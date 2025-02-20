@@ -3,9 +3,10 @@ import { Redirect } from "react-router-dom";
 import axios from "axios";
 
 import HostBrowser from "./HostBrowser";
+import getDefaults from "./HostDefaults";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
-import { Lobbies, PreferredDeckId } from "../../../Constants";
+import { Lobbies } from "../../../Constants";
 
 import "../../../css/host.css";
 
@@ -14,26 +15,7 @@ export default function HostMafia() {
   const [selSetup, setSelSetup] = useState({});
   const [redirect, setRedirect] = useState(false);
 
-  const defaults = JSON.parse(
-    localStorage.getItem("mafiaHostOptions") || null
-  ) || {
-    private: false,
-    guests: false,
-    ranked: false,
-    competitive: false,
-    spectating: false,
-    broadcastClosedRoles: false,
-    scheduled: false,
-    readyCheck: false,
-    noVeg: false,
-    pregameWaitLength: 1,
-    dayLength: 10,
-    nightLength: 2,
-    extendLength: 3,
-    anonymousGame: false,
-    anonymousDeckId: PreferredDeckId,
-    noVeg: false,
-  };
+  const defaults = getDefaults(gameType);
 
   const errorAlert = useErrorAlert();
   const [formFields, updateFormFields] = useForm([
@@ -134,7 +116,7 @@ export default function HostMafia() {
       label: "Day Length (minutes)",
       ref: "dayLength",
       type: "number",
-      value: defaults.dayLength,
+      value: defaults.stateLengths["Day"],
       min: 1,
       max: 30,
     },
@@ -142,7 +124,7 @@ export default function HostMafia() {
       label: "Night Length (minutes)",
       ref: "nightLength",
       type: "number",
-      value: defaults.nightLength,
+      value: defaults.stateLengths["Night"],
       min: 1,
       max: 10,
     },

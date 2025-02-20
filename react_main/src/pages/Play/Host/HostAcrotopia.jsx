@@ -3,10 +3,11 @@ import { Redirect } from "react-router-dom";
 import axios from "axios";
 
 import HostBrowser from "./HostBrowser";
+import getDefaults from "./HostDefaults";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies, PreferredDeckId } from "../../../Constants";
+import { Lobbies } from "../../../Constants";
 
 import "../../../css/host.css";
 
@@ -16,18 +17,8 @@ export default function HostAcrotopia() {
   const [redirect, setRedirect] = useState(false);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
-
-  const defaults = JSON.parse(
-    localStorage.getItem("otherHostOptions") || null
-  ) || {
-    private: false,
-    guests: false,
-    spectating: false,
-    scheduled: false,
-    readyCheck: false,
-    anonymousGame: false,
-    anonymousDeckId: PreferredDeckId,
-  };
+  
+  const defaults = getDefaults(gameType);
 
   const [formFields, updateFormFields] = useForm([
     {
@@ -40,7 +31,7 @@ export default function HostAcrotopia() {
       label: "Round Amount",
       ref: "roundAmt",
       type: "number",
-      value: 5,
+      value: defaults.roundAmt,
       min: 3,
       max: 10,
     },
@@ -48,7 +39,7 @@ export default function HostAcrotopia() {
       label: "Acronym Size",
       ref: "acronymSize",
       type: "number",
-      value: 5,
+      value: defaults.acronymSize,
       min: 3,
       max: 7,
     },
@@ -56,19 +47,19 @@ export default function HostAcrotopia() {
       label: "Enable Punctuation",
       ref: "enablePunctuation",
       type: "boolean",
-      value: true,
+      value: defaults.enablePunctuation,
     },
     {
       label: "Standardise Capitalisation",
       ref: "standardiseCapitalisation",
       type: "boolean",
-      value: true,
+      value: defaults.standardiseCapitalisation,
     },
     {
       label: "Turn On Caps",
       ref: "turnOnCaps",
       type: "boolean",
-      value: true,
+      value: defaults.turnOnCaps,
       showIf: "standardiseCapitalisation",
     },
     {

@@ -3,10 +3,11 @@ import { Redirect } from "react-router-dom";
 import axios from "axios";
 
 import HostBrowser from "./HostBrowser";
+import getDefaults from "./HostDefaults";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies, PreferredDeckId } from "../../../Constants";
+import { Lobbies } from "../../../Constants";
 
 import "../../../css/host.css";
 
@@ -17,17 +18,7 @@ export default function HostJotto() {
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
 
-  const defaults = JSON.parse(
-    localStorage.getItem("otherHostOptions") || null
-  ) || {
-    private: false,
-    guests: false,
-    spectating: false,
-    scheduled: false,
-    readyCheck: false,
-    anonymousGame: false,
-    anonymousDeckId: PreferredDeckId,
-  };
+  const defaults = getDefaults(gameType);
 
   let defaultLobby = localStorage.getItem("lobby");
   if (
@@ -48,7 +39,7 @@ export default function HostJotto() {
       label: "Word Length",
       ref: "wordLength",
       type: "number",
-      value: 5,
+      value: defaults.wordLength,
       min: 4,
       max: 5,
     },
@@ -56,25 +47,25 @@ export default function HostJotto() {
       label: "Duplicate Letters",
       ref: "duplicateLetters",
       type: "boolean",
-      value: false,
+      value: defaults.duplicateLetters,
     },
     {
       label: "Competitive Mode",
       ref: "competitiveMode",
       type: "boolean",
-      value: false,
+      value: defaults.competitiveMode,
     },
     {
       label: "Win With Anagrams",
       ref: "winOnAnagrams",
       type: "boolean",
-      value: true,
+      value: defaults.winOnAnagrams,
     },
     {
       label: "No. Anagrams Required",
       ref: "numAnagramsRequired",
       type: "number",
-      value: 3,
+      value: defaults.numAnagramsRequired,
       min: 1,
       max: 4,
       showIf: "winOnAnagrams",
@@ -143,7 +134,7 @@ export default function HostJotto() {
       ref: "selectWordLength",
       type: "number",
       showIf: "configureDuration",
-      value: 1,
+      value: defaults.selectWordLength,
       min: 0.5,
       max: 5,
       step: 0.5,
@@ -153,7 +144,7 @@ export default function HostJotto() {
       ref: "guessWordLength",
       type: "number",
       showIf: "configureDuration",
-      value: 1,
+      value: defaults.guessWordLength,
       min: 0.5,
       max: 5,
       step: 0.5,

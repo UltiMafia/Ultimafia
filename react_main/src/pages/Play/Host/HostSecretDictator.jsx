@@ -3,6 +3,7 @@ import { Redirect } from "react-router-dom";
 import axios from "axios";
 
 import HostBrowser from "./HostBrowser";
+import getDefaults from "./HostDefaults";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
@@ -17,17 +18,7 @@ export default function HostSecretDictator() {
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
 
-  const defaults = JSON.parse(
-    localStorage.getItem("otherHostOptions") || null
-  ) || {
-    private: false,
-    guests: false,
-    spectating: false,
-    scheduled: false,
-    readyCheck: false,
-    anonymousGame: false,
-    anonymousDeckId: PreferredDeckId,
-  };
+  const defaults = getDefaults(gameType);
 
   let defaultLobby = localStorage.getItem("lobby");
   if (
@@ -108,7 +99,7 @@ export default function HostSecretDictator() {
       ref: "nominationLength",
       type: "number",
       showIf: "configureDuration",
-      value: 1,
+      value: defaults.nominationLength,
       min: 0.5,
       max: 30,
       step: 0.5,
@@ -118,7 +109,7 @@ export default function HostSecretDictator() {
       ref: "electionLength",
       type: "number",
       showIf: "configureDuration",
-      value: 2,
+      value: defaults.electionLength,
       min: 0.5,
       max: 30,
       step: 0.5,
@@ -128,7 +119,7 @@ export default function HostSecretDictator() {
       ref: "legislativeSessionLength",
       type: "number",
       showIf: "configureDuration",
-      value: 2,
+      value: defaults.legislativeSessionLength,
       min: 0.5,
       max: 30,
       step: 0.5,
@@ -138,7 +129,7 @@ export default function HostSecretDictator() {
       ref: "executiveActionLength",
       type: "number",
       showIf: "configureDuration",
-      value: 1,
+      value: defaults.executiveActionLength,
       min: 0.5,
       max: 30,
       step: 0.5,
@@ -148,7 +139,7 @@ export default function HostSecretDictator() {
       ref: "specialNominationLength",
       type: "number",
       showIf: "configureDuration",
-      value: 1,
+      value: defaults.specialNominationLength,
       min: 0.5,
       max: 30,
       step: 0.5,

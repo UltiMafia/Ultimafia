@@ -3,10 +3,11 @@ import { Redirect } from "react-router-dom";
 import axios from "axios";
 
 import HostBrowser from "./HostBrowser";
+import getDefaults from "./HostDefaults";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies, PreferredDeckId } from "../../../Constants";
+import { Lobbies } from "../../../Constants";
 
 import "../../../css/host.css";
 
@@ -17,17 +18,7 @@ export default function HostGhost() {
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
 
-  const defaults = JSON.parse(
-    localStorage.getItem("otherHostOptions") || null
-  ) || {
-    private: false,
-    guests: false,
-    spectating: false,
-    scheduled: false,
-    readyCheck: false,
-    anonymousGame: false,
-    anonymousDeckId: PreferredDeckId,
-  };
+  const defaults = getDefaults(gameType);
 
   let defaultLobby = localStorage.getItem("lobby");
   if (
@@ -49,13 +40,13 @@ export default function HostGhost() {
       label: "Configure Words",
       ref: "configureWords",
       type: "boolean",
-      value: false,
+      value: defaults.configureWords,
     },
     {
       label: "Word Length",
       ref: "wordLength",
       type: "number",
-      value: 5,
+      value: defaults.wordLength,
       min: 3,
       max: 10,
       showIf: "configureWords",
@@ -136,7 +127,7 @@ export default function HostGhost() {
       ref: "nightLength",
       type: "number",
       showIf: "configureDuration",
-      value: 0.5,
+      value: defaults.stateLengths["Night"],
       min: 0.5,
       max: 1,
       step: 0.5,
@@ -146,7 +137,7 @@ export default function HostGhost() {
       ref: "giveClueLength",
       type: "number",
       showIf: "configureDuration",
-      value: 2,
+      value: defaults.giveClueLength,
       min: 1,
       max: 2,
       step: 0.5,
@@ -156,7 +147,7 @@ export default function HostGhost() {
       ref: "dayLength",
       type: "number",
       showIf: "configureDuration",
-      value: 5,
+      value: defaults.stateLengths["Day"],
       min: 2,
       max: 5,
       step: 1,
@@ -166,7 +157,7 @@ export default function HostGhost() {
       ref: "guessWordLength",
       type: "number",
       showIf: "configureDuration",
-      value: 2,
+      value: defaults.guessWordLength,
       min: 1,
       max: 3,
       step: 0.5,
