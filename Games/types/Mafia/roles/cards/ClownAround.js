@@ -59,6 +59,9 @@ module.exports = class ClownAround extends Card {
         }
       },
       handleWinBlockers: function (winners) {
+        if(!this.player.hasAbility(["Win-Con","OnlyWhenAlive"])){
+          return;
+        }
         if (this.player.alive) {
           for (let x = 0; x < MAFIA_FACTIONS.length; x++) {
             if (winners.groups[MAFIA_FACTIONS[x]]) {
