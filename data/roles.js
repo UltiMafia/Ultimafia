@@ -526,7 +526,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Investigative", "Roles"],
       description: [
-        "On Night 1 Learns that 1 of 2 players is a particular role.",
+        "On Night 1, learns that 1 of 2 players is a particular role.",
       ],
     },
     Scientist: {
@@ -534,7 +534,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Investigative", "Roles", "Neighbors", "Visits"],
       description: [
-        "Once Per Game During the Day can learn about the relation beetween a player and a role.",
+        "Once per game during the Day, can learn about the relation between a player and a role.",
       ],
     },
     Tourist: {

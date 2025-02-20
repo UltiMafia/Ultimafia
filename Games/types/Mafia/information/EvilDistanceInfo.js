@@ -63,7 +63,7 @@ module.exports = class EvilDistanceInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    return `:track: Your survey says that there are ${this.mainInfo} people sitting beetween two Evildoers.`;
+    return `:track: Your survey says that there are ${this.mainInfo} people sitting between two Evildoers.`;
   }
 
   isTrue() {

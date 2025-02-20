@@ -31,7 +31,7 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
             );
             if (alive.length <= 3) {
               this.actor.queueAlert(
-                ` You learn nothing because only 2 players are alive.`
+                ` You learn nothing... the other two survivors don't trust you with their laundry.`
               );
               return;
             }
