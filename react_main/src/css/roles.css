@@ -388,6 +388,14 @@
   background-image: url("/images/roles/forensicist-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Televangelist {
+  background-image: url("/images/roles/televangelist-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Sicario {
+  background-image: url("/images/roles/sicario-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Farmer {
   background-image: url("/images/roles/farmer-vivid.png");
 }

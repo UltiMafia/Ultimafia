@@ -217,6 +217,7 @@ const artContributors = {
       "Farmer",
       "Satyr",
       "Forensicist",
+      "Televangelist",
     ],
   },
   grr: {
