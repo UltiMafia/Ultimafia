@@ -464,10 +464,10 @@ const roleData = {
       category: "Investigative",
       tags: ["Investigative", "Information"],
       description: [
-        "Each night learns the number of False Infomation Created.",
+        "Each night learns if and how many system messages are being falsified.",
       ],
       SpecialInteractions: {
-        Journalist: ["Forensicist will not count Journalist info"],
+        Journalist: ["Forensicist will not count Journalist info."],
       },
     },
     Geologist: {
@@ -475,8 +475,8 @@ const roleData = {
       category: "Investigative",
       tags: ["Investigative", "Neighbors", "Position"],
       description: [
-        "Learns the distance in players between 2 evil players on Night 1.",
-        "If the distance is 0 the Evil Players are neighboring eachother.",
+        "On the first night, learns the distance in players between 2 Evil players.",
+        "If the distance is 0, then the Evil players are neighboring each other.",
       ],
     },
     Orienteer: {
@@ -2500,9 +2500,9 @@ const roleData = {
       category: "Speaking",
       tags: ["Speaking", "Overturn", "Condemn", "Roles"],
       description: [
-        "Each night a random non-Cult player is told a role.",
-        "That player must say the name of the role the following day or the vote will be Overturned onto them.",
-        "During the day a Banshee may guess who the player saying the role is, If they guess correctly, the day ends and that player is condemned.",
+        "Each day, a random non-Cult player is told a role.",
+        "That player must say the name of the role the following day or the vote will be overturned onto them.",
+        "During the day a Banshee may guess who their target is. If they guess correctly, the day ends and that player is condemned.",
       ],
     },
     Baphomet: {
@@ -2824,8 +2824,8 @@ const roleData = {
       ],
       description: [
         "Each night, may choose a player to kill.",
-        "Most information created by Village roles is made false.",
-        "If no one is condemned, the Cult wins.",
+        "While alive, most information received by Village roles is made false.",
+        "If no one is condemned while Nyarlathotep is alive, the Cult wins.",
       ],
     },
     Puca: {

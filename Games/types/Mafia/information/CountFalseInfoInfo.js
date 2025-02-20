@@ -31,7 +31,7 @@ module.exports = class CountFalseInfoInfo extends Information {
   }
 
   getInfoFormated() {
-    return `You Learn that ${this.mainInfo} players created False Infomation last night.`;
+    return `:journ: You learn that ${this.mainInfo} players received false information last night.`;
   }
 
   isTrue() {

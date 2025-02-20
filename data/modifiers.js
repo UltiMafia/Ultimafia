@@ -244,7 +244,7 @@ const modifierData = {
       internal: ["Learn3ExcessRoles"],
       tags: ["Investigative", "Roles", "Excess Roles"],
       description:
-        "Starts knowing 3 Excess Roles. Mafia/Cult roles will Always learn Village-Aligned Excess roles.",
+        "Learns 3 excess roles upon the game's start. Mafia/Cult roles always learn Village-aligned excess roles.",
     },
     Kleptomaniac: {
       internal: ["StealFromTargets"],

@@ -15,6 +15,7 @@ module.exports = class Nyarlathotep extends Role {
     ];
     this.meetingMods = {
       "Solo Kill": {
+        actionName: "Annihilate",
         targets: { include: ["alive"], exclude: ["Cult"] },
       },
     };
