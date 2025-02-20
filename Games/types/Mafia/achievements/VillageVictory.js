@@ -6,7 +6,7 @@ module.exports = class VillageVictory extends Achievements {
 
     this.listeners = {
       aboutToFinish: function () {
-        if (this.player.role.alignment != "Village") {
+        if (this.game.getRoleAlignment(this.player.role.name) != "Village") {
           return;
         }
         if (

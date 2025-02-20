@@ -153,7 +153,6 @@ export default function CreateMafiaSetup() {
       ref: "talkingDead",
       value: false,
       type: "boolean",
-      showIf: ["!closed", "useRoleGroups"],
     },
     {
       label: "Voting Dead",

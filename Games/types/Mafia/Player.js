@@ -267,7 +267,7 @@ module.exports = class MafiaPlayer extends Player {
 
   speak(message) {
     if (
-      !this.alive &&
+      (!this.alive && this.game.setup.talkingDead != true) &&
       (message.meeting.name == "Village" ||
         message.meeting.name == "Room 1" ||
         message.meeting.name == "Room 2" ||
@@ -284,7 +284,7 @@ module.exports = class MafiaPlayer extends Player {
 
   speakQuote(quote) {
     if (
-      !this.alive &&
+      (!this.alive && this.game.setup.talkingDead != true) &&
       (quote.meeting.name == "Village" ||
         quote.meeting.name == "Room 1" ||
         quote.meeting.name == "Room 2" ||

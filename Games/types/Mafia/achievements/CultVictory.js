@@ -6,7 +6,7 @@ module.exports = class CultVictory extends Achievements {
 
     this.listeners = {
       aboutToFinish: function () {
-        if (this.player.role.alignment != "Cult") {
+        if (this.game.getRoleAlignment(this.player.role.name) != "Cult") {
           return;
         }
         if (

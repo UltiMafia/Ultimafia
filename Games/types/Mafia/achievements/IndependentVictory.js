@@ -6,7 +6,7 @@ module.exports = class IndependentVictory extends Achievements {
 
     this.listeners = {
       aboutToFinish: function () {
-        if (this.player.role.alignment != "Independent") {
+        if (this.game.getRoleAlignment(this.player.role.name) != "Independent") {
           return;
         }
         if (
