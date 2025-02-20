@@ -28,6 +28,10 @@ module.exports = class MustRoleShareWithVip extends Card {
         }
       },
       handleWinBlockers: function (winners) {
+        if(!this.player.hasAbility(["Win-Con"])){
+          return;
+        }
+        
         let hasFailed = false;
         if (this.player.role.name == "Vice President") {
           for (let player of this.game.players) {
