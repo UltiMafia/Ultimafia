@@ -33,7 +33,7 @@ const modifierData = {
       internal: ["BanishedRole"],
       tags: ["Banished"],
       description:
-        "Banished roles will not spawn normally in closed setups or role group setups. Banished roles will only spawn if the banished count is increased or if another roles adds Banished roles to the game.",
+        "Banished roles have abnormal spawn conditions. Banished roles will only spawn if the Banished count is increased, or if another roles adds Banished roles to the game.",
       incompatible: ["Inclusive", "Exclusive"],
     },
     Birdbrained: {
@@ -137,7 +137,7 @@ const modifierData = {
       internal: ["Demonic"],
       tags: ["Demonic", "Essential"],
       description:
-        "Cult will Win if a Demonic Player is alive in final 2 or Only Demonic and Cult players are alive. If all Demonic roles are dead, All Cult-Aligned players will die.",
+        "Cult will win if a Demonic player is alive in final 2 or only Demonic and Cult players are alive. If all Demonic players are dead, all Cult-aligned players will die.",
     },
     Delayed: {
       internal: ["Delayed"],

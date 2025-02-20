@@ -186,7 +186,7 @@ module.exports = class CountEvilVotes extends Card {
               var alert;
 
               if (this.actor.role.data.voteTied == true) {
-                alert = `:invest: Their was no Majority Vote yesterday!`;
+                alert = `:invest: There was no majority vote yesterday!`;
                 this.actor.queueAlert(alert);
                 return;
               }
@@ -201,9 +201,9 @@ module.exports = class CountEvilVotes extends Card {
               }
 
               if (this.actor.role.data.evilVoted == true) {
-                alert = `:invest: You learn that Evil Players voted with the Majority yesterday!`;
+                alert = `:invest: You ran the numbers... the forces of Evil did vote with the majority yesterday!`;
               } else {
-                alert = `:invest: You learn that no evil players voted with the Majority yesterday!`;
+                alert = `:invest: You ran the numbers... the forces of Evil did NOT vote with the Majority yesterday!`;
               }
 
               if (
@@ -211,9 +211,9 @@ module.exports = class CountEvilVotes extends Card {
                 this.game.RoomTwo.length > 0
               ) {
                 if (this.actor.role.data.evilVoted == true) {
-                  alert = `:invest: You learn that Evil Players voted with the Majority in the Room you were in yesterday!`;
+                  alert = `:invest: You ran the numbers... the forces of Evil did vote with the Majority in your Room yesterday!`;
                 } else {
-                  alert = `:invest: You learn that no evil players voted with the Majority in the Room you were in yesterday!`;
+                  alert = `:invest: You ran the numbers... the forces of Evil did NOT vote with the Majority in your Room yesterday!`;
                 }
               }
 

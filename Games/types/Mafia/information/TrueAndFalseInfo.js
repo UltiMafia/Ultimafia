@@ -102,7 +102,7 @@ module.exports = class TrueAndFalseInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    return `You learn that (${this.mainInfo[0].getInfoSpecial()}) OR (${this.mainInfo[1].getInfoSpecial()}) is True!`;
+    return `You learn that EITHER (${this.mainInfo[0].getInfoSpecial()}) OR (${this.mainInfo[1].getInfoSpecial()}) is True!`;
   }
 
   isTrue() {

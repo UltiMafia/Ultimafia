@@ -585,7 +585,11 @@
 }
 
 .role-icon-scheme-vivid .role-Mafia-Zombie {
-  background-image: url("/images/roles/hexer-vivid.png");
+  background-image: url("/images/roles/zombie-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Satyr {
+  background-image: url("/images/roles/satyr-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Hexer {

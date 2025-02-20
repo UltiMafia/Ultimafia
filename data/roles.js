@@ -455,8 +455,8 @@ const roleData = {
       category: "Investigative",
       tags: ["Investigative", "Alignment", "Voting"],
       description: [
-        "Each night learns if an Evil Player voted with the Majority the previous day.",
-        "Learns a random value if the vote was tied.",
+        "Each night, learns if a Mafia or Cult-aligned player voted with the majority on the previous day.",
+        "If the vote was tied, the Statistician learns a random value.",
       ],
     },
     Forensicist: {
@@ -717,8 +717,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Night-acting", "Conversion", "Role Swapping", "Visiting"],
       description: [
-        "Each night chooses a player.",
-        "Swaps roles with that player.",
+        "Each night, chooses a player to swap roles with.",
         "A Snake Charmer can only swap roles once.",
       ],
     },
@@ -850,7 +849,7 @@ const roleData = {
       category: "Sacrificial",
       tags: ["Sacrificial", "Items", "Conversion", "Role Swapping"],
       description: [
-        "If killed, gives out a can of shaving cream to the killer.",
+        "If killed, the kill receives a can of shaving cream.",
         "While holding the shaving cream, a Mafia or Cult-aligned player may swap the roles of two living players.",
         "Excluding players who started as Independent, the swapped players will keep their original alignments.",
       ],
@@ -884,8 +883,7 @@ const roleData = {
       category: "Sacrificial",
       tags: ["Sacrificial", "Voting", "Speech", "Eclipse"],
       description: [
-        "Following their death, causes an eclipse during the day",
-        "During an eclipse all speech and votes are anonymous.",
+        "Following their death, causes an eclipse during the day. During an eclipse, all speech and votes are anonymous.",
       ],
     },
     Schoolmarm: {
@@ -2852,8 +2850,8 @@ const roleData = {
       ],
       description: [
         "Each night, may choose a player to kill.",
-        "A Satyr's closest Village-Aligned neighbors' actions are inflicted with Mind Rot at night.",
-        "Banished roles are skipped when a Satyr looks for it's closest Village-Aligned neighbors.",
+        "A Satyr's closest Village-aligned neighbors' actions are inflicted with Mind Rot at night.",
+        "Banished roles are skipped when a Satyr checks for its closest Village-aligned neighbors.",
       ],
     },
     Shoggoth: {

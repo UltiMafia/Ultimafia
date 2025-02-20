@@ -34,7 +34,6 @@ module.exports = {
     Prizefighter: "Pedagogue",
     Mindwarper: "Psion",
     Neighbor: "Vegan",
-    Miasma: "Satyr",
     Ritualist: "Haruspex",
     "Accursed Doll": "Slasher",
     Whistleblower: "Magistrate",

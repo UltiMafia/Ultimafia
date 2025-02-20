@@ -14,6 +14,7 @@ module.exports = class Satyr extends Role {
     ];
     this.meetingMods = {
       "Solo Kill": {
+        actionName: "Thrash",
         targets: { include: ["alive"], exclude: ["Cult"] },
       },
     };

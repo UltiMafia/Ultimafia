@@ -113,7 +113,7 @@ module.exports = class EvilDistance extends Card {
             if (info.mainInfo == "Not Enough") {
               this.actor.role.hasInfo = false;
               this.actor.queueAlert(
-                `There wasn't enough evil players for your abilty to work!`
+                `There wasn't enough evil players for your survey to work!`
               );
               return;
             }
