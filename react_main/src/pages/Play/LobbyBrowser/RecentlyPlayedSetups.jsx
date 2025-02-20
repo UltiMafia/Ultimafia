@@ -46,9 +46,9 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
     const onRehostClick = () => {
       let lobby = localStorage.getItem("lobby") || "All";
       let gameType = setup.setupDetails.gameType;
-  
+
       const defaults = getDefaults(gameType);
-  
+
       if (lobby === "All") lobby = "Main";
       if (gameType !== "Mafia" && lobby === "Main") {
         lobby = "Games";
@@ -60,7 +60,7 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
           setup: setup.setupDetails.id,
           lobby: lobby,
           ranked: setup.setupDetails.ranked,
-          ...defaults
+          ...defaults,
         })
         .then((res) => setRedirect(`/game/${res.data}`))
         .catch(errorAlert);
@@ -70,27 +70,29 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
 
     const showRedoButton = isPhoneDevice ? user.loggedIn : true;
 
-    return (<Box
-      key={`recently-played-${setup._id}`}
-      sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
-      <Setup setup={setup.setupDetails} />
-      <Typography variant="body2">{setup.setupDetails.name}</Typography>
-      {showRedoButton && (
-        <Box style={{ mx: 1, width: "32px", textAlign: "center" }}>
-          {user.loggedIn && (
-            <IconButton color="primary" onClick={onRehostClick}>
-              <i className="rehost fas fa-redo" title="Rehost" />
-            </IconButton>
-          )}
-        </Box>
-      )}
-    </Box>
-  )});
+    return (
+      <Box
+        key={`recently-played-${setup._id}`}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Setup setup={setup.setupDetails} />
+        <Typography variant="body2">{setup.setupDetails.name}</Typography>
+        {showRedoButton && (
+          <Box style={{ mx: 1, width: "32px", textAlign: "center" }}>
+            {user.loggedIn && (
+              <IconButton color="primary" onClick={onRehostClick}>
+                <i className="rehost fas fa-redo" title="Rehost" />
+              </IconButton>
+            )}
+          </Box>
+        )}
+      </Box>
+    );
+  });
 
   return (
     <Card variant="outlined">
