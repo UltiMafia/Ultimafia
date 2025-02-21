@@ -67,7 +67,7 @@ export default function Achievements(props) {
       </Typography>
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h6">Commands</Typography>
+          <Typography variant="h6"> List of Achievements</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography paragraph>

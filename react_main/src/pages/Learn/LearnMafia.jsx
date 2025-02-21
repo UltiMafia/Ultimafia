@@ -4,7 +4,13 @@ import {
   AccordionSummary,
   AccordionDetails,
   Typography,
-  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
 } from "@mui/material";
 import { useTheme } from "@mui/styles";
 
@@ -169,6 +175,29 @@ export default function LearnMafia(props) {
     document.title = "Learn Mafia | UltiMafia";
   }, []);
 
+  const renderTable = (data) => (
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Name</TableCell>
+            <TableCell>Description</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {data.map((entry, index) => (
+            <TableRow key={index}>
+              <TableCell>
+                {entry.icon} {entry.name}
+              </TableCell>
+              <TableCell>{entry.text}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+
   return (
     <div className="learn">
       <Typography variant="h4" gutterBottom>
@@ -213,50 +242,19 @@ export default function LearnMafia(props) {
         <AccordionSummary>
           <Typography>Items</Typography>
         </AccordionSummary>
-        <AccordionDetails>
-          <Grid container spacing={2}>
-            {items.map((item, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                <Typography variant="h6">
-                  {item.icon} {item.name}
-                </Typography>
-                <Typography>{item.text}</Typography>
-              </Grid>
-            ))}
-          </Grid>
-        </AccordionDetails>
+        <AccordionDetails>{renderTable(items)}</AccordionDetails>
       </Accordion>
       <Accordion>
         <AccordionSummary>
           <Typography>Mechanics</Typography>
         </AccordionSummary>
-        <AccordionDetails>
-          <Grid container spacing={2}>
-            {mechanics.map((mechanic, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                <Typography variant="h6">{mechanic.name}</Typography>
-                <Typography>{mechanic.text}</Typography>
-              </Grid>
-            ))}
-          </Grid>
-        </AccordionDetails>
+        <AccordionDetails>{renderTable(mechanics)}</AccordionDetails>
       </Accordion>
       <Accordion>
         <AccordionSummary>
           <Typography>Modifiers</Typography>
         </AccordionSummary>
-        <AccordionDetails>
-          <Grid container spacing={2}>
-            {modifiers.map((modifier, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                <Typography variant="h6">
-                  {modifier.icon} {modifier.name}
-                </Typography>
-                <Typography>{modifier.text}</Typography>
-              </Grid>
-            ))}
-          </Grid>
-        </AccordionDetails>
+        <AccordionDetails>{renderTable(modifiers)}</AccordionDetails>
       </Accordion>
     </div>
   );
