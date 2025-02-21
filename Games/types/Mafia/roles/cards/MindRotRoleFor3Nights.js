@@ -41,15 +41,17 @@ module.exports = class MindRotRoleFor3Nights extends Card {
             }
             for (let y = 0; y < currentRoles.length; y++) {
               if (this.target == currentRoles[y]) {
+                players[y].giveEffect("Delirious", this.actor, 3);
+                this.blockWithMindRot(players[y], true);
                 this.actor.role.playersToBlock.push(players[y]);
-                this.actor.role.blockCounter = 3;
+                //this.actor.role.blockCounter = 3;
               }
             }
           },
         },
       },
     };
-
+/*
     this.actions = [
       {
         priority: PRIORITY_NIGHT_ROLE_BLOCKER,
@@ -74,7 +76,7 @@ module.exports = class MindRotRoleFor3Nights extends Card {
         },
       },
     ];
-
+*/
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {
