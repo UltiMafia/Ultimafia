@@ -791,8 +791,8 @@ module.exports = class Player {
     if (!message.modified) message = originalMessage;
 
     // message.textColor = message.sender.user.settings.textColor !== undefined ? message.sender.user.settings.textColor : "";
-    if(message.aliveOverride != true){
-    message.alive = this.alive;
+    if (message.aliveOverride != true) {
+      message.alive = this.alive;
     }
 
     return message;
