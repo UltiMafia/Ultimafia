@@ -6,10 +6,9 @@ module.exports = class Delirious extends Effect {
     super("Delirious");
     this.effecter = effecter;
     this.lifespan = lifespan;
-    if(types != null){
+    if (types != null) {
       this.types = types;
-    }
-    else{
+    } else {
       this.types = ["Delirium"];
     }
 
