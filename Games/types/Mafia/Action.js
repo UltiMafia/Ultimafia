@@ -65,7 +65,7 @@ module.exports = class MafiaAction extends Action {
     target = target || this.target;
     let hasInvestigate = false;
     if (fromEffect != true) {
-      target.giveEffect("Delirious", 1);
+      target.giveEffect("Delirious", this.actor, 1);
     }
     for (let action of this.game.actions[0]) {
       if (action.hasLabel("investigate")) {
