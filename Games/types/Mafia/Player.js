@@ -477,7 +477,7 @@ module.exports = class MafiaPlayer extends Player {
         effect.name == "Delirious" &&
         (effect.effecter == null ||
           effect.effecter == this ||
-          effect.effecter.hasAbility(["Delirium"]))
+          effect.effecter.hasAbility(effect.types))
       ) {
         return true;
       }
