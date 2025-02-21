@@ -134,6 +134,7 @@ const artContributors = {
       "Banshee",
       "Auditor",
       "Vampire",
+      "Tourist",
     ],
   },
   bee: {
@@ -334,6 +335,9 @@ const artContributors = {
   },
   Roskva: {
     Mafia: ["Admiral"],
+  },
+  kimbo: {
+    Mafia: ["Groundskeeper"],
   },
 };
 
