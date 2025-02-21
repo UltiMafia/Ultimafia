@@ -73,7 +73,8 @@ module.exports = class SelectHostAndDie extends Card {
     for (let player of message.game.players) {
       if (player != puppet) message.recipients.push(player);
     }
-
+    message.alive = true;
+    message.aliveOverride = true;
     message.parseForReview = this.parseForReview;
   }
 
