@@ -9,7 +9,7 @@ module.exports = class Succubus extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "NightMindRot",
+      "NightDelirium",
     ];
     this.meetingMods = {
       Rot: {

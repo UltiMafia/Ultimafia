@@ -87,7 +87,7 @@ module.exports = class MagusGame extends Card {
 
           let shuffledPlayers = Random.randomizeArray(alivePlayers);
 
-          if (this.actor.role.data.FakeMindRot) {
+          if (this.actor.role.data.FakeDelirium) {
             if (this.dominates(shuffledPlayers[0])) {
               this.blockWithDelirium(shuffledPlayers[0]);
             }
@@ -177,7 +177,7 @@ module.exports = class MagusGame extends Card {
               this.player.role.data.FakeBlocking = true;
             }
             if (roleTags[v] == "Delirium" && Random.randInt(0, 100) <= chance) {
-              this.player.role.data.FakeMindRot = true;
+              this.player.role.data.FakeDelirium = true;
             }
             if (
               roleTags[v] == "Clean Night Kill" &&

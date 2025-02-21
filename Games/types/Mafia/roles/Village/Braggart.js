@@ -9,9 +9,9 @@ module.exports = class Braggart extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "BecomeMindRottedRole",
+      "BecomeDeliriousRole",
     ];
   }
 };
 
-//If this role is being renamed change it's name in IsTheBraggart.js, BecomeMindRottedRole.js, and Action.js
+//If this role is being renamed change its name in IsTheBraggart.js, BecomeDeliriousRole.js, and Action.js

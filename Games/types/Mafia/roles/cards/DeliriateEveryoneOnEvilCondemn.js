@@ -2,7 +2,7 @@ const Card = require("../../Card");
 const Action = require("../../Action");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 
-module.exports = class MindRotEveryoneOnEvilCondemn extends Card {
+module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
   constructor(role) {
     super(role);
 

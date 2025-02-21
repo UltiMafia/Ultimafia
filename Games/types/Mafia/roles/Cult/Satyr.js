@@ -9,7 +9,7 @@ module.exports = class Satyr extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "MindRotNeighbors",
+      "DeliriateNeighbors",
       "NightKiller",
     ];
     this.meetingMods = {

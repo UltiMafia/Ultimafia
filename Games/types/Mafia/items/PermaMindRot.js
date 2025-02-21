@@ -3,9 +3,9 @@ const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../const/Priority");
 
-module.exports = class PermaMindRot extends Item {
+module.exports = class PermaDelirium extends Item {
   constructor(lifespan) {
-    super("PermaMindRot");
+    super("PermaDelirium");
 
     this.lifespan = lifespan || Infinity;
     this.cannotBeStolen = true;
@@ -23,7 +23,7 @@ module.exports = class PermaMindRot extends Item {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
           labels: ["hidden", "block"],
           run: function () {
-            //if (this.dominates()) this.target.giveEffect("MindRot", this.actor);
+            //if (this.dominates()) this.target.giveEffect("Delirium", this.actor);
 
             if (this.dominates(this.target)) {
               this.blockWithDelirium(this.target);
@@ -44,7 +44,7 @@ module.exports = class PermaMindRot extends Item {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
           labels: ["hidden", "block"],
           run: function () {
-            //if (this.dominates()) this.target.giveEffect("MindRot", this.actor);
+            //if (this.dominates()) this.target.giveEffect("Delirium", this.actor);
 
             if (this.dominates(this.target)) {
               this.blockWithDelirium(this.target);

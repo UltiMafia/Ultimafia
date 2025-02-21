@@ -2,13 +2,13 @@ const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 
-module.exports = class NightMindRot extends Card {
+module.exports = class NightDelirium extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
       Rot: {
-        actionName: "Rot Player",
+        actionName: "Make Delirious",
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["self", "dead"] },

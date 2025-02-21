@@ -2,9 +2,9 @@ const Effect = require("../Effect");
 const Action = require("../Action");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../const/Priority");
 
-module.exports = class SedateMindRot extends Effect {
+module.exports = class SedateDelirium extends Effect {
   constructor(doer) {
-    super("SedateMindRot");
+    super("SedateDelirium");
     this.doer = doer;
   }
 

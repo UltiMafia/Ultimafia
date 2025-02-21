@@ -35,7 +35,7 @@ module.exports = class AddRottenCopy extends Card {
             true
           );
           if (x == 0) {
-            shuffledPlayers[x].holdItem("PermaMindRot");
+            shuffledPlayers[x].holdItem("PermaDelirium");
           }
           shuffledPlayers[x].role.data.reroll = true;
           shuffledPlayers[x].role.data.hasRottenCopied = true;

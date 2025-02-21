@@ -127,6 +127,12 @@ const modifierData = {
       tags: ["Role Blocker", "Reflexive"],
       description: "Is untargetable from all actions.",
     },
+    Confused: {
+      internal: ["ModifierConfused"],
+      tags: ["Manipulative", "Delirium", "Block Self"],
+      description: "Investigative reports appear incorrect 50% of the time.",
+      incompatible: ["Sane", "Insane", "Naive", "Paranoid"],
+    },
     Crystalline: {
       internal: ["StartWithCrystal"],
       tags: ["Revealing", "Items", "Crystal"],
@@ -227,11 +233,6 @@ const modifierData = {
       description:
         "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
       incompatible: ["Respected", "Scatterbrained", "Exposed"],
-    },
-    Confused: {
-      internal: ["MindRot50Percent"],
-      tags: ["Manipulative", "Delirium", "Block Self"],
-      description: "Investigative reports appear incorrect 50% of the time.",
     },
     Inclusive: {
       internal: ["Add1Banished"],
@@ -535,7 +536,7 @@ const modifierData = {
       incompatible: ["Weak"],
     },
     Verrucose: {
-      internal: ["GivePermaMindRot"],
+      internal: ["GivePermaDelirium"],
       tags: ["Sacrificial", "Manipulative", "Delirium"],
       description:
         "On death a random Village Aligned player will be chosen to be made Delirious for the rest of the game.",

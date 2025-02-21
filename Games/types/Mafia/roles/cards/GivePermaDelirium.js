@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 
-module.exports = class GivePermaMindRot extends Card {
+module.exports = class GivePermaDelirium extends Card {
   constructor(role) {
     super(role);
     this.listeners = {

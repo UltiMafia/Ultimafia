@@ -2,7 +2,7 @@ const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 
-module.exports = class SaveTwoAndMindRot extends Card {
+module.exports = class SaveTwoAndDeliriate extends Card {
   constructor(role) {
     super(role);
 

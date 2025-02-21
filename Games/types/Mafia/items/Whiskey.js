@@ -48,7 +48,7 @@ module.exports = class Whiskey extends Item {
                   this.item.drop();
                   return;
                 }
-                this.target.giveEffect("SedateMindRot", this.actor);
+                this.target.giveEffect("SedateDelirium", this.actor);
               } else {
                 this.target.giveEffect("Sedate", this.actor);
               }

@@ -9,7 +9,7 @@ module.exports = class Jazzman extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "MindRotEveryoneOnEvilCondemn",
+      "DeliriateEveryoneOnEvilCondemn",
     ];
   }
 };

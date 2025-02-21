@@ -9,7 +9,7 @@ module.exports = class Flapper extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "MindRotRoleFor3Nights",
+      "DeliriateRoleFor3Nights",
     ];
   }
 };

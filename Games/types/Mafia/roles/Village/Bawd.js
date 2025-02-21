@@ -9,7 +9,7 @@ module.exports = class Bawd extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "SaveTwoAndMindRot",
+      "SaveTwoAndDeliriate",
     ];
   }
 };
