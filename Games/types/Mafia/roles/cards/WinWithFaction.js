@@ -115,27 +115,25 @@ module.exports = class WinWithFaction extends Card {
 
         //Special Win Cons
         // win by Zealot
-        const aliveZealots = this.game.players
-          .filter(
-            (p) =>
-              p.role.name === "Zealot" &&
-              p.role.data.ZealotWin &&
-              p.faction == this.player.faction &&
-              p.hasAbility(["Win-Con"])
-          );
+        const aliveZealots = this.game.players.filter(
+          (p) =>
+            p.role.name === "Zealot" &&
+            p.role.data.ZealotWin &&
+            p.faction == this.player.faction &&
+            p.hasAbility(["Win-Con"])
+        );
         if (aliveZealots.length > 0) {
           factionWin(this);
           return;
         }
         // win by Changeling
-        const aliveChangelings = this.game.players
-          .filter(
-            (p) =>
-              p.role.name === "Changeling" &&
-              p.role.data.twincondemned &&
-              p.faction == this.player.faction &&
-              p.hasAbility(["Win-Con"])
-          );
+        const aliveChangelings = this.game.players.filter(
+          (p) =>
+            p.role.name === "Changeling" &&
+            p.role.data.twincondemned &&
+            p.faction == this.player.faction &&
+            p.hasAbility(["Win-Con"])
+        );
         if (aliveChangelings.length > 0) {
           factionWin(this);
           return;
@@ -148,7 +146,7 @@ module.exports = class WinWithFaction extends Card {
               p.role.name === "Mayor" &&
               p.role.data.MayorWin &&
               p.faction == this.player.faction &&
-              p.hasAbility(["Win-Con","OnlyWhenAlive"])
+              p.hasAbility(["Win-Con", "OnlyWhenAlive"])
           );
         if (aliveMayors.length > 0 && aliveCount == 3) {
           if (
@@ -168,16 +166,15 @@ module.exports = class WinWithFaction extends Card {
               p.role.name === "Mayor" &&
               p.role.data.MayorWin &&
               p.faction != this.player.faction &&
-              p.hasAbility(["Win-Con","OnlyWhenAlive"])
+              p.hasAbility(["Win-Con", "OnlyWhenAlive"])
           );
-        const aliveNyarlathotep = this.game.players
-          .filter(
-            (p) =>
-              p.role.name === "Nyarlathotep" &&
-              p.role.data.NyarlathotepWin &&
-              p.faction == this.player.faction &&
-              p.hasAbility(["Win-Con"])
-          );
+        const aliveNyarlathotep = this.game.players.filter(
+          (p) =>
+            p.role.name === "Nyarlathotep" &&
+            p.role.data.NyarlathotepWin &&
+            p.faction == this.player.faction &&
+            p.hasAbility(["Win-Con"])
+        );
         if (aliveNyarlathotep.length > 0 && enemyMayors.length <= 0) {
           if (
             this.game.getStateName() == "Day" &&
@@ -296,8 +293,11 @@ module.exports = class WinWithFaction extends Card {
         //soldier conditional
         if (this.player.faction != "Village" && !ONE_NIGHT) {
           const soldiersInGame = this.game.players.filter(
-            (p) => p.role.name == "Soldier" && p.faction == "Village" && p.alive &&
-              p.hasAbility(["Win-Con","OnlyWhenAlive"])
+            (p) =>
+              p.role.name == "Soldier" &&
+              p.faction == "Village" &&
+              p.alive &&
+              p.hasAbility(["Win-Con", "OnlyWhenAlive"])
           );
 
           if (soldiersInGame.length > 0) {
@@ -341,7 +341,7 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
-        
+
         //Vampire conditional
         if (EVIL_FACTIONS.includes(this.player.faction) && !ONE_NIGHT) {
           let vampires = this.game.players.filter(
@@ -575,7 +575,10 @@ module.exports = class WinWithFaction extends Card {
             this.game
               .alivePlayers()
               .filter(
-                (p) => p.role.name === "Soldier" && p.faction == "Village" && p.hasAbility(["Win-Con","OnlyWhenAlive"])
+                (p) =>
+                  p.role.name === "Soldier" &&
+                  p.faction == "Village" &&
+                  p.hasAbility(["Win-Con", "OnlyWhenAlive"])
               ).length >=
               aliveCount / 2 &&
             aliveCount > 0
@@ -684,7 +687,10 @@ module.exports = class WinWithFaction extends Card {
         }
       },
       death: function (player, killer, deathType) {
-        if (player.role.name == "President" && player.hasAbility(["Win-Con","WhenDead"])) {
+        if (
+          player.role.name == "President" &&
+          player.hasAbility(["Win-Con", "WhenDead"])
+        ) {
           const vicePresidents = this.game.players.filter(
             (p) =>
               p.alive &&
@@ -767,7 +773,7 @@ module.exports = class WinWithFaction extends Card {
             if (this.target.role.name !== "Seer") {
               return;
             }
-            if(!this.target.hasAbility(["Win-Con","WhenDead"])){
+            if (!this.target.hasAbility(["Win-Con", "WhenDead"])) {
               return;
             }
 
