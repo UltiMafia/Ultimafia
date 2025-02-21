@@ -28,6 +28,10 @@ module.exports = class MustRoleShareWithVip extends Card {
         }
       },
       handleWinBlockers: function (winners) {
+        if (!this.player.hasAbility(["Win-Con"])) {
+          return;
+        }
+
         let hasFailed = false;
         if (this.player.role.name == "Vice President") {
           for (let player of this.game.players) {
@@ -39,7 +43,7 @@ module.exports = class MustRoleShareWithVip extends Card {
             }
             if (
               player.role.name == "Senator" &&
-              !this / data.playersSharedWith.includes(player)
+              !this.data.playersSharedWith.includes(player)
             ) {
               hasFailed = true;
             }
@@ -52,7 +56,7 @@ module.exports = class MustRoleShareWithVip extends Card {
                   )
                 )
                 .includes("Linchpin") &&
-              !this.playersSharedWith.includes(player)
+              !this.data.playersSharedWith.includes(player)
             ) {
               hasFailed = true;
             }

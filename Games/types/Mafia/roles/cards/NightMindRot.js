@@ -17,7 +17,7 @@ module.exports = class NightMindRot extends Card {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
           run: function () {
             if (this.dominates()) {
-              this.blockWithMindRot(this.target);
+              this.blockWithDelirium(this.target);
             }
           },
         },

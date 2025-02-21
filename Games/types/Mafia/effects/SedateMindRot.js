@@ -20,7 +20,7 @@ module.exports = class SedateMindRot extends Effect {
       effect: this,
       game: this.game,
       run: function () {
-        this.blockWithMindRot();
+        this.blockWithDelirium();
         this.effect.remove();
       },
     });

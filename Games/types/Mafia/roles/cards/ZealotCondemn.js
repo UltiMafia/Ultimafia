@@ -23,6 +23,8 @@ module.exports = class ZealotCondemn extends Card {
         }
         if (stateInfo.name.match(/Night/)) {
           if (this.player.role.data.ZealotDay == true) {
+            this.player.role.data.ZealotDay = false;
+            this.player.role.data.ZealotCondemn = false;
             for (let p of this.game.alivePlayers()) {
               if (p.faction === this.player.faction) {
                 p.kill("basic", this.player, true);
@@ -41,7 +43,7 @@ module.exports = class ZealotCondemn extends Card {
         if (
           player.faction === "Village" &&
           deathType == "condemn" &&
-          this.player.alive &&
+          this.player.hasAbility(["Win-Con"]) &&
           this.player.role.data.ZealotDay == true
         ) {
           this.player.role.data.ZealotWin = true;

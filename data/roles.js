@@ -113,10 +113,10 @@ const roleData = {
     Bawd: {
       alignment: "Village",
       category: "Protective",
-      tags: ["Protective", "Night Saver", "Mind Rot", "Visiting"],
+      tags: ["Protective", "Night Saver", "Delirium", "Visiting"],
       description: [
         "Protects two players every night.",
-        "One of the players being protected is inflicted with Mind Rot.",
+        "One of the players being protected is Delirious.",
       ],
     },
     Bodyguard: {
@@ -679,10 +679,10 @@ const roleData = {
     Flapper: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Mind Rot", "Roles"],
+      tags: ["Night-acting", "Delirium", "Roles"],
       description: [
         "Once per game chooses a Role.",
-        "Any players with that role are inflicted with Mind Rot for 3 Nights.",
+        "Any players with that role are Delirious for 3 Nights.",
         "If the selected role is not in the game nothing happens.",
       ],
     },
@@ -700,16 +700,15 @@ const roleData = {
       category: "Night-acting",
       tags: [
         "Night-acting",
-        "Mind Rot",
+        "Delirium",
         "Unkillable",
         "Condemn Immune",
         "Visiting",
       ],
       description: [
-        "Visits one player each night and inflicts them with Mind Rot.",
-        "Mind Rot blocks all non-Investigative actions.",
-        "Players performing investigative actions will get False Info.",
-        "A Sailor can't be killed unless roleblocked/Mind Rotted.",
+        "Visits one player each night and makes them Delirious.",
+        "Delirious players get False Info and have other abilites disabled.",
+        "A Sailor can't be killed unless roleblocked/made delirious.",
       ],
     },
     "Snake Charmer": {
@@ -1008,13 +1007,13 @@ const roleData = {
     Jazzman: {
       alignment: "Village",
       category: "Voting",
-      tags: ["Voting", "Condemn", "Mind Rot", "Alignment"],
+      tags: ["Voting", "Condemn", "Delirium", "Alignment"],
       description: [
-        "If an Evil player is condemned, All players are inflicted with Mind Rot that night.",
+        "If an Evil player is condemned, All players are Delirious that night.",
       ],
       SpecialInteractions: {
         Assassin: [
-          "If an Assassin is Present, All players are inflicted with Mind Rot if an Evil Player is Elected as Room Leader.",
+          "If an Assassin is Present, All players are Delirious if an Evil Player is Elected as Room Leader.",
         ],
       },
     },
@@ -1039,10 +1038,10 @@ const roleData = {
     Braggart: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Manipulative", "Setup Change", "Mind Rot", "Banished"],
+      tags: ["Manipulative", "Setup Change", "Delirium", "Banished"],
       description: [
         "Sees self as a random non-Banished Village role from the setup.",
-        "Has that role's abilities but is permanently inflicted with Mind Rot.",
+        "Has that role's abilities but is permanently Delirious.",
         "Items used by a Braggart will be broken.",
       ],
     },
@@ -1069,7 +1068,7 @@ const roleData = {
     Televangelist: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Manipulative", "Setup Change", "Mind Rot", "Cult"],
+      tags: ["Manipulative", "Setup Change", "Delirium", "Cult"],
       description: [
         "Sees self as a random Demonic Cult role from the setup.",
         "Can use fake versions of that roles abilities.",
@@ -1089,10 +1088,10 @@ const roleData = {
     Philosopher: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Manipulative", "Conversion", "Mind Rot"],
+      tags: ["Manipulative", "Conversion", "Delirium"],
       description: [
         "At night may choose to convert to a Village aligned role that can spawn in the setup.",
-        "If the selected role is already in play, The player with that role will be inflicted with Mind Rot for the rest of the game.",
+        "If the selected role is already in play, The player with that role will be Delirious until the Philosopher is killed.",
       ],
     },
     Student: {
@@ -1383,7 +1382,7 @@ const roleData = {
       tags: ["Essential", "Win Con"],
       description: [
         "When the game ends, Swaps the Winners and Losers.",
-        "If Roleblocked/Mind Rotted will not Switch the Winners that night and the following day.",
+        "If Roleblocked/made Delirious will not Switch the Winners that night and the following day.",
         "If Multiple Brokers are in a game, The Winners and Losers can swapped Multiple Times.",
       ],
     },
@@ -2027,10 +2026,10 @@ const roleData = {
     Associate: {
       alignment: "Mafia",
       category: "Manipulative",
-      tags: ["Manipulative", "Conversion", "Mind Rot"],
+      tags: ["Manipulative", "Conversion", "Delirium"],
       description: [
         "At night may choose to convert to a Mafia aligned role that can spawn in the setup.",
-        "If the selected role is already in play, The player with that role will be inflicted with Mind Rot for the rest of the game.",
+        "If the selected role is already in play, The player with that role will be Delirious until the Associate is killed.",
         "Does not attend the mafia meeting.",
       ],
     },
@@ -2650,11 +2649,10 @@ const roleData = {
     Succubus: {
       alignment: "Cult",
       category: "Manipulative",
-      tags: ["Manipulative", "Mind Rot", "Visiting"],
+      tags: ["Manipulative", "Delirium", "Visiting"],
       description: [
-        "Visits one player each night and inflicts them with Mind Rot",
-        "Mind Rot blocks all non-Investigative actions.",
-        "Players performing investigative actions will get False Info.",
+        "Visits one player each night and makes them Delirious",
+        "Delirious players get False Info and have other abilites disabled.",
       ],
     },
     Witch: {
@@ -2703,9 +2701,9 @@ const roleData = {
       category: "Chaos",
       tags: ["Win Con", "Information", "Condemn"],
       description: [
-        "At the start of the game is Given a Village-Aligned player as a Twin.",
-        "The Changeling and the Village Twin will learn eachothers roles.",
-        "If the Village Twin is Condemned, Cult Wins.",
+        "Will be Twins with an Opposing player.",
+        "The Twins will learn eachothers roles.",
+        "If the Village-aligned Twin is Condemned, Cult Wins.",
       ],
     },
     Devotee: {
@@ -2747,7 +2745,7 @@ const roleData = {
         "Crystal Balls will reveal players as Cultist.",
         "Syringes will resurrect players as Cultist.",
         "Candles and Falcons will provide False Info.",
-        "Whiskey will inflict Mind Rot on Non-Cult Players.",
+        "Whiskey will make Non-Cult Players Delirious.",
         "Keys will not Block Cult.",
         "Envelope messages will be gibberish.",
         "Food Items will Poison players who eat them.",
@@ -2798,14 +2796,14 @@ const roleData = {
         "Killing",
         "Banished",
         "Setup Changes",
-        "Mind Rot",
+        "Delirium",
         "Visiting",
         "Night Killer",
       ],
       description: [
         "Each night, may choose a player to kill.",
         "Cult players killed by a Lich can use their abilites when dead.",
-        "Additonally killing a Cult player will inflict Mind Rot one of their Village-Aligned neighbors for the rest of the game.",
+        "Additonally killing a Cult player will make one of their non-banished Village-Aligned neighbors Delirious until the Lich dies.",
         "Lich removes 1 Banished role in closed setups.",
       ],
       graveyardParticipation: "all",
@@ -2831,9 +2829,9 @@ const roleData = {
     Puca: {
       alignment: "Cult",
       category: "Demon",
-      tags: ["Killing", "Mind Rot", "Poison", "Visiting"],
+      tags: ["Killing", "Delirium", "Poison", "Visiting"],
       description: [
-        "Each night, may choose a player to Mind Rot and Poison.",
+        "Each night, may choose a player to make Delirious and Poison.",
         "Player's Poisoned by a Puca will not be told they were poisoned.",
       ],
     },
@@ -2842,7 +2840,7 @@ const roleData = {
       category: "Demon",
       tags: [
         "Killing",
-        "Mind Rot",
+        "Delirium",
         "Neighbors",
         "Banished",
         "Visiting",
@@ -2850,8 +2848,7 @@ const roleData = {
       ],
       description: [
         "Each night, may choose a player to kill.",
-        "A Satyr's closest Village-aligned neighbors' actions are inflicted with Mind Rot at night.",
-        "Banished roles are skipped when a Satyr checks for its closest Village-aligned neighbors.",
+        "A Satyr's starting Non-banished Village-aligned neighbors are Delirious.",
       ],
     },
     Shoggoth: {
@@ -3177,9 +3174,9 @@ const roleData = {
     },
     Hitchhiker: {
       alignment: "Independent",
-      tags: ["Alignments", "Visits", "Mind Rot", "Reflexive"],
+      tags: ["Alignments", "Visits", "Delirium", "Reflexive"],
       description: [
-        "Each Night Will inflict one of their visitors with Mind Rot.",
+        "Each Night Will make one of their visitors Delirious.",
         "Will Switch to that player's alignment.",
         "Wins with their current Alignment.",
       ],

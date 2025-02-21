@@ -89,7 +89,7 @@ module.exports = class MagusGame extends Card {
 
           if (this.actor.role.data.FakeMindRot) {
             if (this.dominates(shuffledPlayers[0])) {
-              this.blockWithMindRot(shuffledPlayers[0]);
+              this.blockWithDelirium(shuffledPlayers[0]);
             }
           }
 

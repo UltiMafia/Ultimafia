@@ -43,7 +43,7 @@ module.exports = class IsTheTelevangelist extends Item {
             this.target.role.data.banished = true;
 
             if (this.dominates(this.target)) {
-              this.blockWithMindRot(this.target);
+              this.blockWithDelirium(this.target);
             }
           },
         });
@@ -100,7 +100,7 @@ module.exports = class IsTheTelevangelist extends Item {
             }
 
             if (this.dominates(this.target)) {
-              this.blockWithMindRot(this.target);
+              this.blockWithDelirium(this.target);
             }
           },
         });

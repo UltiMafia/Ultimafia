@@ -479,7 +479,12 @@ export const slangList = {
       "A night action which prevents another player from Visiting. Actions that specify a visit will fail to function. If a night action does not mention a visit, or if the player you're blocking only has day actions, Blocking does nothing. Synonymous with hook.",
     emoji: "🛡",
   },
-  Rot: {
+  Delirious: {
+    definition:
+      "A Special version of Blocking/Hooking. If the Action performed is Investigative, Instead of being blocked the player will get False Info.",
+    emoji: "🧠",
+  },
+  Delirium: {
     definition:
       "A Special version of Blocking/Hooking. If the Action performed is Investigative, Instead of being blocked the player will get False Info.",
     emoji: "🧠",

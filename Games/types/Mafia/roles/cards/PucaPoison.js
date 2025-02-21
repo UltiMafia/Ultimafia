@@ -16,7 +16,7 @@ module.exports = class PucaPoison extends Card {
           run: function () {
             if (this.dominates()) {
               this.target.giveEffect("Poison", this.actor);
-              this.blockWithMindRot(this.target);
+              this.blockWithDelirium(this.target);
             }
           },
         },

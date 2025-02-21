@@ -5,8 +5,18 @@ module.exports = class GivePermaMindRot extends Card {
   constructor(role) {
     super(role);
     this.listeners = {
-      death: function (player, killer, instant) {
+      revival: function (player) {
         if (player == this.player) {
+          if (this.DeliriousVictim != null && this.player.alive) {
+            this.DeliriousVictim.remove();
+          }
+        }
+      },
+      death: function (player, killer, instant) {
+        if (
+          player == this.player &&
+          this.player.hasAbility(["Delirium", "WhenDead", "Modifier"])
+        ) {
           let alive = this.game.alivePlayers();
           var villagePlayers = alive.filter(
             (p) =>
@@ -15,8 +25,12 @@ module.exports = class GivePermaMindRot extends Card {
               ) == "Village"
           );
           var villageTarget = Random.randArrayVal(villagePlayers);
-          villageTarget.holdItem("PermaMindRot");
-          //villageTarget.holdItem("Gun");
+          this.DeliriousVictim = villageTarget.giveEffect(
+            "Delirious",
+            this.actor,
+            1,
+            ["Delirium", "WhenDead", "Modifier"]
+          );
         }
       },
     };
