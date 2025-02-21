@@ -154,7 +154,7 @@ export default function LearnMafia(props) {
       text: "While active, each player consumes one item of food each day/night. Anyone who doesn't have food to consume dies.",
     },
     {
-      name: "Mind Rot",
+      name: "Delirium",
       text: "An effect that roleblocks most roles and gives false reports to investigative roles.",
     },
   ];

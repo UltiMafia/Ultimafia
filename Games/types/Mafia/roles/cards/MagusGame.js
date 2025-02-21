@@ -176,7 +176,7 @@ module.exports = class MagusGame extends Card {
             ) {
               this.player.role.data.FakeBlocking = true;
             }
-            if (roleTags[v] == "Mind Rot" && Random.randInt(0, 100) <= chance) {
+            if (roleTags[v] == "Delirium" && Random.randInt(0, 100) <= chance) {
               this.player.role.data.FakeMindRot = true;
             }
             if (

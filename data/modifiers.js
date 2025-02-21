@@ -100,9 +100,9 @@ const modifierData = {
     },
     Clannish: {
       internal: ["AddRottenCopy"],
-      tags: ["Mind Rot", "Setup Changes"],
+      tags: ["Delirium", "Setup Changes"],
       description:
-        "In closed Setups will add 0 to 2 Copies of This Role, 1 of the added roles is Permanently inflicted with Mind Rot.",
+        "In closed Setups will add 0 to 2 Copies of This Role, 1 of the added roles is Permanently given Delirium.",
     },
     Clueless: {
       internal: ["Clueless"],
@@ -230,7 +230,7 @@ const modifierData = {
     },
     Confused: {
       internal: ["MindRot50Percent"],
-      tags: ["Manipulative", "Mind Rot", "Block Self"],
+      tags: ["Manipulative", "Delirium", "Block Self"],
       description: "Investigative reports appear incorrect 50% of the time.",
     },
     Inclusive: {
@@ -536,9 +536,9 @@ const modifierData = {
     },
     Verrucose: {
       internal: ["GivePermaMindRot"],
-      tags: ["Sacrificial", "Manipulative", "Mind Rot"],
+      tags: ["Sacrificial", "Manipulative", "Delirium"],
       description:
-        "On death a random Village Aligned player will be chosen to be inflicted with Mind Rot for the rest of the game.",
+        "On death a random Village Aligned player will be chosen to be made Delirious for the rest of the game.",
     },
     Versatile: {
       internal: ["InheritFirstDeadAligned"],

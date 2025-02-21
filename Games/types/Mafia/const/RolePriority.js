@@ -91,7 +91,7 @@ const Nightdata = {
       ActionValues: [PRIORITY_SUPPORT_VISIT_DEFAULT],
     },
     Bawd: {
-      ActionNames: ["Protect and Mind Rot"],
+      ActionNames: ["Protect and Make Delirious"],
       ActionValues: [PRIORITY_NIGHT_ROLE_BLOCKER + 2],
     },
     Bodyguard: {
@@ -318,7 +318,7 @@ const Nightdata = {
       ActionValues: [PRIORITY_KILL_DEFAULT],
     },
     Flapper: {
-      ActionNames: ["Mind Rot"],
+      ActionNames: ["Give Delirium"],
       ActionValues: [PRIORITY_NIGHT_ROLE_BLOCKER - 1],
     },
     Drunk: {
@@ -326,7 +326,7 @@ const Nightdata = {
       ActionValues: [PRIORITY_NIGHT_ROLE_BLOCKER],
     },
     Sailor: {
-      ActionNames: ["Mind Rot"],
+      ActionNames: ["Give Delirium"],
       ActionValues: [PRIORITY_NIGHT_ROLE_BLOCKER],
     },
     "Snake Charmer": {
@@ -406,11 +406,11 @@ const Nightdata = {
       ActionValues: [PRIORITY_EFFECT_GIVER_DEFAULT],
     },
     Jazzman: {
-      ActionNames: ["Mind Rot Everyone If Evil Condemned"],
+      ActionNames: ["Give Everyone Delirium If Evil Condemned"],
       ActionValues: [PRIORITY_NIGHT_ROLE_BLOCKER - 1],
     },
     Braggart: {
-      ActionNames: ["Mind Rot Self"],
+      ActionNames: ["Give Self Delirium"],
       ActionValues: [PRIORITY_FULL_DISABLE + 1],
     },
     Coward: {
@@ -422,11 +422,11 @@ const Nightdata = {
       ActionValues: [PRIORITY_SWAP_VISITORS],
     },
     Televangelist: {
-      ActionNames: ["Mind Rot Self"],
+      ActionNames: ["Give Self Delirium"],
       ActionValues: [PRIORITY_FULL_DISABLE + 1],
     },
     Philosopher: {
-      ActionNames: ["Become Role and Mind Rot"],
+      ActionNames: ["Become Role and Make Delirious"],
       ActionValues: [PRIORITY_NIGHT_ROLE_BLOCKER],
     },
     Trickster: {
