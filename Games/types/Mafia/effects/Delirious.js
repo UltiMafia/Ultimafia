@@ -1,11 +1,17 @@
 const Effect = require("../Effect");
 const Action = require("../Action");
 
-module.exports = class CursedVote extends Effect {
-  constructor(effecter, lifespan) {
+module.exports = class Delirious extends Effect {
+  constructor(effecter, lifespan, types) {
     super("Delirious");
     this.effecter = effecter;
     this.lifespan = lifespan;
+    if(types != null){
+      this.types = types;
+    }
+    else{
+      this.types = ["Delirium"];
+    }
 
     this.listeners = {
       state: function (stateInfo) {
