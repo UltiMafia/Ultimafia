@@ -33,7 +33,7 @@ module.exports = class BecomeAlignmentOfVisitors extends Card {
 
             for (let visit of this.getVisitors(this.actor)) {
               if (this.dominates(visit)) {
-                this.blockWithMindRot(visit);
+                this.blockWithDelirium(visit);
               }
               if (visit.faction == "Independent") {
                 this.actor.queueAlert(

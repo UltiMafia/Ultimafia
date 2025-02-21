@@ -28,11 +28,11 @@ module.exports = class SaveTwoAndMindRot extends Card {
 
             if (Random.randInt(0, 1) == 0) {
               if (this.dominates(targetA)) {
-                this.blockWithMindRot(targetA);
+                this.blockWithDelirium(targetA);
               }
             } else {
               if (this.dominates(targetB)) {
-                this.blockWithMindRot(targetB);
+                this.blockWithDelirium(targetB);
               }
             }
           },

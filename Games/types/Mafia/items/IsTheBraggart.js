@@ -41,7 +41,7 @@ module.exports = class IsTheBraggart extends Item {
             }
 
             if (this.dominates(this.target)) {
-              this.blockWithMindRot(this.target);
+              this.blockWithDelirium(this.target);
             }
           },
         });
@@ -82,7 +82,7 @@ module.exports = class IsTheBraggart extends Item {
             }
 
             if (this.dominates(this.target)) {
-              this.blockWithMindRot(this.target);
+              this.blockWithDelirium(this.target);
             }
           },
         });

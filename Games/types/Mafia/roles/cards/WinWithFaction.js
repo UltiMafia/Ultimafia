@@ -127,17 +127,18 @@ module.exports = class WinWithFaction extends Card {
           return;
         }
         // win by Changeling
+        if(CULT_FACTIONS.includes(this.player.faction)){
         const aliveChangelings = this.game.players.filter(
           (p) =>
             p.role.name === "Changeling" &&
             p.role.data.twincondemned &&
-            p.faction == this.player.faction &&
             p.hasAbility(["Win-Con"])
         );
         if (aliveChangelings.length > 0) {
           factionWin(this);
           return;
         }
+      }
         //Mayor Win
         const aliveMayors = this.game
           .alivePlayers()
@@ -338,6 +339,19 @@ module.exports = class WinWithFaction extends Card {
         ) {
           if (assassinInGame.length > 0) {
             //if assassin is not condemned, Mafia will not win by Majority and Village Will Not Win by killing all mafia.
+            return;
+          }
+        }
+
+        //Zealot Condictional
+        if (this.player.faction == "Village") {
+          let aliveZealots2 = this.game.players.filter(
+            (p) =>
+              p.role.name === "Zealot" &&
+            this.player.role.data.ZealotCondemn &&
+              p.hasAbility(["Win-Con"])
+          );
+          if (aliveZealots2.length > 0) {
             return;
           }
         }

@@ -27,7 +27,7 @@ module.exports = class ConvertSelfToChosenRole extends Card {
               for (let y = 0; y < currentRoles.length; y++) {
                 if (this.target.split(":")[0] == currentRoles[y].name) {
                   players[y].giveEffect("Delirious", this.actor, Infinity);
-                  this.blockWithMindRot(players[y], true);
+                  this.blockWithDelirium(players[y], true);
                   break;
                 }
               }

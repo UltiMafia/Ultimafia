@@ -16,7 +16,7 @@ module.exports = class Rotten extends Card {
 
           //if (!this.actor.alive) return;
 
-          this.blockWithMindRot(this.actor);
+          this.blockWithDelirium(this.actor);
         },
       },
     ];
@@ -43,7 +43,7 @@ module.exports = class Rotten extends Card {
           run: function () {
             //if (!this.actor.alive) return;
 
-            this.blockWithMindRot(this.actor);
+            this.blockWithDelirium(this.actor);
           },
         });
 

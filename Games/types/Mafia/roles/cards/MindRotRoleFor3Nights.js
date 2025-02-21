@@ -42,7 +42,7 @@ module.exports = class MindRotRoleFor3Nights extends Card {
             for (let y = 0; y < currentRoles.length; y++) {
               if (this.target == currentRoles[y]) {
                 players[y].giveEffect("Delirious", this.actor, 3);
-                this.blockWithMindRot(players[y], true);
+                this.blockWithDelirium(players[y], true);
                 this.actor.role.playersToBlock.push(players[y]);
                 //this.actor.role.blockCounter = 3;
               }
@@ -70,7 +70,7 @@ module.exports = class MindRotRoleFor3Nights extends Card {
 
           for (let x = 0; x < victims.length; x++) {
             if (this.dominates(victims[x])) {
-              this.blockWithMindRot(victims[x]);
+              this.blockWithDelirium(victims[x]);
             }
           }
         },

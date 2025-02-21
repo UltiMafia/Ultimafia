@@ -61,7 +61,7 @@ module.exports = class MafiaAction extends Action {
     }
   }
 
-  blockWithMindRot(target, fromEffect) {
+  blockWithDelirium(target, fromEffect) {
     target = target || this.target;
     let hasInvestigate = false;
     if (fromEffect != true) {

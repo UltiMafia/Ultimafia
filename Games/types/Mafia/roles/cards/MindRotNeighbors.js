@@ -70,7 +70,7 @@ module.exports = class MindRotNeighbors extends Card {
             }
             for (let x = 0; x < this.ClosestVillagePlayers.length; x++) {
               if (this.dominates(this.ClosestVillagePlayers[x])) {
-                this.blockWithMindRot(victims[x]);
+                this.blockWithDelirium(victims[x]);
               }
             }
           },

@@ -15,7 +15,7 @@ module.exports = class MindRot50Percent extends Card {
           if (this.game.getStateName() != "Night") return;
 
           if (Random.randInt(0, 1) == 0) {
-            this.blockWithMindRot(this.actor);
+            this.blockWithDelirium(this.actor);
           }
         },
       },
@@ -39,7 +39,7 @@ module.exports = class MindRot50Percent extends Card {
           labels: ["block", "hidden", "absolute"],
           run: function () {
             if (Random.randInt(0, 1) == 0) {
-              this.blockWithMindRot(this.actor);
+              this.blockWithDelirium(this.actor);
             }
           },
         });

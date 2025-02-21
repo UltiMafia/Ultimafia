@@ -28,7 +28,7 @@ module.exports = class MindRotEveryoneOnEvilCondemn extends Card {
 
           for (let x = 0; x < victims.length; x++) {
             if (this.dominates(victims[x])) {
-              this.blockWithMindRot(victims[x]);
+              this.blockWithDelirium(victims[x]);
             }
           }
         },
@@ -63,7 +63,7 @@ module.exports = class MindRotEveryoneOnEvilCondemn extends Card {
 
               for (let x = 0; x < victims.length; x++) {
                 if (this.dominates(victims[x])) {
-                  this.blockWithMindRot(victims[x]);
+                  this.blockWithDelirium(victims[x]);
                 }
               }
             },

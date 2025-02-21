@@ -1,5 +1,6 @@
 const Effect = require("../Effect");
 const Action = require("../Action");
+const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../const/Priority");
 
 module.exports = class Delirious extends Effect {
   constructor(effecter, lifespan, types) {
@@ -25,7 +26,7 @@ module.exports = class Delirious extends Effect {
           labels: ["block", "hidden"],
           run: function () {
             if (this.actor.hasAbility(["Delirium"])) {
-              this.blockWithMindRot(this.target, true);
+              this.blockWithDelirium(this.target, true);
             }
           },
         });

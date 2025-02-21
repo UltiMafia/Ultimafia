@@ -78,7 +78,7 @@ module.exports = class Demonic extends Card {
         }
 
         var devotion = this.game.players.filter(
-          (p) => p.alive && p.role.data.DevotionCult
+          (p) => p.hasAbility(["Win-Con"]) && p.role.data.DevotionCult
         );
         if (devotion.length > 0) {
           var backUpTarget = devotion.filter((p) => p.role.data.BackUpConvert);
