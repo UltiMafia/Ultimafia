@@ -51,7 +51,7 @@ module.exports = class MindRotRoleFor3Nights extends Card {
         },
       },
     };
-/*
+    /*
     this.actions = [
       {
         priority: PRIORITY_NIGHT_ROLE_BLOCKER,
