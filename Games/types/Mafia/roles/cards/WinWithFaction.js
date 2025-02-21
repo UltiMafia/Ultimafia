@@ -127,18 +127,18 @@ module.exports = class WinWithFaction extends Card {
           return;
         }
         // win by Changeling
-        if(CULT_FACTIONS.includes(this.player.faction)){
-        const aliveChangelings = this.game.players.filter(
-          (p) =>
-            p.role.name === "Changeling" &&
-            p.role.data.twincondemned &&
-            p.hasAbility(["Win-Con"])
-        );
-        if (aliveChangelings.length > 0) {
-          factionWin(this);
-          return;
+        if (CULT_FACTIONS.includes(this.player.faction)) {
+          const aliveChangelings = this.game.players.filter(
+            (p) =>
+              p.role.name === "Changeling" &&
+              p.role.data.twincondemned &&
+              p.hasAbility(["Win-Con"])
+          );
+          if (aliveChangelings.length > 0) {
+            factionWin(this);
+            return;
+          }
         }
-      }
         //Mayor Win
         const aliveMayors = this.game
           .alivePlayers()
@@ -348,7 +348,7 @@ module.exports = class WinWithFaction extends Card {
           let aliveZealots2 = this.game.players.filter(
             (p) =>
               p.role.name === "Zealot" &&
-            this.player.role.data.ZealotCondemn &&
+              this.player.role.data.ZealotCondemn &&
               p.hasAbility(["Win-Con"])
           );
           if (aliveZealots2.length > 0) {

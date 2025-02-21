@@ -408,7 +408,7 @@ const modifierData = {
     },
     Restless: {
       internal: ["ActWhileDead"],
-      tags: ["Dead", "Graveyard","Restless"],
+      tags: ["Dead", "Graveyard", "Restless"],
       description: "Can only perform secondary actions while dead.",
     },
     Retired: {
@@ -503,7 +503,7 @@ const modifierData = {
     },
     Transcendent: {
       internal: ["ActAliveOrDead"],
-      tags: ["Dead", "Graveyard","Transcendent"],
+      tags: ["Dead", "Graveyard", "Transcendent"],
       description: "Can perform secondary actions while either alive or dead.",
     },
     Unassuming: {
