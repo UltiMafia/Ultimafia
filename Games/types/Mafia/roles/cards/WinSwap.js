@@ -6,13 +6,13 @@ const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 module.exports = class WinSwap extends Card {
   constructor(role) {
     super(role);
-    
+
     this.listeners = {
       roleAssigned: function (player) {
         this.player.role.data.ShouldFlipWinCons = true;
       },
       handleWinSwappers: function (winners) {
-        if(!this.player.hasAbility(["Win-Con","WhenDead"])){
+        if (!this.player.hasAbility(["Win-Con", "WhenDead"])) {
           return;
         }
         let losers = [];
