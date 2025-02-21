@@ -65,7 +65,7 @@ module.exports = class MindRotNeighbors extends Card {
 
             let victims = [foundUp, foundDown];
 
-            if(this.ClosestVillagePlayers == null){
+            if (this.ClosestVillagePlayers == null) {
               this.ClosestVillagePlayers = victims;
             }
             for (let x = 0; x < this.ClosestVillagePlayers.length; x++) {
@@ -73,7 +73,6 @@ module.exports = class MindRotNeighbors extends Card {
                 this.blockWithMindRot(victims[x]);
               }
             }
-            
           },
         });
 
