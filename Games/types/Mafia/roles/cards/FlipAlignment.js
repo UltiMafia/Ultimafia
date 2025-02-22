@@ -14,6 +14,7 @@ module.exports = class FlipAlignment extends Card {
         targets: { include: ["alive"], exclude: ["dead", "self"] },
         action: {
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
+          labels: ["frame", "alignment", "flip"],
           run: function () {
             var appearanceToSet =
               this.target.role.alignment == "Mafia" ? "Villager" : "Mafioso";
