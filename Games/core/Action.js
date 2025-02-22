@@ -18,6 +18,7 @@ module.exports = class Action {
     this.effect = options.effect;
     this.item = options.item;
     this.event = options.event;
+    this.achievement = options.achievement;
 
     this.priority += this.actor?.role?.priorityOffset ?? 0;
   }
