@@ -1,7 +1,7 @@
 //DO NOT CHANGE THE IDs
 //DO NOT CHANGE THE IDs
 //DO NOT CHANGE THE IDs
-export const AchievementData = {
+export const AchievementData =  {
   Mafia: {
     //Killing
     "Village Victory": {
@@ -32,10 +32,9 @@ export const AchievementData = {
       ID: "Mafia5",
       internal: ["Scumhunter"],
       description: "As Villager, correctly vote on evil players for 3 days.",
-      reward: 10,
+      reward: 15,
       roles: ["Villager"],
     },
-
     "Nothing to see here": {
       ID: "Mafia6",
       internal: ["NothingToSeeHere"],
@@ -56,22 +55,92 @@ export const AchievementData = {
       ID: "Mafia8",
       internal: ["FoolWinDayOne"],
       description: "As Fool, win on Day 1.",
-      reward: 10,
+      reward: 15,
       roles: ["Fool"],
     },
     "New Sheriff in Town": {
       ID: "Mafia9",
       internal: ["SheriffShootEvil"],
       description: "As Sheriff, shoot and kill an Evil Player.",
-      reward: 15,
+      reward: 10,
       roles: ["Sheriff"],
     },
     "Analytical Genius": {
       ID: "Mafia10",
       internal: ["ProAnalyst"],
       description: "As Analyst, correctly guess the roles of five players.",
-      reward: 10,
+      reward: 30,
       roles: ["Analyst"],
+    },
+    "Quickdraw": {
+      ID: "Mafia11",
+      internal: ["DeputyShootGunnedEvil"],
+      description: "As Deputy, shoot and kill an Evil Player who is carrying a Gun or Rifle.",
+      reward: 20,
+      roles: ["Deputy"],
+    },
+    "Super Sleuth!": {
+      ID: "Mafia12",
+      internal: ["CopFindEvil"],
+      description: "As Cop, find an Evil player.",
+      reward: 10,
+      roles: ["Cop"],
+    },
+    "Philharmonic": {
+      ID: "Mafia13",
+      internal: ["Fiddle2PRRoles"],
+      description: "As Fiddler, Fiddle 2 diffrent village Power Roles during a game.",
+      reward: 20,
+      roles: ["Fiddler"],
+    },
+    "Oxyclean": {
+      ID: "Mafia14",
+      internal: ["JanCleanPR"],
+      description: "As Janitor, clean a Power role.",
+      reward: 10,
+      roles: ["Janitor"],
+    },
+    "Unexpected": {
+      ID: "Mafia15",
+      internal: ["InquisitorDouble"],
+      description: "As Inquisitor, convert 2 players.",
+      reward: 15,
+      roles: ["Inquisitor"],
+    },
+    "VTS": {
+      ID: "Mafia16",
+      internal: ["ChangelingWin"],
+      description: "As Changeling, win using by condeming the Twin.",
+      reward: 15,
+      roles: ["Changeling"],
+    },
+    "Early Execution": {
+      ID: "Mafia17",
+      internal: ["ExecutionerWinDay1"],
+      description: "As Executioner, win on Day 1.",
+      reward: 20,
+      roles: ["Executioner"],
+    },
+    "Early Bird": {
+      ID: "Mafia18",
+      internal: ["DodoWinDay1"],
+      description: "As Dodo, win on Day 1.",
+      reward: 15,
+      roles: ["Dodo"],
+    },
+    "It was Him!": {
+      ID: "Mafia19",
+      internal: ["LawyerFrame"],
+      description: "As Lawyer, make a player shows as Mafia to a Cop or Detective.",
+      reward: 20,
+      roles: ["Lawyer"],
+    },
+    "Elementary, Watson": {
+      ID: "Mafia20",
+      internal: ["DetectiveCheck2"],
+      description: "As Detective, find 2 Evil players and Survive.",
+      reward: 30,
+      roles: ["Detective"],
     },
   },
   Resistance: {},
