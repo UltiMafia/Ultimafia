@@ -18,13 +18,6 @@ module.exports = class JanCleanPR extends Achievements {
             this.game.getRoleAlignment(info.target.role.name) == "Village" &&
             info.target.role.name != "Villager"
           ) {
-            let temp = [];
-            for (let player of info.target) {
-              if (temp.includes(player)) {
-                return;
-              }
-              temp.push(player);
-            }
             this.GoodClean = true;
           }
         }

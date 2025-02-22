@@ -1,5 +1,6 @@
 const Achievements = require("../Achievements");
-const {  PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const Action = require("../Action");
+const {  PRIORITY_KILL_DEFAULT } = require("../const/Priority");
 
 module.exports = class InquisitorDouble extends Achievements {
   constructor(name, player) {

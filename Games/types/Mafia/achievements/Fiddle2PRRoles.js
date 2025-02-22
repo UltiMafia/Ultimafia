@@ -1,5 +1,6 @@
 const Achievements = require("../Achievements");
-const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
+const Action = require("../Action");
+const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../const/Priority");
 
 module.exports = class Fiddle2PRRoles extends Achievements {
   constructor(name, player) {
@@ -24,7 +25,7 @@ if(this.player.role.name == "Fiddler" && this.FiddleCount < 2){
               for (let action of this.game.actions[0]) {
               if (
                 action.hasLabels(["effect", "fiddled"]) &&
-                && action.actor == this.target &&
+               action.actor == this.target &&
                 action.dominates(action.target, false) &&
                 action.target.alive
               ) {

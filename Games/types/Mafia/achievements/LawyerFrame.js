@@ -1,5 +1,6 @@
 const Achievements = require("../Achievements");
-const { PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT } = require("../../const/Priority");
+const Action = require("../Action");
+const { PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT } = require("../const/Priority");
 
 module.exports = class LawyerFrame extends Achievements {
   constructor(name, player) {
@@ -27,7 +28,7 @@ module.exports = class LawyerFrame extends Achievements {
               for (let action of this.game.actions[0]) {
               if (
                 action.hasLabels(["frame", "alignment", "flip"]) &&
-                && action.actor == this.target &&
+                 action.actor == this.target &&
                 action.dominates(action.target, false)
               ) {
                 if(this.game.getRoleAlignment(action.target.role.name) == "Village"){
