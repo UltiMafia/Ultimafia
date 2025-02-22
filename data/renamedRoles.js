@@ -13,13 +13,9 @@ module.exports = {
     Telepath: "Spy",
     //UM changes (golbolco is picky)
     Mason: "Freemason",
-    Bride: "Suitress",
-    "Killer Bee": "Terrorist",
     Mortician: "Coroner",
     Ghoul: "Coward",
     Paparazzi: "Paparazzo",
-    "The Thing": "Hellhound",
-    "Wei Boyang": "Freischütz",
     Monitor: "Voyeur",
     Mimic: "Mime",
     Leader: "Typist",

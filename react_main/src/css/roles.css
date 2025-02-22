@@ -788,8 +788,12 @@
   background-image: url("/images/roles/empath-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Marathoner {
+.role-icon-scheme-vivid .role-Mafia-Tourist {
   background-image: url("/images/roles/marathoner-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Groundskeeper {
+  background-image: url("/images/roles/groundskeeper-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Tea-Lady {
