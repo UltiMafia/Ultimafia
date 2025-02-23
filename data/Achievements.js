@@ -74,10 +74,11 @@ const AchievementData = {
       reward: 30,
       roles: ["Analyst"],
     },
-    "Quickdraw": {
+    Quickdraw: {
       ID: "Mafia11",
       internal: ["DeputyShootGunnedEvil"],
-      description: "As Deputy, shoot and kill an Evil Player who is carrying a Gun or Rifle.",
+      description:
+        "As Deputy, shoot and kill an Evil Player who is carrying a Gun or Rifle.",
       reward: 20,
       roles: ["Deputy"],
     },
@@ -88,31 +89,33 @@ const AchievementData = {
       reward: 10,
       roles: ["Cop"],
     },
-    "Philharmonic": {
+    Philharmonic: {
       ID: "Mafia13",
       internal: ["Fiddle2PRRoles"],
-      description: "As Fiddler, Fiddle 2 diffrent village power roles during a game.",
+      description:
+        "As Fiddler, Fiddle 2 diffrent village power roles during a game.",
       reward: 20,
       roles: ["Fiddler"],
     },
-    "Oxyclean": {
+    Oxyclean: {
       ID: "Mafia14",
       internal: ["JanCleanPR"],
       description: "As Janitor, clean a Village power role.",
       reward: 10,
       roles: ["Janitor"],
     },
-    "Unexpected": {
+    Unexpected: {
       ID: "Mafia15",
       internal: ["InquisitorDouble"],
       description: "As Inquisitor, convert 2 players to Cultist.",
       reward: 15,
       roles: ["Inquisitor"],
     },
-    "VTS": {
+    VTS: {
       ID: "Mafia16",
       internal: ["ChangelingWin"],
-      description: "As Changeling, win by using the Changeling's alternate win condition.",
+      description:
+        "As Changeling, win by using the Changeling's alternate win condition.",
       reward: 15,
       roles: ["Changeling"],
     },
@@ -133,7 +136,8 @@ const AchievementData = {
     "It was Him!": {
       ID: "Mafia19",
       internal: ["LawyerFrame"],
-      description: "As Lawyer, make a player shows as Mafia to a Cop or Detective report.",
+      description:
+        "As Lawyer, make a player shows as Mafia to a Cop or Detective report.",
       reward: 20,
       roles: ["Lawyer"],
     },
