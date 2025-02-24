@@ -11,7 +11,10 @@ module.exports = [
   ],
   ["Be permanently invisible", "Permanently have X-ray vision"],
   ["Be Immortal", "Be Lucky"],
-  ["Gain the ability to summon a Cheese Wheel with a 1 meter diameter during a waxing gibbous", "Gain immunity to all Spoon related injuries during a waning gibbous"],
+  [
+    "Gain the ability to summon a Cheese Wheel with a 1 meter diameter during a waxing gibbous",
+    "Gain immunity to all Spoon related injuries during a waning gibbous",
+  ],
   //Body Changes
   ["Be 1 Foot (0.3048 Meters) shorter", "Be 1 Foot (0.3048 Meters) taller"],
   ["Have feet replace your hands", "Have hands replace your feet"],
@@ -56,7 +59,10 @@ module.exports = [
     "Only be able to listen to $OtherPlayer 's favorite music",
   ],
   ["Have $player as President", "Have $OtherPlayer as President"],
-  ["Let $player given you a haircut", "Let $OtherPlayer pick out your wardrobe"],
+  [
+    "Let $player given you a haircut",
+    "Let $OtherPlayer pick out your wardrobe",
+  ],
   //Travel
   ["Go to $player 's basement", "Go to Romania"],
   ["Travel to any point in the past", "Travel to any point in the future"],
@@ -88,7 +94,10 @@ module.exports = [
   ["Have all spiders triple in size", "Have all spiders be smarter then you"],
   ["Fight a horse sized chicken", "Fight 20 chicken sized horses"],
   ["Fight a horse sized $player", "Fight 20 chicken sized $OtherPlayer s"],
-  ["Be locked in a room with a Boa Constrictor", "Be locked in a room with a Chimpanzee"],
+  [
+    "Be locked in a room with a Boa Constrictor",
+    "Be locked in a room with a Chimpanzee",
+  ],
   //Food
   ["Only be able to drink coffee", "Only be able to drink tea"],
   ["Eat a rotten egg", "Drink spoiled milk"],
@@ -98,7 +107,10 @@ module.exports = [
     "Have everything you drink taste like milk",
   ],
   ["Drink Milk", "Drink Orange Juice"],
-  ["Have Soy Sauce added to everything you eat", "Have Sour Cream added to everything you eat"],
+  [
+    "Have Soy Sauce added to everything you eat",
+    "Have Sour Cream added to everything you eat",
+  ],
   //Jobs
   ["Be a Ninja", "Be a Pirate"],
   ["Be a Pilot", "Be a Submariner"],
