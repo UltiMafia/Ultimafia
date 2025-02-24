@@ -257,7 +257,9 @@ module.exports = class MafiaGame extends Game {
     var mustAct = super.isMustAct();
     mustAct |=
       this.statesSinceLastDeath >= this.noDeathLimit &&
-      (this.getStateName() != "Dusk" && this.getStateName() != "Dawn") && this.ForceMustAct == true;
+      this.getStateName() != "Dusk" &&
+      this.getStateName() != "Dawn" &&
+      this.ForceMustAct == true;
     return mustAct;
   }
 
@@ -265,7 +267,9 @@ module.exports = class MafiaGame extends Game {
     var mustCondemn = super.isMustCondemn();
     mustCondemn |=
       this.statesSinceLastDeath >= this.noDeathLimit &&
-      (this.getStateName() != "Dusk" && this.getStateName() != "Dawn") && this.ForceMustAct == true;
+      this.getStateName() != "Dusk" &&
+      this.getStateName() != "Dawn" &&
+      this.ForceMustAct == true;
     return mustCondemn;
   }
 
@@ -276,13 +280,12 @@ module.exports = class MafiaGame extends Game {
       this.statesSinceLastDeath++;
 
       if (this.statesSinceLastDeath >= this.noDeathLimit) {
-        if (stateName != "Day" && this.ForceMustAct == true){
+        if (stateName != "Day" && this.ForceMustAct == true) {
           this.queueAlert("No one has died for a while, you must act.");
-        }
-        else if(stateName == "Night"){
-        let event = this.createGameEvent(this.GameEndEvent);
-        event.doEvent();
-        event = null;
+        } else if (stateName == "Night") {
+          let event = this.createGameEvent(this.GameEndEvent);
+          event.doEvent();
+          event = null;
           /*
           this.queueAlert(
             "A giant meteor will destroy the town and no one will win if no one dies today."
