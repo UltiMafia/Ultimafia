@@ -11,6 +11,7 @@ module.exports = [
   ],
   ["Be permanently invisible", "Permanently have X-ray vision"],
   ["Be Immortal", "Be Lucky"],
+  ["Gain the ability to summon a Cheese Wheel with a 1 meter diameter during a waxing gibbous", "Gain immunity to all Spoon related injuries during a waning gibbous"],
   //Body Changes
   ["Be 1 Foot (0.3048 Meters) shorter", "Be 1 Foot (0.3048 Meters) taller"],
   ["Have feet replace your hands", "Have hands replace your feet"],
@@ -20,6 +21,7 @@ module.exports = [
     "Have your hair grow 10 times as fast.",
     "Have your nails grow 10 times as fast.",
   ],
+  ["Gain an Arm every year", "Gain an Eye every year"],
   //Pain
   ["Sneeze every 10 Minutes", "Always be sweaty"],
   ["Burn to death", "Freeze to death"],
@@ -28,6 +30,7 @@ module.exports = [
     "Be forced to wear a chicken suit at all times",
     "Be forced to dress as a clown at all times ",
   ],
+  ["Become a Mouse", "Become a Snake"],
   //Prizes
   [
     "Gain a million dollars instantly",
@@ -36,6 +39,7 @@ module.exports = [
   ["Have number named after you", "Have an asteroid named after you"],
   ["Be famous now", "Be famous 200 years from now"],
   ["Have a song written about you", "Have a novel written about you"],
+  ["Win an Olympic Medal", "Win an Oscar"],
   //Trust in Users
   ["Spend a day with $player", "Spend a day with $OtherPlayer"],
   [
@@ -52,6 +56,7 @@ module.exports = [
     "Only be able to listen to $OtherPlayer 's favorite music",
   ],
   ["Have $player as President", "Have $OtherPlayer as President"],
+  ["Let $player given you a haircut", "Let $OtherPlayer pick out your wardrobe"],
   //Travel
   ["Go to $player 's basement", "Go to Romania"],
   ["Travel to any point in the past", "Travel to any point in the future"],
@@ -62,6 +67,7 @@ module.exports = [
     "Have fully paid trip to Dull, Scotland",
   ],
   ["Go to Brazil", "Go to Kazakhstan"],
+  ["Visit China", "Visit India"],
   //moral dilemmas
   ["Play Guns n Hookers", "Play CBA"],
   [
@@ -75,12 +81,14 @@ module.exports = [
   ],
   ["Die", "Have 10 random people die"],
   ["Cure Cancer", "End all wars"],
+  ["Take the Blue pill", "Take the Red pill"],
   //Animals
   ["Swim with Orcas", "Hug a Bear"],
   ["Have a dog", "Have a cat"],
   ["Have all spiders triple in size", "Have all spiders be smarter then you"],
   ["Fight a horse sized chicken", "Fight 20 chicken sized horses"],
   ["Fight a horse sized $player", "Fight 20 chicken sized $OtherPlayer s"],
+  ["Be locked in a room with a Boa Constrictor", "Be locked in a room with a Chimpanzee"],
   //Food
   ["Only be able to drink coffee", "Only be able to drink tea"],
   ["Eat a rotten egg", "Drink spoiled milk"],
@@ -90,9 +98,11 @@ module.exports = [
     "Have everything you drink taste like milk",
   ],
   ["Drink Milk", "Drink Orange Juice"],
+  ["Have Soy Sauce added to everything you eat", "Have Sour Cream added to everything you eat"],
   //Jobs
   ["Be a Ninja", "Be a Pirate"],
   ["Be a Pilot", "Be a Submariner"],
   ["Be a Zookeeper", "Be a School Teacher"],
   ["Be a Doctor", "Be a Lawyer"],
+  ["Be in the Mafia", "Be in a Cult"],
 ];
