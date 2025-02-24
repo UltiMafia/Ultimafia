@@ -16,12 +16,18 @@ module.exports = [
   ["Have feet replace your hands", "Have hands replace your feet"],
   ["Have no teeth", "Have no nails"],
   ["Lose an arm", "Lose a leg"],
-  ["Have your hair grow 10 times as fast.", "Have your nails grow 10 times as fast."],
+  [
+    "Have your hair grow 10 times as fast.",
+    "Have your nails grow 10 times as fast.",
+  ],
   //Pain
   ["Sneeze every 10 Minutes", "Always be sweaty"],
   ["Burn to death", "Freeze to death"],
   ["Go blind", "Go deaf"],
-  ["Be forced to wear a chicken suit at all times", "Be forced to dress as a clown at all times "],
+  [
+    "Be forced to wear a chicken suit at all times",
+    "Be forced to dress as a clown at all times ",
+  ],
   //Prizes
   [
     "Gain a million dollars instantly",
@@ -41,7 +47,10 @@ module.exports = [
     "Let $OtherPlayer have access to your debit card",
   ],
   ["Have $player be your Surgeon", "Have $OtherPlayer be your Surgeon"],
-  ["Only be able to listen to $player 's favorite music", "Only be able to listen to $OtherPlayer 's favorite music"],
+  [
+    "Only be able to listen to $player 's favorite music",
+    "Only be able to listen to $OtherPlayer 's favorite music",
+  ],
   ["Have $player as President", "Have $OtherPlayer as President"],
   //Travel
   ["Go to $player 's basement", "Go to Romania"],
