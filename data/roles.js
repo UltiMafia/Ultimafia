@@ -3827,7 +3827,7 @@ const roleData = {
     },
     Meteor: {
       alignment: "Event",
-      tags: ["Event","Game Ender"],
+      tags: ["Event", "Game Ender"],
       description: [
         "If this Event occurs, The game will end and No One wins if no dies during the day.",
         "This is uneffected by Win-con altering abilites.",
