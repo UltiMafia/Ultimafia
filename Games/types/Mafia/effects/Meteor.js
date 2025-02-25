@@ -12,14 +12,13 @@ module.exports = class Meteor extends Effect {
         if (!stateInfo.name.match(/Day/)) {
           return;
         }
-        
       },
       death: function (player, killer, deathType, instant) {
-      this.remove();
+        this.remove();
       },
-      afterActions: function (){
+      afterActions: function () {
         this.game.MeteorEnd = true;
-        for(let player of this.game.alivePlayers()){
+        for (let player of this.game.alivePlayers()) {
           player.kill("basic");
         }
       },
