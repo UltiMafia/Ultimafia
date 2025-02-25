@@ -409,7 +409,6 @@ router.post("/create", async function (req, res) {
     setup.noDeathLimit = Number(setup.noDeathLimit || 6);
     setup.ForceMustAct = Boolean(setup.ForceMustAct);
     setup.GameEndEvent = String(setup.GameEndEvent || "Meteor");
-    
 
     if (
       !routeUtils.validProp(setup.gameType) ||
