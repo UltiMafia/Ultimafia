@@ -97,7 +97,7 @@ const AchievementData = {
       reward: 20,
       roles: ["Fiddler"],
     },
-    Oxyclean: {
+    "Clean it Up, Janny": {
       ID: "Mafia14",
       internal: ["JanCleanPR"],
       description: "As Janitor, clean a Village power role.",
