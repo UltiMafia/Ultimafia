@@ -142,8 +142,7 @@ const modifierData = {
     Dead: {
       internal: ["Dead"],
       tags: ["Dead"],
-      description:
-        "Starts game dead",
+      description: "Starts game dead",
     },
     Demonic: {
       internal: ["Demonic"],

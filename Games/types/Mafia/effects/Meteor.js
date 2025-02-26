@@ -17,7 +17,10 @@ module.exports = class Meteor extends Effect {
         this.remove();
       },
       afterActions: function () {
-        if(this.game.getStateName() == "Night" || this.game.getStateName() == "Dawn"){
+        if (
+          this.game.getStateName() == "Night" ||
+          this.game.getStateName() == "Dawn"
+        ) {
           return;
         }
         for (let player of this.game.alivePlayers()) {

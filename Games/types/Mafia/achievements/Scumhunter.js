@@ -13,7 +13,7 @@ module.exports = class Scumhunter extends Achievements {
             target = player;
           }
         }
-        if(target == null){
+        if (target == null) {
           return;
         }
         if (vote.meeting.name === "Village" && vote.voter === this.player) {

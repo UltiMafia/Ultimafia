@@ -280,22 +280,22 @@ module.exports = class MafiaGame extends Game {
       this.statesSinceLastDeath++;
 
       if (this.statesSinceLastDeath >= this.noDeathLimit) {
-        if(this.ForceMustAct == true){
+        if (this.ForceMustAct == true) {
           this.queueAlert("No one has died for a while, you must act.");
         }
       }
-     if(this.statesSinceLastDeath >= this.noDeathLimit-1){
-      if (stateName == "Night") {
-        let event = this.createGameEvent(this.GameEndEvent);
-        event.doEvent();
-        event = null;
-        /*
+      if (this.statesSinceLastDeath >= this.noDeathLimit - 1) {
+        if (stateName == "Night") {
+          let event = this.createGameEvent(this.GameEndEvent);
+          event.doEvent();
+          event = null;
+          /*
         this.queueAlert(
           "A giant meteor will destroy the town and no one will win if no one dies today."
         );
         */
+        }
       }
-     }
     } else if (this.resetLastDeath) {
       this.statesSinceLastDeath = 0;
       this.resetLastDeath = false;
@@ -426,8 +426,8 @@ module.exports = class MafiaGame extends Game {
       // Roles with braggadocious modifiers will prevent joint wins
       this.events.emit("handleWinBlockers", winners);
       this.events.emit("handleWinWith", winners);
-      if(this.MeteorLanded != true){
-      this.events.emit("handleWinSwappers", winners);
+      if (this.MeteorLanded != true) {
+        this.events.emit("handleWinSwappers", winners);
       }
       if (winners.groupAmt() <= 0) {
         winners.addGroup("No one");

@@ -25,10 +25,10 @@ module.exports = class Meteor extends Event {
       priority: PRIORITY_EFFECT_GIVER_DEFAULT,
       labels: ["hidden", "absolute"],
       run: function () {
-        for(let player of this.game.players){
-            if(player.hasEffect("BlackHole")){
-                return;
-            }
+        for (let player of this.game.players) {
+          if (player.hasEffect("BlackHole")) {
+            return;
+          }
         }
         if (this.game.SilentEvents != false) {
           this.game.queueAlert(

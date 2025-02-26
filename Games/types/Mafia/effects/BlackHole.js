@@ -30,20 +30,17 @@ module.exports = class BlackHole extends Effect {
             game: this.target.game,
             labels: ["kill", "bomb"],
             run: function () {
-                this.game.queueAlert(
-                    `The Black Hole Consumes the Town`
-                  );
-                for (let player of this.game.alivePlayers()) {
-                    player.kill("basic");
-                  }
-                  this.game.MeteorLanded = true;
+              this.game.queueAlert(`The Black Hole Consumes the Town`);
+              for (let player of this.game.alivePlayers()) {
+                player.kill("basic");
+              }
+              this.game.MeteorLanded = true;
             },
           });
 
           this.game.instantAction(action);
           this.timer = null;
         }, toDetonate);
-
       },
     };
   }
