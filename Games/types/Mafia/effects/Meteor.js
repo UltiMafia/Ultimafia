@@ -17,9 +17,30 @@ module.exports = class Meteor extends Effect {
         this.remove();
       },
       afterActions: function () {
-        this.game.MeteorEnd = true;
+        if(this.game.getStateName() == "Night" || this.game.getStateName() == "Dawn"){
+          return;
+        }
         for (let player of this.game.alivePlayers()) {
           player.kill("basic");
+        }
+        this.game.MeteorLanded = true;
+      },
+      handleWinBlockers: function () {
+        let AllPlayers = this.game.players.filter((p) => p);
+        for (let y = 0; y < AllPlayers.length; y++) {
+          if (
+            winners.groups[AllPlayers[y].faction] ||
+            winners.groups[AllPlayers[y].role.name]
+          ) {
+            if (
+              this.game.getRoleAlignment(AllPlayers[y].role.name) ==
+              "Independent"
+            ) {
+              winners.removeGroup(AllPlayers[y].role.name);
+            } else {
+              winners.removeGroup(AllPlayers[y].faction);
+            }
+          }
         }
       },
     };

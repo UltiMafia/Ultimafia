@@ -206,7 +206,7 @@ export default function CreateMafiaSetup() {
       max: "5",
     },
     {
-      label: "States With No Death until Game End Event",
+      label: "States With No Death",
       ref: "noDeathLimit",
       type: "number",
       value: "6",
@@ -214,7 +214,7 @@ export default function CreateMafiaSetup() {
       max: "8",
     },
     {
-      label: "Force Must Act after No Deaths",
+      label: "Force Must Act",
       ref: "ForceMustAct",
       value: true,
       type: "boolean",
@@ -231,6 +231,10 @@ export default function CreateMafiaSetup() {
         {
           label: "Volcanic Eruption",
           value: "Volcanic Eruption",
+        },
+        {
+          label: "Black Hole",
+          value: "Black Hole",
         },
       ],
     },

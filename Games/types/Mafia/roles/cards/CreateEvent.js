@@ -43,6 +43,9 @@ module.exports = class ConvertToChosenRole extends Card {
         for (let event of this.game.BanishedEvents.filter((r) => r)) {
           this.data.ConvertOptions.push(event);
         }
+        if(this.data.ConvertOptions.length <= 0){
+        this.data.ConvertOptions.push(this.game.GameEndEvent);
+        }
         var ConvertOptions = this.data.ConvertOptions;
 
         this.meetings["Select Event"].targets = ConvertOptions;

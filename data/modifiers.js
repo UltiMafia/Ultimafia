@@ -139,6 +139,12 @@ const modifierData = {
       description: "Starts with a crystal ball.",
       allowDuplicate: true,
     },
+    Dead: {
+      internal: ["Dead"],
+      tags: ["Dead"],
+      description:
+        "Starts game dead",
+    },
     Demonic: {
       internal: ["Demonic"],
       tags: ["Demonic", "Essential"],

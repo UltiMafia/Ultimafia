@@ -8,13 +8,13 @@ module.exports = class Scumhunter extends Achievements {
     this.listeners = {
       vote: function (vote) {
         let target;
-        if (vote.target == "no one") {
-          return;
-        }
         for (let player of this.game.players) {
           if (vote.target == player.id) {
             target = player;
           }
+        }
+        if(target == null){
+          return;
         }
         if (vote.meeting.name === "Village" && vote.voter === this.player) {
           if (target.isEvil() && this.player.role.name == "Villager") {
