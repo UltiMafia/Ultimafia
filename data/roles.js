@@ -3820,9 +3820,25 @@ const roleData = {
     },
     "Volcanic Eruption": {
       alignment: "Event",
-      tags: ["Event"],
+      tags: ["Event", "Game Ender"],
       description: [
         "If this Event occurs, a random player will die every 30 seconds until the day ends.",
+      ],
+    },
+    Meteor: {
+      alignment: "Event",
+      tags: ["Event", "Game Ender"],
+      description: [
+        "If this Event occurs, The game will end and No One wins if nobody dies during the day.",
+        "This is uneffected by Win-con altering abilites.",
+      ],
+    },
+    "Black Hole": {
+      alignment: "Event",
+      tags: ["Event", "Game Ender"],
+      description: [
+        "If this Event occurs, The game will end in 5 Minutes and No One wins if the game doesn't end before the 5 Minutes are up.",
+        "This is uneffected by Win-con altering abilites.",
       ],
     },
     Necronomicon: {

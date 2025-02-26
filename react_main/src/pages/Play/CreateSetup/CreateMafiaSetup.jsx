@@ -205,6 +205,39 @@ export default function CreateMafiaSetup() {
       min: "0",
       max: "5",
     },
+    {
+      label: "States With No Death",
+      ref: "noDeathLimit",
+      type: "number",
+      value: "6",
+      min: "2",
+      max: "8",
+    },
+    {
+      label: "Force Must Act",
+      ref: "ForceMustAct",
+      value: true,
+      type: "boolean",
+    },
+    {
+      label: "Game End Event",
+      ref: "GameEndEvent",
+      type: "select",
+      options: [
+        {
+          label: "Meteor",
+          value: "Meteor",
+        },
+        {
+          label: "Volcanic Eruption",
+          value: "Volcanic Eruption",
+        },
+        {
+          label: "Black Hole",
+          value: "Black Hole",
+        },
+      ],
+    },
   ]);
 
   const formFieldValueMods = {
@@ -255,6 +288,9 @@ export default function CreateMafiaSetup() {
         PrivateShare: formFields[27].value,
         PublicShare: formFields[28].value,
         EventsPerNight: formFields[29].value,
+        noDeathLimit: formFields[30].value,
+        ForceMustAct: formFields[31].value,
+        GameEndEvent: formFields[32].value,
         editing: editing,
         id: params.get("edit"),
       })

@@ -406,6 +406,9 @@ router.post("/create", async function (req, res) {
     setup.PrivateShare = Boolean(setup.PrivateShare);
     setup.PublicShare = Boolean(setup.PublicShare);
     setup.EventsPerNight = Number(setup.EventsPerNight || 0);
+    setup.noDeathLimit = Number(setup.noDeathLimit || 6);
+    setup.ForceMustAct = Boolean(setup.ForceMustAct);
+    setup.GameEndEvent = String(setup.GameEndEvent || "Meteor");
 
     if (
       !routeUtils.validProp(setup.gameType) ||

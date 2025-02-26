@@ -50,12 +50,13 @@ module.exports = class MafiaGame extends Game {
       Postgame: true,
     };
     this.stateEventMessages = stateEventMessages;
-    this.noDeathLimit = 6;
+    this.noDeathLimit = this.setup.noDeathLimit;
     this.statesSinceLastDeath = 0;
     this.resetLastDeath = false;
     this.extensions = 0;
     this.extensionVotes = 0;
     this.hasBeenDay = false;
+    this.ForceMustAct = this.setup.ForceMustAct;
     this.currentSwapAmt = 1;
     this.RoomOne = [];
     this.RoomTwo = [];
@@ -65,6 +66,7 @@ module.exports = class MafiaGame extends Game {
     this.AdmiralEvilRoles = [];
     this.AdmiralGold = 15;
     this.EventsPerNight = this.setup.EventsPerNight;
+    this.GameEndEvent = this.setup.GameEndEvent;
     this.lastNightVisits = [];
     this.infoLog = [];
   }
@@ -207,10 +209,6 @@ module.exports = class MafiaGame extends Game {
     }
     if (this.getStateName() == "Night" && this.CurrentEvents.length > 0) {
       this.selectedEvent = false;
-      /*
-      this.alivePlayers()[0].holdItem("EventManager", 1);
-      this.events.emit("ManageRandomEvents");
-      */
       for (
         let x = 0;
         x < this.EventsPerNight &&
@@ -239,28 +237,6 @@ module.exports = class MafiaGame extends Game {
       }
       this.selectedEvent = true;
     }
-    if (
-      this.getStateName() == "Day" &&
-      (this.setup.RoleShare ||
-        this.setup.AlignmentShare ||
-        this.setup.PrivateShare ||
-        this.setup.PublicShare)
-    ) {
-      /*
-      for (let player of this.alivePlayers()) {
-        if (player.items.filter((i) => i.name == "RoleSharing").length <= 0) {
-          player.holdItem(
-            "RoleSharing",
-            1,
-            this.setup.RoleShare,
-            this.setup.AlignmentShare,
-            this.setup.PrivateShare,
-            this.setup.PublicShare
-          );
-        }
-      }
-      */
-    }
   }
 
   getStateInfo(state) {
@@ -281,7 +257,9 @@ module.exports = class MafiaGame extends Game {
     var mustAct = super.isMustAct();
     mustAct |=
       this.statesSinceLastDeath >= this.noDeathLimit &&
-      this.getStateName() != "Sunset";
+      this.getStateName() != "Dusk" &&
+      this.getStateName() != "Dawn" &&
+      this.ForceMustAct == true;
     return mustAct;
   }
 
@@ -289,7 +267,9 @@ module.exports = class MafiaGame extends Game {
     var mustCondemn = super.isMustCondemn();
     mustCondemn |=
       this.statesSinceLastDeath >= this.noDeathLimit &&
-      this.getStateName() != "Sunset";
+      this.getStateName() != "Dusk" &&
+      this.getStateName() != "Dawn" &&
+      this.ForceMustAct == true;
     return mustCondemn;
   }
 
@@ -300,12 +280,21 @@ module.exports = class MafiaGame extends Game {
       this.statesSinceLastDeath++;
 
       if (this.statesSinceLastDeath >= this.noDeathLimit) {
-        if (stateName != "Day")
+        if (this.ForceMustAct == true) {
           this.queueAlert("No one has died for a while, you must act.");
-        else
-          this.queueAlert(
-            "A giant meteor will destroy the town and no one will win if no one dies today."
-          );
+        }
+      }
+      if (this.statesSinceLastDeath >= this.noDeathLimit - 1) {
+        if (stateName == "Night") {
+          let event = this.createGameEvent(this.GameEndEvent);
+          event.doEvent();
+          event = null;
+          /*
+        this.queueAlert(
+          "A giant meteor will destroy the town and no one will win if no one dies today."
+        );
+        */
+        }
       }
     } else if (this.resetLastDeath) {
       this.statesSinceLastDeath = 0;
@@ -352,13 +341,13 @@ module.exports = class MafiaGame extends Game {
     this.extensionVotes = 0;
 
     for (let player of this.players) player.votedForExtension = false;
-
+    /*
     if (
       this.statesSinceLastDeath >= this.noDeathLimit &&
       prevStateName == "Day"
     )
       this.meteorImminent = true;
-
+    */
     super.checkVeg();
   }
 
@@ -437,7 +426,9 @@ module.exports = class MafiaGame extends Game {
       // Roles with braggadocious modifiers will prevent joint wins
       this.events.emit("handleWinBlockers", winners);
       this.events.emit("handleWinWith", winners);
-      this.events.emit("handleWinSwappers", winners);
+      if (this.MeteorLanded != true) {
+        this.events.emit("handleWinSwappers", winners);
+      }
       if (winners.groupAmt() <= 0) {
         winners.addGroup("No one");
       }

@@ -2420,6 +2420,8 @@ module.exports = class Game {
               }
             }
           }
+        } else {
+          player.EarnedAchievements = [];
         }
         await models.User.updateOne(
           { id: player.user.id },
