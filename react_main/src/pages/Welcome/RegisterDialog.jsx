@@ -8,6 +8,8 @@ import {
   TextField,
   ThemeProvider,
   CssBaseline,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import GoogleIcon from "./GoogleIcon.png";
 import DiscordIcon from "./DiscordIcon.png";
@@ -31,24 +33,29 @@ export const RegisterDialog = ({ open, setOpen }) => {
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [passwordConfirmationHelperText, setPasswordConfirmationHelperText] =
     useState("");
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
   const googleProvider = new GoogleAuthProvider();
 
   useEffect(() => {
     if (!open) {
       setPassword("");
       setPasswordConfirmation("");
+      setAgeConfirmed(false);
     }
   }, [open]);
+
   useEffect(() => {
     setPasswordConfirmationHelperText(
       password !== passwordConfirmation ? "Passwords differ" : ""
     );
   }, [password, passwordConfirmation]);
+
   const handleClose = (event, reason) => {
     if (reason === "escapeKeyDown") {
       setOpen(false);
     }
   };
+
   const pressX = () => setOpen(false);
 
   const register = async (e) => {
@@ -69,7 +76,7 @@ export const RegisterDialog = ({ open, setOpen }) => {
 
       setLoading(true);
 
-      if (process.env.REACT_APP_ENVIRONMENT != "development") {
+      if (process.env.REACT_APP_ENVIRONMENT !== "development") {
         await verifyRecaptcha("auth");
       }
 
@@ -82,23 +89,22 @@ export const RegisterDialog = ({ open, setOpen }) => {
       await sendEmailVerification(userCred.user);
 
       snackbarHook.popSnackbar(
-        "Account created! Please click the verification link in your email before logging in (be sure to check your spam folder).",
+        "Account created! Please check your email for verification before logging in (check spam folder too).",
         "success"
       );
 
       setOpen(false);
-      // gtag_report_conversion();
     } catch (err) {
       if (!err?.message) return;
 
-      if (err.message.indexOf("(auth/invalid-email)") !== -1) {
+      if (err.message.includes("(auth/invalid-email)")) {
         snackbarHook.popSnackbar("Invalid email.", "warning");
-      } else if (err.message.indexOf("(auth/weak-password)") !== -1) {
+      } else if (err.message.includes("(auth/weak-password)")) {
         snackbarHook.popSnackbar(
           "Password should be at least 6 characters.",
           "warning"
         );
-      } else if (err.message.indexOf("(auth/email-already-in-use)") !== -1) {
+      } else if (err.message.includes("(auth/email-already-in-use)")) {
         snackbarHook.popSnackbar("Email already in use.", "warning");
       } else {
         snackbarHook.popUnexpectedError();
@@ -107,20 +113,18 @@ export const RegisterDialog = ({ open, setOpen }) => {
     }
     setLoading(false);
   };
+
   const registerGoogle = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      if (process.env.REACT_APP_ENVIRONMENT != "development") {
+      if (process.env.REACT_APP_ENVIRONMENT !== "development") {
         await verifyRecaptcha("auth");
       }
-
       await signInWithRedirect(getAuth(), googleProvider);
-      // gtag_report_conversion();
     } catch (err) {
       if (!err?.message) return;
-
-      if (err.message.indexOf("(auth/too-many-requests)") !== -1) {
+      if (err.message.includes("(auth/too-many-requests)")) {
         snackbarHook.popTooManyLoginAttempts();
       } else {
         snackbarHook.popLoginFailed();
@@ -128,21 +132,18 @@ export const RegisterDialog = ({ open, setOpen }) => {
     }
     setLoading(false);
   };
+
   const registerDiscord = async () => {
     setLoading(true);
     try {
-      var hrefUrl;
-      if (process.env.REACT_APP_ENVIRONMENT != "development") {
-        await verifyRecaptcha("auth");
-        hrefUrl = window.location.origin + "/auth/discord";
-      } else {
-        hrefUrl = window.location.origin + ":3000/auth/discord";
-      }
+      let hrefUrl =
+        process.env.REACT_APP_ENVIRONMENT !== "development"
+          ? `${window.location.origin}/auth/discord`
+          : `${window.location.origin}:3000/auth/discord`;
       window.location.href = hrefUrl;
     } catch (err) {
       if (!err?.message) return;
-
-      if (err.message.indexOf("(auth/too-many-requests") !== -1) {
+      if (err.message.includes("(auth/too-many-requests)")) {
         snackbarHook.popTooManyLoginAttempts();
       } else {
         snackbarHook.popLoginFailed();
@@ -206,6 +207,15 @@ export const RegisterDialog = ({ open, setOpen }) => {
             error={!!passwordConfirmationHelperText}
             helperText={passwordConfirmationHelperText}
           />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={ageConfirmed}
+                onChange={(e) => setAgeConfirmed(e.target.checked)}
+              />
+            }
+            label="I confirm that I am 13 years or older."
+          />
           <Button
             fullWidth
             sx={{ mt: 2 }}
@@ -215,7 +225,8 @@ export const RegisterDialog = ({ open, setOpen }) => {
               !email ||
               !password ||
               !passwordConfirmation ||
-              password !== passwordConfirmation
+              password !== passwordConfirmation ||
+              !ageConfirmed
             }
           >
             Register
