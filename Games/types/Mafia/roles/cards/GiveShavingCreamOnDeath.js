@@ -7,6 +7,11 @@ module.exports = class GiveShavingCreamOnDeath extends Card {
     this.listeners = {
       death: function (player, killer, instant) {
         if (player == this.player) {
+
+        if (!this.player.hasAbility(["Item", "WhenDead"])) {
+          return;
+        }
+          
           let alive = this.game.alivePlayers();
           var evilPlayers = alive.filter(
             (p) =>
