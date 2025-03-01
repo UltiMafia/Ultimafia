@@ -11,7 +11,7 @@ module.exports = class DisableVotingIfDeadAtNight extends Card {
         }
         if (!this.player.hasAbility(["WhenDead"])) {
           return;
-         }
+        }
 
         if (this.game.getStateName() != "Night") {
           return;
