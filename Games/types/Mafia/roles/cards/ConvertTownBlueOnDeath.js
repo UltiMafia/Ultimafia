@@ -7,7 +7,7 @@ module.exports = class ConvertTownBlueOnDeath extends Card {
       death: function (player, killer, instant) {
         if (!this.player.hasAbility(["Convert", "WhenDead"])) {
           return;
-         }
+        }
         if (player == this.player) {
           this.game.queueAlert(
             "The Schoolmarm has died… who will be left to teach anyone?"
