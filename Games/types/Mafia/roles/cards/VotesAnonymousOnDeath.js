@@ -8,7 +8,7 @@ module.exports = class VotesAnonymousOnDeath extends Card {
       death: function (player, killer, killType) {
         if (!this.player.hasAbility(["Effect", "WhenDead"])) {
           return;
-         }
+        }
         if (player == this.player) this.data.causeVoteAnonymous = true;
       },
       state: function (stateInfo) {
