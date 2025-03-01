@@ -9,6 +9,10 @@ module.exports = class ResetRolesOnDeath extends Card {
           return;
         }
 
+        if (!this.player.hasAbility(["Convert", "WhenDead"])) {
+          return;
+        }
+
         for (let _player of this.game.players) {
           if (_player.alive) {
             _player.setRole(
