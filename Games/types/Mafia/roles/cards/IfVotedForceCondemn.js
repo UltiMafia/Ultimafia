@@ -5,7 +5,7 @@ const { PRIORITY_OVERTHROW_VOTE } = require("../../const/Priority");
 module.exports = class IfVotedForceCondemn extends Card {
   constructor(role) {
     super(role);
-    
+
     this.listeners = {
       vote: function (vote) {
         if (vote.meeting.name === "Village" && vote.target === this.player.id) {
@@ -14,8 +14,8 @@ module.exports = class IfVotedForceCondemn extends Card {
           this.player.role.data.hasBeenVoted = true;
           this.player.role.data.playerVoter = 0;
           if (!this.player.hasAbility(["Condemn"])) {
-          return;
-         }
+            return;
+          }
           if (
             this.game.getRoleAlignment(
               vote.voter.getRoleAppearance().split(" (")[0]

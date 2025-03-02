@@ -23,7 +23,7 @@ module.exports = class ChoosePlayerOnDeath extends Card {
             this.actor.role.revived = true;
 
             if (!this.actor.hasAbility(["Win-Con", "WhenDead"])) {
-            return;
+              return;
             }
 
             if (this.target.role.alignment != "Village") {

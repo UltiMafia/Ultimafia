@@ -14,7 +14,11 @@ module.exports = class SacrificeSameRole extends Card {
         }
 
         for (const player of this.game.players) {
-          if (player.alive && player.role.name === "Sheep" && player.hasAbility(["Kill", "WhenDead"])) {
+          if (
+            player.alive &&
+            player.role.name === "Sheep" &&
+            player.hasAbility(["Kill", "WhenDead"])
+          ) {
             player.kill("sheep", this.player, instant);
           }
         }
