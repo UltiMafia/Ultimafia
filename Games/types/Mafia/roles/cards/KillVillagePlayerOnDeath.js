@@ -26,6 +26,10 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
             this.game.queueAlert(
               `${this.actor.name} the ${this.actor.role.name} has selected ${this.target.name}. If ${this.target.name} is Village Aligned they will die tonight.`
             );
+
+            if (!this.actor.hasAbility(["Kill", "WhenDead"])) {
+              return;
+            }
             //this.hasChoosen = true;
             this.actor.role.SelectedPlayer = this.target;
           },
