@@ -40,6 +40,7 @@ import UserNotifications from "./pages/User/UserNotifications";
 import Policy from "./pages/Policy/Policy";
 import Fame from "./pages/Fame/Fame";
 import Popover, { usePopover } from "./components/Popover";
+import CookieBanner from "./components/CookieBanner";
 import Chat from "./pages/Chat/Chat";
 
 import "./css/main.css";
@@ -198,6 +199,7 @@ function Main() {
       <SiteInfoContext.Provider value={siteInfo}>
         <PopoverContext.Provider value={popover}>
           <ThemeProvider theme={theme}>
+            <CookieBanner />
             <CssBaseline />
             <Switch>
               <Route path="/game">
