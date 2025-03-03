@@ -340,7 +340,7 @@ const artContributors = {
     Mafia: ["Groundskeeper"],
   },
   Jumpy: {
-    Mafia: ["Puppeteer"],
+    Mafia: ["Puppeteer", "Pyromaniac"],
   },
 };
 
