@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Typography, Dialog, DialogActions, DialogContent } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+} from "@mui/material";
 
 export default function CookieBanner() {
   const [open, setOpen] = useState(false);
@@ -26,7 +33,8 @@ export default function CookieBanner() {
       <DialogContent>
         <Typography variant="h6">We use cookies</Typography>
         <Typography variant="body2">
-          UltiMafia uses cookies to improve user experience. By clicking "Accept," you agree to the use of cookies.
+          UltiMafia uses cookies to improve user experience. By clicking
+          "Accept," you agree to the use of cookies.
         </Typography>
       </DialogContent>
       <DialogActions>
