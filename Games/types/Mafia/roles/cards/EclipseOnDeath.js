@@ -6,6 +6,9 @@ module.exports = class EclipseOnDeath extends Card {
 
     this.listeners = {
       death: function (player, killer, killType) {
+        if (!this.player.hasAbility(["Effect", "WhenDead"])) {
+          return;
+        }
         if (player == this.player) this.data.causeEclipse = true;
       },
       state: function (stateInfo) {

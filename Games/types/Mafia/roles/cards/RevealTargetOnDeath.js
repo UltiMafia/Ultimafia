@@ -20,8 +20,16 @@ module.exports = class RevealTargetOnDeath extends Card {
       },
     };
     this.listeners = {
+      state: function (stateInfo) {
+        if (stateInfo.name.match(/Night/)) {
+          this.data.playerToReveal = null;
+        }
+      },
       death: function (player, killer, deathType) {
         if (player == this.player && this.data.playerToReveal) {
+          if (!this.player.hasAbility(["Reveal", "WhenDead"])) {
+            return;
+          }
           let info = this.game.createInformation(
             "RevealInfo",
             this.player,

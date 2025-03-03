@@ -13,6 +13,9 @@ module.exports = class CauseBanishedEventsOnDeath extends Card {
         if (this.player.alive) {
           return;
         }
+        if (!this.player.hasAbility(["Event", "WhenDead"])) {
+          return;
+        }
 
         if (!stateInfo.name.match(/Night/)) {
           return;

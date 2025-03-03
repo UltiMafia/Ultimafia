@@ -339,6 +339,9 @@ const artContributors = {
   kimbo: {
     Mafia: ["Groundskeeper"],
   },
+  Jumpy: {
+    Mafia: ["Puppeteer"],
+  },
 };
 
 const contributorData = {
