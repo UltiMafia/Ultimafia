@@ -34,7 +34,6 @@ import Game from "./pages/Game/Game";
 import Play from "./pages/Play/Play";
 import Community from "./pages/Community/Community";
 import Learn from "./pages/Learn/Learn";
-import Auth from "./pages/Auth/Auth";
 import User, { Avatar, useUser } from "./pages/User/User";
 import UserNotifications from "./pages/User/UserNotifications";
 import Policy from "./pages/Policy/Policy";
@@ -231,9 +230,8 @@ function Main() {
                     <div className="inner-container">
                       <Switch>
                         <Route path="/play" render={() => <Play />} />
-                        <Route path="/learn" render={() => <Learn />} />
                         <Route path="/community" render={() => <Community />} />
-                        <Route path="/auth" render={() => <Auth />} />
+                        <Route path="/learn" render={() => <Learn />} />
                         <Route path="/user" render={() => <User />} />
                         <Route path="/policy" render={() => <Policy />} />
                         <Route path="/fame" render={() => <Fame />} />
