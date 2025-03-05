@@ -33,12 +33,12 @@ import { Nav } from "./components/Nav";
 import Game from "./pages/Game/Game";
 import Play from "./pages/Play/Play";
 import Community from "./pages/Community/Community";
+import Fame from "./pages/Fame/Fame";
 import Learn from "./pages/Learn/Learn";
-import Auth from "./pages/Auth/Auth";
+import Development from "./pages/Development/Development";
+import Policy from "./pages/Policy/Policy";
 import User, { Avatar, useUser } from "./pages/User/User";
 import UserNotifications from "./pages/User/UserNotifications";
-import Policy from "./pages/Policy/Policy";
-import Fame from "./pages/Fame/Fame";
 import Popover, { usePopover } from "./components/Popover";
 import CookieBanner from "./components/CookieBanner";
 import Chat from "./pages/Chat/Chat";
@@ -231,12 +231,15 @@ function Main() {
                     <div className="inner-container">
                       <Switch>
                         <Route path="/play" render={() => <Play />} />
-                        <Route path="/learn" render={() => <Learn />} />
                         <Route path="/community" render={() => <Community />} />
-                        <Route path="/auth" render={() => <Auth />} />
-                        <Route path="/user" render={() => <User />} />
-                        <Route path="/policy" render={() => <Policy />} />
                         <Route path="/fame" render={() => <Fame />} />
+                        <Route
+                          path="/development"
+                          render={() => <Development />}
+                        />
+                        <Route path="/learn" render={() => <Learn />} />
+                        <Route path="/policy" render={() => <Policy />} />
+                        <Route path="/user" render={() => <User />} />
                       </Switch>
                     </div>
                     <Footer />
@@ -295,20 +298,8 @@ function Header({ setShowAnnouncementTemporarily }) {
 
   const getLogoSrc = () => {
     const currentMonth = new Date().getMonth();
-    // 0 = January
-    // 11 = December
-
-    // Pride logo for June
-    if (currentMonth === 5) {
-      return "../../images/holiday/umpride2.png";
-    }
-
-    // Bloody logo for Halloween
-    if (currentMonth === 9) {
-      return "../../images/holiday/logobloody.png";
-    }
-
-    // Default logo
+    if (currentMonth === 5) return "../../images/holiday/umpride2.png"; // June (Pride)
+    if (currentMonth === 9) return "../../images/holiday/logobloody.png"; // October (Halloween)
     return "../../images/fadelogohat.png";
   };
 
@@ -418,6 +409,13 @@ function Header({ setShowAnnouncementTemporarily }) {
             style={expandedMenu ? { width: "100%" } : { width: "auto" }}
           >
             <span>Learn</span>
+          </NavLink>
+          <NavLink
+            to="/development"
+            className={"glow-on-hover"}
+            style={expandedMenu ? { width: "100%" } : { width: "auto" }}
+          >
+            <span>Dev</span>
           </NavLink>
           <NavLink
             to="/policy"
