@@ -233,7 +233,10 @@ function Main() {
                         <Route path="/play" render={() => <Play />} />
                         <Route path="/community" render={() => <Community />} />
                         <Route path="/fame" render={() => <Fame />} />
-                        <Route path="/development" render={() => <Development />} />
+                        <Route
+                          path="/development"
+                          render={() => <Development />}
+                        />
                         <Route path="/learn" render={() => <Learn />} />
                         <Route path="/policy" render={() => <Policy />} />
                         <Route path="/user" render={() => <User />} />

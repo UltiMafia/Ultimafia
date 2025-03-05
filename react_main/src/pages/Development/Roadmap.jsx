@@ -25,27 +25,27 @@ export default function Roadmap() {
       try {
         const { repository } = await graphql(
           `
-          {
-            repository(owner: "UltiMafia", name: "Ultimafia") {
-              issues(first: 20, states: [OPEN]) {
-                edges {
-                  node {
-                    id
-                    title
-                    state
-                    url
-                    createdAt
-                    labels(first: 5) {
-                      nodes {
-                        id
-                        name
+            {
+              repository(owner: "UltiMafia", name: "Ultimafia") {
+                issues(first: 20, states: [OPEN]) {
+                  edges {
+                    node {
+                      id
+                      title
+                      state
+                      url
+                      createdAt
+                      labels(first: 5) {
+                        nodes {
+                          id
+                          name
+                        }
                       }
                     }
                   }
                 }
               }
             }
-          }
           `,
           {
             headers: {
@@ -87,7 +87,11 @@ export default function Roadmap() {
               {issues.map((issue) => (
                 <TableRow key={issue.id}>
                   <TableCell>
-                    <Link href={issue.url} target="_blank" rel="noopener noreferrer">
+                    <Link
+                      href={issue.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       {issue.title}
                     </Link>
                   </TableCell>
@@ -99,10 +103,16 @@ export default function Roadmap() {
                   </TableCell>
                   <TableCell>
                     {issue.labels.nodes.map((label) => (
-                      <Chip key={label.id} label={label.name} sx={{ marginRight: 0.5 }} />
+                      <Chip
+                        key={label.id}
+                        label={label.name}
+                        sx={{ marginRight: 0.5 }}
+                      />
                     ))}
                   </TableCell>
-                  <TableCell>{new Date(issue.createdAt).toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    {new Date(issue.createdAt).toLocaleDateString()}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
