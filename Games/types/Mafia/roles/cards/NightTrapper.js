@@ -10,7 +10,7 @@ module.exports = class NightTrapper extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          labels: ["kill"],
+          labels: ["trap"],
           item: role,
           priority: PRIORITY_KILL_DEFAULT,
           run: function () {
