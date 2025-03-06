@@ -9,6 +9,7 @@ const protips = {
     "Click Say to use speech abilities or whisper.",
     "Use /diceroll to roll dice.",
     "Click the heart icon on a user's profile to confess your love!",
+    "Please remember to be patient and understanding towards new players.",
   ],
   Mafia: [
     "You can use /item to view an item's description during a game.",

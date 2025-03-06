@@ -2052,7 +2052,7 @@ const roleData = {
       ],
       SpecialInteractions: {
         Assassin: [
-          "If an Assassin is Present, Understudy' with an Assassin Target will not become Assassin If the Assassin dies to their Ability.",
+          "If an Assassin is Present, Understudies with an Assassin Target will not become Assassin If the Assassin dies to their Ability.",
         ],
       },
     },
@@ -2291,10 +2291,9 @@ const roleData = {
       ],
       description: [
         "Splits all players into two rooms.",
-        "During the Day, each room will meet and choose a city leader.",
-        "At Night the city leaders will Meet and choose players to switch rooms.",
+        "During the Day, each room meets and choose a city leader. In turn, at Night city leaders meet and choose players to switch rooms.",
         "After three rounds of switching, the Assassin will kill all players who are in the same room as them.",
-        "The presence of an Assassin will force a President to spawn in the setup (unless Senators are present).",
+        "The presence of an Assassin will force a President to spawn in the setup (unless Senators are present). Village-aligned players will not learn who the President is.",
         "Village wins if an Assassin dies before a President or majority of the Senators die.",
         "Mafia will not win by majority if an Assassin is present.",
       ],

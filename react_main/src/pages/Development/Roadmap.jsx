@@ -23,6 +23,8 @@ export default function Roadmap() {
 
     const fetchIssues = async () => {
       try {
+        const token = process.env.REACT_APP_GITHUB_PAT;
+
         const { repository } = await graphql(
           `
             {
@@ -49,12 +51,16 @@ export default function Roadmap() {
           `,
           {
             headers: {
-              authorization: `token YOUR_GITHUB_PERSONAL_ACCESS_TOKEN`,
+              authorization: `token ${token}`,
             },
           }
         );
 
-        setIssues(repository.issues.edges.map((edge) => edge.node));
+        const sortedIssues = repository.issues.edges
+          .map((edge) => edge.node)
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        setIssues(sortedIssues);
       } catch (error) {
         console.error("Error fetching GitHub issues:", error);
       }
