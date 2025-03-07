@@ -1638,6 +1638,7 @@ router.get("/announcements", async function (req, res) {
       last,
       first,
       "id modId mod content date -_id",
+      5,
       ["mod", "id name avatar -_id"]
     );
 
