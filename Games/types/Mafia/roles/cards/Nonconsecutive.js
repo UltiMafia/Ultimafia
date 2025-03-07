@@ -20,25 +20,25 @@ module.exports = class Nonconsecutive extends Card {
           labels: ["block", "hidden", "absolute"],
           run: function () {
             if (!this.actor.hasAbility(["Modifier", "WhenDead", "Blocking"])) {
-          return;
-           }
+              return;
+            }
             var visits = [];
             let actionList = this.game.lastNightVisits;
             for (let action of actionList) {
-            let toCheck1 = action.target;
-            if (!Array.isArray(action.target)) {
-              toCheck1 = [action.target];
+              let toCheck1 = action.target;
+              if (!Array.isArray(action.target)) {
+                toCheck1 = [action.target];
+              }
+
+              if (
+                action.actors.indexOf(player) != -1 &&
+                !action.hasLabel("hidden") &&
+                action.target &&
+                toCheck1[0] instanceof Player
+              ) {
+                visits.push(...toCheck1);
+              }
             }
-      
-            if (
-              action.actors.indexOf(player) != -1 &&
-              !action.hasLabel("hidden") &&
-              action.target &&
-              toCheck1[0] instanceof Player
-            ) {
-              visits.push(...toCheck1);
-            }
-          }
 
             for (let action of this.game.actions[0]) {
               if (action.hasLabel("absolute")) {
