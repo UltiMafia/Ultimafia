@@ -29,7 +29,7 @@ export default function Roadmap() {
           `
             {
               repository(owner: "UltiMafia", name: "Ultimafia") {
-                issues(first: 20, states: [OPEN]) {
+                issues(first: 100, states: [OPEN]) {
                   edges {
                     node {
                       id
