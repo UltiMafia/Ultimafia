@@ -6,16 +6,8 @@ module.exports = class Pyromaniac extends Role {
     this.alignment = "Independent";
     this.cards = [
       "VillageCore",
-      "WinUponPyromaniacMajority",
+      "WinAmongLastTwo",
       "DouseInGasoline",
     ];
-    this.meetingMods = {
-      "Douse Player": {
-        flags: ["group", "speech", "voting"],
-      },
-      "Light Match": {
-        flags: ["group", "speech", "voting"],
-      },
-    };
   }
 };
