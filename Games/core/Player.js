@@ -722,6 +722,7 @@ module.exports = class Player {
     if (this.game.started && !noEmit) {
       this.game.events.emit("roleAssigned", this);
     }
+    this.game.events.emit("AbilityToggle", this);
     if (this.game.achievementsAllowed()) {
       for (let achievement of Object.entries(
         gameAchievements[this.game.type]
@@ -1324,6 +1325,7 @@ module.exports = class Player {
 
     this.queueLastWill();
     this.game.events.emit("death", this, killer, killType, instant);
+    this.game.events.emit("AbilityToggle", this);
 
     if (!instant) return;
 
@@ -1354,6 +1356,7 @@ module.exports = class Player {
     this.game.queueRevival(this);
     this.queueRevivalMessage(revivalType, instant);
     this.game.events.emit("revival", this, reviver, revivalType);
+    this.game.events.emit("AbilityToggle", this);
 
     if (!instant) return;
 
