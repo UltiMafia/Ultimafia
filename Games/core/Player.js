@@ -651,6 +651,7 @@ module.exports = class Player {
     for (let effect of this.passiveEffects) {
       effect.remove();
     }
+    this.passiveEffects = [];
     for (let effect of this.effects) {
       if (effect.name == "Blind" && effect.lifespan == Infinity) {
         effect.remove();
