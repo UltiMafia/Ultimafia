@@ -7,7 +7,6 @@ module.exports = class Blind extends Card {
 
     //this.startEffects = ["Blind"];
 
-
     this.listeners = {
       AbilityToggle: function (player) {
         if (player != this.player) {
@@ -33,8 +32,5 @@ module.exports = class Blind extends Card {
         }
       },
     };
-
-
-
   }
 };

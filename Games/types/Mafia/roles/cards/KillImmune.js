@@ -3,7 +3,7 @@ const Card = require("../../Card");
 module.exports = class KillImmune extends Card {
   constructor(role) {
     super(role);
-  /*
+    /*
     this.startEffects = [
       {
         type: "Kill Immune",
@@ -21,7 +21,11 @@ module.exports = class KillImmune extends Card {
             this.UnkillableEffect == null ||
             !this.players.effects.includes(this.UnkillableEffect)
           ) {
-            this.UnkillableEffect = this.player.giveEffect("Kill Immune", 5, Infinity);
+            this.UnkillableEffect = this.player.giveEffect(
+              "Kill Immune",
+              5,
+              Infinity
+            );
             this.player.passiveEffects.push(this.UnkillableEffect);
           }
         } else {

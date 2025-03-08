@@ -38,8 +38,5 @@ module.exports = class TrueModifier extends Card {
         }
       },
     };
-
-
-
   }
 };

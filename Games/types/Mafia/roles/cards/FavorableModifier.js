@@ -22,11 +22,16 @@ module.exports = class FavorableModifier extends Card {
             this.FavorableModeEffect == null ||
             !this.players.effects.includes(this.FavorableModeEffect)
           ) {
-            this.FavorableModeEffect = this.player.giveEffect("FavorableMode", Infinity);
+            this.FavorableModeEffect = this.player.giveEffect(
+              "FavorableMode",
+              Infinity
+            );
             this.player.passiveEffects.push(this.FavorableModeEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(this.FavorableModeEffect);
+          var index = this.player.passiveEffects.indexOf(
+            this.FavorableModeEffect
+          );
           if (index != -1) {
             this.player.passiveEffects.splice(index, 1);
           }

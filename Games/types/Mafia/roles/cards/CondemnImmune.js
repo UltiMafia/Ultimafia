@@ -16,11 +16,16 @@ module.exports = class CondemnImmune extends Card {
             this.CondemnImmuneEffect == null ||
             !this.players.effects.includes(this.CondemnImmuneEffect)
           ) {
-            this.CondemnImmuneEffect = this.player.giveEffect("CondemnImmune", Infinity);
+            this.CondemnImmuneEffect = this.player.giveEffect(
+              "CondemnImmune",
+              Infinity
+            );
             this.player.passiveEffects.push(this.CondemnImmuneEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(this.CondemnImmuneEffect);
+          var index = this.player.passiveEffects.indexOf(
+            this.CondemnImmuneEffect
+          );
           if (index != -1) {
             this.player.passiveEffects.splice(index, 1);
           }
@@ -31,7 +36,5 @@ module.exports = class CondemnImmune extends Card {
         }
       },
     };
-
-
   }
 };
