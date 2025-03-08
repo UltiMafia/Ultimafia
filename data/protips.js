@@ -3,7 +3,7 @@ const protips = {
     "Git Gud.",
     "You can turn off Protips in your profile settings.",
     "You can spend the coins you earn in the Shop on your profile.",
-    "The setup is shown in the top right corner.",
+    "The setup is shown in the top right(Left on mobile) corner.",
     "You can use /role to view a role's description during a game.",
     "You can view a player's win rate, pronouns, and karma by clicking their name in the player list.",
     "Click Say to use speech abilities or whisper.",
