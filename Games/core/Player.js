@@ -648,8 +648,7 @@ module.exports = class Player {
     const modifiers = roleName.split(":")[1];
     roleName = roleName.split(":")[0];
 
-
-    for(let effect of this.passiveEffects){
+    for (let effect of this.passiveEffects) {
       effect.remove();
     }
     for (let effect of this.effects) {
