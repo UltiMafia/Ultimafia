@@ -31,7 +31,12 @@ const protips = {
   Jotto: [],
   Acrotopia: [],
   "Secret Dictator": ["Count the cards."],
-  "Wacky Words": ["Be wacky."],
+  "Wacky Words": [
+    "Be wacky.",
+    "Be Bold",
+    "Be Brave",
+    "Be Funny",
+                 ],
   "Liars Dice": [
     "Call it!!!!",
     "99% of gamblers quit before they win big!",
