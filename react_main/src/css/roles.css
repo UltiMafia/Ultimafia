@@ -752,6 +752,10 @@
   background-image: url("/images/roles/pyromaniac-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Superhero {
+  background-image: url("/images/roles/superhero-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Guard {
   background-image: url("/images/roles/guard-vivid.png");
 }

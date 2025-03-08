@@ -22,7 +22,7 @@ module.exports = class Nonconsecutive extends Card {
             if (!this.actor.hasAbility(["Modifier", "WhenDead", "Blocking"])) {
               return;
             }
-            var visits = [];
+            let visits = [];
             let actionList = this.game.lastNightVisits;
             for (let action of actionList) {
               let toCheck1 = action.target;
@@ -31,7 +31,7 @@ module.exports = class Nonconsecutive extends Card {
               }
 
               if (
-                action.actors.indexOf(player) != -1 &&
+                action.actors.indexOf(this.actor) != -1 &&
                 !action.hasLabel("hidden") &&
                 action.target &&
                 toCheck1[0] instanceof Player
@@ -39,7 +39,6 @@ module.exports = class Nonconsecutive extends Card {
                 visits.push(...toCheck1);
               }
             }
-
             for (let action of this.game.actions[0]) {
               if (action.hasLabel("absolute")) {
                 continue;

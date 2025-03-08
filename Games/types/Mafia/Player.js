@@ -525,7 +525,7 @@ module.exports = class MafiaPlayer extends Player {
     if (this.alive == true && isRestless == true) {
       return false;
     }
-    if (types.includes("Modifier") && !this.hasEffect("NoModifiers")) {
+    if (types.includes("Modifier") && this.hasEffect("NoModifiers")) {
       return false;
     }
 
