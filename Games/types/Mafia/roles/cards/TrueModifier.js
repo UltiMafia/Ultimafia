@@ -7,6 +7,8 @@ module.exports = class TrueModifier extends Card {
 
     this.hideModifier = {
       self: true,
+      death: true,
+      condemn: true,
     };
 
     this.startEffects = ["TrueMode"];
