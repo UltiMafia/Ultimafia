@@ -352,8 +352,9 @@ const modifierData = {
     },
     Nonconsecutive: {
       internal: ["Nonconsecutive"],
-      tags: ["Visits", "Block Self",],
-      description: "If this player visits the player they visited the previous night, their secondary actions will be blocked.",
+      tags: ["Visits", "Block Self"],
+      description:
+        "If this player visits the player they visited the previous night, their secondary actions will be blocked.",
     },
     Odd: {
       internal: ["Odd"],
