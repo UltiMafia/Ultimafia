@@ -11,6 +11,36 @@ module.exports = class UnfavorableModifier extends Card {
       condemn: true,
     };
 
-    this.startEffects = ["UnfavorableMode"];
+    //this.startEffects = ["UnfavorableMode"];
+    this.listeners = {
+      AbilityToggle: function (player) {
+        if (player != this.player) {
+          return;
+        }
+        if (this.player.hasAbility(["Modifier", "Information", "WhenDead"])) {
+          if (
+            this.UnfavorableModeEffect == null ||
+            !this.players.effects.includes(this.UnfavorableModeEffect)
+          ) {
+            this.UnfavorableModeEffect = this.player.giveEffect(
+              "UnfavorableMode",
+              Infinity
+            );
+            this.player.passiveEffects.push(this.UnfavorableModeEffect);
+          }
+        } else {
+          var index = this.player.passiveEffects.indexOf(
+            this.UnfavorableModeEffect
+          );
+          if (index != -1) {
+            this.player.passiveEffects.splice(index, 1);
+          }
+          if (this.UnfavorableModeEffect != null) {
+            this.UnfavorableModeEffect.remove();
+            this.UnfavorableModeEffect = null;
+          }
+        }
+      },
+    };
   }
 };

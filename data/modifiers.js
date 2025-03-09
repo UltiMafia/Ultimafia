@@ -350,6 +350,12 @@ const modifierData = {
       description:
         "Announces the player's name to the targets of their night actions.",
     },
+    Nonconsecutive: {
+      internal: ["Nonconsecutive"],
+      tags: ["Visits", "Block Self"],
+      description:
+        "If this player visits the player they visited the previous night, their secondary actions will be blocked.",
+    },
     Odd: {
       internal: ["Odd"],
       tags: ["Odd", "Meetings"],

@@ -35,6 +35,7 @@ module.exports = class Player {
     this.data = {};
     this.items = [];
     this.effects = [];
+    this.passiveEffects = [];
     this.AchievementTracker = [];
     this.EarnedAchievements = [];
     this.tempImmunity = {};
@@ -647,6 +648,10 @@ module.exports = class Player {
     const modifiers = roleName.split(":")[1];
     roleName = roleName.split(":")[0];
 
+    for (let effect of this.passiveEffects) {
+      effect.remove();
+    }
+    this.passiveEffects = [];
     for (let effect of this.effects) {
       if (effect.name == "Blind" && effect.lifespan == Infinity) {
         effect.remove();
@@ -717,6 +722,7 @@ module.exports = class Player {
     if (this.game.started && !noEmit) {
       this.game.events.emit("roleAssigned", this);
     }
+    this.game.events.emit("AbilityToggle", this);
     if (this.game.achievementsAllowed()) {
       for (let achievement of Object.entries(
         gameAchievements[this.game.type]
@@ -1319,6 +1325,7 @@ module.exports = class Player {
 
     this.queueLastWill();
     this.game.events.emit("death", this, killer, killType, instant);
+    this.game.events.emit("AbilityToggle", this);
 
     if (!instant) return;
 
@@ -1349,6 +1356,7 @@ module.exports = class Player {
     this.game.queueRevival(this);
     this.queueRevivalMessage(revivalType, instant);
     this.game.events.emit("revival", this, reviver, revivalType);
+    this.game.events.emit("AbilityToggle", this);
 
     if (!instant) return;
 

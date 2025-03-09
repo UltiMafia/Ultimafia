@@ -21,7 +21,7 @@ const developmentContributors = [
   "ruthless",
   "view",
   "drewsworth",
-  "nearbeer",
+  "nearbear",
 ];
 
 const artContributors = {
