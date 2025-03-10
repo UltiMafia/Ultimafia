@@ -158,7 +158,8 @@ const AchievementData = {
     "Do No Harm": {
       ID: "Mafia22",
       internal: ["DoctorSave"],
-      description: "As Doctor, correctly save Village Aligned player from being killed.",
+      description:
+        "As Doctor, correctly save Village Aligned player from being killed.",
       reward: 10,
       roles: ["Doctor"],
     },
@@ -172,11 +173,12 @@ const AchievementData = {
     "They are the Night": {
       ID: "Mafia24",
       internal: ["GunsmithGun"],
-      description: "As Gunsmith, Give a gun to a player who shoots an Evil Player.",
+      description:
+        "As Gunsmith, Give a gun to a player who shoots an Evil Player.",
       reward: 15,
       roles: ["Gunsmith"],
     },
-    "Quickscope": {
+    Quickscope: {
       ID: "Mafia25",
       internal: ["SniperShootGunnedPR"],
       description:
@@ -195,8 +197,7 @@ const AchievementData = {
     "Bad Juju": {
       ID: "Mafia27",
       internal: ["JinxKill"],
-      description:
-        "As Jinx, Get the last kill of the game with your ability.",
+      description: "As Jinx, Get the last kill of the game with your ability.",
       reward: 20,
       roles: ["Jinx"],
     },
@@ -211,16 +212,14 @@ const AchievementData = {
     "All Part of a Balanced Breakfast": {
       ID: "Mafia29",
       internal: ["HellhoundEat"],
-      description:
-        "As Hellhound, Eat 3 Diffrent Alignments and Win.",
+      description: "As Hellhound, Eat 3 Diffrent Alignments and Win.",
       reward: 30,
       roles: ["Hellhound"],
     },
     "Delirious Desires": {
       ID: "Mafia30",
       internal: ["Succubus"],
-      description:
-        "As Hellhound, Make Information false 3 times in a game.",
+      description: "As Hellhound, Make Information false 3 times in a game.",
       reward: 20,
       roles: ["Succubus"],
     },
