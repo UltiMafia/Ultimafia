@@ -12,6 +12,8 @@ import {
   Typography,
   CircularProgress,
 } from "@mui/material";
+import { NameWithAvatar } from "../User/User";
+import { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "../User/Profile";
 
 export default function Leaderboard() {
   const [users, setUsers] = useState([]);
@@ -21,11 +23,12 @@ export default function Leaderboard() {
 
   useEffect(() => {
     axios
-      .get("/user")
+      .get("/user/${id}")
       .then((res) => {
-        const formattedUsers = res.data.map((user) => ({
+        const formattedUsers = res.data.slice(0, 20).map((user) => ({
           id: user.id,
           name: user.name,
+          avatar: user.avatar,
           winLossRatio:
             user.stats["Mafia"].all.wins.count /
             (user.stats["Mafia"].all.wins.total || 1),
@@ -84,7 +87,7 @@ export default function Leaderboard() {
                   direction={orderBy === "kudos" ? order : "asc"}
                   onClick={() => handleSort("kudos")}
                 >
-                  Kudos
+                  <img src={KUDOS_ICON} alt="Kudos" /> Kudos
                 </TableSortLabel>
               </TableCell>
               <TableCell>
@@ -93,7 +96,7 @@ export default function Leaderboard() {
                   direction={orderBy === "karma" ? order : "asc"}
                   onClick={() => handleSort("karma")}
                 >
-                  Karma
+                  <img src={KARMA_ICON} alt="Karma" /> Karma
                 </TableSortLabel>
               </TableCell>
               <TableCell>
@@ -102,6 +105,7 @@ export default function Leaderboard() {
                   direction={orderBy === "achievements" ? order : "asc"}
                   onClick={() => handleSort("achievements")}
                 >
+                  <img src={ACHIEVEMENTS_ICON} alt="Achievements" />
                   Achievements
                 </TableSortLabel>
               </TableCell>
@@ -110,7 +114,9 @@ export default function Leaderboard() {
           <TableBody>
             {sortedUsers.map((user) => (
               <TableRow key={user.id}>
-                <TableCell>{user.name}</TableCell>
+                <TableCell>
+                  <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
+                </TableCell>
                 <TableCell>{user.winLossRatio.toFixed(2)}</TableCell>
                 <TableCell>{user.kudos}</TableCell>
                 <TableCell>{user.karma}</TableCell>
