@@ -115,7 +115,11 @@ export default function Leaderboard() {
             {sortedUsers.map((user) => (
               <TableRow key={user.id}>
                 <TableCell>
-                  <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
+                  <NameWithAvatar
+                    id={user.id}
+                    name={user.name}
+                    avatar={user.avatar}
+                  />
                 </TableCell>
                 <TableCell>{user.winLossRatio.toFixed(2)}</TableCell>
                 <TableCell>{user.kudos}</TableCell>
