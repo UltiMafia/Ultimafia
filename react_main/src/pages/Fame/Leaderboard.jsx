@@ -59,7 +59,7 @@ export default function Leaderboard() {
 
   return (
     <TableContainer component={Paper}>
-      <Typography variant="h4" gutterBottom >
+      <Typography variant="h4" gutterBottom>
         Leaderboard
       </Typography>
       {loading ? (

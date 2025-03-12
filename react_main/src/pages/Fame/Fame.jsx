@@ -12,8 +12,8 @@ export default function Fame(props) {
 
   const links = [
     {
-      text: 'Leaderboard',
-      path: '/fame/Leaderboard',
+      text: "Leaderboard",
+      path: "/fame/Leaderboard",
       exact: true,
     },
     {
