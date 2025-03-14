@@ -28,6 +28,9 @@ module.exports = class JailTarget extends Card {
           this.hasBeenDay = true;
           return;
         }
+        if (stateInfo.name.match(/Night/)) {
+        this.player.role.data.jailMeeting = this.game.getMeetingByName(this.player.role.data.meetingName);
+        }
       },
     };
 
@@ -129,9 +132,7 @@ module.exports = class JailTarget extends Card {
 
             if (!prisoner) return;
 
-            let jailMeeting = this.game.getMeetingByName(
-              this.actor.role.data.meetingName
-            );
+            let jailMeeting = this.actor.role.data.jailMeeting
             if (!jailMeeting.hasJoined(prisoner)) return;
 
             if (this.target === "Yes" && this.dominates(prisoner)) {
