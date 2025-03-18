@@ -156,7 +156,7 @@ module.exports = class MafiaGame extends Game {
   }
 
   async vegPlayer(player) {
-    if(player.hasEffect("Unveggable")) return;
+    if (player.hasEffect("Unveggable")) return;
     this.recordLeaveStats(player, false);
     super.vegPlayer(player);
   }
