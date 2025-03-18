@@ -91,7 +91,6 @@ router.get("/leaderboard", async function (req, res) {
   }
 });
 
-
 router.get("/searchName", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
