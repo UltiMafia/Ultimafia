@@ -76,6 +76,22 @@ router.get("/info", async function (req, res) {
   }
 });
 
+router.get("/leaderboard", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    let users = await models.User.find({ deleted: false })
+      .select("id name avatar kudos karma achievements -_id")
+      .sort({ kudos: -1, karma: -1, achievements: -1 })
+      .limit(20);
+
+    res.send(users);
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send([]);
+  }
+});
+
+
 router.get("/searchName", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -1119,7 +1135,6 @@ router.post("/name", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var itemsOwned = await redis.getUserItemsOwned(userId);
     var name = String(req.body.name);
-    var code = String(req.body.code);
     var perm = "changeName";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
@@ -1182,16 +1197,6 @@ router.post("/name", async function (req, res) {
       res.status(500);
       res.send("There is already a user with this name.");
       return;
-    }
-
-    var reservationCode = reservedNames[name.toLowerCase()];
-
-    if (reservationCode) {
-      if (code != reservationCode) {
-        res.status(500);
-        res.send("Invalid reservation code.");
-        return;
-      }
     }
 
     await models.User.updateOne(
@@ -1772,7 +1777,5 @@ router.post("/delete", async function (req, res) {
     res.send("Error deleting account.");
   }
 });
-
-const reservedNames = JSON.parse(process.env.RESERVED_NAMES);
 
 module.exports = router;
