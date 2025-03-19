@@ -23,7 +23,10 @@ module.exports = class MastermindPerfect extends Achievements {
           return;
         }
         for (let player of this.game.deadPlayers()) {
-          if (CULT_FACTIONS.includes(player.faction) || MAFIA_FACTIONS.includes(player.faction)) {
+          if (
+            CULT_FACTIONS.includes(player.faction) ||
+            MAFIA_FACTIONS.includes(player.faction)
+          ) {
             return;
           }
         }
