@@ -13,19 +13,25 @@ module.exports = class HellhoundEat extends Achievements {
           deathType == "eaten" &&
           this.player.role.name == "Hellhound"
         )
-          if (!this.EatenAlignments.includes(this.game.getRoleAlignment(player.role.name))) {
-            this.EatenAlignments.push(this.game.getRoleAlignment(player.role.name));
+          if (
+            !this.EatenAlignments.includes(
+              this.game.getRoleAlignment(player.role.name)
+            )
+          ) {
+            this.EatenAlignments.push(
+              this.game.getRoleAlignment(player.role.name)
+            );
           }
       },
       aboutToFinish: function () {
         if (this.EatenAlignments.length >= 2) {
           if (
-          Object.values(this.game.winners.groups)
-            .flat()
-            .find((p) => p === this.player)
-        ) {
-          this.player.EarnedAchievements.push("Mafia29");
-        }
+            Object.values(this.game.winners.groups)
+              .flat()
+              .find((p) => p === this.player)
+          ) {
+            this.player.EarnedAchievements.push("Mafia29");
+          }
         }
       },
     };
