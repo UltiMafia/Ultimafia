@@ -24,7 +24,7 @@ module.exports = class SaboteurKill extends Achievements {
                 if (
                   action.hasLabels(["sabotage"]) &&
                   action.actor == this.target &&
-                   action.target.hasItem("Gun")
+                  action.target.hasItem("Gun")
                 ) {
                   this.achievement.GunnedPlayers.push(action.target);
                   break;
