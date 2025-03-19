@@ -197,22 +197,22 @@ const AchievementData = {
     "Bad Juju": {
       ID: "Mafia27",
       internal: ["JinxKill"],
-      description: "As Jinx, Get the last kill of the game with your ability.",
+      description: "As Jinx, Get 2 kills with your ability.",
       reward: 20,
       roles: ["Jinx"],
     },
     Untouchable: {
       ID: "Mafia28",
-      internal: ["MastermindVoteless"],
+      internal: ["MastermindPerfect"],
       description:
-        "As Mastermind, Win without ever being voted by a Mafia or Cult Member.",
+        "As Mastermind, Win without any Mafia or Cult dying.",
       reward: 30,
       roles: ["Mastermind"],
     },
-    "All Part of a Balanced Breakfast": {
+    "Balanced Breakfast": {
       ID: "Mafia29",
       internal: ["HellhoundEat"],
-      description: "As Hellhound, Eat 3 Diffrent Alignments and Win.",
+      description: "As Hellhound, Eat 2 Diffrent Alignments and Win.",
       reward: 30,
       roles: ["Hellhound"],
     },
