@@ -204,8 +204,7 @@ const AchievementData = {
     Untouchable: {
       ID: "Mafia28",
       internal: ["MastermindPerfect"],
-      description:
-        "As Mastermind, Win without any Mafia or Cult dying.",
+      description: "As Mastermind, Win without any Mafia or Cult dying.",
       reward: 30,
       roles: ["Mastermind"],
     },
