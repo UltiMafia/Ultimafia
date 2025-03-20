@@ -3,6 +3,7 @@ export const slurs = [
   "beaner",
   "chink",
   "coon",
+  "cunt",
   "dago",
   "eskimo",
   "fag",
