@@ -9,7 +9,10 @@ module.exports = class WinWithGhost extends Card {
       check: function (counts, winners, aliveCount) {
         let wordHasBeenGuessed = false;
         for (let player of this.game.players) {
-          if (player.role.alignment == "Ghost" && player.role.guessedWord == this.game.townWord) {
+          if (
+            player.role.alignment == "Ghost" &&
+            player.role.guessedWord == this.game.townWord
+          ) {
             wordHasBeenGuessed = true;
             break;
           }
