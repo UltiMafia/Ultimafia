@@ -14,7 +14,7 @@ module.exports = class VigilanteKill extends Achievements {
           this.player.role.name == "Vigilante"
         )
           if (player.isEvil()) {
-            this.achievement.KillCount++;
+            this.KillCount++;
           }
       },
       aboutToFinish: function () {

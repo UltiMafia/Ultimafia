@@ -12,10 +12,10 @@ module.exports = class JinxKill extends Achievements {
           killer == this.player &&
           deathType == "curse" &&
           this.player.role.name == "Jinx"
-        )
-          if (player.isEvil()) {
-            this.achievement.KillCount++;
-          }
+        ){
+  
+            this.KillCount++;
+        }
       },
       aboutToFinish: function () {
         if (this.KillCount >= 2) {

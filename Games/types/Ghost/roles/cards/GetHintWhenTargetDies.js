@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
+const Action = require("../../Action");
 
 module.exports = class GetHintWhenTargetDies extends Card {
   constructor(role) {
@@ -19,21 +20,32 @@ module.exports = class GetHintWhenTargetDies extends Card {
           `If you get ${this.target.name} condemned you will learn a letter in the Word.`
         );
       },
-      death: function (player, killer, deathType) {
+      death: function (player) {
         if (
           player === this.target &&
-          deathType === "condemn" &&
           this.player.alive
         ) {
-          this.player.queueAlert(
-            `You learn that the Word contains the letter ${
-              this.game.townWord[
-                Math.floor(Math.random() * this.game.townWord.length)
-              ]
-            }.`
-          );
+          var action = new Action({
+            actor: this.player,
+            target: this.target,
+            game: this.game,
+            labels: ["hidden"],
+            run: function () {
+              this.actor.queueAlert(
+                `You learn that the Word contains the letter ${
+                  this.game.townWord.charAt(
+                    Math.floor(Math.random() * this.game.townWord.length)
+                  )
+                }.`
+              );
+              
+            },
+          });
+          action.do();
+          
         }
       },
     };
+
   }
 };

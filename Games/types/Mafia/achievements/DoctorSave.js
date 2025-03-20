@@ -22,12 +22,12 @@ module.exports = class DoctorSave extends Achievements {
             run: function () {
               for (let action of this.game.actions[0]) {
                 if (
-                  action.hasLabels(["kill"]) &&
+                  action.hasLabels(["save"]) &&
                   action.actor == this.target &&
                   action.target.alive
                 ) {
                   if (!action.target.isEvil()) {
-                    this.achievement.Saved == true;
+                    this.achievement.Saved = true;
                   }
                   break;
                 }

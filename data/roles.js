@@ -3894,6 +3894,11 @@ const roleData = {
       tags: ["None"],
       description: ["Appears as Merlin to Percival."],
     },
+    Mordred: {
+      alignment: "Spies",
+      tags: ["None"],
+      description: ["Cannot be seen by Merlin."],
+    },
   },
   Ghost: {
     Villager: {

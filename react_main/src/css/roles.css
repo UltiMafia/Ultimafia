@@ -2125,6 +2125,7 @@
   background-image: url("/images/roles/nomad-vivid.png");
 }
 
+
 /*
 * Spies
 */
@@ -2135,6 +2136,10 @@
 
 .role-Resistance-Morgana {
   background-image: url("/images/roles/actress-vivid.png");
+}
+
+.role-Resistance-Mordred {
+  background-image: url("/images/roles/godfather-vivid.png");
 }
 
 .role-Resistance-Oberon {
@@ -2162,6 +2167,9 @@
 
 .role-icon-scheme-vivid .role-Ghost-Fool {
   background-image: url("/images/roles/fool-vivid.png");
+}
+.role-icon-scheme-vivid .role-Ghost-Saint {
+  background-image: url("/images/roles/saint-vivid.png");
 }
 
 /*
