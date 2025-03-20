@@ -133,18 +133,18 @@ const AchievementData = {
       reward: 20,
       roles: ["Dodo"],
     },
-    "It was Him!": {
+    "It was Them!": {
       ID: "Mafia19",
       internal: ["LawyerFrame"],
       description:
-        "As Lawyer, make a player shows as Mafia to a Cop or Detective report.",
+        "As Lawyer, make a player shows as guilty on a Cop/Detective report.",
       reward: 20,
       roles: ["Lawyer"],
     },
     "Elementary, Watson": {
       ID: "Mafia20",
       internal: ["DetectiveCheck2"],
-      description: "As Detective, find 2 Evil players and Survive.",
+      description: "As Detective, find 2 evil players and survive until the end of the game.",
       reward: 30,
       roles: ["Detective"],
     },
@@ -159,14 +159,14 @@ const AchievementData = {
       ID: "Mafia22",
       internal: ["DoctorSave"],
       description:
-        "As Doctor, correctly save Village Aligned player from being killed.",
+        "As Doctor, save a Village-aligned player from being killed.",
       reward: 10,
       roles: ["Doctor"],
     },
     "I am the Night": {
       ID: "Mafia23",
       internal: ["VigilanteKill"],
-      description: "As Vigilante, Kill 2 Evil Players.",
+      description: "As Vigilante, kill 2 evil players.",
       reward: 20,
       roles: ["Vigilante"],
     },
@@ -182,43 +182,43 @@ const AchievementData = {
       ID: "Mafia25",
       internal: ["SniperShootGunnedPR"],
       description:
-        "As Sniper, shoot and kill a Village Power role who is carrying a Gun or Rifle.",
+        "As Sniper, shoot and kill a Village power role who is carrying a gun/rifle.",
       reward: 30,
       roles: ["Sniper"],
     },
-    Rigged: {
+    "Rigged from the Start": {
       ID: "Mafia26",
       internal: ["SaboteurKill"],
       description:
-        "As Saboteur, Have a player you sabotaged die to a sabotaged gun.",
+        "As Saboteur, have a player you sabotaged die to a sabotaged gun.",
       reward: 15,
       roles: ["Saboteur"],
     },
-    "Bad Juju": {
+    "Magic Words": {
       ID: "Mafia27",
       internal: ["JinxKill"],
-      description: "As Jinx, Get 2 kills with your ability.",
+      description: "As Jinx, get 2 kills with your ability.",
       reward: 20,
       roles: ["Jinx"],
     },
     Untouchable: {
       ID: "Mafia28",
       internal: ["MastermindPerfect"],
-      description: "As Mastermind, Win without any Mafia or Cult dying.",
+      description: "As Mastermind, win without any Mafia or Cult dying.",
       reward: 30,
       roles: ["Mastermind"],
     },
     "Balanced Breakfast": {
       ID: "Mafia29",
       internal: ["HellhoundEat"],
-      description: "As Hellhound, Eat 2 Diffrent Alignments and Win.",
+      description: "As Hellhound, Eat 2 players from different alignments and win.",
       reward: 30,
       roles: ["Hellhound"],
     },
     "Delirious Desires": {
       ID: "Mafia30",
       internal: ["SuccubusFalse"],
-      description: "As Succubus, Make Information false 3 times in a game.",
+      description: "As Succubus, make a player's system messages return false 3 times in a game.",
       reward: 20,
       roles: ["Succubus"],
     },
