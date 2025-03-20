@@ -2171,6 +2171,9 @@
 .role-icon-scheme-vivid .role-Ghost-Ghost {
   background-image: url("/images/roles/ghost-vivid.png");
 }
+.role-icon-scheme-vivid .role-Ghost-Vengeful-Spirit {
+  background-image: url("/images/roles/vengeful-spirit-vivid.png");
+}
 
 /*
 * Host
