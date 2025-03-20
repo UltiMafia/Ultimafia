@@ -7,7 +7,7 @@ const {
 module.exports = class SuccubusFalse extends Achievements {
   constructor(name, player) {
     super(name, player);
-  this.FalseInfo = 0;
+    this.FalseInfo = 0;
     this.listeners = {
       state: function (stateInfo) {
         if (stateInfo.name.match(/Day/)) {
@@ -48,13 +48,13 @@ module.exports = class SuccubusFalse extends Achievements {
         }
       },
       Information: function (info) {
-        if (this.DeliriousPlayer == null || this.player.role.name != "Succubus") {
+        if (
+          this.DeliriousPlayer == null ||
+          this.player.role.name != "Succubus"
+        ) {
           return;
         }
-        if (
-          info.creator &&
-          info.creator == this.DeliriousPlayer
-        ) {
+        if (info.creator && info.creator == this.DeliriousPlayer) {
           if (info.isFalse()) {
             this.FalseInfo += 1;
           }
