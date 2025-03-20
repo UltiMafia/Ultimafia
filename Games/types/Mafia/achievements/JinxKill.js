@@ -12,9 +12,8 @@ module.exports = class JinxKill extends Achievements {
           killer == this.player &&
           deathType == "curse" &&
           this.player.role.name == "Jinx"
-        ){
-  
-            this.KillCount++;
+        ) {
+          this.KillCount++;
         }
       },
       aboutToFinish: function () {

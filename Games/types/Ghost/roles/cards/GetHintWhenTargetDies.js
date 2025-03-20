@@ -21,10 +21,7 @@ module.exports = class GetHintWhenTargetDies extends Card {
         );
       },
       death: function (player) {
-        if (
-          player === this.target &&
-          this.player.alive
-        ) {
+        if (player === this.target && this.player.alive) {
           var action = new Action({
             actor: this.player,
             target: this.target,
@@ -32,20 +29,15 @@ module.exports = class GetHintWhenTargetDies extends Card {
             labels: ["hidden"],
             run: function () {
               this.actor.queueAlert(
-                `You learn that the Word contains the letter ${
-                  this.game.townWord.charAt(
-                    Math.floor(Math.random() * this.game.townWord.length)
-                  )
-                }.`
+                `You learn that the Word contains the letter ${this.game.townWord.charAt(
+                  Math.floor(Math.random() * this.game.townWord.length)
+                )}.`
               );
-              
             },
           });
           action.do();
-          
         }
       },
     };
-
   }
 };

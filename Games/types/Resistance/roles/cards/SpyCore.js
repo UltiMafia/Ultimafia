@@ -5,7 +5,7 @@ module.exports = class SpyCore extends Card {
     super(role);
 
     this.appearance.merlin = "Spy";
-    if(role.name == "Mordred"){
+    if (role.name == "Mordred") {
       this.appearance.merlin = null;
     }
 
