@@ -217,7 +217,7 @@ const AchievementData = {
     },
     "Delirious Desires": {
       ID: "Mafia30",
-      internal: ["Succubus"],
+      internal: ["SuccubusFalse"],
       description: "As Succubus, Make Information false 3 times in a game.",
       reward: 20,
       roles: ["Succubus"],
