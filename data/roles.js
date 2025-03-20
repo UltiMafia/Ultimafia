@@ -3918,6 +3918,14 @@ const roleData = {
         "Must blend in and guess the hidden word.",
       ],
     },
+    "Vengeful Spirit": {
+      alignment: "Ghost",
+      tags: ["Hint"],
+      description: [
+        "Is Assigned a Town Player as a Target.",
+        "Learns a letter in the Town word if the Target is killed",
+      ],
+    },
     Host: {
       alignment: "Host",
       tags: ["None"],
