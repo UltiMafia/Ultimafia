@@ -33,10 +33,21 @@ module.exports = class GuessWordOnCondemn extends Card {
             this.game.recordGuess(this.actor, word);
 
             this.actor.role.guessedWord = word;
+            if(this.actor.role.alignment == "Ghost"){
             if (word !== this.game.townWord) {
               this.actor.kill();
             }
-
+          }
+          else{
+          if (word !== this.game.foolWord) {
+              this.actor.kill();
+            for(let player of this.game.players){
+              if(player.role.alignment == "Town"){
+                player.kill();
+              }
+            }
+            }
+          }
             this.actor.role.guessOnNext = false;
           },
         },
