@@ -23,7 +23,7 @@ export default function Leaderboard() {
 
   useEffect(() => {
     axios
-      .get(`/user/leaderboard`)
+      .get(`/fame/leaderboard`)
       .then((res) => {
         const formattedUsers = res.data.slice(0, 20).map((user) => ({
           id: user.id,
