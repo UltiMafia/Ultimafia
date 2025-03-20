@@ -38,8 +38,8 @@ module.exports = class GuessWordOnCondemn extends Card {
                 this.actor.kill();
               }
             } else {
+              this.actor.kill();
               if (word !== this.game.foolWord) {
-                this.actor.kill();
                 for (let player of this.game.players) {
                   if (player.role.alignment == "Town") {
                     player.kill();
