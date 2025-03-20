@@ -21,18 +21,18 @@ const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 
 router.get("/leaderboard", async function (req, res) {
-    res.setHeader("Content-Type", "application/json");
-    try {
-      let users = await models.User.find({ deleted: false })
-        .select("id name avatar kudos karma achievements -_id")
-        .sort({ kudos: -1, karma: -1, achievements: -1 })
-        .limit(20);
-  
-      res.send(users);
-    } catch (e) {
-      logger.error(e);
-      res.status(500).send([]);
-    }
-  });
+  res.setHeader("Content-Type", "application/json");
+  try {
+    let users = await models.User.find({ deleted: false })
+      .select("id name avatar kudos karma achievements -_id")
+      .sort({ kudos: -1, karma: -1, achievements: -1 })
+      .limit(20);
+
+    res.send(users);
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send([]);
+  }
+});
 
 module.exports = router;
