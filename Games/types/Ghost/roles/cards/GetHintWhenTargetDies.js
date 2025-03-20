@@ -12,10 +12,7 @@ module.exports = class GetHintWhenTargetDies extends Card {
           return;
         }
         const nonGhost = this.game.players.filter(
-          (p) =>
-            (p.role.alignment === "Town") &&
-            p.alive &&
-            p !== this.player
+          (p) => p.role.alignment === "Town" && p.alive && p !== this.player
         );
         this.target = Random.randArrayVal(nonGhost);
         this.player.queueAlert(
@@ -28,7 +25,13 @@ module.exports = class GetHintWhenTargetDies extends Card {
           deathType === "condemn" &&
           this.player.alive
         ) {
-          this.player.queueAlert(`You learn that the Word contains the letter ${this.game.townWord[Math.floor(Math.random() * this.game.townWord.length)]}.`);
+          this.player.queueAlert(
+            `You learn that the Word contains the letter ${
+              this.game.townWord[
+                Math.floor(Math.random() * this.game.townWord.length)
+              ]
+            }.`
+          );
         }
       },
     };
