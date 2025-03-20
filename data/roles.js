@@ -3915,7 +3915,7 @@ const roleData = {
       description: [
         "Does not learn any words",
         "If voted out, must guess the Fool Word or Town loses",
-        ],
+      ],
     },
     Ghost: {
       alignment: "Ghost",
