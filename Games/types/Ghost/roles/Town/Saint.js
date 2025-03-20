@@ -6,6 +6,5 @@ module.exports = class Saint extends Role {
 
     this.alignment = "Town";
     this.cards = ["TownCore", "WinWithTown", "GuessWordOnCondemn"];
-    
   }
 };
