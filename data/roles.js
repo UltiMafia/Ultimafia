@@ -3906,8 +3906,16 @@ const roleData = {
       tags: ["None"],
       description: [
         "Knows the decoy word, which has the same number of letters as the hidden word.",
-        "Appears to self as Town, and does not know that their word is the decoy word.",
+        "Appears to self as Villager, and does not know that their word is the decoy word.",
       ],
+    },
+    Saint: {
+      alignment: "Town",
+      tags: ["None"],
+      description: [
+        "Does not learn any words",
+        "If voted out, must guess the Fool Word or Town loses",
+        ],
     },
     Ghost: {
       alignment: "Ghost",
