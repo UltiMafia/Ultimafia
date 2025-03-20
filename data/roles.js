@@ -3894,6 +3894,11 @@ const roleData = {
       tags: ["None"],
       description: ["Appears as Merlin to Percival."],
     },
+    Mordred: {
+      alignment: "Spies",
+      tags: ["None"],
+      description: ["Cannot be seen by Merlin."],
+    },
   },
   Ghost: {
     Villager: {
@@ -3906,7 +3911,15 @@ const roleData = {
       tags: ["None"],
       description: [
         "Knows the decoy word, which has the same number of letters as the hidden word.",
-        "Appears to self as Town, and does not know that their word is the decoy word.",
+        "Appears to self as Villager, and does not know that their word is the decoy word.",
+      ],
+    },
+    Saint: {
+      alignment: "Town",
+      tags: ["None"],
+      description: [
+        "Does not learn any words",
+        "If voted out, must guess the Fool Word or Town loses",
       ],
     },
     Ghost: {
@@ -3916,6 +3929,14 @@ const roleData = {
         "Knows other Ghosts.",
         "Only knows the number of letters in the hidden word.",
         "Must blend in and guess the hidden word.",
+      ],
+    },
+    "Vengeful Spirit": {
+      alignment: "Ghost",
+      tags: ["Hint"],
+      description: [
+        "Is Assigned a Town Player as a Target.",
+        "Learns a letter in the Town word if the Target is killed",
       ],
     },
     Host: {

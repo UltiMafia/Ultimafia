@@ -18,7 +18,7 @@ module.exports = class OverturnVote extends Card {
             for (let action of this.game.actions[0]) {
               if (
                 action.hasLabel("condemn") &&
-                action.target.alignment == "Mafia"
+                action.target.role.alignment == "Mafia"
               ) {
                 return false;
               }

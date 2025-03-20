@@ -28,7 +28,7 @@ module.exports = class Meteor extends Effect {
         }
         this.game.MeteorLanded = true;
       },
-      handleWinBlockers: function () {
+      handleWinBlockers: function (winners) {
         let AllPlayers = this.game.players.filter((p) => p);
         for (let y = 0; y < AllPlayers.length; y++) {
           if (
