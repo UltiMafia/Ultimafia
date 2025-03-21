@@ -62,11 +62,19 @@ module.exports = class Blade extends Item {
       let deathSent = false;
 
       let customMessage = "";
-      if (this.actor.data.blood <= 50 && this.actor.data.blood >= 30 && !wellDoneSent) {
+      if (
+        this.actor.data.blood <= 50 &&
+        this.actor.data.blood >= 30 &&
+        !wellDoneSent
+      ) {
         customMessage = `You have done well so far... But that was just practice!`;
         this.game.queueAlert(customMessage);
         wellDoneSent = true;
-      } else if (this.actor.data.blood <= 30 && this.actor.data.blood >= 20 && !criticalSent) {
+      } else if (
+        this.actor.data.blood <= 30 &&
+        this.actor.data.blood >= 20 &&
+        !criticalSent
+      ) {
         customMessage = "No more games, to the death!";
         this.game.queueAlert(customMessage);
         criticalSent = true;
@@ -102,7 +110,8 @@ module.exports = class Blade extends Item {
       turn++;
     }
     // If the actor or target died, set the winner
-    this.actor.winner = actor.data.blood > 0 ? this.actor.name : this.target.name;
+    this.actor.winner =
+      actor.data.blood > 0 ? this.actor.name : this.target.name;
     this.game.queueAlert(`${this.actor.winner} has won the duel!`);
 
     // Remove items (if necessary)

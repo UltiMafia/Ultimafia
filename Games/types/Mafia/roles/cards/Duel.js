@@ -3,7 +3,7 @@ const Card = require("../../Card");
 module.exports = class Duel extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     const { actor, target } = this;
 
     actor.winner = "";
