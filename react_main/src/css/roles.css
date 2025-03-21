@@ -1525,6 +1525,10 @@
   background-image: url("/images/roles/anarchist-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Dragoon {
+  background-image: url("/images/roles/dragoon-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Communist {
   background-image: url("/images/roles/communist-vivid.png");
 }

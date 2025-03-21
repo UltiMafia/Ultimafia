@@ -3633,9 +3633,9 @@ const roleData = {
       ],
       description: [
         "Gives out a revolver each night.",
-        "6 chambers in the barrel, one of them has a bullet",
-        "During the day a player can either choose to shoot or spin the barrel ",
-        "If the chamber is empty they pass the to player below them.",
+        "6 chambers in the barrel, one of them has a bullet.",
+        "During the day a player can either choose to pull the trigger or spin the barrel.",
+        "If the chamber is empty, they pass the revolver to player below them. If the chamber is full, the shooter is hit.",
         "Wins if 3 players are killed by the revolver, or if the Dragoon is among the last two alive.",
         "Revolver reveals Dragoon when shooting on themself.",
       ],
