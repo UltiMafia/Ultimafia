@@ -48,10 +48,10 @@ module.exports = class Revolver extends Item {
                 this.actor.role.revealToAll();
               } else {
                 if (this.dominates()) {
-                  if(this.item.Dragoon){
+                  if (this.item.Dragoon) {
                     this.item.Dragoon.role.timebombKills++;
                   }
-                   
+
                   this.actor.kill("gun", this.actor, true);
                 }
               }
@@ -62,7 +62,7 @@ module.exports = class Revolver extends Item {
               );
             }
             this.item.Chamber++;
-            if(this.item.Chamber > 6){
+            if (this.item.Chamber > 6) {
               this.item.Chamber = 1;
             }
             let players = this.game

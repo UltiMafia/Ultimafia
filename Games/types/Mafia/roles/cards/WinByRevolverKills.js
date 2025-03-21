@@ -19,6 +19,5 @@ module.exports = class WinByRevolverKills extends Card {
         }
       },
     };
-
   }
 };
