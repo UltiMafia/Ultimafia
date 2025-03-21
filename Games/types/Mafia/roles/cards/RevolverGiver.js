@@ -15,7 +15,7 @@ module.exports = class RevolverGiver extends Card {
           run: function () {
             var itemType = this.actor.role.data.LoadedChamber;
 
-            this.target.holdItem("Revolver", null, this.actor, );
+            this.target.holdItem("Revolver", null, this.actor);
             this.target.queueGetItemAlert(itemType);
             delete this.actor.role.data.LoadedChamber;
           },
@@ -25,14 +25,7 @@ module.exports = class RevolverGiver extends Card {
         states: ["Night"],
         flags: ["voting"],
         inputType: "custom",
-        targets: [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-        ],
+        targets: ["1", "2", "3", "4", "5", "6"],
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 2,
           run: function () {
