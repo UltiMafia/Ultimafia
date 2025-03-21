@@ -15,8 +15,8 @@ module.exports = class RevolverGiver extends Card {
           run: function () {
             var itemType = this.actor.role.data.LoadedChamber;
 
-            this.target.holdItem("Revolver", null, this.actor);
-            this.target.queueGetItemAlert(itemType);
+            this.target.holdItem("Revolver", null, this.actor, itemType);
+            this.target.queueGetItemAlert("Revolver");
             delete this.actor.role.data.LoadedChamber;
           },
         },

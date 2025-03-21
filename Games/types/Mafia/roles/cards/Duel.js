@@ -3,7 +3,7 @@ const Card = require("../../Card");
 module.exports = class Duel extends Card {
   constructor(role) {
     super(role);
-
+/*
     const { actor, target } = this;
 
     actor.winner = "";
@@ -22,7 +22,7 @@ module.exports = class Duel extends Card {
     // Setting crit
     actor.crit = 1.0;
     target.crit = 1.0;
-
+*/
     this.listeners = {
       state: function (stateInfo) {
         if (!this.player.alive) {
@@ -46,6 +46,12 @@ module.exports = class Duel extends Card {
         action: {
           labels: ["duel"],
           run: function () {
+            this.actor.def = 10;
+            this.actor.atk = 15;
+            this.actor.crit = 1.0;
+            this.target.def = 10;
+            this.target.atk = 15;
+            this.target.crit = 1.0;
             this.target.holdItem("Blade");
             this.actor.holdItem("Blade");
           },

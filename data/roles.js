@@ -3685,6 +3685,7 @@ const roleData = {
         "Hostile",
         "Exposed",
       ],
+      disabled: true,
       description: [
         "Picks a player at night to enage in a turn based duel during the day once per game.",
         "Both the samurai and the target has the option to use the following moves: attack, defend, parry and charge.",

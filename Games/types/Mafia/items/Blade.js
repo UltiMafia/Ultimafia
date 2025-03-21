@@ -1,7 +1,7 @@
 const Item = require("../Item");
 
 module.exports = class Blade extends Item {
-  constructor(meetingName) {
+  constructor(meetingName, target) {
     super("Blade");
     this.reveal = true;
     this.meetingName = meetingName;
@@ -23,9 +23,6 @@ module.exports = class Blade extends Item {
         ],
         inputType: "custom",
         targets: ["Attack", "Defend", "Charge"],
-        shouldMeet: function () {
-          return this.actor.hp == 150 && this.target.hp == 150;
-        },
         performAction: this.performAction.bind(this),
         run: this.run.bind(this),
       },
@@ -38,12 +35,12 @@ module.exports = class Blade extends Item {
     let turn = 1;
 
     // While the actor or target is alive
-    while (this.actor.hp > 0 && this.target.hp > 0) {
+    while (this.actor.data.blood > 0 && this.target.data.blood > 0) {
       this.game.queueAlert(`Turn ${turn}`);
       // Shows HP of Actor
-      this.game.queueAlert(`${this.actor.name} HP: ${this.actor.hp}`);
+      this.game.queueAlert(`${this.actor.name} HP: ${this.actor.data.blood}`);
       // Shows HP of Target
-      this.game.queueAlert(`${this.target.name} HP: ${this.target.hp}`);
+      this.game.queueAlert(`${this.target.name} HP: ${this.target.data.blood}`);
 
       // Stores their move selection
       let userVote = this.meeting.votes[actor.id];
@@ -56,8 +53,8 @@ module.exports = class Blade extends Item {
 
       // Custom messages for the battle
       if (turn == 1) {
-        this.game.queueAlert(`${this.actor} unsheathes katana!`);
-        this.game.queueAlert(`${this.target} eyes glow red.`);
+        this.game.queueAlert(`${this.actor.name} unsheathes katana!`);
+        this.game.queueAlert(`${this.target.name} eyes glow red.`);
       }
 
       let wellDoneSent = false;
@@ -65,15 +62,15 @@ module.exports = class Blade extends Item {
       let deathSent = false;
 
       let customMessage = "";
-      if (this.actor.hp <= 50 && this.actor.hp >= 30 && !wellDoneSent) {
+      if (this.actor.data.blood <= 50 && this.actor.data.blood >= 30 && !wellDoneSent) {
         customMessage = `You have done well so far... But that was just practice!`;
         this.game.queueAlert(customMessage);
         wellDoneSent = true;
-      } else if (this.actor.hp <= 30 && this.actor.hp >= 20 && !criticalSent) {
+      } else if (this.actor.data.blood <= 30 && this.actor.data.blood >= 20 && !criticalSent) {
         customMessage = "No more games, to the death!";
         this.game.queueAlert(customMessage);
         criticalSent = true;
-      } else if (this.actor.hp <= 0 && !deathSent) {
+      } else if (this.actor.data.blood <= 0 && !deathSent) {
         customMessage = "I can't fall into the hands of an enemy... So I...";
         this.game.queueAlert(customMessage);
         customMessage = "Fulfill a samurai's final duty...";
@@ -105,7 +102,7 @@ module.exports = class Blade extends Item {
       turn++;
     }
     // If the actor or target died, set the winner
-    this.actor.winner = actor.hp > 0 ? this.actor.name : this.target.name;
+    this.actor.winner = actor.data.blood > 0 ? this.actor.name : this.target.name;
     this.game.queueAlert(`${this.actor.winner} has won the duel!`);
 
     // Remove items (if necessary)
@@ -144,11 +141,14 @@ let moves = [
         labels: ["attack"],
         run: function () {
           let damage = Math.floor(Math.random() * 4) + 10;
-          this.target.hp -= damage;
+          this.target.data.blood -= damage;
           msg = `${this.actor.name} uses slash. ${this.target.name} loses ${
             damage * (1 + this.actor.crit) * (1 - this.target.def / 100) +
             this.actor.atk
           } HP!`;
+          if (this.target.data.blood <= 0) {
+            this.target.kill("blood", this.actor);
+          }
         },
       },
     },

@@ -32,7 +32,7 @@ module.exports = class Revolver extends Item {
             if (this.item.Chamber == this.item.LoadedChamber) {
               this.game.broadcast("gunshot");
               var magicBullet = this.item.magicCult;
-              this.game.queueAlert(`:gun: ${this.actor} fires the Revolver!`);
+              this.game.queueAlert(`:gun: ${this.actor.name} fires the Revolver!`);
               if (magicBullet && this.actor.role.alignment !== "Cult") {
                 let action = new Action({
                   actor: this.actor,
@@ -47,18 +47,17 @@ module.exports = class Revolver extends Item {
               } else if (this.actor == this.item.Dragoon) {
                 this.actor.role.revealToAll();
               } else {
-                if (this.dominates()) {
+                if (this.dominates(this.actor)) {
                   if (this.item.Dragoon) {
                     this.item.Dragoon.role.timebombKills++;
                   }
-
                   this.actor.kill("gun", this.actor, true);
                 }
               }
               return;
             } else {
               this.game.queueAlert(
-                `:gun: ${this.actor} fires the Revolver and the chamber was empty!`
+                `:gun: ${this.actor.name} fires the Revolver and the chamber was empty!`
               );
             }
             this.item.Chamber++;
