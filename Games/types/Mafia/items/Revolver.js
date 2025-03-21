@@ -26,52 +26,42 @@ module.exports = class Revolver extends Item {
           item: this,
           run: function () {
             this.item.drop();
-            if (this.target == "Spin and Shoot"){
+            if (this.target == "Spin and Shoot") {
               this.item.Chamber = Random.randInt(1, 6);
             }
-            if(this.item.Chamber == this.item.LoadedChamber){
+            if (this.item.Chamber == this.item.LoadedChamber) {
               this.game.broadcast("gunshot");
               var magicBullet = this.item.magicCult;
-                  this.game.queueAlert(
-                `:gun: ${this.actor} fires the Revolver!`
-              );
-            if (magicBullet && this.actor.role.alignment !== "Cult") {
-              let action = new Action({
-                actor: this.actor,
-                target: this.actor,
-                game: this.game,
-                labels: ["convert", "hidden"],
-                run: function () {
-                  if (this.dominates()) this.target.setRole("Cultist");
-                },
-              });
-              action.do();
-            }
-            else if(this.actor == this.item.Dragoon){
-              this.actor.role.revealToAll();
-              
-            }
-            else{
-            if (this.dominates()) {
-              this.actor.kill("gun", this.actor, true);
-            }
-            }
-            return;
-            }
-            else{
-                this.game.queueAlert(
+              this.game.queueAlert(`:gun: ${this.actor} fires the Revolver!`);
+              if (magicBullet && this.actor.role.alignment !== "Cult") {
+                let action = new Action({
+                  actor: this.actor,
+                  target: this.actor,
+                  game: this.game,
+                  labels: ["convert", "hidden"],
+                  run: function () {
+                    if (this.dominates()) this.target.setRole("Cultist");
+                  },
+                });
+                action.do();
+              } else if (this.actor == this.item.Dragoon) {
+                this.actor.role.revealToAll();
+              } else {
+                if (this.dominates()) {
+                  this.actor.kill("gun", this.actor, true);
+                }
+              }
+              return;
+            } else {
+              this.game.queueAlert(
                 `:gun: ${this.actor} fires the Revolver and the chamber was empty!`
               );
             }
 
-          
-
-
-
-
-            
-            let players = this.game.alivePlayers().filter((p) => p.role.name != "Host");
-            if(this.actor.role.name == "Host"){
+            let players = this.game
+              .alivePlayers()
+              .filter((p) => p.role.name != "Host");
+            if (this.actor.role.name == "Host") {
               players = this.game.alivePlayers();
             }
             let index = players.indexOf(this.actor);
@@ -83,7 +73,6 @@ module.exports = class Revolver extends Item {
             );
             this.item.incrementMeetingName();
             this.game.instantMeeting(this.item.meetings, [players[rightIdx]]);
-
           },
         },
       },
