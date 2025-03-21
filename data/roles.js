@@ -3620,6 +3620,26 @@ const roleData = {
       ],
       RolesMadeBy: ["Villager", "Mafioso", "Cultist"],
     },
+    Dragoon: {
+      alignment: "Independent",
+      tags: [
+        "Items",
+        "Killing",
+        "Revealing",
+        "Last Two",
+        "Mini-Game",
+        "Visiting",
+        "Hostile",
+      ],
+      description: [
+        "Gives out a revolver each night.",
+        "6 chambers in the barrel, one of them has a bullet",
+        "During the day a player can either choose to shoot or spin the barrel ",
+        "If the chamber is empty they pass the to player below them.",
+        "Wins if 3 players are killed by the revolver, or if the Dragoon is among the last two alive.",
+        "Revolver reveals Dragoon when shooting on themself.",
+      ],
+    },
     Gambler: {
       alignment: "Independent",
       tags: ["Killing", "Last Two", "Mini-Game", "Visiting", "Hostile"],
