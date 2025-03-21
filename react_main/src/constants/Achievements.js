@@ -142,7 +142,8 @@ export const AchievementData = {
     "Elementary, Watson": {
       ID: "Mafia20",
       internal: ["DetectiveCheck2"],
-      description: "As Detective, find 2 evil players and survive until the end of the game.",
+      description:
+        "As Detective, find 2 evil players and survive until the end of the game.",
       reward: 30,
       roles: ["Detective"],
     },
@@ -209,14 +210,16 @@ export const AchievementData = {
     "Balanced Breakfast": {
       ID: "Mafia29",
       internal: ["HellhoundEat"],
-      description: "As Hellhound, Eat 2 players from different alignments and win.",
+      description:
+        "As Hellhound, Eat 2 players from different alignments and win.",
       reward: 30,
       roles: ["Hellhound"],
     },
     "Delirious Desires": {
       ID: "Mafia30",
       internal: ["SuccubusFalse"],
-      description: "As Succubus, make a player's system messages return false 3 times in a game.",
+      description:
+        "As Succubus, make a player's system messages return false 3 times in a game.",
       reward: 20,
       roles: ["Succubus"],
     },
