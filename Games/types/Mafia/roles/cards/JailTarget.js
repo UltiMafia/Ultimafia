@@ -29,6 +29,17 @@ module.exports = class JailTarget extends Card {
           return;
         }
       },
+      meetingsMade: function () {
+        if (this.game.getStateName() == "Night") {
+          this.player.role.data.jailSuccess = false;
+          let jailMeeting = this.game.getMeetingByName(
+            this.player.role.data.meetingName
+          );
+          if (jailMeeting.hasJoined(this.player.role.data.prisoner)) {
+            this.player.role.data.jailSuccess = true;
+          }
+        }
+      },
     };
 
     this.stateMods = {
@@ -129,10 +140,9 @@ module.exports = class JailTarget extends Card {
 
             if (!prisoner) return;
 
-            let jailMeeting = this.game.getMeetingByName(
-              this.actor.role.data.meetingName
-            );
-            if (!jailMeeting.hasJoined(prisoner)) return;
+            //let jailMeeting = this.actor.role.data.jailMeeting;
+            //if (!jailMeeting.hasJoined(prisoner)) return;
+            if (this.actor.role.data.jailSuccess == false) return;
 
             if (this.target === "Yes" && this.dominates(prisoner)) {
               prisoner.kill("basic", this.actor);

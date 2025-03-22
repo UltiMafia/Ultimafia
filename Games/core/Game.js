@@ -554,8 +554,8 @@ module.exports = class Game {
   }
 
   async vegPlayer(player) {
+    if (player.hasEffect("Unveggable")) return;
     if (player.left) return;
-
     this.makeUnranked();
     this.makeUncompetitive();
 

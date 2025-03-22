@@ -34,7 +34,7 @@ const AchievementData = {
       ID: "Mafia5",
       internal: ["Scumhunter"],
       description: "As Villager, correctly vote on evil players for 3 days.",
-      reward: 15,
+      reward: 20,
       roles: ["Villager"],
     },
     "Nothing to see here": {
@@ -57,7 +57,7 @@ const AchievementData = {
       ID: "Mafia8",
       internal: ["FoolWinDayOne"],
       description: "As Fool, win on Day 1.",
-      reward: 15,
+      reward: 20,
       roles: ["Fool"],
     },
     "New Sheriff in Town": {
@@ -79,7 +79,7 @@ const AchievementData = {
       internal: ["DeputyShootGunnedEvil"],
       description:
         "As Deputy, shoot and kill an Evil Player who is carrying a Gun or Rifle.",
-      reward: 20,
+      reward: 30,
       roles: ["Deputy"],
     },
     "Super Sleuth!": {
@@ -94,7 +94,7 @@ const AchievementData = {
       internal: ["Fiddle2PRRoles"],
       description:
         "As Fiddler, Fiddle 2 diffrent village power roles during a game.",
-      reward: 20,
+      reward: 15,
       roles: ["Fiddler"],
     },
     "Clean it Up, Janny": {
@@ -116,7 +116,7 @@ const AchievementData = {
       internal: ["ChangelingWin"],
       description:
         "As Changeling, win by using the Changeling's alternate win condition.",
-      reward: 15,
+      reward: 20,
       roles: ["Changeling"],
     },
     "Early Execution": {
@@ -130,23 +130,100 @@ const AchievementData = {
       ID: "Mafia18",
       internal: ["DodoWinDay1"],
       description: "As Dodo, win on Day 1.",
-      reward: 15,
+      reward: 20,
       roles: ["Dodo"],
     },
-    "It was Him!": {
+    "It was Them!": {
       ID: "Mafia19",
       internal: ["LawyerFrame"],
       description:
-        "As Lawyer, make a player shows as Mafia to a Cop or Detective report.",
+        "As Lawyer, make a player shows as guilty on a Cop/Detective report.",
       reward: 20,
       roles: ["Lawyer"],
     },
     "Elementary, Watson": {
       ID: "Mafia20",
       internal: ["DetectiveCheck2"],
-      description: "As Detective, find 2 Evil players and Survive.",
+      description:
+        "As Detective, find 2 evil players and survive until the end of the game.",
       reward: 30,
       roles: ["Detective"],
+    },
+    "Not On My Watch!": {
+      ID: "Mafia21",
+      internal: ["BodyguardKill"],
+      description: "As Bodyguard, kill an evil player with your ability.",
+      reward: 10,
+      roles: ["Bodyguard"],
+    },
+    "Do No Harm": {
+      ID: "Mafia22",
+      internal: ["DoctorSave"],
+      description:
+        "As Doctor, save a Village-aligned player from being killed.",
+      reward: 10,
+      roles: ["Doctor"],
+    },
+    "I am the Night": {
+      ID: "Mafia23",
+      internal: ["VigilanteKill"],
+      description: "As Vigilante, kill 2 evil players.",
+      reward: 20,
+      roles: ["Vigilante"],
+    },
+    "They are the Night": {
+      ID: "Mafia24",
+      internal: ["GunsmithGun"],
+      description:
+        "As Gunsmith, Give a gun to a player who shoots an Evil Player.",
+      reward: 15,
+      roles: ["Gunsmith"],
+    },
+    Quickscope: {
+      ID: "Mafia25",
+      internal: ["SniperShootGunnedPR"],
+      description:
+        "As Sniper, shoot and kill a Village power role who is carrying a gun/rifle.",
+      reward: 30,
+      roles: ["Sniper"],
+    },
+    "Rigged from the Start": {
+      ID: "Mafia26",
+      internal: ["SaboteurKill"],
+      description:
+        "As Saboteur, have a player you sabotaged die to a sabotaged gun.",
+      reward: 15,
+      roles: ["Saboteur"],
+    },
+    "Magic Words": {
+      ID: "Mafia27",
+      internal: ["JinxKill"],
+      description: "As Jinx, get 2 kills with your ability.",
+      reward: 20,
+      roles: ["Jinx"],
+    },
+    Untouchable: {
+      ID: "Mafia28",
+      internal: ["MastermindPerfect"],
+      description: "As Mastermind, win without any Mafia or Cult dying.",
+      reward: 30,
+      roles: ["Mastermind"],
+    },
+    "Balanced Breakfast": {
+      ID: "Mafia29",
+      internal: ["HellhoundEat"],
+      description:
+        "As Hellhound, Eat 2 players from different alignments and win.",
+      reward: 30,
+      roles: ["Hellhound"],
+    },
+    "Delirious Desires": {
+      ID: "Mafia30",
+      internal: ["SuccubusFalse"],
+      description:
+        "As Succubus, make a player's system messages return false 3 times in a game.",
+      reward: 20,
+      roles: ["Succubus"],
     },
   },
   Resistance: {},

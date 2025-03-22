@@ -1525,6 +1525,10 @@
   background-image: url("/images/roles/anarchist-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Dragoon {
+  background-image: url("/images/roles/dragoon-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Communist {
   background-image: url("/images/roles/communist-vivid.png");
 }
@@ -2137,6 +2141,10 @@
   background-image: url("/images/roles/actress-vivid.png");
 }
 
+.role-Resistance-Mordred {
+  background-image: url("/images/roles/godfather-vivid.png");
+}
+
 .role-Resistance-Oberon {
   background-image: url("/images/roles/druid-vivid.png");
 }
@@ -2163,6 +2171,9 @@
 .role-icon-scheme-vivid .role-Ghost-Fool {
   background-image: url("/images/roles/fool-vivid.png");
 }
+.role-icon-scheme-vivid .role-Ghost-Saint {
+  background-image: url("/images/roles/saint-vivid.png");
+}
 
 /*
 * Ghost
@@ -2170,6 +2181,9 @@
 
 .role-icon-scheme-vivid .role-Ghost-Ghost {
   background-image: url("/images/roles/ghost-vivid.png");
+}
+.role-icon-scheme-vivid .role-Ghost-Vengeful-Spirit {
+  background-image: url("/images/roles/vengeful-spirit-vivid.png");
 }
 
 /*

@@ -119,6 +119,12 @@ const modifierData = {
       description:
         "Players pass the timebomb around during the day. The timebomb will randomly explode between 10 and 30 seconds and kill the person holding the bomb.",
     },
+    Revolver: {
+      internal: ["Revolver"],
+      tags: ["Killing"],
+      description:
+        "One chamber of 6 chambers has a bullet. Players must shoot or spin and shoot the revolver. Spinning will randomize which chamber the gun is on. Shooting an empty chamber passes the Revolver to player below them on the list.",
+    },
     Sockpuppet: {
       internal: ["Sockpuppet"],
       tags: ["Message"],
