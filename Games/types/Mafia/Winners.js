@@ -73,7 +73,7 @@ module.exports = class MafiaWinners extends Winners {
         return "If this were target practice then that would have been a crack shot! Unfortunately, someone just killed the last living Dodo.";
       case "Dragoon":
         return ":shotgun: Did they fire six shots or only five? To tell the truth, in all the confusion, the Dragoon lost track themselves. The town felt lucky, and they were wrong.";
-        case "Emperor":
+      case "Emperor":
         return "By traditional duel, the Emperor selected the best warriors the town had to offer and took them back to the Empire to be trained. Years later, all resistance in the town was crushed and a fort was built upon its ruins.";
       case "Executioner":
         return "The Executioner finally got to pull the lever on their begrudged victim.";
