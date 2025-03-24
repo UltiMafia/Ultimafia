@@ -11,11 +11,11 @@ export default function Fame(props) {
   const theme = useTheme();
 
   const links = [
-    {
-      text: "Leaderboard",
-      path: "/fame/Leaderboard",
-      exact: true,
-    },
+    // {
+    //   text: "Leaderboard",
+    //   path: "/fame/Leaderboard",
+    //   exact: true,
+    // },
     {
       text: "Contributors",
       path: "/fame/contributors",
@@ -55,7 +55,7 @@ export default function Fame(props) {
             <Route exact path="/fame/leaderboard" component={Leaderboard} />
             <Route exact path="/fame/contributors" component={Contributors} />
             <Route exact path="/fame/donors" component={Donors} />
-            <Route render={() => <Redirect to="/fame/leaderboard" />} />
+            <Route render={() => <Redirect to="/fame/contributors" />} />
           </Switch>
         </Card>
       </Box>
