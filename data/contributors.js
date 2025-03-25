@@ -255,6 +255,8 @@ const artContributors = {
       "Auditor",
       "Philosopher",
       "Mediator",
+      "Drama Queen",
+      "Gatekeeper",
     ],
   },
   kirigiri: {
@@ -341,7 +343,7 @@ const artContributors = {
     Mafia: ["Groundskeeper"],
   },
   Jumpy: {
-    Mafia: ["Puppeteer", "Pyromaniac"],
+    Mafia: ["Puppeteer", "Pyromaniac", "Manhunter"],
   },
 };
 
