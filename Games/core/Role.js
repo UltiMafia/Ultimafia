@@ -257,7 +257,7 @@ module.exports = class Role {
     }
   }
 
-  getRevealText(roleName, modifiers) {
+  getRevealText(roleName, modifiers, rvealType) {
     if (modifiers == null || modifiers == "" || modifiers == undefined) {
       return `${roleName}`;
     }
@@ -297,7 +297,8 @@ module.exports = class Role {
       this.game.queueAlert(
         `${this.player.name}'s role is ${this.getRevealText(
           roleName,
-          modifiers
+          modifiers,
+          revealType
         )}.`
       );
   }
