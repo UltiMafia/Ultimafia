@@ -242,51 +242,56 @@ module.exports = class MafiaPlayer extends Player {
     }
   }
 
-  damage(amount, damageType, attacker, instant, reveal, canCrit){
-    if(amount <= 0){
+  damage(amount, damageType, attacker, instant, reveal, canCrit) {
+    if (amount <= 0) {
       return;
     }
-    if(damageType == null){
+    if (damageType == null) {
       damageType == "basic";
     }
-    if(this.data.Parry == true){
-        if(reveal == true){
+    if (this.data.Parry == true) {
+      if (reveal == true) {
         this.game.sendAlert(`${this.name} parries the attack!`);
-        }
-      attacker.damage(amount/2, damageType, attacker, instant, reveal, canCrit);
-      amount = amount/2;
+      }
+      attacker.damage(
+        amount / 2,
+        damageType,
+        attacker,
+        instant,
+        reveal,
+        canCrit
+      );
+      amount = amount / 2;
       this.data.Parry = false;
     }
-    if(this.data.Block >= amount){
-      this.data.Block = this.data.Block- amount;
+    if (this.data.Block >= amount) {
+      this.data.Block = this.data.Block - amount;
       amount = 0;
-    }
-    else if(this.data.Block > 0){
-    amount = amount-this.data.Block;
-    this.data.Block = 0;
-    this.queueAlert(`You now have ${this.data.Block} Block!`);
+    } else if (this.data.Block > 0) {
+      amount = amount - this.data.Block;
+      this.data.Block = 0;
+      this.queueAlert(`You now have ${this.data.Block} Block!`);
     }
 
-            if(amount > 0){
-            if(canCrit == true && Random.randInt(1,20) <= attacker.crit){
-              amount = amount*2;
-            }
-            this.data.blood -= amount;
-            if(reveal == true){
-            this.game.sendAlert(`${this.name} loses ${amount}% blood!`);
-            }
-            this.queueAlert(`You now have ${this.data.blood}% blood left!`);
-            if (this.data.blood <= 0) {
-            this.kill("blood", attacker, instant);
-          }
-          }
-          else{
-          if(reveal == true){
-          this.game.sendAlert(`${this.name} blocks the Attack!`);
-          }
-          this.queueAlert(`You block the Attack!`);
-          this.queueAlert(`You now have ${this.data.Block} Block!`);
-          }
+    if (amount > 0) {
+      if (canCrit == true && Random.randInt(1, 20) <= attacker.crit) {
+        amount = amount * 2;
+      }
+      this.data.blood -= amount;
+      if (reveal == true) {
+        this.game.sendAlert(`${this.name} loses ${amount}% blood!`);
+      }
+      this.queueAlert(`You now have ${this.data.blood}% blood left!`);
+      if (this.data.blood <= 0) {
+        this.kill("blood", attacker, instant);
+      }
+    } else {
+      if (reveal == true) {
+        this.game.sendAlert(`${this.name} blocks the Attack!`);
+      }
+      this.queueAlert(`You block the Attack!`);
+      this.queueAlert(`You now have ${this.data.Block} Block!`);
+    }
     return amount;
   }
 
