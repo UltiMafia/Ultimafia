@@ -20,23 +20,6 @@ module.exports = class ChoirOfRoles extends Card {
           run: function () {
             this.actor.role.data.prevTarget = this.target;
             if (this.target.hasEffect("ChoirSong")) {
-              /*
-              for (let action of this.game.actions[0]) {
-                if (
-                  action.hasLabel("condemn") &&
-                  !action.hasLabel("overthrow")
-                ) {
-                  // Only one village vote can be overthrown
-                  action.cancel(true);
-                  break;
-                }
-              }
-
-              if (this.dominates(this.target)) {
-                this.target.kill("condemn", this.actor);
-              }
-              */
-
               var action = new Action({
                 actor: this.actor,
                 target: this.target,
@@ -63,7 +46,7 @@ module.exports = class ChoirOfRoles extends Card {
               });
               this.game.queueAction(action);
               for (const player of this.game.players) {
-                player.giveEffect("Unveggable", -1);
+                player.giveEffect("Unveggable");
               }
               this.game.gotoNextState();
             } //End if

@@ -52,7 +52,7 @@ module.exports = class IfVotedForceCondemn extends Card {
           });
           this.game.queueAction(action);
           for (const player of this.game.players) {
-            player.giveEffect("Unveggable", -1);
+            player.giveEffect("Unveggable");
           }
           this.game.gotoNextState();
         }

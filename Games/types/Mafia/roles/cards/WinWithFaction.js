@@ -568,7 +568,14 @@ module.exports = class WinWithFaction extends Card {
 
         //Village Normal Win
         if (this.player.faction == "Village" && !ONE_NIGHT) {
-          let VillagePlayers = this.game.alivePlayers().filter((p) => p.faction == "Village" || (p.faction == "Independent" && !this.game.getRoleTags(p.role.name).includes("Hostile")));
+          let VillagePlayers = this.game
+            .alivePlayers()
+            .filter(
+              (p) =>
+                p.faction == "Village" ||
+                (p.faction == "Independent" &&
+                  !this.game.getRoleTags(p.role.name).includes("Hostile"))
+            );
           if (
             VillagePlayers.length == aliveCount &&
             aliveCount > 0 &&
