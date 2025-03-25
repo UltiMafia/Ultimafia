@@ -47,17 +47,13 @@ module.exports = class Duel extends Card {
           labels: ["duel"],
           run: function () {
             this.actor.def = 10;
-            this.actor.atk = 15;
-            this.actor.crit = 1.0;
+            this.actor.atk = 10;
+            this.actor.crit = 1;
             this.target.def = 10;
-            this.target.atk = 15;
-            this.target.crit = 1.0;
-            this.target.holdItem("Blade");
-            this.actor.holdItem("Blade");
-          },
-          shouldMeet: function () {
-            //If a battle happened, samurai can't pick again
-            return this.actor.hp == 150 && this.target.hp == 150;
+            this.target.atk = 10;
+            this.target.crit = 1;
+            this.target.holdItem("Blade", this.target, this.actor, 0, 0);
+            this.actor.holdItem("Blade", this.actor, this.target, 0, 0);
           },
         },
       },

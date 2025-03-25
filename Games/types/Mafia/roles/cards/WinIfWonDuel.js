@@ -8,9 +8,9 @@ module.exports = class WinIfWonDuel extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
-      check: function (winners) {
-        if (this.againOnFinished && this.player.name === this.player.winner) {
-          winners.addPlayer(this.player, this.player.role.name);
+      check: function (counts, winners) {
+        if (this.data.HasWonBladeDuel == true) {
+          winners.addPlayer(this.player, this.name);
         }
       },
     };
