@@ -793,7 +793,15 @@
 }
 
 .role-icon-scheme-vivid .role-Mafia-Tourist {
-  background-image: url("/images/roles/marathoner-vivid.png");
+  background-image: url("/images/roles/tourist-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Drama-Queen {
+  background-image: url("/images/roles/drama-queen-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Gatekeeper {
+  background-image: url("/images/roles/gatekeeper-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Groundskeeper {
