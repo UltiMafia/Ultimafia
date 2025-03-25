@@ -33,7 +33,7 @@ const roleData = {
       category: "Basic",
       tags: ["Role Blocker", "Basic", "Reflexive"],
       description: [
-        "Blocks all visitors during the night from performing any actions.",
+        "Blocks any player who visits them during the night from performing any actions.",
       ],
     },
     Slayer: {
@@ -3688,7 +3688,7 @@ const roleData = {
       description: [
         "Picks a player at night to enage in a turn based duel during the day once per game.",
         "Both the samurai and the target has the option to use the following moves: attack, defend, parry and charge.",
-        "Attack - Deals damage.",
+        "Attack - Deals damage. Have chance to Crit for double damage.",
         "Defend - Grants Block. Block will absorb damage.",
         "Focus - Raises Attack Power, Block Power, or Crit Chance at random",
         "Charge - Makes the next move used stronger. Charging Multiple times will allow for Special moves to be used.",
