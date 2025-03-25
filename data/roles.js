@@ -33,7 +33,7 @@ const roleData = {
       category: "Basic",
       tags: ["Role Blocker", "Basic", "Reflexive"],
       description: [
-        "Blocks all visitors during the night from performing any actions.",
+        "Blocks any player who visits them during the night from performing any actions.",
       ],
     },
     Slayer: {
