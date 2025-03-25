@@ -11,6 +11,6 @@ module.exports = class FalseMode extends Effect {
           this.remove();
         }
       },
-    }
+    };
   }
 };
