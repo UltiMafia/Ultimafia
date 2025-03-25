@@ -20,7 +20,6 @@ module.exports = class ChoirOfRoles extends Card {
           run: function () {
             this.actor.role.data.prevTarget = this.target;
             if (this.target.hasEffect("ChoirSong")) {
-              
               var action = new Action({
                 actor: this.actor,
                 target: this.target,
