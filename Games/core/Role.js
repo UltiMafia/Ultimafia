@@ -315,7 +315,7 @@ module.exports = class Role {
 
     if (!noAlert)
       this.player.queueAlert(
-        `:system: Your role is ${this.getRevealText(roleName, modifiers)}.`
+        `:system: Your role is ${this.getRevealText(roleName, modifiers, "self")}.`
       );
   }
 
