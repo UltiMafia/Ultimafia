@@ -1522,4 +1522,10 @@ module.exports = class Player {
     // Reveal disguiser to disguised player
     player.role.revealToPlayer(this, true);
   }
+
+getVotePower(){
+  return 1;
+}
+
+  
 };
