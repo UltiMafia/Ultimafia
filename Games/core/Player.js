@@ -1523,9 +1523,7 @@ module.exports = class Player {
     player.role.revealToPlayer(this, true);
   }
 
-getVotePower(){
-  return 1;
-}
-
-  
+  getVotePower() {
+    return 1;
+  }
 };
