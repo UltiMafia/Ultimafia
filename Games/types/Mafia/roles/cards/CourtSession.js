@@ -33,7 +33,7 @@ module.exports = class CourtSession extends Card {
       },
       Court: {
         states: ["Dusk"],
-        flags: ["group", "speech", "voting", "anonymous", "mustAct"],
+        flags: ["group", "speech", "voting", "anonymous", "mustAct","useVotingPower"],
         targets: { include: ["alive"], exclude: ["dead"] },
         leader: true,
         shouldMeet: function () {
