@@ -24,6 +24,7 @@ module.exports = class Meeting {
     this.noUnvote = false;
     this.multi = false;
     this.multiSplit = false;
+    this.UseVotingPower = false;
     this.repeatable = false;
     this.includeNo = false;
     this.noRecord = false;
@@ -280,6 +281,7 @@ module.exports = class Meeting {
       votesInvisible: this.votesInvisible,
       multi: this.multi,
       multiSplit: this.multiSplit,
+      useVotingPower: this.UseVotingPower,
       noUnvote: this.noUnvote,
       targets: personalizedTargets,
       inputType: this.inputType,
@@ -726,8 +728,12 @@ module.exports = class Meeting {
         if (isExcludeSelf && voterId === target) continue;
 
         if (!count[target]) count[target] = 0;
-
+        if(this.UseVotingPower != true){
         count[target] += member.voteWeight;
+        }
+        else{
+        count[target] += member.getVotePower();
+        }
       }
 
       // Determine target with the most votes (ignores zero votes)
