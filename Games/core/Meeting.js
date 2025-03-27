@@ -728,11 +728,10 @@ module.exports = class Meeting {
         if (isExcludeSelf && voterId === target) continue;
 
         if (!count[target]) count[target] = 0;
-        if(this.UseVotingPower != true){
-        count[target] += member.voteWeight;
-        }
-        else{
-        count[target] += member.getVotePower();
+        if (this.UseVotingPower != true) {
+          count[target] += member.voteWeight;
+        } else {
+          count[target] += member.getVotePower();
         }
       }
 
