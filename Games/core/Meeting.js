@@ -718,6 +718,9 @@ module.exports = class Meeting {
 
     if (!this.multi && !this.multiSplit) {
       // Count all votes
+      if (this.useVotingPower == true){
+      this.events.emit("PreVotingPowers", this);
+      }
       for (let voterId in this.votes) {
         let member = this.members[voterId];
         let target = this.votes[voterId] || "*";
@@ -734,14 +737,15 @@ module.exports = class Meeting {
           count[target] += member.getVotePower(this);
         }
       }
-
       // Determine target with the most votes (ignores zero votes)
       for (let target in count) {
         if (count[target] > highest.votes)
           highest = { targets: [target], votes: count[target] };
         else if (count[target] == highest.votes) highest.targets.push(target);
       }
-
+      if (this.useVotingPower == true){
+      this.events.emit("PostVotingPowers", this, count, highest);
+      }
       if (highest.targets.length == 1) {
         //Winning vote
         if (
