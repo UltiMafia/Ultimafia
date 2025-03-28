@@ -600,7 +600,7 @@ module.exports = class MafiaPlayer extends Player {
     }
     for (let effect of this.effects) {
       if (effect.name == "VoteNegative") {
-        votePower = votePower*-1;
+        votePower = votePower * -1;
       }
     }
     for (let effect of this.effects) {
