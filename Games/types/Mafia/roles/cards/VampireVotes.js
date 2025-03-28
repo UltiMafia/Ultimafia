@@ -11,21 +11,24 @@ module.exports = class VampireVotes extends Card {
       PreVotingPowers: function (meeting) {
         let targetsWithVillageVoter = [];
         for (let voterId in meeting.votes) {
-        let member = meeting.members[voterId];
-        let target = meeting.votes[voterId] || "*";
-        if (!target) continue;
-        if(member.faction == "Village"){
-          targetsWithVillageVoter.push(target);
-        }      
-      }
+          let member = meeting.members[voterId];
+          let target = meeting.votes[voterId] || "*";
+          if (!target) continue;
+          if (member.faction == "Village") {
+            targetsWithVillageVoter.push(target);
+          }
+        }
         for (let voterId in meeting.votes) {
-        let member = meeting.members[voterId];
-        let target = meeting.votes[voterId] || "*";
-        if (!target) continue;
-        if(member.faction == this.player.faction && !targetsWithVillageVoter.includes(target)){
-          member.giveEffect("Voteless", -1);
-        }      
-      }
+          let member = meeting.members[voterId];
+          let target = meeting.votes[voterId] || "*";
+          if (!target) continue;
+          if (
+            member.faction == this.player.faction &&
+            !targetsWithVillageVoter.includes(target)
+          ) {
+            member.giveEffect("Voteless", -1);
+          }
+        }
       },
     };
   }
