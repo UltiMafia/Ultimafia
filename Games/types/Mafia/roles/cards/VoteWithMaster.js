@@ -23,29 +23,29 @@ module.exports = class VoteWithMaster extends Card {
     };
 
     this.listeners = {
-        PreVotingPowers: function (meeting) {
-          if (this.player.role.data.master == 0){
+      PreVotingPowers: function (meeting) {
+        if (this.player.role.data.master == 0) {
           return;
-          }
+        }
         let masterTarget;
         for (let voterId in meeting.votes) {
-        let member = meeting.members[voterId];
-        let target = meeting.votes[voterId] || "*";
-        if (!target) continue;
-        if(member == this.player.role.data.master){
-          masterTarget = target;
-        }      
-      }
+          let member = meeting.members[voterId];
+          let target = meeting.votes[voterId] || "*";
+          if (!target) continue;
+          if (member == this.player.role.data.master) {
+            masterTarget = target;
+          }
+        }
         for (let voterId in meeting.votes) {
-        let member = meeting.members[voterId];
-        let target = meeting.votes[voterId] || "*";
-        if (!target) continue;
-        if(member == this.player && target != masterTarget){
-          this.player.role.VotePower = 0;
-        }      
-      }
+          let member = meeting.members[voterId];
+          let target = meeting.votes[voterId] || "*";
+          if (!target) continue;
+          if (member == this.player && target != masterTarget) {
+            this.player.role.VotePower = 0;
+          }
+        }
       },
-      PostVotingPowers: function (meeting){
+      PostVotingPowers: function (meeting) {
         this.player.role.VotePower = 1;
       },
       /*
