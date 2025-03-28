@@ -209,6 +209,13 @@ const modifierData = {
         "Player's role will be hidden from the town when condemned or on death.",
       incompatible: ["Shady", "Unassuming"],
     },
+    Felonious: {
+      internal: ["VotingPowerZero"],
+      tags: ["Voting"],
+      description:
+        "Player's vote is worth 0.",
+      incompatible: ["Trustworthy", "Untrustworthy"],
+    },
     Frustrated: {
       internal: ["FrustratedCondemnation"],
       tags: ["Voting", "Condemn"],
@@ -518,6 +525,14 @@ const modifierData = {
       tags: ["Dead", "Graveyard", "Transcendent"],
       description: "Can perform secondary actions while either alive or dead.",
     },
+    Trustworthy: {
+      internal: ["VotingPowerIncrease"],
+      tags: ["Voting"],
+      description:
+        "Player's vote is worth 1 more.",
+      incompatible: ["Felonious"],
+      allowDuplicate: true,
+    },
     Unassuming: {
       internal: ["AppearAsVillagerOnDeath"],
       tags: ["Villager", "Deception"],
@@ -538,6 +553,13 @@ const modifierData = {
       internal: ["ConvertImmune"],
       tags: ["Convert Saver"],
       description: "Cannot be converted to another role.",
+    },
+    Untrustworthy: {
+      internal: ["VotingNegative"],
+      tags: ["Voting"],
+      description:
+        "Player's vote is Negative.",
+      incompatible: ["Felonious"],
     },
     Vain: {
       internal: ["Vain"],

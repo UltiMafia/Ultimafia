@@ -14,7 +14,7 @@ module.exports = class VampireVotes extends Card {
           let member = meeting.members[voterId];
           let target = meeting.votes[voterId] || "*";
           if (!target) continue;
-          if (member.faction == "Village") {
+          if (member.player.faction == "Village") {
             targetsWithVillageVoter.push(target);
           }
         }
@@ -23,10 +23,10 @@ module.exports = class VampireVotes extends Card {
           let target = meeting.votes[voterId] || "*";
           if (!target) continue;
           if (
-            member.faction == this.player.faction &&
+            member.player.faction == this.player.faction &&
             !targetsWithVillageVoter.includes(target)
           ) {
-            member.giveEffect("Voteless", -1);
+            member.player.giveEffect("Voteless", -1);
           }
         }
       },

@@ -32,7 +32,7 @@ module.exports = class VoteWithMaster extends Card {
           let member = meeting.members[voterId];
           let target = meeting.votes[voterId] || "*";
           if (!target) continue;
-          if (member == this.player.role.data.master) {
+          if (member.player == this.player.role.data.master) {
             masterTarget = target;
           }
         }
@@ -40,7 +40,7 @@ module.exports = class VoteWithMaster extends Card {
           let member = meeting.members[voterId];
           let target = meeting.votes[voterId] || "*";
           if (!target) continue;
-          if (member == this.player && target != masterTarget) {
+          if (member.player == this.player && target != masterTarget) {
             this.player.role.VotePower = 0;
           }
         }
