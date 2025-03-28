@@ -6,12 +6,8 @@ module.exports = class Monk extends Role {
 
     this.alignment = "Independent";
     this.winCount = "Village";
-    this.cards = ["VillageCore", "MonkSave", "WinIfSaves"];
+    this.cards = ["VillageCore", "MonkSave", "WinIfSaves","VoteWeightZero"];
 
-    this.meetingMods = {
-      Village: {
-        voteWeight: 0,
-      },
-    };
+
   }
 };
