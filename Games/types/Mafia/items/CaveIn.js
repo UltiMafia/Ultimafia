@@ -15,7 +15,7 @@ module.exports = class CaveIn extends Item {
       "Caved In": {
         actionName: "Convert Player to Food",
         states: ["Night"],
-        flags: ["group", "speech", "voting", "mustAct"],
+        flags: ["group", "speech", "voting", "mustAct", "useVotingPower"],
         priority: MEETING_PRIORITY_JAIL,
         passiveDead: true,
         whileDead: true,
