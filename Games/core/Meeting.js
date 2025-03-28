@@ -731,7 +731,7 @@ module.exports = class Meeting {
         if (this.useVotingPower != true) {
           count[target] += member.voteWeight;
         } else {
-          count[target] += member.getVotePower();
+          count[target] += member.getVotePower(this);
         }
       }
 
