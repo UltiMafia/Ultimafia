@@ -11,9 +11,8 @@ module.exports = class Vampire extends Role {
       "MeetingFaction",
       "VampireKill",
       "VampireSetup",
-      //"VampireVotes",
+      "VampireVotes",
       "VampireAppearAsRoles",
     ];
-    this.VotePower = 0.1;
   }
 };
