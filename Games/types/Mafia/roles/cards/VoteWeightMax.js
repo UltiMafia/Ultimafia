@@ -5,9 +5,14 @@ module.exports = class VoteWeightMax extends Card {
     super(role);
 
     this.listeners = {
-      meeting: function (meeting) {
-        if (meeting.members[this.player.id]) {
-          meeting.members[this.player.id].voteWeight = Infinity;
+        AbilityToggle: function (player) {
+        if (player != this.player) {
+          return;
+        }
+        if (this.player.hasAbility(["Voting"])) {
+        this.player.role.VotePower = 10000;
+        } else {
+        this.player.role.VotePower = 1;
         }
       },
     };
