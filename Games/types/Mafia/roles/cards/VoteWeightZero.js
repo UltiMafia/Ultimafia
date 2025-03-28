@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 
-module.exports = class VoteWeightTwo extends Card {
+module.exports = class VoteWeightZero extends Card {
   constructor(role) {
     super(role);
 
@@ -10,7 +10,7 @@ module.exports = class VoteWeightTwo extends Card {
           return;
         }
         if (this.player.hasAbility(["Voting"])) {
-          this.player.role.VotePower = 2;
+          this.player.role.VotePower = 0;
         } else {
           this.player.role.VotePower = 1;
         }

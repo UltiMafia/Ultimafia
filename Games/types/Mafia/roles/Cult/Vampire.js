@@ -11,16 +11,8 @@ module.exports = class Vampire extends Role {
       "MeetingFaction",
       "VampireKill",
       "VampireSetup",
-      //"VampireVotes",
+      "VampireVotes",
       "VampireAppearAsRoles",
     ];
-    this.meetingMods = {
-      Village: {
-        voteWeight: 0.01,
-      },
-      "Magus Game": {
-        voteWeight: 0.01,
-      },
-    };
   }
 };

@@ -22,7 +22,7 @@ module.exports = class ExtraCondemn extends Item {
       actionName: "Vote to Condemn",
       states: ["Day"],
       targets: { include: [canBeVoted], exclude: [cannotBeVoted] },
-      flags: ["group", "voting"],
+      flags: ["group", "voting", "useVotingPower"],
       whileDead: true,
       passiveDead: true,
       action: {

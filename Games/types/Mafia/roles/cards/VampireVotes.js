@@ -8,63 +8,26 @@ module.exports = class VampireVotes extends Card {
     super(role);
 
     this.listeners = {
-      state: function (stateInfo) {
-        if (!this.player.alive) return;
-        if (stateInfo.name.match(/Day/)) {
-          this.player.role.data.VotingLog = [];
+      PreVotingPowers: function (meeting) {
+        let targetsWithVillageVoter = [];
+        for (let voterId in meeting.votes) {
+          let member = meeting.members[voterId];
+          let target = meeting.votes[voterId] || "*";
+          if (!target) continue;
+          if (member.player.faction == "Village") {
+            targetsWithVillageVoter.push(target);
+          }
         }
-      },
-      vote: function (vote) {
-        if (!this.player.alive) return;
-        if (vote.meeting.name === "Village" && vote.target === vote.voter) {
+        for (let voterId in meeting.votes) {
+          let member = meeting.members[voterId];
+          let target = meeting.votes[voterId] || "*";
+          if (!target) continue;
           if (
-            vote.voter.role.alignment == "Village" &&
-            Random.randInt(0, 100) <= 30
+            member.player.faction == this.player.faction &&
+            !targetsWithVillageVoter.includes(target)
           ) {
-            let action = new Action({
-              actor: this.player,
-              target: vote.voter,
-              game: this.game,
-              labels: ["kill", "curse", "hidden"],
-              power: 2,
-              run: function () {
-                if (this.dominates())
-                  this.target.kill("curse", this.actor, true);
-              },
-            });
-
-            this.game.instantAction(action);
+            member.player.giveEffect("Voteless", -1);
           }
-        } else if (vote.meeting.name === "Village") {
-          let votes = this.player.role.data.VotingLog;
-
-          for (let y = 0; y < votes.length; y++) {
-            if (
-              votes[y].voter == vote.voter &&
-              votes[y].target != vote.target
-            ) {
-              if (
-                vote.voter.role.alignment == "Village" &&
-                Random.randInt(0, 100) <= 30
-              ) {
-                let action = new Action({
-                  actor: this.player,
-                  target: vote.voter,
-                  game: this.game,
-                  labels: ["kill", "curse", "hidden"],
-                  power: 2,
-                  run: function () {
-                    if (this.dominates())
-                      this.target.kill("curse", this.actor, true);
-                  },
-                });
-
-                this.game.instantAction(action);
-              }
-              return;
-            }
-          }
-          this.player.role.data.VotingLog.push(vote);
         }
       },
     };

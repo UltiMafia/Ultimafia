@@ -23,6 +23,32 @@ module.exports = class VoteWithMaster extends Card {
     };
 
     this.listeners = {
+      PreVotingPowers: function (meeting) {
+        if (this.player.role.data.master == 0) {
+          return;
+        }
+        let masterTarget;
+        for (let voterId in meeting.votes) {
+          let member = meeting.members[voterId];
+          let target = meeting.votes[voterId] || "*";
+          if (!target) continue;
+          if (member.player == this.player.role.data.master) {
+            masterTarget = target;
+          }
+        }
+        for (let voterId in meeting.votes) {
+          let member = meeting.members[voterId];
+          let target = meeting.votes[voterId] || "*";
+          if (!target) continue;
+          if (member.player == this.player && target != masterTarget) {
+            this.player.role.VotePower = 0;
+          }
+        }
+      },
+      PostVotingPowers: function (meeting) {
+        this.player.role.VotePower = 1;
+      },
+      /*
       meeting: function (meeting) {
         if (meeting.name != "Village" || this.player.role.data.master == 0)
           return;
@@ -33,6 +59,7 @@ module.exports = class VoteWithMaster extends Card {
           meeting.members[this.player.id].voteWeight = 0;
         }
       },
+      */
     };
   }
 };

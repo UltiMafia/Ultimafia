@@ -588,4 +588,26 @@ module.exports = class MafiaPlayer extends Player {
 
     return true;
   }
+
+  getVotePower(meeting) {
+    let votePower = this.role.VotePower;
+    for (let effect of this.effects) {
+      if (effect.name == "VoteIncrease") {
+        votePower += effect.Amount;
+      } else if (effect.name == "VoteDecrease") {
+        votePower -= effect.Amount;
+      }
+    }
+    for (let effect of this.effects) {
+      if (effect.name == "VoteNegative") {
+        votePower = votePower * -1;
+      }
+    }
+    for (let effect of this.effects) {
+      if (effect.name == "Voteless") {
+        votePower = 0;
+      }
+    }
+    return votePower;
+  }
 };

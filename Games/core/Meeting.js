@@ -24,6 +24,7 @@ module.exports = class Meeting {
     this.noUnvote = false;
     this.multi = false;
     this.multiSplit = false;
+    this.useVotingPower = false;
     this.repeatable = false;
     this.includeNo = false;
     this.noRecord = false;
@@ -280,6 +281,7 @@ module.exports = class Meeting {
       votesInvisible: this.votesInvisible,
       multi: this.multi,
       multiSplit: this.multiSplit,
+      useVotingPower: this.useVotingPower,
       noUnvote: this.noUnvote,
       targets: personalizedTargets,
       inputType: this.inputType,
@@ -716,6 +718,9 @@ module.exports = class Meeting {
 
     if (!this.multi && !this.multiSplit) {
       // Count all votes
+      if (this.useVotingPower == true) {
+        this.events.emit("PreVotingPowers", this);
+      }
       for (let voterId in this.votes) {
         let member = this.members[voterId];
         let target = this.votes[voterId] || "*";
@@ -726,17 +731,21 @@ module.exports = class Meeting {
         if (isExcludeSelf && voterId === target) continue;
 
         if (!count[target]) count[target] = 0;
-
-        count[target] += member.voteWeight;
+        if (this.useVotingPower != true) {
+          count[target] += member.voteWeight;
+        } else {
+          count[target] += member.player.getVotePower(this);
+        }
       }
-
       // Determine target with the most votes (ignores zero votes)
       for (let target in count) {
         if (count[target] > highest.votes)
           highest = { targets: [target], votes: count[target] };
         else if (count[target] == highest.votes) highest.targets.push(target);
       }
-
+      if (this.useVotingPower == true) {
+        this.events.emit("PostVotingPowers", this, count, highest);
+      }
       if (highest.targets.length == 1) {
         //Winning vote
         if (

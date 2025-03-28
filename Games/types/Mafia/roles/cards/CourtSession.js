@@ -10,6 +10,20 @@ module.exports = class CourtSession extends Card {
 
     role.bangedGavel = 0;
 
+    this.listeners = {
+      PreVotingPowers: function (meeting) {
+        if (this.player.role.data.master == 0) {
+          return;
+        }
+        if (meeting.name == "Court") {
+          this.player.role.VotePower = 3;
+        }
+      },
+      PostVotingPowers: function (meeting) {
+        this.player.role.VotePower = 1;
+      },
+    };
+
     this.meetings = {
       "Call Court": {
         actionName: "Call Court?",
@@ -33,7 +47,14 @@ module.exports = class CourtSession extends Card {
       },
       Court: {
         states: ["Dusk"],
-        flags: ["group", "speech", "voting", "anonymous", "mustAct"],
+        flags: [
+          "group",
+          "speech",
+          "voting",
+          "anonymous",
+          "mustAct",
+          "useVotingPower",
+        ],
         targets: { include: ["alive"], exclude: ["dead"] },
         leader: true,
         shouldMeet: function () {

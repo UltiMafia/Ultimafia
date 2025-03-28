@@ -964,8 +964,8 @@ const roleData = {
       category: "Voting",
       tags: ["Voting", "Visiting"],
       description: [
-        "Vote weight is worth 0 votes",
-        "Each night chooses a player to have a Vote weight of 2 the following day",
+        "Each night chooses a player to be their Master.",
+        "A Butler's Vote only counts if they vote the same Target as there Master.",
       ],
     },
     Governor: {
@@ -982,9 +982,7 @@ const roleData = {
       alignment: "Village",
       category: "Voting",
       tags: ["Voting"],
-      description: [
-        "Village meeting vote overrides other voters and determines condemnation.",
-      ],
+      description: ["Vote weight is worth 10000 votes in day meeting."],
     },
     Kingmaker: {
       alignment: "Village",
@@ -992,7 +990,7 @@ const roleData = {
       tags: ["Voting", "Items", "Visiting"],
       description: [
         "Gives out a sceptre each night.",
-        "Sceptres give the player final say in the village vote for one turn.",
+        "Sceptres give a player +10000 votes in day meeting.",
       ],
     },
     Magistrate: {
@@ -1357,7 +1355,7 @@ const roleData = {
         "Voting",
       ],
       description: [
-        "If an Admiral is present, all players start as Grouch. The Admiral is revealed and has infinite vote power.",
+        "If an Admiral is present, all players start as Grouch. The Admiral is revealed and their vote is worth 10000.",
         "Starting with the Admiral, players will Pass a Chest containing Village/Independent Roles and 15 Gold to their lower neighbor.",
         "When a player is passed the Chest they may steal gold or become a role in the chest. Players who steal Gold become Mafia or Cult roles.",
         "The Admiral must steal 1-5 Gold but will not become mafia or Cult.",
@@ -1788,7 +1786,7 @@ const roleData = {
       tags: ["Garbage", "Voting", "Items"],
       description: [
         "While alive, the Mafia's kill is replaced with a Coronation meeting.",
-        "One player is picked to be King for the next day. Their vote is the sole decider of the condemnation.",
+        "One player is picked to be King for the next day. Their vote worth 10000 votes.",
         "The Vizier cannot pick the same player to be King twice in a row.",
         "Upon death, the Mafia reverts to killing.",
       ],
@@ -2614,6 +2612,7 @@ const roleData = {
       ],
       description: [
         "Each night chooses a player and a role.",
+        "That player is converted to that role but their Alignment will not change.",
         "If the selected role is already in play, The conversion fails.",
         "Independant roles can only be converted to other Independant roles.",
       ],
@@ -2910,12 +2909,11 @@ const roleData = {
         "Night Killer",
       ],
       description: [
-        "Vampire Votes count as 0.01 during the Village Meeting",
+        "Vampire Votes only count if a Village Player votes with them.",
         "Most Players including all non-Village are Vampires",
         "Vampires will appear as random Non-Vampire evil roles on Investigations.",
         "Each Night, One Vampire will choose a player to kill.",
         "Vampires can only select Vampires for killing until 1 remains.",
-        //"Vampires might kill Village Players who Vote for Themselves or Switch Votes.", , "Vote Kills"
         "Cult can only win when One or fewer Village players are alive.",
       ],
     },
@@ -3713,7 +3711,7 @@ const roleData = {
         "Can anonymously broadcast messages during the day.",
         "Twice per game, may declare a court session.",
         "During court, all players but the Judge speak and vote anonymously as the jury.",
-        "The Judge's vote counts for three.",
+        "The Judge's vote counts for three during a Court session.",
         "Wins among the last two standing.",
       ],
     },

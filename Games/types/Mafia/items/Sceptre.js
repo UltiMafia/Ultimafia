@@ -23,7 +23,7 @@ module.exports = class Sceptre extends Item {
               this.game.sendAlert(
                 `${this.actor.name} reveals their sceptre and seizes control of the gallows!`
               );
-              this.actor.giveEffect("Crowned", this.actor, 1);
+              this.actor.giveEffect("VoteIncrease", 1, 10000);
               this.item.drop();
             }
           },

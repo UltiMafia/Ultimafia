@@ -11,11 +11,7 @@ module.exports = class Politician extends Role {
       "ChangeRandomAlignment",
       "WinWithCurrentAlignment",
       "Oblivious",
+      "VoteWeightTwo",
     ];
-    this.meetingMods = {
-      "*": {
-        voteWeight: 2,
-      },
-    };
   }
 };

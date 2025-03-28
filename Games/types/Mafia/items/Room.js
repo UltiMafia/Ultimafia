@@ -23,7 +23,7 @@ module.exports = class Room extends Item {
       actionName: "Elect Leader",
       states: ["Day"],
       targets: { include: ["members"], exclude: [cannotBeVoted, "dead"] },
-      flags: ["group", "voting", "speech", "mustAct"],
+      flags: ["group", "voting", "speech", "mustAct", "useVotingPower"],
       whileDead: true,
       passiveDead: true,
       action: {
