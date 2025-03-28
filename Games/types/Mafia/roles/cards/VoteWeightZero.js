@@ -10,9 +10,9 @@ module.exports = class VoteWeightZero extends Card {
           return;
         }
         if (this.player.hasAbility(["Voting"])) {
-        this.player.role.VotePower = 0;
+          this.player.role.VotePower = 0;
         } else {
-        this.player.role.VotePower = 1;
+          this.player.role.VotePower = 1;
         }
       },
     };
