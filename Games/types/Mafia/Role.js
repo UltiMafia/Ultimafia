@@ -6,7 +6,7 @@ module.exports = class MafiaRole extends Role {
     super(name, player, data);
 
     this.Action = MafiaAction;
-
+    this.VotePower = 1;
     this.appearance = {
       self: "real",
       reveal: "real",
