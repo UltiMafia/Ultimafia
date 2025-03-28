@@ -21,7 +21,10 @@ module.exports = class Clueless extends Card {
             this.VotingZeroEffect == null ||
             !this.player.effects.includes(this.VotingZeroEffect)
           ) {
-            this.VotingZeroEffect = this.player.giveEffect("Voteless", Infinity);
+            this.VotingZeroEffect = this.player.giveEffect(
+              "Voteless",
+              Infinity
+            );
             this.player.passiveEffects.push(this.VotingZeroEffect);
           }
         } else {

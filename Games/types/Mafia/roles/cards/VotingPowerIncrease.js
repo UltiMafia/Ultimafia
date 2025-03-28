@@ -17,21 +17,27 @@ module.exports = class Clueless extends Card {
           return;
         }
         let votePower = 0;
-        for(let modifier of this.player.role.modifier.split("/")){
-            if(modifier == "Trustworthy"){
+        for (let modifier of this.player.role.modifier.split("/")) {
+          if (modifier == "Trustworthy") {
             votePower++;
-            }
+          }
         }
         if (this.player.hasAbility(["Modifier", "Voting"])) {
           if (
             this.VotingIncreaseEffect == null ||
             !this.player.effects.includes(this.VotingIncreaseEffect)
           ) {
-            this.VotingIncreaseEffect = this.player.giveEffect("VoteIncrease", Infinity, votePower);
+            this.VotingIncreaseEffect = this.player.giveEffect(
+              "VoteIncrease",
+              Infinity,
+              votePower
+            );
             this.player.passiveEffects.push(this.VotingIncreaseEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(this.VotingIncreaseEffect);
+          var index = this.player.passiveEffects.indexOf(
+            this.VotingIncreaseEffect
+          );
           if (index != -1) {
             this.player.passiveEffects.splice(index, 1);
           }

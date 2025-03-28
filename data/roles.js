@@ -982,9 +982,7 @@ const roleData = {
       alignment: "Village",
       category: "Voting",
       tags: ["Voting"],
-      description: [
-        "Vote weight is worth 10000 votes in day meeting.",
-      ],
+      description: ["Vote weight is worth 10000 votes in day meeting."],
     },
     Kingmaker: {
       alignment: "Village",

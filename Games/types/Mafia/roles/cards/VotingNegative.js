@@ -21,11 +21,16 @@ module.exports = class Clueless extends Card {
             this.VotingNegativeEffect == null ||
             !this.player.effects.includes(this.VotingNegativeEffect)
           ) {
-            this.VotingNegativeEffect = this.player.giveEffect("VoteNegative", Infinity);
+            this.VotingNegativeEffect = this.player.giveEffect(
+              "VoteNegative",
+              Infinity
+            );
             this.player.passiveEffects.push(this.VotingNegativeEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(this.VotingNegativeEffect);
+          var index = this.player.passiveEffects.indexOf(
+            this.VotingNegativeEffect
+          );
           if (index != -1) {
             this.player.passiveEffects.splice(index, 1);
           }

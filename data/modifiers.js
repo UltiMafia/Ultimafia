@@ -212,8 +212,7 @@ const modifierData = {
     Felonious: {
       internal: ["VotingPowerZero"],
       tags: ["Voting"],
-      description:
-        "Player's vote is worth 0.",
+      description: "Player's vote is worth 0.",
       incompatible: ["Trustworthy", "Untrustworthy"],
     },
     Frustrated: {
@@ -528,8 +527,7 @@ const modifierData = {
     Trustworthy: {
       internal: ["VotingPowerIncrease"],
       tags: ["Voting"],
-      description:
-        "Player's vote is worth 1 more.",
+      description: "Player's vote is worth 1 more.",
       incompatible: ["Felonious"],
       allowDuplicate: true,
     },
@@ -557,8 +555,7 @@ const modifierData = {
     Untrustworthy: {
       internal: ["VotingNegative"],
       tags: ["Voting"],
-      description:
-        "Player's vote is Negative.",
+      description: "Player's vote is Negative.",
       incompatible: ["Felonious"],
     },
     Vain: {
