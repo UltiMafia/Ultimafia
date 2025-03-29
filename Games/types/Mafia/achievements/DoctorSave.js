@@ -33,7 +33,7 @@ module.exports = class DoctorSave extends Achievements {
                   break;
                 }
               }
-              if(temp == null){
+              if (temp == null) {
                 return;
               }
               for (let action of this.game.actions[0]) {
