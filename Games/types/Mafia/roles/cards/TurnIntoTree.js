@@ -26,27 +26,24 @@ module.exports = class TurnIntoTree extends Card {
       },
     };
 
-      this.listeners = {
+    this.listeners = {
       AbilityToggle: function (player) {
         if (player != this.player) {
           return;
         }
-        if (this.player.hasAbility(["Tree"]) && this.player.role.isTree == true) {
+        if (
+          this.player.hasAbility(["Tree"]) &&
+          this.player.role.isTree == true
+        ) {
           if (
             this.TreeEffect == null ||
             !this.player.effects.includes(this.TreeEffect)
           ) {
-            this.TreeEffect = this.player.giveEffect(
-              "Tree",
-              1,
-              Infinity
-            );
+            this.TreeEffect = this.player.giveEffect("Tree", 1, Infinity);
             this.player.passiveEffects.push(this.TreeEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(
-            this.TreeEffect
-          );
+          var index = this.player.passiveEffects.indexOf(this.TreeEffect);
           if (index != -1) {
             this.player.passiveEffects.splice(index, 1);
           }
@@ -57,8 +54,5 @@ module.exports = class TurnIntoTree extends Card {
         }
       },
     };
-
-
-    
   }
 };
