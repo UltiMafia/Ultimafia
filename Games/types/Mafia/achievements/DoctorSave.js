@@ -20,11 +20,27 @@ module.exports = class DoctorSave extends Achievements {
             labels: ["hidden", "absolute"],
             achievement: this,
             run: function () {
+              let temp;
               for (let action of this.game.actions[0]) {
                 if (
                   action.hasLabels(["save"]) &&
                   action.actor == this.target &&
                   action.target.alive
+                ) {
+                  if (!action.target.isEvil()) {
+                    temp = action.target;
+                  }
+                  break;
+                }
+              }
+              if(temp == null){
+                return;
+              }
+              for (let action of this.game.actions[0]) {
+                if (
+                  action.hasLabels(["kill"]) &&
+                  action.target == temp &&
+                  temp.alive
                 ) {
                   if (!action.target.isEvil()) {
                     this.achievement.Saved = true;
