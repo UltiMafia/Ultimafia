@@ -28,7 +28,7 @@ module.exports = class VoteWithMaster extends Card {
           return;
         }
         if (!this.player.hasAbility(["Voting"])) {
-        return;
+          return;
         }
         let masterTarget;
         for (let voterId in meeting.votes) {
