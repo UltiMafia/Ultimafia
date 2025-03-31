@@ -35,7 +35,7 @@ module.exports = class JailTarget extends Card {
           let jailMeeting = this.game.getMeetingByName(
             this.player.role.data.meetingName
           );
-          if (jailMeeting.hasJoined(this.player.role.data.prisoner)) {
+          if (jailMeeting && jailMeeting.hasJoined(this.player.role.data.prisoner)) {
             this.player.role.data.jailSuccess = true;
           }
         }
