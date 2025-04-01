@@ -12,6 +12,9 @@ const utils = require("./utils");
 const mongoose = require("mongoose");
 const { min } = require("mocha/lib/reporters");
 const router = express.Router();
+const mongo = require("mongodb");
+const ObjectID = mongo.ObjectID;
+const Diff = require('diff');
 
 function markFavSetups(userId, setups) {
   return new Promise(async (resolve, reject) => {
@@ -33,6 +36,67 @@ function markFavSetups(userId, setups) {
       reject(e);
     }
   });
+}
+
+// The setup manifest should be a human readable, easily diff-able file that concisely describes the setup
+function generateMafiaSetupManifest(setup, roles) {
+  try {
+    // Start with the lines for all of the global stuff
+    lines = [
+      `Name: ${setup.name}`,
+      `Starting state: ${setup.startState	}`,
+      `Whispers enabled: ${setup.whispers}`,
+      `Whisper leak percentage: ${setup.leakPercentage}`,
+      `Last wills enabled: ${setup.lastWill}`,
+      `Banished count: ${setup.banished}`,
+      `Talking dead enabled: ${setup.talkingDead}`,
+      `Voting dead enabled: ${setup.votingDead}`,
+      `One night mode: ${setup.OneNightMode}`,
+      `Hidden converts: ${setup.hiddenConverts}`,
+      `Role sharing: ${setup.RoleShare}`,
+      `Alignment sharing: ${setup.AlignmentShare}`,
+      `Private sharing: ${setup.PrivateShare	}`,
+      `Public sharing: ${setup.PublicShare}`,
+      `Events per night: ${setup.EventsPerNight}`,
+      `No death limit: ${setup.noDeathLimit}`,
+      `Force must act: ${setup.ForceMustAct}`,
+      `Is closed: ${setup.closed}`,
+      `Unique roles: ${setup.unique}`,
+      `Unique roles sans modifier: ${setup.uniqueWithoutModifier}`,
+      `Use role groups: ${setup.useRoleGroups}`,
+      `Dawn enabled: ${setup.dawn}`,
+      `Must act: ${setup.mustAct}`,
+      `Must condemn: ${setup.mustCondemn}`,
+      `Game start prompt: ${setup.gameStartPrompt}`,
+      `No reveal: ${setup.noReveal}`,	
+      `Votes invisible: ${setup.votesInvisible}`,
+      `Game ending event: ${setup.GameEndEvent}`,
+    ];
+
+    if (setup.useRoleGroups) {
+      lines.push(`Role group sizes:`);
+      for (var i = 0; i < setup.roleGroupSizes.length; i++) {
+        lines.push(`- Role group ${i + 1} size: ${setup.roleGroupSizes[i]}`);
+      }
+    }
+
+    lines.push(`Roles:`);
+    for (var i = 0; i < roles.length; i++) {
+      lines.push(`- Role group ${i}:`);
+
+      const roleGroup = roles[i];
+      Object.keys(roleGroup).forEach(function(role) {
+        const tokens = role.split(":");
+        const roleName = (tokens.length < 2 || tokens[1] === "") ? tokens[0] : role;
+        lines.push(`  - ${roleName}: ${roleGroup[role]}`);
+      });
+    }
+
+    return lines.join('\n');
+  } catch (e) {
+    logger.error(e);
+    console.log(setup);
+  }
 }
 
 router.get("/id", async function (req, res) {
@@ -162,15 +226,127 @@ router.get("/search", async function (req, res) {
   }
 });
 
+function calculateStats(setupVersion, gameType) {
+  var stats = {};
+
+  // No stats for other gameTypes for now
+  if (gameType !== "Mafia") {
+    return stats;
+  }
+  if (!setupVersion) {
+    return stats;
+  }
+
+  // Infer that a setup is "legacy" if it lacks a manifest
+  const isLegacy = (setupVersion.manifest === "");
+
+  // =========================================================================
+  
+  const rolePlays = setupVersion.rolePlays || {};
+  const roleWins = setupVersion.roleWins || {};
+
+  // Calculate role winrate
+  var totalRoleWinPercent = 0.0;
+  var roleWinrate = {};
+  var roleWinrateNormalized = {};
+  
+  Object.keys(rolePlays).forEach(function(key) {
+    var numWins = key in roleWins ? roleWins[key] : 0;
+    var winPercent = numWins / rolePlays[key];
+
+    roleWinrate[key] = winPercent;
+    totalRoleWinPercent += winPercent;
+  });
+
+  // totalRoleWinPercent will be 1 in most cases, but can be larger if factions joint
+  if (totalRoleWinPercent < 1) {
+    totalRoleWinPercent = 1;
+  }
+  
+  Object.keys(roleWinrate).forEach(function(key) {
+    roleWinrateNormalized[key] = roleWinrate[key] / totalRoleWinPercent;
+  });
+
+  // =========================================================================
+
+  var alignmentPlays = setupVersion.alignmentPlays || {};
+  var alignmentWins = setupVersion.alignmentWins || {};
+
+  // Convert role win data from old setups into alignment win data. This may lead to misleading results in multi-setups
+  if (isLegacy) {
+    alignmentPlays = {};
+    alignmentWins = {};
+
+    Object.keys(rolePlays).forEach(function(key) {
+      const numWins = key in roleWins ? roleWins[key] : 0;
+      const alignment = roleData[gameType][key].alignment;
+
+      if (!(alignment in alignmentPlays)) alignmentPlays[alignment] = 0;
+      if (!(alignment in alignmentWins)) alignmentWins[alignment] = 0;
+
+      alignmentPlays[alignment] += rolePlays[key];
+      alignmentWins[alignment] += numWins;
+
+      console.log(key)
+      console.log(rolePlays[key])
+      console.log(numWins)
+      console.log(alignment)
+      console.log(alignmentPlays)
+      console.log(alignmentWins)
+      console.log("==================================")
+    });
+  }
+
+  // Calculate alignment winrate
+  var totalAlignmentWinPercent = 0.0;
+  var alignmentWinrate = {};
+  var alignmentWinrateNormalized = {};
+  
+  Object.keys(alignmentPlays).forEach(function(key) {
+    var numWins = key in alignmentWins ? alignmentWins[key] : 0;
+    var winPercent = numWins / alignmentPlays[key];
+
+    alignmentWinrate[key] = winPercent;
+    totalAlignmentWinPercent += winPercent;
+  });
+
+  // totalAlignmentWinPercent will be 1 in most cases, but can be larger if factions joint
+  if (totalAlignmentWinPercent < 1) {
+    totalAlignmentWinPercent = 1;
+  }
+  
+  Object.keys(alignmentWinrate).forEach(function(key) {
+    alignmentWinrateNormalized[key] = alignmentWinrate[key] / totalAlignmentWinPercent;
+  });
+
+  // =========================================================================
+
+  stats.roleWinrate = roleWinrateNormalized;
+  stats.alignmentWinrate = alignmentWinrateNormalized;
+
+  return stats;
+}
+
 router.get("/:id", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     var setup = await models.Setup.findOne({ id: req.params.id })
-      .select("-_id -__v -hash")
+      .select("-__v -hash")
       .populate("creator", "id name avatar tag -_id");
 
     if (setup) {
       setup = setup.toJSON();
+      
+      var setupVersionNum = setup.version || 0;
+      let setupVersion = await models.SetupVersion.findOne({ setup: new ObjectID(setup._id), version: setupVersionNum }).select(
+        "-_id timestamp changelog manifest played rolePlays roleWins alignmentPlays alignmentWins dayCountWins"
+      );
+      setup.setupVersion = setupVersion || {};
+
+      if (req.get("includeStats") == "true") {
+        setup.stats = calculateStats(setupVersion, setup.gameType);
+      }
+      
       res.send(setup);
     } else {
       res.status(500);
@@ -179,7 +355,38 @@ router.get("/:id", async function (req, res) {
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Unable to find setup.");
+    res.send("Error getting setup.");
+  }
+});
+
+router.get("/:id/version/:setupVersionNum", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var setup = await models.Setup.findOne({ id: req.params.id }).select("-__v -hash");
+
+    if (setup) {
+      setup = setup.toJSON();
+      
+      let setupVersion = await models.SetupVersion.findOne({ setup: new ObjectID(setup._id), version: req.params.setupVersionNum }).select(
+        "-_id timestamp changelog manifest played rolePlays roleWins alignmentPlays alignmentWins dayCountWins"
+      );
+
+      if(setupVersion) {
+        setupVersion = setupVersion.toJSON();
+        setupVersion.stats = calculateStats(setupVersion, setup.gameType);
+        res.send(setupVersion);
+      } else {
+        res.status(500);
+        res.send("Unable to find setup version.");
+      }
+    } else {
+      res.status(500);
+      res.send("Unable to find setup.");
+    }
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error getting setup.");
   }
 });
 
@@ -524,9 +731,12 @@ router.post("/create", async function (req, res) {
       count: setup.count,
     };
 
+    var setupId = null;
     if (req.body.editing) {
       await models.Setup.updateOne({ id: setup.id }, { $set: obj }).exec();
+      await models.Setup.updateOne({ id: setup.id }, { $inc: { version: 1, }}).exec();
       res.send(req.body.id);
+      setupId = setup.id;
     } else {
       obj.id = shortid.generate();
       obj.creator = req.session.user._id;
@@ -538,6 +748,33 @@ router.post("/create", async function (req, res) {
         { $push: { setups: setup._id } }
       ).exec();
       res.send(setup.id);
+      setupId = obj.id;
+    }
+
+    const setupAfterChanges = await models.Setup.findOne({ id: setupId }).select(
+      "_id id version"
+    );
+
+    if (setupAfterChanges) {
+      const oldSetupVersion = await models.SetupVersion.findOne({ setup: new ObjectID(setupAfterChanges._id), version: setupAfterChanges.version - 1 }).select("_id manifest");
+
+      var oldSetupManifest = "";
+      if (oldSetupVersion) {
+        oldSetupManifest = oldSetupVersion.manifest;
+      }
+
+      const setupManifest = generateMafiaSetupManifest(setup, newRoles);
+      
+      setupVersion = new models.SetupVersion({
+        version: setupAfterChanges.version,
+        setup: new ObjectID(setupAfterChanges._id),
+        manifest: setupManifest,
+        changelog: JSON.stringify(Diff.diffLines(oldSetupManifest, setupManifest)),
+      });
+      await setupVersion.save();
+    }
+    else {
+      logger.warn(`failed to find setup for ID: ${setupId}. A setup version will not be created as a result.`);
     }
   } catch (e) {
     logger.error(e);
