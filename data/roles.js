@@ -2319,9 +2319,7 @@ const roleData = {
       alignment: "Mafia",
       category: "Gaming",
       tags: ["Voting", "Conversion"],
-      description: [
-        "The first player to vote the Prankster becomes Fool.",
-      ],
+      description: ["The first player to vote the Prankster becomes Fool."],
       RolesMadeBy: ["Fool"],
     },
 
@@ -2991,7 +2989,13 @@ const roleData = {
     "War Demon": {
       alignment: "Cult",
       category: "Demon",
-      tags: ["Killing", "Extra Night Deaths", "Visiting", "Night Killer", "Epic"],
+      tags: [
+        "Killing",
+        "Extra Night Deaths",
+        "Visiting",
+        "Night Killer",
+        "Epic",
+      ],
       description: [
         "Each night, may choose a player to kill.",
         "Makes 2 players fall in love.",
