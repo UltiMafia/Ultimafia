@@ -2996,9 +2996,7 @@ const roleData = {
         "Night Killer",
         "Epic",
       ],
-      description: [
-        "Very Very Good Role.",
-      ],
+      description: ["Very Very Good Role."],
     },
 
     //Independent
