@@ -2315,6 +2315,13 @@ const roleData = {
         "Shy players cannot accept Role/Alignment Shares and cannot Private/Public Reveal.",
       ],
     },
+    Prankster: {
+      alignment: "Mafia",
+      category: "Gaming",
+      tags: ["Voting", "Conversion"],
+      description: ["The first player to vote the Prankster becomes Fool."],
+      RolesMadeBy: ["Fool"],
+    },
 
     //Cult
     //Basic
@@ -2978,6 +2985,18 @@ const roleData = {
         "Annoyingly, this visit has no effect.",
         "Cult roles with the Scatterbrained modifier appear as this role to self.",
       ],
+    },
+    "War Demon": {
+      alignment: "Cult",
+      category: "Demon",
+      tags: [
+        "Killing",
+        "Extra Night Deaths",
+        "Visiting",
+        "Night Killer",
+        "Epic",
+      ],
+      description: ["Very Very Good Role."],
     },
 
     //Independent
