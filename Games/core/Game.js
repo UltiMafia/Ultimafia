@@ -27,6 +27,8 @@ const renamedModifierMapping = require("../../data/renamedModifiers");
 const routeUtils = require("../../routes/utils");
 const PostgameMeeting = require("./PostgameMeeting");
 const VegKickMeeting = require("./VegKickMeeting");
+const mongo = require("mongodb");
+const ObjectID = mongo.ObjectID;
 const axios = require("axios");
 
 module.exports = class Game {
@@ -2293,6 +2295,89 @@ module.exports = class Game {
     }
   }
 
+  async recordSetupStats(setup) {
+    try {
+      if (!setup) {
+        logger.error("Failed to record stats because setup was null.");
+        return;
+      }
+
+      var setupVersionNum = setup.version || 0;
+
+      let setupVersion = await models.SetupVersion.findOne({ setup: new ObjectID(setup._id), version: setupVersionNum }).select("_id");
+
+      if (!setupVersion) {
+        // If version doesn't yet exist, create one
+        logger.info("Migrating setup statistics to setup version object");
+
+        // Try to inherit these deprecated fields from the setup
+        var legacyRolePlays = setup.rolePlays;
+        var legacyRoleWins = setup.roleWins;
+        var legacyPlayed = setup.played;
+
+        setupVersion = new models.SetupVersion({
+          version: setupVersionNum,
+          setup: new ObjectID(setup._id),
+          changelog: "",
+          rolePlays: legacyRolePlays || {},
+          roleWins: legacyRoleWins || {},
+          played: legacyPlayed || 0,
+        });
+        await setupVersion.save();
+      }
+
+      var rolePlays = {};
+      var alignmentPlays = {};
+      var roleWins = {};
+      var alignmentWins = {};
+
+      for (let playerId in this.originalRoles) {
+        let roleName = this.originalRoles[playerId].split(":")[0];
+        let alignment = this.getRoleAlignment(roleName);
+
+        if (rolePlays[roleName] == null) rolePlays[roleName] = 0;
+        if (alignmentPlays[alignment] == null) alignmentPlays[alignment] = 0;
+
+        rolePlays[roleName]++;
+        alignmentPlays[alignment]++;
+      }
+
+      for (let playerId of this.winners.getPlayers()) {
+        let roleName = this.originalRoles[playerId].split(":")[0];
+        let alignment = this.getRoleAlignment(roleName);
+
+        if (roleWins[roleName] == null) roleWins[roleName] = 0;
+        if (alignmentWins[alignment] == null) alignmentWins[alignment] = 0;
+
+        roleWins[roleName]++;
+        alignmentWins[alignment]++;
+      }
+
+      // Using a dot to separate the field name and role name allows mongoDB to update the role's sub-field
+      var increments = {};
+      Object.keys(rolePlays).forEach(function(key) { increments[`rolePlays.${key}`] = rolePlays[key]; } );
+      Object.keys(roleWins).forEach(function(key) { increments[`roleWins.${key}`] = roleWins[key]; } );
+      Object.keys(alignmentPlays).forEach(function(key) { increments[`alignmentPlays.${key}`] = alignmentPlays[key]; } );
+      Object.keys(alignmentWins).forEach(function(key) { increments[`alignmentWins.${key}`] = alignmentWins[key]; } );
+
+      if ("dayCount" in this) {
+        increments[`dayCountWins.${this.dayCount}`] = 1;
+      }
+      
+      await models.SetupVersion.updateOne(
+        { _id: new ObjectID(setupVersion._id) },
+        {
+          $inc: {
+            ...increments,
+            played: 1,
+          },
+        }
+      ).exec();
+    } catch (e) {
+      logger.error('Error recording setup statistics: ', e);
+    }
+  }
+
   async endPostgame() {
     try {
       if (this.postgameOver) return;
@@ -2315,8 +2400,10 @@ module.exports = class Game {
         if (!player.left) player.user.disconnect();
 
       var setup = await models.Setup.findOne({ id: this.setup.id }).select(
-        "id alignmentPlays alignmentWins"
+        "id version rolePlays roleWins played"
       );
+
+      this.recordSetupStats(setup);
 
       var history = this.history.getHistoryInfo(null, true);
       var users = [];
@@ -2361,38 +2448,11 @@ module.exports = class Game {
       });
       await game.save();
 
-      var rolePlays = setup.rolePlays || {};
-      var roleWins = setup.roleWins || {};
-
-      for (let playerId in this.originalRoles) {
-        let roleName = this.originalRoles[playerId].split(":")[0];
-
-        if (rolePlays[roleName] == null) rolePlays[roleName] = 0;
-
-        rolePlays[roleName]++;
-      }
-
-      for (let playerId of this.winners.getPlayers()) {
-        let roleName = this.originalRoles[playerId].split(":")[0];
-
-        if (roleWins[roleName] == null) roleWins[roleName] = 0;
-
-        roleWins[roleName]++;
-      }
-
-      await models.Setup.updateOne(
-        { id: setup.id },
-        {
-          $inc: { played: 1 },
-          $set: { rolePlays, roleWins },
-        }
-      ).exec();
-
       for (let player of this.players) {
         let rankedPoints = 0;
         let competitivePoints = 0;
 
-        if (player.won) {
+        /* if (player.won) {
           let roleName = this.originalRoles[player.id].split(":")[0];
 
           if (rolePlays[roleName] > constants.minRolePlaysForPoints) {
@@ -2402,7 +2462,7 @@ module.exports = class Game {
             rankedPoints = Math.round((1 - perc) * 100);
             competitivePoints = Math.round((1 - perc) * 100);
           }
-        }
+        } */
         let coinsEarned = 0;
         if (this.ranked && player.won) {
           coinsEarned++;

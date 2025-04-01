@@ -1,6 +1,10 @@
 .setup-page {
   display: flex;
-  flex-flow: column;
+  flex-flow: row;
+
+  gap: 8px;
+
+  margin-bottom: 12px;
 }
 
 .setup-page .heading {
@@ -46,4 +50,46 @@
   .play .setup-page .role-list-container .top-link {
     font-size: 13px !important;
   }
+}
+
+.setup-page .main-panel {
+  flex-grow: 1;
+
+  display: flex;
+  flex-flow: column;
+
+  background-color: var(--theme-color);
+  box-shadow: 0px 0px 1px black;
+}
+
+.setup-page .side {
+  gap: 8px;
+}
+
+.setup-page .changelog {
+  white-space: pre-wrap;
+
+  padding: 8px;
+  min-width: 360px;
+  max-height: 400px;
+
+  overflow-y: auto;
+  background-color: #121212;
+}
+
+.setup-page .changelog .color-added {
+  color: green;
+}
+
+.setup-page .changelog .color-removed {
+  color: red;
+}
+
+.setup-page .changelog .color-skipped {
+  color: var(--theme-color-text);
+  background-color: var(--theme-color);
+}
+
+.setup-page .changelog .color-unchanged {
+  color: var(--theme-color-text);
 }
