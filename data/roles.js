@@ -2997,10 +2997,7 @@ const roleData = {
         "Epic",
       ],
       description: [
-        "Each night, may choose a player to kill.",
-        "Makes 2 players fall in love.",
-        "Gives any visitors 3 guns.",
-        "Is Demonic",
+        "Very Very Good Role.",
       ],
     },
 
