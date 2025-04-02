@@ -252,11 +252,22 @@ const modifierData = {
       allowDuplicate: true,
       incompatible: ["Banished", "Exclusive"],
     },
+    Insane: {
+      internal: ["FalseModifier"],
+      tags: ["FalseMode"],
+      description: "All Information received by this role is false.",
+    },
     Insightful: {
       internal: ["Learn3ExcessRoles"],
       tags: ["Investigative", "Roles", "Excess Roles"],
       description:
         "Learns 3 excess roles upon the game's start. Mafia/Cult roles always learn Village-aligned excess roles.",
+    },
+    Inverted: {
+      internal: ["VotingNegative"],
+      tags: ["Voting"],
+      description: "Player's vote is Negative.",
+      incompatible: ["Felonious"],
     },
     Kleptomaniac: {
       internal: ["StealFromTargets"],
@@ -552,12 +563,6 @@ const modifierData = {
       tags: ["Convert Saver"],
       description: "Cannot be converted to another role.",
     },
-    Untrustworthy: {
-      internal: ["VotingNegative"],
-      tags: ["Voting"],
-      description: "Player's vote is Negative.",
-      incompatible: ["Felonious"],
-    },
     Vain: {
       internal: ["Vain"],
       tags: ["Visits", "Killing", "Alignments", "Self Kill"],
@@ -589,12 +594,6 @@ const modifierData = {
       tags: ["Sacrificial", "Information"],
       description:
         "If killed at night, a player with this modifier learns that 1 of 2 players is evil.",
-    },
-
-    Insane: {
-      internal: ["FalseModifier"],
-      tags: ["FalseMode"],
-      description: "All Information received by this role is false.",
     },
     Sane: {
       internal: ["TrueModifier"],

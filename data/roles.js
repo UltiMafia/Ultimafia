@@ -2981,13 +2981,13 @@ const roleData = {
       category: "Night-acting",
       tags: ["Night-acting", "Visiting"],
       description: [
-        "Pays a visit to another player at night.",
-        "Annoyingly, this visit has no effect.",
+        "Visits another player at night. This visit has no effect.",
         "Cult roles with the Scatterbrained modifier appear as this role to self.",
       ],
     },
     "War Demon": {
       alignment: "Cult",
+      disabled: true,
       category: "Demon",
       tags: [
         "Killing",
