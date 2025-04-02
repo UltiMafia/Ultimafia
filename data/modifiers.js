@@ -263,7 +263,7 @@ const modifierData = {
       description:
         "Learns 3 excess roles upon the game's start. Mafia/Cult roles always learn Village-aligned excess roles.",
     },
-    Inverted: {
+    Inverse: {
       internal: ["VotingNegative"],
       tags: ["Voting"],
       description: "Player's vote is Negative.",
