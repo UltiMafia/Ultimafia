@@ -2304,7 +2304,10 @@ module.exports = class Game {
 
       var setupVersionNum = setup.version || 0;
 
-      let setupVersion = await models.SetupVersion.findOne({ setup: new ObjectID(setup._id), version: setupVersionNum }).select("_id");
+      let setupVersion = await models.SetupVersion.findOne({
+        setup: new ObjectID(setup._id),
+        version: setupVersionNum,
+      }).select("_id");
 
       if (!setupVersion) {
         // If version doesn't yet exist, create one
@@ -2355,15 +2358,23 @@ module.exports = class Game {
 
       // Using a dot to separate the field name and role name allows mongoDB to update the role's sub-field
       var increments = {};
-      Object.keys(rolePlays).forEach(function(key) { increments[`rolePlays.${key}`] = rolePlays[key]; } );
-      Object.keys(roleWins).forEach(function(key) { increments[`roleWins.${key}`] = roleWins[key]; } );
-      Object.keys(alignmentPlays).forEach(function(key) { increments[`alignmentPlays.${key}`] = alignmentPlays[key]; } );
-      Object.keys(alignmentWins).forEach(function(key) { increments[`alignmentWins.${key}`] = alignmentWins[key]; } );
+      Object.keys(rolePlays).forEach(function (key) {
+        increments[`rolePlays.${key}`] = rolePlays[key];
+      });
+      Object.keys(roleWins).forEach(function (key) {
+        increments[`roleWins.${key}`] = roleWins[key];
+      });
+      Object.keys(alignmentPlays).forEach(function (key) {
+        increments[`alignmentPlays.${key}`] = alignmentPlays[key];
+      });
+      Object.keys(alignmentWins).forEach(function (key) {
+        increments[`alignmentWins.${key}`] = alignmentWins[key];
+      });
 
       if ("dayCount" in this) {
         increments[`dayCountWins.${this.dayCount}`] = 1;
       }
-      
+
       await models.SetupVersion.updateOne(
         { _id: new ObjectID(setupVersion._id) },
         {
@@ -2374,7 +2385,7 @@ module.exports = class Game {
         }
       ).exec();
     } catch (e) {
-      logger.error('Error recording setup statistics: ', e);
+      logger.error("Error recording setup statistics: ", e);
     }
   }
 

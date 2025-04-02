@@ -43,7 +43,7 @@ function getBasicPieStats(alignmentWinrate, roleWinrate, rolesRaw) {
     return null;
   }
 
-  Object.keys(alignmentWinrate).forEach(function(alignment) {
+  Object.keys(alignmentWinrate).forEach(function (alignment) {
     if (alignment === "Independent") {
       return;
     }
@@ -51,18 +51,16 @@ function getBasicPieStats(alignmentWinrate, roleWinrate, rolesRaw) {
     if (alignment === "Village") {
       colors[alignment] = "#66adff";
       data[alignment] = `${alignmentWinrate[alignment]}`;
-    }
-    else if (alignment === "Mafia") {
+    } else if (alignment === "Mafia") {
       colors[alignment] = "#505d66";
       data[alignment] = `${alignmentWinrate[alignment]}`;
-    }
-    else if (alignment === "Cult") {
+    } else if (alignment === "Cult") {
       colors[alignment] = "#b161d3";
       data[alignment] = `${alignmentWinrate[alignment]}`;
     }
   });
 
-  Object.keys(roleWinrate).forEach(function(roleName) {
+  Object.keys(roleWinrate).forEach(function (roleName) {
     if (roleWinrate[roleName] === 0) {
       return;
     }
@@ -74,7 +72,7 @@ function getBasicPieStats(alignmentWinrate, roleWinrate, rolesRaw) {
     }
   });
 
-  return {"data": data, "colors": colors};
+  return { data: data, colors: colors };
 }
 
 export function SetupPage() {
@@ -92,14 +90,16 @@ export function SetupPage() {
   const [diff, setDiff] = useState([]); // Changelog diff
 
   const allVersions = Array.from(Array(currentVersionNum + 1).keys()).reverse();
-  const localDateString = new Date(Date.parse(versionTimestamp)).toLocaleString();
-  const shouldDisplayStats = (gameType === "Mafia");
-  const shouldDisplayChangelog = (gameType === "Mafia");
+  const localDateString = new Date(
+    Date.parse(versionTimestamp)
+  ).toLocaleString();
+  const shouldDisplayStats = gameType === "Mafia";
+  const shouldDisplayChangelog = gameType === "Mafia";
 
   useEffect(() => {
     if (setupId) {
       axios
-        .get(`/setup/${setupId}`, { headers: {"includeStats": true} })
+        .get(`/setup/${setupId}`, { headers: { includeStats: true } })
         .then((res) => {
           let setup = res.data;
           setup.roles = JSON.parse(setup.roles);
@@ -112,7 +112,13 @@ export function SetupPage() {
           document.title = `Setup | ${res.data.name} | UltiMafia`;
 
           if (setup.gameType === "Mafia") {
-            setPieData(getBasicPieStats(setup.stats.alignmentWinrate, setup.stats.roleWinrate, siteInfo.rolesRaw["Mafia"]));
+            setPieData(
+              getBasicPieStats(
+                setup.stats.alignmentWinrate,
+                setup.stats.roleWinrate,
+                siteInfo.rolesRaw["Mafia"]
+              )
+            );
 
             const changelog = setup.setupVersion.changelog;
             if (changelog) {
@@ -181,13 +187,18 @@ export function SetupPage() {
           setVersionTimestamp(setupVersion.timestamp);
 
           if (gameType === "Mafia") {
-            setPieData(getBasicPieStats(setupVersion.stats.alignmentWinrate, setupVersion.stats.roleWinrate, siteInfo.rolesRaw["Mafia"]));
+            setPieData(
+              getBasicPieStats(
+                setupVersion.stats.alignmentWinrate,
+                setupVersion.stats.roleWinrate,
+                siteInfo.rolesRaw["Mafia"]
+              )
+            );
 
             const changelog = setupVersion.changelog;
             if (changelog) {
               setDiff(JSON.parse(changelog));
-            }
-            else {
+            } else {
               setDiff([]);
             }
           }
@@ -197,7 +208,7 @@ export function SetupPage() {
           history.push("/play");
         });
     }
-  }
+  };
 
   /*
   const rolesets = [];
@@ -293,43 +304,55 @@ export function SetupPage() {
             />
           </div>
         </div>
-        {shouldDisplayStats && (<div className="side column">
-          <div className="box-panel version-selector">
-            <div className="heading">Select Version</div>
-            <select onChange={handleVersionChange}>
-              {allVersions.map((oldVersionNum) => <option value={oldVersionNum}>{oldVersionNum}</option>)}
-            </select>
-          </div>
-          <div className="box-panel winrate-stats">
-            <div className="heading">Win Statistics</div>
-            <div className="content">
-              {/* {ratings}
+        {shouldDisplayStats && (
+          <div className="side column">
+            <div className="box-panel version-selector">
+              <div className="heading">Select Version</div>
+              <select onChange={handleVersionChange}>
+                {allVersions.map((oldVersionNum) => (
+                  <option value={oldVersionNum}>{oldVersionNum}</option>
+                ))}
+              </select>
+            </div>
+            <div className="box-panel winrate-stats">
+              <div className="heading">Win Statistics</div>
+              <div className="content">
+                {/* {ratings}
               <div
                 className="expand-icon-wrapper"
                 onClick={() => setShowStatsModal(true)}
               >
                 <i className="fas fa-expand-arrows-alt" />
               </div> */}
-            </div>
-            <div
-              className="content"
-              style={{ padding: "0", justifyContent: "center" }}
-            >
-              {pieData && (<PieChart
-                data={pieData.data}
-                colors={pieData.colors}
-                displayPieChart={true}
-              />)}
+              </div>
+              <div
+                className="content"
+                style={{ padding: "0", justifyContent: "center" }}
+              >
+                {pieData && (
+                  <PieChart
+                    data={pieData.data}
+                    colors={pieData.colors}
+                    displayPieChart={true}
+                  />
+                )}
+              </div>
             </div>
           </div>
-        </div>)}
-        {shouldDisplayChangelog && (<div className="side column">
-          <div className="box-panel changelog-panel">
-            <div className="heading">Changelog for version {selectedVersionNum}</div>
-            <div className="heading">Changed on: {localDateString}</div>
-            <div><Changelog diff={diff}/></div>
+        )}
+        {shouldDisplayChangelog && (
+          <div className="side column">
+            <div className="box-panel changelog-panel">
+              <div className="heading">
+                Changelog for version {selectedVersionNum}
+              </div>
+              <div className="heading">Changed on: {localDateString}</div>
+              <div>
+                <Changelog diff={diff} />
+              </div>
+            </div>
           </div>
-        </div>)}
+        )}
       </div>
       <Comments location={commentLocation} />
     </>
@@ -338,14 +361,13 @@ export function SetupPage() {
 
 function postprocessUnchangedLines(diff, contextAmount) {
   const newDiff = [];
-  
+
   var i = 0;
   diff.forEach((part) => {
     if (part.added || part.removed) {
       newDiff.push(part);
-    } 
-    else {
-      const unchangedLines = part.value.split('\n');
+    } else {
+      const unchangedLines = part.value.split("\n");
 
       var snippet1Index = 0;
       var snippet2Index = unchangedLines.length - 1;
@@ -368,19 +390,18 @@ function postprocessUnchangedLines(diff, contextAmount) {
 
       if (snippet1Index >= snippet2Index) {
         newDiff.push(part);
-      }
-      else {
+      } else {
         const pushSnippet1 = snippet1Index > 0;
         const pushSnippet2 = snippet2Index < unchangedLines.length - 1;
 
-        if(pushSnippet1) {
+        if (pushSnippet1) {
           newDiff.push({
-            value: unchangedLines.slice(0, snippet1Index).join('\n'),
+            value: unchangedLines.slice(0, snippet1Index).join("\n"),
             added: false,
             removed: false,
           });
         }
-        if(pushSnippet1 || pushSnippet2) {
+        if (pushSnippet1 || pushSnippet2) {
           newDiff.push({
             value: "...",
             added: false,
@@ -388,9 +409,9 @@ function postprocessUnchangedLines(diff, contextAmount) {
             skipped: true,
           });
         }
-        if(pushSnippet2) {
+        if (pushSnippet2) {
           newDiff.push({
-            value: unchangedLines.slice(snippet2Index).join('\n'),
+            value: unchangedLines.slice(snippet2Index).join("\n"),
             added: false,
             removed: false,
           });
@@ -412,14 +433,22 @@ function Changelog({ diff }) {
 
   var i = 0;
   postprocessedDiff.forEach((part) => {
-    const className = part.added ? 'color-added' : part.removed ? 'color-removed' : part.skipped ? 'color-skipped' : 'color-unchanged';
-    lines.push(<p key={i} className={className}>{part.value}</p>);
+    const className = part.added
+      ? "color-added"
+      : part.removed
+      ? "color-removed"
+      : part.skipped
+      ? "color-skipped"
+      : "color-unchanged";
+    lines.push(
+      <p key={i} className={className}>
+        {part.value}
+      </p>
+    );
     i++;
   });
 
-  return (<div className="changelog">
-    {lines}
-  </div>)
+  return <div className="changelog">{lines}</div>;
 }
 
 function SetupRowInfo(props) {
