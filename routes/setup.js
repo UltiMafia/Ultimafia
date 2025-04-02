@@ -14,7 +14,7 @@ const { min } = require("mocha/lib/reporters");
 const router = express.Router();
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
-const Diff = require('diff');
+const Diff = require("diff");
 
 function markFavSetups(userId, setups) {
   return new Promise(async (resolve, reject) => {
@@ -44,7 +44,7 @@ function generateMafiaSetupManifest(setup, roles) {
     // Start with the lines for all of the global stuff
     lines = [
       `Name: ${setup.name}`,
-      `Starting state: ${setup.startState	}`,
+      `Starting state: ${setup.startState}`,
       `Whispers enabled: ${setup.whispers}`,
       `Whisper leak percentage: ${setup.leakPercentage}`,
       `Last wills enabled: ${setup.lastWill}`,
@@ -55,7 +55,7 @@ function generateMafiaSetupManifest(setup, roles) {
       `Hidden converts: ${setup.hiddenConverts}`,
       `Role sharing: ${setup.RoleShare}`,
       `Alignment sharing: ${setup.AlignmentShare}`,
-      `Private sharing: ${setup.PrivateShare	}`,
+      `Private sharing: ${setup.PrivateShare}`,
       `Public sharing: ${setup.PublicShare}`,
       `Events per night: ${setup.EventsPerNight}`,
       `No death limit: ${setup.noDeathLimit}`,
@@ -68,7 +68,7 @@ function generateMafiaSetupManifest(setup, roles) {
       `Must act: ${setup.mustAct}`,
       `Must condemn: ${setup.mustCondemn}`,
       `Game start prompt: ${setup.gameStartPrompt}`,
-      `No reveal: ${setup.noReveal}`,	
+      `No reveal: ${setup.noReveal}`,
       `Votes invisible: ${setup.votesInvisible}`,
       `Game ending event: ${setup.GameEndEvent}`,
     ];
@@ -85,14 +85,15 @@ function generateMafiaSetupManifest(setup, roles) {
       lines.push(`- Role group ${i}:`);
 
       const roleGroup = roles[i];
-      Object.keys(roleGroup).forEach(function(role) {
+      Object.keys(roleGroup).forEach(function (role) {
         const tokens = role.split(":");
-        const roleName = (tokens.length < 2 || tokens[1] === "") ? tokens[0] : role;
+        const roleName =
+          tokens.length < 2 || tokens[1] === "" ? tokens[0] : role;
         lines.push(`  - ${roleName}: ${roleGroup[role]}`);
       });
     }
 
-    return lines.join('\n');
+    return lines.join("\n");
   } catch (e) {
     logger.error(e);
     console.log(setup);
@@ -238,10 +239,10 @@ function calculateStats(setupVersion, gameType) {
   }
 
   // Infer that a setup is "legacy" if it lacks a manifest
-  const isLegacy = (setupVersion.manifest === "");
+  const isLegacy = setupVersion.manifest === "";
 
   // =========================================================================
-  
+
   const rolePlays = setupVersion.rolePlays || {};
   const roleWins = setupVersion.roleWins || {};
 
@@ -249,8 +250,8 @@ function calculateStats(setupVersion, gameType) {
   var totalRoleWinPercent = 0.0;
   var roleWinrate = {};
   var roleWinrateNormalized = {};
-  
-  Object.keys(rolePlays).forEach(function(key) {
+
+  Object.keys(rolePlays).forEach(function (key) {
     var numWins = key in roleWins ? roleWins[key] : 0;
     var winPercent = numWins / rolePlays[key];
 
@@ -262,8 +263,8 @@ function calculateStats(setupVersion, gameType) {
   if (totalRoleWinPercent < 1) {
     totalRoleWinPercent = 1;
   }
-  
-  Object.keys(roleWinrate).forEach(function(key) {
+
+  Object.keys(roleWinrate).forEach(function (key) {
     roleWinrateNormalized[key] = roleWinrate[key] / totalRoleWinPercent;
   });
 
@@ -277,7 +278,7 @@ function calculateStats(setupVersion, gameType) {
     alignmentPlays = {};
     alignmentWins = {};
 
-    Object.keys(rolePlays).forEach(function(key) {
+    Object.keys(rolePlays).forEach(function (key) {
       const numWins = key in roleWins ? roleWins[key] : 0;
       const alignment = roleData[gameType][key].alignment;
 
@@ -287,13 +288,13 @@ function calculateStats(setupVersion, gameType) {
       alignmentPlays[alignment] += rolePlays[key];
       alignmentWins[alignment] += numWins;
 
-      console.log(key)
-      console.log(rolePlays[key])
-      console.log(numWins)
-      console.log(alignment)
-      console.log(alignmentPlays)
-      console.log(alignmentWins)
-      console.log("==================================")
+      console.log(key);
+      console.log(rolePlays[key]);
+      console.log(numWins);
+      console.log(alignment);
+      console.log(alignmentPlays);
+      console.log(alignmentWins);
+      console.log("==================================");
     });
   }
 
@@ -301,8 +302,8 @@ function calculateStats(setupVersion, gameType) {
   var totalAlignmentWinPercent = 0.0;
   var alignmentWinrate = {};
   var alignmentWinrateNormalized = {};
-  
-  Object.keys(alignmentPlays).forEach(function(key) {
+
+  Object.keys(alignmentPlays).forEach(function (key) {
     var numWins = key in alignmentWins ? alignmentWins[key] : 0;
     var winPercent = numWins / alignmentPlays[key];
 
@@ -314,9 +315,10 @@ function calculateStats(setupVersion, gameType) {
   if (totalAlignmentWinPercent < 1) {
     totalAlignmentWinPercent = 1;
   }
-  
-  Object.keys(alignmentWinrate).forEach(function(key) {
-    alignmentWinrateNormalized[key] = alignmentWinrate[key] / totalAlignmentWinPercent;
+
+  Object.keys(alignmentWinrate).forEach(function (key) {
+    alignmentWinrateNormalized[key] =
+      alignmentWinrate[key] / totalAlignmentWinPercent;
   });
 
   // =========================================================================
@@ -336,9 +338,12 @@ router.get("/:id", async function (req, res) {
 
     if (setup) {
       setup = setup.toJSON();
-      
+
       var setupVersionNum = setup.version || 0;
-      let setupVersion = await models.SetupVersion.findOne({ setup: new ObjectID(setup._id), version: setupVersionNum }).select(
+      let setupVersion = await models.SetupVersion.findOne({
+        setup: new ObjectID(setup._id),
+        version: setupVersionNum,
+      }).select(
         "-_id timestamp changelog manifest played rolePlays roleWins alignmentPlays alignmentWins dayCountWins"
       );
       setup.setupVersion = setupVersion || {};
@@ -346,7 +351,7 @@ router.get("/:id", async function (req, res) {
       if (req.get("includeStats") == "true") {
         setup.stats = calculateStats(setupVersion, setup.gameType);
       }
-      
+
       res.send(setup);
     } else {
       res.status(500);
@@ -362,16 +367,21 @@ router.get("/:id", async function (req, res) {
 router.get("/:id/version/:setupVersionNum", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
-    var setup = await models.Setup.findOne({ id: req.params.id }).select("-__v -hash");
+    var setup = await models.Setup.findOne({ id: req.params.id }).select(
+      "-__v -hash"
+    );
 
     if (setup) {
       setup = setup.toJSON();
-      
-      let setupVersion = await models.SetupVersion.findOne({ setup: new ObjectID(setup._id), version: req.params.setupVersionNum }).select(
+
+      let setupVersion = await models.SetupVersion.findOne({
+        setup: new ObjectID(setup._id),
+        version: req.params.setupVersionNum,
+      }).select(
         "-_id timestamp changelog manifest played rolePlays roleWins alignmentPlays alignmentWins dayCountWins"
       );
 
-      if(setupVersion) {
+      if (setupVersion) {
         setupVersion = setupVersion.toJSON();
         setupVersion.stats = calculateStats(setupVersion, setup.gameType);
         res.send(setupVersion);
@@ -734,7 +744,10 @@ router.post("/create", async function (req, res) {
     var setupId = null;
     if (req.body.editing) {
       await models.Setup.updateOne({ id: setup.id }, { $set: obj }).exec();
-      await models.Setup.updateOne({ id: setup.id }, { $inc: { version: 1, }}).exec();
+      await models.Setup.updateOne(
+        { id: setup.id },
+        { $inc: { version: 1 } }
+      ).exec();
       res.send(req.body.id);
       setupId = setup.id;
     } else {
@@ -751,12 +764,15 @@ router.post("/create", async function (req, res) {
       setupId = obj.id;
     }
 
-    const setupAfterChanges = await models.Setup.findOne({ id: setupId }).select(
-      "_id id version"
-    );
+    const setupAfterChanges = await models.Setup.findOne({
+      id: setupId,
+    }).select("_id id version");
 
     if (setupAfterChanges) {
-      const oldSetupVersion = await models.SetupVersion.findOne({ setup: new ObjectID(setupAfterChanges._id), version: setupAfterChanges.version - 1 }).select("_id manifest");
+      const oldSetupVersion = await models.SetupVersion.findOne({
+        setup: new ObjectID(setupAfterChanges._id),
+        version: setupAfterChanges.version - 1,
+      }).select("_id manifest");
 
       var oldSetupManifest = "";
       if (oldSetupVersion) {
@@ -764,17 +780,20 @@ router.post("/create", async function (req, res) {
       }
 
       const setupManifest = generateMafiaSetupManifest(setup, newRoles);
-      
+
       setupVersion = new models.SetupVersion({
         version: setupAfterChanges.version,
         setup: new ObjectID(setupAfterChanges._id),
         manifest: setupManifest,
-        changelog: JSON.stringify(Diff.diffLines(oldSetupManifest, setupManifest)),
+        changelog: JSON.stringify(
+          Diff.diffLines(oldSetupManifest, setupManifest)
+        ),
       });
       await setupVersion.save();
-    }
-    else {
-      logger.warn(`failed to find setup for ID: ${setupId}. A setup version will not be created as a result.`);
+    } else {
+      logger.warn(
+        `failed to find setup for ID: ${setupId}. A setup version will not be created as a result.`
+      );
     }
   } catch (e) {
     logger.error(e);
