@@ -29,7 +29,7 @@ module.exports = class ChoirOfRoles extends Card {
                 run: function () {
                   //New code
                   if (!this.actor.hasAbility(["Condemn"])) {
-                  return;
+                    return;
                   }
                   for (let action of this.game.actions[0]) {
                     if (
