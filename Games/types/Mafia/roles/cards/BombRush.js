@@ -13,7 +13,7 @@ module.exports = class BombRush extends Card {
           run: function () {
             if (!this.actor.hasAbility(["Kill"])) {
               return;
-             }
+            }
             this.game.queueAlert(
               `:dynamite: ${this.actor.name} rushes at ${this.target.name} and explodes!`
             );
