@@ -20,8 +20,8 @@ module.exports = class CauseSnowstorm extends Card {
             if (this.target === "Yes") {
               this.actor.role.causedSnowstorm = true;
               if (!this.actor.hasAbility(["Effect"])) {
-              return;
-             }
+                return;
+              }
               this.game.queueAlert(":snowball: A snowstorm is approaching…");
               for (const player of this.game.players) {
                 player.holdItem("Snowstorm");
