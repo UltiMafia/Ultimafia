@@ -11,6 +11,9 @@ module.exports = class CatGiver extends Card {
         action: {
           labels: ["giveItem", "cat"],
           run: function () {
+              if (!this.actor.hasAbility(["Effect"])) {
+              return;
+             }
             this.target.holdItem("Cat", this.actor);
             this.target.queueGetItemAlert("Cat");
           },
