@@ -47,7 +47,7 @@ module.exports = class ChangeRandomAlignment extends Card {
       },
       state: function (stateInfo) {
         if (
-          this.player.alive &&
+          this.player.hasAbility(["Alignment"]) &&
           stateInfo.name.match(/Day/) &&
           stateInfo.dayCount > 0
         ) {
