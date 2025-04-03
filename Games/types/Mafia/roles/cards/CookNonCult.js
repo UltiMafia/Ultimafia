@@ -14,7 +14,7 @@ module.exports = class CookNonCult extends Card {
           return;
         }
         if (!this.player.hasAbility(["Effect"])) {
-              return;
+          return;
         }
 
         let cult = this.game
