@@ -97,6 +97,9 @@ module.exports = class JailTarget extends Card {
           labels: ["jail"],
           priority: PRIORITY_DAY_DEFAULT,
           run: function () {
+            if (!this.actor.hasAbility(["Meeting", "Jail"])) {
+              return;
+             }
             if (this.dominates()) {
               this.target.holdItem(
                 "Handcuffs",
