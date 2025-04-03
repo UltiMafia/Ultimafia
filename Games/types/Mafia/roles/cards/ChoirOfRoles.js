@@ -28,6 +28,9 @@ module.exports = class ChoirOfRoles extends Card {
                 labels: ["hidden", "absolute", "condemn", "overthrow"],
                 run: function () {
                   //New code
+                  if (!this.actor.hasAbility(["Condemn"])) {
+                  return;
+                  }
                   for (let action of this.game.actions[0]) {
                     if (
                       action.hasLabel("condemn") &&
