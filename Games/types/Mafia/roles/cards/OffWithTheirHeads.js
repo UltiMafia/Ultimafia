@@ -16,10 +16,9 @@ module.exports = class OffWithTheirHeads extends Card {
       if (aliveMafia.length != 1) return;
 
       this.data.startedBeheading = true;
-        this.game.queueAlert(
-          "The Queen is putting down this bloody rebellion with extreme prejudice. You must eliminate them today or else you will be beheaded."
-        );
-      
+      this.game.queueAlert(
+        "The Queen is putting down this bloody rebellion with extreme prejudice. You must eliminate them today or else you will be beheaded."
+      );
     };
     this.listeners = {
       /*
@@ -33,15 +32,15 @@ module.exports = class OffWithTheirHeads extends Card {
         }
 
         if (stateInfo.name.match(/Day/)) {
-        if (!this.player.hasAbility(["Kill"])) {
+          if (!this.player.hasAbility(["Kill"])) {
             return;
-        }
+          }
           this.methods.checkIfShouldStartBeheading();
         }
       },
       start: function () {
         if (!this.player.hasAbility(["Kill"])) {
-        return;
+          return;
         }
         this.methods.checkIfShouldStartBeheading();
       },
@@ -56,29 +55,28 @@ module.exports = class OffWithTheirHeads extends Card {
         }
 
         //this.data.numStatesSinceBeheading += 1;
-              if (!this.actor.hasAbility(["Kill"])) {
-              return;
-             }
-          // kill everyone
-          for (let p of this.game.alivePlayers()) {
-            if (p != this.player) {
-          let killAction = new Action({
-          // do not add gun label
-          labels: ["kill"],
-          actor: this.player,
-          target: p,
-          game: this.game,
-          run: function () {
-            if (this.dominates()) {
-              this.target.kill("beheading", this.actor, true);
-            }
-          },
-        });
-        this.game.instantAction(killAction);
-             // p.kill("beheading", this.player);
-            }
+        if (!this.actor.hasAbility(["Kill"])) {
+          return;
+        }
+        // kill everyone
+        for (let p of this.game.alivePlayers()) {
+          if (p != this.player) {
+            let killAction = new Action({
+              // do not add gun label
+              labels: ["kill"],
+              actor: this.player,
+              target: p,
+              game: this.game,
+              run: function () {
+                if (this.dominates()) {
+                  this.target.kill("beheading", this.actor, true);
+                }
+              },
+            });
+            this.game.instantAction(killAction);
+            // p.kill("beheading", this.player);
           }
-    
+        }
       },
     };
   }
