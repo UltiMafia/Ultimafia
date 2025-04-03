@@ -8,7 +8,7 @@ module.exports = class PureSacrifice extends Card {
       death: function (player, killer, deathType) {
         if (!this.player.hasAbility(["Protection", "WhenDead"])) {
           return;
-       }
+        }
         if (player == this.player && deathType == "condemn") {
           this.game.queueAlert("The virgin has been sacrificed!");
           for (let _player of this.game.players) {
