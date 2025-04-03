@@ -16,9 +16,7 @@ module.exports = class DefendAndSnatchGun extends Card {
         if (!action.hasLabel("gun")) {
           return;
         }
-        if (
-          !this.player.hasAbility(["Modifier", "OnlyWhenAlive"])
-        ) {
+        if (!this.player.hasAbility(["Modifier", "OnlyWhenAlive"])) {
           return;
         }
 
@@ -50,8 +48,7 @@ module.exports = class DefendAndSnatchGun extends Card {
         if (player != this.player) {
           return;
         }
-        if (this.player.hasAbility(["Modifier", "OnlyWhenAlive"])
-        ) {
+        if (this.player.hasAbility(["Modifier", "OnlyWhenAlive"])) {
           this.immunity["gun"] = "Infinity";
         } else {
           this.immunity["gun"] = 0;
