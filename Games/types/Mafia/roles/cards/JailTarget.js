@@ -99,7 +99,7 @@ module.exports = class JailTarget extends Card {
           run: function () {
             if (!this.actor.hasAbility(["Meeting", "Jail"])) {
               return;
-             }
+            }
             if (this.dominates()) {
               this.target.holdItem(
                 "Handcuffs",
