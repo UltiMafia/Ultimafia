@@ -35,6 +35,9 @@ module.exports = class CourtSession extends Card {
           run: function () {
             if (this.target === "Yes") {
               this.actor.role.bangedGavel++;
+               if (!this.actor.hasAbility(["Meeting"])) {
+              return;
+               }
               this.game.queueAlert(
                 ":hammer: You have received a court summons…"
               );
