@@ -5,7 +5,7 @@ const { PRIORITY_NIGHT_SAVER } = require("../../const/Priority");
 module.exports = class ProtectNeighborsIfBothTown extends Card {
   constructor(role) {
     super(role);
-
+/*
     this.actions = [
       {
         priority: PRIORITY_NIGHT_SAVER,
@@ -28,5 +28,35 @@ module.exports = class ProtectNeighborsIfBothTown extends Card {
         },
       },
     ];
+*/
+      this.listeners = {
+      AbilityToggle: function (player) {
+        for(let effect of this.ImmortalEffects){
+          if(effect.player){
+          var index = effect.player.passiveEffects.indexOf(effect);
+          if (index != -1) {
+            this.player.passiveEffects.splice(index, 1);
+          }
+          effect.remove();
+        }
+        }
+        this.ImmortalEffects = [];
+        if (this.player.hasAbility(["Protection", "OnlyWhenAlive"])) {
+            let neighbors = this.player.getNeighbors();
+          if(neighbors[0].isEvil() == true || neighbors[1].isEvil() == true){
+            return;
+          }
+         for(let player of neighbors) {
+            this.player.passiveEffects.push(player.giveEffect(
+              "Immortal",
+              5,
+              Infinity
+            ));
+        }
+        }
+      },
+    };
+
+    
   }
 };
