@@ -16,6 +16,11 @@ module.exports = class DefendAndSnatchGun extends Card {
         if (!action.hasLabel("gun")) {
           return;
         }
+        if (
+          !this.player.hasAbility(["Modifier", "OnlyWhenAlive"])
+        ) {
+          return;
+        }
 
         let toSnatch =
           Random.randFloatRange(0, 100) <= 80 && action.actor != this.player;
@@ -40,6 +45,17 @@ module.exports = class DefendAndSnatchGun extends Card {
           },
         });
         this.game.instantAction(killAction);
+      },
+      AbilityToggle: function (player) {
+        if (player != this.player) {
+          return;
+        }
+        if (this.player.hasAbility(["Modifier", "OnlyWhenAlive"])
+        ) {
+          this.immunity["gun"] = "Infinity";
+        } else {
+          this.immunity["gun"] = 0;
+        }
       },
     };
   }
