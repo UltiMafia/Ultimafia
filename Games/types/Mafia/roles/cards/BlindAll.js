@@ -19,6 +19,9 @@ module.exports = class BlindAll extends Card {
           run: function () {
             if (this.target === "Yes") {
               this.actor.role.hasBlinded = true;
+            if (!this.actor.hasAbility(["Effect"])) {
+              return;
+             }
               this.game.queueAlert(
                 ":omg: Someone turns out the lights… nobody can see!"
               );
