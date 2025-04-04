@@ -10,7 +10,7 @@ module.exports = class FrustratedCondemnation extends Card {
       self: true,
     };
 
-    this.immunity["condemn"] = 3;
+    //this.immunity["condemn"] = 3;
     /*
     this.actions = [
       {
@@ -80,6 +80,7 @@ module.exports = class FrustratedCondemnation extends Card {
 */
 
     this.listeners = {
+      /*
       state: function (stateInfo) {
         if (!this.player.alive) {
           return;
@@ -136,7 +137,7 @@ module.exports = class FrustratedCondemnation extends Card {
             if (!targeted) {
               return;
             }
-            */
+            
             for (let action of this.game.actions[0]) {
               if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
                 // Only one village vote can be overthrown
@@ -163,6 +164,35 @@ module.exports = class FrustratedCondemnation extends Card {
         });
 
         this.game.queueAction(action);
+      },
+      */
+      AbilityToggle: function (player) {
+        if (player != this.player) {
+          return;
+        }
+        if (this.player.hasAbility(["Modifier"])) {
+          if (
+            this.FrustratedEffect == null ||
+            !this.player.effects.includes(this.FrustratedEffect)
+          ) {
+            this.FrustratedEffect = this.player.giveEffect(
+              "Frustrated",
+              Infinity
+            );
+            this.player.passiveEffects.push(this.FrustratedEffect);
+          }
+        } else {
+          var index = this.player.passiveEffects.indexOf(
+            this.FrustratedEffect
+          );
+          if (index != -1) {
+            this.player.passiveEffects.splice(index, 1);
+          }
+          if (this.FrustratedEffect != null) {
+            this.FrustratedEffect.remove();
+            this.FrustratedEffect = null;
+          }
+        }
       },
     };
   }
