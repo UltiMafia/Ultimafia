@@ -5,9 +5,6 @@ module.exports = class Egg extends Role {
     super("Egg", player, data);
 
     this.alignment = "Independent";
-    this.cards = [
-      "VillageCore",
-      "ConvertSelfToChosenRole",
-    ];
+    this.cards = ["VillageCore", "ConvertSelfToChosenRole"];
   }
 };

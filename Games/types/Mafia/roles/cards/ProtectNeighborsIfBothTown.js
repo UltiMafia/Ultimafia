@@ -32,12 +32,14 @@ module.exports = class ProtectNeighborsIfBothTown extends Card {
 */
     this.listeners = {
       AbilityToggle: function (player) {
-        if(this.ImmortalEffects == null){
-        this.ImmortalEffects = [];
+        if (this.ImmortalEffects == null) {
+          this.ImmortalEffects = [];
         }
         for (let x = 0; x < this.ImmortalEffects.length; x++) {
           if (this.ImmortalEffects[x].player) {
-            var index = this.ImmortalEffects[x].player.passiveEffects.indexOf(this.ImmortalEffects[x]);
+            var index = this.ImmortalEffects[x].player.passiveEffects.indexOf(
+              this.ImmortalEffects[x]
+            );
             if (index != -1) {
               this.player.passiveEffects.splice(index, 1);
             }
@@ -51,10 +53,8 @@ module.exports = class ProtectNeighborsIfBothTown extends Card {
             return;
           }
           for (let player of neighbors) {
-            let effect =  player.giveEffect("Immortal", 5, Infinity);
-            this.player.passiveEffects.push(
-              effect
-            );
+            let effect = player.giveEffect("Immortal", 5, Infinity);
+            this.player.passiveEffects.push(effect);
             this.ImmortalEffects.push(effect);
           }
         }

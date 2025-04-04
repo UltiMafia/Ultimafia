@@ -16,7 +16,7 @@ module.exports = class ConvertSelfToChosenRole extends Card {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
           run: function () {
             if (this.target == "None") return;
-            if (!this.dominates(this.actor)){
+            if (!this.dominates(this.actor)) {
               return;
             }
             let targetPlayer = this.actor;
@@ -29,14 +29,15 @@ module.exports = class ConvertSelfToChosenRole extends Card {
               }
               for (let y = 0; y < currentRoles.length; y++) {
                 if (this.target.split(":")[0] == currentRoles[y].name) {
-                  if(this.game.getRoleAlignment(this.target) != "Independent"){
-                  players[y].giveEffect("Delirious", this.actor, Infinity);
-                  this.blockWithDelirium(players[y], true);
-                  break;
-                  }
-                  else{
-                    if (this.dominates(players[y])){
-                    players[y].setRole(`Amnesiac`)
+                  if (
+                    this.game.getRoleAlignment(this.target) != "Independent"
+                  ) {
+                    players[y].giveEffect("Delirious", this.actor, Infinity);
+                    this.blockWithDelirium(players[y], true);
+                    break;
+                  } else {
+                    if (this.dominates(players[y])) {
+                      players[y].setRole(`Amnesiac`);
                     }
                   }
                 }
@@ -46,13 +47,14 @@ module.exports = class ConvertSelfToChosenRole extends Card {
                 this.game.getRoleAlignment(this.target) ==
                 targetPlayer.role.alignment
               ) {
-                targetPlayer.setRole(`${this.target}`,
+                targetPlayer.setRole(
+                  `${this.target}`,
                   null,
                   false,
                   false,
                   false,
-                  "No Change");
-                
+                  "No Change"
+                );
               }
               delete this.actor.role.data.targetPlayer;
             }

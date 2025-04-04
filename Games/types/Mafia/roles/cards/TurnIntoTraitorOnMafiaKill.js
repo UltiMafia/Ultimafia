@@ -35,10 +35,13 @@ module.exports = class TurnIntoTraitorOnMafiaKill extends Card {
         if (player != this.player) {
           return;
         }
-        if ((this.player.role.name == "Turncoat" && this.player.hasAbility(["OnlyWhenAlive"])) || (this.player.hasAbility(["Modifier", "OnlyWhenAlive"]))) {
-           this.immunity["mafia"] = Infinity;
-          }
-        else {
+        if (
+          (this.player.role.name == "Turncoat" &&
+            this.player.hasAbility(["OnlyWhenAlive"])) ||
+          this.player.hasAbility(["Modifier", "OnlyWhenAlive"])
+        ) {
+          this.immunity["mafia"] = Infinity;
+        } else {
           this.immunity["mafia"] = 0;
         }
       },
