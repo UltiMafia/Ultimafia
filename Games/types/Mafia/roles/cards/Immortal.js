@@ -22,7 +22,7 @@ module.exports = class Immortal extends Card {
     ];
 */
     this.listeners = {
-            AbilityToggle: function (player) {
+      AbilityToggle: function (player) {
         if (player != this.player) {
           return;
         }
