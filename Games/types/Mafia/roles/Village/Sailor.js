@@ -10,7 +10,8 @@ module.exports = class Sailor extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "NightDelirium",
-      "ImmortalUnlessBlocked",
+      "KillImmune",
+      "CondemnImmune",
     ];
   }
 };
