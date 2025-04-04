@@ -551,7 +551,7 @@ const modifierData = {
     Unkillable: {
       internal: ["KillImmune"],
       tags: ["Unkillable"],
-      description: "Cannot be killed at night.",
+      description: "Can only be killed by condemn.",
     },
     Unlucky: {
       internal: ["UnluckyDeath"],
