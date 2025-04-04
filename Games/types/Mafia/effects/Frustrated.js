@@ -78,47 +78,43 @@ module.exports = class Frustrated extends Effect {
       },
       */
       PostVotingPowers: function (meeting, count, highest) {
-              const voteCounts = Object.values(meeting.votes).reduce(
-              (acc, vote) => {
-                acc[vote] = (acc[vote] || 0) + 1;
-                return acc;
-              },
-              {}
-            );
+        const voteCounts = Object.values(meeting.votes).reduce((acc, vote) => {
+          acc[vote] = (acc[vote] || 0) + 1;
+          return acc;
+        }, {});
 
-            const minVotes = Math.min(...Object.values(voteCounts));
-            const maxVotes = Math.max(...Object.values(voteCounts));
+        const minVotes = Math.min(...Object.values(voteCounts));
+        const maxVotes = Math.max(...Object.values(voteCounts));
 
-            if (
-              voteCounts[this.player.id] !== minVotes ||
-              voteCounts[this.player.id] === maxVotes ||
-              voteCounts[this.player.id] === 0
-            ) {
-              return;
-            }
+        if (
+          voteCounts[this.player.id] !== minVotes ||
+          voteCounts[this.player.id] === maxVotes ||
+          voteCounts[this.player.id] === 0
+        ) {
+          return;
+        }
 
-          let action = new Action({
-              actor: this.actor,
-              target: this.actor,
-              game: this.game,
-              labels: ["kill", "frustration", "hidden"],
-              power: 3,
-              run: function () {
-                for (let action of this.game.actions[0]) {
-                    if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
-                      // Only one village vote can be overthrown
-                      action.cancel(true);
-                      break;
+        let action = new Action({
+          actor: this.actor,
+          target: this.actor,
+          game: this.game,
+          labels: ["kill", "frustration", "hidden"],
+          power: 3,
+          run: function () {
+            for (let action of this.game.actions[0]) {
+              if (action.hasLabel("condemn") && !action.hasLabel("overthrow")) {
+                // Only one village vote can be overthrown
+                action.cancel(true);
+                break;
               }
             }
-                this.game.sendAlert(
-                  `${this.target.name} feels immensely frustrated!`
-                );
-                if (this.dominates()) this.target.kill("condemn", this.actor);
-              },
-            });
+            this.game.sendAlert(
+              `${this.target.name} feels immensely frustrated!`
+            );
+            if (this.dominates()) this.target.kill("condemn", this.actor);
+          },
+        });
         this.game.queueAction(action);
-        
       },
     };
   }
