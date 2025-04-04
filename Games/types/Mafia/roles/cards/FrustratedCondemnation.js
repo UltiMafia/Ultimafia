@@ -182,9 +182,7 @@ module.exports = class FrustratedCondemnation extends Card {
             this.player.passiveEffects.push(this.FrustratedEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(
-            this.FrustratedEffect
-          );
+          var index = this.player.passiveEffects.indexOf(this.FrustratedEffect);
           if (index != -1) {
             this.player.passiveEffects.splice(index, 1);
           }
