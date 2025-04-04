@@ -965,7 +965,7 @@ const roleData = {
       tags: ["Voting", "Visiting"],
       description: [
         "Each night chooses a player to be their Master.",
-        "A Butler's Vote only counts if they vote the same Target as there Master.",
+        "A Butler's Vote only counts if they vote the same Target as their Master.",
       ],
     },
     Governor: {
@@ -3461,6 +3461,16 @@ const roleData = {
         "Anesthetic attack can be cured by not acting.",
         "Wins if among last two alive.",
       ],
+    },
+    Egg: {
+      alignment: "Independent",
+      tags: ["Hostile", "Conversion"],
+      description: [
+        "At night may choose to convert to a Independent role that can spawn in the setup.",
+        "If the selected role is already in play, The player with that role will be converted to Amnesiac.",
+        "Cannot win the game as Egg.",
+      ],
+      RolesMadeBy: ["Amnesiac"],
     },
     Hellhound: {
       alignment: "Independent",

@@ -19,6 +19,9 @@ module.exports = class HostParty extends Card {
           run: function () {
             if (this.target == "Yes") {
               this.actor.role.hostedParty = true;
+              if (!this.actor.hasAbility(["Meeting"])) {
+                return;
+              }
               for (let player of this.game.players) {
                 player.holdItem("Flier");
               }

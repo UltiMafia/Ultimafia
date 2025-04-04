@@ -16,6 +16,9 @@ module.exports = class SkipNight extends Card {
           run: function () {
             if (this.target === "No") return;
             this.actor.role.data.hasSkipped = true;
+            if (!this.actor.hasAbility(["Voting"])) {
+              return;
+            }
             this.actor.role.data.skipNight = true;
             this.game.queueAlert(
               "A troublemaker is making a ruckus! The Town will not be able to sleep tonight…"

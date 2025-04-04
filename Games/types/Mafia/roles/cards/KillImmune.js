@@ -19,7 +19,7 @@ module.exports = class KillImmune extends Card {
         if (this.player.hasAbility(["Modifier", "OnlyWhenAlive"])) {
           if (
             this.UnkillableEffect == null ||
-            !this.players.effects.includes(this.UnkillableEffect)
+            !this.player.effects.includes(this.UnkillableEffect)
           ) {
             this.UnkillableEffect = this.player.giveEffect(
               "Kill Immune",

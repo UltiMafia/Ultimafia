@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 
 module.exports = class OffWithTheirHeads extends Card {
   constructor(role) {
@@ -15,15 +16,9 @@ module.exports = class OffWithTheirHeads extends Card {
       if (aliveMafia.length != 1) return;
 
       this.data.startedBeheading = true;
-      if (this.player.hasEffect("FalseMode")) {
-        this.game.queueAlert(
-          "The Queen is fully supporting this rebellion. You have several more days to eliminate them."
-        );
-      } else {
-        this.game.queueAlert(
-          "The Queen is putting down this bloody rebellion with extreme prejudice. You must eliminate them today or else you will be beheaded."
-        );
-      }
+      this.game.queueAlert(
+        "The Queen is putting down this bloody rebellion with extreme prejudice. You must eliminate them today or else you will be beheaded."
+      );
     };
     this.listeners = {
       /*
@@ -37,10 +32,16 @@ module.exports = class OffWithTheirHeads extends Card {
         }
 
         if (stateInfo.name.match(/Day/)) {
+          if (!this.player.hasAbility(["Kill"])) {
+            return;
+          }
           this.methods.checkIfShouldStartBeheading();
         }
       },
       start: function () {
+        if (!this.player.hasAbility(["Kill"])) {
+          return;
+        }
         this.methods.checkIfShouldStartBeheading();
       },
       afterActions: function () {
@@ -49,17 +50,30 @@ module.exports = class OffWithTheirHeads extends Card {
         }
 
         const currentState = this.game.getStateName();
-        if (currentState != "Day" && currentState != "Night") {
+        if (currentState != "Day" && currentState != "Dusk") {
           return;
         }
 
-        this.data.numStatesSinceBeheading += 1;
-        if (this.data.numStatesSinceBeheading >= 2) {
-          // kill everyone
-          for (let p of this.game.alivePlayers()) {
-            if (p != this.player) {
-              p.kill("beheading", this.player);
-            }
+        //this.data.numStatesSinceBeheading += 1;
+        if (!this.player.hasAbility(["Kill"])) {
+          return;
+        }
+        // kill everyone
+        for (let p of this.game.alivePlayers()) {
+          if (p != this.player) {
+            let killAction = new Action({
+              labels: ["kill"],
+              actor: this.player,
+              target: p,
+              game: this.game,
+              run: function () {
+                if (this.dominates()) {
+                  this.target.kill("beheading", this.actor, true);
+                }
+              },
+            });
+            this.game.instantAction(killAction);
+            // p.kill("beheading", this.player);
           }
         }
       },

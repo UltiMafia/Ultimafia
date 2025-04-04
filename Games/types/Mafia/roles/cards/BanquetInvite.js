@@ -16,6 +16,9 @@ module.exports = class BanquetInvite extends Card {
           labels: ["giveItem", "Invitation"],
           priority: PRIORITY_DAY_DEFAULT,
           run: function () {
+            if (!this.actor.hasAbility(["Meeting"])) {
+              return;
+            }
             this.target[0].holdItem("Invitation");
             this.target[1].holdItem("Invitation");
           },

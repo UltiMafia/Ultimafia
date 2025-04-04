@@ -16,7 +16,10 @@ module.exports = class CleanCondemnation extends Card {
           priority: PRIORITY_SUNSET_DEFAULT,
           run: function () {
             if (this.target == "No") return;
-
+            if (!this.actor.hasAbility(["Clean"])) {
+              this.actor.role.cleanedPlayer = 0;
+              return;
+            }
             var condemnedTarget;
             for (let action of this.game.actions[0]) {
               if (action.hasLabel("condemn")) {
@@ -61,7 +64,7 @@ module.exports = class CleanCondemnation extends Card {
         if (this.game.getStateName() != "Night") return;
 
         const cleanedPlayer = this.cleanedPlayer;
-        if (!cleanedPlayer) return;
+        if (!cleanedPlayer || cleanedPlayer == 0) return;
         const lastCleanedAppearance = this.player.role.lastCleanedAppearance;
         if (!lastCleanedAppearance) return;
         /*
