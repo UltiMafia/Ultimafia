@@ -50,19 +50,18 @@ module.exports = class OffWithTheirHeads extends Card {
         }
 
         const currentState = this.game.getStateName();
-        if (currentState != "Day" && currentState != "Night") {
+        if (currentState != "Day" && currentState != "Dusk") {
           return;
         }
 
         //this.data.numStatesSinceBeheading += 1;
-        if (!this.actor.hasAbility(["Kill"])) {
+        if (!this.player.hasAbility(["Kill"])) {
           return;
         }
         // kill everyone
         for (let p of this.game.alivePlayers()) {
           if (p != this.player) {
             let killAction = new Action({
-              // do not add gun label
               labels: ["kill"],
               actor: this.player,
               target: p,

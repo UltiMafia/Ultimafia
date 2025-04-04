@@ -50,6 +50,7 @@ module.exports = class ConvertToChosenRole extends Card {
                 this.game.getRoleAlignment(this.target) != "Independent" &&
                 targetPlayer.role.alignment != "Independent"
               ) {
+                if (this.dominates(targetPlayer)){
                 targetPlayer.setRole(
                   `${this.target}`,
                   null,
@@ -58,11 +59,14 @@ module.exports = class ConvertToChosenRole extends Card {
                   false,
                   "No Change"
                 );
+              }
               } else if (
                 this.game.getRoleAlignment(this.target) == "Independent" &&
                 targetPlayer.role.alignment == "Independent"
               ) {
+                if (this.dominates(targetPlayer)){
                 targetPlayer.setRole(`${this.target}`);
+                }
               }
               delete this.actor.role.data.targetPlayer;
             }

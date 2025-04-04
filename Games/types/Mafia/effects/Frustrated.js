@@ -95,8 +95,8 @@ module.exports = class Frustrated extends Effect {
         }
 
         let action = new Action({
-          actor: this.actor,
-          target: this.actor,
+          actor: this.player,
+          target: this.player,
           game: this.game,
           labels: ["kill", "frustration", "hidden"],
           power: 3,

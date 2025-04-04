@@ -5,6 +5,7 @@ const { PRIORITY_NIGHT_SAVER } = require("../../const/Priority");
 module.exports = class ProtectNeighborsIfBothTown extends Card {
   constructor(role) {
     super(role);
+    this.ImmortalEffects = [];
     /*
     this.actions = [
       {
@@ -31,13 +32,16 @@ module.exports = class ProtectNeighborsIfBothTown extends Card {
 */
     this.listeners = {
       AbilityToggle: function (player) {
-        for (let effect of this.ImmortalEffects) {
-          if (effect.player) {
-            var index = effect.player.passiveEffects.indexOf(effect);
+        if(this.ImmortalEffects == null){
+        this.ImmortalEffects = [];
+        }
+        for (let x = 0; x < this.ImmortalEffects.length; x++) {
+          if (this.ImmortalEffects[x].player) {
+            var index = this.ImmortalEffects[x].player.passiveEffects.indexOf(this.ImmortalEffects[x]);
             if (index != -1) {
               this.player.passiveEffects.splice(index, 1);
             }
-            effect.remove();
+            this.ImmortalEffects[x].remove();
           }
         }
         this.ImmortalEffects = [];
@@ -47,9 +51,11 @@ module.exports = class ProtectNeighborsIfBothTown extends Card {
             return;
           }
           for (let player of neighbors) {
+            let effect =  player.giveEffect("Immortal", 5, Infinity);
             this.player.passiveEffects.push(
-              player.giveEffect("Immortal", 5, Infinity)
+              effect
             );
+            this.ImmortalEffects.push(effect);
           }
         }
       },
