@@ -96,7 +96,7 @@ module.exports = class ResponseGiver extends Card {
               this.actor.role.data.FirstDecision,
               this.target,
             ];
-            this.queueAlert(
+            this.game.queueAlert(
               `Would you rather "${this.game.currentQuestion[0]}" OR "${this.game.currentQuestion[1]}"?`
             );
           },
