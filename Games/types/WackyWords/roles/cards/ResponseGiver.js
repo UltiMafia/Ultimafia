@@ -92,18 +92,8 @@ module.exports = class ResponseGiver extends Card {
           priority: -2,
           run: function () {
             //this.actor.role.data.FirstDecision = this.target;
-            this.currentQuestion = [
-              this.actor.role.data.FirstDecision,
-              this.target,
-            ];
-            /*
-            this.game.Decisions[
-              this.game.currentQuestion.indexOf(this.target)
-            ]++;
-            this.game.DecisionLog[
-              this.game.currentQuestion.indexOf(this.target)
-            ].push(this.actor.name);
-            */
+            this.game.currentQuestion = [this.actor.role.data.FirstDecision, this.target];
+            this.queueAlert(`Would you rather "${this.game.currentQuestion[0]}" OR "${this.game.currentQuestion[1]}"?`);
           },
         },
         shouldMeet: function () {
