@@ -92,7 +92,10 @@ module.exports = class ResponseGiver extends Card {
           priority: -2,
           run: function () {
             //this.actor.role.data.FirstDecision = this.target;
-            this.currentQuestion = [this.actor.role.data.FirstDecision, this.target];
+            this.currentQuestion = [
+              this.actor.role.data.FirstDecision,
+              this.target,
+            ];
             /*
             this.game.Decisions[
               this.game.currentQuestion.indexOf(this.target)
