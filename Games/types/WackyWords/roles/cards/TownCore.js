@@ -21,9 +21,16 @@ module.exports = class TownCore extends Card {
           priority: -1,
           run: function () {
             if (this.game.hasGambler) {
-              this.game.recordResponse(this.actor, this.target);
+              //this.game.recordResponse(this.actor, this.target);
+              this.game.Decisions[
+                this.game.currentQuestion.indexOf(this.target)
+              ]++;
+              this.game.DecisionLog[
+                this.game.currentQuestion.indexOf(this.target)
+              ].push(this.actor.name);
               return;
             }
+
             this.game.recordVote(this.actor, this.target);
           },
         },
@@ -35,7 +42,7 @@ module.exports = class TownCore extends Card {
             return false;
           }
 
-          if (this.game.hasGambler && this.player != this.game.guesser) {
+          if (this.game.hasGambler && this.player == this.game.guesser) {
             return false;
           }
 

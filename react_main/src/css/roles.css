@@ -1159,6 +1159,10 @@
   background-image: url("/images/roles/fumigator-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Egg {
+  background-image: url("/images/roles/egg-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Samurai {
   background-image: url("/images/roles/samurai-vivid.png");
 }
