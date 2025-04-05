@@ -245,9 +245,9 @@ module.exports = class WackyWordsGame extends Game {
     var alive = this.players.filter((p) => p.alive && p.role.name != "Host");
     if (this.guesser == null || !this.guesser.alive) {
       this.guesser = alive[0];
-      this.queueAlert(`${this.guesser.name} is now the Guesser.`);
+      this.queueAlert(`${this.guesser.name} is now the Asker.`);
     }
-
+/*
     let question1 = this.shuffledQuestions[0][0];
     let question2 = this.shuffledQuestions[0][1];
     let playerIndex = Random.randInt(0, this.players.length - 1);
@@ -262,10 +262,10 @@ module.exports = class WackyWordsGame extends Game {
     question2 = question2.replace("$OtherPlayer", OtherPlayerName);
     question2 = question2.replace("$blank", "____");
     this.shuffledQuestions.shift();
-
-    this.currentQuestion = [question1, question2];
-    this.queueAlert(`Would you rather "${question1}" OR "${question2}"?`);
-    this.Decisions = [0, 0];
+*/
+    this.currentQuestion = ["Placeholder"];
+    //this.queueAlert(`Would you rather "${question1}" OR "${question2}"?`);
+    this.Decisions = [0.0, 0.0];
     this.DecisionLog = [[], []];
 
     if (this.currentRound == 0) {
@@ -452,27 +452,57 @@ module.exports = class WackyWordsGame extends Game {
     let question1Pickers = [];
     let question2Pickers = [];
 
-    for (let response in this.currentResponses) {
-      let responseObj = this.currentResponses[response];
-      if (this.currentQuestion[0] == responseObj.name) {
-        if (this.Decisions[0] >= this.Decisions[1]) {
-          this.guesser.addScore(3);
+    let total = this.Decisions[0]+this.Decisions[1];
+    let greater = false;
+    if(this.Decisions[0] == this.Decisions[1]){
+      this.guesser.addScore(10);
           this.queueAlert(
-            `${this.guesser.name} has correctly guess what the Majority of players picked.`
+            `${this.guesser.name} has created a Perfect Split!!!!`
           );
-        } else {
-          this.queueAlert(`${this.guesser.name} has guessed incorrectly.`);
-        }
+    }
+    else if(this.Decisions[0] > this.Decisions[1]){
+      greater = this.Decisions[0];
+    }
+    else{
+      greater = this.Decisions[1];
+    }
+
+    if(greater != false){
+      let fraction = (greater/total)-0.5;
+      if(fraction <= 0.1){
+          this.guesser.addScore(8);
+          this.queueAlert(
+            `${this.guesser.name} has created a good Split!!`
+          );
       }
-      if (this.currentQuestion[1] == responseObj.name) {
-        if (this.Decisions[1] >= this.Decisions[0]) {
-          this.guesser.addScore(3);
+      else if(fraction <= 0.2){
+          this.guesser.addScore(6);
           this.queueAlert(
-            `${this.guesser.name} has correctly guess what the Majority of players picked.`
+            `${this.guesser.name} has created a decent Split!!`
           );
-        } else {
-          this.queueAlert(`${this.guesser.name} has guessed incorrectly.`);
-        }
+      }
+      else if(fraction <= 0.25){
+          this.guesser.addScore(4);
+          this.queueAlert(
+            `${this.guesser.name} has created an OK Split!!`
+          );
+      }
+      else if(fraction <= 0.30){
+          this.guesser.addScore(2);
+          this.queueAlert(
+            `${this.guesser.name} has created a poor Split!!`
+          );
+      }
+      else if(fraction <= 0.49){
+          this.guesser.addScore(1);
+          this.queueAlert(
+            `${this.guesser.name} has created a bad Split!`
+          );
+      }
+      else{
+          this.queueAlert(
+            `${this.guesser.name} has failed to make a Split.`
+          );
       }
     }
 
@@ -494,7 +524,7 @@ module.exports = class WackyWordsGame extends Game {
     let rightIdx = (index + 1) % alive.length;
     this.guesser = alive[rightIdx];
 
-    this.queueAlert(`${this.guesser.name} is now the Guesser.`);
+    this.queueAlert(`${this.guesser.name} is now the Asker.`);
   }
 
   emptyResponseHistory() {
