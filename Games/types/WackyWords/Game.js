@@ -247,7 +247,7 @@ module.exports = class WackyWordsGame extends Game {
       this.guesser = alive[0];
       this.queueAlert(`${this.guesser.name} is now the Asker.`);
     }
-/*
+    /*
     let question1 = this.shuffledQuestions[0][0];
     let question2 = this.shuffledQuestions[0][1];
     let playerIndex = Random.randInt(0, this.players.length - 1);
@@ -452,57 +452,36 @@ module.exports = class WackyWordsGame extends Game {
     let question1Pickers = [];
     let question2Pickers = [];
 
-    let total = this.Decisions[0]+this.Decisions[1];
+    let total = this.Decisions[0] + this.Decisions[1];
     let greater = false;
-    if(this.Decisions[0] == this.Decisions[1]){
+    if (this.Decisions[0] == this.Decisions[1]) {
       this.guesser.addScore(10);
-          this.queueAlert(
-            `${this.guesser.name} has created a Perfect Split!!!!`
-          );
-    }
-    else if(this.Decisions[0] > this.Decisions[1]){
+      this.queueAlert(`${this.guesser.name} has created a Perfect Split!!!!`);
+    } else if (this.Decisions[0] > this.Decisions[1]) {
       greater = this.Decisions[0];
-    }
-    else{
+    } else {
       greater = this.Decisions[1];
     }
 
-    if(greater != false){
-      let fraction = (greater/total)-0.5;
-      if(fraction <= 0.1){
-          this.guesser.addScore(8);
-          this.queueAlert(
-            `${this.guesser.name} has created a good Split!!`
-          );
-      }
-      else if(fraction <= 0.2){
-          this.guesser.addScore(6);
-          this.queueAlert(
-            `${this.guesser.name} has created a decent Split!!`
-          );
-      }
-      else if(fraction <= 0.25){
-          this.guesser.addScore(4);
-          this.queueAlert(
-            `${this.guesser.name} has created an OK Split!!`
-          );
-      }
-      else if(fraction <= 0.30){
-          this.guesser.addScore(2);
-          this.queueAlert(
-            `${this.guesser.name} has created a poor Split!!`
-          );
-      }
-      else if(fraction <= 0.49){
-          this.guesser.addScore(1);
-          this.queueAlert(
-            `${this.guesser.name} has created a bad Split!`
-          );
-      }
-      else{
-          this.queueAlert(
-            `${this.guesser.name} has failed to make a Split.`
-          );
+    if (greater != false) {
+      let fraction = greater / total - 0.5;
+      if (fraction <= 0.1) {
+        this.guesser.addScore(8);
+        this.queueAlert(`${this.guesser.name} has created a good Split!!`);
+      } else if (fraction <= 0.2) {
+        this.guesser.addScore(6);
+        this.queueAlert(`${this.guesser.name} has created a decent Split!!`);
+      } else if (fraction <= 0.25) {
+        this.guesser.addScore(4);
+        this.queueAlert(`${this.guesser.name} has created an OK Split!!`);
+      } else if (fraction <= 0.3) {
+        this.guesser.addScore(2);
+        this.queueAlert(`${this.guesser.name} has created a poor Split!!`);
+      } else if (fraction <= 0.49) {
+        this.guesser.addScore(1);
+        this.queueAlert(`${this.guesser.name} has created a bad Split!`);
+      } else {
+        this.queueAlert(`${this.guesser.name} has failed to make a Split.`);
       }
     }
 
