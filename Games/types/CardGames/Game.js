@@ -6,7 +6,7 @@ const Winners = require("../../core/Winners");
 
 const Random = require("../../../lib/Random");
 
-module.exports = class LiarsDiceGame extends Game {
+module.exports = class CardGamesGame extends Game {
   constructor(options) {
     super(options);
 
