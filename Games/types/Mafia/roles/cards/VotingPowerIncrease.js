@@ -7,10 +7,6 @@ module.exports = class Clueless extends Card {
 
     //this.startEffects = ["Scrambled"];
 
-    this.hideModifier = {
-      self: true,
-    };
-
     this.listeners = {
       AbilityToggle: function (player) {
         if (player != this.player) {

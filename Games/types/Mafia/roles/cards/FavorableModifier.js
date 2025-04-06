@@ -20,7 +20,7 @@ module.exports = class FavorableModifier extends Card {
         if (this.player.hasAbility(["Modifier", "Information", "WhenDead"])) {
           if (
             this.FavorableModeEffect == null ||
-            !this.players.effects.includes(this.FavorableModeEffect)
+            !this.player.effects.includes(this.FavorableModeEffect)
           ) {
             this.FavorableModeEffect = this.player.giveEffect(
               "FavorableMode",
