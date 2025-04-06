@@ -137,21 +137,31 @@ module.exports = class CardGamesGame extends Game {
   }
 
   //Start: Randomizes player order, and gives the microphone to first one.
-  setupNextRoundTexas(){
-    if(this.RoundNumber == 0){
-    this.Dealer = this.randomizedPlayersCopy[0];
-    this.SmallBlind = this.randomizedPlayersCopy[1];
-    this.BigBlind = this.randomizedPlayersCopy[(1 + 1) % this.randomizedPlayersCopy.length];
-    }
-    else{
-    
-    this.Dealer = this.randomizedPlayersCopy[(this.randomizedPlayersCopy.indexOf(this.Dealer)+1)% this.randomizedPlayersCopy.length];
-    this.SmallBlind = this.randomizedPlayersCopy[(this.randomizedPlayersCopy.indexOf(this.SmallBlind)+1)% this.randomizedPlayersCopy.length];
-    this.BigBlind = this.randomizedPlayersCopy[(this.randomizedPlayersCopy.indexOf(this.BigBlind)+1)% this.randomizedPlayersCopy.length];
+  setupNextRoundTexas() {
+    if (this.RoundNumber == 0) {
+      this.Dealer = this.randomizedPlayersCopy[0];
+      this.SmallBlind = this.randomizedPlayersCopy[1];
+      this.BigBlind =
+        this.randomizedPlayersCopy[(1 + 1) % this.randomizedPlayersCopy.length];
+    } else {
+      this.Dealer =
+        this.randomizedPlayersCopy[
+          (this.randomizedPlayersCopy.indexOf(this.Dealer) + 1) %
+            this.randomizedPlayersCopy.length
+        ];
+      this.SmallBlind =
+        this.randomizedPlayersCopy[
+          (this.randomizedPlayersCopy.indexOf(this.SmallBlind) + 1) %
+            this.randomizedPlayersCopy.length
+        ];
+      this.BigBlind =
+        this.randomizedPlayersCopy[
+          (this.randomizedPlayersCopy.indexOf(this.BigBlind) + 1) %
+            this.randomizedPlayersCopy.length
+        ];
     }
   }
 
-  
   startRoundRobin() {
     while (true) {
       let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
