@@ -1,8 +1,4 @@
-const IMPORTANT_MEETINGS = [
-  "Raise",
-  "Move",
-  "separationText",
-];
+const IMPORTANT_MEETINGS = ["Raise", "Move", "separationText"];
 
 const ROLE_MEETINGS = ["Snoop", "Shoot", "Spy", "Propose"];
 
