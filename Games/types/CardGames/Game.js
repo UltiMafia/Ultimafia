@@ -46,7 +46,6 @@ module.exports = class CardGamesGame extends Game {
     this.randomizedPlayersCopy = []; //copy of above, but players don't get removed on dying / leaving. Used for deciding next player's
     // turn, since variable above would mess up indexes when players got removed.
     this.currentIndex = 0; //Index of player's current turn.
-  
 
     //information about last turn's bid
     this.lastAmountBid = 0;
@@ -130,7 +129,7 @@ module.exports = class CardGamesGame extends Game {
 
     // super.start();
     //this.rollDice();
-    
+
     this.startRoundRobin();
 
     super.start();
