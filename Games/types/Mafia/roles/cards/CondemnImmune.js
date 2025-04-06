@@ -14,7 +14,7 @@ module.exports = class CondemnImmune extends Card {
         if (this.player.hasAbility(["Modifier", "Condemn"])) {
           if (
             this.CondemnImmuneEffect == null ||
-            !this.players.effects.includes(this.CondemnImmuneEffect)
+            !this.player.effects.includes(this.CondemnImmuneEffect)
           ) {
             this.CondemnImmuneEffect = this.player.giveEffect(
               "CondemnImmune",
