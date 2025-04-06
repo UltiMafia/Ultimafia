@@ -1,5 +1,5 @@
 const Standard_Deck = [
-//Hearts
+  //Hearts
   "Ace-Hearts",
   "2-Hearts",
   "3-Hearts",
@@ -13,7 +13,7 @@ const Standard_Deck = [
   "Jack-Hearts",
   "Queen-Hearts",
   "King-Hearts",
-//Diamonds
+  //Diamonds
   "Ace-Diamonds",
   "2-Diamonds",
   "3-Diamonds",
@@ -27,7 +27,7 @@ const Standard_Deck = [
   "Jack-Diamonds",
   "Queen-Diamonds",
   "King-Diamonds",
-//Clubs
+  //Clubs
   "Ace-Clubs",
   "2-Clubs",
   "3-Clubs",
@@ -41,7 +41,7 @@ const Standard_Deck = [
   "Jack-Clubs",
   "Queen-Clubs",
   "King-Clubs",
-//Spades
+  //Spades
   "Ace-Spades",
   "2-Spades",
   "3-Spades",
