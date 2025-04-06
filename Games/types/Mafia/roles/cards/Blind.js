@@ -15,7 +15,7 @@ module.exports = class Blind extends Card {
         if (this.player.hasAbility(["Modifier", "Speaking"])) {
           if (
             this.BlindEffect == null ||
-            !this.players.effects.includes(this.BlindEffect)
+            !this.player.effects.includes(this.BlindEffect)
           ) {
             this.BlindEffect = this.player.giveEffect("Blind", Infinity);
             this.player.passiveEffects.push(this.BlindEffect);
