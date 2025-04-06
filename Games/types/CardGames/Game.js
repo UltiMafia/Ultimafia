@@ -10,7 +10,7 @@ module.exports = class CardGamesGame extends Game {
   constructor(options) {
     super(options);
 
-    this.type = "Liars Dice";
+    this.type = "Card Games";
     this.Player = Player;
     this.states = [
       {
@@ -20,21 +20,33 @@ module.exports = class CardGamesGame extends Game {
         name: "Pregame",
       },
       {
+        name: "Place Bets",
+        length: options.settings.stateLengths["Place Bets"],
+      },
+      {
+        name: "Showdown",
+        length: options.settings.stateLengths["Showdown"],
+      },
+      {
         name: "Guess Dice",
         length: options.settings.stateLengths["Guess Dice"],
       },
     ];
 
     //settings
+    /*
     this.wildOnes = options.settings.wildOnes;
     this.spotOn = options.settings.spotOn;
-    this.startingDice = options.settings.startingDice;
+    */
+    this.startingChips = options.settings.startingChips;
+    this.CardGameType = "Texas Hold’em";
 
     //VARIABLES
     this.randomizedPlayers = []; //All players after they get randomized. Used for showing players and their dice on left side of screen.
     this.randomizedPlayersCopy = []; //copy of above, but players don't get removed on dying / leaving. Used for deciding next player's
     // turn, since variable above would mess up indexes when players got removed.
     this.currentIndex = 0; //Index of player's current turn.
+  
 
     //information about last turn's bid
     this.lastAmountBid = 0;
@@ -83,7 +95,7 @@ module.exports = class CardGamesGame extends Game {
         { color: "#718E77" }
       );
     }
-
+    /*
     if (this.wildOnes) {
       this.sendAlert(
         `WILD ONES are enabled. Ones will count towards any face amount.`
@@ -94,8 +106,9 @@ module.exports = class CardGamesGame extends Game {
         `SPOT ON is enabled. On your turn, you can guess that the previous bidder called exact amount. If you're right, everyone else will lose a die.`
       );
     }
-    if (this.startingDice) {
-      this.sendAlert(`Everyone starts with ${this.startingDice} dice.`);
+    */
+    if (this.startingChips) {
+      this.sendAlert(`Everyone starts with ${this.startingChips} chips.`);
     }
     this.sendAlert(`Good luck... You'll probably need it.`);
 
@@ -112,11 +125,12 @@ module.exports = class CardGamesGame extends Game {
     this.randomizedPlayersCopy = this.randomizedPlayers;
 
     this.randomizedPlayers.forEach((player) => {
-      player.diceNum = parseInt(this.startingDice);
+      player.Chips = parseInt(this.startingDice);
     });
 
     // super.start();
-    this.rollDice();
+    //this.rollDice();
+    
     this.startRoundRobin();
 
     super.start();
