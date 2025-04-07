@@ -8,10 +8,6 @@ module.exports = class Microphone extends Item {
   constructor() {
     super("Microphone");
     this.meetings = {};
-    this.MovesOptions = ["Check", "Fold"];
-    if (this.game.lastAmountBid > 0) {
-      this.MovesOptions = ["Call", "Fold"];
-    }
   }
 
   setupMeetings() {
@@ -132,7 +128,12 @@ module.exports = class Microphone extends Item {
     super.hold(player);
 
     player.game.sendAlert(`${player.name} is placing Bets…`);
-
+    this.MovesOptions = ["Check", "Fold"];
+    this.MinRaise = 1;
+    if (this.game.lastAmountBid > 0) {
+      this.MovesOptions = ["Call", "Fold"];
+      this.MinRaise = this.game.minimumBet;
+    }
     this.setupMeetings();
     /*
     this.meetings.Amount.textOptions.maxLength =
