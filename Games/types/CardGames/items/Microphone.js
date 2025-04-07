@@ -43,12 +43,18 @@ module.exports = class Microphone extends Item {
           run: function () {
             this.target = parseInt(this.target);
 
-
-            if (this.actor.Chips < (this.game.lastAmountBid-this.actor.AmountBidding)+this.target) {
+            if (
+              this.actor.Chips <
+              this.game.lastAmountBid - this.actor.AmountBidding + this.target
+            ) {
               this.actor.getMeetings().forEach((meeting) => {
                 if (meeting.name == "Amount") {
                   this.game.sendAlert(
-                    `You don't have ${(this.game.lastAmountBid-this.actor.AmountBidding)+this.target} Chips.`,
+                    `You don't have ${
+                      this.game.lastAmountBid -
+                      this.actor.AmountBidding +
+                      this.target
+                    } Chips.`,
                     [this.actor]
                   );
                   meeting.unvote(this.actor, true, true);
@@ -56,27 +62,23 @@ module.exports = class Microphone extends Item {
               });
               return;
             }
-            
-            
-            
-            this.game.addToPot(this.actor, "Raise", this.target); 
-            this.actor.hasHadTurn = true;
-              this.item.drop();
 
-              this.actor.getMeetings().forEach((meeting) => {
-                if (IMPORTANT_MEETINGS.includes(meeting.name)) {
-                  meeting.leave(this.actor, true);
+            this.game.addToPot(this.actor, "Raise", this.target);
+            this.actor.hasHadTurn = true;
+            this.item.drop();
+
+            this.actor.getMeetings().forEach((meeting) => {
+              if (IMPORTANT_MEETINGS.includes(meeting.name)) {
+                meeting.leave(this.actor, true);
+              }
+            });
+            for (let player of this.game.players) {
+              player.getMeetings().forEach((meeting) => {
+                if (ROLE_MEETINGS.includes(meeting.name)) {
+                  meeting.leave(player, true);
                 }
               });
-              for (let player of this.game.players) {
-                player.getMeetings().forEach((meeting) => {
-                  if (ROLE_MEETINGS.includes(meeting.name)) {
-                    meeting.leave(player, true);
-                  }
-                });
             }
-
-         
           },
         },
       },
@@ -90,35 +92,32 @@ module.exports = class Microphone extends Item {
         action: {
           item: this,
           run: function () {
-          if(this.target == "Call"){
-            this.game.addToPot(this.actor, "Call", 0);
-          }
-          if(this.target == "Fold"){
-                  this.game.sendAlert(
-                  `${this.actor.name} Folds!`
-                );
-            this.actor.hasFolded = true;
-          }
-            
-              this.item.drop();
-              this.actor.hasHadTurn = true;
-              this.actor.getMeetings().forEach((meeting) => {
-                if (IMPORTANT_MEETINGS.includes(meeting.name)) {
-                  meeting.leave(this.actor, true);
+            if (this.target == "Call") {
+              this.game.addToPot(this.actor, "Call", 0);
+            }
+            if (this.target == "Fold") {
+              this.game.sendAlert(`${this.actor.name} Folds!`);
+              this.actor.hasFolded = true;
+            }
+
+            this.item.drop();
+            this.actor.hasHadTurn = true;
+            this.actor.getMeetings().forEach((meeting) => {
+              if (IMPORTANT_MEETINGS.includes(meeting.name)) {
+                meeting.leave(this.actor, true);
+              }
+            });
+            for (let player of this.game.players) {
+              player.getMeetings().forEach((meeting) => {
+                if (ROLE_MEETINGS.includes(meeting.name)) {
+                  meeting.leave(player, true);
                 }
               });
-              for (let player of this.game.players) {
-                player.getMeetings().forEach((meeting) => {
-                  if (ROLE_MEETINGS.includes(meeting.name)) {
-                    meeting.leave(player, true);
-                  }
-                });
             }
           },
         },
       },
     };
-
   }
 
   hold(player) {
@@ -127,7 +126,7 @@ module.exports = class Microphone extends Item {
     player.game.sendAlert(`${player.name} is placing Bets…`);
 
     this.setupMeetings();
-/*
+    /*
     this.meetings.Amount.textOptions.maxLength =
       player.game.lastAmountBid.toString().length + 2;
 
