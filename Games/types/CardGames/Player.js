@@ -4,6 +4,7 @@ module.exports = class CardGamesPlayer extends Player {
   constructor(user, game, isBot) {
     super(user, game, isBot);
     this.usesCount = 0;
+    this.CardsInHand = [];
   }
 
   parseCommand(message) {
