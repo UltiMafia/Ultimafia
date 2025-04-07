@@ -8,6 +8,10 @@ module.exports = class Microphone extends Item {
   constructor() {
     super("Microphone");
     this.meetings = {};
+    this.MovesOptions = ["Check", "Fold"];
+    if(this.game.lastAmountBid > 0){
+    this.MovesOptions = ["Call", "Fold"];
+    }
   }
 
   setupMeetings() {
@@ -87,21 +91,26 @@ module.exports = class Microphone extends Item {
         states: ["Guess Dice"],
         flags: ["voting", "instant", "instantButChangeable", "repeatable"],
         inputType: "custom",
-        targets: ["Call", "Raise", "Fold"],
+        targets: this.MovesOptions,
         canUnvote: false,
         action: {
           item: this,
           run: function () {
+            
             if (this.target == "Call") {
               this.game.addToPot(this.actor, "Call", 0);
+              this.actor.hasHadTurn = true;
             }
             if (this.target == "Fold") {
               this.game.sendAlert(`${this.actor.name} Folds!`);
               this.actor.hasFolded = true;
+              this.actor.hasHadTurn = true;
+            }
+            if (this.target == "Check") {
+              this.game.sendAlert(`${this.actor.name} Checks!`);
             }
 
             this.item.drop();
-            this.actor.hasHadTurn = true;
             this.actor.getMeetings().forEach((meeting) => {
               if (IMPORTANT_MEETINGS.includes(meeting.name)) {
                 meeting.leave(this.actor, true);
