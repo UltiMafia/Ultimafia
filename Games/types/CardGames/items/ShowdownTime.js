@@ -34,9 +34,9 @@ module.exports = class ShowdownTime extends Item {
 
   hold(player) {
     super.hold(player);
-      this.PossibleCards.push(...player.CardsInHand);
-      this.PossibleCards.push(...player.game.CommunityCards);
-    
+    this.PossibleCards.push(...player.CardsInHand);
+    this.PossibleCards.push(...player.game.CommunityCards);
+
     this.setupMeetings();
     /*
     this.meetings.Amount.textOptions.maxLength =
