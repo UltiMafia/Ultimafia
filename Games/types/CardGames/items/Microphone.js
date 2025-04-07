@@ -9,8 +9,8 @@ module.exports = class Microphone extends Item {
     super("Microphone");
     this.meetings = {};
     this.MovesOptions = ["Check", "Fold"];
-    if(this.game.lastAmountBid > 0){
-    this.MovesOptions = ["Call", "Fold"];
+    if (this.game.lastAmountBid > 0) {
+      this.MovesOptions = ["Call", "Fold"];
     }
   }
 
@@ -96,7 +96,6 @@ module.exports = class Microphone extends Item {
         action: {
           item: this,
           run: function () {
-            
             if (this.target == "Call") {
               this.game.addToPot(this.actor, "Call", 0);
               this.actor.hasHadTurn = true;
