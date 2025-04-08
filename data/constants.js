@@ -55,6 +55,7 @@ module.exports = {
     "Secret Dictator",
     "Wacky Words",
     "Liars Dice",
+    "Card Games"
   ],
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
   alignments: {
@@ -64,8 +65,9 @@ module.exports = {
     Jotto: ["Town"],
     Acrotopia: ["Town"],
     "Secret Dictator": ["Liberals", "Fascists"],
-    "Wacky Words": ["Town"],
-    "Liars Dice": ["Liars"],
+    "Wacky Words": ["Town", "Host"],
+    "Liars Dice": ["Liars", "Host"],
+    "Card Games": ["Town", "Host"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -76,6 +78,7 @@ module.exports = {
     "Secret Dictator": ["Nomination"],
     "Wacky Words": ["Night"],
     "Liars Dice": ["Guess Dice"],
+    "Liars Dice": ["Place Bets", "Showdown"],
   },
   configurableStates: {
     Mafia: {
@@ -194,6 +197,18 @@ module.exports = {
     },
     "Liars Dice": {
       "Guess Dice": {
+        min: 30 * 1000,
+        max: 5 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+    },
+    "Card Games": {
+      "Place Bets": {
+        min: 30 * 1000,
+        max: 5 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+      "Showdown": {
         min: 30 * 1000,
         max: 5 * 60 * 1000,
         default: 1 * 60 * 1000,
