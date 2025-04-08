@@ -4138,6 +4138,18 @@ const roleData = {
       description: ["Facilitates the game."],
     },
   },
+  "Card Games": {
+    Player: {
+      alignment: "Town",
+      tags: ["None"],
+      description: ["Can place Bets and Play Cards."],
+    },
+    Host: {
+      alignment: "Host",
+      tags: ["None"],
+      description: ["Facilitates the game."],
+    },
+  },
 };
 
 module.exports = roleData;
