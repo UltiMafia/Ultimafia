@@ -6,7 +6,7 @@ module.exports = class TownCore extends Card {
 
     this.meetings = {
       [this.role.game.chatName]: {
-        states: ["Guess Dice"],
+        states: ["Place Bets", "Showdown"],
         flags: ["group", "speech"],
         whileDead: true,
         passiveDead: true,
