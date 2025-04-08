@@ -74,6 +74,13 @@ var defaultOptions = {
     spotOn: false,
     guessDiceLength: 2,
   },
+  "Card Games": {
+    ...otherHostOptions,
+    startingChips: 6,
+    minimumBet: 2,
+    placeBetsLength: 2,
+    showdownLength: 2,
+  },
   Resistance: {
     ...otherHostOptions,
     teamSelLength: 2,
