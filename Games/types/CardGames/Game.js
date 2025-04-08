@@ -1,8 +1,10 @@
 const Game = require("../../core/Game");
 const Player = require("./Player");
 const Action = require("./Action");
+const DrawDiscardPile = require("./DrawDiscardPile");
 const Queue = require("../../core/Queue");
 const Winners = require("../../core/Winners");
+
 
 const Random = require("../../../lib/Random");
 
@@ -26,10 +28,7 @@ module.exports = class CardGamesGame extends Game {
       {
         name: "Showdown",
         length: options.settings.stateLengths["Showdown"],
-      },
-      {
-        name: "Guess Dice",
-        length: options.settings.stateLengths["Guess Dice"],
+        skipChecks: [() => this.Phase != "Showdown"],
       },
     ];
 
@@ -38,7 +37,9 @@ module.exports = class CardGamesGame extends Game {
     this.wildOnes = options.settings.wildOnes;
     this.spotOn = options.settings.spotOn;
     */
+    this.drawDiscardPile = new DrawDiscardPile();
     this.startingChips = options.settings.startingChips;
+    this.minimumBet = options.settings.minimumBet;
     this.CardGameType = "Texas Hold’em";
 
     //VARIABLES
@@ -124,13 +125,17 @@ module.exports = class CardGamesGame extends Game {
     this.randomizedPlayersCopy = this.randomizedPlayers;
 
     this.randomizedPlayers.forEach((player) => {
-      player.Chips = parseInt(this.startingDice);
+      player.Chips = parseInt(this.startingChips);
     });
 
     // super.start();
     //this.rollDice();
+    if(this.CardGameType == "Texas Hold’em"){
     this.RoundNumber = 0;
-
+    this.ThePot = 0;
+    this.drawDiscardPile.shuffle();
+    this.setupNextRoundTexas();
+  }
     this.startRoundRobin();
 
     super.start();
@@ -138,34 +143,75 @@ module.exports = class CardGamesGame extends Game {
 
   //Start: Randomizes player order, and gives the microphone to first one.
   setupNextRoundTexas() {
+    this.randomizedPlayers.forEach((player) => {
+      player.hasFolded = false;
+      player.hasHadTurn = false;
+    });
+    this.randomizedPlayers.forEach((player) => {
+      if(player.Chips < this.minimumBet){
+        player.kill();
+      }
+    });
+    this.Phase = "First Bets";
     if (this.RoundNumber == 0) {
       this.Dealer = this.randomizedPlayersCopy[0];
       this.SmallBlind = this.randomizedPlayersCopy[1];
       this.BigBlind =
         this.randomizedPlayersCopy[(1 + 1) % this.randomizedPlayersCopy.length];
     } else {
+      for(let x = 1; x < this.randomizedPlayersCopy.length; x++){
+      if(this.randomizedPlayersCopy[(this.randomizedPlayersCopy.indexOf(this.Dealer) + x) %this.randomizedPlayersCopy.length].alive){
       this.Dealer =
         this.randomizedPlayersCopy[
-          (this.randomizedPlayersCopy.indexOf(this.Dealer) + 1) %
+          (this.randomizedPlayersCopy.indexOf(this.Dealer) + x) %
             this.randomizedPlayersCopy.length
         ];
+      break;
+      }
+      }
+      for(let x = 1; x < this.randomizedPlayersCopy.length; x++){
+      if(this.randomizedPlayersCopy[(this.randomizedPlayersCopy.indexOf(this.SmallBlind) + x) %this.randomizedPlayersCopy.length].alive){
       this.SmallBlind =
         this.randomizedPlayersCopy[
-          (this.randomizedPlayersCopy.indexOf(this.SmallBlind) + 1) %
+          (this.randomizedPlayersCopy.indexOf(this.SmallBlind) + x) %
             this.randomizedPlayersCopy.length
         ];
+      break;
+      }
+      }
+      for(let x = 1; x < this.randomizedPlayersCopy.length; x++){
+      if(this.randomizedPlayersCopy[(this.randomizedPlayersCopy.indexOf(this.BigBlind) + x) %this.randomizedPlayersCopy.length].alive){
       this.BigBlind =
         this.randomizedPlayersCopy[
-          (this.randomizedPlayersCopy.indexOf(this.BigBlind) + 1) %
+          (this.randomizedPlayersCopy.indexOf(this.BigBlind) + x) %
             this.randomizedPlayersCopy.length
         ];
+      break;
+      }
+      }
     }
+    this.sendAlert(
+        `${this.SmallBlind.name} is The Small Blind and bets ${Math.ceil(this.minimumBet/2.0)}.`
+      );
+      this.SmallBlind.Chips -= Math.ceil(this.minimumBet/2.0);
+      this.SmallBlind.AmountBidding = this.minimumBet;
+      this.ThePot += Math.ceil(this.minimumBet/2.0);
+      this.lastAmountBid = Math.ceil(this.minimumBet/2.0);
+    this.sendAlert(
+        `${this.BigBlind.name} is The Big Blind and bets ${this.minimumBet}.`
+      );
+      this.BigBlind.Chips -= this.minimumBet;
+      this.BigBlind.AmountBidding = this.minimumBet;
+      this.ThePot += this.minimumBet;
+      this.lastAmountBid = this.minimumBet;
+    this.dealCards(amount);
+    this.currentIndex = (this.randomizedPlayersCopy.indexOf(this.BigBlind) + 1) % this.randomizedPlayersCopy.length;
   }
 
   startRoundRobin() {
     while (true) {
       let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
-      if (nextPlayer.alive) {
+      if (nextPlayer.alive && nextPlayer.hasFolded != true) {
         nextPlayer.howManySelected = false;
         nextPlayer.whichFaceSelected = false;
         nextPlayer.holdItem("Microphone");
@@ -184,632 +230,302 @@ module.exports = class CardGamesGame extends Game {
   incrementState() {
     let previousState = this.getStateName();
 
-    if (previousState == "Guess Dice") {
+    if (previousState == "Place Bets") {
       console.log(this.spectatorMeetFilter);
+      let tempPlayers = this.randomizedPlayersCopy.filter((p) => p.hasHadTurn != true && p.alive && p.hasFolded != true)
+      if(tempPlayers.length > 0){
       while (true) {
         this.incrementCurrentIndex();
 
         let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
-        if (nextPlayer.alive) {
+        if (nextPlayer.alive && nextPlayer.hasFolded != true) {
           nextPlayer.holdItem("Microphone");
           break;
         }
       }
     }
+    else if(this.Phase == "First Bets"){
+      this.lastAmountBid = 0;
+      this.Phase = "The Flop";
+      this.randomizedPlayers.forEach((player) => {
+      player.hasHadTurn = false;
+      player.AmountBidding = 0;
+      });
+      this.DrawCommunityCards(3);
+      this.currentIndex = (this.randomizedPlayersCopy.indexOf(this.Dealer)) %this.randomizedPlayersCopy.length;
+        while (true) {
+        this.incrementCurrentIndex();
+
+        let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
+        if (nextPlayer.alive && nextPlayer.hasFolded != true) {
+          nextPlayer.holdItem("Microphone");
+          break;
+        }
+      }
+    }
+    else if(this.Phase == "The Flop" || this.Phase == "The Turn"){
+      this.lastAmountBid = 0;
+      if(this.Phase == "The Flop"){
+      this.Phase = "The Turn";
+      }
+      else{
+      this.Phase = "The River";
+      }
+      this.randomizedPlayers.forEach((player) => {
+      player.hasHadTurn = false;
+      player.AmountBidding = 0;
+      });
+      this.DrawCommunityCards(1);
+      this.currentIndex = (this.randomizedPlayersCopy.indexOf(this.Dealer)) %this.randomizedPlayersCopy.length;
+        while (true) {
+        this.incrementCurrentIndex();
+
+        let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
+        if (nextPlayer.alive && nextPlayer.hasFolded != true) {
+          nextPlayer.holdItem("Microphone");
+          break;
+        }
+      }
+    }
+    else if(this.Phase == "The River"){
+      this.Phase = "Showdown";
+      this.randomizedPlayers.forEach((player) => {
+      if(player.alive != true){
+        return;
+      }
+      if(player.hasFolded == true){
+        return;
+      }
+      player.holdItem("ShowdownTime");
+      player.hasHadTurn = false;
+      player.AmountBidding = 0;
+      });
+    }
+    else if(this.Phase == "Showdown"){
+      this.AwardRoundWinner();
+      this.RemoveHands();
+      this.discardCommunityCards();
+      this.setupNextRoundTexas();
+      
+    }
+    }
 
     super.incrementState();
   }
 
-  //Checks whether bid was a lie, removes dice, then passes onto next player.
-  callALie(player) {
-    this.sendAlert(`(LIE CALL) ${player.name} calls a lie!`);
-    if (this.lastBidder !== null) {
-      this.sendAlert(
-        `(LIE CALL) Last bid was ${this.lastAmountBid}x  :dice${this.lastFaceBid}: 's by ${this.lastBidder.name}.`
-      );
-
-      let diceCount = 0;
-
-      this.allRolledDice.forEach((die) => {
-        if (die == this.lastFaceBid) {
-          diceCount++;
-        }
-        if (this.wildOnes && die == 1 && this.lastFaceBid != 1) {
-          diceCount++;
-        }
-      });
-      this.events.emit(
-        "LieCall",
-        player,
-        diceCount < this.lastAmountBid,
-        this.lastBidder
-      );
-      if (diceCount >= this.lastAmountBid) {
-        if (this.chatName == "Casino") {
-          this.sendAlert(
-            `(LIE CALL) There are ${diceCount}x  :dice${this.lastFaceBid}: 's. Bid was correct, ${player.name} loses a die.`
-          );
-        } else if (this.chatName == "The Flying Dutchman") {
-          this.sendAlert(
-            `(LIE CALL) There are ${diceCount}x  :dice${this.lastFaceBid}: 's. ${this.lastBidder.name}, feel free to go ashore. The very next time we make port!`
-          );
-        }
-        this.removeDice(player);
-      } else {
-        if (this.chatName == "Casino") {
-          this.sendAlert(
-            `(LIE CALL) There are ${diceCount}x  :dice${this.lastFaceBid}: 's. Bid was incorrect, ${this.lastBidder.name} loses a die.`
-          );
-        } else if (this.chatName == "The Flying Dutchman") {
-          this.sendAlert(
-            `(LIE CALL) There are ${diceCount}x  :dice${this.lastFaceBid}: 's. ${this.lastBidder.name}, you're a liar and you will spend an eternity on this ship.`
-          );
-        }
-        this.removeDice(this.lastBidder);
+AwardRoundWinner(){
+  this.randomizedPlayers.forEach((player) => {
+      if(player.alive != true){
+        return;
       }
-    } else {
-      const response = Math.floor(Math.random() * 23);
-
-      //funny responses to players calling a lie on default zero 1's bet
-      switch (response) {
-        case 0:
-          this.sendAlert(
-            `Round just started with 0 ones... Of course there's at least 0 of ones :|`
-          );
-          this.sendAlert(
-            `I'll still take your die tho... Let that be a lesson to you!`
-          );
-          break;
-        case 1:
-          this.sendAlert(
-            `What are you doing???? Round just started with default bid of 0 ones!`
-          );
-          this.queueAlert(`I don't care, you still lose a die.`);
-          break;
-        case 2:
-          this.sendAlert(
-            `Really? You’re calling a lie on the default bid of 0 ones?`
-          );
-          this.sendAlert(`You just lost a die for that, genius.`);
-          break;
-        case 3:
-          this.sendAlert(
-            `You think there’s a lie in 0 ones? Well, you're definitely mistaken.`
-          );
-          this.sendAlert(`Enjoy losing that die, it’s a lesson well learnt.`);
-          break;
-        case 4:
-          this.sendAlert(
-            `How do you call a lie on 0 ones? Pure talent, that’s how.`
-          );
-          this.sendAlert(
-            `One die down, plenty more chances to redeem yourself!`
-          );
-          break;
-        case 5:
-          this.sendAlert(
-            `Calling a lie on the default bid of 0 ones? Now that's just embarrassing.`
-          );
-          this.sendAlert(
-            `You lose a die for that. Very embarrassing if you ask me...`
-          );
-          break;
-        case 6:
-          this.sendAlert(`Are there at least 0 ones? I wonder...`);
-          this.sendAlert(`(there were, and you lost a die.)`);
-          break;
-        case 7:
-          this.sendAlert(
-            `Lie on 0 ones? That’s not even a lie, that’s just... obvious.`
-          );
-          this.sendAlert(
-            `One die down, but don't worry, you got this! (I was asked to be nice to players)`
-          );
-          break;
-        case 8:
-          this.sendAlert(`Oh no, you were wrong :(. There was at least 0 ones`);
-          this.sendAlert(`Try again, maybe next time there won't be...`);
-          break;
-        case 9:
-          this.sendAlert(`Seriously? A lie on default bid of 0 ones?`);
-          this.sendAlert(`And you think your job is bad.`);
-          break;
-        case 10:
-          this.sendAlert(
-            `Is there a lie in 0 ones? You'd be the first to find it.`
-          );
-          this.sendAlert(
-            `Congratulations, you just made history! History of losing a die, that is.`
-          );
-          break;
-        case 11:
-          this.sendAlert(`Default bid is 0 ones, and you call a lie on it?`);
-          this.sendAlert(
-            `Are you playing a game or running a charity? Thanks for a free die.`
-          );
-          break;
-        case 12:
-          this.sendAlert(
-            `Doubting the default bid of 0 ones? That's one way to play.`
-          );
-          this.sendAlert(`One way to play with one less die, that is.`);
-          break;
-        case 13:
-          this.sendAlert(
-            `ERROR: Invalid input dete... Oh wait, that's no error.`
-          );
-          this.sendAlert(
-            `it's just you making a questionable move... You lose a die.`
-          );
-          break;
-        case 14:
-          this.sendAlert(
-            `Calling a lie on 0 ones? That's like doubting the existence of air.`
-          );
-          this.sendAlert(`Breathe in that sweet, sweet loss of a die.`);
-          break;
-        case 15:
-          this.sendAlert(
-            `You called a lie on 0 ones? I didn't know we were playing "Guess the Obvious".`
-          );
-          this.sendAlert(`Prize for guessing wrong: one less die! Congrats?`);
-          break;
-        case 16:
-          this.sendAlert(
-            `Round starts with 0 ones. You: "That's a lie!" Universe: "Hold my beer."`
-          );
-          this.sendAlert(
-            `Universe wins, you lose a die. Better luck arguing with reality next time!`
-          );
-          break;
-        case 17:
-          this.sendAlert(
-            `Ah, the old "doubt the undoubtable" strategy. Bold move, Cotton.`
-          );
-          this.sendAlert(`Let's see how it pays off... Oh, you lost a die.`);
-          break;
-        case 18:
-          this.sendAlert(
-            `You vs. 0 ones: an epic battle of wits. Spoiler: the 1's won`
-          );
-          this.sendAlert(
-            `Your prize? A life lesson and one less die. Mostly the die part.`
-          );
-          break;
-        case 19:
-          this.sendAlert(
-            `0 ones: the easiest bet to believe. You: "Challenge accepted!"`
-          );
-          this.sendAlert(`Game: "Challenge failed. You lose a die."`);
-          break;
-        case 20:
-          this.sendAlert(
-            `You thought 0 ones was a bluff? What's next, thinking the game's rigged?`
-          );
-          this.sendAlert(
-            `(It's not rigged, you just lost a die fair and square.)`
-          );
-          break;
-        case 21:
-          this.sendAlert(
-            `0 ones: the "Hello World" of betting. You: "Nah, it's a virus."`
-          );
-          this.sendAlert(
-            `System response: Die deleted. Antivirus: Common Sense 2.0.`
-          );
-          break;
-        case 22:
-          this.sendAlert(
-            `Player used "Doubt 0 ones." It's not very effective...`
-          );
-          this.sendAlert(
-            `Game used "Reality Check." Critical hit! Player lost a die.`
-          );
-          break;
-        default:
-          this.sendAlert(
-            `Ummmm, you should never have got this text. How did you get here?`
-          );
-          this.sendAlert(
-            `No really, this is a bug, you shouldn't be able to see this ever.`
-          );
-          this.sendAlert(
-            `I'll still take the chance to take your die, but you really shouldn't have seen this.`
-          );
-          break;
+      if(player.hasFolded == true){
+        return;
       }
-      this.removeDice(player);
-    }
-
-    this.rollDice();
-  }
-
-  //Checks whether bid was a lie, removes die, then passes onto next player.
-  callASpotOn(player) {
-    if (this.lastBidder !== null) {
-      this.sendAlert(`(SPOT ON CALL) ${player.name} calls a spot on!`);
-      this.sendAlert(
-        `(SPOT ON CALL) Last bid was ${this.lastAmountBid}x  :dice${this.lastFaceBid}: 's by ${this.lastBidder.name}.`
-      );
-
-      let diceCount = 0;
-
-      this.allRolledDice.forEach((die) => {
-        if (die == this.lastFaceBid) {
-          diceCount++;
-        }
-        if (this.wildOnes && die == 1 && this.lastFaceBid != 1) {
-          diceCount++;
-        }
-      });
-      this.events.emit(
-        "SpotOnCall",
-        player,
-        diceCount == this.lastAmountBid,
-        this.lastBidder
-      );
-      if (diceCount == this.lastAmountBid) {
-        this.sendAlert(
-          `(SPOT ON CALL) There are exactly ${diceCount}x  :dice${this.lastFaceBid}: 's. Spot On was correct! Everyone except ${player.name} loses a die.`
-        );
-
-        if (player.correctSpotOnsInARow >= 2) {
-          const response = Math.floor(Math.random() * 26);
-
-          switch (response) {
-            case 0:
-              this.sendAlert(
-                `SPOT ON HACK DETECTED! ${player.name} is getting permanently banned from Ultimafia.`
-              );
-              break;
-            case 1:
-              this.sendAlert(
-                `WARNING! Improbable luck levels detected. ${player.name}'s account flagged for review.`
-              );
-              break;
-            case 2:
-              this.sendAlert(
-                `CHEAT ALERT! ${player.name}'s dice prediction algorithm violates game rules. Initiating ban sequence...`
-              );
-              break;
-            case 3:
-              this.sendAlert(
-                `ANTI-CHEAT TRIGGERED! ${player.name}'s spot-on accuracy has broken the space-time continuum.`
-              );
-              break;
-            case 4:
-              this.sendAlert(
-                `UNAUTHORIZED CLAIRVOYANCE DETECTED! ${player.name} is being reported to the Psychic Gaming Commission.`
-              );
-              break;
-            case 5:
-              this.sendAlert(
-                `SUGGESTION: ${player.name} should immediately purchase a lottery ticket and retire from Liar's Dice.`
-              );
-              break;
-            case 6:
-              this.sendAlert(
-                `CHEATING ALGORITHM DETECTED! ${player.name}'s spot-on calls exceed human capabilities. Account suspended.`
-              );
-              break;
-            case 7:
-              this.sendAlert(
-                `PROBABILITY MANIPULATION ALERT! ${player.name} caught using quantum entanglement to predict dice rolls.`
-              );
-              break;
-            case 8:
-              this.sendAlert(
-                `DICE STATE HACKING CONFIRMED! ${player.name}'s device is transmitting unauthorized dice data. Connection terminated.`
-              );
-              break;
-            case 9:
-              this.sendAlert(
-                `CRITICAL CHEAT WARNING! ${player.name}'s perfect guesses violate the laws of statistics. Cheat detection engaged.`
-              );
-              break;
-            case 10:
-              this.sendAlert(
-                `EXPLOIT ABUSE DETECTED! ${player.name} found exploiting a bug in the random number generator.`
-              );
-              break;
-            case 11:
-              this.sendAlert(
-                `FLUX CAPACITOR DETECTED! ${player.name} caught using future knowledge to make perfect spot-on calls.`
-              );
-              break;
-            case 12:
-              this.sendAlert(
-                `AI ASSISTANCE VIOLATION! ${player.name}'s use of advanced machine learning for predictions has been flagged.`
-              );
-              break;
-            case 13:
-              this.sendAlert(
-                `PRECOGNITION HACK IDENTIFIED! ${player.name}'s psychic abilities deemed unfair advantage. Immediate disqualification.`
-              );
-              break;
-            case 14:
-              this.sendAlert(
-                `PROBABILITY MATRIX BREACH! ${player.name} found accessing the source code of reality. Administrator intervention required.`
-              );
-              break;
-            case 15:
-              this.sendAlert(
-                `INSIDER TRADING ALERT! ${player.name} suspected of bribing the RNG gods. Celestial authorities notified.`
-              );
-              break;
-            case 16:
-              this.sendAlert(
-                `GAMING WIZARDRY MANIPULATION! ${player.name}'s magical dice predictions are under investigation by the Ministry of Magic.`
-              );
-              break;
-            case 17:
-              this.sendAlert(
-                `TELEPATHY SUSPICION! ${player.name} is reading other players' minds to predict dice outcomes.`
-              );
-              break;
-            case 18:
-              this.sendAlert(
-                `GLITCH EXPLOIT DETECTED! ${player.name} found exploiting a known bug in the dice algorithm. Action required.`
-              );
-              break;
-            case 19:
-              this.sendAlert(
-                `CODE INJECTION ALERT! ${player.name} caught injecting malicious code to influence dice rolls.`
-              );
-              break;
-            case 20:
-              this.sendAlert(
-                `ALERT! Unbelievable luck streak detected. ${player.name} under scrutiny for potential game exploits.`
-              );
-              break;
-            case 21:
-              this.sendAlert(
-                `ALERT! ${player.name}'s consistent accuracy defies odds. Account flagged for potential exploit investigation.`
-              );
-              break;
-            case 22:
-              this.sendAlert(
-                `ALERT! ${player.name}'s unlikely success rate suggests potential cheating. Account under review.`
-              );
-              break;
-            case 23:
-              this.sendAlert(
-                `WARNING! ${player.name}'s repeated spot-on calls are statistically improbable. Investigating for hacks.`
-              );
-              break;
-            case 24:
-              this.sendAlert(
-                `ALERT! ${player.name}'s improbable luck has triggered an FBI investigation. Stay where you are.`
-              );
-              break;
-            case 25:
-              this.sendAlert(
-                `ALERT! ${player.name}'s improbable streak has alerted the FBI. They're coming. Stay calm and don't move.`
-              );
-              break;
-            default:
-              this.sendAlert(
-                `NOTICE! This message should never have been seen. ${player.name} must be hacking for real.`
-              );
-              break;
+      let allSameSuit = true;
+      let streight = true;
+      var counts = {};
+     player.ShowdownCards = this.sortCards(player.ShowdownCards);
+      for(let card of player.ShowdownCards){
+        let tempCard = this.readCard(card);
+        if (!counts[tempCard[0]]){ 
+          counts[tempCard[0]] = 0;
+          }
+        counts[tempCard[0]]++;
+        for(let cardB of player.ShowdownCards){
+          let tempCardB = this.readCard(cardB);
+          if(card == player.ShowdownCards[0]){
+            if(card != cardB){
+              if(tempCard[0]-tempCardB[0] != player.ShowdownCards.indexOf(cardB)){
+                let streight = false;
+              }
+            }
+          }
+          if(card != cardB){
+            if(tempCard[1] != tempCardB[1]){
+              allSameSuit = false;
+          }
           }
         }
-        player.correctSpotOnsInARow = player.correctSpotOnsInARow + 1 || 1;
-
-        this.randomizedPlayers.forEach((rPlayer) => {
-          if (rPlayer != player) {
-            this.removeDice(rPlayer);
-          }
-        });
-      } else {
-        this.sendAlert(
-          `(SPOT ON CALL) There are ${diceCount}x  :dice${this.lastFaceBid}: 's. Spot on was incorrect, ${player.name} loses a die.`
-        );
-        player.correctSpotOnsInARow = 0;
-
-        this.removeDice(player);
       }
-
-      this.rollDice();
-    } else {
-      const response = Math.floor(Math.random() * 30);
-
-      //funny responses to players calling a spot on on default bet
-      switch (response) {
-        case 0:
-          this.sendAlert(
-            `You really tried to call 'spot on' on first turn? I'd say 'nice try,', but it wasn't.`
-          );
-          break;
-        case 1:
-          this.sendAlert(
-            `Spot on, first-turn? I didn't realize we were playing 'How to Annoy Your Game Master 101.'`
-          );
-          break;
-        case 2:
-          this.sendAlert(
-            `First-turn spot on? Are you trying to speedrun getting on my bad side? Because congratulations, you did it.`
-          );
-          break;
-        case 3:
-          this.sendAlert(
-            `Spot on now? You do realize this is a game of wits, not a game of 'Who Can Annoy the GM Fastest'? You'd win that, though.`
-          );
-          break;
-        case 4:
-          this.sendAlert(
-            `I could have easily removed spot on from first turns. But I didn't want to miss out on chances to be mean.`
-          );
-          break;
-        case 5:
-          this.sendAlert(
-            `Ah, the 'spot on first turn' classic. Classically useless, but classic nonetheless.`
-          );
-          break;
-        case 6:
-          this.sendAlert(
-            `You want to spot on the first turn? And I want players who understand basic game rules. Guess we're both disappointed.`
-          );
-          break;
-        case 7:
-          this.sendAlert(
-            `First-turn spot on? If 'facepalm' was a dice move, you'd have just nailed it.`
-          );
-          break;
-        case 8:
-          this.sendAlert(
-            `First-turn spot on? I'd explain why that doesn't work, but I feel like you'd try to 'spot on' my explanation.`
-          );
-          break;
-        case 9:
-          this.sendAlert(
-            `Ha! ${player.name} thought 'spot on' works on first turn. Everyone, laugh at the newbie!`
-          );
-          break;
-        case 10:
-          this.sendAlert(
-            `${player.name}'s brilliant move: first-turn 'spot on.' (it doesn't work)`
-          );
-          break;
-        case 11:
-          this.sendAlert(
-            `Behold! ${player.name}'s epic fail: 'spot on', first turn.`
-          );
-          break;
-        case 12:
-          this.sendAlert(
-            `${player.name} redefines 'rookie mistake.' First-turn, 'spot on.' LOL!`
-          );
-          break;
-        case 13:
-          this.sendAlert(
-            `Everybody clap for ${player.name}'s first-turn 'spot on.'`
-          );
-          break;
-        case 14:
-          this.sendAlert(
-            `${player.name} kicks off with a 'spot on.' Comedy gold, folks!`
-          );
-          break;
-        case 15:
-          this.sendAlert(
-            `${player.name} just signed up for public mockery by trying to first-turn 'spot on.'`
-          );
-          break;
-        case 16:
-          this.sendAlert(
-            `${player.name}'s game opener: 'spot on.' Game's reaction: ROFL.`
-          );
-          break;
-        case 17:
-          this.sendAlert(
-            `${player.name}'s first move: 'spot on.' Second move: realizing their mistake.`
-          );
-          break;
-        case 18:
-          this.sendAlert(
-            `'Spot on' right away? ${player.name}, did you read the rules backwards?`
-          );
-          break;
-        case 19:
-          this.sendAlert(
-            `Breaking news: ${player.name} discovers 'spot on' doesn't work on first turn!`
-          );
-          break;
-        case 20:
-          this.sendAlert(
-            `${player.name} tries first-turn 'spot on.' It's not very effective...`
-          );
-          break;
-        case 21:
-          this.sendAlert(
-            `${player.name}'s first play: 'spot on.' Also ${player.name}'s first lesson: reading rules.`
-          );
-          break;
-        case 22:
-          this.sendAlert(
-            `${player.name}'s game opener: 'spot on.' Game's reaction: ROFL.`
-          );
-          break;
-        case 23:
-          this.sendAlert(
-            `${player.name} tries 'spot on' immediately. I didn't know we were speedrunning mistakes!`
-          );
-          break;
-        case 24:
-          this.sendAlert(
-            `It clearly says 'Spot on cannot be used on the first turn of each round' on the learn page.`
-          );
-          break;
-        case 25:
-          this.sendAlert(
-            `POV: You skipped the tutorial on not calling 'spot on' first turn so now you get roasted by me.`
-          );
-          break;
-        case 26:
-          this.sendAlert(
-            `'Spot On cannot be used on the first turn' - ringing any bells from the learn page?`
-          );
-          break;
-        case 27:
-          this.sendAlert(
-            `Per the learn page: 'Spot On cannot be used on the first turn.' Clearly you skipped that part.`
-          );
-          break;
-        case 28:
-          this.sendAlert(
-            `The rule is 'Spot On cannot be used on the first turn', not 'Spot On anytime you want.'`
-          );
-          break;
-        case 29:
-          this.sendAlert(
-            `Maybe reread the 'Spot On cannot be used on the first turn' bit on learn page before trying that again.`
-          );
-          break;
-        default:
-          this.sendAlert(
-            `You should never get this but if you happen to... Feel free to mock ${player.name} for trying the first-turn 'spot on'.`
-          );
-          break;
+   let score = 0;
+    let four = false;
+    let fourValue;
+    let three = false;
+    let threeValue;
+    let pairs = 0;
+    let pairValues = [];
+    for(let x = 0; x < counts.length; x++;){
+      if(counts[x] == 4){
+        four = true;
+        fourValue = x;
       }
+      if(counts[x] == 3){
+        three = true;
+        threeValue = x;
+      }
+      if(counts[x] == 2){
+        pairs += 1;
+        pairValues.push(x);
+      }
+    }
+    
+    if(streight == true && allSameSuit == true && this.readCard(player.ShowdownCards[0])[0] == 14){
+      player.ScoreType = "Royal Flush";
+      score += 10000;
+    }
+    else if(streight == true && allSameSuit == true){
+      player.ScoreType = "Straight flush";
+      score += 9000;
+      score += this.readCard(player.ShowdownCards[0])[0];
+    }
+    else if(four == true){
+      player.ScoreType = "Four of a kind";
+      score += 8000;
+      score += fourValue;
+    }
+    else if(three == true && pairs > 0){
+      player.ScoreType = "Full house";
+      score += 7000;
+      score += threeValue;
+      score += pairValues[0];
+    }
+    else if(allSameSuit == true){
+      player.ScoreType = "Flush";
+      score += 6000;
+      score += this.readCard(player.ShowdownCards[0])[0];
+    }
+    else if(streight == true){
+      player.ScoreType = "Straight";
+      score += 5000;
+      score += this.readCard(player.ShowdownCards[0])[0];
+    }
+    else if(three == true){
+      player.ScoreType = "Three of a kind";
+      score += 4000;
+      score += threeValue;
+    }
+    else if(pairs > 1){
+      player.ScoreType = "Two Pairs";
+      score += 3000;
+      score += pairValues[0];
+      score += pairValues[1];
+    }
+    else if(pairs > 0){
+      player.ScoreType = "Pair";
+      score += 2000;
+      score += pairValues[0];
+    }
+    else{
+    player.ScoreType = "High Card";
+    score += this.readCard(player.ShowdownCards[0])[0];
+    }
+  player.Score = score;
+      });
+  let highest
+for(let player of this.randomizedPlayers.filter((p) => p.alive && p.hasFolded != true)){
+  
+}
+  
+}
+
+sortCards(cards){
+for(let x = 0; x< cards.length; x++){
+  for(let y = 0; y< cards.length; y++){
+    if(this.readCard(cards[x], this.CardGameType)[0] < this.readCard(cards[y], this.CardGameType)[0]){
+      let temp = cards[x];
+      cards[x] = cards[y];
+      cards[y] = temp;
     }
   }
+}
 
-  //Rolls/Rerolls dice for each player and resets variables
-  rollDice() {
-    this.lastAmountBid = 0;
-    this.lastFaceBid = 1;
-    this.lastBidder = null;
-    this.allRolledDice = [];
+  return cards;
+}
 
-    this.allDice = 0;
-    this.gameMasterAnnoyedByHighBidsThisRoundYet = false;
-
-    const dicerollSound = Math.floor(Math.random() * 2);
-    if (dicerollSound == 0) {
-      this.broadcast("diceRoll");
-    } else {
-      this.broadcast("diceRoll2");
+readCard(card, type){
+  let cardValue = card.split("-")[0];
+  let cardSuit = card.split("-")[0];
+  if(type == "Texas Hold’em"){
+    if(cardValue == "Jack"){
+      cardValue = 11;
     }
+    else if(cardValue == "Queen"){
+      cardValue = 12;
+    }
+    else if(cardValue == "King"){
+      cardValue = 13;
+    }
+    else if(cardValue == "Ace"){
+      cardValue = 14;
+    }
+  }
+  return [parseInt(cardValue), cardSuit];
+}
 
+  //DealCards
+  dealCards(amount) {
     this.randomizedPlayers.forEach((player) => {
-      const rolledDice = [];
-
-      if (player.rolledDice) {
-        player.previousRolls = player.rolledDice;
-      }
-
-      for (let i = 0; i < player.diceNum; i++) {
-        let diceNumber = Math.floor(Math.random() * 6) + 1;
-
-        rolledDice.push(diceNumber);
-        this.allDice += 1;
-
-        this.allRolledDice.push(diceNumber);
-      }
-
-      player.rolledDice = rolledDice;
+      let Cards = this.drawDiscardPile.drawMultiple(amount);
+      player.CardsInHand.push(...Cards);
     });
+  }
+
+    removeHands() {
+    this.randomizedPlayers.forEach((player) => {
+      for(let card of player.CardsInHand){
+        this.drawDiscardPile.discard(card);
+      }
+      player.CardsInHand = [];
+    });
+  }
+
+    discardCommunityCards() {
+      for(let card of this.CommunityCards){
+        this.drawDiscardPile.discard(card);
+      }
+      this.CommunityCards = [];
+  }
+
+  //DealCommunity
+  DrawCommunityCards(amount) {
+    let Cards = this.drawDiscardPile.drawMultiple(amount);
+    this.CommunityCards.push(...Cards);
+  }
+
+  addToPot(player, type, amount){
+    if(type == "Call"){
+      if(player.Chips >= (this.lastAmountBid-player.AmountBidding)){
+      player.Chips = player.Chips - (this.lastAmountBid-player.AmountBidding);
+      player.AmountBidding += (this.lastAmountBid-player.AmountBidding);
+      this.ThePot += (this.lastAmountBid-player.AmountBidding);
+        this.sendAlert(
+          `${player.name} calls and puts ${(this.lastAmountBid-player.AmountBidding)} into the Pot!`
+            );
+            }
+            else if(player.Chips > 0){
+                this.sendAlert(
+                  `${player.name} goes All in and puts ${player.Chips} into the Pot!`
+                );
+            this.actor.AmountBidding += player.Chips;
+            this.ThePot +=  player.Chips;
+            player.Chips = 0;
+            }
+            else{
+            this.game.sendAlert(`${player.name} has Nothing to put into the Pot!`);
+            }
+    }
+    if(type == "Raise"){
+      if(player.Chips >= (this.lastAmountBid-player.AmountBidding)+amount){
+      player.Chips = player.Chips - (this.lastAmountBid-player.AmountBidding)+amount;
+      player.AmountBidding += (this.lastAmountBid-player.AmountBidding)+amount;
+      this.lastAmountBid = player.AmountBidding;
+      this.ThePot += (this.lastAmountBid-player.AmountBidding)+amount;
+        this.sendAlert(`${player.name} raises and puts ${(this.lastAmountBid-player.AmountBidding)+amount} into the Pot!`);
+      }
+    }
+    
+
+    
   }
 
   //Removes one dice from a player and eliminate if no more dice
