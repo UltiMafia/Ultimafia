@@ -146,6 +146,9 @@ module.exports = class CardGamesGame extends Game {
     this.randomizedPlayers.forEach((player) => {
       player.hasFolded = false;
       player.hasHadTurn = false;
+      player.Score = 0;
+      player.ScoreType = null;
+      player.ShowdownCards = [];
     });
     this.randomizedPlayers.forEach((player) => {
       if(player.Chips < this.minimumBet){
@@ -421,11 +424,20 @@ AwardRoundWinner(){
     }
   player.Score = score;
       });
-  let highest
+  let highest = [this.randomizedPlayers[0]];
 for(let player of this.randomizedPlayers.filter((p) => p.alive && p.hasFolded != true)){
-  
+  if(player.Score > highest[0].score){
+    highest = [player];
+  }
+  else if(player.Score == highest[0].score){
+    highest.push(player);
+  }
 }
-  
+this.sendAlert(`The Round has Concluded`);
+  for(let player of highest){
+    this.sendAlert(`${player.name} has Won ${Math.floor((this.ThePot)/highest.length)} from The Pot with a ${this.ScoreType}!`);
+    player.Chips += Math.floor((this.ThePot)/highest.length);
+  }
 }
 
 sortCards(cards){
@@ -825,9 +837,8 @@ readCard(card, type){
 
   getGameTypeOptions() {
     return {
-      wildOnes: this.wildOnes,
-      spotOn: this.spotOn,
-      startingDice: this.startingDice,
+      startingChips: = this.startingChips,
+      minimumBet: this.minimumBet,
     };
   }
 };
