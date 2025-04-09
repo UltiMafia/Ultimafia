@@ -55,7 +55,7 @@ module.exports = {
     "Secret Dictator",
     "Wacky Words",
     "Liars Dice",
-    "Card Games"
+    "Card Games",
   ],
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
   alignments: {
@@ -208,7 +208,7 @@ module.exports = {
         max: 5 * 60 * 1000,
         default: 1 * 60 * 1000,
       },
-      "Showdown": {
+      Showdown: {
         min: 30 * 1000,
         max: 5 * 60 * 1000,
         default: 1 * 60 * 1000,

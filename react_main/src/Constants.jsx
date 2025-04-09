@@ -27,7 +27,7 @@ export const Alignments = {
   "Secret Dictator": ["Liberals", "Fascists"],
   "Wacky Words": ["Town", "Host"],
   "Liars Dice": ["Liars", "Host"],
-  "Card Games": ["Town", "Host"]
+  "Card Games": ["Town", "Host"],
 };
 
 export const GameStates = {

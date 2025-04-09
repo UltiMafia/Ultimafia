@@ -153,7 +153,7 @@ export default function HostCardGames() {
           readyCheck: getFormFieldValue("readyCheck"),
           stateLengths: {
             "Place Bets": getFormFieldValue("placeBetsLength"),
-            "Showdown": getFormFieldValue("showdownLength"),
+            Showdown: getFormFieldValue("showdownLength"),
           },
           startingChips: getFormFieldValue("startingChips"),
           minimumBet: getFormFieldValue("minimumBet"),

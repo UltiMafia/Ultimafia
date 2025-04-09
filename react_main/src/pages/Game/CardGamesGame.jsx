@@ -306,9 +306,7 @@ function LiarsDicePlayerRow({
               >
                 Chips:
               </div>
-              <div className="previous-rolls-dice">
-                {Chips}
-              </div>
+              <div className="previous-rolls-dice">{Chips}</div>
             </div>
           </>
         )}
@@ -327,9 +325,7 @@ function LiarsDicePlayerRow({
               >
                 Current Bid:
               </div>
-              <div className="previous-rolls-dice">
-                {Bets}
-              </div>
+              <div className="previous-rolls-dice">{Bets}</div>
             </div>
           </>
         )}

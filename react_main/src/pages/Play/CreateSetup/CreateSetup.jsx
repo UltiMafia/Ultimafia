@@ -148,7 +148,7 @@ export default function CreateSetup(props) {
                 case "Liars Dice":
                   return <CreateLiarsDiceSetup />;
                 case "Card Games":
-                    return <CreateCardGamesSetup />;
+                  return <CreateCardGamesSetup />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;

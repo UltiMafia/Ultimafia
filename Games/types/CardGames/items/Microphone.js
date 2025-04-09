@@ -43,10 +43,8 @@ module.exports = class Microphone extends Item {
           run: function () {
             this.target = parseInt(this.target);
             //this.game.lastAmountBid - this.actor.AmountBidding + this.target
-          
 
-            if (
-              this.target+this.actor.AmountBidding < this.game.minimumBet) {
+            if (this.target + this.actor.AmountBidding < this.game.minimumBet) {
               this.actor.getMeetings().forEach((meeting) => {
                 if (meeting.name == "Raise") {
                   this.game.sendAlert(
@@ -59,21 +57,22 @@ module.exports = class Microphone extends Item {
               return;
             }
 
-            if (
-              this.actor.Chips < this.target) {
+            if (this.actor.Chips < this.target) {
               this.actor.getMeetings().forEach((meeting) => {
                 if (meeting.name == "Raise") {
-                  this.game.sendAlert(
-                    `You don't have ${this.target} Chips.`,
-                    [this.actor]
-                  );
+                  this.game.sendAlert(`You don't have ${this.target} Chips.`, [
+                    this.actor,
+                  ]);
                   meeting.unvote(this.actor, true, true);
                 }
               });
               return;
             }
 
-            if ((this.target+this.actor.AmountBidding) < this.game.lastAmountBid) {
+            if (
+              this.target + this.actor.AmountBidding <
+              this.game.lastAmountBid
+            ) {
               this.actor.getMeetings().forEach((meeting) => {
                 if (meeting.name == "Raise") {
                   this.game.sendAlert(
@@ -158,7 +157,10 @@ module.exports = class Microphone extends Item {
       this.MovesOptions = ["Fold"];
       this.MinRaise = this.game.minimumBet;
     }
-    if((this.game.lastAmountBid > player.Chips) || (this.game.minimumBet > player.Chips)){
+    if (
+      this.game.lastAmountBid > player.Chips ||
+      this.game.minimumBet > player.Chips
+    ) {
       this.MovesOptions.push("All-In");
     }
     this.setupMeetings();

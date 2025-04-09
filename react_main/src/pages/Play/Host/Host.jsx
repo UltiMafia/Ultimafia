@@ -148,7 +148,7 @@ export default function Host(props) {
                 case "Liars Dice":
                   return <HostLiarsDice />;
                 case "Card Games":
-                    return <HostCardGames />;
+                  return <HostCardGames />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;

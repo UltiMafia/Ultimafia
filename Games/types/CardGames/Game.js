@@ -5,7 +5,6 @@ const DrawDiscardPile = require("./DrawDiscardPile");
 const Queue = require("../../core/Queue");
 const Winners = require("../../core/Winners");
 
-
 const Random = require("../../../lib/Random");
 
 module.exports = class CardGamesGame extends Game {
@@ -131,13 +130,13 @@ module.exports = class CardGamesGame extends Game {
 
     // super.start();
     //this.rollDice();
-    if(this.CardGameType == "Texas Hold’em"){
-    this.CommunityCards = [];
-    this.RoundNumber = 0;
-    this.ThePot = 0;
-    this.drawDiscardPile.shuffle();
-    this.setupNextRoundTexas();
-  }
+    if (this.CardGameType == "Texas Hold’em") {
+      this.CommunityCards = [];
+      this.RoundNumber = 0;
+      this.ThePot = 0;
+      this.drawDiscardPile.shuffle();
+      this.setupNextRoundTexas();
+    }
     this.startRoundRobin();
 
     super.start();
@@ -154,7 +153,7 @@ module.exports = class CardGamesGame extends Game {
       player.ShowdownCards = [];
     });
     this.randomizedPlayers.forEach((player) => {
-      if(player.Chips < this.minimumBet){
+      if (player.Chips < this.minimumBet) {
         player.kill();
       }
     });
@@ -165,53 +164,72 @@ module.exports = class CardGamesGame extends Game {
       this.BigBlind =
         this.randomizedPlayersCopy[(1 + 1) % this.randomizedPlayersCopy.length];
     } else {
-      for(let x = 1; x < this.randomizedPlayersCopy.length; x++){
-      if(this.randomizedPlayersCopy[(this.randomizedPlayersCopy.indexOf(this.Dealer) + x) %this.randomizedPlayersCopy.length].alive){
-      this.Dealer =
-        this.randomizedPlayersCopy[
-          (this.randomizedPlayersCopy.indexOf(this.Dealer) + x) %
-            this.randomizedPlayersCopy.length
-        ];
-      break;
+      for (let x = 1; x < this.randomizedPlayersCopy.length; x++) {
+        if (
+          this.randomizedPlayersCopy[
+            (this.randomizedPlayersCopy.indexOf(this.Dealer) + x) %
+              this.randomizedPlayersCopy.length
+          ].alive
+        ) {
+          this.Dealer =
+            this.randomizedPlayersCopy[
+              (this.randomizedPlayersCopy.indexOf(this.Dealer) + x) %
+                this.randomizedPlayersCopy.length
+            ];
+          break;
+        }
       }
+      for (let x = 1; x < this.randomizedPlayersCopy.length; x++) {
+        if (
+          this.randomizedPlayersCopy[
+            (this.randomizedPlayersCopy.indexOf(this.SmallBlind) + x) %
+              this.randomizedPlayersCopy.length
+          ].alive
+        ) {
+          this.SmallBlind =
+            this.randomizedPlayersCopy[
+              (this.randomizedPlayersCopy.indexOf(this.SmallBlind) + x) %
+                this.randomizedPlayersCopy.length
+            ];
+          break;
+        }
       }
-      for(let x = 1; x < this.randomizedPlayersCopy.length; x++){
-      if(this.randomizedPlayersCopy[(this.randomizedPlayersCopy.indexOf(this.SmallBlind) + x) %this.randomizedPlayersCopy.length].alive){
-      this.SmallBlind =
-        this.randomizedPlayersCopy[
-          (this.randomizedPlayersCopy.indexOf(this.SmallBlind) + x) %
-            this.randomizedPlayersCopy.length
-        ];
-      break;
-      }
-      }
-      for(let x = 1; x < this.randomizedPlayersCopy.length; x++){
-      if(this.randomizedPlayersCopy[(this.randomizedPlayersCopy.indexOf(this.BigBlind) + x) %this.randomizedPlayersCopy.length].alive){
-      this.BigBlind =
-        this.randomizedPlayersCopy[
-          (this.randomizedPlayersCopy.indexOf(this.BigBlind) + x) %
-            this.randomizedPlayersCopy.length
-        ];
-      break;
-      }
+      for (let x = 1; x < this.randomizedPlayersCopy.length; x++) {
+        if (
+          this.randomizedPlayersCopy[
+            (this.randomizedPlayersCopy.indexOf(this.BigBlind) + x) %
+              this.randomizedPlayersCopy.length
+          ].alive
+        ) {
+          this.BigBlind =
+            this.randomizedPlayersCopy[
+              (this.randomizedPlayersCopy.indexOf(this.BigBlind) + x) %
+                this.randomizedPlayersCopy.length
+            ];
+          break;
+        }
       }
     }
     this.sendAlert(
-        `${this.SmallBlind.name} is The Small Blind and bets ${Math.ceil(this.minimumBet/2.0)}.`
-      );
-      this.SmallBlind.Chips -= Math.ceil(this.minimumBet/2.0);
-      this.SmallBlind.AmountBidding = Math.ceil(this.minimumBet/2.0);
-      this.ThePot += Math.ceil(this.minimumBet/2.0);
-      this.lastAmountBid = Math.ceil(this.minimumBet/2.0);
+      `${this.SmallBlind.name} is The Small Blind and bets ${Math.ceil(
+        this.minimumBet / 2.0
+      )}.`
+    );
+    this.SmallBlind.Chips -= Math.ceil(this.minimumBet / 2.0);
+    this.SmallBlind.AmountBidding = Math.ceil(this.minimumBet / 2.0);
+    this.ThePot += Math.ceil(this.minimumBet / 2.0);
+    this.lastAmountBid = Math.ceil(this.minimumBet / 2.0);
     this.sendAlert(
-        `${this.BigBlind.name} is The Big Blind and bets ${this.minimumBet}.`
-      );
-      this.BigBlind.Chips -= this.minimumBet;
-      this.BigBlind.AmountBidding = this.minimumBet;
-      this.ThePot += this.minimumBet;
-      this.lastAmountBid = this.minimumBet;
+      `${this.BigBlind.name} is The Big Blind and bets ${this.minimumBet}.`
+    );
+    this.BigBlind.Chips -= this.minimumBet;
+    this.BigBlind.AmountBidding = this.minimumBet;
+    this.ThePot += this.minimumBet;
+    this.lastAmountBid = this.minimumBet;
     this.dealCards(2);
-    this.currentIndex = (this.randomizedPlayersCopy.indexOf(this.BigBlind) + 1) % this.randomizedPlayersCopy.length;
+    this.currentIndex =
+      (this.randomizedPlayersCopy.indexOf(this.BigBlind) + 1) %
+      this.randomizedPlayersCopy.length;
   }
 
   startRoundRobin() {
@@ -238,277 +256,284 @@ module.exports = class CardGamesGame extends Game {
 
     if (previousState == "Place Bets") {
       console.log(this.spectatorMeetFilter);
-      let tempPlayers = this.randomizedPlayersCopy.filter((p) => p.hasHadTurn != true && p.alive && p.hasFolded != true);
-      let playersInGame = this.randomizedPlayersCopy.filter((p) => p.alive && p.hasFolded != true);
-      if(playersInGame.length == 1){
+      let tempPlayers = this.randomizedPlayersCopy.filter(
+        (p) => p.hasHadTurn != true && p.alive && p.hasFolded != true
+      );
+      let playersInGame = this.randomizedPlayersCopy.filter(
+        (p) => p.alive && p.hasFolded != true
+      );
+      if (playersInGame.length == 1) {
         this.sendAlert(`The Round has Concluded`);
         this.RoundNumber++;
-        this.sendAlert(`${playersInGame[0].name} has Won ${this.ThePot} from The Pot by not folding!`);
+        this.sendAlert(
+          `${playersInGame[0].name} has Won ${this.ThePot} from The Pot by not folding!`
+        );
         playersInGame[0].Chips += this.ThePot;
-    
-          this.removeHands();
-          this.discardCommunityCards();
-          this.setupNextRoundTexas();
-      }
-      else if(tempPlayers.length > 0){
-      while (true) {
-        this.incrementCurrentIndex();
 
-        let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
-        if (nextPlayer.alive && nextPlayer.hasFolded != true) {
-          nextPlayer.holdItem("Microphone");
-          break;
-        }
-      }
-    }
-    else if(this.Phase == "First Bets"){
-      this.lastAmountBid = 0;
-      this.Phase = "The Flop";
-      this.randomizedPlayers.forEach((player) => {
-      player.hasHadTurn = false;
-      player.AmountBidding = 0;
-      });
-      this.DrawCommunityCards(3);
-      this.currentIndex = (this.randomizedPlayersCopy.indexOf(this.Dealer)) %this.randomizedPlayersCopy.length;
+        this.removeHands();
+        this.discardCommunityCards();
+        this.setupNextRoundTexas();
+      } else if (tempPlayers.length > 0) {
         while (true) {
-        this.incrementCurrentIndex();
+          this.incrementCurrentIndex();
 
-        let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
-        if (nextPlayer.alive && nextPlayer.hasFolded != true) {
-          nextPlayer.holdItem("Microphone");
-          break;
+          let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
+          if (nextPlayer.alive && nextPlayer.hasFolded != true) {
+            nextPlayer.holdItem("Microphone");
+            break;
+          }
         }
-      }
-    }
-    else if(this.Phase == "The Flop" || this.Phase == "The Turn"){
-      this.lastAmountBid = 0;
-      if(this.Phase == "The Flop"){
-      this.Phase = "The Turn";
-      }
-      else{
-      this.Phase = "The River";
-      }
-      this.randomizedPlayers.forEach((player) => {
-      player.hasHadTurn = false;
-      player.AmountBidding = 0;
-      });
-      this.DrawCommunityCards(1);
-      this.currentIndex = (this.randomizedPlayersCopy.indexOf(this.Dealer)) %this.randomizedPlayersCopy.length;
+      } else if (this.Phase == "First Bets") {
+        this.lastAmountBid = 0;
+        this.Phase = "The Flop";
+        this.randomizedPlayers.forEach((player) => {
+          player.hasHadTurn = false;
+          player.AmountBidding = 0;
+        });
+        this.DrawCommunityCards(3);
+        this.currentIndex =
+          this.randomizedPlayersCopy.indexOf(this.Dealer) %
+          this.randomizedPlayersCopy.length;
         while (true) {
-        this.incrementCurrentIndex();
+          this.incrementCurrentIndex();
 
-        let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
-        if (nextPlayer.alive && nextPlayer.hasFolded != true) {
-          nextPlayer.holdItem("Microphone");
-          break;
+          let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
+          if (nextPlayer.alive && nextPlayer.hasFolded != true) {
+            nextPlayer.holdItem("Microphone");
+            break;
+          }
         }
+      } else if (this.Phase == "The Flop" || this.Phase == "The Turn") {
+        this.lastAmountBid = 0;
+        if (this.Phase == "The Flop") {
+          this.Phase = "The Turn";
+        } else {
+          this.Phase = "The River";
+        }
+        this.randomizedPlayers.forEach((player) => {
+          player.hasHadTurn = false;
+          player.AmountBidding = 0;
+        });
+        this.DrawCommunityCards(1);
+        this.currentIndex =
+          this.randomizedPlayersCopy.indexOf(this.Dealer) %
+          this.randomizedPlayersCopy.length;
+        while (true) {
+          this.incrementCurrentIndex();
+
+          let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
+          if (nextPlayer.alive && nextPlayer.hasFolded != true) {
+            nextPlayer.holdItem("Microphone");
+            break;
+          }
+        }
+      } else if (this.Phase == "The River") {
+        this.Phase = "Showdown";
+        this.randomizedPlayers.forEach((player) => {
+          if (player.alive != true) {
+            return;
+          }
+          if (player.hasFolded == true) {
+            return;
+          }
+          player.holdItem("ShowdownTime");
+          player.hasHadTurn = false;
+          player.AmountBidding = 0;
+        });
       }
-    }
-    else if(this.Phase == "The River"){
-      this.Phase = "Showdown";
-      this.randomizedPlayers.forEach((player) => {
-      if(player.alive != true){
-        return;
-      }
-      if(player.hasFolded == true){
-        return;
-      }
-      player.holdItem("ShowdownTime");
-      player.hasHadTurn = false;
-      player.AmountBidding = 0;
-      });
-    }
-    }
-    else if(previousState ==  "Showdown"){
+    } else if (previousState == "Showdown") {
       this.AwardRoundWinner();
       this.RoundNumber++;
       this.removeHands();
       this.discardCommunityCards();
       this.setupNextRoundTexas();
-      
     }
 
     super.incrementState();
   }
 
-AwardRoundWinner(){
-  this.randomizedPlayers.forEach((player) => {
-      if(player.alive != true){
+  AwardRoundWinner() {
+    this.randomizedPlayers.forEach((player) => {
+      if (player.alive != true) {
         return;
       }
-      if(player.hasFolded == true){
+      if (player.hasFolded == true) {
         return;
       }
       let allSameSuit = true;
       let streight = true;
       var counts = [
-        0,//2-0
-        0,//3-1
-        0,//4-2
-        0,//5-3
-        0,//6-4
-        0,//7-5
-        0,//8-6
-        0,//9-7
-        0,//10-8
-        0,//Jack-9
-        0,//Queen-10
-        0,//King-11
-        0,//Ace-12
+        0, //2-0
+        0, //3-1
+        0, //4-2
+        0, //5-3
+        0, //6-4
+        0, //7-5
+        0, //8-6
+        0, //9-7
+        0, //10-8
+        0, //Jack-9
+        0, //Queen-10
+        0, //King-11
+        0, //Ace-12
       ];
 
-     player.ShowdownCards = this.sortCards(player.ShowdownCards);
-     this.sendAlert(`${player.name} uses ${player.ShowdownCards.join(", ")}!`);
-      for(let card of player.ShowdownCards){
+      player.ShowdownCards = this.sortCards(player.ShowdownCards);
+      this.sendAlert(`${player.name} uses ${player.ShowdownCards.join(", ")}!`);
+      for (let card of player.ShowdownCards) {
         let tempCard = this.readCard(card);
-        if (!counts[tempCard[0]]){ 
+        if (!counts[tempCard[0]]) {
           counts[tempCard[0]] = 0;
-          }
-        counts[(tempCard[0]-2)]++;
-        for(let cardB of player.ShowdownCards){
+        }
+        counts[tempCard[0] - 2]++;
+        for (let cardB of player.ShowdownCards) {
           let tempCardB = this.readCard(cardB);
-          if(card == player.ShowdownCards[0]){
-            if(card != cardB){
+          if (card == player.ShowdownCards[0]) {
+            if (card != cardB) {
               //this.sendAlert(`${card} ${tempCard[0]}-${cardB} ${tempCardB[0]} is ${tempCard[0]-tempCardB[0]} Index ${player.ShowdownCards.indexOf(cardB)}!`);
-              if((tempCard[0]-tempCardB[0]) != player.ShowdownCards.indexOf(cardB)){
+              if (
+                tempCard[0] - tempCardB[0] !=
+                player.ShowdownCards.indexOf(cardB)
+              ) {
                 streight = false;
               }
             }
           }
-          if(card != cardB){
-            if(tempCard[1] != tempCardB[1]){
+          if (card != cardB) {
+            if (tempCard[1] != tempCardB[1]) {
               allSameSuit = false;
-          }
+            }
           }
         }
       }
-   let score = 0;
-    let four = false;
-    let fourValue;
-    let three = false;
-    let threeValue;
-    let pairs = 0;
-    let pairValues = [];
-  
-    for(let x = 0; x < counts.length; x++){
-      //this.sendAlert(`Value ${x+2} Amounts ${counts[x]}!`);
-      if(counts[x] == 4){
-        four = true;
-        fourValue = x+2;
+      let score = 0;
+      let four = false;
+      let fourValue;
+      let three = false;
+      let threeValue;
+      let pairs = 0;
+      let pairValues = [];
+
+      for (let x = 0; x < counts.length; x++) {
+        //this.sendAlert(`Value ${x+2} Amounts ${counts[x]}!`);
+        if (counts[x] == 4) {
+          four = true;
+          fourValue = x + 2;
+        }
+        if (counts[x] == 3) {
+          three = true;
+          threeValue = x + 2;
+        }
+        if (counts[x] == 2) {
+          pairs += 1;
+          pairValues.push(x + 2);
+        }
       }
-      if(counts[x] == 3){
-        three = true;
-        threeValue = x+2;
+
+      if (
+        streight == true &&
+        allSameSuit == true &&
+        this.readCard(player.ShowdownCards[0])[0] == 14
+      ) {
+        player.ScoreType = "Royal Flush";
+        score += 10000;
+      } else if (streight == true && allSameSuit == true) {
+        player.ScoreType = "Straight flush";
+        score += 9000;
+        score += this.readCard(player.ShowdownCards[0])[0];
+      } else if (four == true) {
+        player.ScoreType = "Four of a kind";
+        score += 8000;
+        score += fourValue;
+      } else if (three == true && pairs > 0) {
+        player.ScoreType = "Full house";
+        score += 7000;
+        score += threeValue;
+        score += pairValues[0];
+      } else if (allSameSuit == true) {
+        player.ScoreType = "Flush";
+        score += 6000;
+        score += this.readCard(player.ShowdownCards[0])[0];
+      } else if (streight == true) {
+        player.ScoreType = "Straight";
+        score += 5000;
+        score += this.readCard(player.ShowdownCards[0])[0];
+      } else if (three == true) {
+        player.ScoreType = "Three of a kind";
+        score += 4000;
+        score += threeValue;
+      } else if (pairs > 1) {
+        player.ScoreType = "Two Pairs";
+        score += 3000;
+        score += pairValues[0];
+        score += pairValues[1];
+      } else if (pairs > 0) {
+        player.ScoreType = "Pair";
+        score += 2000;
+        score += pairValues[0];
+      } else {
+        player.ScoreType = "High Card";
+        score += this.readCard(player.ShowdownCards[0])[0];
       }
-      if(counts[x] == 2){
-        pairs += 1;
-        pairValues.push(x+2);
+      player.Score = score;
+    });
+    let highest = [
+      this.randomizedPlayers.filter((p) => p.alive && p.hasFolded != true)[0],
+    ];
+    for (let player of this.randomizedPlayers.filter(
+      (p) => p.alive && p.hasFolded != true
+    )) {
+      if (player.Score > highest[0].Score) {
+        highest = [player];
+      } else if (player != highest[0] && player.Score == highest[0].Score) {
+        highest.push(player);
       }
     }
-    
-    if(streight == true && allSameSuit == true && this.readCard(player.ShowdownCards[0])[0] == 14){
-      player.ScoreType = "Royal Flush";
-      score += 10000;
-    }
-    else if(streight == true && allSameSuit == true){
-      player.ScoreType = "Straight flush";
-      score += 9000;
-      score += this.readCard(player.ShowdownCards[0])[0];
-    }
-    else if(four == true){
-      player.ScoreType = "Four of a kind";
-      score += 8000;
-      score += fourValue;
-    }
-    else if(three == true && pairs > 0){
-      player.ScoreType = "Full house";
-      score += 7000;
-      score += threeValue;
-      score += pairValues[0];
-    }
-    else if(allSameSuit == true){
-      player.ScoreType = "Flush";
-      score += 6000;
-      score += this.readCard(player.ShowdownCards[0])[0];
-    }
-    else if(streight == true){
-      player.ScoreType = "Straight";
-      score += 5000;
-      score += this.readCard(player.ShowdownCards[0])[0];
-    }
-    else if(three == true){
-      player.ScoreType = "Three of a kind";
-      score += 4000;
-      score += threeValue;
-    }
-    else if(pairs > 1){
-      player.ScoreType = "Two Pairs";
-      score += 3000;
-      score += pairValues[0];
-      score += pairValues[1];
-    }
-    else if(pairs > 0){
-      player.ScoreType = "Pair";
-      score += 2000;
-      score += pairValues[0];
-    }
-    else{
-    player.ScoreType = "High Card";
-    score += this.readCard(player.ShowdownCards[0])[0];
-    }
-  player.Score = score;
-      });
-  let highest = [this.randomizedPlayers.filter((p) => p.alive && p.hasFolded != true)[0]];
-for(let player of this.randomizedPlayers.filter((p) => p.alive && p.hasFolded != true)){
-
-  if(player.Score > highest[0].Score){
-    highest = [player];
-  }
-  else if(player != highest[0] && player.Score == highest[0].Score){
-    highest.push(player);
-  }
-}
-this.sendAlert(`The Round has Concluded`);
-  for(let player of highest){
-    this.sendAlert(`${player.name} has Won ${Math.floor((this.ThePot)/highest.length)} from The Pot with a ${player.ScoreType}!`);
-    //this.sendAlert(`${player.name} had a score of ${player.Score}!`);
-    player.Chips += Math.floor((this.ThePot)/highest.length);
-  }
-}
-
-sortCards(cards){
-for(let x = 0; x< cards.length; x++){
-  for(let y = 0; y< cards.length; y++){
-    if(this.readCard(cards[x], this.CardGameType)[0] > this.readCard(cards[y], this.CardGameType)[0]){
-      let temp = cards[x];
-      cards[x] = cards[y];
-      cards[y] = temp;
+    this.sendAlert(`The Round has Concluded`);
+    for (let player of highest) {
+      this.sendAlert(
+        `${player.name} has Won ${Math.floor(
+          this.ThePot / highest.length
+        )} from The Pot with a ${player.ScoreType}!`
+      );
+      //this.sendAlert(`${player.name} had a score of ${player.Score}!`);
+      player.Chips += Math.floor(this.ThePot / highest.length);
     }
   }
-}
 
-  return cards;
-}
+  sortCards(cards) {
+    for (let x = 0; x < cards.length; x++) {
+      for (let y = 0; y < cards.length; y++) {
+        if (
+          this.readCard(cards[x], this.CardGameType)[0] >
+          this.readCard(cards[y], this.CardGameType)[0]
+        ) {
+          let temp = cards[x];
+          cards[x] = cards[y];
+          cards[y] = temp;
+        }
+      }
+    }
 
-readCard(card, type){
-  let cardValue = card.split("-")[0];
-  let cardSuit = card.split("-")[1];
-  //if(type == "Texas Hold’em"){
-    if(cardValue == "Jack"){
+    return cards;
+  }
+
+  readCard(card, type) {
+    let cardValue = card.split("-")[0];
+    let cardSuit = card.split("-")[1];
+    //if(type == "Texas Hold’em"){
+    if (cardValue == "Jack") {
       cardValue = 11;
-    }
-    else if(cardValue == "Queen"){
+    } else if (cardValue == "Queen") {
       cardValue = 12;
-    }
-    else if(cardValue == "King"){
+    } else if (cardValue == "King") {
       cardValue = 13;
-    }
-    else if(cardValue == "Ace"){
+    } else if (cardValue == "Ace") {
       cardValue = 14;
     }
-  //}
-  return [parseInt(cardValue), cardSuit];
-}
+    //}
+    return [parseInt(cardValue), cardSuit];
+  }
 
   //DealCards
   dealCards(amount) {
@@ -519,44 +544,43 @@ readCard(card, type){
     });
   }
 
-    removeHands() {
+  removeHands() {
     this.randomizedPlayers.forEach((player) => {
-      for(let card of player.CardsInHand){
+      for (let card of player.CardsInHand) {
         this.drawDiscardPile.discard(card);
       }
       player.CardsInHand = [];
     });
   }
 
-    discardCommunityCards() {
-      for(let card of this.CommunityCards){
-        this.drawDiscardPile.discard(card);
-      }
-      this.CommunityCards = [];
+  discardCommunityCards() {
+    for (let card of this.CommunityCards) {
+      this.drawDiscardPile.discard(card);
+    }
+    this.CommunityCards = [];
   }
 
   //DealCommunity
   DrawCommunityCards(amount) {
     let Cards = this.drawDiscardPile.drawMultiple(amount);
     this.CommunityCards.push(...Cards);
-    this.sendAlert(`${Cards.join(", ")} have been added to the Community Cards!`);
+    this.sendAlert(
+      `${Cards.join(", ")} have been added to the Community Cards!`
+    );
   }
 
-  addToPot(player, type, amount){
-    if(type == "Bet"){
-      this.sendAlert(
-        `${player.name} bets ${(amount)} into the Pot!`
-          );
-          player.Chips = player.Chips - (amount);
-          player.AmountBidding += (amount);
-          this.ThePot += (amount);
-          if(this.lastAmountBid < player.AmountBidding){
-            this.lastAmountBid = player.AmountBidding;
-          }
+  addToPot(player, type, amount) {
+    if (type == "Bet") {
+      this.sendAlert(`${player.name} bets ${amount} into the Pot!`);
+      player.Chips = player.Chips - amount;
+      player.AmountBidding += amount;
+      this.ThePot += amount;
+      if (this.lastAmountBid < player.AmountBidding) {
+        this.lastAmountBid = player.AmountBidding;
+      }
     }
 
-
-/*
+    /*
     if(type == "Call"){
       if(player.Chips >= (this.lastAmountBid-player.AmountBidding)){
         this.sendAlert(
@@ -588,10 +612,7 @@ readCard(card, type){
       }
     }
     */
-
-    
   }
-
 
   addDice(player, amount, midRound, noMessage) {
     if (amount == null || amount <= 0) {
@@ -686,7 +707,6 @@ readCard(card, type){
       });
 
       if (player.alive && player != this.hostPlayer) {
-        
       } else {
         this.sendAlert(`${player.name} left, and will surely be missed.`);
       }

@@ -109,7 +109,6 @@
   margin-bottom: 8px;
 }
 
-
 .cAce-Hearts {
   background-position: 0 0px;
 }
@@ -279,12 +278,9 @@
   background-position: 768 -192px;
 }
 
-
-
 .card-unknown {
   background-position: 832 -64px;
 }
-
 
 .current-rolls {
   display: flex;
