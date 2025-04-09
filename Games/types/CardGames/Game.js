@@ -38,8 +38,8 @@ module.exports = class CardGamesGame extends Game {
     */
     this.drawDiscardPile = new DrawDiscardPile();
     this.drawDiscardPile.initCards();
-    this.startingChips = options.settings.startingChips;
-    this.minimumBet = options.settings.minimumBet;
+    this.startingChips = parseInt(options.settings.startingChips);
+    this.minimumBet = parseInt(options.settings.minimumBet);
     this.CardGameType = "Texas Hold’em";
 
     //VARIABLES
@@ -133,7 +133,6 @@ module.exports = class CardGamesGame extends Game {
     if (this.CardGameType == "Texas Hold’em") {
       this.CommunityCards = [];
       this.RoundNumber = 0;
-      this.ThePot = 0;
       this.drawDiscardPile.shuffle();
       this.setupNextRoundTexas();
     }
@@ -144,11 +143,12 @@ module.exports = class CardGamesGame extends Game {
 
   //Start: Randomizes player order, and gives the microphone to first one.
   setupNextRoundTexas() {
+    this.ThePot = parseInt(0);
     this.randomizedPlayers.forEach((player) => {
       player.hasFolded = false;
       player.hasHadTurn = false;
       player.Score = 0;
-      player.AmountBidding = 0;
+      player.AmountBidding = parseInt(0);
       player.ScoreType = null;
       player.ShowdownCards = [];
     });
@@ -268,7 +268,7 @@ module.exports = class CardGamesGame extends Game {
         this.sendAlert(
           `${playersInGame[0].name} has Won ${this.ThePot} from The Pot by not folding!`
         );
-        playersInGame[0].Chips += this.ThePot;
+        playersInGame[0].Chips += parseInt(this.ThePot);
 
         this.removeHands();
         this.discardCommunityCards();
@@ -497,7 +497,7 @@ module.exports = class CardGamesGame extends Game {
         )} from The Pot with a ${player.ScoreType}!`
       );
       //this.sendAlert(`${player.name} had a score of ${player.Score}!`);
-      player.Chips += Math.floor(this.ThePot / highest.length);
+      player.Chips += parseInt(Math.floor(this.ThePot / highest.length));
     }
   }
 
@@ -572,9 +572,9 @@ module.exports = class CardGamesGame extends Game {
   addToPot(player, type, amount) {
     if (type == "Bet") {
       this.sendAlert(`${player.name} bets ${amount} into the Pot!`);
-      player.Chips = player.Chips - amount;
-      player.AmountBidding += amount;
-      this.ThePot += amount;
+      player.Chips = parseInt(player.Chips) - parseInt(amount);
+      player.AmountBidding += parseInt(amount);
+      this.ThePot += parseInt(amount);
       if (this.lastAmountBid < player.AmountBidding) {
         this.lastAmountBid = player.AmountBidding;
       }
@@ -663,6 +663,7 @@ module.exports = class CardGamesGame extends Game {
         this.chatName == "The Flying Dutchman" ? true : false,
       whoseTurnIsIt:
         this.randomizedPlayersCopy?.[this.currentIndex]?.user.id ?? 0,
+      ThePot: this.ThePot,
     };
     return info;
   }

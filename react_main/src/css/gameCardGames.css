@@ -110,176 +110,176 @@
 }
 
 .cAce-Hearts {
-  background-position: 0 0px;
+  background-position: 0px 0px;
 }
 .cAce-Diamonds {
-  background-position: 0 -64px;
+  background-position: 0px -64px;
 }
 .cAce-Clubs {
-  background-position: 0 -128px;
+  background-position: 0px -128px;
 }
 .cAce-Spades {
-  background-position: 0 -192px;
+  background-position: 0px -192px;
 }
 
 .c2-Hearts {
-  background-position: 64 0px;
+  background-position: -64px 0px;
 }
 .c2-Diamonds {
-  background-position: 64 -64px;
+  background-position: -64px -64px;
 }
 .c2-Clubs {
-  background-position: 64 -128px;
+  background-position: -64px -128px;
 }
 .c2-Spades {
-  background-position: 64 -192px;
+  background-position: -64px -192px;
 }
 
 .c3-Hearts {
-  background-position: 128 0px;
+  background-position: -128px 0px;
 }
 .c3-Diamonds {
-  background-position: 128 -64px;
+  background-position: -128px -64px;
 }
 .c3-Clubs {
-  background-position: 128 -128px;
+  background-position: -128px -128px;
 }
 .c3-Spades {
-  background-position: 128 -192px;
+  background-position: -128px -192px;
 }
 
 .c4-Hearts {
-  background-position: 192 0px;
+  background-position: -192px 0px;
 }
 .c4-Diamonds {
-  background-position: 192 -64px;
+  background-position: -192px -64px;
 }
 .c4-Clubs {
-  background-position: 192 -128px;
+  background-position: -192px -128px;
 }
 .c4-Spades {
-  background-position: 192 -192px;
+  background-position: -192px -192px;
 }
 
 .c5-Hearts {
-  background-position: 256 0px;
+  background-position: -256px 0px;
 }
 .c5-Diamonds {
-  background-position: 256 -64px;
+  background-position: -256px -64px;
 }
 .c5-Clubs {
-  background-position: 256 -128px;
+  background-position: -256px -128px;
 }
 .c5-Spades {
-  background-position: 256 -192px;
+  background-position: -256px -192px;
 }
 
 .c6-Hearts {
-  background-position: 320 0px;
+  background-position: -320px 0px;
 }
 .c6-Diamonds {
-  background-position: 320 -64px;
+  background-position: -320px -64px;
 }
 .c6-Clubs {
-  background-position: 320 -128px;
+  background-position: -320px -128px;
 }
 .c6-Spades {
-  background-position: 320 -192px;
+  background-position: -320px -192px;
 }
 
 .c7-Hearts {
-  background-position: 384 0px;
+  background-position: -384px 0px;
 }
 .c7-Diamonds {
-  background-position: 384 -64px;
+  background-position: -384px -64px;
 }
 .c7-Clubs {
-  background-position: 384 -128px;
+  background-position: -384px -128px;
 }
 .c7-Spades {
-  background-position: 384 -192px;
+  background-position: -384px -192px;
 }
 
 .c8-Hearts {
-  background-position: 448 0px;
+  background-position: -448px 0px;
 }
 .c8-Diamonds {
-  background-position: 448 -64px;
+  background-position: -448px -64px;
 }
 .c8-Clubs {
-  background-position: 448 -128px;
+  background-position: -448px -128px;
 }
 .c8-Spades {
-  background-position: 448 -192px;
+  background-position: -448px -192px;
 }
 
 .c9-Hearts {
-  background-position: 512 0px;
+  background-position: -512px 0px;
 }
 .c9-Diamonds {
-  background-position: 512 -64px;
+  background-position: -512px -64px;
 }
 .c9-Clubs {
-  background-position: 512 -128px;
+  background-position: -512px -128px;
 }
 .c9-Spades {
-  background-position: 512 -192px;
+  background-position: -512px -192px;
 }
 
 .c10-Hearts {
-  background-position: 576 0px;
+  background-position: -576px 0px;
 }
 .c10-Diamonds {
-  background-position: 576 -64px;
+  background-position: -576px -64px;
 }
 .c10-Clubs {
-  background-position: 576 -128px;
+  background-position: -576px -128px;
 }
 .c10-Spades {
-  background-position: 576 -192px;
+  background-position: -576px -192px;
 }
 
 .cJack-Hearts {
-  background-position: 640 0px;
+  background-position: -640px 0px;
 }
 .cJack-Diamonds {
-  background-position: 640 -64px;
+  background-position: -640px -64px;
 }
 .cJack-Clubs {
-  background-position: 640 -128px;
+  background-position: -640px -128px;
 }
 .cJack-Spades {
-  background-position: 640 -192px;
+  background-position: -640px -192px;
 }
 
 .cQueen-Hearts {
-  background-position: 704 0px;
+  background-position: -704px 0px;
 }
 .cQueen-Diamonds {
-  background-position: 704 -64px;
+  background-position: -704px -64px;
 }
 .cQueen-Clubs {
-  background-position: 704 -128px;
+  background-position: -704px -128px;
 }
 .cQueen-Spades {
-  background-position: 704 -192px;
+  background-position: -704px -192px;
 }
 
 .cKing-Hearts {
-  background-position: 768 0px;
+  background-position: -768px 0px;
 }
 .cKing-Diamonds {
-  background-position: 768 -64px;
+  background-position: -768px -64px;
 }
 .cKing-Clubs {
-  background-position: 768 -128px;
+  background-position: -768px -128px;
 }
 .cKing-Spades {
-  background-position: 768 -192px;
+  background-position: -768px -192px;
 }
 
 .card-unknown {
-  background-position: 832 -64px;
+  background-position: -832px -64px;
 }
 
 .current-rolls {

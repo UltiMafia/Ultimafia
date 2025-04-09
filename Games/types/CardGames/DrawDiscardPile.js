@@ -13,4 +13,18 @@ module.exports = class CardGamesDrawDiscardPile extends DrawDiscardPile {
     }
     super.initCards(temp);
   }
+
+  drawMultiple(numToDraw) {
+    numToDraw = numToDraw || 1;
+    if(this.drawPile.length < numToDraw){
+      this.refillDrawFromDiscard();
+      this.shuffle();
+    }
+    var result = [];
+    for (let i = 0; i < numToDraw; i++) {
+      result.push(this.drawPile.shift());
+    }
+
+    return result;
+  }
 };

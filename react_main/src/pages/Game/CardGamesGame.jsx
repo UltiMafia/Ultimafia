@@ -105,6 +105,7 @@ export default function CardGamesGame(props) {
         setRehostId={game.setRehostId}
         noLeaveRef={game.noLeaveRef}
         dev={game.dev}
+        ThePot={game.ThePot}
         gameName={
           <div className="game-name">
             <span
@@ -177,6 +178,15 @@ export default function CardGamesGame(props) {
                 activity={game.activity}
               />
             )}
+            {history.currentState != -1 && (
+              <ThePot
+              players={players}
+              history={history}
+              gameType={gameType}
+              stateViewing={stateViewing}
+              activity={game.activity}
+              />
+            )}
             <ActionList
               socket={game.socket}
               meetings={meetings}
@@ -197,6 +207,31 @@ export default function CardGamesGame(props) {
         }
       />
     </>
+  );
+}
+
+export function ThePot(props) {
+  const history = props.history;
+  const stateViewing = props.stateViewing;
+  const self = props.self;
+
+  if (stateViewing < 0) return <></>;
+
+  const extraInfo = history.states[stateViewing].extraInfo;
+
+  return (
+    <SideMenu
+      title="The Pot"
+      scrollable
+      content={
+        <table className="options-table">
+          <tbody>
+          The Pot: 
+            {extraInfo.ThePot}
+          </tbody>
+        </table>
+      }
+    />
   );
 }
 
