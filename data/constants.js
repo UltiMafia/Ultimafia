@@ -78,7 +78,7 @@ module.exports = {
     "Secret Dictator": ["Nomination"],
     "Wacky Words": ["Night"],
     "Liars Dice": ["Guess Dice"],
-    "Liars Dice": ["Place Bets", "Showdown"],
+    "Card Games": ["Place Bets", "Showdown"],
   },
   configurableStates: {
     Mafia: {

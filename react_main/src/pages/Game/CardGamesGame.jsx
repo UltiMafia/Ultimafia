@@ -221,8 +221,9 @@ function LiarsDiceDiceViewWrapper(props) {
               key={index}
               userId={player.userId}
               playerName={player.playerName}
-              diceValues={player.CardsInHand}
-              previousRolls={player.Chips}
+              CardsInHand={player.CardsInHand}
+              Chips={player.Chips}
+              Bets={player.Bets}
               isCurrentPlayer={player.playerId === self}
               isTheFlyingDutchman={extraInfo.isTheFlyingDutchman}
               whoseTurnIsIt={extraInfo.whoseTurnIsIt}
@@ -237,13 +238,15 @@ function LiarsDiceDiceViewWrapper(props) {
 function LiarsDicePlayerRow({
   userId,
   playerName,
-  diceValues,
-  previousRolls,
+  CardsInHand,
+  Chips,
+  Bets,
   isCurrentPlayer,
   isTheFlyingDutchman,
   whoseTurnIsIt,
 }) {
-  previousRolls = previousRolls || [];
+  Chips = Chips || 0;
+  Bets = Bets || 0;
   const isSamePlayer = whoseTurnIsIt === userId;
   return (
     <div className="liars-dice-player-section">
@@ -279,16 +282,16 @@ function LiarsDicePlayerRow({
         }
       >
         <div className="current-rolls">
-          {diceValues.map((value, index) => (
+          {CardsInHand.map((value, index) => (
             <div
               key={index}
               className={`dice ${
-                isCurrentPlayer ? `dice-${value}` : "dice-unknown"
+                isCurrentPlayer ? `c${value}` : "card-unknown"
               }`}
             ></div>
           ))}
         </div>
-        {previousRolls.length > 0 && (
+        {Chips > 0 && (
           <>
             <div className="previous-rolls">
               <div
@@ -305,6 +308,27 @@ function LiarsDicePlayerRow({
               </div>
               <div className="previous-rolls-dice">
                 {Chips}
+              </div>
+            </div>
+          </>
+        )}
+        {Bets > 0 && (
+          <>
+            <div className="previous-rolls">
+              <div
+                className="previous-rolls-label"
+                style={
+                  isTheFlyingDutchman
+                    ? {
+                        color: "#3B5841",
+                      }
+                    : {}
+                }
+              >
+                Current Bid:
+              </div>
+              <div className="previous-rolls-dice">
+                {Bets}
               </div>
             </div>
           </>

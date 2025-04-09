@@ -38,6 +38,7 @@ module.exports = class CardGamesGame extends Game {
     this.spotOn = options.settings.spotOn;
     */
     this.drawDiscardPile = new DrawDiscardPile();
+    this.drawDiscardPile.initCards();
     this.startingChips = options.settings.startingChips;
     this.minimumBet = options.settings.minimumBet;
     this.CardGameType = "Texas Hold’em";
@@ -131,6 +132,7 @@ module.exports = class CardGamesGame extends Game {
     // super.start();
     //this.rollDice();
     if(this.CardGameType == "Texas Hold’em"){
+    this.CommunityCards = [];
     this.RoundNumber = 0;
     this.ThePot = 0;
     this.drawDiscardPile.shuffle();
@@ -147,6 +149,7 @@ module.exports = class CardGamesGame extends Game {
       player.hasFolded = false;
       player.hasHadTurn = false;
       player.Score = 0;
+      player.AmountBidding = 0;
       player.ScoreType = null;
       player.ShowdownCards = [];
     });
@@ -197,7 +200,7 @@ module.exports = class CardGamesGame extends Game {
         `${this.SmallBlind.name} is The Small Blind and bets ${Math.ceil(this.minimumBet/2.0)}.`
       );
       this.SmallBlind.Chips -= Math.ceil(this.minimumBet/2.0);
-      this.SmallBlind.AmountBidding = this.minimumBet;
+      this.SmallBlind.AmountBidding = Math.ceil(this.minimumBet/2.0);
       this.ThePot += Math.ceil(this.minimumBet/2.0);
       this.lastAmountBid = Math.ceil(this.minimumBet/2.0);
     this.sendAlert(
@@ -207,7 +210,7 @@ module.exports = class CardGamesGame extends Game {
       this.BigBlind.AmountBidding = this.minimumBet;
       this.ThePot += this.minimumBet;
       this.lastAmountBid = this.minimumBet;
-    this.dealCards(amount);
+    this.dealCards(2);
     this.currentIndex = (this.randomizedPlayersCopy.indexOf(this.BigBlind) + 1) % this.randomizedPlayersCopy.length;
   }
 
@@ -235,8 +238,19 @@ module.exports = class CardGamesGame extends Game {
 
     if (previousState == "Place Bets") {
       console.log(this.spectatorMeetFilter);
-      let tempPlayers = this.randomizedPlayersCopy.filter((p) => p.hasHadTurn != true && p.alive && p.hasFolded != true)
-      if(tempPlayers.length > 0){
+      let tempPlayers = this.randomizedPlayersCopy.filter((p) => p.hasHadTurn != true && p.alive && p.hasFolded != true);
+      let playersInGame = this.randomizedPlayersCopy.filter((p) => p.alive && p.hasFolded != true);
+      if(playersInGame.length == 1){
+        this.sendAlert(`The Round has Concluded`);
+        this.RoundNumber++;
+        this.sendAlert(`${playersInGame[0].name} has Won ${this.ThePot} from The Pot by not folding!`);
+        playersInGame[0].Chips += this.ThePot;
+    
+          this.removeHands();
+          this.discardCommunityCards();
+          this.setupNextRoundTexas();
+      }
+      else if(tempPlayers.length > 0){
       while (true) {
         this.incrementCurrentIndex();
 
@@ -304,13 +318,14 @@ module.exports = class CardGamesGame extends Game {
       player.AmountBidding = 0;
       });
     }
-    else if(this.Phase == "Showdown"){
+    }
+    else if(previousState ==  "Showdown"){
       this.AwardRoundWinner();
-      this.RemoveHands();
+      this.RoundNumber++;
+      this.removeHands();
       this.discardCommunityCards();
       this.setupNextRoundTexas();
       
-    }
     }
 
     super.incrementState();
@@ -326,20 +341,37 @@ AwardRoundWinner(){
       }
       let allSameSuit = true;
       let streight = true;
-      var counts = {};
+      var counts = [
+        0,//2-0
+        0,//3-1
+        0,//4-2
+        0,//5-3
+        0,//6-4
+        0,//7-5
+        0,//8-6
+        0,//9-7
+        0,//10-8
+        0,//Jack-9
+        0,//Queen-10
+        0,//King-11
+        0,//Ace-12
+      ];
+
      player.ShowdownCards = this.sortCards(player.ShowdownCards);
+     this.sendAlert(`${player.name} uses ${player.ShowdownCards.join(", ")}!`);
       for(let card of player.ShowdownCards){
         let tempCard = this.readCard(card);
         if (!counts[tempCard[0]]){ 
           counts[tempCard[0]] = 0;
           }
-        counts[tempCard[0]]++;
+        counts[(tempCard[0]-2)]++;
         for(let cardB of player.ShowdownCards){
           let tempCardB = this.readCard(cardB);
           if(card == player.ShowdownCards[0]){
             if(card != cardB){
-              if(tempCard[0]-tempCardB[0] != player.ShowdownCards.indexOf(cardB)){
-                let streight = false;
+              //this.sendAlert(`${card} ${tempCard[0]}-${cardB} ${tempCardB[0]} is ${tempCard[0]-tempCardB[0]} Index ${player.ShowdownCards.indexOf(cardB)}!`);
+              if((tempCard[0]-tempCardB[0]) != player.ShowdownCards.indexOf(cardB)){
+                streight = false;
               }
             }
           }
@@ -357,18 +389,20 @@ AwardRoundWinner(){
     let threeValue;
     let pairs = 0;
     let pairValues = [];
-    for(let x = 0; x < counts.length; x++;){
+  
+    for(let x = 0; x < counts.length; x++){
+      //this.sendAlert(`Value ${x+2} Amounts ${counts[x]}!`);
       if(counts[x] == 4){
         four = true;
-        fourValue = x;
+        fourValue = x+2;
       }
       if(counts[x] == 3){
         three = true;
-        threeValue = x;
+        threeValue = x+2;
       }
       if(counts[x] == 2){
         pairs += 1;
-        pairValues.push(x);
+        pairValues.push(x+2);
       }
     }
     
@@ -424,18 +458,20 @@ AwardRoundWinner(){
     }
   player.Score = score;
       });
-  let highest = [this.randomizedPlayers[0]];
+  let highest = [this.randomizedPlayers.filter((p) => p.alive && p.hasFolded != true)[0]];
 for(let player of this.randomizedPlayers.filter((p) => p.alive && p.hasFolded != true)){
-  if(player.Score > highest[0].score){
+
+  if(player.Score > highest[0].Score){
     highest = [player];
   }
-  else if(player.Score == highest[0].score){
+  else if(player != highest[0] && player.Score == highest[0].Score){
     highest.push(player);
   }
 }
 this.sendAlert(`The Round has Concluded`);
   for(let player of highest){
-    this.sendAlert(`${player.name} has Won ${Math.floor((this.ThePot)/highest.length)} from The Pot with a ${this.ScoreType}!`);
+    this.sendAlert(`${player.name} has Won ${Math.floor((this.ThePot)/highest.length)} from The Pot with a ${player.ScoreType}!`);
+    //this.sendAlert(`${player.name} had a score of ${player.Score}!`);
     player.Chips += Math.floor((this.ThePot)/highest.length);
   }
 }
@@ -443,7 +479,7 @@ this.sendAlert(`The Round has Concluded`);
 sortCards(cards){
 for(let x = 0; x< cards.length; x++){
   for(let y = 0; y< cards.length; y++){
-    if(this.readCard(cards[x], this.CardGameType)[0] < this.readCard(cards[y], this.CardGameType)[0]){
+    if(this.readCard(cards[x], this.CardGameType)[0] > this.readCard(cards[y], this.CardGameType)[0]){
       let temp = cards[x];
       cards[x] = cards[y];
       cards[y] = temp;
@@ -456,8 +492,8 @@ for(let x = 0; x< cards.length; x++){
 
 readCard(card, type){
   let cardValue = card.split("-")[0];
-  let cardSuit = card.split("-")[0];
-  if(type == "Texas Hold’em"){
+  let cardSuit = card.split("-")[1];
+  //if(type == "Texas Hold’em"){
     if(cardValue == "Jack"){
       cardValue = 11;
     }
@@ -470,7 +506,7 @@ readCard(card, type){
     else if(cardValue == "Ace"){
       cardValue = 14;
     }
-  }
+  //}
   return [parseInt(cardValue), cardSuit];
 }
 
@@ -479,6 +515,7 @@ readCard(card, type){
     this.randomizedPlayers.forEach((player) => {
       let Cards = this.drawDiscardPile.drawMultiple(amount);
       player.CardsInHand.push(...Cards);
+      player.sendAlert(`${Cards.join(", ")} have been added to your Hand!`);
     });
   }
 
@@ -502,177 +539,59 @@ readCard(card, type){
   DrawCommunityCards(amount) {
     let Cards = this.drawDiscardPile.drawMultiple(amount);
     this.CommunityCards.push(...Cards);
+    this.sendAlert(`${Cards.join(", ")} have been added to the Community Cards!`);
   }
 
   addToPot(player, type, amount){
+    if(type == "Bet"){
+      this.sendAlert(
+        `${player.name} bets ${(amount)} into the Pot!`
+          );
+          player.Chips = player.Chips - (amount);
+          player.AmountBidding += (amount);
+          this.ThePot += (amount);
+          if(this.lastAmountBid < player.AmountBidding){
+            this.lastAmountBid = player.AmountBidding;
+          }
+    }
+
+
+/*
     if(type == "Call"){
       if(player.Chips >= (this.lastAmountBid-player.AmountBidding)){
-      player.Chips = player.Chips - (this.lastAmountBid-player.AmountBidding);
-      player.AmountBidding += (this.lastAmountBid-player.AmountBidding);
-      this.ThePot += (this.lastAmountBid-player.AmountBidding);
         this.sendAlert(
           `${player.name} calls and puts ${(this.lastAmountBid-player.AmountBidding)} into the Pot!`
             );
+      player.Chips = player.Chips - (this.lastAmountBid-player.AmountBidding);
+      player.AmountBidding += (this.lastAmountBid-player.AmountBidding);
+      this.ThePot += (this.lastAmountBid-player.AmountBidding);
             }
             else if(player.Chips > 0){
                 this.sendAlert(
                   `${player.name} goes All in and puts ${player.Chips} into the Pot!`
                 );
-            this.actor.AmountBidding += player.Chips;
+            player.AmountBidding += player.Chips;
             this.ThePot +=  player.Chips;
             player.Chips = 0;
             }
             else{
-            this.game.sendAlert(`${player.name} has Nothing to put into the Pot!`);
+            this.sendAlert(`${player.name} has Nothing to put into the Pot!`);
             }
     }
     if(type == "Raise"){
       if(player.Chips >= (this.lastAmountBid-player.AmountBidding)+amount){
-      player.Chips = player.Chips - (this.lastAmountBid-player.AmountBidding)+amount;
-      player.AmountBidding += (this.lastAmountBid-player.AmountBidding)+amount;
+      this.sendAlert(`${player.name} raises and puts ${(this.lastAmountBid-player.AmountBidding)+amount} into the Pot!`);
+      player.Chips = player.Chips - ((this.lastAmountBid-player.AmountBidding)+amount);
+      player.AmountBidding += ((this.lastAmountBid-player.AmountBidding)+amount);
       this.lastAmountBid = player.AmountBidding;
-      this.ThePot += (this.lastAmountBid-player.AmountBidding)+amount;
-        this.sendAlert(`${player.name} raises and puts ${(this.lastAmountBid-player.AmountBidding)+amount} into the Pot!`);
+      this.ThePot += ((this.lastAmountBid-player.AmountBidding)+amount);
       }
     }
-    
+    */
 
     
   }
 
-  //Removes one dice from a player and eliminate if no more dice
-  removeDice(player, amount, midRound) {
-    if (amount == null || amount <= 0) {
-      amount = 1;
-    }
-
-    player.diceNum = player.diceNum - amount;
-
-    if (midRound == true) {
-      player.queueAlert(
-        `You lose a Dice but you won't learn which until this turn ends!`
-      );
-      let dice;
-      for (let x = 0; x < amount; x++) {
-        dice = player.rolledDice.pop();
-        this.allDice -= 1;
-        this.allRolledDice.splice(this.allRolledDice.indexOf(dice), 1);
-      }
-    }
-
-    if (player.diceNum < 1) {
-      const response = Math.floor(Math.random() * 19);
-
-      //funny responses to players losing
-      switch (response) {
-        case 0:
-          this.sendAlert(
-            `${player.name} is out of dice and lost! Very unexpected...`
-          );
-          break;
-        case 1:
-          this.sendAlert(
-            `You've lost, ${player.name}! Better luck next time... maybe.`
-          );
-          break;
-        case 2:
-          this.sendAlert(
-            `Oh no, ${player.name} is out of dice and lost! I'm totally surprised... not.`
-          );
-          break;
-        case 3:
-          this.sendAlert(
-            `You've lost, ${player.name}! Better luck next time... maybe.`
-          );
-          break;
-        case 4:
-          this.sendAlert(
-            `Oh, you lost the game, ${player.name}! I'm sure you tried your best...`
-          );
-          break;
-        case 5:
-          this.sendAlert(
-            `You've lost the game, ${player.name}! Maybe next time will be different. But probably not.`
-          );
-          break;
-        case 6:
-          this.sendAlert(
-            `${player.name} is out of dice and lost! Who could have seen that coming? Oh wait, everyone.`
-          );
-          break;
-        case 7:
-          this.sendAlert(
-            `${player.name}, your dice have abandoned you faster than your luck. Game over!`
-          );
-          break;
-        case 8:
-          this.sendAlert(
-            `${player.name}'s out! On the bright side, you no longer have to pretend you had a chance.`
-          );
-          break;
-        case 9:
-          this.sendAlert(
-            `You've lost, ${player.name}. I'd say 'better luck next time', but let's be realistic here.`
-          );
-          break;
-        case 10:
-          this.sendAlert(
-            `${player.name}'s out of dice! I guess Lady Luck just ghosted you.`
-          );
-          break;
-        case 11:
-          this.sendAlert(
-            `${player.name}, you lost! But hey, at least you're a winner at being unpredictable... in a predictable way.`
-          );
-          break;
-        case 12:
-          this.sendAlert(
-            `Game over, ${player.name}. Your bluffing was so good, even your dice believed you didn't need them.`
-          );
-          break;
-        case 13:
-          this.sendAlert(
-            `${player.name}'s out! I'd say it was a good effort, but... let's not lie more than we already have.`
-          );
-          break;
-        case 14:
-          this.sendAlert(
-            `Game over, ${player.name}. Your dice must've thought this was hide-and-seek.`
-          );
-          break;
-        case 15:
-          this.sendAlert(
-            `You've lost, ${player.name}. But hey, at least you're consistent - consistently unlucky!`
-          );
-          break;
-        case 16:
-          this.sendAlert(
-            `You've lost, ${player.name}. Don't think of it as losing, think of it as... okay, yeah, it's losing.`
-          );
-          break;
-        case 17:
-          this.sendAlert(
-            `Game over, ${player.name}. Your strategy of "hope for the best" didn't quite pan out this time.`
-          );
-          break;
-        case 18:
-          this.sendAlert(
-            `${player.name}'s out of dice! I'd say "roll again," but... well, you know.`
-          );
-          break;
-        default:
-          this.sendAlert(
-            `Uhhh, ${player.name}, you weren't supposed to get this message. But since you did, just know... you lost.`
-          );
-          break;
-      }
-
-      this.randomizedPlayers = this.randomizedPlayers.filter(
-        (rPlayer) => rPlayer.id !== player.id
-      );
-      player.kill();
-    }
-  }
 
   addDice(player, amount, midRound, noMessage) {
     if (amount == null || amount <= 0) {
@@ -736,8 +655,9 @@ readCard(card, type){
           playerId: player.id,
           userId: player.user.id,
           playerName: player.name,
-          rolledDice: player.rolledDice,
-          previousRolls: player.previousRolls,
+          CardsInHand: player.CardsInHand,
+          Chips: player.Chips,
+          Bets: player.AmountBidding,
         });
       }
     }
@@ -766,9 +686,7 @@ readCard(card, type){
       });
 
       if (player.alive && player != this.hostPlayer) {
-        this.sendAlert(
-          `${player.name} left, but their ${player.rolledDice.length} dice will still count towards this round's total.`
-        );
+        
       } else {
         this.sendAlert(`${player.name} left, and will surely be missed.`);
       }
@@ -837,7 +755,7 @@ readCard(card, type){
 
   getGameTypeOptions() {
     return {
-      startingChips: = this.startingChips,
+      startingChips: this.startingChips,
       minimumBet: this.minimumBet,
     };
   }

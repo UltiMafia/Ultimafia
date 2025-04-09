@@ -37,7 +37,7 @@ export default function LearnCardGames(props) {
   return (
     <div className="learn">
       <Typography variant="h4" gutterBottom>
-        Learn Liars Dice
+        Learn Card Games
       </Typography>
       <Typography variant="body1" paragraph>
         Each player starts with 5 dice unless customized, and can only see faces

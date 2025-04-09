@@ -2339,6 +2339,19 @@
 
 /***********
 *
+* Card Games
+*
+************/
+.role-Card-Games-Player {
+  background-image: url("/images/roles/villager-vivid.png");
+}
+
+.role-Card-Games-Host {
+  background-image: url("/images/roles/host-vivid.png");
+}
+
+/***********
+*
 * Pride icons; not for game
 *
 ***********/

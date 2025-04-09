@@ -5,8 +5,9 @@ module.exports = class CardGamesPlayer extends Player {
     super(user, game, isBot);
     this.usesCount = 0;
     this.CardsInHand = [];
+    this.AmountBidding = 0;
   }
-
+  /*
   parseCommand(message) {
     var cmd = super.parseCommand(message);
 
@@ -40,4 +41,5 @@ module.exports = class CardGamesPlayer extends Player {
       }
     }
   }
+  */
 };

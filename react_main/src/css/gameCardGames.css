@@ -78,12 +78,12 @@
 
 /* Dice images */
 .dice {
-  width: 32px;
-  height: 32px;
+  width: 64px;
+  height: 64px;
   margin: 4px;
-  background-image: url("/images/diceset.png");
+  background-image: url("/images/cardsLarge_tilemap.png");
   background-repeat: no-repeat;
-  background-size: 256px 64px;
+  background-size: 909px 259px;
   transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   background-position-x: 0;
 }
@@ -94,10 +94,10 @@
 }
 
 .previous-rolls .dice {
-  width: 24px;
-  height: 24px;
-  background-size: 192px 48px;
-  margin: 2px;
+  width: 64px;
+  height: 64px;
+  background-size: 909px 259px;
+  margin: 3px;
   background-position-x: 0;
 }
 
@@ -109,49 +109,182 @@
   margin-bottom: 8px;
 }
 
-.dice-1 {
-  background-position: 0 -32px;
+
+.cAce-Hearts {
+  background-position: 0 0px;
 }
-.dice-2 {
-  background-position: -32px -32px;
+.cAce-Diamonds {
+  background-position: 0 -64px;
 }
-.dice-3 {
-  background-position: -64px -32px;
+.cAce-Clubs {
+  background-position: 0 -128px;
 }
-.dice-4 {
-  background-position: -96px -32px;
-}
-.dice-5 {
-  background-position: -128px -32px;
-}
-.dice-6 {
-  background-position: -160px -32px;
-}
-.dice-unknown {
-  background-position: -192px -32px;
+.cAce-Spades {
+  background-position: 0 -192px;
 }
 
-.previous-rolls .dice-1 {
-  background-position: 0 -24px;
+.c2-Hearts {
+  background-position: 64 0px;
 }
-.previous-rolls .dice-2 {
-  background-position: -24px -24px;
+.c2-Diamonds {
+  background-position: 64 -64px;
 }
-.previous-rolls .dice-3 {
-  background-position: -48px -24px;
+.c2-Clubs {
+  background-position: 64 -128px;
 }
-.previous-rolls .dice-4 {
-  background-position: -72px -24px;
+.c2-Spades {
+  background-position: 64 -192px;
 }
-.previous-rolls .dice-5 {
-  background-position: -96px -24px;
+
+.c3-Hearts {
+  background-position: 128 0px;
 }
-.previous-rolls .dice-6 {
-  background-position: -120px -24px;
+.c3-Diamonds {
+  background-position: 128 -64px;
 }
-.previous-rolls .dice-unknown {
-  background-position: -168px -24px;
+.c3-Clubs {
+  background-position: 128 -128px;
 }
+.c3-Spades {
+  background-position: 128 -192px;
+}
+
+.c4-Hearts {
+  background-position: 192 0px;
+}
+.c4-Diamonds {
+  background-position: 192 -64px;
+}
+.c4-Clubs {
+  background-position: 192 -128px;
+}
+.c4-Spades {
+  background-position: 192 -192px;
+}
+
+.c5-Hearts {
+  background-position: 256 0px;
+}
+.c5-Diamonds {
+  background-position: 256 -64px;
+}
+.c5-Clubs {
+  background-position: 256 -128px;
+}
+.c5-Spades {
+  background-position: 256 -192px;
+}
+
+.c6-Hearts {
+  background-position: 320 0px;
+}
+.c6-Diamonds {
+  background-position: 320 -64px;
+}
+.c6-Clubs {
+  background-position: 320 -128px;
+}
+.c6-Spades {
+  background-position: 320 -192px;
+}
+
+.c7-Hearts {
+  background-position: 384 0px;
+}
+.c7-Diamonds {
+  background-position: 384 -64px;
+}
+.c7-Clubs {
+  background-position: 384 -128px;
+}
+.c7-Spades {
+  background-position: 384 -192px;
+}
+
+.c8-Hearts {
+  background-position: 448 0px;
+}
+.c8-Diamonds {
+  background-position: 448 -64px;
+}
+.c8-Clubs {
+  background-position: 448 -128px;
+}
+.c8-Spades {
+  background-position: 448 -192px;
+}
+
+.c9-Hearts {
+  background-position: 512 0px;
+}
+.c9-Diamonds {
+  background-position: 512 -64px;
+}
+.c9-Clubs {
+  background-position: 512 -128px;
+}
+.c9-Spades {
+  background-position: 512 -192px;
+}
+
+.c10-Hearts {
+  background-position: 576 0px;
+}
+.c10-Diamonds {
+  background-position: 576 -64px;
+}
+.c10-Clubs {
+  background-position: 576 -128px;
+}
+.c10-Spades {
+  background-position: 576 -192px;
+}
+
+.cJack-Hearts {
+  background-position: 640 0px;
+}
+.cJack-Diamonds {
+  background-position: 640 -64px;
+}
+.cJack-Clubs {
+  background-position: 640 -128px;
+}
+.cJack-Spades {
+  background-position: 640 -192px;
+}
+
+.cQueen-Hearts {
+  background-position: 704 0px;
+}
+.cQueen-Diamonds {
+  background-position: 704 -64px;
+}
+.cQueen-Clubs {
+  background-position: 704 -128px;
+}
+.cQueen-Spades {
+  background-position: 704 -192px;
+}
+
+.cKing-Hearts {
+  background-position: 768 0px;
+}
+.cKing-Diamonds {
+  background-position: 768 -64px;
+}
+.cKing-Clubs {
+  background-position: 768 -128px;
+}
+.cKing-Spades {
+  background-position: 768 -192px;
+}
+
+
+
+.card-unknown {
+  background-position: 832 -64px;
+}
+
 
 .current-rolls {
   display: flex;

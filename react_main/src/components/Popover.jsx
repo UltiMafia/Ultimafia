@@ -879,6 +879,23 @@ export function parseGamePopover(game) {
         />
       );
       break;
+      case "Card Games":
+        result.push(
+          <InfoRow
+            title="Minimum Bet"
+            content={game.settings.gameTypeOptions.minimumBet}
+            key="minimumBet"
+          />
+        );
+  
+        result.push(
+          <InfoRow
+            title="Starting Chips"
+            content={game.settings.gameTypeOptions.startingChips}
+            key="startingChips"
+          />
+        );
+        break;
   }
 
   //Created at

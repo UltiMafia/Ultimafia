@@ -39,7 +39,7 @@ export default function CreateCardGamesSetup() {
   const siteInfo = useContext(SiteInfoContext);
 
   useEffect(() => {
-    document.title = "Create Liars Dice Setup | UltiMafia";
+    document.title = "Create Card Games Setup | UltiMafia";
   }, []);
 
   function onCreateSetup(roleData, editing, setRedirect) {

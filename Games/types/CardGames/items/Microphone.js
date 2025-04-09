@@ -21,7 +21,7 @@ module.exports = class Microphone extends Item {
       },
       */
       Raise: {
-        actionName: "Raise?",
+        actionName: "Bet",
         states: ["Place Bets"],
         flags: [
           "voting",
@@ -32,7 +32,7 @@ module.exports = class Microphone extends Item {
         ],
         inputType: "text",
         textOptions: {
-          minNumber: 1,
+          minNumber: 0,
           minLength: 1,
           maxLength: 5,
           numericOnly: true,
@@ -42,19 +42,15 @@ module.exports = class Microphone extends Item {
           item: this,
           run: function () {
             this.target = parseInt(this.target);
+            //this.game.lastAmountBid - this.actor.AmountBidding + this.target
+          
 
             if (
-              this.actor.Chips <
-              this.game.lastAmountBid - this.actor.AmountBidding + this.target
-            ) {
+              this.target+this.actor.AmountBidding < this.game.minimumBet) {
               this.actor.getMeetings().forEach((meeting) => {
-                if (meeting.name == "Amount") {
+                if (meeting.name == "Raise") {
                   this.game.sendAlert(
-                    `You don't have ${
-                      this.game.lastAmountBid -
-                      this.actor.AmountBidding +
-                      this.target
-                    } Chips.`,
+                    `You must Bid at least ${this.game.minimumBet} Chips.`,
                     [this.actor]
                   );
                   meeting.unvote(this.actor, true, true);
@@ -63,7 +59,34 @@ module.exports = class Microphone extends Item {
               return;
             }
 
-            this.game.addToPot(this.actor, "Raise", this.target);
+            if (
+              this.actor.Chips < this.target) {
+              this.actor.getMeetings().forEach((meeting) => {
+                if (meeting.name == "Raise") {
+                  this.game.sendAlert(
+                    `You don't have ${this.target} Chips.`,
+                    [this.actor]
+                  );
+                  meeting.unvote(this.actor, true, true);
+                }
+              });
+              return;
+            }
+
+            if ((this.target+this.actor.AmountBidding) < this.game.lastAmountBid) {
+              this.actor.getMeetings().forEach((meeting) => {
+                if (meeting.name == "Raise") {
+                  this.game.sendAlert(
+                    `You must Bid more or equal to then the last Bid.`,
+                    [this.actor]
+                  );
+                  meeting.unvote(this.actor, true, true);
+                }
+              });
+              return;
+            }
+
+            this.game.addToPot(this.actor, "Bet", this.target);
             this.actor.hasHadTurn = true;
             this.item.drop();
 
@@ -84,16 +107,17 @@ module.exports = class Microphone extends Item {
       },
       Move: {
         actionName: "Choose an Action?",
-        states: ["Guess Dice"],
-        flags: ["voting", "instant", "instantButChangeable", "repeatable"],
+        states: ["Place Bets"],
+        flags: ["voting", "instant"],
         inputType: "custom",
         targets: this.MovesOptions,
         canUnvote: false,
         action: {
           item: this,
           run: function () {
-            if (this.target == "Call") {
-              this.game.addToPot(this.actor, "Call", 0);
+            if (this.target == "All-In") {
+              this.game.sendAlert(`${this.actor.name} goes All In!`);
+              this.game.addToPot(this.actor, "Bet", this.actor.Chips);
               this.actor.hasHadTurn = true;
             }
             if (this.target == "Fold") {
@@ -131,8 +155,11 @@ module.exports = class Microphone extends Item {
     this.MovesOptions = ["Check", "Fold"];
     this.MinRaise = 1;
     if (this.game.lastAmountBid > 0) {
-      this.MovesOptions = ["Call", "Fold"];
+      this.MovesOptions = ["Fold"];
       this.MinRaise = this.game.minimumBet;
+    }
+    if((this.game.lastAmountBid > player.Chips) || (this.game.minimumBet > player.Chips)){
+      this.MovesOptions.push("All-In");
     }
     this.setupMeetings();
     /*
