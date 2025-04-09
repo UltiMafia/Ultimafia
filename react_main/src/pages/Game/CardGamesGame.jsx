@@ -180,11 +180,11 @@ export default function CardGamesGame(props) {
             )}
             {history.currentState != -1 && (
               <ThePot
-              players={players}
-              history={history}
-              gameType={gameType}
-              stateViewing={stateViewing}
-              activity={game.activity}
+                players={players}
+                history={history}
+                gameType={gameType}
+                stateViewing={stateViewing}
+                activity={game.activity}
               />
             )}
             <ActionList
@@ -226,7 +226,7 @@ export function ThePot(props) {
       content={
         <table className="options-table">
           <tbody>
-          The Pot: 
+            The Pot:
             {extraInfo.ThePot}
           </tbody>
         </table>

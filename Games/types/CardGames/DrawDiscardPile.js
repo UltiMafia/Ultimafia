@@ -16,7 +16,7 @@ module.exports = class CardGamesDrawDiscardPile extends DrawDiscardPile {
 
   drawMultiple(numToDraw) {
     numToDraw = numToDraw || 1;
-    if(this.drawPile.length < numToDraw){
+    if (this.drawPile.length < numToDraw) {
       this.refillDrawFromDiscard();
       this.shuffle();
     }
