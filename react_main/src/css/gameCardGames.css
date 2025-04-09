@@ -1,0 +1,303 @@
+/* Styles for the SideMenu (Dice View Wrapper) */
+.liars-dice-wrapper {
+  background-color: #8b0000;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  margin: 15px 30px 0 0;
+  max-width: 280px;
+  width: 100%;
+}
+
+.liars-dice-wrapper .side-menu-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #f0f0f0;
+  margin-bottom: 15px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.liars-dice-players-container {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+/* Styles for the Player Section */
+.liars-dice-player-section {
+  margin-top: 5%;
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.liars-dice-player-section:last-child {
+  margin-bottom: 0;
+}
+
+/* Styles for the Player Name Box */
+.liars-dice-player-name {
+  background-color: #a52a2a;
+  border-radius: 6px 6px 0 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  padding: 12px 15px;
+  border: 1px solid #8b0000;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: center;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.current-player {
+  background-color: #c01717;
+  border-color: #8b0000;
+  color: #ffffff;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.liars-dice-player-section:hover .liars-dice-player-name {
+  background-color: #b22222;
+}
+
+/* Styles for the Dice Container */
+.liars-dice-dice-container {
+  background-color: #1c1c1c;
+  border-radius: 0 0 6px 6px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #8b0000;
+  border-top: none;
+}
+
+/* Dice images */
+.dice {
+  width: 64px;
+  height: 64px;
+  margin: 4px;
+  background-image: url("/images/cardsLarge_tilemap.png");
+  background-repeat: no-repeat;
+  background-size: 909px 259px;
+  transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  background-position-x: 0;
+}
+
+.dice:hover {
+  transform: scale(1.15) rotate(8deg);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+.previous-rolls .dice {
+  width: 64px;
+  height: 64px;
+  background-size: 909px 259px;
+  margin: 3px;
+  background-position-x: 0;
+}
+
+.previous-rolls-label {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #a52a2a;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+  margin-bottom: 8px;
+}
+
+.cAce-Hearts {
+  background-position: 0px 0px;
+}
+.cAce-Diamonds {
+  background-position: 0px -64px;
+}
+.cAce-Clubs {
+  background-position: 0px -128px;
+}
+.cAce-Spades {
+  background-position: 0px -192px;
+}
+
+.c2-Hearts {
+  background-position: -64px 0px;
+}
+.c2-Diamonds {
+  background-position: -64px -64px;
+}
+.c2-Clubs {
+  background-position: -64px -128px;
+}
+.c2-Spades {
+  background-position: -64px -192px;
+}
+
+.c3-Hearts {
+  background-position: -128px 0px;
+}
+.c3-Diamonds {
+  background-position: -128px -64px;
+}
+.c3-Clubs {
+  background-position: -128px -128px;
+}
+.c3-Spades {
+  background-position: -128px -192px;
+}
+
+.c4-Hearts {
+  background-position: -192px 0px;
+}
+.c4-Diamonds {
+  background-position: -192px -64px;
+}
+.c4-Clubs {
+  background-position: -192px -128px;
+}
+.c4-Spades {
+  background-position: -192px -192px;
+}
+
+.c5-Hearts {
+  background-position: -256px 0px;
+}
+.c5-Diamonds {
+  background-position: -256px -64px;
+}
+.c5-Clubs {
+  background-position: -256px -128px;
+}
+.c5-Spades {
+  background-position: -256px -192px;
+}
+
+.c6-Hearts {
+  background-position: -320px 0px;
+}
+.c6-Diamonds {
+  background-position: -320px -64px;
+}
+.c6-Clubs {
+  background-position: -320px -128px;
+}
+.c6-Spades {
+  background-position: -320px -192px;
+}
+
+.c7-Hearts {
+  background-position: -384px 0px;
+}
+.c7-Diamonds {
+  background-position: -384px -64px;
+}
+.c7-Clubs {
+  background-position: -384px -128px;
+}
+.c7-Spades {
+  background-position: -384px -192px;
+}
+
+.c8-Hearts {
+  background-position: -448px 0px;
+}
+.c8-Diamonds {
+  background-position: -448px -64px;
+}
+.c8-Clubs {
+  background-position: -448px -128px;
+}
+.c8-Spades {
+  background-position: -448px -192px;
+}
+
+.c9-Hearts {
+  background-position: -512px 0px;
+}
+.c9-Diamonds {
+  background-position: -512px -64px;
+}
+.c9-Clubs {
+  background-position: -512px -128px;
+}
+.c9-Spades {
+  background-position: -512px -192px;
+}
+
+.c10-Hearts {
+  background-position: -576px 0px;
+}
+.c10-Diamonds {
+  background-position: -576px -64px;
+}
+.c10-Clubs {
+  background-position: -576px -128px;
+}
+.c10-Spades {
+  background-position: -576px -192px;
+}
+
+.cJack-Hearts {
+  background-position: -640px 0px;
+}
+.cJack-Diamonds {
+  background-position: -640px -64px;
+}
+.cJack-Clubs {
+  background-position: -640px -128px;
+}
+.cJack-Spades {
+  background-position: -640px -192px;
+}
+
+.cQueen-Hearts {
+  background-position: -704px 0px;
+}
+.cQueen-Diamonds {
+  background-position: -704px -64px;
+}
+.cQueen-Clubs {
+  background-position: -704px -128px;
+}
+.cQueen-Spades {
+  background-position: -704px -192px;
+}
+
+.cKing-Hearts {
+  background-position: -768px 0px;
+}
+.cKing-Diamonds {
+  background-position: -768px -64px;
+}
+.cKing-Clubs {
+  background-position: -768px -128px;
+}
+.cKing-Spades {
+  background-position: -768px -192px;
+}
+
+.card-unknown {
+  background-position: -832px -64px;
+}
+
+.current-rolls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.previous-rolls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.previous-rolls-dice {
+  margin-left: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}

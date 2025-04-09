@@ -20,6 +20,7 @@ import HostAcrotopia from "./HostAcrotopia";
 import HostSecretDictator from "./HostSecretDictator";
 import HostWackyWords from "./HostWackyWords";
 import HostLiarsDice from "./HostLiarsDice";
+import HostCardGames from "./HostCardGames";
 
 import { GameTypes } from "../../../Constants";
 
@@ -32,6 +33,7 @@ const gamesIcons = {
   "Secret Dictator": "/images/game_icons/SecretDictator.png",
   "Wacky Words": "/images/game_icons/WackyWords.png",
   "Liars Dice": "/images/game_icons/LiarsDice.png",
+  "Card Games": "/images/game_icons/CardGames.png",
 };
 
 export default function Host(props) {
@@ -145,6 +147,8 @@ export default function Host(props) {
                   return <HostWackyWords />;
                 case "Liars Dice":
                   return <HostLiarsDice />;
+                case "Card Games":
+                  return <HostCardGames />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;

@@ -20,6 +20,7 @@ import LearnAcrotopia from "./LearnAcrotopia";
 import LearnSecretDictator from "./LearnSecretDictator";
 import LearnWackyWords from "./LearnWackyWords";
 import LearnLiarsDice from "./LearnLiarsDice";
+import LearnCardGames from "./LearnCardGames";
 
 import { GameTypes } from "../../Constants";
 
@@ -32,6 +33,7 @@ const gamesIcons = {
   "Secret Dictator": "/images/game_icons/SecretDictator.png",
   "Wacky Words": "/images/game_icons/WackyWords.png",
   "Liars Dice": "/images/game_icons/LiarsDice.png",
+  "Card Games": "/images/game_icons/CardGames.png",
 };
 
 export default function Games(props) {
@@ -145,6 +147,8 @@ export default function Games(props) {
                   return <LearnWackyWords />;
                 case "Liars Dice":
                   return <LearnLiarsDice />;
+                case "Card Games":
+                  return <LearnCardGames />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;

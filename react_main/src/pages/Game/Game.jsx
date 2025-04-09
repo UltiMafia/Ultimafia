@@ -18,6 +18,7 @@ import AcrotopiaGame from "./AcrotopiaGame";
 import SecretDictatorGame from "./SecretDictatorGame";
 import WackyWordsGame from "./WackyWordsGame";
 import LiarsDiceGame from "./LiarsDiceGame";
+import CardGamesGame from "./CardGamesGame";
 import {
   GameContext,
   PopoverContext,
@@ -677,6 +678,7 @@ function GameWrapper(props) {
           {gameType === "Secret Dictator" && <SecretDictatorGame />}
           {gameType === "Wacky Words" && <WackyWordsGame />}
           {gameType === "Liars Dice" && <LiarsDiceGame />}
+          {gameType === "Card Games" && <CardGamesGame />}
         </div>
       </GameContext.Provider>
     );

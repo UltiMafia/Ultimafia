@@ -20,6 +20,7 @@ import CreateAcrotopiaSetup from "./CreateAcrotopiaSetup";
 import CreateSecretDictatorSetup from "./CreateSecretDictatorSetup";
 import CreateWackyWordsSetup from "./CreateWackyWordsSetup";
 import CreateLiarsDiceSetup from "./CreateLiarsDiceSetup";
+import CreateCardGamesSetup from "./CreateCardGamesSetup";
 
 import { GameTypes } from "../../../Constants";
 
@@ -32,6 +33,7 @@ const gamesIcons = {
   "Secret Dictator": "/images/game_icons/SecretDictator.png",
   "Wacky Words": "/images/game_icons/WackyWords.png",
   "Liars Dice": "/images/game_icons/LiarsDice.png",
+  "Card Games": "/images/game_icons/CardGames.png",
 };
 
 export default function CreateSetup(props) {
@@ -145,6 +147,8 @@ export default function CreateSetup(props) {
                   return <CreateWackyWordsSetup />;
                 case "Liars Dice":
                   return <CreateLiarsDiceSetup />;
+                case "Card Games":
+                  return <CreateCardGamesSetup />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;

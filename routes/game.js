@@ -993,6 +993,15 @@ const settingsChecks = {
       startingDice,
     };
   },
+  "Card Games": (settings, setup) => {
+    let minimumBet = settings.minimumBet;
+    let startingChips = settings.startingChips;
+
+    return {
+      minimumBet,
+      startingChips,
+    };
+  },
 };
 
 module.exports = router;
