@@ -151,7 +151,7 @@ export default function CardGamesGame(props) {
         }
         centerPanelContent={
           <>
-            <TextMeetingLayout
+          <TextMeetingLayout
               combineMessagesFromAllMeetings
               socket={game.socket}
               history={history}
@@ -187,11 +187,13 @@ export default function CardGamesGame(props) {
                 activity={game.activity}
               />
             )}
+          {history.currentState != -1 && (
             <CommunityCards
               history={history}
               stateViewing={stateViewing}
               self={self}
             />
+          )}
             <ActionList
               socket={game.socket}
               meetings={meetings}
@@ -226,13 +228,13 @@ export function ThePot(props) {
 
   return (
     <SideMenu
-      title="The Pot"
+      title="Round Info"
       scrollable
       content={
         <table className="options-table">
           <tbody>{extraInfo.Phase}</tbody>
           <tbody>
-            Current Round:
+            Round:
             {extraInfo.RoundNumber}
           </tbody>
           <tbody>
@@ -301,6 +303,7 @@ function LiarsDiceDiceViewWrapper(props) {
               isCurrentPlayer={player.playerId === self}
               isTheFlyingDutchman={extraInfo.isTheFlyingDutchman}
               whoseTurnIsIt={extraInfo.whoseTurnIsIt}
+              Folded={player.Folded}
             />
           ))}
         </div>
@@ -318,6 +321,7 @@ function LiarsDicePlayerRow({
   isCurrentPlayer,
   isTheFlyingDutchman,
   whoseTurnIsIt,
+  Folded
 }) {
   Chips = Chips || 0;
   Bets = Bets || 0;
@@ -400,6 +404,24 @@ function LiarsDicePlayerRow({
                 Current Bid:
               </div>
               <div className="previous-rolls-dice">{Bets}</div>
+            </div>
+          </>
+        )}
+        {Folded == true && (
+          <>
+            <div className="previous-rolls">
+              <div
+                className="previous-rolls-label"
+                style={
+                  isTheFlyingDutchman
+                    ? {
+                        color: "#3B5841",
+                      }
+                    : {}
+                }
+              >
+                Folded
+              </div>
             </div>
           </>
         )}
