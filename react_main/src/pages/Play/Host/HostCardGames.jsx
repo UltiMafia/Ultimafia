@@ -41,15 +41,15 @@ export default function HostCardGames() {
       type: "number",
       value: defaults.minimumBet,
       min: 2,
-      max: 10,
+      max: 20,
     },
     {
       label: "Starting Chips",
       ref: "startingChips",
       type: "number",
       value: defaults.startingChips,
-      min: 6,
-      max: 60,
+      min: 5,
+      max: 500,
     },
     {
       label: "Lobby",

@@ -57,6 +57,20 @@ const Standard_Deck = [
   "King-Spades",
 ];
 
+const Test_Deck = [
+  //Hearts
+  "Ace-Hearts",
+  "Jack-Hearts",
+  "7-Hearts",
+  "8-Hearts",
+  "9-Hearts",
+  "10-Hearts",
+  "Jack-Hearts",
+  "Queen-Hearts",
+  "King-Hearts",
+];
+
 module.exports = {
   Standard_Deck,
+  Test_Deck,
 };
