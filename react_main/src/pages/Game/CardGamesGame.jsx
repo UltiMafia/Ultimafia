@@ -230,9 +230,7 @@ export function ThePot(props) {
       scrollable
       content={
         <table className="options-table">
-          <tbody>
-            {extraInfo.Phase}
-          </tbody>
+          <tbody>{extraInfo.Phase}</tbody>
           <tbody>
             Current Round:
             {extraInfo.RoundNumber}
