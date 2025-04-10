@@ -151,7 +151,7 @@ export default function CardGamesGame(props) {
         }
         centerPanelContent={
           <>
-          <TextMeetingLayout
+            <TextMeetingLayout
               combineMessagesFromAllMeetings
               socket={game.socket}
               history={history}
@@ -187,13 +187,13 @@ export default function CardGamesGame(props) {
                 activity={game.activity}
               />
             )}
-          {history.currentState != -1 && (
-            <CommunityCards
-              history={history}
-              stateViewing={stateViewing}
-              self={self}
-            />
-          )}
+            {history.currentState != -1 && (
+              <CommunityCards
+                history={history}
+                stateViewing={stateViewing}
+                self={self}
+              />
+            )}
             <ActionList
               socket={game.socket}
               meetings={meetings}
@@ -321,7 +321,7 @@ function LiarsDicePlayerRow({
   isCurrentPlayer,
   isTheFlyingDutchman,
   whoseTurnIsIt,
-  Folded
+  Folded,
 }) {
   Chips = Chips || 0;
   Bets = Bets || 0;

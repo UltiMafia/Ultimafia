@@ -11,7 +11,7 @@ module.exports = class CardGamesDrawDiscardPile extends DrawDiscardPile {
     for (let x = 0; x < Standard_Deck.length; x++) {
       temp.push(`${Standard_Deck[x]}`);
     }
-    
+
     super.initCards(temp);
   }
 

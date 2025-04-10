@@ -202,9 +202,12 @@ module.exports = class CardGamesGame extends Game {
                         w) %
                         this.randomizedPlayersCopy.length
                     ];
-                   this.currentIndex = ((parseInt(this.randomizedPlayersCopy.indexOf(this.BigBlind))) % this.randomizedPlayersCopy.length);
-                      
-                    //Bidder
+                  this.currentIndex =
+                    parseInt(
+                      this.randomizedPlayersCopy.indexOf(this.BigBlind)
+                    ) % this.randomizedPlayersCopy.length;
+
+                  //Bidder
                   break;
                 }
               } //BigBlind
@@ -541,10 +544,10 @@ module.exports = class CardGamesGame extends Game {
   //DealCards
   dealCards(amount) {
     this.randomizedPlayers.forEach((player) => {
-      if(player.alive){
-      let Cards = this.drawDiscardPile.drawMultiple(amount);
-      player.CardsInHand.push(...Cards);
-      player.sendAlert(`${Cards.join(", ")} have been added to your Hand!`);
+      if (player.alive) {
+        let Cards = this.drawDiscardPile.drawMultiple(amount);
+        player.CardsInHand.push(...Cards);
+        player.sendAlert(`${Cards.join(", ")} have been added to your Hand!`);
       }
     });
   }
