@@ -176,38 +176,25 @@ module.exports = class CardGamesGame extends Game {
               (this.randomizedPlayersCopy.indexOf(this.Dealer) + x) %
                 this.randomizedPlayersCopy.length
             ];
+            for (let y = 1; y < this.randomizedPlayersCopy.length; y++){
+              if (
+                  this.randomizedPlayersCopy[(this.randomizedPlayersCopy.indexOf(this.Dealer) + y) % this.randomizedPlayersCopy.length].alive
+                ) {
+                  this.SmallBlind = this.randomizedPlayersCopy[(this.randomizedPlayersCopy.indexOf(this.Dealer) + y) % this.randomizedPlayersCopy.length];
+
+                  for(let w = 1; w < this.randomizedPlayersCopy.length; w++){
+                    if (this.randomizedPlayersCopy[(this.randomizedPlayersCopy.indexOf(this.SmallBlind) + w) % this.randomizedPlayersCopy.length].alive){
+                      this.BigBlind = this.randomizedPlayersCopy[(this.randomizedPlayersCopy.indexOf(this.SmallBlind) + w) % this.randomizedPlayersCopy.length];
+                      break;
+                    }
+                  }//BigBlind
+
+                
+                  break;
+                }//SmallBlind
+            }
           break;
-        }
-      }
-      for (let x = 1; x < this.randomizedPlayersCopy.length; x++) {
-        if (
-          this.randomizedPlayersCopy[
-            (this.randomizedPlayersCopy.indexOf(this.SmallBlind) + x) %
-              this.randomizedPlayersCopy.length
-          ].alive
-        ) {
-          this.SmallBlind =
-            this.randomizedPlayersCopy[
-              (this.randomizedPlayersCopy.indexOf(this.SmallBlind) + x) %
-                this.randomizedPlayersCopy.length
-            ];
-          break;
-        }
-      }
-      for (let x = 1; x < this.randomizedPlayersCopy.length; x++) {
-        if (
-          this.randomizedPlayersCopy[
-            (this.randomizedPlayersCopy.indexOf(this.BigBlind) + x) %
-              this.randomizedPlayersCopy.length
-          ].alive
-        ) {
-          this.BigBlind =
-            this.randomizedPlayersCopy[
-              (this.randomizedPlayersCopy.indexOf(this.BigBlind) + x) %
-                this.randomizedPlayersCopy.length
-            ];
-          break;
-        }
+        }//Dealer
       }
     }
     this.sendAlert(
@@ -391,10 +378,7 @@ module.exports = class CardGamesGame extends Game {
           if (card == player.ShowdownCards[0]) {
             if (card != cardB) {
               //this.sendAlert(`${card} ${tempCard[0]}-${cardB} ${tempCardB[0]} is ${tempCard[0]-tempCardB[0]} Index ${player.ShowdownCards.indexOf(cardB)}!`);
-              if (
-                tempCard[0] - tempCardB[0] !=
-                player.ShowdownCards.indexOf(cardB)
-              ) {
+              if (parseInt(tempCard[0] - tempCardB[0]) != parseInt(player.ShowdownCards.indexOf(cardB))) {
                 streight = false;
               }
             }
@@ -664,6 +648,9 @@ module.exports = class CardGamesGame extends Game {
       whoseTurnIsIt:
         this.randomizedPlayersCopy?.[this.currentIndex]?.user.id ?? 0,
       ThePot: this.ThePot,
+      RoundNumber: this.RoundNumber,
+      Phase: this.Phase,
+      CommunityCard: this.CommunityCards,
     };
     return info;
   }
@@ -680,6 +667,7 @@ module.exports = class CardGamesGame extends Game {
           CardsInHand: player.CardsInHand,
           Chips: player.Chips,
           Bets: player.AmountBidding,
+          Folded: player.hasFolded,
         });
       }
     }
