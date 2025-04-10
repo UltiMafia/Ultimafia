@@ -669,7 +669,7 @@ module.exports = class CardGamesGame extends Game {
       ThePot: this.ThePot,
       RoundNumber: this.RoundNumber,
       Phase: this.Phase,
-      CommunityCard: this.CommunityCards,
+      CommunityCards: this.CommunityCards,
     };
     return info;
   }
