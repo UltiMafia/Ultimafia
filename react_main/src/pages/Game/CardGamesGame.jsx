@@ -257,14 +257,11 @@ function CommunityCards(props) {
       content={
         <div className="liars-dice-players-container">
           {
-        <div className="current-rolls">
-          {extraInfo.CommunityCards.map((value, index) => (
-            <div
-              key={index}
-              className={`dice ${`c${value}`}`}
-            ></div>
-          ))}
-        </div>
+            <div className="current-rolls">
+              {extraInfo.CommunityCards.map((value, index) => (
+                <div key={index} className={`dice ${`c${value}`}`}></div>
+              ))}
+            </div>
           }
         </div>
       }
