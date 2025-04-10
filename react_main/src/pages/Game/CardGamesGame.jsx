@@ -187,6 +187,11 @@ export default function CardGamesGame(props) {
                 activity={game.activity}
               />
             )}
+            <CommunityCards
+              history={history}
+              stateViewing={stateViewing}
+              self={self}
+            />
             <ActionList
               socket={game.socket}
               meetings={meetings}
@@ -230,6 +235,38 @@ export function ThePot(props) {
             {extraInfo.ThePot}
           </tbody>
         </table>
+      }
+    />
+  );
+}
+
+function CommunityCards(props) {
+  const history = props.history;
+  const stateViewing = props.stateViewing;
+  const self = props.self;
+
+  if (stateViewing < 0) return <></>;
+
+  const extraInfo = history.states[stateViewing].extraInfo;
+
+  return (
+    <SideMenu
+      title="Community Cards"
+      scrollable
+      className="liars-dice-wrapper"
+      content={
+        <div className="liars-dice-players-container">
+          {
+        <div className="current-rolls">
+          {extraInfo.CommunityCards.map((value, index) => (
+            <div
+              key={index}
+              className={`dice ${`c${value}`}`}
+            ></div>
+          ))}
+        </div>
+          }
+        </div>
       }
     />
   );
