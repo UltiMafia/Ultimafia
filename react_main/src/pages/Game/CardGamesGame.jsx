@@ -231,6 +231,13 @@ export function ThePot(props) {
       content={
         <table className="options-table">
           <tbody>
+            {extraInfo.Phase}
+          </tbody>
+          <tbody>
+            Current Round:
+            {extraInfo.RoundNumber}
+          </tbody>
+          <tbody>
             The Pot:
             {extraInfo.ThePot}
           </tbody>
