@@ -1,5 +1,5 @@
-/* Styles for the SideMenu (Dice View Wrapper) */
-.liars-dice-wrapper {
+/* Styles for the SideMenu (card View Wrapper) */
+.card-games-wrapper {
   background-color: #8b0000;
   border-radius: 12px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
@@ -9,7 +9,7 @@
   width: 100%;
 }
 
-.liars-dice-wrapper .side-menu-title {
+.card-games-wrapper .side-menu-title {
   font-size: 1.3rem;
   font-weight: bold;
   color: #f0f0f0;
@@ -20,25 +20,25 @@
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
 }
 
-.liars-dice-players-container {
+.card-games-players-container {
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 6px;
 }
 
 /* Styles for the Player Section */
-.liars-dice-player-section {
+.card-games-player-section {
   margin-top: 5%;
   width: 95%;
   margin-left: auto;
   margin-right: auto;
 }
 
-.liars-dice-player-section:last-child {
+.card-games-player-section:last-child {
   margin-bottom: 0;
 }
 
 /* Styles for the Player Name Box */
-.liars-dice-player-name {
+.card-games-player-name {
   background-color: #a52a2a;
   border-radius: 6px 6px 0 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -59,12 +59,12 @@
   text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
 }
 
-.liars-dice-player-section:hover .liars-dice-player-name {
+.card-games-player-section:hover .card-games-player-name {
   background-color: #b22222;
 }
 
-/* Styles for the Dice Container */
-.liars-dice-dice-container {
+/* Styles for the card Container */
+.card-games-card-container {
   background-color: #1c1c1c;
   border-radius: 0 0 6px 6px;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
@@ -76,8 +76,8 @@
   border-top: none;
 }
 
-/* Dice images */
-.dice {
+/* card images */
+.card {
   width: 64px;
   height: 64px;
   margin: 4px;
@@ -88,12 +88,12 @@
   background-position-x: 0;
 }
 
-.dice:hover {
+.card:hover {
   transform: scale(1.15) rotate(8deg);
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
 }
 
-.previous-rolls .dice {
+.previous-rolls .card {
   width: 64px;
   height: 64px;
   background-size: 909px 259px;
@@ -288,16 +288,3 @@
   justify-content: center;
 }
 
-.previous-rolls {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 15px;
-}
-
-.previous-rolls-dice {
-  margin-left: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
