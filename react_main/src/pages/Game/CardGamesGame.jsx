@@ -36,7 +36,7 @@ export default function CardGamesGame(props) {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
-  const audioFileNames = ["diceRoll", "diceRoll2", "gunshot"];
+  const audioFileNames = ["cardRoll", "cardRoll2", "gunshot"];
   const audioLoops = [];
   const audioOverrides = [];
   const audioVolumes = [];
@@ -76,11 +76,11 @@ export default function CardGamesGame(props) {
       // else
       // 	game.playAudio("spieswin");
     });
-    socket.on("diceRoll", () => {
-      game.playAudio("diceRoll");
+    socket.on("cardRoll", () => {
+      game.playAudio("cardRoll");
     });
-    socket.on("diceRoll2", () => {
-      game.playAudio("diceRoll2");
+    socket.on("cardRoll2", () => {
+      game.playAudio("cardRoll2");
     });
     socket.on("gunshot", () => {
       game.playAudio("gunshot");
@@ -135,7 +135,7 @@ export default function CardGamesGame(props) {
                 activity={game.activity}
               />
             )}
-            <LiarsDiceDiceViewWrapper
+            <LiarscardcardViewWrapper
               history={history}
               stateViewing={stateViewing}
               self={self}
@@ -260,13 +260,13 @@ function CommunityCards(props) {
     <SideMenu
       title="Community Cards"
       scrollable
-      className="liars-dice-wrapper"
+      className="card-games-wrapper"
       content={
-        <div className="liars-dice-players-container">
+        <div className="card-games-players-container">
           {
             <div className="current-rolls">
               {extraInfo.CommunityCards.map((value, index) => (
-                <div key={index} className={`dice ${`c${value}`}`}></div>
+                <div key={index} className={`card ${`c${value}`}`}></div>
               ))}
             </div>
           }
@@ -276,7 +276,7 @@ function CommunityCards(props) {
   );
 }
 
-function LiarsDiceDiceViewWrapper(props) {
+function LiarscardcardViewWrapper(props) {
   const history = props.history;
   const stateViewing = props.stateViewing;
   const self = props.self;
@@ -289,11 +289,11 @@ function LiarsDiceDiceViewWrapper(props) {
     <SideMenu
       title="Hand"
       scrollable
-      className="liars-dice-wrapper"
+      className="card-games-wrapper"
       content={
-        <div className="liars-dice-players-container">
+        <div className="card-games-players-container">
           {extraInfo.randomizedPlayers.map((player, index) => (
-            <LiarsDicePlayerRow
+            <LiarscardPlayerRow
               key={index}
               userId={player.userId}
               playerName={player.playerName}
@@ -312,7 +312,7 @@ function LiarsDiceDiceViewWrapper(props) {
   );
 }
 
-function LiarsDicePlayerRow({
+function LiarscardPlayerRow({
   userId,
   playerName,
   CardsInHand,
@@ -327,9 +327,9 @@ function LiarsDicePlayerRow({
   Bets = Bets || 0;
   const isSamePlayer = whoseTurnIsIt === userId;
   return (
-    <div className="liars-dice-player-section">
+    <div className="card-games-player-section">
       <div
-        className={`liars-dice-player-name ${
+        className={`card-games-player-name ${
           isCurrentPlayer ? "current-player" : ""
         }`}
         style={
@@ -348,7 +348,7 @@ function LiarsDicePlayerRow({
         {playerName}
       </div>
       <div
-        className="liars-dice-dice-container"
+        className="card-games-card-container"
         style={
           isTheFlyingDutchman
             ? {
@@ -363,7 +363,7 @@ function LiarsDicePlayerRow({
           {CardsInHand.map((value, index) => (
             <div
               key={index}
-              className={`dice ${
+              className={`card ${
                 isCurrentPlayer ? `c${value}` : "card-unknown"
               }`}
             ></div>
@@ -384,7 +384,7 @@ function LiarsDicePlayerRow({
               >
                 Chips:
               </div>
-              <div className="previous-rolls-dice">{Chips}</div>
+              <div className="previous-rolls-card">{Chips}</div>
             </div>
           </>
         )}
@@ -403,7 +403,7 @@ function LiarsDicePlayerRow({
               >
                 Current Bid:
               </div>
-              <div className="previous-rolls-dice">{Bets}</div>
+              <div className="previous-rolls-card">{Bets}</div>
             </div>
           </>
         )}
