@@ -101,6 +101,11 @@ const modifierData = {
       description:
         "Given out by the Capybara to invite players to relax at the hot springs. Counts as 1 ration for each phase in a famine.",
     },
+    Coffee: {
+      internal: ["Coffee"],
+      tags: ["actions"],
+      description: "Can be used to perform nights additional times.",
+    },
     //Non Town Items
     Suit: {
       internal: ["Suit"],

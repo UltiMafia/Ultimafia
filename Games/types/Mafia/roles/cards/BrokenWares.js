@@ -39,6 +39,7 @@ module.exports = class BrokenWares extends Card {
           "Tract",
           "Syringe",
           "Envelope",
+          "Coffee",
         ],
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 2,

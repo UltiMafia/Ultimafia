@@ -1076,6 +1076,9 @@ module.exports = class Game {
       ) {
         this.ExorciseVillageMeeting = true;
       }
+      if (this.getRoleTags(this.PossibleRoles[z]).includes("Treasure Chest")) {
+        this.HaveTreasureChestState = true;
+      }
       if (this.getRoleTags(this.PossibleRoles[z]).includes("Pregame Actions")) {
         this.HaveDuskOrDawn = true;
       }
@@ -1353,7 +1356,10 @@ module.exports = class Game {
 
   calculateStateOffset() {
     let start = this.setup.startState;
-    if (this.HaveDuskOrDawn == true && start == "Day") {
+    if (this.HaveTreasureChestState == true) {
+      start = "Treasure Chest";
+    } 
+    else if (this.HaveDuskOrDawn == true && start == "Day") {
       start = "Dawn";
     } else if (this.HaveDuskOrDawn == true && start == "Night") {
       start = "Dusk";

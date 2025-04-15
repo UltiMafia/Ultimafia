@@ -91,6 +91,15 @@ module.exports = class VillageCore extends Card {
     };
 
     this.stateMods = {
+      "Treasure Chest": {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          if (this.game.HaveTreasureChestState == true) {
+            return false;
+          }
+          return true;
+        },
+      },
       Day: {
         type: "delayActions",
         delayActions: true,

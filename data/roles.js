@@ -211,6 +211,23 @@ const roleData = {
       ],
     },
     //gifting roles
+    Barista: {
+      alignment: "Village",
+      category: "Gifting",
+      tags: [
+        "Gifting",
+        "Information",
+        "Items",
+        "Candle",
+        "Visit Interaction",
+        "Visiting",
+        "Dawn",
+      ],
+      description: [
+        "Gives out a coffee to one player each night.",
+        "Coffee will allow a player to perform their actions multiple times.",
+      ],
+    },
     Baker: {
       alignment: "Village",
       category: "Gifting",
@@ -372,11 +389,12 @@ const roleData = {
         "Visiting",
         "Information",
         "Self Blocking",
+        "Dawn",
       ],
       description: [
         "Visits a player each night to learn their role alignment.",
         "If not visited during the night, will learn whether that player is naughty or nice.",
-        "Gives out a Gun, Knife, Armor, Bomb, Crystal, Whiskey, Bread, Key, Falcon, Tract, or Syringe each night.",
+        "Gives out a Gun, Knife, Armor, Bomb, Crystal, Whiskey, Bread, Key, Falcon, Tract, Syringe, or Coffee each night.",
       ],
       graveyardParticipation: "all",
     },
@@ -1349,9 +1367,7 @@ const roleData = {
       tags: [
         "Setup Changes",
         "Exposed",
-        "Dusk",
-        "Pregame Actions",
-        "Dawn",
+        "Treasure Chest",
         "Voting",
       ],
       description: [
@@ -1884,7 +1900,7 @@ const roleData = {
     },
     Fabricator: {
       alignment: "Mafia",
-      tags: ["Gifting", "Broken", "Items", "Visiting"],
+      tags: ["Gifting", "Broken", "Items", "Visiting", "Dawn"],
       description: [
         "Gives out a cursed item once per night.",
         "Cursed Guns and Knives will backfire against the player who used them.",
@@ -2741,15 +2757,17 @@ const roleData = {
         "Insanity",
         "Magic",
         "Visiting",
+        "Dawn",
       ],
       description: [
         "Once per night, corrupts the target's item(s) into magic items that benefit the Cult.",
         "Guns, Rifles, and Knives will convert instead of killing.",
         "Armor will make an Attacker Insane.",
-        "Tracts will convert a player to a random Cult if converted.",
+        "Tracts will convert a player to a random Cult role if converted.",
         "Crystal Balls will reveal players as Cultist.",
         "Syringes will resurrect players as Cultist.",
         "Candles and Falcons will provide False Info.",
+        "Coffee will make the extra actions into conversions.",
         "Whiskey will make Non-Cult Players Delirious.",
         "Keys will not Block Cult.",
         "Envelope messages will be gibberish.",
