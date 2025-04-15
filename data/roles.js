@@ -1902,7 +1902,7 @@ const roleData = {
     },
     Fabricator: {
       alignment: "Mafia",
-      tags: ["Gifting", "Broken", "Items", "Visiting","Dawn"],
+      tags: ["Gifting", "Broken", "Items", "Visiting", "Dawn"],
       description: [
         "Gives out a cursed item once per night.",
         "Cursed Guns and Knives will backfire against the player who used them.",
