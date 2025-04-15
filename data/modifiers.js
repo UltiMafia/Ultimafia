@@ -585,8 +585,7 @@ const modifierData = {
     Wandering: {
       internal: ["TargetRandom"],
       tags: ["Redirection"],
-      description:
-        "Each night is redirected onto a random player.",
+      description: "Each night is redirected onto a random player.",
     },
     Weak: {
       internal: ["Weak"],
