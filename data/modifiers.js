@@ -437,7 +437,7 @@ const modifierData = {
     },
     Restless: {
       internal: ["ActWhileDead"],
-      tags: ["Dead", "Graveyard", "Restless","Graveyard Participation"],
+      tags: ["Dead", "Graveyard", "Restless", "Graveyard Participation"],
       description: "Can only perform secondary actions while dead.",
     },
     Retired: {
@@ -591,7 +591,7 @@ const modifierData = {
     },
     Wise: {
       internal: ["MakePlayerLearnOneOfTwoPlayersOnDeath"],
-      tags: ["Sacrificial", "Information","Graveyard Participation"],
+      tags: ["Sacrificial", "Information", "Graveyard Participation"],
       description:
         "If killed at night, a player with this modifier learns that 1 of 2 players is evil.",
     },
