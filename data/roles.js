@@ -1367,9 +1367,7 @@ const roleData = {
       tags: [
         "Setup Changes",
         "Exposed",
-        "Dusk",
-        "Pregame Actions",
-        "Dawn",
+        "Treasure Chest",
         "Voting",
       ],
       description: [
