@@ -582,6 +582,12 @@ const modifierData = {
       description:
         "Will passively convert to the role of the first aligned power role.",
     },
+    Wandering: {
+      internal: ["TargetRandom"],
+      tags: ["Redirection"],
+      description:
+        "Each night is redirected onto a random player.",
+    },
     Weak: {
       internal: ["Weak"],
       tags: ["Visits", "Killing", "Alignments", "Self Kill"],
