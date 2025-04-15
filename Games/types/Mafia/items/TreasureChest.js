@@ -47,9 +47,6 @@ module.exports = class TreasureChest extends Item {
                 "TreasureChest",
                 this.item.Admiral
               );
-              this.game.instantMeeting(ShareWith.meetings, [
-                players[admiralIndex + 1 + x],
-              ]);
               this.drop();
               return;
             }
@@ -76,8 +73,8 @@ module.exports = class TreasureChest extends Item {
     ) {
       this.meetings[`${this.holder.name} Excess`] = {
         actionName: "Discard a Role",
-        states: ["Dusk", "Dawn"],
-        flags: ["voting", "instant", "hideAfterVote"],
+        states: ["Treasure Chest Dusk", "Treasure Chest Dawn"],
+        flags: ["voting", "instant"],
         inputType: "custom",
         targets: this.ExcessAdmiralGoodRoles,
         canUnvote: false,
@@ -98,8 +95,8 @@ module.exports = class TreasureChest extends Item {
     ) {
       this.meetings[`${this.meetingName}`] = {
         actionName: "Choose a Role",
-        states: ["Dusk", "Dawn"],
-        flags: ["voting", "instant", "hideAfterVote"],
+        states: ["Treasure Chest Dusk", "Treasure Chest Dawn"],
+        flags: ["voting", "instant"],
         inputType: "custom",
         targets: this.game.AdmiralGoodRoles,
         canUnvote: false,
@@ -149,7 +146,7 @@ module.exports = class TreasureChest extends Item {
     ) {
       this.meetings[`${this.holder.name} Grouch`] = {
         actionName: "Become Grouch",
-        states: ["Dusk", "Dawn"],
+        states: ["Treasure Chest Dusk", "Treasure Chest Dawn"],
         flags: ["voting", "instant"],
         inputType: "custom",
         targets: ["Yes"],
@@ -200,7 +197,7 @@ module.exports = class TreasureChest extends Item {
       }
       this.meetings[`${this.holder.name} Amount`] = {
         actionName: "Steal Gold (Enter an Amount)?",
-        states: ["Dusk", "Dawn"],
+        states: ["Treasure Chest Dusk", "Treasure Chest Dawn"],
         flags: ["voting", "instant"],
         inputType: "custom",
         targets: numberTargets,
@@ -281,7 +278,7 @@ module.exports = class TreasureChest extends Item {
       player.sendAlert(
         `You may steal Gold and Become Mafia/Cult Or Become a role in the Chest!`
       );
-      player.game.timers["main"].extend(1000 * 90);
+      //player.game.timers["main"].extend(1000 * 90);
     }
     this.setupMeetings();
   }
