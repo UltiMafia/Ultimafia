@@ -95,6 +95,15 @@ module.exports = class VillageCore extends Card {
         type: "delayActions",
         delayActions: true,
       },
+      "Treasure Chest Dusk": {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          if (this.game.HaveTreasureChestState == true) {
+            return false;
+          }
+          return true;
+        },
+      },
       Dusk: {
         type: "shouldSkip",
         shouldSkip: function () {
@@ -119,6 +128,15 @@ module.exports = class VillageCore extends Card {
       Night: {
         type: "delayActions",
         delayActions: true,
+      },
+      "Treasure Chest Dawn": {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          if (this.game.HaveTreasureChestState == true) {
+            return false;
+          }
+          return true;
+        },
       },
       Dawn: {
         type: "shouldSkip",
