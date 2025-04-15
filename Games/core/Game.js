@@ -1116,6 +1116,11 @@ module.exports = class Game {
         this.FamineEventPossible = true;
       }
       if (
+        this.getRoleTags(this.PossibleEvents[z]).includes("Treasure Chest")
+      ) {
+        this.HaveTreasureChestState = true;
+      }
+      if (
         this.getRoleTags(this.PossibleEvents[z]).includes("Pregame Actions")
       ) {
         this.HaveDuskOrDawn = true;
@@ -1353,7 +1358,13 @@ module.exports = class Game {
 
   calculateStateOffset() {
     let start = this.setup.startState;
-    if (this.HaveDuskOrDawn == true && start == "Day") {
+    if(this.HaveTreasureChestState == true && start == "Day"){
+      start = "Treasure Chest Dawn";
+    }
+    else if(this.HaveTreasureChestState == true && start == "Night"){
+      start = "Treasure Chest Dusk";
+    }
+    else if (this.HaveDuskOrDawn == true && start == "Day") {
       start = "Dawn";
     } else if (this.HaveDuskOrDawn == true && start == "Night") {
       start = "Dusk";
