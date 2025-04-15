@@ -237,11 +237,12 @@ module.exports = class MafiaPlayer extends Player {
 
   requiresGraveyardParticipation() {
     let data = roleData["Mafia"][this.role.name];
-    let tags = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier));
+    let tags = this.game.getRoleTags(
+      this.game.formatRoleInternal(this.role.name, this.role.modifier)
+    );
     if (data.graveyardParticipation === "self") {
       return true;
-    }
-    else if(tags.includes("Graveyard Participation")){
+    } else if (tags.includes("Graveyard Participation")) {
       return true;
     }
   }
