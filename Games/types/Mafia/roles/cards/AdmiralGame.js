@@ -38,6 +38,9 @@ module.exports = class AdmiralGame extends Card {
         this.player.holdItem("TreasureChest", this.player);
       },
       death: function (player, killer, deathType, instant) {
+        if(player == this.player){
+          this.game.HaveTreasureChestState = false;
+        }
         if (player.isEvil()) {
           this.game.queueAlert(`${player.name} had ${player.Gold} Gold Bars!`);
           this.player.Gold += player.Gold;
