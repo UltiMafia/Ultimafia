@@ -437,7 +437,7 @@ const modifierData = {
     },
     Restless: {
       internal: ["ActWhileDead"],
-      tags: ["Dead", "Graveyard", "Restless"],
+      tags: ["Dead", "Graveyard", "Restless","Graveyard Participation"],
       description: "Can only perform secondary actions while dead.",
     },
     Retired: {
@@ -532,7 +532,7 @@ const modifierData = {
     },
     Transcendent: {
       internal: ["ActAliveOrDead"],
-      tags: ["Dead", "Graveyard", "Transcendent"],
+      tags: ["Dead", "Graveyard", "Transcendent", "Graveyard Participation"],
       description: "Can perform secondary actions while either alive or dead.",
     },
     Trustworthy: {
@@ -591,7 +591,7 @@ const modifierData = {
     },
     Wise: {
       internal: ["MakePlayerLearnOneOfTwoPlayersOnDeath"],
-      tags: ["Sacrificial", "Information"],
+      tags: ["Sacrificial", "Information","Graveyard Participation"],
       description:
         "If killed at night, a player with this modifier learns that 1 of 2 players is evil.",
     },
