@@ -104,8 +104,7 @@ const modifierData = {
     Coffee: {
       internal: ["Coffee"],
       tags: ["actions"],
-      description:
-        "Can be used to perform nights additional times.",
+      description: "Can be used to perform nights additional times.",
     },
     //Non Town Items
     Suit: {
