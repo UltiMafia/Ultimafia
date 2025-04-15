@@ -720,6 +720,10 @@
   background-image: url("/images/roles/turncoat-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Barista {
+  background-image: url("/images/roles/barista-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Chandler {
   background-image: url("/images/roles/chandler-vivid.png");
 }

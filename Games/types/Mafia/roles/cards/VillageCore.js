@@ -91,11 +91,7 @@ module.exports = class VillageCore extends Card {
     };
 
     this.stateMods = {
-      Day: {
-        type: "delayActions",
-        delayActions: true,
-      },
-      "Treasure Chest Dusk": {
+      "Treasure Chest": {
         type: "shouldSkip",
         shouldSkip: function () {
           if (this.game.HaveTreasureChestState == true) {
@@ -103,6 +99,10 @@ module.exports = class VillageCore extends Card {
           }
           return true;
         },
+      },
+      Day: {
+        type: "delayActions",
+        delayActions: true,
       },
       Dusk: {
         type: "shouldSkip",
@@ -128,15 +128,6 @@ module.exports = class VillageCore extends Card {
       Night: {
         type: "delayActions",
         delayActions: true,
-      },
-      "Treasure Chest Dawn": {
-        type: "shouldSkip",
-        shouldSkip: function () {
-          if (this.game.HaveTreasureChestState == true) {
-            return false;
-          }
-          return true;
-        },
       },
       Dawn: {
         type: "shouldSkip",

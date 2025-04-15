@@ -1076,6 +1076,9 @@ module.exports = class Game {
       ) {
         this.ExorciseVillageMeeting = true;
       }
+      if (this.getRoleTags(this.PossibleRoles[z]).includes("Treasure Chest")) {
+        this.HaveTreasureChestState = true;
+      }
       if (this.getRoleTags(this.PossibleRoles[z]).includes("Pregame Actions")) {
         this.HaveDuskOrDawn = true;
       }
@@ -1114,9 +1117,6 @@ module.exports = class Game {
     for (let z = 0; z < this.PossibleEvents.length; z++) {
       if (this.PossibleEvents[z].split(":")[0] == "Famine") {
         this.FamineEventPossible = true;
-      }
-      if (this.getRoleTags(this.PossibleEvents[z]).includes("Treasure Chest")) {
-        this.HaveTreasureChestState = true;
       }
       if (
         this.getRoleTags(this.PossibleEvents[z]).includes("Pregame Actions")

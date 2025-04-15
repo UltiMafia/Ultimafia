@@ -40,6 +40,7 @@ module.exports = class AdmiralGame extends Card {
       death: function (player, killer, deathType, instant) {
         if (player == this.player) {
           this.game.HaveTreasureChestState = false;
+          this.game.AdmiralStateBlock = null;
         }
         if (player.isEvil()) {
           this.game.queueAlert(`${player.name} had ${player.Gold} Gold Bars!`);
@@ -63,6 +64,79 @@ module.exports = class AdmiralGame extends Card {
           }
         }
       },
+      state: function (stateInfo) {
+        if(!this.player.alive){
+          return;
+        }
+        if (stateInfo.name.match(/Treasure Chest/)) {
+          if(this.game.AdmiralStateBlock == null){
+            this.game.AdmiralStateBlock = this.game.setup.startState;
+          }
+        }
+        if(this.game.getStateName() == "Day" && (this.game.AdmiralStateBlock == "Day" || this.game.AdmiralStateBlock == "Dawn")){
+          this.game.AdmiralStateBlock = null;
+        }
+        if(this.game.getStateName() == "Night" && (this.game.AdmiralStateBlock == "Night" || this.game.AdmiralStateBlock == "Dusk")){
+          this.game.AdmiralStateBlock = null;
+        }
+
+      },
     };
+
+
+    this.stateMods = {
+      Day: {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          if (this.game.HaveTreasureChestState == true) {
+            return true;
+          }
+          if (this.game.AdmiralStateBlock == "Night") {
+            return true;
+          }
+          return false;
+        },
+      },
+      Dusk: {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          if (this.game.HaveTreasureChestState == true) {
+            return true;
+          }
+          if (this.game.AdmiralStateBlock == "Day") {
+            return true;
+          }
+          return false;
+        },
+      },
+      Night: {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          if (this.game.HaveTreasureChestState == true) {
+            return true;
+          }
+          if (this.game.AdmiralStateBlock == "Day") {
+            return true;
+          }
+          return false;
+        },
+      },
+      Dawn: {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          if (this.game.HaveTreasureChestState == true) {
+            return true;
+          }
+          if (this.game.AdmiralStateBlock == "Night") {
+            return true;
+          }
+          return false;
+        },
+      },
+    };
+
+
+
+
   }
 };

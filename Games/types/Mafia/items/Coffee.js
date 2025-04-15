@@ -1,6 +1,7 @@
 const Item = require("../Item");
 const Random = require("../../../../lib/Random");
 const Player = require("../Player");
+const Action = require("../Action");
 const {
   PRIORITY_CONVERT_DEFAULT,
   PRIORITY_NIGHT_ROLE_BLOCKER,
@@ -19,7 +20,6 @@ module.exports = class Coffee extends Item {
         flags: ["voting", "instant"],
         action: {
           labels: ["hidden", "absolute"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           item: this,
           run: function () {
             let actions = [];

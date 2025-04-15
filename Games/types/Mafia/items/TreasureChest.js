@@ -73,7 +73,7 @@ module.exports = class TreasureChest extends Item {
     ) {
       this.meetings[`${this.holder.name} Excess`] = {
         actionName: "Discard a Role",
-        states: ["Treasure Chest Dusk", "Treasure Chest Dawn"],
+        states: ["Treasure Chest"],
         flags: ["voting", "instant"],
         inputType: "custom",
         targets: this.ExcessAdmiralGoodRoles,
@@ -95,7 +95,7 @@ module.exports = class TreasureChest extends Item {
     ) {
       this.meetings[`${this.meetingName}`] = {
         actionName: "Choose a Role",
-        states: ["Treasure Chest Dusk", "Treasure Chest Dawn"],
+        states: ["Treasure Chest"],
         flags: ["voting", "instant"],
         inputType: "custom",
         targets: this.game.AdmiralGoodRoles,
@@ -119,7 +119,6 @@ module.exports = class TreasureChest extends Item {
                 "TreasureChest",
                 this.item.Admiral
               );
-              this.game.instantMeeting(ShareWith.meetings, [players[rightIdx]]);
             } else {
               this.game.HaveTreasureChestState = false;
               players[rightIdx].sendAlert(`Your Treasure Chest has returned!`);
@@ -147,7 +146,7 @@ module.exports = class TreasureChest extends Item {
     ) {
       this.meetings[`${this.holder.name} Grouch`] = {
         actionName: "Become Grouch",
-        states: ["Treasure Chest Dusk", "Treasure Chest Dawn"],
+        states: ["Treasure Chest"],
         flags: ["voting", "instant"],
         inputType: "custom",
         targets: ["Yes"],
@@ -166,7 +165,7 @@ module.exports = class TreasureChest extends Item {
                 "TreasureChest",
                 this.item.Admiral
               );
-              this.game.instantMeeting(ShareWith.meetings, [players[rightIdx]]);
+              
             } else {
               this.game.HaveTreasureChestState = false;
               players[rightIdx].sendAlert(`Your Treasure Chest has returned!`);
@@ -199,7 +198,7 @@ module.exports = class TreasureChest extends Item {
       }
       this.meetings[`${this.holder.name} Amount`] = {
         actionName: "Steal Gold (Enter an Amount)?",
-        states: ["Treasure Chest Dusk", "Treasure Chest Dawn"],
+        states: ["Treasure Chest"],
         flags: ["voting", "instant"],
         inputType: "custom",
         targets: numberTargets,
@@ -245,7 +244,6 @@ module.exports = class TreasureChest extends Item {
                 "TreasureChest",
                 this.item.Admiral
               );
-              this.game.instantMeeting(ShareWith.meetings, [players[rightIdx]]);
             } else {
               this.game.HaveTreasureChestState = false;
               players[rightIdx].sendAlert(`Your Treasure Chest has returned!`);
