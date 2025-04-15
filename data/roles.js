@@ -389,11 +389,12 @@ const roleData = {
         "Visiting",
         "Information",
         "Self Blocking",
+        "Dawn",
       ],
       description: [
         "Visits a player each night to learn their role alignment.",
         "If not visited during the night, will learn whether that player is naughty or nice.",
-        "Gives out a Gun, Knife, Armor, Bomb, Crystal, Whiskey, Bread, Key, Falcon, Tract, or Syringe each night.",
+        "Gives out a Gun, Knife, Armor, Bomb, Crystal, Whiskey, Bread, Key, Falcon, Tract, Syringe, or Coffee each night.",
       ],
       graveyardParticipation: "all",
     },
@@ -1901,7 +1902,7 @@ const roleData = {
     },
     Fabricator: {
       alignment: "Mafia",
-      tags: ["Gifting", "Broken", "Items", "Visiting"],
+      tags: ["Gifting", "Broken", "Items", "Visiting","Dawn"],
       description: [
         "Gives out a cursed item once per night.",
         "Cursed Guns and Knives will backfire against the player who used them.",
