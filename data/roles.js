@@ -211,6 +211,23 @@ const roleData = {
       ],
     },
     //gifting roles
+    Barista: {
+      alignment: "Village",
+      category: "Gifting",
+      tags: [
+        "Gifting",
+        "Information",
+        "Items",
+        "Candle",
+        "Visit Interaction",
+        "Visiting",
+        "Dawn",
+      ],
+      description: [
+        "Gives out a coffee to one player each night.",
+        "Coffee will allow a player to perform their actions multiple times.",
+      ],
+    },
     Baker: {
       alignment: "Village",
       category: "Gifting",
@@ -2741,15 +2758,17 @@ const roleData = {
         "Insanity",
         "Magic",
         "Visiting",
+        "Dawn",
       ],
       description: [
         "Once per night, corrupts the target's item(s) into magic items that benefit the Cult.",
         "Guns, Rifles, and Knives will convert instead of killing.",
         "Armor will make an Attacker Insane.",
-        "Tracts will convert a player to a random Cult if converted.",
+        "Tracts will convert a player to a random Cult role if converted.",
         "Crystal Balls will reveal players as Cultist.",
         "Syringes will resurrect players as Cultist.",
         "Candles and Falcons will provide False Info.",
+        "Coffee will make the extra actions into conversions.",
         "Whiskey will make Non-Cult Players Delirious.",
         "Keys will not Block Cult.",
         "Envelope messages will be gibberish.",
