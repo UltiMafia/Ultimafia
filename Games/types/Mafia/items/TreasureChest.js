@@ -121,6 +121,7 @@ module.exports = class TreasureChest extends Item {
               );
               this.game.instantMeeting(ShareWith.meetings, [players[rightIdx]]);
             } else {
+              this.game.HaveTreasureChestState = false;
               players[rightIdx].sendAlert(`Your Treasure Chest has returned!`);
               players[rightIdx].sendAlert(
                 `Inside are ${this.game.AdmiralGold} Gold Bars and the following roles ${this.game.AdmiralGoodRoles}!`
@@ -167,6 +168,7 @@ module.exports = class TreasureChest extends Item {
               );
               this.game.instantMeeting(ShareWith.meetings, [players[rightIdx]]);
             } else {
+              this.game.HaveTreasureChestState = false;
               players[rightIdx].sendAlert(`Your Treasure Chest has returned!`);
               players[rightIdx].sendAlert(
                 `Inside are ${this.game.AdmiralGold} Gold Bars and the following roles ${this.game.AdmiralGoodRoles}!`
@@ -245,6 +247,7 @@ module.exports = class TreasureChest extends Item {
               );
               this.game.instantMeeting(ShareWith.meetings, [players[rightIdx]]);
             } else {
+              this.game.HaveTreasureChestState = false;
               players[rightIdx].sendAlert(`Your Treasure Chest has returned!`);
               players[rightIdx].sendAlert(
                 `Inside are ${this.game.AdmiralGold} Gold Bars and the following roles ${this.game.AdmiralGoodRoles}!`
