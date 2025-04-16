@@ -214,7 +214,7 @@ const roleData = {
     Barista: {
       alignment: "Village",
       category: "Gifting",
-      tags: ["Gifting", "Information", "Items", "Coffee", "Visiting"],
+      tags: ["Gifting", "Information", "Items", "Coffee", "Visiting","Dawn"],
       description: [
         "Gives out coffee to one player each night.",
         "Coffee will allow a player to perform their night actions twice in one night.",
