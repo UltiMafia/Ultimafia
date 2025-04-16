@@ -218,14 +218,13 @@ const roleData = {
         "Gifting",
         "Information",
         "Items",
-        "Candle",
-        "Visit Interaction",
+        "Coffee",
         "Visiting",
-        "Dawn",
       ],
       description: [
-        "Gives out a coffee to one player each night.",
-        "Coffee will allow a player to perform their actions multiple times.",
+        "Gives out coffee to one player each night.",
+        "Coffee will allow a player to perform their night actions twice in one night.",
+        "The more cups of coffee a player drinks, the more night actions they can take in one night."
       ],
     },
     Baker: {

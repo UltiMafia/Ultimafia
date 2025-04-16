@@ -220,6 +220,7 @@ const artContributors = {
       "Forensicist",
       "Televangelist",
       "Dragoon",
+      "Barista",
     ],
   },
   grr: {
@@ -350,7 +351,7 @@ const artContributors = {
     Mafia: ["Groundskeeper"],
   },
   Jumpy: {
-    Mafia: ["Puppeteer", "Pyromaniac", "Manhunter", "Fumigator"],
+    Mafia: ["Puppeteer", "Pyromaniac", "Manhunter", "Fumigator", "Dentist", "Hitchhiker", "Prankster"],
   },
 };
 
