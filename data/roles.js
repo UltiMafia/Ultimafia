@@ -214,17 +214,11 @@ const roleData = {
     Barista: {
       alignment: "Village",
       category: "Gifting",
-      tags: [
-        "Gifting",
-        "Information",
-        "Items",
-        "Coffee",
-        "Visiting",
-      ],
+      tags: ["Gifting", "Information", "Items", "Coffee", "Visiting"],
       description: [
         "Gives out coffee to one player each night.",
         "Coffee will allow a player to perform their night actions twice in one night.",
-        "The more cups of coffee a player drinks, the more night actions they can take in one night."
+        "The more cups of coffee a player drinks, the more night actions they can take in one night.",
       ],
     },
     Baker: {
@@ -1363,12 +1357,7 @@ const roleData = {
     //essential roles
     Admiral: {
       alignment: "Village",
-      tags: [
-        "Setup Changes",
-        "Exposed",
-        "Treasure Chest",
-        "Voting",
-      ],
+      tags: ["Setup Changes", "Exposed", "Treasure Chest", "Voting"],
       description: [
         "If an Admiral is present, all players start as Grouch. The Admiral is revealed and their vote is worth 10000.",
         "Starting with the Admiral, players will Pass a Chest containing Village/Independent Roles and 15 Gold to their lower neighbor.",

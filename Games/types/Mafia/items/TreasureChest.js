@@ -165,7 +165,6 @@ module.exports = class TreasureChest extends Item {
                 "TreasureChest",
                 this.item.Admiral
               );
-              
             } else {
               this.game.HaveTreasureChestState = false;
               players[rightIdx].sendAlert(`Your Treasure Chest has returned!`);

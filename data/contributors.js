@@ -351,7 +351,15 @@ const artContributors = {
     Mafia: ["Groundskeeper"],
   },
   Jumpy: {
-    Mafia: ["Puppeteer", "Pyromaniac", "Manhunter", "Fumigator", "Dentist", "Hitchhiker", "Prankster"],
+    Mafia: [
+      "Puppeteer",
+      "Pyromaniac",
+      "Manhunter",
+      "Fumigator",
+      "Dentist",
+      "Hitchhiker",
+      "Prankster",
+    ],
   },
 };
 
