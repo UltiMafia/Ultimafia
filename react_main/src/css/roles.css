@@ -1525,6 +1525,14 @@
   background-image: url("/images/roles/dentist-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Hitchhiker {
+  background-image: url("/images/roles/hithhhiker-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Prankster {
+  background-image: url("/images/roles/prankster-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Vengeful-Spirit {
   background-image: url("/images/roles/vengeful-spirit-vivid.png");
 }
