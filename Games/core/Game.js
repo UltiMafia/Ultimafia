@@ -1358,8 +1358,7 @@ module.exports = class Game {
     let start = this.setup.startState;
     if (this.HaveTreasureChestState == true) {
       start = "Treasure Chest";
-    } 
-    else if (this.HaveDuskOrDawn == true && start == "Day") {
+    } else if (this.HaveDuskOrDawn == true && start == "Day") {
       start = "Dawn";
     } else if (this.HaveDuskOrDawn == true && start == "Night") {
       start = "Dusk";
