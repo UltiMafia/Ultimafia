@@ -550,7 +550,7 @@ module.exports = class WinWithFaction extends Card {
           const numTraitorsAlive = this.game.players.filter(
             (p) => p.alive && p.role.name == "Traitor"
           ).length;
-          if (aliveCount > 0 && (factionCount + numTraitorsAlive == aliveCount)) {
+          if (aliveCount > 0 && factionCount + numTraitorsAlive == aliveCount) {
             factionWin(this);
             return;
           }
