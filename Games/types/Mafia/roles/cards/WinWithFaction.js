@@ -108,7 +108,7 @@ module.exports = class WinWithFaction extends Card {
           p.hasItem("IsTheTelevangelist")
         );
 
-        const hasMajority = ((factionCount >= (aliveCount/2)) && aliveCount > 0);
+        const hasMajority = factionCount >= aliveCount / 2 && aliveCount > 0;
         const assassinInGame = this.game.players.filter(
           (p) => p.role.name === "Assassin"
         );
