@@ -85,7 +85,13 @@ module.exports = class Microphone extends Item {
               return;
             }
 
-            this.game.addToPot(this.actor, "Bet", this.target);
+            if(parseInt(this.target)+this.actor.AmountBidding == this.game.lastAmountBid){
+              this.game.addToPot(this.actor, "Call");
+            }
+            else{
+              this.game.addToPot(this.actor, "Bet", this.target);
+            }
+
             this.actor.hasHadTurn = true;
             this.item.drop();
 
@@ -114,6 +120,11 @@ module.exports = class Microphone extends Item {
         action: {
           item: this,
           run: function () {
+              if (this.target == "Call") {
+              //this.game.sendAlert(`${this.actor.name} Calls!`);
+              this.game.addToPot(this.actor, "Call");
+              this.actor.hasHadTurn = true;
+            }
             if (this.target == "All-In") {
               this.game.sendAlert(`${this.actor.name} goes All In!`);
               this.game.addToPot(this.actor, "Bet", this.actor.Chips);
@@ -157,12 +168,14 @@ module.exports = class Microphone extends Item {
       this.MovesOptions = ["Fold"];
       this.MinRaise = this.game.minimumBet;
     }
+    /*
     if (
       this.game.lastAmountBid > player.Chips ||
       this.game.minimumBet > player.Chips
     ) {
       this.MovesOptions.push("All-In");
     }
+    */
     this.setupMeetings();
     /*
     this.meetings.Amount.textOptions.maxLength =
