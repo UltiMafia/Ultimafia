@@ -7,6 +7,5 @@ module.exports = class Wisp extends Role {
     this.alignment = "Independent";
     this.winCount = "Village";
     this.cards = ["VillageCore", "WispConvert", "WinWithWisps"];
-
   }
 };

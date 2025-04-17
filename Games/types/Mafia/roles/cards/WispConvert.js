@@ -19,25 +19,23 @@ module.exports = class WispConvert extends Card {
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
             let temp = new Action({
-                actor: this.actor,
-                target: this.actor,
-                game: this.game,
-                labels: ["kill", "seppuku"],
-              });
-            if(temp.dominates(this.actor)){
+              actor: this.actor,
+              target: this.actor,
+              game: this.game,
+              labels: ["kill", "seppuku"],
+            });
+            if (temp.dominates(this.actor)) {
               this.actor.kill("basic", this.actor);
-            }
-            else{
+            } else {
               return;
             }
 
-            if (this.dominates()){ 
+            if (this.dominates()) {
               this.target.setRole("Wisp");
             }
           },
         },
       },
     };
-
   }
 };
