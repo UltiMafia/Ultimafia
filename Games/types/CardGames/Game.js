@@ -595,9 +595,12 @@ module.exports = class CardGamesGame extends Game {
             this.lastAmountBid - player.AmountBidding
           } into the Pot!`
         );
-        this.ThePot += parseInt(this.lastAmountBid-player.AmountBidding);
-        player.Chips = parseInt(player.Chips) - (this.lastAmountBid - player.AmountBidding);
-        player.AmountBidding += parseInt(this.lastAmountBid - player.AmountBidding);
+        this.ThePot += parseInt(this.lastAmountBid - player.AmountBidding);
+        player.Chips =
+          parseInt(player.Chips) - (this.lastAmountBid - player.AmountBidding);
+        player.AmountBidding += parseInt(
+          this.lastAmountBid - player.AmountBidding
+        );
       } else if (player.Chips > 0) {
         this.sendAlert(
           `${player.name} goes All in and puts ${player.Chips} into the Pot!`
