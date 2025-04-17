@@ -55,7 +55,7 @@ module.exports = {
     Gallis: "Villager",
     Scapegoat: "Villager",
     Quartermaster: "Gunsmith",
-    Freischütz: "Gremlin",
+    //Freischütz: "Gremlin",
     Clinician: "Apothecary",
     Occultist: "Devotee",
     Marathoner: "Visitor",

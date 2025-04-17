@@ -2763,6 +2763,34 @@ const roleData = {
       ],
       RolesMadeBy: ["Cultist"],
     },
+    Freischütz: {
+      alignment: "Cult",
+      category: "Chaos",
+      tags: [
+        "Conversion",
+        "Items",
+        "Cult Items",
+        "Insanity",
+        "Magic",
+        "Visiting",
+        "Dawn",
+      ],
+      description: [
+        "Each night gives out magic items that benefit the Cult.",
+        "Guns, Rifles, and Knives will convert instead of killing.",
+        "Armor will make an Attacker Insane.",
+        "Tracts will convert a player to a random Cult role if converted.",
+        "Crystal Balls will reveal players as Cultist.",
+        "Syringes will resurrect players as Cultist.",
+        "Candles and Falcons will provide False Info.",
+        "Coffee will make the extra actions into conversions.",
+        "Whiskey will make Non-Cult Players Delirious.",
+        "Keys will not Block Cult.",
+        "Envelope messages will be gibberish.",
+        "Food Items will Poison players who eat them.",
+      ],
+      RolesMadeBy: ["Cultist"],
+    },
     Haruspex: {
       alignment: "Cult",
       category: "Chaos",
@@ -3534,6 +3562,14 @@ const roleData = {
       ],
       graveyardParticipation: "all",
     },
+    Wisp: {
+      alignment: "Independent",
+      tags: ["Killing", "Last Two", "Conversion", "Visiting", "Hostile"],
+      description: [
+        "Chooses to sacrifice self at night to convert another player to Wisp.",
+        "Wins if a Wisp is in the last two alive.",
+      ],
+    },
     Mastermind: {
       alignment: "Independent",
       tags: ["Mafia", "Cult", "Meeting", "AnonymizeMeeting", "Hostile"],
@@ -3552,6 +3588,7 @@ const roleData = {
         "Cultist",
         "Visiting",
         "Hostile",
+        "Conversion",
       ],
       description: [
         "Meets with the Mafia and Cult, makes their night meeting anonymous.",

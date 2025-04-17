@@ -588,28 +588,31 @@ module.exports = class CardGamesGame extends Game {
       }
     }
 
-    /*
-    if(type == "Call"){
-      if(player.Chips >= (this.lastAmountBid-player.AmountBidding)){
+    if (type == "Call") {
+      if (player.Chips >= this.lastAmountBid - player.AmountBidding) {
         this.sendAlert(
-          `${player.name} calls and puts ${(this.lastAmountBid-player.AmountBidding)} into the Pot!`
-            );
-      player.Chips = player.Chips - (this.lastAmountBid-player.AmountBidding);
-      player.AmountBidding += (this.lastAmountBid-player.AmountBidding);
-      this.ThePot += (this.lastAmountBid-player.AmountBidding);
-            }
-            else if(player.Chips > 0){
-                this.sendAlert(
-                  `${player.name} goes All in and puts ${player.Chips} into the Pot!`
-                );
-            player.AmountBidding += player.Chips;
-            this.ThePot +=  player.Chips;
-            player.Chips = 0;
-            }
-            else{
-            this.sendAlert(`${player.name} has Nothing to put into the Pot!`);
-            }
+          `${player.name} calls and puts ${
+            this.lastAmountBid - player.AmountBidding
+          } into the Pot!`
+        );
+        this.ThePot += parseInt(this.lastAmountBid - player.AmountBidding);
+        player.Chips =
+          parseInt(player.Chips) - (this.lastAmountBid - player.AmountBidding);
+        player.AmountBidding += parseInt(
+          this.lastAmountBid - player.AmountBidding
+        );
+      } else if (player.Chips > 0) {
+        this.sendAlert(
+          `${player.name} goes All in and puts ${player.Chips} into the Pot!`
+        );
+        player.AmountBidding += parseInt(player.Chips);
+        this.ThePot += parseInt(player.Chips);
+        player.Chips = 0;
+      } else {
+        this.sendAlert(`${player.name} has Nothing to put into the Pot!`);
+      }
     }
+    /*
     if(type == "Raise"){
       if(player.Chips >= (this.lastAmountBid-player.AmountBidding)+amount){
       this.sendAlert(`${player.name} raises and puts ${(this.lastAmountBid-player.AmountBidding)+amount} into the Pot!`);
