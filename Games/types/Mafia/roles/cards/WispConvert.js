@@ -23,6 +23,9 @@ module.exports = class WispConvert extends Card {
               target: this.actor,
               game: this.game,
               labels: ["kill", "seppuku"],
+              run: function () {
+                if (this.dominates()) this.target.kill("basic", this.actor);
+              },
             });
             if (temp.dominates(this.actor)) {
               this.actor.kill("basic", this.actor);
