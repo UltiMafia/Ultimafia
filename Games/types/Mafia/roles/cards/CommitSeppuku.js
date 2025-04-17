@@ -17,7 +17,12 @@ module.exports = class CommitSeppuku extends Card {
           labels: ["convert", "seppuku"],
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
-            if (this.dominates()) this.target.setRole("Mafioso");
+            if (this.dominates()) this.target.setRole("Mafioso",
+                null,
+                false,
+                false,
+                false,
+                this.actor.faction);
             this.actor.role.hasSeppukuTonight = true;
           },
         },
