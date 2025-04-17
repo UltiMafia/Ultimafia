@@ -85,10 +85,12 @@ module.exports = class Microphone extends Item {
               return;
             }
 
-            if(parseInt(this.target)+this.actor.AmountBidding == this.game.lastAmountBid){
+            if (
+              parseInt(this.target) + this.actor.AmountBidding ==
+              this.game.lastAmountBid
+            ) {
               this.game.addToPot(this.actor, "Call");
-            }
-            else{
+            } else {
               this.game.addToPot(this.actor, "Bet", this.target);
             }
 
@@ -120,7 +122,7 @@ module.exports = class Microphone extends Item {
         action: {
           item: this,
           run: function () {
-              if (this.target == "Call") {
+            if (this.target == "Call") {
               //this.game.sendAlert(`${this.actor.name} Calls!`);
               this.game.addToPot(this.actor, "Call");
               this.actor.hasHadTurn = true;
