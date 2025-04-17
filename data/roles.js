@@ -3536,13 +3536,7 @@ const roleData = {
     },
     Wisp: {
       alignment: "Independent",
-      tags: [
-        "Killing",
-        "Last Two",
-        "Conversion",
-        "Visiting",
-        "Hostile",
-      ],
+      tags: ["Killing", "Last Two", "Conversion", "Visiting", "Hostile"],
       description: [
         "Chooses to sacrifice self at night to convert another player to Wisp.",
         "Wins if a Wisp is in the last two alive.",
