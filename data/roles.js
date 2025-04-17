@@ -3534,6 +3534,20 @@ const roleData = {
       ],
       graveyardParticipation: "all",
     },
+    Wisp: {
+      alignment: "Independent",
+      tags: [
+        "Killing",
+        "Last Two",
+        "Conversion",
+        "Visiting",
+        "Hostile",
+      ],
+      description: [
+        "Chooses to sacrifice self at night to convert another player to Wisp.",
+        "Wins if a Wisp is in the last two alive.",
+      ],
+    },
     Mastermind: {
       alignment: "Independent",
       tags: ["Mafia", "Cult", "Meeting", "AnonymizeMeeting", "Hostile"],
@@ -3552,6 +3566,7 @@ const roleData = {
         "Cultist",
         "Visiting",
         "Hostile",
+        "Conversion",
       ],
       description: [
         "Meets with the Mafia and Cult, makes their night meeting anonymous.",
