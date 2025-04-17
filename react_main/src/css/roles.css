@@ -1317,9 +1317,10 @@
   background-image: url("/images/roles/leech-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Accursed-Doll {
-  background-image: url("/images/roles/accursed-doll-vivid.png");
+.role-icon-scheme-vivid .role-Mafia-Freischütz {
+  background-image: url("/images/roles/freischutz-vivid.png");
 }
+
 
 .role-icon-scheme-vivid .role-Mafia-Fungoid {
   background-image: url("/images/roles/fungoid-vivid.png");
