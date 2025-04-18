@@ -10,6 +10,60 @@ module.exports = class VisitOnlyDead extends Card {
   constructor(role) {
     super(role);
 
+
+
+
+    this.listeners = {
+      roleAssigned: function (player) {
+        if (player !== this.player) {
+          return;
+        }
+
+        this.data.ConvertOptions = this.game.PossibleRoles.filter((r) => r);
+      },
+      // refresh cooldown
+      state: function (stateInfo) {
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+        var ConvertOptions = this.data.ConvertOptions;
+
+        for(let meeting of this.player.meetings){
+          if(meeting.name == "Village"){
+            continue;
+          }
+          if(IMPORTANT_MEETINGS_NIGHT.includes(meeting.name)){
+            continue;
+          }
+          if(IMPORTANT_MEETINGS_DAY.includes(meeting.name)){
+            continue;
+          }
+          if(INVITED_MEETINGS.includes(meeting.name)){
+            continue;
+          }
+          for (let w = 0; w < STARTS_WITH_MEETINGS.length; w++) {
+            if (
+              meeting.name &&
+              meeting.name.startsWith(STARTS_WITH_MEETINGS[w])
+            ) {
+              continue;
+            }
+          }
+          if(meeting.inputType == "player"){
+            meeting.targets = { include: ["dead"], exclude: ["alive"] },
+          }
+          
+
+
+          
+        }
+          
+
+        this.meetings["Convert To"].targets = ConvertOptions;
+      },
+    };
+    
+/*
     this.meetingMods = {
       "*": {
         targets: function (meetingName) {
@@ -55,9 +109,10 @@ module.exports = class VisitOnlyDead extends Card {
         },
       },
     };
+    */
   }
 };
-
+/*
 function isHost(player) {
   return player.role.name == "Host";
 }
@@ -85,3 +140,4 @@ function canBeVoted(player) {
     (!player.alive && !player.exorcised && player.game.ExorciseVillageMeeting)
   );
 }
+*/
