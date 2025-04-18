@@ -14,14 +14,6 @@ module.exports = class VisitOnlyDead extends Card {
 
 
     this.listeners = {
-      roleAssigned: function (player) {
-        if (player !== this.player) {
-          return;
-        }
-
-        this.data.ConvertOptions = this.game.PossibleRoles.filter((r) => r);
-      },
-      // refresh cooldown
       state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
           return;
