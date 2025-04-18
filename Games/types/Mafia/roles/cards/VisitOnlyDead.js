@@ -10,24 +10,19 @@ module.exports = class VisitOnlyDead extends Card {
   constructor(role) {
     super(role);
 
-
-
-
     this.listeners = {
       meetingsMade: function () {
-
-
         this.player.getMeetings().forEach((meeting) => {
-          if(meeting.name == "Village"){
+          if (meeting.name == "Village") {
             return;
           }
-          if(IMPORTANT_MEETINGS_NIGHT.includes(meeting.name)){
+          if (IMPORTANT_MEETINGS_NIGHT.includes(meeting.name)) {
             return;
           }
-          if(IMPORTANT_MEETINGS_DAY.includes(meeting.name)){
+          if (IMPORTANT_MEETINGS_DAY.includes(meeting.name)) {
             return;
           }
-          if(INVITED_MEETINGS.includes(meeting.name)){
+          if (INVITED_MEETINGS.includes(meeting.name)) {
             return;
           }
           for (let w = 0; w < STARTS_WITH_MEETINGS.length; w++) {
@@ -38,7 +33,7 @@ module.exports = class VisitOnlyDead extends Card {
               return;
             }
           }
-          if(meeting.inputType == "player"){
+          if (meeting.inputType == "player") {
             meeting.targets = { include: ["dead"], exclude: ["alive"] };
             meeting.targetsDescription = null;
             meeting.generateTargets();
@@ -47,11 +42,10 @@ module.exports = class VisitOnlyDead extends Card {
             }
           }
         });
-
       },
     };
-    
-/*
+
+    /*
     this.meetingMods = {
       "*": {
         targets: function (meetingName) {
