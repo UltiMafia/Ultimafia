@@ -347,7 +347,7 @@ const modifierData = {
     },
     Morbid: {
       internal: ["VisitOnlyDead"],
-      tags: ["Visits", "Dead", "Broken"],
+      tags: ["Visits", "Dead"],
       description: "Secondary actions can only be used on dead players.",
     },
     Narcissistic: {
@@ -400,6 +400,11 @@ const modifierData = {
       tags: ["Visits", "Block Self"],
       description:
         "If visited during the night, blocks the player's night action.",
+    },
+    Proactive: {
+      internal: ["MustAct"],
+      tags: ["Action"],
+      description: "Must take actions.",
     },
     Prosaic: {
       internal: ["StartWithEnvelope"],
