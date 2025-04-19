@@ -3807,14 +3807,28 @@ const roleData = {
     },
     "Missing Supplies": {
       alignment: "Event",
-      tags: ["Event"],
+      tags: ["Event", "Item"],
       description: [
-        "If this Event occurs, one random player will be given a gun.",
+        "If this Event occurs, one random player will be given a Gun.",
+      ],
+    },
+    Moonshine: {
+      alignment: "Event",
+      tags: ["Event", "Item"],
+      description: [
+        "If this Event occurs, one random player will be given Whiskey.",
+      ],
+    },
+    "Ominous Warning": {
+      alignment: "Event",
+      tags: ["Event", "Item"],
+      description: [
+        "If this Event occurs, one random player will be given a Knife.",
       ],
     },
     Vaccination: {
       alignment: "Event",
-      tags: ["Event"],
+      tags: ["Event", "Item"],
       description: [
         "If this Event occurs, one random player will be given a Syringe.",
       ],
