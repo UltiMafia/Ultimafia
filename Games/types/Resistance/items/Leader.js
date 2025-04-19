@@ -31,7 +31,7 @@ module.exports = class Leader extends Item {
             for (let target of this.target)
               target.role.meetings["Mission Success"].disabled = false;
 
-            this.actor.role.meetings["Approve Team"].disabled = true;
+            // this.actor.role.meetings["Approve Team"].disabled = true;
 
             var selectedNames = this.target.map((t) => t.name);
             // for displaying mission history
