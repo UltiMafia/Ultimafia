@@ -207,7 +207,7 @@ const modifierData = {
       tags: ["Clean Night Kill"],
       description:
         "Player's role will be hidden from the town when condemned or on death.",
-      incompatible: ["Shady", "Unassuming"],
+      incompatible: ["Shady", "Unassuming", "Suspect"],
     },
     Felonious: {
       internal: ["VotingPowerZero"],
@@ -485,8 +485,15 @@ const modifierData = {
       internal: ["AppearAsRandomEvil"],
       tags: ["Deception"],
       description:
-        "Appears as Mafioso when investigated or condemned. Appears as their real role on death.",
-      incompatible: ["Faceless", "Unassuming"],
+        "Appears as a Random Evil Role from the setup when investigated or condemned. Appears as their real role on death.",
+      incompatible: ["Faceless", "Unassuming", "Suspect"],
+    },
+    Suspect: {
+      internal: ["AppearAsVanillaEvil"],
+      tags: ["Deception"],
+      description:
+        "Appears as a Vanilla Evil Role from the setup when investigated or condemned. Appears as their real role on death.",
+      incompatible: ["Faceless", "Unassuming", "Shady"],
     },
     Simple: {
       internal: ["Simple"],
@@ -551,7 +558,7 @@ const modifierData = {
       internal: ["AppearAsVillagerOnDeath"],
       tags: ["Villager", "Deception"],
       description: "Appears as Villager when condemned or on death.",
-      incompatible: ["Shady", "Faceless"],
+      incompatible: ["Shady", "Faceless", "Suspect"],
     },
     Unkillable: {
       internal: ["KillImmune"],
