@@ -3,7 +3,7 @@ import { Redirect } from "react-router-dom";
 import axios from "axios";
 
 import HostBrowser from "./HostBrowser";
-import getDefaults from "./HostDefaults";
+import { getDefaults, persistDefaults } from "./HostDefaults";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
@@ -73,6 +73,7 @@ export default function HostWackyWords() {
       label: "Private",
       ref: "private",
       type: "boolean",
+      value: defaults.private,
     },
     {
       label: "Anonymous Game",
@@ -91,11 +92,13 @@ export default function HostWackyWords() {
       label: "Allow Guests",
       ref: "guests",
       type: "boolean",
+      value: defaults.guests,
     },
     {
       label: "Spectating",
       ref: "spectating",
       type: "boolean",
+      value: defaults.spectating,
     },
     {
       label: "Scheduled",
@@ -106,6 +109,7 @@ export default function HostWackyWords() {
       label: "Ready Check",
       ref: "readyCheck",
       type: "boolean",
+      value: defaults.readyCheck,
     },
     {
       label: "Start Date",
@@ -120,13 +124,14 @@ export default function HostWackyWords() {
       label: "Configure Duration",
       ref: "configureDuration",
       type: "boolean",
+      value: defaults.configureDuration,
     },
     {
       label: "Night Length (minutes)",
       ref: "nightLength",
       type: "number",
       showIf: "configureDuration",
-      value: defaults.stateLengths["Night"],
+      value: defaults.nightLength,
       min: 1,
       max: 5,
       step: 1,
@@ -136,7 +141,7 @@ export default function HostWackyWords() {
       ref: "dayLength",
       type: "number",
       showIf: "configureDuration",
-      value: defaults.stateLengths["Day"],
+      value: defaults.dayLength,
       min: 2,
       max: 5,
       step: 1,
@@ -184,9 +189,13 @@ export default function HostWackyWords() {
         })
         .catch(errorAlert);
 
-      defaults.anonymousGame = getFormFieldValue("anonymousGame");
-      defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
-      localStorage.setItem("otherHostOptions", JSON.stringify(defaults));
+      Object.keys(defaults).forEach(function(key) {
+        const submittedValue = getFormFieldValue(key);
+        if (submittedValue) {
+          defaults[key] = submittedValue;
+        }
+      });
+      persistDefaults(gameType, defaults);
     } else errorAlert("You must choose a setup");
   }
 

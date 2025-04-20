@@ -3,7 +3,7 @@ import { Redirect } from "react-router-dom";
 import axios from "axios";
 
 import HostBrowser from "./HostBrowser";
-import getDefaults from "./HostDefaults";
+import { getDefaults, persistDefaults } from "./HostDefaults";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { Lobbies } from "../../../Constants";
@@ -113,10 +113,17 @@ export default function HostMafia() {
       type: "boolean",
     },
     {
+      label: "Configure Duration",
+      ref: "configureDuration",
+      type: "boolean",
+      value: defaults.configureDuration,
+    },
+    {
       label: "Day Length (minutes)",
       ref: "dayLength",
       type: "number",
-      value: defaults.stateLengths["Day"],
+      showIf: "configureDuration",
+      value: defaults.dayLength,
       min: 1,
       max: 30,
     },
@@ -124,7 +131,8 @@ export default function HostMafia() {
       label: "Night Length (minutes)",
       ref: "nightLength",
       type: "number",
-      value: defaults.stateLengths["Night"],
+      showIf: "configureDuration",
+      value: defaults.nightLength,
       min: 1,
       max: 10,
     },
@@ -132,6 +140,7 @@ export default function HostMafia() {
       label: "Pregame Wait (hours)",
       ref: "pregameWaitLength",
       type: "number",
+      showIf: "configureDuration",
       value: defaults.pregameWaitLength || 1,
       min: 1,
       max: 6,
@@ -140,6 +149,7 @@ export default function HostMafia() {
       label: "Extension Length (minutes)",
       ref: "extendLength",
       type: "number",
+      showIf: "configureDuration",
       value: defaults.extendLength,
       min: 1,
       max: 5,
@@ -195,7 +205,6 @@ export default function HostMafia() {
       defaults.ranked = getFormFieldValue("ranked");
       defaults.competitive = getFormFieldValue("competitive");
       defaults.spectating = getFormFieldValue("spectating");
-      // defaults.scheduled = getFormFieldValue("scheduled");
       defaults.readyCheck = getFormFieldValue("readyCheck");
       defaults.noVeg = getFormFieldValue("noVeg");
       defaults.dayLength = getFormFieldValue("dayLength");
@@ -205,7 +214,7 @@ export default function HostMafia() {
       defaults.anonymousGame = getFormFieldValue("anonymousGame");
       defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
       defaults.broadcastClosedRoles = getFormFieldValue("broadcastClosedRoles");
-      localStorage.setItem("mafiaHostOptions", JSON.stringify(defaults));
+      persistDefaults(gameType, defaults);
     } else errorAlert("You must choose a setup");
   }
 

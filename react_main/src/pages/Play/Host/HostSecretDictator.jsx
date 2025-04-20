@@ -3,7 +3,7 @@ import { Redirect } from "react-router-dom";
 import axios from "axios";
 
 import HostBrowser from "./HostBrowser";
-import getDefaults from "./HostDefaults";
+import { getDefaults, persistDefaults } from "./HostDefaults";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
@@ -46,6 +46,7 @@ export default function HostSecretDictator() {
       label: "Private",
       ref: "private",
       type: "boolean",
+      value: defaults.private,
     },
     {
       label: "Anonymous Game",
@@ -64,11 +65,13 @@ export default function HostSecretDictator() {
       label: "Allow Guests",
       ref: "guests",
       type: "boolean",
+      value: defaults.guests,
     },
     {
       label: "Spectating",
       ref: "spectating",
       type: "boolean",
+      value: defaults.spectating,
     },
     {
       label: "Scheduled",
@@ -79,6 +82,7 @@ export default function HostSecretDictator() {
       label: "Ready Check",
       ref: "readyCheck",
       type: "boolean",
+      value: defaults.readyCheck,
     },
     {
       label: "Start Date",
@@ -93,6 +97,7 @@ export default function HostSecretDictator() {
       label: "Configure Duration",
       ref: "configureDuration",
       type: "boolean",
+      value: defaults.configureDuration,
     },
     {
       label: "Nomination Length (minutes)",
@@ -185,9 +190,13 @@ export default function HostSecretDictator() {
         })
         .catch(errorAlert);
 
-      defaults.anonymousGame = getFormFieldValue("anonymousGame");
-      defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
-      localStorage.setItem("otherHostOptions", JSON.stringify(defaults));
+      Object.keys(defaults).forEach(function(key) {
+        const submittedValue = getFormFieldValue(key);
+        if (submittedValue) {
+          defaults[key] = submittedValue;
+        }
+      });
+      persistDefaults(gameType, defaults);
     } else errorAlert("You must choose a setup");
   }
 

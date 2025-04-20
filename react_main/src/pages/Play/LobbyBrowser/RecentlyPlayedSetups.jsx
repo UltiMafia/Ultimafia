@@ -5,7 +5,7 @@ import { Box, Card, IconButton, Typography } from "@mui/material";
 import { UserContext } from "../../../Contexts";
 import { useErrorAlert } from "../../../components/Alerts";
 import { getRecentlyPlayedSetups } from "../../../services/gameService";
-import getDefaults from "../Host/HostDefaults";
+import { getDefaults } from "../Host/HostDefaults";
 import Setup from "../../../components/Setup";
 import { getRecentlyPlayedSetupsChart } from "./getRecentlyPlayedSetupsChart";
 import { useTheme } from "@mui/styles";
