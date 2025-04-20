@@ -258,6 +258,11 @@ const artContributors = {
       "Mediator",
       "Drama Queen",
       "Gatekeeper",
+      "Moonshine",
+      "Ominous Warning",
+      "Eclipse",
+      "Volcanic Eruption",
+      "Lightning Strike",
     ],
   },
   kirigiri: {
@@ -339,6 +344,7 @@ const artContributors = {
       "Emperor",
       "Lich",
       "Superhero",
+      "Black Hole",
     ],
   },
   drewsworth: {
