@@ -3,7 +3,7 @@ import { Redirect } from "react-router-dom";
 import axios from "axios";
 
 import HostBrowser from "./HostBrowser";
-import getDefaults from "./HostDefaults";
+import { getDefaults, persistDefaults } from "./HostDefaults";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
@@ -62,6 +62,7 @@ export default function HostCardGames() {
       label: "Private",
       ref: "private",
       type: "boolean",
+      value: defaults.private,
     },
     {
       label: "Anonymous Game",
@@ -80,11 +81,13 @@ export default function HostCardGames() {
       label: "Allow Guests",
       ref: "guests",
       type: "boolean",
+      value: defaults.guests,
     },
     {
       label: "Spectating",
       ref: "spectating",
       type: "boolean",
+      value: defaults.spectating,
     },
     {
       label: "Scheduled",
@@ -95,6 +98,7 @@ export default function HostCardGames() {
       label: "Ready Check",
       ref: "readyCheck",
       type: "boolean",
+      value: defaults.readyCheck,
     },
     {
       label: "Start Date",
@@ -109,6 +113,7 @@ export default function HostCardGames() {
       label: "Configure Duration",
       ref: "configureDuration",
       type: "boolean",
+      value: defaults.configureDuration,
     },
     {
       label: "Place Bets (minutes)",
@@ -168,9 +173,13 @@ export default function HostCardGames() {
         })
         .catch(errorAlert);
 
+      defaults.private = getFormFieldValue("private");
+      defaults.guests = getFormFieldValue("guests");
+      defaults.spectating = getFormFieldValue("spectating");
+      defaults.readyCheck = getFormFieldValue("readyCheck");
       defaults.anonymousGame = getFormFieldValue("anonymousGame");
       defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
-      localStorage.setItem("otherHostOptions", JSON.stringify(defaults));
+      persistDefaults(gameType, defaults);
     } else errorAlert("You must choose a setup");
   }
 
