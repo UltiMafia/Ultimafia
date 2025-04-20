@@ -1714,6 +1714,10 @@
   background-image: url("/images/roles/lightningstrike-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Volcanic-Eruption {
+  background-image: url("/images/roles/volcanic-eruption-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Time-Loop {
   background-image: url("/images/roles/timeloop-vivid.png");
 }
