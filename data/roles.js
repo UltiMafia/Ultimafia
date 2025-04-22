@@ -434,7 +434,6 @@ const roleData = {
       tags: ["Investigative", "Alignment", "Cop", "Visiting"],
       description: [
         "Investigates one player each night and learns their alignment.",
-        "Some other roles appear as Cop to themself.",
       ],
     },
     Coroner: {
@@ -513,7 +512,8 @@ const roleData = {
       category: "Investigative",
       tags: ["Investigative", "Roles", "Visiting"],
       description: [
-        "Investigates one player each night and learns their role and another role of the opposite alignment.",
+        "Investigates one player each night and learns two roles of opposite alignments.",
+        "The investigated player is one of the roles learned by the Diviner.",
       ],
     },
     Journalist: {

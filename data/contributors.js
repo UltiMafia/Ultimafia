@@ -365,6 +365,7 @@ const artContributors = {
       "Dentist",
       "Hitchhiker",
       "Prankster",
+      "Zombie",
     ],
   },
 };

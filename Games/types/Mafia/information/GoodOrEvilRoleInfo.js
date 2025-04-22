@@ -59,7 +59,7 @@ module.exports = class GoodOrEvilRoleInfo extends Information {
   getInfoFormated() {
     super.getInfoRaw();
     let info = Random.randomizeArray(this.mainInfo);
-    return `You Learn that your ${this.target.name}'s Role is ${info[0]} or ${info[1]}`;
+    return `You dowse for water on ${this.target.name}'s property... And discover that they are either ${info[0]} or ${info[1]}!`;
     //return `You Learn that your Target's Role is ${this.mainInfo}`
   }
 

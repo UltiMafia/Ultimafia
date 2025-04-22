@@ -7,7 +7,7 @@ module.exports = class LearnGoodAndEvilRole extends Card {
     super(role);
 
     this.meetings = {
-      "Learn Possible Role": {
+      "Dowse": {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["self", isPrevTarget] },
