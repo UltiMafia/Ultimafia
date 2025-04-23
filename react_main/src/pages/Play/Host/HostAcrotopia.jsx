@@ -198,7 +198,9 @@ export default function HostAcrotopia() {
       defaults.roundAmt = getFormFieldValue("roundAmt");
       defaults.acronymSize = getFormFieldValue("acronymSize");
       defaults.enablePunctuation = getFormFieldValue("enablePunctuation");
-      defaults.standardiseCapitalisation = getFormFieldValue("standardiseCapitalisation");
+      defaults.standardiseCapitalisation = getFormFieldValue(
+        "standardiseCapitalisation"
+      );
       defaults.turnOnCaps = getFormFieldValue("turnOnCaps");
       persistDefaults(gameType, defaults);
     } else errorAlert("You must choose a setup");

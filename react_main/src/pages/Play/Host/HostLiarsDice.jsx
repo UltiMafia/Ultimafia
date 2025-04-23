@@ -167,7 +167,7 @@ export default function HostLiarsDice() {
         })
         .catch(errorAlert);
 
-      Object.keys(defaults).forEach(function(key) {
+      Object.keys(defaults).forEach(function (key) {
         const submittedValue = getFormFieldValue(key);
         if (submittedValue) {
           defaults[key] = submittedValue;
