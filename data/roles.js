@@ -3875,6 +3875,7 @@ const roleData = {
       tags: ["Event"],
       description: [
         "If this Event occurs, All Players lose food if they have no food to lose they die.",
+        "If this Event is in a setup, All players start with 1 Food.",
       ],
     },
     Eclipse: {
