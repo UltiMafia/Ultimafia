@@ -21,14 +21,18 @@ const HOST_OPTIONS_VERSIONS = {
 var existingHostOptions = {};
 Object.keys(HOST_OPTIONS_VERSIONS).forEach(function (gameType) {
   const storageKey = getStorageKey(gameType);
-  const _existingHostOptions = JSON.parse(localStorage.getItem(storageKey) || null);
+  const _existingHostOptions = JSON.parse(
+    localStorage.getItem(storageKey) || null
+  );
 
   // If the version doesn't match, delete the item from storage and null it out in the map
-  if (_existingHostOptions && _existingHostOptions.hostOptionsVersion !== HOST_OPTIONS_VERSIONS[gameType]) {
+  if (
+    _existingHostOptions &&
+    _existingHostOptions.hostOptionsVersion !== HOST_OPTIONS_VERSIONS[gameType]
+  ) {
     localStorage.removeItem(storageKey);
     existingHostOptions[gameType] = null;
-  }
-  else {
+  } else {
     existingHostOptions[gameType] = _existingHostOptions;
   }
 });
@@ -128,7 +132,9 @@ export function getDefaults(gameType) {
   if (defaults) {
     return defaults;
   } else {
-    console.error(`Could not find default options for: ${gameType}. Please report this error.`);
+    console.error(
+      `Could not find default options for: ${gameType}. Please report this error.`
+    );
     return null;
   }
 }
