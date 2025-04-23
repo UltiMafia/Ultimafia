@@ -5,7 +5,7 @@ const {
   PRIORITY_KILL_DEFAULT,
 } = require("../../const/Priority");
 
-module.exports = class WispConvert extends Card {
+module.exports = class GliderConvert extends Card {
   constructor(role) {
     super(role);
 
@@ -34,7 +34,7 @@ module.exports = class WispConvert extends Card {
             }
 
             if (this.dominates()) {
-              this.target.setRole("Wisp");
+              this.target.setRole("Glider");
             }
           },
         },

@@ -2763,7 +2763,7 @@ const roleData = {
       ],
       RolesMadeBy: ["Cultist"],
     },
-    Freischütz: {
+    Runemaster: {
       alignment: "Cult",
       category: "Chaos",
       tags: [
@@ -3562,12 +3562,12 @@ const roleData = {
       ],
       graveyardParticipation: "all",
     },
-    Wisp: {
+    Glider: {
       alignment: "Independent",
       tags: ["Killing", "Last Two", "Conversion", "Visiting", "Hostile"],
       description: [
-        "Chooses to sacrifice self at night to convert another player to Wisp.",
-        "Wins if a Wisp is in the last two alive.",
+        "Chooses to sacrifice self at night to convert another player to a Glider.",
+        "Wins if a Glider is in the last two alive.",
       ],
     },
     Mastermind: {
