@@ -3,7 +3,6 @@ module.exports = {
     //BM changes (some can be recycled)
     Jester: "Fool",
     Babushka: "Granny",
-    Suspect: "Miller",
     Illuminati: "Templar",
     Archer: "Hunter",
     "Arms Dealer": "Gunsmith",
