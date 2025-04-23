@@ -543,6 +543,7 @@ module.exports = class CardGamesGame extends Game {
 
   //DealCards
   dealCards(amount) {
+    this.broadcast("cardShuffle");
     this.randomizedPlayers.forEach((player) => {
       if (player.alive) {
         let Cards = this.drawDiscardPile.drawMultiple(amount);
@@ -570,6 +571,7 @@ module.exports = class CardGamesGame extends Game {
 
   //DealCommunity
   DrawCommunityCards(amount) {
+    this.broadcast("cardShuffle");
     let Cards = this.drawDiscardPile.drawMultiple(amount);
     this.CommunityCards.push(...Cards);
     this.sendAlert(
