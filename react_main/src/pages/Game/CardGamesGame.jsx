@@ -36,7 +36,7 @@ export default function CardGamesGame(props) {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
-  const audioFileNames = ["cardRoll", "cardRoll2", "gunshot"];
+  const audioFileNames = ["cardShuffle", "gunshot"];
   const audioLoops = [];
   const audioOverrides = [];
   const audioVolumes = [];
@@ -76,14 +76,8 @@ export default function CardGamesGame(props) {
       // else
       // 	game.playAudio("spieswin");
     });
-    socket.on("cardRoll", () => {
-      game.playAudio("cardRoll");
-    });
-    socket.on("cardRoll2", () => {
-      game.playAudio("cardRoll2");
-    });
-    socket.on("gunshot", () => {
-      game.playAudio("gunshot");
+    socket.on("cardShuffle", () => {
+      game.playAudio("cardShuffle");
     });
   }, game.socket);
 
