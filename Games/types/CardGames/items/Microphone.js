@@ -139,6 +139,7 @@ module.exports = class Microphone extends Item {
             }
             if (this.target == "Check") {
               this.game.sendAlert(`${this.actor.name} Checks!`);
+              this.actor.hasHadTurn = true;
             }
 
             this.item.drop();
