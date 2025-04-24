@@ -60,14 +60,14 @@ const Standard_Deck = [
 const Test_Deck = [
   //Hearts
   "Ace-Hearts",
-  "Jack-Hearts",
-  "7-Hearts",
-  "8-Hearts",
-  "9-Hearts",
-  "10-Hearts",
-  "Jack-Hearts",
-  "Queen-Hearts",
-  "King-Hearts",
+  "Ace-Clubs",
+  "Ace-Spades",
+  "2-Spades",
+  "5-Hearts",
+  "5-Clubs",
+  "4-Hearts",
+  "3-Hearts",
+  "2-Hearts",
 ];
 
 module.exports = {

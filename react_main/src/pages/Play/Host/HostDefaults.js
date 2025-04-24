@@ -96,7 +96,7 @@ var defaultOptions = {
   },
   "Card Games": existingHostOptions["Card Games"] || {
     ...commonHostOptions,
-    startingChips: 6,
+    startingChips: 50,
     minimumBet: 2,
     placeBetsLength: 2,
     showdownLength: 2,

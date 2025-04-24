@@ -263,7 +263,7 @@ module.exports = class CardGamesGame extends Game {
     if (previousState == "Place Bets") {
       console.log(this.spectatorMeetFilter);
       let tempPlayers = this.randomizedPlayersCopy.filter(
-        (p) => p.hasHadTurn != true && p.alive && p.hasFolded != true
+        (p) => p.hasHadTurn != true && p.alive && p.hasFolded != true && p.Chips > 0
       );
       let playersInGame = this.randomizedPlayersCopy.filter(
         (p) => p.alive && p.hasFolded != true
@@ -280,7 +280,8 @@ module.exports = class CardGamesGame extends Game {
         this.discardCommunityCards();
         this.setupNextRoundTexas();
       } else if (tempPlayers.length > 0) {
-        while (true) {
+        playersInGame = playersInGame.filter(((p) => p.Chips > 0));
+        while (playersInGame.length > 0) {
           this.incrementCurrentIndex();
 
           let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
@@ -304,7 +305,8 @@ module.exports = class CardGamesGame extends Game {
         this.currentIndex =
           this.randomizedPlayersCopy.indexOf(this.Dealer) %
           this.randomizedPlayersCopy.length;
-        while (true) {
+          playersInGame = playersInGame.filter(((p) => p.Chips > 0));
+        while (playersInGame.length > 0) {
           this.incrementCurrentIndex();
 
           let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
@@ -332,7 +334,8 @@ module.exports = class CardGamesGame extends Game {
         this.currentIndex =
           this.randomizedPlayersCopy.indexOf(this.Dealer) %
           this.randomizedPlayersCopy.length;
-        while (true) {
+          playersInGame = playersInGame.filter(((p) => p.Chips > 0));
+        while (playersInGame.length > 0) {
           this.incrementCurrentIndex();
 
           let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
