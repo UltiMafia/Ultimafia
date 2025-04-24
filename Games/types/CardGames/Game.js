@@ -280,12 +280,15 @@ module.exports = class CardGamesGame extends Game {
         this.discardCommunityCards();
         this.setupNextRoundTexas();
       } else if (tempPlayers.length > 0) {
-        
         while (true) {
           this.incrementCurrentIndex();
 
           let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
-          if (nextPlayer.alive && nextPlayer.hasFolded != true && nextPlayer.Chips > 0) {
+          if (
+            nextPlayer.alive &&
+            nextPlayer.hasFolded != true &&
+            nextPlayer.Chips > 0
+          ) {
             nextPlayer.holdItem("Microphone");
             break;
           }
@@ -305,7 +308,11 @@ module.exports = class CardGamesGame extends Game {
           this.incrementCurrentIndex();
 
           let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
-          if (nextPlayer.alive && nextPlayer.hasFolded != true && nextPlayer.Chips > 0) {
+          if (
+            nextPlayer.alive &&
+            nextPlayer.hasFolded != true &&
+            nextPlayer.Chips > 0
+          ) {
             nextPlayer.holdItem("Microphone");
             break;
           }
@@ -329,7 +336,11 @@ module.exports = class CardGamesGame extends Game {
           this.incrementCurrentIndex();
 
           let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
-          if (nextPlayer.alive && nextPlayer.hasFolded != true && nextPlayer.Chips > 0) {
+          if (
+            nextPlayer.alive &&
+            nextPlayer.hasFolded != true &&
+            nextPlayer.Chips > 0
+          ) {
             nextPlayer.holdItem("Microphone");
             break;
           }
@@ -404,16 +415,17 @@ module.exports = class CardGamesGame extends Game {
                 parseInt(player.ShowdownCards.indexOf(cardB))
               ) {
                 //Low Ace Check
-                if(this.readCard(player.ShowdownCards[0])[0] == 14 &&
+                if (
+                  this.readCard(player.ShowdownCards[0])[0] == 14 &&
                   this.readCard(player.ShowdownCards[1])[0] == 5 &&
                   this.readCard(player.ShowdownCards[2])[0] == 4 &&
                   this.readCard(player.ShowdownCards[3])[0] == 3 &&
-                  this.readCard(player.ShowdownCards[4])[0] == 2){
+                  this.readCard(player.ShowdownCards[4])[0] == 2
+                ) {
                   streight = true;
                   lowAce = true;
-                }
-                else{
-                streight = false;
+                } else {
+                  streight = false;
                 }
               }
             }
@@ -437,7 +449,7 @@ module.exports = class CardGamesGame extends Game {
 
       for (let x = 0; x < counts.length; x++) {
         //this.sendAlert(`Value ${x+2} Amounts ${counts[x]}!`);
-          if (counts[x] == 5) {
+        if (counts[x] == 5) {
           five = true;
           fiveValue = x + 2;
         }
@@ -454,27 +466,25 @@ module.exports = class CardGamesGame extends Game {
           pairValues.push(x + 2);
         }
       }
-      
-     if (five == true && allSameSuit == true) {
+
+      if (five == true && allSameSuit == true) {
         player.ScoreType = "Five Flush";
         score += 13000;
         score += fiveValue;
-      }
-    else if (three == true && pairs > 0 && allSameSuit == true) {
+      } else if (three == true && pairs > 0 && allSameSuit == true) {
         player.ScoreType = "Flush house";
         score += 12000;
         score += threeValue;
         score += pairValues[0];
-    }
-     else if (five == true) {
+      } else if (five == true) {
         player.ScoreType = "Five of a kind";
         score += 11000;
         score += fiveValue;
-      }
-      else if (
+      } else if (
         streight == true &&
         allSameSuit == true &&
-        this.readCard(player.ShowdownCards[0])[0] == 14 && lowAce != true
+        this.readCard(player.ShowdownCards[0])[0] == 14 &&
+        lowAce != true
       ) {
         player.ScoreType = "Royal Flush";
         score += 10000;
@@ -620,11 +630,11 @@ module.exports = class CardGamesGame extends Game {
       player.Chips = parseInt(player.Chips) - parseInt(amount);
       player.AmountBidding += parseInt(amount);
       this.ThePot += parseInt(amount);
-    let activePlayers = this.players.filter((p) => p.alive && !p.hasFolded);
-      for(let person of activePlayers){
+      let activePlayers = this.players.filter((p) => p.alive && !p.hasFolded);
+      for (let person of activePlayers) {
         person.hasHadTurn = false;
       }
-      
+
       if (this.lastAmountBid < player.AmountBidding) {
         this.lastAmountBid = player.AmountBidding;
       }
