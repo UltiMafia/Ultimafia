@@ -85,18 +85,27 @@ module.exports = class LiveOrDie extends Item {
 
           let indexOf = this.item.victims.indexOf(this.actor);
           if (this.item.victims[parseInt(indexOf) + 1]) {
-            let item = this.item.victims[parseInt(indexOf) + 1].holdItem("LiveOrDie",this.item.Applier,this.item.victims);
-            this.game.instantMeeting(item.meetings, [this.item.victims[parseInt(indexOf) + 1]]);
+            let item = this.item.victims[parseInt(indexOf) + 1].holdItem(
+              "LiveOrDie",
+              this.item.Applier,
+              this.item.victims
+            );
+            this.game.instantMeeting(item.meetings, [
+              this.item.victims[parseInt(indexOf) + 1],
+            ]);
           }
         },
       },
     };
   }
 
-
- hold(player) {
+  hold(player) {
     super.hold(player);
-      player.game.sendAlert(`${player.name} has been selected by ${this.Applier.role.name}!`);
-      player.sendAlert(`You have been selected by ${this.Applier.role.name}, You must choose to live or die! If you and the other players All choose to live you All die!`);
+    player.game.sendAlert(
+      `${player.name} has been selected by ${this.Applier.role.name}!`
+    );
+    player.sendAlert(
+      `You have been selected by ${this.Applier.role.name}, You must choose to live or die! If you and the other players All choose to live you All die!`
+    );
   }
 };
