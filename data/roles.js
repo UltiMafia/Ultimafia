@@ -2938,6 +2938,16 @@ const roleData = {
       ],
       graveyardParticipation: "self",
     },
+    Sphinx: {
+      alignment: "Cult",
+      category: "Demon",
+      tags: ["Killing", "Extra Night Deaths", "Visiting", "Night Killer"],
+      description: [
+        "Each night, may choose 3 players.",
+        "Each of the selected players will choose to Live or Die.",
+        "If All 3 players choose to Live they all Die.",
+      ],
+    },
     Vampire: {
       alignment: "Cult",
       category: "Demon",
