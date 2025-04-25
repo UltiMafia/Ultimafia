@@ -9,15 +9,15 @@ module.exports = class Choose3toLiveOrDie extends Card {
       "Death Game": {
         states: ["Night"],
         flags: ["voting", "instant", "multi"],
-        targets: { include: ["alive","dead","self"]},
+        targets: { include: ["alive", "dead", "self"] },
         multiMin: 3,
         multiMax: 3,
         action: {
           labels: ["giveItem"],
           run: function () {
             if (!this.actor.hasAbility(["Kill"])) {
-          return;
-         }
+              return;
+            }
             this.actor.data.PlayersChoosenDie = false;
             this.target[0].holdItem("LiveOrDie", this.actor, this.target);
           },
