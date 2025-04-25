@@ -8,7 +8,7 @@ module.exports = class CauseFullMoons extends Card {
       state: function (stateInfo) {
         if (!this.player.hasAbility(["Full Moon"])) {
           return;
-       }
+        }
 
         if (
           stateInfo.name.match(/Night/) &&
