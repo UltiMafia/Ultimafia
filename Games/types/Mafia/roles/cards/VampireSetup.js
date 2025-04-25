@@ -13,7 +13,8 @@ module.exports = class VampireSetup extends Card {
         let players = this.game.players.filter(
           (p) =>
             (p.role.alignment == "Mafia" || p.role.alignment == "Cult") &&
-            p.role.data.UnReplaceable != true && p.role.name != "Vampire"
+            p.role.data.UnReplaceable != true &&
+            p.role.name != "Vampire"
         );
         let shuffledPlayers = Random.randomizeArray(players);
         for (let x = 0; x < shuffledPlayers.length; x++) {
@@ -59,7 +60,8 @@ module.exports = class VampireSetup extends Card {
         let players = this.game.players.filter(
           (p) =>
             (p.role.alignment == "Mafia" || p.role.alignment == "Cult") &&
-            p.role.data.UnReplaceable != true && p.role.name != "Vampire"
+            p.role.data.UnReplaceable != true &&
+            p.role.name != "Vampire"
         );
         let shuffledPlayers = Random.randomizeArray(players);
         for (let x = 0; x < shuffledPlayers.length; x++) {
