@@ -2941,7 +2941,13 @@ const roleData = {
     Warden: {
       alignment: "Cult",
       category: "Demon",
-      tags: ["Killing", "Extra Night Deaths", "Visiting", "Night Killer", "Dawn"],
+      tags: [
+        "Killing",
+        "Extra Night Deaths",
+        "Visiting",
+        "Night Killer",
+        "Dawn",
+      ],
       description: [
         "Each night, may choose 3 players.",
         "Each of the selected players will choose to Live or Die.",
