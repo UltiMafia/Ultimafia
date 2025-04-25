@@ -96,19 +96,19 @@ module.exports = class VillageCore extends Card {
         shouldSkip: function () {
           if (this.game.HaveTreasureChestState == true) {
             for (let player of this.game.players) {
-            if (
-              this.game
-                .getRoleTags(
-                  this.game.formatRoleInternal(
-                    player.role.name,
-                    player.role.modifier
+              if (
+                this.game
+                  .getRoleTags(
+                    this.game.formatRoleInternal(
+                      player.role.name,
+                      player.role.modifier
+                    )
                   )
-                )
-                .includes("Treasure Chest")
-            ) {
-              return true;
+                  .includes("Treasure Chest")
+              ) {
+                return true;
+              }
             }
-          }
             return false;
           }
           return true;
