@@ -8,10 +8,13 @@ module.exports = class CauseFullMoons extends Card {
       state: function (stateInfo) {
         if (!this.player.alive) return;
 
-        if (stateInfo.name.match(/Night/) && parseInt(stateInfo.dayCount) % 2 == 0 && this.game.stateEvents["Full Moon"] != true){
+        if (
+          stateInfo.name.match(/Night/) &&
+          parseInt(stateInfo.dayCount) % 2 == 0 &&
+          this.game.stateEvents["Full Moon"] != true
+        ) {
           this.game.stateEvents["Full Moon"] = true;
-        }
-        else if(!stateInfo.name.match(/Dawn/)){
+        } else if (!stateInfo.name.match(/Dawn/)) {
           this.game.stateEvents["Full Moon"] = false;
         }
       },
