@@ -22,14 +22,13 @@ module.exports = class LiveOrDie extends Item {
     this.cannotBeStolen = true;
     this.Applier = Applier;
     this.victims = players;
-    this.meetings[meetingName] = {
+    this.meetings["Live or Die"] = {
       actionName: "Live or Die",
       states: ["Dawn"],
       inputType: "custom",
       targets: ["Live", "Die"],
       flags: ["voting", "instant"],
       whileDead: true,
-      passiveDead: true,
       action: {
         labels: ["hidden"],
         item: this,

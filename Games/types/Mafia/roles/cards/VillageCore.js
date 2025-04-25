@@ -106,10 +106,10 @@ module.exports = class VillageCore extends Card {
                   )
                   .includes("Treasure Chest")
               ) {
-                return true;
+                return false;
               }
             }
-            return false;
+            return true;
           }
           return true;
         },
