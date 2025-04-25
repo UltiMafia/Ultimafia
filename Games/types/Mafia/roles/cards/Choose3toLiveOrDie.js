@@ -18,7 +18,7 @@ module.exports = class Choose3toLiveOrDie extends Card {
             if (!this.actor.hasAbility(["Kill"])) {
               return;
             }
-            this.actor.data.PlayersChoosenDie = false;
+            this.actor.role.data.PlayersChoosenDie = false;
             this.target[0].holdItem("LiveOrDie", this.actor, this.target);
           },
         },
