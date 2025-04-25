@@ -33,6 +33,9 @@ module.exports = class Volcanic extends Effect {
             game: this.target.game,
             labels: ["kill", "bomb"],
             run: function () {
+              if (this.game.getStateName() != "Day") {
+                return;
+              }
               this.game.queueAlert(
                 `The Volcano erupts, hitting ${this.target.name} with molten rock!`
               );

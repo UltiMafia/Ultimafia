@@ -2495,7 +2495,7 @@ const roleData = {
       category: "Killing",
       tags: ["Killing", "Lycan", "Effect", "Full Moons", "Visiting"],
       description: [
-        "When a Werewolf is present in the game, full moons will occur on odd nights.",
+        "When a Werewolf is present in the game, full moons will occur on even nights.",
         "Each night, bites a non-Cult player and turns them into a Lycan.",
         "Lycans retain their original roles, but they unknowingly kill a random non-Cult player on full moons.",
         "Invincible during full moons, except for when visiting the Apothecary.",
@@ -2937,6 +2937,23 @@ const roleData = {
         "Condemned dead players are Exorcised.",
       ],
       graveyardParticipation: "self",
+    },
+    Warden: {
+      alignment: "Cult",
+      category: "Demon",
+      tags: [
+        "Killing",
+        "Extra Night Deaths",
+        "Visiting",
+        "Night Killer",
+        "Dawn",
+      ],
+      description: [
+        "Each night, may choose 3 players.",
+        "Each of the selected players will choose to Live or Die.",
+        "If All 3 players choose to Live they all Die.",
+      ],
+      graveyardParticipation: "all",
     },
     Vampire: {
       alignment: "Cult",
