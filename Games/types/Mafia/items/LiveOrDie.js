@@ -34,62 +34,63 @@ module.exports = class LiveOrDie extends Item {
         labels: ["hidden"],
         item: this,
         run: function () {
-          if(this.target == "Die"){
+          if (this.target == "Die") {
             this.item.Applier.role.data.PlayersChoosenDie = true;
             this.game.queueAction(
-            new Action({
-              actor: this.item.Applier,
-              target: this.actor,
-              game: this.actor.game,
-              labels: ["kill"],
-              priority: PRIORITY_KILL_DEFAULT+1,
-              run: function () {
-                if (this.dominates()){ 
-                  this.target.kill("basic", this.actor);
-                }
-              },
-            })
-          );
-          }
-          else{
+              new Action({
+                actor: this.item.Applier,
+                target: this.actor,
+                game: this.actor.game,
+                labels: ["kill"],
+                priority: PRIORITY_KILL_DEFAULT + 1,
+                run: function () {
+                  if (this.dominates()) {
+                    this.target.kill("basic", this.actor);
+                  }
+                },
+              })
+            );
+          } else {
             this.game.queueAction(
-            new Action({
-              actor: this.item.Applier,
-              target: this.actor,
-              game: this.actor.game,
-              labels: ["revive"],
-              priority: PRIORITY_KILL_DEFAULT+1,
-              run: function () {
-                if(this.actor.role.data.PlayersChoosenDie != true){
-              let temp = new Action({
-              actor: this.actor,
-              target: this.target,
-              game: this.actor.game,
-              labels: ["kill"],
-              priority: PRIORITY_KILL_DEFAULT+1,
-              run: function () {
-                if (this.dominates()){ 
-                  this.target.kill("basic", this.actor);
-                }
-              },
-            });
-                if(temp.dominates(this.target)){
-                  this.target.kill("basic", this.actor);
-                }  
-          }
-                else if (this.dominates()){ 
-                  this.target.revive("basic", this.actor);
-                }
-              },
-            })
-          );
+              new Action({
+                actor: this.item.Applier,
+                target: this.actor,
+                game: this.actor.game,
+                labels: ["revive"],
+                priority: PRIORITY_KILL_DEFAULT + 1,
+                run: function () {
+                  if (this.actor.role.data.PlayersChoosenDie != true) {
+                    let temp = new Action({
+                      actor: this.actor,
+                      target: this.target,
+                      game: this.actor.game,
+                      labels: ["kill"],
+                      priority: PRIORITY_KILL_DEFAULT + 1,
+                      run: function () {
+                        if (this.dominates()) {
+                          this.target.kill("basic", this.actor);
+                        }
+                      },
+                    });
+                    if (temp.dominates(this.target)) {
+                      this.target.kill("basic", this.actor);
+                    }
+                  } else if (this.dominates()) {
+                    this.target.revive("basic", this.actor);
+                  }
+                },
+              })
+            );
           }
 
-        let indexOf = this.item.victims.indexOf(this.actor);
-        if(this.item.victims[parseInt(indexOf)+1]){
-          this.item.victims[parseInt(indexOf)+1].holdItem("LiveOrDie", this.item.Applier, this.item.victims);
-        }
-          
+          let indexOf = this.item.victims.indexOf(this.actor);
+          if (this.item.victims[parseInt(indexOf) + 1]) {
+            this.item.victims[parseInt(indexOf) + 1].holdItem(
+              "LiveOrDie",
+              this.item.Applier,
+              this.item.victims
+            );
+          }
         },
       },
     };
