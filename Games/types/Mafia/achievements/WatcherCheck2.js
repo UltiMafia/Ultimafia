@@ -12,13 +12,13 @@ module.exports = class WatcherCheck2 extends Achievements {
           info.creator == this.player &&
           this.player.role.name == "Watcher"
         ) {
-          if(info.isTrue()){
-          for(let player of info.mainInfo){
-            if(player.isEvil() == true){
-              this.GoodChecks++;
-              return;
+          if (info.isTrue()) {
+            for (let player of info.mainInfo) {
+              if (player.isEvil() == true) {
+                this.GoodChecks++;
+                return;
+              }
             }
-          }
           }
         }
       },
