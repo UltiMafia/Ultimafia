@@ -233,7 +233,7 @@ const AchievementData = {
       reward: 30,
       roles: ["Watcher"],
     },
-    "Trail to Nowhere": {
+    "On the Trail": {
       ID: "Mafia32",
       internal: ["TrackerCheck"],
       description: "As Tracker, track a player who visits you.",
