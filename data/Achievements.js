@@ -225,7 +225,7 @@ const AchievementData = {
       reward: 20,
       roles: ["Succubus"],
     },
-    "Eyewitness": {
+    Eyewitness: {
       ID: "Mafia31",
       internal: ["WatcherCheck2"],
       description:
@@ -236,8 +236,7 @@ const AchievementData = {
     "Trail to Nowhere": {
       ID: "Mafia32",
       internal: ["TrackerCheck"],
-      description:
-        "As Tracker, track a player who visits you.",
+      description: "As Tracker, track a player who visits you.",
       reward: 10,
       roles: ["Tracker"],
     },
@@ -259,8 +258,7 @@ const AchievementData = {
     "The Master has become the Student": {
       ID: "Mafia35",
       internal: ["PedagoguePedagogue"],
-      description:
-        "As Pedagogue, Retrain a Pedagogue who is retraining you.",
+      description: "As Pedagogue, Retrain a Pedagogue who is retraining you.",
       reward: 30,
       roles: ["Pedagogue"],
     },
@@ -275,32 +273,28 @@ const AchievementData = {
     "Psychoanalyze Me!": {
       ID: "Mafia37",
       internal: ["ShrinkSaveTwice"],
-      description:
-        "As Shrink, Prevent 2 conversions.",
+      description: "As Shrink, Prevent 2 conversions.",
       reward: 20,
       roles: ["Shrink"],
     },
     "Household Homicide!": {
       ID: "Mafia38",
       internal: ["GrannyKills"],
-      description:
-        "As Granny, kill 2 Evil players in a single night.",
+      description: "As Granny, kill 2 Evil players in a single night.",
       reward: 20,
       roles: ["Granny"],
     },
     "Clean it Up, Undie": {
       ID: "Mafia39",
       internal: ["UndertakerCleanPR"],
-      description:
-        "As Undertaker, clean a Village power role.",
+      description: "As Undertaker, clean a Village power role.",
       reward: 10,
       roles: ["Undertaker"],
     },
     "Eternal Order": {
       ID: "Mafia40",
       internal: ["TemplarSurvive"],
-      description:
-        "As Templar, Win when alive with 1 or more other Templars.",
+      description: "As Templar, Win when alive with 1 or more other Templars.",
       reward: 10,
       roles: ["Templar"],
     },
