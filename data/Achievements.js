@@ -225,6 +225,85 @@ const AchievementData = {
       reward: 20,
       roles: ["Succubus"],
     },
+    "Eyewitness": {
+      ID: "Mafia31",
+      internal: ["WatcherCheck2"],
+      description:
+        "As Watcher, see Evil players visiting twice and survive until the end of the game.",
+      reward: 30,
+      roles: ["Watcher"],
+    },
+    "Trail to Nowhere": {
+      ID: "Mafia32",
+      internal: ["TrackerCheck"],
+      description:
+        "As Tracker, track a player who visits you.",
+      reward: 10,
+      roles: ["Tracker"],
+    },
+    "I'm Towntelling!": {
+      ID: "Mafia33",
+      internal: ["MillerTowntell"],
+      description:
+        "As Miller, survive and win after being checked by a Cop or Detective.",
+      reward: 20,
+      roles: ["Miller"],
+    },
+    "So Below": {
+      ID: "Mafia34",
+      internal: ["DeclareMagusAsEvil"],
+      description:
+        "As a Mafia or Cult role, convince the Village to Declare a Magus game.",
+      reward: 40,
+    },
+    "The Master has become the Student": {
+      ID: "Mafia35",
+      internal: ["PedagoguePedagogue"],
+      description:
+        "As Pedagogue, Retrain a Pedagogue who is retraining you.",
+      reward: 30,
+      roles: ["Pedagogue"],
+    },
+    "Duct Tape is Helpful": {
+      ID: "Mafia36",
+      internal: ["SilencerSilence2PR"],
+      description:
+        "As Silencer, Silence 2 diffrent village power roles during a game.",
+      reward: 15,
+      roles: ["Silencer"],
+    },
+    "Psychoanalyze Me!": {
+      ID: "Mafia37",
+      internal: ["ShrinkSaveTwice"],
+      description:
+        "As Shrink, Prevent 2 conversions.",
+      reward: 20,
+      roles: ["Shrink"],
+    },
+    "Household Homicide!": {
+      ID: "Mafia38",
+      internal: ["GrannyKills"],
+      description:
+        "As Granny, kill 2 Evil players in a single night.",
+      reward: 20,
+      roles: ["Granny"],
+    },
+    "Clean it Up, Undie": {
+      ID: "Mafia39",
+      internal: ["UndertakerCleanPR"],
+      description:
+        "As Undertaker, clean a Village power role.",
+      reward: 10,
+      roles: ["Undertaker"],
+    },
+    "Eternal Order": {
+      ID: "Mafia40",
+      internal: ["TemplarSurvive"],
+      description:
+        "As Templar, Win when alive with 1 or more other Templars.",
+      reward: 10,
+      roles: ["Templar"],
+    },
   },
   Resistance: {},
   Ghost: {},
