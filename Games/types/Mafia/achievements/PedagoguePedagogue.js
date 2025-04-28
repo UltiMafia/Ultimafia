@@ -11,7 +11,10 @@ module.exports = class PedagoguePedagogue extends Achievements {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-        if (this.player.role.name == "Pedagogue" && this.ConvertHappened != true) {
+        if (
+          this.player.role.name == "Pedagogue" &&
+          this.ConvertHappened != true
+        ) {
           var action = new Action({
             actor: null,
             target: this.player,
@@ -31,8 +34,7 @@ module.exports = class PedagoguePedagogue extends Achievements {
                     check1 = true;
                   }
                   break;
-                }
-                else if (
+                } else if (
                   action.hasLabels(["convert"]) &&
                   action.target == this.target &&
                   action.actor.role.name == "Pedagogue"
@@ -43,7 +45,7 @@ module.exports = class PedagoguePedagogue extends Achievements {
                   break;
                 }
               }
-              if(check1 && check2){
+              if (check1 && check2) {
                 this.ConvertHappened = true;
               }
             },
