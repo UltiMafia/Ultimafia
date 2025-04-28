@@ -672,8 +672,6 @@ module.exports = class Player {
         effect.remove();
       } else if (effect.name == "Immortal" && effect.lifespan == Infinity) {
         effect.remove();
-      } else if (effect.name == "Kill Immune" && effect.lifespan == Infinity) {
-        effect.remove();
       } else if (
         effect.name == "Leak Whispers" &&
         effect.lifespan == Infinity
