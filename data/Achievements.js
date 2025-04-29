@@ -291,12 +291,12 @@ const AchievementData = {
       reward: 10,
       roles: ["Undertaker"],
     },
-    "Eternal Order": {
+    "Ultimate Sacrifice": {
       ID: "Mafia40",
-      internal: ["TemplarSurvive"],
-      description: "As Templar, Win when alive with 1 or more other Templars.",
-      reward: 10,
-      roles: ["Templar"],
+      internal: ["HunterKill"],
+      description: "As Hunter, Kill an Evil player when 3 players are alive.",
+      reward: 20,
+      roles: ["Hunter"],
     },
   },
   Resistance: {},
