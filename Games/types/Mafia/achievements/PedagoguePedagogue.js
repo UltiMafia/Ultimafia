@@ -5,7 +5,7 @@ const { PRIORITY_CONVERT_DEFAULT } = require("../const/Priority");
 module.exports = class PedagoguePedagogue extends Achievements {
   constructor(name, player) {
     super(name, player);
-    this.ConvertCount = 0;
+    this.ConvertHappened = false;
     this.listeners = {
       state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
@@ -33,20 +33,19 @@ module.exports = class PedagoguePedagogue extends Achievements {
                   if (action.target.role.name == "Pedagogue") {
                     check1 = true;
                   }
-                  break;
-                } else if (
+                } 
+                if (
                   action.hasLabels(["convert"]) &&
-                  action.target == this.target &&
-                  action.actor.role.name == "Pedagogue"
+                  action.target == this.target 
                 ) {
-                  if (action.target.role.name == "Pedagogue") {
+                  if (action.actor.role.name == "Pedagogue") {
                     check2 = true;
                   }
                   break;
                 }
               }
               if (check1 && check2) {
-                this.ConvertHappened = true;
+                this.achievement.ConvertHappened = true;
               }
             },
           });
