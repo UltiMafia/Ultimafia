@@ -226,6 +226,7 @@ module.exports = {
   maxOwnedAnonymousDecks: 10,
   maxOwnedCustomEmotes: 10,
   maxOwnedCustomEmotesExtra: 10,
+  maxArchivedGamesMax: 10,
   maxDeckNameLength: 25, // maxSetupNameLength
   maxCustomEmoteNameLength: 25,
   minDeckSize: 5, // minMafiaSetupTotal
