@@ -279,6 +279,11 @@ function calculateStats(setupVersion, gameType) {
     alignmentWins = {};
 
     Object.keys(rolePlays).forEach(function (key) {
+      if (!key in roleData[gameType]) {
+        console.error(`Could not find role data for ${key}`);
+        return;
+      }
+
       const numWins = key in roleWins ? roleWins[key] : 0;
       const alignment = roleData[gameType][key].alignment;
 
@@ -287,14 +292,6 @@ function calculateStats(setupVersion, gameType) {
 
       alignmentPlays[alignment] += rolePlays[key];
       alignmentWins[alignment] += numWins;
-
-      console.log(key);
-      console.log(rolePlays[key]);
-      console.log(numWins);
-      console.log(alignment);
-      console.log(alignmentPlays);
-      console.log(alignmentWins);
-      console.log("==================================");
     });
   }
 
