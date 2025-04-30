@@ -33,10 +33,10 @@ module.exports = class PedagoguePedagogue extends Achievements {
                   if (action.target.role.name == "Pedagogue") {
                     check1 = true;
                   }
-                } 
+                }
                 if (
                   action.hasLabels(["convert"]) &&
-                  action.target == this.target 
+                  action.target == this.target
                 ) {
                   if (action.actor.role.name == "Pedagogue") {
                     check2 = true;
