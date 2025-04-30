@@ -57,6 +57,8 @@ export default function Profile() {
   const [karmaInfo, setKarmaInfo] = useState({});
   const [settings, setSettings] = useState({});
   const [recentGames, setRecentGames] = useState([]);
+  const [archivedGames, setArchivedGames] = useState([]);
+  const [editingArchivedGames, setEditingArchivedGames] = useState(false);
   const [createdSetups, setCreatedSetups] = useState([]);
   const [bustCache, setBustCache] = useState(false);
   const [friendsPage, setFriendsPage] = useState(1);
@@ -82,6 +84,12 @@ export default function Profile() {
   const isSelf = userId === user.id;
   const isBlocked = !isSelf && user.blockedUsers.indexOf(userId) !== -1;
   const hasDefaultPronouns = pronouns === DEFAULT_PRONOUNS_TEXT;
+
+  // userId is the id of the current profile
+  // user.id is the id of the current user
+  const showDelete = userId === user.id;
+
+  const showDeleteArchivedGame = showDelete && editingArchivedGames;
 
   useEffect(() => {
     if (bustCache) setBustCache(false);
@@ -115,6 +123,7 @@ export default function Profile() {
           setIsMarried(res.data.isMarried);
           setSettings(res.data.settings);
           setRecentGames(res.data.games);
+          setArchivedGames(res.data.archivedGames);
           setCreatedSetups(res.data.setups);
           // setMaxFriendsPage(res.data.maxFriendsPage);
           setFriendRequests(res.data.friendRequests);
@@ -222,6 +231,28 @@ export default function Profile() {
           siteInfo.showAlert(res.data, "success");
         })
         .catch(errorAlert);
+    };
+  }
+ 
+  function onUnarchiveGame(gameId, description) {
+    return () => {
+      var shouldDelete = window.confirm(
+        `Are you sure you wish to unarchive ${description}? If the game is old enough to be expired then it will eventually be deleted.`
+      );
+      if (!shouldDelete) return;
+
+      axios
+        .delete(`/game/${gameId}/archive`)
+        .then((res) => {
+          siteInfo.showAlert(res.data, "success");
+        })
+        .catch(errorAlert);
+    };
+  }
+ 
+  function onEditArchivedGamesClick() {
+    return () => {
+      setEditingArchivedGames(editingArchivedGames ? false : true);
     };
   }
 
@@ -469,6 +500,26 @@ export default function Profile() {
     );
   });
 
+  const archivedGamesRows = archivedGames.map((game) => {
+    return (
+      <div className="archived-game" key={game.id}>
+        <Typography variant="body2">
+          {filterProfanity(game.description, user.settings)}
+        </Typography>
+        {showDeleteArchivedGame && (
+          <div className="btns-wrapper">
+            <i className="fas fa-trash" onClick={onUnarchiveGame(game.id, game.description)} />
+          </div>
+        )}
+        <GameRow
+          game={game}
+          type={game.status || "Finished"}
+          small
+        />
+      </div>
+    );
+  });
+
   const AchievementRows = achievements
     .map((achID) => {
       for (let item of Object.entries(AchievementData.Mafia).filter(
@@ -498,10 +549,6 @@ export default function Profile() {
       </div>
     </div>
   ));
-
-  // userId is the id of the current profile
-  // user.id is the id of the current user
-  const showDelete = userId === user.id;
 
   const friendRows = friends.map((friend) => (
     <div className="friend" key={friend.id}>
@@ -784,6 +831,15 @@ export default function Profile() {
               {achievements.length === 0 && "No achievements yet"}
             </div>
           </div>
+          {archivedGamesRows.length !== 0 && (<div
+            className="box-panel archived-games"
+            style={{ ...panelStyle, maxWidth: "350px" }}
+          >
+            <div className="heading">Archived Games {showDelete && (<i className="fas fa-edit" onClick={onEditArchivedGamesClick()} />)}</div>
+            <div className="content">
+              {archivedGamesRows}
+            </div>
+          </div>)}
         </div>
       </div>
       <Box sx={{ mt: 4 }}>

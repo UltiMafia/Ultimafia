@@ -151,6 +151,11 @@
   opacity: 1;
 }
 
+.game .misc-wrapper .game-buttons {
+  display: flex;
+  gap: 8px;
+}
+
 .leave-game,
 .rehost-game {
   margin-left: 10px;

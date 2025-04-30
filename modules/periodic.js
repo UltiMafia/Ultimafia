@@ -79,9 +79,15 @@ module.exports = function () {
         try {
           let oldGames = await models.Game.find({
             endTime: { $lt: Date.now() - 1000 * 60 * 60 * 24 * 30 },
-          }).select("_id players");
+          }).select("_id id players");
 
           for (let game of oldGames) {
+            var archivedGame = await models.ArchivedGame.findOne({ game: game._id }).select("user game");
+            if (archivedGame) {
+              // Don't expire games that have been archived by someone
+              continue;
+            }
+
             for (let player of game.players)
               models.User.updateOne(
                 { id: player },
