@@ -233,7 +233,7 @@ export default function Profile() {
         .catch(errorAlert);
     };
   }
- 
+
   function onUnarchiveGame(gameId, description) {
     return () => {
       var shouldDelete = window.confirm(
@@ -249,7 +249,7 @@ export default function Profile() {
         .catch(errorAlert);
     };
   }
- 
+
   function onEditArchivedGamesClick() {
     return () => {
       setEditingArchivedGames(editingArchivedGames ? false : true);
@@ -508,14 +508,13 @@ export default function Profile() {
         </Typography>
         {showDeleteArchivedGame && (
           <div className="btns-wrapper">
-            <i className="fas fa-trash" onClick={onUnarchiveGame(game.id, game.description)} />
+            <i
+              className="fas fa-trash"
+              onClick={onUnarchiveGame(game.id, game.description)}
+            />
           </div>
         )}
-        <GameRow
-          game={game}
-          type={game.status || "Finished"}
-          small
-        />
+        <GameRow game={game} type={game.status || "Finished"} small />
       </div>
     );
   });
@@ -831,15 +830,23 @@ export default function Profile() {
               {achievements.length === 0 && "No achievements yet"}
             </div>
           </div>
-          {archivedGamesRows.length !== 0 && (<div
-            className="box-panel archived-games"
-            style={{ ...panelStyle, maxWidth: "350px" }}
-          >
-            <div className="heading">Archived Games {showDelete && (<i className="fas fa-edit" onClick={onEditArchivedGamesClick()} />)}</div>
-            <div className="content">
-              {archivedGamesRows}
+          {archivedGamesRows.length !== 0 && (
+            <div
+              className="box-panel archived-games"
+              style={{ ...panelStyle, maxWidth: "350px" }}
+            >
+              <div className="heading">
+                Archived Games{" "}
+                {showDelete && (
+                  <i
+                    className="fas fa-edit"
+                    onClick={onEditArchivedGamesClick()}
+                  />
+                )}
+              </div>
+              <div className="content">{archivedGamesRows}</div>
             </div>
-          </div>)}
+          )}
         </div>
       </div>
       <Box sx={{ mt: 4 }}>
