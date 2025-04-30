@@ -377,6 +377,14 @@ iframe {
   overflow-x: auto;
 }
 
+.profile .archived-games .content {
+  gap: 12px;
+}
+
+.profile .archived-games .setup {
+  overflow-x: auto;
+}
+
 .profile .created-setups .setup {
   margin-bottom: 5px;
 }

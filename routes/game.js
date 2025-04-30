@@ -795,6 +795,91 @@ router.post("/unreserve", async function (req, res) {
   }
 });
 
+router.post("/:id/archive", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var gameId = String(req.params.id);
+
+    var user = await models.User.findOne({ id: userId, deleted: false }).select(
+      "itemsOwned _id"
+    );
+    user = user.toJSON();
+
+    var itemsOwned = await redis.getUserItemsOwned(userId);
+
+    if (!itemsOwned.archivedGames) {
+      res.status(500);
+      res.send("You must purchase archived games from the Shop.");
+      return;
+    }
+
+    var archivedGames = await models.ArchivedGame.find({ user: user._id })
+      .select("user game");
+    if (archivedGames.length >= itemsOwned.archivedGamesMax) {
+      res.status(500);
+      res.send(
+        "You must purchase additional archived games from the Shop."
+      );
+      return;
+    }
+    
+    var game = await models.Game.findOne({ id: gameId })
+      .select("type setup startTime _id")
+      .populate("setup", "name -_id");
+    
+      if (!game) {
+      res.status(500);
+      res.send("Game not found");
+      return;
+    }
+
+    if (archivedGames.map(item => item.game.toString()).includes(game._id.toString())) {
+      res.status(500);
+      res.send("You've already archived this game.");
+      return;
+    }
+
+    var descriptionDate = new Date(game.startTime).toDateString();
+
+    var archivedGame = new models.ArchivedGame({
+      user: user._id,
+      game: game._id,
+      description: `${game.type} ${game.setup.name} ${descriptionDate}`
+    });
+    await archivedGame.save();
+
+    res.send("Successfully archived game.");
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error archiving game.");
+  }
+});
+
+router.delete("/:id/archive", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var gameId = String(req.params.id);
+
+    var user = await models.User.findOne({ id: userId }).select("_id");
+    var game = await models.Game.findOne({ id: gameId }).select("_id");
+
+    var status = await models.ArchivedGame.deleteOne({ user: user._id, game: game._id });
+
+    if (status.deletedCount > 0) {
+      res.send("Successfully unarchived game.");
+      return;
+    }
+    else {
+      return;
+    }
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error deleting archived game.");
+  }
+});
+
 router.post("/cancel", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);

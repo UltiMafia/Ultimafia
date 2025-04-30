@@ -768,6 +768,15 @@ export function BotBar(props) {
     }, 500);
   }
 
+  function onArchiveGameClick() {
+    axios
+      .post(`/game/${gameId}/archive`)
+      .then((res) => { siteInfo.showAlert(res.data, "success"); })
+      .catch((e) => {
+        errorAlert(e);
+      });
+  }
+
   return (
     <div className="top">
       {!isPhoneDevice && (
@@ -839,17 +848,27 @@ export function BotBar(props) {
             )}
           </div>
         </div>
-        <Button className="btn btn-theme leave-game" onClick={onLeaveGameClick}>
-          Leave
-        </Button>
-        {!props.review && props.history.currentState == -2 && (
-          <Button
-            className="btn btn-theme-sec rehost-game"
-            onClick={onRehostGameClick}
-          >
-            Rehost
+        <div className="game-buttons">
+          {props.review && (
+            <Button
+              className="btn btn-theme-sec archive-game"
+              onClick={onArchiveGameClick}
+            >
+              Archive
+            </Button>
+          )}
+          <Button className="btn btn-theme leave-game" onClick={onLeaveGameClick}>
+            Leave
           </Button>
-        )}
+          {!props.review && props.history.currentState == -2 && (
+            <Button
+              className="btn btn-theme-sec rehost-game"
+              onClick={onRehostGameClick}
+            >
+              Rehost
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );

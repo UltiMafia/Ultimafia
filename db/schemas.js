@@ -94,6 +94,8 @@ var schemas = {
       anonymousDeck: { type: Number, default: 0 },
       customEmotes: { type: Number, default: 0 },
       customEmotesExtra: { type: Number, default: 0 },
+      archivedGames: { type: Number, default: 0 },
+      archivedGamesMax: { type: Number, default: 0 },
     },
     stats: {},
     achievements: [],
@@ -237,6 +239,19 @@ var schemas = {
       type: mongoose.Schema.Types.ObjectId,
       ref: "AnonymousDeck",
     },
+  }),
+  ArchivedGame: new mongoose.Schema({
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      index: true,
+    },
+    game: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Game",
+      index: true,
+    },
+    description: { type: String, default: "" },
   }),
   ForumCategory: new mongoose.Schema({
     id: { type: String, index: true },

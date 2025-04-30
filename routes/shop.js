@@ -107,6 +107,25 @@ const shopItems = [
     limit: constants.maxOwnedCustomEmotesExtra,
     onBuy: function () {},
   },
+  {
+    name: "Archived Games",
+    desc: "Gain the ability to archive games and have them displayed on your profile!",
+    key: "archivedGames",
+    price: 25,
+    limit: 1,
+    propagateItemUpdates: {
+      archivedGamesMax: 5,
+    },
+    onBuy: function () {},
+  },
+  {
+    name: "Maximum Archived Games",
+    desc: "Increases the amount of games that you can archive.",
+    key: "archivedGamesMax",
+    price: 25,
+    limit: constants.maxArchivedGamesMax,
+    onBuy: function () {},
+  },
 ];
 
 router.get("/info", async function (req, res) {

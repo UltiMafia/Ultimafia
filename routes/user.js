@@ -180,7 +180,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar settings accounts wins losses kudos karma achievements bio pronouns banner setups games numFriends stats -_id"
+        "id name avatar settings accounts wins losses kudos karma achievements bio pronouns banner setups games numFriends stats _id"
       )
       .populate({
         path: "setups",
@@ -215,6 +215,9 @@ router.get("/:id/profile", async function (req, res) {
     user.maxFriendsPage =
       Math.ceil(user.numFriends / constants.friendsPerPage) || 1;
 
+    var userMongoId = user._id;
+    delete user._id;
+
     var allStats = dbStats.allStats();
     user.stats = user.stats || allStats;
 
@@ -229,6 +232,29 @@ router.get("/:id/profile", async function (req, res) {
             user.stats[gameType][objName] = statsSet[objName];
       }
     }
+
+    var archivedGames = await models.ArchivedGame.find({ user: userMongoId })
+      .select("game description")
+      .populate({
+        path: "game",
+        select: "id setup endTime private broken -_id",
+        populate: {
+          path: "setup",
+          select:
+            "id gameType name closed useRoleGroups roleGroupSizes count roles total -_id",
+        },
+        options: {
+          sort: "-endTime",
+          limit: constants.maxArchivedGamesMax,
+        },
+      });
+    user.archivedGames = archivedGames.map(item => {
+      return {
+        ...item.game._doc,
+        description: item.description,
+        status: "Finished",
+      };
+    });
 
     var karmaInfo = { voteCount: user.karma, vote: 0 };
     var karmaVote = await models.KarmaVote.findOne({
@@ -660,7 +686,7 @@ router.post("/deathMessage", async function (req, res) {
 
     if (!itemsOwned.deathMessageEnabled) {
       res.status(500);
-      res.send("You must custom death messages from the Shop.");
+      res.send("You must purchase custom death messages from the Shop.");
       return;
     }
 
