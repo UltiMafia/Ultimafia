@@ -345,6 +345,7 @@ const artContributors = {
       "Lich",
       "Superhero",
       "Black Hole",
+      "Grey Goo",
     ],
   },
   drewsworth: {
@@ -366,6 +367,13 @@ const artContributors = {
       "Hitchhiker",
       "Prankster",
       "Zombie",
+    ],
+  },
+  JaNa: {
+    Mafia: [
+      "Sorcerer",
+      "Vizier",
+      "Ghostbuster",
     ],
   },
 };

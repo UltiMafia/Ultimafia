@@ -652,6 +652,14 @@
   background-image: url("/images/roles/vizier-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Sorcerer {
+  background-image: url("/images/roles/Sorcerer-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Ghostbuster {
+  background-image: url("/images/roles/ghostbuster-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Suitress {
   background-image: url("/images/roles/suitress-vivid.png");
 }
@@ -1165,6 +1173,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Egg {
   background-image: url("/images/roles/egg-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Grey-Goo {
+  background-image: url("/images/roles/grey-goo-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Samurai {

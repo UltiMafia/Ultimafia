@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 
-module.exports = class WinWithGliders extends Card {
+module.exports = class WinWithGreyGoo extends Card {
   constructor(role) {
     super(role);
 
@@ -9,10 +9,10 @@ module.exports = class WinWithGliders extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
         // win with majority
-        const numGliderAlive = this.game.players.filter(
-          (p) => p.alive && p.role.name == "Glider"
+        const numGreyGooAlive = this.game.players.filter(
+          (p) => p.alive && p.role.name == "Grey Goo"
         ).length;
-        if (aliveCount > 0 && numGliderAlive >= aliveCount / 2) {
+        if (aliveCount > 0 && numGreyGooAlive >= aliveCount / 2) {
           winners.addPlayer(this.player, this.name);
           return;
         }
@@ -26,7 +26,7 @@ module.exports = class WinWithGliders extends Card {
         }
 
         this.player.queueAlert(
-          ":scream: You must ensure a Glider survives until the end."
+          ":scream: You must ensure a Grey Goo survives until the end."
         );
       },
     };
