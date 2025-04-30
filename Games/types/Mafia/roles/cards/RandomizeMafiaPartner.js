@@ -21,11 +21,14 @@ module.exports = class RandomizeMafiaPartner extends Card {
                 .filter((roleData) => roleData[1].alignment === "Mafia")
                 .map((roleData) => roleData[0])
             );
-            this.target.setRole(randomMafiaRole, null,
-                    false,
-                    false,
-                    false,
-                    "No Change");
+            this.target.setRole(
+              randomMafiaRole,
+              null,
+              false,
+              false,
+              false,
+              "No Change"
+            );
           },
         },
       },
