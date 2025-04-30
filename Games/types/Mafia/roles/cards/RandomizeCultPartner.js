@@ -21,7 +21,11 @@ module.exports = class RandomizeCultPartner extends Card {
                 .filter((roleData) => roleData[1].alignment === "Cult")
                 .map((roleData) => roleData[0])
             );
-            this.target.setRole(randomCultRole);
+            this.target.setRole(randomCultRole, null,
+                    false,
+                    false,
+                    false,
+                    "No Change");
           },
         },
       },
