@@ -248,7 +248,7 @@ router.get("/:id/profile", async function (req, res) {
           limit: constants.maxArchivedGamesMax,
         },
       });
-    user.archivedGames = archivedGames.map(item => {
+    user.archivedGames = archivedGames.map((item) => {
       return {
         ...item.game._doc,
         description: item.description,

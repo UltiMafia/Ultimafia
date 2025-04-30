@@ -82,7 +82,9 @@ module.exports = function () {
           }).select("_id id players");
 
           for (let game of oldGames) {
-            var archivedGame = await models.ArchivedGame.findOne({ game: game._id }).select("user game");
+            var archivedGame = await models.ArchivedGame.findOne({
+              game: game._id,
+            }).select("user game");
             if (archivedGame) {
               // Don't expire games that have been archived by someone
               continue;

@@ -771,7 +771,9 @@ export function BotBar(props) {
   function onArchiveGameClick() {
     axios
       .post(`/game/${gameId}/archive`)
-      .then((res) => { siteInfo.showAlert(res.data, "success"); })
+      .then((res) => {
+        siteInfo.showAlert(res.data, "success");
+      })
       .catch((e) => {
         errorAlert(e);
       });
@@ -857,7 +859,10 @@ export function BotBar(props) {
               Archive
             </Button>
           )}
-          <Button className="btn btn-theme leave-game" onClick={onLeaveGameClick}>
+          <Button
+            className="btn btn-theme leave-game"
+            onClick={onLeaveGameClick}
+          >
             Leave
           </Button>
           {!props.review && props.history.currentState == -2 && (
