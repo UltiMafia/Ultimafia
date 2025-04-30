@@ -111,7 +111,7 @@ const shopItems = [
     name: "Archived Games",
     desc: "Gain the ability to archive games and have them displayed on your profile!",
     key: "archivedGames",
-    price: 25,
+    price: 100,
     limit: 1,
     propagateItemUpdates: {
       archivedGamesMax: 5,
@@ -122,7 +122,7 @@ const shopItems = [
     name: "Maximum Archived Games",
     desc: "Increases the amount of games that you can archive.",
     key: "archivedGamesMax",
-    price: 25,
+    price: 100,
     limit: constants.maxArchivedGamesMax,
     onBuy: function () {},
   },
