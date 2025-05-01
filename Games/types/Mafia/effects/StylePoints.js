@@ -2,7 +2,7 @@ const Effect = require("../Effect");
 const Action = require("../Action");
 
 module.exports = class StylePoints extends Effect {
-  constructor(actor, player) {
+  constructor(actor, player, lifespan) {
     super("StylePoints");
     this.actor = actor;
     this.word = player.role.name;
@@ -15,13 +15,17 @@ module.exports = class StylePoints extends Effect {
         }
         if (this.game.getStateName() != "Night") return;
         if (!this.player.alive) return;
-        this.actor.data.StylePoints += this.StylePointsToday;
+        this.player.data.StylePoints += this.StylePointsToday;
+        if(!this.actor.hasAbility(["WhenDead"])){
+          this.remove();
+        }
       },
     };
   }
 
   speak(message) {
-    if (this.player && message.content.replace(" ", "").toLowerCase().includes(this.player.role.name)) {
+
+    if (this.player && this.player.faction == this.actor.faction && message.content.replace(" ", "").toLowerCase().includes(this.player.role.name)) {
       var action = new Action({
         actor: this.player,
         target: this.player,
@@ -36,5 +40,6 @@ module.exports = class StylePoints extends Effect {
 
       this.game.instantAction(action);
     }
+  
   }
 };
