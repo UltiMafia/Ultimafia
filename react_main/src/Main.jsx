@@ -204,6 +204,7 @@ function Main() {
             <Switch>
               <Route path="/game">
                 <Game />
+                <AlertList />
               </Route>
               <Route path="/">
                 <div className="site-wrapper">
