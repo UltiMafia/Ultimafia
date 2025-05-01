@@ -65,6 +65,10 @@ module.exports = {
     Tarotist: "Psychic",
     Admirer: "Sidekick",
     Conspirator: "Sidekick",
+    Brute: "Villager",
+    Recluse: "Villager",
+    Bully: "Mafioso",
+    Blackmailer: "Mafioso",
   },
   Ghost: {
     Town: "Villager",

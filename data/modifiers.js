@@ -69,6 +69,12 @@ const modifierData = {
       description:
         "If a player with this modifier wins, then Village, Mafia, and Cult cannot also win alongside them.",
     },
+    Brutish: {
+      internal: ["MakeSkittishOnRoleShare"],
+      tags: [],
+      description:
+      "Players who role-share with a Brutish player become skittish. Skittish players must accept all incoming role-shares.",
+    },
     Bulletproof: {
       internal: ["StartWithArmor"],
       tags: ["Items", "Armor"],
@@ -422,6 +428,11 @@ const modifierData = {
       tags: ["Convert Saver", "Killing", "Reflexive"],
       description:
         "Kills anyone (up to two people) who tries to convert them at night.",
+    },
+    Reclusive: {
+      internal: ["MakeShyOnRoleShare"],
+      tags: ["Killing", "Visits", "Self Kill"],
+      description: "Players who role-share with a Reclusive player become shy. Shy players cannot accept incoming role-shares and cannot Private/Public Reveal.",
     },
     Regretful: {
       internal: ["Regretful"],

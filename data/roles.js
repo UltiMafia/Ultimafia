@@ -1494,24 +1494,6 @@ const roleData = {
         "Once a proposal is accepted, the Suitress cannot make another proposal.",
       ],
     },
-    Brute: {
-      alignment: "Village",
-      category: "Role Sharing",
-      tags: ["Role Share"],
-      description: [
-        "Player who Role Share with a Brute become skittish.",
-        "Skittish players must accept all Role/Alignment Shares",
-      ],
-    },
-    Recluse: {
-      alignment: "Village",
-      category: "Role Sharing",
-      tags: ["Role Share"],
-      description: [
-        "Player who Role Share with a Recluse become shy.",
-        "Shy players cannot accept Role/Alignment Shares and cannot Private/Public Reveal.",
-      ],
-    },
     //Mafia
     Mafioso: {
       alignment: "Mafia",
@@ -2300,24 +2282,6 @@ const roleData = {
         "Mafia will not win by majority if an Assassin is present.",
       ],
       RolesMadeBy: ["President"],
-    },
-    Bully: {
-      alignment: "Mafia",
-      category: "Role Sharing",
-      tags: ["Role Share"],
-      description: [
-        "Player who Role Share with a Bully become skittish.",
-        "Skittish players must accept all Role/Alignment Shares",
-      ],
-    },
-    Blackmailer: {
-      alignment: "Mafia",
-      category: "Role Sharing",
-      tags: ["Role Share"],
-      description: [
-        "Player who Role Share with a Blackmailer become shy.",
-        "Shy players cannot accept Role/Alignment Shares and cannot Private/Public Reveal.",
-      ],
     },
     Prankster: {
       alignment: "Mafia",
