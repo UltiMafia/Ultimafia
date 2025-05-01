@@ -2592,6 +2592,23 @@ const roleData = {
         "Independant roles can only be converted to other Independant roles.",
       ],
     },
+    "Facehugger": {
+      alignment: "Cult",
+      category: "Manipulative",
+      tags: [
+        "Night-acting",
+        "Conversion",
+        "Roles",
+        "Manipulative",
+        "Visiting",
+        "Effect",
+      ],
+      description: [
+        "Each night chooses a player and a non-Demonic Cult role.",
+        "When that player dies they will be converted to that role and become Transcendent.",
+      ],
+      graveyardParticipation: "all",
+    },
     "Queen Bee": {
       alignment: "Cult",
       category: "Manipulative",
