@@ -27,6 +27,7 @@ module.exports = class MafiaPlayer extends Player {
     this.data.Block = 0;
     this.data.ConversionProgress = 0;
     this.data.Charge = 0;
+    this.data.StylePoints = 0;
     this.Gold = 0;
   }
 
