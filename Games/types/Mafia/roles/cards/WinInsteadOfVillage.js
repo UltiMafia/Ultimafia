@@ -14,9 +14,8 @@ module.exports = class WinInsteadOfVillage extends Card {
         if (winners.groups["Village"]) {
           winners.addPlayer(this.player, this.player.role.name);
           winners.removeGroup("Village");
-        }
-        else if(winners.groups["Autocrat"]){
-        winners.addPlayer(this.player, this.player.role.name);
+        } else if (winners.groups["Autocrat"]) {
+          winners.addPlayer(this.player, this.player.role.name);
         }
       },
     };
