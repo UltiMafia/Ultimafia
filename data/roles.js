@@ -2285,12 +2285,7 @@ const roleData = {
     },
     Stylist: {
       alignment: "Mafia",
-      tags: [
-        "Mini-game",
-        "Essential",
-        "Style Points",
-        "Win-Con",
-      ],
+      tags: ["Mini-game", "Essential", "Style Points", "Win-Con"],
       description: [
         "At the end of each day, Any Living Mafia players will gain 1 Style Point for everytime they said their role in chat.",
         "Style Points cannot be earned if only 1 Mafia player is alive.",
@@ -2606,7 +2601,7 @@ const roleData = {
         "Independant roles can only be converted to other Independant roles.",
       ],
     },
-    "Facehugger": {
+    Facehugger: {
       alignment: "Cult",
       category: "Manipulative",
       tags: [

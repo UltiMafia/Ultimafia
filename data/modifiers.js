@@ -73,7 +73,7 @@ const modifierData = {
       internal: ["MakeSkittishOnRoleShare"],
       tags: [],
       description:
-      "Players who role-share with a Brutish player become skittish. Skittish players must accept all incoming role-shares.",
+        "Players who role-share with a Brutish player become skittish. Skittish players must accept all incoming role-shares.",
     },
     Bulletproof: {
       internal: ["StartWithArmor"],
@@ -439,7 +439,8 @@ const modifierData = {
     Reclusive: {
       internal: ["MakeShyOnRoleShare"],
       tags: ["Killing", "Visits", "Self Kill"],
-      description: "Players who role-share with a Reclusive player become shy. Shy players cannot accept incoming role-shares and cannot Private/Public Reveal.",
+      description:
+        "Players who role-share with a Reclusive player become shy. Shy players cannot accept incoming role-shares and cannot Private/Public Reveal.",
     },
     Regretful: {
       internal: ["Regretful"],

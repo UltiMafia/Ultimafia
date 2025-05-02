@@ -10,13 +10,13 @@ module.exports = class StylePoints extends Effect {
 
     this.listeners = {
       state: function () {
-        if(this.game.getStateName() == "Day"){
+        if (this.game.getStateName() == "Day") {
           this.StylePointsToday = 0;
         }
         if (this.game.getStateName() != "Night") return;
         if (!this.player.alive) return;
         this.player.data.StylePoints += this.StylePointsToday;
-        if(!this.actor.hasAbility(["WhenDead"])){
+        if (!this.actor.hasAbility(["WhenDead"])) {
           this.remove();
         }
       },
@@ -24,8 +24,18 @@ module.exports = class StylePoints extends Effect {
   }
 
   speak(message) {
-    let players = this.game.alivePlayers().filter((p) => p.faction == this.actor.faction);
-    if (players.length > 1 && this.player.faction == this.actor.faction && message.content.replace(" ", "").toLowerCase().includes(this.player.role.name.toLowerCase()) && this.game.getStateName() == "Day") {
+    let players = this.game
+      .alivePlayers()
+      .filter((p) => p.faction == this.actor.faction);
+    if (
+      players.length > 1 &&
+      this.player.faction == this.actor.faction &&
+      message.content
+        .replace(" ", "")
+        .toLowerCase()
+        .includes(this.player.role.name.toLowerCase()) &&
+      this.game.getStateName() == "Day"
+    ) {
       var action = new Action({
         actor: this.player,
         target: this.player,
@@ -40,6 +50,5 @@ module.exports = class StylePoints extends Effect {
 
       this.game.instantAction(action);
     }
-  
   }
 };

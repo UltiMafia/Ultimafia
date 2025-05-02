@@ -2213,14 +2213,19 @@ function ActionSelect(props) {
   if (!selectVisible) return null;
 
   // Client side vote counting logic
-  const shouldDisplayCounters = (meeting.inputType === "player") && (meeting.name === "Village");
+  const shouldDisplayCounters =
+    meeting.inputType === "player" && meeting.name === "Village";
   const voteCounts = new Map();
   var highestVoteCount = 0;
 
   if (shouldDisplayCounters) {
     // Tally the votes per player
     for (const member of Object.values(meeting.members)) {
-      var selections = getTargetDisplay(meeting.votes[member.id], meeting, props.players);
+      var selections = getTargetDisplay(
+        meeting.votes[member.id],
+        meeting,
+        props.players
+      );
       for (let selection of selections) {
         if (!voteCounts.has(selection)) {
           voteCounts.set(selection, 0);
@@ -2236,7 +2241,6 @@ function ActionSelect(props) {
       }
     }
   }
-
 
   return (
     <Box
@@ -2280,7 +2284,8 @@ function ActionSelect(props) {
           if (voteCounts.has(player.name)) {
             voteCount = voteCounts.get(player.name);
           }
-          const hasHighestVoteCount = (voteCount != 0) && (voteCount == highestVoteCount);
+          const hasHighestVoteCount =
+            voteCount != 0 && voteCount == highestVoteCount;
 
           if (
             !member.canVote &&
@@ -2295,9 +2300,18 @@ function ActionSelect(props) {
               className={`vote ${meeting.multi ? "multi" : ""}`}
               sx={{ display: "flex", flexDirection: "column", gap: 1 }}
             >
-              {shouldDisplayCounters && (<div className="vote-count" style={hasHighestVoteCount ? { backgroundColor : "#bd4c4c" } : { backgroundColor : "#4c7dbd" }}>
-                {voteCount}
-              </div>)}
+              {shouldDisplayCounters && (
+                <div
+                  className="vote-count"
+                  style={
+                    hasHighestVoteCount
+                      ? { backgroundColor: "#bd4c4c" }
+                      : { backgroundColor: "#4c7dbd" }
+                  }
+                >
+                  {voteCount}
+                </div>
+              )}
               <Typography
                 className="voter"
                 sx={{ cursor: "pointer", fontWeight: "bold" }}

@@ -7,7 +7,6 @@ module.exports = class Unholy extends Card {
   constructor(role) {
     super(role);
 
-
     this.listeners = {
       state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {

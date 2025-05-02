@@ -27,10 +27,14 @@ module.exports = class ConvertToChosenRole extends Card {
           run: function () {
             let targetPlayer = this.actor.role.data.targetPlayer;
             if (targetPlayer) {
-                if (this.dominates(targetPlayer)) {
-                  targetPlayer.giveEffect("BecomeRoleOnDeath", this.actor, this.target);
-                }
-              
+              if (this.dominates(targetPlayer)) {
+                targetPlayer.giveEffect(
+                  "BecomeRoleOnDeath",
+                  this.actor,
+                  this.target
+                );
+              }
+
               delete this.actor.role.data.targetPlayer;
             }
           },
@@ -44,7 +48,12 @@ module.exports = class ConvertToChosenRole extends Card {
           return;
         }
 
-        this.data.ConvertOptions = this.game.PossibleRoles.filter((r) => this.game.getRoleAlignment(r) == "Cult" && r.split(":")[0] != this.player.role.name && !this.game.getRoleTags(r).includes("Demonic"));
+        this.data.ConvertOptions = this.game.PossibleRoles.filter(
+          (r) =>
+            this.game.getRoleAlignment(r) == "Cult" &&
+            r.split(":")[0] != this.player.role.name &&
+            !this.game.getRoleTags(r).includes("Demonic")
+        );
       },
       // refresh cooldown
       state: function (stateInfo) {

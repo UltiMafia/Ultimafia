@@ -8,15 +8,13 @@ module.exports = class BecomeRoleOnDeath extends Effect {
     this.infector = infector;
     this.role = role;
 
-
-
     this.listeners = {
-      death: function (player, killer, deathType, instant){
+      death: function (player, killer, deathType, instant) {
         if (this.player != player) return;
         //if(this.word == "Complete") return;
-          if (!this.infector.hasAbility(["Convert"])) {
+        if (!this.infector.hasAbility(["Convert"])) {
           return;
-         }
+        }
         var action = new Action({
           labels: ["hidden", "convert"],
           actor: this.infector,
@@ -24,34 +22,33 @@ module.exports = class BecomeRoleOnDeath extends Effect {
           game: this.game,
           effect: this,
           run: function () {
-            if (this.dominates()){
+            if (this.dominates()) {
               let roleName = this.effect.role.split(":")[0];
               let modifiers = this.effect.role.split(":")[1];
-              if(!modifiers || modifiers.length <= 0){
-                  this.target.setRole(
-                  `${roleName}:Transcendent`,                   
-                    null,
-                    false,
-                    false,
-                    false,
-                    this.actor.faction);
-              }
-              else{
+              if (!modifiers || modifiers.length <= 0) {
                 this.target.setRole(
-                  `${this.effect.role}/Transcendent`,                   
-                    null,
-                    false,
-                    false,
-                    false,
-                    this.actor.faction);
+                  `${roleName}:Transcendent`,
+                  null,
+                  false,
+                  false,
+                  false,
+                  this.actor.faction
+                );
+              } else {
+                this.target.setRole(
+                  `${this.effect.role}/Transcendent`,
+                  null,
+                  false,
+                  false,
+                  false,
+                  this.actor.faction
+                );
               }
-          }
+            }
           },
         });
-       action.do();
+        action.do();
       },
     };
-
-    
   }
 };
