@@ -9,7 +9,7 @@ const IMPORTANT_MEETINGS_NIGHT = [
   "*",
   "Leaders",
   "Hostage Swap",
-  "Choose Vessal",
+  "Choose Vessel",
 ];
 const INVITED_MEETINGS = ["Party!", "Hot Springs", "Banquet", "Superhero"];
 const STARTS_WITH_MEETINGS = [
