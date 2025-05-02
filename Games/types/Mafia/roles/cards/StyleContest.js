@@ -7,15 +7,13 @@ module.exports = class StyleContest extends Card {
     super(role);
 
 
-
-    
     this.listeners = {
       AbilityToggle: function (player) {
         if (this.player.hasAbility(["WhenDead"])){
           for(let player of this.game.players){
             if(player.faction == this.player.faction){
               if(!player.hasEffect("StylePoints")){
-              let effect = player.giveEffect("Immortal", 5, Infinity);
+              let effect = player.giveEffect("StylePoints", this.player, player);
               this.player.passiveEffects.push(effect);
               }
             }

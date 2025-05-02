@@ -22,7 +22,7 @@ module.exports = class BecomeRoleOnDeath extends Effect {
           actor: this.infector,
           target: this.player,
           game: this.game,
-          effect: this
+          effect: this,
           run: function () {
             if (this.dominates()){
               let roleName = this.effect.role.split(":")[0];
@@ -53,12 +53,5 @@ module.exports = class BecomeRoleOnDeath extends Effect {
     };
 
     
-  }
-
-  
-
-  remove() {
-    super.remove();
-    this.action.cancel(true);
   }
 };

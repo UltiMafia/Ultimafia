@@ -199,7 +199,7 @@ const roleData = {
       ],
       description: [
         "Each night, operates on one player to prevent them from dying or being converted.",
-        "If attacked, kills one of their killers",
+        "If that player is attacked, the Surgeon kills one of their attackers",
       ],
     },
     "Tea Lady": {
@@ -2898,8 +2898,8 @@ const roleData = {
       description: [
         "Each night, may choose a player to kill.",
         "On the first night chooses a player as a Vessal.",
-        "The Vessal is Delirious."
-        "A Dream Eater can only be killed if their Vessal is killed."
+        "The Vessal is Delirious.",
+        "A Dream Eater can only be killed if their Vessal is killed.",
       ],
     },
     Shoggoth: {

@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
-const { PRIORITY_NIGHT_SAVER } = require("../../const/Priority");
+const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 
 module.exports = class HauntDreams extends Card {
   constructor(role) {
@@ -11,14 +11,17 @@ module.exports = class HauntDreams extends Card {
       "Choose Vessal": {
         actionName: "Choose Vessal",
         states: ["Night"],
-        flags: ["voting"],
+        flags: ["voting", "mustAct"],
+        targets: { include: ["alive", "self"] },
         action: {
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          priority: PRIORITY_NIGHT_ROLE_BLOCKER,
           labels: ["absolute"],
           run: function () {
             this.actor.role.loved = true;
             this.actor.role.data.DreamHost = this.target;
             this.actor.passiveEffects.push(this.target.giveEffect("Delirious", this.actor, Infinity));
+            this.blockWithDelirium(this.target);
+            this.game.events.emit("AbilityToggle", this.actor);
           },
         },
         shouldMeet() {
@@ -29,10 +32,7 @@ module.exports = class HauntDreams extends Card {
     
     this.listeners = {
       AbilityToggle: function (player) {
-        if (player != this.player) {
-          return;
-        }
-        if (this.player.hasAbility(["OnlyWhenAlive"]) && this.player.role.data.DreamHost.alive) {
+        if (this.player.hasAbility(["OnlyWhenAlive"]) && this.player.role.data.DreamHost && this.player.role.data.DreamHost.alive) {
           if (
             this.DreamImmortalEffect == null ||
             !this.player.effects.includes(this.DreamImmortalEffect)
@@ -55,7 +55,7 @@ module.exports = class HauntDreams extends Card {
           }
         }
 
-        if (this.player.hasAbility(["OnlyWhenAlive"]) && !this.player.role.data.DreamHost.alive){
+        if (this.player.hasAbility(["OnlyWhenAlive"]) && this.player.role.data.DreamHost && !this.player.role.data.DreamHost.alive){
           let action = new Action({
             actor: this.player,
             target: this.player,

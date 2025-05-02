@@ -244,6 +244,13 @@ const modifierData = {
       description:
         "If this player is shot or targeted for a kill, will bleed and then die in one day.",
     },
+    Holy: {
+      internal: ["Holy"],
+      tags: ["Visits", "Block Self", "Modifiers"],
+      description:
+        "If this player visits a player with a Demonic role, their secondary actions will be blocked.",
+      incompatible: ["Unholy"],
+    },
     Humble: {
       internal: ["Humble"],
       tags: ["Vanilla"],
@@ -570,6 +577,13 @@ const modifierData = {
       tags: ["Villager", "Deception"],
       description: "Appears as Villager when condemned or on death.",
       incompatible: ["Shady", "Faceless", "Suspect"],
+    },
+    Unholy: {
+      internal: ["Unholy"],
+      tags: ["Visits", "Block Self", "Modifiers"],
+      description:
+        "If this player visits a player with a non-Demonic role, their secondary actions will be blocked.",
+      incompatible: ["Holy"],
     },
     Unkillable: {
       internal: ["KillImmune"],

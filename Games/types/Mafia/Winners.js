@@ -145,6 +145,8 @@ module.exports = class MafiaWinners extends Winners {
         return "Here's a little lesson in trickery, this is going down in history. If you wanna be a villain number one, then look no further than the Supervillain.";
       case "Survivor":
         return "Through the carnage, the Survivor drifted on.";
+      case "Style Points":
+          return "When you are the most stylish you can't really lose.";
       case "Tofurkey":
         return ":turkey: The grain shipments arrived in town a day too late. The streets were filled with wild Turkeys…";
       case "Turkey":
