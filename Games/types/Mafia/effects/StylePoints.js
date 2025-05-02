@@ -24,8 +24,8 @@ module.exports = class StylePoints extends Effect {
   }
 
   speak(message) {
-
-    if (this.player && this.player.faction == this.actor.faction && message.content.replace(" ", "").toLowerCase().includes(this.player.role.name)) {
+    let players = this.game.players.filter((p) => p.alive && p.faction == this.actor.faction);
+    if (players.length > 1 && this.player && this.player.faction == this.actor.faction && message.content.replace(" ", "").toLowerCase().includes(this.player.role.name)) {
       var action = new Action({
         actor: this.player,
         target: this.player,
