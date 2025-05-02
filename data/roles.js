@@ -2897,8 +2897,8 @@ const roleData = {
       ],
       description: [
         "Each night, may choose a player to kill.",
-        "On the first night chooses a player as a Vessal.",
-        "The Vessal is Delirious.",
+        "On the first night chooses a player as a Vessel.",
+        "The Vessel is Delirious.",
         "A Dream Eater can only be killed if their Vessal is killed.",
       ],
     },
