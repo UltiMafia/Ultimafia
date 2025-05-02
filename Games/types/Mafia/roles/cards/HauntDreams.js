@@ -7,7 +7,7 @@ module.exports = class HauntDreams extends Card {
   constructor(role) {
     super(role);
 
-      this.meetings = {
+    this.meetings = {
       "Choose Vessel": {
         actionName: "Choose Vessel",
         states: ["Night"],
@@ -19,7 +19,9 @@ module.exports = class HauntDreams extends Card {
           run: function () {
             this.actor.role.loved = true;
             this.actor.role.data.DreamHost = this.target;
-            this.actor.passiveEffects.push(this.target.giveEffect("Delirious", this.actor, Infinity));
+            this.actor.passiveEffects.push(
+              this.target.giveEffect("Delirious", this.actor, Infinity)
+            );
             this.blockWithDelirium(this.target);
             this.game.events.emit("AbilityToggle", this.actor);
           },
@@ -29,10 +31,14 @@ module.exports = class HauntDreams extends Card {
         },
       },
     };
-    
+
     this.listeners = {
       AbilityToggle: function (player) {
-        if (this.player.hasAbility(["OnlyWhenAlive"]) && this.player.role.data.DreamHost && this.player.role.data.DreamHost.alive) {
+        if (
+          this.player.hasAbility(["OnlyWhenAlive"]) &&
+          this.player.role.data.DreamHost &&
+          this.player.role.data.DreamHost.alive
+        ) {
           if (
             this.DreamImmortalEffect == null ||
             !this.player.effects.includes(this.DreamImmortalEffect)
@@ -45,7 +51,9 @@ module.exports = class HauntDreams extends Card {
             this.player.passiveEffects.push(this.DreamImmortalEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(this.DreamImmortalEffect);
+          var index = this.player.passiveEffects.indexOf(
+            this.DreamImmortalEffect
+          );
           if (index != -1) {
             this.player.passiveEffects.splice(index, 1);
           }
@@ -55,7 +63,11 @@ module.exports = class HauntDreams extends Card {
           }
         }
 
-        if (this.player.hasAbility(["OnlyWhenAlive"]) && this.player.role.data.DreamHost && !this.player.role.data.DreamHost.alive){
+        if (
+          this.player.hasAbility(["OnlyWhenAlive"]) &&
+          this.player.role.data.DreamHost &&
+          !this.player.role.data.DreamHost.alive
+        ) {
           let action = new Action({
             actor: this.player,
             target: this.player,

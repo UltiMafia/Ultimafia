@@ -7,7 +7,6 @@ module.exports = class Holy extends Card {
   constructor(role) {
     super(role);
 
-
     this.listeners = {
       state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
