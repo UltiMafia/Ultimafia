@@ -2283,6 +2283,20 @@ const roleData = {
       ],
       RolesMadeBy: ["President"],
     },
+    Stylist: {
+      alignment: "Mafia",
+      tags: [
+        "Mini-game",
+        "Essential",
+        "Style Points",
+        "Win-Con",
+      ],
+      description: [
+        "At the end of each day, Any Living Mafia players will gain 1 Style Point for everytime they said their role in chat.",
+        "Style Points cannot be earned if only 1 Mafia player is alive.",
+        "At the end of the game reguardless of who Won, The player with the most Style Points will also Win.",
+      ],
+    },
     Prankster: {
       alignment: "Mafia",
       category: "Gaming",
@@ -2869,6 +2883,23 @@ const roleData = {
       description: [
         "Each night, may choose a player to kill.",
         "A Satyr's starting Non-banished Village-aligned neighbors are Delirious.",
+      ],
+    },
+    "Dream Eater": {
+      alignment: "Cult",
+      category: "Demon",
+      tags: [
+        "Killing",
+        "Delirium",
+        "Visiting",
+        "Night Killer",
+        "Condemn Immune",
+      ],
+      description: [
+        "Each night, may choose a player to kill.",
+        "On the first night chooses a player as a Vessal.",
+        "The Vessal is Delirious."
+        "A Dream Eater can only be killed if their Vessal is killed."
       ],
     },
     Shoggoth: {
