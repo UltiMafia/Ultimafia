@@ -3,7 +3,7 @@ const Action = require("../../Action");
 const Player = require("../../../../core/Player");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 
-module.exports = class Disloyal extends Card {
+module.exports = class Unholy extends Card {
   constructor(role) {
     super(role);
 
@@ -45,7 +45,7 @@ module.exports = class Disloyal extends Card {
                 toCheck[0] instanceof Player
               ) {
                 for (let y = 0; y < toCheck.length; y++) {
-                  if (toCheck[y].role.alignment == this.actor.role.alignment) {
+                  if (!toCheck[y].isDemonic(true)) {
                     if (
                       action.priority > this.priority &&
                       !action.hasLabel("absolute")

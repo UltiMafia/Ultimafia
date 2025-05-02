@@ -199,7 +199,7 @@ const roleData = {
       ],
       description: [
         "Each night, operates on one player to prevent them from dying or being converted.",
-        "If attacked, kills one of their killers",
+        "If that player is attacked, the Surgeon kills one of their attackers",
       ],
     },
     "Tea Lady": {
@@ -2283,6 +2283,20 @@ const roleData = {
       ],
       RolesMadeBy: ["President"],
     },
+    Stylist: {
+      alignment: "Mafia",
+      tags: [
+        "Mini-game",
+        "Essential",
+        "Style Points",
+        "Win-Con",
+      ],
+      description: [
+        "At the end of each day, Any Living Mafia players will gain 1 Style Point for everytime they said their role in chat.",
+        "Style Points cannot be earned if only 1 Mafia player is alive.",
+        "At the end of the game reguardless of who Won, The player with the most Style Points will also Win.",
+      ],
+    },
     Prankster: {
       alignment: "Mafia",
       category: "Gaming",
@@ -2592,6 +2606,23 @@ const roleData = {
         "Independant roles can only be converted to other Independant roles.",
       ],
     },
+    "Facehugger": {
+      alignment: "Cult",
+      category: "Manipulative",
+      tags: [
+        "Night-acting",
+        "Conversion",
+        "Roles",
+        "Manipulative",
+        "Visiting",
+        "Effect",
+      ],
+      description: [
+        "Each night chooses a player and a non-Demonic Cult role.",
+        "When that player dies they will be converted to that role and become Transcendent.",
+      ],
+      graveyardParticipation: "all",
+    },
     "Queen Bee": {
       alignment: "Cult",
       category: "Manipulative",
@@ -2852,6 +2883,23 @@ const roleData = {
       description: [
         "Each night, may choose a player to kill.",
         "A Satyr's starting Non-banished Village-aligned neighbors are Delirious.",
+      ],
+    },
+    "Dream Eater": {
+      alignment: "Cult",
+      category: "Demon",
+      tags: [
+        "Killing",
+        "Delirium",
+        "Visiting",
+        "Night Killer",
+        "Condemn Immune",
+      ],
+      description: [
+        "Each night, may choose a player to kill.",
+        "On the first night chooses a player as a Vessel.",
+        "The Vessel is Delirious.",
+        "A Dream Eater can only be killed if their Vessal is killed.",
       ],
     },
     Shoggoth: {

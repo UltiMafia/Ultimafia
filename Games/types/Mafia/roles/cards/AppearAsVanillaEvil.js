@@ -11,7 +11,7 @@ module.exports = class AppearAsVanillaEvil extends Card {
         role.game.getRoleAlignment(r) === "Mafia"
     );
 
-    const randomEvilRole = Random.randArrayVal(evilRoles);
+    let randomEvilRole = Random.randArrayVal(evilRoles);
 
     if (this.game.getRoleAlignment(randomEvilRole) == "Cult") {
       randomEvilRole = "Cultist";
