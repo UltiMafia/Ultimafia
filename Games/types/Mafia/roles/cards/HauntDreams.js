@@ -8,8 +8,8 @@ module.exports = class HauntDreams extends Card {
     super(role);
 
       this.meetings = {
-      "Haunt Dreams": {
-        actionName: "Invade Dreams",
+      "Choose Vessal": {
+        actionName: "Choose Vessal",
         states: ["Night"],
         flags: ["voting"],
         action: {
