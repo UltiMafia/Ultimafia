@@ -767,6 +767,16 @@
   margin-left: 5px;
 }
 
+.game .vote-count {
+  color: white;
+  min-width: 24px;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 12px;
+  text-align: center;
+  margin-right: 5px;
+}
+
 /* resistance */
 
 .game .rst {
