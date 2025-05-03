@@ -1856,7 +1856,7 @@ const roleData = {
       tags: ["Gifting", "Killing", "Items", "Gun", "Tommy", "Visiting"],
       description: [
         "Gives out a tommy gun each night.",
-        "Tommy gun will only kill the target if not aligned with the Mafia.",
+        "Tommy gun will only kill the target if aligned with the shooter.",
         "The gunned player will not know the gun is a tommy gun.",
       ],
     },
@@ -2720,9 +2720,9 @@ const roleData = {
       category: "Chaos",
       tags: ["Win Con", "Essential", "Voting", "Condemn"],
       description: [
-        "If a Cult role that kills the team on death dies, the Zealot will prevent those deaths.",
-        "On the Day following the Zealots death prevention, If a Village Aligned player is condemned, Cult Wins.",
-        "If no one is condemned or a Non-Village player is condemned on the day following the Zealots death prevention, All Cult-aligned players die.",
+        "If a Demonic or Lichpin Cult role is condemned and the game would have ended, the game will continue for 1 more day.",
+        "On the following Day, If a Village Aligned player is condemned, Cult Wins.",
+        "If no one is condemned or a Non-Village player is condemned on the following day, All Cult-aligned players die.",
       ],
     },
     Gremlin: {
