@@ -9,7 +9,7 @@ module.exports = class GiveTommyGun extends Card {
       "Give Tommy Gun": {
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive"], exclude: ["Mafia"] },
+        targets: { include: ["alive", "self"]},
         action: {
           labels: ["giveItem", "gun"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
