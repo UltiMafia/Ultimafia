@@ -2721,8 +2721,8 @@ const roleData = {
       tags: ["Win Con", "Essential", "Voting", "Condemn"],
       description: [
         "If a Demonic or Lichpin Cult role is condemned and the game would have ended, the game will continue for 1 more day.",
-        "On the following Day, If a Village Aligned player is condemned, Cult Wins.",
-        "If no one is condemned or a Non-Village player is condemned on the following day, All Cult-aligned players die.",
+        "On the extra Day, If a Village Aligned player is condemned, Cult Wins.",
+        "If no one is condemned or a Non-Village player is condemned on the extra day, All Cult-aligned players die.",
       ],
     },
     Gremlin: {
