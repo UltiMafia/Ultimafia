@@ -223,6 +223,8 @@ module.exports = class Meeting {
       this.targetsDescription["exclude"] &&
       this.targetsDescription["exclude"].includes("self");
 
+    var playerHasVoted = false;
+
     if (this.voting) {
       if (member.id) {
         votes = this.voteVersions[member.id].votes;
@@ -230,6 +232,10 @@ module.exports = class Meeting {
       } else {
         votes = this.votes;
         voteRecord = this.voteRecord;
+      }
+      
+      if (playerId) {
+        playerHasVoted = Object.keys(votes).includes(playerId);
       }
 
       if (this.anonymous || this.anonymousVotes) {
@@ -297,6 +303,7 @@ module.exports = class Meeting {
       canWhisper: member.canWhisper,
       speechAbilities: this.getSpeechAbilityInfo(member),
       amMember: member.id != null,
+      playerHasVoted: playerHasVoted,
     };
   }
 
