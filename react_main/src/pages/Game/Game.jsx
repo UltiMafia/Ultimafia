@@ -2152,6 +2152,20 @@ export function ActionList(props) {
             />
           );
           break;
+        case "playingCardButtons":
+          action = (
+            <PlayingCardButtons
+              key={meeting.id}
+              socket={props.socket}
+              meeting={meeting}
+              players={props.players}
+              self={props.self}
+              history={props.history}
+              stateViewing={props.stateViewing}
+              style={props.style}
+            />
+          );
+          break;
         case "actionSeparatingText":
           action = (
             <ActionSeparatingText
@@ -2428,6 +2442,72 @@ function ActionImageButtons(props) {
             alt={targetDisplay}
             className="action-icon"
           />
+        </div>
+      </div>
+    );
+  });
+
+  return (
+    <div className="action" style={{ ...props.style }}>
+      <div className="action-name">{meeting.actionName}</div>
+      <div style={{ display: "flex", flexWrap: "wrap" }}>{buttons}</div>
+    </div>
+  );
+}
+
+function PlayingCardButtons(props) {
+  const [meeting, history, stateViewing, isCurrentState, notClickable, onVote] =
+    useAction(props);
+  const [selectedTarget, setSelectedTarget] = useState(null);
+
+  if (notClickable) {
+    return null;
+  }
+
+  const votes = { ...meeting.votes };
+  for (let playerId in votes)
+    votes[playerId] = getTargetDisplay(votes[playerId], meeting, props.players);
+
+  const selectedStyle = {
+    border: "2px solid #999",
+    backgroundColor: "#f0f0f0",
+    boxSizing: "border-box",
+  };
+
+  const unselectedStyle = {
+    border: "2px solid transparent",
+    boxSizing: "border-box",
+  };
+
+  const imgContainerStyle = {
+    width: "43px",
+    height: "59px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+  };
+
+  const handleClick = (target) => {
+    setSelectedTarget(target);
+    onVote(target);
+  };
+  //|| (selectedTarget && selectedTarget.includes(target))
+  const buttons = meeting.targets.map((target) => {
+    var targetDisplay = getTargetDisplay(target, meeting, props.players);
+    const isSelected =
+      votes[meeting.members[0].id] === target ||
+      (votes[meeting.members[0].id] &&
+        votes[meeting.members[0].id].includes(target));
+    return (
+      <div
+        className="btn btn-theme"
+        key={target}
+        onClick={() => handleClick(target)}
+        style={isSelected ? selectedStyle : unselectedStyle}
+      >
+        <div style={imgContainerStyle}>
+          <div className={`card ${`c${targetDisplay}`}`}></div>
         </div>
       </div>
     );
