@@ -2087,7 +2087,8 @@ export function OptionsList(props) {
 }
 
 export function getUnresolvedActionCount(meetings) {
-  return Object.values(meetings).filter(meeting => !meeting.playerHasVoted).length;
+  return Object.values(meetings).filter((meeting) => !meeting.playerHasVoted)
+    .length;
 }
 
 export function ActionList(props) {
