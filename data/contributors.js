@@ -371,7 +371,14 @@ const artContributors = {
     ],
   },
   JaNa: {
-    Mafia: ["Sorcerer", "Vizier", "Ghostbuster", "Exorcist", "Lunch Lady", "Laundress"],
+    Mafia: [
+      "Sorcerer",
+      "Vizier",
+      "Ghostbuster",
+      "Exorcist",
+      "Lunch Lady",
+      "Laundress",
+    ],
   },
 };
 
