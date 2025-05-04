@@ -600,6 +600,10 @@
   background-image: url("/images/roles/zombie-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Parasite {
+  background-image: url("/images/roles/parasite-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Satyr {
   background-image: url("/images/roles/satyr-vivid.png");
 }
@@ -658,6 +662,14 @@
 
 .role-icon-scheme-vivid .role-Mafia-Ghostbuster {
   background-image: url("/images/roles/ghostbuster-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Exorcist {
+  background-image: url("/images/roles/exorcist-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Lunch-Lady {
+  background-image: url("/images/roles/lunch-lady-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Suitress {
