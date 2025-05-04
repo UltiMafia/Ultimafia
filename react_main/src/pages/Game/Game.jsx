@@ -159,6 +159,8 @@ function GameWrapper(props) {
   useEffect(() => {
     if (token == null) return;
 
+    siteInfo.hideAllAlerts();
+
     var socketURL;
 
     if (process.env.REACT_APP_USE_PORT === "true")
