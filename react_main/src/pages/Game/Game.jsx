@@ -159,6 +159,8 @@ function GameWrapper(props) {
   useEffect(() => {
     if (token == null) return;
 
+    siteInfo.hideAllAlerts();
+
     var socketURL;
 
     if (process.env.REACT_APP_USE_PORT === "true")
@@ -2084,6 +2086,10 @@ export function OptionsList(props) {
   );
 }
 
+export function getUnresolvedActionCount(meetings) {
+  return Object.values(meetings).filter(meeting => !meeting.playerHasVoted).length;
+}
+
 export function ActionList(props) {
   const actions = Object.values(props.meetings).reduce((actions, meeting) => {
     if (meeting.voting) {
@@ -2295,7 +2301,7 @@ function ActionSelect(props) {
           selection = getTargetDisplay(selection, meeting, props.players);
 
           var voteCount = 0;
-          if (voteCounts.has(player.name)) {
+          if (player && voteCounts.has(player.name)) {
             voteCount = voteCounts.get(player.name);
           }
           const hasHighestVoteCount =

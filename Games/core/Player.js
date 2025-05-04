@@ -246,7 +246,13 @@ module.exports = class Player {
         var meeting = this.game.getMeeting(vote.meetingId);
         if (!meeting) return;
 
+        const gameStateBeforeVote = this.game.currentState;
         meeting.vote(this, vote.selection);
+
+        // This if statement prevents meetings from being sent if the player's vote caused the state to change
+        if (gameStateBeforeVote === this.game.currentState) {
+          this.sendMeeting(meeting);
+        }
       } catch (e) {
         logger.error(e);
         // this.handleError(e);
@@ -266,6 +272,7 @@ module.exports = class Player {
         if (!meeting) return;
 
         meeting.unvote(this, target);
+        this.sendMeeting(meeting);
       } catch (e) {
         logger.error(e);
         // this.handleError(e);

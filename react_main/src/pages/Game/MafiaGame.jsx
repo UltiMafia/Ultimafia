@@ -6,6 +6,7 @@ import {
   ThreePanelLayout,
   BotBar,
   TextMeetingLayout,
+  getUnresolvedActionCount,
   ActionList,
   PlayerList,
   LastWillEntry,
@@ -249,6 +250,8 @@ export default function MafiaGame() {
       game.playAudio("explosion");
     });
   }, game.socket);
+
+  const unresolvedActionCount = getUnresolvedActionCount(meetings);
 
   return (
     <>
