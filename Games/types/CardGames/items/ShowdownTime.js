@@ -15,8 +15,8 @@ module.exports = class ShowdownTime extends Item {
       Move: {
         actionName: "Choose 5 Cards?",
         states: ["Showdown"],
-        flags: ["voting", "instant", "multi"],
-        inputType: "custom",
+        flags: ["voting", "multi"],
+        inputType: "playingCardButtons",
         multiMin: 5,
         multiMax: 5,
         targets: this.PossibleCards,

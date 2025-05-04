@@ -2468,6 +2468,7 @@ function PlayingCardButtons(props) {
   for (let playerId in votes)
     votes[playerId] = getTargetDisplay(votes[playerId], meeting, props.players);
 
+
   const selectedStyle = {
     border: "2px solid #999",
     backgroundColor: "#f0f0f0",
@@ -2480,8 +2481,8 @@ function PlayingCardButtons(props) {
   };
 
   const imgContainerStyle = {
-    width: "30px",
-    height: "30px",
+    width: "43px",
+    height: "59px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -2489,13 +2490,14 @@ function PlayingCardButtons(props) {
   };
 
   const handleClick = (target) => {
-    //setSelectedTarget(target);
+    
+    setSelectedTarget(target);
     onVote(target);
   };
-
+//|| (selectedTarget && selectedTarget.includes(target))
   const buttons = meeting.targets.map((target) => {
     var targetDisplay = getTargetDisplay(target, meeting, props.players);
-    const isSelected = selectedTarget === target;
+    const isSelected = (votes[meeting.members[0].id] === target) || (votes[meeting.members[0].id] && votes[meeting.members[0].id].includes(target));
     return (
       <div
         className="btn btn-theme"
@@ -2504,11 +2506,7 @@ function PlayingCardButtons(props) {
         style={isSelected ? selectedStyle : unselectedStyle}
       >
         <div style={imgContainerStyle}>
-          <img
-            src={`/images/emotes/${targetDisplay}.webp`}
-            alt={targetDisplay}
-            className="action-icon"
-          />
+        <div className={`card ${`c${targetDisplay}`}`}></div>
         </div>
       </div>
     );
