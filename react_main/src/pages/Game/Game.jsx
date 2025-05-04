@@ -2285,7 +2285,7 @@ function ActionSelect(props) {
           selection = getTargetDisplay(selection, meeting, props.players);
 
           var voteCount = 0;
-          if (voteCounts.has(player.name)) {
+          if (player && voteCounts.has(player.name)) {
             voteCount = voteCounts.get(player.name);
           }
           const hasHighestVoteCount =
