@@ -119,4 +119,3 @@ function stealIdentity(target) {
   this.player.swapIdentity(target);
   this.data.originalUser.swapped = target.user;
 }
-
