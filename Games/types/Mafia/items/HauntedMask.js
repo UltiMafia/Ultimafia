@@ -135,10 +135,8 @@ function stealIdentity(target) {
 
   if (!this.data.originalUser) this.data.originalUser = this.player.user;
   if (!this.data.originalPlayer) this.data.originalPlayer = this.player;
-  let temp = this.player.faction;
+
   target.queueAlert(":anon: Someone has stolen your identity!");
-  this.player.faction = target.faction;
-  target.faction = temp;
   this.game.swaps.unshift([this.player, target]);
   this.player.swapIdentity(target);
   this.data.originalUser.swapped = target.user;

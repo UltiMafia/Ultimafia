@@ -1447,6 +1447,12 @@ module.exports = class Player {
   }
 
   swapIdentity(player) {
+
+    //Swap Factions
+    let tempFaction = this.faction;
+    this.faction = player.faction;
+    player.faction = tempFaction;
+
     // Swap sockets
     this.socket.clearListeners();
     player.socket.clearListeners();
