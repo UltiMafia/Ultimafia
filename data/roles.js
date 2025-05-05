@@ -3858,6 +3858,15 @@ const roleData = {
       ],
       graveyardParticipation: "all",
     },
+    "Haunted House": {
+      alignment: "Event",
+      tags: ["Event", "Item"],
+      description: [
+        "If this event occurs, One player receives a Haunted Mask.",
+        "Only the player with the Haunted Mask is informed if this event occurs.",
+        "If a player with a Haunted Mask is attacked. They will kill their attacker and steal their identity.",
+      ],
+    },
     Evolution: {
       alignment: "Event",
       tags: ["Event"],
