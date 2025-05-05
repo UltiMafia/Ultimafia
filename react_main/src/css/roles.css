@@ -672,6 +672,22 @@
   background-image: url("/images/roles/lunch-lady-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Sailor {
+  background-image: url("/images/roles/sailor-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Zealot {
+  background-image: url("/images/roles/zealot-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Assassin {
+  background-image: url("/images/roles/assassin-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Stylist {
+  background-image: url("/images/roles/stylist-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Suitress {
   background-image: url("/images/roles/suitress-vivid.png");
 }

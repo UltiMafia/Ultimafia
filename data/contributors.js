@@ -378,6 +378,10 @@ const artContributors = {
       "Exorcist",
       "Lunch Lady",
       "Laundress",
+      "Sailor",
+      "Zealot",
+      "Assassin",
+      "Stylist",
     ],
   },
 };
