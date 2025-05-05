@@ -14,7 +14,7 @@ module.exports = class HauntedMask extends Item {
     this.listeners = {
       immune: function (action, player) {
         //let killer = this.getVisitors(this.target, "kill");
-          
+
         if (player == this.holder && action.hasLabel("kill")) {
           if (this.holder.tempImmunity["kill"]) return;
 
@@ -29,31 +29,29 @@ module.exports = class HauntedMask extends Item {
             }
           }
 
-              let action = new Action({
-                actor: this.holder,
-                target: action.actor,
-                game: this.game,
-                labels: ["kill", "hidden"],
-                item: this,
-                run: function () {
-                   var originalActor = this.actor;
-                  if (this.dominates()){
+          let action = new Action({
+            actor: this.holder,
+            target: action.actor,
+            game: this.game,
+            labels: ["kill", "hidden"],
+            item: this,
+            run: function () {
+              var originalActor = this.actor;
+              if (this.dominates()) {
                 stealIdentity.bind(originalActor.role)(action.target);
                 this.target = originalActor;
-                    this.target.kill("basic", this.actor, true);
-                  }
-                  this.item.hasBeenUsed = true
-                   this.item.removeEffectsIfNeeded();
-                },
-              });
-              action.do();
-
+                this.target.kill("basic", this.actor, true);
+              }
+              this.item.hasBeenUsed = true;
+              this.item.removeEffectsIfNeeded();
+            },
+          });
+          action.do();
 
           this.uses--;
           this.holder.queueAlert(
             ":armor: The Haunted Mask protects but at a Cost!"
           );
-
         }
       },
       death: function (player, killer, deathType) {
@@ -143,7 +141,6 @@ module.exports = class HauntedMask extends Item {
   }
 };
 
-
 function stealIdentity(target) {
   if (!this.data.swaps) this.data.swaps = [];
 
@@ -169,4 +166,3 @@ function resetIdentities() {
   delete this.data.swaps;
   delete this.data.originalUser.swapped;
 }
-
