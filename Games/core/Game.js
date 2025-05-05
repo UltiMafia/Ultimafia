@@ -2181,7 +2181,6 @@ module.exports = class Game {
 
     if (finished) this.endGame(winners);
 
-
     return finished;
   }
 

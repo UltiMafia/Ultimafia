@@ -1447,7 +1447,6 @@ module.exports = class Player {
   }
 
   swapIdentity(player) {
-
     //Swap Factions
     let tempFaction = this.faction;
     this.faction = player.faction;
