@@ -17,12 +17,21 @@ module.exports = class HauntedMask extends Item {
       immune: function (action, player) {
         //let killer = this.getVisitors(this.target, "kill");
 
-        if (player == this.holder && action.hasLabel("kill") && !action.hasLabel("Haunted Mask") && this.hasBeenUsed == false) {
+        if (
+          player == this.holder &&
+          action.hasLabel("kill") &&
+          !action.hasLabel("Haunted Mask") &&
+          this.hasBeenUsed == false
+        ) {
           if (this.holder.tempImmunity["kill"]) return;
 
           // check for effect immunity
           for (let effect of this.holder.effects)
-            if (effect.immunity["kill"] && effect.name != "HauntedMaskProtection") return;
+            if (
+              effect.immunity["kill"] &&
+              effect.name != "HauntedMaskProtection"
+            )
+              return;
 
           // check for saves
           for (let action2 of this.game.actions[0]) {
@@ -33,7 +42,7 @@ module.exports = class HauntedMask extends Item {
           this.hasBeenUsed = true;
           this.cannotBeStolen = true;
           this.removeEffectsIfNeeded();
-          if(action.actor && this.holder && action.actor != this.holder){
+          if (action.actor && this.holder && action.actor != this.holder) {
             let action4 = new Action({
               actor: this.holder,
               target: action.actor,
@@ -47,44 +56,40 @@ module.exports = class HauntedMask extends Item {
               },
             });
 
-
-          if(action4.dominates(action4.target, false)){
-          let action3 = new Action({
-            actor: this.holder,
-            target: action.actor,
-            game: this.game,
-            labels: ["hidden", "Haunted Mask"],
-            item: this,
-            run: function () {
-              var originalActor = this.actor;
-              this.item.drop();
-              this.item.hold(this.target);
-              this.actor.queueAlert(
-                ":armor: The Haunted Mask protects you but at a Cost!"
-              );
-              stealIdentity.bind(originalActor.role)(this.target);
-              if(this.game.getStateName() == "Night" || this.game.getStateName() == "Dawn" || this.game.getStateName() == "Dusk"){
-                this.actor.kill("basic", this.actor, false);
-              }
-              else{
-                this.actor.kill("basic", this.actor, true);
-              }
-            },
-          });
-          action3.do();
-        }
-        else{
-          action4.do();
-          this.holder.queueAlert(
-            ":armor: The Haunted Mask protects you!"
-          );
-        }
-        }
-        else{
-          this.holder.queueAlert(
-            ":armor: The Haunted Mask protects you!"
-          );
-        }
+            if (action4.dominates(action4.target, false)) {
+              let action3 = new Action({
+                actor: this.holder,
+                target: action.actor,
+                game: this.game,
+                labels: ["hidden", "Haunted Mask"],
+                item: this,
+                run: function () {
+                  var originalActor = this.actor;
+                  this.item.drop();
+                  this.item.hold(this.target);
+                  this.actor.queueAlert(
+                    ":armor: The Haunted Mask protects you but at a Cost!"
+                  );
+                  stealIdentity.bind(originalActor.role)(this.target);
+                  if (
+                    this.game.getStateName() == "Night" ||
+                    this.game.getStateName() == "Dawn" ||
+                    this.game.getStateName() == "Dusk"
+                  ) {
+                    this.actor.kill("basic", this.actor, false);
+                  } else {
+                    this.actor.kill("basic", this.actor, true);
+                  }
+                },
+              });
+              action3.do();
+            } else {
+              action4.do();
+              this.holder.queueAlert(":armor: The Haunted Mask protects you!");
+            }
+          } else {
+            this.holder.queueAlert(":armor: The Haunted Mask protects you!");
+          }
         }
       },
       death: function (player, killer, deathType) {
@@ -133,7 +138,6 @@ module.exports = class HauntedMask extends Item {
     };
   }
 
-
   removeEffectsIfNeeded() {
     if (this.effects.length > 0) {
       this.removeEffects();
@@ -155,8 +159,8 @@ module.exports = class HauntedMask extends Item {
       }
     }
     super.hold(player);
-    if(this.hasBeenUsed != true){
-    this.applyEffectsIfNeeded();
+    if (this.hasBeenUsed != true) {
+      this.applyEffectsIfNeeded();
     }
   }
 };
