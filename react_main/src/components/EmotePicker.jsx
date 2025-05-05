@@ -31,7 +31,7 @@ export default function EmotePicker(props) {
     panelRef.current.style.visibility = "visible";
   });
 
-  const userCustomEmotes = user.settings.customEmotes || {};
+  const userCustomEmotes = user.settings?.customEmotes || {};
   const customEmotes = (
     <>
       {Object.keys(userCustomEmotes).map((customEmote) => (
