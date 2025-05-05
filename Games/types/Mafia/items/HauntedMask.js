@@ -3,7 +3,7 @@ const Action = require("../Action");
 
 module.exports = class HauntedMask extends Item {
   constructor(options) {
-    super("HauntedMask");
+    super("Haunted Mask");
 
     this.uses = 1;
     // if armour starts out broken, the setter will handle the logic of making it broken
