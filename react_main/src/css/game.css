@@ -1069,6 +1069,10 @@
     width: 300px;
   }
 
+  .hide-on-mobile {
+    display: none !important;
+  }
+
   .game .rehost-game {
     display: none;
   }
