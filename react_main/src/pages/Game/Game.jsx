@@ -818,7 +818,10 @@ export function BotBar(props) {
               onClick={onInfoClick}
             />
             {props.dev && (
-              <i className="misc-icon fas fa-vial hide-on-mobile" onClick={onTestClick} />
+              <i
+                className="misc-icon fas fa-vial hide-on-mobile"
+                onClick={onTestClick}
+              />
             )}
           </div>
           <div className="options">
