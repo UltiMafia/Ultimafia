@@ -93,10 +93,12 @@ module.exports = class HauntedMask extends Item {
         }
       },
       death: function (player, killer, deathType) {
-          let swappedPlayers = this.game.alivePlayers().filter((p) => p.user.swapped);
-          if(swappedPlayers.length <= 0){
-            this.game.resetIdentities();
-          }
+        let swappedPlayers = this.game
+          .alivePlayers()
+          .filter((p) => p.user.swapped);
+        if (swappedPlayers.length <= 0) {
+          this.game.resetIdentities();
+        }
       },
     };
   }
@@ -141,4 +143,3 @@ function stealIdentity(target) {
   this.player.swapIdentity(target);
   this.data.originalUser.swapped = target.user;
 }
-
