@@ -10,59 +10,91 @@ module.exports = class HauntedMask extends Item {
     this.brokenUses = 0;
     this.optionBroken = options?.broken;
     this.magicCult = options?.magicCult;
+    this.hasBeenUsed = false;
+    this.data = {};
 
     this.listeners = {
       immune: function (action, player) {
         //let killer = this.getVisitors(this.target, "kill");
 
-        if (player == this.holder && action.hasLabel("kill")) {
+        if (player == this.holder && action.hasLabel("kill") && !action.hasLabel("Haunted Mask") && this.hasBeenUsed == false) {
           if (this.holder.tempImmunity["kill"]) return;
 
           // check for effect immunity
           for (let effect of this.holder.effects)
-            if (effect.immunity["kill"] && effect.name != "Kill Immune") return;
+            if (effect.immunity["kill"] && effect.name != "HauntedMaskProtection") return;
 
           // check for saves
-          for (let action of this.game.actions[0]) {
-            if (action.target === this.holder && action.hasLabel("save")) {
+          for (let action2 of this.game.actions[0]) {
+            if (action2.target === this.holder && action2.hasLabel("save")) {
               return;
             }
           }
+          this.hasBeenUsed = true;
+          this.cannotBeStolen = true;
+          this.removeEffectsIfNeeded();
+          if(action.actor && this.holder && action.actor != this.holder){
+            let action4 = new Action({
+              actor: this.holder,
+              target: action.actor,
+              game: this.game,
+              labels: ["kill", "Haunted Mask"],
+              item: this,
+              run: function () {
+                if (this.dominates(this.target)) {
+                  this.target.kill("basic", this.actor, true);
+                }
+              },
+            });
 
-          let action = new Action({
+
+          if(action4.dominates(action4.target, false)){
+          let action3 = new Action({
             actor: this.holder,
             target: action.actor,
             game: this.game,
-            labels: ["kill", "hidden"],
+            labels: ["hidden", "Haunted Mask"],
             item: this,
             run: function () {
               var originalActor = this.actor;
-              if (this.dominates()) {
-                stealIdentity.bind(originalActor.role)(action.target);
-                this.target = originalActor;
-                this.target.kill("basic", this.actor, true);
+              this.item.drop();
+              this.item.hold(this.target);
+              this.actor.queueAlert(
+                ":armor: The Haunted Mask protects you but at a Cost!"
+              );
+              stealIdentity.bind(originalActor.role)(this.target);
+              if(this.game.getStateName() == "Night" || this.game.getStateName() == "Dawn" || this.game.getStateName() == "Dusk"){
+                this.actor.kill("basic", this.actor, false);
               }
-              this.item.hasBeenUsed = true;
-              this.item.cannotBeStolen = true;
-              this.item.removeEffectsIfNeeded();
+              else{
+                this.actor.kill("basic", this.actor, true);
+              }
             },
           });
-          action.do();
-
-          this.uses--;
+          action3.do();
+        }
+        else{
+          action4.do();
           this.holder.queueAlert(
-            ":armor: The Haunted Mask protects but at a Cost!"
+            ":armor: The Haunted Mask protects you!"
           );
+        }
+        }
+        else{
+          this.holder.queueAlert(
+            ":armor: The Haunted Mask protects you!"
+          );
+        }
         }
       },
       death: function (player, killer, deathType) {
         if (player == this.holder) resetIdentities.bind(this)();
       },
       aboutToFinish: function () {
-        resetIdentities.bind(this)();
+        resetIdentities.bind(this.holder.role)();
       },
       disguiser: function () {
-        resetIdentities.bind(this)();
+        resetIdentities.bind(this.holder.role)();
       },
       state: function (stateInfo) {
         if (!this.holder.alive) {
@@ -101,17 +133,6 @@ module.exports = class HauntedMask extends Item {
     };
   }
 
-  set broken(broken) {
-    if (broken) {
-      this.brokenUses += this.uses;
-      this.uses = 0;
-      this.removeEffectsIfNeeded();
-    } else {
-      this.uses += this.brokenUses;
-      this.brokenUses = 0;
-      this.applyEffectsIfNeeded();
-    }
-  }
 
   removeEffectsIfNeeded() {
     if (this.effects.length > 0) {
@@ -122,36 +143,34 @@ module.exports = class HauntedMask extends Item {
 
   applyEffectsIfNeeded() {
     if (this.uses > 0 && this.effects.length == 0) {
-      this.effects = ["Kill Immune"];
+      this.effects = ["HauntedMaskProtection"];
       this.applyEffects();
     }
   }
 
   hold(player) {
     for (let item of player.items) {
-      if (item.name == "Armor") {
-        item.uses += this.uses;
-        item.brokenUses += this.brokenUses;
-        item.applyEffectsIfNeeded();
+      if (item.name == "Haunted Mask" && item != this) {
         return;
       }
     }
-
     super.hold(player);
-    this.broken = this.optionBroken;
+    if(this.hasBeenUsed != true){
+    this.applyEffectsIfNeeded();
+    }
   }
 };
 
 function stealIdentity(target) {
   if (!this.data.swaps) this.data.swaps = [];
 
-  if (!this.data.originalUser) this.data.originalUser = this.holder.user;
-  if (!this.data.originalPlayer) this.data.originalPlayer = this.holder;
-  let temp = this.holder.faction;
+  if (!this.data.originalUser) this.data.originalUser = this.player.user;
+  if (!this.data.originalPlayer) this.data.originalPlayer = this.player;
+  let temp = this.player.faction;
   target.queueAlert(":anon: Someone has stolen your identity!");
   this.player.faction = target.faction;
   target.faction = temp;
-  this.data.swaps.unshift([this.holder, target]);
+  this.data.swaps.unshift([this.player, target]);
   this.player.swapIdentity(target);
   this.data.originalUser.swapped = target.user;
 }
