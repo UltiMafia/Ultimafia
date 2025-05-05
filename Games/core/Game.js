@@ -2177,15 +2177,7 @@ module.exports = class Game {
   }
 
   checkGameEnd() {
-    var [finished, winners] = this.checkWinConditions();
-
-    if (finished) this.endGame(winners);
-
-    return finished;
-  }
-
-  checkWinConditions() {
-    return [false];
+    return this.finished;
   }
 
   getGameTypeOptions() {
