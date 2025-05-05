@@ -31,16 +31,16 @@ export default function EmotePicker(props) {
     panelRef.current.style.visibility = "visible";
   });
 
-  const customEmotesMap = Object.keys(user.settings.customEmotes || {});
+  const userCustomEmotes = user.settings?.customEmotes || {};
   const customEmotes = (
     <>
-      {customEmotesMap.map((customEmote) => (
+      {Object.keys(userCustomEmotes).map((customEmote) => (
         <div
           className="emote"
           key={customEmote}
           onClick={(e) => selectEmote(e, customEmote)}
         >
-          {emotify(customEmote, user.settings.customEmotes)}
+          {emotify(customEmote, userCustomEmotes)}
         </div>
       ))}
     </>
