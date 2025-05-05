@@ -50,11 +50,8 @@ module.exports = class TeamCore extends Card {
         canVote: false,
         action: {
           run: function () {
-            let winnerGroup = "Resistance";
-            if (this.target.role.name === "Merlin") {
-              winnerGroup = "Spies";
-            }
-            let winners = new Winners(this.game);
+            const winnerGroup = this.target.role.name === "Merlin" ? "Spies" : "Resistance";
+            const winners = new Winners(this.game);
             winners.addGroup(winnerGroup);
             for (let player of this.game.players) {
               if (player.role.alignment !== winnerGroup) {
