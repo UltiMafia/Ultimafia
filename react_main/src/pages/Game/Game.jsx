@@ -53,13 +53,11 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Badge,
   Box,
   Button,
   ButtonGroup,
   TextField,
-  InputAdornment,
-  Checkbox,
-  FormControlLabel,
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/styles";
@@ -820,7 +818,10 @@ export function BotBar(props) {
               onClick={onInfoClick}
             />
             {props.dev && (
-              <i className="misc-icon fas fa-vial" onClick={onTestClick} />
+              <i
+                className="misc-icon fas fa-vial hide-on-mobile"
+                onClick={onTestClick}
+              />
             )}
           </div>
           <div className="options">
@@ -2087,10 +2088,12 @@ export function OptionsList(props) {
 }
 
 export function getUnresolvedActionCount(meetings) {
-  return Object.values(meetings).filter(meeting => !meeting.playerHasVoted).length;
+  return Object.values(meetings).filter((meeting) => !meeting.playerHasVoted)
+    .length;
 }
 
 export function ActionList(props) {
+  const unresolvedActionCount = getUnresolvedActionCount(props.meetings);
   const actions = Object.values(props.meetings).reduce((actions, meeting) => {
     if (meeting.voting) {
       var action;
@@ -2198,7 +2201,15 @@ export function ActionList(props) {
       {actions.length > 0 && (
         <SideMenu
           scrollable
-          title={props.title || "Actions"}
+          title={
+            <Badge
+              badgeContent={unresolvedActionCount}
+              color="primary"
+              invisible={unresolvedActionCount === 0}
+            >
+              {props.title || "Actions"}
+            </Badge>
+          }
           content={<div className="action-list">{actions}</div>}
         />
       )}

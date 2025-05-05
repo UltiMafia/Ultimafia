@@ -150,7 +150,10 @@ function Main() {
           );
         }
 
-        if (res.data.inGame && !window.location.href.includes(`/game/${res.data.inGame}`)) {
+        if (
+          res.data.inGame &&
+          !window.location.href.includes(`/game/${res.data.inGame}`)
+        ) {
           siteInfo.showAlert(
             (index) => (
               <div>

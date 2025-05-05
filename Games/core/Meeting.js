@@ -233,7 +233,7 @@ module.exports = class Meeting {
         votes = this.votes;
         voteRecord = this.voteRecord;
       }
-      
+
       if (playerId) {
         playerHasVoted = Object.keys(votes).includes(playerId);
       }
