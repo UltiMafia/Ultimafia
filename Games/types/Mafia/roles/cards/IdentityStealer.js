@@ -85,7 +85,6 @@ module.exports = class IdentityStealer extends Card {
           game: this.player.game,
           priority: PRIORITY_IDENTITY_STEALER_BLOCK,
           run: function () {
-            if (this.game.getStateName() != "Night") return;
 
             var stealing = false;
             var killing = false;
