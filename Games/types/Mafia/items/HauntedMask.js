@@ -43,6 +43,7 @@ module.exports = class HauntedMask extends Item {
                 this.target.kill("basic", this.actor, true);
               }
               this.item.hasBeenUsed = true;
+              this.item.cannotBeStolen = true;
               this.item.removeEffectsIfNeeded();
             },
           });
