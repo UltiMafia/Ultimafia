@@ -1764,6 +1764,7 @@ const roleData = {
       tags: ["Deception", "Visits", "Astral"],
       description: [
         "Does not get detected by watchers and trackers.",
+        "Does not trigger any when visited abilites on the target.",
         "Kills bomb without setting off the explosion.",
       ],
     },
