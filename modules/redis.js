@@ -134,7 +134,7 @@ async function cacheUserInfo(userId, reset) {
 
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday achievements"
+        "id name avatar blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday achievements stats karma kudos"
       )
       .populate({
         path: "customEmotes",
@@ -175,6 +175,13 @@ async function cacheUserInfo(userId, reset) {
     );
     var groups = inGroups.map((inGroup) => inGroup.toJSON().group);
     await client.setAsync(`user:${userId}:info:groups`, JSON.stringify(groups));
+    await client.setAsync(`user:${userId}:info:karma`, user.karma);
+    await client.setAsync(`user:${userId}:info:kudos`, user.kudos);
+    await client.setAsync(
+      `user:${userId}:info:achievements`,
+      user.achievements
+    );
+    await client.setAsync(`user:${userId}:info:stats`, user.stats);
   }
 
   client.expire(`user:${userId}:info:id`, 3600);
@@ -187,9 +194,14 @@ async function cacheUserInfo(userId, reset) {
   client.expire(`user:${userId}:info:settings`, 3600);
   client.expire(`user:${userId}:info:itemsOwned`, 3600);
   client.expire(`user:${userId}:info:groups`, 3600);
+  client.expire(`user:${userId}:info:karma`, 3600);
+  client.expire(`user:${userId}:info:kudos`, 3600);
+  client.expire(`user:${userId}:info:achievements`, 3600);
+  client.expire(`user:${userId}:info:stats`, 3600);
 
   return true;
 }
+
 
 async function deleteUserInfo(userId) {
   await client.delAsync(`user:${userId}:info:id`);
@@ -258,6 +270,47 @@ async function getBasicUserInfo(userId, delTemplate) {
   info.avatar = (await client.getAsync(`user:${userId}:info:avatar`)) == "true";
   info.status = await client.getAsync(`user:${userId}:info:status`);
   info.groups = JSON.parse(await client.getAsync(`user:${userId}:info:groups`));
+
+  var settings = JSON.parse(
+    await client.getAsync(`user:${userId}:info:settings`)
+  );
+  info.settings = {
+    nameColor: settings?.nameColor,
+    textColor: settings?.textColor,
+  };
+
+  return info;
+}
+
+async function getLeaderboardUserInfo(userId, delTemplate) {
+  var exists = await cacheUserInfo(userId);
+
+  if (!exists && !delTemplate) return;
+  else if (!exists && delTemplate) {
+    return {
+      id: userId,
+      name: "[deleted]",
+      avatar: false,
+      status: "offline",
+      groups: [],
+      settings: {},
+      stats: {},
+      achievements: [],
+      kudos: 0,
+      karma: 0,
+    };
+  }
+
+  var info = {};
+  info.id = await client.getAsync(`user:${userId}:info:id`);
+  info.name = await client.getAsync(`user:${userId}:info:name`);
+  info.avatar = (await client.getAsync(`user:${userId}:info:avatar`)) == "true";
+  info.status = await client.getAsync(`user:${userId}:info:status`);
+  info.groups = JSON.parse(await client.getAsync(`user:${userId}:info:groups`));
+  info.stats = await client.getAsync(`user:${userId}:info:stats`);
+  info.achievements = await client.getAsync(`user:${userId}:info:achievements`);
+  info.kudos = await client.getAsync(`user:${userId}:info:kudos`);
+  info.karma = await client.getAsync(`user:${userId}:info:karma`);
 
   var settings = JSON.parse(
     await client.getAsync(`user:${userId}:info:settings`)
@@ -756,6 +809,19 @@ async function getOnlineUsersInfo(limit) {
   return users;
 }
 
+async function getLeaderboardUsersInfo(limit) {
+  var userIds = await getOnlineUsers(limit);
+  var users = [];
+
+  for (let userId of userIds) {
+    let user = await getLeaderboardUserInfo(userId);
+
+    if (user != null) users.push(user);
+  }
+
+  return users;
+}
+
 async function updateUserOnline(userId) {
   await client.zaddAsync("onlineUsers", Date.now(), userId);
   await client.setAsync(`user:${userId}:info:status`, "online");
@@ -902,6 +968,7 @@ module.exports = {
   deleteUserInfo,
   getUserInfo,
   getBasicUserInfo,
+  getLeaderboardUsersInfo,
   getUserName,
   getUserStatus,
   getBlockedUsers,

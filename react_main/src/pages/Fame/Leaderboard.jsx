@@ -23,18 +23,18 @@ export default function Leaderboard() {
 
   useEffect(() => {
     axios
-      .get(`/fame/leaderboard`)
+      .get(`/user/leaderboard`)
       .then((res) => {
-        const formattedUsers = res.data.slice(0, 20).map((user) => ({
+        const formattedUsers = res.data.map((user) => ({
           id: user.id,
           name: user.name,
           avatar: user.avatar,
-          winLossRatio:
-            user.stats["Mafia"].all.wins.count /
-            (user.stats["Mafia"].all.wins.total || 1),
-          kudos: user.kudos,
-          karma: user.karma,
-          achievements: user.achievements.length || 0,
+          winLossRatio: 
+          (user.stats ? user.stats["Mafia"].all.wins.count : 0) /
+            (user.stats ? user.stats["Mafia"].all.wins.total : 1),
+          kudos: user.kudos || 0,
+          karma: user.karma || 0,
+          achievements: user.achievements || [],
         }));
         setUsers(formattedUsers);
         setLoading(false);
@@ -124,7 +124,7 @@ export default function Leaderboard() {
                 <TableCell>{user.winLossRatio.toFixed(2)}</TableCell>
                 <TableCell>{user.kudos}</TableCell>
                 <TableCell>{user.karma}</TableCell>
-                <TableCell>{user.achievements}/20</TableCell>
+                <TableCell>{user.achievements.length}/40</TableCell>
               </TableRow>
             ))}
           </TableBody>
