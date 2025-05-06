@@ -2169,7 +2169,6 @@ module.exports = class Game {
 
   isKudosEligible() {
     return this.ranked || this.competitive;
-    //return true;
   }
 
   achievementsAllowed() {

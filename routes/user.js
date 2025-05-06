@@ -159,30 +159,6 @@ router.get("/flagged", async function (req, res) {
   }
 });
 
-router.get("/leaderboard", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var users = await redis.getLeaderboardUsersInfo(100);
-    res.send(users);
-  } catch (e) {
-    logger.error(e);
-    res.send([]);
-  }
-});
-
-router.post("/leaderboard", async function (req, res) {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req, true);
-
-    if (userId) redis.updateUserOnline(userId);
-
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.sendStatus(200);
-  }
-});
-
 router.post("/online", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req, true);

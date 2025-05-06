@@ -17,26 +17,13 @@ module.exports = class HauntedHouse extends Event {
 
   doEvent() {
     super.doEvent();
-
-
+    let victim = Random.randArrayVal(this.game.alivePlayers());
     this.action = new Action({
-      target: null,
+      target: victim,
       game: this.game,
       priority: PRIORITY_ITEM_GIVER_DEFAULT,
       labels: ["hidden", "absolute"],
       run: function () {
-        let possibleVictims = [];
-        for (let action of this.game.actions[0]){
-          if(action.hasLabels(["kill"]) && action.target && action.target.alive){
-            possibleVictims.push(action.target);
-          }
-        }
-        if(possibleVictims.length <= 0){
-          possibleVictims = this.game.alivePlayers();
-        }
-        this.target = Random.randArrayVal(possibleVictims);
-
-
         if (this.game.SilentEvents != false) {
           this.target.queueAlert(
             `Event: Haunted House, You enter a Haunted House and find a Mask!`
