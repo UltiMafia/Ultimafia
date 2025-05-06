@@ -422,6 +422,7 @@ module.exports = class MafiaGame extends Game {
     }
 
     if (finished) {
+      this.resetIdentities();
       this.events.emit("handleWinBlockers", winners);
       for (let winCheck of winQueue) {
         if (winCheck.againOnFinished) {
@@ -478,6 +479,17 @@ module.exports = class MafiaGame extends Game {
     const infoClass = Utils.importGameClass(this.type, "information", infoType);
     const info = new infoClass(...args);
     return info;
+  }
+
+  resetIdentities() {
+    if (!this.swaps) return;
+
+    for (let swap of this.swaps) {
+      swap[0].swapIdentity(swap[1]);
+      delete swap[1].swapped;
+    }
+
+    delete this.swaps;
   }
 
   getRoleNightOrder() {
