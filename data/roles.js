@@ -2601,7 +2601,7 @@ const roleData = {
         "Independant roles can only be converted to other Independant roles.",
       ],
     },
-    Facehugger: {
+    Incubus: {
       alignment: "Cult",
       category: "Manipulative",
       tags: [
@@ -2818,7 +2818,7 @@ const roleData = {
         "Jiangshi adds 1 Banished role in closed setups.",
       ],
     },
-    Lich: {
+    Necromancer: {
       alignment: "Cult",
       category: "Demon",
       tags: [
@@ -2831,9 +2831,8 @@ const roleData = {
       ],
       description: [
         "Each night, may choose a player to kill.",
-        "Cult players killed by a Lich can use their abilites when dead.",
-        "Additonally killing a Cult player will make one of their non-banished Village-Aligned neighbors Delirious until the Lich dies.",
-        "Lich removes 1 Banished role in closed setups.",
+        "Cult players killed by a Necromancer can use their abilites when dead, and will make one of their non-banished Village-Aligned neighbors Delirious until the Necromancer dies.",
+        "Necromancer removes 1 Banished role in closed setups.",
       ],
       graveyardParticipation: "all",
     },
@@ -2880,7 +2879,7 @@ const roleData = {
         "A Satyr's starting Non-banished Village-aligned neighbors are Delirious.",
       ],
     },
-    "Dream Eater": {
+    Lich: {
       alignment: "Cult",
       category: "Demon",
       tags: [
@@ -2894,7 +2893,7 @@ const roleData = {
         "Each night, may choose a player to kill.",
         "On the first night chooses a player as a Vessel.",
         "The Vessel is Delirious.",
-        "A Dream Eater can only be killed if their Vessal is killed.",
+        "A Lich can only be killed if their Vessel is killed.",
       ],
     },
     Shoggoth: {
@@ -3013,16 +3012,6 @@ const roleData = {
       description: [
         "Visits a dead player during the night.",
         "That player will be resurrected as a Tree the following day.",
-      ],
-      graveyardParticipation: "all",
-    },
-    Necromancer: {
-      alignment: "Cult",
-      tags: ["Revive", "Protective", "Graveyard", "Visiting"],
-      description: [
-        "Visits a dead player during the night once per game.",
-        "That player will be resurrected the following day.",
-        "If player's role identity was revealed upon death, they will remain revealed when resurrected.",
       ],
       graveyardParticipation: "all",
     },

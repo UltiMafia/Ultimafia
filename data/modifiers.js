@@ -430,6 +430,11 @@ const modifierData = {
       tags: ["Messages", "Items", "Sockpuppet"],
       description: "Each day, receives a sockpuppet.",
     },
+    Random: {
+      internal: ["TargetRandom"],
+      tags: ["Redirection"],
+      description: "Each night is redirected onto a random player.",
+    },
     Reactionary: {
       internal: ["KillConverters"],
       tags: ["Convert Saver", "Killing", "Reflexive"],
@@ -619,11 +624,6 @@ const modifierData = {
       tags: ["Dead", "Conversion"],
       description:
         "Will passively convert to the role of the first aligned power role.",
-    },
-    Wandering: {
-      internal: ["TargetRandom"],
-      tags: ["Redirection"],
-      description: "Each night is redirected onto a random player.",
     },
     Weak: {
       internal: ["Weak"],

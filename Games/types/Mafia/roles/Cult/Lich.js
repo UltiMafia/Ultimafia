@@ -9,9 +9,14 @@ module.exports = class Lich extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-
-      "KillAndCreateUndead",
-      "Remove1Banished",
+      "HauntDreams",
+      "NightKiller",
     ];
+    this.meetingMods = {
+      "Solo Kill": {
+        actionName: "Rip Apart",
+        targets: { include: ["alive"] },
+      },
+    };
   }
 };
