@@ -1764,6 +1764,7 @@ const roleData = {
       tags: ["Deception", "Visits", "Astral"],
       description: [
         "Does not get detected by watchers and trackers.",
+        "Does not trigger any when visited abilites on the target.",
         "Kills bomb without setting off the explosion.",
       ],
     },
@@ -3853,6 +3854,7 @@ const roleData = {
       description: [
         "If this event occurs, One player receives a Haunted Mask.",
         "Only the player with the Haunted Mask is informed if this event occurs.",
+        "Players being attacked are prioritized for receiving the Mask.",
         "If a player with a Haunted Mask is attacked. They will kill their attacker and steal their identity.",
       ],
     },
