@@ -325,7 +325,6 @@ const artContributors = {
       "Villager",
       "King",
       "Coward",
-      "Mistress",
       "Queen",
       "Fool",
       "Gambler",
@@ -382,6 +381,13 @@ const artContributors = {
       "Zealot",
       "Assassin",
       "Stylist",
+    ],
+  },
+  Mpreg: {
+    Mafia: [
+      "Count",
+      "Harpy",
+      "Mistress",
     ],
   },
 };

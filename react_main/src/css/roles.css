@@ -680,6 +680,14 @@
   background-image: url("/images/roles/zealot-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Count {
+  background-image: url("/images/roles/count-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Harpy {
+  background-image: url("/images/roles/harpy-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Assassin {
   background-image: url("/images/roles/assassin-vivid.png");
 }
@@ -782,6 +790,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Mistress {
   background-image: url("/images/roles/mistress-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Beguiler {
+  background-image: url("/images/roles/beguiler-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Firebrand {
