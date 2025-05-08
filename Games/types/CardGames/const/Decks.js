@@ -57,6 +57,88 @@ const Standard_Deck = [
   "King-Spades",
 ];
 
+const Standard_Deck_WIP = [
+  //Hearts
+  "Ace-Hearts": {
+    name: "Ace-Hearts",
+    suit: "Hearts",
+    rank: [14,1],
+    id: 01,
+  },
+  "2-Hearts": {
+    name: "2-Hearts",
+    suit: "Hearts",
+    rank: [2],
+    id: 01,
+  },
+  "3-Hearts": {
+    name: "3-Hearts",
+    suit: "Hearts",
+    rank: [3],
+    id: 01,
+  },
+  "4-Hearts": {
+    name: "4-Hearts",
+    suit: "Hearts",
+    rank: [4],
+    id: 01,
+  },
+  "5-Hearts": {
+    name: "5-Hearts",
+    suit: "Hearts",
+    rank: [5],
+    id: 01,
+  },
+  "6-Hearts": {
+    name: "6-Hearts",
+    suit: "Hearts",
+    rank: [6],
+    id: 01,
+  },
+  "7-Hearts": {
+    name: "7-Hearts",
+    suit: "Hearts",
+    rank: [7],
+    id: 01,
+  },
+  "8-Hearts": {
+    name: "8-Hearts",
+    suit: "Hearts",
+    rank: [8],
+    id: 01,
+  },
+  "9-Hearts": {
+    name: "9-Hearts",
+    suit: "Hearts",
+    rank: [9],
+    id: 01,
+  },
+  "10-Hearts": {
+    name: "10-Hearts",
+    suit: "Hearts",
+    rank: [10],
+    id: 01,
+  },
+  "Jack-Hearts": {
+    name: "Jack-Hearts",
+    suit: "Hearts",
+    rank: [11],
+    id: 01,
+  },
+  "Queen-Hearts": {
+    name: "Queen-Hearts",
+    suit: "Hearts",
+    rank: [12],
+    id: 01,
+  },
+"King-Hearts": {
+    name: "Queen-Hearts",
+    suit: "Hearts",
+    rank: [13],
+    id: 01,
+  },
+];
+
 const Test_Deck = [
   //Hearts
   "Ace-Hearts",
