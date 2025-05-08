@@ -330,6 +330,34 @@ async function authenticateToken(token) {
   return userId;
 }
 
+async function getLeaderBoardStat(field) {
+  const key = `leaderboard:${field}`;
+
+  const cachedLeaderboard = await client.getAsync(key);
+  if (cachedLeaderboard) {
+    // Got cached result, no need to perform query
+    return JSON.parse(cachedLeaderboard);
+  }
+  else {
+    var sortBy = {};
+    sortBy[field] = -1;
+  
+    // Query the top 100 users for a given field
+    const leadingUsers = await models.User.find({ deleted: false })
+      .select("id name avatar kudos karma achievements stats _id")
+      .sort(sortBy)
+      .limit(100);
+
+    // Cache the result in redis so that we don't have to do the query again for a little bit
+    await client.setAsync(key, JSON.stringify(leadingUsers));
+
+    // Causes leaderboards update every 2 minutes
+    client.expire(key, 120);
+    
+    return leadingUsers;
+  }
+}
+
 async function gameExists(gameId) {
   return (await client.sismemberAsync("games", gameId)) != 0;
 }
@@ -909,6 +937,7 @@ module.exports = {
   getUserItemsOwned,
   createAuthToken,
   authenticateToken,
+  getLeaderBoardStat,
   gameExists,
   inGame,
   hostingScheduled,

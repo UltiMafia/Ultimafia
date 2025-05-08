@@ -76,6 +76,22 @@ router.get("/info", async function (req, res) {
   }
 });
 
+router.get("/leaderboard", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var leadingKarmaUsers = await redis.getLeaderBoardStat("karma");
+    var leadingKudosUsers = await redis.getLeaderBoardStat("kudos");
+    
+    res.send({
+      leadingKarmaUsers: leadingKarmaUsers,
+      leadingKudosUsers: leadingKudosUsers,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.send([]);
+  }
+});
+
 router.get("/searchName", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
