@@ -38,7 +38,6 @@ module.exports = class HauntedHouse extends Event {
         }
         this.target = Random.randArrayVal(possibleVictims);
 
-        
         if (this.game.SilentEvents != false) {
           this.target.queueAlert(
             `Event: Haunted House, You enter a Haunted House and find a Mask!`

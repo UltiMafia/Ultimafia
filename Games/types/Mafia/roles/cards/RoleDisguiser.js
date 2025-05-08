@@ -1,5 +1,7 @@
 const Card = require("../../Card");
-const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
+} = require("../../const/Priority");
 const Random = require("../../../../../lib/Random");
 const { addArticle } = require("../../../../core/Utils");
 
@@ -13,7 +15,7 @@ module.exports = class RoleDisguiser extends Card {
         flags: ["voting"],
         action: {
           labels: ["investigate", "role"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
           run: function () {
             let role = this.target.getAppearance("investigate", true);
             let info = this.game.createInformation(
