@@ -386,11 +386,7 @@ const artContributors = {
     ],
   },
   Mpreg: {
-    Mafia: [
-      "Count",
-      "Harpy",
-      "Bawd",
-    ],
+    Mafia: ["Count", "Harpy", "Bawd"],
   },
 };
 
