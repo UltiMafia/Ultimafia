@@ -381,13 +381,15 @@ const artContributors = {
       "Zealot",
       "Assassin",
       "Stylist",
+      "Mistress",
+      "Orienteer",
     ],
   },
   Mpreg: {
     Mafia: [
       "Count",
       "Harpy",
-      "Mistress",
+      "Bawd",
     ],
   },
 };

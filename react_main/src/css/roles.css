@@ -796,6 +796,10 @@
   background-image: url("/images/roles/beguiler-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Orienteer {
+  background-image: url("/images/roles/orienteer-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Firebrand {
   background-image: url("/images/roles/firebrand-vivid.png");
 }
@@ -1674,7 +1678,11 @@
 }
 
 .role-icon-scheme-vivid .role-Mafia-Dealer {
-  background-image: url("/images/roles/bully-vivid.png");
+  background-image: url("/images/roles/dealer-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Bawd {
+  background-image: url("/images/roles/bawd-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Palladist {
