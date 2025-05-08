@@ -337,14 +337,13 @@ async function getLeaderBoardStat(field) {
   if (cachedLeaderboard) {
     // Got cached result, no need to perform query
     return JSON.parse(cachedLeaderboard);
-  }
-  else {
+  } else {
     var sortBy = {};
     sortBy[field] = -1;
-  
+
     // Query the top 100 users for a given field
     const leadingUsers = await models.User.find({ deleted: false })
-      .select("id name avatar kudos karma achievements stats _id")
+      .select("id name avatar kudos karma achievementCount winRate _id")
       .sort(sortBy)
       .limit(100);
 
@@ -353,7 +352,7 @@ async function getLeaderBoardStat(field) {
 
     // Causes leaderboards update every 2 minutes
     client.expire(key, 120);
-    
+
     return leadingUsers;
   }
 }

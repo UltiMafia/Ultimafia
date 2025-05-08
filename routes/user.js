@@ -81,10 +81,16 @@ router.get("/leaderboard", async function (req, res) {
   try {
     var leadingKarmaUsers = await redis.getLeaderBoardStat("karma");
     var leadingKudosUsers = await redis.getLeaderBoardStat("kudos");
-    
+    var leadingStatsUsers = await redis.getLeaderBoardStat("winRate");
+    var leadingAchievementUsers = await redis.getLeaderBoardStat(
+      "achievementCount"
+    );
+
     res.send({
       leadingKarmaUsers: leadingKarmaUsers,
       leadingKudosUsers: leadingKudosUsers,
+      leadingStatsUsers: leadingStatsUsers,
+      leadingAchievementUsers: leadingAchievementUsers,
     });
   } catch (e) {
     logger.error(e);
