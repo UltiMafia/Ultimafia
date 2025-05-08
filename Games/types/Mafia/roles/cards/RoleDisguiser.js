@@ -1,5 +1,7 @@
 const Card = require("../../Card");
-const { PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
+} = require("../../const/Priority");
 const Random = require("../../../../../lib/Random");
 const { addArticle } = require("../../../../core/Utils");
 
