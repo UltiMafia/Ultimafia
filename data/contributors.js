@@ -383,9 +383,11 @@ const artContributors = {
       "Stylist",
       "Mistress",
       "Orienteer",
+      "Magistrate",
+      "Braggart",
     ],
   },
-  Mpreg: {
+  syn: {
     Mafia: ["Count", "Harpy", "Bawd", "Diplomat"],
   },
 };

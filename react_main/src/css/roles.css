@@ -1689,6 +1689,14 @@
   background-image: url("/images/roles/diplomat-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Magistrate {
+  background-image: url("/images/roles/magistrate-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Braggart {
+  background-image: url("/images/roles/braggart-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Palladist {
   background-image: url("/images/roles/palladist-vivid.png");
 }
