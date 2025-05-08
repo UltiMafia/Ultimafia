@@ -16,6 +16,7 @@ services:
       - "27017:27017"
     volumes:
       - mongodb:/data/db
+      - ./scripts/mongo:/scripts
     networks:
       - my_net
 

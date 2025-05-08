@@ -23,7 +23,7 @@ export default function Leaderboard() {
 
   useEffect(() => {
     axios
-      .get(`/fame/leaderboard`)
+      .get(`/user/leaderboard`)
       .then((res) => {
         const formattedUsers = res.data.slice(0, 20).map((user) => ({
           id: user.id,
@@ -50,15 +50,6 @@ export default function Leaderboard() {
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
-
-  const sortedUsers = [...users].sort((a, b) => {
-    const valA = a[orderBy];
-    const valB = b[orderBy];
-
-    if (valA < valB) return order === "asc" ? -1 : 1;
-    if (valA > valB) return order === "asc" ? 1 : -1;
-    return 0;
-  });
 
   return (
     <TableContainer component={Paper}>
@@ -112,7 +103,7 @@ export default function Leaderboard() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedUsers.map((user) => (
+            {users.map((user) => (
               <TableRow key={user.id}>
                 <TableCell>
                   <NameWithAvatar
