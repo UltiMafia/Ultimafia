@@ -56,7 +56,7 @@ const Standard_Deck = [
   "Queen-Spades",
   "King-Spades",
 ];
-
+/*
 const Standard_Deck_WIP = [
   //Hearts
   "Ace-Hearts": {
@@ -138,7 +138,7 @@ const Standard_Deck_WIP = [
     id: 01,
   },
 ];
-
+*/
 const Test_Deck = [
   //Hearts
   "Ace-Hearts",
