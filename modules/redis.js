@@ -346,8 +346,7 @@ async function getLeaderBoardStat(field) {
       .select("id name avatar kudos karma achievementCount winRate _id")
       .sort(sortBy)
       .limit(100);
-   
-    
+
     // Cache the result in redis so that we don't have to do the query again for a little bit
     await client.setAsync(key, JSON.stringify(leadingUsers));
 

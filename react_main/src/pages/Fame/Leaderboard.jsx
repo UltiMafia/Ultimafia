@@ -31,7 +31,7 @@ export default function Leaderboard() {
           name: user.name,
           avatar: user.avatar,
           winLossRatio: user.winRate,
-         //(user.stats ? (user.stats["Mafia"].all.wins.count/user.stats["Mafia"].all.wins.total) : 0),
+          //(user.stats ? (user.stats["Mafia"].all.wins.count/user.stats["Mafia"].all.wins.total) : 0),
           kudos: user.kudos,
           karma: user.karma,
           achievements: user.achievementCount,
@@ -46,16 +46,18 @@ export default function Leaderboard() {
           karma: user.karma,
           achievements: user.achievementCount,
         }));
-        const highachievementUsers = res.data.leadingAchievementUsers.map((user) => ({
-          id: user.id,
-          name: user.name,
-          avatar: user.avatar,
-          winLossRatio: user.winRate,
-         // (user.stats ? (user.stats["Mafia"].all.wins.count/user.stats["Mafia"].all.wins.total) : 0),
-          kudos: user.kudos,
-          karma: user.karma,
-          achievements: user.achievementCount,
-        }));
+        const highachievementUsers = res.data.leadingAchievementUsers.map(
+          (user) => ({
+            id: user.id,
+            name: user.name,
+            avatar: user.avatar,
+            winLossRatio: user.winRate,
+            // (user.stats ? (user.stats["Mafia"].all.wins.count/user.stats["Mafia"].all.wins.total) : 0),
+            kudos: user.kudos,
+            karma: user.karma,
+            achievements: user.achievementCount,
+          })
+        );
         const highWinRateUsers = res.data.leadingStatsUsers.map((user) => ({
           id: user.id,
           name: user.name,
@@ -76,7 +78,12 @@ export default function Leaderboard() {
           karma: user.karma,
           achievements: user.achievementCount,
         }));
-        setSorted([highkarmaUsers, highkudosUsers, highachievementUsers, highWinRateUsers]);
+        setSorted([
+          highkarmaUsers,
+          highkudosUsers,
+          highachievementUsers,
+          highWinRateUsers,
+        ]);
         setUsers(formattedUsers);
         setLoading(false);
       })
@@ -86,16 +93,13 @@ export default function Leaderboard() {
       });
   }, []);
   let tempsortedUsers = sorted[0];
-  if(orderBy == "winLossRatio"){
+  if (orderBy == "winLossRatio") {
     tempsortedUsers = sorted[3];
-  }
-  else if(orderBy == "kudos"){
+  } else if (orderBy == "kudos") {
     tempsortedUsers = sorted[1];
-  }
-  else if(orderBy == "karma"){
+  } else if (orderBy == "karma") {
     tempsortedUsers = sorted[0];
-  }
-  else if(orderBy == "achievements"){
+  } else if (orderBy == "achievements") {
     tempsortedUsers = sorted[2];
   }
   const sortedUsers = tempsortedUsers;

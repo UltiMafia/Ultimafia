@@ -2505,7 +2505,14 @@ module.exports = class Game {
           {
             $push: { games: game._id },
             $addToSet: { achievements: { $each: player.EarnedAchievements } },
-            $set: { stats: player.user.stats, playedGame: true, achievementCount: (player.user.achievements.length), winRate: (player.user.stats["Mafia"].all.wins.count/player.user.stats["Mafia"].all.wins.total) },
+            $set: {
+              stats: player.user.stats,
+              playedGame: true,
+              achievementCount: player.user.achievements.length,
+              winRate:
+                player.user.stats["Mafia"].all.wins.count /
+                player.user.stats["Mafia"].all.wins.total,
+            },
             $inc: {
               rankedPoints: rankedPoints,
               competitivePoints: competitivePoints,
