@@ -17,6 +17,7 @@ import { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "../User/Profile";
 
 export default function Leaderboard() {
   const [users, setUsers] = useState([]);
+  const [sorted, setSorted] = useState([]);
   const [loading, setLoading] = useState(true);
   const [orderBy, setOrderBy] = useState("winLossRatio");
   const [order, setOrder] = useState("desc");
@@ -25,17 +26,57 @@ export default function Leaderboard() {
     axios
       .get(`/user/leaderboard`)
       .then((res) => {
-        const formattedUsers = res.data.slice(0, 20).map((user) => ({
+        const highkarmaUsers = res.data.leadingKarmaUsers.map((user) => ({
           id: user.id,
           name: user.name,
           avatar: user.avatar,
-          winLossRatio:
-            user.stats["Mafia"].all.wins.count /
-            (user.stats["Mafia"].all.wins.total || 1),
+          winLossRatio: user.winRate,
+         //(user.stats ? (user.stats["Mafia"].all.wins.count/user.stats["Mafia"].all.wins.total) : 0),
           kudos: user.kudos,
           karma: user.karma,
-          achievements: user.achievements.length || 0,
+          achievements: user.achievementCount,
         }));
+        const highkudosUsers = res.data.leadingKudosUsers.map((user) => ({
+          id: user.id,
+          name: user.name,
+          avatar: user.avatar,
+          winLossRatio: user.winRate,
+          //(user.stats ? (user.stats["Mafia"].all.wins.count/user.stats["Mafia"].all.wins.total) : 0),
+          kudos: user.kudos,
+          karma: user.karma,
+          achievements: user.achievementCount,
+        }));
+        const highachievementUsers = res.data.leadingAchievementUsers.map((user) => ({
+          id: user.id,
+          name: user.name,
+          avatar: user.avatar,
+          winLossRatio: user.winRate,
+         // (user.stats ? (user.stats["Mafia"].all.wins.count/user.stats["Mafia"].all.wins.total) : 0),
+          kudos: user.kudos,
+          karma: user.karma,
+          achievements: user.achievementCount,
+        }));
+        const highWinRateUsers = res.data.leadingStatsUsers.map((user) => ({
+          id: user.id,
+          name: user.name,
+          avatar: user.avatar,
+          winLossRatio: user.winRate,
+          //(user.stats ? (user.stats["Mafia"].all.wins.count/user.stats["Mafia"].all.wins.total) : 0),
+          kudos: user.kudos,
+          karma: user.karma,
+          achievements: user.achievementCount,
+        }));
+        const formattedUsers = res.data.leadingKarmaUsers.map((user) => ({
+          id: user.id,
+          name: user.name,
+          avatar: user.avatar,
+          winLossRatio: user.winRate,
+          //(user.stats ? (user.stats["Mafia"].all.wins.count/user.stats["Mafia"].all.wins.total) : 0),
+          kudos: user.kudos,
+          karma: user.karma,
+          achievements: user.achievementCount,
+        }));
+        setSorted([highkarmaUsers, highkudosUsers, highachievementUsers, highWinRateUsers]);
         setUsers(formattedUsers);
         setLoading(false);
       })
@@ -44,10 +85,32 @@ export default function Leaderboard() {
         setLoading(false);
       });
   }, []);
+  let tempsortedUsers = sorted[0];
+  if(orderBy == "winLossRatio"){
+    tempsortedUsers = sorted[3];
+  }
+  else if(orderBy == "kudos"){
+    tempsortedUsers = sorted[1];
+  }
+  else if(orderBy == "karma"){
+    tempsortedUsers = sorted[0];
+  }
+  else if(orderBy == "achievements"){
+    tempsortedUsers = sorted[2];
+  }
+  const sortedUsers = tempsortedUsers;
+  /*[...users].sort((a, b) => {
+    const valA = a[orderBy];
+    const valB = b[orderBy];
+    if (valA < valB) return order === "asc" ? -1 : 1;
+    if (valA > valB) return order === "asc" ? 1 : -1;
+    return 0;
+  });
+  */
 
   const handleSort = (property) => {
     const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
+    //setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
@@ -103,7 +166,7 @@ export default function Leaderboard() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
+            {sortedUsers.map((user) => (
               <TableRow key={user.id}>
                 <TableCell>
                   <NameWithAvatar
@@ -115,7 +178,7 @@ export default function Leaderboard() {
                 <TableCell>{user.winLossRatio.toFixed(2)}</TableCell>
                 <TableCell>{user.kudos}</TableCell>
                 <TableCell>{user.karma}</TableCell>
-                <TableCell>{user.achievements}/20</TableCell>
+                <TableCell>{user.achievements}/40</TableCell>
               </TableRow>
             ))}
           </TableBody>
