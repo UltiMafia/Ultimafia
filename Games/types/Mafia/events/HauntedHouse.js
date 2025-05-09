@@ -30,7 +30,9 @@ module.exports = class HauntedHouse extends Event {
             possibleVictims.push(action.target);
           }
         }
-        possibleVictims = possibleVictims.filter((p) => this.event.canTargetPlayer(p));
+        possibleVictims = possibleVictims.filter((p) =>
+          this.event.canTargetPlayer(p)
+        );
         if (possibleVictims.length <= 0) {
           possibleVictims = this.event.generatePossibleVictims();
         }
