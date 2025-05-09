@@ -34,17 +34,17 @@ module.exports = class Evolution extends Event {
       target: victim,
       game: this.game,
       priority: PRIORITY_BECOME_DEAD_ROLE,
-      item: this,
+      event: this,
       labels: ["hidden", "absolute"],
       run: function () {
         let vanillaPlayers = this.game
           .alivePlayers()
           .filter(
             (p) =>
-              p.role.name == "Villager" ||
+              (p.role.name == "Villager" ||
               p.role.name == "Mafioso" ||
               p.role.name == "Cultist" ||
-              p.role.name == "Grouch"
+              p.role.name == "Grouch") && this.event.canTargetPlayer(p)
           );
         if (vanillaPlayers.length <= 0) return;
 
