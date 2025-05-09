@@ -1,7 +1,9 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 const Action = require("../../Action");
-const { PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class Wannabe extends Card {
   constructor(role) {
@@ -28,32 +30,20 @@ module.exports = class Wannabe extends Card {
           game: this.player.game,
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
           run: function () {
-          let possibleVictims = [];
-          for (let action of this.game.actions[0]) {
-          if (
-            action.hasLabels(["kill", "mafia"]) &&
-            action.target
-          ) {
-            this.actor.giveEffect("FakeVisit", 1, [
-              action.target,
-            ]);
-            return;
-          }
-          else if (
-            action.hasLabels(["kill"]) &&
-            action.target
-          ) {
-            possibleVictims.push(action.target);
-          }
-          }
-          if(possibleVictims.length > 0){
+            let possibleVictims = [];
+            for (let action of this.game.actions[0]) {
+              if (action.hasLabels(["kill", "mafia"]) && action.target) {
+                this.actor.giveEffect("FakeVisit", 1, [action.target]);
+                return;
+              } else if (action.hasLabels(["kill"]) && action.target) {
+                possibleVictims.push(action.target);
+              }
+            }
+            if (possibleVictims.length > 0) {
               this.actor.giveEffect("FakeVisit", 1, [
-              Random.randArrayVal(possibleVictims),
-            ]);
-          }
-          
-        
-            
+                Random.randArrayVal(possibleVictims),
+              ]);
+            }
           },
         });
 
