@@ -75,6 +75,16 @@ const roleData = {
         "Appears as Miller upon being killed.",
       ],
     },
+    Wannabe: {
+      alignment: "Village",
+      category: "Basic",
+      tags: ["Humble", "Basic", "Deception"],
+      description: [
+        "Appears as Villager to self.",
+        "Appears to visit a player who dies at night, prioritizing players who are killed by the mafia.",
+        "Does not visit the player.",
+      ],
+    },
     "Party Host": {
       alignment: "Village",
       category: "Basic",
