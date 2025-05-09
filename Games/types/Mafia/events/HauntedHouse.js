@@ -11,10 +11,6 @@ module.exports = class HauntedHouse extends Event {
     super("Haunted House", modifiers, game);
   }
 
-  getNormalRequirements() {
-    return true;
-  }
-
   doEvent() {
     super.doEvent();
 
@@ -22,6 +18,7 @@ module.exports = class HauntedHouse extends Event {
       game: this.game,
       priority: PRIORITY_ITEM_GIVER_DEFAULT,
       labels: ["hidden", "absolute"],
+      event: this,
       run: function () {
         let possibleVictims = [];
         for (let action of this.game.actions[0]) {
@@ -33,8 +30,9 @@ module.exports = class HauntedHouse extends Event {
             possibleVictims.push(action.target);
           }
         }
+        possibleVictims = possibleVictims.filter((p) => this.event.canTargetPlayer(p));
         if (possibleVictims.length <= 0) {
-          possibleVictims = this.game.alivePlayers();
+          possibleVictims = this.event.generatePossibleVictims();
         }
         this.target = Random.randArrayVal(possibleVictims);
 
