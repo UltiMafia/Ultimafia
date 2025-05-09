@@ -47,44 +47,47 @@ module.exports = class MafiaEvent extends Event {
     }
   }
 
-  generatePossibleVictims(includeDead, playersToExclude, alignment){
-    let players = this.game.players.filter((p) => !playersToExclude.includes(p));
-    if(includeDead != true){
+  generatePossibleVictims(includeDead, playersToExclude, alignment) {
+    let players = this.game.players.filter(
+      (p) => !playersToExclude.includes(p)
+    );
+    if (includeDead != true) {
       players = players.filter((p) => p.alive);
     }
-    if(alignment){
+    if (alignment) {
       players = players.filter((p) => p.role.alignment == alignment);
     }
     players = players.filter((p) => this.canTargetPlayer(p));
   }
 
-canTargetPlayer(player){
-    if(this.modifiers.includes("Loyal") && player.isEvil()){
+  canTargetPlayer(player) {
+    if (this.modifiers.includes("Loyal") && player.isEvil()) {
+      return false;
+    } else if (this.modifiers.includes("Disloyal") && !player.isEvil()) {
       return false;
     }
-    else if(this.modifiers.includes("Disloyal") && !player.isEvil()){
+    if (this.modifiers.includes("Holy") && player.isDemonic(true)) {
+      return false;
+    } else if (this.modifiers.includes("Unholy") && !player.isDemonic(true)) {
       return false;
     }
-    if(this.modifiers.includes("Holy") && player.isDemonic(true)){
+    if (this.modifiers.includes("Simple") && !this.isVanilla(p)) {
+      return false;
+    } else if (this.modifiers.includes("Complex") && this.isVanilla(p)) {
       return false;
     }
-    else if(this.modifiers.includes("Unholy") && !player.isDemonic(true)){
-      return false;
-    }
-    if(this.modifiers.includes("Simple") && !this.isVanilla(p)){
-      return false;
-    }
-    else if(this.modifiers.includes("Complex")  && this.isVanilla(p)){
-      return false;
-    }
-  return true;
-}
-
-isVanilla(player){
-  if(player.role.name == "Villager" || player.role.name == "Mafioso" || player.role.name == "Cultist" || player.role.name == "Grouch"){
     return true;
   }
-  return false;
-}
-  
+
+  isVanilla(player) {
+    if (
+      player.role.name == "Villager" ||
+      player.role.name == "Mafioso" ||
+      player.role.name == "Cultist" ||
+      player.role.name == "Grouch"
+    ) {
+      return true;
+    }
+    return false;
+  }
 };
