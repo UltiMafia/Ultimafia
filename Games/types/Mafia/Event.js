@@ -56,10 +56,10 @@ module.exports = class MafiaEvent extends Event {
   }
 
   generatePossibleVictims(includeDead, playersToExclude, alignment) {
-    if(includeDead == null){
+    if (includeDead == null) {
       includeDead = false;
     }
-    
+
     let players = this.game.players.filter(
       (p) => !playersToExclude.includes(p)
     );
