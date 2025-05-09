@@ -94,7 +94,7 @@ export default function DeckSelector() {
       .catch(errorAlert);
   }
 
-  const hostButtonLabels = ["Featured", "Popular" "Yours"];
+  const hostButtonLabels = ["Featured", "Popular", "Yours"];
   const hostButtons = hostButtonLabels.map((label) => (
     <BotBarLink
       text={label}
