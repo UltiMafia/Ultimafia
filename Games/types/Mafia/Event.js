@@ -7,7 +7,7 @@ module.exports = class MafiaEvent extends Event {
   }
 
    getNormalRequirements() {
-     let players = this. generatePossibleVictims(false);
+     let players = this.generatePossibleVictims(false);
      if(players.length >= 1){
       return true;
      }
