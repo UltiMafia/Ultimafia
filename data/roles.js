@@ -75,6 +75,16 @@ const roleData = {
         "Appears as Miller upon being killed.",
       ],
     },
+    Wannabe: {
+      alignment: "Village",
+      category: "Basic",
+      tags: ["Humble", "Basic", "Deception"],
+      description: [
+        "Appears as Villager to self.",
+        "Appears to visit a player who dies at night, prioritizing players who are killed by the mafia.",
+        "Does not visit the player.",
+      ],
+    },
     "Party Host": {
       alignment: "Village",
       category: "Basic",
@@ -1479,9 +1489,9 @@ const roleData = {
       tags: ["Linked", "Information", "Alignment"],
       description: [
         "Once per game during the day, can open the door.",
-        "The opening of the door will be publicly announced without revealing the identity of the Mistress.",
-        "When the door is opened, they will learn the identity of an evil player, regardless of appearance, etc.",
-        "Dies the next day if not visited that night by a town-aligned player.",
+        "When the Mistress opens the Door all players will learn that the Mistress opened the door.",
+        "When the door is opened, the Mistress will learn an evil player.",
+        "After the Door was opened, The Mistress will Die the at night unless visited by a town-aligned player at night.",
       ],
     },
     Suitress: {

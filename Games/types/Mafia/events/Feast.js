@@ -25,13 +25,14 @@ module.exports = class Feast extends Event {
       game: this.game,
       priority: PRIORITY_ITEM_GIVER_DEFAULT,
       labels: ["hidden", "absolute"],
+      event: this,
       run: function () {
         if (this.game.SilentEvents != false) {
           this.game.queueAlert(
             `Event: Feast, The Town discovered hidden rations a Grand Feast will be Held!`
           );
         }
-        for (let person of this.game.players) {
+        for (let person of this.event.generatePossibleVictims()) {
           if (person.alive && person.role.name !== "Turkey") {
             person.holdItem("Food", "Bread");
             person.queueGetItemAlert("Bread");
