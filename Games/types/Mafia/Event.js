@@ -6,11 +6,11 @@ module.exports = class MafiaEvent extends Event {
     //this.game.queueAlert(`Mafia ${modifiers}`);
   }
 
-   getNormalRequirements() {
-     let players = this.generatePossibleVictims(false);
-     if(players.length >= 1){
+  getNormalRequirements() {
+    let players = this.generatePossibleVictims(false);
+    if (players.length >= 1) {
       return true;
-     }
+    }
     return false;
   }
 
