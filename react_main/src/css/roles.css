@@ -368,6 +368,10 @@
   background-image: url("/images/roles/miller-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Wannabe {
+  background-image: url("/images/roles/wannabe-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Celebrity {
   background-image: url("/images/roles/celebrity-vivid.png");
 }
