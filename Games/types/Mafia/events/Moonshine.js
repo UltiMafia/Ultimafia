@@ -11,13 +11,9 @@ module.exports = class Moonshine extends Event {
     super("Moonshine", modifiers, game);
   }
 
-  getNormalRequirements() {
-    return true;
-  }
-
   doEvent() {
     super.doEvent();
-    let victim = Random.randArrayVal(this.game.alivePlayers());
+    let victim = Random.randArrayVal(this.generatePossibleVictims());
     this.action = new Action({
       target: victim,
       game: this.game,

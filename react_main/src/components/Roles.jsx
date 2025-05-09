@@ -177,7 +177,10 @@ export function RoleCount(props) {
             primary={
               <div>
                 <span style={{ fontWeight: "bold" }}>{modifier.name}</span>:{" "}
-                {modifier.description}
+                {roleData?.alignment == "Event" &&
+                modifier.eventDescription != null
+                  ? modifier.eventDescription
+                  : modifier.description}
               </div>
             }
           />

@@ -41,11 +41,12 @@ module.exports = class Famine extends Event {
       priority: PRIORITY_KILL_DEFAULT,
       labels: ["hidden", "absolute"],
       delay: 2,
+      event: this,
       run: function () {
         let foodTypes = ["Food", "Bread", "Orange"];
         let hasEaten = false;
-        for (let person of this.game.players) {
-          //let foodTypes = ["Food", "Bread", "Orange"];
+        for (let person of this.event.generatePossibleVictims()) {
+          let foodTypes = ["Food", "Bread", "Orange"];
           if (person.getImmunity("famine")) hasEaten = true;
           for (let food of foodTypes) {
             let foodItems = person.getItems(food);

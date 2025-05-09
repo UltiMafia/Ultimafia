@@ -22,11 +22,12 @@ module.exports = class CaveIn extends Event {
       actor: victim,
       target: victim,
       game: this.game,
+      event: this,
       priority: PRIORITY_ITEM_GIVER_DEFAULT,
       labels: ["hidden", "absolute"],
       run: function () {
         for (const player of this.game.players) {
-          player.holdItem("CaveIn");
+          if (this.event.canTargetPlayer(player)) player.holdItem("CaveIn");
         }
       },
     });

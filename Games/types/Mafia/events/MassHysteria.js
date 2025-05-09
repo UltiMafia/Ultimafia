@@ -24,13 +24,14 @@ module.exports = class MassHysteria extends Event {
       game: this.game,
       priority: PRIORITY_EFFECT_GIVER_DEFAULT,
       labels: ["hidden", "absolute"],
+      event: this,
       run: function () {
         if (this.game.SilentEvents != false) {
           this.game.queueAlert(
             `Event: Mass Hysteria, All players have Frustrated Modifier today!`
           );
         }
-        for (const player of this.game.players) {
+        for (const player of this.event.generatePossibleVictims()) {
           player.giveEffect("Frustrated", 1);
         }
       },

@@ -11,10 +11,6 @@ module.exports = class SensibleMood extends Event {
     super("Sensible Mood", modifiers, game);
   }
 
-  getNormalRequirements() {
-    return true;
-  }
-
   doEvent() {
     super.doEvent();
     let victim = Random.randArrayVal(this.game.alivePlayers());
@@ -22,6 +18,7 @@ module.exports = class SensibleMood extends Event {
       actor: victim,
       target: victim,
       game: this.game,
+      event: this,
       priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5,
       labels: ["hidden", "absolute"],
       run: function () {
@@ -30,7 +27,7 @@ module.exports = class SensibleMood extends Event {
             `Event: Sensible Mood! 1-3 Players will Learn if their role has changed!`
           );
         }
-        let players = this.game.alivePlayers();
+        let players = this.event.generatePossibleVictims();
         players = Random.randomizeArray(players);
         let count = Random.randInt(1, 3);
         if (players.length < count) {

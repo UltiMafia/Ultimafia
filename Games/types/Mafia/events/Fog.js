@@ -24,11 +24,12 @@ module.exports = class Fog extends Event {
       game: this.game,
       priority: PRIORITY_EFFECT_GIVER_DEFAULT,
       labels: ["hidden", "absolute"],
+      event: this,
       run: function () {
         if (this.game.SilentEvents != false) {
           this.game.queueAlert(`Event: Fog, You can only see your neighbors!`);
         }
-        for (const player of this.game.players) {
+        for (const player of this.event.generatePossibleVictims()) {
           player.giveEffect("Fog", 1);
         }
       },

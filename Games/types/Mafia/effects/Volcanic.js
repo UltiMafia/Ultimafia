@@ -3,9 +3,10 @@ const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 
 module.exports = class Volcanic extends Effect {
-  constructor(lifespan) {
+  constructor(lifespan, Volcano) {
     super("Volcanic");
     this.lifespan = lifespan;
+    this.event = Volcano;
 
     this.listeners = {
       state: function (stateInfo) {
@@ -25,25 +26,28 @@ module.exports = class Volcanic extends Effect {
             return;
           }
 
-          let players = this.game.alivePlayers();
-          this.target = Random.randArrayVal(players);
+          let players = this.event.generatePossibleVictims();
+          if (players.length > 0) {
+            this.target = Random.randArrayVal(players);
 
-          let action = new Action({
-            target: this.target,
-            game: this.target.game,
-            labels: ["kill", "bomb"],
-            run: function () {
-              if (this.game.getStateName() != "Day") {
-                return;
-              }
-              this.game.queueAlert(
-                `The Volcano erupts, hitting ${this.target.name} with molten rock!`
-              );
-              if (this.dominates()) this.target.kill("bomb", this.target, true);
-            },
-          });
+            let action = new Action({
+              target: this.target,
+              game: this.target.game,
+              labels: ["kill", "bomb"],
+              run: function () {
+                if (this.game.getStateName() != "Day") {
+                  return;
+                }
+                this.game.queueAlert(
+                  `The Volcano erupts, hitting ${this.target.name} with molten rock!`
+                );
+                if (this.dominates())
+                  this.target.kill("bomb", this.target, true);
+              },
+            });
 
-          this.game.instantAction(action);
+            this.game.instantAction(action);
+          }
           this.timer = null;
           this.game.events.emit("Volcano");
         }, toDetonate);
