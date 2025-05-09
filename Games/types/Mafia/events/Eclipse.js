@@ -23,6 +23,7 @@ module.exports = class Eclipse extends Event {
       target: victim,
       game: this.game,
       priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+      event: this,
       labels: ["hidden", "absolute"],
       run: function () {
         if (this.game.SilentEvents != false) {
@@ -31,7 +32,9 @@ module.exports = class Eclipse extends Event {
           );
         }
         for (const player of this.game.players) {
+          if(this.event.canTargetPlayer()){
           player.giveEffect("Blind", 1);
+          }
         }
       },
     });
