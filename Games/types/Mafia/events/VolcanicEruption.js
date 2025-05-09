@@ -11,7 +11,7 @@ module.exports = class VolcanicEruption extends Event {
     super("Volcanic Eruption", modifiers, game);
   }
 
-    getNormalRequirements() {
+  getNormalRequirements() {
     return true;
   }
 
