@@ -13,7 +13,7 @@ module.exports = class Brainblast extends Event {
 
   doEvent() {
     super.doEvent();
-    
+
     let victim = Random.randArrayVal(this.generatePossibleVictims());
     this.action = new Action({
       actor: victim,
