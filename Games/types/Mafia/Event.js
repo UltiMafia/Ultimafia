@@ -6,6 +6,14 @@ module.exports = class MafiaEvent extends Event {
     //this.game.queueAlert(`Mafia ${modifiers}`);
   }
 
+   getNormalRequirements() {
+     let players = this. generatePossibleVictims(false);
+     if(players.length >= 1){
+      return true;
+     }
+    return false;
+  }
+
   getModifierRequirements() {
     if (this.modifiers == null) return true;
     //this.game.queueAlert("Checks Null");
