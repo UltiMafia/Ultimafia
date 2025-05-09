@@ -960,7 +960,11 @@ export function parseRolePopover(role, modifiers) {
           title={`Modifier: ${modifier.name}`}
           content={
             <ul>
-              <li key={modifier.name}>{ (role.alignment == "Event" && modifier.eventDescription != null) ? modifier.eventDescription : modifier.description}</li>
+              <li key={modifier.name}>
+                {role.alignment == "Event" && modifier.eventDescription != null
+                  ? modifier.eventDescription
+                  : modifier.description}
+              </li>
             </ul>
           }
           key={modifier.name}
