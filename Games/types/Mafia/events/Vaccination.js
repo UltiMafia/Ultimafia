@@ -14,7 +14,7 @@ module.exports = class Vaccination extends Event {
 
   doEvent() {
     super.doEvent();
-     let victim = Random.randArrayVal(this.generatePossibleVictims());
+    let victim = Random.randArrayVal(this.generatePossibleVictims());
     this.action = new Action({
       target: victim,
       game: this.game,
