@@ -34,6 +34,7 @@ const modifierData = {
       tags: ["Banished"],
       description:
         "Banished roles have abnormal spawn conditions. Banished roles will only spawn if the Banished count is increased, or if another roles adds Banished roles to the game.",
+      eventDescription: "This Event will not occur normally.",
       incompatible: ["Inclusive", "Exclusive"],
     },
     Birdbrained: {
@@ -126,6 +127,7 @@ const modifierData = {
       tags: ["Visits", "Block Self", "Vanilla"],
       description:
         "If this player visits a player with a vanilla role, all their actions will be blocked.",
+      eventDescription: "This Event will not apply to players with Vanilla roles.",
       incompatible: ["Simple"],
     },
     Commuting: {
@@ -161,6 +163,7 @@ const modifierData = {
       tags: ["Delayed", "Meetings"],
       description:
         "Cannot attend secondary meetings for the first day and night.",
+      eventDescription: "This Event will not occur on the first night.",
       incompatible: ["Lazy", "Odd", "Even", "Exhausted"],
     },
     Diplomatic: {
@@ -174,6 +177,7 @@ const modifierData = {
       tags: ["Visits", "Block Self", "Alignments"],
       description:
         "If this player visits a player of the same alignment, their secondary actions will be blocked.",
+      eventDescription: "This Event will not apply to Non-Evil players.",
       incompatible: ["Loyal"],
     },
     Dovish: {
@@ -187,6 +191,7 @@ const modifierData = {
       tags: ["Even", "Meetings"],
       description:
         "Can only attend secondary meetings on even days and nights.",
+      eventDescription: "This Event will only occur on Even nights.",
       incompatible: ["Lazy", "Odd", "Delayed", "Exhausted"],
     },
     Exclusive: {
@@ -249,6 +254,7 @@ const modifierData = {
       tags: ["Visits", "Block Self", "Modifiers"],
       description:
         "If this player visits a player with a Demonic role, their secondary actions will be blocked.",
+      eventDescription: "This Event will not apply to Demonic players.",
       incompatible: ["Unholy"],
     },
     Humble: {
@@ -322,6 +328,7 @@ const modifierData = {
       tags: ["Visits", "Block Self", "Alignments"],
       description:
         "If this player visits a player of the opposite alignment, their secondary actions will be blocked.",
+      eventDescription: "This Event will not apply to Evil players.",
       incompatible: ["Disloyal"],
     },
     Luminous: {
@@ -390,6 +397,7 @@ const modifierData = {
       internal: ["Odd"],
       tags: ["Odd", "Meetings"],
       description: "Can only attend secondary meetings on odd days and nights.",
+      eventDescription: "This Event will only occur on Odd nights.",
       incompatible: ["Lazy", "Even", "Delayed", "Exhausted"],
     },
     Omniscient: {
@@ -401,6 +409,7 @@ const modifierData = {
       internal: ["OneShot"],
       tags: ["One Shot", "Dawn", "Dusk", "Pregame Actions"],
       description: "Can only perform actions once.",
+      eventDescription: "This Event will only occur once.",
       incompatible: ["Exhausted"],
     },
     Pious: {
@@ -524,6 +533,7 @@ const modifierData = {
       tags: ["Visits", "Block Self", "Vanilla"],
       description:
         "If this player visits a player with a power role, all their actions will be blocked.",
+      eventDescription: "This Event will not apply to non-Vanilla players.",
       incompatible: ["Complex"],
     },
     Social: {
@@ -547,6 +557,7 @@ const modifierData = {
       tags: ["Suspended", "Meetings"],
       description:
         "Can only attend secondary meetings for the first day and night.",
+      eventDescription: "This Event can only occur on the first night.",
       allowDuplicate: true,
       incompatible: ["Lazy", "Odd", "One Shot", "Even", "Delayed"],
     },
@@ -589,6 +600,7 @@ const modifierData = {
       tags: ["Visits", "Block Self", "Modifiers"],
       description:
         "If this player visits a player with a non-Demonic role, their secondary actions will be blocked.",
+      eventDescription: "This Event will not apply to non-Demonic players.",
       incompatible: ["Holy"],
     },
     Unkillable: {
