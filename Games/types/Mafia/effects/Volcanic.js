@@ -27,26 +27,26 @@ module.exports = class Volcanic extends Effect {
           }
 
           let players = this.event.generatePossibleVictims();
-          if(players.length > 0){
-          
-          this.target = Random.randArrayVal(players);
+          if (players.length > 0) {
+            this.target = Random.randArrayVal(players);
 
-          let action = new Action({
-            target: this.target,
-            game: this.target.game,
-            labels: ["kill", "bomb"],
-            run: function () {
-              if (this.game.getStateName() != "Day") {
-                return;
-              }
-              this.game.queueAlert(
-                `The Volcano erupts, hitting ${this.target.name} with molten rock!`
-              );
-              if (this.dominates()) this.target.kill("bomb", this.target, true);
-            },
-          });
+            let action = new Action({
+              target: this.target,
+              game: this.target.game,
+              labels: ["kill", "bomb"],
+              run: function () {
+                if (this.game.getStateName() != "Day") {
+                  return;
+                }
+                this.game.queueAlert(
+                  `The Volcano erupts, hitting ${this.target.name} with molten rock!`
+                );
+                if (this.dominates())
+                  this.target.kill("bomb", this.target, true);
+              },
+            });
 
-          this.game.instantAction(action);
+            this.game.instantAction(action);
           }
           this.timer = null;
           this.game.events.emit("Volcano");
