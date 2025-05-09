@@ -482,7 +482,6 @@ router.get("/search", async function (req, res) {
   }
 });
 
-
 router.get("/popular", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -506,14 +505,18 @@ router.get("/popular", async function (req, res) {
     if (start < deckLimit) {
       var decks = await models.AnonymousDeck.find({
         disabled: false,
-      }).limit(deckLimit)
+      })
+        .limit(deckLimit)
         .select("id name profiles");
       var count = decks.length;
       decks = decks.slice(start, start + pageSize);
 
       res.send({
         decks: decks,
-        pages: ((Math.ceil(count / pageSize)+1) <= pageLimit ? (Math.ceil(count / pageSize)+1) : pageLimit),
+        pages:
+          Math.ceil(count / pageSize) + 1 <= pageLimit
+            ? Math.ceil(count / pageSize) + 1
+            : pageLimit,
       });
     } else {
       res.send({ decks: [], pages: 0 });
