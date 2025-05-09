@@ -430,7 +430,7 @@ const modifierData = {
       tags: ["Redirection"],
       description:
         "Each night has 50% chance to be redirected onto themselves.",
-        eventDescription: "This modifier does nothing when on an Event.",
+      eventDescription: "This modifier does nothing when on an Event.",
     },
     Neighborly: {
       internal: ["MeetWithNeighbors"],
