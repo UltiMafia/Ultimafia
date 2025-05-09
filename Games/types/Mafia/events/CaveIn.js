@@ -27,8 +27,7 @@ module.exports = class CaveIn extends Event {
       labels: ["hidden", "absolute"],
       run: function () {
         for (const player of this.game.players) {
-          if(this.event.canTargetPlayer(player))
-          player.holdItem("CaveIn");
+          if (this.event.canTargetPlayer(player)) player.holdItem("CaveIn");
         }
       },
     });
