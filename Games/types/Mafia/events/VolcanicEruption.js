@@ -11,6 +11,10 @@ module.exports = class VolcanicEruption extends Event {
     super("Volcanic Eruption", modifiers, game);
   }
 
+    getNormalRequirements() {
+    return true;
+  }
+
   doEvent() {
     super.doEvent();
     let victim = Random.randArrayVal(this.game.alivePlayers());
