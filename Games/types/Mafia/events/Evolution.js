@@ -42,9 +42,10 @@ module.exports = class Evolution extends Event {
           .filter(
             (p) =>
               (p.role.name == "Villager" ||
-              p.role.name == "Mafioso" ||
-              p.role.name == "Cultist" ||
-              p.role.name == "Grouch") && this.event.canTargetPlayer(p)
+                p.role.name == "Mafioso" ||
+                p.role.name == "Cultist" ||
+                p.role.name == "Grouch") &&
+              this.event.canTargetPlayer(p)
           );
         if (vanillaPlayers.length <= 0) return;
 
