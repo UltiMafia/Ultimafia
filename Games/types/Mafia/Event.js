@@ -66,6 +66,7 @@ module.exports = class MafiaEvent extends Event {
       players = players.filter((p) => p.role.alignment == alignment);
     }
     players = players.filter((p) => this.canTargetPlayer(p));
+    return players;
   }
 
   canTargetPlayer(player) {
