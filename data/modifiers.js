@@ -638,6 +638,12 @@ const modifierData = {
       description:
         "Will passively convert to the role of the first aligned power role.",
     },
+    Wannabe: {
+      internal: ["Wannabe"],
+      tags: ["Deception"],
+      description:
+        "Appears to visit a player who dies at night, prioritizing players who are killed by the mafia.",
+    },
     Weak: {
       internal: ["Weak"],
       tags: ["Visits", "Killing", "Alignments", "Self Kill"],
