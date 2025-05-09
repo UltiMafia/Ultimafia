@@ -2510,8 +2510,8 @@ module.exports = class Game {
               playedGame: true,
               achievementCount: player.user.achievements.length,
               winRate:
-                player.user.stats["Mafia"].all.wins.count /
-                player.user.stats["Mafia"].all.wins.total,
+                (player.user.stats["Mafia"].all.wins.count || 0)/
+                (player.user.stats["Mafia"].all.wins.total || 1),
             },
             $inc: {
               rankedPoints: rankedPoints,
