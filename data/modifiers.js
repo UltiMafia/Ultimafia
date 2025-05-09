@@ -127,7 +127,8 @@ const modifierData = {
       tags: ["Visits", "Block Self", "Vanilla"],
       description:
         "If this player visits a player with a vanilla role, all their actions will be blocked.",
-      eventDescription: "This Event will not apply to players with Vanilla roles.",
+      eventDescription:
+        "This Event will not apply to players with Vanilla roles.",
       incompatible: ["Simple"],
     },
     Commuting: {
