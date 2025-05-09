@@ -32,8 +32,8 @@ module.exports = class Eclipse extends Event {
           );
         }
         for (const player of this.game.players) {
-          if(this.event.canTargetPlayer()){
-          player.giveEffect("Blind", 1);
+          if (this.event.canTargetPlayer()) {
+            player.giveEffect("Blind", 1);
           }
         }
       },
