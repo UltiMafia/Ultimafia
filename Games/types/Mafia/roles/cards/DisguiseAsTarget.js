@@ -47,8 +47,6 @@ module.exports = class DisguiseAsTarget extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           labels: ["giveItem", "suit", "hidden", "absolute"],
           run: function () {
-            
-
             let targets = this.getVisits(this.actor);
             for (let target of targets) {
               let role = target.getAppearance("investigate", true);

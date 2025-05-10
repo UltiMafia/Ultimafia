@@ -45,7 +45,6 @@ module.exports = class VillageMightSurviveCondemn extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           labels: ["save"],
           run: function () {
-
             const villagePlayers = this.game
               .alivePlayers()
               .filter(

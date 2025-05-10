@@ -64,8 +64,6 @@ module.exports = class ForageItem extends Card {
           labels: ["giveItem"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-           
-
             //if (this.game.getStateName() != "Night") return;
 
             if (this.getVisitors().length > 0) {

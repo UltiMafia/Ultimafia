@@ -50,8 +50,6 @@ module.exports = class KillConverters extends Card {
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill", "hidden"],
           run: function () {
-            
-
             if (this.actor.role.killLimit <= 0) {
               return;
             }

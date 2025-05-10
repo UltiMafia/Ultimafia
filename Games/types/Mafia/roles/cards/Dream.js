@@ -81,8 +81,6 @@ module.exports = class Dream extends Card {
           labels: ["dream", "hidden", "investigate"],
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
           run: function () {
-            
-
             var aliveExceptSelf = this.game.players.filter(
               (p) => p.alive && p != this.actor
             );

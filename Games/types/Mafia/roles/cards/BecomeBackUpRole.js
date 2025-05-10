@@ -63,7 +63,10 @@ module.exports = class BecomeBackUpRole extends Card {
           }
         }
 
-        if (this.data.RoleTargetBackup != null && this.player.hasAbility(["Convert"])) {
+        if (
+          this.data.RoleTargetBackup != null &&
+          this.player.hasAbility(["Convert"])
+        ) {
           let playersWithRole = this.game
             .alivePlayers()
             .filter((p) => this.data.RoleTargetBackup == p.role.name);

@@ -76,7 +76,6 @@ module.exports = class Simple extends Card {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
           labels: ["block", "hidden"],
           run: function () {
-
             for (let action of this.game.actions[0]) {
               if (action.hasLabel("absolute")) {
                 continue;

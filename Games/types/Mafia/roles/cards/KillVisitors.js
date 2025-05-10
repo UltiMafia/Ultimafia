@@ -39,7 +39,6 @@ module.exports = class KillVisitors extends Card {
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill", "hidden", "absolute"],
           run: function () {
-
             let visitors = this.getVisitors();
 
             for (let visitor of visitors)

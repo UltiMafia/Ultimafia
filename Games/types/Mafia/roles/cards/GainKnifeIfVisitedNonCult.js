@@ -45,7 +45,6 @@ module.exports = class GainKnifeIfVisitedNonCult extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           labels: ["hidden", "absolute"],
           run: function () {
-
             let visitors = this.getVisitors(this.actor);
             let hasNonCultVisitors =
               visitors.filter((v) => v.role.alignment !== "Cult")?.length > 0;

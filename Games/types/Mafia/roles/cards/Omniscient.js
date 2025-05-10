@@ -23,7 +23,6 @@ module.exports = class Omiscient extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           labels: ["investigate"],
           run: function () {
-            
             let visits;
             let visitNames;
             let role;

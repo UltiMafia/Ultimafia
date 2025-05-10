@@ -55,7 +55,6 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           labels: ["hidden", "absolute"],
           run: function () {
-
             if (this.actor.role.data.gainedGun) return;
 
             let mafiaKilled = false;

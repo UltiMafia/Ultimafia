@@ -18,8 +18,8 @@ module.exports = class WinIfPredictOwnDeath extends Card {
       death: function (player, killer, deathType) {
         if (
           player == this.player &&
-          this.game.getStateInfo().dayCount  == this.prediction
-        ){
+          this.game.getStateInfo().dayCount == this.prediction
+        ) {
           this.nightKilled = true;
         }
       },

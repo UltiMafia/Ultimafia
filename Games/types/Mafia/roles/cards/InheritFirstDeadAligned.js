@@ -28,10 +28,10 @@ module.exports = class InheritFirstDeadAligned extends Card {
                 this.actor.setRole(
                   `${this.target.role.name}:${this.target.role.modifier}`,
                   this.target.role.data,
-                    false,
-                    false,
-                    false,
-                    "No Change"
+                  false,
+                  false,
+                  false,
+                  "No Change"
                 );
               }
             },

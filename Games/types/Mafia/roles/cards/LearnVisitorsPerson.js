@@ -60,7 +60,6 @@ module.exports = class LearnVisitorsPerson extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           labels: ["investigate", "role", "hidden", "absolute"],
           run: function () {
-
             let info = this.game.createInformation(
               "WatcherInfo",
               this.actor,

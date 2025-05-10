@@ -9,7 +9,7 @@ module.exports = class Disloyal extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-         if (!this.player.hasAbility(["Blocking", "Modifier"])) {
+        if (!this.player.hasAbility(["Blocking", "Modifier"])) {
           return;
         }
         if (!stateInfo.name.match(/Night/)) {
@@ -22,7 +22,6 @@ module.exports = class Disloyal extends Card {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER - 1,
           labels: ["block", "hidden", "absolute"],
           run: function () {
-
             for (let action of this.game.actions[0]) {
               if (action.hasLabel("absolute")) {
                 continue;

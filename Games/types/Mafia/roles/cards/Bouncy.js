@@ -48,7 +48,7 @@ module.exports = class Bouncy extends Card {
           priority: PRIORITY_MODIFY_ACTION,
           run: function () {
             if (this.game.getStateName() != "Night") return;
-            
+
             var alive = this.game.players.filter(
               (p) =>
                 p.alive &&

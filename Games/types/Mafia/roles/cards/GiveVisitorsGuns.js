@@ -44,7 +44,6 @@ module.exports = class GiveVisitorsGuns extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           labels: ["giveItem", "gun"],
           run: function () {
-
             let visitors = this.getVisitors();
             visitors.map((p) => {
               p.holdItem("Gun");

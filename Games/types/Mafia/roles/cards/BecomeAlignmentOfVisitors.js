@@ -29,8 +29,6 @@ module.exports = class BecomeAlignmentOfVisitors extends Card {
           priority: PRIORITY_BLOCK_VISITORS - 1,
           labels: ["block", "hidden"],
           run: function () {
-          
-
             for (let visit of this.getVisitors(this.actor)) {
               if (this.dominates(visit)) {
                 this.blockWithDelirium(visit);

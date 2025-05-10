@@ -55,8 +55,6 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
             run: function () {
               if (!this.actor.role.evilDied) return;
 
-              
-
               let players = this.game.players.filter((p) => p != this.actor);
 
               let victims = players;

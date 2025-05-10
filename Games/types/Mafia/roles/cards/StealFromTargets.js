@@ -38,7 +38,6 @@ module.exports = class StealFromTargets extends Card {
           priority: PRIORITY_ITEM_TAKER_DEFAULT,
           labels: ["stealItem"],
           run: function () {
-
             let visits = this.getVisits(this.actor);
             visits.map((v) => this.stealAllItems(v));
           },

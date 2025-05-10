@@ -80,8 +80,6 @@ module.exports = class ChoirOfRoles extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           labels: ["effect"],
           run: function () {
-            
-
             let roles = this.game.PossibleRoles.filter((r) => r);
             let players = this.game
               .alivePlayers()

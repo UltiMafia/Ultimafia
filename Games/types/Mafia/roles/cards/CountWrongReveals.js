@@ -22,7 +22,6 @@ module.exports = class CountWrongReveals extends Card {
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1,
           labels: ["investigate", "Forensicist"],
           run: function () {
-            
             let info = this.game.createInformation(
               "CountFalseInfoInfo",
               this.actor,
