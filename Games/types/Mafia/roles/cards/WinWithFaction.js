@@ -159,7 +159,7 @@ module.exports = class WinWithFaction extends Card {
           }
         }
         //MagusWin
-          if (this.player.faction == "Village") {
+        if (this.player.faction == "Village") {
           const magusInGame = this.game.players.filter(
             (p) => p.role.name == "Magus" && p.role.data.MagusWin
           );
