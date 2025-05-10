@@ -52,21 +52,21 @@ module.exports = class Retired extends Card {
             `You are a retired ${this.player.role.name}. You remember a few people you worked with!`
           );
         }
-        
+
         //this.player.holdItem("Retirement", this.player.role.name);
 
         let newRole = "Sidekick";
         let currRole = this.player.role.name;
 
         if (this.player.role.alignment == "Independent") {
-        this.player.setRole(
-          "Sidekick",
-          undefined,
-          false,
-          true,
-          false,
-          "No Change"
-        );
+          this.player.setRole(
+            "Sidekick",
+            undefined,
+            false,
+            true,
+            false,
+            "No Change"
+          );
           this.player.role.data.OldRole = currRole;
         }
       },
