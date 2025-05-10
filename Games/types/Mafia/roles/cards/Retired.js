@@ -1,5 +1,11 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
+const {
+  IMPORTANT_MEETINGS_NIGHT,
+  INVITED_MEETINGS,
+  STARTS_WITH_MEETINGS,
+  IMPORTANT_MEETINGS_DAY,
+} = require("../../const/ImportantMeetings");
 
 module.exports = class Retired extends Card {
   constructor(role) {
@@ -35,7 +41,7 @@ module.exports = class Retired extends Card {
         }
         let info = this.game.createInformation(
           "RevealPlayersWithRoleInfo",
-          this.holder,
+          this.player,
           this.game,
           null,
           this.player.role.name
@@ -44,11 +50,11 @@ module.exports = class Retired extends Card {
         info.getInfoRaw();
 
         if (info.mainInfo.length <= 0) {
-          this.holder.queueAlert(
+          this.player.queueAlert(
             `You are a retired ${this.player.role.name}. You know that no one in this town is a ${this.player.role.name}`
           );
         } else {
-          this.holder.queueAlert(
+          this.player.queueAlert(
             `You are a retired ${this.player.role.name}. You remember a few people you worked with!`
           );
         }

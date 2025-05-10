@@ -34,7 +34,7 @@ module.exports = class Bouncy extends Card {
 */
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["OnlyWhenAlive"])) {
           return;
         }
         if (!stateInfo.name.match(/Night/)) {
@@ -48,7 +48,7 @@ module.exports = class Bouncy extends Card {
           priority: PRIORITY_MODIFY_ACTION,
           run: function () {
             if (this.game.getStateName() != "Night") return;
-            if (!this.actor.alive) return;
+            
             var alive = this.game.players.filter(
               (p) =>
                 p.alive &&

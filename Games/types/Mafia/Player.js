@@ -569,7 +569,7 @@ module.exports = class MafiaPlayer extends Player {
         .getRoleTags(
           this.game.formatRoleInternal(this.role.name, this.role.modifier)
         )
-        .includes("Transcendent") && !this.hasEffect("NoModifiers");
+        .includes("Retired") && !this.hasEffect("NoModifiers");
     if (this.exorcised == true) {
       return false;
     }

@@ -17,7 +17,7 @@ module.exports = class BecomeAlignmentOfVisitors extends Card {
         this.player.faction = "Village";
       },
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Delirium"])) {
           return;
         }
         if (!stateInfo.name.match(/Night/)) {
@@ -29,7 +29,7 @@ module.exports = class BecomeAlignmentOfVisitors extends Card {
           priority: PRIORITY_BLOCK_VISITORS - 1,
           labels: ["block", "hidden"],
           run: function () {
-            if (!this.actor.alive) return;
+          
 
             for (let visit of this.getVisitors(this.actor)) {
               if (this.dominates(visit)) {

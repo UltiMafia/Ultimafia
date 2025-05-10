@@ -11,7 +11,7 @@ module.exports = class Wannabe extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Modifier", "Deception"]) && !(this.player.role.name == "Wannabe" && this.player.hasAbility(["Deception"])) ) {
           return;
         }
 

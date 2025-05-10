@@ -67,7 +67,7 @@ module.exports = class ChoirOfRoles extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Effect"])) {
           return;
         }
         if (!stateInfo.name.match(/Night/)) {
@@ -80,7 +80,7 @@ module.exports = class ChoirOfRoles extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           labels: ["effect"],
           run: function () {
-            if (!this.actor.alive) return;
+            
 
             let roles = this.game.PossibleRoles.filter((r) => r);
             let players = this.game

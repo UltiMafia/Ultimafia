@@ -31,7 +31,7 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
         }
       },
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Information"])) {
           return;
         }
 
@@ -45,7 +45,6 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
           labels: ["investigate", "role"],
           run: function () {
             if (this.actor.role.hasInfo) return;
-            if (!this.actor.alive) return;
 
             if (this.actor.role.targetPlayer) {
               let learnPlayer = this.actor.role.targetPlayer;

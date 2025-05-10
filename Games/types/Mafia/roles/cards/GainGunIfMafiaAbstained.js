@@ -43,7 +43,7 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
         this.player.data.gainedGun = false;
       },
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Item"])) {
           return;
         }
         if (!stateInfo.name.match(/Night/)) {
@@ -55,7 +55,6 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           labels: ["hidden", "absolute"],
           run: function () {
-            if (!this.actor.alive) return;
 
             if (this.actor.role.data.gainedGun) return;
 

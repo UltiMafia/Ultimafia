@@ -36,7 +36,7 @@ module.exports = class KillConverters extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Kill", "Modifier"])) {
           return;
         }
 
@@ -50,7 +50,7 @@ module.exports = class KillConverters extends Card {
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill", "hidden"],
           run: function () {
-            if (!this.actor.alive) return;
+            
 
             if (this.actor.role.killLimit <= 0) {
               return;

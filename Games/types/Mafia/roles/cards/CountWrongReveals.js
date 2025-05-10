@@ -10,7 +10,7 @@ module.exports = class CountWrongReveals extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Information"])) {
           return;
         }
         if (!stateInfo.name.match(/Night/)) {
@@ -22,7 +22,7 @@ module.exports = class CountWrongReveals extends Card {
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1,
           labels: ["investigate", "Forensicist"],
           run: function () {
-            if (!this.actor.alive) return;
+            
             let info = this.game.createInformation(
               "CountFalseInfoInfo",
               this.actor,

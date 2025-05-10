@@ -23,7 +23,7 @@ module.exports = class LearnIfRoleChanged extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Information"])) {
           return;
         }
 
@@ -36,7 +36,6 @@ module.exports = class LearnIfRoleChanged extends Card {
           game: this.player.game,
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5,
           run: function () {
-            if (!this.actor.alive) return;
             let info = this.game.createInformation(
               "RoleInfo",
               this.actor,

@@ -31,7 +31,7 @@ module.exports = class GainKnifeIfVisitedNonCult extends Card {
 */
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Item"])) {
           return;
         }
 
@@ -45,7 +45,6 @@ module.exports = class GainKnifeIfVisitedNonCult extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           labels: ["hidden", "absolute"],
           run: function () {
-            if (!this.actor.alive) return;
 
             let visitors = this.getVisitors(this.actor);
             let hasNonCultVisitors =

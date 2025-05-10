@@ -33,7 +33,7 @@ module.exports = class DisguiseAsTarget extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Modifier"])) {
           return;
         }
 
@@ -47,7 +47,7 @@ module.exports = class DisguiseAsTarget extends Card {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           labels: ["giveItem", "suit", "hidden", "absolute"],
           run: function () {
-            if (!this.actor.alive) return;
+            
 
             let targets = this.getVisits(this.actor);
             for (let target of targets) {

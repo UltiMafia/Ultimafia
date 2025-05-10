@@ -68,7 +68,7 @@ module.exports = class BecomeExcessRole extends Card {
 */
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Convert", "Modifier"])) {
           return;
         }
 
@@ -84,7 +84,7 @@ module.exports = class BecomeExcessRole extends Card {
           run: function () {
             if (this.game.getStateName() != "Night") return;
 
-            if (!this.actor.alive) return;
+            
 
             let roles = this.game.PossibleRoles.filter((r) => r);
             let players = this.game.players.filter((p) => p.role);

@@ -74,6 +74,7 @@ module.exports = class MafiaEvent extends Event {
   }
 
   canTargetPlayer(player) {
+    if(this.modifiers != null){
     if (this.modifiers.includes("Loyal") && player.isEvil()) {
       return false;
     } else if (this.modifiers.includes("Disloyal") && !player.isEvil()) {
@@ -89,6 +90,7 @@ module.exports = class MafiaEvent extends Event {
     } else if (this.modifiers.includes("Complex") && this.isVanilla(p)) {
       return false;
     }
+  }
     return true;
   }
 

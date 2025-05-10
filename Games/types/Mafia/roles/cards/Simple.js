@@ -62,7 +62,7 @@ module.exports = class Simple extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Blocking", "Modifier"])) {
           return;
         }
 
@@ -76,7 +76,6 @@ module.exports = class Simple extends Card {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
           labels: ["block", "hidden"],
           run: function () {
-            if (!this.actor.alive) return;
 
             for (let action of this.game.actions[0]) {
               if (action.hasLabel("absolute")) {

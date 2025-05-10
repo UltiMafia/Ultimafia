@@ -9,8 +9,7 @@ module.exports = class WinIfPredictOwnDeath extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if (this.data.nightKilled == false) return;
-        if (!confirmedFinished && counts["Village"] != aliveCount) return;
+        if (this.nightKilled != true) return;
 
         winners.addPlayer(this.player, this.name);
       },
@@ -19,11 +18,10 @@ module.exports = class WinIfPredictOwnDeath extends Card {
       death: function (player, killer, deathType) {
         if (
           player == this.player &&
-          deathType == "basic" &&
-          this.game.getStateName() == "Night" &&
-          this.game.getStateInfo().daycount == this.prediction
-        )
-          this.data.nightKilled = true;
+          this.game.getStateInfo().dayCount  == this.prediction
+        ){
+          this.nightKilled = true;
+        }
       },
     };
   }

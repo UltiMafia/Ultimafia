@@ -50,7 +50,7 @@ module.exports = class ForageItem extends Card {
         }
       },
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Item", "Modifier"])) {
           return;
         }
 
@@ -64,7 +64,7 @@ module.exports = class ForageItem extends Card {
           labels: ["giveItem"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-            if (!this.actor.alive) return;
+           
 
             //if (this.game.getStateName() != "Night") return;
 

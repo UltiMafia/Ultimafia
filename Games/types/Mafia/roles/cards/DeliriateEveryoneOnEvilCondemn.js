@@ -37,7 +37,7 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
 */
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Delirium"])) {
           return;
         }
 
@@ -55,7 +55,7 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
             run: function () {
               if (!this.actor.role.evilDied) return;
 
-              if (!this.actor.alive) return;
+              
 
               let players = this.game.players.filter((p) => p != this.actor);
 
