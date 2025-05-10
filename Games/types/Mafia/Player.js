@@ -564,7 +564,16 @@ module.exports = class MafiaPlayer extends Player {
           this.game.formatRoleInternal(this.role.name, this.role.modifier)
         )
         .includes("Transcendent") && !this.hasEffect("NoModifiers");
+    let isRetired =
+      this.game
+        .getRoleTags(
+          this.game.formatRoleInternal(this.role.name, this.role.modifier)
+        )
+        .includes("Transcendent") && !this.hasEffect("NoModifiers");
     if (this.exorcised == true) {
+      return false;
+    }
+    if(isRetired == true && !types.includes("Modifier")){
       return false;
     }
     if (types.includes("OnlyWhenDead") && this.alive == true) {
