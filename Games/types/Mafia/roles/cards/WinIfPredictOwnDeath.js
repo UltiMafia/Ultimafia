@@ -9,7 +9,7 @@ module.exports = class WinIfPredictOwnDeath extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if ((this.data.nightKilled = false)) return;
+        if ((this.data.nightKilled == false)) return;
         if (!confirmedFinished && counts["Village"] != aliveCount) return;
 
         winners.addPlayer(this.player, this.name);
