@@ -34,7 +34,6 @@ module.exports = {
     Innkeeper: "Bawd",
     Bard: "Jazzman",
     // deprecated roles
-    Framer: "Lawyer",
     Knight: "Villager",
     Veteran: "Villager",
     Bomb: "Villager",
