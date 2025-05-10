@@ -796,8 +796,16 @@
   background-image: url("/images/roles/mistress-vivid.png");
 }
 
-.role-icon-scheme-vivid .role-Mafia-Beguiler {
-  background-image: url("/images/roles/beguiler-vivid.png");
+.role-icon-scheme-vivid .role-Mafia-Framer {
+  background-image: url("/images/roles/framer-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Warden {
+  background-image: url("/images/roles/warden-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Mooncalf {
+  background-image: url("/images/roles/mooncalf-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Orienteer {
@@ -1695,6 +1703,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Magistrate {
   background-image: url("/images/roles/magistrate-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Associate {
+  background-image: url("/images/roles/associate-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Braggart {

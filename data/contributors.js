@@ -345,6 +345,7 @@ const artContributors = {
       "Superhero",
       "Black Hole",
       "Grey Goo",
+      "Mooncalf",
     ],
   },
   drewsworth: {
@@ -367,6 +368,7 @@ const artContributors = {
       "Prankster",
       "Zombie",
       "Parasite",
+      "Warden",
     ],
   },
   JaNa: {
@@ -385,10 +387,11 @@ const artContributors = {
       "Orienteer",
       "Magistrate",
       "Braggart",
+      "Framer",
     ],
   },
   syn: {
-    Mafia: ["Count", "Harpy", "Bawd", "Diplomat"],
+    Mafia: ["Count", "Harpy", "Bawd", "Diplomat", "Associate"],
   },
 };
 
