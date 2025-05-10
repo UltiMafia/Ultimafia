@@ -573,7 +573,7 @@ module.exports = class MafiaPlayer extends Player {
     if (this.exorcised == true) {
       return false;
     }
-    if(isRetired == true && !types.includes("Modifier")){
+    if (isRetired == true && !types.includes("Modifier")) {
       return false;
     }
     if (types.includes("OnlyWhenDead") && this.alive == true) {
