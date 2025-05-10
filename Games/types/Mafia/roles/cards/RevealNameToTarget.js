@@ -36,7 +36,7 @@ module.exports = class RevealNameToTarget extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Modifier", "Information"])) {
           return;
         }
 

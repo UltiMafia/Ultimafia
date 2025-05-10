@@ -12,7 +12,7 @@ module.exports = class ZealotCondemn extends Card {
         this.player.role.data.ZealotCondemn = true;
       },
       state: function (stateInfo) {
-        if (!this.player.alive) return;
+        if (!this.player.hasAbility(["Win-Con"])) return;
         if (stateInfo.name.match(/Day/)) {
           if (this.player.role.data.ZealotCondemn == true) {
             this.player.queueAlert(

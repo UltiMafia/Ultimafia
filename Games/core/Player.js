@@ -997,6 +997,8 @@ module.exports = class Player {
         //
         (options.shouldMeetMod != null &&
           !options.shouldMeetMod.bind(this.role)(meetingName, options)) ||
+        (options.ModDisable != null &&
+          !options.ModDisable.bind(this.role)(meetingName, options)) ||
         (options.shouldMeetOneShot != null &&
           !options.shouldMeetOneShot.bind(this.role)(meetingName, options)) ||
         (options.shouldMeetDeadMod != null &&

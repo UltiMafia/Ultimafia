@@ -263,6 +263,8 @@ const artContributors = {
       "Eclipse",
       "Volcanic Eruption",
       "Lightning Strike",
+      "Feast",
+      "Famine",
     ],
   },
   kirigiri: {
@@ -388,6 +390,7 @@ const artContributors = {
       "Magistrate",
       "Braggart",
       "Framer",
+      "Wannabe",
     ],
   },
   syn: {

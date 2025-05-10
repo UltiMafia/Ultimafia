@@ -90,7 +90,7 @@ module.exports = class EvilDirection extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Information", "OnlyWhenAlive"])) {
           return;
         }
         if (!stateInfo.name.match(/Night/)) {

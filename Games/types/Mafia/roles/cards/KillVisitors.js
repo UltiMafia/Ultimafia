@@ -25,7 +25,7 @@ module.exports = class KillVisitors extends Card {
 */
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Kill"])) {
           return;
         }
 
@@ -39,8 +39,6 @@ module.exports = class KillVisitors extends Card {
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill", "hidden", "absolute"],
           run: function () {
-            if (!this.actor.alive) return;
-
             let visitors = this.getVisitors();
 
             for (let visitor of visitors)

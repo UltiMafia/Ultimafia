@@ -68,7 +68,7 @@ module.exports = class Dream extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Information"])) {
           return;
         }
         if (!stateInfo.name.match(/Night/)) {
@@ -81,8 +81,6 @@ module.exports = class Dream extends Card {
           labels: ["dream", "hidden", "investigate"],
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
           run: function () {
-            if (!this.actor.alive) return;
-
             var aliveExceptSelf = this.game.players.filter(
               (p) => p.alive && p != this.actor
             );

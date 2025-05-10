@@ -552,9 +552,9 @@ const modifierData = {
     },
     Retired: {
       internal: ["Retired"],
-      tags: ["Information", "Vanilla"],
+      tags: ["Information", "Retired"],
       description:
-        "This will become a Vanilla role at the Start of the game will start knowing any players with the Orignal role.",
+        "Starts knowing anyone who has the same role. Has all other abilites disabled",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Backup"],
     },

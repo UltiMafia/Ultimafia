@@ -158,6 +158,16 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
+        //MagusWin
+        if (this.player.faction == "Village") {
+          const magusInGameWin = this.game.players.filter(
+            (p) => p.role.name == "Magus" && p.role.data.MagusWin
+          );
+          if (magusInGameWin.length > 0) {
+            factionWin(this);
+            return;
+          }
+        }
 
         //Win with Nyarlathotep NC
         const enemyMayors = this.game
@@ -270,7 +280,7 @@ module.exports = class WinWithFaction extends Card {
                 CULT_FACTIONS.includes(p.faction)) &&
               p.role.name != "Magus"
           );
-          if (magusInGame.length > 0 && mafiaCultInGame.length <= 0) {
+          if (magusInGame.length > 0) {
             // Magus in Game Town Can't Win
             return;
           }

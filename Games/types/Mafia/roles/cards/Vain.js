@@ -57,7 +57,7 @@ module.exports = class Vain extends Card {
 */
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Kill", "Modifier"])) {
           return;
         }
 

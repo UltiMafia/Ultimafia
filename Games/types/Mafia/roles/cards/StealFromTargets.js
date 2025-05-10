@@ -24,7 +24,7 @@ module.exports = class StealFromTargets extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Item", "Modifier"])) {
           return;
         }
 
@@ -38,8 +38,6 @@ module.exports = class StealFromTargets extends Card {
           priority: PRIORITY_ITEM_TAKER_DEFAULT,
           labels: ["stealItem"],
           run: function () {
-            if (!this.actor.alive) return;
-
             let visits = this.getVisits(this.actor);
             visits.map((v) => this.stealAllItems(v));
           },
