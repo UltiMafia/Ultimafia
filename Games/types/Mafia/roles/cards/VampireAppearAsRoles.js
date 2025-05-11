@@ -23,13 +23,12 @@ module.exports = class VampireAppearAsRoles extends Card {
 
     //const selfAppearance = role.name == "Miller" ? "Villager" : "real";
 
-    this.appearance = {
-      self: "real",
-      reveal: "real",
+    let tempApp = {
       condemn: roleAppearance,
       death: roleAppearance,
       investigate: roleAppearance,
     };
+    this.editAppearance(tempApp);
 
     this.hideModifier = {
       condemn: true,
