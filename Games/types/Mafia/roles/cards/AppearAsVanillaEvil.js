@@ -30,7 +30,7 @@ module.exports = class AppearAsVanillaEvil extends Card {
       condemn: roleAppearance,
       investigate: roleAppearance,
     };
-     this.editAppearance(tempApp);
+    this.editAppearance(tempApp);
 
     this.hideModifier = {
       condemn: true,
