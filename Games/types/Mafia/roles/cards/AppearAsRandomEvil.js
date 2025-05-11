@@ -24,7 +24,7 @@ module.exports = class AppearAsRandomEvil extends Card {
       condemn: roleAppearance,
       investigate: roleAppearance,
     };
-     this.editAppearance(tempApp);
+    this.editAppearance(tempApp);
     this.hideModifier = {
       condemn: true,
       investigate: true,
