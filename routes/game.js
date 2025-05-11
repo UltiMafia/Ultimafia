@@ -1093,8 +1093,10 @@ const settingsChecks = {
     };
   },
   "Snake": (settings, setup) => {
+    const boardSize = settings.boardSize;
+    
     return {
-      
+      boardSize
     }
   }
 };

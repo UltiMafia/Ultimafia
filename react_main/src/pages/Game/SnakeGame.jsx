@@ -16,6 +16,7 @@ import { GameContext } from "../../Contexts";
 
 import "../../css/gameGhost.css";
 import { SnakeGameType } from "../../Constants";
+import SnakeGameDisplay from "./SnakeGameDisplay";
 
 export default function SnakeGame(props) {
   const game = useContext(GameContext);
@@ -138,7 +139,8 @@ export default function SnakeGame(props) {
         }
         centerPanelContent={
           <>
-            <TextMeetingLayout
+            <SnakeGameDisplay/>
+            {/* <TextMeetingLayout
               combineMessagesFromAllMeetings
               socket={game.socket}
               history={history}
@@ -150,7 +152,7 @@ export default function SnakeGame(props) {
               options={game.options}
               setup={game.setup}
               localAudioTrack={game.localAudioTrack}
-            />
+            /> */}
           </>
         }
         rightPanelContent={
@@ -170,3 +172,5 @@ export default function SnakeGame(props) {
     </>
   );
 }
+
+
