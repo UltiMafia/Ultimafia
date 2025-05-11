@@ -88,7 +88,10 @@ module.exports = class GuideWithFaith extends Card {
     if (message.sender.role.data.GuessingCount >= 5) return;
     if (message.sender.role.data.HasInformation == true) return;
     if (formatedMessage.includes("Let us all have faith in ")) {
-      formatedMessage = formatedMessage.replace("Let us all have faith in ", "");
+      formatedMessage = formatedMessage.replace(
+        "Let us all have faith in ",
+        ""
+      );
 
       let array = formatedMessage.split(" ");
       let playerName = array[0];
@@ -121,10 +124,8 @@ module.exports = class GuideWithFaith extends Card {
         game: message.sender.game,
         labels: ["hidden"],
         run: function () {
-          if(this.actor == this.target){
-          this.actor.queueAlert(
-            `You cannot place your faith in yourself.`
-          );
+          if (this.actor == this.target) {
+            this.actor.queueAlert(`You cannot place your faith in yourself.`);
           }
           this.actor.queueAlert(
             `You place your faith in ${this.target.name}, Their team will win if they survive today.`
