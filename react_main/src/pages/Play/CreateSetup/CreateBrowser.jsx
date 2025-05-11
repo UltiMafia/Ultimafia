@@ -239,7 +239,7 @@ export default function CreateSetup(props) {
     }
 
     return (
-      <>
+      <React.Fragment key={Object.values(roleSet).join("") + i}>
         {usingRoleGroups && (
           <div className="roleset-size">
             Size:
@@ -277,7 +277,7 @@ export default function CreateSetup(props) {
           }}
           key={i}
         />
-      </>
+      </React.Fragment>
     );
   });
 

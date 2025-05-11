@@ -1,4 +1,4 @@
-import { PreferredDeckId } from "../../../Constants";
+import { PreferredDeckId, SnakeGameType } from "../../../Constants";
 
 function getStorageKey(gameType) {
   return `${gameType.toLowerCase()} persisted options`;
@@ -124,6 +124,12 @@ var defaultOptions = {
     turnOnCaps: true,
     dayLength: 5,
     nightLength: 2,
+  },
+  [SnakeGameType]: existingHostOptions[SnakeGameType] || {
+    ...commonHostOptions,
+    boardSize: 20,
+    dayLength: 60,
+    nightLength: 0.5,
   },
 };
 
