@@ -243,40 +243,7 @@ export default function SnakeGameDisplay({ player, players, gameSocket }) {
     window.addEventListener("keydown", keyListener);
     return () => window.removeEventListener("keydown", keyListener);
   }, [playerId]);
-
-  function renderInfo() {
-    if (!gameState) return null;
-    const snakeIds = Object.keys(gameState.snakes || {});
-    return (
-      <div style={{ marginBottom: 8, width: "min-content" }}>
-        {snakeIds.map((id, idx) => {
-          const sn = gameState.snakes[id];
-          const isMe = id === playerId;
-          return (
-            <span
-              key={id}
-              style={{
-                marginRight: 12,
-                fontWeight: isMe ? 700 : 400,
-                color: snakeColor(idx),
-                background: isMe ? "#222" : "transparent",
-                padding: "0 6px",
-                borderRadius: 4,
-              }}
-            >
-              {isMe
-                ? "You"
-                : players && players[id]
-                ? players[id].name
-                : `Player ${idx + 1}`}
-              {sn.alive ? "" : " (☠️dead)"}
-            </span>
-          );
-        })}
-      </div>
-    );
-  }
-
+  
   return (
     <div
       style={{
@@ -289,17 +256,6 @@ export default function SnakeGameDisplay({ player, players, gameSocket }) {
         boxShadow: "0 2px 8px #000a",
       }}
     >
-      <h3
-        style={{
-          textAlign: "center",
-          letterSpacing: 2,
-          color: "#fff",
-          margin: "0 0 10px",
-        }}
-      >
-        Multiplayer Snake
-      </h3>
-      {renderInfo()}
       <svg ref={svgRef} />
       <div
         style={{
