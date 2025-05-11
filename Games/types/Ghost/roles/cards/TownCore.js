@@ -8,7 +8,21 @@ module.exports = class TownCore extends Card {
       Village: {
         states: ["Day"],
         flags: ["group", "speech", "voting"],
-        targets: { include: ["alive"] },
+        targets: { include: ["alive"], exclude: [isHost] },
+        whileDead: true,
+        passiveDead: true,
+        speakDead: true,
+        action: {
+          labels: ["condemn"],
+          run: function () {
+            this.game.continueVoting = true;
+            if (this.dominates()) this.target.kill();
+          },
+        },
+      },
+      "Ghost Guessing…": {
+        states: ["Guess Word"],
+        flags: ["group", "speech"],
         whileDead: true,
         passiveDead: true,
         speakDead: true,
