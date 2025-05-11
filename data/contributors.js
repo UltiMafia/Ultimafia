@@ -124,7 +124,6 @@ const artContributors = {
       "Siren",
       "Angel",
       "Yandere",
-      "Hellhound",
       "Nyarlathotep",
       "Turkey",
       "Tofurkey",
@@ -258,6 +257,7 @@ const artContributors = {
       "Mediator",
       "Drama Queen",
       "Gatekeeper",
+      "Incubus",
       "Moonshine",
       "Ominous Warning",
       "Eclipse",
@@ -371,6 +371,8 @@ const artContributors = {
       "Zombie",
       "Parasite",
       "Warden",
+      "Snallygaster",
+      "Weatherman",
     ],
   },
   JaNa: {
@@ -391,10 +393,13 @@ const artContributors = {
       "Braggart",
       "Framer",
       "Wannabe",
+      "Hellhound",
+      "Theocrat",
     ],
   },
   syn: {
     Mafia: ["Count", "Harpy", "Bawd", "Diplomat", "Associate"],
+    Snake: ["Snake"],
   },
 };
 

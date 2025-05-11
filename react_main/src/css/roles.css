@@ -804,6 +804,22 @@
   background-image: url("/images/roles/warden-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Snallygaster {
+  background-image: url("/images/roles/snallygaster-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Theocrat {
+  background-image: url("/images/roles/theocrat-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Incubus {
+  background-image: url("/images/roles/incubus-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Weatherman {
+  background-image: url("/images/roles/weatherman-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Mooncalf {
   background-image: url("/images/roles/mooncalf-vivid.png");
 }
