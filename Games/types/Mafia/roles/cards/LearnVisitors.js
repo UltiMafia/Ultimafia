@@ -50,7 +50,7 @@ module.exports = class LearnVisitors extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Information"])) {
           return;
         }
 
@@ -64,8 +64,6 @@ module.exports = class LearnVisitors extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           labels: ["investigate", "role", "hidden", "absolute"],
           run: function () {
-            if (!this.actor.alive) return;
-
             let info = this.game.createInformation(
               "WatcherRoleInfo",
               this.actor,

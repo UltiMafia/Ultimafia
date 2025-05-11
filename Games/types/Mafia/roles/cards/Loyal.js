@@ -62,7 +62,7 @@ module.exports = class Loyal extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Blocking", "Modifier"])) {
           return;
         }
 

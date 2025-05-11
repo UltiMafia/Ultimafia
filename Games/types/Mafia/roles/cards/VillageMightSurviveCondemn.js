@@ -31,7 +31,7 @@ module.exports = class VillageMightSurviveCondemn extends Card {
 */
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Protection", "Modifier"])) {
           return;
         }
 
@@ -45,8 +45,6 @@ module.exports = class VillageMightSurviveCondemn extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           labels: ["save"],
           run: function () {
-            if (!this.actor.alive) return;
-
             const villagePlayers = this.game
               .alivePlayers()
               .filter(

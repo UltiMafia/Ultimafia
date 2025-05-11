@@ -9,7 +9,7 @@ module.exports = class Omiscient extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Modifier", "Information"])) {
           return;
         }
 
@@ -23,7 +23,6 @@ module.exports = class Omiscient extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           labels: ["investigate"],
           run: function () {
-            if (!this.actor.alive) return;
             let visits;
             let visitNames;
             let role;

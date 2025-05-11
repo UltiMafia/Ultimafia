@@ -20,7 +20,7 @@ module.exports = class JailTarget extends Card {
         delete this.meetings["JailPlaceholder"];
       },
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Meeting", "Kill"])) {
           return;
         }
 
@@ -83,7 +83,10 @@ module.exports = class JailTarget extends Card {
         states: ["Dusk"],
         flags: ["voting"],
         shouldMeet: function () {
-          if (!this.player.alive || this.hasBeenDay != true) {
+          if (
+            !this.player.hasAbility(["Meeting", "Kill"]) ||
+            this.hasBeenDay != true
+          ) {
             return false;
           }
           for (let action of this.game.actions[0]) {

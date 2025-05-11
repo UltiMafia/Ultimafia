@@ -10,7 +10,7 @@ module.exports = class InheritFirstDeadAligned extends Card {
         if (
           player !== this.player &&
           player.role.alignment === this.player.role.alignment &&
-          this.player.alive
+          this.player.hasAbility(["Convert", "Modifier"])
         ) {
           let inheritAction = new Action({
             labels: ["hidden", "absolute"],
@@ -27,7 +27,11 @@ module.exports = class InheritFirstDeadAligned extends Card {
                 );
                 this.actor.setRole(
                   `${this.target.role.name}:${this.target.role.modifier}`,
-                  this.target.role.data
+                  this.target.role.data,
+                  false,
+                  false,
+                  false,
+                  "No Change"
                 );
               }
             },

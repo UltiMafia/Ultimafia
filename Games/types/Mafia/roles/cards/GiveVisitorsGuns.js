@@ -30,7 +30,7 @@ module.exports = class GiveVisitorsGuns extends Card {
 */
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Item"])) {
           return;
         }
 
@@ -44,10 +44,6 @@ module.exports = class GiveVisitorsGuns extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           labels: ["giveItem", "gun"],
           run: function () {
-            if (!this.actor.alive) {
-              return;
-            }
-
             let visitors = this.getVisitors();
             visitors.map((p) => {
               p.holdItem("Gun");

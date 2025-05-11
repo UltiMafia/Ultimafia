@@ -7,7 +7,7 @@ module.exports = class DiesWithVillageCondemn extends Card {
 
     this.listeners = {
       meetingFinish: function (meeting) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["OnlyWhenAlive"])) {
           return;
         }
 

@@ -74,20 +74,22 @@ module.exports = class MafiaEvent extends Event {
   }
 
   canTargetPlayer(player) {
-    if (this.modifiers.includes("Loyal") && player.isEvil()) {
-      return false;
-    } else if (this.modifiers.includes("Disloyal") && !player.isEvil()) {
-      return false;
-    }
-    if (this.modifiers.includes("Holy") && player.isDemonic(true)) {
-      return false;
-    } else if (this.modifiers.includes("Unholy") && !player.isDemonic(true)) {
-      return false;
-    }
-    if (this.modifiers.includes("Simple") && !this.isVanilla(p)) {
-      return false;
-    } else if (this.modifiers.includes("Complex") && this.isVanilla(p)) {
-      return false;
+    if (this.modifiers != null) {
+      if (this.modifiers.includes("Loyal") && player.isEvil()) {
+        return false;
+      } else if (this.modifiers.includes("Disloyal") && !player.isEvil()) {
+        return false;
+      }
+      if (this.modifiers.includes("Holy") && player.isDemonic(true)) {
+        return false;
+      } else if (this.modifiers.includes("Unholy") && !player.isDemonic(true)) {
+        return false;
+      }
+      if (this.modifiers.includes("Simple") && !this.isVanilla(p)) {
+        return false;
+      } else if (this.modifiers.includes("Complex") && this.isVanilla(p)) {
+        return false;
+      }
     }
     return true;
   }

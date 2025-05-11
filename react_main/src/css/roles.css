@@ -1818,6 +1818,14 @@
   background-image: url("/images/roles/cave-in-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Famine {
+  background-image: url("/images/roles/famine-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Feast {
+  background-image: url("/images/roles/feast-vivid.png");
+}
+
 /*
 /*
 /*------------------Items----------------------*/

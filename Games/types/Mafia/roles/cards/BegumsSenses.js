@@ -98,7 +98,7 @@ module.exports = class BegumsSenses extends Card {
         this.begumTarget = Random.randArrayVal(possibleTargets);
       },
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Information"])) {
           return;
         }
         if (!stateInfo.name.match(/Night/)) {
@@ -111,7 +111,6 @@ module.exports = class BegumsSenses extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           labels: ["investigate"],
           run: function () {
-            if (!this.actor.alive) return;
             if (this.game.getStateName() != "Night") return;
             if (!this.actor.role.begumTarget) return;
 

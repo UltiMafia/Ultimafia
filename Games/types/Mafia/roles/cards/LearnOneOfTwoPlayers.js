@@ -9,7 +9,7 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Information"])) {
           return;
         }
 
@@ -23,13 +23,12 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           labels: ["investigate"],
           run: function () {
-            if (!this.actor.alive) return;
             if (this.actor.role.hasInfo) return;
 
             var alive = this.game.players.filter(
               (p) => p.alive && p != this.actor
             );
-            if (alive.length <= 3) {
+            if (alive.length <= 2) {
               this.actor.queueAlert(
                 ` You learn nothing... the other two survivors don't trust you with their laundry.`
               );

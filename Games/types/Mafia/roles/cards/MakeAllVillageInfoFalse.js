@@ -39,7 +39,7 @@ module.exports = class MakeAllVillageInfoFalse extends Card {
         }
       },
       state: function (stateInfo) {
-        if (!this.player.alive) {
+        if (!this.player.hasAbility(["Deception"])) {
           return;
         }
 
@@ -53,7 +53,6 @@ module.exports = class MakeAllVillageInfoFalse extends Card {
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
           labels: ["effect"],
           run: function () {
-            if (!this.actor.alive) return;
             let players = this.game.players.filter(
               (p) => p.role.alignment == "Village"
             );

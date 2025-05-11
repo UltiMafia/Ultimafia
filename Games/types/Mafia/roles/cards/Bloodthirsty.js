@@ -16,7 +16,7 @@ module.exports = class Bloodthirsty extends Card {
         );
       },
       actionsNext: function () {
-        if (!this.player.alive) return;
+        if (!this.player.hasAbility(["Blood"])) return;
 
         if (this.game.getStateName() != "Day") return;
 
