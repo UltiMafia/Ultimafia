@@ -283,7 +283,6 @@ export default function CreateSetup(props) {
 
   const gameModifiers = siteInfo.modifiers ? siteInfo.modifiers[gameType] : [];
 
-  console.log(gameModifiers, siteInfo);
   function getCompatibleModifiers(...selectedModifiers) {
     const mappedMods = selectedModifiers.map((e) =>
       gameModifiers.find((x) => x.name === e)

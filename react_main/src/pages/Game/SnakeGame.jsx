@@ -1,16 +1,12 @@
 import React, { useRef, useEffect, useContext } from "react";
 
 import {
-  useSocketListeners,
   ThreePanelLayout,
   BotBar,
   TextMeetingLayout,
   ActionList,
   PlayerList,
   Timer,
-  SpeechFilter,
-  SettingsMenu,
-  Notes,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 
@@ -22,25 +18,16 @@ function SnakeGame(props) {
   const game = useContext(GameContext);
   const history = game.history;
   const updateHistory = game.updateHistory;
-  // const updatePlayers = game.updatePlayers;
   const stateViewing = game.stateViewing;
   const updateStateViewing = game.updateStateViewing;
   const self = game.self;
   const players = game.players;
-  const isSpectator = game.isSpectator;
-
-  const playBellRef = useRef(false);
 
   const gameType = SnakeGameType;
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
-  /*
-  const stateEvents = history.states[stateViewing]
-    ? history.states[stateViewing].stateEvents
-    : [];
-  const stateNames = ["Night", "Give Clue", "Day", "Guess Word"];
-  */
+
   const audioFileNames = [];
   const audioLoops = [];
   const audioOverrides = [];
@@ -62,32 +49,6 @@ function SnakeGame(props) {
     // Make game review start at pregame
     if (game.review) updateStateViewing({ type: "first" });
   }, []);
-
-  useSocketListeners((socket) => {
-    socket.on("state", (state) => {
-      if (playBellRef.current) game.playAudio("ping");
-
-      playBellRef.current = true;
-
-      // for (let stateName of stateNames)
-      // 	if (state.name.indexOf(stateName) == 0)
-      // 		game.playAudio(stateName);
-    });
-
-    socket.on("winners", (winners) => {
-      // game.stopAudios(stateNames);
-      // if (winners.groups.indexOf("Resistance") != -1)
-      // 	game.playAudio("resistancewin");
-      // else
-      // 	game.playAudio("spieswin");
-    });
-
-    socket.on("gameState", (state) => {
-      console.log(state);
-    });
-  }, game.socket);
-
-  console.log(stateViewing);
 
   return (
     <>
