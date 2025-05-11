@@ -30,3 +30,7 @@ module.exports = class TownCore extends Card {
     };
   }
 };
+
+function isHost(player) {
+  return player.role.name == "Host";
+}
