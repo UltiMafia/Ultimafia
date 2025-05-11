@@ -7,7 +7,7 @@ module.exports = class MoveSnake extends Card {
     this.meetings = {
       "MoveSnake": {
         actionName: "Move your snake",
-        states: ["*"],
+        states: ["Day"],
         flags: ["voting", "instant", "instantButChangeable", "repeatable"],
         inputType: "custom",
         targets: ['Up', "Right", "Down", "Left"],

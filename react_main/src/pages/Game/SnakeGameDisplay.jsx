@@ -21,24 +21,19 @@ function cellToPx(cell, cellSize) {
  *              calls onPlayerId(id) when player id assigned.
  */
 export default function SnakeGameDisplay({ player, players, gameSocket }) {
-  console.log(players)
   const [gameState, setGameState] = useState(null);
   const [playerId, setPlayerId] = useState(player || -1);
   const svgRef = useRef();
   const [cellSize, setCellSize] = useState(24); // pixels per grid square
 
-  console.log(gameState);
   useSocketListeners((socket) => {
     socket.on("gameState", (state)=> {
         setGameState(state);
-        console.log("gameState", state);
     })
   }, gameSocket);
 
-  // Mock "connect" function if none is provided (for demo)
   useEffect(() => {
     if (!gameSocket) {
-      // Mock State Every 200ms for Standalone Demo Usage
       let demoPlayerId = "you";
       setPlayerId(demoPlayerId);
       let otherId = "other";
@@ -57,31 +52,23 @@ export default function SnakeGameDisplay({ player, players, gameSocket }) {
           }
         },
         food: { x: 12, y: 8 },
+        foods: [ { x: 12, y: 8 }, { x: 5, y: 5 } ],
       };
       let tick = 0;
       const intv = setInterval(() => {
-        // Move demo snakes for demo
         demoState.snakes[demoPlayerId].segments = demoState.snakes[demoPlayerId].segments.map(s => ({...s, x: s.x+1}));
         demoState.food.x = (demoState.food.x+1) % demoState.gridSize;
+        demoState.foods.forEach((f, i) => {
+          f.x = (f.x + 1 + i) % demoState.gridSize;
+        });
         setGameState({ ...demoState });
         tick += 1;
       }, 400);
       return () => clearInterval(intv);
-    }else{
-// --- Real connect to backend ---
-// connect(
-//     state => {
-//       setGameState(state);
-//       // If grid size changes, adapt svg size
-//       if (state.gridSize) setCellSize(Math.max(16, Math.floor(480/state.gridSize)));
-//     },
-//     id => setPlayerId(id)
-//   );
     }
-    
+    // else: real connect to backend not implemented in this file
   }, [gameSocket]);
 
-  // --- Draw Game ---
   useEffect(() => {
     if (!gameState) return;
 
@@ -91,7 +78,6 @@ export default function SnakeGameDisplay({ player, players, gameSocket }) {
       .attr("height", gridSize * cellSize)
       .attr("viewBox", `0 0 ${gridSize*cellSize} ${gridSize*cellSize}`);
 
-    // Draw vertical grid lines
     let vertLines = svg.selectAll(".gridline-vert").data(d3.range(1, gridSize));
     vertLines.enter()
       .append("line")
@@ -105,7 +91,6 @@ export default function SnakeGameDisplay({ player, players, gameSocket }) {
       .attr("y2", cellToPx(gridSize, cellSize));
     vertLines.exit().remove();
 
-    // Draw horizontal grid lines
     let horizLines = svg.selectAll(".gridline-horiz").data(d3.range(1, gridSize));
     horizLines.enter()
       .append("line")
@@ -142,7 +127,6 @@ let foodSel = svg.selectAll(".food").data(gameState.foods || []);
     let allSegs = [];
     snakePlayerIds.forEach((id, idx) => {
       const snake = gameState.snakes[id];
-      // For head/tail distinction
       const segs = snake.segments.map((s, i) => ({
         ...s,
         player: id,
@@ -179,9 +163,38 @@ let foodSel = svg.selectAll(".food").data(gameState.foods || []);
         (d.player === playerId && d.isHead) ?
         "drop-shadow(0 0 4px #fff)" : null
       );
-  }, [gameState, cellSize, playerId]);
 
-  // --- Keyboard => Send to backend ---
+    // --- Draw player names at snake heads ---
+    let headNames = [];
+    snakePlayerIds.forEach((id, idx) => {
+      const snake = gameState.snakes[id];
+      if (snake.segments.length > 0) {
+        headNames.push({
+          x: snake.segments[0].x,
+          y: snake.segments[0].y,
+          id,
+          name: (players && players[id] && players[id].name) ? players[id].name : `Player ${idx + 1}`
+        });
+      }
+    });
+
+    let nameSel = svg.selectAll(".snake-name").data(headNames, d => d.id);
+    nameSel.enter()
+      .append("text")
+      .attr("class", "snake-name")
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "central")
+      .style("pointer-events", "none")
+      .style("font-size", Math.max(cellSize * 0.5, 10))
+      .style("fill", "#fff")
+      .style("font-weight", 600)
+      .merge(nameSel)
+      .attr("x", d => cellToPx(d.x + 0.5, cellSize))
+      .attr("y", d => cellToPx(d.y + 0.5, cellSize))
+      .text(d => d.name);
+    nameSel.exit().remove();
+  }, [gameState, cellSize, playerId, players]);
+
   useEffect(() => {
     if (!playerId) return;
     const keyToDir = {
@@ -196,24 +209,20 @@ let foodSel = svg.selectAll(".food").data(gameState.foods || []);
     };
     function keyListener(e) {
       if (keyToDir[e.key]) {
-        // If a "setDirection" function was set by parent, call it.
-        // Otherwise, assume backend supplies a window.setDirection
         if (window.setDirection) {
           window.setDirection(keyToDir[e.key]);
         }
-        // Or: emit to backend: connect.sendDirection(playerId, keyToDir[e.key]);
       }
     }
     window.addEventListener("keydown", keyListener);
     return () => window.removeEventListener("keydown", keyListener);
   }, [playerId]);
 
-  // --- Scoreboard / status ---
   function renderInfo() {
     if (!gameState) return null;
     const snakeIds = Object.keys(gameState.snakes || {});
     return (
-      <div style={{marginBottom:8}}>
+      <div style={{marginBottom:8, width: "min-content"}}>
         {snakeIds.map((id,idx) => {
           const sn = gameState.snakes[id];
           const isMe = (id === playerId);
@@ -229,7 +238,7 @@ let foodSel = svg.selectAll(".food").data(gameState.foods || []);
                 borderRadius: 4
               }}
             >
-              {isMe ? "You" : players[id].name}
+              {isMe ? "You" : players && players[id] ? players[id].name : `Player ${idx+1}`}
               {sn.alive ? "" : " (☠️dead)"}
             </span>
           );
@@ -254,7 +263,6 @@ let foodSel = svg.selectAll(".food").data(gameState.foods || []);
       <div style={{
         textAlign:'center', marginTop:10, color:"#ccc"
       }}>
-        {/* { playerId ? "Use arrow keys or WASD to control." : "Connecting..." } */}
       </div>
     </div>
   );

@@ -34,18 +34,21 @@ module.exports = class SnakeGame extends Game {
      * @type {Array<{x: number, y: number}>}
      */
     this.foods = [];
-
-    // Run game tick
-    this.tickInterval = setInterval(() => {
-      this.gameTick();
-    }, 250);
   }
 
   incrementState(){
 
     super.incrementState()
 
-    console.log('state1', this.getStateInfo());
+    const state = this.getStateInfo().name;
+    if (state === "Day"){
+      this.startGame();
+
+      // Run game tick
+      this.tickInterval = setInterval(() => {
+        this.gameTick();
+      }, 250);
+    }
   }
 
   /**
@@ -88,6 +91,7 @@ module.exports = class SnakeGame extends Game {
     // Initialize snake positions for each player
     for (const player of this.players) {
       this.positions[player.id] = {
+        playerId: player.id,
         direction: "up",
         segments: [this.getRandomStartSegment()],
         alive: true,
@@ -100,16 +104,16 @@ module.exports = class SnakeGame extends Game {
       this.spawnFood();
     }
   }
+
+  killSnake(snake){
+    snake.alive = false;
+    this.players[snake.playerId]?.kill()
+  }
+
   /**
    * The main game loop tick: moves all snakes, checks collisions, awards points, etc.
    */
   gameTick() {
-    if (this.getStateName() === 'Pregame'){
-      return;
-    }
-    if (!this.gameStarted){
-      this.startGame();
-    }
     // Move each snake if alive
     for (const [playerId, snake] of Object.entries(this.positions)) {
       if (!snake.alive) continue;
@@ -128,7 +132,7 @@ module.exports = class SnakeGame extends Game {
       // Remove wall collision check, only check for self/other snake collisions
       // Check self collisions
       if (snake.segments.some(seg => seg.x === head.x && seg.y === head.y)) {
-        snake.alive = false;
+        this.killSnake(snake);
         continue;
       }
 
@@ -136,7 +140,7 @@ module.exports = class SnakeGame extends Game {
       for (const [otherId, otherSnake] of Object.entries(this.positions)) {
         if (otherId !== playerId && otherSnake.alive &&
             otherSnake.segments.some(seg => seg.x === head.x && seg.y === head.y)) {
-          snake.alive = false;
+          this.killSnake(snake);
           break;
         }
       }
@@ -167,12 +171,10 @@ module.exports = class SnakeGame extends Game {
     // Check for win condition: only one snake left alive, or all dead
     const alivePlayers = Object.keys(this.positions).filter(pid => this.positions[pid].alive);
 
-    console.log(this.getStateName())
     if (alivePlayers.length <= 1) {
       clearInterval(this.tickInterval);
       const winners = new Winners()
       const winner = this.players[alivePlayers[0]];
-      console.log('Winner', winner?.id)
       // if (winner){
       //   winners.addPlayer(winner, 'snakes')
       // }
@@ -193,7 +195,7 @@ module.exports = class SnakeGame extends Game {
    */
   async playerLeave(player) {
     if (this.positions[player.id]) {
-      this.positions[player.id].alive = false;
+      this.killSnake(this.positions[player.id]);
     }
     await super.playerLeave(player);
   }

@@ -87,6 +87,8 @@ function SnakeGame(props) {
     })
   }, game.socket);
 
+  console.log(stateViewing);
+
   return (
     <>
       <BotBar
@@ -122,16 +124,12 @@ function SnakeGame(props) {
               stateViewing={stateViewing}
               activity={game.activity}
             />
-            <SpeechFilter
-              filters={game.speechFilters}
-              setFilters={game.setSpeechFilters}
-              stateViewing={stateViewing}
-            />
-            <SettingsMenu
-              settings={game.settings}
-              updateSettings={game.updateSettings}
-              showMenu={game.showMenu}
-              setShowMenu={game.setShowMenu}
+            <ActionList
+              socket={game.socket}
+              meetings={meetings}
+              players={players}
+              self={self}
+              history={history}
               stateViewing={stateViewing}
             />
           </>
@@ -141,7 +139,11 @@ function SnakeGame(props) {
           {players && game.socket &&
             <SnakeGameDisplay player={self} players={players} gameSocket={game.socket}/>
           }
-            {/* <TextMeetingLayout
+          </>
+        }
+        rightPanelContent={
+          <>
+           <TextMeetingLayout
               combineMessagesFromAllMeetings
               socket={game.socket}
               history={history}
@@ -153,20 +155,8 @@ function SnakeGame(props) {
               options={game.options}
               setup={game.setup}
               localAudioTrack={game.localAudioTrack}
-            /> */}
-          </>
-        }
-        rightPanelContent={
-          <>
-            <ActionList
-              socket={game.socket}
-              meetings={meetings}
-              players={players}
-              self={self}
-              history={history}
-              stateViewing={stateViewing}
             />
-            {!isSpectator && <Notes stateViewing={stateViewing} />}
+            
           </>
         }
       />
