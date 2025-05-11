@@ -9,6 +9,7 @@ module.exports = class Miller extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
+      "Humble",
       "AppearAsRandomEvil",
     ];
   }
