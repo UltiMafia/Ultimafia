@@ -8,11 +8,12 @@ module.exports = class TownCore extends Card {
       Village: {
         states: ["Day"],
         flags: ["group", "speech", "voting"],
-        targets: { include: ["alive"] },
+        targets: { include: ["alive"]},
         whileDead: true,
         passiveDead: true,
-        speakDead: true
-      },
+        speakDead: true,
+      }
     };
   }
 };
+

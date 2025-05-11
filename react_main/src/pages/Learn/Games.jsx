@@ -22,7 +22,8 @@ import LearnWackyWords from "./LearnWackyWords";
 import LearnLiarsDice from "./LearnLiarsDice";
 import LearnCardGames from "./LearnCardGames";
 
-import { GameTypes } from "../../Constants";
+import { GameTypes, SnakeGameType } from "../../Constants";
+import LearnSnake from "./LearnSnake";
 
 const gamesIcons = {
   Mafia: "/images/game_icons/Mafia.png",
@@ -34,6 +35,7 @@ const gamesIcons = {
   "Wacky Words": "/images/game_icons/WackyWords.png",
   "Liars Dice": "/images/game_icons/LiarsDice.png",
   "Card Games": "/images/game_icons/CardGames.png",
+  [SnakeGameType]: "/images/game_icons/Snake.png"
 };
 
 export default function Games(props) {
@@ -44,6 +46,7 @@ export default function Games(props) {
   const [gameType, setGameType] = useState(
     params.get("game") || localStorage.getItem("gameType") || defaultGameType
   );
+  console.log(gameType)
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleListItemClick = (newValue) => {
@@ -149,6 +152,10 @@ export default function Games(props) {
                   return <LearnLiarsDice />;
                 case "Card Games":
                   return <LearnCardGames />;
+                case "Card Games":
+                  return <LearnCardGames />;
+                case SnakeGameType:
+                  return <LearnSnake />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;

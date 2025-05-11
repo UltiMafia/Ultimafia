@@ -1092,6 +1092,11 @@ const settingsChecks = {
       startingChips,
     };
   },
+  "Snake": (settings, setup) => {
+    return {
+      
+    }
+  }
 };
 
 module.exports = router;

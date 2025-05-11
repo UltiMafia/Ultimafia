@@ -29,6 +29,9 @@ const protips = {
   Resistance: [],
   Ghost: [],
   Jotto: [],
+  Snake: [
+    "Drink Red Bull"
+  ],
   Acrotopia: [],
   "Secret Dictator": ["Count the cards."],
   "Wacky Words": ["Be wacky.", "Be Bold", "Be Brave", "Be Funny"],

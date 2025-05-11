@@ -1,3 +1,4 @@
+export const SnakeGameType = 'Snake'
 export const GameTypes = [
   "Mafia",
   "Resistance",
@@ -8,6 +9,7 @@ export const GameTypes = [
   "Wacky Words",
   "Liars Dice",
   "Card Games",
+  SnakeGameType
 ];
 export const Lobbies = [
   "Main",
@@ -28,6 +30,7 @@ export const Alignments = {
   "Wacky Words": ["Town", "Host"],
   "Liars Dice": ["Liars", "Host"],
   "Card Games": ["Town", "Host"],
+  [SnakeGameType]: ["Town"]
 };
 
 export const GameStates = {
@@ -46,6 +49,7 @@ export const GameStates = {
   "Wacky Words": ["Day", "Night"],
   "Liars Dice": ["Guess Dice"],
   "Card Games": ["Place Bets", "Showdown"],
+  [SnakeGameType]: ["Day"]
 };
 
 export const RatingThresholds = {

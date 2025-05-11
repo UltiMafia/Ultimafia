@@ -56,6 +56,7 @@ module.exports = {
     "Wacky Words",
     "Liars Dice",
     "Card Games",
+    "Snake"
   ],
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
   alignments: {
@@ -68,6 +69,7 @@ module.exports = {
     "Wacky Words": ["Town", "Host"],
     "Liars Dice": ["Liars", "Host"],
     "Card Games": ["Town", "Host"],
+    "Snake": ["Town"]
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -79,6 +81,7 @@ module.exports = {
     "Wacky Words": ["Night"],
     "Liars Dice": ["Guess Dice"],
     "Card Games": ["Place Bets", "Showdown"],
+    "Snake": ["Day"]
   },
   configurableStates: {
     Mafia: {
@@ -108,6 +111,18 @@ module.exports = {
         min: 0.1 * 60 * 1000,
         max: 1 * 60 * 1000,
         default: 0.5 * 60 * 1000,
+      },
+    },
+    Snake: {
+      Night: {
+        min: 1 * 60 * 1000,
+        max: 1 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+      Day: {
+        min: 1 * 60 * 1000,
+        max: 30 * 60 * 1000,
+        default: 10 * 60 * 1000,
       },
     },
     Ghost: {
