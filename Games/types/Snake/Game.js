@@ -11,12 +11,10 @@ module.exports = class SnakeGame extends Game {
    */
   constructor(options) {
     super(options);
-
-    console.log(options);
     
     this.type = "Snake";
     this.Player = Player;
-    this.gridSize = options.boardSize || 20;
+    this.gridSize = options.settings.boardSize || 20;
     this.gameStarted = false;
     this.states = [
       { name: "Postgame" },
@@ -27,17 +25,27 @@ module.exports = class SnakeGame extends Game {
       },
     ];
 
-    console.log(options, this);
-
     /**
      * @type {Record<string, { direction: string, segments: Array<{x: number, y: number}>, alive: boolean }>}
      */
     this.positions = {};
 
+    /**
+     * @type {Array<{x: number, y: number}>}
+     */
+    this.foods = [];
+
     // Run game tick
     this.tickInterval = setInterval(() => {
       this.gameTick();
-    }, 1000);
+    }, 250);
+  }
+
+  incrementState(){
+
+    super.incrementState()
+
+    console.log('state1', this.getStateInfo());
   }
 
   /**
@@ -46,13 +54,13 @@ module.exports = class SnakeGame extends Game {
    */
   getRandomStartSegment() {
     return {
-      x: Math.floor(Math.random() * this.gridSize),
-      y: Math.floor(Math.random() * this.gridSize),
-    };
+        x: Math.floor(Math.random() * this.gridSize),
+        y: Math.floor(Math.random() * this.gridSize),
+      };
   }
 
   /**
-   * Spawns food at a random position not occupied by any snake.
+   * Spawns and adds food at a random position not occupied by any snake or other food.
    * @returns {{x: number, y: number}}
    */
   spawnFood() {
@@ -61,10 +69,14 @@ module.exports = class SnakeGame extends Game {
       pos = {
         x: Math.floor(Math.random() * this.gridSize),
         y: Math.floor(Math.random() * this.gridSize),
-      };
-    } while (Object.values(this.positions).some(p =>
-      p.segments.some(seg => seg.x === pos.x && seg.y === pos.y))
+    };
+    } while (
+      Object.values(this.positions).some(p =>
+        p.segments.some(seg => seg.x === pos.x && seg.y === pos.y)
+      ) ||
+      this.foods.some(food => food.x === pos.x && food.y === pos.y)
     );
+    this.foods.push(pos);
     return pos;
   }
 
@@ -82,20 +94,21 @@ module.exports = class SnakeGame extends Game {
       };
     }
 
-    // Set up food spawn
-    this.food = this.spawnFood();
-
-    console.log(this.gameStarted, this.players, this.positions);
+    // Spawn multiple foods (e.g., 3, adjust as needed)
+    this.foods = [];
+    for (let i = 0; i < 3; i++) {
+      this.spawnFood();
+    }
   }
   /**
    * The main game loop tick: moves all snakes, checks collisions, awards points, etc.
    */
   gameTick() {
-    if (this.getStateName() !== 'Day'){
+    if (this.getStateName() === 'Pregame'){
       return;
     }
     if (!this.gameStarted){
-      this.startGame()
+      this.startGame();
     }
     // Move each snake if alive
     for (const [playerId, snake] of Object.entries(this.positions)) {
@@ -108,12 +121,11 @@ module.exports = class SnakeGame extends Game {
         case "right": head.x += 1; break;
       }
 
-      // Check wall collisions (using gridSize)
-      if (head.x < 0 || head.x >= this.gridSize || head.y < 0 || head.y >= this.gridSize) {
-        snake.alive = false;
-        continue;
-      }
+      // New: Wrap the head position at the walls
+      head.x = (head.x + this.gridSize) % this.gridSize;
+      head.y = (head.y + this.gridSize) % this.gridSize;
 
+      // Remove wall collision check, only check for self/other snake collisions
       // Check self collisions
       if (snake.segments.some(seg => seg.x === head.x && seg.y === head.y)) {
         snake.alive = false;
@@ -133,10 +145,12 @@ module.exports = class SnakeGame extends Game {
       // Move snake
       snake.segments.unshift(head);
 
-      // Check food collection
-      if (head.x === this.food.x && head.y === this.food.y) {
-        this.food = this.spawnFood();
-        // Optionally notify player or award points
+      // Food collection logic for multiple foods
+      let ateFoodIndex = this.foods.findIndex(f => f.x === head.x && f.y === head.y);
+      if (ateFoodIndex !== -1) {
+        // Remove eaten food and spawn a new one
+        this.foods.splice(ateFoodIndex, 1);
+        this.spawnFood();
       } else {
         // Remove tail if not eating
         snake.segments.pop();
@@ -146,15 +160,22 @@ module.exports = class SnakeGame extends Game {
     // Broadcast updated state to players
     this.broadcast("gameState", {
       snakes: this.positions,
-      food: this.food
+      foods: this.foods,
+      gridSize: this.gridSize
     });
 
     // Check for win condition: only one snake left alive, or all dead
     const alivePlayers = Object.keys(this.positions).filter(pid => this.positions[pid].alive);
 
+    console.log(this.getStateName())
     if (alivePlayers.length <= 1) {
       clearInterval(this.tickInterval);
       const winners = new Winners()
+      const winner = this.players[alivePlayers[0]];
+      console.log('Winner', winner?.id)
+      // if (winner){
+      //   winners.addPlayer(winner, 'snakes')
+      // }
       this.endGame(winners);
     }
   }

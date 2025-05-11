@@ -18,9 +18,8 @@ import "../../css/gameGhost.css";
 import { SnakeGameType } from "../../Constants";
 import SnakeGameDisplay from "./SnakeGameDisplay";
 
-export default function SnakeGame(props) {
+function SnakeGame(props) {
   const game = useContext(GameContext);
-
   const history = game.history;
   const updateHistory = game.updateHistory;
   // const updatePlayers = game.updatePlayers;
@@ -139,7 +138,9 @@ export default function SnakeGame(props) {
         }
         centerPanelContent={
           <>
-            <SnakeGameDisplay/>
+          {players && game.socket &&
+            <SnakeGameDisplay player={self} players={players} gameSocket={game.socket}/>
+          }
             {/* <TextMeetingLayout
               combineMessagesFromAllMeetings
               socket={game.socket}
@@ -174,3 +175,6 @@ export default function SnakeGame(props) {
 }
 
 
+
+
+export default React.memo(SnakeGame);

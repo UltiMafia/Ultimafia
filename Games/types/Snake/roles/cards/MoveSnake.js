@@ -15,8 +15,7 @@ module.exports = class MoveSnake extends Card {
         action: {
           item: this,
           run: function () {
-            this.actor.direction = this.target;
-            console.log('move', this.actor)
+            this.game.setDirection(this.actor.id, this.target.toLowerCase())
             // if (this.target == "Call") {
             //   //this.game.sendAlert(`${this.actor.name} Calls!`);
             //   this.game.addToPot(this.actor, "Call");

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
+import { useSocketListeners } from "./Game";
 
 // Helper: Assign each player a unique color (supports up to 10+ players)
 function snakeColor(index) {
@@ -19,15 +20,24 @@ function cellToPx(cell, cellSize) {
  *              Calls onGameState(state) with latest state,
  *              calls onPlayerId(id) when player id assigned.
  */
-export default function SnakeGameDisplay({ playerId: userPlayerId, connect }) {
+export default function SnakeGameDisplay({ player, players, gameSocket }) {
+  console.log(players)
   const [gameState, setGameState] = useState(null);
-  const [playerId, setPlayerId] = useState(userPlayerId || null);
+  const [playerId, setPlayerId] = useState(player || -1);
   const svgRef = useRef();
   const [cellSize, setCellSize] = useState(24); // pixels per grid square
 
+  console.log(gameState);
+  useSocketListeners((socket) => {
+    socket.on("gameState", (state)=> {
+        setGameState(state);
+        console.log("gameState", state);
+    })
+  }, gameSocket);
+
   // Mock "connect" function if none is provided (for demo)
   useEffect(() => {
-    if (!connect) {
+    if (!gameSocket) {
       // Mock State Every 200ms for Standalone Demo Usage
       let demoPlayerId = "you";
       setPlayerId(demoPlayerId);
@@ -57,17 +67,19 @@ export default function SnakeGameDisplay({ playerId: userPlayerId, connect }) {
         tick += 1;
       }, 400);
       return () => clearInterval(intv);
+    }else{
+// --- Real connect to backend ---
+// connect(
+//     state => {
+//       setGameState(state);
+//       // If grid size changes, adapt svg size
+//       if (state.gridSize) setCellSize(Math.max(16, Math.floor(480/state.gridSize)));
+//     },
+//     id => setPlayerId(id)
+//   );
     }
-    // --- Real connect to backend ---
-    connect(
-      state => {
-        setGameState(state);
-        // If grid size changes, adapt svg size
-        if (state.gridSize) setCellSize(Math.max(16, Math.floor(480/state.gridSize)));
-      },
-      id => setPlayerId(id)
-    );
-  }, [connect]);
+    
+  }, [gameSocket]);
 
   // --- Draw Game ---
   useEffect(() => {
@@ -79,32 +91,37 @@ export default function SnakeGameDisplay({ playerId: userPlayerId, connect }) {
       .attr("height", gridSize * cellSize)
       .attr("viewBox", `0 0 ${gridSize*cellSize} ${gridSize*cellSize}`);
 
-    // Draw grid lines
-    let gridLines = svg.selectAll(".gridline").data(d3.range(1, gridSize));
-    gridLines.enter()
+    // Draw vertical grid lines
+    let vertLines = svg.selectAll(".gridline-vert").data(d3.range(1, gridSize));
+    vertLines.enter()
       .append("line")
-      .attr("class", "gridline")
+      .attr("class", "gridline gridline-vert")
       .attr("stroke", "#333")
       .attr("stroke-width", 1)
-      .merge(gridLines)
+      .merge(vertLines)
       .attr("x1", d => cellToPx(d, cellSize))
       .attr("x2", d => cellToPx(d, cellSize))
       .attr("y1", 0)
       .attr("y2", cellToPx(gridSize, cellSize));
-    gridLines.enter()
+    vertLines.exit().remove();
+
+    // Draw horizontal grid lines
+    let horizLines = svg.selectAll(".gridline-horiz").data(d3.range(1, gridSize));
+    horizLines.enter()
       .append("line")
-      .attr("class", "gridline")
+      .attr("class", "gridline gridline-horiz")
       .attr("stroke", "#333")
       .attr("stroke-width", 1)
-      .merge(gridLines)
+      .merge(horizLines)
       .attr("y1", d => cellToPx(d, cellSize))
       .attr("y2", d => cellToPx(d, cellSize))
       .attr("x1", 0)
       .attr("x2", cellToPx(gridSize, cellSize));
-    gridLines.exit().remove();
+    horizLines.exit().remove();
 
     // --- Draw Food ---
-    let foodSel = svg.selectAll(".food").data([gameState.food]);
+// --- Draw Food --- (modified to handle multiple foods)
+let foodSel = svg.selectAll(".food").data(gameState.foods || []);
     foodSel.enter()
       .append("rect")
       .attr("class", "food")
@@ -212,7 +229,7 @@ export default function SnakeGameDisplay({ playerId: userPlayerId, connect }) {
                 borderRadius: 4
               }}
             >
-              {isMe ? "You" : ("Player "+(idx+1))}
+              {isMe ? "You" : players[id].name}
               {sn.alive ? "" : " (☠️dead)"}
             </span>
           );
@@ -237,7 +254,7 @@ export default function SnakeGameDisplay({ playerId: userPlayerId, connect }) {
       <div style={{
         textAlign:'center', marginTop:10, color:"#ccc"
       }}>
-        { playerId ? "Use arrow keys or WASD to control." : "Connecting..." }
+        {/* { playerId ? "Use arrow keys or WASD to control." : "Connecting..." } */}
       </div>
     </div>
   );

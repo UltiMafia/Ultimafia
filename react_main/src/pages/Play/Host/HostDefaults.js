@@ -127,7 +127,7 @@ var defaultOptions = {
   },
   [SnakeGameType]: existingHostOptions[SnakeGameType] || {
     ...commonHostOptions,
-    boardSize: 10,
+    boardSize: 20,
     dayLength: 60,
     nightLength: 0.5,
   },
