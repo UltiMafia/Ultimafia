@@ -1146,6 +1146,11 @@ const countChecks = {
       return "Ghosts must not make up the majority.";
     return true;
   },
+  Snake: (roles, count, total, closed, unique) => {
+    if (total < 2 || total > 10)
+      return "Only 2 to 10 players for now. Will support more players soon.";
+    return true;
+  },
   Jotto: (roles, count, total, closed, unique) => {
     if (total < 2 || total > 4)
       return "Only 2 to 4 players for now. Will support more players soon.";
@@ -1223,6 +1228,9 @@ const optionsChecks = {
     return { firstTeamSize, lastTeamSize, numMissions, teamFailLimit };
   },
   Ghost: (setup) => {
+    return setup;
+  },
+  Snake: (setup) => {
     return setup;
   },
   Jotto: (setup) => {

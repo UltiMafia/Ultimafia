@@ -37,6 +37,7 @@ import {
   MaxGameMessageLength,
   MaxTextInputLength,
   MaxWillLength,
+  SnakeGameType,
 } from "../../Constants";
 import { textIncludesSlurs } from "../../lib/profanity";
 
@@ -61,6 +62,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/styles";
+import SnakeGame from "./SnakeGame";
 
 export default function Game() {
   return (
@@ -679,6 +681,7 @@ function GameWrapper(props) {
           {gameType === "Wacky Words" && <WackyWordsGame />}
           {gameType === "Liars Dice" && <LiarsDiceGame />}
           {gameType === "Card Games" && <CardGamesGame />}
+          {gameType === SnakeGameType && <SnakeGame />}
         </div>
       </GameContext.Provider>
     );

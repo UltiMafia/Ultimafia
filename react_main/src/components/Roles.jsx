@@ -129,8 +129,9 @@ export function RoleCount(props) {
   const hasModifiers = roleData?.modifiers?.length;
   const DescriptionLines = (
     <List dense sx={{ ...(hasModifiers ? { paddingBottom: 0 } : {}) }}>
-      {roleData?.description?.map((text) => (
+      {roleData?.description?.map((text, i) => (
         <ListItem
+          key={text + i}
           sx={{
             paddingBottom: "0",
             paddingTop: "0",
@@ -156,8 +157,9 @@ export function RoleCount(props) {
   );
   const Modifiers = hasModifiers ? (
     <List dense sx={{ paddingTop: "0" }}>
-      {roleData?.modifiers?.map((modifier) => (
+      {roleData?.modifiers?.map((modifier, i) => (
         <ListItem
+          key={modifier.name + i}
           sx={{
             paddingBottom: "0",
             paddingTop: "0",

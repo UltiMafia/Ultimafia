@@ -4242,6 +4242,13 @@ const roleData = {
       description: ["Facilitates the game."],
     },
   },
+  Snake: {
+    Snake: {
+      alignment: "Town",
+      tags: ["None"],
+      description: ["Your best friend."],
+    },
+  },
 };
 
 module.exports = roleData;
