@@ -121,8 +121,8 @@ module.exports = {
       },
       Day: {
         min: 1 * 60 * 1000,
-        max: 30 * 60 * 1000,
-        default: 10 * 60 * 1000,
+        max: 60 * 60 * 1000,
+        default: 60 * 60 * 1000,
       },
     },
     Ghost: {

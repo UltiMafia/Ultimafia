@@ -5,7 +5,7 @@ module.exports = class Villager extends Role {
     super("Snake", player, data);
 
     this.alignment = "Town";
-    this.cards = ["TownCore"];
+    this.cards = ["MoveSnake"];
 
     this.listeners = {
       roleAssigned: [

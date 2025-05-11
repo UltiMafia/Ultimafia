@@ -125,7 +125,7 @@ export default function HostSnake() {
       showIf: "configureDuration",
       value: defaults.dayLength,
       min: 2,
-      max: 5,
+      max: 60,
       step: 1,
     }
   ]);
@@ -151,16 +151,9 @@ export default function HostSnake() {
           readyCheck: getFormFieldValue("readyCheck"),
           stateLengths: {
             Night: getFormFieldValue("nightLength"),
-            "Give Clue": getFormFieldValue("giveClueLength"),
             Day: getFormFieldValue("dayLength"),
-            "Guess Word": getFormFieldValue("guessWordLength"),
           },
-          wordOptions: {
-            configureWords: getFormFieldValue("configureWords"),
-            wordLength: getFormFieldValue("wordLength"),
-            townWord: getFormFieldValue("townWord"),
-            foolWord: getFormFieldValue("foolWord"),
-          },
+          boardSize: getFormFieldValue("boardSize"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })
