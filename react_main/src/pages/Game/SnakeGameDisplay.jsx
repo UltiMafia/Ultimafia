@@ -243,7 +243,7 @@ export default function SnakeGameDisplay({ player, players, gameSocket }) {
     window.addEventListener("keydown", keyListener);
     return () => window.removeEventListener("keydown", keyListener);
   }, [playerId]);
-  
+
   return (
     <div
       style={{
