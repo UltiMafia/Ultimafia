@@ -19,17 +19,16 @@ module.exports = class AppearAsRandomEvil extends Card {
 
     const selfAppearance = role.name == "Miller" ? "Villager" : "real";
 
-    this.appearance = {
-      self: selfAppearance,
+    let tempApp = {
       reveal: roleAppearance,
       condemn: roleAppearance,
-      death: "real",
       investigate: roleAppearance,
     };
-
+     this.editAppearance(tempApp);
     this.hideModifier = {
       condemn: true,
       investigate: true,
+      reveal: true,
     };
   }
 };
