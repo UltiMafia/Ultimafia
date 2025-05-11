@@ -4242,12 +4242,12 @@ const roleData = {
       description: ["Facilitates the game."],
     },
   },
-  "Snake": {
+  Snake: {
     Snake: {
       alignment: "Town",
       tags: ["None"],
       description: ["Your best friend."],
-    }
+    },
   },
 };
 

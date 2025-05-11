@@ -5,17 +5,17 @@ module.exports = class MoveSnake extends Card {
     super(role);
 
     this.meetings = {
-      "MoveSnake": {
+      MoveSnake: {
         actionName: "Move your snake",
         states: ["Day"],
         flags: ["voting", "instant", "instantButChangeable", "repeatable"],
         inputType: "custom",
-        targets: ['Up', "Right", "Down", "Left"],
+        targets: ["Up", "Right", "Down", "Left"],
         canUnvote: true,
         action: {
           item: this,
           run: function () {
-            this.game.setDirection(this.actor.id, this.target.toLowerCase())
+            this.game.setDirection(this.actor.id, this.target.toLowerCase());
             // if (this.target == "Call") {
             //   //this.game.sendAlert(`${this.actor.name} Calls!`);
             //   this.game.addToPot(this.actor, "Call");
@@ -48,7 +48,7 @@ module.exports = class MoveSnake extends Card {
             //       meeting.leave(player, true);
             //     }
             //   });
-           }
+          },
         },
       },
     };

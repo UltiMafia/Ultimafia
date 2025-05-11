@@ -35,7 +35,7 @@ const gamesIcons = {
   "Wacky Words": "/images/game_icons/WackyWords.png",
   "Liars Dice": "/images/game_icons/LiarsDice.png",
   "Card Games": "/images/game_icons/CardGames.png",
-  [SnakeGameType]: "/images/game_icons/Snake.png"
+  [SnakeGameType]: "/images/game_icons/Snake.png",
 };
 
 export default function CreateSetup(props) {

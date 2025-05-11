@@ -11,7 +11,7 @@ module.exports = class SnakeGame extends Game {
    */
   constructor(options) {
     super(options);
-    
+
     this.type = "Snake";
     this.Player = Player;
     this.gridSize = options.settings.boardSize || 20;
@@ -36,12 +36,11 @@ module.exports = class SnakeGame extends Game {
     this.foods = [];
   }
 
-  incrementState(){
-
-    super.incrementState()
+  incrementState() {
+    super.incrementState();
 
     const state = this.getStateInfo().name;
-    if (state === "Day"){
+    if (state === "Day") {
       this.startGame();
 
       // Run game tick
@@ -57,9 +56,9 @@ module.exports = class SnakeGame extends Game {
    */
   getRandomStartSegment() {
     return {
-        x: Math.floor(Math.random() * this.gridSize),
-        y: Math.floor(Math.random() * this.gridSize),
-      };
+      x: Math.floor(Math.random() * this.gridSize),
+      y: Math.floor(Math.random() * this.gridSize),
+    };
   }
 
   /**
@@ -72,12 +71,12 @@ module.exports = class SnakeGame extends Game {
       pos = {
         x: Math.floor(Math.random() * this.gridSize),
         y: Math.floor(Math.random() * this.gridSize),
-    };
+      };
     } while (
-      Object.values(this.positions).some(p =>
-        p.segments.some(seg => seg.x === pos.x && seg.y === pos.y)
+      Object.values(this.positions).some((p) =>
+        p.segments.some((seg) => seg.x === pos.x && seg.y === pos.y)
       ) ||
-      this.foods.some(food => food.x === pos.x && food.y === pos.y)
+      this.foods.some((food) => food.x === pos.x && food.y === pos.y)
     );
     this.foods.push(pos);
     return pos;
@@ -85,7 +84,7 @@ module.exports = class SnakeGame extends Game {
 
   startGame() {
     this.gameStarted = true;
-    
+
     this.positions = {};
 
     // Initialize snake positions for each player
@@ -105,9 +104,9 @@ module.exports = class SnakeGame extends Game {
     }
   }
 
-  killSnake(snake){
+  killSnake(snake) {
     snake.alive = false;
-    this.players[snake.playerId]?.kill()
+    this.players[snake.playerId]?.kill();
   }
 
   /**
@@ -119,10 +118,18 @@ module.exports = class SnakeGame extends Game {
       if (!snake.alive) continue;
       const head = { ...snake.segments[0] };
       switch (snake.direction) {
-        case "up": head.y -= 1; break;
-        case "down": head.y += 1; break;
-        case "left": head.x -= 1; break;
-        case "right": head.x += 1; break;
+        case "up":
+          head.y -= 1;
+          break;
+        case "down":
+          head.y += 1;
+          break;
+        case "left":
+          head.x -= 1;
+          break;
+        case "right":
+          head.x += 1;
+          break;
       }
 
       // New: Wrap the head position at the walls
@@ -131,15 +138,20 @@ module.exports = class SnakeGame extends Game {
 
       // Remove wall collision check, only check for self/other snake collisions
       // Check self collisions
-      if (snake.segments.some(seg => seg.x === head.x && seg.y === head.y)) {
+      if (snake.segments.some((seg) => seg.x === head.x && seg.y === head.y)) {
         this.killSnake(snake);
         continue;
       }
 
       // Check collision with other snakes
       for (const [otherId, otherSnake] of Object.entries(this.positions)) {
-        if (otherId !== playerId && otherSnake.alive &&
-            otherSnake.segments.some(seg => seg.x === head.x && seg.y === head.y)) {
+        if (
+          otherId !== playerId &&
+          otherSnake.alive &&
+          otherSnake.segments.some(
+            (seg) => seg.x === head.x && seg.y === head.y
+          )
+        ) {
           this.killSnake(snake);
           break;
         }
@@ -150,7 +162,9 @@ module.exports = class SnakeGame extends Game {
       snake.segments.unshift(head);
 
       // Food collection logic for multiple foods
-      let ateFoodIndex = this.foods.findIndex(f => f.x === head.x && f.y === head.y);
+      let ateFoodIndex = this.foods.findIndex(
+        (f) => f.x === head.x && f.y === head.y
+      );
       if (ateFoodIndex !== -1) {
         // Remove eaten food and spawn a new one
         this.foods.splice(ateFoodIndex, 1);
@@ -165,15 +179,17 @@ module.exports = class SnakeGame extends Game {
     this.broadcast("gameState", {
       snakes: this.positions,
       foods: this.foods,
-      gridSize: this.gridSize
+      gridSize: this.gridSize,
     });
 
     // Check for win condition: only one snake left alive, or all dead
-    const alivePlayers = Object.keys(this.positions).filter(pid => this.positions[pid].alive);
+    const alivePlayers = Object.keys(this.positions).filter(
+      (pid) => this.positions[pid].alive
+    );
 
     if (alivePlayers.length <= 1) {
       clearInterval(this.tickInterval);
-      const winners = new Winners()
+      const winners = new Winners();
       const winner = this.players[alivePlayers[0]];
       // if (winner){
       //   winners.addPlayer(winner, 'snakes')
@@ -222,7 +238,7 @@ module.exports = class SnakeGame extends Game {
       up: "down",
       down: "up",
       left: "right",
-      right: "left"
+      right: "left",
     };
     if (direction !== opposite[snake.direction]) {
       snake.direction = direction;

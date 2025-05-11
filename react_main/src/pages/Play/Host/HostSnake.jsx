@@ -127,7 +127,7 @@ export default function HostSnake() {
       min: 2,
       max: 60,
       step: 1,
-    }
+    },
   ]);
 
   useEffect(() => {

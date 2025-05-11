@@ -239,7 +239,7 @@ export default function CreateSetup(props) {
     }
 
     return (
-      <React.Fragment key={Object.values(roleSet).join('') + i}>
+      <React.Fragment key={Object.values(roleSet).join("") + i}>
         {usingRoleGroups && (
           <div className="roleset-size">
             Size:
@@ -283,7 +283,7 @@ export default function CreateSetup(props) {
 
   const gameModifiers = siteInfo.modifiers ? siteInfo.modifiers[gameType] : [];
 
-  console.log(gameModifiers, siteInfo)
+  console.log(gameModifiers, siteInfo);
   function getCompatibleModifiers(...selectedModifiers) {
     const mappedMods = selectedModifiers.map((e) =>
       gameModifiers.find((x) => x.name === e)

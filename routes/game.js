@@ -1092,13 +1092,13 @@ const settingsChecks = {
       startingChips,
     };
   },
-  "Snake": (settings, setup) => {
+  Snake: (settings, setup) => {
     const boardSize = settings.boardSize;
-    
+
     return {
-      boardSize
-    }
-  }
+      boardSize,
+    };
+  },
 };
 
 module.exports = router;

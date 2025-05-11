@@ -11,7 +11,7 @@ module.exports = class TownCore extends Card {
         targets: { include: ["alive"] },
         whileDead: true,
         passiveDead: true,
-        speakDead: true
+        speakDead: true,
       },
     };
   }

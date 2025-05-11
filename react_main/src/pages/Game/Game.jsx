@@ -36,7 +36,8 @@ import { useErrorAlert } from "../../components/Alerts";
 import {
   MaxGameMessageLength,
   MaxTextInputLength,
-  MaxWillLength, SnakeGameType
+  MaxWillLength,
+  SnakeGameType,
 } from "../../Constants";
 import { textIncludesSlurs } from "../../lib/profanity";
 

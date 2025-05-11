@@ -132,7 +132,7 @@ var defaultOptions = {
     nightLength: 0.5,
   },
 };
-console.log('defaultOptions', defaultOptions)
+console.log("defaultOptions", defaultOptions);
 export function getDefaults(gameType) {
   const defaults = defaultOptions[gameType];
   if (defaults) {

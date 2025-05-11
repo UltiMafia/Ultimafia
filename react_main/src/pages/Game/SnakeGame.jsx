@@ -68,7 +68,7 @@ function SnakeGame(props) {
       if (playBellRef.current) game.playAudio("ping");
 
       playBellRef.current = true;
-      
+
       // for (let stateName of stateNames)
       // 	if (state.name.indexOf(stateName) == 0)
       // 		game.playAudio(stateName);
@@ -82,9 +82,9 @@ function SnakeGame(props) {
       // 	game.playAudio("spieswin");
     });
 
-    socket.on("gameState", (state)=> {
+    socket.on("gameState", (state) => {
       console.log(state);
-    })
+    });
   }, game.socket);
 
   console.log(stateViewing);
@@ -136,14 +136,18 @@ function SnakeGame(props) {
         }
         centerPanelContent={
           <>
-          {players && game.socket &&
-            <SnakeGameDisplay player={self} players={players} gameSocket={game.socket}/>
-          }
+            {players && game.socket && (
+              <SnakeGameDisplay
+                player={self}
+                players={players}
+                gameSocket={game.socket}
+              />
+            )}
           </>
         }
         rightPanelContent={
           <>
-           <TextMeetingLayout
+            <TextMeetingLayout
               combineMessagesFromAllMeetings
               socket={game.socket}
               history={history}
@@ -156,15 +160,11 @@ function SnakeGame(props) {
               setup={game.setup}
               localAudioTrack={game.localAudioTrack}
             />
-            
           </>
         }
       />
     </>
   );
 }
-
-
-
 
 export default React.memo(SnakeGame);
