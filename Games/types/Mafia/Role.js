@@ -23,26 +23,56 @@ module.exports = class MafiaRole extends Role {
     };
   }
 
-  editAppearance(newAppearance, newAppearanceMods){
+  editAppearance(newAppearance, newAppearanceMods) {
     let oldAppearance = this.appearance;
     let oldAppearanceMods = this.appearanceMods;
-    if( newAppearanceMods != null){
-    this.appearance = {
-      self: (newAppearance["self"] != null) ? newAppearance["self"] : oldAppearance["self"],
-      reveal: (newAppearance["reveal"] != null) ? newAppearance["reveal"] : oldAppearance["reveal"],
-      condemn: (newAppearance["condemn"] != null) ? newAppearance["condemn"] : oldAppearance["condemn"],
-      death: (newAppearance["death"] != null) ? newAppearance["death"] : oldAppearance["death"],
-      investigate: (newAppearance["investigate"] != null) ? newAppearance["investigate"] : oldAppearance["investigate"],
-    };
-  }
-    if( newAppearanceMods != null){
-    this.appearanceMods = {
-      self: (newAppearance["self"] != null) ? newAppearance["self"] : oldAppearance["self"],
-      reveal: (newAppearance["reveal"] != null) ? newAppearance["reveal"] : oldAppearance["reveal"],
-      condemn: (newAppearance["condemn"] != null) ? newAppearance["condemn"] : oldAppearance["condemn"],
-      death: (newAppearance["death"] != null) ? newAppearance["death"] : oldAppearance["death"],
-      investigate: (newAppearance["investigate"] != null) ? newAppearance["investigate"] : oldAppearance["investigate"],
-    };
+    if (newAppearanceMods != null) {
+      this.appearance = {
+        self:
+          newAppearance["self"] != null
+            ? newAppearance["self"]
+            : oldAppearance["self"],
+        reveal:
+          newAppearance["reveal"] != null
+            ? newAppearance["reveal"]
+            : oldAppearance["reveal"],
+        condemn:
+          newAppearance["condemn"] != null
+            ? newAppearance["condemn"]
+            : oldAppearance["condemn"],
+        death:
+          newAppearance["death"] != null
+            ? newAppearance["death"]
+            : oldAppearance["death"],
+        investigate:
+          newAppearance["investigate"] != null
+            ? newAppearance["investigate"]
+            : oldAppearance["investigate"],
+      };
+    }
+    if (newAppearanceMods != null) {
+      this.appearanceMods = {
+        self:
+          newAppearance["self"] != null
+            ? newAppearance["self"]
+            : oldAppearance["self"],
+        reveal:
+          newAppearance["reveal"] != null
+            ? newAppearance["reveal"]
+            : oldAppearance["reveal"],
+        condemn:
+          newAppearance["condemn"] != null
+            ? newAppearance["condemn"]
+            : oldAppearance["condemn"],
+        death:
+          newAppearance["death"] != null
+            ? newAppearance["death"]
+            : oldAppearance["death"],
+        investigate:
+          newAppearance["investigate"] != null
+            ? newAppearance["investigate"]
+            : oldAppearance["investigate"],
+      };
     }
   }
 
