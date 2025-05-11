@@ -24,7 +24,7 @@ export default function LearnSnake(props) {
         Learn Snake
       </Typography>
       <Typography variant="body1" paragraph>
-        The objective of Snake is to fuck other snakes
+        The objective of Snake is to be the last survivor
       </Typography>
       <Accordion>
         <AccordionSummary>
