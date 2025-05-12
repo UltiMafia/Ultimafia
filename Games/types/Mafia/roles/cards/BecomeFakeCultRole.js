@@ -6,15 +6,8 @@ module.exports = class BecomeFakeCultRole extends Card {
   constructor(role) {
     super(role);
 
-    this.startItems = ["IsTheTelevangelist"];
-
-    this.listeners = {
-      SwitchRoleBefore: function (player) {
-        if (player != this.player) return;
-        this.player.role.data.reroll = true;
-        this.player.holdItem("IsTheTelevangelist");
-
-        let banishedRoles = this.game.banishedRoles;
+    //this.startItems = ["IsTheTelevangelist"];
+    let banishedRoles = this.game.banishedRoles;
         let roles = this.game.PossibleRoles.filter((r) => r);
         let currentRoles = [];
         let playersAll = this.game.players.filter((p) => p.role);
@@ -60,30 +53,52 @@ module.exports = class BecomeFakeCultRole extends Card {
           );
           roles = roles.filter((r) => r.split(":")[0] != "Televangelist");
         }
-        if (roles.length == 0) {
-          roles = [`Imp`];
+        if (roles.length <= 0) {
+          roles = [`Imp:Demonic`];
         }
 
-        for (let y = 0; y < playersAll.length; y++) {
-          if (CULT_FACTIONS.includes(playersAll[y].faction)) {
-            this.player.factionFake = playersAll[y].faction;
-            y = playersAll.length;
-          }
-        }
-
-        if (!this.player.factionFake) {
           this.player.factionFake = "Cult";
-        }
+        
+
+      this.newRole = Random.randArrayVal(roles);
+      let tempApp = {
+      self: this.newRole,
+      reveal: this.newRole,
+    };
+    this.editAppearance(tempApp);
+    
+
+    this.listeners = {
+      SwitchRoleBefore: function (player) {
+        if (player != this.player) return;
+        this.player.role.data.reroll = true;
+        this.player.holdItem("IsTheTelevangelist");
+
 
         let newRole = Random.randArrayVal(roles);
         this.player.setRole(
-          newRole,
+          this.newRole,
           undefined,
           false,
           true,
           false,
           "No Change"
         );
+      },
+      roleAssigned: function (player){
+        if (player !== this.player) {
+          return;
+        }
+        this.player.holdItem("IsTheTelevangelist");
+        this.player.setRole(
+          this.newRole,
+          undefined,
+          false,
+          true,
+          false,
+          "No Change"
+        );
+        
       },
     };
   }
