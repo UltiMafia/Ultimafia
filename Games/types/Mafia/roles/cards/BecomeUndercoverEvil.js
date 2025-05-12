@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
 
 module.exports = class BecomeUndercoverEvil extends Card {
@@ -42,26 +43,55 @@ module.exports = class BecomeUndercoverEvil extends Card {
     if (roles.length <= 0) {
       roles = ["Mafioso"];
     }
-    this.newRole = Random.randArrayVal(roles);
+    role.newRole = Random.randArrayVal(roles);
 
     this.listeners = {
       SwitchRoleBefore: function (player) {
         if (player != this.player) return;
+        if(this.player.faction == null){
+        this.player.faction = "Village";
+        }
         this.player.role.data.reroll = true;
         this.player.holdItem("IsTheMole", this.player.faction);
 
-        this.player.setRole(this.newRole, undefined, false, true, false);
+          this.action = new Action({
+          actor: this.player,
+          target: this.player,
+          game: this.game,
+          labels: ["hidden", "block"],
+          run: function () {
+            let evilPlayers = this.game.players.filter(
+              (p) => p.role.alignment == this.game.getRoleAlignment(this.actor.role.newRole)
+            );
+
+            for (let x = 0; x < evilPlayers.length; x++) {
+              evilPlayers[x].queueAlert(
+                `There is a Mole Amoungst your ranks! You may attempt to guess the mole once.`
+              );
+              evilPlayers[x].holdItem("MoleVoting");
+            }
+            this.actor.holdItem("MoleVoting");
+            this.actor.queueAlert(
+              `You are the Mole, You have the abilites of a ${this.actor.role.newRole}`
+            );
+          },
+        });
+
+        this.action.do();
+
+        this.player.setRole(this.player.role.newRole, undefined, false, true, false);
         let tempApp = {
           self: "Mole",
         };
         this.editAppearance(tempApp);
+        this.game.graveyardParticipation = true;
       },
       roleAssigned: function (player) {
         if (player !== this.player) {
           return;
         }
         this.player.holdItem("IsTheMole", this.player.faction);
-        this.player.setRole(this.newRole, undefined, false, true, false);
+        this.player.setRole(this.player.role, undefined, false, true, false);
         let tempApp = {
           self: "Mole",
         };

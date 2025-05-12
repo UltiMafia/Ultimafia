@@ -15,7 +15,7 @@ module.exports = class MoleVoting extends Item {
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
     this.meetingName = meetingName;
-    this.meetings["Vote Out Mole"] = {
+    this.meetings["Guess Mole"] = {
       states: ["Night"],
       flags: ["group", "anonymous", "voting"],
       targets: { include: ["alive", "dead"] },
@@ -27,9 +27,13 @@ module.exports = class MoleVoting extends Item {
         item: this,
         run: function () {
           //this.target.role.revealToPlayer(this.actor);
-
+          if (!this.game.guessedMoles) {
+          this.game.guessedMoles = {};
+        }
+        this.game.guessedMoles[this.actor.faction] = [];
           if (this.target.hasItem("IsTheMole")) {
             this.game.hasGuessedMole = true;
+            this.game.guessedMoles[this.actor.faction].push(this.target);
           }
           for (let player of this.game.players) {
             for (let item of player.items) {

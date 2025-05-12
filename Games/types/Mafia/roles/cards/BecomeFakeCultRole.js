@@ -57,12 +57,12 @@ module.exports = class BecomeFakeCultRole extends Card {
       roles = [`Imp:Demonic`];
     }
 
-    this.player.factionFake = "Cult";
+    role.player.factionFake = "Cult";
 
-    this.newRole = Random.randArrayVal(roles);
+    role.newRole = Random.randArrayVal(roles);
     let tempApp = {
-      self: this.newRole,
-      reveal: this.newRole,
+      self: role.newRole,
+      reveal: role.newRole,
     };
     this.editAppearance(tempApp);
 
@@ -72,15 +72,19 @@ module.exports = class BecomeFakeCultRole extends Card {
         this.player.role.data.reroll = true;
         this.player.holdItem("IsTheTelevangelist");
 
-        let newRole = Random.randArrayVal(roles);
         this.player.setRole(
-          this.newRole,
+          this.player.role.newRole,
           undefined,
           false,
           true,
           false,
           "No Change"
         );
+        this.player.role.name = "Televangelist";
+      let tempApp = {
+      self: role.newRole,
+    };
+    this.player.role.editAppearance(tempApp);
       },
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -88,13 +92,18 @@ module.exports = class BecomeFakeCultRole extends Card {
         }
         this.player.holdItem("IsTheTelevangelist");
         this.player.setRole(
-          this.newRole,
+          this.player.role.newRole,
           undefined,
           false,
           true,
           false,
           "No Change"
         );
+        this.player.role.name = "Televangelist";
+      let tempApp = {
+      self: role.newRole,
+    };
+    this.player.role.editAppearance(tempApp);
       },
     };
   }

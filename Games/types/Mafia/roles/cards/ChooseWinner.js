@@ -11,13 +11,13 @@ module.exports = class ChooseWinner extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if (this.ReaperWinningTeam) {
+        if (this.player.role.ReaperWinningTeam) {
           for (let player of this.game.players) {
             if (
-              player.role.name == this.ReaperWinningTeam ||
-              player.faction == this.ReaperWinningTeam
+              player.role.name == this.player.role.ReaperWinningTeam ||
+              player.faction == this.player.role.ReaperWinningTeam
             ) {
-              winners.addPlayer(player, this.ReaperWinningTeam);
+              winners.addPlayer(player, this.player.role.ReaperWinningTeam);
             }
           }
         }
@@ -25,6 +25,25 @@ module.exports = class ChooseWinner extends Card {
     };
 
     this.listeners = {
+       afterActions: function () {
+        if (this.game.getStateName() == "Day" || this.game.getStateName() == "Dusk") {
+                  if (
+          this.player.role.FaithTarget != null &&
+          this.player.role.FaithTarget != "No one" &&
+          this.player.role.FaithTarget.alive &&
+          this.player.hasAbility(["Win-Con", "WhenDead"])
+        ) {
+          this.ReaperWin = true;
+          if (this.player.role.FaithTarget.faction == "Independent") {
+            this.player.role.ReaperWinningTeam = this.FaithTarget.role.name;
+          } else {
+            this.player.role.ReaperWinningTeam = this.player.role.FaithTarget.faction;
+          }
+        } else {
+          this.player.role.FaithTarget = null;
+        }
+        }
+      },
       state: function (stateInfo) {
         if (stateInfo.name.match(/Day/)) {
           let toDetonate = 60000;
@@ -61,28 +80,29 @@ module.exports = class ChooseWinner extends Card {
           return;
         }
         this.timer = null;
-
+        /*
         if (
-          this.FaithTarget != null &&
-          this.FaithTarget != "No one" &&
-          this.FaithTarget.alive &&
+          this.player.role.FaithTarget != null &&
+          this.player.role.FaithTarget != "No one" &&
+          this.player.role.FaithTarget.alive &&
           this.player.hasAbility(["Win-Con"])
         ) {
           this.ReaperWin = true;
-          if (this.FaithTarget.faction == "Independent") {
-            this.ReaperWinningTeam = this.FaithTarget.role.name;
+          if (this.player.role.FaithTarget.faction == "Independent") {
+            this.player.role.ReaperWinningTeam = this.FaithTarget.role.name;
           } else {
-            this.ReaperWinningTeam = this.FaithTarget.faction;
+            this.player.role.ReaperWinningTeam = this.player.role.FaithTarget.faction;
           }
         } else {
-          this.FaithTarget = null;
+          this.player.role.FaithTarget = null;
         }
+        */
       },
     };
   }
 
   speak(message) {
-    if (message.abilityName != "") {
+    if (message.abilityName == "Whisper" || !message.sender.hasAbility(["Win-Con"])) {
       return;
     }
     if (message.sender.role.FaithTarget != null) {
@@ -97,20 +117,18 @@ module.exports = class ChooseWinner extends Card {
       formatedMessage = formatedMessage.replace("(", "");
       formatedMessage = formatedMessage.replace(")", "");
       formatedMessage = formatedMessage.replace('"', "");
+      formatedMessage = formatedMessage.replace('.', "");
     }
     formatedMessage = formatedMessage.toLowerCase();
     if (this.game.getStateName() != "Day") return;
-    if (formatedMessage.includes("I claim Reaper and choose ")) {
+    if (formatedMessage.includes("i claim reaper and choose ")) {
       formatedMessage = formatedMessage.replace(
-        "I claim Reaper and choose ",
+        "i claim reaper and choose ",
         ""
       );
-
-      let array = formatedMessage.split(" ");
-      let playerName = array[0];
-      if (array.length < 3) return;
+      formatedMessage = formatedMessage.replace(' ', "");
+      let playerName = formatedMessage;
       let playerTarget = false;
-      let roleTarget = false;
       for (let player of message.sender.game.players) {
         if (player.name.toLowerCase() == playerName) {
           playerTarget = player;
@@ -130,7 +148,6 @@ module.exports = class ChooseWinner extends Card {
         return;
       }
 
-      message.sender.role.data.GuessingPlayers.push(playerTarget);
       var action = new Action({
         actor: message.sender,
         target: playerTarget,
@@ -139,11 +156,12 @@ module.exports = class ChooseWinner extends Card {
         run: function () {
           if (this.actor == this.target) {
             this.actor.queueAlert(`You cannot choose yourself.`);
+            return;
           }
           this.actor.queueAlert(
             `You choose ${this.target.name}, Their team will win if they survive today.`
           );
-          this.actor.role.FaithTarget = this.target.name;
+          this.actor.role.FaithTarget = this.target;
         },
       });
       message.sender.game.instantAction(action);

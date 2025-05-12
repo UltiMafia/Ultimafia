@@ -22,10 +22,10 @@ module.exports = class Winners {
   removePlayer(player, group) {
     group = group || player.role.alignment;
 
-    if (!this.groups[group]) this.groups[group] = [];
+    if (!this.groups[group]) return;
 
-    if (!this.groups[group].includes(player)) {
-      this.groups[group].splice(this.game.CurrentEvents.indexOf(player), 1);
+    if (this.groups[group].includes(player)) {
+    this.groups[group].splice(this.groups[group].indexOf(player), 1);
     }
   }
 

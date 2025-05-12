@@ -40,6 +40,7 @@ module.exports = class Card {
     var attributes = [
       "winCount",
       "winCheck",
+      "winCheckSpecial",
       "appearance",
       "hideModifier",
       "oblivious",

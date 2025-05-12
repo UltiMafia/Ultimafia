@@ -24,9 +24,20 @@ module.exports = class MafiaRole extends Role {
   }
 
   editAppearance(newAppearance, newAppearanceMods) {
-    let oldAppearance = this.appearance;
+    let oldAppearance = {
+        self:
+          this.appearance["self"],
+        reveal:
+          this.appearance["reveal"],
+        condemn:
+          this.appearance["condemn"],
+        death:
+          this.appearance["death"],
+        investigate:
+          this.appearance["investigate"],
+    };
     let oldAppearanceMods = this.appearanceMods;
-    if (newAppearanceMods != null) {
+    if (newAppearance != null) {
       this.appearance = {
         self:
           newAppearance["self"] != null
@@ -53,25 +64,25 @@ module.exports = class MafiaRole extends Role {
     if (newAppearanceMods != null) {
       this.appearanceMods = {
         self:
-          newAppearance["self"] != null
-            ? newAppearance["self"]
-            : oldAppearance["self"],
+          newAppearanceMods["self"] != null
+            ? newAppearanceMods["self"]
+            : oldAppearanceMods["self"],
         reveal:
-          newAppearance["reveal"] != null
-            ? newAppearance["reveal"]
-            : oldAppearance["reveal"],
+          newAppearanceMods["reveal"] != null
+            ? newAppearanceMods["reveal"]
+            : oldAppearanceMods["reveal"],
         condemn:
-          newAppearance["condemn"] != null
-            ? newAppearance["condemn"]
-            : oldAppearance["condemn"],
+          newAppearanceMods["condemn"] != null
+            ? newAppearanceMods["condemn"]
+            : oldAppearanceMods["condemn"],
         death:
-          newAppearance["death"] != null
-            ? newAppearance["death"]
-            : oldAppearance["death"],
+          newAppearanceMods["death"] != null
+            ? newAppearanceMods["death"]
+            : oldAppearanceMods["death"],
         investigate:
-          newAppearance["investigate"] != null
-            ? newAppearance["investigate"]
-            : oldAppearance["investigate"],
+          newAppearanceMods["investigate"] != null
+            ? newAppearanceMods["investigate"]
+            : oldAppearanceMods["investigate"],
       };
     }
   }

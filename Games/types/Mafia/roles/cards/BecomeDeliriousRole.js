@@ -24,17 +24,20 @@ module.exports = class BecomeDeliriousRole extends Card {
     }
     roles = roles.filter((r) => !r.toLowerCase().includes("banished"));
     roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
-    roles = roles.filter((r) => !this.game.getRoleTags(r).includes("Humble"));
+    roles = roles.filter((r) => !r.toLowerCase().includes("humble"));
     if (roles.length <= 0) {
       roles = currentRoles;
       roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
       roles = roles.filter((r) => r.split(":")[0] != "Braggart");
     }
-    this.newRole = Random.randArrayVal(roles);
+    if(roles.length <= 0){
+      roles = ["Cop"];
+    }
+    role.newRole = Random.randArrayVal(roles);
 
     let tempApp = {
-      self: this.newRole,
-      reveal: this.newRole,
+      self: role.newRole,
+      reveal: role.newRole,
     };
     this.editAppearance(tempApp);
 
@@ -45,7 +48,7 @@ module.exports = class BecomeDeliriousRole extends Card {
         this.player.holdItem("IsTheBraggart");
 
         this.player.setRole(
-          this.newRole,
+          this.player.role.newRole,
           undefined,
           false,
           true,
@@ -59,7 +62,7 @@ module.exports = class BecomeDeliriousRole extends Card {
         }
         this.player.holdItem("IsTheBraggart");
         this.player.setRole(
-          this.newRole,
+          this.player.role.newRole,
           undefined,
           false,
           true,
