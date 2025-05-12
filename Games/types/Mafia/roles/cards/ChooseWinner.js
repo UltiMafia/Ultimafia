@@ -27,11 +27,11 @@ module.exports = class ChooseWinner extends Card {
     this.listeners = {
       state: function (stateInfo) {
         if (stateInfo.name.match(/Day/)) {
-        let toDetonate = 60000;
-        this.timer = setTimeout(() => {
-          if (this.game.finished) {
-            return;
-          }
+          let toDetonate = 60000;
+          this.timer = setTimeout(() => {
+            if (this.game.finished) {
+              return;
+            }
 
             let action = new Action({
               target: this.player,
@@ -42,7 +42,7 @@ module.exports = class ChooseWinner extends Card {
                   return;
                 }
                 if (this.target.role.FaithTarget != null) {
-                return;
+                  return;
                 }
                 this.target.queueAlert(
                   `The time to use your ability has passed.`
@@ -52,16 +52,16 @@ module.exports = class ChooseWinner extends Card {
             });
 
             this.game.instantAction(action);
-          
-          this.timer = null;
-        }, toDetonate);
+
+            this.timer = null;
+          }, toDetonate);
         }
-        
+
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
         this.timer = null;
-        
+
         if (
           this.FaithTarget != null &&
           this.FaithTarget != "No one" &&
