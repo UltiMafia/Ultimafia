@@ -1,9 +1,7 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
 const roles = require("../../../../../data/roles");
-const {
-  PRIORITY_WIN_CHECK_DEFAULT,
-} = require("../../const/Priority");
+const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 
 module.exports = class GuideWithFaith extends Card {
   constructor(role) {
