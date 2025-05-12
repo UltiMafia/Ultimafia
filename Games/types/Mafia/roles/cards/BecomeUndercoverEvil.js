@@ -24,18 +24,25 @@ module.exports = class BecomeUndercoverEvil extends Card {
     }
     roles = roles.filter((r) => !r.toLowerCase().includes("demonic"));
     roles = roles.filter((r) => !r.toLowerCase().includes("linchpin"));
-    roles = roles.filter((r) => this.game.getRoleAlignment(r) != "Village" && this.game.getRoleAlignment(r) != "Independent");
+    roles = roles.filter(
+      (r) =>
+        this.game.getRoleAlignment(r) != "Village" &&
+        this.game.getRoleAlignment(r) != "Independent"
+    );
     if (roles.length <= 0) {
       roles = currentRoles;
       roles = roles.filter((r) => !r.toLowerCase().includes("demonic"));
       roles = roles.filter((r) => !r.toLowerCase().includes("linchpin"));
-      roles = roles.filter((r) => this.game.getRoleAlignment(r) != "Village" && this.game.getRoleAlignment(r) != "Independent");
+      roles = roles.filter(
+        (r) =>
+          this.game.getRoleAlignment(r) != "Village" &&
+          this.game.getRoleAlignment(r) != "Independent"
+      );
     }
-    if (roles.length <= 0){
+    if (roles.length <= 0) {
       roles = ["Mafioso"];
     }
     this.newRole = Random.randArrayVal(roles);
-
 
     this.listeners = {
       SwitchRoleBefore: function (player) {
@@ -43,34 +50,22 @@ module.exports = class BecomeUndercoverEvil extends Card {
         this.player.role.data.reroll = true;
         this.player.holdItem("IsTheMole");
 
-        this.player.setRole(
-          this.newRole,
-          undefined,
-          false,
-          true,
-          false
-        );
-      let tempApp = {
-      self: "Mole",
-    };
-    this.editAppearance(tempApp);
+        this.player.setRole(this.newRole, undefined, false, true, false);
+        let tempApp = {
+          self: "Mole",
+        };
+        this.editAppearance(tempApp);
       },
       roleAssigned: function (player) {
         if (player !== this.player) {
           return;
         }
         this.player.holdItem("IsTheMole");
-        this.player.setRole(
-          this.newRole,
-          undefined,
-          false,
-          true,
-          false
-        );
-      let tempApp = {
-      self: "Mole",
-    };
-    this.editAppearance(tempApp);
+        this.player.setRole(this.newRole, undefined, false, true, false);
+        let tempApp = {
+          self: "Mole",
+        };
+        this.editAppearance(tempApp);
       },
     };
   }
