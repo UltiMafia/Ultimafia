@@ -791,7 +791,7 @@ const modifierData = {
   "Wacky Words": {},
   "Liars Dice": {},
   "Card Games": {},
-  Snake: {},
+  Battlesnakes: {},
 };
 
 module.exports = modifierData;

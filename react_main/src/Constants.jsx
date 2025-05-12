@@ -1,4 +1,4 @@
-export const SnakeGameType = "Snake";
+export const SnakeGameType = "Battlesnakes";
 export const GameTypes = [
   "Mafia",
   "Resistance",

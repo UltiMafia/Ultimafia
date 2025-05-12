@@ -29,10 +29,10 @@ const protips = {
   Resistance: [],
   Ghost: [],
   Jotto: [],
-  Snake: ["Drink Red Bull"],
+  Battlesnakes: ["Sometimes, size does matter."],
   Acrotopia: [],
   "Secret Dictator": ["Count the cards."],
-  "Wacky Words": ["Be wacky.", "Be Bold", "Be Brave", "Be Funny"],
+  "Wacky Words": ["Be wacky.", "Be bold.", "Be brave.", "Be funny."],
   "Liars Dice": [
     "Call it!!!!",
     "99% of gamblers quit before they win big!",

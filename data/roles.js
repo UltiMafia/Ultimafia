@@ -4244,7 +4244,7 @@ const roleData = {
     Player: {
       alignment: "Town",
       tags: ["None"],
-      description: ["Can place Bets and Play Cards."],
+      description: ["Can place bets and play cards."],
     },
     Host: {
       alignment: "Host",
@@ -4252,11 +4252,11 @@ const roleData = {
       description: ["Facilitates the game."],
     },
   },
-  Snake: {
+  Battlesnakes: {
     Snake: {
       alignment: "Town",
       tags: ["None"],
-      description: ["Your best friend."],
+      description: ["Eats the food on the board."],
     },
   },
 };
