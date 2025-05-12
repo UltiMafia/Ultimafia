@@ -30,7 +30,7 @@ module.exports = class BecomeDeliriousRole extends Card {
       roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
       roles = roles.filter((r) => r.split(":")[0] != "Braggart");
     }
-    if(roles.length <= 0){
+    if (roles.length <= 0) {
       roles = ["Cop"];
     }
     role.newRole = Random.randArrayVal(roles);

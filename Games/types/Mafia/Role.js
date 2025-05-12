@@ -25,16 +25,11 @@ module.exports = class MafiaRole extends Role {
 
   editAppearance(newAppearance, newAppearanceMods) {
     let oldAppearance = {
-        self:
-          this.appearance["self"],
-        reveal:
-          this.appearance["reveal"],
-        condemn:
-          this.appearance["condemn"],
-        death:
-          this.appearance["death"],
-        investigate:
-          this.appearance["investigate"],
+      self: this.appearance["self"],
+      reveal: this.appearance["reveal"],
+      condemn: this.appearance["condemn"],
+      death: this.appearance["death"],
+      investigate: this.appearance["investigate"],
     };
     let oldAppearanceMods = this.appearanceMods;
     if (newAppearance != null) {

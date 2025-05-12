@@ -28,9 +28,9 @@ module.exports = class MoleVoting extends Item {
         run: function () {
           //this.target.role.revealToPlayer(this.actor);
           if (!this.game.guessedMoles) {
-          this.game.guessedMoles = {};
-        }
-        this.game.guessedMoles[this.actor.faction] = [];
+            this.game.guessedMoles = {};
+          }
+          this.game.guessedMoles[this.actor.faction] = [];
           if (this.target.hasItem("IsTheMole")) {
             this.game.hasGuessedMole = true;
             this.game.guessedMoles[this.actor.faction].push(this.target);

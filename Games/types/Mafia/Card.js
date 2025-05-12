@@ -6,16 +6,11 @@ module.exports = class MafiaCard extends Card {
   }
   editAppearance(newAppearance, newAppearanceMods) {
     let oldAppearance = {
-        self:
-          this.role.appearance["self"],
-        reveal:
-          this.role.appearance["reveal"],
-        condemn:
-          this.role.appearance["condemn"],
-        death:
-          this.role.appearance["death"],
-        investigate:
-          this.role.appearance["investigate"],
+      self: this.role.appearance["self"],
+      reveal: this.role.appearance["reveal"],
+      condemn: this.role.appearance["condemn"],
+      death: this.role.appearance["death"],
+      investigate: this.role.appearance["investigate"],
     };
     let oldAppearanceMods = this.role.appearanceMods;
     if (newAppearance != null) {

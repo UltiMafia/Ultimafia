@@ -48,20 +48,22 @@ module.exports = class BecomeUndercoverEvil extends Card {
     this.listeners = {
       SwitchRoleBefore: function (player) {
         if (player != this.player) return;
-        if(this.player.faction == null){
-        this.player.faction = "Village";
+        if (this.player.faction == null) {
+          this.player.faction = "Village";
         }
         this.player.role.data.reroll = true;
         this.player.holdItem("IsTheMole", this.player.faction);
 
-          this.action = new Action({
+        this.action = new Action({
           actor: this.player,
           target: this.player,
           game: this.game,
           labels: ["hidden", "block"],
           run: function () {
             let evilPlayers = this.game.players.filter(
-              (p) => p.role.alignment == this.game.getRoleAlignment(this.actor.role.newRole)
+              (p) =>
+                p.role.alignment ==
+                this.game.getRoleAlignment(this.actor.role.newRole)
             );
 
             for (let x = 0; x < evilPlayers.length; x++) {
@@ -79,7 +81,13 @@ module.exports = class BecomeUndercoverEvil extends Card {
 
         this.action.do();
 
-        this.player.setRole(this.player.role.newRole, undefined, false, true, false);
+        this.player.setRole(
+          this.player.role.newRole,
+          undefined,
+          false,
+          true,
+          false
+        );
         let tempApp = {
           self: "Mole",
         };

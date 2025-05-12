@@ -25,7 +25,7 @@ module.exports = class Winners {
     if (!this.groups[group]) return;
 
     if (this.groups[group].includes(player)) {
-    this.groups[group].splice(this.groups[group].indexOf(player), 1);
+      this.groups[group].splice(this.groups[group].indexOf(player), 1);
     }
   }
 

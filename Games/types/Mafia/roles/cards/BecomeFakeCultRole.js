@@ -81,10 +81,10 @@ module.exports = class BecomeFakeCultRole extends Card {
           "No Change"
         );
         this.player.role.name = "Televangelist";
-      let tempApp = {
-      self: role.newRole,
-    };
-    this.player.role.editAppearance(tempApp);
+        let tempApp = {
+          self: role.newRole,
+        };
+        this.player.role.editAppearance(tempApp);
       },
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -100,10 +100,10 @@ module.exports = class BecomeFakeCultRole extends Card {
           "No Change"
         );
         this.player.role.name = "Televangelist";
-      let tempApp = {
-      self: role.newRole,
-    };
-    this.player.role.editAppearance(tempApp);
+        let tempApp = {
+          self: role.newRole,
+        };
+        this.player.role.editAppearance(tempApp);
       },
     };
   }

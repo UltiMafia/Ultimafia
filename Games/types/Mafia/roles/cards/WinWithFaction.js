@@ -89,8 +89,8 @@ module.exports = class WinWithFaction extends Card {
           (p) => p.role.name == "Seer"
         );
 
-        const MolesInGame = this.game.players.filter(
-          (p) => p.hasItem("IsTheMole")
+        const MolesInGame = this.game.players.filter((p) =>
+          p.hasItem("IsTheMole")
         );
 
         let factionCount = this.game.players.filter(
@@ -235,11 +235,12 @@ module.exports = class WinWithFaction extends Card {
           }
         }
 
-      // win by guessing Mole
+        // win by guessing Mole
         if (EVIL_FACTIONS.includes(this.player.faction)) {
           if (
-            MolesInGame.length > 0 && this.game.guessedMoles &&
-              this.game.guessedMoles[this.player.faction].length > 0
+            MolesInGame.length > 0 &&
+            this.game.guessedMoles &&
+            this.game.guessedMoles[this.player.faction].length > 0
           ) {
             factionWin(this);
             return;
@@ -288,7 +289,8 @@ module.exports = class WinWithFaction extends Card {
         if (this.player.faction == "Village") {
           if (MolesInGame.length > 0) {
             for (let x = 0; x < EVIL_FACTIONS.length; x++) {
-              if (this.game.guessedMoles &&
+              if (
+                this.game.guessedMoles &&
                 this.game.guessedMoles[EVIL_FACTIONS[x]]?.length > 0
               ) {
                 //Moles have been guessed, village cannot win

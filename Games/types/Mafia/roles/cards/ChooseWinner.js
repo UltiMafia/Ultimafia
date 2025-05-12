@@ -25,23 +25,27 @@ module.exports = class ChooseWinner extends Card {
     };
 
     this.listeners = {
-       afterActions: function () {
-        if (this.game.getStateName() == "Day" || this.game.getStateName() == "Dusk") {
-                  if (
-          this.player.role.FaithTarget != null &&
-          this.player.role.FaithTarget != "No one" &&
-          this.player.role.FaithTarget.alive &&
-          this.player.hasAbility(["Win-Con", "WhenDead"])
+      afterActions: function () {
+        if (
+          this.game.getStateName() == "Day" ||
+          this.game.getStateName() == "Dusk"
         ) {
-          this.ReaperWin = true;
-          if (this.player.role.FaithTarget.faction == "Independent") {
-            this.player.role.ReaperWinningTeam = this.FaithTarget.role.name;
+          if (
+            this.player.role.FaithTarget != null &&
+            this.player.role.FaithTarget != "No one" &&
+            this.player.role.FaithTarget.alive &&
+            this.player.hasAbility(["Win-Con", "WhenDead"])
+          ) {
+            this.ReaperWin = true;
+            if (this.player.role.FaithTarget.faction == "Independent") {
+              this.player.role.ReaperWinningTeam = this.FaithTarget.role.name;
+            } else {
+              this.player.role.ReaperWinningTeam =
+                this.player.role.FaithTarget.faction;
+            }
           } else {
-            this.player.role.ReaperWinningTeam = this.player.role.FaithTarget.faction;
+            this.player.role.FaithTarget = null;
           }
-        } else {
-          this.player.role.FaithTarget = null;
-        }
         }
       },
       state: function (stateInfo) {
@@ -102,7 +106,10 @@ module.exports = class ChooseWinner extends Card {
   }
 
   speak(message) {
-    if (message.abilityName == "Whisper" || !message.sender.hasAbility(["Win-Con"])) {
+    if (
+      message.abilityName == "Whisper" ||
+      !message.sender.hasAbility(["Win-Con"])
+    ) {
       return;
     }
     if (message.sender.role.FaithTarget != null) {
@@ -117,7 +124,7 @@ module.exports = class ChooseWinner extends Card {
       formatedMessage = formatedMessage.replace("(", "");
       formatedMessage = formatedMessage.replace(")", "");
       formatedMessage = formatedMessage.replace('"', "");
-      formatedMessage = formatedMessage.replace('.', "");
+      formatedMessage = formatedMessage.replace(".", "");
     }
     formatedMessage = formatedMessage.toLowerCase();
     if (this.game.getStateName() != "Day") return;
@@ -126,7 +133,7 @@ module.exports = class ChooseWinner extends Card {
         "i claim reaper and choose ",
         ""
       );
-      formatedMessage = formatedMessage.replace(' ', "");
+      formatedMessage = formatedMessage.replace(" ", "");
       let playerName = formatedMessage;
       let playerTarget = false;
       for (let player of message.sender.game.players) {
