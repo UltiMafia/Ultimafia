@@ -5,15 +5,9 @@ module.exports = class BecomeDeliriousRole extends Card {
   constructor(role) {
     super(role);
 
-    this.startItems = ["IsTheBraggart"];
-
-    this.listeners = {
-      SwitchRoleBefore: function (player) {
-        if (player != this.player) return;
-        this.player.role.data.reroll = true;
-        this.player.holdItem("IsTheBraggart");
-
-        let banishedRoles = this.game.banishedRoles;
+    //this.startItems = ["IsTheBraggart"];
+    
+    let banishedRoles = this.game.banishedRoles;
         let roles = this.game.PossibleRoles.filter((r) => r);
         let currentRoles = [];
         let playersAll = this.game.players.filter((p) => p.role);
@@ -30,7 +24,7 @@ module.exports = class BecomeDeliriousRole extends Card {
         }
         roles = roles.filter((r) => !r.toLowerCase().includes("banished"));
         roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
-
+        roles = roles.filter((r) => this.game.getRoleTags(r).includes("Humble"));
         if (roles.length <= 0) {
           roles = currentRoles;
           roles = roles.filter(
@@ -38,16 +32,43 @@ module.exports = class BecomeDeliriousRole extends Card {
           );
           roles = roles.filter((r) => r.split(":")[0] != "Braggart");
         }
+    this.newRole = Random.randArrayVal(roles);
 
-        let newRole = Random.randArrayVal(roles);
+    let tempApp = {
+      self: this.newRole,
+      reveal: this.newRole,
+    };
+    this.editAppearance(tempApp);
+
+    this.listeners = {
+      SwitchRoleBefore: function (player) {
+        if (player != this.player) return;
+        this.player.role.data.reroll = true;
+        this.player.holdItem("IsTheBraggart");
+        
         this.player.setRole(
-          newRole,
+          this.newRole,
           undefined,
           false,
           true,
           false,
           "No Change"
         );
+      },
+      roleAssigned: function (player){
+        if (player !== this.player) {
+          return;
+        }
+        this.player.holdItem("IsTheBraggart");
+        this.player.setRole(
+          this.newRole,
+          undefined,
+          false,
+          true,
+          false,
+          "No Change"
+        );
+        
       },
     };
   }
