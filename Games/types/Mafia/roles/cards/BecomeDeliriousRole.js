@@ -24,7 +24,7 @@ module.exports = class BecomeDeliriousRole extends Card {
     }
     roles = roles.filter((r) => !r.toLowerCase().includes("banished"));
     roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
-    roles = roles.filter((r) => this.game.getRoleTags(r).includes("Humble"));
+    roles = roles.filter((r) => !this.game.getRoleTags(r).includes("Humble"));
     if (roles.length <= 0) {
       roles = currentRoles;
       roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
