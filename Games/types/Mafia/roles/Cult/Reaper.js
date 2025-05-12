@@ -1,6 +1,6 @@
 const Role = require("../../Role");
 
-module.exports = class Shepherd extends Role {
+module.exports = class Reaper extends Role {
   constructor(player, data) {
     super("Reaper", player, data);
 
