@@ -1,4 +1,4 @@
-import { PreferredDeckId, SnakeGameType } from "../../../Constants";
+import { PreferredDeckId } from "../../../Constants";
 
 function getStorageKey(gameType) {
   return `${gameType.toLowerCase()} persisted options`;
@@ -11,6 +11,7 @@ const HOST_OPTIONS_VERSIONS = {
   Ghost: 1,
   Jotto: 1,
   "Liars Dice": 1,
+  "Battlesnakes": 1,
   "Card Games": 1,
   Resistance: 1,
   "Secret Dictator": 1,
@@ -125,7 +126,7 @@ var defaultOptions = {
     dayLength: 5,
     nightLength: 2,
   },
-  [SnakeGameType]: existingHostOptions[SnakeGameType] || {
+  Battlesnakes: existingHostOptions["Battlesnakes"] || {
     ...commonHostOptions,
     boardSize: 20,
     dayLength: 60,

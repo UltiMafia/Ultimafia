@@ -1092,7 +1092,7 @@ const settingsChecks = {
       startingChips,
     };
   },
-  Snake: (settings, setup) => {
+  Battlesnakes: (settings, setup) => {
     const boardSize = settings.boardSize;
 
     return {

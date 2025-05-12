@@ -11,7 +11,6 @@ import {
 import { GameContext } from "../../Contexts";
 
 import "../../css/gameGhost.css";
-import { SnakeGameType } from "../../Constants";
 import SnakeGameDisplay from "./SnakeGameDisplay";
 
 function SnakeGame(props) {
@@ -23,7 +22,7 @@ function SnakeGame(props) {
   const self = game.self;
   const players = game.players;
 
-  const gameType = SnakeGameType;
+  const gameType = "Battlesnakes";
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};

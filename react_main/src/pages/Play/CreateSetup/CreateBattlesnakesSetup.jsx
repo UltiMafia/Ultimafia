@@ -6,10 +6,9 @@ import CreateBrowser from "./CreateBrowser";
 import { SiteInfoContext } from "../../../Contexts";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
-import { SnakeGameType } from "../../../Constants";
 
-export default function CreateSnakeSetup() {
-  const gameType = SnakeGameType;
+export default function CreateBattlesnakesSetup() {
+  const gameType = "Battlesnakes";
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const errorAlert = useErrorAlert();
@@ -25,7 +24,7 @@ export default function CreateSnakeSetup() {
   const siteInfo = useContext(SiteInfoContext);
 
   useEffect(() => {
-    document.title = "Create Snake Setup | UltiMafia";
+    document.title = "Create Battlesnakes Setup | UltiMafia";
   }, []);
 
   function onCreateSetup(roleData, editing, setRedirect) {

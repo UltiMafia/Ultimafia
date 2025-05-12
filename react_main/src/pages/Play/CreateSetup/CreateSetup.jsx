@@ -21,9 +21,10 @@ import CreateSecretDictatorSetup from "./CreateSecretDictatorSetup";
 import CreateWackyWordsSetup from "./CreateWackyWordsSetup";
 import CreateLiarsDiceSetup from "./CreateLiarsDiceSetup";
 import CreateCardGamesSetup from "./CreateCardGamesSetup";
+import CreateBattlesnakesSetup from "./CreateBattlesnakesSetup";
 
-import { GameTypes, SnakeGameType } from "../../../Constants";
-import CreateSnakeSetup from "./CreateSnakeSetup";
+import { GameTypes} from "../../../Constants";
+
 
 const gamesIcons = {
   Mafia: "/images/game_icons/Mafia.png",
@@ -35,7 +36,7 @@ const gamesIcons = {
   "Wacky Words": "/images/game_icons/WackyWords.png",
   "Liars Dice": "/images/game_icons/LiarsDice.png",
   "Card Games": "/images/game_icons/CardGames.png",
-  [SnakeGameType]: "/images/game_icons/Battlesnakes.png",
+  Battlesnakes: "/images/game_icons/Battlesnakes.png",
 };
 
 export default function CreateSetup(props) {
@@ -151,8 +152,8 @@ export default function CreateSetup(props) {
                   return <CreateLiarsDiceSetup />;
                 case "Card Games":
                   return <CreateCardGamesSetup />;
-                case SnakeGameType:
-                  return <CreateSnakeSetup />;
+                case "Battlesnakes":
+                  return <CreateBattlesnakesSetup />;
                 default:
                   setGameType(defaultGameType);
                   return null;

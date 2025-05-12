@@ -1146,7 +1146,7 @@ const countChecks = {
       return "Ghosts must not make up the majority.";
     return true;
   },
-  Snake: (roles, count, total, closed, unique) => {
+  Battlesnakes: (roles, count, total, closed, unique) => {
     if (total < 2 || total > 10)
       return "Only 2 to 10 players for now. Will support more players soon.";
     return true;
@@ -1230,7 +1230,7 @@ const optionsChecks = {
   Ghost: (setup) => {
     return setup;
   },
-  Snake: (setup) => {
+  Battlesnakes: (setup) => {
     return setup;
   },
   Jotto: (setup) => {
