@@ -26,12 +26,45 @@ module.exports = class ChooseWinner extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
+        if (stateInfo.name.match(/Day/)) {
+        let toDetonate = 60000;
+        this.timer = setTimeout(() => {
+          if (this.game.finished) {
+            return;
+          }
+
+            let action = new Action({
+              target: this.player,
+              game: this.player.game,
+              labels: ["kill", "bomb"],
+              run: function () {
+                if (this.game.getStateName() != "Day") {
+                  return;
+                }
+                if (this.target.role.FaithTarget != null) {
+                return;
+                }
+                this.target.queueAlert(
+                  `The time to use your ability has passed.`
+                );
+                this.target.role.FaithTarget = "No One";
+              },
+            });
+
+            this.game.instantAction(action);
+          
+          this.timer = null;
+        }, toDetonate);
+        }
+        
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-
+        this.timer = null;
+        
         if (
-          this.FaithTarget &&
+          this.FaithTarget != null &&
+          this.FaithTarget != "No one" &&
           this.FaithTarget.alive &&
           this.player.hasAbility(["Win-Con"])
         ) {
