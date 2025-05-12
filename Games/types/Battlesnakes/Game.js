@@ -3,16 +3,16 @@ const Winners = require("../../core/Winners");
 const Player = require("./Player");
 
 /**
- * The backend state and logic handler for a multiplayer Snake game.
+ * The backend state and logic handler for a multiplayer Battlesnakes game.
  */
-module.exports = class SnakeGame extends Game {
+module.exports = class BattlesnakesGame extends Game {
   /**
    * @param {object} options - Game initialization options
    */
   constructor(options) {
     super(options);
 
-    this.type = "Snake";
+    this.type = "Battlesnakes";
     this.Player = Player;
     this.gridSize = options.settings.boardSize || 20;
     this.gameStarted = false;

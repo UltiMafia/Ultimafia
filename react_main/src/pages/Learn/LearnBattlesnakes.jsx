@@ -8,23 +8,22 @@ import {
 import { useTheme } from "@mui/styles";
 
 import { RoleSearch } from "../../components/Roles";
-import { SnakeGameType } from "../../Constants";
 
-export default function LearnSnake(props) {
-  const gameType = SnakeGameType;
+export default function LearnBattlesnakes(props) {
+  const gameType = "Battlesnakes";
   const theme = useTheme();
 
   useEffect(() => {
-    document.title = "Learn Snake | UltiMafia";
+    document.title = "Learn Battlesnakes | UltiMafia";
   }, []);
 
   return (
     <div className="learn">
       <Typography variant="h4" gutterBottom>
-        Learn Snake
+        Learn Battlesnakes
       </Typography>
       <Typography variant="body1" paragraph>
-        The objective of Snake is to be the last survivor
+        The objective of Battlesnakes is to be the last surviving Snake
       </Typography>
       <Accordion>
         <AccordionSummary>

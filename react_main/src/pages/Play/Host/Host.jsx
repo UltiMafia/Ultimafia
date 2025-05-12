@@ -21,9 +21,10 @@ import HostSecretDictator from "./HostSecretDictator";
 import HostWackyWords from "./HostWackyWords";
 import HostLiarsDice from "./HostLiarsDice";
 import HostCardGames from "./HostCardGames";
+import HostBattlesnakes from "./HostBattlesnakes";
 
-import { GameTypes, SnakeGameType } from "../../../Constants";
-import HostSnake from "./HostSnake";
+import { GameTypes} from "../../../Constants";
+
 
 const gamesIcons = {
   Mafia: "/images/game_icons/Mafia.png",
@@ -35,7 +36,7 @@ const gamesIcons = {
   "Wacky Words": "/images/game_icons/WackyWords.png",
   "Liars Dice": "/images/game_icons/LiarsDice.png",
   "Card Games": "/images/game_icons/CardGames.png",
-  [SnakeGameType]: "/images/game_icons/Battlesnakes.png",
+  Battlesnakes: "/images/game_icons/Battlesnakes.png",
 };
 
 export default function Host(props) {
@@ -151,8 +152,8 @@ export default function Host(props) {
                   return <HostLiarsDice />;
                 case "Card Games":
                   return <HostCardGames />;
-                case SnakeGameType:
-                  return <HostSnake />;
+                case "Battlesnakes":
+                  return <HostBattlesnakes />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;

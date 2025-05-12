@@ -22,8 +22,8 @@ import LearnWackyWords from "./LearnWackyWords";
 import LearnLiarsDice from "./LearnLiarsDice";
 import LearnCardGames from "./LearnCardGames";
 
-import { GameTypes, SnakeGameType } from "../../Constants";
-import LearnSnake from "./LearnSnake";
+import { GameTypes } from "../../Constants";
+import LearnBattlesnakes from "./LearnBattlesnakes";
 
 const gamesIcons = {
   Mafia: "/images/game_icons/Mafia.png",
@@ -35,7 +35,7 @@ const gamesIcons = {
   "Wacky Words": "/images/game_icons/WackyWords.png",
   "Liars Dice": "/images/game_icons/LiarsDice.png",
   "Card Games": "/images/game_icons/CardGames.png",
-  [SnakeGameType]: "/images/game_icons/Battlesnakes.png",
+ "Battlesnakes": "/images/game_icons/Battlesnakes.png",
 };
 
 export default function Games(props) {
@@ -153,8 +153,8 @@ export default function Games(props) {
                   return <LearnCardGames />;
                 case "Card Games":
                   return <LearnCardGames />;
-                case SnakeGameType:
-                  return <LearnSnake />;
+                case "Battlesnakes":
+                  return <LearnBattlesnakes />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;

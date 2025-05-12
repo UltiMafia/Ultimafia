@@ -7,12 +7,12 @@ import { getDefaults, persistDefaults } from "./HostDefaults";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies, SnakeGameType } from "../../../Constants";
+import { Lobbies } from "../../../Constants";
 
 import "../../../css/host.css";
 
-export default function HostSnake() {
-  const gameType = SnakeGameType;
+export default function HostBattlesnakes() {
+  const gameType = "Battlesnakes";
   const [selSetup, setSelSetup] = useState({});
   const [redirect, setRedirect] = useState(false);
   const siteInfo = useContext(SiteInfoContext);
@@ -131,7 +131,7 @@ export default function HostSnake() {
   ]);
 
   useEffect(() => {
-    document.title = "Host Snake | UltiMafia";
+    document.title = "Host Battlesnakes | UltiMafia";
   }, []);
 
   function onHostGame() {
