@@ -315,10 +315,8 @@ const artContributors = {
     Mafia: [
       "Celebrity",
       "Waitress",
-      "Gunslinger",
       "Hooker",
       "Actress",
-      "Necromancer",
       "Housekeeper",
     ],
   },
@@ -396,6 +394,8 @@ const artContributors = {
       "Hellhound",
       "Theocrat",
       "Snake Charmer",
+      "Necromancer",
+      "Debtor",
     ],
   },
   syn: {

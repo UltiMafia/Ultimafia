@@ -1091,6 +1091,10 @@
   background-image: url("/images/roles/necromancer-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Debtor {
+  background-image: url("/images/roles/debtor-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Mummy {
   background-image: url("/images/roles/mummy-vivid.png");
 }
