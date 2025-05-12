@@ -82,7 +82,7 @@ module.exports = class ChooseWinner extends Card {
   }
 
   speak(message) {
-    if(message.abilityName != ""){
+    if (message.abilityName != "") {
       return;
     }
     if (message.sender.role.FaithTarget != null) {
@@ -99,7 +99,7 @@ module.exports = class ChooseWinner extends Card {
       formatedMessage = formatedMessage.replace('"', "");
     }
     formatedMessage = formatedMessage.toLowerCase();
-    if(this.game.getStateName() != "Day") return;
+    if (this.game.getStateName() != "Day") return;
     if (formatedMessage.includes("I claim Reaper and choose ")) {
       formatedMessage = formatedMessage.replace(
         "I claim Reaper and choose ",
