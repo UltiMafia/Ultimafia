@@ -157,6 +157,9 @@ module.exports = class GuessFiveRoles extends Card {
   }
 
   speak(message) {
+    if (message.abilityName == "Whisper") {
+      return;
+    }
     let formatedMessage = message.content;
     while (
       formatedMessage.includes("(") ||

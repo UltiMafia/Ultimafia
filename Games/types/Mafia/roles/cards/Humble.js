@@ -23,10 +23,10 @@ module.exports = class Humble extends Card {
     if (!appearance) {
       return;
     }
-
-    this.appearance = {
+    let tempApp = {
       self: appearance,
       reveal: appearance,
     };
+    this.editAppearance(tempApp);
   }
 };

@@ -4,8 +4,9 @@ module.exports = class VillagerToInvestigative extends Card {
   constructor(role) {
     super(role);
 
-    this.appearance = {
+    let tempApp = {
       investigate: "Villager",
     };
+    this.editAppearance(tempApp);
   }
 };

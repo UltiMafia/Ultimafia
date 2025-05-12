@@ -396,6 +396,7 @@ module.exports = class MafiaGame extends Game {
       if (player.alive) counts[alignment]++;
 
       winQueue.enqueue(player.role.winCheck);
+      winQueue.enqueue(player.role.winCheckSpecial);
     }
 
     for (let winCheck of winQueue) {

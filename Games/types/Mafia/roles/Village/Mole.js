@@ -1,15 +1,15 @@
 const Role = require("../../Role");
 
-module.exports = class Reaper extends Role {
+module.exports = class Mole extends Role {
   constructor(player, data) {
-    super("Reaper", player, data);
+    super("Mole", player, data);
 
-    this.alignment = "Cult";
+    this.alignment = "Village";
     this.cards = [
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "ChooseWinner",
+      "BecomeUndercoverEvil",
     ];
   }
 };

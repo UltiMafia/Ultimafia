@@ -1437,6 +1437,17 @@ const roleData = {
         "Appears as villager on death.",
       ],
     },
+    Mole: {
+      alignment: "Village",
+      category: "Essential",
+      tags: ["Essential", "Information", "Mafia"],
+      description: [
+        "Has a Mafia or Cult role and Counts Torwards Mafia/Cult Majority.",
+        "At night mafia can guess who the Mole is Once per game even if dead.",
+        "On a correct guess, Mafia or Cult wins.",
+      ],
+      graveyardParticipation: "All",
+    },
     Senator: {
       alignment: "Village",
       category: "Essential",
@@ -2714,6 +2725,16 @@ const roleData = {
         "Will be Twins with an Opposing player.",
         "The Twins will learn eachothers roles.",
         "If the Village-aligned Twin is Condemned, Cult Wins.",
+      ],
+    },
+    Reaper: {
+      alignment: "Cult",
+      category: "Chaos",
+      tags: ["Win Con", "Information", "Condemn"],
+      description: [
+        'If a Reaper says "I claim Reaper and choose (Player Name)" within the first minute of the day. The Choose player will be Reaped.',
+        "If the Reaped player survives until the end of the day, Their team wins.",
+        "A Reaper cannot Reap themselves.",
       ],
     },
     Devotee: {

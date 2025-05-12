@@ -23,6 +23,65 @@ module.exports = class MafiaRole extends Role {
     };
   }
 
+  editAppearance(newAppearance, newAppearanceMods) {
+    let oldAppearance = {
+      self: this.appearance["self"],
+      reveal: this.appearance["reveal"],
+      condemn: this.appearance["condemn"],
+      death: this.appearance["death"],
+      investigate: this.appearance["investigate"],
+    };
+    let oldAppearanceMods = this.appearanceMods;
+    if (newAppearance != null) {
+      this.appearance = {
+        self:
+          newAppearance["self"] != null
+            ? newAppearance["self"]
+            : oldAppearance["self"],
+        reveal:
+          newAppearance["reveal"] != null
+            ? newAppearance["reveal"]
+            : oldAppearance["reveal"],
+        condemn:
+          newAppearance["condemn"] != null
+            ? newAppearance["condemn"]
+            : oldAppearance["condemn"],
+        death:
+          newAppearance["death"] != null
+            ? newAppearance["death"]
+            : oldAppearance["death"],
+        investigate:
+          newAppearance["investigate"] != null
+            ? newAppearance["investigate"]
+            : oldAppearance["investigate"],
+      };
+    }
+    if (newAppearanceMods != null) {
+      this.appearanceMods = {
+        self:
+          newAppearanceMods["self"] != null
+            ? newAppearanceMods["self"]
+            : oldAppearanceMods["self"],
+        reveal:
+          newAppearanceMods["reveal"] != null
+            ? newAppearanceMods["reveal"]
+            : oldAppearanceMods["reveal"],
+        condemn:
+          newAppearanceMods["condemn"] != null
+            ? newAppearanceMods["condemn"]
+            : oldAppearanceMods["condemn"],
+        death:
+          newAppearanceMods["death"] != null
+            ? newAppearanceMods["death"]
+            : oldAppearanceMods["death"],
+        investigate:
+          newAppearanceMods["investigate"] != null
+            ? newAppearanceMods["investigate"]
+            : oldAppearanceMods["investigate"],
+      };
+    }
+  }
+
   getRevealText(roleName, modifiers, revealType) {
     if (
       (revealType == "death" ||

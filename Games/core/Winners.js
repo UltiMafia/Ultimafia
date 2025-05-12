@@ -19,6 +19,16 @@ module.exports = class Winners {
     if (!this.groups[group]) this.groups[group] = [];
   }
 
+  removePlayer(player, group) {
+    group = group || player.role.alignment;
+
+    if (!this.groups[group]) return;
+
+    if (this.groups[group].includes(player)) {
+      this.groups[group].splice(this.groups[group].indexOf(player), 1);
+    }
+  }
+
   removeGroup(group) {
     delete this.groups[group];
   }
