@@ -2716,7 +2716,7 @@ const roleData = {
         "If the Village-aligned Twin is Condemned, Cult Wins.",
       ],
     },
-  Reaper: {
+    Reaper: {
       alignment: "Cult",
       category: "Chaos",
       tags: ["Win Con", "Information", "Condemn"],
