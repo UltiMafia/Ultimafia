@@ -48,7 +48,7 @@ module.exports = class BecomeUndercoverEvil extends Card {
       SwitchRoleBefore: function (player) {
         if (player != this.player) return;
         this.player.role.data.reroll = true;
-        this.player.holdItem("IsTheMole");
+        this.player.holdItem("IsTheMole", this.player.faction);
 
         this.player.setRole(this.newRole, undefined, false, true, false);
         let tempApp = {
@@ -60,7 +60,7 @@ module.exports = class BecomeUndercoverEvil extends Card {
         if (player !== this.player) {
           return;
         }
-        this.player.holdItem("IsTheMole");
+        this.player.holdItem("IsTheMole", this.player.faction);
         this.player.setRole(this.newRole, undefined, false, true, false);
         let tempApp = {
           self: "Mole",
