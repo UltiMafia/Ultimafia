@@ -23,6 +23,13 @@ module.exports = class Role {
         // Return true to stop checking for other winners
       },
     };
+    this.winCheckSpecial = {
+      priority: 0,
+      check: (counts, winners) => {
+        // winners.addPlayer(this.player, null or "group")
+        // Return true to stop checking for other winners
+      },
+    };
     this.appearance = {
       self: "real",
       reveal: "real",
@@ -162,6 +169,7 @@ module.exports = class Role {
 
     // Bind role to winCheck
     this.winCheck.check = this.winCheck.check.bind(this);
+    this.winCheckSpecial.check = this.winCheckSpecial.check.bind(this);
 
     // Modify games states
     for (let name in this.stateMods) {
