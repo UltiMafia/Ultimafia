@@ -14,11 +14,14 @@ module.exports = class GuideWithFaith extends Card {
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
         if (this.ReaperWinningTeam) {
-            for(let player of this.game.players){
-              if(player.role.name == this.ReaperWinningTeam || player.faction == this.ReaperWinningTeam){
-                winners.addPlayer(player, this.ReaperWinningTeam);
-              }
+          for (let player of this.game.players) {
+            if (
+              player.role.name == this.ReaperWinningTeam ||
+              player.faction == this.ReaperWinningTeam
+            ) {
+              winners.addPlayer(player, this.ReaperWinningTeam);
             }
+          }
         }
       },
     };
@@ -28,27 +31,27 @@ module.exports = class GuideWithFaith extends Card {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-        
-        if(this.FaithTarget && this.FaithTarget.alive && this.player.hasAbility(["Win-Con"])){
+
+        if (
+          this.FaithTarget &&
+          this.FaithTarget.alive &&
+          this.player.hasAbility(["Win-Con"])
+        ) {
           this.ReaperWin = true;
-          if(this.FaithTarget.faction == "Independent"){
-          this.ReaperWinningTeam = this.FaithTarget.role.name;
-          }
-          else{
+          if (this.FaithTarget.faction == "Independent") {
+            this.ReaperWinningTeam = this.FaithTarget.role.name;
+          } else {
             this.ReaperWinningTeam = this.FaithTarget.faction;
           }
-        }
-        else{
+        } else {
           this.FaithTarget = null;
         }
-
-       
       },
     };
   }
 
   speak(message) {
-    if(message.sender.role.FaithTarget != null){
+    if (message.sender.role.FaithTarget != null) {
       return;
     }
     let formatedMessage = message.content;
