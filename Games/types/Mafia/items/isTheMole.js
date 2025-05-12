@@ -33,11 +33,11 @@ module.exports = class IsTheMole extends Item {
               evilPlayers[x].queueAlert(
                 `There is a Mole Amoungst your ranks! You may attempt to guess the mole once.`
               );
-                evilPlayers[x].holdItem("MoleVoting");
-              
+              evilPlayers[x].holdItem("MoleVoting");
             }
-              this.actor.queueAlert(`You are the Mole, You have the abilites of a ${this.actor.role.name}`);
-            
+            this.actor.queueAlert(
+              `You are the Mole, You have the abilites of a ${this.actor.role.name}`
+            );
           },
         });
 
@@ -47,10 +47,10 @@ module.exports = class IsTheMole extends Item {
         this.holder.role.name = "Mole";
         winners.removePlayer(this.holder, this.holder.faction);
         this.holder.faction = originalFaction;
-        if(this.holder.faction == "Independent"){
+        if (this.holder.faction == "Independent") {
           this.holder.faction = "Village";
         }
-        if(winners[this.holder.faction]){
+        if (winners[this.holder.faction]) {
           winners.addPlayer(this.holder, this.holder.faction);
         }
       },

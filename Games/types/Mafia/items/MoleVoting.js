@@ -28,12 +28,12 @@ module.exports = class MoleVoting extends Item {
         run: function () {
           //this.target.role.revealToPlayer(this.actor);
 
-          if(this.target.hasItem("IsTheMole")){
-            this.game.hasGuessedMole = true
+          if (this.target.hasItem("IsTheMole")) {
+            this.game.hasGuessedMole = true;
           }
-          for(let player of this.game.players){
-            for(let item of player.items){
-              if(item.name == "MoleVoting"){
+          for (let player of this.game.players) {
+            for (let item of player.items) {
+              if (item.name == "MoleVoting") {
                 item.drop();
               }
             }
