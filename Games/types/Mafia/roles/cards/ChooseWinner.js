@@ -82,6 +82,9 @@ module.exports = class ChooseWinner extends Card {
   }
 
   speak(message) {
+    if(message.abilityName != ""){
+      return;
+    }
     if (message.sender.role.FaithTarget != null) {
       return;
     }
@@ -96,8 +99,7 @@ module.exports = class ChooseWinner extends Card {
       formatedMessage = formatedMessage.replace('"', "");
     }
     formatedMessage = formatedMessage.toLowerCase();
-    if (message.sender.role.data.GuessingCount >= 5) return;
-    if (message.sender.role.data.HasInformation == true) return;
+    if(this.game.getStateName() != "Day") return;
     if (formatedMessage.includes("I claim Reaper and choose ")) {
       formatedMessage = formatedMessage.replace(
         "I claim Reaper and choose ",
