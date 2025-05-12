@@ -2716,6 +2716,16 @@ const roleData = {
         "If the Village-aligned Twin is Condemned, Cult Wins.",
       ],
     },
+  Reaper: {
+      alignment: "Cult",
+      category: "Chaos",
+      tags: ["Win Con", "Information", "Condemn"],
+      description: [
+        'If a Reaper says "I claim Reaper and choose (Player Name)" within the first minute of the day. The Choose player will be Reaped.',
+        "If the Reaped player survives until the end of the day, Their team wins.",
+        "A Reaper cannot Reap themselves.",
+      ],
+    },
     Devotee: {
       alignment: "Cult",
       category: "Chaos",
