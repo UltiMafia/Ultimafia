@@ -1437,6 +1437,21 @@ const roleData = {
         "Appears as villager on death.",
       ],
     },
+    Mole: {
+      alignment: "Village",
+      category: "Essential",
+      tags: [
+        "Essential",
+        "Information",
+        "Mafia",
+      ],
+      description: [
+        "Has a Mafia or Cult role and Counts Torwards Mafia/Cult Majority.",
+        "At night mafia can guess who the Mole is Once per game even if dead.",
+        "On a correct guess, Mafia or Cult wins.",
+      ],
+      graveyardParticipation: "All",
+    },
     Senator: {
       alignment: "Village",
       category: "Essential",
