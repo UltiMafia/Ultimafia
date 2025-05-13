@@ -35,7 +35,7 @@ const gamesIcons = {
   "Wacky Words": "/images/game_icons/WackyWords.png",
   "Liars Dice": "/images/game_icons/LiarsDice.png",
   "Card Games": "/images/game_icons/CardGames.png",
- "Battlesnakes": "/images/game_icons/Battlesnakes.png",
+  Battlesnakes: "/images/game_icons/Battlesnakes.png",
 };
 
 export default function Games(props) {
