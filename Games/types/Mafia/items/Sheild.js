@@ -24,16 +24,15 @@ module.exports = class Sheild extends Item {
           item: this,
           labels: ["hidden"],
           run: function () {
-
-            if (this.item.magicCult == true || this.broken == true){
+            if (this.item.magicCult == true || this.broken == true) {
               return;
             }
-              var alive = this.game.players.filter(
-                (p) =>
-                  p.alive &&
-                  p != this.actor &&
-                  p.role.alignment == this.actor.role.alignment
-              );
+            var alive = this.game.players.filter(
+              (p) =>
+                p.alive &&
+                p != this.actor &&
+                p.role.alignment == this.actor.role.alignment
+            );
             if (alive.length > 0) {
               var randomTarget = Random.randArrayVal(alive);
               for (const action of this.game.actions[0]) {
@@ -42,7 +41,7 @@ module.exports = class Sheild extends Item {
                 }
               }
             }
-          this.item.drop();
+            this.item.drop();
           },
         });
 
