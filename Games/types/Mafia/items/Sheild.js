@@ -7,7 +7,7 @@ module.exports = class Sheild extends Item {
   constructor(options, lifespan) {
     super("Sheild");
 
-    this.lifespan = lifespan || 1;
+    this.lifespan = lifespan || Infinity;
     this.magicCult = options?.magicCult;
     this.broken = options?.broken;
     this.listeners = {
@@ -24,9 +24,10 @@ module.exports = class Sheild extends Item {
           item: this,
           labels: ["hidden"],
           run: function () {
-            if (this.game.getStateName() != "Night") return;
 
-            if (this.item.magicCult == true || this.broken == true)
+            if (this.item.magicCult == true || this.broken == true){
+              return;
+            }
               var alive = this.game.players.filter(
                 (p) =>
                   p.alive &&
@@ -41,6 +42,7 @@ module.exports = class Sheild extends Item {
                 }
               }
             }
+          this.item.drop();
           },
         });
 
