@@ -27,8 +27,12 @@ module.exports = class Sheild extends Item {
             if (this.item.magicCult == true || this.broken == true) {
               return;
             }
-            for(let action of this.game.actions[0]){
-              if(action.hasLabels(["hidden", "Sheild"]) && action.item != this.item && action.actor == this.actor){
+            for (let action of this.game.actions[0]) {
+              if (
+                action.hasLabels(["hidden", "Sheild"]) &&
+                action.item != this.item &&
+                action.actor == this.actor
+              ) {
                 action.cancel(true);
               }
             }
