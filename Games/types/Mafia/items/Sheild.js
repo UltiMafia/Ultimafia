@@ -18,14 +18,19 @@ module.exports = class Sheild extends Item {
 
         this.action = new Action({
           actor: this.holder,
-          target: this.holder,
+          target: null,
           game: this.game,
           priority: PRIORITY_MODIFY_ACTION,
           item: this,
-          labels: ["hidden"],
+          labels: ["hidden", "Sheild"],
           run: function () {
             if (this.item.magicCult == true || this.broken == true) {
               return;
+            }
+            for(let action of this.game.actions[0]){
+              if(action.hasLabels(["hidden", "Sheild"]) && action.item != this.item && action.actor == this.actor){
+                action.cancel(true);
+              }
             }
             var alive = this.game.players.filter(
               (p) =>
