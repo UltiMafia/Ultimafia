@@ -7,7 +7,7 @@ const { PRIORITY_BECOME_DEAD_ROLE } = require("../../const/Priority");
 module.exports = class LoseModifiers extends Card {
   constructor(role) {
     super(role);
-    
+
     this.listeners = {
       state: function (stateInfo) {
         if (!this.player.hasAbility(["Convert", "Modifier"])) {
