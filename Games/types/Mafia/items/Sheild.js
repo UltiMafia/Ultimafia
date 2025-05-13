@@ -7,7 +7,7 @@ module.exports = class Sheild extends Item {
   constructor(options, lifespan) {
     super("Sheild");
 
-    this.lifespan = lifespan || Infinity;
+    this.lifespan = lifespan || 1;
     this.magicCult = options?.magicCult;
     this.broken = options?.broken;
     this.listeners = {
@@ -25,6 +25,8 @@ module.exports = class Sheild extends Item {
           labels: ["hidden"],
           run: function () {
             if (this.game.getStateName() != "Night") return;
+
+            if(this.item.magicCult == true || this.broken == true)
 
             var alive = this.game.players.filter(
               (p) =>
