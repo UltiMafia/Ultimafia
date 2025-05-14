@@ -390,10 +390,12 @@ const artContributors = {
       "Snake Charmer",
       "Necromancer",
       "Debtor",
+      "Mole",
+      "Plumber",
     ],
   },
   syn: {
-    Mafia: ["Count", "Harpy", "Bawd", "Diplomat", "Associate"],
+    Mafia: ["Count", "Harpy", "Bawd", "Diplomat", "Associate", "Reaper"],
     Battlesnakes: ["Snake"],
   },
 };
