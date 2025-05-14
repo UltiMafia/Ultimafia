@@ -114,7 +114,7 @@ module.exports = class Meeting {
     if (options.displayVoteCounter !== undefined) {
       this.displayVoteCounter = options.displayVoteCounter;
     }
-    
+
     if (this.multi) {
       this.multiMin = options.multiMin;
       this.multiMax = options.multiMax;
