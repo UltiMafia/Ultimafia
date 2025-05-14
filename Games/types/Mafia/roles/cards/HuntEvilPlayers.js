@@ -1,7 +1,9 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
-const { PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class HuntEvilPlayers extends Card {
   constructor(role) {
@@ -30,30 +32,25 @@ module.exports = class HuntEvilPlayers extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-20,
+          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 20,
           labels: ["investigate"],
           run: function () {
             if (this.actor.role.data.EvilTarget != null) return;
-              let learnRole;
-              let info = this.game.createInformation(
-                "EvilPlayerInfo",
-                this.actor,
-                this.game
-              );
-              info.processInfo();
-              learnRole = info.getInfoRaw();
+            let learnRole;
+            let info = this.game.createInformation(
+              "EvilPlayerInfo",
+              this.actor,
+              this.game
+            );
+            info.processInfo();
+            learnRole = info.getInfoRaw();
 
-              if(learnRole == "No Evil Players Exist"){
-                 this.actor.queueAlert(
-                `You could not Find any Evil Players.`
-              );
-              }
-              else{
-                this.actor.role.data.EvilTarget = learnPlayer;
-                this.actor.queueAlert(
-                `You learn ${learnPlayer.name} is Evil!`
-              );
-              }
+            if (learnRole == "No Evil Players Exist") {
+              this.actor.queueAlert(`You could not Find any Evil Players.`);
+            } else {
+              this.actor.role.data.EvilTarget = learnPlayer;
+              this.actor.queueAlert(`You learn ${learnPlayer.name} is Evil!`);
+            }
           },
         });
 
