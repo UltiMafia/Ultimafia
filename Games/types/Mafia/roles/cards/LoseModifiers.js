@@ -22,7 +22,7 @@ module.exports = class LoseModifiers extends Card {
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_BECOME_DEAD_ROLE,
-          labels: ["convert"],
+          labels: ["convert", "absolute"],
           run: function () {
             if (this.game.getStateName() != "Night") return;
 
