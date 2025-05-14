@@ -8,6 +8,7 @@ module.exports = class VillageMeeting extends Meeting {
     this.group = true;
     this.speech = true;
     this.voting = true;
+    this.displayVoteCounter = true;
     this.targets = { include: ["alive"], exclude: [] };
   }
 

@@ -2246,8 +2246,7 @@ function ActionSelect(props) {
   if (!selectVisible) return null;
 
   // Client side vote counting logic
-  const shouldDisplayCounters =
-    meeting.inputType === "player" && meeting.name === "Village";
+  const shouldDisplayCounters = meeting.displayVoteCounter;
   const voteCounts = new Map();
   var highestVoteCount = 0;
 
