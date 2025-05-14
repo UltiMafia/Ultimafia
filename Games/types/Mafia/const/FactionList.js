@@ -1,4 +1,4 @@
-const EVIL_FACTIONS = ["Cult", "Mafia", "Red Mafia"];
+const EVIL_FACTIONS = ["Cult", "Mafia", "Red Mafia", "Evil"];
 const NOT_EVIL_FACTIONS = ["Village", "Independent"];
 const CULT_FACTIONS = ["Cult"];
 const MAFIA_FACTIONS = ["Mafia", "Red Mafia"];
