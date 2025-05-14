@@ -1343,6 +1343,14 @@
   background-image: url("/images/roles/plumber-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Reaper {
+  background-image: url("/images/roles/reaper-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Mole {
+  background-image: url("/images/roles/mole-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Cyclist {
   background-image: url("/images/roles/cyclist-vivid.png");
 }
