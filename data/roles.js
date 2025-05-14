@@ -430,6 +430,16 @@ const roleData = {
         "Tracks a player each night and learns if they visited anybody.",
       ],
     },
+    "Bounty Hunter": {
+      alignment: "Village",
+      category: "Investigative",
+      tags: ["Investigative"],
+      description: [
+        "On their first night learns an Evil Player.",
+        "When that evil player dies, The Bounty Hunter will learn another player at night.",
+        "One Village Aligned Player is Evil.",
+      ],
+    },
     Housekeeper: {
       alignment: "Village",
       category: "Investigative",
@@ -514,7 +524,7 @@ const roleData = {
       tags: ["Investigative", "Alignment", "Dead"],
       description: [
         "Each night learn how many dead players are Evil.",
-        "The number is calulated after any kills in the night.",
+        "The number is calculated after any kills in the night.",
       ],
     },
     Diviner: {

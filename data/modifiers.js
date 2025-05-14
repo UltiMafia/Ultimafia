@@ -600,6 +600,13 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Faceless", "Unassuming", "Suspect"],
     },
+    Sheilded: {
+      internal: ["StartWithSheild"],
+      tags: ["Items"],
+      description: "Starts with a sheild.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      allowDuplicate: true,
+    },
     Suspect: {
       internal: ["AppearAsVanillaEvil"],
       tags: ["Deception"],
@@ -648,6 +655,12 @@ const modifierData = {
       internal: ["ModifierTelepathic"],
       tags: ["Speaking"],
       description: "May anonymously contact any player.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Temporary: {
+      internal: ["LoseModifiers"],
+      tags: ["Temporary", "Modifiers"],
+      description: "Loses their Modifiers at the end of the Night.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Tinkering: {

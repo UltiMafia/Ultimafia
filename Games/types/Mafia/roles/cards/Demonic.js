@@ -98,7 +98,7 @@ module.exports = class Demonic extends Card {
         }
         //this.game.queueAlert(`We Got here ${aliveRoles.length}`);
         for (let p of this.game.alivePlayers()) {
-          if (CULT_FACTIONS.includes(p.faction)) {
+          if (CULT_FACTIONS.includes(p.faction) || p.faction == "Evil") {
             p.kill("basic", this.player, instant);
           }
         }

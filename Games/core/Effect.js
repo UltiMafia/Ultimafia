@@ -32,7 +32,7 @@ module.exports = class Effect {
       this.listeners[eventName] = this.listeners[eventName].bind(this);
       this.game.events.on(eventName, this.listeners[eventName]);
     }
-    this.winCheck.check.bind(this);
+    this.winCheck.check = this.winCheck.check.bind(this);
 
     this.game.events.emit("applyEffect", this, player);
   }

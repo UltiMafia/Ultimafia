@@ -9,13 +9,13 @@ module.exports = class AddEvilVillage extends Card {
       ReplaceAlways: function (player) {
         if (player != this.player) return;
         let VillagePlayers = this.game.players.filter((p) => p.role.alignment == "Village" && p.faction == "Village" && !p.role.data.banished);
-        var villageTarget = Random.randArrayVal(villagePlayers);
-        for (let item of villageTarget[0].items) {
+        var villageTarget = Random.randArrayVal(VillagePlayers);
+        for (let item of villageTarget.items) {
           item.drop();
         }
         let role = `${villageTarget.role.name}:${villageTarget.role.modifier}`;
           villageTarget.setRole(
-          villageTarget.role.,
+          role,
           undefined,
           false,
           true,

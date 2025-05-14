@@ -1,10 +1,35 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const { PRIORITY_NIGHT_SAVER } = require("../../const/Priority");
+const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 
 module.exports = class StyleContest extends Card {
   constructor(role) {
     super(role);
+
+      this.winCheckSpecial = {
+      priority: PRIORITY_WIN_CHECK_DEFAULT,
+      againOnFinished: true,
+      check: function (counts, winners, aliveCount, confirmedFinished) {
+        if (!this.player.hasAbility(["Win-Con", "WhenDead"])) {
+          return;
+        }
+        let stylePlayers = [];
+        let highScore = 1;
+        for (let player of this.game.players) {
+          if (player.data.StylePoints == highScore) {
+            stylePlayers.push(player);
+          } else if (player.data.StylePoints > highScore) {
+            stylePlayers = [];
+            stylePlayers.push(player);
+            highScore = player.data.StylePoints;
+          }
+        }
+        if (confirmedFinished && stylePlayers.length == 1 && !Object.values(winners.groups).flat().find((p) => p === stylePlayers[0])) {
+          winners.addPlayer(stylePlayers[0], "Style Points");
+        }
+        
+      },
+    };
 
     this.listeners = {
       AbilityToggle: function (player) {
@@ -23,22 +48,24 @@ module.exports = class StyleContest extends Card {
           }
         }
       },
-      handleWinWith: function (winners) {
-        if (!this.player.hasAbility(["Win-Con", "WhenDead"])) {
-          return;
-        }
-        let stylePlayers = [];
-        let highScore = 1;
-        for (let player of this.game.players) {
-          if (player.data.StylePoints == highScore) {
-            stylePlayers.push(player);
-          } else if (player.data.StylePoints > highScore) {
-            stylePlayers = [];
-            highScore = player.data.StylePoints;
+      state: function () {
+        if (this.game.getStateName() == "Day") {
+          let contest = [];
+          for(let player of this.game.players){
+            if(player.data.StylePoints > 0){
+              contest.push(player);
+            }
           }
-        }
-        if (stylePlayers.length == 1) {
-          winners.addPlayer(stylePlayers[0], "Style Points");
+          for(let member of contest){
+                this.game.queueAlert(
+                `${member.name} has ${member.data.StylePoints} Style Points!`,
+                0,
+                this.game.players.filter(
+                  (p) =>
+                    p.role.alignment === this.player.role.alignment
+                )
+              );
+          }
         }
       },
     };
