@@ -28,7 +28,7 @@ module.exports = class LoseModifiers extends Card {
 
             this.actor.setRole(
               this.actor.role.name,
-              undefined,
+              this.actor.role.data,
               false,
               false,
               false,
