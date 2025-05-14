@@ -28,7 +28,7 @@ module.exports = class Sheild extends Item {
             if (this.target != "Yes") return;
             this.item.drop();
             //this.game.broadcast("gunshot");
-                        if (this.item.magicCult == true || this.broken == true) {
+            if (this.item.magicCult == true || this.broken == true) {
               return;
             }
             for (let action of this.game.actions[0]) {
@@ -59,14 +59,12 @@ module.exports = class Sheild extends Item {
       },
     };
 
-
-    
     this.listeners = {
       state: function (stateInfo) {
         if (this.game.getStateName() != "Night") return;
 
         if (!this.holder.alive) return;
-/*
+        /*
         this.action = new Action({
           actor: this.holder,
           target: null,
