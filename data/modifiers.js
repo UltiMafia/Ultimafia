@@ -71,7 +71,7 @@ const modifierData = {
       internal: ["Bouncy"],
       tags: ["Redirection"],
       description:
-        "If possible night kills will be redirected to another player of the same alignment.",
+        "If possible, night kills will be redirected to another player of the same alignment.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Braggadocious: {
@@ -601,9 +601,9 @@ const modifierData = {
       incompatible: ["Faceless", "Unassuming", "Suspect"],
     },
     Sheilded: {
-      internal: ["StartWithSheild"],
+      internal: ["StartWithShield"],
       tags: ["Items"],
-      description: "Starts with a sheild.",
+      description: "Starts with a Shield.",
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },

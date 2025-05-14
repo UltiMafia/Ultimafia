@@ -40,6 +40,7 @@ module.exports = class CultWares extends Card {
           "Syringe",
           "Envelope",
           "Coffee",
+          "Shield",
         ],
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 2,

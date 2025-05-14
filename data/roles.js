@@ -336,6 +336,15 @@ const roleData = {
         "Keys can be used to lock a player in the next night; they cannot be visited, but also cannot perform any actions.",
       ],
     },
+    Knight: {
+      alignment: "Village",
+      category: "Gifting",
+      tags: ["Gifting", "Protective", "Items", "Shield", "Visiting"],
+      description: [
+        "Gives out sheild to one player each night.",
+        "Shields can be used at night to redirect kills targeting the holder on to a random player of the same alignment if possible.",
+      ],
+    },
     Mailman: {
       alignment: "Village",
       category: "Gifting",

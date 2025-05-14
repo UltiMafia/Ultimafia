@@ -83,6 +83,7 @@ module.exports = class ForageItem extends Card {
               "Tract",
               "Syringe",
               "Envelope",
+              "Shield",
             ];
             var itemToGet = Random.randArrayVal(items);
 
