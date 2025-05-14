@@ -8,6 +8,7 @@ module.exports = class PostgameMeeting extends Meeting {
     this.speech = true;
     this.speakDead = true;
     this.noVeg = true;
+    this.displayVoteCounter = true;
 
     if (game.isKudosEligible()) {
       this.voting = true;
