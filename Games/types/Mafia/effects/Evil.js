@@ -8,19 +8,14 @@ module.exports = class Evil extends Effect {
     super("Evil");
     this.lifespan = lifespan || Infinity;
 
-
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if (
-          confirmedFinished &&
-          !winners.groups["Village"]
-        ) {
+        if (confirmedFinished && !winners.groups["Village"]) {
           winners.addPlayer(this.player, this.name);
         }
       },
     };
-    
   }
 };
