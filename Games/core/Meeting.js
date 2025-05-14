@@ -41,6 +41,7 @@ module.exports = class Meeting {
     this.exclusive = false;
     this.hideAfterVote = false;
     this.Important = false;
+    this.displayVoteCounter = false;
     /***/
 
     this.inputType = "player";
@@ -110,6 +111,10 @@ module.exports = class Meeting {
     this.textOptions = options.textOptions;
     this.displayOptions = options.displayOptions;
 
+    if (options.displayVoteCounter !== undefined) {
+      this.displayVoteCounter = options.displayVoteCounter;
+    }
+    
     if (this.multi) {
       this.multiMin = options.multiMin;
       this.multiMax = options.multiMax;
@@ -282,6 +287,7 @@ module.exports = class Meeting {
       instant: this.instant,
       instantButChangeable: this.instantButChangeable,
       hideAfterVote: this.hideAfterVote,
+      displayVoteCounter: this.displayVoteCounter,
       anonymous: this.anonymous,
       anonymousVotes: this.anonymousVotes,
       votesInvisible: this.votesInvisible,
