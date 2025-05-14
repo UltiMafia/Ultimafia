@@ -6,7 +6,7 @@ module.exports = class StyleContest extends Card {
   constructor(role) {
     super(role);
 
-      this.winCheckSpecial = {
+    this.winCheckSpecial = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
@@ -24,10 +24,15 @@ module.exports = class StyleContest extends Card {
             highScore = player.data.StylePoints;
           }
         }
-        if (confirmedFinished && stylePlayers.length == 1 && !Object.values(winners.groups).flat().find((p) => p === stylePlayers[0])) {
+        if (
+          confirmedFinished &&
+          stylePlayers.length == 1 &&
+          !Object.values(winners.groups)
+            .flat()
+            .find((p) => p === stylePlayers[0])
+        ) {
           winners.addPlayer(stylePlayers[0], "Style Points");
         }
-        
       },
     };
 
@@ -51,20 +56,19 @@ module.exports = class StyleContest extends Card {
       state: function () {
         if (this.game.getStateName() == "Day") {
           let contest = [];
-          for(let player of this.game.players){
-            if(player.data.StylePoints > 0){
+          for (let player of this.game.players) {
+            if (player.data.StylePoints > 0) {
               contest.push(player);
             }
           }
-          for(let member of contest){
-                this.game.queueAlert(
-                `${member.name} has ${member.data.StylePoints} Style Points!`,
-                0,
-                this.game.players.filter(
-                  (p) =>
-                    p.role.alignment === this.player.role.alignment
-                )
-              );
+          for (let member of contest) {
+            this.game.queueAlert(
+              `${member.name} has ${member.data.StylePoints} Style Points!`,
+              0,
+              this.game.players.filter(
+                (p) => p.role.alignment === this.player.role.alignment
+              )
+            );
           }
         }
       },

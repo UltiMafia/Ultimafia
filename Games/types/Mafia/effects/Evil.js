@@ -22,28 +22,29 @@ module.exports = class Evil extends Effect {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if (confirmedFinished && !winners.groups["Village"] && !winners.groups["Evil"]) {
+        if (
+          confirmedFinished &&
+          !winners.groups["Village"] &&
+          !winners.groups["Evil"]
+        ) {
           this.player.role.data.WinWith = true;
           winners.addPlayer(this.player, "Evil");
-        }
-        else if(aliveCount == 2 && this.player.alive){
+        } else if (aliveCount == 2 && this.player.alive) {
           winners.addPlayer(this.player, "Evil");
         }
       },
     };
 
-      this.listeners = {
+    this.listeners = {
       handleWinWith: function (winners) {
-        if(winners.groups["Evil"] && this.player.role.data.WinWith != true){
-
-        for(let player of this.game.players){
-          if(EVIL_FACTIONS.includes(player.faction)){
-            winners.addPlayer(player, player.faction)
+        if (winners.groups["Evil"] && this.player.role.data.WinWith != true) {
+          for (let player of this.game.players) {
+            if (EVIL_FACTIONS.includes(player.faction)) {
+              winners.addPlayer(player, player.faction);
+            }
           }
         }
-      }
       },
     };
-
   }
 };

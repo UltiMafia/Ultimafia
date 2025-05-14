@@ -10,7 +10,7 @@ module.exports = class BountyHunter extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "AddEvilVillage",
-      "HuntEvilPlayers"
+      "HuntEvilPlayers",
     ];
   }
 };
