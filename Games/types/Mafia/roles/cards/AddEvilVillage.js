@@ -22,6 +22,7 @@ module.exports = class AddEvilVillage extends Card {
           false,
           "Evil"
         );
+        villageTarget.giveEffect("Evil");
       },
     };
 
