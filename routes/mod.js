@@ -1538,9 +1538,12 @@ router.post("/refundRedHearts", async (req, res) => {
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
+    var itemsOwned = await redis.getUserItemsOwned(userId);
+    const redHeartCapacity = constants.initialRedHeartCapacity + itemsOwned.bonusRedHearts;
+
     await models.User.updateOne(
       { id: userIdToGiveTo },
-      { $inc: { redHearts: amount } }
+      { $set: { redHearts: redHeartCapacity } }
     ).exec();
 
     await redis.cacheUserInfo(userIdToGiveTo, true);

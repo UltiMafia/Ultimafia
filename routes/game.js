@@ -554,6 +554,20 @@ router.post("/host", async function (req, res) {
       );
       return;
     }
+    
+    if (req.body.ranked) {
+      const user = await models.User.findOne({ id: userId }).select(
+        "redHearts"
+      );
+
+      if (user && user.redHearts <= 0) {
+        res.status(500);
+        res.send(
+          "You cannot host ranked games because your Red Hearts are depleted."
+        );
+        return;
+      }
+    }
 
     var settings = settingsChecks[gameType](req.body, setup);
     settings.anonymousGame = Boolean(req.body.anonymousGame);
