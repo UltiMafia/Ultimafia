@@ -23,8 +23,7 @@ import HostLiarsDice from "./HostLiarsDice";
 import HostCardGames from "./HostCardGames";
 import HostBattlesnakes from "./HostBattlesnakes";
 
-import { GameTypes} from "../../../Constants";
-
+import { GameTypes } from "../../../Constants";
 
 const gamesIcons = {
   Mafia: "/images/game_icons/Mafia.png",

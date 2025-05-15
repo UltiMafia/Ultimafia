@@ -336,6 +336,15 @@ const roleData = {
         "Keys can be used to lock a player in the next night; they cannot be visited, but also cannot perform any actions.",
       ],
     },
+    Knight: {
+      alignment: "Village",
+      category: "Gifting",
+      tags: ["Gifting", "Protective", "Items", "Shield", "Visiting"],
+      description: [
+        "Gives out sheild to one player each night.",
+        "Shields can be used at night to redirect kills targeting the holder on to a random player of the same alignment if possible.",
+      ],
+    },
     Mailman: {
       alignment: "Village",
       category: "Gifting",
@@ -430,6 +439,16 @@ const roleData = {
         "Tracks a player each night and learns if they visited anybody.",
       ],
     },
+    "Bounty Hunter": {
+      alignment: "Village",
+      category: "Investigative",
+      tags: ["Investigative"],
+      description: [
+        "On their first night learns an Evil Player.",
+        "When that evil player dies, The Bounty Hunter will learn another player at night.",
+        "One Village Aligned Player is Evil.",
+      ],
+    },
     Housekeeper: {
       alignment: "Village",
       category: "Investigative",
@@ -514,7 +533,7 @@ const roleData = {
       tags: ["Investigative", "Alignment", "Dead"],
       description: [
         "Each night learn how many dead players are Evil.",
-        "The number is calulated after any kills in the night.",
+        "The number is calculated after any kills in the night.",
       ],
     },
     Diviner: {

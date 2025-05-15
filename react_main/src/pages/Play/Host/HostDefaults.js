@@ -11,7 +11,7 @@ const HOST_OPTIONS_VERSIONS = {
   Ghost: 1,
   Jotto: 1,
   "Liars Dice": 1,
-  "Battlesnakes": 1,
+  Battlesnakes: 1,
   "Card Games": 1,
   Resistance: 1,
   "Secret Dictator": 1,

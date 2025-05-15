@@ -796,9 +796,15 @@ module.exports = class WinWithFaction extends Card {
             this.player.faction &&
           !this.player.hasItem("IsTheTelevangelist")
         ) {
-          this.player.queueAlert(
-            `You are ${this.player.faction} Aligned, You will win with ${this.player.faction}!`
-          );
+          if (this.player.faction == "Evil") {
+            this.player.queueAlert(
+              `You are ${this.player.faction} Aligned, You will win if Village loses!`
+            );
+          } else {
+            this.player.queueAlert(
+              `You are ${this.player.faction} Aligned, You will win with ${this.player.faction}!`
+            );
+          }
         }
       },
     };

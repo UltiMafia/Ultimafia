@@ -23,8 +23,7 @@ import CreateLiarsDiceSetup from "./CreateLiarsDiceSetup";
 import CreateCardGamesSetup from "./CreateCardGamesSetup";
 import CreateBattlesnakesSetup from "./CreateBattlesnakesSetup";
 
-import { GameTypes} from "../../../Constants";
-
+import { GameTypes } from "../../../Constants";
 
 const gamesIcons = {
   Mafia: "/images/game_icons/Mafia.png",

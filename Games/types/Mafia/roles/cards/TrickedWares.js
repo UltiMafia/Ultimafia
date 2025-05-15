@@ -46,6 +46,7 @@ module.exports = class TrickedWares extends Card {
               "Stake",
               "Shaving Cream",
               "Snowball",
+              "Shield",
             ];
             var itemToGive = Random.randArrayVal(items);
             var isItemBroken = Random.randArrayVal([true, false]);

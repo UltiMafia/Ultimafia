@@ -312,13 +312,7 @@ const artContributors = {
     Mafia: ["Keymaker"],
   },
   sw33t: {
-    Mafia: [
-      "Celebrity",
-      "Waitress",
-      "Hooker",
-      "Actress",
-      "Housekeeper",
-    ],
+    Mafia: ["Celebrity", "Waitress", "Hooker", "Actress", "Housekeeper"],
   },
   trout: {
     Mafia: [

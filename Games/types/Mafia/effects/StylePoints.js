@@ -15,8 +15,9 @@ module.exports = class StylePoints extends Effect {
         }
         if (this.game.getStateName() != "Night") return;
         if (!this.player.alive) return;
-        this.player.data.StylePoints += this.StylePointsToday;
-        if (!this.actor.hasAbility(["WhenDead"])) {
+        this.player.data.StylePoints =
+          this.player.data.StylePoints + this.StylePointsToday;
+        if (!this.player.hasAbility(["WhenDead"])) {
           this.remove();
         }
       },

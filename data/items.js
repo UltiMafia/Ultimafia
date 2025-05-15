@@ -48,6 +48,12 @@ const modifierData = {
       description:
         "When a player is killed while holding a bomb, the player who killed them will also die.",
     },
+    Sheild: {
+      internal: ["Armor"],
+      tags: ["Armor"],
+      description:
+        "Can be used at night to redirect kill targeting the holder on to a random player of the same alignment if possible",
+    },
     "Crystal Ball": {
       internal: ["CrystalBall"],
       tags: ["Reveal"],

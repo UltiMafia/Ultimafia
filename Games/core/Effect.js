@@ -8,6 +8,13 @@ module.exports = class Effect {
     this.cancelImmunity = {};
     this.actions = [];
     this.listeners = {};
+    this.winCheck = {
+      priority: 0,
+      check: (counts, winners) => {
+        // winners.addPlayer(this.player, null or "group")
+        // Return true to stop checking for other winners
+      },
+    };
     this.disabledMeetings = [];
     this.lifespan = Infinity;
     this.ageListener;
@@ -25,6 +32,7 @@ module.exports = class Effect {
       this.listeners[eventName] = this.listeners[eventName].bind(this);
       this.game.events.on(eventName, this.listeners[eventName]);
     }
+    this.winCheck.check = this.winCheck.check.bind(this);
 
     this.game.events.emit("applyEffect", this, player);
   }
