@@ -96,6 +96,7 @@ var schemas = {
       customEmotesExtra: { type: Number, default: 0 },
       archivedGames: { type: Number, default: 0 },
       archivedGamesMax: { type: Number, default: 0 },
+      bonusRedHearts: { type: Number, default: 0 },
     },
     stats: {},
     winRate: { type: Number, default: 0 },
@@ -103,7 +104,6 @@ var schemas = {
     achievementCount: { type: Number, default: 0 },
     redHearts: { type: Number, default: 0 },
     goldHearts: { type: Number, default: 0 },
-    heartReset: { type: Date, default: Date.now },
     rankedPoints: { type: Number, default: 0 },
     competitivePoints: { type: Number, default: 0 },
     kudos: { type: Number, default: 0 },
@@ -512,6 +512,11 @@ var schemas = {
   }),
   Restart: new mongoose.Schema({
     when: Number,
+  }),
+  HeartRefresh: new mongoose.Schema({
+    userId: { type: String, index: true },
+    when: { type: Number, index: true },
+    type: { type: String, index: true },
   }),
 };
 
