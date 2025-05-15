@@ -65,9 +65,6 @@ module.exports = class MayorWin extends Card {
 */
     this.listeners = {
         state: function (stateInfo) {
-        if (!this.player.hasAbility(["Meeting", "Kill"])) {
-          return;
-        }
         if (!stateInfo.name.match(/Day/)) {
           return;
         }
@@ -77,8 +74,8 @@ module.exports = class MayorWin extends Card {
           game: this.player.game,
           priority: PRIORITY_DAY_EFFECT_DEFAULT + 1,
           labels: ["investigate"],
-                 run: function () {
-          if (!this.actor.alive) return;
+          run: function () {
+          if (!this.player.hasAbility(["Win-Con", "OnlyWhenAlive"])) return;
           if (this.game.alivePlayers().length != 3) {
             this.actor.role.data.MayorWin = false;
             return;
