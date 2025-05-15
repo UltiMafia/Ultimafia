@@ -122,7 +122,7 @@ const shopItems = [
     name: "Maximum Archived Games",
     desc: "Increases the amount of games that you can archive.",
     key: "archivedGamesMax",
-    price: 100,
+    price: 30,
     limit: constants.maxArchivedGamesMax,
     onBuy: function () {},
   },
