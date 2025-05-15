@@ -445,8 +445,8 @@ const roleData = {
       tags: ["Investigative"],
       description: [
         "On their first night learns an Evil Player.",
-        "When that evil player dies, The Bounty Hunter will learn another player at night.",
-        "One Village Aligned Player is Evil.",
+        "When that evil player dies, The Bounty Hunter will learn another evil player at night.",
+        "One Village Aligned Player is Evil, and Wins if Village Loses",
       ],
     },
     Housekeeper: {
