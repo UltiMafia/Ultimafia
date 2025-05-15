@@ -13,7 +13,7 @@ const shopItems = [
     key: "textColors",
     price: 20,
     limit: 1,
-    onBuy: function () {},
+    onBuy: async function (userId) {},
   },
   {
     name: "Profile Customization",
@@ -21,7 +21,7 @@ const shopItems = [
     key: "customProfile",
     price: 20,
     limit: 1,
-    onBuy: function () {},
+    onBuy: async function (userId) {},
   },
   {
     name: "Name Change",
@@ -29,7 +29,7 @@ const shopItems = [
     key: "nameChange",
     price: 20,
     limit: null,
-    onBuy: function () {},
+    onBuy: async function (userId) {},
   },
   {
     name: "3 Character Username",
@@ -40,7 +40,7 @@ const shopItems = [
     propagateItemUpdates: {
       nameChange: 1,
     },
-    onBuy: function () {},
+    onBuy: async function (userId) {},
   },
   {
     name: "2 Character Username",
@@ -51,7 +51,7 @@ const shopItems = [
     propagateItemUpdates: {
       nameChange: 1,
     },
-    onBuy: function () {},
+    onBuy: async function (userId) {},
   },
   {
     name: "1 Character Username",
@@ -62,7 +62,7 @@ const shopItems = [
     propagateItemUpdates: {
       nameChange: 1,
     },
-    onBuy: function () {},
+    onBuy: async function (userId) {},
   },
   {
     name: "Custom Death Message",
@@ -73,7 +73,7 @@ const shopItems = [
     propagateItemUpdates: {
       deathMessageChange: 2,
     },
-    onBuy: function () {},
+    onBuy: async function (userId) {},
   },
   {
     name: "Death Message Change",
@@ -81,7 +81,7 @@ const shopItems = [
     key: "deathMessageChange",
     price: 10,
     disableOn: (user) => !user.itemsOwned.deathMessageEnabled,
-    onBuy: function () {},
+    onBuy: async function (userId) {},
   },
   {
     name: "Anonymous Deck",
@@ -89,7 +89,7 @@ const shopItems = [
     key: "anonymousDeck",
     price: 70,
     limit: constants.maxOwnedAnonymousDecks,
-    onBuy: function () {},
+    onBuy: async function (userId) {},
   },
   {
     name: "Custom Emotes",
@@ -97,7 +97,7 @@ const shopItems = [
     key: "customEmotes",
     price: 5,
     limit: constants.maxOwnedCustomEmotes,
-    onBuy: function () {},
+    onBuy: async function (userId) {},
   },
   {
     name: "MORE Custom Emotes",
@@ -105,7 +105,7 @@ const shopItems = [
     key: "customEmotesExtra",
     price: 25,
     limit: constants.maxOwnedCustomEmotesExtra,
-    onBuy: function () {},
+    onBuy: async function (userId) {},
   },
   {
     name: "Archived Games",
@@ -116,7 +116,7 @@ const shopItems = [
     propagateItemUpdates: {
       archivedGamesMax: 5,
     },
-    onBuy: function () {},
+    onBuy: async function (userId) {},
   },
   {
     name: "Maximum Archived Games",
@@ -124,7 +124,18 @@ const shopItems = [
     key: "archivedGamesMax",
     price: 30,
     limit: constants.maxArchivedGamesMax,
-    onBuy: function () {},
+    onBuy: async function (userId) {},
+  },
+  {
+    name: "Bonus Red Heart Capacity",
+    desc: "Increases the amount of red hearts that you can hold.",
+    key: "bonusRedHearts",
+    price: 10,
+    limit: constants.maxBonusRedHearts,
+    onBuy: async function (userId) {
+      // Immediately give the user their red heart
+      await models.User.updateOne({ id: userId }, { $inc: { redHearts: 1 } }).exec();
+    },
   },
 ];
 
@@ -198,7 +209,10 @@ router.post(
         }
       ).exec();
 
+      await item.onBuy(userId);
+
       await redis.cacheUserInfo(userId, true);
+
       res.sendStatus(200);
     } catch (e) {
       logger.error(e);
