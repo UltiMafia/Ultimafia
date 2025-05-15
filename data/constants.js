@@ -247,6 +247,7 @@ module.exports = {
   minDeckSize: 5, // minMafiaSetupTotal
   maxDeckSize: 50, // maxPlayers
   maxNameLengthInDeck: 20, // maxUserNameLength
+  maxBonusRedHearts: 5,
 
   maxGameMessageLength: 240,
   maxGameTextInputLength: 100,
@@ -301,6 +302,11 @@ module.exports = {
 
   minMafiaSetupTotal: 5,
   captchaThreshold: 0.25,
+
+  initialRedHeartCapacity: 15,
+  initialGoldHeartCapacity: 0,
+  redHeartRefreshIntervalMillis: 86400000,
+  goldHeartRefreshIntervalMillis: 86400000,
 
   // Perms given to all users
   defaultPerms: [

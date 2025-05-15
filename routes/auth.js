@@ -196,6 +196,8 @@ async function authSuccess(req, uid, email, discordProfile) {
         discordId: discordProfile?.id,
         discordUsername: discordProfile?.username,
         discordName: discordProfile?.global_name,
+        redHearts: constants.initialRedHeartCapacity,
+        goldHearts: constants.initialGoldHeartCapacity,
       });
 
       if (process.env.NODE_ENV.includes("development")) {

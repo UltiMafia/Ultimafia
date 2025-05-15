@@ -124,6 +124,56 @@ module.exports = function () {
       },
       interval: 1000 * 10,
     },
+    refreshHearts: {
+      run: async function () {
+        const now = Date.now();
+        
+        // Query all heart refreshes that have elapsed
+        let refreshedHearts = await models.HeartRefresh.find({ when: { $lt: now } }).select("userId type");
+        for (let refreshedHeart of refreshedHearts) {
+          const userId = refreshedHeart.userId;
+          const type = refreshedHeart.type;
+
+          var itemsOwned = await redis.getUserItemsOwned(userId);
+
+          const update = {};
+          if (type === "red") update["redHearts"] = constants.initialRedHeartCapacity + itemsOwned.bonusRedHearts;
+          if (type === "gold") update["goldHearts"] = constants.initialGoldHeartCapacity;
+
+          // Refresh the user's heart type to capacity
+          const result1 = await models.User.updateOne({ id: userId }, { $set: update }).exec();
+          if (result1.matchedCount === 0) {
+            console.warn(`Failed to refresh hearts for userId[${userId}] type[${type}]`);
+          }
+
+          // Remove the heart refresh so that it won't trigger again
+          const result2 = await models.HeartRefresh.deleteOne({ userId: userId, type: type }).exec();
+          if (result2.deletedCount === 0) {
+            console.warn(`Failed to delete heart refresh for userId[${userId}] type[${type}]`);
+          }
+
+          await redis.cacheUserInfo(userId, true);
+        }
+      },
+      interval: 1000 * 300,
+    },
+    heartMaintenance: {
+      // This safeguard runs sparsely just in case a heart refresh never gets created for a user
+      // This shouldn't be necessary but just in case it would suck if someone got to 0 and couldn't refresh their hearts
+      run: async function () {
+        var users = await models.User.find({ redHearts: { $lt: constants.initialRedHeartCapacity } }).select("id");
+        users = users.map((user) => user.toJSON());
+        for (let user of users) {
+          let heartRefresh = await models.HeartRefresh.findOne({ userId: user.id, type: "red" });
+          if (!heartRefresh) {
+            console.warn(`Detected missing heart refresh: userId[${user.id}] type[red}]`);
+            await models.User.updateOne({ id: user.id }, { $set: { redHearts: constants.initialRedHeartCapacity } }).exec();
+            await redis.cacheUserInfo(user.id, true);
+          }
+        }
+      },
+      interval: 1000 * 7200,
+    },
     gamesWebhook: {
       run: async function () {
         try {

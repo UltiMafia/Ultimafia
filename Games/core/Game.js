@@ -2465,6 +2465,11 @@ module.exports = class Game {
       });
       await game.save();
 
+      // Determine the heart type of this game based on if it was comp, ranked, or neither
+      const heartType = this.competitive ? "gold"
+        : this.ranked ? "red"
+        : null;
+
       for (let player of this.players) {
         let rankedPoints = 0;
         let competitivePoints = 0;
@@ -2524,6 +2529,23 @@ module.exports = class Game {
             },
           }
         ).exec();
+
+        if (!player.isBot) {
+          await redis.cacheUserInfo(player.user.id, true);
+        }
+
+        if (heartType && !player.isBot) {
+          let heartRefresh = await models.HeartRefresh.findOne({ userId: player.user.id, type: heartType }).select("_id");
+          if (!heartRefresh) {
+            heartRefresh = new models.HeartRefresh({
+              userId: player.user.id,
+              when: Date.now() + constants.redHeartRefreshIntervalMillis,
+              type: heartType,
+            });
+            await heartRefresh.save();
+          }
+        }
+
 
         // if (this.ranked && player.user.referrer && player.user.rankedCount == constants.referralGames - 1) {
         //     await models.User.updateOne(
