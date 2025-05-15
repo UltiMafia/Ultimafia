@@ -5,6 +5,36 @@ module.exports = class CultWinsIfNoCondemn extends Card {
   constructor(role) {
     super(role);
 
+
+
+      this.winCheckSpecial = {
+      priority: PRIORITY_WIN_CHECK_DEFAULT+1,
+      againOnFinished: true,
+      check: function (counts, winners, aliveCount, confirmedFinished) {
+        if(!this.player.hasAbility(["Win-Con", "OnlyWhenAlive"]){
+          return;
+        }
+        const enemyMayors = this.game
+          .alivePlayers()
+          .filter(
+            (p) =>
+              p.role.name === "Mayor" &&
+              p.role.data.MayorWin &&
+              p.faction != this.player.faction &&
+              p.hasAbility(["Win-Con", "OnlyWhenAlive"])
+          );
+            
+              
+        if (this.actor.role.data.NyarlathotepWin && this.player.hasAbility(["Win-Con"]) && aliveCount == 3) {
+          for(let player of this.game.players){
+            if(player.faction == this.player.faction){
+              winners.addPlayer(player, player.faction);
+            }
+          }
+        }
+      },
+    };
+
     this.actions = [
       {
         priority: PRIORITY_DAY_EFFECT_DEFAULT + 1,
