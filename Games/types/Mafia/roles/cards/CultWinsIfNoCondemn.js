@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_DAY_EFFECT_DEFAULT } = require("../../const/Priority");
+const { CULT_FACTIONS } = require("../../const/FactionList");
 
 module.exports = class CultWinsIfNoCondemn extends Card {
   constructor(role) {
@@ -23,11 +24,14 @@ module.exports = class CultWinsIfNoCondemn extends Card {
               p.faction != this.player.faction &&
               p.hasAbility(["Win-Con", "OnlyWhenAlive"])
           );
+        if(enemyMayors.length > 0){
+          return;
+        }
             
               
-        if (this.actor.role.data.NyarlathotepWin && this.player.hasAbility(["Win-Con"]) && aliveCount == 3) {
+        if (this.actor.role.data.NyarlathotepWin && this.player.hasAbility(["Win-Con"])) {
           for(let player of this.game.players){
-            if(player.faction == this.player.faction){
+            if(CULT_FACTIONS.includes(player.faction)){
               winners.addPlayer(player, player.faction);
             }
           }
@@ -35,6 +39,49 @@ module.exports = class CultWinsIfNoCondemn extends Card {
       },
     };
 
+        this.listeners = {
+        state: function (stateInfo) {
+        if (!this.player.hasAbility(["Win-Con"])) {
+          return;
+        }
+        if (!stateInfo.name.match(/Day/)) {
+          return;
+        }
+
+        var action = new Action({
+          actor: this.player,
+          game: this.player.game,
+          priority: PRIORITY_DAY_EFFECT_DEFAULT + 1,
+          labels: ["investigate"],
+          run: function () {
+          if (!this.player.hasAbility(["Win-Con"])) return;
+            let alivePlayers = this.game.players.filter((p) => p.role);
+
+            for (let x = 0; x < alivePlayers.length; x++) {
+              for (let action of this.game.actions[0]) {
+                if (
+                  action.target == alivePlayers[x] &&
+                  action.hasLabel("condemn")
+                ) {
+                  this.actor.role.data.NyarlathotepWin = false;
+                  return;
+                }
+              }
+            }
+            /*
+            this.actor.queueAlert(
+              `Now that only 3 players are alive today, Town will win if no one is executed Today!`
+            );
+            */
+            this.actor.role.data.NyarlathotepWin = true;
+            return;
+        },
+        });
+
+        this.game.queueAction(action);
+      },
+    };
+/*
     this.actions = [
       {
         priority: PRIORITY_DAY_EFFECT_DEFAULT + 1,
@@ -57,16 +104,12 @@ module.exports = class CultWinsIfNoCondemn extends Card {
                 }
               }
             }
-            /*
-            this.actor.queueAlert(
-              `Now that only 3 players are alive today, Town will win if no one is executed Today!`
-            );
-            */
             this.actor.role.data.NyarlathotepWin = true;
             return;
           }
         },
       },
     ];
+    */
   }
 };
