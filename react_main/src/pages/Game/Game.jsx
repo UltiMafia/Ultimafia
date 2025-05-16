@@ -81,6 +81,8 @@ export default function Game() {
   );
 }
 
+const NO_ONE_NAME = "no one";
+
 function GameWrapper(props) {
   const [loaded, setLoaded] = useState(false);
   const [leave, setLeave] = useState(false);
@@ -1194,7 +1196,7 @@ function getMessagesToDisplay(
 
     if (!isUnvote) {
       if (target !== "*" && players[target]) target = players[target].name;
-      else if (target === "*") target = "no one";
+      else if (target === "*") target = NO_ONE_NAME;
     }
 
     let voteMsg = {
@@ -2247,8 +2249,10 @@ function ActionSelect(props) {
 
   // Client side vote counting logic
   const shouldDisplayCounters = meeting.displayVoteCounter;
+  const canVoteNoOne = meeting.targets && Array.isArray(meeting.targets) && meeting.targets.includes("*");
   const voteCounts = new Map();
   var highestVoteCount = 0;
+  var noOneHasMostVotes = false;
 
   if (shouldDisplayCounters) {
     // Tally the votes per player
@@ -2272,6 +2276,33 @@ function ActionSelect(props) {
         highestVoteCount = value;
       }
     }
+
+    if (voteCounts.has(NO_ONE_NAME) && voteCounts.get(NO_ONE_NAME) === highestVoteCount) {
+      noOneHasMostVotes = true;
+    }
+  }
+
+  const rowItems = Object.values(meeting.members).map((member) => { 
+    const player = props.players[member.id];
+    const selection = getTargetDisplay(meeting.votes[member.id], meeting, props.players);
+    const name = player ? player.name : null;
+
+    return {
+      id: member.id,
+      name: name || "Anonymous",
+      canVote: member.canVote,
+      selection: selection,
+    }
+  });
+
+  // Also show how many people are voting NO_ONE_NAME if applicable
+  if (shouldDisplayCounters && canVoteNoOne) {
+    rowItems.push({
+      id: "*",
+      name: NO_ONE_NAME,
+      canVote: false,
+      selection: [],
+    })
   }
 
   return (
@@ -2307,39 +2338,43 @@ function ActionSelect(props) {
       </Box>
 
       <Box className="votes" sx={{ width: "100%" }}>
-        {Object.values(meeting.members).map((member) => {
-          var selection = meeting.votes[member.id];
-          var player = props.players[member.id];
-          selection = getTargetDisplay(selection, meeting, props.players);
-
+        {rowItems.map((rowItem) => {
+          const rowIsNoOne = rowItem.name === NO_ONE_NAME;
           var voteCount = 0;
-          if (player && voteCounts.has(player.name)) {
-            voteCount = voteCounts.get(player.name);
+          if (rowItem.name && voteCounts.has(rowItem.name)) {
+            voteCount = voteCounts.get(rowItem.name);
           }
           const hasHighestVoteCount =
-            voteCount != 0 && voteCount == highestVoteCount;
+            voteCount != 0 && voteCount == highestVoteCount && (!noOneHasMostVotes || rowIsNoOne);
 
           if (
-            !member.canVote &&
+            !rowItem.canVote &&
             meeting.displayOptions.disableShowDoesNotVote
           ) {
             return null;
           }
 
+          var style = null;
+          if (hasHighestVoteCount) {
+            if (rowIsNoOne) {
+              style = { backgroundColor: "#487a28" };
+            }
+            else {
+              style = { backgroundColor: "#bd4c4c" }
+            }
+          }
+          else {
+            style = { backgroundColor: "#4c7dbd" };
+          }
+
           return (
             <Box
-              key={member.id}
+              key={rowItem.id}
               className={`vote ${meeting.multi ? "multi" : ""}`}
               sx={{ display: "flex", flexDirection: "column", gap: 1 }}
             >
               {shouldDisplayCounters && (
-                <div
-                  className="vote-count"
-                  style={
-                    hasHighestVoteCount
-                      ? { backgroundColor: "#bd4c4c" }
-                      : { backgroundColor: "#4c7dbd" }
-                  }
+                <div className="vote-count" style={style}
                 >
                   {voteCount}
                 </div>
@@ -2347,19 +2382,19 @@ function ActionSelect(props) {
               <Typography
                 className="voter"
                 sx={{ cursor: "pointer", fontWeight: "bold" }}
-                onClick={() => onSelectVote(member.id)}
+                onClick={() => onSelectVote(rowItem.id)}
               >
-                {(player && player.name) || "Anonymous"}
+                {rowItem.name}
               </Typography>
-              {!member.canVote && (
+              {!rowItem.canVote && !rowIsNoOne && (
                 <Typography className="selection">does not vote</Typography>
               )}
-              {member.canVote && selection.length > 0 && (
+              {rowItem.canVote && rowItem.selection.length > 0 && (
                 <Typography>votes</Typography>
               )}
-              {member.canVote && (
+              {rowItem.canVote && (
                 <Typography className="selection">
-                  {selection.join(", ")}
+                  {rowItem.selection.join(", ")}
                 </Typography>
               )}
             </Box>
@@ -2714,7 +2749,7 @@ function getTargetDisplay(targets, meeting, players) {
 
     switch (meeting.inputType) {
       case "player":
-        if (target === "*") target = "no one";
+        if (target === "*") target = NO_ONE_NAME;
         else if (target) target = players[target].name;
         else target = "";
         break;
