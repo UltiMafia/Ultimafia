@@ -12,7 +12,7 @@ module.exports = class CultWinsIfNoCondemn extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT+1,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if(!this.player.hasAbility(["Win-Con", "OnlyWhenAlive"]){
+        if(!this.player.hasAbility(["Win-Con"]){
           return;
         }
         const enemyMayors = this.game
