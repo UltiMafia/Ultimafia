@@ -7,6 +7,26 @@ module.exports = class ZealotCondemn extends Card {
     super(role);
     this.target = "";
 
+
+    this.winCheckSpecial = {
+      priority: PRIORITY_WIN_CHECK_DEFAULT+1,
+      againOnFinished: true,
+      check: function (counts, winners, aliveCount, confirmedFinished) {
+        if(!this.player.hasAbility(["Win-Con"]){
+          return;
+        }
+            
+              
+        if (this.player.role.data.ZealotWin && this.player.hasAbility(["Win-Con"])) {
+          for(let player of this.game.players){
+            if(CULT_FACTIONS.includes(player.faction)){
+              winners.addPlayer(player, player.faction);
+            }
+          }
+        }
+      },
+    };
+
     this.listeners = {
       Devotion: function (EndangeredPlayer) {
         this.player.role.data.ZealotCondemn = true;
