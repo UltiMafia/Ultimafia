@@ -330,14 +330,16 @@ module.exports = class MafiaGame extends Game {
         var votesNeeded = Math.ceil(aliveCount / 2) + this.extensions;
 
         if (this.extensionVotes < votesNeeded || this.isTest) break;
-
+      if(this.extendLength > 0){
         this.timers["main"].extend(this.extendLength * 60 * 1000);
         this.extensions++;
         this.extensionVotes = 0;
 
-        for (let player of this.players) player.votedForExtension = false;
-
+        for (let player of this.players){
+          player.votedForExtension = false;
+      }
         this.sendAlert("Day extended due to a lack of votes.");
+      }
         return;
       }
     }
