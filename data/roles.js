@@ -1252,10 +1252,9 @@ const roleData = {
     Painter: {
       alignment: "Village",
       category: "Reflexive",
-      tags: ["Reflexive", "Information", "Kill Interaction", "Basic"],
+      tags: ["Reflexive", "Information", "Kill Interaction", "Basic", "Visit Interaction"],
       description: [
-        "Paints portraits of their visitors every night.",
-        "Upon their death, the portraits will be unveiled in a grand auction.",
+        "When killed will announce all players who ever visited them."
       ],
     },
     Priest: {
