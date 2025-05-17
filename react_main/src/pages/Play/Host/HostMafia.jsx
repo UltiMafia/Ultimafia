@@ -151,7 +151,7 @@ export default function HostMafia() {
       type: "number",
       showIf: "configureDuration",
       value: defaults.extendLength,
-      min: 1,
+      min: 0,
       max: 5,
     },
   ]);
