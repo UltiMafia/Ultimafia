@@ -554,7 +554,7 @@ router.post("/host", async function (req, res) {
       );
       return;
     }
-    
+
     if (req.body.ranked) {
       const user = await models.User.findOne({ id: userId }).select(
         "redHearts"

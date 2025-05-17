@@ -12,6 +12,7 @@ module.exports = class Assassin extends Role {
       "ForceSplitDecision",
       "KillAllInRoom",
       "AddCopyOfRole",
+      "VillageWinsWhenKilled",
     ];
   }
 };

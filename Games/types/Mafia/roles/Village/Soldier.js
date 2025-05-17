@@ -7,3 +7,4 @@ module.exports = class Soldier extends Role {
     this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction"];
   }
 };
+//, "WinWithSoldierMaj"

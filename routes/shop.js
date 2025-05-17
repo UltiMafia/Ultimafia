@@ -134,7 +134,10 @@ const shopItems = [
     limit: constants.maxBonusRedHearts,
     onBuy: async function (userId) {
       // Immediately give the user their red heart
-      await models.User.updateOne({ id: userId }, { $inc: { redHearts: 1 } }).exec();
+      await models.User.updateOne(
+        { id: userId },
+        { $inc: { redHearts: 1 } }
+      ).exec();
     },
   },
 ];
