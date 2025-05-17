@@ -281,7 +281,7 @@ module.exports = class Role {
     var appearance = this.player.getAppearance(revealType);
 
     //this.game.queueReveal(this.player, appearance);
-
+    this.game.queueReveal(this.player, this.game.getRoleAlignment(appearance));
     if (!noAlert)
       this.game.queueAlert(
         `${this.player.name}'s alignment is ${this.game.getRoleAlignment(

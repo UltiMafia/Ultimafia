@@ -249,6 +249,25 @@
 *
 ***********/
 
+
+/* Alignment Icons */
+
+.role-icon-scheme-vivid .role-Mafia-Village {
+  background-image: url("/images/roles/village-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Mafia {
+  background-image: url("/images/roles/mafia-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Cult {
+  background-image: url("/images/roles/cult-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Independent {
+  background-image: url("/images/roles/independent-vivid.png");
+}
+
 /* 
 /*------------------Village Roles----------------------*/
 
