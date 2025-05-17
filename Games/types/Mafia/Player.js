@@ -62,6 +62,12 @@ module.exports = class MafiaPlayer extends Player {
         )
           return;
 
+
+if(this.game.extendLength == 0){
+    this.sendAlert("Extends are disabled.");
+  return;
+}
+        
         this.votedForExtension = true;
         this.game.extensionVotes++;
 
