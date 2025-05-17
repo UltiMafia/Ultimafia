@@ -15,7 +15,7 @@ const roleData = {
     Bleeder: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Bleeding", "Basic"],
+      tags: ["Kill Interaction", "Basic", "Malicious Effects"],
       description: [
         "Will die one day after being targeted for a kill or shot.",
       ],
@@ -31,7 +31,7 @@ const roleData = {
     Commuter: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Role Blocker", "Basic", "Reflexive"],
+      tags: ["Blocking", "Basic", "Reflexive"],
       description: [
         "Blocks any player who visits them during the night from performing any actions.",
       ],
@@ -39,7 +39,7 @@ const roleData = {
     Slayer: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Items", "Killing", "Alignments", "Day Killer"],
+      tags: ["Items", "Killing", "Alignments", "Day Actions"],
       description: [
         "Starts with a stake.",
         "Stakes can only kill players who appear as Cult or Mafia-aligned.",
@@ -49,7 +49,7 @@ const roleData = {
     Deputy: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Items", "Basic", "Killing", "Gun", "Day Killer"],
+      tags: ["Items", "Basic", "Killing", "Gun", "Day Actions"],
       description: [
         "Starts with a gun.",
         "This gun never reveals the deputy when shot.",
@@ -97,7 +97,7 @@ const roleData = {
     Sapling: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Tree", "Basic", "Voting", "Unkillable", "Condemn Immunity"],
+      tags: ["Basic", "Voting", "Kill Interaction", "Condemn Interaction"],
       description: [
         "Chooses whether or not to grow into a tree at night.",
         "Tree is immune to most ways of dying.",
@@ -107,7 +107,7 @@ const roleData = {
     Sheriff: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Items", "Basic", "Killing", "Gun", "Day Killer"],
+      tags: ["Items", "Basic", "Killing", "Gun", "Day Actions"],
       description: [
         "Starts with a gun.",
         "This gun always reveals the sheriff when shot.",
@@ -123,7 +123,7 @@ const roleData = {
     Bawd: {
       alignment: "Village",
       category: "Protective",
-      tags: ["Protective", "Night Saver", "Delirium", "Visiting"],
+      tags: ["Protective", "Delirium", "Visiting"],
       description: [
         "Protects two players every night.",
         "One of the players being protected is Delirious.",
@@ -147,13 +147,13 @@ const roleData = {
     Doctor: {
       alignment: "Village",
       category: "Protective",
-      tags: ["Protective", "Night Saver", "Visiting"],
+      tags: ["Protective", "Visiting"],
       description: ["Saves another player from dying each night."],
     },
     Martyr: {
       alignment: "Village",
       category: "Protective",
-      tags: ["Protective", "Condemn", "Visiting"],
+      tags: ["Protective", "Condemn Interaction", "Visiting"],
       description: [
         "Can choose to sacrifice themself and be condemned in the place of the player currently being condemned.",
       ],
@@ -161,7 +161,7 @@ const roleData = {
     Medic: {
       alignment: "Village",
       category: "Protective",
-      tags: ["Protective", "Extra Lives", "Visiting"],
+      tags: ["Kill Interaction", "Extra Lives", "Visiting"],
       description: [
         "Visits two players each night.",
         "If the first player is targeted for a night kill and dies, the second player gains an extra life.",
@@ -170,7 +170,7 @@ const roleData = {
     Nurse: {
       alignment: "Village",
       category: "Protective",
-      tags: ["Protective", "Cleanse", "Visiting"],
+      tags: ["Malicious Effects", "Visiting"],
       description: [
         "Visits one player each night and cleanses them of malicious effects.",
         "Malicious effects include poison, bleeding, insanity, and polarization.",
@@ -179,7 +179,7 @@ const roleData = {
     Resurrectionist: {
       alignment: "Village",
       category: "Protective",
-      tags: ["Revive", "Protective", "Graveyard", "Visiting"],
+      tags: ["Revive", "Graveyard", "Visiting", "Dead"],
       description: [
         "Visits a dead player during the night once per game.",
         "That player will be resurrected the following day.",
@@ -190,7 +190,7 @@ const roleData = {
     Shrink: {
       alignment: "Village",
       category: "Protective",
-      tags: ["Convert Saver", "Protective", "Conversion", "Visiting"],
+      tags: ["Protective", "Conversion", "Visiting"],
       description: [
         "Prevents their target from being converted to another role.",
         "If their target was a Hostile Independent, the target will become a Villager.",
@@ -201,10 +201,9 @@ const roleData = {
       alignment: "Village",
       category: "Protective",
       tags: [
-        "Convert Saver",
         "Protective",
         "Killing",
-        "Night Saver",
+        "Kill Interaction",
         "Visiting",
       ],
       description: [
@@ -215,7 +214,7 @@ const roleData = {
     "Tea Lady": {
       alignment: "Village",
       category: "Protective",
-      tags: ["Protective", "Condemn", "Neighbors", "Night Saver"],
+      tags: ["Protective", "Neighbors", "Position"],
       description: [
         "If both of the Tea Lady's neighbors are aligned with the Village, the neighbors can't die.",
       ],
@@ -224,7 +223,7 @@ const roleData = {
     Barista: {
       alignment: "Village",
       category: "Gifting",
-      tags: ["Gifting", "Information", "Items", "Coffee", "Visiting", "Dawn"],
+      tags: ["Items", "Coffee", "Visiting", "Dawn"],
       description: [
         "Gives out coffee to one player each night.",
         "Coffee will allow a player to perform their night actions twice in one night.",
@@ -234,7 +233,7 @@ const roleData = {
     Baker: {
       alignment: "Village",
       category: "Gifting",
-      tags: ["Gifting", "Famine", "Items", "Bread", "Visiting"],
+      tags: ["Famine", "Items", "Bread", "Visiting"],
       description: [
         "When baker is present in the game, all players start with two breads. A famine will start.",
         "Gives out up to two breads each night.",
@@ -244,7 +243,7 @@ const roleData = {
     Blacksmith: {
       alignment: "Village",
       category: "Gifting",
-      tags: ["Gifting", "Protective", "Items", "Armor", "Visiting"],
+      tags: ["Protective", "Items", "Armor", "Visiting"],
       description: [
         "Gives out armor to one player each night.",
         "Armor will protect from one attack before breaking.",
@@ -254,7 +253,6 @@ const roleData = {
       alignment: "Village",
       category: "Gifting",
       tags: [
-        "Gifting",
         "Information",
         "Items",
         "Candle",
@@ -269,7 +267,7 @@ const roleData = {
     Cutler: {
       alignment: "Village",
       category: "Gifting",
-      tags: ["Gifting", "Bleeding", "Items", "Knife", "Killing", "Visiting"],
+      tags: ["Items", "Knife", "Killing", "Visiting", "Day Actions", "Malicious Effects"],
       description: [
         "Gives out a knife each night.",
         "Knives can be used to attack another player, causing them to bleed.",
@@ -278,7 +276,7 @@ const roleData = {
     Demolitionist: {
       alignment: "Village",
       category: "Gifting",
-      tags: ["Gifting", "Items", "Bomb", "Killing", "Visiting"],
+      tags: ["Items", "Bomb", "Killing", "Visiting", "Kill Interaction"],
       description: [
         "Gives out bomb to one player each night.",
         "If a player holding a bomb is attacked, their attacker will die along with them.",
@@ -288,7 +286,6 @@ const roleData = {
       alignment: "Village",
       category: "Gifting",
       tags: [
-        "Gifting",
         "Information",
         "Items",
         "Falcon",
@@ -303,7 +300,7 @@ const roleData = {
     Funsmith: {
       alignment: "Village",
       category: "Gifting",
-      tags: ["Gifting", "Killing", "Items", "Gun", "Reflexive", "Visiting"],
+      tags: ["Killing", "Items", "Gun", "Reflexive", "Visiting", "Day Actions"],
       description: [
         "Gives out a gun each night.",
         "Gives out a gun to all visitors at night.",
@@ -312,7 +309,7 @@ const roleData = {
     Gemcutter: {
       alignment: "Village",
       category: "Gifting",
-      tags: ["Gifting", "Revealing", "Items", "Crystal", "Visiting"],
+      tags: ["Information", "Items", "Crystal", "Visiting", "Kill Interaction"],
       description: [
         "Gives out a crystal ball to a player each night.",
         "If a player holding the crystal ball dies, their target's role will be revealed.",
@@ -321,7 +318,7 @@ const roleData = {
     Gunsmith: {
       alignment: "Village",
       category: "Gifting",
-      tags: ["Gifting", "Killing", "Items", "Gun", "Visiting"],
+      tags: ["Killing", "Items", "Gun", "Visiting", "Day Actions"],
       description: [
         "Gives out a gun each night.",
         "Guns can be used to shoot and kill someone during the day.",
@@ -330,7 +327,7 @@ const roleData = {
     Keymaker: {
       alignment: "Village",
       category: "Gifting",
-      tags: ["Gifting", "Role Blocker", "Items", "Key", "Visiting"],
+      tags: ["Role Blocker", "Items", "Key", "Visiting", "Day Actions"],
       description: [
         "Gives out a key to one player each night.",
         "Keys can be used to lock a player in the next night; they cannot be visited, but also cannot perform any actions.",
@@ -339,7 +336,7 @@ const roleData = {
     Knight: {
       alignment: "Village",
       category: "Gifting",
-      tags: ["Gifting", "Protective", "Items", "Shield", "Visiting"],
+      tags: ["Redirection", "Items", "Shield", "Visiting"],
       description: [
         "Gives out sheild to one player each night.",
         "Shields can be used at night to redirect kills targeting the holder on to a random player of the same alignment if possible.",
@@ -348,7 +345,7 @@ const roleData = {
     Mailman: {
       alignment: "Village",
       category: "Gifting",
-      tags: ["Gifting", "Messages", "Items", "Envelope", "Visiting"],
+      tags: ["Messages", "Items", "Envelope", "Visiting"],
       description: [
         "Gives out an envelope to one player each night.",
         "Envelopes can be used to send an anonymous message to another player at night.",
@@ -358,8 +355,6 @@ const roleData = {
       alignment: "Village",
       category: "Gifting",
       tags: [
-        "Gifting",
-        "Convert Saver",
         "Items",
         "Tract",
         "Protective",
@@ -373,7 +368,7 @@ const roleData = {
     Pharmacist: {
       alignment: "Village",
       category: "Gifting",
-      tags: ["Gifting", "Role Blocker", "Items", "Whiskey", "Visiting"],
+      tags: ["Role Blocker", "Items", "Whiskey", "Visiting", "Day Actions"],
       description: [
         "Gives out a bottle of whiskey each night.",
         "Whiskey can be used to distract another player, preventing them from acting the next night.",
@@ -382,7 +377,7 @@ const roleData = {
     Reanimator: {
       alignment: "Village",
       category: "Gifting",
-      tags: ["Gifting", "Revive", "Items", "Syringe", "Graveyard", "Visiting"],
+      tags: ["Revive", "Items", "Syringe", "Graveyard", "Visiting"],
       description: [
         "Gives out a syringe each night.",
         "Syringes can be used on dead players to resurrect them.",
@@ -393,7 +388,6 @@ const roleData = {
       alignment: "Village",
       category: "Gifting",
       tags: [
-        "Gifting",
         "Items",
         "Graveyard",
         "Investigative",
@@ -402,6 +396,8 @@ const roleData = {
         "Information",
         "Self Blocking",
         "Dawn",
+        "Day Actions",
+        "Revive",
       ],
       description: [
         "Visits a player each night to learn their role alignment.",
@@ -414,7 +410,7 @@ const roleData = {
     Analyst: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Roles", "Speaking"],
+      tags: ["Information", "Guess", "Speaking"],
       description: [
         'On their 1st day if an Analyst makes a guess in chat following this structure "I will analyze if (Player Name) is (Role Name)".',
         "The Analyst will learn how many guesses were correct during the night.",
@@ -424,7 +420,7 @@ const roleData = {
     Accountant: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Neighbors", "Position"],
+      tags: ["Information", "Neighbors", "Position"],
       description: [
         "On Night 1 learns how many pairs of Evil players there are.",
         "A pair is each unique instance of 2 Evil Players neighboring each other.",
@@ -434,7 +430,7 @@ const roleData = {
     Bloodhound: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Visits", "Visiting"],
+      tags: ["Information", "Visit Interaction", "Visiting"],
       description: [
         "Tracks a player each night and learns if they visited anybody.",
       ],
@@ -442,7 +438,7 @@ const roleData = {
     "Bounty Hunter": {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative"],
+      tags: ["Information", "Setup Changes"],
       description: [
         "On their first night learns an Evil Player.",
         "When that evil player dies, The Bounty Hunter will learn another evil player at night.",
@@ -452,7 +448,7 @@ const roleData = {
     Housekeeper: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Visits", "Reports", "Visiting"],
+      tags: ["Information", "Visits", "Reports", "Visiting", "Visit Interaction"],
       description: [
         "Each night chooses 2 players, Learns how many of those players visited or received reports",
       ],
@@ -460,7 +456,7 @@ const roleData = {
     Cop: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Alignment", "Cop", "Visiting"],
+      tags: ["Information", "Alignment", "Visiting"],
       description: [
         "Investigates one player each night and learns their alignment.",
       ],
@@ -468,7 +464,7 @@ const roleData = {
     Coroner: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Roles", "Dead", "Visiting"],
+      tags: ["Information", "Roles", "Visiting", "Dead"],
       description: [
         "Chooses to visit a dead player at night and learns their role identity.",
       ],
@@ -476,7 +472,7 @@ const roleData = {
     Detective: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Roles", "Visiting"],
+      tags: ["Information", "Roles", "Visiting"],
       description: [
         "Investigates one player each night and learns their role.",
       ],
@@ -484,7 +480,7 @@ const roleData = {
     Empath: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Alignment", "Neighbors"],
+      tags: ["Information", "Alignment", "Neighbors"],
       description: [
         "Each night learns how many of their alive neighbors are evil.",
       ],
@@ -492,7 +488,7 @@ const roleData = {
     Statistician: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Alignment", "Voting"],
+      tags: ["Information", "Alignment", "Voting"],
       description: [
         "Each night, learns if a Mafia or Cult-aligned player voted with the majority on the previous day.",
         "If the vote was tied, the Statistician learns a random value.",
@@ -501,7 +497,7 @@ const roleData = {
     Forensicist: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Information"],
+      tags: ["Information", "Information"],
       description: [
         "Each night learns if and how many system messages are being falsified.",
       ],
@@ -512,7 +508,7 @@ const roleData = {
     Geologist: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Neighbors", "Position"],
+      tags: ["Information", "Position"],
       description: [
         "On the first night, learns the distance in players between 2 Evil players.",
         "If the distance is 0, then the Evil players are neighboring each other.",
@@ -521,7 +517,7 @@ const roleData = {
     Orienteer: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Neighbors", "Position"],
+      tags: ["Information", "Position"],
       description: [
         "Learns the direction to closest evil player on Night 1.",
         "This will Loop around at the top and bottom of the player list.",
@@ -530,7 +526,7 @@ const roleData = {
     Groundskeeper: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Alignment", "Dead"],
+      tags: ["Information", "Alignment", "Dead"],
       description: [
         "Each night learn how many dead players are Evil.",
         "The number is calculated after any kills in the night.",
@@ -539,7 +535,7 @@ const roleData = {
     Diviner: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Roles", "Visiting"],
+      tags: ["Information", "Roles", "Alignment", "Visiting"],
       description: [
         "Investigates one player each night and learns two roles of opposite alignments.",
         "The investigated player is one of the roles learned by the Diviner.",
@@ -548,7 +544,7 @@ const roleData = {
     Journalist: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Reports", "Visiting"],
+      tags: ["Information", "Reports", "Visiting"],
       description: [
         "Chooses a player each night and views any reports they receive the following day.",
       ],
@@ -556,7 +552,7 @@ const roleData = {
     Justice: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Alignment", "Visiting"],
+      tags: ["Information", "Alignment", "Visiting"],
       description: [
         "Investigates two players at night and learns if they share an alignment.",
       ],
@@ -564,7 +560,7 @@ const roleData = {
     Laundress: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Roles"],
+      tags: ["Information", "Roles"],
       description: [
         "On Night 1, learns that 1 of 2 players is a particular role.",
       ],
@@ -572,7 +568,7 @@ const roleData = {
     Scientist: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Roles", "Neighbors", "Visits"],
+      tags: ["Information", "Roles", "Neighbors", "Visits", "Guess", "Day Actions"],
       description: [
         "Once per game during the Day, can learn about the relation between a player and a role.",
       ],
@@ -580,13 +576,13 @@ const roleData = {
     Tourist: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Roles", "Excess Roles"],
+      tags: ["Information", "Excess Roles"],
       description: ["At night, reveals 1-3 Excess roles to All Players."],
     },
     Manhunter: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Roles", "Visiting"],
+      tags: ["Information", "Roles", "Visiting", "Guess"],
       description: [
         "Chooses a player and a role and learns if they are that role or not.",
       ],
@@ -594,7 +590,7 @@ const roleData = {
     Pathologist: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Reports", "Dead", "Visiting"],
+      tags: ["Information", "Reports", "Dead", "Visiting"],
       description: [
         "Each night, visits one dead player.",
         "Will receive all system messages the player ever received.",
@@ -604,11 +600,9 @@ const roleData = {
       alignment: "Village",
       category: "Investigative",
       tags: [
-        "Investigative",
-        "Alignment",
-        "Visiting",
-        "Reflexive",
-        "Self Blocking",
+        "Information",
+        "Roles",
+        "Excess Roles",
       ],
       description: [
         "At night, learns either one player's role or two excess roles.",
@@ -618,12 +612,15 @@ const roleData = {
       alignment: "Village",
       category: "Investigative",
       tags: [
-        "Investigative",
+        "Information",
         "Alignment",
         "Roles",
         "Neighbors",
         "Position",
         "Excess Roles",
+        "Item Interaction",
+        "Visit Interaction",
+        "Day Actions",
       ],
       description: [
         "Each day, may learn two pieces of information about the game. One will be true and one will be false.",
@@ -632,7 +629,7 @@ const roleData = {
     Snoop: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Items", "Visiting"],
+      tags: ["Information", "Item Interaction", "Visiting"],
       description: [
         "Visits a player each night and learns what items they are carrying.",
       ],
@@ -640,13 +637,13 @@ const roleData = {
     Tracker: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Visits", "Visiting"],
+      tags: ["Information", "Visit Interaction", "Visiting"],
       description: ["Tracks a player each night and learns who they visited."],
     },
     Voyeur: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Visits", "Roles"],
+      tags: ["Information", "Visit Interaction", "Roles"],
       description: [
         "Watches a player each night and learns what roles visited them.",
         "Doesn't visit its target.",
@@ -655,7 +652,7 @@ const roleData = {
     Watcher: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Visits"],
+      tags: ["Information", "Visit Interaction"],
       description: [
         "Watches a player each night and learns who visited them.",
         "Doesn't visit its target.",
@@ -664,7 +661,7 @@ const roleData = {
     Witness: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Investigative", "Visits"],
+      tags: ["Information", "Visit Interaction"],
       description: [
         "Watches a player each night and learns if they were visited by anybody.",
         "Doesn't visit its target.",
@@ -675,12 +672,12 @@ const roleData = {
       alignment: "Village",
       category: "Night-acting",
       tags: [
-        "Night-acting",
+        "Kill Interaction",
         "Killing",
         "Gun",
         "Items",
         "Visiting",
-        "Day Killer",
+        "Day Actions",
       ],
       description: [
         "Each night, chooses someone to avenge.",
@@ -690,7 +687,7 @@ const roleData = {
     Caroler: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Information", "Alignment", "Visiting"],
+      tags: ["Visit Interaction", "Information", "Alignment", "Visiting"],
       description: [
         "Each night, sings a carol to a player about 3 players, at least one of whom is Evil.",
         "The carol is not heard if the player chosen visits at night.",
@@ -700,7 +697,7 @@ const roleData = {
     Comedian: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Information", "Roles", "Visiting"],
+      tags: ["Visit Interaction", "Information", "Roles", "Visiting"],
       description: [
         "Each night, tells a joke to a player about 3 roles, and a different player who is one of the roles.",
         "The joke is not heard if the target chosen visits at night.",
@@ -710,7 +707,7 @@ const roleData = {
     Exorcist: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Dead", "Graveyard", "Exorcise", "Visiting"],
+      tags: ["Dead", "Graveyard", "Exorcise", "Visiting"],
       description: [
         "Each Night, the Exorcist can Exorcise a dead Player.",
         "Exorcised players can't be revived or use Graveyard abilites.",
@@ -719,7 +716,7 @@ const roleData = {
     Flapper: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Delirium", "Roles"],
+      tags: ["Delirium", "Roles"],
       description: [
         "Once per game chooses a Role.",
         "Any players with that role are Delirious for 3 Nights.",
@@ -729,7 +726,7 @@ const roleData = {
     Drunk: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Role Blocker", "Visiting"],
+      tags: ["Role Blocker", "Visiting"],
       description: [
         "Visits one player each night and blocks them from performing any night actions.",
         "Some actions cannot be blocked.",
@@ -739,10 +736,9 @@ const roleData = {
       alignment: "Village",
       category: "Night-acting",
       tags: [
-        "Night-acting",
         "Delirium",
-        "Unkillable",
-        "Condemn Immune",
+        "Kill Interaction",
+        "Condemn Interaction",
         "Visiting",
       ],
       description: [
@@ -754,7 +750,7 @@ const roleData = {
     "Snake Charmer": {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Conversion", "Role Swapping", "Visiting"],
+      tags: ["Conversion", "Role Swapping", "Visiting"],
       description: [
         "Each night, chooses a player to swap roles with.",
         "A Snake Charmer can only swap roles once.",
@@ -763,7 +759,7 @@ const roleData = {
     Mediator: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Conversion", "Role Swapping", "Visiting"],
+      tags: ["Conversion", "Role Swapping", "Visiting"],
       description: [
         "Each night chooses 2 players.",
         "The selected players will swap roles.",
@@ -772,13 +768,13 @@ const roleData = {
     Guard: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Role Blocker", "Visiting"],
+      tags: ["Visit Interaction", "Role Blocker", "Visiting"],
       description: ["Each night, protects one player from all visits."],
     },
     Mechanic: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Items", "Visiting"],
+      tags: ["Item Interaction", "Visiting"],
       description: [
         "Once per night, fixes the target's item(s).",
         "Can undo an item's fabricated/sabotaged status, and can turn Gunrunner guns into normal guns and Gremlin guns into normal guns.",
@@ -788,7 +784,7 @@ const roleData = {
     Mime: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Villager", "Conversion", "Alignment", "Visiting"],
+      tags: ["Villager", "Conversion", "Alignment", "Visiting"],
       description: [
         "Chooses a player at night and attempts to mime their role.",
         "If player is Village, Mime steals their role and that player becomes a villager.",
@@ -800,13 +796,13 @@ const roleData = {
     "Lunch Lady": {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Modifiers", "Conversion", "Visiting"],
+      tags: ["Modifiers", "Conversion", "Visiting"],
       description: ["Removes modifiers from other players at night"],
     },
     Photographer: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Revealing", "Visiting"],
+      tags: ["Information", "Visiting"],
       description: [
         "Each Night the Photographer can take a picture of a player during the night.",
         "The role of the photographed player will be revealed to everyone the next day.",
@@ -815,7 +811,7 @@ const roleData = {
     Impersonator: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Deception", "No Investigate"],
+      tags: ["Deception", "No Investigate"],
       description: [
         "Chooses a role each night to imitate.",
         "Can not be seen as a Villager, Impersonator or Imposter",
@@ -824,7 +820,7 @@ const roleData = {
     Vegan: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Revealing", "Selective Revealing", "Visiting"],
+      tags: ["Information", "Visiting"],
       description: [
         "Chooses a player each night to reveal their identity as Vegan.",
       ],
@@ -832,7 +828,7 @@ const roleData = {
     Oracle: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Revealing", "Sacrificial", "Visiting"],
+      tags: ["Information", "Kill Interaction", "Visiting"],
       description: [
         "Visits one player each night whose role will be revealed upon death.",
       ],
@@ -840,7 +836,7 @@ const roleData = {
     Penguin: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Information", "Items", "Visits", "Visiting"],
+      tags: ["Information", "Item Interaction", "Visit Interaction", "Visiting"],
       description: [
         "Each night, waddles up to someone to tell them a secret.",
         "The secret will be about Visits, Visitors, or Items.",
@@ -849,7 +845,7 @@ const roleData = {
     "Robin Hood": {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Items", "Visiting"],
+      tags: ["Alignment", "Item Interaction", "Visiting"],
       description: [
         "Chooses one player to steal from each night and another player to receive their items.",
         "If the player chosen to receive an item is mafia, the steal will not go through.",
@@ -858,7 +854,7 @@ const roleData = {
     Visitor: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Visiting"],
+      tags: ["Visiting"],
       description: [
         "Pays a visit to another player at night.",
         "Annoyingly, this visit has no effect.",
@@ -868,12 +864,12 @@ const roleData = {
     Waitress: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Night-acting", "Items", "Visiting"],
+      tags: ["Item Interaction", "Visiting"],
       description: ["Chooses a player to steal an item from each night."],
     },
     "Drama Queen": {
       alignment: "Village",
-      tags: ["Night-acting", "Visiting"],
+      tags: ["Information", "Visiting", "Day Actions"],
       description: [
         "Each night, starts drama against one player.",
         "The following day, targeted player has two options:",
@@ -886,7 +882,7 @@ const roleData = {
     Barber: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Sacrificial", "Items", "Conversion", "Role Swapping"],
+      tags: ["Kill Interaction", "Items", "Conversion", "Role Swapping"],
       description: [
         "If killed, the kill receives a can of shaving cream.",
         "While holding the shaving cream, a Mafia or Cult-aligned player may swap the roles of two living players.",
@@ -896,7 +892,7 @@ const roleData = {
     Butterfly: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Sacrificial", "Conversion"],
+      tags: ["Kill Interaction", "Conversion"],
       description: [
         "When they die all players are reset to the role they had at the start of the game.",
       ],
@@ -904,7 +900,7 @@ const roleData = {
     Gatekeeper: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Sacrificial", "Events"],
+      tags: ["Kill Interaction", "Events"],
       description: [
         "When the Gatekeeper is dead, Banished Events will Occur in addition to normal Events.",
       ],
@@ -912,7 +908,7 @@ const roleData = {
     Hunter: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Sacrificial", "Killing", "Dusk", "Day Killer"],
+      tags: ["Condemn Interaction", "Killing", "Dusk"],
       description: [
         "Chooses a player to kill when condemned by town during the day.",
       ],
@@ -920,7 +916,7 @@ const roleData = {
     Lightkeeper: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Sacrificial", "Voting", "Speech", "Eclipse"],
+      tags: ["Kill Interaction", "Voting", "Speaking", "Eclipse"],
       description: [
         "Following their death, causes an eclipse during the day. During an eclipse, all speech and votes are anonymous.",
       ],
@@ -928,7 +924,7 @@ const roleData = {
     Schoolmarm: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Sacrificial", "Conversion", "Villager"],
+      tags: ["Kill Interaction", "Conversion", "Villager"],
       description: [
         "If killed, all Village-aligned players convert to Villager.",
       ],
@@ -937,7 +933,7 @@ const roleData = {
     Secretary: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Sacrificial", "Voting"],
+      tags: ["Kill Interaction", "Voting"],
       description: [
         "If killed at night, players are forced to vote for no one the next day.",
       ],
@@ -945,7 +941,7 @@ const roleData = {
     Sheep: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Sacrificial", "Killing", "Setup Changes", "Self Kill"],
+      tags: ["Kill Interaction", "Setup Changes", "Self Kill"],
       description: [
         "If one Sheep dies, all Sheep die.",
         "Adds 1 Sheep in Closed setups",
@@ -954,7 +950,7 @@ const roleData = {
     Turncoat: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Sacrificial", "Conversion", "Traitor"],
+      tags: ["Kill Interaction", "Conversion", "Traitor"],
       description: [
         "When killed by the Mafia, will turn into a Traitor instead.",
       ],
@@ -963,7 +959,7 @@ const roleData = {
     Typist: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Sacrificial", "Voting"],
+      tags: ["Kill Interaction", "Voting"],
       description: [
         "On the day following their death, all votes will be anonymous.",
       ],
@@ -971,7 +967,7 @@ const roleData = {
     Virgin: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Sacrificial", "Protective", "Conversion"],
+      tags: ["Condemn Interaction", "Protective", "Conversion"],
       description: [
         "If condemned by the village, no one will die the following night.",
         "If visited by Hooker, gets turned into Villager.",
@@ -985,7 +981,7 @@ const roleData = {
     Mooncalf: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Sacrificial", "Killing"],
+      tags: ["Kill Interaction", "Killing"],
       description: [
         "After dying chooses a player.",
         "If the chosen player is village aligned, That player will die during the night.",
@@ -1011,7 +1007,7 @@ const roleData = {
     Governor: {
       alignment: "Village",
       category: "Voting",
-      tags: ["Voting", "Condemn", "Overturn", "Dusk"],
+      tags: ["Condemn Interaction", "Overturn", "Dusk"],
       description: [
         "Overrides village condemnation once per game.",
         "Cannot cancel a village condemnation.",
@@ -1027,7 +1023,7 @@ const roleData = {
     Kingmaker: {
       alignment: "Village",
       category: "Voting",
-      tags: ["Voting", "Items", "Visiting"],
+      tags: ["Voting", "Items", "Visiting", "Sceptre", "Day Actions"],
       description: [
         "Gives out a sceptre each night.",
         "Sceptres give a player +10000 votes in day meeting.",
@@ -1036,7 +1032,7 @@ const roleData = {
     Magistrate: {
       alignment: "Village",
       category: "Voting",
-      tags: ["Voting", "Condemn", "Condemn Immune", "Visiting"],
+      tags: ["Voting", "Condemn Interaction", "Visiting"],
       description: [
         "Every night, chooses one player and prevents them from voting and from being voted.",
         "Cannot place themselves under house arrest.",
@@ -1045,7 +1041,7 @@ const roleData = {
     Jazzman: {
       alignment: "Village",
       category: "Voting",
-      tags: ["Voting", "Condemn", "Delirium", "Alignment"],
+      tags: ["Condemn Interaction", "Delirium", "Alignment"],
       description: [
         "If an Evil player is condemned, All players are Delirious that night.",
       ],
@@ -1058,7 +1054,7 @@ const roleData = {
     Princess: {
       alignment: "Village",
       category: "Voting",
-      tags: ["Voting", "Condemn", "Overturn", "Alignment"],
+      tags: ["Voting", "Condemn Interaction", "Overturn", "Alignment"],
       description: [
         "If the first player to vote for a Princess appears as Village-aligned, The day ends and that player is condemned.",
         "If the first player to vote for a Princess does not appear as Village-aligned, nothing happens.",
@@ -1067,7 +1063,7 @@ const roleData = {
     Troublemaker: {
       alignment: "Village",
       category: "Voting",
-      tags: ["Voting", "Condemn", "Day"],
+      tags: ["Voting", "Condemn Interaction", "Day Actions"],
       description: [
         "Once per game during the day, can force the next night phase to skip and two day phases to occur consecutively.",
       ],
@@ -1076,7 +1072,7 @@ const roleData = {
     Braggart: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Manipulative", "Setup Change", "Delirium", "Banished"],
+      tags: ["Setup Changes", "Delirium", "Banished"],
       description: [
         "Sees self as a random non-Banished Village role from the setup.",
         "Has that role's abilities but is permanently Delirious.",
@@ -1086,7 +1082,7 @@ const roleData = {
     Coward: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Manipulative", "Redirection", "Reflexive", "Visiting"],
+      tags: ["Redirection", "Reflexive", "Visiting"],
       description: [
         "Each night, chooses a player.",
         "Anyone who visits the Coward will be redirect to the choosen player.",
@@ -1095,7 +1091,7 @@ const roleData = {
     Chauffeur: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Manipulative", "Redirection", "Visiting"],
+      tags: ["Redirection", "Visiting"],
       description: [
         "Chooses two players, A and B, each night.",
         "Players who visit A will be redirected to B.",
@@ -1106,7 +1102,7 @@ const roleData = {
     Televangelist: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Manipulative", "Setup Change", "Delirium", "Cult"],
+      tags: ["Setup Changes", "Delirium", "Cult"],
       description: [
         "Sees self as a random Demonic Cult role from the setup.",
         "Can use fake versions of that roles abilities.",
@@ -1117,7 +1113,7 @@ const roleData = {
     Monkey: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Manipulative", "Copy Actions", "Dusk", "Pregame Actions"],
+      tags: ["Copy Actions", "Dusk", "Pregame Actions"],
       description: [
         "Before each Night chooses a player.",
         "Copies the actions of the choosen player at night.",
@@ -1126,7 +1122,7 @@ const roleData = {
     Philosopher: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Manipulative", "Conversion", "Delirium"],
+      tags: ["Conversion", "Delirium"],
       description: [
         "At night may choose to convert to a Village aligned role that can spawn in the setup.",
         "If the selected role is already in play, The player with that role will be Delirious until the Philosopher is killed.",
@@ -1151,7 +1147,7 @@ const roleData = {
     Trickster: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Manipulative", "Conversion", "Items", "Killing"],
+      tags: ["Conversion", "Items", "Killing", "Day Actions"],
       description: [
         "Gives out an item each night to a random player.",
         "The item can be a Gun, Knife, Armor, Whiskey, or Crystal.",
@@ -1163,7 +1159,7 @@ const roleData = {
     Capybara: {
       alignment: "Village",
       category: "Meeting",
-      tags: ["Meeting", "Food", "Items", "Visiting"],
+      tags: ["Meetings", "Orange", "Items", "Visiting"],
       description: [
         "Chooses a player to invite to a hot springs relaxation by giving them a Yuzu Orange each night.",
         "When holding a Yuzu Orange, player can choose during the day to anonymously meet with the Capybara and other Yuzu Orange holders the following night.",
@@ -1173,7 +1169,7 @@ const roleData = {
     Chef: {
       alignment: "Village",
       category: "Meeting",
-      tags: ["Meeting", "Information"],
+      tags: ["Meetings", "Information"],
       description: [
         "Chooses two players during the day to attend a banquet the following evening.",
         "Players chosen to attend the banquet meet anonymously with their roles revealed to one another.",
@@ -1182,7 +1178,7 @@ const roleData = {
     Freemason: {
       alignment: "Village",
       category: "Meeting",
-      tags: ["Meeting", "Conversion", "Alignment", "Visiting"],
+      tags: ["Meetings", "Conversion", "Alignment", "Visiting"],
       description: [
         "Converts one player into a Freemason each night.",
         "Shares a night meeting with other Freemasons.",
@@ -1194,7 +1190,7 @@ const roleData = {
     "Invisible Man": {
       alignment: "Village",
       category: "Meeting",
-      tags: ["Meeting", "Investigative"],
+      tags: ["Meetings"],
       description: [
         "Chooses one player during the day to follow at night.",
         "Views all messages from that player's meetings that night.",
@@ -1203,7 +1199,7 @@ const roleData = {
     Matron: {
       alignment: "Village",
       category: "Meeting",
-      tags: ["Meeting", "Reflexive"],
+      tags: ["Meetings", "Reflexive"],
       description: [
         "Passively invites visitors to the common room, where  they share a meeting.",
       ],
@@ -1211,7 +1207,7 @@ const roleData = {
     Templar: {
       alignment: "Village",
       category: "Meeting",
-      tags: ["Meeting", "Setup Changes"],
+      tags: ["Meetings", "Setup Changes"],
       description: [
         "Shares a night meeting with other Templars.",
         "Adds 1 Templar in closed setups.",
@@ -1221,7 +1217,7 @@ const roleData = {
     Apothecary: {
       alignment: "Village",
       category: "Reflexive",
-      tags: ["Reflexive", "Protective", "Malicious Effects", "Role Share"],
+      tags: ["Reflexive", "Malicious Effects", "Role Share"],
       description: [
         "When visited, heals and cleanses all effects currently possessed by the visiting player.",
         "Players who Role Share with an Apothecary are Cleansed.",
@@ -1230,7 +1226,7 @@ const roleData = {
     Dreamer: {
       alignment: "Village",
       category: "Reflexive",
-      tags: ["Reflexive", "Investigative", "Alignment"],
+      tags: ["Reflexive", "Information", "Alignment"],
       description: [
         "Dreams about 3 players, at least one of whom is Evil; or about 1 player who is Village aligned.",
         "Does not dream if visited at night.",
@@ -1239,7 +1235,7 @@ const roleData = {
     Farmer: {
       alignment: "Village",
       category: "Reflexive",
-      tags: ["Reflexive", "Famine", "Food", "Items"],
+      tags: ["Reflexive", "Famine", "Items"],
       description: [
         "When visited, gives a loaf of bread to each visitor.",
         "Starts a famine when present in the game.",
@@ -1248,7 +1244,7 @@ const roleData = {
     Painter: {
       alignment: "Village",
       category: "Reflexive",
-      tags: ["Reflexive", "Information", "Sacrificial"],
+      tags: ["Reflexive", "Information", "Kill Interaction"],
       description: [
         "Paints portraits of their visitors every night.",
         "Upon their death, the portraits will be unveiled in a grand auction.",
@@ -1257,14 +1253,14 @@ const roleData = {
     Priest: {
       alignment: "Village",
       category: "Reflexive",
-      tags: ["Reflexive", "Investigative", "Roles", "Visits"],
+      tags: ["Reflexive", "Information", "Roles", "Visit Interaction"],
       description: ["Learns the roles of those who visited them."],
     },
     //killing roles
     Debtor: {
       alignment: "Village",
       category: "Killing",
-      tags: ["Killing", "Information", "Roles", "Visiting", "Self Kill"],
+      tags: ["Guess", "Roles", "Visiting", "Self Kill"],
       description: [
         "Each night must choose a player and role from the Setup.",
         "If the selected role is not the player's role, The Debtor dies.",
@@ -1974,7 +1970,7 @@ const roleData = {
     },
     Sicario: {
       alignment: "Mafia",
-      tags: ["Killing", "Reflexive", "Knife", "Items"],
+      tags: ["Killing", "Reflexive", "Knife", "Items", "Malicious Effects"],
       description: [
         "Receives a knife if not visited during the night.",
         "A knife used by the Sicario does not reveal.",
@@ -2159,7 +2155,7 @@ const roleData = {
     },
     Homeopath: {
       alignment: "Mafia",
-      tags: ["Protective", "Malicious Effects", "Visiting"],
+      tags: ["Malicious Effects", "Visiting"],
       description: [
         "Visits one player each night and cleanses them of malicious effects.",
         "Malicious effects include poison, bleeding, insanity, and polarization.",
@@ -2481,7 +2477,7 @@ const roleData = {
     Slasher: {
       alignment: "Cult",
       category: "Killing",
-      tags: ["Killing", "Bleeding", "Reflexive", "Knife", "Items"],
+      tags: ["Killing", "Malicious Effects", "Reflexive", "Knife", "Items"],
       description: [
         "If visited at night by a non-Cult player, gains a knife the next day.",
         "Knows who visits but not their roles.",
@@ -2539,7 +2535,7 @@ const roleData = {
     Cthulhu: {
       alignment: "Cult",
       category: "Speaking",
-      tags: ["Speaking", "Insanity", "Reflexive"],
+      tags: ["Speaking", "Malicious Effects", "Reflexive"],
       description: [
         "All players who visit Cthulhu go insane.",
         "All players who Role Share with Cthulhu go insane.",
@@ -2591,7 +2587,7 @@ const roleData = {
     Psion: {
       alignment: "Cult",
       category: "Speaking",
-      tags: ["Speaking", "Insanity", "Visits", "Visiting"],
+      tags: ["Speaking", "Malicious Effects", "Visit Interaction", "Visiting"],
       description: [
         "Visits a player each night.",
         "If that player is not visited by a non-Cult player during the next night, they will go insane.",
