@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_DAY_EFFECT_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_DAY_EFFECT_DEFAULT, PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 const { CULT_FACTIONS, EVIL_FACTIONS } = require("../../const/FactionList");
 
 module.exports = class LoseIfSeerGuessed extends Card {
@@ -18,14 +18,21 @@ module.exports = class LoseIfSeerGuessed extends Card {
           (p) => p.role.name == "Seer"
         );
 
+        if(!this.game.guessedSeers){
+          this.game.guessedSeers = {};
+        }
+
         for(let faction of EVIL_FACTIONS){
+          if(!this.game.guessedSeers[faction]){
+            this.game.guessedSeers[faction] = [];
+          }
           if (
             seersInGame.length > 0 &&
             seersInGame.length ==
               this.game.guessedSeers[faction].length
           ) {
             for(let player of this.game.players){
-            if(faction == player.faction)){
+            if(faction == player.faction){
               winners.addPlayer(player, player.faction);
             }
           }
@@ -34,6 +41,8 @@ module.exports = class LoseIfSeerGuessed extends Card {
               
       },
     };
+
+
 
   }
 };

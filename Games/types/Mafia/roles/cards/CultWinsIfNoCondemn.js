@@ -1,5 +1,6 @@
 const Card = require("../../Card");
-const { PRIORITY_DAY_EFFECT_DEFAULT } = require("../../const/Priority");
+const Action = require("../../Action");
+const { PRIORITY_DAY_EFFECT_DEFAULT, PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 const { CULT_FACTIONS } = require("../../const/FactionList");
 
 module.exports = class CultWinsIfNoCondemn extends Card {
@@ -12,7 +13,7 @@ module.exports = class CultWinsIfNoCondemn extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT+1,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if(!this.player.hasAbility(["Win-Con"]){
+        if(!this.player.hasAbility(["Win-Con"])){
           return;
         }
         const enemyMayors = this.game
@@ -52,9 +53,9 @@ module.exports = class CultWinsIfNoCondemn extends Card {
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_DAY_EFFECT_DEFAULT + 1,
-          labels: ["investigate"],
+          labels: ["hidden", "absolute"],
           run: function () {
-          if (!this.player.hasAbility(["Win-Con"])) return;
+          if (!this.actor.hasAbility(["Win-Con"])) return;
             let alivePlayers = this.game.players.filter((p) => p.role);
 
             for (let x = 0; x < alivePlayers.length; x++) {

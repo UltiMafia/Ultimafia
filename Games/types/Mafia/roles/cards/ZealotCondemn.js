@@ -1,6 +1,16 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
-const { PRIORITY_WIN_BY_CONDEMNING } = require("../../const/Priority");
+const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
+const {
+  EVIL_FACTIONS,
+  NOT_EVIL_FACTIONS,
+  CULT_FACTIONS,
+  MAFIA_FACTIONS,
+  FACTION_LEARN_TEAM,
+  FACTION_WIN_WITH_MAJORITY,
+  FACTION_WITH_MEETING,
+  FACTION_KILL,
+} = require("../../const/FactionList");
 
 module.exports = class ZealotCondemn extends Card {
   constructor(role) {
@@ -9,10 +19,10 @@ module.exports = class ZealotCondemn extends Card {
 
 
     this.winCheckSpecial = {
-      priority: PRIORITY_WIN_CHECK_DEFAULT+1,
+      priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if(!this.player.hasAbility(["Win-Con"]){
+        if(!this.player.hasAbility(["Win-Con"])){
           return;
         }
             

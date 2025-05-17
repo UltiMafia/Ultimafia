@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_DAY_EFFECT_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 const { CULT_FACTIONS, EVIL_FACTIONS } = require("../../const/FactionList");
 
 module.exports = class EvilsWinWhenKilled extends Card {
@@ -15,7 +15,7 @@ module.exports = class EvilsWinWhenKilled extends Card {
    
             
               
-        if (this.actor.role.killedPresident) {
+        if (this.player.role.killedPresident) {
           for(let player of this.game.players){
             if(EVIL_FACTIONS.includes(player.faction)){
               winners.addPlayer(player, player.faction);
@@ -32,7 +32,7 @@ module.exports = class EvilsWinWhenKilled extends Card {
             return;
           }
 
-          if(!this.player.hasAbility(["Win-Con", "WhenDead"]){
+          if(!this.player.hasAbility(["Win-Con", "WhenDead"])){
             return;
           }
 

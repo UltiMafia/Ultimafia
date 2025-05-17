@@ -1,6 +1,9 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
-const { PRIORITY_WIN_BY_CONDEMNING } = require("../../const/Priority");
+const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
+const {
+  CULT_FACTIONS,
+} = require("../../const/FactionList");
 
 module.exports = class Twins extends Card {
   constructor(role) {
@@ -11,7 +14,7 @@ module.exports = class Twins extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if(!this.player.hasAbility(["Win-Con"]){
+        if(!this.player.hasAbility(["Win-Con"])){
           return;
         }
         

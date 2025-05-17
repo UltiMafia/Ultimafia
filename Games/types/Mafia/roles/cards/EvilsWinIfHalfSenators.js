@@ -1,14 +1,12 @@
 const Card = require("../../Card");
-const { PRIORITY_DAY_EFFECT_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 const { EVIL_FACTIONS } = require("../../const/FactionList");
 
 module.exports = class EvilsWinIfHalfSenators extends Card {
   constructor(role) {
     super(role);
 
-
-
-      this.winCheckSpecial = {
+this.winCheckSpecial = {
       priority: PRIORITY_WIN_CHECK_DEFAULT+1,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
@@ -29,8 +27,8 @@ module.exports = class EvilsWinIfHalfSenators extends Card {
               winners.addPlayer(player, player.faction);
             }
           }
-      },
-    };
-
-  }
+      }
+    },
+  };
+};
 };

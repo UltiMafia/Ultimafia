@@ -1,5 +1,6 @@
 const Card = require("../../Card");
-const { PRIORITY_DAY_EFFECT_DEFAULT } = require("../../const/Priority");
+const Action = require("../../Action");
+const { PRIORITY_DAY_EFFECT_DEFAULT, PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 
 module.exports = class MayorWin extends Card {
   constructor(role) {
@@ -10,7 +11,7 @@ module.exports = class MayorWin extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if(!this.player.hasAbility(["Win-Con", "OnlyWhenAlive"]){
+        if(!this.player.hasAbility(["Win-Con", "OnlyWhenAlive"])){
           return;
         }
             
@@ -73,9 +74,9 @@ module.exports = class MayorWin extends Card {
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_DAY_EFFECT_DEFAULT + 1,
-          labels: ["investigate"],
+          labels: ["hidden", "absolute"],
           run: function () {
-          if (!this.player.hasAbility(["Win-Con", "OnlyWhenAlive"])) return;
+          if (!this.actor.hasAbility(["Win-Con", "OnlyWhenAlive"])) return;
           if (this.game.alivePlayers().length != 3) {
             this.actor.role.data.MayorWin = false;
             return;
@@ -108,5 +109,5 @@ module.exports = class MayorWin extends Card {
     };
   }
     
-  }
-};
+  };
+
