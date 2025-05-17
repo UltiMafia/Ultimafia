@@ -9,6 +9,7 @@ module.exports = class Seer extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "RevealEvilPlayersToSelf",
+      "LoseIfSeerGuessed",
     ];
 
     this.appearance = {

@@ -9,6 +9,7 @@ module.exports = class Senator extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "AddMultipleCopy",
+      "EvilsWinIfHalfSenators",
     ];
   }
 };

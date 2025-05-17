@@ -943,6 +943,8 @@ export function parseRolePopover(role, modifiers) {
     <InfoRow title="Alignment" content={role.alignment} key="alignment" />
   );
 
+
+
   //Description
   const descLines = [];
 

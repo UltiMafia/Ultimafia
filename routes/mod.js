@@ -1539,7 +1539,8 @@ router.post("/refundRedHearts", async (req, res) => {
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
     var itemsOwned = await redis.getUserItemsOwned(userId);
-    const redHeartCapacity = constants.initialRedHeartCapacity + itemsOwned.bonusRedHearts;
+    const redHeartCapacity =
+      constants.initialRedHeartCapacity + itemsOwned.bonusRedHearts;
 
     await models.User.updateOne(
       { id: userIdToGiveTo },

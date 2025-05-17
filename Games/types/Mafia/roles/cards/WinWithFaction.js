@@ -118,118 +118,12 @@ module.exports = class WinWithFaction extends Card {
         );
 
         //Special Win Cons
-        // win by Zealot
-        const aliveZealots = this.game.players.filter(
-          (p) =>
-            p.role.name === "Zealot" &&
-            p.role.data.ZealotWin &&
-            p.faction == this.player.faction &&
-            p.hasAbility(["Win-Con"])
-        );
-        if (aliveZealots.length > 0) {
-          factionWin(this);
-          return;
-        }
-        // win by Changeling
-        if (CULT_FACTIONS.includes(this.player.faction)) {
-          const aliveChangelings = this.game.players.filter(
-            (p) =>
-              p.role.name === "Changeling" &&
-              p.role.data.twincondemned &&
-              p.hasAbility(["Win-Con"])
-          );
-          if (aliveChangelings.length > 0) {
-            factionWin(this);
-            return;
-          }
-        }
-        //Mayor Win
-        const aliveMayors = this.game
-          .alivePlayers()
-          .filter(
-            (p) =>
-              p.role.name === "Mayor" &&
-              p.role.data.MayorWin &&
-              p.faction == this.player.faction &&
-              p.hasAbility(["Win-Con", "OnlyWhenAlive"])
-          );
-        if (aliveMayors.length > 0 && aliveCount == 3) {
-          if (
-            this.game.getStateName() == "Day" &&
-            aliveMayors[0].role.data.MayorWin
-          ) {
-            factionWin(this);
-            return;
-          }
-        }
         //MagusWin
         if (this.player.faction == "Village") {
           const magusInGameWin = this.game.players.filter(
             (p) => p.role.name == "Magus" && p.role.data.MagusWin
           );
           if (magusInGameWin.length > 0) {
-            factionWin(this);
-            return;
-          }
-        }
-
-        //Win with Nyarlathotep NC
-        const enemyMayors = this.game
-          .alivePlayers()
-          .filter(
-            (p) =>
-              p.role.name === "Mayor" &&
-              p.role.data.MayorWin &&
-              p.faction != this.player.faction &&
-              p.hasAbility(["Win-Con", "OnlyWhenAlive"])
-          );
-        const aliveNyarlathotep = this.game.players.filter(
-          (p) =>
-            p.role.name === "Nyarlathotep" &&
-            p.role.data.NyarlathotepWin &&
-            p.faction == this.player.faction &&
-            p.hasAbility(["Win-Con"])
-        );
-        if (aliveNyarlathotep.length > 0 && enemyMayors.length <= 0) {
-          if (
-            this.game.getStateName() == "Day" &&
-            aliveNyarlathotep[0].role.data.NyarlathotepWin
-          ) {
-            factionWin(this);
-            return;
-          }
-        }
-
-        // win by killing president
-        if (EVIL_FACTIONS.includes(this.player.faction)) {
-          if (this.killedPresident) {
-            factionWin(this);
-            return;
-          }
-        }
-        // win by killing senators
-        if (EVIL_FACTIONS.includes(this.player.faction)) {
-          var hasSenators = false;
-          var senatorCount = 0;
-          for (let p of this.game.players) {
-            if (p.role.name == "Senator") {
-              hasSenators = true;
-              senatorCount += p.alive ? 1 : -1;
-            }
-          }
-
-          if (hasSenators && senatorCount <= 0) {
-            factionWin(this);
-            return;
-          }
-        }
-        // win by guessing seer
-        if (EVIL_FACTIONS.includes(this.player.faction)) {
-          if (
-            seersInGame.length > 0 &&
-            seersInGame.length ==
-              this.game.guessedSeers[this.player.faction].length
-          ) {
             factionWin(this);
             return;
           }
@@ -242,23 +136,6 @@ module.exports = class WinWithFaction extends Card {
             this.game.guessedMoles &&
             this.game.guessedMoles[this.player.faction].length > 0
           ) {
-            factionWin(this);
-            return;
-          }
-        }
-
-        //win by killing Assassin
-        if (this.player.faction == "Village") {
-          var hasSenators = false;
-          var senatorCount = 0;
-          for (let p of this.game.players) {
-            if (p.role.name == "Senator") {
-              hasSenators = true;
-              senatorCount += p.alive ? 1 : -1;
-            }
-          }
-          if (hasSenators && senatorCount <= 0) return;
-          if (this.killedAssassin) {
             factionWin(this);
             return;
           }
