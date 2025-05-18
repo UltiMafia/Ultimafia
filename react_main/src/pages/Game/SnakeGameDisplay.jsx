@@ -237,8 +237,6 @@ export default function SnakeGameDisplay({ player, players, gameSocket }) {
       const val = keyToDir[e.key];
       if (val) {
         gameSocket.send("move", val);
-        e.preventDefault();
-        e.stopPropagation();
       }
     }
     window.addEventListener("keydown", keyListener);
