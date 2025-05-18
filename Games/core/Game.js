@@ -1216,7 +1216,7 @@ module.exports = class Game {
         for (let i = 0; i < banishedCount; i++) {
           let newRole = Random.randArrayVal(banishedRoles);
           //let targetPlayer = Random.randArrayVal(validReplace);
-          validReplace[i].setRole(newRole, undefined, false, true);
+          validReplace[i].setRole(newRole, undefined, false, true, null, null, "RemoveStartingItems");
           if (this.setup.unique) {
             let currentBanishedPlayers = this.players.filter(
               (p) => p.role.data.banished
