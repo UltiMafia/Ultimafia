@@ -34,6 +34,7 @@ module.exports = class Player {
     this.exorcised = false;
     this.data = {};
     this.items = [];
+    this.startingItems = [];
     this.effects = [];
     this.passiveEffects = [];
     this.AchievementTracker = [];
@@ -651,7 +652,7 @@ module.exports = class Player {
     return info;
   }
 
-  setRole(roleName, roleData, noReveal, noAlert, noEmit, faction) {
+  setRole(roleName, roleData, noReveal, noAlert, noEmit, faction, items) {
     const modifiers = roleName.split(":")[1];
     roleName = roleName.split(":")[0];
 
@@ -692,7 +693,12 @@ module.exports = class Player {
         effect.remove();
       }
     }
-
+    if(items == "RemoveStartingItems"){
+    for (let item of this.startingItems) {
+      item.drop();
+    }
+    this.startingItems = [];
+  }
     if (!faction) {
       this.faction = this.game.getRoleAlignment(roleName);
 
@@ -710,6 +716,9 @@ module.exports = class Player {
     let oldAppearanceSelf = this.role?.appearance.self;
     this.removeRole();
     this.role = new role(this, roleData);
+    if(items == "NoStartingItems"){
+      this.role.startItems = [];
+    }
     this.role.init(modifiers);
 
     if (this.game.started == true && this.game.setup.hiddenConverts == true) {
