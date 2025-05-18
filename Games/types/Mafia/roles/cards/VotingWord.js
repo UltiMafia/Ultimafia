@@ -24,7 +24,7 @@ module.exports = class VotingWord extends Card {
           run: function () {
             this.actor.role.cursedWord = this.target;
               for (let player of this.game.players) {
-              player.giveEffect("WordTracker", 1, this.actor);
+              player.giveEffect("WordTracker", 1, this.actor, player, this.target);
             }
           },
         },
@@ -36,15 +36,19 @@ module.exports = class VotingWord extends Card {
       PreVotingPowers: function (meeting) {
 
         if(this.data.PlayersWhoSaidPhrase == null){
-          this.data.PlayersWhoSaidPhraseCount = [];
+          this.data.PlayersWhoSaidPhrase = [];
         }
-        let count = this.data.PlayersWhoSaidPhraseCount.filter((p) => p.faction == "Village").length;
+        let count = this.data.PlayersWhoSaidPhrase.filter((p) => p.faction == "Village").length;
 
             if(this.player.hasAbility(["Voting"])){
-            this.player.role.VotePower = this.data.PlayersWhoSaidPhrase;
+            this.player.role.VotePower = count;
             }
       },
       state: function () {
+        if (this.game.getStateName() == "Day"){
+          this.player.role.data.PlayersWhoSaidPhrase = [];
+          this.player.role.VotePower = 1;
+        }
         if (this.game.getStateName() == "Night") {
           if(this.data.PlayersWhoSaidPhrase == null){
           this.data.PlayersWhoSaidPhrase = [];
@@ -65,23 +69,7 @@ module.exports = class VotingWord extends Card {
         });
 
         this.game.queueAction(action);
-            
-        var action2 = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-          labels: ["effect"],
-          run: function () {
-            for (let player of this.game.players) {
-              player.giveEffect("WordTracker", 1, this.actor);
-            }
-          },
-        });
-
-        this.game.queueAction(action2);
           }
-          this.player.role.VotePower = 1;
-          this.data.PlayersWhoSaidPhrase = [];
         }
       },
     };

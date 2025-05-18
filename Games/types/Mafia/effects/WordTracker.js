@@ -25,7 +25,7 @@ module.exports = class WordTracker extends Effect {
         effect: this,
         labels: ["hidden"],
         run: function () {
-          this.effect.actor.data.PlayersWhoSaidPhrase.push(this.actor);
+          this.effect.actor.role.data.PlayersWhoSaidPhrase.push(this.actor);
           this.effect.remove();
         },
       });
