@@ -148,8 +148,14 @@ module.exports = class Role {
 
     // Hold starting items
     for (let item of this.startItems) {
-      if (typeof item == "string") this.player.holdItem(item);
-      else this.player.holdItem(item.type, ...item.args);
+      let StartingItem;
+      if (typeof item == "string"){
+        StartingItem = this.player.holdItem(item);
+      }
+      else {
+       StartingItem = this.player.holdItem(item.type, ...item.args);
+      }
+      this.player.startingItems.push(StartingItem);
     }
 
     // Give intial effects
