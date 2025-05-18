@@ -2321,15 +2321,15 @@
 */
 
 .role-Resistance-Rebel {
-  background-image: url("/images/roles/survivor-vivid.png");
+  background-image: url("/images/roles/res-rebel-vivid.png");
 }
 
 .role-Resistance-Merlin {
-  background-image: url("/images/roles/seer-vivid.png");
+  background-image: url("/images/roles/res-merlin-vivid.png");
 }
 
 .role-Resistance-Percival {
-  background-image: url("/images/roles/nomad-vivid.png");
+  background-image: url("/images/roles/res-percival-vivid.png");
 }
 
 /*
@@ -2337,19 +2337,19 @@
 */
 
 .role-Resistance-Spy {
-  background-image: url("/images/roles/spy-vivid.png");
+  background-image: url("/images/roles/res-spy-vivid.png");
 }
 
 .role-Resistance-Morgana {
-  background-image: url("/images/roles/actress-vivid.png");
+  background-image: url("/images/roles/res-morgana-vivid.png");
 }
 
 .role-Resistance-Mordred {
-  background-image: url("/images/roles/godfather-vivid.png");
+  background-image: url("/images/roles/res-mordred-vivid.png");
 }
 
 .role-Resistance-Oberon {
-  background-image: url("/images/roles/druid-vivid.png");
+  background-image: url("/images/roles/res-oberon-vivid.png");
 }
 
 /* for role prediction */

@@ -393,6 +393,16 @@ const artContributors = {
       "Mole",
       "Plumber",
     ],
+    Resistance: [
+      "Assassin",
+      "Merlin",
+      "Mordred",
+      "Morgana",
+      "Oberon",
+      "Percival",
+      "Rebel",
+      "Spy",
+    ],
   },
   syn: {
     Mafia: ["Count", "Harpy", "Bawd", "Diplomat", "Associate", "Reaper"],
