@@ -27,10 +27,10 @@ function SnakeGame(props) {
     ? history.states[stateViewing].meetings
     : {};
 
-  const audioFileNames = [];
-  const audioLoops = [];
-  const audioOverrides = [];
-  const audioVolumes = [];
+  const audioFileNames = ["14_Minigame"];
+  const audioLoops = [true];
+  const audioOverrides = [true];
+  const audioVolumes = [1];
 
   // Make player view current state when it changes
   useEffect(() => {
