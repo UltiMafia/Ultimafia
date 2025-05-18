@@ -1977,6 +1977,17 @@ const roleData = {
         "While in a Library meeting, players can only whisper instead of speaking aloud.",
       ],
     },
+    Syllara: {
+      alignment: "Mafia",
+      tags: ["Speech", "Whispers", "Silence", "Advanced", "Speaking"],
+      description: [
+        "Vote counts as 0",
+        "Each Night chooses a 7-20 letter phrase.",
+        "The Syllara's voting power increases by 1 for every Village-Aligned player who said the phrase during the day. ",
+        "All players who said the phrase can only speak in whispers the following day.",
+        "The Syllara's voting power resets at night.",
+      ],
+    },
     Sicario: {
       alignment: "Mafia",
       tags: ["Killing", "Reflexive", "Knife", "Items", "Malicious Effects", "Advanced"],
