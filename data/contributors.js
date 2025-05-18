@@ -392,7 +392,7 @@ const artContributors = {
       "Debtor",
       "Mole",
       "Plumber",
-      "Syllara",
+      "Dilettante",
     ],
     Resistance: [
       "Assassin",
