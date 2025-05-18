@@ -234,15 +234,16 @@ export default function SnakeGameDisplay({ player, players, gameSocket }) {
       d: "right",
     };
     function keyListener(e) {
-      if (keyToDir[e.key]) {
-        if (window.setDirection) {
-          window.setDirection(keyToDir[e.key]);
-        }
+      const val = keyToDir[e.key];
+      if (val) {
+        gameSocket.send("move", val);
+        e.preventDefault();
+        e.stopPropagation();
       }
     }
     window.addEventListener("keydown", keyListener);
     return () => window.removeEventListener("keydown", keyListener);
-  }, [playerId]);
+  }, [playerId, gameSocket]);
 
   return (
     <div
