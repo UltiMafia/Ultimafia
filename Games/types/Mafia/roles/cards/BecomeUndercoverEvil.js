@@ -86,7 +86,7 @@ module.exports = class BecomeUndercoverEvil extends Card {
           undefined,
           false,
           true,
-          false
+          false,  null, null, "RemoveStartingItems"
         );
         let tempApp = {
           self: "Mole",
