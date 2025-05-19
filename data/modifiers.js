@@ -17,7 +17,7 @@ const modifierData = {
     Ascetic: {
       internal: ["Ascetic"],
       tags: ["Role Blocker", "Kills", "Reflexive"],
-      description: "Is untargetable from all killing actions.",
+      description: "Is untargetable from all non-killing actions.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Astral: {

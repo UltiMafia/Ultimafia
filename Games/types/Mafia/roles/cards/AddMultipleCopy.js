@@ -32,7 +32,7 @@ module.exports = class AddMultipleCopy extends Card {
             `${this.player.role.name}:${this.player.role.modifier}`,
             this.player.role.data,
             false,
-            true
+            true, null, null, "RemoveStartingItems"
           );
           shuffledPlayers[x].role.data.reroll = true;
           shuffledPlayers[x].role.data.hasCopied = true;

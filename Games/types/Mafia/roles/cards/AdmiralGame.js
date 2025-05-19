@@ -33,7 +33,7 @@ module.exports = class AdmiralGame extends Card {
               `${players[x].role.name}:${players[x].role.modifier}`
             );
           }
-          players[x].setRole(`Grouch`);
+          players[x].setRole(`Grouch`, undefined, false, true, null, null, "RemoveStartingItems");
         }
         this.player.holdItem("TreasureChest", this.player);
       },

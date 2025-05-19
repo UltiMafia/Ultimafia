@@ -97,7 +97,7 @@ module.exports = class BecomeFakeCultRole extends Card {
           false,
           true,
           false,
-          "No Change"
+          "No Change", "RemoveStartingItems"
         );
         this.player.role.name = "Televangelist";
         let tempApp = {

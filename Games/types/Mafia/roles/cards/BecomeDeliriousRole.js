@@ -53,7 +53,7 @@ module.exports = class BecomeDeliriousRole extends Card {
           false,
           true,
           false,
-          "No Change"
+          "No Change", "RemoveStartingItems"
         );
       },
       roleAssigned: function (player) {
