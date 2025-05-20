@@ -19,11 +19,9 @@ module.exports = class AddRandomModifier extends Card {
             if (!this.dominates()) {
               return;
             }
-              let randomModifier = Random.randArrayVal(
-              Object.entries(modifiers.Mafia)
-                .filter((modifierData) => (!modifierData[1].tags.includes("Items") || modifierData[0] == "Apprehensive") && !modBlacklist.includes(modifierData[0]))
-                .map((modifierData) => modifierData[0])
-            );
+            let modifiers = Object.entries(modifiers.Mafia).filter((modifierData) => (!modifierData[1].tags.includes("Items") || modifierData[0] == "Apprehensive") && !modBlacklist.includes(modifierData[0])).map((modifierData) => modifierData[0]);
+            modifiers = modifiers.filter((m) => this.target.role.modifier.split("/").includes(m));
+              let randomModifier = Random.randArrayVal(modifiers);
 
             let currRoleName = this.target.role.name;
             let currRoleModifier = this.target.role.modifier;
