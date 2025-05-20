@@ -16,7 +16,7 @@ const modifierData = {
     },
     Ascetic: {
       internal: ["Ascetic"],
-      tags: ["Role Blocker", "Kills", "Reflexive"],
+      tags: ["Role Blocker", "Kill Interaction", "Reflexive"],
       description: "Is untargetable from all non-killing actions.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
@@ -45,8 +45,8 @@ const modifierData = {
     Birdbrained: {
       internal: ["StartWithFalcon"],
       tags: ["Information", "Items", "Falcon", "Visits"],
-      eventDescription: "This modifier does nothing when on an Event.",
       description: "Starts with a falcon.",
+      eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
     Blessed: {

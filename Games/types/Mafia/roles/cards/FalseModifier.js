@@ -1,5 +1,7 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
+const { PRIORITY_EFFECT_REMOVER_DEFAULT } = require("../../const/Priority");
+const Action = require("../../Action");
 
 module.exports = class FalseModifier extends Card {
   constructor(role) {
@@ -13,6 +15,29 @@ module.exports = class FalseModifier extends Card {
 
     //this.startEffects = ["FalseMode"];
     this.listeners = {
+        state: function (stateInfo) {
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+
+        var action = new Action({
+          actor: this.player,
+          game: this.player.game,
+          priority: PRIORITY_EFFECT_REMOVER_DEFAULT,
+          labels: ["abolute", "hidden"],
+          run: function () {
+
+            for (let effect of this.actor.effects){
+              if(effect.name == "Insanity"){
+                effect.remove();
+              }
+            }
+              
+          },
+        });
+
+        this.game.queueAction(action);
+      },
       AbilityToggle: function (player) {
         if (player != this.player) {
           return;

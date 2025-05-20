@@ -807,6 +807,15 @@ const roleData = {
       tags: ["Modifiers", "Conversion", "Visiting", "Advanced"],
       description: ["Removes modifiers from other players at night"],
     },
+    Modder: {
+      alignment: "Village",
+      category: "Night-acting",
+      tags: ["Modifiers", "Conversion", "Visiting", "Advanced"],
+      description: [
+        "Each night visits a player and gives them a random Modifier",
+        "The modifier cannot be Exclusive, Clannish, Inclusive, or a Starting Item modifier."
+        ],
+    },
     Photographer: {
       alignment: "Village",
       category: "Night-acting",
@@ -2271,6 +2280,15 @@ const roleData = {
       category: "Night-acting",
       tags: ["Modifiers", "Conversion", "Visiting", "Advanced"],
       description: ["Removes modifiers from other players at night"],
+    },
+    Hacker: {
+      alignment: "Mafia",
+      category: "Night-acting",
+      tags: ["Modifiers", "Conversion", "Visiting", "Advanced"],
+      description: [
+        "Each night visits a player and gives them a random Modifier",
+        "The modifier cannot be Exclusive, Clannish, Inclusive, or a Starting Item modifier."
+        ],
     },
     Pedagogue: {
       alignment: "Mafia",
@@ -4113,6 +4131,13 @@ const roleData = {
       alignment: "Spies",
       tags: ["None"],
       description: ["Cannot be seen by Merlin."],
+    },
+    Assassin: {
+      alignment: "Spies",
+      tags: ["None"],
+      description: [
+        "Will be the only player to guess Merlin."
+      ],
     },
   },
   Ghost: {

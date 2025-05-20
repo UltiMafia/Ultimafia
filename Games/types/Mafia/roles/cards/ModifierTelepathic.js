@@ -23,13 +23,14 @@ module.exports = class ModifierTelepathic extends Card {
     message.modified = true;
     message.anonymous = true;
     message.quotable = false;
-    message.prefix = `says to the ${message.abilityTarget}`;
     message.recipients = [message.sender];
     message.parseForReview = this.parseForReview;
 
     for (let player of message.game.players)
-      if (player.name == message.abilityTarget) message.recipients.push(player);
-
+      if (player.id == message.abilityTarget){
+         message.recipients.push(player);
+        message.prefix = `says to ${player.name}`;
+      }
     if (message.recipients.length == 1) {
       message.cancel = true;
       return;
