@@ -64,6 +64,10 @@ module.exports = class TeamCore extends Card {
             this.game.endGame(winners);
           },
         },
+        shouldMeet: function () {
+          let assassins = this.game.players.filter((p) => p.role.name == "Assassin")
+          return assassins.length <= 0;
+        },
       },
     };
   }

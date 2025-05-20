@@ -4132,6 +4132,13 @@ const roleData = {
       tags: ["None"],
       description: ["Cannot be seen by Merlin."],
     },
+    Assassin: {
+      alignment: "Spies",
+      tags: ["None"],
+      description: [
+        "Will be the only player to guess Merlin."
+      ],
+    },
   },
   Ghost: {
     Villager: {

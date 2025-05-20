@@ -1,6 +1,7 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 const { PRIORITY_EFFECT_REMOVER_DEFAULT } = require("../../const/Priority");
+const Action = require("../../Action");
 
 module.exports = class FalseModifier extends Card {
   constructor(role) {
