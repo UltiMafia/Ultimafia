@@ -9,7 +9,7 @@ module.exports = class Blinder extends Card {
       Blind: {
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive"], exclude: ["Mafia"] },
+        targets: { include: ["alive"], exclude: ["self"] },
         action: {
           labels: ["effect", "blind"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
