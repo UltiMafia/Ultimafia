@@ -9,7 +9,7 @@ module.exports = class Silencer extends Card {
       Silence: {
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive"], exclude: ["Mafia"] },
+        targets: { include: ["alive"]},
         action: {
           labels: ["effect", "silence"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
