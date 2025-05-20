@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const modifiers = require("../../../../../data/modifiers");
 const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
-const modBlacklist = ["Banished", "Clannish", "Diplomatic", "Exclusive", "Inclusive"]
+const modBlacklist = ["Clannish", "Exclusive", "Inclusive"]
 
 module.exports = class AddRandomModifier extends Card {
   constructor(role) {
