@@ -133,8 +133,7 @@ module.exports = class WinWithFaction extends Card {
         if (EVIL_FACTIONS.includes(this.player.faction)) {
           if (
             MolesInGame.length > 0 &&
-            this.game.guessedMoles &&
-            this.game.guessedMoles[this.player.faction].length > 0
+            this.game.hasGuessedMole == true
           ) {
             factionWin(this);
             return;
