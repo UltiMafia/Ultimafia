@@ -55,7 +55,7 @@ export default function Fame(props) {
             <Route exact path="/fame/leaderboard" component={Leaderboard} />
             <Route exact path="/fame/contributors" component={Contributors} />
             <Route exact path="/fame/donors" component={Donors} />
-            <Route render={() => <Redirect to="/fame/contributors" />} />
+            <Route render={() => <Redirect to="/fame/leaderboard" />} />
           </Switch>
         </Card>
       </Box>
