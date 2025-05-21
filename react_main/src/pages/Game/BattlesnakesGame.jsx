@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useContext } from "react";
 
 import {
+  useSocketListeners,
   ThreePanelLayout,
   BotBar,
   TextMeetingLayout,
@@ -50,7 +51,7 @@ function SnakeGame(props) {
   }, []);
 
     useSocketListeners((socket) => {
-      socket.on("state", () => {
+      socket.on("start", () => {
         game.playAudio("14_Minigame");
       });
     }, game.socket);
