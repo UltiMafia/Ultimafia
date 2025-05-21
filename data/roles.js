@@ -2481,7 +2481,7 @@ const roleData = {
       tags: ["Killing", "Voting", "Visiting", "Advanced"],
       description: [
         "Chooses a victim and a target each night.",
-        "If the victim doesn't get 1/3 of living players to vote for the Target, the Victim, Target, or Both will die.",
+        "If the victim doesn't get 1/3 of players to vote for the target the next day, a death will occur randomly between the target, the victim, or both.",
       ],
     },
     Gorgon: {
