@@ -384,7 +384,6 @@ const artContributors = {
       "Magistrate",
       "Braggart",
       "Framer",
-      "Wannabe",
       "Hellhound",
       "Theocrat",
       "Snake Charmer",
