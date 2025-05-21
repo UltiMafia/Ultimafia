@@ -29,9 +29,9 @@ module.exports = class CompareAlignmentInfo extends Information {
     let alignmentA = this.getAppearanceAlignment(this.targetA);
     let alignmentB = this.getAppearanceAlignment(this.targetB);
     if (alignmentA == alignmentB) {
-      this.mainInfo = "the Same";
+      this.mainInfo = "match in alignment";
     } else {
-      this.mainInfo = "Diffrent";
+      this.mainInfo = "differ in alignment";
     }
   }
 
@@ -42,22 +42,21 @@ module.exports = class CompareAlignmentInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    return `You Learn that ${this.targetA.name} and ${this.targetB.name} have ${this.mainInfo} Alignments.`;
-    //return `You Learn that your Target's Alignment is ${this.mainInfo}`
+    return `You weigh the souls of ${this.targetA.name} and ${this.targetB.name}... they ${this.mainInfo}.`;
   }
   getInfoSpecial() {
-    return `${this.targetA.name} and ${this.targetB.name} have ${this.mainInfo} Alignments.`;
+    return `${this.targetA.name} and ${this.targetB.name} ${this.mainInfo}.`;
   }
 
   isTrue() {
     let alignmentA = this.getAlignment(this.targetA);
     let alignmentB = this.getAlignment(this.targetB);
     if (alignmentA == alignmentB) {
-      if (this.mainInfo == "the Same") {
+      if (this.mainInfo == "the same") {
         return true;
       }
     } else {
-      if (this.mainInfo == "Diffrent") {
+      if (this.mainInfo == "different") {
         return true;
       }
     }
@@ -71,14 +70,14 @@ module.exports = class CompareAlignmentInfo extends Information {
     }
   }
   isFavorable() {
-    if (this.mainInfo == "the Same") {
+    if (this.mainInfo == "the same") {
       return true;
     } else {
       return false;
     }
   }
   isUnfavorable() {
-    if (this.mainInfo == "Diffrent") {
+    if (this.mainInfo == "different") {
       return true;
     } else {
       return false;
@@ -89,24 +88,24 @@ module.exports = class CompareAlignmentInfo extends Information {
     let alignmentA = this.getAlignment(this.targetA);
     let alignmentB = this.getAlignment(this.targetB);
     if (alignmentA == alignmentB) {
-      this.mainInfo = "the Same";
+      this.mainInfo = "the same";
     } else {
-      this.mainInfo = "Diffrent";
+      this.mainInfo = "different";
     }
   }
   makeFalse() {
     let alignmentA = this.getAlignment(this.targetA);
     let alignmentB = this.getAlignment(this.targetB);
     if (alignmentA == alignmentB) {
-      this.mainInfo = "Diffrent";
+      this.mainInfo = "different";
     } else {
-      this.mainInfo = "the Same";
+      this.mainInfo = "the same";
     }
   }
   makeFavorable() {
-    this.mainInfo = "the Same";
+    this.mainInfo = "the same";
   }
   makeUnfavorable() {
-    this.mainInfo = "Diffrent";
+    this.mainInfo = "different";
   }
 };
