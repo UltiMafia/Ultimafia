@@ -50,7 +50,7 @@ function SnakeGame(props) {
   }, []);
 
     useSocketListeners((socket) => {
-      socket.on("start", () => {
+      socket.on("state", () => {
         game.playAudio("14_Minigame");
       });
     }, game.socket);
