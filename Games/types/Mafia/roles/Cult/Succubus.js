@@ -13,7 +13,7 @@ module.exports = class Succubus extends Role {
     ];
     this.meetingMods = {
       Rot: {
-        targets: { include: ["alive"], exclude: ["Cult"] },
+        targets: { include: ["alive"] },
       },
     };
   }
