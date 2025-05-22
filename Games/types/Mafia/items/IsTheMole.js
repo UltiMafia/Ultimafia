@@ -8,7 +8,6 @@ module.exports = class IsTheMole extends Item {
   constructor(originalFaction) {
     super("IsTheMole");
 
-    this.lifespan = Infinity;
     this.originalFaction = originalFaction;
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;

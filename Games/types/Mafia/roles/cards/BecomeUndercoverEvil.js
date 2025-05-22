@@ -6,8 +6,6 @@ module.exports = class BecomeUndercoverEvil extends Card {
   constructor(role) {
     super(role);
 
-    //this.startItems = ["IsTheBraggart"];
-
     let banishedRoles = this.game.banishedRoles;
     let roles = this.game.PossibleRoles.filter((r) => r);
     let currentRoles = [];

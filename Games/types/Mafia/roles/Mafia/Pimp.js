@@ -1,10 +1,10 @@
 const Role = require("../../Role");
 
-module.exports = class Succubus extends Role {
+module.exports = class Pimp extends Role {
   constructor(player, data) {
-    super("Succubus", player, data);
+    super("Pimp", player, data);
 
-    this.alignment = "Cult";
+    this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
       "WinWithFaction",
