@@ -184,7 +184,7 @@ const roleData = {
       tags: ["Visiting", "Basic"],
       category: "Basic",
       description: ["Visits a random player each night."],
-      nightOrder: [["Become Tree",(PRIORITY_SUPPORT_VISIT_DEFAULT)]],
+      nightOrder: [["Visit",(PRIORITY_SUPPORT_VISIT_DEFAULT)]],
     },
     //protective roles
     Bawd: {
@@ -391,7 +391,7 @@ const roleData = {
         "Gives out a gun each night.",
         "Gives out a gun to all visitors at night.",
       ],
-      nightOrder: [["Give Falcon",(PRIORITY_ITEM_GIVER_DEFAULT)]],
+      nightOrder: [["Give Guns",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Gemcutter: {
       alignment: "Village",
@@ -930,7 +930,7 @@ const roleData = {
         "If player is Mafia, Mime becomes villager.",
         "If player is Cult or Independent, Mime becomes Amnesiac.",
       ],
-      nightOrder: [["Mime Role",([PRIORITY_MIMIC_ROLE)]],
+      nightOrder: [["Mime Role",(PRIORITY_MIMIC_ROLE)]],
       RolesMadeBy: ["Villager", "Amnesiac"],
     },
     "Lunch Lady": {

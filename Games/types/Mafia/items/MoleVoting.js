@@ -22,18 +22,14 @@ module.exports = class MoleVoting extends Item {
       whileDead: true,
       whileAlive: true,
       action: {
-        labels: ["hidden", "absolute", "group", "multiActor"],
+        labels: ["hidden", "absolute"],
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
         item: this,
         run: function () {
           //this.target.role.revealToPlayer(this.actor);
-          if (!this.game.guessedMoles) {
-            this.game.guessedMoles = {};
-          }
-          this.game.guessedMoles[this.actor.faction] = [];
-          if (this.target.hasItem("IsTheMole")) {
+
+          if (this.target.hasItem("IsTheMole") == true) {
             this.game.hasGuessedMole = true;
-            this.game.guessedMoles[this.actor.faction].push(this.target);
           }
           for (let player of this.game.players) {
             for (let item of player.items) {

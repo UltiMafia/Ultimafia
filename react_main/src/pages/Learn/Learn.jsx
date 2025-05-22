@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Route, Switch, Redirect, useLocation } from "react-router-dom";
 
 import Setups from "./Setup/SetupPage";
+import SetupsNightOrder from "./Setup/SetupNightOrder";
 import Games from "./Games";
 import Terminology from "./Terminology";
 import Achievements from "./Achievements";
@@ -65,6 +66,11 @@ export default function Learn(props) {
                 exact
                 path="/learn/setup/:setupId"
                 render={() => <Setups />}
+              />
+              <Route
+                exact
+                path="/learn/setup/:setupId/nightorder"
+                render={() => <SetupsNightOrder />}
               />
               <Route
                 exact
