@@ -55,6 +55,7 @@ import {
 } from "./constants/themes";
 import { Announcement } from "./components/alerts/Announcement";
 import { BadTextContrast } from "./components/alerts/BadTextContrast";
+import { useIsPhoneDevice } from "./hooks/useIsPhoneDevice";
 
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
@@ -70,6 +71,8 @@ function Main() {
   const openAnnouncements = () => {
     setShowAnnouncementTemporarily(true);
   };
+
+  const isPhoneDevice = useIsPhoneDevice();
 
   const user = useUser();
   const siteInfo = useSiteInfo({
@@ -197,6 +200,10 @@ function Main() {
     return <NewLoading />;
   }
 
+  const style = isPhoneDevice
+    ? { padding: "8px" }
+    : { padding: "24px" };
+
   return (
     <UserContext.Provider value={user}>
       <SiteInfoContext.Provider value={siteInfo}>
@@ -211,7 +218,7 @@ function Main() {
               </Route>
               <Route path="/">
                 <div className="site-wrapper">
-                  <div className="main-container">
+                  <div className="main-container" style={style}>
                     <Header
                       setShowAnnouncementTemporarily={
                         setShowAnnouncementTemporarily

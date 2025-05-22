@@ -17,6 +17,7 @@ import { Link as MuiLink, Popover } from "@mui/material";
 import { Box, Card, AppBar, Toolbar } from "@mui/material";
 import { PieChart } from "./PieChart";
 import { usePopoverOpen } from "../../hooks/usePopoverOpen";
+import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 
 export function YouTubeEmbed(props) {
   const embedId = props.embedId;
@@ -128,6 +129,8 @@ export function MediaEmbed(props) {
 export default function User(props) {
   const theme = useTheme();
   const user = useContext(UserContext);
+  const isPhoneDevice = useIsPhoneDevice();
+
   const links = [
     {
       text: "Profile",
@@ -148,6 +151,13 @@ export default function User(props) {
   ];
   if (user.loaded && !user.loggedIn) return <Redirect to="/" />;
 
+  const outerStyle = isPhoneDevice
+    ? { padding: theme.spacing(1) }
+    : { padding: theme.spacing(3) };
+  const cardStyle = isPhoneDevice
+      ? { padding: theme.spacing(1), textAlign: "justify" }
+      : { padding: theme.spacing(3), textAlign: "justify" };
+
   return (
     <>
       <AppBar position="static">
@@ -166,10 +176,10 @@ export default function User(props) {
           ))}
         </Toolbar>
       </AppBar>
-      <Box maxWidth="1080px" sx={{ padding: theme.spacing(3) }}>
+      <Box maxWidth="1080px" sx={outerStyle}>
         <Card
           variant="outlined"
-          sx={{ padding: theme.spacing(3), textAlign: "justify" }}
+          sx={cardStyle}
         >
           <Switch>
             <Route exact path="/user" render={() => <Profile />} />

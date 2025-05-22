@@ -54,7 +54,6 @@
   align-items: center;
   justify-content: flex-start;
   background-color: var(--scheme-color);
-  height: var(--rowHeight);
   padding: 8px;
 }
 .row.odd {

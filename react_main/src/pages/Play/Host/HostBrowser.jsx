@@ -12,6 +12,8 @@ import { useErrorAlert } from "../../../components/Alerts";
 import "../../../css/host.css";
 import { BotBarLink } from "../Play";
 import { clamp } from "../../../lib/MathExt";
+import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
+import { Stack } from "@mui/material";
 
 export default function HostBrowser(props) {
   const gameType = props.gameType;
@@ -293,6 +295,7 @@ export default function HostBrowser(props) {
 
 function SetupRow(props) {
   const user = useContext(UserContext);
+  const isPhoneDevice = useIsPhoneDevice();
 
   let selIconFormat = "far";
   let favIconFormat = "far";
@@ -300,6 +303,8 @@ function SetupRow(props) {
   if (props.sel.id === props.setup.id) selIconFormat = "fas";
 
   if (props.setup.favorite) favIconFormat = "fas";
+
+  const maxRolesCount = isPhoneDevice ? 6 : 12;
 
   return (
     <div className={`row ${props.odd ? "odd" : ""}`}>
@@ -309,36 +314,36 @@ function SetupRow(props) {
           onClick={() => props.onSelect(props.setup)}
         />
       )}
-      <div className="setup-wrapper">
-        <Setup setup={props.setup} />
-      </div>
-      <div className="setup-name">
-        {filterProfanity(props.setup.name, user.settings)}
-      </div>
-      {user.loggedIn && (
-        <i
-          className={`setup-btn fav-setup fa-star ${favIconFormat}`}
-          onClick={() => props.onFav(props.setup)}
-        />
-      )}
-      {user.loggedIn && props.setup.creator?.id === user.id && (
-        <i
-          className={`setup-btn edit-setup fa-pen-square fas`}
-          onClick={() => props.onEdit(props.setup)}
-        />
-      )}
-      {user.loggedIn && (
-        <i
-          className={`setup-btn copy-setup fa-copy fas`}
-          onClick={() => props.onCopy(props.setup)}
-        />
-      )}
-      {user.loggedIn && props.setup.creator?.id === user.id && (
-        <i
-          className={`setup-btn del-setup fa-times-circle fas`}
-          onClick={() => props.onDel(props.setup)}
-        />
-      )}
+      <Setup setup={props.setup} maxRolesCount={maxRolesCount} fixedWidth />
+      <Stack direction="row" sx={{
+        marginLeft: "auto",
+        marginTop: "8px"
+      }}>
+        {user.loggedIn && (
+          <i
+            className={`setup-btn fav-setup fa-star ${favIconFormat}`}
+            onClick={() => props.onFav(props.setup)}
+          />
+        )}
+        {user.loggedIn && props.setup.creator?.id === user.id && (
+          <i
+            className={`setup-btn edit-setup fa-pen-square fas`}
+            onClick={() => props.onEdit(props.setup)}
+          />
+        )}
+        {user.loggedIn && (
+          <i
+            className={`setup-btn copy-setup fa-copy fas`}
+            onClick={() => props.onCopy(props.setup)}
+          />
+        )}
+        {user.loggedIn && props.setup.creator?.id === user.id && (
+          <i
+            className={`setup-btn del-setup fa-times-circle fas`}
+            onClick={() => props.onDel(props.setup)}
+          />
+        )}
+      </Stack>
     </div>
   );
 }

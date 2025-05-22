@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
-import { Box, Card, IconButton, Typography } from "@mui/material";
+import { Box, IconButton, Paper, Stack, Typography } from "@mui/material";
 import { UserContext } from "../../../Contexts";
 import { useErrorAlert } from "../../../components/Alerts";
 import { getRecentlyPlayedSetups } from "../../../services/gameService";
@@ -69,6 +69,7 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
     if (redirect) return <Redirect to={redirect} />;
 
     const showRedoButton = isPhoneDevice ? user.loggedIn : true;
+    const maxRolesCount = isPhoneDevice ? 5 : 7;
 
     return (
       <Box
@@ -79,8 +80,7 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
           alignItems: "center",
         }}
       >
-        <Setup setup={setup.setupDetails} />
-        <Typography variant="body2">{setup.setupDetails.name}</Typography>
+        <Setup setup={setup.setupDetails} maxRolesCount={maxRolesCount} fixedWidth />
         {showRedoButton && (
           <Box style={{ mx: 1, width: "32px", textAlign: "center" }}>
             {user.loggedIn && (
@@ -95,16 +95,18 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
   });
 
   return (
-    <Card variant="outlined">
+    <Paper>
       <Box sx={{ p: 2 }}>
         <Typography color="primary" gutterBottom>
           Most popular setups
         </Typography>
-        {setupRows}
+        <Stack spacing={1}>
+          {setupRows}
+        </Stack>
         <Box sx={{ mt: 2 }}>
           <svg ref={svgRef} />
         </Box>
       </Box>
-    </Card>
+    </Paper>
   );
 };

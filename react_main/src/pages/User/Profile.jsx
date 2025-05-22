@@ -31,6 +31,7 @@ import { NewLoading } from "../Welcome/NewLoading";
 import { GameRow } from "../Play/LobbyBrowser/GameRow";
 import { Box, IconButton, Typography } from "@mui/material";
 import { useTheme } from "@mui/styles";
+import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 
 export const KUDOS_ICON = `/images/kudos.png`;
 export const KARMA_ICON = `/images/karma.png`;
@@ -80,6 +81,7 @@ export default function Profile() {
   const history = useHistory();
   const errorAlert = useErrorAlert();
   const { userId } = useParams();
+  const isPhoneDevice = useIsPhoneDevice();
 
   const isSelf = userId === user.id;
   const isBlocked = !isSelf && user.blockedUsers.indexOf(userId) !== -1;
@@ -495,6 +497,7 @@ export default function Profile() {
         game={game}
         type={game.status || "Finished"}
         key={game.id}
+        odd={recentGames.indexOf(game) % 2 === 1}
         small
       />
     );
@@ -535,8 +538,9 @@ export default function Profile() {
       </div>
     ));
 
+  const maxRolesCount = isPhoneDevice ? 6 : 8;
   const createdSetupRows = createdSetups.map((setup) => (
-    <Setup setup={setup} key={setup.id} maxRolesCount={5} />
+    <Setup setup={setup} key={setup.id} maxRolesCount={maxRolesCount} fixedWidth  />
   ));
 
   const friendRequestRows = friendRequests.map((user) => (
