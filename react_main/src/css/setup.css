@@ -4,25 +4,15 @@
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
-  flex-wrap: nowrap;
 
-  height: 100%;
-  max-width: 100%;
   border-radius: 3px;
-  overflow: hidden;
+  overflow: visible;
+  
+  margin-left: 4px;
+  margin-right: 4px;
 
-  color: var(--scheme-color-text);
+  background-color: #121212;
   cursor: pointer;
-}
-
-.setup .fa-ellipsis-h {
-  align-self: flex-end;
-  margin-left: 5px;
-}
-
-.setup .multi-setup-icon {
-  font-size: 20px;
-  margin-right: 5px;
 }
 
 .popover .setup,

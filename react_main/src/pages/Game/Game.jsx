@@ -59,6 +59,7 @@ import {
   ButtonGroup,
   TextField,
   Typography,
+  Stack,
 } from "@mui/material";
 import { useTheme } from "@mui/styles";
 import BattlesnakesGame from "./BattlesnakesGame";
@@ -783,6 +784,9 @@ export function BotBar(props) {
       });
   }
 
+  const maxRolesCount = isPhoneDevice ? 5 : 10;
+  const gameButtonStackDirection = isPhoneDevice ? "column" : "row";
+
   return (
     <div className="top">
       {!isPhoneDevice && (
@@ -812,8 +816,7 @@ export function BotBar(props) {
             : {}
         }
       >
-        {props.setup && <Setup setup={props.setup} maxRolesCount={10} />}
-
+        {props.setup && <Setup setup={props.setup} maxRolesCount={maxRolesCount} fixedWidth />}
         <div className="misc-left">
           <div className="misc-buttons">
             <i
@@ -857,7 +860,7 @@ export function BotBar(props) {
             )}
           </div>
         </div>
-        <div className="game-buttons">
+        <Stack direction={gameButtonStackDirection} spacing={1}>
           {props.review && (
             <Button
               className="btn btn-theme-sec archive-game"
@@ -880,7 +883,7 @@ export function BotBar(props) {
               Rehost
             </Button>
           )}
-        </div>
+        </Stack>
       </div>
     </div>
   );

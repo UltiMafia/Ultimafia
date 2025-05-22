@@ -197,6 +197,7 @@ export const LobbyBrowser = () => {
       </div>
     </Box>
   );
+  const maxRolesCount = isPhoneDevice ? 4 : 10;
   const gameList = loading ? (
     <NewLoading small />
   ) : games.length ? (
@@ -208,6 +209,9 @@ export const LobbyBrowser = () => {
           refresh={() => getGameList(listType, page)}
           odd={games.indexOf(game) % 2 === 1}
           key={game.id}
+          showLobbyName
+          showGameTypeIcon
+          maxRolesCount={maxRolesCount}
         />
       ))}
     </List>

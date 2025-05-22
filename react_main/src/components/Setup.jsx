@@ -6,30 +6,44 @@ import { Alignments } from "../Constants";
 import { filterProfanity } from "./Basic";
 import { hyphenDelimit } from "../utils";
 
+import { Box, Card, Divider, Grid, Stack, Typography } from "@mui/material";
+
 import "../css/setup.css";
 import "../css/roles.css";
+
+const ICON_WIDTH = 30;
+const ICON_LIST_PADDING = 8;
 
 export default function Setup(props) {
   const user = useContext(UserContext);
   const popover = useContext(PopoverContext);
   const setupRef = useRef();
-  const maxRolesCount = props.maxRolesCount || 50;
-  const classList = props.classList || "";
   const [setupIndex, setSetupIndex] = useState(0);
-  const disablePopover = props.disablePopover;
-  const small = props.small ?? true;
-
-  var roleCounts, multi, useRoleGroups;
-  var overSize = false;
-
-  useRoleGroups = props.setup.useRoleGroups;
 
   if (typeof props.setup.roles == "string")
     props.setup.roles = JSON.parse(props.setup.roles);
 
-  if (props.setup.closed && !useRoleGroups) {
-    roleCounts = [];
+  const maxRolesCount = props.maxRolesCount || 50;
+  const classList = props.classList || "";
+  const disablePopover = props.disablePopover;
+  const small = props.small ?? true;
+  const fixedWidth = props.fixedWidth || false; // Should the component always be the same size for the same maxRolesCount?
+  const useRoleGroups = props.setup.useRoleGroups;
+  const multi = (!props.setup.closed || useRoleGroups) && !useRoleGroups && (props.setup.roles.length > 1);
 
+  // Calculate the width if fixedWidth is set. This must be adjusted every time that the layout is adjusted.
+  var width = null;
+  if (fixedWidth) {
+    // Two instances of padding
+    // maxRolesCount instances of role icons
+    // one instance of ellipses icon plus 5px of its margin
+    width = (ICON_LIST_PADDING * 2) + ICON_WIDTH * (maxRolesCount + 1) + 5;
+  }
+
+  var roleCounts = [];
+  var overSize = false;
+
+  if (props.setup.closed && !useRoleGroups) {
     for (let alignment of Alignments[props.setup.gameType]) {
       roleCounts.push(
         <RoleCount
@@ -42,9 +56,8 @@ export default function Setup(props) {
       );
     }
   } else if (useRoleGroups) {
-    roleCounts = [];
     for (let roleGroup in props.setup.roles) {
-      if (small && roleCounts.length >= maxRolesCount) {
+      if (roleCounts.length >= maxRolesCount) {
         overSize = true;
         break;
       }
@@ -62,7 +75,6 @@ export default function Setup(props) {
       );
     }
   } else {
-    multi = props.setup.roles.length > 1 && !useRoleGroups;
     selectSetup(setupIndex);
   }
 
@@ -77,11 +89,6 @@ export default function Setup(props) {
         key={role}
       />
     ));
-
-    if (roleCounts.length > maxRolesCount) {
-      roleCounts = roleCounts.slice(0, maxRolesCount);
-      overSize = true;
-    }
   }
 
   function onClick({ ref = null }) {
@@ -106,35 +113,79 @@ export default function Setup(props) {
     }
   }
 
+  if (multi) {
+    roleCounts.unshift(
+      <i
+        onClick={cycleSetups}
+        className="fas fa-list-alt"
+      />
+    );
+  }
+
+  if (roleCounts.length > maxRolesCount) {
+    roleCounts = roleCounts.slice(0, maxRolesCount);
+    overSize = true;
+  }
+
+  if (overSize) {
+    roleCounts.push(
+      <i
+        onClick={onClick}
+        gameType={props.setup.gameType}
+        className="fas fa-ellipsis-h"
+        style={{
+          alignSelf: "flex-end",
+          marginLeft: "5px",
+        }}
+      />
+    );
+  }
+  else {
+    // Otherwise, if not oversized, add an invisible box where the ellipses would be
+    roleCounts.push(
+      <Box 
+        style={{
+          alignSelf: "flex-end",
+          marginLeft: "5px",
+        }}
+      />
+    );
+  }
+
+  const displayedIcons = roleCounts.map((item) => {
+    return (
+      <Grid
+        size={1}
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="30px"
+        width="30px"
+      >
+        {item}
+      </Grid>
+    )
+  });
+
   return (
-    <div
-      className={"setup " + classList}
-      ref={setupRef}
-      style={{ flexWrap: "wrap", overflow: "visible", marginRight: "6px" }}
-    >
-      {props.anonymousGame && (
-        <i className="fas fa-theater-masks" title="Anonymous game" />
-      )}
+    <Card variant="outlined" className={"setup " + classList} ref={setupRef}>
       <GameIcon revealPopover={onClick} gameType={props.setup.gameType} />
-      {useRoleGroups && (
-        <i
-          title={`Role-Groups`}
-          onClick={onClick}
-          className="multi-setup-icon fas fa-user-friends"
-        />
-      )}
-      {multi && (
-        <i onClick={cycleSetups} className="multi-setup-icon fas fa-list-alt" />
-      )}
-      {roleCounts}
-      {overSize && (
-        <i
-          onClick={onClick}
-          gameType={props.setup.gameType}
-          className="fas fa-ellipsis-h"
-        />
-      )}
-    </div>
+      <Divider orientation="vertical" flexItem />
+      <Box sx={{
+        width: width ? `${width}px` : undefined,
+      }}>
+        <Stack direction="column" sx={{
+          padding: "8px",
+        }}>
+          <Typography variant="body2">
+            {filterProfanity(props.setup.name, user.settings)}
+          </Typography>
+          <Grid container>
+            {displayedIcons}
+          </Grid>
+        </Stack>
+      </Box>
+    </Card>
   );
 }
 
