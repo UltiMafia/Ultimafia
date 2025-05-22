@@ -1923,6 +1923,15 @@ const roleData = {
         "Some actions cannot be blocked.",
       ],
     },
+    Pimp: {
+      alignment: "Mafia",
+      category: "Manipulative",
+      tags: ["Manipulative", "Delirium", "Visiting", "Advanced"],
+      description: [
+        "Visits one player each night and makes them Delirious",
+        "Delirious players get False Info and have other abilites disabled.",
+      ],
+    },
     Don: {
       alignment: "Mafia",
       tags: ["Condemn Interaction", "Overturn", "Dusk", "Advanced"],
