@@ -404,7 +404,7 @@ const artContributors = {
       "Spy",
     ],
   },
-  syn: {
+  aleph: {
     Mafia: ["Count", "Harpy", "Bawd", "Diplomat", "Associate", "Reaper"],
     Battlesnakes: ["Snake"],
   },
