@@ -116,7 +116,7 @@ const roleData = {
       tags: ["Items", "Killing", "Alignments", "Day Actions"],
       description: [
         "Starts with a stake.",
-        "Stakes can only kill players who appear as Cult or Mafia-aligned.",
+        "Stakes can only kill players who appear as Evil.",
         "This stake always reveals the Slayer when successfully killing a player.",
       ],
     },
@@ -596,7 +596,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Alignment", "Voting", "Advanced"],
       description: [
-        "Each night, learns if a Mafia or Cult-aligned player voted with the majority on the previous day.",
+        "Each night, learns if an Evil player voted with the majority on the previous day.",
         "If the vote was tied, the Statistician learns a random value.",
       ],
       nightOrder: [["Learn If Evil Voted",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
@@ -1570,10 +1570,10 @@ const roleData = {
       tags: ["Setup Changes", "Exposed", "Treasure Chest", "Voting", "Advanced", "Special"],
       description: [
         "If an Admiral is present, all players start as Grouch. The Admiral is revealed and their vote is worth 10000.",
-        "Starting with the Admiral, players will Pass a Chest containing Village/Independent Roles and 15 Gold to their lower neighbor.",
-        "When a player is passed the Chest they may steal gold or become a role in the chest. Players who steal Gold become Mafia or Cult roles.",
-        "The Admiral must steal 1-5 Gold but will not become mafia or Cult.",
-        "The Player directly below the Admiral can Choose to become an Excess Role, while the Player directly above the Admiral can choose to become Grouch.",
+        "Starting with the Admiral, players will pass a chest containing Village/Independent roles and 15 Gold to their lower neighbor.",
+        "When a player is passed the chest they may steal gold or become a role in the chest. Players who steal Gold become Evil roles.",
+        "The Admiral must steal 1-5 Gold but will not become an Evil role.",
+        "The Player directly below the Admiral can Choose to become an excess role, while the player directly above the Admiral can choose to become Grouch.",
         "If 2 or more non-evil roles are condemned, All village aligned players die.",
       ],
       RolesMadeBy: ["Grouch"],
@@ -1604,7 +1604,7 @@ const roleData = {
       tags: ["Essential", "Selective Revealing", "Exposed", "Advanced"],
       description: [
         "All villagers will know who the President is.",
-        "When the President dies, the Mafia will win.",
+        "When the President dies, the Mafia/Cult will win.",
       ],
       SpecialInteractions: {
         Assassin: [
@@ -1658,7 +1658,7 @@ const roleData = {
       category: "Essential",
       tags: ["Setup Changes", "Advanced", "Win Con"],
       description: [
-        "If half or more the number of Senators in play die, Mafia wins.",
+        "If half or more the number of Senators in play die, Mafia/Cult wins.",
         "Adds 2 to 4 Senators in closed setups.",
       ],
     },
@@ -2766,9 +2766,10 @@ const roleData = {
       category: "Killing",
       tags: ["Killing", "Reflexive", "Day Actions", "Basic"],
       description: [
-        "Chooses to turn all visitors from the previous night into stone, once per game, during the day.",
-        "Players turned to stone are killed.",
+        "Each night learns how many players visited them.",
+        "Once per game, during the day, can choose to kill all of their visitors from the previous night.",
       ],
+      nightOrder: [["Count Visitors",(PRIORITY_INVESTIGATIVE_DEFAULT)],["Mark Visitors",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     Leech: {
       alignment: "Cult",
@@ -2780,6 +2781,7 @@ const roleData = {
         "If the player dies from leeching, the leech also gains an additional 50% of blood.",
         "Gains an extra life after draining 150% blood.",
       ],
+      nightOrder: [["Drain Blood",(PRIORITY_KILL_DEFAULT)]],
     },
     Slasher: {
       alignment: "Cult",
@@ -2808,6 +2810,7 @@ const roleData = {
         "If a player with a Banished Role dies during the Day, May kill a player at night.",
         "Learns what Banished Roles are in the Current Game.",
       ],
+      nightOrder: [["Drain Blood",(PRIORITY_KILL_DEFAULT)]],
     },
     Werewolf: {
       alignment: "Cult",
@@ -2819,6 +2822,7 @@ const roleData = {
         "Lycans retain their original roles, but they unknowingly kill a random non-Cult player on full moons.",
         "Invincible during full moons, except for when visiting the Apothecary.",
       ],
+      nightOrder: [["Create Lycan",(PRIORITY_BITING_WOLF)]],
     },
     //Speaking
     Banshee: {
@@ -2830,6 +2834,7 @@ const roleData = {
         "That player must say the name of the role the following day or the vote will be overturned onto them.",
         "During the day a Banshee may guess who their target is. If they guess correctly, the day ends and that player is condemned.",
       ],
+      nightOrder: [["Send Banshee Word",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     Baphomet: {
       alignment: "Cult",
@@ -2850,6 +2855,7 @@ const roleData = {
         "All players who Role Share with Cthulhu go insane.",
         "Insane players speak gibberish for the rest of the game.",
       ],
+       nightOrder: [["Make Visitors Insane",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     Fungoid: {
       alignment: "Cult",
