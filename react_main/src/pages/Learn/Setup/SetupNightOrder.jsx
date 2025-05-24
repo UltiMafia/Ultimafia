@@ -83,19 +83,20 @@ export function NightOrder() {
     // TODO if setupId not set, redirect to a setup page
   
     if (!setup || !user.loaded) return <NewLoading small />;
+//let useingRoles = setup.roles[0].filter((p));
+//let useingRoles2 = useingRoles.concat(setup.roles[1]);
 
-/*
-  setRoleData(roleName, modifiers){
-      ...siteInfo.rolesRaw[gameType][roleName],
-      modifiers: siteInfo.modifiers[gameType].filter((m) =>
-        modifiers?.split("/").includes(m.name)
-      ),
-    });
-  }, [siteInfo, roleName]);
-*/
+let useingRoles = [];
+for (let i = 0; i < setup.roles.length; i++){
+   useingRoles = useingRoles.concat(
+    Object.keys(setup.roles[i]).map((key) => [key, siteInfo.rolesRaw[setup.gameType][key.split(":")[0]]])
+   );
+  
+}
 
   
-  const roles = Object.keys(setup.roles[0]).map((key) => [key, siteInfo.rolesRaw[setup.gameType][key.split(":")[0]]]);
+  //const roles = Object.keys(useingRoles2).map((key) => [key, siteInfo.rolesRaw[setup.gameType][key.split(":")[0]]]);
+  const roles = useingRoles;
   const hasMafia = (roles.filter((r) => r[1].alignment == "Mafia").length > 0);
   const nightRoles = roles.filter((r) => r[1].nightOrder != null);
 let nightActions = [];

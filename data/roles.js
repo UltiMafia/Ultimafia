@@ -137,7 +137,7 @@ const roleData = {
         "When visited, will announce the name of their visitors.",
         "When whispering, will read their whispers aloud.",
       ],
-      nightOrder: [["Announce Visitors",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 2)]],
+      nightOrder: [["Announce Visitors",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 3)]],
     },
     Miller: {
       alignment: "Village",
@@ -553,7 +553,7 @@ const roleData = {
       description: [
         "Each night chooses 2 players, Learns how many of those players visited or received reports",
       ],
-      nightOrder: [["Track and Check for Reports",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT +1)]],
+      nightOrder: [["Track and Check for Reports",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
     },
     Cop: {
       alignment: "Village",
@@ -608,7 +608,7 @@ const roleData = {
       description: [
         "Each night learns if and how many system messages are being falsified.",
       ],
-      nightOrder: [["Count False Info",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 1)]],
+      nightOrder: [["Count False Info",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1)]],
       SpecialInteractions: {
         Journalist: ["Forensicist will not count Journalist info."],
       },
@@ -660,7 +660,7 @@ const roleData = {
       description: [
         "Chooses a player each night and views any reports they receive the following day.",
       ],
-       nightOrder: [["Learn Reports",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1)]],
+       nightOrder: [["Learn Reports",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 2)]],
     },
     Justice: {
       alignment: "Village",
@@ -771,7 +771,7 @@ const roleData = {
         "Watches a player each night and learns what roles visited them.",
         "Doesn't visit its target.",
       ],
-      nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-5)]],
     },
     Watcher: {
       alignment: "Village",
@@ -781,7 +781,7 @@ const roleData = {
         "Watches a player each night and learns who visited them.",
         "Doesn't visit its target.",
       ],
-      nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-5)]],
     },
     Witness: {
       alignment: "Village",
@@ -791,7 +791,7 @@ const roleData = {
         "Watches a player each night and learns if they were visited by anybody.",
         "Doesn't visit its target.",
       ],
-      nightOrder: [["Watch Binary",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Watch Binary",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-5)]],
     },
     //night-acting roles
     Avenger: {
@@ -821,7 +821,7 @@ const roleData = {
         "The carol is not heard if the player chosen visits at night.",
         "Cannot choose the same player consecutively.",
       ],
-      nightOrder: [["Sing Carol",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Sing Carol",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10)]],
     },
     Comedian: {
       alignment: "Village",
@@ -832,7 +832,7 @@ const roleData = {
         "The joke is not heard if the target chosen visits at night.",
         "Cannot choose same the target consecutively.",
       ],
-      nightOrder: [["Tell Joke",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Tell Joke",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10)]],
     },
     Exorcist: {
       alignment: "Village",
@@ -1277,6 +1277,7 @@ const roleData = {
         "Will attend a Fake Cult Meeting with the non-Demonic Cult roles.",
         "Cult players will learn who the Televangelist selects at night.",
       ],
+      nightOrder: [["Self Deliriate",(PRIORITY_FULL_DISABLE + 1)]],
     },
     Monkey: {
       alignment: "Village",
@@ -1405,7 +1406,7 @@ const roleData = {
         "Dreams about 3 players, at least one of whom is Evil; or about 1 player who is Village aligned.",
         "Does not dream if visited at night.",
       ],
-      nightOrder: [["Dream",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Dream",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-10)]],
     },
     Farmer: {
       alignment: "Village",
@@ -1892,7 +1893,7 @@ const roleData = {
         "Watches a player each night and learns if they were visited by anybody.",
         "Doesn't visit its target.",
       ],
-      nightOrder: [["Watch Binary",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Watch Binary",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5)]],
     },
     Caser: {
       alignment: "Mafia",
@@ -1902,7 +1903,7 @@ const roleData = {
         "Watches a player each night and learns what roles visited them.",
         "Doesn't visit its target.",
       ],
-      nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5)]],
     },
     Informant: {
       alignment: "Mafia",
@@ -1911,7 +1912,7 @@ const roleData = {
       description: [
         "Chooses a player each night and views any reports they receive the following day.",
       ],
-      nightOrder: [["Learn Reports",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1)]],
+      nightOrder: [["Learn Reports",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 2)]],
     },
     Lookout: {
       alignment: "Mafia",
@@ -1921,7 +1922,7 @@ const roleData = {
         "Watches a player each night and learns who visited them.",
         "Doesn't visit its target.",
       ],
-      nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5)]],
     },
     Lurker: {
       alignment: "Mafia",
@@ -3761,7 +3762,7 @@ const roleData = {
         "If that person is condemned the next day, the Warlock has predicted correctly. They gain an extra life.",
         "The Warlock wins if they predict the condemnation correctly twice.",
       ],
-      nightOrder: [["Visit",(0)]],
+      nightOrder: [["Guess Vote",(0)]],
       SpecialInteractions: {
         Assassin: [
           "If an Assassin is Present, The Warlock wins if they can guess a player who is Elected as Room Leader Twice.",
@@ -4354,6 +4355,7 @@ const roleData = {
       description: [
         "If this Event occurs, all players will be blocked and forced to vote on a player to kill and eat during the Night.",
       ],
+      nightOrder: [["Kill and eat",(PRIORITY_KILL_DEFAULT)]],
     },
     Feast: {
       alignment: "Event",
