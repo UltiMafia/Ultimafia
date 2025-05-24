@@ -2822,7 +2822,7 @@ const roleData = {
         "Lycans retain their original roles, but they unknowingly kill a random non-Cult player on full moons.",
         "Invincible during full moons, except for when visiting the Apothecary.",
       ],
-      nightOrder: [["Create Lycan",(PRIORITY_BITING_WOLF)]],
+      nightOrder: [["Create Lycan",(PRIORITY_BITING_WOLF)],["Make Lycans Kill",(PRIORITY_KILL_DEFAULT)]],
     },
     //Speaking
     Banshee: {
@@ -2900,6 +2900,7 @@ const roleData = {
         "Can Control the Infested players actions at night.",
         "If the Infested player dies the Parasite is Exorcised.",
       ],
+      nightOrder: [["Choose Host",(PRIORITY_EFFECT_GIVER_DEFAULT)],["Control Host",(PRIORITY_REDIRECT_ACTION)]],
       graveyardParticipation: "self",
     },
     Psion: {
@@ -2910,6 +2911,7 @@ const roleData = {
         "Visits a player each night.",
         "If that player is not visited by a non-Cult player during the next night, they will go insane.",
       ],
+      nightOrder: [["Mind Warp",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     //Manipulative
     "Cat Lady": {
@@ -2956,6 +2958,7 @@ const roleData = {
         "If the selected role is already in play, The conversion fails.",
         "Independant roles can only be converted to other Independant roles.",
       ],
+      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT)]],
     },
     Incubus: {
       alignment: "Cult",
@@ -2973,6 +2976,7 @@ const roleData = {
         "Each night chooses a player and a non-Demonic Cult role.",
         "When that player dies they will be converted to that role and become Transcendent.",
       ],
+      nightOrder: [["Apply Effect",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
       graveyardParticipation: "all",
     },
     "Queen Bee": {
@@ -2983,6 +2987,7 @@ const roleData = {
         "Every night, visits a player and covers them with sticky honey.",
         "Delays their action by one day/night cycle.",
       ],
+      nightOrder: [["Delay Action",(PRIORITY_MODIFY_ACTION_DELAY)]],
     },
     Selkie: {
       alignment: "Cult",
@@ -2991,6 +2996,7 @@ const roleData = {
       description: [
         "Each night, chooses two players who are forced to target each other.",
       ],
+      nightOrder: [["Redirect Targets",(PRIORITY_REDIRECT_ACTION)]],
     },
     "Snow Queen": {
       alignment: "Cult",
@@ -3044,6 +3050,7 @@ const roleData = {
         "An elucidating potion, which reveals the target's role.",
         "Once a potion has been concocted, it cannot be brewed again for the next two nights.",
       ],
+      nightOrder: [["Save Player",(PRIORITY_NIGHT_SAVER)],["Kill Player",(PRIORITY_KILL_DEFAULT)],["Learn Role",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
     Cannibal: {
       alignment: "Cult",
@@ -3163,6 +3170,7 @@ const roleData = {
         "Visits two Cult-aligned players each night.",
         "The first player is killed while the second player gains an extra life.",
       ],
+     nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT - 1)], ["Grant Extra Life",(PRIORITY_KILL_DEFAULT)]],
     },
     //Demon/Endangered
     Imp: {
@@ -3173,6 +3181,7 @@ const roleData = {
         "Each night, may choose any player to kill.",
         "If an Imp kills themself, a random Cult-aligned player becomes an Imp.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
     },
     Jiangshi: {
       alignment: "Cult",
@@ -3191,6 +3200,7 @@ const roleData = {
         "The first time a Jiangshi chooses a player with a Banished Role, the Jiangshi dies and the Banished Player becomes a Jiangshi.",
         "Jiangshi adds 1 Banished role in closed setups.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
     },
     Necromancer: {
       alignment: "Cult",
@@ -3208,6 +3218,7 @@ const roleData = {
         "Cult players killed by a Necromancer can use their abilites when dead, and will make one of their non-banished Village-Aligned neighbors Delirious until the Necromancer dies.",
         "Necromancer removes 1 Banished role in closed setups.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
       graveyardParticipation: "all",
     },
     Nyarlathotep: {
@@ -3226,6 +3237,7 @@ const roleData = {
         "While alive, most information received by Village roles is made false.",
         "If no one is condemned while Nyarlathotep is alive, the Cult wins.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
     },
     Puca: {
       alignment: "Cult",
@@ -3235,6 +3247,7 @@ const roleData = {
         "Each night, may choose a player to make Delirious and Poison.",
         "Player's Poisoned by a Puca will not be told they were poisoned.",
       ],
+      
     },
     Satyr: {
       alignment: "Cult",
@@ -3252,6 +3265,7 @@ const roleData = {
         "Each night, may choose a player to kill.",
         "A Satyr's starting Non-banished Village-aligned neighbors are Delirious.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
     },
     Lich: {
       alignment: "Cult",
@@ -3270,6 +3284,7 @@ const roleData = {
         "The Vessel is Delirious.",
         "A Lich can only be killed if their Vessel is killed.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
     },
     Shoggoth: {
       alignment: "Cult",
@@ -3287,6 +3302,7 @@ const roleData = {
         "Players killed by shoggoth have a chance of reviving the following night.",
         "Shoggoth will only revive a player once per game.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 2)]],
       graveyardParticipation: "all",
     },
     Snallygaster: {
@@ -3298,6 +3314,7 @@ const roleData = {
         "Can choose to charge their kill instead of killing.",
         "If a Snallygaster chooses to Charge kill, They may kill 3 players the Next Night",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)], ["Charge",(PRIORITY_KILL_DEFAULT - 1)]],
     },
     Poltergeist: {
       alignment: "Cult",
@@ -3318,6 +3335,7 @@ const roleData = {
         "If it is possible for a Poltergeist to spawn in a setup, Dead players can be voted in village meeting.",
         "Condemned dead players are Exorcised.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT)]],
       graveyardParticipation: "self",
     },
     Warden: {
@@ -3336,6 +3354,7 @@ const roleData = {
         "Each of the selected players will choose to Live or Die.",
         "If All 3 players choose to Live they all Die.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
       graveyardParticipation: "all",
     },
     Vampire: {
@@ -3356,6 +3375,7 @@ const roleData = {
         "Vampires can only select Vampires for killing until 1 remains.",
         "Cult can only win when One or fewer Village players are alive.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT)]],
     },
     //Other
     Theocrat: {
@@ -3382,6 +3402,7 @@ const roleData = {
         "Visits a player each night.",
         "Can see who that player visits as well as everyone who visits that player.",
       ],
+      nightOrder: [["Track and Watch",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
     Druid: {
       alignment: "Cult",
@@ -3390,6 +3411,7 @@ const roleData = {
         "Visits a dead player during the night.",
         "That player will be resurrected as a Tree the following day.",
       ],
+      nightOrder: [["Revive as Tree",(PRIORITY_NIGHT_REVIVER - 1)]],
       graveyardParticipation: "all",
     },
     Sorcerer: {
@@ -3408,6 +3430,7 @@ const roleData = {
         "Visits another player at night. This visit has no effect.",
         "Cult roles with the Scatterbrained modifier appear as this role to self.",
       ],
+      nightOrder: [["Visit",(0)]],
     },
     "War Demon": {
       alignment: "Cult",
@@ -3421,6 +3444,7 @@ const roleData = {
         "Very Very Very Very Very Expert",
       ],
       description: ["Very Very Good Role."],
+      nightOrder: [["Very Very Good Action",(69420)]],
     },
 
     //Independent
@@ -3432,6 +3456,7 @@ const roleData = {
         "Wins if condemned by the town.",
         "Independent roles with the Scatterbrained modifier appear as this role to self.",
       ],
+       nightOrder: [["Visit",(0)]],
     },
     Executioner: {
       alignment: "Independent",
@@ -3448,6 +3473,7 @@ const roleData = {
         "Wins if shot and killed with a gun.",
         "Flocks around at night, giving their target a gun.",
       ],
+      nightOrder: [["Give Gun",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Joker: {
       alignment: "Independent",
@@ -3476,6 +3502,7 @@ const roleData = {
         "Chosen player becomes the Old Maid.",
         "Cannot win the game as Old Maid.",
       ],
+      nightOrder: [["Swap Roles",(PRIORITY_SWAP_ROLES)]],
     },
     Traitor: {
       alignment: "Independent",
@@ -3495,6 +3522,7 @@ const roleData = {
         "If a Clown is Killed by non-condemn method, a Mafia-Aligned player becomes Clown",
         "Wins with Mafia.",
       ],
+      nightOrder: [["Visit",(0)]],
     },
     Autocrat: {
       alignment: "Independent",
@@ -3510,6 +3538,7 @@ const roleData = {
         "Immune to conversions.",
         "Wins instead of Village if there is a Freemason majority and counts toward their total.",
       ],
+      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
       RolesMadeBy: ["Freemason"],
     },
     "Panda Bear": {
@@ -3521,6 +3550,7 @@ const roleData = {
         "Wins instead of Village if the Panda Bears survive without mating.",
         "Adds 1 Panda in Closed Setups.",
       ],
+      nightOrder: [["Visit",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     Politician: {
       alignment: "Independent",
@@ -3585,6 +3615,7 @@ const roleData = {
         "Does not gain the ability if condemned by village vote.",
         "Wins if they kill all of their murderers.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
       graveyardParticipation: "self",
     },
     Phantom: {
@@ -3595,6 +3626,7 @@ const roleData = {
         "The killed player will have their role hidden upon death, and instead reveal as their alignment.",
         "Cannot win the game as Phantom.",
       ],
+       nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT)]],
     },
     Prince: {
       alignment: "Independent",
@@ -3604,6 +3636,7 @@ const roleData = {
         "If the Prince dies, everyone of that alignment dies.",
         "Wins if their chosen alignment wins.",
       ],
+      nightOrder: [["Conquer Alignment",(PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT)]],
     },
     Nomad: {
       alignment: "Independent",
@@ -3613,6 +3646,7 @@ const roleData = {
         "Cannot choose the same player consecutively.",
         "Wins if they are alive when the last player they visited wins.",
       ],
+      nightOrder: [["Become Alignment",(PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT)]],
     },
     Hitchhiker: {
       alignment: "Independent",
@@ -3622,6 +3656,7 @@ const roleData = {
         "Will Switch to that player's alignment.",
         "Wins with their current Alignment.",
       ],
+      nightOrder: [["Become Alignment of Visitor",(PRIORITY_BLOCK_VISITORS - 1)]],
     },
     "Creepy Girl": {
       alignment: "Independent",
@@ -3631,6 +3666,7 @@ const roleData = {
         "The doll can be passed to someone else each night.",
         "Wins if the player holding the doll dies.",
       ],
+      nightOrder: [["Give Doll",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Host: {
       alignment: "Independent",
@@ -3660,6 +3696,7 @@ const roleData = {
         "If the beckoned player visits the Siren that night, the player dies.",
         "Wins if successfully kills two players.",
       ],
+      nightOrder: [["Kill Beckoned",(PRIORITY_KILL_SIREN)]],
     },
     "Gingerbread Man": {
       alignment: "Independent",
@@ -3669,6 +3706,7 @@ const roleData = {
         "Will get eaten if the player visits them. That player will gain an extra life.",
         "Wins if alive at the end of the game.",
       ],
+      nightOrder: [["Hide Behind Player",(PRIORITY_NIGHT_SAVER)]],
     },
     Astrologer: {
       alignment: "Independent",
@@ -3677,6 +3715,7 @@ const roleData = {
         "Chooses two players and makes them fall in love with each other.",
         "Wins if their chosen lovers are alive at the end of the game.",
       ],
+      nightOrder: [["Make players in love.",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     Grouch: {
       alignment: "Independent",
@@ -3712,6 +3751,7 @@ const roleData = {
         "Each night, can save one player and also grant them condemn immunity the following day.",
         "Wins from two saves, or if no deaths happen in 2 days and 2 nights.",
       ],
+      nightOrder: [["Protect Player",(PRIORITY_NIGHT_SAVER)]],
     },
     Warlock: {
       alignment: "Independent",
@@ -3721,6 +3761,7 @@ const roleData = {
         "If that person is condemned the next day, the Warlock has predicted correctly. They gain an extra life.",
         "The Warlock wins if they predict the condemnation correctly twice.",
       ],
+      nightOrder: [["Visit",(0)]],
       SpecialInteractions: {
         Assassin: [
           "If an Assassin is Present, The Warlock wins if they can guess a player who is Elected as Room Leader Twice.",
@@ -3747,6 +3788,7 @@ const roleData = {
         "When the Picciotto has visited all the living mafia, they are converted into a random mafia.",
         "Does not win if not converted to mafia.",
       ],
+      nightOrder: [["Visit",(PRIORITY_KILL_DEFAULT)]],
       RolesMadeBy: ["All Mafia Roles"],
     },
     Angel: {
@@ -3758,6 +3800,7 @@ const roleData = {
         "Once per game while alive or dead, can turn on sacrificial powers and protect their target from all kills",
         "Wins if their target is alive at the end of the game.",
       ],
+      nightOrder: [["Protect Player",(PRIORITY_NIGHT_SAVER)]],
     },
     Emperor: {
       alignment: "Independent",
