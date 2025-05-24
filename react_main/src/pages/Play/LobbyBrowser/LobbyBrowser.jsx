@@ -13,8 +13,10 @@ import { RefreshButton } from "./RefreshButton";
 import { NewLoading } from "../../Welcome/NewLoading";
 import {
   Box,
+  Divider,
   Grid,
   List,
+  ListItem,
   Tab,
   Tabs,
   Typography,
@@ -197,23 +199,40 @@ export const LobbyBrowser = () => {
       </div>
     </Box>
   );
+
+  function getRowStubColor(game) {
+    return game.competitive ? "#edb334"
+      : game.ranked ? "#e23b3b"
+      : "#d3d3d3";
+  }
+
   const maxRolesCount = isPhoneDevice ? 4 : 10;
   const gameList = loading ? (
     <NewLoading small />
   ) : games.length ? (
-    <List sx={{ my: -0.5 }}>
-      {games.map((game) => (
-        <GameRow
-          game={game}
-          lobby={lobbyName}
-          refresh={() => getGameList(listType, page)}
-          odd={games.indexOf(game) % 2 === 1}
-          key={game.id}
-          showLobbyName
-          showGameTypeIcon
-          maxRolesCount={maxRolesCount}
-        />
-      ))}
+    <List sx={{ my: -0.5 }} disablePadding>
+      {games.map((game) => {
+        return (
+          <ListItem disablePadding sx={{ py: 1 }}>
+            <Box sx={{
+              backgroundColor: getRowStubColor(game),
+              borderTopLeftRadius: "5px",
+              borderBottomLeftRadius: "5px",
+              alignSelf: "stretch",
+              width: "15px",
+            }}/>
+            <GameRow
+              game={game}
+              lobby={lobbyName}
+              refresh={() => getGameList(listType, page)}
+              odd={games.indexOf(game) % 2 === 1}
+              key={game.id}
+              showLobbyName
+              showGameTypeIcon
+              maxRolesCount={maxRolesCount}
+            />
+          </ListItem>
+      )})}
     </List>
   ) : (
     <Typography style={{ textAlign: "center" }}>
@@ -232,6 +251,7 @@ export const LobbyBrowser = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          marginTop: 1,
         }}
       >
         {!isPhoneDevice && PageNavGames}
@@ -257,6 +277,7 @@ export const LobbyBrowser = () => {
     <>
       {buttons}
       {lobbyTabs}
+      <Divider sx={{ my: 1 }}/>
       {gameList}
 
       <Grid container sx={{ mt: 4 * 1 }} columnSpacing={4}>

@@ -27,7 +27,6 @@ const GameStatus = (props) => {
   const gameButtonDisabled =
     props?.status === "In Progress" && !props.game.spectating;
   const stackedVertically = props.stackedVertically;
-  const showGameTypeIcon = props.showGameTypeIcon;
 
   let buttonUrl, buttonText, buttonVariant, buttonColor;
   if (props.game.status === "Open") {
@@ -40,43 +39,19 @@ const GameStatus = (props) => {
       buttonUrl = `/game/${props.game.id}`;
       buttonText = "Spectate";
       buttonColor = "info";
-      buttonVariant = "outlined";
+      buttonVariant = "contained";
     } else {
       buttonUrl = "/play";
       buttonText = "In Progress";
       buttonColor = "secondary";
-      buttonVariant = "outlined";
+      buttonVariant = "contained";
     }
   } else if (props.game.status === "Finished") {
     buttonUrl = `/game/${props.game.id}`;
     buttonText = "Review";
-    buttonColor = "primary";
-    buttonVariant = "outlined";
+    buttonColor = "info";
+    buttonVariant = "contained";
   }
-
-  const GameTypeIcon = (
-    <Box
-      sx={{
-        textAlign: "center",
-        minWidth: "20px",
-      }}
-    >
-      {props.game.ranked && (
-        <i
-          className="fas fa-heart"
-          title="Ranked game"
-          style={{ color: "#e23b3b" }}
-        />
-      )}
-      {props.game.competitive && (
-        <i
-          className="fas fa-heart"
-          title="Competitive game"
-          style={{ color: "#edb334" }}
-        />
-      )}
-    </Box>
-  );
 
   const GameButton = (
     <Link to={buttonUrl} disabled={gameButtonDisabled}>
@@ -85,8 +60,8 @@ const GameStatus = (props) => {
         color={buttonColor}
         sx={{
           p: 0.5,
-          textTransform: "none",
           width: "100%",
+          textTransform: "none",
           ...(props?.game?.status === "In Progress"
             ? { cursor: "default" }
             : {}),
@@ -100,7 +75,7 @@ const GameStatus = (props) => {
   );
 
   const gameButtonWrapped = (
-    <Box sx={{ minWidth: isPhoneDevice || props.small ? "88px" : "100px", ml: 0.5 }}>
+    <Box sx={{ width: "100px", ml: 0.5 }}>
       {canShowGameButton && GameButton}
       <div
         style={{
@@ -111,14 +86,14 @@ const GameStatus = (props) => {
         {props.game.broken && (
           <i
             className="fas fa-car-crash"
-            style={{ fontSize: "24px" }}
+            style={{ fontSize: "24px", cursor: "not-allowed" }}
             title="Broken"
           />
         )}
         {props.game.private && (
           <i
             className="fas fa-lock"
-            style={{ fontSize: "24px" }}
+            style={{ fontSize: "24px", cursor: "not-allowed" }}
             title="Private"
           />
         )}
@@ -127,25 +102,24 @@ const GameStatus = (props) => {
   );
 
   return (
-    <>
-      <Stack direction="column" spacing={0.5} sx={{
-        ml: isPhoneDevice || props?.small ? 0.5 : 1,
+    <Stack direction={stackedVertically ? "column" : "row-reverse"} spacing={1}
+      sx={{
+        alignItems: stackedVertically ? "stretch" : "center",
+        justifyContent: "center",
+        alignSelf: stackedVertically ? "stretch" : undefined,
+        ml: 1,
+        mr: .5,
       }}>
-        {showGameTypeIcon && GameTypeIcon}
-        {props.game.anonymousGame && (<i className="fas fa-theater-masks" title="Anonymous game" />)}
-      </Stack>
-      <Stack direction={stackedVertically ? "column" : "row"} spacing={1}
-        sx={{
-          alignItems: "center",
-          justifyContent: "space-around",
-          height: stackedVertically ? "100%" : undefined,
-          ml: "8px",
-          mr: "8px",
-        }}>
-        <PlayerCount game={props.game} small={props?.small} />
-        {gameButtonWrapped}
-      </Stack>
-    </>
+      <PlayerCount
+        game={props.game}
+        gameId={props.game.id}
+        anonymousGame={props.game.anonymousGame}
+        status={props.game.status}
+        numSlotsTaken={props.game.players}
+        spectatingAllowed={props.game.spectating}
+      />
+      {gameButtonWrapped}
+    </Stack>
   );
 };
 
@@ -221,37 +195,36 @@ export const GameRow = (props) => {
   if (redirect) return <Redirect to={redirect} />;
   if (!props.game.setup) return <></>;
 
-  const getRowColor = (odd, hover) => {
-    let color = { r: 0, g: 0, b: 0 };
+  function getRowColor(game, hover) {
     if (hover) {
-      color = { r: 7, g: 7, b: 7 };
+      return "rgba(39, 37, 37, 0.7)"
     }
-    if (odd) {
-      if (hover) {
-        return "var(--game-row-odd-h)";
+    else {
+      if (game.competitive) {
+        return "rgba(237, 179, 52, 0.3)"
       }
-      return "var(--game-row-odd)";
-    } else {
-      if (hover) {
-        return "var(--game-row-h)";
+      else if (game.ranked) {
+        return "rgba(226, 59, 59, 0.3)"
       }
-      return "var(--game-row)";
+      else {
+        return "rgba(211, 211, 211, 0.3)"
+      }
     }
   };
 
   return (
-    <ListItemButton
+    <Stack
+      direction="row"
       sx={{
         p: 0,
         py: 0.75,
-
-        display: "flex",
-        flexDirection: "column",
-        background: getRowColor(props.odd),
+        width: "100%",
+        background: getRowColor(props.game, false),
         ":hover": {
-          background: getRowColor(props.odd, true),
+          background: getRowColor(props.game, true),
         },
       }}
+      key={props.game.id}
     >
       <Box
         sx={{
@@ -298,6 +271,6 @@ export const GameRow = (props) => {
           </Box>
         </Stack>
       </Box>
-    </ListItemButton>
+    </Stack>
   );
 };

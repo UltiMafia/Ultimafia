@@ -257,20 +257,11 @@ export default function MafiaGame() {
     <>
       <BotBar
         gameType={gameType}
-        setup={game.setup}
+        game={game}
         history={history}
         stateViewing={stateViewing}
         updateStateViewing={updateStateViewing}
         players={players}
-        socket={game.socket}
-        options={game.options}
-        spectatorCount={game.spectatorCount}
-        setLeave={game.setLeave}
-        finished={game.finished}
-        review={game.review}
-        setRehostId={game.setRehostId}
-        noLeaveRef={game.noLeaveRef}
-        dev={game.dev}
         gameName={<div className="game-name">Mafia</div>}
         timer={<Timer timers={game.timers} history={history} />}
       />

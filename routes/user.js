@@ -193,7 +193,7 @@ router.get("/:id/profile", async function (req, res) {
       })
       .populate({
         path: "games",
-        select: "id setup endTime private broken -_id",
+        select: "id setup endTime private broken ranked competitive spectating anonymousGame -_id",
         populate: {
           path: "setup",
           select:
@@ -238,7 +238,7 @@ router.get("/:id/profile", async function (req, res) {
       .select("game description")
       .populate({
         path: "game",
-        select: "id setup endTime private broken -_id",
+        select: "id setup endTime private broken ranked competitive spectating anonymousGame -_id",
         populate: {
           path: "setup",
           select:
