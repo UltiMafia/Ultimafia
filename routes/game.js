@@ -32,18 +32,26 @@ router.post("/leave", async function (req, res) {
 
 router.get("/mostPlayedRecently", async (req, res) => {
   try {
-    const { daysInterval = 7, maxSetups = 5 } = req.query;
-    const games = await models.Game.aggregate([
-      {
-        $match: {
-          broken: { $exists: false },
-          endTime: {
-            $gt:
-              new Date(new Date().setHours(0, 0, 0, 0)).getTime() -
-              daysInterval * 24 * 60 * 60 * 1000,
-          },
-        },
+    const maxSetups = 5;
+    const daysInterval = 7;
+
+    const { lobby = "All" } = req.query;
+
+    const matchfilter = {
+      broken: { $exists: false },
+      endTime: {
+        $gt:
+          new Date(new Date().setHours(0, 0, 0, 0)).getTime() -
+          daysInterval * 24 * 60 * 60 * 1000,
       },
+    };
+
+    if (lobby && lobby !== "All") {
+      matchfilter["lobby"] = lobby;
+    }
+
+    const games = await models.Game.aggregate([
+      { $match: matchfilter },
       { $group: { _id: "$setup", count: { $sum: 1 } } },
       {
         $lookup: {
