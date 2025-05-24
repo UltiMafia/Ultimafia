@@ -1,29 +1,34 @@
 import React, { useContext, useRef } from "react";
 import { PopoverContext } from "../../../Contexts";
-import { Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 
-export const PlayerCount = ({ game, small }) => {
+export const PlayerCount = (props) => {
   const infoRef = useRef();
   const popover = useContext(PopoverContext);
+
+  const game = props.game;
+  const numSlotsTotal = game.setup.total;
+  const gameId = props.gameId;
+  const anonymousGame = props.anonymousGame;
+  const status = props.status;
+  const numSlotsTaken = Math.min(props.numSlotsTaken || 0, numSlotsTotal);
+  const spectatingAllowed = props.spectatingAllowed || false;
+  const spectatorCount = props.spectatorCount || 0;
 
   function onInfoClick(e) {
     e.stopPropagation();
     popover.onClick(
-      `/game/${game.id}/info`,
+      `/game/${gameId}/info`,
       "game",
       infoRef.current,
-      `Game ${game.id}`
+      `Game ${gameId}`
     );
   }
-
-  if (game.endTime > 0) {
-    game.players = 0;
-  }
+  const gameNotFinished = ["Open", "In Progress"].includes(status);
+  const numSlotsOpen = numSlotsTotal - numSlotsTaken;
 
   const gradientColor = "var(--gradient-color)";
   const backgroundColor = "var(--scheme-color)";
-  const numSlotsTaken = game.players;
-  const numSlotsOpen = game.setup.total - game.players;
   const extraFillColors = `${gradientColor} ,`.repeat(
     Math.max(numSlotsTaken, 0) // Math.max because if we SOMEHOW magically have 8/7 players in the lobby, I'd rather not crash the whole app
   );
@@ -32,7 +37,6 @@ export const PlayerCount = ({ game, small }) => {
   ); // -1 to avoid THE trailing comma
   const extraLastColor = numSlotsOpen > 0 ? backgroundColor : gradientColor; // If the game is filled, make the gradient "full"
 
-  const gameNotFinished = ["Open", "In Progress"].includes(game.status);
   const backgroundImage = gameNotFinished
     ? `linear-gradient(to right, ${gradientColor}, ${extraFillColors}${extraBackgroundColors}${extraLastColor})`
     : "";
@@ -40,16 +44,41 @@ export const PlayerCount = ({ game, small }) => {
     backgroundImage,
   };
 
-  const minWidth = small ? "36px" : "48px";
   return (
-    <Typography
+    <Stack
       className="player-count"
-      sx={{ px: 0.25, mx: 1, minWidth }}
+      direction="row"
+      spacing={0.5}
+      sx={{
+        p: 0.5,
+        width: "100px",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
       ref={infoRef}
       onMouseOver={onInfoClick}
       style={extraStyles}
     >
-      {game.players}/{game.setup.total}
-    </Typography>
+      {anonymousGame && (<i 
+        className="fas fa-theater-masks"
+        title="Anonymous game"
+      />)}
+      <Typography>
+        {numSlotsTaken}/{numSlotsTotal}
+      </Typography>
+      {!spectatingAllowed && (
+        <div className="no-spectator">
+          <i className="fas fa-eye-slash" />
+        </div>
+      )}
+      {gameNotFinished && spectatingAllowed && (
+        <>
+          <i className="fas fa-eye" />
+          <Typography>
+            {spectatorCount}
+          </Typography>
+        </>
+      )}
+    </Stack>
   );
 };

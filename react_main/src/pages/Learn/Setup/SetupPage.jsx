@@ -18,6 +18,7 @@ import { useErrorAlert } from "../../../components/Alerts";
 import { NameWithAvatar } from "../../User/User";
 import Setup from "../../../components/Setup";
 import { NewLoading } from "../../Welcome/NewLoading";
+import { Stack, Typography } from "@mui/material";
 
 export default function Setups() {
   return (
@@ -260,7 +261,8 @@ export function SetupPage() {
   }
   */
   return (
-    <>
+    <Stack direction="column" spacing={1}>
+      <Setup setup={setup} disablePopover />
       <div className="setup-page">
         <div className="span-panel main">
           <div className="heading">Setup Info</div>
@@ -292,16 +294,7 @@ export function SetupPage() {
               title="Competitive Allowed"
               content={setup.competitive ? "Yes" : "No"}
             />
-
             {closedRoleInfo}
-            <SetupRowInfo
-              title="Roles"
-              content={
-                <div className="setup-wrapper">
-                  <Setup setup={setup} disablePopover />
-                </div>
-              }
-            />
           </div>
         </div>
         {shouldDisplayStats && (
@@ -355,7 +348,7 @@ export function SetupPage() {
         )}
       </div>
       <Comments location={commentLocation} />
-    </>
+    </Stack>
   );
 }
 

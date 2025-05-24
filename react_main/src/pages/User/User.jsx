@@ -152,7 +152,7 @@ export default function User(props) {
   if (user.loaded && !user.loggedIn) return <Redirect to="/" />;
 
   const outerStyle = isPhoneDevice
-    ? { padding: theme.spacing(1) }
+    ? { padding: theme.spacing(0) }
     : { padding: theme.spacing(3) };
   const cardStyle = isPhoneDevice
       ? { padding: theme.spacing(1), textAlign: "justify" }

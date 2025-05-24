@@ -122,17 +122,6 @@
   margin-right: 0px;
 }
 
-.game .misc-wrapper .setup {
-  align-self: center;
-
-  margin-bottom: 8px;
-  margin-right: 8px;
-}
-
-.game .misc-wrapper .setup .role-count-wrap {
-  color: white;
-}
-
 .game .misc-wrapper i {
   color: white;
 }
@@ -143,20 +132,6 @@
 
 .game .misc-wrapper .misc-icon:hover {
   opacity: 0.8;
-}
-
-.game .misc-wrapper .misc-icon.fa-microphone {
-  cursor: default;
-  color: #e23b3b;
-}
-
-.game .misc-wrapper .misc-icon.fa-microphone:hover {
-  opacity: 1;
-}
-
-.game .options .player-count i,
-.game .options .spectator-count i {
-  margin-right: 5px;
 }
 
 .game .main {
