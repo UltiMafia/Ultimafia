@@ -63,6 +63,7 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/styles";
 import BattlesnakesGame from "./BattlesnakesGame";
+import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 
 export default function Game() {
   return (
@@ -706,6 +707,7 @@ export function BotBar(props) {
   const siteInfo = useContext(SiteInfoContext);
   const popover = useContext(PopoverContext);
   const hideStateSwitcher = props.hideStateSwitcher;
+  const game = props.game;
 
   function onInfoClick(e) {
     e.stopPropagation();
@@ -722,52 +724,52 @@ export function BotBar(props) {
   }
 
   function onTestClick() {
-    for (let i = 0; i < props.setup.total - 1; i++)
+    for (let i = 0; i < game.setup.total - 1; i++)
       window.open(window.location + "?bot");
   }
 
   function onLeaveGameClick() {
     const shouldLeave =
-      props.finished ||
-      props.review ||
+      game.finished ||
+      game.review ||
       window.confirm("Are you sure you wish to leave?");
 
     if (!shouldLeave) return;
 
-    if (props.finished) siteInfo.hideAllAlerts();
+    if (game.finished) siteInfo.hideAllAlerts();
 
-    if (props.socket.on) props.socket.send("leave");
-    else props.setLeave(true);
+    if (game.socket.on) game.socket.send("leave");
+    else game.setLeave(true);
   }
 
   function onRehostGameClick() {
-    props.noLeaveRef.current = true;
+    game.noLeaveRef.current = true;
 
-    if (props.socket.on) props.socket.send("leave");
+    if (game.socket.on) game.socket.send("leave");
 
     setTimeout(() => {
       var stateLengths = {};
 
-      for (let stateName in props.options.stateLengths)
-        stateLengths[stateName] = props.options.stateLengths[stateName] / 60000;
+      for (let stateName in game.options.stateLengths)
+        stateLengths[stateName] = game.options.stateLengths[stateName] / 60000;
 
       axios
         .post("/game/host", {
           rehost: gameId,
           gameType: props.gameType,
-          setup: props.setup.id,
-          lobby: props.options.lobby,
-          private: props.options.private,
-          spectating: props.options.spectating,
-          guests: props.options.guests,
-          ranked: props.options.ranked,
-          competitive: props.options.competitive,
+          setup: game.setup.id,
+          lobby: game.options.lobby,
+          private: game.options.private,
+          spectating: game.options.spectating,
+          guests: game.options.guests,
+          ranked: game.options.ranked,
+          competitive: game.options.competitive,
           stateLengths: stateLengths,
-          ...props.options.gameTypeOptions,
+          ...game.options.gameTypeOptions,
         })
-        .then((res) => props.setRehostId(res.data))
+        .then((res) => game.setRehostId(res.data))
         .catch((e) => {
-          props.noLeaveRef.current = false;
+          game.noLeaveRef.current = false;
           errorAlert(e);
         });
     }, 500);
@@ -809,59 +811,33 @@ export function BotBar(props) {
         style={
           isPhoneDevice
             ? {
-                marginTop: "8px",
-                width: "96%",
+                padding: "8px",
+                width: "100%",
                 justifyContent: "flex-end",
               }
             : {}
         }
       >
-        {props.setup && <Setup setup={props.setup} maxRolesCount={maxRolesCount} fixedWidth />}
-        <div className="misc-left">
+        {game.setup && <Setup setup={game.setup} maxRolesCount={maxRolesCount} fixedWidth />}
+        {game.dev && !isPhoneDevice && (<div className="misc-left">
           <div className="misc-buttons">
-            <i
-              className="misc-icon fas fa-info-circle"
-              ref={infoRef}
-              onClick={onInfoClick}
-            />
-            {props.dev && (
               <i
                 className="misc-icon fas fa-vial hide-on-mobile"
                 onClick={onTestClick}
               />
-            )}
           </div>
-          <div className="options">
-            {props.options.anonymousGame && !props.review && (
-              <i className="option-icon fas fa-theater-masks" />
-            )}
-            {!props.options.private && !props.review && (
-              <i className="fas fa-lock-open" />
-            )}
-            {props.options.private && !props.review && (
-              <i className="fas fa-lock" />
-            )}
-            {!props.review && (
-              <div className="player-count">
-                {Object.values(props.players).filter((p) => !p.left).length} /{" "}
-                {props.setup.total}
-              </div>
-            )}
-            {!props.options.spectating && !props.review && (
-              <div className="no-spectator">
-                <i className="fas fa-eye-slash" />
-              </div>
-            )}
-            {props.options.spectating && !props.review && (
-              <div className="spectator-count">
-                <i className="fas fa-eye" />
-                {props.spectatorCount}
-              </div>
-            )}
-          </div>
-        </div>
+        </div>)}
         <Stack direction={gameButtonStackDirection} spacing={1}>
-          {props.review && (
+          {!game.review && (<PlayerCount
+            game={game}
+            gameId={game.gameId}
+            anonymousGame={game.options.anonymousGame}
+            status={"In Progress"}
+            numSlotsTaken={Object.keys(game.players).length}
+            spectatingAllowed={game.options.spectating}
+            spectatorCount={game.spectatorCount}
+          />)}
+          {game.review && (
             <Button
               className="btn btn-theme-sec archive-game"
               onClick={onArchiveGameClick}
@@ -875,7 +851,7 @@ export function BotBar(props) {
           >
             Leave
           </Button>
-          {!props.review && props.history.currentState == -2 && (
+          {!game.review && props.history.currentState == -2 && (
             <Button
               className="btn btn-theme-sec rehost-game"
               onClick={onRehostGameClick}

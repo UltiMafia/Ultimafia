@@ -216,6 +216,7 @@ var schemas = {
     id: { type: String, index: true },
     type: String,
     lobby: { type: String, default: "Main" },
+    lobbyName: { type: String, default: "" },
     setup: { type: mongoose.Schema.Types.ObjectId, ref: "Setup" },
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     players: [String],
