@@ -73,14 +73,14 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
 
     return (
       <Box
-        key={`recently-played-${setup._id}`}
+        key={setup.setupDetails.id}
         sx={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
         }}
       >
-        <Setup setup={setup.setupDetails} maxRolesCount={maxRolesCount} fixedWidth />
+        <Setup setup={setup.setupDetails} maxRolesCount={maxRolesCount} fixedWidth/>
         {showRedoButton && (
           <Box style={{ mx: 1, width: "32px", textAlign: "center" }}>
             {user.loggedIn && (

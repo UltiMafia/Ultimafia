@@ -118,6 +118,7 @@ export default function Setup(props) {
       <i
         onClick={cycleSetups}
         className="fas fa-list-alt"
+        key="multi"
       />
     );
   }
@@ -137,6 +138,7 @@ export default function Setup(props) {
           alignSelf: "flex-end",
           marginLeft: "5px",
         }}
+        key="ellipses"
       />
     );
   }
@@ -148,6 +150,7 @@ export default function Setup(props) {
           alignSelf: "flex-end",
           marginLeft: "5px",
         }}
+        key="ellipses"
       />
     );
   }
@@ -161,6 +164,7 @@ export default function Setup(props) {
         alignItems="center"
         height="30px"
         width="30px"
+        key={`grid-${item.key}`}
       >
         {item}
       </Grid>

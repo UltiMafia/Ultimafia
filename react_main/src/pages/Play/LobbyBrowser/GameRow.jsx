@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
+import "../../../css/shiny.css";
 import { Link, Redirect } from "react-router-dom";
 import { PlayerCount } from "./PlayerCount";
 import { UserContext } from "../../../Contexts";
@@ -15,6 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
+import { getRowColor } from "./gameRowColors.js";
 
 const GameStatus = (props) => {
   const user = useContext(UserContext);
@@ -179,6 +181,7 @@ export const GameRow = (props) => {
       setup={props.game.setup}
       maxRolesCount={props.small ? 3 : maxRolesCount}
       fixedWidth
+      key={props.game.setup.id}
     />
   );
 
@@ -195,24 +198,10 @@ export const GameRow = (props) => {
   if (redirect) return <Redirect to={redirect} />;
   if (!props.game.setup) return <></>;
 
-  function getRowColor(game, hover) {
-    if (hover) {
-      return "rgba(39, 37, 37, 0.7)"
-    }
-    else {
-      if (game.competitive) {
-        return "rgba(237, 179, 52, 0.3)"
-      }
-      else if (game.ranked) {
-        return "rgba(226, 59, 59, 0.3)"
-      }
-      else {
-        return "rgba(211, 211, 211, 0.3)"
-      }
-    }
-  };
 
   return (
+    <div className="shiny-container">
+    {props.game.competitive && (<i className="shiny"/>)}
     <Stack
       direction="row"
       sx={{
@@ -232,6 +221,7 @@ export const GameRow = (props) => {
           flexWrap: "wrap",
           alignItems: "center",
           width: "100%",
+          zIndex: 1,
         }}
       >
         <GameStatus 
@@ -249,6 +239,7 @@ export const GameRow = (props) => {
         }}>
           <Stack direction="row" sx={{
               alignItems: "center",
+              zIndex: 1,
             }}
           >
             {showLobbyName && stackedVertically && (<Typography variant="body2">
@@ -263,6 +254,7 @@ export const GameRow = (props) => {
               alignItems: "center",
               //...(!isPhoneDevice ? { whiteSpace: "nowrap" } : {}),
               mr: 0.5,
+              zIndex: 1,
             }}
           >
             {!setupOnNewRow && SetupWrapped}
@@ -272,5 +264,6 @@ export const GameRow = (props) => {
         </Stack>
       </Box>
     </Stack>
+    </div>
   );
 };

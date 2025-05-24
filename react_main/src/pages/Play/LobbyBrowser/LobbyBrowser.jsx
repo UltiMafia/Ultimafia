@@ -26,6 +26,7 @@ import { useLoading } from "../../../hooks/useLoading";
 import { GameRow } from "./GameRow";
 import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
 import { RecentlyPlayedSetups } from "./RecentlyPlayedSetups";
+import { getRowStubColor } from "./gameRowColors.js";
 
 const lobbies = [
   { name: "All", displayName: "All" },
@@ -200,12 +201,6 @@ export const LobbyBrowser = () => {
     </Box>
   );
 
-  function getRowStubColor(game) {
-    return game.competitive ? "#edb334"
-      : game.ranked ? "#e23b3b"
-      : "#d3d3d3";
-  }
-
   const maxRolesCount = isPhoneDevice ? 4 : 10;
   const gameList = loading ? (
     <NewLoading small />
@@ -213,7 +208,7 @@ export const LobbyBrowser = () => {
     <List sx={{ my: -0.5 }} disablePadding>
       {games.map((game) => {
         return (
-          <ListItem disablePadding sx={{ py: 1 }}>
+          <ListItem disablePadding sx={{ py: 1 }} key={game.id}>
             <Box sx={{
               backgroundColor: getRowStubColor(game),
               borderTopLeftRadius: "5px",
