@@ -139,7 +139,7 @@ export const GameRow = (props) => {
   const stackedVertically = props?.small || isPhoneDevice;
   const setupOnNewRow = isPhoneDevice || props.small;
   const maxRolesCount = props.maxRolesCount || undefined;
-  const lobbyName = "";
+  const lobbyName = props.game.lobbyName;
 
   const onRehostClick = () => {
     var stateLengths = {};
@@ -231,9 +231,13 @@ export const GameRow = (props) => {
           showGameTypeIcon={showGameTypeIcon}
           stackedVertically={stackedVertically}
         />
-        {showLobbyName && !stackedVertically && (<Typography variant="body2">
-          {filterProfanity(lobbyName, user.settings)}
-        </Typography>)}
+        {showLobbyName && !stackedVertically && (<Typography variant="body2" sx={{
+            maxWidth: "280px",
+            overflow: "hidden",
+            ml: .5
+          }}>
+            {filterProfanity(lobbyName, user.settings)}
+          </Typography>)}
         <Stack direction={stackedVertically ? "column" : "row"} sx={{
           marginLeft: "auto"
         }}>
@@ -242,9 +246,15 @@ export const GameRow = (props) => {
               zIndex: 1,
             }}
           >
-            {showLobbyName && stackedVertically && (<Typography variant="body2">
-              {filterProfanity(lobbyName, user.settings)}
-            </Typography>)}
+            {showLobbyName && stackedVertically && (<Box sx={{
+              maxWidth: "180px",
+              overflow: "hidden",
+              ml: .5
+            }}>
+              <Typography variant="caption">
+                {filterProfanity(lobbyName, user.settings)}
+              </Typography>
+            </Box>)}
             {showRedoButton && isPhoneDevice && (<Box sx={{ marginLeft: "auto" }}>{redoButton}</Box>)}
           </Stack>
           <Box

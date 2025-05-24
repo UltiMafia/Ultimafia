@@ -144,6 +144,7 @@ router.get("/list", async function (req, res) {
       newGame.setup = newGame.setup.toJSON();
       newGame.hostId = game.hostId;
       newGame.players = game.players.length;
+      newGame.lobbyName = game.settings.lobbyName;
       newGame.ranked = game.settings.ranked;
       newGame.competitive = game.settings.competitive;
       newGame.spectating = game.settings.spectating;
@@ -175,7 +176,7 @@ router.get("/list", async function (req, res) {
         "endTime",
         last,
         first,
-        "id type setup lobby anonymousGame anonymousDeck ranked competitive private spectating guests readyCheck noVeg stateLengths gameTypeOptions broken endTime -_id",
+        "id type setup lobby lobbyName anonymousGame anonymousDeck ranked competitive private spectating guests readyCheck noVeg stateLengths gameTypeOptions broken endTime -_id",
         constants.lobbyPageSize - games.length,
         [
           "setup",
@@ -353,7 +354,7 @@ router.get("/:id/info", async function (req, res) {
     if (!game) {
       game = await models.Game.findOne({ id: gameId })
         .select(
-          "type users players left stateLengths ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions -_id"
+          "type users players left stateLengths lobbyName ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions -_id"
         )
         .populate("users", "id name avatar -_id")
         .populate("anonymousDeck", "-_id -__v -creator");
@@ -419,6 +420,7 @@ router.post("/host", async function (req, res) {
 
     var gameType = String(req.body.gameType);
     var lobby = String(req.body.lobby);
+    var lobbyName = req.body.lobbyName ? String(req.body.lobbyName) : null;
     var rehostId = req.body.rehost && String(req.body.rehost);
     var scheduled = Number(req.body.scheduled);
 
@@ -555,11 +557,10 @@ router.post("/host", async function (req, res) {
       return;
     }
 
+    const user = await models.User.findOne({ id: userId }).select(
+      "redHearts name"
+    );
     if (req.body.ranked) {
-      const user = await models.User.findOne({ id: userId }).select(
-        "redHearts"
-      );
-
       if (user && user.redHearts <= 0) {
         res.status(500);
         res.send(
@@ -680,10 +681,16 @@ router.post("/host", async function (req, res) {
       return;
     }
 
+    if (!lobbyName || lobbyName === "" || lobbyName === "undefined") {
+      lobbyName = `${user.name}'s lobby`;
+    }
+    lobbyName = lobbyName.substring(0, 50);
+
     try {
       var gameId = await gameLoadBalancer.createGame(userId, gameType, {
         setup: setup,
         lobby: lobby,
+        lobbyName: lobbyName,
         private: Boolean(req.body.private),
         guests: Boolean(req.body.guests),
         ranked: Boolean(req.body.ranked),

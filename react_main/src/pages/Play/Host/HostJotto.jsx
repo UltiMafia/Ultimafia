@@ -78,6 +78,12 @@ export default function HostJotto() {
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {
+      label: "Lobby Name",
+      ref: "lobbyName",
+      type: "text",
+      value: defaults.lobbyName,
+    },
+    {
       label: "Private",
       ref: "private",
       type: "boolean",
@@ -169,6 +175,7 @@ export default function HostJotto() {
           gameType: gameType,
           setup: selSetup.id,
           lobby: getFormFieldValue("lobby"),
+          lobbyName: getFormFieldValue("lobbyName"),
           private: getFormFieldValue("private"),
           guests: getFormFieldValue("guests"),
           spectating: getFormFieldValue("spectating"),

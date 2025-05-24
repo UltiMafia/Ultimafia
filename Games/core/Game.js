@@ -55,6 +55,7 @@ module.exports = class Game {
     this.stateEventMessages = {};
     this.setup = options.settings.setup;
     this.lobby = options.settings.lobby;
+    this.lobbyName = options.settings.lobbyName;
     this.private = options.settings.private;
     this.guests = options.settings.guests;
     this.ranked = options.settings.ranked;
@@ -139,6 +140,7 @@ module.exports = class Game {
         settings: {
           setup: this.setup.id,
           total: this.setup.total,
+          lobbyName: this.lobbyName,
           private: this.private,
           guests: this.guests,
           ranked: this.ranked,
@@ -2441,6 +2443,7 @@ module.exports = class Game {
         id: this.id,
         type: this.type,
         lobby: this.lobby,
+        lobbyName: this.lobbyName,
         setup: setup._id,
         users: users,
         players: playerIds,

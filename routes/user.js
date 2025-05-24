@@ -307,6 +307,7 @@ router.get("/:id/profile", async function (req, res) {
         status: game.status,
         scheduled: game.settings.scheduled,
         spectating: game.settings.spectating,
+        lobbyName: game.settings.lobbyName,
         ranked: game.settings.ranked,
         competitive: game.settings.competitive,
       };

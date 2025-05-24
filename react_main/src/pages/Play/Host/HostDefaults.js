@@ -47,6 +47,7 @@ const commonHostOptions = {
   configureDuration: false,
   anonymousGame: false,
   anonymousDeckId: PreferredDeckId,
+  lobbyName: "",
 };
 
 var defaultOptions = {

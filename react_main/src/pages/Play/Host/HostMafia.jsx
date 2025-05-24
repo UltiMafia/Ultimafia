@@ -33,6 +33,12 @@ export default function HostMafia() {
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {
+      label: "Lobby Name",
+      ref: "lobbyName",
+      type: "text",
+      value: defaults.lobbyName,
+    },
+    {
       label: "Private",
       ref: "private",
       type: "boolean",
@@ -172,6 +178,7 @@ export default function HostMafia() {
           gameType,
           lobby,
           setup: selSetup.id,
+          lobbyName: getFormFieldValue("lobbyName"),
           private: getFormFieldValue("private"),
           guests: getFormFieldValue("guests"),
           ranked: getFormFieldValue("ranked"),
