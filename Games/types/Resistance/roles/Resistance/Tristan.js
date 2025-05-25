@@ -5,6 +5,7 @@ module.exports = class Tristan extends Role {
     super("Tristan", player, data);
 
     this.alignment = "Resistance";
+    this.appearance.isolde = "Tristan";
     this.cards = ["TeamCore", "WinWithResistance", "KnowIsolde "];
   }
 };
