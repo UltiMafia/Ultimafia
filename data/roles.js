@@ -49,7 +49,7 @@ const {
   PRIORITY_IDENTITY_STEALER,
 
   PRIORITY_MAFIA_KILL,
-
+  PRIORITY_KILL_SPECIAL,
   PRIORITY_KILL_GUESS_ROLE,
   PRIORITY_KILL_SIREN,
   PRIORITY_KILL_DEFAULT,
@@ -116,7 +116,7 @@ const roleData = {
       tags: ["Items", "Killing", "Alignments", "Day Actions"],
       description: [
         "Starts with a stake.",
-        "Stakes can only kill players who appear as Cult or Mafia-aligned.",
+        "Stakes can only kill players who appear as Evil.",
         "This stake always reveals the Slayer when successfully killing a player.",
       ],
     },
@@ -137,7 +137,7 @@ const roleData = {
         "When visited, will announce the name of their visitors.",
         "When whispering, will read their whispers aloud.",
       ],
-      nightOrder: [["Announce Visitors",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 2)]],
+      nightOrder: [["Announce Visitors",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 3)]],
     },
     Miller: {
       alignment: "Village",
@@ -269,7 +269,7 @@ const roleData = {
         "Prevents their target from being converted to another role.",
         "If their target was a Hostile Independent, the target will become a Villager.",
       ],
-      nightOrder: [["Save from Conversion",(PRIORITY_EFFECT_GIVER_DEFAULT + 1)]],
+      nightOrder: [["Save from Conversion",(PRIORITY_NIGHT_SAVER- 1)]],
       RolesMadeBy: ["Villager"],
     },
     Surgeon: {
@@ -553,7 +553,7 @@ const roleData = {
       description: [
         "Each night chooses 2 players, Learns how many of those players visited or received reports",
       ],
-      nightOrder: [["Track and Check for Reports",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT +1)]],
+      nightOrder: [["Track and Check for Reports",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
     },
     Cop: {
       alignment: "Village",
@@ -596,7 +596,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Alignment", "Voting", "Advanced"],
       description: [
-        "Each night, learns if a Mafia or Cult-aligned player voted with the majority on the previous day.",
+        "Each night, learns if an Evil player voted with the majority on the previous day.",
         "If the vote was tied, the Statistician learns a random value.",
       ],
       nightOrder: [["Learn If Evil Voted",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
@@ -608,7 +608,7 @@ const roleData = {
       description: [
         "Each night learns if and how many system messages are being falsified.",
       ],
-      nightOrder: [["Count False Info",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 1)]],
+      nightOrder: [["Count False Info",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1)]],
       SpecialInteractions: {
         Journalist: ["Forensicist will not count Journalist info."],
       },
@@ -660,7 +660,7 @@ const roleData = {
       description: [
         "Chooses a player each night and views any reports they receive the following day.",
       ],
-       nightOrder: [["Learn Reports",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1)]],
+       nightOrder: [["Learn Reports",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 2)]],
     },
     Justice: {
       alignment: "Village",
@@ -771,7 +771,7 @@ const roleData = {
         "Watches a player each night and learns what roles visited them.",
         "Doesn't visit its target.",
       ],
-      nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-5)]],
     },
     Watcher: {
       alignment: "Village",
@@ -781,7 +781,7 @@ const roleData = {
         "Watches a player each night and learns who visited them.",
         "Doesn't visit its target.",
       ],
-      nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-5)]],
     },
     Witness: {
       alignment: "Village",
@@ -791,7 +791,7 @@ const roleData = {
         "Watches a player each night and learns if they were visited by anybody.",
         "Doesn't visit its target.",
       ],
-      nightOrder: [["Watch Binary",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Watch Binary",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-5)]],
     },
     //night-acting roles
     Avenger: {
@@ -821,7 +821,7 @@ const roleData = {
         "The carol is not heard if the player chosen visits at night.",
         "Cannot choose the same player consecutively.",
       ],
-      nightOrder: [["Sing Carol",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Sing Carol",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10)]],
     },
     Comedian: {
       alignment: "Village",
@@ -832,7 +832,7 @@ const roleData = {
         "The joke is not heard if the target chosen visits at night.",
         "Cannot choose same the target consecutively.",
       ],
-      nightOrder: [["Tell Joke",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Tell Joke",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10)]],
     },
     Exorcist: {
       alignment: "Village",
@@ -1277,6 +1277,7 @@ const roleData = {
         "Will attend a Fake Cult Meeting with the non-Demonic Cult roles.",
         "Cult players will learn who the Televangelist selects at night.",
       ],
+      nightOrder: [["Self Deliriate",(PRIORITY_FULL_DISABLE + 1)]],
     },
     Monkey: {
       alignment: "Village",
@@ -1405,7 +1406,7 @@ const roleData = {
         "Dreams about 3 players, at least one of whom is Evil; or about 1 player who is Village aligned.",
         "Does not dream if visited at night.",
       ],
-      nightOrder: [["Dream",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Dream",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-10)]],
     },
     Farmer: {
       alignment: "Village",
@@ -1463,9 +1464,6 @@ const roleData = {
         "Can only be killed by village condemnation.",
       ],
        nightOrder: [["Kill Visitors",(PRIORITY_KILL_DEFAULT)]],
-      SpecialInteractions: {
-        Hellhound: ["A Hellhound can kill a Granny at Night."],
-      },
     },
     Jailer: {
       alignment: "Village",
@@ -1483,7 +1481,7 @@ const roleData = {
         "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
         "Decides whether or not the prisoner should be executed.",
       ],
-      nightOrder: [["Execute Prisoner",(PRIORITY_KILL_DEFAULT)],["Block Jailed Player's Visitors",(PRIORITY_UNTARGETABLE)]],
+      nightOrder: [["Execute Prisoner",(PRIORITY_KILL_DEFAULT)],["Block Jailed Player's Visitors",(PRIORITY_UNTARGETABLE-5)]],
     },
     Seeker: {
       alignment: "Village",
@@ -1570,10 +1568,10 @@ const roleData = {
       tags: ["Setup Changes", "Exposed", "Treasure Chest", "Voting", "Advanced", "Special"],
       description: [
         "If an Admiral is present, all players start as Grouch. The Admiral is revealed and their vote is worth 10000.",
-        "Starting with the Admiral, players will Pass a Chest containing Village/Independent Roles and 15 Gold to their lower neighbor.",
-        "When a player is passed the Chest they may steal gold or become a role in the chest. Players who steal Gold become Mafia or Cult roles.",
-        "The Admiral must steal 1-5 Gold but will not become mafia or Cult.",
-        "The Player directly below the Admiral can Choose to become an Excess Role, while the Player directly above the Admiral can choose to become Grouch.",
+        "Starting with the Admiral, players will pass a chest containing Village/Independent roles and 15 Gold to their lower neighbor.",
+        "When a player is passed the chest they may steal gold or become a role in the chest. Players who steal Gold become Evil roles.",
+        "The Admiral must steal 1-5 Gold but will not become an Evil role.",
+        "The Player directly below the Admiral can Choose to become an excess role, while the player directly above the Admiral can choose to become Grouch.",
         "If 2 or more non-evil roles are condemned, All village aligned players die.",
       ],
       RolesMadeBy: ["Grouch"],
@@ -1604,7 +1602,7 @@ const roleData = {
       tags: ["Essential", "Selective Revealing", "Exposed", "Advanced"],
       description: [
         "All villagers will know who the President is.",
-        "When the President dies, the Mafia will win.",
+        "When the President dies, the Mafia/Cult will win.",
       ],
       SpecialInteractions: {
         Assassin: [
@@ -1658,7 +1656,7 @@ const roleData = {
       category: "Essential",
       tags: ["Setup Changes", "Advanced", "Win Con"],
       description: [
-        "If half or more the number of Senators in play die, Mafia wins.",
+        "If half or more the number of Senators in play die, Mafia/Cult wins.",
         "Adds 2 to 4 Senators in closed setups.",
       ],
     },
@@ -1892,7 +1890,7 @@ const roleData = {
         "Watches a player each night and learns if they were visited by anybody.",
         "Doesn't visit its target.",
       ],
-      nightOrder: [["Watch Binary",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Watch Binary",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5)]],
     },
     Caser: {
       alignment: "Mafia",
@@ -1902,7 +1900,7 @@ const roleData = {
         "Watches a player each night and learns what roles visited them.",
         "Doesn't visit its target.",
       ],
-      nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5)]],
     },
     Informant: {
       alignment: "Mafia",
@@ -1911,7 +1909,7 @@ const roleData = {
       description: [
         "Chooses a player each night and views any reports they receive the following day.",
       ],
-      nightOrder: [["Learn Reports",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1)]],
+      nightOrder: [["Learn Reports",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 2)]],
     },
     Lookout: {
       alignment: "Mafia",
@@ -1921,7 +1919,7 @@ const roleData = {
         "Watches a player each night and learns who visited them.",
         "Doesn't visit its target.",
       ],
-      nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT)]],
+      nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5)]],
     },
     Lurker: {
       alignment: "Mafia",
@@ -2017,7 +2015,7 @@ const roleData = {
         "Chooses one player every night to snitch on.",
         "Chooses another player to divert attention from and redirect their visitors to the first target.",
       ],
-      nightOrder: [["Deflect Visitors",(PRIORITY_REDIRECT_ACTION)]],
+      nightOrder: [["Deflect Visitors",(PRIORITY_REDIRECT_ACTION+3)]],
     },
     Ninja: {
       alignment: "Mafia",
@@ -2281,7 +2279,7 @@ const roleData = {
         "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
         "Decides whether or not the prisoner should be executed.",
       ],
-      nightOrder: [["Execute Prisoner",(PRIORITY_KILL_DEFAULT)],["Block Jailed Player's Visitors",(PRIORITY_UNTARGETABLE)]],
+      nightOrder: [["Execute Prisoner",(PRIORITY_KILL_DEFAULT)],["Block Jailed Player's Visitors",(PRIORITY_UNTARGETABLE-5)]],
     },
     Bookie: {
       alignment: "Mafia",
@@ -2406,7 +2404,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Manipulative", "Redirection", "Control", "Visiting", "Basic"],
       description: ["Each night, attracts a player to visit them."],
-      nightOrder: [["Redirect Action",(PRIORITY_REDIRECT_ACTION)]],
+      nightOrder: [["Redirect Action",(PRIORITY_REDIRECT_ACTION+2)]],
     },
     Blinder: {
       alignment: "Mafia",
@@ -2466,7 +2464,7 @@ const roleData = {
         "Prevents their target from being converted.",
         "If their target was a Hostile Independent, the target will become a Traitor.",
       ],
-      nightOrder: [["Save from Conversion",(PRIORITY_EFFECT_GIVER_DEFAULT + 1)]],
+      nightOrder: [["Save from Conversion",(PRIORITY_NIGHT_SAVER - 1)]],
     },
     Forger: {
       alignment: "Mafia",
@@ -2766,9 +2764,10 @@ const roleData = {
       category: "Killing",
       tags: ["Killing", "Reflexive", "Day Actions", "Basic"],
       description: [
-        "Chooses to turn all visitors from the previous night into stone, once per game, during the day.",
-        "Players turned to stone are killed.",
+        "Each night learns how many players visited them.",
+        "Once per game, during the day, can choose to kill all of their visitors from the previous night.",
       ],
+      nightOrder: [["Count Visitors",(PRIORITY_INVESTIGATIVE_DEFAULT)],["Mark Visitors",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     Leech: {
       alignment: "Cult",
@@ -2780,6 +2779,7 @@ const roleData = {
         "If the player dies from leeching, the leech also gains an additional 50% of blood.",
         "Gains an extra life after draining 150% blood.",
       ],
+      nightOrder: [["Drain Blood",(PRIORITY_KILL_SPECIAL - 4)]],
     },
     Slasher: {
       alignment: "Cult",
@@ -2808,6 +2808,7 @@ const roleData = {
         "If a player with a Banished Role dies during the Day, May kill a player at night.",
         "Learns what Banished Roles are in the Current Game.",
       ],
+      nightOrder: [["Drain Blood",(PRIORITY_KILL_DEFAULT)]],
     },
     Werewolf: {
       alignment: "Cult",
@@ -2819,6 +2820,7 @@ const roleData = {
         "Lycans retain their original roles, but they unknowingly kill a random non-Cult player on full moons.",
         "Invincible during full moons, except for when visiting the Apothecary.",
       ],
+      nightOrder: [["Create Lycan",(PRIORITY_BITING_WOLF)],["Make Lycans Kill",(PRIORITY_KILL_DEFAULT)]],
     },
     //Speaking
     Banshee: {
@@ -2830,6 +2832,7 @@ const roleData = {
         "That player must say the name of the role the following day or the vote will be overturned onto them.",
         "During the day a Banshee may guess who their target is. If they guess correctly, the day ends and that player is condemned.",
       ],
+      nightOrder: [["Send Banshee Word",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     Baphomet: {
       alignment: "Cult",
@@ -2850,6 +2853,7 @@ const roleData = {
         "All players who Role Share with Cthulhu go insane.",
         "Insane players speak gibberish for the rest of the game.",
       ],
+       nightOrder: [["Make Visitors Insane",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     Fungoid: {
       alignment: "Cult",
@@ -2894,6 +2898,7 @@ const roleData = {
         "Can Control the Infested players actions at night.",
         "If the Infested player dies the Parasite is Exorcised.",
       ],
+      nightOrder: [["Choose Host",(PRIORITY_EFFECT_GIVER_DEFAULT)],["Control Host",(PRIORITY_REDIRECT_ACTION)]],
       graveyardParticipation: "self",
     },
     Psion: {
@@ -2904,6 +2909,7 @@ const roleData = {
         "Visits a player each night.",
         "If that player is not visited by a non-Cult player during the next night, they will go insane.",
       ],
+      nightOrder: [["Mind Warp",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     //Manipulative
     "Cat Lady": {
@@ -2950,6 +2956,7 @@ const roleData = {
         "If the selected role is already in play, The conversion fails.",
         "Independant roles can only be converted to other Independant roles.",
       ],
+      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT)]],
     },
     Incubus: {
       alignment: "Cult",
@@ -2967,6 +2974,7 @@ const roleData = {
         "Each night chooses a player and a non-Demonic Cult role.",
         "When that player dies they will be converted to that role and become Transcendent.",
       ],
+      nightOrder: [["Apply Effect",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
       graveyardParticipation: "all",
     },
     "Queen Bee": {
@@ -2977,6 +2985,7 @@ const roleData = {
         "Every night, visits a player and covers them with sticky honey.",
         "Delays their action by one day/night cycle.",
       ],
+      nightOrder: [["Delay Action",(PRIORITY_MODIFY_ACTION_DELAY)]],
     },
     Selkie: {
       alignment: "Cult",
@@ -2985,6 +2994,7 @@ const roleData = {
       description: [
         "Each night, chooses two players who are forced to target each other.",
       ],
+      nightOrder: [["Redirect Targets",(PRIORITY_REDIRECT_ACTION+1)]],
     },
     "Snow Queen": {
       alignment: "Cult",
@@ -3038,6 +3048,7 @@ const roleData = {
         "An elucidating potion, which reveals the target's role.",
         "Once a potion has been concocted, it cannot be brewed again for the next two nights.",
       ],
+      nightOrder: [["Save Player",(PRIORITY_NIGHT_SAVER)],["Kill Player",(PRIORITY_KILL_DEFAULT)],["Learn Role",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
     Cannibal: {
       alignment: "Cult",
@@ -3157,6 +3168,7 @@ const roleData = {
         "Visits two Cult-aligned players each night.",
         "The first player is killed while the second player gains an extra life.",
       ],
+     nightOrder: [["Kill to grant extra life",(PRIORITY_KILL_SPECIAL - 3)]],
     },
     //Demon/Endangered
     Imp: {
@@ -3167,6 +3179,7 @@ const roleData = {
         "Each night, may choose any player to kill.",
         "If an Imp kills themself, a random Cult-aligned player becomes an Imp.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_SPECIAL)]],
     },
     Jiangshi: {
       alignment: "Cult",
@@ -3185,6 +3198,7 @@ const roleData = {
         "The first time a Jiangshi chooses a player with a Banished Role, the Jiangshi dies and the Banished Player becomes a Jiangshi.",
         "Jiangshi adds 1 Banished role in closed setups.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_SPECIAL)]],
     },
     Necromancer: {
       alignment: "Cult",
@@ -3202,6 +3216,7 @@ const roleData = {
         "Cult players killed by a Necromancer can use their abilites when dead, and will make one of their non-banished Village-Aligned neighbors Delirious until the Necromancer dies.",
         "Necromancer removes 1 Banished role in closed setups.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
       graveyardParticipation: "all",
     },
     Nyarlathotep: {
@@ -3220,6 +3235,7 @@ const roleData = {
         "While alive, most information received by Village roles is made false.",
         "If no one is condemned while Nyarlathotep is alive, the Cult wins.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
     },
     Puca: {
       alignment: "Cult",
@@ -3229,6 +3245,7 @@ const roleData = {
         "Each night, may choose a player to make Delirious and Poison.",
         "Player's Poisoned by a Puca will not be told they were poisoned.",
       ],
+      
     },
     Satyr: {
       alignment: "Cult",
@@ -3246,6 +3263,7 @@ const roleData = {
         "Each night, may choose a player to kill.",
         "A Satyr's starting Non-banished Village-aligned neighbors are Delirious.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
     },
     Lich: {
       alignment: "Cult",
@@ -3264,6 +3282,7 @@ const roleData = {
         "The Vessel is Delirious.",
         "A Lich can only be killed if their Vessel is killed.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
     },
     Shoggoth: {
       alignment: "Cult",
@@ -3281,6 +3300,7 @@ const roleData = {
         "Players killed by shoggoth have a chance of reviving the following night.",
         "Shoggoth will only revive a player once per game.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 2)]],
       graveyardParticipation: "all",
     },
     Snallygaster: {
@@ -3292,6 +3312,7 @@ const roleData = {
         "Can choose to charge their kill instead of killing.",
         "If a Snallygaster chooses to Charge kill, They may kill 3 players the Next Night",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)], ["Charge",(PRIORITY_KILL_DEFAULT - 1)]],
     },
     Poltergeist: {
       alignment: "Cult",
@@ -3312,6 +3333,7 @@ const roleData = {
         "If it is possible for a Poltergeist to spawn in a setup, Dead players can be voted in village meeting.",
         "Condemned dead players are Exorcised.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT)]],
       graveyardParticipation: "self",
     },
     Warden: {
@@ -3330,6 +3352,7 @@ const roleData = {
         "Each of the selected players will choose to Live or Die.",
         "If All 3 players choose to Live they all Die.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
       graveyardParticipation: "all",
     },
     Vampire: {
@@ -3350,6 +3373,7 @@ const roleData = {
         "Vampires can only select Vampires for killing until 1 remains.",
         "Cult can only win when One or fewer Village players are alive.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT)]],
     },
     //Other
     Theocrat: {
@@ -3376,6 +3400,7 @@ const roleData = {
         "Visits a player each night.",
         "Can see who that player visits as well as everyone who visits that player.",
       ],
+      nightOrder: [["Track and Watch",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
     Druid: {
       alignment: "Cult",
@@ -3384,6 +3409,7 @@ const roleData = {
         "Visits a dead player during the night.",
         "That player will be resurrected as a Tree the following day.",
       ],
+      nightOrder: [["Revive as Tree",(PRIORITY_NIGHT_REVIVER - 1)]],
       graveyardParticipation: "all",
     },
     Sorcerer: {
@@ -3402,6 +3428,7 @@ const roleData = {
         "Visits another player at night. This visit has no effect.",
         "Cult roles with the Scatterbrained modifier appear as this role to self.",
       ],
+      nightOrder: [["Visit",(0)]],
     },
     "War Demon": {
       alignment: "Cult",
@@ -3415,6 +3442,7 @@ const roleData = {
         "Very Very Very Very Very Expert",
       ],
       description: ["Very Very Good Role."],
+      nightOrder: [["Very Very Good Action",(69420)]],
     },
 
     //Independent
@@ -3426,6 +3454,7 @@ const roleData = {
         "Wins if condemned by the town.",
         "Independent roles with the Scatterbrained modifier appear as this role to self.",
       ],
+       nightOrder: [["Visit",(0)]],
     },
     Executioner: {
       alignment: "Independent",
@@ -3442,6 +3471,7 @@ const roleData = {
         "Wins if shot and killed with a gun.",
         "Flocks around at night, giving their target a gun.",
       ],
+      nightOrder: [["Give Gun",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Joker: {
       alignment: "Independent",
@@ -3470,6 +3500,7 @@ const roleData = {
         "Chosen player becomes the Old Maid.",
         "Cannot win the game as Old Maid.",
       ],
+      nightOrder: [["Swap Roles",(PRIORITY_SWAP_ROLES)]],
     },
     Traitor: {
       alignment: "Independent",
@@ -3489,6 +3520,7 @@ const roleData = {
         "If a Clown is Killed by non-condemn method, a Mafia-Aligned player becomes Clown",
         "Wins with Mafia.",
       ],
+      nightOrder: [["Visit",(0)]],
     },
     Autocrat: {
       alignment: "Independent",
@@ -3504,6 +3536,7 @@ const roleData = {
         "Immune to conversions.",
         "Wins instead of Village if there is a Freemason majority and counts toward their total.",
       ],
+      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
       RolesMadeBy: ["Freemason"],
     },
     "Panda Bear": {
@@ -3515,6 +3548,7 @@ const roleData = {
         "Wins instead of Village if the Panda Bears survive without mating.",
         "Adds 1 Panda in Closed Setups.",
       ],
+      nightOrder: [["Visit",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     Politician: {
       alignment: "Independent",
@@ -3579,6 +3613,7 @@ const roleData = {
         "Does not gain the ability if condemned by village vote.",
         "Wins if they kill all of their murderers.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
       graveyardParticipation: "self",
     },
     Phantom: {
@@ -3589,6 +3624,7 @@ const roleData = {
         "The killed player will have their role hidden upon death, and instead reveal as their alignment.",
         "Cannot win the game as Phantom.",
       ],
+       nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT)]],
     },
     Prince: {
       alignment: "Independent",
@@ -3598,6 +3634,7 @@ const roleData = {
         "If the Prince dies, everyone of that alignment dies.",
         "Wins if their chosen alignment wins.",
       ],
+      nightOrder: [["Conquer Alignment",(PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT)]],
     },
     Nomad: {
       alignment: "Independent",
@@ -3607,6 +3644,7 @@ const roleData = {
         "Cannot choose the same player consecutively.",
         "Wins if they are alive when the last player they visited wins.",
       ],
+      nightOrder: [["Become Alignment",(PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT)]],
     },
     Hitchhiker: {
       alignment: "Independent",
@@ -3616,6 +3654,7 @@ const roleData = {
         "Will Switch to that player's alignment.",
         "Wins with their current Alignment.",
       ],
+      nightOrder: [["Become Alignment of Visitor",(PRIORITY_BLOCK_VISITORS - 1)]],
     },
     "Creepy Girl": {
       alignment: "Independent",
@@ -3625,6 +3664,7 @@ const roleData = {
         "The doll can be passed to someone else each night.",
         "Wins if the player holding the doll dies.",
       ],
+      nightOrder: [["Give Doll",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Host: {
       alignment: "Independent",
@@ -3654,6 +3694,7 @@ const roleData = {
         "If the beckoned player visits the Siren that night, the player dies.",
         "Wins if successfully kills two players.",
       ],
+      nightOrder: [["Kill Beckoned",(PRIORITY_KILL_SIREN)]],
     },
     "Gingerbread Man": {
       alignment: "Independent",
@@ -3663,6 +3704,7 @@ const roleData = {
         "Will get eaten if the player visits them. That player will gain an extra life.",
         "Wins if alive at the end of the game.",
       ],
+      nightOrder: [["Hide Behind Player",(PRIORITY_NIGHT_SAVER)]],
     },
     Astrologer: {
       alignment: "Independent",
@@ -3671,6 +3713,7 @@ const roleData = {
         "Chooses two players and makes them fall in love with each other.",
         "Wins if their chosen lovers are alive at the end of the game.",
       ],
+      nightOrder: [["Make players in love.",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     Grouch: {
       alignment: "Independent",
@@ -3706,6 +3749,7 @@ const roleData = {
         "Each night, can save one player and also grant them condemn immunity the following day.",
         "Wins from two saves, or if no deaths happen in 2 days and 2 nights.",
       ],
+      nightOrder: [["Protect Player",(PRIORITY_NIGHT_SAVER)]],
     },
     Warlock: {
       alignment: "Independent",
@@ -3715,6 +3759,7 @@ const roleData = {
         "If that person is condemned the next day, the Warlock has predicted correctly. They gain an extra life.",
         "The Warlock wins if they predict the condemnation correctly twice.",
       ],
+      nightOrder: [["Guess Vote",(0)]],
       SpecialInteractions: {
         Assassin: [
           "If an Assassin is Present, The Warlock wins if they can guess a player who is Elected as Room Leader Twice.",
@@ -3741,6 +3786,7 @@ const roleData = {
         "When the Picciotto has visited all the living mafia, they are converted into a random mafia.",
         "Does not win if not converted to mafia.",
       ],
+      nightOrder: [["Visit",(PRIORITY_KILL_DEFAULT)]],
       RolesMadeBy: ["All Mafia Roles"],
     },
     Angel: {
@@ -3752,6 +3798,7 @@ const roleData = {
         "Once per game while alive or dead, can turn on sacrificial powers and protect their target from all kills",
         "Wins if their target is alive at the end of the game.",
       ],
+      nightOrder: [["Protect Player",(PRIORITY_NIGHT_SAVER)]],
     },
     Emperor: {
       alignment: "Independent",
@@ -3762,6 +3809,7 @@ const roleData = {
         "Must predict during the sunrise which duelist will survive.",
         "Wins if they predict correctly twice.",
       ],
+       nightOrder: [["Duel",(PRIORITY_EFFECT_GIVER_DEFAULT + 1)]],
     },
     Magus: {
       alignment: "Independent",
@@ -3797,6 +3845,7 @@ const roleData = {
         "Grants All Independents a random Infomation or Role Swapping ability.",
         "Wins if Independents have majority.",
       ],
+      nightOrder: [["Give Superpower",(PRIORITY_INVESTIGATIVE_DEFAULT)], ["Swap Roles", (PRIORITY_SWAP_ROLES - 1)]],
       SpecialInteractions: {
         OneNightMode: [
           "In One Night Mode, Superheros Wins if no Independents die.",
@@ -3835,6 +3884,7 @@ const roleData = {
         "Must kill a player each night.",
         "Wins if among last two alive.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
     },
     Yandere: {
       alignment: "Independent",
@@ -3853,6 +3903,7 @@ const roleData = {
         "Must kill a player each night.",
         "Wins if the Yandere and their beloved are the last two alive.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)], ["Fall in love",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     Clockmaker: {
       alignment: "Independent",
@@ -3865,6 +3916,7 @@ const roleData = {
         "Gains an extra life at 9 o'clock.",
         "Wins when clock strikes 12 o'clock.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
     },
     Pyromaniac: {
       alignment: "Independent",
@@ -3885,6 +3937,7 @@ const roleData = {
         "Anesthetic attack can be cured by not acting.",
         "Wins if among last two alive.",
       ],
+       nightOrder: [["Gas Player",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     Egg: {
       alignment: "Independent",
@@ -3894,6 +3947,7 @@ const roleData = {
         "If the selected role is already in play, The player with that role will be converted to Amnesiac.",
         "Cannot win the game as Egg.",
       ],
+      nightOrder: [["Become Role and Convert players to Amnesiac",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
       RolesMadeBy: ["Amnesiac"],
     },
     Hellhound: {
@@ -3914,6 +3968,7 @@ const roleData = {
         "If guessed incorrect, identity will be revealed to all.",
         "Wins if Hellhounds outnumber all other living parties.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_GUESS_ROLE)]],
     },
     Shinigami: {
       alignment: "Independent",
@@ -3924,6 +3979,7 @@ const roleData = {
         "The holder of the notebook must pass it to another player each day.",
         "The Shinigami guesses the current holder of the notebook each night. If they guess correctly once, they win.",
       ],
+      nightOrder: [["Guess Book Holder",(PRIORITY_ITEM_TAKER_DEFAULT)]],
     },
     Ripper: {
       alignment: "Independent",
@@ -3932,6 +3988,7 @@ const roleData = {
         "Kills one player every night.",
         "Wins when all other Hostile Independents are dead.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
     },
     Blob: {
       alignment: "Independent",
@@ -3952,6 +4009,7 @@ const roleData = {
         "Upon death, everyone absorbed by the Blob is regurgitated.",
         "Wins if among the last two alive.",
       ],
+       nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
       graveyardParticipation: "all",
     },
     "Grey Goo": {
@@ -3961,6 +4019,7 @@ const roleData = {
         "Chooses to sacrifice self at night to convert another player to Grey Goo.",
         "Wins if a Grey Goo is in the last two alive.",
       ],
+      nightOrder: [["Convert and Die",(PRIORITY_CONVERT_DEFAULT)]],
     },
     Mastermind: {
       alignment: "Independent",
@@ -3988,6 +4047,7 @@ const roleData = {
         "Each night, chooses a player. If the player is sided with the mafia/cult, they become a Mafioso/Cultist.",
         "Wins when all mafia-aligned players are Mafiosos or all cult-aligned players are Cultists.",
       ],
+      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT)]],
       RolesMadeBy: ["Mafioso", "Cultist"],
     },
     Mutineer: {
@@ -4008,6 +4068,7 @@ const roleData = {
         "Attends Mafia and Cult meetings, makes them anonymous and cannot vote in them.",
         "Wins if alive alone or the final two, and the other is not a mafia or cult",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
     },
     Alien: {
       alignment: "Independent",
@@ -4016,6 +4077,7 @@ const roleData = {
         "Chooses one player to probe each night.",
         "Wins if all players left alive have been probed.",
       ],
+      nightOrder: [["Probe",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     Matchmaker: {
       alignment: "Independent",
@@ -4024,6 +4086,7 @@ const roleData = {
         "Each night chooses two players to go on a date. If they are the same alignment, the date will be succesful.",
         "Wins if all players left alive have went on a successful date.",
       ],
+      nightOrder: [["Matchmaker",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Tofurkey: {
       alignment: "Independent",
@@ -4055,6 +4118,7 @@ const roleData = {
         "If it finds another Leprechaun, will kill them and steal all their items.",
         "Wins if holding three four-leaf clovers.",
       ],
+      nightOrder: [["Steal Items",(PRIORITY_ITEM_TAKER_DEFAULT)]],
     },
     Anarchist: {
       alignment: "Independent",
@@ -4074,6 +4138,7 @@ const roleData = {
         "Wins if 3 players are killed by the timebomb, or if the Anarchist is among the last two alive.",
         "Timebomb reveals Anarchist when exploded on themself.",
       ],
+      nightOrder: [["Give Timebomb",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Communist: {
       alignment: "Independent",
@@ -4106,6 +4171,7 @@ const roleData = {
         "Wins if 3 players are killed by the revolver, or if the Dragoon is among the last two alive.",
         "Revolver reveals Dragoon when shooting on themself.",
       ],
+      nightOrder: [["Give Revolver",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Gambler: {
       alignment: "Independent",
@@ -4115,6 +4181,7 @@ const roleData = {
         "If the Gambler wins, the Challenger dies.",
         "Wins the game when they have 2 gamble wins, or are among the last two standing.",
       ],
+      nightOrder: [["Gamble",(0)]],
     },
     "Grizzly Bear": {
       alignment: "Independent",
@@ -4124,6 +4191,7 @@ const roleData = {
         "Any player to visit the Grizzly Bear's target will be killed. If the Grizzly Bear's target does not visit that night, they will be killed as well.",
         "Wins if among last two alive.",
       ],
+      nightOrder: [["Kill Visitors",(PRIORITY_KILL_DEFAULT + 1)]],
     },
     "Polar Bear": {
       alignment: "Independent",
@@ -4142,6 +4210,7 @@ const roleData = {
         //"If visited by a Penguin, will eat it.",
         "Wins if four polarised players die or if majority is attained.",
       ],
+      nightOrder: [["Polarize",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     Samurai: {
       alignment: "Independent",
@@ -4163,6 +4232,7 @@ const roleData = {
         "Charge - Strengthens the duelist's next move. Charging multiple times will allow for Special moves to be used.",
         "Wins if they win their duel.",
       ],
+      nightOrder: [["Start Duel",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Snowman: {
       alignment: "Independent",
@@ -4174,6 +4244,7 @@ const roleData = {
         "A frozen player cannot vote or take any action at night. To be unfrozen, they must be visited by another player.",
         "Wins if all living players have been frozen.",
       ],
+       nightOrder: [["Snowballs",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Judge: {
       alignment: "Independent",
@@ -4211,6 +4282,7 @@ const roleData = {
       description: [
         "If this Event occurs, one random player will be given a Gun.",
       ],
+      nightOrder: [["Give Gun",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Moonshine: {
       alignment: "Event",
@@ -4218,6 +4290,7 @@ const roleData = {
       description: [
         "If this Event occurs, one random player will be given Whiskey.",
       ],
+      nightOrder: [["Give Whiskey",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     "Ominous Warning": {
       alignment: "Event",
@@ -4225,6 +4298,7 @@ const roleData = {
       description: [
         "If this Event occurs, one random player will be given a Knife.",
       ],
+      nightOrder: [["Give Knife",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Vaccination: {
       alignment: "Event",
@@ -4232,6 +4306,7 @@ const roleData = {
       description: [
         "If this Event occurs, one random player will be given a Syringe.",
       ],
+      nightOrder: [["Give Syringe",(PRIORITY_ITEM_GIVER_DEFAULT)]],
       graveyardParticipation: "all",
     },
     "Haunted House": {
@@ -4243,6 +4318,7 @@ const roleData = {
         "Players being attacked are prioritized for receiving the Mask.",
         "If a player with a Haunted Mask is attacked. They will kill their attacker and steal their identity.",
       ],
+      nightOrder: [["Give Haunted Mask",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Evolution: {
       alignment: "Event",
@@ -4251,6 +4327,7 @@ const roleData = {
         "Can only occur if an alive player has a Vanilla role.",
         "If this Event occurs, one random player with a Vanilla role will be converted to a random role from their alignment.",
       ],
+      nightOrder: [["Evolve Player",(PRIORITY_BECOME_DEAD_ROLE)]],
       RolesMadeBy: ["All Roles"],
     },
     "Time Loop": {
@@ -4267,6 +4344,7 @@ const roleData = {
       description: [
         "If this Event occurs, one player will get to learn another player's role during the Day.",
       ],
+       nightOrder: [["Give Brain Blast",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     "Cave-In": {
       alignment: "Event",
@@ -4274,11 +4352,13 @@ const roleData = {
       description: [
         "If this Event occurs, all players will be blocked and forced to vote on a player to kill and eat during the Night.",
       ],
+      nightOrder: [["Kill and eat",(PRIORITY_KILL_DEFAULT)]],
     },
     Feast: {
       alignment: "Event",
       tags: ["Event"],
       description: ["If this Event occurs, All Players gain food."],
+       nightOrder: [["Give Bread",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Famine: {
       alignment: "Event",
@@ -4287,6 +4367,7 @@ const roleData = {
         "If this Event occurs, All Players lose food if they have no food to lose they die.",
         "If this Event is in a setup, All players start with 1 Food.",
       ],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT)]],
     },
     Eclipse: {
       alignment: "Event",
@@ -4294,6 +4375,7 @@ const roleData = {
       description: [
         "If this Event occurs, all speech and votes are anonymous.",
       ],
+      nightOrder: [["Blind",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     Fog: {
       alignment: "Event",
@@ -4301,6 +4383,7 @@ const roleData = {
       description: [
         "If this Event occurs, players can only see there neighbors messages.",
       ],
+       nightOrder: [["Semi-Blind",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     "Mass Hysteria": {
       alignment: "Event",
@@ -4309,6 +4392,7 @@ const roleData = {
         "If this Event occurs, all are Frustrated for 1 day.",
         "Frustrated players cannot be condemned by majority vote. A non-zero minority vote will kill a frustrated player.",
       ],
+      nightOrder: [["Make Frustrated",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     "Sensible Mood": {
       alignment: "Event",
@@ -4316,6 +4400,7 @@ const roleData = {
       description: [
         "If this Event occurs, 1-3 Players learn if their role changed.",
       ],
+      nightOrder: [["Tell about role",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5)]],
     },
     "Culture Exchange": {
       alignment: "Event",
@@ -4323,6 +4408,7 @@ const roleData = {
       description: [
         "If this Event occurs, One player gains the ability to role share today.",
       ],
+       nightOrder: [["Give Role Share Powers",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     "Lightning Strike": {
       alignment: "Event",
@@ -4331,6 +4417,7 @@ const roleData = {
         "If this Event occurs, all Players gain Kites.",
         "Kites can be used to kill a random player with the same alignment as the user.",
       ],
+       nightOrder: [["Give Kites",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     "Volcanic Eruption": {
       alignment: "Event",
@@ -4363,6 +4450,7 @@ const roleData = {
         "Cult may vote on which player holds the Necronomicon during at Day.",
         "Players with the Necronomicon may choose a player to kill at Night.",
       ],
+      nightOrder: [["Give Necronomicon",(PRIORITY_ITEM_GIVER_DEFAULT)]],
       SpecialInteractionsModifiers: {
         Demonic: [
           "Necronomicon with the Demonic modifier, Players holding the Necronomicon are Demonic.",

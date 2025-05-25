@@ -12,7 +12,7 @@ module.exports = class DeflectAction extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          priority: PRIORITY_REDIRECT_ACTION - 1,
+          priority: PRIORITY_REDIRECT_ACTION,
           run: function () {
             this.actor.role.data.deflectedFrom = this.target;
           },
@@ -24,7 +24,7 @@ module.exports = class DeflectAction extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: [] },
         action: {
-          priority: PRIORITY_REDIRECT_ACTION,
+          priority: PRIORITY_REDIRECT_ACTION+3,
           run: function () {
             let deflectFrom = this.actor.role.data.deflectedFrom;
             if (!deflectFrom) {
