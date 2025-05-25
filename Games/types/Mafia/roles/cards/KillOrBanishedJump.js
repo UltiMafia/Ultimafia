@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
-const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_KILL_SPECIAL } = require("../../const/Priority");
 
 module.exports = class KillorBanishedJump extends Card {
   constructor(role) {
@@ -14,7 +14,7 @@ module.exports = class KillorBanishedJump extends Card {
         targets: { include: ["alive", "self"] },
         action: {
           labels: ["kill"],
-          priority: PRIORITY_KILL_DEFAULT + 1,
+          priority: PRIORITY_KILL_SPECIAL,
           run: function () {
             let savers = this.getVisitors(this.target, "save");
             let saversSelf = this.getVisitors(this.actor, "save");

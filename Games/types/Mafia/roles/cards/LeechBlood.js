@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_KILL_SPECIAL } = require("../../const/Priority");
 
 module.exports = class LeechBlood extends Card {
   constructor(role) {
@@ -12,7 +12,7 @@ module.exports = class LeechBlood extends Card {
         flags: ["voting"],
         action: {
           labels: ["blood"],
-          priority: PRIORITY_KILL_DEFAULT,
+          priority:  PRIORITY_KILL_SPECIAL-4,
           run: function () {
             this.target.data.blood -= 50;
             bloodCount += 50;

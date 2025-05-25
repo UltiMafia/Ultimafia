@@ -49,7 +49,7 @@ const {
   PRIORITY_IDENTITY_STEALER,
 
   PRIORITY_MAFIA_KILL,
-
+  PRIORITY_KILL_SPECIAL,
   PRIORITY_KILL_GUESS_ROLE,
   PRIORITY_KILL_SIREN,
   PRIORITY_KILL_DEFAULT,
@@ -269,7 +269,7 @@ const roleData = {
         "Prevents their target from being converted to another role.",
         "If their target was a Hostile Independent, the target will become a Villager.",
       ],
-      nightOrder: [["Save from Conversion",(PRIORITY_EFFECT_GIVER_DEFAULT + 1)]],
+      nightOrder: [["Save from Conversion",(PRIORITY_NIGHT_SAVER- 1)]],
       RolesMadeBy: ["Villager"],
     },
     Surgeon: {
@@ -1464,9 +1464,6 @@ const roleData = {
         "Can only be killed by village condemnation.",
       ],
        nightOrder: [["Kill Visitors",(PRIORITY_KILL_DEFAULT)]],
-      SpecialInteractions: {
-        Hellhound: ["A Hellhound can kill a Granny at Night."],
-      },
     },
     Jailer: {
       alignment: "Village",
@@ -1484,7 +1481,7 @@ const roleData = {
         "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
         "Decides whether or not the prisoner should be executed.",
       ],
-      nightOrder: [["Execute Prisoner",(PRIORITY_KILL_DEFAULT)],["Block Jailed Player's Visitors",(PRIORITY_UNTARGETABLE)]],
+      nightOrder: [["Execute Prisoner",(PRIORITY_KILL_DEFAULT)],["Block Jailed Player's Visitors",(PRIORITY_UNTARGETABLE-5)]],
     },
     Seeker: {
       alignment: "Village",
@@ -2018,7 +2015,7 @@ const roleData = {
         "Chooses one player every night to snitch on.",
         "Chooses another player to divert attention from and redirect their visitors to the first target.",
       ],
-      nightOrder: [["Deflect Visitors",(PRIORITY_REDIRECT_ACTION)]],
+      nightOrder: [["Deflect Visitors",(PRIORITY_REDIRECT_ACTION+3)]],
     },
     Ninja: {
       alignment: "Mafia",
@@ -2282,7 +2279,7 @@ const roleData = {
         "Meets with the prisoner at night and the prisoner cannot perform actions or attend other meetings or be targeted.",
         "Decides whether or not the prisoner should be executed.",
       ],
-      nightOrder: [["Execute Prisoner",(PRIORITY_KILL_DEFAULT)],["Block Jailed Player's Visitors",(PRIORITY_UNTARGETABLE)]],
+      nightOrder: [["Execute Prisoner",(PRIORITY_KILL_DEFAULT)],["Block Jailed Player's Visitors",(PRIORITY_UNTARGETABLE-5)]],
     },
     Bookie: {
       alignment: "Mafia",
@@ -2407,7 +2404,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Manipulative", "Redirection", "Control", "Visiting", "Basic"],
       description: ["Each night, attracts a player to visit them."],
-      nightOrder: [["Redirect Action",(PRIORITY_REDIRECT_ACTION)]],
+      nightOrder: [["Redirect Action",(PRIORITY_REDIRECT_ACTION+2)]],
     },
     Blinder: {
       alignment: "Mafia",
@@ -2467,7 +2464,7 @@ const roleData = {
         "Prevents their target from being converted.",
         "If their target was a Hostile Independent, the target will become a Traitor.",
       ],
-      nightOrder: [["Save from Conversion",(PRIORITY_EFFECT_GIVER_DEFAULT + 1)]],
+      nightOrder: [["Save from Conversion",(PRIORITY_NIGHT_SAVER - 1)]],
     },
     Forger: {
       alignment: "Mafia",
@@ -2782,7 +2779,7 @@ const roleData = {
         "If the player dies from leeching, the leech also gains an additional 50% of blood.",
         "Gains an extra life after draining 150% blood.",
       ],
-      nightOrder: [["Drain Blood",(PRIORITY_KILL_DEFAULT)]],
+      nightOrder: [["Drain Blood",(PRIORITY_KILL_SPECIAL - 4)]],
     },
     Slasher: {
       alignment: "Cult",
@@ -2997,7 +2994,7 @@ const roleData = {
       description: [
         "Each night, chooses two players who are forced to target each other.",
       ],
-      nightOrder: [["Redirect Targets",(PRIORITY_REDIRECT_ACTION)]],
+      nightOrder: [["Redirect Targets",(PRIORITY_REDIRECT_ACTION+1)]],
     },
     "Snow Queen": {
       alignment: "Cult",
@@ -3171,7 +3168,7 @@ const roleData = {
         "Visits two Cult-aligned players each night.",
         "The first player is killed while the second player gains an extra life.",
       ],
-     nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT - 1)], ["Grant Extra Life",(PRIORITY_KILL_DEFAULT)]],
+     nightOrder: [["Kill to grant extra life",(PRIORITY_KILL_SPECIAL - 3)]],
     },
     //Demon/Endangered
     Imp: {
@@ -3182,7 +3179,7 @@ const roleData = {
         "Each night, may choose any player to kill.",
         "If an Imp kills themself, a random Cult-aligned player becomes an Imp.",
       ],
-      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
+      nightOrder: [["Kill",(PRIORITY_KILL_SPECIAL)]],
     },
     Jiangshi: {
       alignment: "Cult",
@@ -3201,7 +3198,7 @@ const roleData = {
         "The first time a Jiangshi chooses a player with a Banished Role, the Jiangshi dies and the Banished Player becomes a Jiangshi.",
         "Jiangshi adds 1 Banished role in closed setups.",
       ],
-      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
+      nightOrder: [["Kill",(PRIORITY_KILL_SPECIAL)]],
     },
     Necromancer: {
       alignment: "Cult",

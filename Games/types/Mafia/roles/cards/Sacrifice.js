@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_KILL_SPECIAL } = require("../../const/Priority");
 
 module.exports = class Sacrifice extends Card {
   constructor(role) {
@@ -11,11 +11,17 @@ module.exports = class Sacrifice extends Card {
         flags: ["voting"],
         targets: { include: ["Cult"], exclude: ["dead", "self"] },
         action: {
-          priority: PRIORITY_KILL_DEFAULT - 1,
+          priority: PRIORITY_KILL_SPECIAL - 4,
           run: function () {
-            if (this.dominates()) this.target.kill("basic", this.actor);
-
-            this.actor.role.data.harvestedOrgans = this.target;
+            if (this.dominates()){
+             this.target.kill("basic", this.actor);
+              if(this.actor.role.data.PlayerToGiveExtraLifeTo){
+              this.actor.role.data.PlayerToGiveExtraLifeTo.giveEffect("ExtraLife", this.actor);
+              this.actor.role.data.PlayerToGiveExtraLifeTo.queueAlert("You gain an extra life!");
+              }
+            
+            }
+            delete this.actor.role.data.PlayerToGiveExtraLifeTo;
           },
         },
       },
@@ -24,18 +30,9 @@ module.exports = class Sacrifice extends Card {
         flags: ["voting"],
         targets: { include: ["Cult"], exclude: ["dead", "self"] },
         action: {
-          priority: PRIORITY_KILL_DEFAULT,
+          priority: PRIORITY_KILL_SPECIAL -5,
           run: function () {
-            if (this.actor.role.data.harvestedOrgans) {
-              var harvestedOrgans = this.actor.role.data.harvestedOrgans;
-              if (harvestedOrgans.length == 0) {
-                return;
-              }
-              this.target.giveEffect("ExtraLife", this.actor);
-              this.target.queueAlert("You gain an extra life!");
-
-              delete this.actor.role.data.harvestedOrgans;
-            }
+            this.actor.role.data.PlayerToGiveExtraLifeTo = this.target;
           },
         },
       },

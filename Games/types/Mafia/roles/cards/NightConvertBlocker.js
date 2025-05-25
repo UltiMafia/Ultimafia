@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_NIGHT_SAVER } = require("../../const/Priority");
 
 module.exports = class NightConvertBlocker extends Card {
   constructor(role) {
@@ -11,7 +11,7 @@ module.exports = class NightConvertBlocker extends Card {
         flags: ["voting"],
         action: {
           labels: ["convert blocker"],
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT + 1,
+          priority: PRIORITY_NIGHT_SAVER-1,
           run: function () {
             // cure insanity
 
