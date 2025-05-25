@@ -16,7 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
-import { getRowColor } from "./gameRowColors.js";
+import { getRowColor, getSetupBackgroundColor } from "./gameRowColors.js";
 
 const GameStatus = (props) => {
   const user = useContext(UserContext);
@@ -182,6 +182,7 @@ export const GameRow = (props) => {
       maxRolesCount={props.small ? 3 : maxRolesCount}
       fixedWidth
       key={props.game.setup.id}
+      backgroundColor={getSetupBackgroundColor(props.game, true)}
     />
   );
 
@@ -197,7 +198,6 @@ export const GameRow = (props) => {
 
   if (redirect) return <Redirect to={redirect} />;
   if (!props.game.setup) return <></>;
-
 
   return (
     <div className="shiny-container">
