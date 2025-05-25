@@ -1,7 +1,5 @@
-// TODO / note: slang containing spaces currently does not work (although this list may contain it)
-
-export const commandList = {
-  "/kick": {
+const commandData = {
+    "/kick": {
     input: "Username",
     description:
       "Used during pregame to temporarily remove someone from a game lobby.",
@@ -41,11 +39,6 @@ export const commandList = {
     input: "Amount, Dice Type",
     description: "Rolls dice, results are shown to everyone.",
   },
-  "/Nightorder": {
-    input: "N/A",
-    description:
-      "Lists the Night Order for the Setup (Ties are resloved by Player Order).",
-  },
   "/special": {
     input: "N/A",
     description: "Lists Any Special Role Interactions for the Setup.",
@@ -55,3 +48,5 @@ export const commandList = {
     description: "Lists the commands on the site.",
   },
 };
+
+module.exports = commandData;

@@ -156,13 +156,17 @@ module.exports = class ResistanceGame extends Game {
     return info;
   }
 
+  checkGameEnd(){
+    return this.finished;
+  }
+
   checkWinConditions() {
     var thresholdToWin = this.numMissions / 2;
     var finished =
       this.missionFails >= thresholdToWin ||
       (this.mission - 1 - this.missionFails >= thresholdToWin &&
         !this.hasMerlin);
-    var winners = finished && this.getWinners();
+    var winners = this.getWinners();
 
     return [finished, winners];
   }
@@ -180,5 +184,14 @@ module.exports = class ResistanceGame extends Game {
 
     winners.determinePlayers();
     return winners;
+  }
+
+    async endGame(winners) {
+    for (let player of this.players) {
+      if (player.won) player.recordStat("wins", true);
+      else player.recordStat("wins", false);
+    }
+
+    await super.endGame(winners);
   }
 };
