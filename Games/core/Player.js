@@ -14,6 +14,7 @@ const roleData = require("../../data/roles");
 const gameAchievements = require("../../data/Achievements");
 const itemData = require("../../data/items");
 const modifierData = require("../../data/modifiers");
+const commandData = require("../../data/commands");
 const axios = require("axios");
 
 module.exports = class Player {
@@ -431,6 +432,13 @@ module.exports = class Player {
         this.sendAlert(
           `:system: Modifier Info for ${modifierNameToQuery}| ${modifier.description}`
         );
+        return;
+      case "help":
+        for(let command of commandData){
+        this.sendAlert(
+          `:system: ${command[0]}| ${command[1].description}`
+        );
+        }
         return;
       case "achievement":
         const achievementNameToQuery = cmd.args
