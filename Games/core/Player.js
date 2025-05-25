@@ -434,9 +434,9 @@ module.exports = class Player {
         );
         return;
       case "help":
-        for(let command of commandData){
+        for(let x = 0; x < Object.entries(commandData).length; x++){
         this.sendAlert(
-          `:system: ${command[0]}| ${command[1].description}`
+          `:system: ${Object.entries(commandData)[x][0]}| ${Object.entries(commandData)[x][1].description}`
         );
         }
         return;

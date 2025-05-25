@@ -6,6 +6,6 @@ module.exports = class Tristan extends Role {
 
     this.alignment = "Resistance";
     this.appearance.isolde = "Tristan";
-    this.cards = ["TeamCore", "WinWithResistance", "KnowIsolde "];
+    this.cards = ["TeamCore", "WinWithResistance", "KnowIsolde", "Lovers"];
   }
 };

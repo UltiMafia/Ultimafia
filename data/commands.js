@@ -1,4 +1,4 @@
-const modifierData = {
+const commandData = {
     "/kick": {
     input: "Username",
     description:
@@ -49,4 +49,4 @@ const modifierData = {
   },
 };
 
-module.exports = modifierData;
+module.exports = commandData;

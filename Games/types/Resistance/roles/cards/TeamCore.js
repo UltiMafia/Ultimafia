@@ -39,6 +39,7 @@ module.exports = class TeamCore extends Card {
             var missionSuccess = this.target == "Yes";
 
             if (!missionSuccess) this.game.currentMissionFails++;
+
           },
         },
       },
@@ -49,9 +50,14 @@ module.exports = class TeamCore extends Card {
         targets: { include: ["Resistance"], exclude: [""] },
         canVote: false,
         action: {
+          priority: 2,
           run: function () {
-            const winnerGroup =
+
+            let winnerGroup =
               this.target.role.name === "Merlin" ? "Spies" : "Resistance";
+              if(this.game.FirstLover != null && this.game.SecondLover != null){
+                return;
+              }
             const winners = new Winners(this.game);
             winners.addGroup(winnerGroup);
             for (let player of this.game.players) {
@@ -65,6 +71,87 @@ module.exports = class TeamCore extends Card {
           },
         },
         shouldMeet: function () {
+          let Merlins = this.game.players.filter((p) => p.role.name == "Merlin");
+
+          if(Merlins.length <= 0){
+            return false;
+          }
+          
+          let assassins = this.game.players.filter((p) => p.role.name == "Assassin");
+          return assassins.length <= 0;
+        },
+      },
+      "Identify First Lover": {
+        states: ["Epilogue"],
+        flags: ["group", "speech", "voting"],
+        targetType: "player",
+        targets: { include: ["Resistance"], exclude: [""] },
+        canVote: false,
+        action: {
+          priority: 0,
+          run: function () {
+            this.game.FirstLover = this.target;
+          },
+        },
+        shouldMeet: function () {
+          let Lovers = this.game.players.filter((p) => p.role.name == "Isolde" && p.role.name == "Tristan");
+
+          if(Lovers.length <= 1){
+            return false;
+          }
+
+
+          let assassins = this.game.players.filter((p) => p.role.name == "Assassin")
+          return assassins.length <= 0;
+        },
+      },
+      "Identify Second Lover": {
+        states: ["Epilogue"],
+        flags: ["group", "speech", "voting"],
+        targetType: "player",
+        targets: { include: ["Resistance"], exclude: [""] },
+        canVote: false,
+        action: {
+          priority: 1,
+          run: function () {
+            this.game.SecondLover = this.target;
+            if(this.game.FirstLover != null){
+            let winnerGroup;
+            if(this.game.FirstLover.role.name == "Tristan" || this.game.FirstLover.role.name == "Isolde"){
+              if(this.game.FirstLover != this.target){
+                if(this.target.role.name == "Tristan" || this.target.role.name == "Isolde"){
+                  winnerGroup = "Spies";
+                }
+                else{
+                  winnerGroup = "Resistance";
+                }
+              }
+            }
+            else{
+              winnerGroup = "Resistance";
+            }
+            
+            const winners = new Winners(this.game);
+            winners.addGroup(winnerGroup);
+            for (let player of this.game.players) {
+              if (player.role.alignment !== winnerGroup) {
+                player.kill();
+              } else {
+                winners.addPlayer(player);
+              }
+            }
+            this.game.endGame(winners);
+          }
+          },
+        },
+        shouldMeet: function () {
+          let Lovers = this.game.players.filter((p) => p.role.name == "Isolde" && p.role.name == "Tristan");
+
+          if(Lovers.length <= 1){
+            return false;
+          }
+
+
           let assassins = this.game.players.filter((p) => p.role.name == "Assassin")
           return assassins.length <= 0;
         },

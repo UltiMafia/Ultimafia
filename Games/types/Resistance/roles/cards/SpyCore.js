@@ -18,6 +18,12 @@ module.exports = class SpyCore extends Card {
       "Identify Merlin": {
         canVote: true,
       },
+      "Identify First Lover": {
+        canVote: true,
+      },
+      "Identify Second Lover": {
+        canVote: true,
+      },
     };
 
     this.listeners = {

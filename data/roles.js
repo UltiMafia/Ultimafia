@@ -4479,6 +4479,24 @@ const roleData = {
       tags: ["None"],
       description: ["Knows who is Merlin."],
     },
+    /*
+    Tristan: {
+      alignment: "Resistance",
+      tags: ["None"],
+      description: [
+        "Knows who is Isolde.",
+        "Spies can choose to guess who Tristan and Isolde are instead of guessing Merlin.",
+      ],
+    },
+    Isolde: {
+      alignment: "Resistance",
+      tags: ["None"],
+      description: [
+        "Knows who is Tristan.",
+        "Spies can choose to guess who Tristan and Isolde are instead of guessing Merlin.",
+      ],
+    },
+    */
     //Spies
     Spy: {
       alignment: "Spies",
