@@ -137,11 +137,12 @@ module.exports = function () {
           const type = refreshedHeart.type;
 
           var itemsOwned = await redis.getUserItemsOwned(userId);
+          const bonusRedHearts = itemsOwned ? itemsOwned.bonusRedHearts : 0;
 
           const update = {};
           if (type === "red")
             update["redHearts"] =
-              constants.initialRedHeartCapacity + itemsOwned.bonusRedHearts;
+              constants.initialRedHeartCapacity + bonusRedHearts;
           if (type === "gold")
             update["goldHearts"] = constants.initialGoldHeartCapacity;
 
@@ -150,7 +151,7 @@ module.exports = function () {
             { id: userId },
             { $set: update }
           ).exec();
-          if (result1.matchedCount === 0) {
+          if (result1.modifiedCount === 0) {
             console.warn(
               `Failed to refresh hearts for userId[${userId}] type[${type}]`
             );
