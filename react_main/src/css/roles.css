@@ -695,6 +695,18 @@
   background-image: url("/images/roles/lunch-lady-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Knight {
+  background-image: url("/images/roles/knight-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Plastician {
+  background-image: url("/images/roles/plastician-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Bounty-Hunter {
+  background-image: url("/images/roles/bounty-hunter-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Sailor {
   background-image: url("/images/roles/sailor-vivid.png");
 }
@@ -1004,6 +1016,10 @@
 
 .role-icon-scheme-vivid .role-Mafia-Hooker {
   background-image: url("/images/roles/hooker-vivid.png");
+}
+
+.role-icon-scheme-vivid .role-Mafia-Pimp {
+  background-image: url("/images/roles/pimp-vivid.png");
 }
 
 .role-icon-scheme-vivid .role-Mafia-Godfather {
