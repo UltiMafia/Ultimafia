@@ -10,7 +10,7 @@ module.exports = class WinWithSpies extends Card {
         if(Epilogue == true){
           return;
         }
-        if (this.game.missionFails >= this.game.numMissions / 2)
+        if (this.game.missionFails >= Math.ceil(this.game.numMissions / 2))
           winners.addPlayer(this.player, "Spies");
       },
     };
