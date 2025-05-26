@@ -47,6 +47,7 @@ import "./Game.css";
 import { NewLoading } from "../Welcome/NewLoading";
 import { ChangeHead } from "../../components/ChangeHead";
 import { ChangeHeadPing } from "../../components/ChangeHeadPing";
+
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import {
@@ -64,6 +65,11 @@ import {
 import { useTheme } from "@mui/styles";
 import BattlesnakesGame from "./BattlesnakesGame";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
+
+const lore = `/images/emotes/lore.webp`;
+const poison = `/images/emotes/poison.webp`;
+const exit = `/images/emotes/exit.webp`;
+const veg = `/images/emotes/veg.webp`;
 
 export default function Game() {
   return (
@@ -709,16 +715,6 @@ export function BotBar(props) {
   const hideStateSwitcher = props.hideStateSwitcher;
   const game = props.game;
 
-  function onInfoClick(e) {
-    e.stopPropagation();
-    popover.onClick(
-      `/game/${gameId}/info`,
-      "game",
-      infoRef.current,
-      `Game ${gameId}`
-    );
-  }
-
   function onLogoClick() {
     window.open(process.env.REACT_APP_URL, "_blank");
   }
@@ -819,21 +815,13 @@ export function BotBar(props) {
         }
       >
         {game.setup && <Setup setup={game.setup} maxRolesCount={maxRolesCount} fixedWidth />}
-        {game.dev && !isPhoneDevice && (<div className="misc-left">
-          <div className="misc-buttons">
-              <i
-                className="misc-icon fas fa-vial hide-on-mobile"
-                onClick={onTestClick}
-              />
-          </div>
-        </div>)}
         <Stack direction={gameButtonStackDirection} spacing={1}>
           {!game.review && (<PlayerCount
             game={game}
             gameId={game.gameId}
             anonymousGame={game.options.anonymousGame}
             status={"In Progress"}
-            numSlotsTaken={Object.keys(game.players).length}
+            numSlotsTaken={Object.values(props.players).filter((p) => !p.left).length}
             spectatingAllowed={game.options.spectating}
             spectatorCount={game.spectatorCount}
           />)}
@@ -841,13 +829,24 @@ export function BotBar(props) {
             <Button
               className="btn btn-theme-sec archive-game"
               onClick={onArchiveGameClick}
+              startIcon={<img src={lore} />}
             >
               Archive
             </Button>
           )}
+          {game.dev && (
+            <Button
+              className="btn btn-theme-sec fill-game"
+              onClick={onTestClick}
+              startIcon={<img src={poison} />}
+            >
+              Fill
+            </Button>  
+          )}      
           <Button
             className="btn btn-theme leave-game"
             onClick={onLeaveGameClick}
+            startIcon={<img src={exit} />}
           >
             Leave
           </Button>
@@ -855,6 +854,7 @@ export function BotBar(props) {
             <Button
               className="btn btn-theme-sec rehost-game"
               onClick={onRehostGameClick}
+              startIcon={<img src={veg} />}
             >
               Rehost
             </Button>
