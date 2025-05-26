@@ -6,10 +6,13 @@ module.exports = class WinWithResistance extends Card {
 
     this.winCheck = {
       priority: 0,
-      check: function (winners) {
+      check: function (winners, Epilogue) {
+        if(Epilogue == true){
+          return;
+        }
         if (
           this.game.mission - 1 - this.game.missionFails >=
-          this.game.numMissions / 2
+          Math.ceil(this.game.numMissions / 2)
         )
           winners.addPlayer(this.player, "Resistance");
       },
