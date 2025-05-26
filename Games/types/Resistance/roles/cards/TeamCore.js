@@ -37,6 +37,9 @@ module.exports = class TeamCore extends Card {
         action: {
           run: function () {
             var missionSuccess = this.target == "Yes";
+            if(this.actor.role.name == "Lunatic"){
+              missionSuccess = false;
+            }
 
             if (!missionSuccess) this.game.currentMissionFails++;
 
