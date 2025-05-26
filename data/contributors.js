@@ -406,6 +406,8 @@ const artContributors = {
       "Percival",
       "Rebel",
       "Spy",
+      "Tristan",
+      "Isolde"
     ],
   },
   aleph: {
