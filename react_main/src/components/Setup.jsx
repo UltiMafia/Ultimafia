@@ -23,6 +23,7 @@ export default function Setup(props) {
   if (typeof props.setup.roles == "string")
     props.setup.roles = JSON.parse(props.setup.roles);
 
+  const backgroundColor = props.backgroundColor || undefined;
   const maxRolesCount = props.maxRolesCount || 50;
   const classList = props.classList || "";
   const disablePopover = props.disablePopover;
@@ -172,7 +173,7 @@ export default function Setup(props) {
   });
 
   return (
-    <Card variant="outlined" className={"setup " + classList} ref={setupRef}>
+    <Card variant="outlined" className={"setup " + classList} ref={setupRef} style={{ backgroundColor: backgroundColor }}>
       <GameIcon revealPopover={onClick} gameType={props.setup.gameType} />
       <Divider orientation="vertical" flexItem />
       <Box sx={{
