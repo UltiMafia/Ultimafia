@@ -4479,13 +4479,14 @@ const roleData = {
       tags: ["None"],
       description: ["Knows who is Merlin."],
     },
-    /*
+    
     Tristan: {
       alignment: "Resistance",
       tags: ["None"],
       description: [
         "Knows who is Isolde.",
-        "Spies can choose to guess who Tristan and Isolde are instead of guessing Merlin.",
+        "If the Rebels would win, the spies can guess who Tristan and Isolde are to win instead.",
+        "If Spies choose to guess who Tristan and Isolde are their guess for Merlin will not count.",
       ],
     },
     Isolde: {
@@ -4493,10 +4494,10 @@ const roleData = {
       tags: ["None"],
       description: [
         "Knows who is Tristan.",
-        "Spies can choose to guess who Tristan and Isolde are instead of guessing Merlin.",
+        "If the Rebels would win, the spies can guess who Tristan and Isolde are to win instead.",
+        "If Spies choose to guess who Tristan and Isolde are their guess for Merlin will not count.",
       ],
     },
-    */
     //Spies
     Spy: {
       alignment: "Spies",
@@ -4524,7 +4525,7 @@ const roleData = {
       alignment: "Spies",
       tags: ["None"],
       description: [
-        "Will be the only player to guess Merlin."
+        "Will be the only player to guess Merlin or Tristan and Isolde."
       ],
     },
   },

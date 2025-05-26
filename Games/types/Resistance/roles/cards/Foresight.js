@@ -13,7 +13,7 @@ module.exports = class Foresight extends Card {
         shouldSkip: function () {
           return !(
             this.game.mission - 1 - this.game.missionFails >=
-            this.game.numMissions / 2
+            Math.ceil(this.game.numMissions / 2)
           );
         },
       },

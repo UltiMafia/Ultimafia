@@ -5,6 +5,6 @@ module.exports = class Assassin extends Role {
     super("Assassin", player, data);
 
     this.alignment = "Spies";
-    this.cards = ["TeamCore", "WinWithSpies", "SpyCore"];
+    this.cards = ["TeamCore", "WinWithSpies", "SpyCore", "AssassinGuess"];
   }
 };

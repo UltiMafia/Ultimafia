@@ -13,7 +13,7 @@ role.game.hasEpilogue = true;
         shouldSkip: function () {
           return !(
             this.game.mission - 1 - this.game.missionFails >=
-            this.game.numMissions / 2
+            Math.ceil(this.game.numMissions / 2)
           );
         },
       },

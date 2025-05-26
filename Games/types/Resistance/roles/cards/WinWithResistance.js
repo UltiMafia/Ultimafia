@@ -11,7 +11,7 @@ module.exports = class WinWithResistance extends Card {
           return;
         }
         if (
-          this.game.mission - 1 - this.game.missionFails >=
+          this.game.missionRecord.score["rebels"] >=
           Math.ceil(this.game.numMissions / 2)
         )
           winners.addPlayer(this.player, "Resistance");

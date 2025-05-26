@@ -49,6 +49,9 @@ module.exports = class TeamCore extends Card {
         targetType: "player",
         targets: { include: ["Resistance"], exclude: [""] },
         canVote: false,
+        displayOptions: {
+          disableShowDoesNotVote: true,
+        },
         action: {
           priority: 2,
           run: function () {
@@ -83,6 +86,9 @@ module.exports = class TeamCore extends Card {
       },
       "Identify First Lover": {
         states: ["Epilogue"],
+        displayOptions: {
+          disableShowDoesNotVote: true,
+        },
         flags: ["group", "speech", "voting"],
         targetType: "player",
         targets: { include: ["Resistance"], exclude: [""] },
@@ -94,7 +100,7 @@ module.exports = class TeamCore extends Card {
           },
         },
         shouldMeet: function () {
-          let Lovers = this.game.players.filter((p) => p.role.name == "Isolde" && p.role.name == "Tristan");
+          let Lovers = this.game.players.filter((p) => p.role.name == "Isolde" || p.role.name == "Tristan");
 
           if(Lovers.length <= 1){
             return false;
@@ -107,7 +113,10 @@ module.exports = class TeamCore extends Card {
       },
       "Identify Second Lover": {
         states: ["Epilogue"],
-        flags: ["group", "speech", "voting"],
+        displayOptions: {
+          disableShowDoesNotVote: true,
+        },
+        flags: ["group", "voting"],
         targetType: "player",
         targets: { include: ["Resistance"], exclude: [""] },
         canVote: false,
@@ -145,7 +154,7 @@ module.exports = class TeamCore extends Card {
           },
         },
         shouldMeet: function () {
-          let Lovers = this.game.players.filter((p) => p.role.name == "Isolde" && p.role.name == "Tristan");
+          let Lovers = this.game.players.filter((p) => p.role.name == "Isolde" || p.role.name == "Tristan");
 
           if(Lovers.length <= 1){
             return false;

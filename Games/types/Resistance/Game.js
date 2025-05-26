@@ -138,6 +138,7 @@ module.exports = class ResistanceGame extends Game {
     this.missionRecord.missionHistory.push(this.currentMissionHistory);
     this.missionRecord.score[winningTeam] += 1;
     this.currentMissionHistory = null;
+    this.checkGameEnd();
   }
 
   getStateInfo(state) {
@@ -181,10 +182,6 @@ module.exports = class ResistanceGame extends Game {
     }
 
     if (winners.groupAmt() > 0) finished = true;
-    else if (aliveCount == 0) {
-      winners.addGroup("No one");
-      finished = true;
-    }
     /*
     var finished =
       this.missionFails >= thresholdToWin ||
