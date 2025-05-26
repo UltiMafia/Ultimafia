@@ -416,6 +416,7 @@ async function getGameInfo(gameId, idsOnly) {
   info.status = await client.getAsync(`game:${gameId}:status`);
   info.hostId = await client.getAsync(`game:${gameId}:hostId`);
   info.lobby = await client.getAsync(`game:${gameId}:lobby`);
+  info.spectatorCount = await client.getAsync(`game:${gameId}:spectatorCount`);
   info.lobbyName = await client.getAsync(`game:${gameId}:lobbyName`);
   info.settings = JSON.parse(
     (await client.getAsync(`game:${gameId}:settings`)) || "{}"
@@ -577,6 +578,8 @@ async function createGame(gameId, info) {
     await client.setAsync(`game:${gameId}:${key}`, val);
   }
 
+  await client.setAsync(`game:${gameId}:spectatorCount`, 0);
+
   await client.saddAsync("games", gameId);
 
   if (info.settings.scheduled) {
@@ -689,6 +692,7 @@ async function deleteGame(gameId, game) {
   await client.delAsync(`game:${gameId}:status`);
   await client.delAsync(`game:${gameId}:hostId`);
   await client.delAsync(`game:${gameId}:lobby`);
+  await client.delAsync(`game:${gameId}:spectatorCount`);
   await client.delAsync(`game:${gameId}:lobbyName`);
   await client.delAsync(`game:${gameId}:players`);
   await client.delAsync(`game:${gameId}:settings`);
@@ -736,6 +740,10 @@ async function breakGame(gameId) {
     broken: true,
   });
   await game.save();
+}
+
+async function setSpectatorCount(gameId, spectatorCount) {
+  await client.setAsync(`game:${gameId}:spectatorCount`, spectatorCount);
 }
 
 async function gameWebhookPublished(gameId) {
@@ -971,6 +979,7 @@ module.exports = {
   unreserveGame,
   deleteGame,
   breakGame,
+  setSpectatorCount,
   gameWebhookPublished,
   registerGameServer,
   removeGameServer,

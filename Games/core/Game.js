@@ -443,6 +443,7 @@ module.exports = class Game {
       spectator.send("loaded");
 
       this.broadcast("spectatorCount", this.spectators.length);
+      redis.setSpectatorCount(this.id, this.spectators.length);
     } catch (e) {
       logger.error(e);
       // this.handleError(e);
@@ -594,6 +595,7 @@ module.exports = class Game {
     spectator.send("loaded");
 
     this.broadcast("spectatorCount", this.spectators.length);
+    redis.setSpectatorCount(this.id, this.spectators.length);
   }
 
   makeUnranked() {
@@ -632,6 +634,7 @@ module.exports = class Game {
   removeSpectator(spectator) {
     this.spectators.splice(this.spectators.indexOf(spectator), 1);
     this.broadcast("spectatorCount", this.spectators.length);
+    redis.setSpectatorCount(this.id, this.spectators.length);
   }
 
   async kickPlayer(player, permanent) {

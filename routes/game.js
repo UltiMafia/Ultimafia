@@ -152,6 +152,7 @@ router.get("/list", async function (req, res) {
       newGame.setup = newGame.setup.toJSON();
       newGame.hostId = game.hostId;
       newGame.players = game.players.length;
+      newGame.spectatorCount = game.spectatorCount;
       newGame.lobbyName = game.settings.lobbyName;
       newGame.ranked = game.settings.ranked;
       newGame.competitive = game.settings.competitive;

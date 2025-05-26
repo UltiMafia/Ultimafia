@@ -119,6 +119,7 @@ const GameStatus = (props) => {
         status={props.game.status}
         numSlotsTaken={props.game.players}
         spectatingAllowed={props.game.spectating}
+        spectatorCount={props.game.spectatorCount}
       />
       {gameButtonWrapped}
     </Stack>
