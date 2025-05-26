@@ -11,7 +11,6 @@ module.exports = class AssassinGuess extends Card {
         flags: ["group", "voting", "mustAct"],
         targetType: "player",
         targets: { include: ["Resistance"], exclude: [""] },
-        canVote: false,
         action: {
           run: function () {
             const winnerGroup =
@@ -42,10 +41,9 @@ module.exports = class AssassinGuess extends Card {
       },
       "Assassinate First Lover": {
         states: ["Epilogue"],
-        flags: ["group", "speech", "voting"],
+        flags: ["group", "voting"],
         targetType: "player",
         targets: { include: ["Resistance"], exclude: [""] },
-        canVote: false,
         action: {
           priority: 0,
           run: function () {
@@ -53,7 +51,7 @@ module.exports = class AssassinGuess extends Card {
           },
         },
         shouldMeet: function () {
-          let Lovers = this.game.players.filter((p) => p.role.name == "Isolde" && p.role.name == "Tristan");
+          let Lovers = this.game.players.filter((p) => p.role.name == "Isolde" || p.role.name == "Tristan");
 
           if(Lovers.length <= 1){
             return false;
@@ -66,10 +64,9 @@ module.exports = class AssassinGuess extends Card {
       },
       "Assassinate Second Lover": {
         states: ["Epilogue"],
-        flags: ["group", "speech", "voting"],
+        flags: ["group", "voting"],
         targetType: "player",
         targets: { include: ["Resistance"], exclude: [""] },
-        canVote: false,
         action: {
           priority: 1,
           run: function () {
@@ -104,7 +101,7 @@ module.exports = class AssassinGuess extends Card {
           },
         },
         shouldMeet: function () {
-          let Lovers = this.game.players.filter((p) => p.role.name == "Isolde" && p.role.name == "Tristan");
+          let Lovers = this.game.players.filter((p) => p.role.name == "Isolde" || p.role.name == "Tristan");
 
           if(Lovers.length <= 1){
             return false;

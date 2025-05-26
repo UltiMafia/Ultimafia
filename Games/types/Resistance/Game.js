@@ -138,6 +138,7 @@ module.exports = class ResistanceGame extends Game {
     this.missionRecord.missionHistory.push(this.currentMissionHistory);
     this.missionRecord.score[winningTeam] += 1;
     this.currentMissionHistory = null;
+    this.checkGameEnd();
   }
 
   getStateInfo(state) {
@@ -157,17 +158,38 @@ module.exports = class ResistanceGame extends Game {
   }
 
   checkGameEnd(){
-    return this.finished;
+    var finished = super.checkGameEnd();
+    if (finished) return finished;
   }
 
   checkWinConditions() {
-    var thresholdToWin = this.numMissions / 2;
+    var finished = false;
+    var winQueue = new Queue();
+    var winners = new Winners(this);
+
+    var thresholdToWin = Math.ceil(this.numMissions / 2);
+    for (let player of this.players) {
+      for (let effect of player.effects) {
+        winQueue.enqueue(effect.winCheck);
+      }
+      winQueue.enqueue(player.role.winCheck);
+      winQueue.enqueue(player.role.winCheckSpecial);
+    }
+
+    for (let winCheck of winQueue) {
+      let stop = winCheck.check(winners, this.hasEpilogue);
+      if (stop) break;
+    }
+
+    if (winners.groupAmt() > 0) finished = true;
+    /*
     var finished =
       this.missionFails >= thresholdToWin ||
       (this.mission - 1 - this.missionFails >= thresholdToWin &&
         !this.hasMerlin);
-    var winners = this.getWinners();
-
+    */
+    
+    winners.determinePlayers();
     return [finished, winners];
   }
 

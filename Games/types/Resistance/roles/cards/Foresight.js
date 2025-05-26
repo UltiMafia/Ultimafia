@@ -3,7 +3,7 @@ const Card = require("../../Card");
 module.exports = class Foresight extends Card {
   constructor(role) {
     super(role);
-
+  role.game.hasEpilogue = true;
     this.stateMods = {
       Epilogue: {
         type: "add",
@@ -13,7 +13,7 @@ module.exports = class Foresight extends Card {
         shouldSkip: function () {
           return !(
             this.game.mission - 1 - this.game.missionFails >=
-            this.game.numMissions / 2
+            Math.ceil(this.game.numMissions / 2)
           );
         },
       },
