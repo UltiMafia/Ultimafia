@@ -252,10 +252,7 @@ export default function MafiaGame() {
     });
     //night music
     socket.on("NightFool", () => {
-      const currentState = history.states[history.currentState];
-      if (currentState?.name?.startsWith("Night")) {
         game.playAudio("music/NightFool");
-      }
     });
   }, game.socket);
 
