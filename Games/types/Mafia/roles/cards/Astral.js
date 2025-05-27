@@ -39,7 +39,7 @@ module.exports = class Astral extends Card {
             for (let action of this.game.actions[0]) {
               if (
                 action.priority > this.priority &&
-                action.actors.includes(this.actor)
+                action.actors.includes(this.actor) && !action.hasLabels(["mafia"])
               ) {
                 action.labels = [...action.labels, "hidden"];
               }
