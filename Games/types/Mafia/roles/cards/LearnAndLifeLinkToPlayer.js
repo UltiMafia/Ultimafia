@@ -21,12 +21,15 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
         this.player.role.targetPlayer = Random.randArrayVal(nonMafia);
       },
       death: function (player, killer, deathType) {
+        if(this.player.role.targetPlayer && player != this.player.role.targetPlayer){
+          return;
+        }
         if (this.game.getStateName() != "Night") return;
-        if (killer.role.alignment == this.player.role.alignment) return;
+        if (killer == null && killer.role.alignment == this.player.role.alignment) return;
         if (!this.player.hasAbility(["Kill", "OnlyWhenAlive"])) {
           return;
         }
-        if (player === this.player.role.targetPlayer && this.player.alive) {
+        if (this.player.alive) {
           this.player.kill("basic", this.player);
         }
       },
