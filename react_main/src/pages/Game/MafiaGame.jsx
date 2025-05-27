@@ -41,16 +41,15 @@ export default function MafiaGame() {
     : [];
   const stateNames = ["Day", "Night", "Sunset"];
   */
-  const audioFileNames = [
-    /*"Day", "Night", "Sunset", "villagewin", */ "gunshot",
-    "condemn",
-    "explosion",
-  ];
-  const audioLoops = [/*true, true, true, */ false, false, false, false];
-  const audioOverrides = [/*true, true, true, */ false, false, false, false];
-  const audioVolumes = [/*1, 1, 1, */ 1, 1, 1, 0.5];
+  const audioFileNames = [];
+  const audioLoops = [];
+  const audioOverrides = [];
+  const audioVolumes = [];
 
   const customAudios = [
+    { fileName: "gunshot", loops: false, overrides: false, volumes: 1, },
+    { fileName: "condemn", loops: false, overrides: false, volumes: 1, },
+    { fileName: "explosion", loops: false, overrides: false, volumes: 0.5, },
     // { fileName: "music/NightFool", loops: true, overrides: false, volumes: 1 },
     { fileName: "music/Draw", loops: false, overrides: false, volumes: 1, },
     { fileName: "music/WinAlien", loops: false, overrides: false, volumes: 1 },
