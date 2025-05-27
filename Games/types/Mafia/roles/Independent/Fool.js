@@ -12,5 +12,6 @@ module.exports = class Fool extends Role {
         actionName: "Fool Around",
       },
     };
+    this.game.broadcast("NightFool");
   }
 };
