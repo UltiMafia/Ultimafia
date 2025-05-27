@@ -41,90 +41,41 @@ export default function MafiaGame() {
     : [];
   const stateNames = ["Day", "Night", "Sunset"];
   */
-  const audioFileNames = [
-    /*"Day", "Night", "Sunset", "nonvillagewin", "villagewin", */ "gunshot",
-    "condemn",
-    "explosion",
-  ];
-  const audioLoops = [/*true, true, true, */ false, false, false, false];
-  const audioOverrides = [/*true, true, true, */ false, false, false, false];
-  const audioVolumes = [/*1, 1, 1, */ 1, 1, 1, 0.5];
+  const audioFileNames = [];
+  const audioLoops = [];
+  const audioOverrides = [];
+  const audioVolumes = [];
 
   const customAudios = [
-    { fileName: "music/Alien", loops: false, overrides: false, volumes: 1 },
-    {
-      fileName: "music/Anarchist",
-      loops: false,
-      overrides: false,
-      volumes: 1,
-    },
-    { fileName: "music/Fool", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/Mafia", loops: false, overrides: false, volumes: 1 },
-    {
-      fileName: "music/Cultist",
-      loops: false,
-      overrides: false,
-      volumes: 1,
-    },
-    {
-      fileName: "music/Matchmaker",
-      loops: false,
-      overrides: false,
-      volumes: 1,
-    },
-    { fileName: "music/Killer", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/Village", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/Angel", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/Monk", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/Siren", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/Lover", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/Cupid", loops: false, overrides: false, volumes: 1 },
-    {
-      fileName: "music/Executioner",
-      loops: false,
-      overrides: false,
-      volumes: 1,
-    },
-    { fileName: "music/Autocrat", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/Gambler", loops: false, overrides: false, volumes: 1 },
-    {
-      fileName: "music/CreepyGirl",
-      loops: false,
-      overrides: false,
-      volumes: 1,
-    },
-    { fileName: "music/Sidekick", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/Warlock", loops: false, overrides: false, volumes: 1 },
-    {
-      fileName: "music/Survivor",
-      loops: false,
-      overrides: false,
-      volumes: 1,
-    },
-    {
-      fileName: "music/Hellhound",
-      loops: false,
-      overrides: false,
-      volumes: 1,
-    },
-    {
-      fileName: "music/Mastermind",
-      loops: false,
-      overrides: false,
-      volumes: 1,
-    },
-    {
-      fileName: "music/Clockmaker",
-      loops: false,
-      overrides: false,
-      volumes: 1,
-    },
-    {
-      fileName: "music/Prophet",
-      loops: false,
-      overrides: false,
-      volumes: 1,
-    },
+    { fileName: "gunshot", loops: false, overrides: false, volumes: 1, },
+    { fileName: "condemn", loops: false, overrides: false, volumes: 1, },
+    { fileName: "explosion", loops: false, overrides: false, volumes: 0.5, },
+    // { fileName: "music/NightFool", loops: true, overrides: false, volumes: 1 },
+    { fileName: "music/Draw", loops: false, overrides: false, volumes: 1, },
+    { fileName: "music/WinAlien", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinAnarchist", loops: false, overrides: false, volumes: 1, },
+    { fileName: "music/WinFool", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinMafia", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinCult", loops: false, overrides: false, volumes: 1, },
+    { fileName: "music/WinMatchmaker", loops: false, overrides: false, volumes: 1, },
+    { fileName: "music/WinKiller", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinVillage", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinAngel", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinMonk", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinSiren", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinLover", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinAstrologer", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinExecutioner", loops: false, overrides: false, volumes: 1, },
+    { fileName: "music/WinAutocrat", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinGambler", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinCreepyGirl", loops: false, overrides: false, volumes: 1, },
+    { fileName: "music/WinSidekick", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinWarlock", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinSurvivor", loops: false, overrides: false, volumes: 1, },
+    { fileName: "music/WinHellhound", loops: false, overrides: false, volumes: 1, },
+    { fileName: "music/WinMastermind", loops: false, overrides: false, volumes: 1, },
+    { fileName: "music/WinClockmaker", loops: false, overrides: false, volumes: 1, },
+    { fileName: "music/WinProphet", loops: false, overrides: false, volumes: 1, },
   ];
 
   customAudios.forEach((e) => {
@@ -165,78 +116,78 @@ export default function MafiaGame() {
     socket.on("winners", (winners) => {
       game.stopAudio();
       if (winners.groups.includes("Alien")) {
-        game.playAudio("music/Alien");
+        game.playAudio("music/WinAlien");
       }
       if (winners.groups.includes("Prophet")) {
-        game.playAudio("music/Prophet");
+        game.playAudio("music/WinProphet");
       }
       if (winners.groups.includes("Fool")) {
-        game.playAudio("music/Fool");
+        game.playAudio("music/WinFool");
       }
       if (winners.groups.includes("Matchmaker")) {
-        game.playAudio("music/Matchmaker");
+        game.playAudio("music/WinMatchmaker");
       }
       if (winners.groups.includes("Survivor")) {
-        game.playAudio("music/Survivor");
+        game.playAudio("music/WinSurvivor");
       }
       if (winners.groups.includes("Serial Killer")) {
-        game.playAudio("music/Killer");
+        game.playAudio("music/WinKiller");
       }
       if (winners.groups.includes("Cult")) {
-        game.playAudio("music/Cultist");
+        game.playAudio("music/WinCultist");
       }
       if (winners.groups.includes("Village")) {
-        game.playAudio("music/Village");
+        game.playAudio("music/WinVillage");
       }
       if (winners.groups.includes("Angel")) {
-        game.playAudio("music/Angel");
+        game.playAudio("music/WinAngel");
       }
       if (winners.groups.includes("Siren")) {
-        game.playAudio("music/Siren");
+        game.playAudio("music/WinSiren");
       }
       if (winners.groups.includes("Monk")) {
-        game.playAudio("music/Monk");
+        game.playAudio("music/WinMonk");
       }
       if (winners.groups.includes("Lover")) {
-        game.playAudio("music/Lover");
+        game.playAudio("music/WinLover");
       }
       if (winners.groups.includes("Astrologer")) {
-        game.playAudio("music/Cupid");
+        game.playAudio("music/WinAstrologer");
       }
       if (winners.groups.includes("Hellhound")) {
-        game.playAudio("music/Hellhound");
+        game.playAudio("music/WinHellhound");
       }
       if (winners.groups.includes("Warlock")) {
-        game.playAudio("music/Warlock");
+        game.playAudio("music/WinWarlock");
       }
       if (winners.groups.includes("Creepy Girl")) {
-        game.playAudio("music/CreepyGirl");
+        game.playAudio("music/WinCreepyGirl");
       }
       if (winners.groups.includes("Autocrat")) {
-        game.playAudio("music/Autocrat");
+        game.playAudio("music/WinAutocrat");
       }
       if (winners.groups.includes("Gambler")) {
-        game.playAudio("music/Gambler");
+        game.playAudio("music/WinGambler");
       }
       if (winners.groups.includes("Sidekick")) {
-        game.playAudio("music/Sidekick");
+        game.playAudio("music/WinSidekick");
       }
       if (winners.groups.includes("Executioner")) {
-        game.playAudio("music/Executioner");
+        game.playAudio("music/WinExecutioner");
       }
       if (winners.groups.includes("Clockmaker")) {
-        game.playAudio("music/Clockmaker");
+        game.playAudio("music/WinClockmaker");
       }
       if (winners.groups.includes("Mastermind")) {
-        game.playAudio("music/Mastermind");
+        game.playAudio("music/WinMastermind");
       }
       if (winners.groups.includes("Anarchist")) {
-        game.playAudio("music/Anarchist");
+        game.playAudio("music/WinAnarchist");
       }
       if (winners.groups.includes("Mafia")) {
-        game.playAudio("music/Mafia");
-      } else {
-        game.playAudio("nonvillagewin");
+        game.playAudio("music/WinMafia");
+      } else if (winners.groups.includes("No one")) {
+        game.playAudio("music/Draw");
       }
     });
 
@@ -249,9 +200,11 @@ export default function MafiaGame() {
     socket.on("explosion", () => {
       game.playAudio("explosion");
     });
+    // night music
+    // socket.on("NightFool", () => {
+    //     game.playAudio("music/NightFool");
+    // });
   }, game.socket);
-
-  const unresolvedActionCount = getUnresolvedActionCount(meetings);
 
   return (
     <>
