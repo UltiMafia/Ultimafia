@@ -42,7 +42,7 @@ export default function MafiaGame() {
   const stateNames = ["Day", "Night", "Sunset"];
   */
   const audioFileNames = [
-    /*"Day", "Night", "Sunset", "nonvillagewin", "villagewin", */ "gunshot",
+    /*"Day", "Night", "Sunset", "villagewin", */ "gunshot",
     "condemn",
     "explosion",
   ];
@@ -51,6 +51,7 @@ export default function MafiaGame() {
   const audioVolumes = [/*1, 1, 1, */ 1, 1, 1, 0.5];
 
   const customAudios = [
+    // { fileName: "music/NightFool", loops: true, overrides: false, volumes: 1 },
     { fileName: "music/WinAlien", loops: false, overrides: false, volumes: 1 },
     {
       fileName: "music/WinAnarchist",
@@ -201,7 +202,7 @@ export default function MafiaGame() {
         game.playAudio("music/WinLover");
       }
       if (winners.groups.includes("Astrologer")) {
-        game.playAudio("music/WinCupid");
+        game.playAudio("music/WinAstrologer");
       }
       if (winners.groups.includes("Hellhound")) {
         game.playAudio("music/WinHellhound");
@@ -249,9 +250,11 @@ export default function MafiaGame() {
     socket.on("explosion", () => {
       game.playAudio("explosion");
     });
+    // night music
+    // socket.on("NightFool", () => {
+    //     game.playAudio("music/NightFool");
+    // });
   }, game.socket);
-
-  const unresolvedActionCount = getUnresolvedActionCount(meetings);
 
   return (
     <>
