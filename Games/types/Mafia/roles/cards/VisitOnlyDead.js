@@ -25,6 +25,9 @@ module.exports = class VisitOnlyDead extends Card {
           if (INVITED_MEETINGS.includes(meeting.name)) {
             return;
           }
+          if(meeting.item != null){
+            return;
+          }
           for (let w = 0; w < STARTS_WITH_MEETINGS.length; w++) {
             if (
               meeting.name &&
