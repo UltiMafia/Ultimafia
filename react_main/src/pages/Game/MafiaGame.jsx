@@ -202,7 +202,7 @@ export default function MafiaGame() {
         game.playAudio("music/WinLover");
       }
       if (winners.groups.includes("Astrologer")) {
-        game.playAudio("music/WinCupid");
+        game.playAudio("music/WinAstrologer");
       }
       if (winners.groups.includes("Hellhound")) {
         game.playAudio("music/WinHellhound");
@@ -255,8 +255,6 @@ export default function MafiaGame() {
     //     game.playAudio("music/NightFool");
     // });
   }, game.socket);
-
-  const unresolvedActionCount = getUnresolvedActionCount(meetings);
 
   return (
     <>
