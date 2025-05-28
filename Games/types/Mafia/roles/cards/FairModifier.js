@@ -5,6 +5,9 @@ const {
   STARTS_WITH_MEETINGS,
   IMPORTANT_MEETINGS_DAY,
 } = require("../../const/ImportantMeetings");
+const {
+  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class FairModifier extends Card {
   constructor(role) {
