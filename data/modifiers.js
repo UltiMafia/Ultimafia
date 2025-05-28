@@ -471,7 +471,7 @@ const modifierData = {
       internal: ["Nonconsecutive"],
       tags: ["Visits", "Block Self", "Nonconsecutive"],
       description:
-        "If this player visits the player they visited the previous night, their secondary actions will be blocked.",
+        "Cannot target a player they targeted the previous night",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Fair", "Consecutive"],
     },
