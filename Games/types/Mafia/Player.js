@@ -631,4 +631,49 @@ if(this.game.extendLength == 0){
     }
     return votePower;
   }
+
+customizeMeetingTargets(meeting){
+let isMorbid = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Morbid");
+let isLiminal = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Liminal");
+let isSelfish = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Selfish");
+let isFair = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Fair");
+let isNonconsecutive = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Nonconsecutive");
+let isConsecutive = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Consecutive");
+let standard = ["alive"];
+let standard2 = ["members"];
+if(isLiminal == true){
+  standard = ["alive", "dead"];
+}
+if(isMorbid == true){
+  standard = ["dead"];
+}
+if(isSelfish == true){
+  standard2 = [];
+}
+if(isConsecutive){
+if(this.actor.role.data.LimitedLastNightVisits == null || this.actor.role.data.LimitedLastNightVisits.length <= 0){
+  
+}
+else{
+  standard = ["previousAll"];
+}
+  
+}
+else if(isFair){
+  standard2.push("previousAll");
+}
+else if(isNonconsecutive){
+  standard2.push("previous");
+}
+    meeting.targets = { include: standard, exclude: standard2 };
+    meeting.targetsDescription = null;
+    meeting.generateTargets();
+    for(let member of meeting.members) {
+    member.player.sendMeeting(meeting);
+    }
+  
+}
+
+
+  
 };
