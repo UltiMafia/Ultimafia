@@ -4738,6 +4738,12 @@ const roleData = {
       tags: ["None"],
       description: ["Eats the food on the board."],
     },
+
+    Host: {
+      alignment: "Host",
+      tags: ["None"],
+      description: ["Facilitates the game."],
+    },
   },
 };
 

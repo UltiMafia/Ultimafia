@@ -89,12 +89,14 @@ module.exports = class BattlesnakesGame extends Game {
 
     // Initialize snake positions for each player
     for (const player of this.players) {
+      if(player.role.name != "Host"){
       this.positions[player.id] = {
         playerId: player.id,
         direction: "up",
         segments: [this.getRandomStartSegment()],
         alive: true,
       };
+      }
     }
 
     // Spawn multiple foods (e.g., 3, adjust as needed)

@@ -29,7 +29,7 @@ export const Alignments = {
   "Wacky Words": ["Town", "Host"],
   "Liars Dice": ["Liars", "Host"],
   "Card Games": ["Town", "Host"],
-  Battlesnakes: ["Town"],
+  Battlesnakes: ["Town", "Host"],
 };
 
 export const GameStates = {
