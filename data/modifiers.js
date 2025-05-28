@@ -164,6 +164,14 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Sane", "Insane", "Naive", "Paranoid"],
     },
+    Consecutive: {
+      internal: ["Consecutive"],
+      tags: ["Visits", "Block Self", "Consecutive"],
+      description:
+      "Can only target players they targeted previously.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Fair", "Nonconsecutive"],
+    },
     Crystalline: {
       internal: ["StartWithCrystal"],
       tags: ["Revealing", "Items", "Crystal"],
@@ -251,6 +259,14 @@ const modifierData = {
         "Player's role will be hidden from the town when condemned or on death.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Shady", "Unassuming", "Suspect"],
+    },
+    Fair: {
+      internal: ["FairModifier"],
+      tags: ["Fair"],
+      description:
+        "Cannot target a previously targeted player.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Nonconsecutive", "Consecutive"],
     },
     Felonious: {
       internal: ["VotingPowerZero"],
@@ -351,6 +367,12 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Delayed", "Odd", "Even", "Exhausted"],
     },
+    Liminal: {
+      internal: ["VisitDeadOrAlive"],
+      tags: ["Visits", "Dead", "Liminal"],
+      description: "Secondary actions can be used on dead or living players.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Linchpin: {
       internal: ["KillAlignedOnDeath"],
       tags: ["Essential", "Selective Revealing", "Linchpin"],
@@ -403,7 +425,7 @@ const modifierData = {
       internal: ["LearnAndLifeLinkToPlayer"],
       tags: ["Information", "Linked"],
       description:
-        "On Night 1 will learn a player and their role. If that player is killed during the Night at Any Point in the game, You die.",
+        "On Night 1 will learn a Village-aligned player and their role. If that player is killed by the Mafia or a Demonic role, the Married player dies.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Masked: {
@@ -421,7 +443,7 @@ const modifierData = {
     },
     Morbid: {
       internal: ["VisitOnlyDead"],
-      tags: ["Visits", "Dead"],
+      tags: ["Visits", "Dead", "Morbid"],
       description: "Secondary actions can only be used on dead players.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
@@ -447,10 +469,11 @@ const modifierData = {
     },
     Nonconsecutive: {
       internal: ["Nonconsecutive"],
-      tags: ["Visits", "Block Self"],
+      tags: ["Visits", "Block Self", "Nonconsecutive"],
       description:
-        "If this player visits the player they visited the previous night, their secondary actions will be blocked.",
+        "Cannot target a player they targeted the previous night",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Fair", "Consecutive"],
     },
     Odd: {
       internal: ["Odd"],
@@ -584,6 +607,12 @@ const modifierData = {
       internal: ["BlockTargets"],
       tags: ["Visits", "Role Blocker"],
       description: "While visiting a player, that player will be roleblocked.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Selfish: {
+      internal: ["CanVisitSelf"],
+      tags: ["Visits", "Role Blocker", "Selfish"],
+      description: "Can target themselves.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Sensible: {

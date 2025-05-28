@@ -42,6 +42,7 @@ module.exports = class RoleSharing extends Item {
       "Share With Target": {
         states: ["Day"],
         flags: ["voting"],
+        item: this,
       },
     };
 

@@ -34,6 +34,7 @@ module.exports = class Envelope extends Item {
       "Send Letter": {
         states: ["Night"],
         flags: ["voting"],
+        item: this,
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
           labels: ["hidden", "absolute", "message"],

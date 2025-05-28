@@ -13,6 +13,7 @@ module.exports = class Falcon extends Item {
       "Track with Falcon": {
         states: ["Night"],
         flags: ["voting"],
+        item: this,
         action: {
           labels: ["hidden", "absolute"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,

@@ -14,6 +14,7 @@ module.exports = class Knife extends Item {
         actionName: "Stab",
         states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
+        item: this,
         action: {
           labels: ["stab"],
           item: this,

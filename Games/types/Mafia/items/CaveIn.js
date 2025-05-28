@@ -20,6 +20,7 @@ module.exports = class CaveIn extends Item {
         passiveDead: true,
         whileDead: true,
         speakDead: false,
+        item: this,
         displayVoteCounter: true,
         targets: { include: ["alive"], exclude: ["dead"] },
         action: {

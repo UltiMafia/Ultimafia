@@ -18,6 +18,7 @@ module.exports = class Coffee extends Item {
       "Coffee Actions": {
         states: ["Dawn"],
         flags: ["voting", "instant"],
+        item: this,
         action: {
           labels: ["hidden", "absolute"],
           item: this,

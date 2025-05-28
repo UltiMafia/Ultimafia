@@ -1,66 +1,16 @@
 const Card = require("../../Card");
-const Action = require("../../Action");
-const Player = require("../../Player");
 const {
   IMPORTANT_MEETINGS_NIGHT,
   INVITED_MEETINGS,
   STARTS_WITH_MEETINGS,
   IMPORTANT_MEETINGS_DAY,
 } = require("../../const/ImportantMeetings");
-const {
-  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
-} = require("../../const/Priority");
 
-module.exports = class Nonconsecutive extends Card {
+module.exports = class CanVisitSelf extends Card {
   constructor(role) {
     super(role);
-  
+
     this.listeners = {
-            state: function (stateInfo) {
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: null,
-          target: this.player,
-          game: this.player.game,
-          priority:  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT -20,
-          labels: ["block", "hidden", "absolute"],
-          run: function () {
-            if (!this.target.hasAbility(["Modifier", "WhenDead", "Blocking"])) {
-              return;
-            }
-            let visits = [];
-            let actionList = this.game.actions[0];
-            for (let action of actionList) {
-              let toCheck1 = action.target;
-              if (!Array.isArray(action.target)) {
-                toCheck1 = [action.target];
-              }
-
-              if (
-                action.actors.indexOf(this.target) != -1 &&
-                !action.hasLabel("hidden") &&
-                action.target &&
-                toCheck1[0] instanceof Player
-              ) {
-                visits.push(...toCheck1);
-              }
-            }
-            
-            this.target.role.data.LimitedLastNightVisits = visits;
-            if(this.target.role.data.LimitedAllVisits == null){
-              this.target.role.data.LimitedAllVisits = visits;
-            }
-            else{
-              this.target.role.data.LimitedAllVisits = this.target.role.data.LimitedAllVisits.concat(visits);
-            }
-          },
-        });
-
-        this.game.queueAction(action);
-      },
       meetingsMade: function () {
         this.player.getMeetings().forEach((meeting) => {
           if (meeting.name == "Village") {
@@ -87,11 +37,18 @@ module.exports = class Nonconsecutive extends Card {
             }
           }
           if (meeting.inputType == "player") {
+            /*
+            meeting.targets = { include: ["dead"], exclude: ["alive"] };
+            meeting.targetsDescription = null;
+            meeting.generateTargets();
+            for (let member of meeting.members) {
+              member.player.sendMeeting(meeting);
+            }
+            */
             this.player.customizeMeetingTargets(meeting);
           }
         });
       },
-      
     };
 
     /*

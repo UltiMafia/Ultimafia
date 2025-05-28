@@ -18,6 +18,7 @@ module.exports = class MoleVoting extends Item {
     this.meetings["Guess Mole"] = {
       states: ["Night"],
       flags: ["group", "anonymous", "voting"],
+      item: this,
       targets: { include: ["alive", "dead"] },
       whileDead: true,
       whileAlive: true,

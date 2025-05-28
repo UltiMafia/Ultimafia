@@ -20,14 +20,28 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
         if (nonMafia.length <= 0) return;
         this.player.role.targetPlayer = Random.randArrayVal(nonMafia);
       },
-      death: function (player, killer, deathType) {
+      death: function (player, killer, deathType, instant) {
+        if(this.player.role.targetPlayer && player != this.player.role.targetPlayer){
+          return;
+        }
         if (this.game.getStateName() != "Night") return;
-        if (killer.role.alignment == this.player.role.alignment) return;
+        if (killer.role.alignment != "Mafia" && !killer.isDemonic(true)) return;
         if (!this.player.hasAbility(["Kill", "OnlyWhenAlive"])) {
           return;
         }
-        if (player === this.player.role.targetPlayer && this.player.alive) {
-          this.player.kill("basic", this.player);
+        if (this.player.alive) {
+          var action = new Action({
+            actor: this.player,
+            target: this.player,
+            game: this.holder.game,
+            labels: ["kill"],
+            run: function () {
+              if (this.dominates())
+                this.target.kill("basic", this.actor, instant);
+            },
+          });
+
+          action.do();
         }
       },
       state: function (stateInfo) {
@@ -60,7 +74,7 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
               learnRole = info.getInfoRaw();
 
               this.actor.queueAlert(
-                `You are Married to ${learnPlayer.name} who is a ${learnRole}. If they die during the night to another alignment, You will die as well.`
+                `You are Married to ${learnPlayer.name} who is a ${learnRole}. If they are killed by the Mafia or a Demonic role you will die.`
               );
             }
 

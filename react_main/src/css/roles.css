@@ -2399,6 +2399,10 @@
   background-image: url("/images/roles/snake-vivid.png");
 }
 
+.role-Battlesnakes-Host {
+  background-image: url("/images/roles/host-vivid.png");
+}
+
 /***********
 *
 * Ghost

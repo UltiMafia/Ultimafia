@@ -14,6 +14,7 @@ module.exports = class Whiskey extends Item {
       "Share Whiskey": {
         states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
+        item: this,
         action: {
           labels: ["sedate"],
           item: this,

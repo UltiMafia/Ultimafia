@@ -12,6 +12,7 @@ module.exports = class Meeting {
     this.id = shortid.generate();
     this.game = game;
     this.events = game.events;
+    
 
     /* Flags */
     this.group = false;
@@ -56,6 +57,7 @@ module.exports = class Meeting {
     this.multiMin = 0;
     this.multiMax = 0;
     this.priority = 0;
+    this.item;
   }
 
   join(player, options) {
@@ -500,6 +502,16 @@ module.exports = class Meeting {
               break;
             case "dead":
               if (!player.alive) includePlayer[player.id] = include;
+              break;
+            case "previous":
+              if(self.role.data.LimitedLastNightVisits && self.role.data.LimitedLastNightVisits.includes(player)){
+                includePlayer[player.id] = include;
+              }
+              break;
+            case "previousAll":
+              if(self.role.data.LimitedAllVisits && self.role.data.LimitedAllVisits.includes(player)){
+                includePlayer[player.id] = include;
+              }
               break;
             default:
               if (typeof tag == "function") {

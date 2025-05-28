@@ -45,13 +45,13 @@ const GameStatus = (props) => {
     } else {
       buttonUrl = "/play";
       buttonText = "In Progress";
-      buttonColor = "rgba(211, 211, 211, 0.15)";
+      buttonColor = "secondary"//"rgba(211, 211, 211, 0.15)";
       buttonVariant = "contained";
     }
   } else if (props.game.status === "Finished") {
     buttonUrl = `/game/${props.game.id}`;
     buttonText = "Review";
-    buttonColor = "rgba(211, 211, 211, 0.15)";
+    buttonColor = "info"//"rgba(211, 211, 211, 0.15)";
     buttonVariant = "contained";
   }
 

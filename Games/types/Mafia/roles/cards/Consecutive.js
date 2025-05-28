@@ -11,7 +11,7 @@ const {
   PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
 } = require("../../const/Priority");
 
-module.exports = class Nonconsecutive extends Card {
+module.exports = class Consecutive extends Card {
   constructor(role) {
     super(role);
   

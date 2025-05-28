@@ -74,6 +74,7 @@ module.exports = class Trollbox extends Item {
         states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
         targets: { include: ["alive"], exclude: ["self"] },
+        item: this,
         action: {
           labels: ["hidden", "absolute", "message"],
           item: this,
