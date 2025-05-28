@@ -6,7 +6,7 @@ const {
   IMPORTANT_MEETINGS_DAY,
 } = require("../../const/ImportantMeetings");
 
-module.exports = class LimitedModifier extends Card {
+module.exports = class FairModifier extends Card {
   constructor(role) {
     super(role);
   
@@ -82,12 +82,7 @@ module.exports = class LimitedModifier extends Card {
             }
           }
           if (meeting.inputType == "player") {
-            meeting.targets = { include: ["alive"], exclude: ["previousAll"] };
-            meeting.targetsDescription = null;
-            meeting.generateTargets();
-            for (let member of meeting.members) {
-              member.player.sendMeeting(meeting);
-            }
+            this.player.customizeMeetingTargets(meeting);
           }
         });
       },
