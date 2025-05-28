@@ -25,8 +25,13 @@ module.exports = class Volcanic extends Effect {
           if (this.game.finished) {
             return;
           }
-
-          let players = this.event.generatePossibleVictims();
+          let players;
+          if(this.event != null){
+          players = this.event.generatePossibleVictims();
+          }
+          else{
+            players = this.game.alivePlayers();
+          }
           if (players.length > 0) {
             this.target = Random.randArrayVal(players);
 
