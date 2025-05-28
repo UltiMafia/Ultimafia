@@ -25,6 +25,7 @@ module.exports = class ExtraCondemn extends Item {
       flags: ["group", "voting", "useVotingPower"],
       whileDead: true,
       passiveDead: true,
+      item: this,
       action: {
         labels: ["kill", "condemn", "hidden"],
         priority: PRIORITY_VILLAGE,

@@ -651,7 +651,7 @@ if(isSelfish == true){
   standard2 = [];
 }
 if(isConsecutive){
-if(this.actor.role.data.LimitedLastNightVisits == null || this.actor.role.data.LimitedLastNightVisits.length <= 0){
+if(this.role.data.LimitedAllVisits == null || this.role.data.LimitedAllVisits.length <= 0){
   
 }
 else{

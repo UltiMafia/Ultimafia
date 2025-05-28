@@ -14,6 +14,7 @@ module.exports = class WackyFactionRoleReveal extends Item {
     this.meetings[this.meetingName] = {
       states: ["Night"],
       flags: ["group", "anonymous", "voting"],
+      item: this,
       targets: { include: ["alive"] },
       action: {
         labels: ["hidden", "absolute", "reveal", "group", "multiActor"],

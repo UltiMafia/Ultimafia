@@ -609,6 +609,12 @@ const modifierData = {
       description: "While visiting a player, that player will be roleblocked.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    Selfish: {
+      internal: ["CanVisitSelf"],
+      tags: ["Visits", "Role Blocker", "Selfish"],
+      description: "Can target themselves.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Sensible: {
       internal: ["LearnIfRoleChanged"],
       tags: ["Information"],

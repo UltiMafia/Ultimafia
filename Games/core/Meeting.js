@@ -12,6 +12,7 @@ module.exports = class Meeting {
     this.id = shortid.generate();
     this.game = game;
     this.events = game.events;
+    
 
     /* Flags */
     this.group = false;
@@ -56,6 +57,7 @@ module.exports = class Meeting {
     this.multiMin = 0;
     this.multiMax = 0;
     this.priority = 0;
+    this.item;
   }
 
   join(player, options) {

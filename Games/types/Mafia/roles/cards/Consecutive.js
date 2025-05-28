@@ -1,4 +1,6 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
+const Player = require("../../Player");
 const {
   IMPORTANT_MEETINGS_NIGHT,
   INVITED_MEETINGS,
@@ -30,7 +32,7 @@ module.exports = class Consecutive extends Card {
               return;
             }
             let visits = [];
-            let actionList = this.game.lastNightVisits;
+            let actionList = this.game.actions[0];
             for (let action of actionList) {
               let toCheck1 = action.target;
               if (!Array.isArray(action.target)) {
@@ -38,7 +40,7 @@ module.exports = class Consecutive extends Card {
               }
 
               if (
-                action.actors.indexOf(this.actor) != -1 &&
+                action.actors.indexOf(this.target) != -1 &&
                 !action.hasLabel("hidden") &&
                 action.target &&
                 toCheck1[0] instanceof Player
@@ -47,12 +49,12 @@ module.exports = class Consecutive extends Card {
               }
             }
             
-            this.actor.role.data.LimitedLastNightVisits = visits;
-            if(this.actor.role.data.LimitedAllVisits == null){
-              this.actor.role.data.LimitedAllVisits = visits;
+            this.target.role.data.LimitedLastNightVisits = visits;
+            if(this.target.role.data.LimitedAllVisits == null){
+              this.target.role.data.LimitedAllVisits = visits;
             }
             else{
-              this.actor.role.data.LimitedAllVisits = this.actor.role.data.LimitedAllVisits.concat(visits);
+              this.target.role.data.LimitedAllVisits = this.target.role.data.LimitedAllVisits.concat(visits);
             }
           },
         });

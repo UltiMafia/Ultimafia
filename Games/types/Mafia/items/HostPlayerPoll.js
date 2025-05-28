@@ -16,6 +16,7 @@ module.exports = class HostPlayerPoll extends Item {
           states: ["Day"],
           flags: ["voting", "mustAct", "instant"],
           targets: { include: ["alive"], exclude: [cannotBeVoted, "self"] },
+          item: this,
           action: {
             labels: ["hidden", "absolute"],
             item: this,

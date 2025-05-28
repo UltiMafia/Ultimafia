@@ -19,6 +19,7 @@ module.exports = class NecroVoting extends Item {
       states: ["Day"],
       flags: ["group", "anonymous", "voting"],
       targets: { include: ["alive"] },
+      item: this,
       action: {
         labels: ["hidden", "absolute", "group", "multiActor"],
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,

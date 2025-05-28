@@ -34,6 +34,7 @@ module.exports = class RoomLeader extends Item {
         targets: { include: this.targets, exclude: ["members"] },
         multiMin: game.currentSwapAmt,
         multiMax: game.currentSwapAmt,
+        item: this,
         action: {
           item: this,
           priority: PRIORITY_ROOM_SWAP,

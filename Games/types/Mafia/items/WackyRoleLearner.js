@@ -15,6 +15,7 @@ module.exports = class WackyRoleLearner extends Item {
         "Wacky Learn Role": {
           states: ["Night"],
           flags: ["voting", "mustAct"],
+          item: this,
           targets: { include: [this.targetType], exclude: ["self"] },
           action: {
             labels: ["hidden", "absolute"],

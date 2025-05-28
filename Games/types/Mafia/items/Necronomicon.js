@@ -23,6 +23,7 @@ module.exports = class Necronomicon extends Item {
         actionName: "Necronomicon Kill",
         flags: ["voting", "mustAct"],
         targets: { include: ["alive", "self"] },
+        item: this,
         action: {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT,

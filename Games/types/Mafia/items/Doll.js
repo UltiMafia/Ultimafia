@@ -10,6 +10,7 @@ module.exports = class Doll extends Item {
         actionName: "Pass on the doll?",
         states: ["Night"],
         flags: ["voting", "mustAct"],
+        item: this,
         action: {
           labels: ["giveItem", "doll", "absolute"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,

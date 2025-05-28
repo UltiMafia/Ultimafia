@@ -13,6 +13,7 @@ module.exports = class PuppetStrings extends Item {
       actionName: this.meetingName,
       states: ["Night"],
       flags: ["voting"],
+      item: this,
       targets: { include: ["alive", "dead"], exclude: [] },
       action: {
         item: this,

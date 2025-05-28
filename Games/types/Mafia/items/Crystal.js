@@ -13,6 +13,7 @@ module.exports = class Crystal extends Item {
         actionName: "Reveal on Death",
         states: ["Night"],
         flags: ["voting"],
+        item: this,
         action: {
           labels: ["hidden", "absolute"],
           priority: PRIORITY_REVEAL_DEFAULT,
