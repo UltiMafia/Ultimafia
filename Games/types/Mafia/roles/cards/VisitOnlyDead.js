@@ -37,12 +37,15 @@ module.exports = class VisitOnlyDead extends Card {
             }
           }
           if (meeting.inputType == "player") {
+            /*
             meeting.targets = { include: ["dead"], exclude: ["alive"] };
             meeting.targetsDescription = null;
             meeting.generateTargets();
             for (let member of meeting.members) {
               member.player.sendMeeting(meeting);
             }
+            */
+            this.player.customizeMeetingTargets(meeting);
           }
         });
       },
