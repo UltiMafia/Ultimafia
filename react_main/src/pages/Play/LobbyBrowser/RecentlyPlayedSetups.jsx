@@ -69,7 +69,7 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
     if (redirect) return <Redirect to={redirect} />;
 
     const showRedoButton = isPhoneDevice ? user.loggedIn : true;
-    const maxRolesCount = isPhoneDevice ? 5 : 7;
+    const maxRolesCount = isPhoneDevice ? 6 : 8;
 
     return (
       <Box
