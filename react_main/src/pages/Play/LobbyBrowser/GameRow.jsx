@@ -180,7 +180,7 @@ export const GameRow = (props) => {
   const SetupWrapped = (
     <Setup
       setup={props.game.setup}
-      maxRolesCount={props.small ? 3 : maxRolesCount}
+      maxRolesCount={props.small ? 4 : maxRolesCount}
       fixedWidth
       key={props.game.setup.id}
       backgroundColor={getSetupBackgroundColor(props.game, true)}

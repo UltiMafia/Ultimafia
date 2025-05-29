@@ -67,9 +67,7 @@ export const PlayerCount = (props) => {
         {numSlotsTaken}/{numSlotsTotal}
       </Typography>
       {gameNotFinished && !spectatingAllowed && (
-        <div className="no-spectator">
-          <i className="fas fa-eye-slash" />
-        </div>
+        <i className="fas fa-eye-slash" />
       )}
       {gameNotFinished && spectatingAllowed && (
         <>

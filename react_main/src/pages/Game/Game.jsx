@@ -65,6 +65,7 @@ import {
 import { useTheme } from "@mui/styles";
 import BattlesnakesGame from "./BattlesnakesGame";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
+import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
 
 const lore = `/images/emotes/lore.webp`;
 const poison = `/images/emotes/poison.webp`;
@@ -248,6 +249,7 @@ function GameWrapper(props) {
           setSetup(data.setup);
 
           setOptions({
+            lobby: data.lobby,
             ranked: data.ranked,
             competitive: data.competitive,
             spectating: data.spectating,
@@ -781,11 +783,11 @@ export function BotBar(props) {
       });
   }
 
-  const maxRolesCount = isPhoneDevice ? 5 : 10;
-  const gameButtonStackDirection = isPhoneDevice ? "column" : "row";
-
   return (
-    <div className="top">
+    <div className="top" style={{
+      marginTop: "8px",
+      marginBottom: isPhoneDevice ? undefined : "8px",
+    }}>
       {!isPhoneDevice && (
         <div className="game-name-wrapper" onClick={onLogoClick}>
           {props.gameName}
@@ -803,18 +805,21 @@ export function BotBar(props) {
       </div>
       <div
         className="misc-wrapper"
-        style={
-          isPhoneDevice
-            ? {
-                padding: "8px",
-                width: "100%",
-                justifyContent: "flex-end",
-              }
-            : {}
-        }
+        style={{
+          // Apply different styling when mobile since it takes up entire width
+          width: isPhoneDevice ? "100%" : undefined,
+          paddingLeft: isPhoneDevice ? "8px" : undefined,
+          paddingRight: isPhoneDevice ? "8px" : "10px",
+          justifyContent: isPhoneDevice ? "space-between" : "center",
+        }}
       >
-        {game.setup && <Setup setup={game.setup} maxRolesCount={maxRolesCount} fixedWidth />}
-        <Stack direction={gameButtonStackDirection} spacing={1}>
+        {game.setup && (<Setup
+          setup={game.setup}
+          maxRolesCount={isPhoneDevice ? 5 : 10}
+          fixedWidth
+          backgroundColor={getSetupBackgroundColor(game.options, false)}
+        />)}
+        <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1}>
           {!game.review && (<PlayerCount
             game={game}
             gameId={game.gameId}
@@ -833,7 +838,7 @@ export function BotBar(props) {
               Archive
             </Button>
           )}
-          {game.dev && (
+          {!isPhoneDevice && game.dev && (
             <Button
               className="btn btn-theme-sec fill-game"
               onClick={onTestClick}
@@ -841,7 +846,7 @@ export function BotBar(props) {
             >
               Fill
             </Button>  
-          )}      
+          )}
           <Button
             className="btn btn-theme leave-game"
             onClick={onLeaveGameClick}

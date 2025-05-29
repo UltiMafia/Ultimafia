@@ -81,57 +81,12 @@
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
-  justify-content: center;
-  margin: 0px 10px 0px 0px;
-}
-
-.game .misc-wrapper .misc-left {
-  display: flex;
-  flex-flow: column;
-  align-items: flex-end;
-}
-
-.game .misc-buttons,
-.game .options {
-  margin-right: 10px;
-}
-
-.game .misc-buttons {
-  margin-bottom: 10px;
-}
-
-.game .misc-wrapper .options {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  gap: 5px;
-
-  color: white;
-  font-size: 13px;
-}
-
-.game .misc-icon {
-  margin-right: 10px;
+  
+  gap: 8px;
 }
 
 .game .fas {
   font-size: medium;
-}
-
-.game .misc-icon:last-child {
-  margin-right: 0px;
-}
-
-.game .misc-wrapper i {
-  color: white;
-}
-
-.game .misc-wrapper .misc-icon {
-  cursor: pointer;
-}
-
-.game .misc-wrapper .misc-icon:hover {
-  opacity: 0.8;
 }
 
 .game .main {
@@ -1009,10 +964,6 @@
     scroll-snap-stop: always;
   }
 
-  .game .misc-wrapper {
-    width: 300px;
-  }
-
   .game .top {
     flex-flow: column !important;
   }
@@ -1020,6 +971,7 @@
   .game .state-wrapper {
     order: 3;
     margin-top: 8px;
+    justify-self: center;
   }
 
   .game .message .sender {
