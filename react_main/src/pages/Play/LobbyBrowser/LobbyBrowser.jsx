@@ -201,7 +201,7 @@ export const LobbyBrowser = () => {
     </Box>
   );
 
-  const maxRolesCount = isPhoneDevice ? 4 : 10;
+  const maxRolesCount = isPhoneDevice ? 5 : 10;
   const gameList = loading ? (
     <NewLoading small />
   ) : games.length ? (
@@ -209,7 +209,7 @@ export const LobbyBrowser = () => {
       {games.map((game) => {
         return (
           <ListItem disablePadding sx={{ py: 1 }} key={game.id}>
-            <Box sx={{
+            <Box className={game.competitive ? "metallic-gold" : undefined} sx={{
               backgroundColor: getRowStubColor(game),
               borderTopLeftRadius: "5px",
               borderBottomLeftRadius: "5px",

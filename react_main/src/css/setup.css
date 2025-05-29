@@ -1,18 +1,12 @@
 .setup {
-  align-self: flex-start;
-
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
 
   border-radius: 3px;
   overflow: visible;
-  
-  margin-left: 4px;
-  margin-right: 4px;
 
   background-color: #121212;
-  cursor: pointer;
 }
 
 .popover .setup,

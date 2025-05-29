@@ -38,7 +38,7 @@ export default function Setup(props) {
     // Two instances of padding
     // maxRolesCount instances of role icons
     // one instance of ellipses icon plus 5px of its margin
-    width = (ICON_LIST_PADDING * 2) + ICON_WIDTH * (maxRolesCount + 1) + 5;
+    width = (ICON_LIST_PADDING * 2) + (ICON_WIDTH * maxRolesCount) + 5;
   }
 
   var roleCounts = [];
@@ -130,23 +130,11 @@ export default function Setup(props) {
   }
 
   if (overSize) {
-    roleCounts.push(
+    roleCounts[maxRolesCount-1] = (
       <i
         onClick={onClick}
         gameType={props.setup.gameType}
         className="fas fa-ellipsis-h"
-        style={{
-          alignSelf: "flex-end",
-          marginLeft: "5px",
-        }}
-        key="ellipses"
-      />
-    );
-  }
-  else {
-    // Otherwise, if not oversized, add an invisible box where the ellipses would be
-    roleCounts.push(
-      <Box 
         style={{
           alignSelf: "flex-end",
           marginLeft: "5px",

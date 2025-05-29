@@ -304,7 +304,7 @@ function SetupRow(props) {
 
   if (props.setup.favorite) favIconFormat = "fas";
 
-  const maxRolesCount = isPhoneDevice ? 6 : 12;
+  const maxRolesCount = isPhoneDevice ? 7 : 12;
 
   return (
     <div className={`row ${props.odd ? "odd" : ""}`}>
