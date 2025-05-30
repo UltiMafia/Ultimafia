@@ -91,7 +91,7 @@ export default function Game() {
   );
 }
 
-const NO_ONE_NAME = "Condemn No One";
+const NO_ONE_NAME = "No One";
 const MAGUS_NAME = "Declare Magus Game";
 
 function GameWrapper(props) {

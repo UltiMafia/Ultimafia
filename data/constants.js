@@ -300,7 +300,7 @@ module.exports = {
   referralGames: 5,
   referralCoins: 50,
 
-  minMafiaSetupTotal: 5,
+  minMafiaSetupTotal: 3,
   captchaThreshold: 0.25,
 
   initialRedHeartCapacity: 15,

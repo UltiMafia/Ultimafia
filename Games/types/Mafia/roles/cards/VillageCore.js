@@ -38,6 +38,7 @@ module.exports = class VillageCore extends Card {
                 }
               }
             }
+            return;
             }
 
             
