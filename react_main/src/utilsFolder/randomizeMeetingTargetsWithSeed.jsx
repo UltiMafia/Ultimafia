@@ -1,5 +1,8 @@
 import { badMathRandomWithStringSeed } from "../utilsFolder";
 
+// Should be bigger than the number seen in hashStrToInt
+const BIG_NUMBER = 1000000;
+
 export const randomizeMeetingTargetsWithSeed = ({
   targets,
   playerIds,
@@ -13,8 +16,8 @@ export const randomizeMeetingTargetsWithSeed = ({
     {}
   );
   const sortedTargets = targets.sort((a, b) => {
-    const aOrder = a === "*" ? Infinity : idToOrder[a];
-    const bOrder = b === "*" ? Infinity : idToOrder[b];
+    const aOrder = a === "*" ? BIG_NUMBER : a === "*magus" ? BIG_NUMBER + 1 : idToOrder[a];
+    const bOrder = b === "*" ? BIG_NUMBER : b === "*magus" ? BIG_NUMBER + 1 : idToOrder[b];
     return aOrder < bOrder ? -1 : aOrder === bOrder ? 0 : 1;
   });
 
