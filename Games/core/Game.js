@@ -991,8 +991,27 @@ module.exports = class Game {
   }
 
   makeGameAnonymous() {
-    this.queueAlert(`Randomising names with deck: ${this.anonymousDeck.name}`);
-    let deckProfiles = Random.randomizeArray(this.anonymousDeck.profiles);
+    if(this.anonymousDeck.length == 1){
+    this.queueAlert(`Randomising names with deck: ${this.anonymousDeck[0].name}`);
+    }
+    else{
+      let Decknames = this.anonymousDeck.map((d) => d.name);
+      this.queueAlert(`Randomising names with decks: ${Decknames.join(", ")}`);
+    }
+    //this.queueAlert(`Randomising names with decks: ${this.anonymousDeck.length}`);
+    let deckProfiles = [];
+    for(let deck of this.anonymousDeck){
+      deckProfiles = deckProfiles.concat(deck.profiles);
+    }
+    for(let profile of deckProfiles){
+      for(let profile2 of deckProfiles){
+        profile.id = deckProfiles.indexOf(profile);
+        if(profile != profile2 && profile.name == profile2.name){
+          deckProfiles = deckProfiles.filter((p) => p != profile2);
+        }
+      }
+    }
+    deckProfiles = Random.randomizeArray(deckProfiles);
     let deckIndex = 0;
 
     for (let playerId in this.players) {
@@ -1000,12 +1019,14 @@ module.exports = class Game {
       // save mapping for front-end render
       this.beforeAnonPlayerInfo.push(this.createPlayerGoneObj(p));
 
-      p.makeAnonymous(deckProfiles[deckIndex++]);
+      p.makeAnonymous(deckProfiles[deckIndex]);
+      deckIndex++;
       this.players[p.id] = p;
 
       // save mapping for reconnect
       this.anonPlayerMapping[p.originalProfile.userId] = p;
     }
+
 
     // shuffle player order
     let randomPlayers = Random.randomizeArray(this.players.array());

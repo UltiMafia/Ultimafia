@@ -191,7 +191,8 @@ router.get("/list", async function (req, res) {
           "setup",
           "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id",
         ],
-        ["anonymousDeck", "id name disabled profiles -_id"]
+        //["anonymousDeck", "id name disabled profiles -_id"]
+        ["anonymousDeck"]
       );
       finishedGames = finishedGames.map((game) => ({
         ...game.toJSON(),
@@ -307,7 +308,7 @@ router.get("/:id/review/data", async function (req, res) {
           },
         ],
       })
-      .populate("anonymousDeck", "-_id -__v -creator");
+      //.populate("anonymousDeck", "-_id -__v -creator");
 
     if (!game || !userId) {
       res.status(500);
@@ -366,7 +367,7 @@ router.get("/:id/info", async function (req, res) {
           "type users players left stateLengths lobbyName ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions -_id"
         )
         .populate("users", "id name avatar -_id")
-        .populate("anonymousDeck", "-_id -__v -creator");
+        //.populate("anonymousDeck", "-_id -__v -creator");
 
       if (!game) {
         res.status(500);
@@ -590,8 +591,10 @@ router.post("/host", async function (req, res) {
     }
 
     if (settings.anonymousGame) {
+      let decks = [];
+      for(let item of settings.anonymousDeckId.split(",")){
       let deck = await models.AnonymousDeck.findOne({
-        id: settings.anonymousDeckId,
+        id: item.trim(),
       }).select("id name disabled profiles");
       if (!deck) {
         res.status(500);
@@ -628,15 +631,17 @@ router.post("/host", async function (req, res) {
         res.send("This deck is too small for the chosen setup.");
         return;
       }
-
       let jsonProfiles = [];
       for (let profile of deckProfiles) {
         profile = profile.toJSON();
         jsonProfiles.push(profile);
       }
+      deck.profiles = jsonProfiles;
+      decks.push(deck);
+      }
 
-      settings.anonymousDeck = deck;
-      settings.anonymousDeck.profiles = jsonProfiles;
+
+      settings.anonymousDeck = decks;
     }
 
     var lobbyCheck = lobbyChecks[lobby](gameType, req.body, setup);

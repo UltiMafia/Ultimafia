@@ -238,10 +238,13 @@ var schemas = {
     broken: Boolean,
     kudosReceiver: { type: String, default: "" },
     anonymousGame: Boolean,
-    anonymousDeck: {
+    anonymousDeck: [],
+    /*
+     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "AnonymousDeck",
     },
+    */
   }),
   ArchivedGame: new mongoose.Schema({
     user: {
