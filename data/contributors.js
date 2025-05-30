@@ -364,6 +364,7 @@ const artContributors = {
       "Warden",
       "Snallygaster",
       "Weatherman",
+      "Lamia",
     ],
   },
   JaNa: {
