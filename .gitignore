@@ -19,7 +19,7 @@ testing/
 
 # Data.
 uploads/
-uploads/decks
+
 # Firebase.
 *firebase-adminsdk*.json
 firebase.json
