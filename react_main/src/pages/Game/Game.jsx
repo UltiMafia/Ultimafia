@@ -61,6 +61,7 @@ import {
   TextField,
   Typography,
   Stack,
+  Divider,
 } from "@mui/material";
 import { useTheme } from "@mui/styles";
 import BattlesnakesGame from "./BattlesnakesGame";
@@ -90,7 +91,8 @@ export default function Game() {
   );
 }
 
-const NO_ONE_NAME = "no one";
+const NO_ONE_NAME = "Condemn No One";
+const MAGUS_NAME = "Declare Magus Game";
 
 function GameWrapper(props) {
   const [loaded, setLoaded] = useState(false);
@@ -2233,6 +2235,7 @@ function ActionSelect(props) {
   // Client side vote counting logic
   const shouldDisplayCounters = meeting.displayVoteCounter;
   const canVoteNoOne = meeting.targets && Array.isArray(meeting.targets) && meeting.targets.includes("*");
+  const canVoteMagus = meeting.targets && Array.isArray(meeting.targets) && meeting.targets.includes("*magus");
   const voteCounts = new Map();
   var highestVoteCount = 0;
   var noOneHasMostVotes = false;
@@ -2278,14 +2281,46 @@ function ActionSelect(props) {
     }
   });
 
+  // In a meeting where players are targets, a "special" target is anything that's not a player
+  // includes "Condemn No One", "Declare Magus Game"
+  var displayingSpecialTarget = false;
+
+  var displayingNoOneTarget = false;
+  var displayingMagusTarget = false;
+
   // Also show how many people are voting NO_ONE_NAME if applicable
   if (shouldDisplayCounters && canVoteNoOne) {
+    displayingSpecialTarget = true;
+    displayingNoOneTarget = true;
+  }
+
+  // Also show how many people are voting MAGUS_NAME if applicable
+  if (shouldDisplayCounters && canVoteMagus) {
+    displayingSpecialTarget = true;
+    displayingMagusTarget = true;
+  }
+
+  // Start displaying the special targets after the divider to keep them visually separate
+  if (displayingSpecialTarget) {
+    rowItems.push("divider");
+  }
+
+  if (displayingNoOneTarget) {
     rowItems.push({
       id: "*",
       name: NO_ONE_NAME,
       canVote: false,
       selection: [],
-    })
+    });
+  }
+
+  if (displayingMagusTarget) {
+    rowItems.push({
+      id: "*magus",
+      name: MAGUS_NAME,
+      canVote: false,
+      selection: [],
+    });
   }
 
   return (
@@ -2322,7 +2357,18 @@ function ActionSelect(props) {
 
       <Box className="votes" sx={{ width: "100%" }}>
         {rowItems.map((rowItem) => {
+          if (rowItem === "divider") {
+            // if the row item is just the string "divider" then short circuit and render a divider
+            return (
+              <Divider direction="horizontal" sx={{
+                marginBottom: 1,
+              }}/>
+            )
+          }
+
           const rowIsNoOne = rowItem.name === NO_ONE_NAME;
+          const rowIsSpecial = rowItem.id.startsWith("*");
+
           var voteCount = 0;
           if (rowItem.name && voteCounts.has(rowItem.name)) {
             voteCount = voteCounts.get(rowItem.name);
@@ -2337,17 +2383,22 @@ function ActionSelect(props) {
             return null;
           }
 
-          var style = null;
+          var voteCountStyle = null;
           if (hasHighestVoteCount) {
-            if (rowIsNoOne) {
-              style = { backgroundColor: "#487a28" };
+            if (rowIsSpecial) {
+              voteCountStyle = { backgroundColor: "#487a28" };
             }
             else {
-              style = { backgroundColor: "#bd4c4c" }
+              voteCountStyle = { backgroundColor: "#bd4c4c" }
             }
           }
           else {
-            style = { backgroundColor: "#4c7dbd" };
+            voteCountStyle = { backgroundColor: "#4c7dbd" };
+          }
+
+          var nameColorOverride = null;
+          if (rowIsSpecial) {
+            nameColorOverride = "grey";
           }
 
           return (
@@ -2357,19 +2408,23 @@ function ActionSelect(props) {
               sx={{ display: "flex", flexDirection: "column", gap: 1 }}
             >
               {shouldDisplayCounters && (
-                <div className="vote-count" style={style}
+                <div className="vote-count" style={voteCountStyle}
                 >
                   {voteCount}
                 </div>
               )}
               <Typography
                 className="voter"
-                sx={{ cursor: "pointer", fontWeight: "bold" }}
+                sx={{
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  color: nameColorOverride ? nameColorOverride : undefined
+                }}
                 onClick={() => onSelectVote(rowItem.id)}
               >
                 {rowItem.name}
               </Typography>
-              {!rowItem.canVote && !rowIsNoOne && (
+              {!rowItem.canVote && !rowIsSpecial && (
                 <Typography className="selection">does not vote</Typography>
               )}
               {rowItem.canVote && rowItem.selection.length > 0 && (
@@ -2733,6 +2788,7 @@ function getTargetDisplay(targets, meeting, players) {
     switch (meeting.inputType) {
       case "player":
         if (target === "*") target = NO_ONE_NAME;
+        else if (target === "*magus") target = MAGUS_NAME;
         else if (target) target = players[target].name;
         else target = "";
         break;
