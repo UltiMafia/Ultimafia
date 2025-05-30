@@ -991,8 +991,18 @@ module.exports = class Game {
   }
 
   makeGameAnonymous() {
-    this.queueAlert(`Randomising names with deck: ${this.anonymousDeck.name}`);
-    let deckProfiles = Random.randomizeArray(this.anonymousDeck.profiles);
+    if(this.anonymousDeck.length == 1){
+    this.queueAlert(`Randomising names with deck: ${this.anonymousDeck[0].name}`);
+    }
+    else{
+      let Decknames = this.anonymousDeck.map((d) => d.name);
+      this.queueAlert(`Randomising names with decks: ${Decknames.join(", ")}`);
+    }
+    let deckProfiles = [];
+    for(let deck of this.anonymousDeck){
+      deckProfiles.concat(deck.profiles);
+    }
+    deckProfiles = Random.randomizeArray(deckProfiles);
     let deckIndex = 0;
 
     for (let playerId in this.players) {
