@@ -998,9 +998,10 @@ module.exports = class Game {
       let Decknames = this.anonymousDeck.map((d) => d.name);
       this.queueAlert(`Randomising names with decks: ${Decknames.join(", ")}`);
     }
+    //this.queueAlert(`Randomising names with decks: ${this.anonymousDeck.length}`);
     let deckProfiles = [];
     for(let deck of this.anonymousDeck){
-      deckProfiles.concat(deck.profiles);
+      deckProfiles = deckProfiles.concat(deck.profiles);
     }
     for(let profile of deckProfiles){
       for(let profile2 of deckProfiles){
@@ -1025,6 +1026,7 @@ module.exports = class Game {
       // save mapping for reconnect
       this.anonPlayerMapping[p.originalProfile.userId] = p;
     }
+
 
     // shuffle player order
     let randomPlayers = Random.randomizeArray(this.players.array());
