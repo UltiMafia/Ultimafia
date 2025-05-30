@@ -1002,6 +1002,14 @@ module.exports = class Game {
     for(let deck of this.anonymousDeck){
       deckProfiles.concat(deck.profiles);
     }
+    for(let profile of deckProfiles){
+      for(let profile2 of deckProfiles){
+        profile.id = deckProfiles.indexOf(profile);
+        if(profile != profile2 && profile.name == profile2.name){
+          deckProfiles = deckProfiles.filter((p) => p != profile2);
+        }
+      }
+    }
     deckProfiles = Random.randomizeArray(deckProfiles);
     let deckIndex = 0;
 
@@ -1010,7 +1018,8 @@ module.exports = class Game {
       // save mapping for front-end render
       this.beforeAnonPlayerInfo.push(this.createPlayerGoneObj(p));
 
-      p.makeAnonymous(deckProfiles[deckIndex++]);
+      p.makeAnonymous(deckProfiles[deckIndex]);
+      deckIndex++;
       this.players[p.id] = p;
 
       // save mapping for reconnect

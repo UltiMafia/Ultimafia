@@ -684,7 +684,7 @@ export function parseGamePopover(game) {
     result.push(
       <InfoRow
         title="Anonymous Deck"
-        content={`${game.settings.anonymousDeck.name} (${game.settings.anonymousDeck.id})`}
+        content={`${game.settings.anonymousDeck.map((d) => d.name).join(", ")} (${game.settings.anonymousDeck.map((d) => d.id).join(", ")})`}
         key="anonymousDeck"
       />
     );
