@@ -375,6 +375,9 @@ module.exports = class Meeting {
         ) {
           this.targets.push("*");
         }
+        if(this.game.MagusPossible == true && !this.repeatable){
+          this.targets.push("*magus");
+        }
       }
     } else if (this.inputType == "boolean") {
       if (!this.mustAct || this.includeNo) this.targets = ["Yes", "No"];
@@ -840,6 +843,8 @@ module.exports = class Meeting {
       return;
     }
 
+    if(finalTarget != "*magus"){
+    
     // Get player targeted
     if (this.inputType == "player") {
       if (!this.multi && !this.multiSplit)
@@ -848,7 +853,7 @@ module.exports = class Meeting {
 
       this.finalTarget = finalTarget;
     }
-
+  }
     // Do the action
     var actor, actors;
 

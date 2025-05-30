@@ -19,6 +19,29 @@ module.exports = class VillageCore extends Card {
           priority: PRIORITY_VILLAGE,
           power: 3,
           run: function () {
+
+            if(this.target == "*magus"){
+            this.game.MagusGameDeclared = true;
+            let players = this.game.players.filter(
+              (p) => p.role.name == "Magus"
+            );
+            if (players.length <= 0) {
+              for (let p of this.game.alivePlayers()) {
+                if (p.role.alignment === "Village" || p.role.name === "Magus") {
+                  p.kill("basic", this.actor, true);
+                }
+              }
+            } else {
+              for (let p of this.game.players) {
+                if (p.role.alignment == "Village" || p.role.name == "Magus") {
+                  p.role.data.MagusWin = true;
+                }
+              }
+            }
+            return;
+            }
+
+            
             if (this.dominates()) {
               if (!this.target.alive) {
                 this.game.exorcisePlayer(this.target);
@@ -28,6 +51,7 @@ module.exports = class VillageCore extends Card {
           },
         },
       },
+      /*
       "Magus Game": {
         states: ["Day"],
         inputType: "custom",
@@ -65,6 +89,7 @@ module.exports = class VillageCore extends Card {
           },
         },
       },
+      */
       Graveyard: {
         states: ["Night"],
         flags: ["group", "speech", "liveJoin"],

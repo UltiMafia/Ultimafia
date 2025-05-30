@@ -120,9 +120,9 @@ module.exports = class WinWithFaction extends Card {
         //MagusWin
         if (this.player.faction == "Village") {
           const magusInGameWin = this.game.players.filter(
-            (p) => p.role.name == "Magus" && p.role.data.MagusWin
+            (p) => p.role.name == "Magus"
           );
-          if (magusInGameWin.length > 0) {
+          if (magusInGameWin.length > 0 && this.game.MagusGameDeclared == true) {
             factionWin(this);
             return;
           }

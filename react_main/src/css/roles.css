@@ -1472,6 +1472,10 @@
   background-image: url("/images/roles/lich-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Lamia {
+  background-image: url("/images/roles/lamia-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Enchantress {
   background-image: url("/images/roles/enchantress-vivid.png");
 }

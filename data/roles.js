@@ -3219,6 +3219,22 @@ const roleData = {
       nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
       graveyardParticipation: "all",
     },
+      Lamia: {
+      alignment: "Cult",
+      category: "Demon",
+      tags: [
+        "Killing",
+        "Delirium",
+        "Visiting",
+        "Advanced",
+      ],
+      description: [
+        "Each night, may choose a player to kill.",
+        "If a player survives a Lamia's attack, They will be delirious until the Lamia dies.",
+        "If a Lamia attacks a delirious player, That player will die even if protected.",
+      ],
+      nightOrder: [["Kill",(PRIORITY_SUPPORT_VISIT_DEFAULT)]],
+    },
     Nyarlathotep: {
       alignment: "Cult",
       category: "Demon",
