@@ -590,8 +590,10 @@ router.post("/host", async function (req, res) {
     }
 
     if (settings.anonymousGame) {
+      let decks = [];
+      for(let item of settings.anonymousDeckId.split(",")){
       let deck = await models.AnonymousDeck.findOne({
-        id: settings.anonymousDeckId,
+        id: item.trim(),
       }).select("id name disabled profiles");
       if (!deck) {
         res.status(500);
@@ -628,15 +630,17 @@ router.post("/host", async function (req, res) {
         res.send("This deck is too small for the chosen setup.");
         return;
       }
-
       let jsonProfiles = [];
       for (let profile of deckProfiles) {
         profile = profile.toJSON();
         jsonProfiles.push(profile);
       }
+      deck.profiles = jsonProfiles;
+      decks.push(deck);
+      }
 
-      settings.anonymousDeck = deck;
-      settings.anonymousDeck.profiles = jsonProfiles;
+
+      settings.anonymousDeck = decks;
     }
 
     var lobbyCheck = lobbyChecks[lobby](gameType, req.body, setup);
