@@ -375,6 +375,9 @@ module.exports = class Meeting {
         ) {
           this.targets.push("*");
         }
+        if(this.game.MagusPossible == true){
+          this.targets.push("*magus");
+        }
       }
     } else if (this.inputType == "boolean") {
       if (!this.mustAct || this.includeNo) this.targets = ["Yes", "No"];
