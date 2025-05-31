@@ -91,7 +91,7 @@ export default function Game() {
   );
 }
 
-const NO_ONE_NAME = "Condemn No One";
+const NO_ONE_NAME = "no one";
 const MAGUS_NAME = "Declare Magus Game";
 
 function GameWrapper(props) {
@@ -2234,6 +2234,7 @@ function ActionSelect(props) {
 
   // Client side vote counting logic
   const shouldDisplayCounters = meeting.displayVoteCounter;
+  const noOneDisplayName = meeting.noOneDisplayName ? meeting.noOneDisplayName : NO_ONE_NAME;
   const canVoteNoOne = meeting.targets && Array.isArray(meeting.targets) && meeting.targets.includes("*");
   const canVoteMagus = meeting.targets && Array.isArray(meeting.targets) && meeting.targets.includes("*magus");
   const voteCounts = new Map();
@@ -2263,7 +2264,7 @@ function ActionSelect(props) {
       }
     }
 
-    if (voteCounts.has(NO_ONE_NAME) && voteCounts.get(NO_ONE_NAME) === highestVoteCount) {
+    if (voteCounts.has(noOneDisplayName) && voteCounts.get(noOneDisplayName) === highestVoteCount) {
       noOneHasMostVotes = true;
     }
   }
@@ -2288,7 +2289,7 @@ function ActionSelect(props) {
   var displayingNoOneTarget = false;
   var displayingMagusTarget = false;
 
-  // Also show how many people are voting NO_ONE_NAME if applicable
+  // Also show how many people are voting noOneDisplayName if applicable
   if (shouldDisplayCounters && canVoteNoOne) {
     displayingSpecialTarget = true;
     displayingNoOneTarget = true;
@@ -2308,7 +2309,7 @@ function ActionSelect(props) {
   if (displayingNoOneTarget) {
     rowItems.push({
       id: "*",
-      name: NO_ONE_NAME,
+      name: noOneDisplayName,
       canVote: false,
       selection: [],
     });
@@ -2366,7 +2367,7 @@ function ActionSelect(props) {
             )
           }
 
-          const rowIsNoOne = rowItem.name === NO_ONE_NAME;
+          const rowIsNoOne = rowItem.name === noOneDisplayName;
           const rowIsSpecial = rowItem.id.startsWith("*");
 
           var voteCount = 0;
@@ -2782,12 +2783,14 @@ function getTargetDisplay(targets, meeting, players) {
   else if (!targets) targets = [];
   else targets = [...targets];
 
+  const noOneDisplayName = meeting.noOneDisplayName ? meeting.noOneDisplayName : NO_ONE_NAME;
+
   for (let i in targets) {
     let target = targets[i];
 
     switch (meeting.inputType) {
       case "player":
-        if (target === "*") target = NO_ONE_NAME;
+        if (target === "*") target = noOneDisplayName;
         else if (target === "*magus") target = MAGUS_NAME;
         else if (target) target = players[target].name;
         else target = "";
