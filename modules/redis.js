@@ -144,6 +144,19 @@ async function cacheUserInfo(userId, reset) {
 
     if (!user) return false;
 
+    // Get all of the user's heart refreshes
+    let heartRefreshes = await models.HeartRefresh.find({
+      userId: userId,
+    }).select("when type");
+
+    var redHeartRefreshTimestamp = 0;
+    var goldHeartRefreshTimestamp = 0;
+
+    for (let heartRefresh of heartRefreshes) {
+      if (heartRefresh.type === "red") redHeartRefreshTimestamp = heartRefresh.when;
+      else if (heartRefresh.type === "gold") goldHeartRefreshTimestamp = heartRefresh.when;
+    }
+
     user = user.toJSON();
     utils.remapCustomEmotes(user, userId);
 
@@ -157,6 +170,8 @@ async function cacheUserInfo(userId, reset) {
     await client.setAsync(`user:${userId}:info:bdayChanged`, user.bdayChanged);
     await client.setAsync(`user:${userId}:info:redHearts`, user.redHearts);
     await client.setAsync(`user:${userId}:info:goldHearts`, user.goldHearts);
+    await client.setAsync(`user:${userId}:info:redHeartRefreshTimestamp`, redHeartRefreshTimestamp);
+    await client.setAsync(`user:${userId}:info:goldHeartRefreshTimestamp`, goldHeartRefreshTimestamp);
     await client.setAsync(
       `user:${userId}:info:blockedUsers`,
       JSON.stringify(user.blockedUsers || [])
@@ -186,6 +201,8 @@ async function cacheUserInfo(userId, reset) {
   client.expire(`user:${userId}:info:birthday`, 3600);
   client.expire(`user:${userId}:info:redHearts`, 3600);
   client.expire(`user:${userId}:info:goldHearts`, 3600);
+  client.expire(`user:${userId}:info:redHeartRefreshTimestamp`, 3600);
+  client.expire(`user:${userId}:info:goldHeartRefreshTimestamp`, 3600);
   client.expire(`user:${userId}:info:blockedUsers`, 3600);
   client.expire(`user:${userId}:info:settings`, 3600);
   client.expire(`user:${userId}:info:itemsOwned`, 3600);
@@ -203,6 +220,8 @@ async function deleteUserInfo(userId) {
   await client.delAsync(`user:${userId}:info:birthday`);
   await client.delAsync(`user:${userId}:info:redHearts`);
   await client.delAsync(`user:${userId}:info:goldHearts`);
+  await client.delAsync(`user:${userId}:info:redHeartRefreshTimestamp`);
+  await client.delAsync(`user:${userId}:info:goldHeartRefreshTimestamp`);
   await client.delAsync(`user:${userId}:info:status`);
   await client.delAsync(`user:${userId}:info:blockedUsers`);
   await client.delAsync(`user:${userId}:info:settings`);
@@ -226,6 +245,8 @@ async function getUserInfo(userId) {
   info.birthday = await client.getAsync(`user:${userId}:info:birthday`);
   info.redHearts = await client.getAsync(`user:${userId}:info:redHearts`);
   info.goldHearts = await client.getAsync(`user:${userId}:info:goldHearts`);
+  info.redHeartRefreshTimestamp = await client.getAsync(`user:${userId}:info:redHeartRefreshTimestamp`);
+  info.goldHeartRefreshTimestamp = await client.getAsync(`user:${userId}:info:goldHeartRefreshTimestamp`);
   info.status = await client.getAsync(`user:${userId}:info:status`);
   info.blockedUsers = JSON.parse(
     await client.getAsync(`user:${userId}:info:blockedUsers`)

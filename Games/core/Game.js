@@ -2555,10 +2555,6 @@ module.exports = class Game {
           }
         ).exec();
 
-        if (!player.isBot) {
-          await redis.cacheUserInfo(player.user.id, true);
-        }
-
         if (heartType && !player.isBot) {
           let heartRefresh = await models.HeartRefresh.findOne({
             userId: player.user.id,
@@ -2572,6 +2568,10 @@ module.exports = class Game {
             });
             await heartRefresh.save();
           }
+        }
+
+        if (!player.isBot) {
+          await redis.cacheUserInfo(player.user.id, true);
         }
 
         // if (this.ranked && player.user.referrer && player.user.rankedCount == constants.referralGames - 1) {
