@@ -369,7 +369,7 @@ export default function Settings() {
 
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h6">Accounts</Typography>
+          <Typography variant="h6">Account</Typography>
         </AccordionSummary>
         <Box sx={{ width: "50%", mx: "auto" }}>
           <AccordionDetails>
