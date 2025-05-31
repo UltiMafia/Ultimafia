@@ -305,8 +305,10 @@ module.exports = {
 
   initialRedHeartCapacity: 15,
   initialGoldHeartCapacity: 0,
-  redHeartRefreshIntervalMillis: 86400000,
-  goldHeartRefreshIntervalMillis: 86400000,
+
+  // Refresh every 23 hours
+  redHeartRefreshIntervalMillis: 82800000,
+  goldHeartRefreshIntervalMillis: 82800000,
 
   // Perms given to all users
   defaultPerms: [
