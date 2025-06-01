@@ -171,7 +171,7 @@ module.exports = function () {
           await redis.cacheUserInfo(userId, true);
         }
       },
-      interval: 1000 * 300,
+      interval: 1000 * 60,
     },
     heartMaintenance: {
       // This safeguard runs sparsely just in case a heart refresh never gets created for a user
