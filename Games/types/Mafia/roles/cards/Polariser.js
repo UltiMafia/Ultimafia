@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_EFFECT_GIVER_DEFAULT, PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
 module.exports = class Polariser extends Card {
   constructor(role) {
@@ -31,5 +31,47 @@ module.exports = class Polariser extends Card {
         },
       },
     };
+
+    this.listeners = {
+        state: function (stateInfo) {
+        if (!this.player.hasAbility(["Kill", "Effect"])) {
+          return;
+        }
+
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+
+        var action = new Action({
+          actor: this.player,
+          game: this.player.game,
+          priority: PRIORITY_KILL_DEFAULT,
+          labels: ["kill", "hidden", "absolute"],
+          run: function () 
+          for(let player of this.game.players){
+           let visitors = this.getVisitors(player);
+            for (let v of visitors) {
+              if (!v.hasEffect("Polarised")) {
+                continue;
+              }
+
+              if (this.dominates(player)) {
+                player.kill("polarised", this.actor);
+              }
+
+              if (this.dominates(v)) {
+                v.kill("polarised", this.actor);
+              }
+            }
+          
+          }
+          },
+        });
+
+        this.game.queueAction(action);
+      },
+    };
+
+    
   }
 };
