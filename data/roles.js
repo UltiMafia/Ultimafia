@@ -4160,6 +4160,7 @@ const roleData = {
       alignment: "Independent",
       tags: ["Conversion", "Vanilla", "Visiting", "Hostile", "Basic"],
       description: [
+        "Meets with other Communists at night.",
         "Visits one player each night.",
         "Turns that player into their alignment's vanilla role.",
         "Wins if alive when all other players are vanilla.",
@@ -4221,6 +4222,7 @@ const roleData = {
         "Advanced",
       ],
       description: [
+        "Meets with other Polar Bears at night."
         "Visits two players each night, polarising them.",
         "A polarised player visiting another polarised player will kill both of them.",
         //"If visited by a Penguin, will eat it.",
