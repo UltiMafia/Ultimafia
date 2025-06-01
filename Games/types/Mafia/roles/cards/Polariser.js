@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const { PRIORITY_EFFECT_GIVER_DEFAULT, PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
 module.exports = class Polariser extends Card {
@@ -47,7 +48,7 @@ module.exports = class Polariser extends Card {
           game: this.player.game,
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill", "hidden", "absolute"],
-          run: function () 
+          run: function () {
           for(let player of this.game.players){
            let visitors = this.getVisitors(player);
             for (let v of visitors) {

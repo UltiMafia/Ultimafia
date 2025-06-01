@@ -27,6 +27,35 @@ module.exports = class MakeAllVillageInfoFalse extends Card {
 */
 
     this.listeners = {
+        AbilityToggle: function (player) {
+        if (this.FalseModeVillageEffects == null) {
+          this.FalseModeVillageEffects = [];
+        }
+        for (let x = 0; x < this.FalseModeVillageEffects.length; x++) {
+          if (this.FalseModeVillageEffects[x].player) {
+            var index = this.FalseModeVillageEffects[x].player.passiveEffects.indexOf(
+              this.FalseModeVillageEffects[x]
+            );
+            if (index != -1) {
+              this.player.passiveEffects.splice(index, 1);
+            }
+            this.FalseModeVillageEffects[x].remove();
+          }
+        }
+        this.FalseModeVillageEffects = [];
+        if (this.player.hasAbility(["Deception"])) {
+          let neighbors = this.player.getNeighbors();
+          if (neighbors[0].isEvil() == true || neighbors[1].isEvil() == true) {
+            return;
+          }
+          for (let player of this.game.players.filter((p) => p.role.alignment == "Village")) {
+            let effect = player.giveEffect("FalseMode", Infinity);
+            this.player.passiveEffects.push(effect);
+            this.FalseModeVillageEffects.push(effect);
+          }
+        }
+      },
+      /*
       SwitchRoleBefore: function (player) {
         if (player != this.player) return;
 
@@ -64,6 +93,7 @@ module.exports = class MakeAllVillageInfoFalse extends Card {
 
         this.game.queueAction(action);
       },
+      */
     };
   }
 };
