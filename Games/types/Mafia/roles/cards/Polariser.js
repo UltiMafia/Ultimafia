@@ -51,6 +51,7 @@ module.exports = class Polariser extends Card {
           run: function () {
           for(let player of this.game.players){
            let visitors = this.getVisitors(player);
+           if(player.hasEffect("Polarised")){
             for (let v of visitors) {
               if (!v.hasEffect("Polarised")) {
                 continue;
@@ -64,6 +65,7 @@ module.exports = class Polariser extends Card {
                 v.kill("polarised", this.actor);
               }
             }
+          }
           
           }
           },

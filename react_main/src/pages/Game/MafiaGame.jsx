@@ -134,7 +134,7 @@ export default function MafiaGame() {
         game.playAudio("music/WinKiller");
       }
       if (winners.groups.includes("Cult")) {
-        game.playAudio("music/WinCultist");
+        game.playAudio("music/WinCult");
       }
       if (winners.groups.includes("Village")) {
         game.playAudio("music/WinVillage");

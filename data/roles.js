@@ -4222,7 +4222,7 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Meets with other Polar Bears at night."
+        "Meets with other Polar Bears at night.",
         "Visits two players each night, polarising them.",
         "A polarised player visiting another polarised player will kill both of them.",
         //"If visited by a Penguin, will eat it.",
