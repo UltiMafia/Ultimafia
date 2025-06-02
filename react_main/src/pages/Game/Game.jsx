@@ -50,6 +50,7 @@ import { ChangeHeadPing } from "../../components/ChangeHeadPing";
 
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { useLongPress } from "../../hooks/useLongPress.jsx";
 import {
   Accordion,
   AccordionSummary,
@@ -140,6 +141,76 @@ function GameWrapper(props) {
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
   const { gameId } = useParams();
+
+  function PinnedMessagesReducer(state, action) {
+    var newState = state;
+
+    switch (action.type) {
+      case 'addMessage': {
+        if (action.message && action.message.id) newState[action.message.id] = action.message;
+        break;
+      }
+      case 'removeMessage': {
+        if (action.messageId) delete newState[action.messageId];
+        break;
+      }
+      case 'setMessages': {
+        newState = action.messages;
+        break;
+      }
+      default: {
+        throw Error('Unknown action: ' + action.type);
+      }
+    }
+
+    const pinnedMessageData = JSON.stringify({
+      state: newState,
+      gameId: gameId,
+    });
+
+    window.localStorage.setItem("pinnedMessageData", pinnedMessageData);
+    return newState;
+  }
+  
+  const [pinnedMessages, updatePinnedMessages] = useReducer(PinnedMessagesReducer, {});
+
+  function isMessagePinned(message) {
+    return message && message.id in pinnedMessages;
+  }
+
+  function onPinMessage(message) {
+    if (isMessagePinned(message)) {
+      updatePinnedMessages({
+        type: "removeMessage",
+        messageId: message.id,
+      });
+    }
+    else {
+      updatePinnedMessages({
+        type: "addMessage",
+        message: message,
+      });
+    }
+  }
+
+  // If a user refreshes, retain their pinned messages
+  useEffect(() => {
+    var pinnedMessageData = window.localStorage.getItem("pinnedMessageData");
+
+    if (pinnedMessageData) {
+      pinnedMessageData = JSON.parse(pinnedMessageData);
+
+      if (pinnedMessageData.gameId !== gameId){
+        window.localStorage.removeItem("pinnedMessageData");
+      }
+      else {
+        updatePinnedMessages({
+          type: "setMessages",
+          messages: pinnedMessageData.state,
+        });
+      };
+    }
+  }, []);
 
   const audioFileNames = ["bell", "ping", "tick", "vegPing"];
   const audioLoops = [false, false, false];
@@ -595,6 +666,22 @@ function GameWrapper(props) {
         }
       });
   }
+  
+  function onMessageQuote(message) {
+    if (
+      !props.review &&
+      message.senderId !== "server" &&
+      !message.isQuote &&
+      message.quotable
+    ) {
+      socket.send("quote", {
+        messageId: message.id,
+        toMeetingId: history.states[history.currentState].selTab,
+        fromMeetingId: message.meetingId,
+        fromState: stateViewing,
+      });
+    }
+  }
 
   if (leave === "review") return <Redirect to={`/game/${gameId}/review`} />;
   else if (leave) return <Redirect to="/play" />;
@@ -637,6 +724,10 @@ function GameWrapper(props) {
       togglePlayerIsolation,
       rolePredictions,
       toggleRolePrediction,
+      pinnedMessages: pinnedMessages,
+      onPinMessage: onPinMessage,
+      isMessagePinned: isMessagePinned,
+      onMessageQuote: onMessageQuote,
       loadAudioFiles: loadAudioFiles,
       playAudio: playAudio,
       stopAudio: stopAudio,
@@ -956,26 +1047,6 @@ export function TextMeetingLayout(props) {
     setAutoScroll(true);
   }
 
-  function onMessageQuote(message) {
-    if (
-      !props.review &&
-      message.senderId !== "server" &&
-      !message.isQuote &&
-      message.quotable
-    ) {
-      const fromState = combineMessagesFromAllMeetings
-        ? message.fromState
-        : stateViewing;
-
-      props.socket.send("quote", {
-        messageId: message.id,
-        toMeetingId: history.states[history.currentState].selTab,
-        fromMeetingId: message.meetingId,
-        fromState: fromState,
-      });
-    }
-  }
-
   function onSpeechScroll() {
     if (!mouseMoved) {
       doAutoScroll();
@@ -1017,6 +1088,29 @@ export function TextMeetingLayout(props) {
       props.filters
     );
   }
+
+  function shouldChainToPreviousMessage(message, previousMessage) {
+    if (!previousMessage) {
+      return false;
+    }
+
+    if (message.senderId === "server" || message.senderId === "anonymous") {
+        return false;
+    }
+
+    if (Math.abs(message.time - previousMessage.time) > 30000) {
+      return false;
+    }
+  
+    if (message.senderId === previousMessage.senderId) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  var previousMessage = null;
   messages = messages.map((message, i) => {
     const isNotServerMessage = message.senderId !== "server";
     const unfocusedMessage =
@@ -1025,16 +1119,23 @@ export function TextMeetingLayout(props) {
       isolatedPlayers.size &&
       !isolatedPlayers.has(message.senderId);
 
+    const chainToPrevious = shouldChainToPreviousMessage(message, previousMessage);
+    previousMessage = message;
+
     return (
       <Message
         message={message}
+        review={game.review}
         history={history}
         players={players}
         stateViewing={stateViewing}
         key={message.id || message.messageId + message.time || i}
-        onMessageQuote={onMessageQuote}
+        onMessageQuote={game.onMessageQuote}
+        onPinMessage={game.onPinMessage}
+        isMessagePinned={game.isMessagePinned}
         settings={props.settings}
         unfocusedMessage={unfocusedMessage}
+        chainToPrevious={chainToPrevious}
       />
     );
   });
@@ -1221,26 +1322,34 @@ function areSameDay(first, second) {
 }
 
 function Message(props) {
-  const theme = useTheme();
   const isPhoneDevice = useIsPhoneDevice();
+  const user = useContext(UserContext);
+  const [isHovering, setIsHovering] = useState(false);
+
+  // Mobile only - users pin message by long pressing them
+  const messageLongPress = useLongPress(() => props.onPinMessage(props.message), 300);
+
   const history = props.history;
   const players = props.players;
-  const user = useContext(UserContext);
-
+  const chainToPrevious = props.chainToPrevious;
   var message = props.message;
+
+  const isVoteMessage = message.senderId === "vote";
+  const isServerMessage = message.senderId === "server";
+  const isAnonymousMessage = message.senderId === "anonymous";
+  const isPlayerMessage = !isVoteMessage && !isServerMessage && !isAnonymousMessage;
+
   const extraStyle = message.extraStyle;
   var player, quotedMessage;
   var contentClass = "content ";
   var isMe = false;
+  const thumbtackFaClass = props.isMessagePinned(message) ? "fas fa-thumbtack" : "fas fa-thumbtack fa-rotate-270";
 
-  if (
-    message.senderId !== "server" &&
-    message.senderId !== "vote" &&
-    message.senderId !== "anonymous"
-  ) {
+  if (isPlayerMessage) {
     player = players[message.senderId];
   }
   var customEmotes = player ? player.customEmotes : null;
+  const denseMessages = props?.settings?.denseMessages && !props.disableDenseMessages;
 
   if (message.isQuote) {
     var state = history.states[message.fromState];
@@ -1278,13 +1387,19 @@ function Message(props) {
   }
 
   if (message.isQuote) contentClass += "quote ";
-  else if (message.senderId === "server") contentClass += "server ";
-  else if (message.senderId === "vote") contentClass += "vote-record ";
+  else if (isServerMessage) contentClass += "server ";
+  else if (isVoteMessage) contentClass += "vote-record ";
   else if (isMe) contentClass += "me ";
 
   const messageStyle = {};
   if (props.unfocusedMessage) {
     messageStyle.opacity = "0.2";
+  }
+  if (!denseMessages) {
+    messageStyle.paddingLeft = "32px"; // 24px avatar + 8px margin
+  }
+  if (!denseMessages && !chainToPrevious) {
+    messageStyle.marginTop = "8px";
   }
 
   const stateMeetings = history.states[props.stateViewing].meetings;
@@ -1345,123 +1460,156 @@ function Message(props) {
     }
   }
 
-  const canStyleMessagesVertically =
-    player && props?.settings?.alignMessagesVertically;
-  const styleMessagesVertically = {
-    width: isPhoneDevice ? "107px" : "175px",
-    borderRight: `1px solid ${theme.palette.primary.main}`,
-    paddingRight: "10px",
-    marginRight: "6px",
-  };
-  const alignServerMessageStyles =
-    message.senderId === "server" &&
-    props.settings?.alignMessagesVertically &&
-    !isPhoneDevice
-      ? { paddingLeft: "108px" }
-      : {};
+  function messageOnMouseEnter() {
+    setIsHovering(true);
+  }
+
+  function messageOnMouseLeave() {
+    setIsHovering(false);
+  }
+
   return (
     <div
       className="message"
       onDoubleClick={() => props.onMessageQuote(message)}
       style={messageStyle}
+      onMouseEnter={messageOnMouseEnter}
+      onMouseLeave={messageOnMouseLeave}
+      onTouchStart={messageLongPress.onTouchStart}
+      onTouchEnd={messageLongPress.onTouchEnd}
     >
-      <span
-        className="sender"
-        style={canStyleMessagesVertically ? styleMessagesVertically : {}}
-      >
-        &#8203;
-        {props.settings.timestamps && <Timestamp time={message.time} />}
-        {player && (
-          <NameWithAvatar
-            dead={playerDead && props.stateViewing > 0}
-            id={player.userId}
-            avatarId={avatarId}
-            name={player.name}
-            avatar={player.avatar}
-            color={
-              !user.settings?.ignoreTextColor && message.nameColor !== ""
-                ? message.nameColor
-                : ""
-            }
-            noLink
-            small
-          />
-        )}
-        {message.senderId === "anonymous" && (
-          <div className="name-with-avatar">Anonymous</div>
-        )}
-      </span>
-      <div
-        className={contentClass}
-        style={{
-          ...(!user.settings?.ignoreTextColor && message.textColor !== ""
-            ? // ? { color: flipTextColor(message.textColor) }
-              { color: message.textColor }
-            : contentClass == "content server "
-            ? extraStyle
-            : {}),
-          ...alignServerMessageStyles,
+      <Stack
+        direction={(!isPlayerMessage && !isAnonymousMessage) ? "row" : "column"}
+        spacing={.5}
+        sx={{
+          display: denseMessages ? "block" : undefined,
         }}
       >
-        {!message.isQuote && (
-          <>
-            {message.prefix && (
-              <div className="prefix" style={{ display: "inline" }}>
-                ({message.prefix})
-              </div>
-            )}
-            <UserText
-              text={message.content}
-              settings={user.settings}
-              players={players}
-              customEmotes={customEmotes}
-              filterProfanity
-              linkify
-              emotify
-              slangify
-              slangifySeed={message.time.toString()}
-              terminologyEmoticons={props.settings.terminologyEmoticons}
-              iconUsername
+        {(!chainToPrevious || denseMessages || isVoteMessage) && (<Stack
+          direction={denseMessages ? "row" : "row-reverse"}
+          spacing={.5}
+          sx={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "start",
+          }}
+        >
+          &#8203;
+          {props.settings.timestamps && <Timestamp time={message.time} hideHours={denseMessages}/>}
+          {player && (
+            <NameWithAvatar
+              dead={playerDead && props.stateViewing > 0}
+              id={player.userId}
+              avatarId={avatarId}
+              name={player.name}
+              avatar={player.avatar}
+              color={
+                !user.settings?.ignoreTextColor && message.nameColor !== ""
+                  ? message.nameColor
+                  : ""
+              }
+              noLink
+              small
+              absoluteLeftAvatarPx={denseMessages ? undefined : "8px"}
             />
-          </>
-        )}
-        {message.isQuote && (
-          <>
-            <i className="fas fa-quote-left" />
-            <Timestamp time={quotedMessage.time} />
-            <span className="quote-info">
-              {`${quotedMessage.senderName} on ${quotedMessage.fromStateName}: `}
-            </span>
-            <span className="quote-content">
+          )}
+          {isAnonymousMessage && (
+            <NameWithAvatar
+              name="Anonymous"
+              noLink
+              small
+              absoluteLeftAvatarPx={denseMessages ? undefined : "8px"}
+            />
+          )}
+        </Stack>)}
+        <div
+          className={contentClass}
+          style={{
+            marginLeft: denseMessages ? "8px" : undefined,
+            ...(!user.settings?.ignoreTextColor && message.textColor !== ""
+              ? // ? { color: flipTextColor(message.textColor) }
+                { color: message.textColor }
+              : contentClass == "content server "
+              ? extraStyle
+              : {}),
+          }}
+        >
+          {!message.isQuote && (
+            <>
+              {message.prefix && (
+                <div className="prefix" style={{ display: "inline" }}>
+                  ({message.prefix})
+                </div>
+              )}
               <UserText
-                text={quotedMessage.content}
+                text={message.content}
                 settings={user.settings}
                 players={players}
                 customEmotes={customEmotes}
                 filterProfanity
                 linkify
                 emotify
-                slangifySeed={quotedMessage.time.toString()}
+                slangify
+                slangifySeed={message.time.toString()}
+                terminologyEmoticons={props.settings.terminologyEmoticons}
                 iconUsername
               />
-            </span>
-            <i className="fas fa-quote-right" />
-          </>
+            </>
+          )}
+          {message.isQuote && (
+            <>
+              <i className="fas fa-quote-left" />
+              <Timestamp time={quotedMessage.time} hideHours={denseMessages}/>
+              <span className="quote-info">
+                {`${quotedMessage.senderName} on ${quotedMessage.fromStateName}: `}
+              </span>
+              <span className="quote-content">
+                <UserText
+                  text={quotedMessage.content}
+                  settings={user.settings}
+                  players={players}
+                  customEmotes={customEmotes}
+                  filterProfanity
+                  linkify
+                  emotify
+                  slangifySeed={quotedMessage.time.toString()}
+                  iconUsername
+                />
+              </span>
+              <i className="fas fa-quote-right" />
+            </>
+          )}
+        </div>
+      </Stack>
+      {!isPhoneDevice && (<Box
+        onClick={() => props.onPinMessage(message)}
+        sx={{
+          minWidth: "20px",
+          marginLeft: "auto",
+          alignSelf: "start",
+        }}
+      >
+        {!props.review && !message.isQuote && !isVoteMessage && isHovering && (<i
+          class={thumbtackFaClass}
+          style={{ cursor: "pointer" }}
+          />
         )}
-      </div>
+      </Box>)}
     </div>
   );
 }
 
 export function Timestamp(props) {
   const time = new Date(props.time);
+  const hideHours = props.hideHours;
+
   var hours = String(time.getHours()).padStart(2, "0");
   var minutes = String(time.getMinutes()).padStart(2, "0");
   var seconds = String(time.getSeconds()).padStart(2, "0");
 
   return (
     <span className="time">
-      {hours}:{minutes}:{seconds}
+      {!hideHours ? hours + ":" : ""}{minutes}:{seconds}
     </span>
   );
 }
@@ -1746,6 +1894,7 @@ export function SideMenuNew({
   onChange,
   defaultExpanded = false,
   disabled = false,
+  contentPadding = "8px 16px",
 }) {
   const handleToggle = () => {
     if (!disabled && onChange) {
@@ -1772,7 +1921,7 @@ export function SideMenuNew({
         className="side-menu-title"
         sx={{
           minHeight: "30px",
-          padding: "4px 16px",
+          padding: "4px 8px",
           "& .MuiAccordionSummary-content": {
             margin: "4px 0",
           },
@@ -1787,7 +1936,7 @@ export function SideMenuNew({
       <AccordionDetails
         className="side-menu-content"
         sx={{
-          padding: "8px 16px", // Adjust padding inside the expanded section
+          padding: contentPadding, // Adjust padding inside the expanded section
         }}
       >
         {content}
@@ -2932,10 +3081,10 @@ export function SettingsMenu(props) {
       value: settings.terminologyEmoticons,
     },
     {
-      label: "Align Messages Vertically",
-      ref: "alignMessagesVertically",
+      label: "Compact Messages",
+      ref: "denseMessages",
       type: "boolean",
-      value: settings.alignMessagesVertically,
+      value: settings.denseMessages,
     },
   ]);
 
@@ -3155,6 +3304,54 @@ export function SpeechFilter(props) {
             value={filters.contains}
             onChange={(e) => onFilter("contains", e.target.value)}
           />
+        </div>
+      }
+    />
+  );
+}
+
+export function PinnedMessages() {
+  const game = useContext(GameContext);
+
+  if (game.stateViewing < 0) return <></>;
+
+  function sortMessagesByTimestamp(a, b) {
+    if (a.time < b.time) {
+      return -1;
+    }
+    if (a.time > b.time) {
+      return 1;
+    }
+    else {
+      return 0
+    }
+  }
+
+  const sortedPinnedMessages = Object.values(game.pinnedMessages).sort(sortMessagesByTimestamp);
+
+  const pinnedMessages = sortedPinnedMessages.map((message, i) => {
+    return (<Message
+      message={message}
+      review={game.review}
+      history={game.history}
+      players={game.players}
+      stateViewing={game.stateViewing}
+      key={message.id || message.messageId + message.time || i}
+      onMessageQuote={game.onMessageQuote}
+      onPinMessage={game.onPinMessage}
+      isMessagePinned={game.isMessagePinned}
+      settings={game.settings}
+      disableDenseMessages
+    />
+  )});
+
+  return (
+    <SideMenuNew
+      title="Pinned messages"
+      contentPadding="0px 0px"
+      content={
+        <div className="speech-display" style={{ minHeight: "40px", maxHeight: "240px" }}>
+          {pinnedMessages}
         </div>
       }
     />
@@ -3673,7 +3870,7 @@ export function useSettingsReducer() {
     music: true,
     volume: 1,
     terminologyEmoticons: true,
-    alignMessagesVertically: true,
+    denseMessages: false,
   };
 
   return useReducer((settings, action) => {

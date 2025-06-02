@@ -161,12 +161,21 @@
   z-index: 1;
 }
 
-.game .message {
-  /*display: flex;*/
-  flex-wrap: wrap;
+.game .message:hover {
+  background-color: rgba(12, 12, 12, .15);
+}
 
-  margin-top: 6px;
-  margin-left: 8px;
+.game .message {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+
+  position: relative;
+
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 8px;
+  padding-right: 4px;
 
   color: var(--scheme-color-text);
 }
@@ -175,32 +184,9 @@
   padding-bottom: 10px;
 }
 
-.game .message .sender,
-.gameMessageSender {
-  display: inline-flex;
-  align-items: center;
-  /*flex-shrink: 0;*/
-  /*flex-basis: 170px;*/
-  /*align-self: flex-start;*/
-
-  /*display: flex;*/
-  /*flex-flow: row nowrap;*/
-  /*justify-content: flex-end;*/
-
-  overflow-x: hidden;
-}
-
-.game .message .sender .time {
-  margin-right: 8px;
+.game .message .time {
   opacity: 0.5;
-}
-
-.game .message .sender .name-with-avatar {
-  display: inline-flex;
-  margin-left: auto;
-
-  overflow-x: hidden;
-  font-weight: bold;
+  min-width: 40px;
 }
 
 .game .message .prefix {
@@ -212,12 +198,8 @@
 .game .message .content,
 .gameMessageContent {
   display: inline;
-  /*display: flex;*/
-  /*flex-flow: row wrap;*/
 
-  padding: 0px 4px;
-  /*border-left: 1px solid #616161;*/
-
+  word-break: break-word;
   white-space: pre-wrap;
 }
 

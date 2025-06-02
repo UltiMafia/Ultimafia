@@ -14,6 +14,7 @@ import {
   SpeechFilter,
   SettingsMenu,
   Notes,
+  PinnedMessages,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 
@@ -283,9 +284,8 @@ export default function MafiaGame() {
                   socket={game.socket}
                 />
               )}
-            {!game.review && !isSpectator && (
-              <Notes stateViewing={stateViewing} />
-            )}
+            {!game.review && !isSpectator && (<PinnedMessages/>)}
+            {!game.review && !isSpectator && (<Notes stateViewing={stateViewing} />)}
           </>
         }
       />
