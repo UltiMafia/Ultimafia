@@ -490,7 +490,7 @@ const modifierData = {
     },
     "One Shot": {
       internal: ["OneShot"],
-      tags: ["One Shot", "Dawn", "Dusk", "Pregame Actions"],
+      tags: ["One Shot"],
       description: "Can only perform actions once.",
       eventDescription: "This Event will only occur once.",
       incompatible: ["Exhausted"],

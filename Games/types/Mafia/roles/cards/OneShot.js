@@ -16,8 +16,8 @@ module.exports = class OneShot extends Card {
     this.meetings = {
       "One Shot Night": {
         actionName: "Use Night Ability?",
-        states: ["Dusk"],
-        flags: ["voting"],
+        states: ["Night"],
+        flags: ["voting", "instant"],
         inputType: "boolean",
         whileDead: true,
         whileAlive: true,
@@ -26,8 +26,23 @@ module.exports = class OneShot extends Card {
           priority: 0,
           run: function () {
             if (this.target == "No") return;
-
             this.actor.role.OneShotNight = 1;
+            //this.actor.meet();
+            //let meetings = this.actor.role.meetings.filter((m) => !IMPORTANT_MEETINGS_NIGHT.includes(m.name) && m.name != "One Shot Night");
+            /*
+            for(let meeting of Object.values(this.actor.role.meetings)){
+              if(!IMPORTANT_MEETINGS_NIGHT.includes(meeting.name) && meeting.name != "One Shot Night"){
+              this.actor.joinMeetings(meeting)
+              this.actor.sendMeeting(meeting);
+              }
+            }
+            */
+            //this.game.instantMeeting(this.actor.role.meetings, [this.actor]);
+            this.actor.joinMeetings(this.actor.role.meetings);
+            for (let meeting of this.game.meetings){
+               meeting.generateTargets();
+            }
+            this.actor.sendMeetings();
           },
         },
         shouldMeet() {
@@ -36,7 +51,7 @@ module.exports = class OneShot extends Card {
       },
       "One Shot Day": {
         actionName: "Use Day Ability?",
-        states: ["Dawn"],
+        states: ["Day"],
         flags: ["voting"],
         inputType: "boolean",
         whileDead: true,
@@ -48,6 +63,11 @@ module.exports = class OneShot extends Card {
             if (this.target == "No") return;
 
             this.actor.role.OneShotDay = 1;
+            this.actor.joinMeetings(this.actor.role.meetings);
+            for (let meeting of this.game.meetings){
+               meeting.generateTargets();
+            }
+            this.actor.sendMeetings();
           },
         },
         shouldMeet() {

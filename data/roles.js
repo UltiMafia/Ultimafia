@@ -428,7 +428,7 @@ const roleData = {
       category: "Gifting",
       tags: ["Redirection", "Items", "Shield", "Visiting", "Advanced"],
       description: [
-        "Gives out sheild to one player each night.",
+        "Gives out shield to one player each night.",
         "Shields can be used at night to redirect kills targeting the holder on to a random player of the same alignment if possible.",
       ],
       nightOrder: [["Give Sheild",(PRIORITY_ITEM_GIVER_DEFAULT)]],
