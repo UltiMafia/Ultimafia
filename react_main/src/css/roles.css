@@ -1022,6 +1022,10 @@
   background-image: url("/images/roles/pimp-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Tattooist {
+  background-image: url("/images/roles/tattooist-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Godfather {
   background-image: url("/images/roles/godfather-vivid.png");
 }
@@ -2062,7 +2066,7 @@
 }
 
 .modifier-Mafia-Traitorous {
-  background-position: -0 -32px;
+  background-position: -0px -32px;
 }
 
 .modifier-Mafia-Seductive {
@@ -2098,7 +2102,7 @@
 }
 
 .modifier-Mafia-Lazy {
-  background-position: -0 -48px;
+  background-position: -0px -48px;
 }
 
 .modifier-Mafia-Crystalline {
@@ -2129,7 +2133,7 @@
   background-position: -112px -48px;
 }
 
-.modifier-Mafia-Blasphemous {
+.modifier-Mafia-Demonic {
   background-position: -128px -48px;
 }
 
@@ -2309,6 +2313,10 @@
   background-position: -32px -128px;
 }
 
+.modifier-Mafia-Holy {
+  background-position: -32px -128px;
+}
+
 .modifier-Mafia-Wise {
   background-position: -48px -128px;
 }
@@ -2327,6 +2335,26 @@
 
 .modifier-Mafia-Bouncy {
   background-position: -112px -128px;
+}
+
+.modifier-Mafia-Proactive {
+  background-position: -128px -128px;
+}
+
+.modifier-Mafia-Braggadocious {
+  background-position: -144px -128px;
+}
+
+.modifier-Mafia-Braggadocious {
+  background-position: -144px -128px;
+}
+
+.modifier-Mafia-Dead {
+  background-position: -0px -144px;
+}
+
+.modifier-Mafia-Unholy {
+  background-position: -32px -144px;
 }
 
 /* for role prediction */

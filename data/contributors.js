@@ -14,12 +14,11 @@ const developmentContributors = [
   "Nou",
   "Pyrrhic",
   "caitelatte",
-  "Cabernet",
+  "Wine",
   "melodice",
   "SawJester",
   "DarkB",
   "ruthless",
-  "view",
   "drewsworth",
   "nearbear",
 ];
@@ -397,6 +396,7 @@ const artContributors = {
       "Bounty Hunter",
       "Knight",
       "Plastician",
+      "Tattooist",
     ],
     Resistance: [
       "Assassin",
