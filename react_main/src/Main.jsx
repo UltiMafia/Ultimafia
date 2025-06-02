@@ -679,6 +679,14 @@ function Footer() {
               <i className="fab fa-youtube"></i> Featuring music by FredTheMole
             </a>
           </span>
+          <span>
+            <a
+              target="_blank"
+              href="https://ultimafia.com/user/2oDrE3Ueq"
+            >
+              Additional music by Jumpy
+            </a>
+          </span>
           <div>© {year} UltiMafia</div>
         </div>
       </div>
