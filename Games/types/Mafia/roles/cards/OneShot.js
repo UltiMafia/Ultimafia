@@ -16,8 +16,8 @@ module.exports = class OneShot extends Card {
     this.meetings = {
       "One Shot Night": {
         actionName: "Use Night Ability?",
-        states: ["Dusk"],
-        flags: ["voting"],
+        states: ["Night"],
+        flags: ["voting", "instant"],
         inputType: "boolean",
         whileDead: true,
         whileAlive: true,
@@ -26,8 +26,10 @@ module.exports = class OneShot extends Card {
           priority: 0,
           run: function () {
             if (this.target == "No") return;
-
             this.actor.role.OneShotNight = 1;
+            //this.actor.meet();
+            let meetings = this.actor.role.meetings.filter((m) => !IMPORTANT_MEETINGS_NIGHT.includes(m.name) && m.name != "One Shot Night");
+            this.game.instantMeeting(meetings, [this.actor]);
           },
         },
         shouldMeet() {
@@ -36,7 +38,7 @@ module.exports = class OneShot extends Card {
       },
       "One Shot Day": {
         actionName: "Use Day Ability?",
-        states: ["Dawn"],
+        states: ["Day"],
         flags: ["voting"],
         inputType: "boolean",
         whileDead: true,
@@ -48,6 +50,8 @@ module.exports = class OneShot extends Card {
             if (this.target == "No") return;
 
             this.actor.role.OneShotDay = 1;
+            let meetings = this.actor.role.meetings.filter((m) => !IMPORTANT_MEETINGS_DAY.includes(m.name) && m.name != "One Shot Night");
+            this.game.instantMeeting(meetings, [this.actor]);
           },
         },
         shouldMeet() {
