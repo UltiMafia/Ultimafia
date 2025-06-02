@@ -11,6 +11,7 @@ import {
   SpeechFilter,
   SettingsMenu,
   Notes,
+  PinnedMessages,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -151,7 +152,8 @@ export default function GhostGame(props) {
               history={history}
               stateViewing={stateViewing}
             />
-            {!isSpectator && <Notes stateViewing={stateViewing} />}
+            {!game.review && !isSpectator && (<PinnedMessages/>)}
+            {!game.review && !isSpectator && <Notes stateViewing={stateViewing} />}
           </>
         }
       />

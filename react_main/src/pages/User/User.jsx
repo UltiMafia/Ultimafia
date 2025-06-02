@@ -207,6 +207,7 @@ export function Avatar(props) {
   const dead = props.dead;
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
+  const absoluteLeftAvatarPx = props.absoluteLeftAvatarPx;
 
   const santaDir = "/images/holiday/santahat.png";
 
@@ -228,6 +229,11 @@ export function Avatar(props) {
   if (small) size = "small";
   else if (large) size = "large";
   else size = "";
+
+  if (absoluteLeftAvatarPx) {
+    style.position = "absolute";
+    style.left = absoluteLeftAvatarPx;
+  }
 
   if (hasImage && !imageUrl && id && avatarId) {
     if (id === avatarId) {
@@ -329,6 +335,8 @@ export function NameWithAvatar(props) {
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
   const includeMiniprofile = props.includeMiniprofile;
+  const absoluteLeftAvatarPx = props.absoluteLeftAvatarPx;
+
   const game = useContext(GameContext);
   const [userProfile, setUserProfile] = useState(null);
   const [isClicked, setIsClicked] = useState(false);
@@ -365,6 +373,7 @@ export function NameWithAvatar(props) {
         dead={dead}
         active={active}
         deckProfile={deckProfile}
+        absoluteLeftAvatarPx={absoluteLeftAvatarPx}
       />
       <div
         className={`user-name ${props.dead ? "dead" : color}`}
