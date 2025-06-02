@@ -28,8 +28,21 @@ module.exports = class OneShot extends Card {
             if (this.target == "No") return;
             this.actor.role.OneShotNight = 1;
             //this.actor.meet();
-            let meetings = this.actor.role.meetings.filter((m) => !IMPORTANT_MEETINGS_NIGHT.includes(m.name) && m.name != "One Shot Night");
-            this.game.instantMeeting(meetings, [this.actor]);
+            //let meetings = this.actor.role.meetings.filter((m) => !IMPORTANT_MEETINGS_NIGHT.includes(m.name) && m.name != "One Shot Night");
+            /*
+            for(let meeting of Object.values(this.actor.role.meetings)){
+              if(!IMPORTANT_MEETINGS_NIGHT.includes(meeting.name) && meeting.name != "One Shot Night"){
+              this.actor.joinMeetings(meeting)
+              this.actor.sendMeeting(meeting);
+              }
+            }
+            */
+            //this.game.instantMeeting(this.actor.role.meetings, [this.actor]);
+            this.actor.joinMeetings(this.actor.role.meetings);
+            for (let meeting of this.game.meetings){
+               meeting.generateTargets();
+            }
+            this.actor.sendMeetings();
           },
         },
         shouldMeet() {
@@ -50,8 +63,11 @@ module.exports = class OneShot extends Card {
             if (this.target == "No") return;
 
             this.actor.role.OneShotDay = 1;
-            let meetings = this.actor.role.meetings.filter((m) => !IMPORTANT_MEETINGS_DAY.includes(m.name) && m.name != "One Shot Night");
-            this.game.instantMeeting(meetings, [this.actor]);
+            this.actor.joinMeetings(this.actor.role.meetings);
+            for (let meeting of this.game.meetings){
+               meeting.generateTargets();
+            }
+            this.actor.sendMeetings();
           },
         },
         shouldMeet() {
