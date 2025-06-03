@@ -8,8 +8,7 @@ module.exports = class Gramps extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-
-      "KillImmune",
+      //"KillImmune",
       "LearnVisitors",
     ];
   }
