@@ -52,6 +52,14 @@ export default function HostCardGames() {
       max: 500,
     },
     {
+      label: "Max Rounds",
+      ref: "MaxRounds",
+      type: "number",
+      value: defaults.MaxRounds,
+      min: 0,
+      max: 25,
+    },
+    {
       label: "Lobby",
       ref: "lobby",
       type: "select",
