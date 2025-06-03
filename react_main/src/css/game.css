@@ -187,6 +187,7 @@
 .game .message .time {
   opacity: 0.5;
   min-width: 40px;
+  font-size: 12px;
 }
 
 .game .message .prefix {
@@ -293,13 +294,16 @@
 
 .game .message .content.server,
 .gameMessageContentServer {
-  border: none;
+  flex-grow: 1;
+
+  padding: 4px 8px;
+
   color: #bd4c4c;
-  margin-left: 21px;
+  background-color: #121212;
+  border-radius: 8px;
 }
 
 .game .message .content.vote-record {
-  border: none;
   opacity: 0.5;
   margin-left: 21px;
 }
@@ -333,12 +337,18 @@
   margin-right: 10px;
 }
 
+.game .message .pin-button-wrapper {
+  align-self: start;
+
+  min-width: 20px;
+  margin-left: auto;
+  transform: translateX(6px);
+}
+
 .game .speech-wrapper {
   flex-grow: 1;
   display: flex;
   flex-flow: column;
-
-  /* padding-top: 10px; */
 
   background-color: var(--theme-color);
 }

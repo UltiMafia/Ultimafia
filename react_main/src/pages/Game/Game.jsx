@@ -1333,6 +1333,7 @@ function Message(props) {
   const players = props.players;
   const chainToPrevious = props.chainToPrevious;
   var message = props.message;
+  const denseMessages = props?.settings?.denseMessages && !props.disableDenseMessages;
 
   const isVoteMessage = message.senderId === "vote";
   const isServerMessage = message.senderId === "server";
@@ -1343,13 +1344,16 @@ function Message(props) {
   var player, quotedMessage;
   var contentClass = "content ";
   var isMe = false;
+
+  const isRightAligned = isVoteMessage;
+  const useAbsoluteTimestamp = (chainToPrevious || isServerMessage) && !isRightAligned && !denseMessages;
+  const showThumbtack = !props.review && !message.isQuote && isHovering && (props.stateViewing >= 0);
   const thumbtackFaClass = props.isMessagePinned(message) ? "fas fa-thumbtack" : "fas fa-thumbtack fa-rotate-270";
 
   if (isPlayerMessage) {
     player = players[message.senderId];
   }
   var customEmotes = player ? player.customEmotes : null;
-  const denseMessages = props?.settings?.denseMessages && !props.disableDenseMessages;
 
   if (message.isQuote) {
     var state = history.states[message.fromState];
@@ -1400,6 +1404,10 @@ function Message(props) {
   }
   if (!denseMessages && !chainToPrevious) {
     messageStyle.marginTop = "8px";
+  }
+
+  if (isRightAligned) {
+    messageStyle.justifyContent = "flex-end";
   }
 
   const stateMeetings = history.states[props.stateViewing].meetings;
@@ -1479,13 +1487,14 @@ function Message(props) {
       onTouchEnd={messageLongPress.onTouchEnd}
     >
       <Stack
-        direction={(!isPlayerMessage && !isAnonymousMessage) ? "row" : "column"}
+        direction={isRightAligned ? "row-reverse" : (!isPlayerMessage && !isAnonymousMessage) ? "row" : "column"}
         spacing={.5}
         sx={{
-          display: denseMessages ? "block" : undefined,
+          display: denseMessages && !isRightAligned ? "block" : undefined,
+          flexGrow: 1,
         }}
       >
-        {(!chainToPrevious || denseMessages || isVoteMessage) && (<Stack
+        {(!chainToPrevious || denseMessages || isRightAligned) && (<Stack
           direction={denseMessages ? "row" : "row-reverse"}
           spacing={.5}
           sx={{
@@ -1495,7 +1504,12 @@ function Message(props) {
           }}
         >
           &#8203;
-          {props.settings.timestamps && <Timestamp time={message.time} hideHours={denseMessages}/>}
+          {props.settings.timestamps && (<div style={{
+              position: useAbsoluteTimestamp ? "absolute" : undefined,
+              left: useAbsoluteTimestamp ? "4px" : undefined,
+            }}>
+            <Timestamp time={message.time}/>
+          </div>)}
           {player && (
             <NameWithAvatar
               dead={playerDead && props.stateViewing > 0}
@@ -1525,7 +1539,9 @@ function Message(props) {
         <div
           className={contentClass}
           style={{
-            marginLeft: denseMessages ? "8px" : undefined,
+            marginLeft: denseMessages ? "4px" : undefined,
+            paddingLeft: denseMessages ? "4px" : undefined,
+            borderLeft: denseMessages && isPlayerMessage ? "1px solid rgb(128, 128, 128)" : undefined,
             ...(!user.settings?.ignoreTextColor && message.textColor !== ""
               ? // ? { color: flipTextColor(message.textColor) }
                 { color: message.textColor }
@@ -1559,7 +1575,7 @@ function Message(props) {
           {message.isQuote && (
             <>
               <i className="fas fa-quote-left" />
-              <Timestamp time={quotedMessage.time} hideHours={denseMessages}/>
+              <Timestamp time={quotedMessage.time}/>
               <span className="quote-info">
                 {`${quotedMessage.senderName} on ${quotedMessage.fromStateName}: `}
               </span>
@@ -1581,27 +1597,19 @@ function Message(props) {
           )}
         </div>
       </Stack>
-      {!isPhoneDevice && (<Box
-        onClick={() => props.onPinMessage(message)}
-        sx={{
-          minWidth: "20px",
-          marginLeft: "auto",
-          alignSelf: "start",
-        }}
-      >
-        {!props.review && !message.isQuote && !isVoteMessage && isHovering && (<i
+      {!isPhoneDevice && !isRightAligned && (<div className="pin-button-wrapper" onClick={() => props.onPinMessage(message)}>
+        {showThumbtack && (<i
           class={thumbtackFaClass}
-          style={{ cursor: "pointer" }}
+          style={{ cursor: "pointer", textAlign: "center" }}
           />
         )}
-      </Box>)}
+      </div>)}
     </div>
   );
 }
 
 export function Timestamp(props) {
   const time = new Date(props.time);
-  const hideHours = props.hideHours;
 
   var hours = String(time.getHours()).padStart(2, "0");
   var minutes = String(time.getMinutes()).padStart(2, "0");
@@ -1609,7 +1617,7 @@ export function Timestamp(props) {
 
   return (
     <span className="time">
-      {!hideHours ? hours + ":" : ""}{minutes}:{seconds}
+      {minutes}:{seconds}
     </span>
   );
 }
