@@ -40,7 +40,7 @@ module.exports = class TexasHoldEmGame extends Game {
     this.drawDiscardPile.initCards();
     this.startingChips = parseInt(options.settings.startingChips);
     this.minimumBet = parseInt(options.settings.minimumBet);
-    this.MaxRounds = 0 || parseInt(options.settings.MaxRounds);
+    this.MaxRounds = parseInt(options.settings.MaxRounds) || 0;
     this.CardGameType = "Texas Hold’em";
 
     //VARIABLES
