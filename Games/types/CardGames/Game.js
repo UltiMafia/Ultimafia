@@ -7,11 +7,11 @@ const Winners = require("../../core/Winners");
 
 const Random = require("../../../lib/Random");
 
-module.exports = class CardGamesGame extends Game {
+module.exports = class TexasHoldEmGame extends Game {
   constructor(options) {
     super(options);
 
-    this.type = "Card Games";
+    this.type = "Texas Hold Em";
     this.Player = Player;
     this.states = [
       {
