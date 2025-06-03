@@ -2,7 +2,7 @@ const DrawDiscardPile = require("../../core/DrawDiscardPile");
 const Random = require("../../../lib/Random");
 const { Standard_Deck, Test_Deck } = require("./const/Decks");
 
-module.exports = class CardGamesDrawDiscardPile extends DrawDiscardPile {
+module.exports = class TexasHoldEmDrawDiscardPile extends DrawDiscardPile {
   constructor() {
     super();
   }
