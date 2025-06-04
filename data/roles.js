@@ -1055,7 +1055,7 @@ const roleData = {
       category: "Sacrificial",
       tags: ["Kill Interaction", "Items", "Conversion", "Role Swapping", "Expert"],
       description: [
-        "If killed, the kill receives a can of shaving cream.",
+        "When a Barber dies, an Evil player receives a can of shaving cream.",
         "While holding the shaving cream, a Mafia or Cult-aligned player may swap the roles of two living players.",
         "Excluding players who started as Independent, the swapped players will keep their original alignments.",
       ],
