@@ -1,15 +1,15 @@
 const Role = require("../../Role");
 
-module.exports = class Gramps extends Role {
+module.exports = class Lifeguard extends Role {
   constructor(player, data) {
-    super("Gramps", player, data);
-    this.alignment = "Mafia";
+    super("Lifeguard", player, data);
+
+    this.alignment = "Village";
     this.cards = [
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      //"KillImmune",
-      "LearnVisitors",
+      "VoteToBlockVotes",
     ];
   }
 };

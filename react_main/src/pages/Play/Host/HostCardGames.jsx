@@ -52,6 +52,14 @@ export default function HostCardGames() {
       max: 500,
     },
     {
+      label: "Max Rounds",
+      ref: "MaxRounds",
+      type: "number",
+      value: defaults.MaxRounds,
+      min: 0,
+      max: 25,
+    },
+    {
       label: "Lobby",
       ref: "lobby",
       type: "select",
@@ -169,6 +177,7 @@ export default function HostCardGames() {
           },
           startingChips: getFormFieldValue("startingChips"),
           minimumBet: getFormFieldValue("minimumBet"),
+          MaxRounds: getFormFieldValue("MaxRounds"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         })

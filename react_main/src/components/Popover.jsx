@@ -895,6 +895,13 @@ export function parseGamePopover(game) {
           key="startingChips"
         />
       );
+      result.push(
+        <InfoRow
+          title="Max Rounds"
+          content={game.settings.gameTypeOptions.MaxRounds}
+          key="MaxRounds"
+        />
+      );
       break;
   }
 

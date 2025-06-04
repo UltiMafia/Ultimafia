@@ -431,7 +431,7 @@ const roleData = {
         "Gives out shield to one player each night.",
         "Shields can be used at night to redirect kills targeting the holder on to a random player of the same alignment if possible.",
       ],
-      nightOrder: [["Give Sheild",(PRIORITY_ITEM_GIVER_DEFAULT)]],
+      nightOrder: [["Give Shield",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Mailman: {
       alignment: "Village",
@@ -479,6 +479,17 @@ const roleData = {
       ],
       nightOrder: [["Give Syringe",(PRIORITY_ITEM_GIVER_DEFAULT)]],
       graveyardParticipation: "all",
+    },
+    Riflemaster: {
+      alignment: "Village",
+      category: "Gifting",
+      tags: ["Killing", "Items", "Gun", "Visiting", "Day Actions", "Basic"],
+      description: [
+        "Gives out a Rifle each night.",
+        "Guns can be used to shoot and kill someone during the day.",
+        "If a player shot by a Rifle shares alignment with shooter, shooter will die too. If a player shot by a Rifle is of an opposing alignment, shooter gains another rifle.",
+      ],
+      nightOrder: [["Give Rifle",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Santa: {
       alignment: "Village",
@@ -965,7 +976,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Deception", "No Investigate", "Advanced"],
       description: [
-        "Chooses a role each night to imitate.",
+        "Chooses a role each night to appear as on death and to information role.",
         "Can not be seen as a Villager, Impersonator or Imposter",
       ],
       nightOrder: [["Disguise Self",(PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT)]],
@@ -1044,7 +1055,7 @@ const roleData = {
       category: "Sacrificial",
       tags: ["Kill Interaction", "Items", "Conversion", "Role Swapping", "Expert"],
       description: [
-        "If killed, the kill receives a can of shaving cream.",
+        "When a Barber dies, an Evil player receives a can of shaving cream.",
         "While holding the shaving cream, a Mafia or Cult-aligned player may swap the roles of two living players.",
         "Excluding players who started as Independent, the swapped players will keep their original alignments.",
       ],
@@ -1192,6 +1203,14 @@ const roleData = {
       ],
       nightOrder: [["Give Sceptre",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
+    Lifeguard: {
+      alignment: "Village",
+      category: "Voting",
+      tags: ["Voting", "Advanced"],
+      description: [
+        "All votes for whoever a Lifeguard is voting for do not count.",
+      ],
+    },
     Magistrate: {
       alignment: "Village",
       category: "Voting",
@@ -1282,7 +1301,7 @@ const roleData = {
     Monkey: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Copy Actions", "Dusk", "Pregame Actions", "Advanced"],
+      tags: ["Copy Actions", "Advanced"],
       description: [
         "Before each Night chooses a player.",
         "Copies the actions of the choosen player at night.",
@@ -2297,7 +2316,7 @@ const roleData = {
     },
     Ape: {
       alignment: "Mafia",
-      tags: ["Manipulative", "Copy Actions", "Dusk", "Pregame Actions", "Advanced"],
+      tags: ["Manipulative", "Copy Actions", "Advanced"],
       description: [
         "Before each Night chooses a player.",
         "Copies the actions of the choosen player at night.",
@@ -2587,7 +2606,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Deception", "Night-acting", "No Investigate","Basic"],
       description: [
-        "Chooses a role each night to imitate.",
+        "Chooses a role each night to appear as on death and to information role.",
         "Can not be seen as a Villager, Impersonator or Imposter",
       ],
       nightOrder: [["Disguise Self",(PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT)]],
@@ -3614,9 +3633,9 @@ const roleData = {
     },
     Doppelgänger: {
       alignment: "Independent",
-      tags: ["Conversion", "Dusk", "Pregame Actions", "Basic"],
+      tags: ["Conversion", "Basic"],
       description: [
-        "Before Night chooses a player.",
+        "At Night chooses a player.",
         "Will instantly convert to that player's role.",
         "Cannot win the game as Doppelgänger.",
       ],

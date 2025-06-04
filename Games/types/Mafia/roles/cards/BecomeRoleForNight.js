@@ -6,7 +6,7 @@ module.exports = class BecomeRoleForNight extends Card {
 
     this.meetings = {
       "Copy Actions": {
-        states: ["Dusk"],
+        states: ["Night"],
         flags: ["voting", "instant", "mustAct"],
         action: {
           run: function () {
@@ -35,6 +35,13 @@ module.exports = class BecomeRoleForNight extends Card {
               false,
               "No Change"
             );
+
+            this.actor.joinMeetings(this.actor.role.meetings);
+            for (let meeting of this.game.meetings){
+               meeting.generateTargets();
+            }
+            this.actor.sendMeetings();
+
             //this.actor.role.priorityOffset = -1;
 
             if (this.actor.role.name != currRole) {

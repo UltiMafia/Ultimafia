@@ -100,6 +100,7 @@ var defaultOptions = {
     ...commonHostOptions,
     startingChips: 50,
     minimumBet: 2,
+    MaxRounds: 0,
     placeBetsLength: 2,
     showdownLength: 2,
   },

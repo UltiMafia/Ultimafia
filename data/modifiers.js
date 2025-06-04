@@ -99,7 +99,7 @@ const modifierData = {
       internal: ["AppearAsRandomRole"],
       tags: ["Roles", "Deception"],
       description:
-        "Appears as a random role in the game that is not Villager, Impersonator or Impostor.",
+        "Appears on death and to information roles as a random role in the game that is not Villager, Impersonator or Impostor.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Chaotic: {
@@ -629,7 +629,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Faceless", "Unassuming", "Suspect"],
     },
-    Sheilded: {
+    Shielded: {
       internal: ["StartWithShield"],
       tags: ["Items"],
       description: "Starts with a Shield.",
