@@ -480,6 +480,17 @@ const roleData = {
       nightOrder: [["Give Syringe",(PRIORITY_ITEM_GIVER_DEFAULT)]],
       graveyardParticipation: "all",
     },
+    Riflemaster: {
+      alignment: "Village",
+      category: "Gifting",
+      tags: ["Killing", "Items", "Gun", "Visiting", "Day Actions", "Basic"],
+      description: [
+        "Gives out a Rifle each night.",
+        "Guns can be used to shoot and kill someone during the day.",
+        "If a player shot by a Rifle shares alignment with shooter, shooter will die too. If a player shot by a Rifle is of an opposing alignment, shooter gains another rifle.",
+      ],
+      nightOrder: [["Give Rifle",(PRIORITY_ITEM_GIVER_DEFAULT)]],
+    },
     Santa: {
       alignment: "Village",
       category: "Gifting",
