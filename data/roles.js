@@ -431,7 +431,7 @@ const roleData = {
         "Gives out shield to one player each night.",
         "Shields can be used at night to redirect kills targeting the holder on to a random player of the same alignment if possible.",
       ],
-      nightOrder: [["Give Sheild",(PRIORITY_ITEM_GIVER_DEFAULT)]],
+      nightOrder: [["Give Shield",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Mailman: {
       alignment: "Village",
@@ -1301,7 +1301,7 @@ const roleData = {
     Monkey: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Copy Actions", "Dusk", "Pregame Actions", "Advanced"],
+      tags: ["Copy Actions", "Advanced"],
       description: [
         "Before each Night chooses a player.",
         "Copies the actions of the choosen player at night.",
@@ -2316,7 +2316,7 @@ const roleData = {
     },
     Ape: {
       alignment: "Mafia",
-      tags: ["Manipulative", "Copy Actions", "Dusk", "Pregame Actions", "Advanced"],
+      tags: ["Manipulative", "Copy Actions", "Advanced"],
       description: [
         "Before each Night chooses a player.",
         "Copies the actions of the choosen player at night.",
@@ -3633,9 +3633,9 @@ const roleData = {
     },
     Doppelgänger: {
       alignment: "Independent",
-      tags: ["Conversion", "Dusk", "Pregame Actions", "Basic"],
+      tags: ["Conversion", "Basic"],
       description: [
-        "Before Night chooses a player.",
+        "At Night chooses a player.",
         "Will instantly convert to that player's role.",
         "Cannot win the game as Doppelgänger.",
       ],

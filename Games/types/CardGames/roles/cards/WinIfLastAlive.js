@@ -8,7 +8,7 @@ module.exports = class WinIfLastAlive extends Card {
       priority: 0,
       check: function (counts, winners, aliveCount) {
 
-        if(this.game.MaxRounds != 0 && this.game.RoundNumber >= this.game.MaxRounds){
+        if(this.game.MaxRounds != 0 && this.game.RoundNumber > this.game.MaxRounds){
           let min = 0;
           let maxPlayer;
           for(let player of this.game.players){

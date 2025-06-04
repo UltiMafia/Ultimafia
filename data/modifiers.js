@@ -629,7 +629,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Faceless", "Unassuming", "Suspect"],
     },
-    Sheilded: {
+    Shielded: {
       internal: ["StartWithShield"],
       tags: ["Items"],
       description: "Starts with a Shield.",

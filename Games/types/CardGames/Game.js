@@ -111,6 +111,9 @@ module.exports = class TexasHoldEmGame extends Game {
     if (this.startingChips) {
       this.sendAlert(`Everyone starts with ${this.startingChips} chips.`);
     }
+    if(this.MaxRounds >= 1){
+      this.sendAlert(`The player with the most Chips wins after Round ${this.MaxRounds}.`);
+    }
     this.sendAlert(`Good luck... You'll probably need it.`);
 
     //start of game - randomizes player order, and gives dice to everyone.
@@ -850,6 +853,7 @@ module.exports = class TexasHoldEmGame extends Game {
     return {
       startingChips: this.startingChips,
       minimumBet: this.minimumBet,
+      MaxRounds: this.MaxRounds,
     };
   }
 };

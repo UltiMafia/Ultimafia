@@ -1121,10 +1121,12 @@ const settingsChecks = {
   "Card Games": (settings, setup) => {
     let minimumBet = settings.minimumBet;
     let startingChips = settings.startingChips;
+    let MaxRounds = settings.MaxRounds;
 
     return {
       minimumBet,
       startingChips,
+      MaxRounds,
     };
   },
   Battlesnakes: (settings, setup) => {
