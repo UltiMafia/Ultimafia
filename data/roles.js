@@ -965,7 +965,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Deception", "No Investigate", "Advanced"],
       description: [
-        "Chooses a role each night to imitate.",
+        "Chooses a role each night to appear as on death and to information role.",
         "Can not be seen as a Villager, Impersonator or Imposter",
       ],
       nightOrder: [["Disguise Self",(PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT)]],
@@ -1191,6 +1191,14 @@ const roleData = {
         "Sceptres give a player +10000 votes in day meeting.",
       ],
       nightOrder: [["Give Sceptre",(PRIORITY_ITEM_GIVER_DEFAULT)]],
+    },
+    Lifeguard: {
+      alignment: "Village",
+      category: "Voting",
+      tags: ["Voting", "Advanced"],
+      description: [
+        "All votes for whoever a Lifeguard is voting for do not count.",
+      ],
     },
     Magistrate: {
       alignment: "Village",
@@ -2587,7 +2595,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Deception", "Night-acting", "No Investigate","Basic"],
       description: [
-        "Chooses a role each night to imitate.",
+        "Chooses a role each night to appear as on death and to information role.",
         "Can not be seen as a Villager, Impersonator or Imposter",
       ],
       nightOrder: [["Disguise Self",(PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT)]],
