@@ -10,7 +10,7 @@ module.exports = class Filibuster extends Role {
       "WinWithFaction",
       "MeetingFaction",
 
-      "CondemnImmune",
+      //"CondemnImmune",
       "DiesWithVillageCondemn",
     ];
   }
