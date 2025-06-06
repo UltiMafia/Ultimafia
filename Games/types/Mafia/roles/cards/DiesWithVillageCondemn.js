@@ -33,7 +33,7 @@ module.exports = class DiesWithVillageCondemn extends Card {
           }
         }
       },
-      
+      /*
       meetingFinish: function (meeting) {
         if (!this.player.hasAbility(["OnlyWhenAlive"])) {
           return;
@@ -72,6 +72,7 @@ module.exports = class DiesWithVillageCondemn extends Card {
         });
         action.do();
       },
+      */
     };
   }
 };
