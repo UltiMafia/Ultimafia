@@ -889,7 +889,7 @@ const roleData = {
       description: [
         "Visits one player each night and makes them Delirious.",
         "Delirious players get False Info and have other abilites disabled.",
-        "A Sailor can't be killed unless roleblocked/made delirious.",
+        "A Sailor can not die unless roleblocked/made delirious.",
       ],
       nightOrder: [["Give Delirium",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
     },
@@ -1097,7 +1097,7 @@ const roleData = {
       category: "Sacrificial",
       tags: ["Kill Interaction", "Conversion", "Villager", "Basic"],
       description: [
-        "If killed, all Village-aligned players convert to Villager.",
+        "When a Schoolmarm dies, all Village-aligned players convert to Villager.",
       ],
       RolesMadeBy: ["Villager"],
     },
@@ -1313,7 +1313,7 @@ const roleData = {
       tags: ["Conversion", "Delirium", "Advanced"],
       description: [
         "At night may choose to convert to a Village aligned role that can spawn in the setup.",
-        "If the selected role is already in play, The player with that role will be Delirious until the Philosopher is killed.",
+        "If the selected role is already in play, The player with that role will be Delirious until the Philosopher dies.",
       ],
       nightOrder: [["Become Role and Make Delirious",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
     },
@@ -1442,7 +1442,7 @@ const roleData = {
       category: "Reflexive",
       tags: ["Reflexive", "Information", "Kill Interaction", "Basic", "Visit Interaction"],
       description: [
-        "When killed will announce all players who ever visited them."
+        "When a Painter dies they will announce all players who ever visited them."
       ],
     },
     Priest: {
@@ -1769,7 +1769,7 @@ const roleData = {
       ],
       description: [
         "Learns role of any player who visits them.",
-        "Cannot be killed normally.",
+       // "Cannot be killed normally.",
       ],
       nightOrder: [["Learn Visitors",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
@@ -2328,7 +2328,7 @@ const roleData = {
       tags: ["Manipulative", "Conversion", "Delirium", "Advanced"],
       description: [
         "At night may choose to convert to a Mafia aligned role that can spawn in the setup.",
-        "If the selected role is already in play, The player with that role will be Delirious until the Associate is killed.",
+        "If the selected role is already in play, The player with that role will be Delirious until the Associate dies.",
         "Does not attend the mafia meeting.",
       ],
       nightOrder: [["Become Role and Make Delirious",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
@@ -2991,7 +2991,7 @@ const roleData = {
       ],
       description: [
         "Each night chooses a player and a non-Demonic Cult role.",
-        "When that player dies they will be converted to that role and become Transcendent.",
+        "If that player is condemned they will be converted to that role and become Transcendent.",
       ],
       nightOrder: [["Apply Effect",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
       graveyardParticipation: "all",
@@ -3105,8 +3105,6 @@ const roleData = {
       tags: ["Conversion", "Demonic Interaction", "Basic"],
       description: [
         "If a Demonic or Lichpin Cult role dies, the Devotee will convert to that role.",
-        "Cult Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
-        "If the Target role is killed or Converted, The Devotee becomes that role.",
       ],
     },
     Zealot: {
@@ -3315,7 +3313,7 @@ const roleData = {
         "Each night, may choose a player to kill.",
         "On the first night chooses a player as a Vessel.",
         "The Vessel is Delirious.",
-        "A Lich can only be killed if their Vessel is killed.",
+        "A Lich can only die if their Vessel dies.",
       ],
       nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
     },
