@@ -949,7 +949,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Modifiers", "Conversion", "Visiting", "Advanced"],
       description: ["Removes modifiers from other players at night"],
-      nightOrder: [["Remove Modifiers",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Remove Modifiers",(PRIORITY_CONVERT_DEFAULT+7)]],
     },
     Plastician: {
       alignment: "Village",
@@ -959,7 +959,7 @@ const roleData = {
         "Each night visits a player and gives them a random Modifier",
         "The modifier cannot be Exclusive, Clannish, Inclusive, or a Starting Item modifier."
         ],
-      nightOrder: [["Add Modifiers",(PRIORITY_CONVERT_DEFAULT-1)]],
+      nightOrder: [["Add Modifiers",(PRIORITY_CONVERT_DEFAULT+6)]],
     },
     Photographer: {
       alignment: "Village",
@@ -2539,7 +2539,7 @@ const roleData = {
         "Each night, visits one player.",
         "Village roles convert to Villager. Cult roles convert to Cultist. Independent roles convert to Grouch.",
       ],
-      nightOrder: [["Convert to Vanilla",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Convert to Vanilla",(PRIORITY_CONVERT_DEFAULT+8)]],
       RolesMadeBy: ["Villager", "Cultist", "Grouch"],
     },
     Nun: {
@@ -2547,7 +2547,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Modifiers", "Conversion", "Visiting", "Advanced"],
       description: ["Removes modifiers from other players at night"],
-      nightOrder: [["Remove Modifiers",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Remove Modifiers",(PRIORITY_CONVERT_DEFAULT+7)]],
     },
     Tattooist: {
       alignment: "Mafia",
@@ -2557,7 +2557,7 @@ const roleData = {
         "Each night visits a player and gives them a random Modifier",
         "The modifier cannot be Exclusive, Clannish, Inclusive, or a Starting Item modifier."
         ],
-        nightOrder: [["Add Modifiers",(PRIORITY_CONVERT_DEFAULT-1)]],
+        nightOrder: [["Add Modifiers",(PRIORITY_CONVERT_DEFAULT+6)]],
     },
     Pedagogue: {
       alignment: "Mafia",
@@ -2565,7 +2565,7 @@ const roleData = {
       description: [
         "Each night, converts another Mafia teammate into a random Mafia-aligned role.",
       ],
-      nightOrder: [["Randomize Role",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Randomize Role",(PRIORITY_CONVERT_DEFAULT+3)]],
       RolesMadeBy: ["All Mafia Roles"],
     },
     Bartender: {
@@ -2955,7 +2955,7 @@ const roleData = {
       description: [
         "Each night, converts another Cult teammate into a random Cult-aligned role.",
       ],
-      nightOrder: [["Randomize Role",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Randomize Role",(PRIORITY_CONVERT_DEFAULT+3)]],
       RolesMadeBy: ["All Cult Roles"],
     },
     "Mi-Go": {
@@ -2975,7 +2975,7 @@ const roleData = {
         "If the selected role is already in play, The conversion fails.",
         "Independant roles can only be converted to other Independant roles.",
       ],
-      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT+4)]],
     },
     Incubus: {
       alignment: "Cult",
@@ -4052,7 +4052,7 @@ const roleData = {
         "Chooses to sacrifice self at night to convert another player to Grey Goo.",
         "Wins if a Grey Goo is in the last two alive.",
       ],
-      nightOrder: [["Convert and Die",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Convert and Die",(PRIORITY_CONVERT_DEFAULT+5)]],
     },
     Mastermind: {
       alignment: "Independent",
@@ -4080,7 +4080,7 @@ const roleData = {
         "Each night, chooses a player. If the player is sided with the mafia/cult, they become a Mafioso/Cultist.",
         "Wins when all mafia-aligned players are Mafiosos or all cult-aligned players are Cultists.",
       ],
-      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT+8)]],
       RolesMadeBy: ["Mafioso", "Cultist"],
     },
     Mutineer: {
@@ -4182,7 +4182,7 @@ const roleData = {
         "Turns that player into their alignment's vanilla role.",
         "Wins if alive when all other players are vanilla.",
       ],
-      nightOrder: [["Convert to Vanilla",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Convert to Vanilla",(PRIORITY_CONVERT_DEFAULT+8)]],
       RolesMadeBy: ["Villager", "Mafioso", "Cultist"],
     },
     Dragoon: {
