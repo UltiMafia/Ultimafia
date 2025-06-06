@@ -1377,7 +1377,7 @@ const roleData = {
         "Attempting to convert a Whig into a Freemason will fail.",
         "All Cultists die if targeted by a Freemason meeting.",
       ],
-      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
+      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT+2)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
     },
     "Invisible Man": {
       alignment: "Village",
@@ -2064,7 +2064,7 @@ const roleData = {
         "Shares a night meeting with the Freemasons.",
         "Can convert players to Freemasons.",
       ],
-      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
+      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT+2)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
       RolesMadeBy: ["Freemason"],
     },
     Lawyer: {
@@ -2188,7 +2188,7 @@ const roleData = {
       description: [
         "Chooses to sacrifice self once per game to convert another player to Mafioso.",
       ],
-      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT)],["Self Kill",(PRIORITY_KILL_DEFAULT)]],
+      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT+1)],["Self Kill",(PRIORITY_KILL_DEFAULT)]],
       RolesMadeBy: ["Mafioso"],
     },
     Graverobber: {
@@ -3569,7 +3569,7 @@ const roleData = {
         "Immune to conversions.",
         "Wins instead of Village if there is a Freemason majority and counts toward their total.",
       ],
-      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
+      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT+2)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
       RolesMadeBy: ["Freemason"],
     },
     "Panda Bear": {
