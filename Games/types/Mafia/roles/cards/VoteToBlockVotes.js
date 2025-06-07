@@ -28,7 +28,7 @@ module.exports = class VoteToBlockVotes extends Card {
           let target = meeting.votes[voterId] || "*";
           if (!target) continue;
           if (target == masterTarget) {
-            member.player.role.VotePower = 0;
+            member.player.giveEffect("Voteless", -1);
           }
         }
       },

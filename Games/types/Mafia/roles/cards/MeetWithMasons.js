@@ -16,7 +16,7 @@ module.exports = class MeetWithMasons extends Card {
         targets: { include: ["alive"], exclude: ["Freemason"] },
         action: {
           labels: ["convert", "mason"],
-          priority: PRIORITY_CONVERT_DEFAULT,
+          priority: PRIORITY_CONVERT_DEFAULT+2,
           run: function () {
             if (this.target.role.alignment == "Cult") {
               this.actor.role.masonKills = [this.target];

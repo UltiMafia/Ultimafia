@@ -11,6 +11,7 @@ module.exports = class BecomeRoleOnDeath extends Effect {
     this.listeners = {
       death: function (player, killer, deathType, instant) {
         if (this.player != player) return;
+        if(deathType != "condemn") return;
         //if(this.word == "Complete") return;
         if (!this.infector.hasAbility(["Convert"])) {
           return;

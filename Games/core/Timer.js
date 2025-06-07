@@ -64,6 +64,11 @@ module.exports = class Timer {
     this.restart();
   }
 
+  set(length) {
+    this.delay = length;
+    this.restart();
+  }
+
   sendInfoToClient(client) {
     client.send("timerInfo", {
       name: this.name,

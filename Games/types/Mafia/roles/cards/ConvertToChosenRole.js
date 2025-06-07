@@ -11,7 +11,7 @@ module.exports = class ConvertToChosenRole extends Card {
         flags: ["voting"],
         targets: { include: ["alive", "self"] },
         action: {
-          priority: PRIORITY_CONVERT_DEFAULT - 1,
+          priority: PRIORITY_CONVERT_DEFAULT + 3,
           run: function () {
             this.actor.role.data.targetPlayer = this.target;
           },
@@ -24,7 +24,7 @@ module.exports = class ConvertToChosenRole extends Card {
         //targets: { targetOptions },
         action: {
           labels: ["convert", "role"],
-          priority: PRIORITY_CONVERT_DEFAULT,
+          priority: PRIORITY_CONVERT_DEFAULT + 4,
           run: function () {
             let targetPlayer = this.actor.role.data.targetPlayer;
             if (targetPlayer) {
