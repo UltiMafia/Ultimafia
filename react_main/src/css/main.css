@@ -85,6 +85,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+body > iframe {
+  pointer-events: none;
+}
+
 #root {
   width: 100%;
   height: 100%;

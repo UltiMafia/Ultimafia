@@ -211,7 +211,7 @@ export function RoleCount(props) {
           <div
             className={`role role-${roleClass} ${
               props.scheme ? `role-icon-scheme-${props.scheme}` : ""
-            } ${props.small ? "small" : ""} ${props.bg ? "bg" : ""}`}
+            } ${props.small ? "small" : props.large ? "large" : ""} ${props.bg ? "bg" : ""}`}
             ref={roleRef}
             onClick={onRoleGroupClick}
           >
@@ -232,7 +232,7 @@ export function RoleCount(props) {
           onMouseLeave={handleMouseLeave}
         >
           <div
-            className={`role role-${roleClass} ${props.small ? "small" : ""} ${
+            className={`role role-${roleClass} ${props.small ? "small" : props.large ? "large" : ""} ${
               props.bg ? "bg" : ""
             }`}
             ref={roleRef}

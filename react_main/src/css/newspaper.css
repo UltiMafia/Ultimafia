@@ -19,7 +19,7 @@
     
     width: 324px;
     /* width: 262px; */
-    padding: 12px;
+    padding: 8px;
     margin-left: auto;
     margin-right: auto;
     margin-top: 8px;
@@ -31,14 +31,14 @@
     /* background-color: #acacac; */
     color: #2f2f2f;
 
-    animation-duration: 3s;
-    animation-name: slide-in;
+    border: 4px solid #000000;
 }
 
 .newspaper .newspaper-title {
-    display: inline-block;
+    display: block;
 
     width: 100%;
+
     margin-top: 12px;
     margin-bottom: 12px;
 
@@ -62,7 +62,7 @@
     display: block;
     overflow: hidden;
 
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     margin-left: 0;
     margin-right: 0;
 
@@ -72,15 +72,15 @@
 }
 
 .newspaper .obituary {
-    margin-top: 12px;
-    margin-bottom: 12px;
+    margin-top: 8px;
+    margin-bottom: 8px;
 }
 
 .newspaper .obituary-header {
     font-weight: 700;
     font-size: 24px;
     text-transform: uppercase;
-    text-align: right;
+    /* text-align: right; */
 }
 
 .newspaper .obituary-header::after {
@@ -94,10 +94,6 @@
 
 .newspaper .obituary-avatar {
     display: inline-block;
-    /* float: right; */
-
-    margin-left: 12px;
-    margin-bottom: 12px;
 
     -webkit-filter: sepia(80%) contrast(1);
     filter: sepia(80%) grayscale(1) contrast(1);
@@ -106,14 +102,9 @@
 
 .newspaper .obituary-role {
     display: inline-block;
-    /* float: right; */
-
-    margin-left: 12px;
-    margin-bottom: 12px;
 
     width: 100px;
     height: 100px;
-    /* padding: 12px; */
 
     background-color: #acacac; 
 
@@ -128,12 +119,6 @@
     mix-blend-mode: multiply;
 }
 
-.animate-printing-press {
-    display: block;
-    animation: printing-press 4s steps(44) 1s 1 normal both;
-}
-
-@keyframes printing-press{
-    from{height: 0;}
-    to{height: 100%;}
+.newspaper .Typewriter {
+    display: inline;
 }
