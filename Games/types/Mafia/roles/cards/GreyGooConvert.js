@@ -16,7 +16,7 @@ module.exports = class GreyGooConvert extends Card {
         targets: { include: ["alive"], exclude: ["Mafia"] },
         action: {
           labels: ["convert", "seppuku"],
-          priority: PRIORITY_CONVERT_DEFAULT,
+          priority: PRIORITY_CONVERT_DEFAULT+5,
           run: function () {
             let temp = new Action({
               actor: this.actor,

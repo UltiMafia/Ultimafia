@@ -14,7 +14,7 @@ module.exports = class RandomizeCultPartner extends Card {
         targets: { include: ["Cult"], exclude: ["self"] },
         action: {
           labels: ["convert"],
-          priority: PRIORITY_CONVERT_DEFAULT,
+          priority: PRIORITY_CONVERT_DEFAULT+3,
           run: function () {
             const randomCultRole = Random.randArrayVal(
               Object.entries(roles.Mafia)

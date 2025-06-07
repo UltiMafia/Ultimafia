@@ -889,7 +889,7 @@ const roleData = {
       description: [
         "Visits one player each night and makes them Delirious.",
         "Delirious players get False Info and have other abilites disabled.",
-        "A Sailor can't be killed unless roleblocked/made delirious.",
+        "A Sailor can not die unless roleblocked/made delirious.",
       ],
       nightOrder: [["Give Delirium",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
     },
@@ -949,7 +949,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Modifiers", "Conversion", "Visiting", "Advanced"],
       description: ["Removes modifiers from other players at night"],
-      nightOrder: [["Remove Modifiers",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Remove Modifiers",(PRIORITY_CONVERT_DEFAULT+7)]],
     },
     Plastician: {
       alignment: "Village",
@@ -959,7 +959,7 @@ const roleData = {
         "Each night visits a player and gives them a random Modifier",
         "The modifier cannot be Exclusive, Clannish, Inclusive, or a Starting Item modifier."
         ],
-      nightOrder: [["Add Modifiers",(PRIORITY_CONVERT_DEFAULT-1)]],
+      nightOrder: [["Add Modifiers",(PRIORITY_CONVERT_DEFAULT+6)]],
     },
     Photographer: {
       alignment: "Village",
@@ -1097,7 +1097,7 @@ const roleData = {
       category: "Sacrificial",
       tags: ["Kill Interaction", "Conversion", "Villager", "Basic"],
       description: [
-        "If killed, all Village-aligned players convert to Villager.",
+        "When a Schoolmarm dies, all Village-aligned players convert to Villager.",
       ],
       RolesMadeBy: ["Villager"],
     },
@@ -1313,7 +1313,7 @@ const roleData = {
       tags: ["Conversion", "Delirium", "Advanced"],
       description: [
         "At night may choose to convert to a Village aligned role that can spawn in the setup.",
-        "If the selected role is already in play, The player with that role will be Delirious until the Philosopher is killed.",
+        "If the selected role is already in play, The player with that role will be Delirious until the Philosopher dies.",
       ],
       nightOrder: [["Become Role and Make Delirious",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
     },
@@ -1377,7 +1377,7 @@ const roleData = {
         "Attempting to convert a Whig into a Freemason will fail.",
         "All Cultists die if targeted by a Freemason meeting.",
       ],
-      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
+      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT+2)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
     },
     "Invisible Man": {
       alignment: "Village",
@@ -1442,7 +1442,7 @@ const roleData = {
       category: "Reflexive",
       tags: ["Reflexive", "Information", "Kill Interaction", "Basic", "Visit Interaction"],
       description: [
-        "When killed will announce all players who ever visited them."
+        "When a Painter dies they will announce all players who ever visited them."
       ],
     },
     Priest: {
@@ -1769,7 +1769,7 @@ const roleData = {
       ],
       description: [
         "Learns role of any player who visits them.",
-        "Cannot be killed normally.",
+       // "Cannot be killed normally.",
       ],
       nightOrder: [["Learn Visitors",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
@@ -2064,7 +2064,7 @@ const roleData = {
         "Shares a night meeting with the Freemasons.",
         "Can convert players to Freemasons.",
       ],
-      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
+      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT+2)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
       RolesMadeBy: ["Freemason"],
     },
     Lawyer: {
@@ -2188,7 +2188,7 @@ const roleData = {
       description: [
         "Chooses to sacrifice self once per game to convert another player to Mafioso.",
       ],
-      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT)],["Self Kill",(PRIORITY_KILL_DEFAULT)]],
+      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT+1)],["Self Kill",(PRIORITY_KILL_DEFAULT)]],
       RolesMadeBy: ["Mafioso"],
     },
     Graverobber: {
@@ -2328,7 +2328,7 @@ const roleData = {
       tags: ["Manipulative", "Conversion", "Delirium", "Advanced"],
       description: [
         "At night may choose to convert to a Mafia aligned role that can spawn in the setup.",
-        "If the selected role is already in play, The player with that role will be Delirious until the Associate is killed.",
+        "If the selected role is already in play, The player with that role will be Delirious until the Associate dies.",
         "Does not attend the mafia meeting.",
       ],
       nightOrder: [["Become Role and Make Delirious",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
@@ -2398,9 +2398,9 @@ const roleData = {
     },
     Filibuster: {
       alignment: "Mafia",
-      tags: ["Condemn", "Voting", "Condemn Immune", "Advanced"],
+      tags: ["Condemn", "Voting", "Advanced"],
       description: [
-        "Can only be condemned when every town role votes for them.",
+        "Votes for a Filibuster will not count unless every Village-Aligned votes for them.",
       ],
     },
     Rainmaker: {
@@ -2526,10 +2526,17 @@ const roleData = {
     },
     Electrician: {
       alignment: "Mafia",
-      tags: ["Voting", "Speech", "Eclipse", "Blind", "Basic"],
+      tags: ["Voting", "Speech", "Eclipse", "Blind", "Basic", "Day Actions"],
       description: [
         "Once per game, can cause an eclipse during the day.",
         "During an eclipse all speech and votes are anonymous.",
+      ],
+    },
+    Expediter: {
+      alignment: "Mafia",
+      tags: ["Timer", "Day Actions", "Basic"],
+      description: [
+        "Once per game during the day, can set the timer to 1 minute and disable extends.",
       ],
     },
     Lobotomist: {
@@ -2539,7 +2546,7 @@ const roleData = {
         "Each night, visits one player.",
         "Village roles convert to Villager. Cult roles convert to Cultist. Independent roles convert to Grouch.",
       ],
-      nightOrder: [["Convert to Vanilla",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Convert to Vanilla",(PRIORITY_CONVERT_DEFAULT+8)]],
       RolesMadeBy: ["Villager", "Cultist", "Grouch"],
     },
     Nun: {
@@ -2547,7 +2554,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Modifiers", "Conversion", "Visiting", "Advanced"],
       description: ["Removes modifiers from other players at night"],
-      nightOrder: [["Remove Modifiers",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Remove Modifiers",(PRIORITY_CONVERT_DEFAULT+7)]],
     },
     Tattooist: {
       alignment: "Mafia",
@@ -2557,7 +2564,7 @@ const roleData = {
         "Each night visits a player and gives them a random Modifier",
         "The modifier cannot be Exclusive, Clannish, Inclusive, or a Starting Item modifier."
         ],
-        nightOrder: [["Add Modifiers",(PRIORITY_CONVERT_DEFAULT-1)]],
+        nightOrder: [["Add Modifiers",(PRIORITY_CONVERT_DEFAULT+6)]],
     },
     Pedagogue: {
       alignment: "Mafia",
@@ -2565,7 +2572,7 @@ const roleData = {
       description: [
         "Each night, converts another Mafia teammate into a random Mafia-aligned role.",
       ],
-      nightOrder: [["Randomize Role",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Randomize Role",(PRIORITY_CONVERT_DEFAULT+3)]],
       RolesMadeBy: ["All Mafia Roles"],
     },
     Bartender: {
@@ -2955,7 +2962,7 @@ const roleData = {
       description: [
         "Each night, converts another Cult teammate into a random Cult-aligned role.",
       ],
-      nightOrder: [["Randomize Role",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Randomize Role",(PRIORITY_CONVERT_DEFAULT+3)]],
       RolesMadeBy: ["All Cult Roles"],
     },
     "Mi-Go": {
@@ -2975,7 +2982,7 @@ const roleData = {
         "If the selected role is already in play, The conversion fails.",
         "Independant roles can only be converted to other Independant roles.",
       ],
-      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT+4)]],
     },
     Incubus: {
       alignment: "Cult",
@@ -2991,7 +2998,7 @@ const roleData = {
       ],
       description: [
         "Each night chooses a player and a non-Demonic Cult role.",
-        "When that player dies they will be converted to that role and become Transcendent.",
+        "If that player is condemned they will be converted to that role and become Transcendent.",
       ],
       nightOrder: [["Apply Effect",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
       graveyardParticipation: "all",
@@ -3105,8 +3112,6 @@ const roleData = {
       tags: ["Conversion", "Demonic Interaction", "Basic"],
       description: [
         "If a Demonic or Lichpin Cult role dies, the Devotee will convert to that role.",
-        "Cult Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
-        "If the Target role is killed or Converted, The Devotee becomes that role.",
       ],
     },
     Zealot: {
@@ -3315,7 +3320,7 @@ const roleData = {
         "Each night, may choose a player to kill.",
         "On the first night chooses a player as a Vessel.",
         "The Vessel is Delirious.",
-        "A Lich can only be killed if their Vessel is killed.",
+        "A Lich can only die if their Vessel dies.",
       ],
       nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
     },
@@ -3571,7 +3576,7 @@ const roleData = {
         "Immune to conversions.",
         "Wins instead of Village if there is a Freemason majority and counts toward their total.",
       ],
-      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
+      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT+2)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
       RolesMadeBy: ["Freemason"],
     },
     "Panda Bear": {
@@ -4054,7 +4059,7 @@ const roleData = {
         "Chooses to sacrifice self at night to convert another player to Grey Goo.",
         "Wins if a Grey Goo is in the last two alive.",
       ],
-      nightOrder: [["Convert and Die",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Convert and Die",(PRIORITY_CONVERT_DEFAULT+5)]],
     },
     Mastermind: {
       alignment: "Independent",
@@ -4082,7 +4087,7 @@ const roleData = {
         "Each night, chooses a player. If the player is sided with the mafia/cult, they become a Mafioso/Cultist.",
         "Wins when all mafia-aligned players are Mafiosos or all cult-aligned players are Cultists.",
       ],
-      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT+8)]],
       RolesMadeBy: ["Mafioso", "Cultist"],
     },
     Mutineer: {
@@ -4184,7 +4189,7 @@ const roleData = {
         "Turns that player into their alignment's vanilla role.",
         "Wins if alive when all other players are vanilla.",
       ],
-      nightOrder: [["Convert to Vanilla",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Convert to Vanilla",(PRIORITY_CONVERT_DEFAULT+8)]],
       RolesMadeBy: ["Villager", "Mafioso", "Cultist"],
     },
     Dragoon: {

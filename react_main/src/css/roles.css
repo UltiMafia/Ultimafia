@@ -1883,6 +1883,10 @@
   background-image: url("/images/roles/eclipse-noir.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Mass-Hysteria {
+  background-image: url("/images/roles/mass-hysteria-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Black-Hole {
   background-image: url("/images/roles/blackhole-vivid.png");
 }

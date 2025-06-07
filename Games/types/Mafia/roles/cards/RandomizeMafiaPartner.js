@@ -14,7 +14,7 @@ module.exports = class RandomizeMafiaPartner extends Card {
         targets: { include: ["Mafia"], exclude: ["self"] },
         action: {
           labels: ["convert"],
-          priority: PRIORITY_CONVERT_DEFAULT,
+          priority: PRIORITY_CONVERT_DEFAULT+3,
           run: function () {
             const randomMafiaRole = Random.randArrayVal(
               Object.entries(roles.Mafia)

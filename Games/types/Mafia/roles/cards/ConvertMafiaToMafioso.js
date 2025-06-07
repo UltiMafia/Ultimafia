@@ -12,7 +12,7 @@ module.exports = class ConvertMafiaToMafioso extends Card {
         flags: ["voting"],
         action: {
           labels: ["convert"],
-          priority: PRIORITY_CONVERT_DEFAULT,
+          priority: PRIORITY_CONVERT_DEFAULT+8,
           run: function () {
             if (
               !MAFIA_FACTIONS.includes(this.target.faction) &&

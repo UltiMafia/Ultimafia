@@ -15,7 +15,7 @@ module.exports = class AddRandomModifier extends Card {
         flags: ["voting"],
         action: {
           labels: ["convert"],
-          priority: PRIORITY_CONVERT_DEFAULT-1,
+          priority: PRIORITY_CONVERT_DEFAULT+6,
           run: function () {
             if (!this.dominates()) {
               return;

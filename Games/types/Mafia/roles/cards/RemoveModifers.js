@@ -11,7 +11,7 @@ module.exports = class RemoveModifers extends Card {
         flags: ["voting"],
         action: {
           labels: ["convert"],
-          priority: PRIORITY_CONVERT_DEFAULT,
+          priority: PRIORITY_CONVERT_DEFAULT+7,
           run: function () {
             if (!this.dominates()) {
               return;
