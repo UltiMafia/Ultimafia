@@ -2532,6 +2532,13 @@ const roleData = {
         "During an eclipse all speech and votes are anonymous.",
       ],
     },
+    Expediter: {
+      alignment: "Mafia",
+      tags: ["Timer"],
+      description: [
+        "Once per game during the day, can set the timer to 1 minute and disable extends.",
+      ],
+    },
     Lobotomist: {
       alignment: "Mafia",
       tags: ["Night-acting", "Conversion", "Vanilla", "Visiting", "Basic"],
