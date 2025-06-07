@@ -13,11 +13,13 @@ const TIMINGS = {
 
     // Post-typing delays
     newspaperHeader: 1000 / speedModifier,
-    newspaperSubheader: 1000 / speedModifier,
+    newspaperSubheader: 0 / speedModifier,
+
+    initialObituaryDelay: 3000  / speedModifier,
     obituaryHeader: 1000 / speedModifier,
     obituaryDeathMessage: 3000 / speedModifier,
     obituaryRevealMessage: 3000 / speedModifier,
-    obituaryLastWill: 3000 / speedModifier,
+    obituaryLastWill: 0 / speedModifier,
 
     // Delays between "keystrokes"
     newspaperHeaderDelay: 30 / speedModifier,
@@ -33,7 +35,7 @@ const SKIP_HEADER_ANIMATION = false;
 const PHASE_IN_SECS = 1 / speedModifier;
 const PHASE_IN_MS = PHASE_IN_SECS * 1000;
 
-const DEBUG = true;
+const DEBUG = false;
 
 function ChainedTypewriter(props) {
     const text = props.text;
@@ -180,6 +182,7 @@ function ObituaryItem({death, onFullyAnimated, parentProps}) {
             }}>
             <ChainedTypewriter
                 text={death.name}
+                initialDelayMs={TIMINGS.initialObituaryDelay}
                 delayMs={TIMINGS.obituaryHeader}
                 typingDelay={TIMINGS.obituaryHeaderDelay}
                 chainedFunction={() => setAnimatedHeader(true)}
