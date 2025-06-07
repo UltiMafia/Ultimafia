@@ -2398,9 +2398,9 @@ const roleData = {
     },
     Filibuster: {
       alignment: "Mafia",
-      tags: ["Condemn", "Voting", "Condemn Immune", "Advanced"],
+      tags: ["Condemn", "Voting", "Advanced"],
       description: [
-        "Can only be condemned when every town role votes for them.",
+        "Votes for a Filibuster will not count unless every Village-Aligned votes for them.",
       ],
     },
     Rainmaker: {
