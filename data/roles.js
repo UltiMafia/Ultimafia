@@ -2526,7 +2526,7 @@ const roleData = {
     },
     Electrician: {
       alignment: "Mafia",
-      tags: ["Voting", "Speech", "Eclipse", "Blind", "Basic"],
+      tags: ["Voting", "Speech", "Eclipse", "Blind", "Basic", "Day Actions"],
       description: [
         "Once per game, can cause an eclipse during the day.",
         "During an eclipse all speech and votes are anonymous.",
@@ -2534,7 +2534,7 @@ const roleData = {
     },
     Expediter: {
       alignment: "Mafia",
-      tags: ["Timer"],
+      tags: ["Timer", "Day Actions", "Basic"],
       description: [
         "Once per game during the day, can set the timer to 1 minute and disable extends.",
       ],
