@@ -735,9 +735,23 @@ const roleData = {
         "Basic",
       ],
       description: [
-        "At night, learns either one player's role or two excess roles.",
+        "Each night can choose to learn a player's role or two excess roles"
       ],
       nightOrder: [["Learn Role or Excess Roles",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
+    },
+    Clairvoyant: {
+      alignment: "Village",
+      category: "Investigative",
+      tags: [
+        "Information",
+        "Roles",
+        "Basic",
+        "Visiting"
+      ],
+      description: [
+        "Visits one player each night and learns two roles that are not that player's role.",
+      ],
+      nightOrder: [["Learn Not Roles",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
     Auditor: {
       alignment: "Village",
