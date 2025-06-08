@@ -208,6 +208,7 @@ export function Avatar(props) {
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
   const absoluteLeftAvatarPx = props.absoluteLeftAvatarPx;
+  const isSquare = props.isSquare || false;
 
   const santaDir = "/images/holiday/santahat.png";
 
@@ -299,7 +300,11 @@ var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/
       className={`avatar ${size} ${dead ? "dead" : ""} ${
         active ? "active" : ""
       }`}
-      style={{ ...style, display: "inline-block" }}
+      style={{
+        ...style,
+        display: "inline-block",
+        borderRadius: isSquare ? "0px" : undefined,
+      }}
     >
       {edit && (
         <HiddenUpload className="edit" name="avatar" onFileUpload={onUpload}>
