@@ -2217,6 +2217,9 @@ module.exports = class Game {
   }
 
   changeSetup(setupID){
+    if(!setupID){
+      return;
+    }
     
     if(this.canChangeSetup() != true){
       return;
