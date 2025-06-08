@@ -498,6 +498,24 @@ module.exports = class Player {
           }
         }
         return;
+        case "changeSetup":
+  
+        const setupToQuery = cmd.args;
+        if (
+          this.game.started ||
+          this.user.id != this.game.hostId ||
+          cmd.args.length == 0
+        ){
+          return;
+        }
+        if(this.game.canChangeSetup() != true){
+              this.game.sendAlert(
+              `The setup cannot be changed.`
+            );
+                return;
+              }
+        this.game.changeSetup(setupToQuery);
+        return;
       case "diceroll":
         /* Code for cooldown, but it's not needed since only user can see the result :(
 

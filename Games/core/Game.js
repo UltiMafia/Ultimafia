@@ -2203,6 +2203,84 @@ module.exports = class Game {
     //return true;
   }
 
+  canChangeSetup(){
+    if(this.ranked == true || this.competitive == true){
+      return false;
+    }
+    if(this.started == true){
+      return false;
+    }
+    if(this.finished == true){
+      return false;
+    } 
+    return true;
+  }
+
+  async changeSetup(setupID){
+    if(!setupID){
+      return;
+    }
+    
+    if(this.canChangeSetup() != true){
+      return;
+    }
+         let setup = await models.Setup.findOne({
+        id: setupID,
+      })
+      /*.select(
+        "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
+      );*/
+    if(setup && setup.total){
+      //setup = setup.toJSON();
+      if(setup.total < this.players.length){
+            this.sendAlert(
+              `The setup must have at least ${this.players.length} players.`, this.game.players.filter((p) => p.user.id != this.hostId)
+            );
+        return;
+      }
+      if(setup.gameType != this.type){
+               this.sendAlert(
+              `The setup must be a ${this.type} setup.`, this.game.players.filter((p) => p.user.id != this.hostId)
+            );
+        return;
+      }
+      this.setup = setup.toJSON();
+      this.setup.roles = JSON.parse(this.setup.roles);
+      if(this.type == "Mafia"){
+        this.noDeathLimit = this.setup.noDeathLimit;
+         this.ForceMustAct = this.setup.ForceMustAct;
+        this.EventsPerNight = this.setup.EventsPerNight;
+        this.GameEndEvent = this.setup.GameEndEvent;
+      }
+      else if(this.type == "Card Games"){
+        this.hasHost = this.setup.roles[0]["Host:"];
+      }
+      else if(this.type == "Ghost"){
+        this.hasFool = this.setup.roles[0]["Fool:"];
+      }
+      else if(this.type == "Liars Dice"){
+         this.hasHost = this.setup.roles[0]["Host:"];
+      }
+      else if(this.type == "Resistance"){
+        this.numMissions = this.setup.numMissions;
+         this.teamFailLimit = this.setup.teamFailLimit;
+        this.teamSizeSlope = (this.setup.lastTeamSize - this.setup.firstTeamSize) / this.numMissions;
+      }
+      else if(this.type == "Wacky Words"){
+    this.hasAlien = this.setup.roles[0]["Alien:"];
+    this.hasNeighbor = this.setup.roles[0]["Neighbor:"];
+    this.hasGovernor = this.setup.roles[0]["Governor:"];
+    this.hasGambler = this.setup.roles[0]["Gambler:"];
+    this.hasHost = this.setup.roles[0]["Host:"];
+      }
+
+       this.sendAlert(
+              `The setup has been changed to ${this.setup.name}.`
+            );
+      this.checkGameStart();
+    }
+  }
+
   checkGameEnd() {
     var [finished, winners] = this.checkWinConditions();
 
@@ -2589,6 +2667,8 @@ module.exports = class Game {
       // this.handleError(e);
     }
   }
+
+  
 
   async queueScheduleNotifications() {
     var usersWhoReserved = await redis.getGameReservations(this.id);

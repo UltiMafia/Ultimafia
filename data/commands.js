@@ -39,6 +39,10 @@ const commandData = {
     input: "Amount, Dice Type",
     description: "Rolls dice, results are shown to everyone.",
   },
+"/changeSetup": {
+    input: "Setup ID",
+    description: "Can be used by host to change the setup.",
+  },
   "/special": {
     input: "N/A",
     description: "Lists Any Special Role Interactions for the Setup.",
