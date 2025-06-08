@@ -499,6 +499,7 @@ module.exports = class Player {
         }
         return;
         case "changeSetup":
+  
         const setupToQuery = cmd.args;
         if (
           this.game.started ||
@@ -507,6 +508,12 @@ module.exports = class Player {
         ){
           return;
         }
+        if(this.game.canChangeSetup() != true){
+              this.game.sendAlert(
+              `The setup cannot be changed.`
+            );
+                return;
+              }
         this.game.changeSetup(setupToQuery);
         return;
       case "diceroll":

@@ -2216,7 +2216,7 @@ module.exports = class Game {
     return true;
   }
 
-  changeSetup(setupID){
+  async changeSetup(setupID){
     if(!setupID){
       return;
     }
@@ -2226,17 +2226,26 @@ module.exports = class Game {
     }
          let setup = await models.Setup.findOne({
         id: setupID,
-      }).select(
+      })
+      /*.select(
         "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
-      );
+      );*/
     if(setup && setup.total){
+      //setup = setup.toJSON();
       if(setup.total < this.players.length){
+            this.sendAlert(
+              `The setup must have at least ${this.players.length} players.`, this.game.players.filter((p) => p.user.id != this.hostId)
+            );
         return;
       }
       if(setup.gameType != this.type){
+               this.sendAlert(
+              `The setup must be a ${this.type} setup.`, this.game.players.filter((p) => p.user.id != this.hostId)
+            );
         return;
       }
-      this.setup = setup;
+      this.setup = setup.toJSON();
+      this.setup.roles = JSON.parse(this.setup.roles);
       if(this.type == "Mafia"){
         this.noDeathLimit = this.setup.noDeathLimit;
          this.ForceMustAct = this.setup.ForceMustAct;
@@ -2264,7 +2273,11 @@ module.exports = class Game {
     this.hasGambler = this.setup.roles[0]["Gambler:"];
     this.hasHost = this.setup.roles[0]["Host:"];
       }
-      
+
+       this.sendAlert(
+              `The setup has been changed to ${this.setup.name}.`
+            );
+      this.checkGameStart();
     }
   }
 
