@@ -885,8 +885,8 @@ function verifyRolesAndCount(setup) {
       //roleset = Object.keys(roleset).filter((role) => roleData[gameType][role.split(":")[0]].alignment != "Event");
       for (let role in roles[i]) {
         let roleName = role.split(":")[0];
-
-        if (roleData[gameType][roleName].alignment == "Event") eventCount++;
+        let modifiers = role.split(":")[1];
+        if (roleData[gameType][roleName].alignment == "Event" || (modifiers && modifiers.toLowerCase().includes("banished"))) eventCount++;
       }
 
       let roleSetSize = Object.keys(roleset).length - eventCount;
@@ -961,8 +961,8 @@ function verifyRolesAndCount(setup) {
       //roleset = Object.keys(roleset).filter((role) => roleData[gameType][role.split(":")[0]].alignment != "Event");
       for (let role in roles[i]) {
         let roleName = role.split(":")[0];
-
-        if (roleData[gameType][roleName].alignment == "Event") eventCount++;
+        let modifiers = role.split(":")[1];
+        if (roleData[gameType][roleName].alignment == "Event" || (modifiers && modifiers.toLowerCase().includes("banished"))) eventCount++;
       }
       //Check that all roles are valid roles
       for (let role in roleset)
@@ -977,7 +977,9 @@ function verifyRolesAndCount(setup) {
 
       for (let role in roleset) {
         let roleName = role.split(":")[0];
+        let modifiers = role.split(":")[1];
         if (roleData[gameType][roleName].alignment == "Event") continue;
+        if (modifiers && modifiers.toLowerCase().includes("banished"))) continue;
         roleset[role] = Math.abs(Math.floor(Number(roleset[role]) || 0));
         tempCount[roleData[gameType][roleName].alignment] += roleset[role];
         tempTotal += roleset[role];
