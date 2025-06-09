@@ -257,7 +257,8 @@ module.exports = class MafiaInformation {
     excludeCreator,
     InvestType,
     alignment,
-    forceFalse
+    forceFalse,
+    UseAppear
   ) {
     if (count == null || count <= 0) {
       count = 1;
@@ -267,6 +268,9 @@ module.exports = class MafiaInformation {
     }
     if (forceFalse == null) {
       forceFalse = false;
+    }
+    if (UseAppear == null) {
+      UseAppear = false;
     }
     let fakeRoles = [];
     let returnRoles = [];
@@ -285,17 +289,11 @@ module.exports = class MafiaInformation {
                 .includes("Exposed")
           )
       );
+      if (UseAppear) {
+        randomPlayers = randomPlayers.filter((p) => p.getRoleAppearance() != player.getRoleAppearance());
+      }
       if (forceFalse) {
-        randomPlayers = randomPlayers.filter(
-          (p) =>
-            p.getRoleAppearance() ==
-            this.game.formatRole(
-              this.game.formatRoleInternal(
-                player.role.name,
-                player.role.modifier
-              )
-            )
-        );
+        randomPlayers = randomPlayers.filter((p) => p.getRoleAppearance() != this.game.formatRole(this.game.formatRoleInternal(player.role.name,player.role.modifier)));
       }
       if (
         alignment &&
