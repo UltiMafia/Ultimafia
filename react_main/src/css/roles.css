@@ -797,6 +797,10 @@
   background-image: url("/images/roles/psychic-vivid.png");
 }
 
+.role-icon-scheme-vivid .role-Mafia-Clairvoyant {
+  background-image: url("/images/roles/clairvoyant-vivid.png");
+}
+
 .role-icon-scheme-vivid .role-Mafia-Shrink {
   background-image: url("/images/roles/shrink-vivid.png");
 }
