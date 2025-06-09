@@ -2234,13 +2234,13 @@ module.exports = class Game {
       //setup = setup.toJSON();
       if(setup.total < this.players.length){
             this.sendAlert(
-              `The setup must have at least ${this.players.length} players.`, this.game.players.filter((p) => p.user.id != this.hostId)
+              `The setup must have at least ${this.players.length} players.`, this.game.players.filter((p) => p.user.id == this.hostId)
             );
         return;
       }
       if(setup.gameType != this.type){
                this.sendAlert(
-              `The setup must be a ${this.type} setup.`, this.game.players.filter((p) => p.user.id != this.hostId)
+              `The setup must be a ${this.type} setup.`, this.game.players.filter((p) => p.user.id == this.hostId)
             );
         return;
       }
@@ -2278,6 +2278,11 @@ module.exports = class Game {
               `The setup has been changed to ${this.setup.name}.`
             );
       this.checkGameStart();
+    }
+    else{
+          this.sendAlert(
+              `Setup not found.`, this.game.players.filter((p) => p.user.id == this.hostId)
+            );
     }
   }
 
