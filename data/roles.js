@@ -735,9 +735,23 @@ const roleData = {
         "Basic",
       ],
       description: [
-        "At night, learns either one player's role or two excess roles.",
+        "Each night can choose to learn a player's role or two excess roles"
       ],
       nightOrder: [["Learn Role or Excess Roles",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
+    },
+    Clairvoyant: {
+      alignment: "Village",
+      category: "Investigative",
+      tags: [
+        "Information",
+        "Roles",
+        "Basic",
+        "Visiting"
+      ],
+      description: [
+        "Visits one player each night and learns two roles that are not that player's role.",
+      ],
+      nightOrder: [["Learn Not Roles",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
     Auditor: {
       alignment: "Village",
@@ -1316,6 +1330,15 @@ const roleData = {
         "If the selected role is already in play, The player with that role will be Delirious until the Philosopher dies.",
       ],
       nightOrder: [["Become Role and Make Delirious",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
+    },
+    Jack: {
+      alignment: "Village",
+      category: "Manipulative",
+      tags: ["Advanced", "Banished Interaction",],
+      description: [
+        "At night chooses a banished Village role, gains it's abilities until the next night",
+        "Cannot select a role they already selected.",
+      ],
     },
     Student: {
       alignment: "Village",
@@ -2333,6 +2356,15 @@ const roleData = {
       ],
       nightOrder: [["Become Role and Make Delirious",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
     },
+    Consigliere: {
+      alignment: "Mafia",
+      category: "Manipulative",
+      tags: ["Advanced", "Banished Interaction"],
+      description: [
+        "At night chooses a banished Mafia role, gains it's abilities until the next night",
+        "Cannot select a role they already selected.",
+      ],
+    },
     Apprentice: {
       alignment: "Mafia",
       tags: ["Conversion", "Dead", "Basic"],
@@ -3002,6 +3034,15 @@ const roleData = {
       ],
       nightOrder: [["Apply Effect",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
       graveyardParticipation: "all",
+    },
+    Sidhe: {
+      alignment: "Cult",
+      category: "Manipulative",
+      tags: ["Advanced", "Banished Interaction"],
+      description: [
+        "At night chooses a banished Cult role, gains it's abilities until the next night",
+        "Cannot select a role they already selected.",
+      ],
     },
     "Queen Bee": {
       alignment: "Cult",

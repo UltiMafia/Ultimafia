@@ -1052,11 +1052,15 @@ module.exports = class Game {
     let toDelete = [];
     for (let roleName in roleset) {
       let role = roleName.split(":")[0];
+      let modifiers = roleName.split(":")[1];
       if (this.getRoleAlignment(role) == "Event") {
         toDelete.push(roleName);
         if (!this.BanishedEvents.includes(roleName)) {
           this.CurrentEvents.push(roleName);
         }
+      }
+      else if (modifiers && modifiers.toLowerCase().includes("banished")) {
+        toDelete.push(roleName);
       }
       if (role != "Host") {
         continue;
