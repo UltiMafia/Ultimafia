@@ -400,7 +400,8 @@ const artContributors = {
       "Magistrate",
       "Bloodhound",
       "Rottweiler",
-      "Mass Hysteria"
+      "Mass Hysteria",
+      "Clairvoyant"
     ],
     Resistance: [
       "Assassin",
