@@ -410,6 +410,54 @@ module.exports = class MafiaInformation {
     }
   }
 
+  getNotRoles(player, count, investType, forceTrue, alignment){
+    let role = player.getRoleAppearance(investType);
+    if(forceTrue == true){
+      role = this.game.formatRole(this.game.formatRoleInternal(player.role.name,player.role.modifier));
+    }
+    let notRoles = [];
+    let rolesToUse = this.game.PossibleRoles.filter(
+      (r) =>
+        this.game.formatRole(r) != role &&
+        !this.game.getRoleTags(r).includes("Exposed")
+    );
+    if(alignment){
+          if (alignment == "Evil") {
+      rolesToUse = rolesToUse.filter(
+        (r) =>
+          this.game.getRoleAlignment(r) == "Cult" ||
+          this.game.getRoleAlignment(r) == "Mafia" ||
+          (this.game.getRoleAlignment(r) == "Independent" &&
+            this.game.getRoleTags(r).includes("Hostile"))
+      );
+    }
+    if (alignment == "Good") {
+      rolesToUse = rolesToUse.filter(
+        (r) =>
+          this.game.getRoleAlignment(r) != "Cult" &&
+          this.game.getRoleAlignment(r) != "Mafia" &&
+          !(
+            this.game.getRoleAlignment(r) == "Independent" &&
+            this.game.getRoleTags(r).includes("Hostile")
+          )
+      );
+    }
+    }
+    rolesToUse = Random.randomizeArray(rolesToUse);
+
+    for(let x = 0; x < count && x < rolesToUse.length; x++){
+      notRoles.push(rolesToUse[x]);
+    }
+    if(notRoles.length < count){
+      while(notRoles.length < count){
+        notRoles.push(notRoles[0]);
+      }
+    }
+    
+
+    return notRoles;
+  }
+
   getMostValuableEvilPlayer() {
     let score = 5;
     let highest = 0;

@@ -38,7 +38,7 @@ const modifierData = {
       internal: ["BanishedRole"],
       tags: ["Banished"],
       description:
-        "Banished roles have abnormal spawn conditions. Banished roles will only spawn if the Banished count is increased, or if another roles adds Banished roles to the game.",
+        "Banished roles will only spawn if the Banished count is increased, or if another roles adds Banished roles to the game.",
       eventDescription: "This Event will not occur normally.",
       incompatible: ["Inclusive", "Exclusive"],
     },

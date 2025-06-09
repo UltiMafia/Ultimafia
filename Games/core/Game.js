@@ -1059,7 +1059,7 @@ module.exports = class Game {
           this.CurrentEvents.push(roleName);
         }
       }
-      else if (modifiers && modifiers.toLowerCase().includes("banished"))) {
+      else if (modifiers && modifiers.toLowerCase().includes("banished")) {
         toDelete.push(roleName);
       }
       if (role != "Host") {

@@ -33,7 +33,7 @@ module.exports = class TwoNotRolesInfo extends Information {
     this.targetRole = this.target
       .getRoleAppearance(this.investType)
       .split(" (")[0];
-    let info = this.getFakeRole(this.target, 2, false, this.investType, null, null, true);
+    let info = this.getNotRoles(this.target, 2, this.investType);
     let trueRole = this.game.formatRoleInternal(
       target.role.name,
       target.role.modifier
@@ -52,7 +52,7 @@ module.exports = class TwoNotRolesInfo extends Information {
   getInfoFormated() {
     super.getInfoRaw();
     let info = Random.randomizeArray(this.mainInfo);
-    return `You Learn that ${this.target.name}'s Role is not ${info[0]}, or ${info[1]}.`;
+    return `You Learn that ${this.target.name}'s Role is not ${this.game.formatRole(info[0])}, or ${this.game.formatRole(info[1])}.`;
     //return `You Learn that your Target's Role is ${this.mainInfo}`
   }
 
@@ -88,30 +88,28 @@ module.exports = class TwoNotRolesInfo extends Information {
   }
 
   makeTrue() {
-    let roles = this.getFakeRole(
+    let roles = this.getNotRoles(
       this.target,
       2,
-      false,
       this.investType,
-      null,
-      true
+      true,
     );
 
     this.mainInfo = roles;
     this.targetRole = roles[0].split(":")[0];
   }
   makeFalse() {
-    let info = this.getFakeRole(this.target, 1, false, this.investType);
+    let info = this.getNotRoles(this.target, 1, this.investType);
     info.push(this.trueRole);
     this.mainInfo = info;
     this.targetRole = this.target.role.name;
   }
   makeFavorable() {
-    let roles = this.getFakeRole(
+    let roles = this.getNotRoles(
       this.target,
       2,
-      false,
       this.investType,
+      null,
       "Evil"
     );
 
@@ -119,12 +117,12 @@ module.exports = class TwoNotRolesInfo extends Information {
     this.targetRole = roles[0].split(":")[0];
   }
   makeUnfavorable() {
-    let roles = this.getFakeRole(
+    let roles = this.getNotRoles(
       this.target,
       2,
-      false,
       this.investType,
-      "Village"
+      null,
+      "Good"
     );
 
     this.mainInfo = roles;

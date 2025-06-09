@@ -979,7 +979,7 @@ function verifyRolesAndCount(setup) {
         let roleName = role.split(":")[0];
         let modifiers = role.split(":")[1];
         if (roleData[gameType][roleName].alignment == "Event") continue;
-        if (modifiers && modifiers.toLowerCase().includes("banished"))) continue;
+        if (modifiers && modifiers.toLowerCase().includes("banished")) continue;
         roleset[role] = Math.abs(Math.floor(Number(roleset[role]) || 0));
         tempCount[roleData[gameType][roleName].alignment] += roleset[role];
         tempTotal += roleset[role];
