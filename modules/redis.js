@@ -502,7 +502,12 @@ async function setGameStatus(gameId, status) {
 }
 
 async function setGameSetup(gameId, setupID) {
-  await client.setAsync(`game:${gameId}:settings:setup`, setupID);
+  let info = JSON.parse(
+    (await client.getAsync(`game:${gameId}:settings`)) || "{}"
+  );
+  info.setup = setupID;
+  //JSON.stringify(info);
+  await client.setAsync(`game:${gameId}:settings`, JSON.stringify(info));
 
 }
 
@@ -993,6 +998,7 @@ module.exports = {
   getGameType,
   getGameReservations,
   setGameStatus,
+  setGameSetup,
   getOpenGames,
   getOpenPublicGames,
   getInProgressGames,
