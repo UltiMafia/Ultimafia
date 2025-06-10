@@ -196,8 +196,7 @@
   font-style: italic;
 }
 
-.game .message .content,
-.gameMessageContent {
+.game .message .content {
   display: inline;
 
   word-break: break-word;
@@ -292,15 +291,21 @@
   font-style: italic;
 }
 
-.game .message .content.server,
-.gameMessageContentServer {
+.game .message .content.server {
   flex-grow: 1;
 
   padding: 4px 8px;
 
-  color: #bd4c4c;
   background-color: #121212;
   border-radius: 8px;
+}
+
+.game .message .content.server.important {
+  color: #bd4c4c;
+}
+
+.game .message .content.server.info {
+  color: #F1F1F1;
 }
 
 .game .message .content.vote-record {

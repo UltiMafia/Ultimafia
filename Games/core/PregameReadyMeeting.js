@@ -52,7 +52,7 @@ module.exports = class PregameReadyMeeting extends Meeting {
     );
 
     for (let member of this.members)
-      member.player.sendAlert(`${voter.name} is ready.`);
+      member.player.sendAlert(`${voter.name} is ready.`, undefined, undefined, ["info"]);
 
     this.checkAllPlayersReady();
   }

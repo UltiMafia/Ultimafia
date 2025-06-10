@@ -11,6 +11,7 @@ import axios from "axios";
 import ReactLoading from "react-loading";
 
 import { UserText } from "../../components/Basic";
+import Newspaper from "../../components/Newspaper";
 import MafiaGame from "./MafiaGame";
 import ResistanceGame from "./ResistanceGame";
 import GhostGame from "./GhostGame";
@@ -64,7 +65,6 @@ import {
   Stack,
   Divider,
 } from "@mui/material";
-import { useTheme } from "@mui/styles";
 import BattlesnakesGame from "./BattlesnakesGame";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
@@ -103,13 +103,15 @@ function GameWrapper(props) {
   const [winners, setWinners] = useState(null);
   const [port, setPort] = useState();
   const [gameType, setGameType] = useState();
+  const [startTime, setStartTime] = useState(Date.now());
   const [token, setToken] = useState();
   const [socket, setSocket] = useState({});
   const [connected, setConnected] = useState(0);
   const [setup, setSetup] = useState();
   const [options, setOptions] = useState({});
   const [emojis, setEmojis] = useState({});
-  const [history, updateHistory] = useHistoryReducer();
+  const [isObituaryPlaying, setIsObituaryPlaying] = useState(false);
+  const [history, updateHistory] = useHistoryReducer(isObituaryPlaying);
   const [stateViewing, updateStateViewing] = useStateViewingReducer(history);
   const [players, updatePlayers] = usePlayersReducer();
   const [spectatorCount, setSpectatorCount] = useState(0);
@@ -211,6 +213,68 @@ function GameWrapper(props) {
       };
     }
   }, []);
+  
+  const [obituariesWatchedCookie, updateObituariesWatchedCookie] = useState({});
+
+  function wasObituaryWatched(state, source) {
+    return source && obituariesWatchedCookie[state] && obituariesWatchedCookie[state][source];
+  }
+
+  function toggleObituaryWatched(state, source) {
+    var obituariesWatchedData = window.localStorage.getItem("obituariesWatchedData");
+
+    if (!obituariesWatchedData) {
+      obituariesWatchedData = { gameId: gameId, state: {} };
+    }
+    else {
+      obituariesWatchedData = JSON.parse(obituariesWatchedData);
+    }
+
+    if (obituariesWatchedData.gameId !== gameId){
+      window.localStorage.removeItem("obituariesWatchedData");
+      obituariesWatchedData = {};
+    }
+
+    if (state && source) {
+      if (!obituariesWatchedData.state[state]) {
+        obituariesWatchedData.state[state] = {};
+      }
+      obituariesWatchedData.state[state][source] = true;
+    }
+    window.localStorage.setItem("obituariesWatchedData", JSON.stringify(obituariesWatchedData));
+  }
+
+  // If a user refreshes or views a different state, don't make them watch obituaries again
+  function refreshObituariesWatched() {
+    var obituariesWatchedData = window.localStorage.getItem("obituariesWatchedData");
+
+    if (obituariesWatchedData) {
+      obituariesWatchedData = JSON.parse(obituariesWatchedData);
+
+      if (obituariesWatchedData.gameId !== gameId){
+        window.localStorage.removeItem("obituariesWatchedData");
+      }
+      else {
+        updateObituariesWatchedCookie(obituariesWatchedData.state);
+      };
+    }
+  }
+
+  function onStateNavigation() {
+    refreshObituariesWatched();
+  }
+
+  useEffect(() => {
+    refreshObituariesWatched();
+  }, []);
+
+  useEffect(() => {
+    if (!isObituaryPlaying) {
+      for (let action of history.pausedActions) {
+        updateHistory(action);
+      }
+    }
+  }, [isObituaryPlaying]);
 
   const audioFileNames = ["bell", "ping", "tick", "vegPing"];
   const audioLoops = [false, false, false];
@@ -320,6 +384,7 @@ function GameWrapper(props) {
 
           setGameType(data.type);
           setSetup(data.setup);
+          setStartTime(data.startTime);
 
           setOptions({
             lobby: data.lobby,
@@ -464,6 +529,13 @@ function GameWrapper(props) {
 
     socket.on("self", (playerId) => {
       setSelf(playerId);
+    });
+
+    socket.on("obituaries", (info) => {
+      updateHistory({
+        type: "obituaries",
+        obituariesMessage: info,
+      });
     });
 
     socket.on("reveal", (info) => {
@@ -698,10 +770,12 @@ function GameWrapper(props) {
       socket: socket,
       review: props.review,
       setup: setup,
+      startTime: startTime,
       history: history,
       updateHistory: updateHistory,
       stateViewing: stateViewing,
       updateStateViewing: updateStateViewing,
+      onStateNavigation: onStateNavigation,
       self: self,
       isSpectator: isSpectator,
       players: players,
@@ -718,6 +792,10 @@ function GameWrapper(props) {
       updateSettings: updateSettings,
       speechFilters: speechFilters,
       setSpeechFilters: setSpeechFilters,
+      toggleObituaryWatched: toggleObituaryWatched,
+      wasObituaryWatched: wasObituaryWatched,
+      isObituaryPlaying: isObituaryPlaying,
+      setIsObituaryPlaying: setIsObituaryPlaying,
       isolationEnabled,
       setIsolationEnabled,
       isolatedPlayers,
@@ -892,6 +970,7 @@ export function BotBar(props) {
             history={props.history}
             stateViewing={props.stateViewing}
             updateStateViewing={props.updateStateViewing}
+            onStateNavigation={game.onStateNavigation}
           />
         )}
         {props.timer}
@@ -992,6 +1071,7 @@ export function TextMeetingLayout(props) {
   const stateInfo = history.states[stateViewing];
   const meetings = stateInfo ? stateInfo.meetings : {};
   const alerts = stateInfo ? stateInfo.alerts : [];
+  const obituaries = stateInfo ? stateInfo.obituaries : {};
   const selTab = stateInfo && stateInfo.selTab;
 
   const [speechInput, setSpeechInput] = useState("");
@@ -1082,10 +1162,11 @@ export function TextMeetingLayout(props) {
     messages = getMessagesToDisplay(
       meetings,
       alerts,
+      obituaries,
       selTab,
       players,
       props.settings,
-      props.filters
+      props.filters,
     );
   }
 
@@ -1149,7 +1230,6 @@ export function TextMeetingLayout(props) {
     stateViewing === history.currentState &&
     meetings[selTab].amMember &&
     meetings[selTab].canTalk;
-
   return (
     <>
       <div className="meeting-tabs">
@@ -1227,10 +1307,11 @@ function getAllMessagesToDisplay(history) {
 function getMessagesToDisplay(
   meetings,
   alerts,
+  obituaries,
   selTab,
   players,
   settings,
-  filters
+  filters,
 ) {
   var messages;
 
@@ -1258,6 +1339,19 @@ function getMessagesToDisplay(
         break;
       } else if (alert.time < messages[i].time) {
         messages.splice(i, 0, alert);
+        break;
+      }
+    }
+  }
+
+  for (let source in obituaries) {
+    const obituariesMessage = obituaries[source];
+    for (let i = 0; i <= messages.length; i++) {
+      if (i === messages.length) {
+        messages.push(obituariesMessage);
+        break;
+      } else if (obituariesMessage.time < messages[i].time) {
+        messages.splice(i, 0, obituariesMessage);
         break;
       }
     }
@@ -1321,6 +1415,34 @@ function areSameDay(first, second) {
   return false;
 }
 
+function getContentClasses(message) {
+  const contentClasses = ["content"];
+
+  const tags = message.tags || [];
+
+  const isVoteMessage = message.senderId === "vote";
+  const isServerMessage = message.senderId === "server";
+  const isAnonymousMessage = message.senderId === "anonymous";
+  const isPlayerMessage = !isVoteMessage && !isServerMessage && !isAnonymousMessage;
+
+  // First: get class for importance of message
+  if (tags.includes("important")) contentClasses.push("important");
+  else if (tags.includes("info")) contentClasses.push("info");
+  else contentClasses.push("important");
+
+  // Second: get class for kind of message
+  if (message.isQuote) contentClasses.push("quote");
+  else if (isServerMessage) contentClasses.push("server");
+  else if (isVoteMessage) contentClasses.push("vote-record");
+  
+  // Make content clickable if it's quotable
+  if ((isPlayerMessage || isAnonymousMessage) && !message.isQuote) {
+    contentClasses.push("clickable");
+  }
+
+  return contentClasses;
+}
+
 function Message(props) {
   const isPhoneDevice = useIsPhoneDevice();
   const user = useContext(UserContext);
@@ -1342,13 +1464,23 @@ function Message(props) {
 
   const extraStyle = message.extraStyle;
   var player, quotedMessage;
-  var contentClass = "content ";
-  var isMe = false;
+  var contentClass = getContentClasses(message).join(" ") + " ";
 
+  const hasNameplate = isPlayerMessage || isAnonymousMessage;
   const isRightAligned = isVoteMessage;
   const useAbsoluteTimestamp = (chainToPrevious || isServerMessage) && !isRightAligned && !denseMessages;
   const showThumbtack = !props.review && !message.isQuote && isHovering && (props.stateViewing >= 0);
   const thumbtackFaClass = props.isMessagePinned(message) ? "fas fa-thumbtack" : "fas fa-thumbtack fa-rotate-270";
+
+  // If message is obituary, then short circuit and render that instead
+  if (message.obituaries) {
+    return <ObituariesMessage
+      message={message}
+      stateViewing={props.stateViewing}
+      settings={props.settings}
+      history={history}
+    />;
+  }
 
   if (isPlayerMessage) {
     player = players[message.senderId];
@@ -1381,19 +1513,10 @@ function Message(props) {
 
   if (message.isQuote && !quotedMessage) return <></>;
 
-  if ((player || message.senderId === "anonymous") && !message.isQuote)
-    contentClass += "clickable ";
-
   if (!message.isQuote && message.content?.indexOf("/me ") === 0) {
-    isMe = true;
     message = { ...message };
     message.content = message.content.replace("/me ", "");
   }
-
-  if (message.isQuote) contentClass += "quote ";
-  else if (isServerMessage) contentClass += "server ";
-  else if (isVoteMessage) contentClass += "vote-record ";
-  else if (isMe) contentClass += "me ";
 
   const messageStyle = {};
   if (props.unfocusedMessage) {
@@ -1487,12 +1610,13 @@ function Message(props) {
       onTouchEnd={messageLongPress.onTouchEnd}
     >
       <Stack
-        direction={isRightAligned ? "row-reverse" : (!isPlayerMessage && !isAnonymousMessage) ? "row" : "column"}
+        // if right aligned, use row-reverse to put timestamp on right hand side
+        // otherwise if in compact mode AKA denseMessages, keep everything as a row for vertical density
+        // otherwise if there is no nameplate, use row to keep everything on the same line
+        // otherwise, use column when in non-compact mode so that nameplate can appear above
+        direction={isRightAligned ? "row-reverse" : denseMessages || !hasNameplate ? "row" : "column"}
         spacing={.5}
-        sx={{
-          display: denseMessages && !isRightAligned ? "block" : undefined,
-          flexGrow: 1,
-        }}
+        sx={{ flexGrow: denseMessages ? undefined : 1 }}
       >
         {(!chainToPrevious || denseMessages || isRightAligned) && (<Stack
           direction={denseMessages ? "row" : "row-reverse"}
@@ -1545,7 +1669,7 @@ function Message(props) {
             ...(!user.settings?.ignoreTextColor && message.textColor !== ""
               ? // ? { color: flipTextColor(message.textColor) }
                 { color: message.textColor }
-              : contentClass == "content server "
+              : contentClass.includes("content")
               ? extraStyle
               : {}),
           }}
@@ -1599,12 +1723,69 @@ function Message(props) {
       </Stack>
       {!isPhoneDevice && !isRightAligned && (<div className="pin-button-wrapper" onClick={() => props.onPinMessage(message)}>
         {showThumbtack && (<i
-          class={thumbtackFaClass}
+          className={thumbtackFaClass}
           style={{ cursor: "pointer", textAlign: "center" }}
           />
         )}
       </div>)}
     </div>
+  );
+}
+
+function ObituariesMessage(props) {
+  const game = useContext(GameContext);
+
+  const message = props.message;
+  const history = props.history;
+
+  const alreadyWatched = game.wasObituaryWatched(props.stateViewing, message.source) || props.stateViewing !== history.currentState;
+
+  var shouldAnimateSource = false;
+  var title = null;
+  if (message.source === "Day") {
+    title = "Evening News";
+  }
+  else if (message.source === "Night") {
+    title = "Obituaries";
+    shouldAnimateSource = true;
+  }
+  else if (message.source === "Postgame") {
+    title = "The Miller Times";
+  }
+  else {
+    title = "Breaking News";
+  }
+
+  const noAnimation = props?.settings?.noAnimation || !shouldAnimateSource || alreadyWatched || game.review;
+
+  useEffect(() => {
+    game.toggleObituaryWatched(props.stateViewing, message.source);
+    if (!noAnimation) {
+      game.setIsObituaryPlaying(true);
+    }
+  }, []);
+
+  const deaths = message.obituaries.map((obituary) => { return {
+    id: obituary.playerInfo.userId,
+    name: obituary.playerInfo.name,
+    avatar: obituary.playerInfo.avatar,
+    customEmotes: obituary.playerInfo.customEmotes,
+    deathMessage: obituary.snippets.deathMessage,
+    revealMessage: obituary.snippets.revealMessage,
+    lastWill: obituary.snippets.lastWill,
+  }});
+
+  return (
+    <>
+      <Newspaper
+        title={title}
+        timestamp={message.time}
+        dayCount={message.dayCount}
+        noAnimation={noAnimation}
+        deaths={deaths}
+        onFullyAnimated={() => game.setIsObituaryPlaying(false)}
+      />
+    </>
   );
 }
 
@@ -1849,6 +2030,7 @@ export function StateSwitcher(props) {
 
   function onStateNameClick() {
     props.updateStateViewing({ type: "current" });
+    props.onStateNavigation();
   }
 
   return (
@@ -1857,7 +2039,7 @@ export function StateSwitcher(props) {
         className={`hist-arrow fas fa-caret-left ${
           leftArrowVisible ? "" : "invisible"
         }`}
-        onClick={() => props.updateStateViewing({ type: "backward" })}
+        onClick={() => { props.updateStateViewing({ type: "backward" }); props.onStateNavigation() }}
       />
       <div className="state-name" onClick={onStateNameClick}>
         {stateName.toUpperCase()}
@@ -1866,7 +2048,7 @@ export function StateSwitcher(props) {
         className={`hist-arrow fas fa-caret-right ${
           rigthArrowVisible ? "" : "invisible"
         }`}
-        onClick={() => props.updateStateViewing({ type: "forward" })}
+        onClick={() => { props.updateStateViewing({ type: "forward" }); props.onStateNavigation(); }}
       />
     </div>
   );
@@ -3094,6 +3276,12 @@ export function SettingsMenu(props) {
       type: "boolean",
       value: settings.denseMessages,
     },
+    {
+      label: "Disable Animations",
+      ref: "noAnimation",
+      type: "boolean",
+      value: settings.noAnimation,
+    },
   ]);
 
   function cancel() {
@@ -3409,15 +3597,23 @@ export function Notes(props) {
   );
 }
 
-function useHistoryReducer() {
+function useHistoryReducer(pauseHistoryUpdates) {
   return useReducer(
     (history, action) => {
       var newHistory;
 
+      if (pauseHistoryUpdates) {
+        return update(history, {
+          pausedActions: {
+            $push: [action],
+          },
+        });
+      }
+
       switch (action.type) {
         case "set":
           var stateIds = Object.keys(action.history).sort((a, b) => a - b);
-          newHistory = { states: action.history };
+          newHistory = { states: action.history, pausedActions: [] };
 
           if (stateIds[0] == -2) newHistory.currentState = -2;
           else newHistory.currentState = stateIds[stateIds.length - 1];
@@ -3438,6 +3634,7 @@ function useHistoryReducer() {
                     meetings: {},
                     alerts: [],
                     stateEvents: [],
+                    obituaries: {},
                     roles: { ...history.states[prevState].roles },
                     dead: { ...history.states[prevState].dead },
                     exorcised: { ...history.states[prevState].exorcised },
@@ -3695,6 +3892,21 @@ function useHistoryReducer() {
             });
           }
           break;
+        case "obituaries":
+          if (history.states[history.currentState]) {
+            newHistory = update(history, {
+              states: {
+                [history.currentState]: {
+                  obituaries: {
+                    [action.obituariesMessage.source]: {
+                      $set: action.obituariesMessage,
+                    },
+                  },
+                },
+              },
+            });
+          }
+          break;
         case "reveal":
           if (history.states[history.currentState]) {
             newHistory = update(history, {
@@ -3744,7 +3956,7 @@ function useHistoryReducer() {
 
       return newHistory || history;
     },
-    { states: {} }
+    { states: {}, pausedActions: [] }
   );
 }
 
@@ -3879,6 +4091,7 @@ export function useSettingsReducer() {
     volume: 1,
     terminologyEmoticons: true,
     denseMessages: false,
+    noAnimation : false,
   };
 
   return useReducer((settings, action) => {

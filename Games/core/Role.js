@@ -278,7 +278,7 @@ module.exports = class Role {
     return `${roleName}${modifiers ? ` (${modifiers})` : ""}`;
   }
 
-  revealAlignmentToAll(noAlert, revealType) {
+  revealAlignmentToAll(noAlert, revealType, dueToDeath = false) {
     revealType = revealType || "reveal";
 
     if (!this.appearance[revealType] && !this.player.tempAppearance[revealType])
@@ -288,15 +288,20 @@ module.exports = class Role {
 
     //this.game.queueReveal(this.player, appearance);
     this.game.queueReveal(this.player, this.game.getRoleAlignment(appearance));
-    if (!noAlert)
-      this.game.queueAlert(
-        `${this.player.name}'s alignment is ${this.game.getRoleAlignment(
-          appearance
-        )}.`
-      );
+    if (!noAlert) {
+      const revealMessage = `${this.player.name}'s alignment is ${this.game.getRoleAlignment(
+        appearance
+      )}.`;
+      if (this.game.useObituaries) {
+        this.game.addToObituary(this.player.id, "revealMessage",revealMessage );
+      }
+      else {
+        this.game.queueAlert(revealMessage);
+      }
+    }
   }
 
-  revealToAll(noAlert, revealType) {
+  revealToAll(noAlert, revealType, dueToDeath = false) {
     revealType = revealType || "reveal";
 
     if (!this.appearance[revealType] && !this.player.tempAppearance[revealType])
@@ -307,14 +312,19 @@ module.exports = class Role {
     var modifiers = appearance.split(":")[1];
     this.game.queueReveal(this.player, appearance);
 
-    if (!noAlert)
-      this.game.queueAlert(
-        `${this.player.name}'s role is ${this.getRevealText(
+    if (!noAlert) {
+      const revealMessage = `${this.player.name}'s role is ${this.getRevealText(
           roleName,
           modifiers,
           revealType
-        )}.`
-      );
+        )}.`;
+      if (dueToDeath && this.game.useObituaries) {
+        this.game.addToObituary(this.player.id, "revealMessage", revealMessage);
+      }
+      else {
+        this.game.queueAlert(revealMessage);
+      }
+    }
   }
 
   revealToSelf(noAlert) {

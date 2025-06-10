@@ -7,7 +7,7 @@ module.exports = function (type, name) {
     trap: `:trap: ${name} has stepped into a trap.`,
     gamble: `${name} didn't bet so good…`,
     veg: `:veg: ${name} turned into a vegetable.`,
-    gun: `${name} collapses to the ground from a gunshot wound.`,
+    gun: `${name} collapsed to the ground from a gunshot wound.`,
     burn: `${name} suddenly lights on fire and burns to a crisp!`,
     poison: `${name} finally succumbs to poison.`,
     condemnRevenge: `${name} was killed in an act of revenge.`,

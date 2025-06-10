@@ -44,6 +44,7 @@ module.exports = class MafiaGame extends Game {
         length: options.settings.stateLengths["Day"],
       },
     ];
+    this.useObituaries = true;
     this.pregameWaitLength = options.settings.pregameWaitLength;
     this.extendLength = options.settings.extendLength;
     this.broadcastClosedRoles = options.settings.broadcastClosedRoles;
