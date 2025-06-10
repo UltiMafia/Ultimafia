@@ -501,6 +501,11 @@ async function setGameStatus(gameId, status) {
     await client.setAsync(`game:${gameId}:startTime`, Date.now());
 }
 
+async function setGameSetup(gameId, setupID) {
+  await client.setAsync(`game:${gameId}:settings:setup`, setupID);
+
+}
+
 async function getOpenGames(gameType) {
   var allGames = await client.smembersAsync("games");
   var games = [];
