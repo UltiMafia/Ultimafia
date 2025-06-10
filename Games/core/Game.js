@@ -2336,6 +2336,8 @@ module.exports = class Game {
        this.sendAlert(
               `The setup has been changed to ${this.setup.name}.`
             );
+    // Set game in progress in redis db
+    redis.setGameSetup(this.id, setupID);
       this.checkGameStart();
     }
     else{
