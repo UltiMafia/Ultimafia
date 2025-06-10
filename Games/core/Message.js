@@ -11,6 +11,7 @@ module.exports = class Message {
     this.isServer = info.isServer;
     this.extraStyle = info.extraStyle;
     this.recipients = info.recipients;
+    this.tags = info.tags;
     this.prefix = info.prefix;
     this.abilityName = info.abilityName;
     this.abilityTarget = info.abilityTarget;
@@ -138,6 +139,7 @@ module.exports = class Message {
       customEmotes: version.customEmotes || [],
       alive: version.alive !== undefined ? version.alive : undefined,
       extraStyle: version.extraStyle,
+      tags: version.tags,
     };
   }
 };

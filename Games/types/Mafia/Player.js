@@ -323,11 +323,11 @@ if(this.game.extendLength == 0){
       this.requiresGraveyardParticipation()
     ) {
       this.queueAlert(
-        ":system: :star: ATTENTION: :rip: Graveyard participation is required! Please stay in the game."
+        ":system: :star: ATTENTION: :rip: Graveyard participation is required! Please stay in the game.", undefined, undefined, ["important"]
       );
     } else {
       this.queueAlert(
-        ":system: Graveyard participation is not required. You can leave the game."
+        ":system: Graveyard participation is not required. You can leave the game.", undefined, undefined, ["info"]
       );
     }
 

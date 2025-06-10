@@ -36,7 +36,9 @@
 
 .newspaper .newspaper-title {
     display: block;
+    overflow: hidden;
 
+    max-height: 100px;
     width: 100%;
 
     margin-top: 12px;
@@ -44,7 +46,7 @@
 
     font-family: 'Playfair Display', serif;
     font-weight: 900;
-    font-size: 32px;
+    font-size: 28px;
 
     text-transform: uppercase;
     text-align: center;
@@ -58,13 +60,16 @@
     text-align: center;
 }
 
+.newspaper .newspaper-no-one-died {
+    margin-top: 8px;
+    text-align: center;
+}
+
 .newspaper .newspaper-paragraph {
-    display: block;
+    /* display: inline-block; */
     overflow: hidden;
 
     margin-bottom: 8px;
-    margin-left: 0;
-    margin-right: 0;
 
     /* text-wrap: balance; */
     /* text-align: justify;
@@ -78,7 +83,7 @@
 
 .newspaper .obituary-header {
     font-weight: 700;
-    font-size: 24px;
+    font-size: 20px;
     text-transform: uppercase;
     /* text-align: right; */
 }

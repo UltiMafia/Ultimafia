@@ -8,6 +8,7 @@ module.exports = class History {
         meetings: {},
         alerts: [],
         stateEvents: {},
+        obituaries: {},
         roles: {},
         dead: {},
         exorcised: {},
@@ -27,6 +28,7 @@ module.exports = class History {
       meetings: {},
       alerts: [],
       stateEvents: {},
+      obituaries: {},
       roles: { ...this.states[prevState].roles },
       dead: { ...this.states[prevState].dead },
       exorcised: { ...this.states[prevState].exorcised },
@@ -62,6 +64,11 @@ module.exports = class History {
   addAlert(message, state) {
     state = state == null ? this.game.currentState : state;
     this.states[state].alerts.push(message);
+  }
+
+  addObituaries(obituariesMessage, state) {
+    state = state == null ? this.game.currentState : state;
+    this.states[state].obituaries[obituariesMessage.source] = obituariesMessage;
   }
 
   setStateName(name, state) {
@@ -103,6 +110,7 @@ module.exports = class History {
         meetings: {},
         alerts: [],
         stateEvents: Object.keys(info.stateEvents),
+        obituaries: info.obituaries,
         roles: info.roles,
         dead: info.dead,
         exorcised: info.exorcised,

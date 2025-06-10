@@ -14,6 +14,7 @@ const TIMINGS = {
     // Post-typing delays
     newspaperHeader: 1000 / speedModifier,
     newspaperSubheader: 0 / speedModifier,
+    initialNoOneDiedDelay: 3000 / speedModifier,
 
     initialObituaryDelay: 3000  / speedModifier,
     obituaryHeader: 1000 / speedModifier,
@@ -24,6 +25,7 @@ const TIMINGS = {
     // Delays between "keystrokes"
     newspaperHeaderDelay: 30 / speedModifier,
     newspaperSubheaderDelay: 10 / speedModifier,
+    noOneDiedDelay: 10 / speedModifier,
     obituaryHeaderDelay: 20 / speedModifier,
     obituaryDeathMessageDelay: 10 / speedModifier,
     obituaryRevealMessageDelay: 10 / speedModifier,
@@ -39,7 +41,7 @@ const DEBUG = false;
 
 function ChainedTypewriter(props) {
     const text = props.text;
-    const unanimatedText = props.unanimatedText || text;
+    const staticText = props.staticText || text;
     const initialDelayMs = props.initialDelayMs || 0;
     const delayMs = props.delayMs;
     const chainedFunction = props.chainedFunction;
@@ -68,8 +70,6 @@ function ChainedTypewriter(props) {
                 textAlign: "left", // ALWAYS use left aligned text because the invisible parent is already aligned as we want it
             }}>
                 {sideContent && (<div style={{
-                    /* display: "inline", */
-                    /* visibility: !isPhasedIn ? "hidden" : "visible", */
                     visibility: "visible",
                     marginRight: "8px",
                 }}>
@@ -131,12 +131,29 @@ function ChainedTypewriter(props) {
                         display: "inline-block",
                         width: "101%",
                     }}>
-                        {unanimatedText}
+                        {staticText}
                     </span>
                 </div>
             </div>
         </>
     );
+}
+
+function PhaseInSection(props) {
+    const content = props.content;
+    const phaseIn = props.phaseIn;
+
+    // Try to get the max height as low as possible without ever letting the content exceed it
+    const maxHeight = props.maxHeight || "100px";
+
+    return (<div style={{
+        overflow: "hidden",
+        transition: `all ${PHASE_IN_SECS}s`,
+        margin: phaseIn ? undefined : "0px",
+        maxHeight: phaseIn ? maxHeight : "0px",
+    }}>
+        {content}
+    </div>);
 }
 
 function ObituaryItem({death, onFullyAnimated, parentProps}) {
@@ -145,22 +162,24 @@ function ObituaryItem({death, onFullyAnimated, parentProps}) {
 
     const noAnimation = parentProps.noAnimation || false;
 
+    // STATIC vs NOT STATIC: why?
+    // We have two separate ways of generating the content of these pieces because
+    // the typewriter uses text ONLY, while the static text uses normal react
+    // JSX stuff. The static and non-static version of the content MUST align else
+    // stuff will look janky. Beware.
+
     const deathMessage = emotifyInline(death.deathMessage);
-    const deathMessageUnanimated = emotify(death.deathMessage);
+    const deathMessageStatic = emotify(death.deathMessage);
 
     const revealMessage = `${death.name}'s role was: <span class="newspaper-emphasis">${reformattedRoleName}</span>`;
-    const revealMessageUnanimated = (<>
+    const revealMessageStatic = (<>
         {death.name}
         's role was:
         <span className="newspaper-emphasis"> {reformattedRoleName}</span>
     </>);
 
     const lastWill = death.lastWill ? emotifyInline(death.lastWill) : null;
-    const lastWillUnanimated = death.lastWill ? emotify(death.lastWill) : null;
-
-    /* const deathMessage = death.deathMessage; */
-    /* const lastWill = death.lastWill ? death.lastWill : null; */
-    /* const revealMessage = `${death.name}'s role was: ${reformatRoleName(roleName)}`; */
+    const lastWillStatic = death.lastWill ? emotify(death.lastWill) : null;
 
     const [animatedHeader, setAnimatedHeader] = useState(noAnimation ? true : false);
     const [animatedDeathMessage, setAnimatedDeathMessage] = useState(noAnimation ? true : false);
@@ -174,88 +193,89 @@ function ObituaryItem({death, onFullyAnimated, parentProps}) {
     return (<div className="obituary" key={death.id} style={{
             transition:  `all ${PHASE_IN_SECS}s`,
             margin: phaseInHeader ? undefined : "0px",
-            fontSize: phaseInHeader ? undefined : "0px",
         }}>
-        <div className="obituary-header" style={{
-                transition: `all ${PHASE_IN_SECS}s`,
-                fontSize: phaseInHeader ? undefined : "0px",
-            }}>
-            <ChainedTypewriter
-                text={death.name}
-                initialDelayMs={TIMINGS.initialObituaryDelay}
-                delayMs={TIMINGS.obituaryHeader}
-                typingDelay={TIMINGS.obituaryHeaderDelay}
-                chainedFunction={() => setAnimatedHeader(true)}
-                debug={DEBUG ? "obituaryHeader" : undefined}
-                noAnimation={noAnimation}
-                PHASE_IN_MS={PHASE_IN_MS}
-                phaseInFunction={() => setPhaseInHeader(true)}
-            />
-        </div>
-        {animatedHeader && (<div className="newspaper-paragraph" style={{
-            transition: `all ${PHASE_IN_SECS}s`,
-            margin: phaseInDeathMessage ? undefined : "0px",
-            height: phaseInDeathMessage ? undefined : "0px",
-        }}>
-            <ChainedTypewriter
-                text={deathMessage}
-                unanimatedText={deathMessageUnanimated}
-                delayMs={TIMINGS.obituaryDeathMessage}
-                typingDelay={TIMINGS.obituaryDeathMessageDelay}
-                chainedFunction={() => setAnimatedDeathMessage(true)}
-                debug={DEBUG ? "obituaryDeathMessage" : undefined}
-                sideContent={
-                    <div className="obituary-avatar">
-                        <Avatar
-                            id={death.id}
-                            hasImage={death.avatar}
-                            avatarId={death.avatarId}
-                            name={death.name}
-                            /* deckProfile={props.deckProfile} */
-                            large
-                            isSquare
-                        />
-                    </div>
-                }
-                noAnimation={noAnimation}
-                PHASE_IN_MS={PHASE_IN_MS}
-                phaseInFunction={() => setPhaseInDeathMessage(true)}
-            />
-        </div>)}
-        {animatedDeathMessage && <div className="newspaper-paragraph" style={{
-            transition: `all ${PHASE_IN_SECS}s`,
-            marginBottom: phaseInRevealMessage ? undefined : "0px",
-            fontSize: phaseInRevealMessage ? undefined : "0px",
-        }}>
-            <ChainedTypewriter
-                text={revealMessage}
-                unanimatedText={revealMessageUnanimated}
-                delayMs={TIMINGS.obituaryRevealMessage}
-                typingDelay={TIMINGS.obituaryRevealMessageDelay}
-                chainedFunction={() => { setAnimatedRevealMessage(true); if(!lastWill) onFullyAnimated(); }}
-                debug={DEBUG ? "obituaryRevealMessage" : undefined}
-                noAnimation={noAnimation}
-                PHASE_IN_MS={PHASE_IN_MS}
-                phaseInFunction={() => setPhaseInRevealMessage(true)}
-            />
-        </div>}
-        {lastWill && animatedRevealMessage && (<div className="newspaper-paragraph"  style={{
-                transition: `all ${PHASE_IN_SECS}s`,
-                marginBottom: phaseInLastWill ? undefined : "0px",
-                fontSize: phaseInLastWill ? undefined : "0px",
-            }}>
-            <ChainedTypewriter
-                text={lastWill}
-                unanimatedText={lastWillUnanimated}
-                delayMs={TIMINGS.obituaryLastWill}
-                typingDelay={TIMINGS.obituaryLastWilleDelay}
-                chainedFunction={() => { onFullyAnimated(); }}
-                debug={DEBUG ? "obituaryLastWill" : undefined}
-                noAnimation={noAnimation}
-                PHASE_IN_MS={PHASE_IN_MS}
-                phaseInFunction={() => setPhaseInLastWill(true)}
-            />
-        </div>)}
+        <PhaseInSection
+            key={"obituary-header"}
+            phaseIn={phaseInHeader}
+            content={<div className="obituary-header">
+                <ChainedTypewriter
+                    text={death.name}
+                    initialDelayMs={TIMINGS.initialObituaryDelay}
+                    delayMs={TIMINGS.obituaryHeader}
+                    typingDelay={TIMINGS.obituaryHeaderDelay}
+                    chainedFunction={() => setAnimatedHeader(true)}
+                    debug={DEBUG ? "obituaryHeader" : undefined}
+                    noAnimation={noAnimation}
+                    PHASE_IN_MS={PHASE_IN_MS}
+                    phaseInFunction={() => setPhaseInHeader(true)}
+                />
+            </div>}
+        />
+        {animatedHeader && (<PhaseInSection
+            key={"obituary-death-message"}
+            phaseIn={phaseInDeathMessage}
+            maxHeight={200}
+            content={<div className="newspaper-paragraph">
+                <ChainedTypewriter
+                    text={deathMessage}
+                    staticText={deathMessageStatic}
+                    delayMs={TIMINGS.obituaryDeathMessage}
+                    typingDelay={TIMINGS.obituaryDeathMessageDelay}
+                    chainedFunction={() => setAnimatedDeathMessage(true)}
+                    debug={DEBUG ? "obituaryDeathMessage" : undefined}
+                    sideContent={
+                        <div className="obituary-avatar">
+                            <Avatar
+                                id={death.id}
+                                hasImage={death.avatar}
+                                avatarId={death.avatarId}
+                                name={death.name}
+                                /* deckProfile={props.deckProfile} */
+                                large
+                                isSquare
+                            />
+                        </div>
+                    }
+                    noAnimation={noAnimation}
+                    PHASE_IN_MS={PHASE_IN_MS}
+                    phaseInFunction={() => setPhaseInDeathMessage(true)}
+                />
+            </div>}
+        />)}
+        {animatedDeathMessage && (<PhaseInSection
+            key={"obituary-reveal-message"}
+            phaseIn={phaseInRevealMessage}
+            content={<div className="newspaper-paragraph">
+                <ChainedTypewriter
+                    text={revealMessage}
+                    staticText={revealMessageStatic}
+                    delayMs={TIMINGS.obituaryRevealMessage}
+                    typingDelay={TIMINGS.obituaryRevealMessageDelay}
+                    chainedFunction={() => { setAnimatedRevealMessage(true); if(!lastWill) onFullyAnimated(); }}
+                    debug={DEBUG ? "obituaryRevealMessage" : undefined}
+                    noAnimation={noAnimation}
+                    PHASE_IN_MS={PHASE_IN_MS}
+                    phaseInFunction={() => setPhaseInRevealMessage(true)}
+                />
+            </div>}
+        />)}
+        {lastWill && animatedRevealMessage && (<PhaseInSection
+            key={"obituary-last-will"}
+            phaseIn={phaseInLastWill}
+            content={<div className="newspaper-paragraph">
+                <ChainedTypewriter
+                    text={lastWill}
+                    staticText={lastWillStatic}
+                    delayMs={TIMINGS.obituaryLastWill}
+                    typingDelay={TIMINGS.obituaryLastWilleDelay}
+                    chainedFunction={() => { onFullyAnimated(); }}
+                    debug={DEBUG ? "obituaryLastWill" : undefined}
+                    noAnimation={noAnimation}
+                    PHASE_IN_MS={PHASE_IN_MS}
+                    phaseInFunction={() => setPhaseInLastWill(true)}
+                />
+            </div>}
+        />)}
     </div>);
 }
 
@@ -263,7 +283,12 @@ export default function Newspaper(props) {
     const title = props.title || "Obituary";
     const timestamp = props.timestamp || Date.now();
     const noAnimation = props.noAnimation || false;
-    const deaths = props.deaths || [{
+    const deaths = props.deaths || [];
+    const dayCount = props.dayCount || 0;
+    const onFullyAnimated = props.onFullyAnimated || null;
+    
+    // Example props.deaths input data:
+    /* [{
         id: "l-jKFhbq6",
         name: "nearbear",
         avatar: true,
@@ -279,36 +304,26 @@ export default function Newspaper(props) {
         deathMessage: "n1 TheGameGuy if you are jealous that he is better than you at EpicMafia. You can make up a fake excuse if you want to.",
         revealMessage: "TheGameGuy's role is Cop:Insane",
         lastWill: ":will: As read from TheGameGuy's last will: I knew you guys were jealous."
-    }];
-    const doAutoScroll = props.doAutoScroll || null;
-    const onFullyAnimated = props.onFullyAnimated || null;
+    }] */
 
     const [animatedTitle, setAnimatedTitle] = useState(noAnimation || SKIP_HEADER_ANIMATION ? true : false);
     const [animatedSubheader, setAnimatedSubheader] = useState(noAnimation || SKIP_HEADER_ANIMATION ? true : false);
     const [animatedObituaryCount, setAnimatedObituaryCount] = useState(noAnimation ? deaths.length : 0);
-    const animationFullyComplete = (animatedObituaryCount == deaths.length);
+    const [animatedNoOneDied, setAnimatedNoOneDied] = useState(noAnimation ? true : false);
+    const animationFullyComplete = deaths.length > 0 ? (animatedObituaryCount == deaths.length) : animatedNoOneDied;
 
     useEffect(() => {
         if (animationFullyComplete && onFullyAnimated) {
             onFullyAnimated();
         }
-
-        if (!animationFullyComplete&& doAutoScroll ) {
-            const autoScroller = setInterval(() => { doAutoScroll(); }, 5);
-            return () => {
-                clearInterval(autoScroller);
-            };
-        }
-        else {
-            return;
-        }
-
     }, [animationFullyComplete]);
     
-    const [phaseInTitle, setPhaseInTitle] = useState(noAnimation ? true : false);
+    const [phaseInTitle, setPhaseInTitle] = useState(noAnimation || SKIP_HEADER_ANIMATION ? true : false);
+    const [phaseInSubheader, setPhaseInSubheader] = useState(noAnimation || SKIP_HEADER_ANIMATION ? true : false);
+    const [phaseInNoOneDied, setPhaseInNoOneDied] = useState(noAnimation ? true : false);
 
     // Subtract 100 years from the game's start time to get MAFIA time
-    var gameDate = new Date(timestamp);
+    var gameDate = new Date(timestamp + (dayCount * 24*60*60*1000));
     gameDate.setFullYear(gameDate.getFullYear() - 100);
 
     const obituaries = deaths.map((death, i) => {
@@ -325,37 +340,63 @@ export default function Newspaper(props) {
         }
     });
 
+    const noOneDied = obituaries.length === 0;
+
     return (
         <div className="newspaper">
-            <div className="newspaper-title" style={{
-                transition: `all ${PHASE_IN_SECS}s`,
-                fontSize: phaseInTitle ? undefined : "0px",
-            }}>
-                <ChainedTypewriter
-                    text={title}
-                    initialDelayMs={TIMINGS.initialDelay}
-                    delayMs={TIMINGS.newspaperHeader}
-                    typingDelay={TIMINGS.newspaperHeaderDelay}
-                    chainedFunction={() => {setAnimatedTitle(true); }}
-                    debug={DEBUG ? "newspaperHeader" : undefined}
-                    textAlign="center"
-                    noAnimation={noAnimation || SKIP_HEADER_ANIMATION}
-                    PHASE_IN_MS={PHASE_IN_MS}
-                    phaseInFunction={() => setPhaseInTitle(true)}
-                />
-            </div>
-            {animatedTitle && (<div className="newspaper-subheader">
-                <ChainedTypewriter
-                    text={gameDate.toDateString()}
-                    delayMs={TIMINGS.newspaperSubheader}
-                    typingDelay={TIMINGS.newspaperSubheaderDelay}
-                    chainedFunction={() => setAnimatedSubheader(true)}
-                    debug={DEBUG ? "newspaperSubheader" : undefined}
-                    textAlign="center"
-                    noAnimation={noAnimation || SKIP_HEADER_ANIMATION}
-                />
-            </div>)}
-            {animatedSubheader && obituaries}
+            <PhaseInSection
+                key={"newspaper-title"}
+                phaseIn={phaseInTitle}
+                content={<div className="newspaper-title">
+                    <ChainedTypewriter
+                        text={title}
+                        initialDelayMs={TIMINGS.initialDelay}
+                        delayMs={TIMINGS.newspaperHeader}
+                        typingDelay={TIMINGS.newspaperHeaderDelay}
+                        chainedFunction={() => {setAnimatedTitle(true); }}
+                        debug={DEBUG ? "newspaperHeader" : undefined}
+                        textAlign="center"
+                        noAnimation={noAnimation || SKIP_HEADER_ANIMATION}
+                        PHASE_IN_MS={PHASE_IN_MS}
+                        phaseInFunction={() => setPhaseInTitle(true)}
+                    />
+                </div>}
+            />
+            {animatedTitle && (<PhaseInSection
+                key={"newspaper-subheader"}
+                phaseIn={phaseInSubheader}
+                content={<div className="newspaper-subheader">
+                    <ChainedTypewriter
+                        text={gameDate.toDateString()}
+                        delayMs={TIMINGS.newspaperSubheader}
+                        typingDelay={TIMINGS.newspaperSubheaderDelay}
+                        chainedFunction={() => setAnimatedSubheader(true)}
+                        debug={DEBUG ? "newspaperSubheader" : undefined}
+                        textAlign="center"
+                        noAnimation={noAnimation || SKIP_HEADER_ANIMATION}
+                        PHASE_IN_MS={PHASE_IN_MS}
+                        phaseInFunction={() => setPhaseInSubheader(true)}
+                    />
+                </div>}
+            />)}
+            {animatedSubheader && !noOneDied && obituaries}
+            {animatedSubheader && noOneDied && (<PhaseInSection
+                key={"no-one-died"}
+                phaseIn={phaseInNoOneDied}
+                content={<div className="newspaper-no-one-died">
+                    <ChainedTypewriter
+                        text={"No one died last night."}
+                        initialDelayMs={TIMINGS.initialNoOneDiedDelay}
+                        typingDelay={TIMINGS.noOneDiedDelay}
+                        chainedFunction={() => setAnimatedNoOneDied(true)}
+                        debug={DEBUG ? "noOneDied" : undefined}
+                        textAlign="center"
+                        noAnimation={noAnimation || SKIP_HEADER_ANIMATION}
+                        PHASE_IN_MS={PHASE_IN_MS}
+                        phaseInFunction={() => setPhaseInNoOneDied(true)}
+                    />
+                </div>}
+            />)}
         </div>
     );
 }

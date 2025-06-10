@@ -86,7 +86,7 @@ module.exports = class Player {
   makeNotAnonymous() {
     let p = this.originalProfile;
 
-    this.game.sendAlert(`${p.name}'s anonymous name was ${this.name}.`);
+    this.game.sendAlert(`${p.name}'s anonymous name was ${this.name}.`, undefined, undefined, ["info"]);
 
     this.user.id = p.userId;
     this.name = p.name;
@@ -492,7 +492,7 @@ module.exports = class Player {
           if (player.name.toLowerCase() === cmd.args[0].toLowerCase()) {
             this.game.kickPlayer(player, kickPermanently);
             this.game.sendAlert(
-              `${player.name} was kicked ${andBanned}from the game.`
+              `${player.name} was kicked ${andBanned}from the game.`, undefined, undefined, ["info"]
             );
             return;
           }
@@ -1358,11 +1358,11 @@ module.exports = class Player {
 
     if (this.game.setup.alignmentReveal) {
       roleReveal = false;
-      this.role.revealAlignmentToAll(false, this.getRevealType(killType));
+      this.role.revealAlignmentToAll(false, this.getRevealType(killType), true);
     }
 
     if (roleReveal) {
-      this.role.revealToAll(false, this.getRevealType(killType));
+      this.role.revealToAll(false, this.getRevealType(killType), true);
     }
 
     this.queueLastWill();
@@ -1425,7 +1425,13 @@ module.exports = class Player {
       !this.game.anonymousGame
         ? customDeathMessage.replace("${name}", this.name)
         : this.deathMessages(type || "basic", this.name);
-    this.game.queueAlert(deathMessage);
+    
+    if (this.game.useObituaries) {
+      this.game.addToObituary(this.id, "deathMessage", deathMessage);
+    }
+    else {
+      this.game.queueAlert(deathMessage);
+    }
   }
 
   queueRevivalMessage(type) {
@@ -1442,7 +1448,12 @@ module.exports = class Player {
       will = `:will: As read from ${this.name}'s last will: ${this.lastWill}`;
     else will = `:will: ${this.name} did not leave a will.`;
 
-    this.game.queueAlert(will);
+    if (this.game.useObituaries) {
+      this.game.addToObituary(this.id, "lastWill", will);
+    }
+    else {
+      this.game.queueAlert(will);
+    }
   }
 
   recordStat(stat, inc) {

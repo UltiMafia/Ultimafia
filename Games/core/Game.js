@@ -93,6 +93,8 @@ module.exports = class Game {
     this.spectatorMeetFilter = { "*": true };
     this.timers = {};
     this.actions = [new Queue()];
+    this.useObituaries = false;
+    this.obituaryQueue = {};
     this.alertQueue = new Queue();
     this.deathQueue = new Queue();
     this.exorciseQueue = new Queue();
@@ -222,10 +224,11 @@ module.exports = class Game {
     for (let spectator of this.spectators) spectator.send(eventName, data);
   }
 
-  sendAlert(message, recipients, extraStyle = {}) {
+  sendAlert(message, recipients, extraStyle = {}, tags = []) {
     message = new Message({
       content: message,
       recipients: recipients,
+      tags: tags,
       game: this,
       isServer: true,
       extraStyle: extraStyle,
@@ -236,14 +239,55 @@ module.exports = class Game {
 
   processAlertQueue() {
     for (let item of this.alertQueue)
-      this.sendAlert(item.message, item.recipients);
+      this.sendAlert(item.message, item.recipients, undefined, item.tags);
 
     this.alertQueue.empty();
   }
 
-  queueAlert(message, priority, recipients) {
+  queueAlert(message, priority, recipients, tags = []) {
     priority = priority || 0;
-    this.alertQueue.enqueue({ message, priority, recipients });
+    this.alertQueue.enqueue({ message, priority, recipients, tags });
+  }
+
+  addToObituary(playerId, snippetKey, text) {
+    if (!this.obituaryQueue[playerId]) {
+      this.obituaryQueue[playerId] = {
+        snippets: {}
+      };
+    }
+    this.obituaryQueue[playerId].snippets[snippetKey] = text;
+  }
+
+  processObituaryQueue(source) {
+    const obituaries = [];
+
+    for (let playerId in this.obituaryQueue) {
+      const obituary = this.obituaryQueue[playerId];
+      delete this.obituaryQueue[playerId];
+
+      const player = this.getPlayer(playerId);
+
+      obituary.id = player.id;
+      obituary.playerInfo = player.getPlayerInfo();
+
+      if (!player.alive) {
+        obituaries.push(obituary);
+      }
+    }
+
+    const obituariesMessage = {
+      id: `${this.currentState}:${source}`,
+      obituaries: obituaries,
+      source: source,
+      time: Date.now(),
+      dayCount: "dayCount" in this ? this.dayCount - 1 : 0,
+    };
+
+    if ((obituaries.length > 0) || (source === "Night")) {
+      this.history.addObituaries(obituariesMessage);
+      this.addObituaries(obituariesMessage);
+      this.broadcast("obituaries", obituariesMessage);
+    }
   }
 
   processDeathQueue() {
@@ -500,7 +544,7 @@ module.exports = class Game {
 
     this.playerLeave(player);
 
-    if (player.alive) this.sendAlert(`${player.name} has left.`);
+    if (player.alive) this.sendAlert(`${player.name} has left.`, undefined, undefined, ["info"]);
   }
 
   async playerLeave(player) {
@@ -707,7 +751,7 @@ module.exports = class Game {
       if (player != newPlayer)
         player.send("playerJoin", newPlayer.getPlayerInfo(player));
     }
-    this.sendAlert(`${newPlayer.name} has joined.`);
+    this.sendAlert(`${newPlayer.name} has joined.`, undefined, undefined, ["info"]);
     if (newPlayer.user && newPlayer.user.Protips == false) {
       let allTips = protips[this.type].filter((p) => p);
       for (let tip of protips["Any"]) {
@@ -764,7 +808,7 @@ module.exports = class Game {
     for (let member of this.readyMeeting.members) {
       if (!member.ready) {
         this.kickPlayer(member.player);
-        this.sendAlert(`${member.player.name} was kicked for inactivity.`);
+        this.sendAlert(`${member.player.name} was kicked for inactivity.`, undefined, undefined, ["info"]);
       }
     }
 
@@ -1514,6 +1558,13 @@ module.exports = class Game {
     }
   }
 
+  addObituaries(obituaries) {
+    for (let _player of this.players)
+      _player.history.addObituaries(obituaries);
+
+    this.spectatorHistory.addObituaries(obituaries);
+  }
+
   recordRole(player, appearance) {
     for (let _player of this.players)
       _player.history.recordRole(player, appearance);
@@ -1557,6 +1608,8 @@ module.exports = class Game {
 
     // Check win conditions
     if (this.checkGameEnd()) return;
+
+    const previousStateName = this.getStateName();
 
     // Set next state
     this.incrementState(index, skipped);
@@ -1757,6 +1810,7 @@ module.exports = class Game {
     this.inactivityCheck();
 
     // Make meetings and send deaths, reveals, alerts
+    this.processObituaryQueue(previousStateName);
     this.processDeathQueue();
     this.processExorciseQueue();
     this.processRevealQueue();
@@ -2148,6 +2202,7 @@ module.exports = class Game {
     this.processExorciseQueue();
     this.processRevealQueue();
     this.processAlertQueue();
+    this.processObituaryQueue(`instant-${Date.now()}`);
   }
 
   // A test branch version of this.makeMeetings()
@@ -2346,6 +2401,7 @@ module.exports = class Game {
       this.history.recordAllDead();
 
       winners.queueAlerts();
+      this.processObituaryQueue("Postgame");
       this.processDeathQueue();
       this.processExorciseQueue();
       this.processRevealQueue();
@@ -2517,7 +2573,7 @@ module.exports = class Game {
         this.postgame.finish(true);
         if (this.postgame.finalTarget && this.postgame.finalTarget !== "*") {
           kudosTarget = this.postgame.finalTarget;
-          this.sendAlert(`${kudosTarget.name} has received kudos!`);
+          this.sendAlert(`${kudosTarget.name} has received kudos!`, undefined, undefined, ["info"]);
         }
       }
 
