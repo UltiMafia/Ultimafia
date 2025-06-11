@@ -209,6 +209,9 @@ export default function MafiaGame() {
         }
       }
     }
+    else{
+        game.stopAudio();
+      }
   }, [history.currentState]);
 
   useSocketListeners((socket) => {
