@@ -153,6 +153,8 @@ export default function MafiaGame() {
             break;
           case "Doctor":
           case "Surgeon":
+          case "Nurse":
+          case "Medic":
             game.playAudio("music/NightProtector");
             break;
           case "Sheriff":
@@ -174,6 +176,7 @@ export default function MafiaGame() {
           case "Santa":
           case "Snowman":
           case "Polar Bear":
+          case "Snow Queen":
             game.playAudio("music/NightWinter");
             break;
           case "Fiddler":
@@ -186,6 +189,7 @@ export default function MafiaGame() {
           case "Fool":
           case "Joker":
           case "Trickster":
+          case "Prankster":
             game.playAudio("music/NightFool");
             break;
           case "Lover":
