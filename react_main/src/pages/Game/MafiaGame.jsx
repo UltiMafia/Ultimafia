@@ -16,10 +16,11 @@ import {
   Notes,
   PinnedMessages,
 } from "./Game";
-import { GameContext } from "../../Contexts";
+import { GameContext, SiteInfoContext } from "../../Contexts";
 
 export default function MafiaGame() {
   const game = useContext(GameContext);
+  const siteInfo = useContext(SiteInfoContext);
 
   const history = game.history;
   const updateHistory = game.updateHistory;
@@ -51,7 +52,17 @@ export default function MafiaGame() {
     { fileName: "gunshot", loops: false, overrides: false, volumes: 1, },
     { fileName: "condemn", loops: false, overrides: false, volumes: 1, },
     { fileName: "explosion", loops: false, overrides: false, volumes: 0.5, },
-    // { fileName: "music/NightFool", loops: true, overrides: false, volumes: 1 },
+    { fileName: "music/NightCrafter", loops: true, overrides: false, volumes: 1 },
+    { fileName: "music/NightEssential", loops: true, overrides: false, volumes: 1 },
+    { fileName: "music/NightFiddler", loops: true, overrides: false, volumes: 1 },
+    { fileName: "music/NightInvestigator", loops: true, overrides: false, volumes: 1 },
+    { fileName: "music/NightLove", loops: true, overrides: false, volumes: 1 },
+    { fileName: "music/NightMafia", loops: true, overrides: false, volumes: 1 },
+    { fileName: "music/NightProtector", loops: true, overrides: false, volumes: 1 },
+    { fileName: "music/NightWestern", loops: true, overrides: false, volumes: 1 },
+    { fileName: "music/NightWinter", loops: true, overrides: false, volumes: 1 },
+    { fileName: "music/NightFool", loops: true, overrides: false, volumes: 0.6 },
+    { fileName: "music/NightClockmaker", loops: true, overrides: false, volumes: 1 },
     { fileName: "music/Draw", loops: false, overrides: false, volumes: 1, },
     { fileName: "music/WinAlien", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinAnarchist", loops: false, overrides: false, volumes: 1, },
@@ -102,6 +113,99 @@ export default function MafiaGame() {
     // Make game review start at pregame
     if (game.review) updateStateViewing({ type: "first" });
   }, []);
+
+  // Play music on state change to Night
+  useEffect(() => {
+    if (game.review) return;
+
+    const currentState = history.states[history.currentState];
+    if (currentState && currentState.name.startsWith("Night")) {
+      const currentRole = currentState.roles[self];
+      if (currentRole) {
+        const currentRoleName = currentRole.split(":")[0];
+        const currentAlignment = currentRoleName in siteInfo.rolesRaw[gameType] ? siteInfo.rolesRaw[gameType][currentRoleName].alignment : "";
+
+        switch (currentRoleName) {
+          case "Cop":
+          case "Detective":
+          case "Manhunter":
+          case "Tracker":
+          case "Watcher":
+            game.playAudio("music/NightInvestigator");
+            break;
+          case "Baker":
+          case "Blacksmith":
+          case "Chandler":
+          case "Cutler":
+          case "Demolitionist":
+          case "Falconer":
+          case "Funsmith":
+          case "Gemcutter":
+          case "Gunsmith":
+          case "Keymaker":
+          case "Knight":
+          case "Mailman":
+          case "Missionary": 
+          case "Pharmacist":
+          case "Reanimator":
+          case "Capybara":
+            game.playAudio("music/NightCrafter");
+            break;
+          case "Doctor":
+          case "Surgeon":
+            game.playAudio("music/NightProtector");
+            break;
+          case "Sheriff":
+          case "Deputy":
+          case "Rival":
+            game.playAudio("music/NightWestern");
+            break;
+          case "Mayor":
+          case "Governor":
+          case "President":
+          case "Prince":
+          case "Princess":
+          case "King":
+          case "Kingmaker":
+          case "Queen":
+            game.playAudio("music/NightEssential");
+            break;
+          case "Caroler":
+          case "Santa":
+          case "Snowman":
+          case "Polar Bear":
+            game.playAudio("music/NightWinter");
+            break;
+          case "Fiddler":
+            game.playAudio("music/NightFiddler");
+            break;
+          case "Clockmaker":
+            game.playAudio("music/NightClockmaker");
+            break;
+          case "Clown":
+          case "Fool":
+          case "Joker":
+          case "Trickster":
+            game.playAudio("music/NightFool");
+            break;
+          case "Lover":
+          case "Heartbreaker":
+          case "Yandere":
+            game.playAudio("music/NightLove");
+            break;
+          default:
+            if (currentAlignment === "Mafia") {
+              // If mafia isn't listed above then this track plays
+              game.playAudio("music/NightMafia");
+            }
+            else {
+              console.log(`${currentRoleName} has no night music`);
+            }
+            break;
+        }
+      }
+    }
+  }, [history.currentState]);
 
   useSocketListeners((socket) => {
     socket.on("state", (state) => {
