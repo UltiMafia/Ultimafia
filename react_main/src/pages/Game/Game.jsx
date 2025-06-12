@@ -1243,6 +1243,9 @@ export function TextMeetingLayout(props) {
           className="speech-display"
           onScroll={onSpeechScroll}
           ref={speechDisplayRef}
+          style={{
+            flexDirection: game.isObituaryPlaying ? "column-reverse" : undefined,
+          }}
         >
           {messages}
         </div>
@@ -1781,9 +1784,10 @@ function ObituariesMessage(props) {
         title={title}
         timestamp={message.time}
         dayCount={message.dayCount}
-        noAnimation={noAnimation}
+        /* noAnimation={noAnimation} */
         deaths={deaths}
         onFullyAnimated={() => game.setIsObituaryPlaying(false)}
+        playAudio={game.playAudio}
       />
     </>
   );
