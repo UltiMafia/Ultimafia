@@ -403,6 +403,8 @@ export default function Newspaper(props) {
 
 const ROLE_SEARCH_TERM = "'s role is ";
 function getRoleName(text) {
+    if (!text) return "???";
+
     const indexStart = text.lastIndexOf(ROLE_SEARCH_TERM);
     const indexEnd = indexStart + ROLE_SEARCH_TERM.length;
 
