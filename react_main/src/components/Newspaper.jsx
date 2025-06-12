@@ -22,14 +22,14 @@ const TIMINGS = {
     obituaryRevealMessage: 3000 / speedModifier,
     obituaryLastWill: 0 / speedModifier,
 
-    // Delays between "keystrokes"
-    newspaperHeaderDelay: 30 / speedModifier,
-    newspaperSubheaderDelay: 10 / speedModifier,
-    noOneDiedDelay: 10 / speedModifier,
-    obituaryHeaderDelay: 20 / speedModifier,
-    obituaryDeathMessageDelay: 10 / speedModifier,
-    obituaryRevealMessageDelay: 10 / speedModifier,
-    obituaryLastWilleDelay: 10 / speedModifier,
+    // Delays between "keystrokes" in milliseconds
+    newspaperHeaderDelay: 80 / speedModifier,
+    newspaperSubheaderDelay: 20 / speedModifier,
+    noOneDiedDelay: 20 / speedModifier,
+    obituaryHeaderDelay: 40 / speedModifier,
+    obituaryDeathMessageDelay: 20 / speedModifier,
+    obituaryRevealMessageDelay: 20 / speedModifier,
+    obituaryLastWilleDelay: 20 / speedModifier,
 }
 
 const SKIP_HEADER_ANIMATION = false;
@@ -50,6 +50,9 @@ function ChainedTypewriter(props) {
     const typingDelay = props.typingDelay || 80;
     const noAnimation = props.noAnimation || false;
     const noChain = props.noChain || false;
+
+    // #2058: call this function like so: playAudio("<name of mp3 file minus extension>")
+    const playAudio = props.playAudio || null;
 
     const phaseInFunction = props.phaseInFunction || null;
     const PHASE_IN_MS = props.PHASE_IN_MS || 1000;
@@ -107,11 +110,15 @@ function ChainedTypewriter(props) {
                                 if (debug) typewriter = typewriter.callFunction(() => { console.log(`${debug} phaseInFunction`) });
                                 if(phaseInFunction) typewriter = typewriter.callFunction(() => { phaseInFunction() });
 
+                                // #2058: Play carriage return sound here, should last around PHASE_IN_MS
+
                                 if (debug) typewriter = typewriter.callFunction(() => { console.log(`${debug} PHASE_IN_MS ${PHASE_IN_MS}`) });
                                 if(PHASE_IN_MS > 0) typewriter = typewriter.pauseFor(PHASE_IN_MS);
 
                                 if (debug) typewriter = typewriter.callFunction(() => { console.log(`${debug} setIsPhasedIn true`) });
                                 typewriter = typewriter.callFunction(() => { setIsPhasedIn(true); });
+
+                                // #2058: Play typewriter sounds here based on size of text variable
                                 
                                 if (debug) typewriter = typewriter.callFunction(() => { console.log(`${debug} typeString ${text}`) });
                                 typewriter = typewriter.typeString(text);
@@ -161,6 +168,7 @@ function ObituaryItem({death, onFullyAnimated, parentProps}) {
     const reformattedRoleName = reformatRoleName(roleName);
 
     const noAnimation = parentProps.noAnimation || false;
+    const playAudio = parentProps.playAudio || null;
 
     // STATIC vs NOT STATIC: why?
     // We have two separate ways of generating the content of these pieces because
@@ -208,6 +216,7 @@ function ObituaryItem({death, onFullyAnimated, parentProps}) {
                     noAnimation={noAnimation}
                     PHASE_IN_MS={PHASE_IN_MS}
                     phaseInFunction={() => setPhaseInHeader(true)}
+                    playAudio={playAudio}
                 />
             </div>}
         />
@@ -239,6 +248,7 @@ function ObituaryItem({death, onFullyAnimated, parentProps}) {
                     noAnimation={noAnimation}
                     PHASE_IN_MS={PHASE_IN_MS}
                     phaseInFunction={() => setPhaseInDeathMessage(true)}
+                    playAudio={playAudio}
                 />
             </div>}
         />)}
@@ -256,6 +266,7 @@ function ObituaryItem({death, onFullyAnimated, parentProps}) {
                     noAnimation={noAnimation}
                     PHASE_IN_MS={PHASE_IN_MS}
                     phaseInFunction={() => setPhaseInRevealMessage(true)}
+                    playAudio={playAudio}
                 />
             </div>}
         />)}
@@ -273,6 +284,7 @@ function ObituaryItem({death, onFullyAnimated, parentProps}) {
                     noAnimation={noAnimation}
                     PHASE_IN_MS={PHASE_IN_MS}
                     phaseInFunction={() => setPhaseInLastWill(true)}
+                    playAudio={playAudio}
                 />
             </div>}
         />)}
@@ -286,6 +298,7 @@ export default function Newspaper(props) {
     const deaths = props.deaths || [];
     const dayCount = props.dayCount || 0;
     const onFullyAnimated = props.onFullyAnimated || null;
+    const playAudio = props.playAudio || null;
     
     // Example props.deaths input data:
     /* [{
@@ -359,6 +372,7 @@ export default function Newspaper(props) {
                         noAnimation={noAnimation || SKIP_HEADER_ANIMATION}
                         PHASE_IN_MS={PHASE_IN_MS}
                         phaseInFunction={() => setPhaseInTitle(true)}
+                        playAudio={playAudio}
                     />
                 </div>}
             />
@@ -376,6 +390,7 @@ export default function Newspaper(props) {
                         noAnimation={noAnimation || SKIP_HEADER_ANIMATION}
                         PHASE_IN_MS={PHASE_IN_MS}
                         phaseInFunction={() => setPhaseInSubheader(true)}
+                        playAudio={playAudio}
                     />
                 </div>}
             />)}
@@ -394,6 +409,7 @@ export default function Newspaper(props) {
                         noAnimation={noAnimation || SKIP_HEADER_ANIMATION}
                         PHASE_IN_MS={PHASE_IN_MS}
                         phaseInFunction={() => setPhaseInNoOneDied(true)}
+                        playAudio={playAudio}
                     />
                 </div>}
             />)}
@@ -403,6 +419,8 @@ export default function Newspaper(props) {
 
 const ROLE_SEARCH_TERM = "'s role is ";
 function getRoleName(text) {
+    if (!text) return "???";
+
     const indexStart = text.lastIndexOf(ROLE_SEARCH_TERM);
     const indexEnd = indexStart + ROLE_SEARCH_TERM.length;
 
