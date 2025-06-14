@@ -34,7 +34,7 @@ import { useErrorAlert } from "../../../components/Alerts";
 import { NewLoading } from "../../Welcome/NewLoading";
 import { Stack, Typography } from "@mui/material";
 
-export default function Role() {
+export default function RolePage() {
   return (
     <>
       <div className="inner-content">
@@ -42,7 +42,7 @@ export default function Role() {
           <Route
             exact
             path="/learn/role/:RoleName"
-            render={() => <RolePage />}
+            render={() => <RoleThings />}
           />
         </Switch>
       </div>
@@ -50,7 +50,7 @@ export default function Role() {
   );
 }
 
-export function RolePage() {
+export function RoleThings() {
   const [setup, setSetup] = useState();
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
