@@ -97,7 +97,6 @@ export default function AcrotopiaGame(props) {
             <span>Acrotopia</span>
           </div>
         }
-        timer={<Timer timers={game.timers} history={history} />}
       />
       <ThreePanelLayout
         leftPanelContent={

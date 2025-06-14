@@ -104,7 +104,6 @@ export default function SecretDictatorGame(props) {
             <span>Secret Dictator</span>
           </div>
         }
-        timer={<Timer timers={game.timers} history={history} />}
       />
       <ThreePanelLayout
         leftPanelContent={
