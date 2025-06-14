@@ -168,7 +168,7 @@
   flex-flow: row;
 }
 
-.role-null {
+.role-icon-vivid-null {
   background-image: url("/images/roles/02-unknown-vivid.png");
 
   -webkit-filter: none;
