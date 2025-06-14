@@ -51,6 +51,7 @@ var schemas = {
       roleIconScheme: { type: String, default: "vivid" },
       siteColorScheme: { type: String, default: "dark" },
       disableProTips: { type: Boolean, default: false },
+      roleSkins: [];
       autoplay: { type: Boolean, default: false },
       youtube: String,
       hideStatistics: { type: Boolean, default: false },
