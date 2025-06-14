@@ -27,6 +27,7 @@ import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 export function RoleCount(props) {
   const roleRef = useRef();
   const popover = useContext(PopoverContext);
+  const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const [roleData, setRoleData] = useState(null);
   const isPhoneDevice = useIsPhoneDevice();
@@ -60,7 +61,8 @@ export function RoleCount(props) {
   // Choose from list of icons to predict from
   const makeRolePrediction = props.makeRolePrediction;
 
-  var roleName, modifiers;
+  var roleName, modifiers, roleSkin;
+
 
   if (typeof props.role == "string") {
     roleName = props.role.split(":")[0];
@@ -68,6 +70,19 @@ export function RoleCount(props) {
   } else if (props.role) {
     roleName = props.role.name;
     modifiers = props.role.modifier;
+  }
+let userRoleSkins1;
+  if(typeof user.settings.roleSkins == "string"){
+userRoleSkins1 = user.settings.roleSkins.split(",");
+  }
+
+  let userRoleSkins = userRoleSkins1.filter((s) => s.split(":")[0] == roleName);
+
+  if(userRoleSkins.length == 1 && userRoleSkins != null){
+    roleSkin = userRoleSkins[0].split(":")[1];
+  }
+  else{
+    roleSkin = "vivid";
   }
 
   useEffect(() => {
@@ -209,9 +224,7 @@ export function RoleCount(props) {
       <div className="role-count-wrap">
         <div className="role-group-placeholder">
           <div
-            className={`role role-${roleClass} ${
-              props.scheme ? `role-icon-scheme-${props.scheme}` : ""
-            } ${props.small ? "small" : props.large ? "large" : ""} ${props.bg ? "bg" : ""}`}
+            className={`role role-icon-${roleSkin}-${roleClass} ${props.small ? "small" : props.large ? "large" : ""} ${props.bg ? "bg" : ""}`}
             ref={roleRef}
             onClick={onRoleGroupClick}
           >
@@ -232,7 +245,7 @@ export function RoleCount(props) {
           onMouseLeave={handleMouseLeave}
         >
           <div
-            className={`role role-${roleClass} ${props.small ? "small" : props.large ? "large" : ""} ${
+            className={`role role-icon-${roleSkin}-${roleClass} ${props.small ? "small" : props.large ? "large" : ""} ${
               props.bg ? "bg" : ""
             }`}
             ref={roleRef}
@@ -268,7 +281,7 @@ export function RoleCount(props) {
           >
             <div className={"mui-popover"}>
               <div className={"mui-popover-title"}>
-                <div className={`role role-${roleClass}`} />
+                <div className={`role role-icon-${roleSkin}-${roleClass}`} />
                 &nbsp;{roleName}&nbsp;
               </div>
               <div style={{ margin: "6px" }}>

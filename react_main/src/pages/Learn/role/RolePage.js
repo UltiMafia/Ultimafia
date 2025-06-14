@@ -20,9 +20,10 @@ import {
   Select,
   TextField,
   LinearProgress,
+  Stack,
 } from "@mui/material";
 
-import Form, { useForm } from "../../components/Form";
+import Form, { useForm } from "../../../components/Form";
 import axios from "axios";
 
 import { UserContext, SiteInfoContext } from "../../../Contexts";
@@ -32,7 +33,7 @@ import "../../../css/setupPage.css";
 
 import { useErrorAlert } from "../../../components/Alerts";
 import { NewLoading } from "../../Welcome/NewLoading";
-import { Stack, Typography } from "@mui/material";
+import { RoleCount } from "../../../components/Roles";
 
 export default function RolePage() {
   return (
@@ -106,7 +107,7 @@ let role = [RoleName, siteInfo.rolesRaw["Mafia"][RoleName]];
     const [siteFields, updateSiteFields] = useForm([
     {
       label: "Role Skin",
-      ref: "roleIconScheme",
+      ref: "roleSkins",
       type: "select",
       options: role[1].skins || [
         {
@@ -141,11 +142,20 @@ let role = [RoleName, siteInfo.rolesRaw["Mafia"][RoleName]];
   if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
   // TODO if setupId not set, redirect to a setup page
 
-  if (!setup || !user.loaded) return <NewLoading small />;
+  if (!role || !user.loaded) return <NewLoading small />;
 
   let commentLocation = `role/${RoleName}`;
+  let temproleSkins;
+  if(user.settings.roleSkins){
+    temproleSkins = user.settings.roleSkins.split(",");
+}
+else{
+   temproleSkins = null;
+}
 
-  // favourites
+  const roleSkins = temproleSkins;
+
+  // favourites <SetupRowInfo title="Current Skins" content={roleSkins.filter((s) => s).sort().join(", ")} />
 
   // TODO add button to host it
   
@@ -159,15 +169,15 @@ let role = [RoleName, siteInfo.rolesRaw["Mafia"][RoleName]];
                 />
       <div className="setup-page">
         <div className="span-panel main">
-          <div className="heading">Setup Info</div>
+          <div className="heading">Role Info</div>
 
           <div className="meta">
             <SetupRowInfo title="Name" content={RoleName} />
-            //<SetupRowInfo title="Tags" content={role[1].tags} />
+            <SetupRowInfo title="Tags" content={role[1].tags.sort().join(", ")} />
               <Form
               fields={siteFields}
               deps={{ user }}
-              onChange={(action) => onSettingChange(action, updateSiteFields)}
+              onChange={(action) => onRoleSkinChange(action, RoleName, updateSiteFields, user, roleSkins)}
             />
           </div>
         </div>
@@ -189,20 +199,31 @@ function SetupRowInfo(props) {
   );
 }
 
- async function onRoleSkinChange(role, selection) {
-      const user = useContext(UserContext);
-   
-   let roleformated = `${role}:${selection}`;
-   
-  let temp = user.roleSkins.filter((s) => s.split(":")[0] == role);
+ function onRoleSkinChange(action, role, update, user, roleSkins) {
+      if (action.prop === "value" && !action.localOnly) {
+
+    let roleformated = `${role}:${action.value}`;
+   let array = roleSkins.filter((s) => s);
+  let temp = roleSkins.filter((s) => s.split(":")[0] == role);
    if(temp.length > 0){
-     let index = user.roleSkins.indexOf(temp[0]);
-     user.roleSkins[index] = roleformated;
+     let index = roleSkins.indexOf(temp[0]);
+     array[index] = roleformated;
    }
    else{
-     user.roleSkins.push(roleformated);
+     array = array.concat([roleformated]);
    }
+   let strArray = array.join(",");
+      axios
+        .post("/user/settings/update", {
+          prop: action.ref,
+          value: strArray,
+        })
+        .then(() => user.updateSetting(action.ref, strArray));
+    }
+    update(action);
+
    
+   /*
    role.skin = selection;
         await models.User.updateOne(
            { id: user.id },
@@ -212,5 +233,5 @@ function SetupRowInfo(props) {
             },
           }
         ).exec();
-
+*/
   }
