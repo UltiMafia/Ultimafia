@@ -2512,7 +2512,7 @@
 *
 ***********/
 
-.role-Jotto-Player {
+.role-icon-vivid-Jotto-Player {
   background-image: url("/images/roles/villager-vivid.png");
 }
 
@@ -2522,7 +2522,7 @@
 *
 ***********/
 
-.role-Acrotopia-Player {
+.role-icon-vivid-Acrotopia-Player {
   background-image: url("/images/roles/villager-vivid.png");
 }
 
@@ -2536,7 +2536,7 @@
 * Liberals
 */
 
-.role-Secret-Dictator-Liberal {
+.role-icon-vivid-Secret-Dictator-Liberal {
   background-image: url("/images/roles/villager-vivid.png");
 }
 
@@ -2566,27 +2566,27 @@
 *
 ***********/
 
-.role-Wacky-Words-Player {
+.role-icon-vivid-Wacky-Words-Player {
   background-image: url("/images/roles/villager-vivid.png");
 }
 
-.role-Wacky-Words-Alien {
+.role-icon-vivid-Wacky-Words-Alien {
   background-image: url("/images/roles/alien-vivid.png");
 }
 
-.role-Wacky-Words-Neighbor {
+.role-icon-vivid-Wacky-Words-Neighbor {
   background-image: url("/images/roles/neighbor-vivid.png");
 }
 
-.role-Wacky-Words-Governor {
+.role-icon-vivid-Wacky-Words-Governor {
   background-image: url("/images/roles/governor-vivid.png");
 }
 
-.role-Wacky-Words-Gambler {
+.role-icon-vivid-Wacky-Words-Gambler {
   background-image: url("/images/roles/gambler-vivid.png");
 }
 
-.role-Wacky-Words-Host {
+.role-icon-vivid-Wacky-Words-Host {
   background-image: url("/images/roles/host-vivid.png");
 }
 
@@ -2596,31 +2596,31 @@
 *
 ***********/
 
-.role-Liars-Dice-Liar {
+.role-icon-vivid-Liars-Dice-Liar {
   background-image: url("/images/roles/buccaneer-vivid.png");
 }
-.role-Liars-Dice-Snoop {
+.role-icon-vivid-Liars-Dice-Snoop {
   background-image: url("/images/roles/snoop-vivid.png");
 }
-.role-Liars-Dice-Thief {
+.role-icon-vivid-Liars-Dice-Thief {
   background-image: url("/images/roles/thief-vivid.png");
 }
-.role-Liars-Dice-Graverobber {
+.role-icon-vivid-Liars-Dice-Graverobber {
   background-image: url("/images/roles/graverobber-vivid.png");
 }
-.role-Liars-Dice-Sniper {
+.role-icon-vivid-Liars-Dice-Sniper {
   background-image: url("/images/roles/sniper-vivid.png");
 }
-.role-Liars-Dice-Spy {
+.role-icon-vivid-Liars-Dice-Spy {
   background-image: url("/images/roles/spy-vivid.png");
 }
-.role-Liars-Dice-Suitress {
+.role-icon-vivid-Liars-Dice-Suitress {
   background-image: url("/images/roles/suitress-vivid.png");
 }
-.role-Liars-Dice-Soldier {
+.role-icon-vivid-Liars-Dice-Soldier {
   background-image: url("/images/roles/soldier-vivid.png");
 }
-.role-Liars-Dice-Host {
+.role-icon-vivid-Liars-Dice-Host {
   background-image: url("/images/roles/host-vivid.png");
 }
 
@@ -2629,11 +2629,11 @@
 * Card Games
 *
 ************/
-.role-Card-Games-Player {
+.role-icon-vivid-Card-Games-Player {
   background-image: url("/images/roles/gambler-vivid.png");
 }
 
-.role-Card-Games-Host {
+.role-icon-vivid-Card-Games-Host {
   background-image: url("/images/roles/host-vivid.png");
 }
 
