@@ -78,7 +78,7 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
 
   let userRoleSkins = null;
   if (userRoleSkins1) {
-    userRoleSkins1.filter((s) => s.split(":")[0] == roleName);
+    userRoleSkins = userRoleSkins1.filter((s) => s.split(":")[0] == roleName);
   }
 
   if(userRoleSkins && userRoleSkins.length == 1){
