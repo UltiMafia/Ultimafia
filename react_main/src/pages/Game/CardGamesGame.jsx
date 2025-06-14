@@ -104,7 +104,6 @@ export default function CardGamesGame(props) {
             </span>
           </div>
         }
-        timer={<Timer timers={game.timers} history={history} />}
         hideStateSwitcher
       />
       <ThreePanelLayout

@@ -97,7 +97,6 @@ export default function WackyWordsGame(props) {
             <span>Wacky Words</span>
           </div>
         }
-        timer={<Timer timers={game.timers} history={history} />}
       />
       <ThreePanelLayout
         leftPanelContent={

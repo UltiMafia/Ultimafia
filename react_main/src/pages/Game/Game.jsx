@@ -4,6 +4,7 @@ import React, {
   useReducer,
   useContext,
   useRef,
+  useMemo,
 } from "react";
 import { useParams, Switch, Route, Redirect } from "react-router-dom";
 import update from "immutability-helper";
@@ -98,9 +99,7 @@ const MAGUS_NAME = "Declare Magus Game";
 function GameWrapper(props) {
   const [loaded, setLoaded] = useState(false);
   const [leave, setLeave] = useState(false);
-  const [started, setStarted] = useState(null);
   const [finished, setFinished] = useState(false);
-  const [winners, setWinners] = useState(null);
   const [port, setPort] = useState();
   const [gameType, setGameType] = useState();
   const [startTime, setStartTime] = useState(Date.now());
@@ -118,7 +117,6 @@ function GameWrapper(props) {
   const [isSpectator, setIsSpectator] = useState(false);
   const [self, setSelf] = useState();
   const [lastWill, setLastWill] = useState("");
-  const [timers, updateTimers] = useTimersReducer();
   const [settings, updateSettings] = useSettingsReducer();
   const [showFirstGameModal, setShowFirstGameModal] = useState(false);
   const [speechFilters, setSpeechFilters] = useState({
@@ -134,10 +132,8 @@ function GameWrapper(props) {
 
   const playersRef = useRef();
   const selfRef = useRef();
-  const localAudioTrack = useRef();
   const noLeaveRef = useRef();
 
-  const [activity, updateActivity] = useActivity(localAudioTrack);
   const [playAudio, loadAudioFiles, stopAudio, stopAudios, setVolume] =
     useAudio(settings);
   const siteInfo = useContext(SiteInfoContext);
@@ -149,11 +145,15 @@ function GameWrapper(props) {
 
     switch (action.type) {
       case 'addMessage': {
-        if (action.message && action.message.id) newState[action.message.id] = action.message;
+        if (action.message && action.message.id) {
+          newState = update(state, {[action.message.id]: {$set: action.message}});
+        }
         break;
       }
       case 'removeMessage': {
-        if (action.messageId) delete newState[action.messageId];
+        if (action.messageId) {
+          newState = update(state, {$unset: [action.messageId]});
+        }
         break;
       }
       case 'setMessages': {
@@ -170,6 +170,7 @@ function GameWrapper(props) {
       gameId: gameId,
     });
 
+    // Save data in localStorage for remembering it in future refreshes
     window.localStorage.setItem("pinnedMessageData", pinnedMessageData);
     return newState;
   }
@@ -339,13 +340,6 @@ function GameWrapper(props) {
       loadAudioFiles(audioFileNames, audioLoops, audioOverrides, audioVolumes);
       requestNotificationAccess();
 
-      var timerInterval = setInterval(() => {
-        updateTimers({
-          type: "updateAll",
-          playAudio,
-        });
-      }, 200);
-
       function onKeydown() {
         var speechInput = document.getElementById("speechInput");
         var activeElName = document.activeElement.tagName;
@@ -363,10 +357,7 @@ function GameWrapper(props) {
       return () => {
         window.removeEventListener("keydown", onKeydown);
 
-        clearInterval(timerInterval);
         stopAudio();
-
-        if (localAudioTrack.current) localAudioTrack.current.close();
       };
     } else {
       document.title = `Review Game ${gameId} | UltiMafia`;
@@ -487,9 +478,7 @@ function GameWrapper(props) {
       setEmojis(emojis);
     });
 
-    socket.on("start", () => setStarted(true));
     socket.on("finished", () => setFinished(true));
-    socket.on("isStarted", (isStarted) => setStarted(isStarted));
 
     socket.on("state", (state) => {
       updateHistory({ type: "addState", state: state });
@@ -648,48 +637,6 @@ function GameWrapper(props) {
       setShowFirstGameModal(true);
     });
 
-    socket.on("timerInfo", (info) => {
-      if (info?.name === "vegKick") {
-        playAudio("vegPing");
-      }
-      updateTimers({
-        type: "create",
-        timer: info,
-      });
-
-      if (
-        info.name === "pregameCountdown" &&
-        Notification &&
-        Notification.permission === "granted" &&
-        !document.hasFocus()
-      ) {
-        new Notification("Your game is starting!");
-      }
-    });
-
-    socket.on("clearTimer", (name) => {
-      updateTimers({
-        type: "clear",
-        name,
-      });
-    });
-
-    socket.on("time", (info) => {
-      updateTimers({
-        type: "update",
-        name: info.name,
-        time: info.time,
-      });
-    });
-
-    socket.on("typing", (info) => {
-      updateActivity({
-        type: "typing",
-        playerId: info.playerId,
-        meetingId: info.meetingId,
-      });
-    });
-
     socket.on("isSpectator", () => {
       setIsSpectator(true);
     });
@@ -699,15 +646,6 @@ function GameWrapper(props) {
         setLeave(true);
         siteInfo.hideAllAlerts();
       }
-    });
-
-    socket.on("winners", ({ groups }) => {
-      const newGroups = groups.map((group) => {
-        if (group === "Village") return "⛪ Village";
-        if (group === "Mafia") return "🔪 Mafia";
-        return group;
-      });
-      setWinners(`${newGroups.join("/")} won!`);
     });
 
     socket.on("error", (error) => {
@@ -780,13 +718,11 @@ function GameWrapper(props) {
       isSpectator: isSpectator,
       players: players,
       updatePlayers: updatePlayers,
-      timers: timers,
       options: options,
       spectatorCount: spectatorCount,
       lastWill: lastWill,
       emojis: emojis,
       setLeave: setLeave,
-      started: started,
       finished: finished,
       settings: settings,
       updateSettings: updateSettings,
@@ -811,42 +747,12 @@ function GameWrapper(props) {
       stopAudio: stopAudio,
       stopAudios: stopAudios,
       setRehostId: setRehostId,
-      localAudioTrack: localAudioTrack,
-      activity: activity,
       noLeaveRef,
       dev: dev,
     };
 
-    const numPlayers = Object.values(gameContext?.players).filter(
-      (p) => !p?.left
-    ).length;
-    const isFilled = numPlayers === gameContext?.setup?.total;
-    const filledEmoji = isFilled ? " 🔔🔔" : "";
-    const fillingTitle = `🔪 ${numPlayers}/${gameContext?.setup?.total}${filledEmoji} Ultimafia`;
-    const ChangeHeadFilling = <ChangeHead title={fillingTitle} />;
-
-    const currentState =
-      gameContext?.history?.states[gameContext?.history?.currentState]?.name;
-    const mainTimer = formatTimerTime(
-      gameContext?.timers?.main?.delay - gameContext?.timers?.main?.time
-    );
-    const ChangeHeadInProgress = (
-      <ChangeHead title={`🔪 ${mainTimer} - ${currentState}`} />
-    );
-    const isFinished = currentState === "Postgame";
-
-    let HeadChanges = null;
-    if (!props.review) {
-      if (isFinished) {
-        if (winners) HeadChanges = <ChangeHead title={winners} />;
-        else HeadChanges = <ChangeHead title=" Ultimafia" />;
-      } else if (started) HeadChanges = ChangeHeadInProgress;
-      else HeadChanges = ChangeHeadFilling;
-    }
-
     return (
       <GameContext.Provider value={gameContext}>
-        {HeadChanges}
         <ChangeHeadPing title={pingInfo?.msg} timestamp={pingInfo?.timestamp} />
         <div className="game no-highlight">
           <FirstGameModal
@@ -973,7 +879,7 @@ export function BotBar(props) {
             onStateNavigation={game.onStateNavigation}
           />
         )}
-        {props.timer}
+        <Timer/>
       </div>
       <div
         className="misc-wrapper"
@@ -1155,21 +1061,6 @@ export function TextMeetingLayout(props) {
     );
   });
 
-  var messages;
-  if (combineMessagesFromAllMeetings) {
-    messages = getAllMessagesToDisplay(history);
-  } else {
-    messages = getMessagesToDisplay(
-      meetings,
-      alerts,
-      obituaries,
-      selTab,
-      players,
-      props.settings,
-      props.filters,
-    );
-  }
-
   function shouldChainToPreviousMessage(message, previousMessage) {
     if (!previousMessage) {
       return false;
@@ -1191,35 +1082,62 @@ export function TextMeetingLayout(props) {
     }
   }
 
-  var previousMessage = null;
-  messages = messages.map((message, i) => {
-    const isNotServerMessage = message.senderId !== "server";
-    const unfocusedMessage =
-      isolationEnabled &&
-      isNotServerMessage &&
-      isolatedPlayers.size &&
-      !isolatedPlayers.has(message.senderId);
-
-    const chainToPrevious = shouldChainToPreviousMessage(message, previousMessage);
-    previousMessage = message;
-
-    return (
-      <Message
-        message={message}
-        review={game.review}
-        history={history}
-        players={players}
-        stateViewing={stateViewing}
-        key={message.id || message.messageId + message.time || i}
-        onMessageQuote={game.onMessageQuote}
-        onPinMessage={game.onPinMessage}
-        isMessagePinned={game.isMessagePinned}
-        settings={props.settings}
-        unfocusedMessage={unfocusedMessage}
-        chainToPrevious={chainToPrevious}
-      />
-    );
-  });
+  const messages = useMemo(() => {
+    var messageData;
+    if (combineMessagesFromAllMeetings) {
+      messageData = getAllMessagesToDisplay(history);
+    } else {
+      messageData = getMessagesToDisplay(
+        meetings,
+        alerts,
+        obituaries,
+        selTab,
+        players,
+        props.settings,
+        props.filters,
+      );
+    }
+  
+    var previousMessage = null;
+    return messageData.map((message, i) => {
+      const isNotServerMessage = message.senderId !== "server";
+      const unfocusedMessage =
+        isolationEnabled &&
+        isNotServerMessage &&
+        isolatedPlayers.size &&
+        !isolatedPlayers.has(message.senderId);
+  
+      const chainToPrevious = shouldChainToPreviousMessage(message, previousMessage);
+      previousMessage = message;
+  
+      return (
+        <Message
+          message={message}
+          review={game.review}
+          history={history}
+          players={players}
+          stateViewing={stateViewing}
+          key={message.id || message.messageId + message.time || i}
+          onMessageQuote={game.onMessageQuote}
+          onPinMessage={game.onPinMessage}
+          isMessagePinned={game.isMessagePinned}
+          settings={props.settings}
+          unfocusedMessage={unfocusedMessage}
+          chainToPrevious={chainToPrevious}
+        />
+      );
+    });
+  }, [
+    /* MEMO DEPENDENCIES: These variables can affect the messages that are rendered in the game.
+       This is a performance improvement for preventing unnecessary re-renders caused by GameWrapper.
+    */
+    stateInfo,
+    props.settings,
+    props.filters,
+    isolationEnabled,
+    isolatedPlayers,
+    game.pinnedMessages,
+  ]);
 
   var canSpeak = selTab;
   canSpeak =
@@ -1259,7 +1177,6 @@ export function TextMeetingLayout(props) {
               setup={props.setup}
               socket={props.socket}
               setAutoScroll={setAutoScroll}
-              localAudioTrack={props.localAudioTrack}
               speechInput={speechInput}
               setSpeechInput={setSpeechInput}
             />
@@ -1446,6 +1363,9 @@ function getContentClasses(message) {
   return contentClasses;
 }
 
+/* CAUTION: This is rendered with useMemo in TextMeetingLayout, if you want to add something new to messages
+    then you may need to update the memo dependencies!
+*/
 function Message(props) {
   const isPhoneDevice = useIsPhoneDevice();
   const user = useContext(UserContext);
@@ -1576,6 +1496,10 @@ function Message(props) {
     contentClass += "greentext ";
   }
 
+  if (denseMessages && isPlayerMessage) {
+    contentClass += "dense ";
+  }
+
   let avatarId;
 
   if (player !== undefined) {
@@ -1602,6 +1526,12 @@ function Message(props) {
     setIsHovering(false);
   }
 
+  // if right aligned, use row-reverse to put timestamp on right hand side
+  // otherwise if in compact mode AKA denseMessages, keep everything as a row for vertical density
+  // otherwise if there is no nameplate, use row to keep everything on the same line
+  // otherwise, use column when in non-compact mode so that nameplate can appear above
+  const innerClassName = isRightAligned ? "message-inner-rightaligned" : denseMessages || !hasNameplate ? "message-inner-onelined" : "message-inner-nameplated";
+
   return (
     <div
       className="message"
@@ -1612,24 +1542,8 @@ function Message(props) {
       onTouchStart={messageLongPress.onTouchStart}
       onTouchEnd={messageLongPress.onTouchEnd}
     >
-      <Stack
-        // if right aligned, use row-reverse to put timestamp on right hand side
-        // otherwise if in compact mode AKA denseMessages, keep everything as a row for vertical density
-        // otherwise if there is no nameplate, use row to keep everything on the same line
-        // otherwise, use column when in non-compact mode so that nameplate can appear above
-        direction={isRightAligned ? "row-reverse" : denseMessages || !hasNameplate ? "row" : "column"}
-        spacing={.5}
-        sx={{ flexGrow: denseMessages ? undefined : 1 }}
-      >
-        {(!chainToPrevious || denseMessages || isRightAligned) && (<Stack
-          direction={denseMessages ? "row" : "row-reverse"}
-          spacing={.5}
-          sx={{
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "start",
-          }}
-        >
+      <div className={innerClassName}>
+        {(!chainToPrevious || denseMessages || isRightAligned) && (<div className="nameplate">
           &#8203;
           {props.settings.timestamps && (<div style={{
               position: useAbsoluteTimestamp ? "absolute" : undefined,
@@ -1662,13 +1576,10 @@ function Message(props) {
               absoluteLeftAvatarPx={denseMessages ? undefined : "8px"}
             />
           )}
-        </Stack>)}
+        </div>)}
         <div
           className={contentClass}
           style={{
-            marginLeft: denseMessages ? "4px" : undefined,
-            paddingLeft: denseMessages ? "4px" : undefined,
-            borderLeft: denseMessages && isPlayerMessage ? "1px solid rgb(128, 128, 128)" : undefined,
             ...(!user.settings?.ignoreTextColor && message.textColor !== ""
               ? // ? { color: flipTextColor(message.textColor) }
                 { color: message.textColor }
@@ -1723,7 +1634,7 @@ function Message(props) {
             </>
           )}
         </div>
-      </Stack>
+      </div>
       {!isPhoneDevice && !isRightAligned && (<div className="pin-button-wrapper" onClick={() => props.onPinMessage(message)}>
         {showThumbtack && (<i
           className={thumbtackFaClass}
@@ -2179,11 +2090,25 @@ function RoleMarkerToggle(props) {
 
 export function PlayerRows(props) {
   const game = useContext(GameContext);
+  const [activity, updateActivity] = useActivity();
+  const socket = game.socket;
+
+  useEffect(() => {
+    if (socket && socket.on) {
+      socket.on("typing", (info) => {
+        updateActivity({
+          type: "typing",
+          playerId: info.playerId,
+          meetingId: info.meetingId,
+        });
+      });
+    }
+  }, []);
+
   const { isolationEnabled, togglePlayerIsolation, isolatedPlayers } = game;
   const { rolePredictions } = game;
   const history = props.history;
   const players = props.players;
-  const activity = props.activity;
   const stateViewingInfo = history.states[props.stateViewing];
   const selTab = stateViewingInfo && stateViewingInfo.selTab;
 
@@ -3153,26 +3078,125 @@ function getTargetDisplay(targets, meeting, players) {
 }
 
 export function Timer(props) {
+  const game = useContext(GameContext);
+  const [timers, updateTimers] = useTimersReducer();
+  const [started, setStarted] = useState(null);
+  const [winners, setWinners] = useState(null);
+
+  const socket = game.socket;
+  const playAudio = game.playAudio;
+
+  useEffect(() => {
+    var timerInterval = setInterval(() => {
+      updateTimers({
+        type: "updateAll",
+        playAudio,
+      });
+    }, 200);
+
+    if (socket && socket.on) {
+      socket.on("timerInfo", (info) => {
+        if (info?.name === "vegKick") {
+          playAudio("vegPing");
+        }
+        updateTimers({
+          type: "create",
+          timer: info,
+        });
+
+        if (
+          info.name === "pregameCountdown" &&
+          Notification &&
+          Notification.permission === "granted" &&
+          !document.hasFocus()
+        ) {
+          new Notification("Your game is starting!");
+        }
+      });
+
+      socket.on("clearTimer", (name) => {
+        updateTimers({
+          type: "clear",
+          name,
+        });
+      });
+
+      socket.on("time", (info) => {
+        updateTimers({
+          type: "update",
+          name: info.name,
+          time: info.time,
+        });
+      });
+
+      socket.on("start", () => setStarted(true));
+
+      socket.on("isStarted", (isStarted) => setStarted(isStarted));
+
+      socket.on("winners", ({ groups }) => {
+        const newGroups = groups.map((group) => {
+          if (group === "Village") return "⛪ Village";
+          if (group === "Mafia") return "🔪 Mafia";
+          return group;
+        });
+        setWinners(`${newGroups.join("/")} won!`);
+      });
+    }
+
+    // cleanup
+    return () => {
+      clearInterval(timerInterval);
+    }
+  }, []);
+
+  const numPlayers = Object.values(game.players).filter(
+    (p) => !p?.left
+  ).length;
+
+  const isFilled = numPlayers === game.setup?.total;
+  const filledEmoji = isFilled ? " 🔔🔔" : "";
+  const fillingTitle = `🔪 ${numPlayers}/${game.setup?.total}${filledEmoji} Ultimafia`;
+  const ChangeHeadFilling = <ChangeHead title={fillingTitle} />;
+
+  const currentState = game.history?.states[game.history?.currentState]?.name;
+  const isFinished = currentState === "Postgame";
+
+  const mainTimer = formatTimerTime(
+    timers?.main?.delay - timers?.main?.time
+  );
+  const ChangeHeadInProgress = (
+    <ChangeHead title={`🔪 ${mainTimer} - ${currentState}`} />
+  );
+
+  let HeadChanges = null;
+  if (!game.review) {
+    if (isFinished) {
+      if (winners) HeadChanges = <ChangeHead title={winners} />;
+      else HeadChanges = <ChangeHead title=" Ultimafia" />;
+    } else if (started) HeadChanges = ChangeHeadInProgress;
+    else HeadChanges = ChangeHeadFilling;
+  }
+
   var timerName;
 
-  if (!props.timers["pregameCountdown"] && props.timers["pregameWait"])
+  if (!timers["pregameCountdown"] && timers["pregameWait"])
     timerName = "pregameWait";
-  else if (props.history.currentState == -1) timerName = "pregameCountdown";
-  else if (props.history.currentState == -2) timerName = "postgame";
-  else if (props.timers["secondary"]) timerName = "secondary";
-  else if (props.timers["vegKick"]) timerName = "vegKick";
-  else if (props.timers["vegKickCountdown"]) timerName = "vegKickCountdown";
+  else if (game.history.currentState == -1) timerName = "pregameCountdown";
+  else if (game.history.currentState == -2) timerName = "postgame";
+  else if (timers["secondary"]) timerName = "secondary";
+  else if (timers["vegKick"]) timerName = "vegKick";
+  else if (timers["vegKickCountdown"]) timerName = "vegKickCountdown";
   else timerName = "main";
 
-  const timer = props.timers[timerName];
+  const timer = timers[timerName];
 
   if (!timer) return <div className="state-timer"></div>;
 
   var time = timer.delay - timer.time;
 
-  if (props.timers["secondary"]) {
+  if (timers["secondary"]) {
     // show main timer if needed
-    const mainTimer = props.timers["main"];
+    const mainTimer = timers["main"];
     if (mainTimer) {
       var mainTime = mainTimer.delay - mainTimer.time;
       time = Math.min(time, mainTime);
@@ -3184,7 +3208,10 @@ export function Timer(props) {
   if (timerName === "vegKick") {
     return <div className="state-timer">Kicking in {time}</div>;
   }
-  return <div className="state-timer">{time}</div>;
+  return (<>
+        {HeadChanges}
+        <div className="state-timer">{time}</div>
+  </>);
 }
 
 export function LastWillEntry(props) {
@@ -4135,7 +4162,7 @@ export function useSettingsReducer() {
   }, defaultSettings);
 }
 
-export function useActivity(localAudioTrack) {
+export function useActivity() {
   // const volumeThreshold = 0.001;
   const [activity, updateActivity] = useReducer(
     (activity, action) => {

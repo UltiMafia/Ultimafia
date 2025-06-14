@@ -328,7 +328,6 @@ export default function MafiaGame() {
         updateStateViewing={updateStateViewing}
         players={players}
         gameName={<div className="game-name">Mafia</div>}
-        timer={<Timer timers={game.timers} history={history} />}
       />
       <ThreePanelLayout
         leftPanelContent={

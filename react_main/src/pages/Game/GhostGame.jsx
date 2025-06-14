@@ -98,7 +98,6 @@ export default function GhostGame(props) {
             <span>Ghost</span>
           </div>
         }
-        timer={<Timer timers={game.timers} history={history} />}
       />
       <ThreePanelLayout
         leftPanelContent={
