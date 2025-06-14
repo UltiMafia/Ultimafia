@@ -100,10 +100,11 @@ function Main() {
 
     setTheme(colorScheme === "dark" ? darkTheme : lightTheme);
   }, [user?.settings?.siteColorScheme]);
-
+/*
   var roleIconScheme = user.settings?.roleIconScheme
     ? user.settings.roleIconScheme
     : "vivid";
+  var roleSkins = user.settings?.roleSkins ? user.settings.roleSkins : [];
 
   let toClear = ["role-icon-scheme-noir", "role-icon-scheme-vivid"];
   for (let scheme of toClear) {
@@ -111,7 +112,24 @@ function Main() {
       document.documentElement.classList.remove(scheme);
     }
   }
-  document.documentElement.classList.add(`role-icon-scheme-${roleIconScheme}`);
+  
+  if(roleSkins.length > 0){
+    let hasDone = false;
+    for(let skin of roleSkins){
+      if(document.documentElement.classList.contains(`role-Mafia-${skin.split(":")[0]}`)){
+        document.documentElement.classList.add(`role-icon-scheme-${skin.split(":")[1]}`);
+        hasDone = true;
+      }
+    }
+    if(hasDone == false){
+      document.documentElement.classList.add(`role-icon-scheme-${roleIconScheme}`);
+    }
+  }
+  else{
+ document.documentElement.classList.add(`role-icon-scheme-${roleIconScheme}`);
+  }
+  */
+  
 
   useEffect(() => {
     async function getInfo() {

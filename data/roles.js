@@ -1131,6 +1131,16 @@ const roleData = {
         "If one Sheep dies, all Sheep die.",
         "Adds 1 Sheep in Closed setups",
       ],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     Turncoat: {
       alignment: "Village",
@@ -2005,6 +2015,16 @@ const roleData = {
         "Some actions cannot be blocked.",
       ],
       nightOrder: [["Block",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
+            skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+      ],
     },
     Pimp: {
       alignment: "Mafia",
@@ -2204,6 +2224,16 @@ const roleData = {
         "Both players will die if Heartbreaker dies.",
       ],
       nightOrder: [["Heart Break",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     Yakuza: {
       alignment: "Mafia",
@@ -2968,6 +2998,16 @@ const roleData = {
         "If that player is not visited by a non-Cult player during the next night, they will go insane.",
       ],
       nightOrder: [["Mind Warp",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     //Manipulative
     "Cat Lady": {
@@ -4459,6 +4499,16 @@ const roleData = {
         "If this Event occurs, all speech and votes are anonymous.",
       ],
       nightOrder: [["Blind",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     Fog: {
       alignment: "Event",

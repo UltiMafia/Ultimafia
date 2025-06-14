@@ -1,0 +1,237 @@
+import React, { useState, useEffect, useContext } from "react";
+import {
+  Route,
+  Switch,
+  Redirect,
+  useParams,
+  useHistory,
+  Link,
+} from "react-router-dom";
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Box,
+  Button,
+  Typography,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  LinearProgress,
+  Stack,
+} from "@mui/material";
+
+import Form, { useForm } from "../../../components/Form";
+import axios from "axios";
+
+import { UserContext, SiteInfoContext } from "../../../Contexts";
+import Comments from "../../Community/Comments";
+
+import "../../../css/setupPage.css";
+
+import { useErrorAlert } from "../../../components/Alerts";
+import { NewLoading } from "../../Welcome/NewLoading";
+import { RoleCount } from "../../../components/Roles";
+
+export default function RolePage() {
+  return (
+    <>
+      <div className="inner-content">
+        <Switch>
+          <Route
+            exact
+            path="/learn/role/:RoleName"
+            render={() => <RoleThings />}
+          />
+        </Switch>
+      </div>
+    </>
+  );
+}
+
+export function RoleThings() {
+  const [setup, setSetup] = useState();
+  const user = useContext(UserContext);
+  const siteInfo = useContext(SiteInfoContext);
+  const history = useHistory();
+  const errorAlert = useErrorAlert();
+  const { RoleName } = useParams();
+  const [gameType, setGameType] = useState("");
+  const [diff, setDiff] = useState([]); // Changelog diff
+/*
+  useEffect(() => {
+    if (setupId) {
+      axios
+        .get(`/setup/${setupId}`, { headers: { includeStats: true } })
+        .then((res) => {
+          let setup = res.data;
+          setup.roles = JSON.parse(setup.roles);
+          setSetup(res.data);
+          setGameType(setup.gameType);
+          setCurrentVersionNum(setup.version);
+          setSelectedVersionNum(setup.version);
+          setVersionTimestamp(setup.setupVersion.timestamp);
+
+          document.title = `Setup | ${res.data.name} | UltiMafia`;
+
+          if (setup.gameType === "Mafia") {
+            setPieData(
+              getBasicPieStats(
+                setup.stats.alignmentWinrate,
+                setup.stats.roleWinrate,
+                siteInfo.rolesRaw["Mafia"]
+              )
+            );
+
+            const changelog = setup.setupVersion.changelog;
+            if (changelog) {
+              setDiff(JSON.parse(changelog));
+            }
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+          errorAlert(e);
+        });
+    }
+  }, [setupId]);
+*/
+
+
+
+let role = [RoleName, siteInfo.rolesRaw["Mafia"][RoleName]];
+
+
+    const [siteFields, updateSiteFields] = useForm([
+    {
+      label: "Role Skin",
+      ref: "roleSkins",
+      type: "select",
+      options: role[1].skins || [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+      ],
+        /*
+        [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
+      */
+    },
+  ]);
+
+  const updateFieldsFromData = (data) => {
+    let changes = Object.keys(data).map((ref) => ({
+      ref,
+      prop: "value",
+      value: data[ref],
+    }));
+    updateSiteFields(changes);
+  };
+  
+  if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
+  // TODO if setupId not set, redirect to a setup page
+
+  if (!role || !user.loaded) return <NewLoading small />;
+
+  let commentLocation = `role/${RoleName}`;
+  let temproleSkins;
+  if(user.settings.roleSkins){
+    temproleSkins = user.settings.roleSkins.split(",");
+}
+else{
+   temproleSkins = null;
+}
+
+  const roleSkins = temproleSkins;
+
+  // favourites <SetupRowInfo title="Current Skins" content={roleSkins.filter((s) => s).sort().join(", ")} />
+
+  // TODO add button to host it
+  
+  return (
+    <Stack direction="column" spacing={1}>
+    <RoleCount
+      key={0}
+      scheme="vivid"
+      role={role[0]}
+      gameType={"Mafia"}
+                />
+      <div className="setup-page">
+        <div className="span-panel main">
+          <div className="heading">Role Info</div>
+
+          <div className="meta">
+            <SetupRowInfo title="Name" content={RoleName} />
+            <SetupRowInfo title="Tags" content={role[1].tags.sort().join(", ")} />
+              <Form
+              fields={siteFields}
+              deps={{ user }}
+              onChange={(action) => onRoleSkinChange(action, RoleName, updateSiteFields, user, roleSkins)}
+            />
+          </div>
+        </div>
+
+        
+       
+      </div>
+      <Comments location={commentLocation} />
+    </Stack>
+  );
+}
+
+function SetupRowInfo(props) {
+  return (
+    <div className="setup-row-info">
+      <div className="title">{props.title}</div>
+      <div className="content">{props.content}</div>
+    </div>
+  );
+}
+
+ function onRoleSkinChange(action, role, update, user, roleSkins) {
+      if (action.prop === "value" && !action.localOnly) {
+
+    let roleformated = `${role}:${action.value}`;
+   let array = roleSkins.filter((s) => s);
+  let temp = roleSkins.filter((s) => s.split(":")[0] == role);
+   if(temp.length > 0){
+     let index = roleSkins.indexOf(temp[0]);
+     array[index] = roleformated;
+   }
+   else{
+     array = array.concat([roleformated]);
+   }
+   let strArray = array.join(",");
+      axios
+        .post("/user/settings/update", {
+          prop: action.ref,
+          value: strArray,
+        })
+        .then(() => user.updateSetting(action.ref, strArray));
+    }
+    update(action);
+
+   
+   /*
+   role.skin = selection;
+        await models.User.updateOne(
+           { id: user.id },
+          {
+            $set: {
+              roleSkins: user.roleSkins,
+            },
+          }
+        ).exec();
+*/
+  }

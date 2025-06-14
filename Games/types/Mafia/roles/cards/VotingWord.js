@@ -8,13 +8,13 @@ module.exports = class VotingWord extends Card {
 
 
     this.meetings = {
-      "Choose Phrase (7-20)": {
+      "Choose Phrase (4-10)": {
         states: ["Night"],
         flags: ["voting"],
         inputType: "text",
         textOptions: {
-          minLength: 7,
-          maxLength: 20,
+          minLength: 4,
+          maxLength: 10,
           alphaOnly: true,
           toLowerCase: true,
           submit: "Submit",
