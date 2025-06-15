@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
 const { addArticle } = require("../../../../core/Utils");
-module.exports = class ConvertToChosenRole extends Card {
+module.exports = class CreateEvent extends Card {
   constructor(role) {
     super(role);
     //const targetOptions = this.game.PossibleRoles.filter((r) => r);
