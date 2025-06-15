@@ -155,7 +155,7 @@ else{
 
   const roleSkins = temproleSkins;
 
-  // favourites <SetupRowInfo title="Current Skins" content={roleSkins.filter((s) => s).sort().join(", ")} />
+  // favourites <SetupRowInfo title="Current Skins" content={roleSkins} />
 
   // TODO add button to host it
   
@@ -174,7 +174,6 @@ else{
           <div className="meta">
             <SetupRowInfo title="Name" content={RoleName} />
             <SetupRowInfo title="Tags" content={role[1].tags.sort().join(", ")} />
-            <SetupRowInfo title="Current Skins" content={roleSkins} />
               <Form
               fields={siteFields}
               deps={{ user }}
