@@ -2015,7 +2015,7 @@ const roleData = {
         "Some actions cannot be blocked.",
       ],
       nightOrder: [["Block",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
-            skins: [
+      skins: [
         {
           label: "Vivid",
           value: "vivid",
@@ -2352,6 +2352,16 @@ const roleData = {
         "Decides whether or not the prisoner should be executed.",
       ],
       nightOrder: [["Execute Prisoner",(PRIORITY_KILL_DEFAULT)],["Block Jailed Player's Visitors",(PRIORITY_UNTARGETABLE-5)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Gator",
+          value: "gator",
+        },
+      ],
     },
     Bookie: {
       alignment: "Mafia",
@@ -2479,6 +2489,16 @@ const roleData = {
       description: [
         "At Night can Choose an Event.",
         "That Event will Occur in addition to any other events.",
+      ],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Blue",
+          value: "blue",
+        },
       ],
     },
     Toreador: {
@@ -2767,6 +2787,16 @@ const roleData = {
         "Survivors will be infected but will not turn.",
       ],
       nightOrder: [["Infect",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Jockey",
+          value: "jockey",
+        },
+      ],
     },
     Hexer: {
       alignment: "Cult",
@@ -4526,6 +4556,22 @@ const roleData = {
         "Frustrated players cannot be condemned by majority vote. A non-zero minority vote will kill a frustrated player.",
       ],
       nightOrder: [["Make Frustrated",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
+    },
+    Flood: {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, All players will be blocked during the night.",
+      ],
+      nightOrder: [["Block Players",(PRIORITY_FULL_DISABLE+3)]],
+    },
+    Sabbath: {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, No one will die at night.",
+      ],
+      nightOrder: [["Protect Players",(PRIORITY_FULL_DISABLE+3)]],
     },
     "Sensible Mood": {
       alignment: "Event",

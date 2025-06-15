@@ -174,6 +174,7 @@ else{
           <div className="meta">
             <SetupRowInfo title="Name" content={RoleName} />
             <SetupRowInfo title="Tags" content={role[1].tags.sort().join(", ")} />
+            <SetupRowInfo title="Current Skins" content={roleSkins} />
               <Form
               fields={siteFields}
               deps={{ user }}
@@ -203,6 +204,9 @@ function SetupRowInfo(props) {
       if (action.prop === "value" && !action.localOnly) {
 
     let roleformated = `${role}:${action.value}`;
+    if(roleSkins == null){
+      roleSkins = [];
+    }
    let array = roleSkins.filter((s) => s);
   let temp = roleSkins.filter((s) => s.split(":")[0] == role);
    if(temp.length > 0){

@@ -32,7 +32,7 @@ module.exports = class Sabbath extends Event {
         }
         for (const player of this.event.generatePossibleVictims()) {
               if (this.dominates(player)) {
-               _player.setTempImmunity("kill", 10);
+               player.setTempImmunity("kill", 10);
             }
         }
       },
