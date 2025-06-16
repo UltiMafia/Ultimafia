@@ -1,6 +1,6 @@
 const donors = [
   "Eudia",
-  "godswife",
+  "JaNa",
   "RangoonEnjoyer",
   "Ego",
   "MetalAF",
@@ -9,6 +9,8 @@ const donors = [
   "jacobkrin",
   "Joesaurus",
   "Natalia",
+  "aleph",
+  "nearbear",
 ];
 
 const donorData = {

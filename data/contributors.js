@@ -417,7 +417,7 @@ const artContributors = {
     ],
   },
   aleph: {
-    Mafia: ["Count", "Harpy", "Bawd", "Diplomat", "Associate", "Reaper", "Lifeguard"],
+    Mafia: ["Count", "Harpy", "Bawd", "Diplomat", "Associate", "Reaper", "Lifeguard", "Sidhe"],
     Battlesnakes: ["Snake"],
   },
 };
