@@ -1,5 +1,7 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
-
+import {
+  Link,
+} from "react-router-dom";
 import { UserContext, SiteInfoContext, PopoverContext } from "../Contexts";
 import { SearchBar } from "./Nav";
 import { hyphenDelimit } from "../utils";
@@ -190,7 +192,7 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
               marginRight: "8px",
             }}
           >
-            <i className={"fas fa-wrench"} />
+            <i className={`modifier modifier-${props.gameType}-${modifier.name}`} />
           </ListItemIcon>
           <ListItemText
             disableTypography
@@ -285,7 +287,7 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
             <div className={"mui-popover"}>
               <div className={"mui-popover-title"}>
                 <div className={`role role-icon-${roleSkin}-${roleClass}`} />
-                &nbsp;{roleName}&nbsp;
+                &nbsp;{<Link to= {`/learn/role/${roleName}`}>{roleName}</Link>}&nbsp;
               </div>
               <div style={{ margin: "6px" }}>
                 <div>

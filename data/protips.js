@@ -10,6 +10,7 @@ const protips = {
     "Use /diceroll to roll dice.",
     "Click the heart icon on a user's profile to confess your love!",
     "Please remember to be patient and understanding towards new players.",
+    "Click on a role's name to see their role page.",
   ],
   Mafia: [
     "You can use /item to view an item's description during a game.",

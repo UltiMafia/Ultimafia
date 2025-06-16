@@ -629,6 +629,10 @@
   background-image: url("/images/roles/zombie-vivid.png");
 }
 
+.role-icon-jockey-Mafia-Zombie {
+  background-image: url("/images/roles/zombie-jockey.png");
+}
+
 .role-icon-vivid-Mafia-Parasite {
   background-image: url("/images/roles/parasite-vivid.png");
 }
@@ -859,6 +863,10 @@
 
 .role-icon-vivid-Mafia-Weatherman {
   background-image: url("/images/roles/weatherman-vivid.png");
+}
+
+.role-icon-blue-Mafia-Weatherman {
+  background-image: url("/images/roles/weatherman-blue.png");
 }
 
 .role-icon-vivid-Mafia-Mooncalf {
@@ -1214,6 +1222,10 @@
 
 .role-icon-vivid-Mafia-Interrogator {
   background-image: url("/images/roles/interrogator-vivid.png");
+}
+
+.role-icon-gator-Mafia-Interrogator {
+  background-image: url("/images/roles/interrogator-gator.png");
 }
 
 .role-icon-vivid-Mafia-Informant {

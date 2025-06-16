@@ -155,7 +155,7 @@ else{
 
   const roleSkins = temproleSkins;
 
-  // favourites <SetupRowInfo title="Current Skins" content={roleSkins.filter((s) => s).sort().join(", ")} />
+  // favourites <SetupRowInfo title="Current Skins" content={roleSkins} />
 
   // TODO add button to host it
   
@@ -203,6 +203,9 @@ function SetupRowInfo(props) {
       if (action.prop === "value" && !action.localOnly) {
 
     let roleformated = `${role}:${action.value}`;
+    if(roleSkins == null){
+      roleSkins = [];
+    }
    let array = roleSkins.filter((s) => s);
   let temp = roleSkins.filter((s) => s.split(":")[0] == role);
    if(temp.length > 0){
