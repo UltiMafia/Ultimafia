@@ -659,8 +659,12 @@ function GameWrapper(props) {
   }, [connected]);
 
   function getConnectionInfo() {
-    axios
-      .get(`/game/${gameId}/connect`)
+    const urlParams = new URLSearchParams(window.location.search);
+    const isSpectating = urlParams.get('spectate') === 'true';
+    
+    const url = `/game/${gameId}/connect${isSpectating ? '?spectate=true' : ''}`;
+    
+    axios.get(url)
       .then((res) => {
         setGameType(res.data.type);
         setPort(res.data.port);
@@ -668,7 +672,6 @@ function GameWrapper(props) {
       })
       .catch((e) => {
         var msg = e && e.response && e.response.data;
-
         if (msg === "Game not found.") setLeave("review");
         else {
           setLeave(true);
@@ -1378,19 +1381,29 @@ function Message(props) {
   const players = props.players;
   const chainToPrevious = props.chainToPrevious;
   var message = props.message;
-  const denseMessages = props?.settings?.denseMessages && !props.disableDenseMessages;
 
+  // message type flags
   const isVoteMessage = message.senderId === "vote";
   const isServerMessage = message.senderId === "server";
   const isAnonymousMessage = message.senderId === "anonymous";
   const isPlayerMessage = !isVoteMessage && !isServerMessage && !isAnonymousMessage;
 
+  const hasNameplate = isPlayerMessage || isAnonymousMessage;
+  const isRightAligned = isVoteMessage;
+  
+  // layout flags
+  const messageLayout = props.forceDefaultStyling ? "default" : props?.settings?.messageLayout || "default";
+  const denseMessages = (messageLayout === "compactInline" || messageLayout === "compactAligned");
+  const alignedNameplate = hasNameplate && messageLayout === "compactAligned";
+  
+  // nameplate styling
+  const absoluteLeftAvatarPx = denseMessages ? undefined : "8px";
+  const smallAvatar = messageLayout === "defaultLarge" ? false : true;
+
   const extraStyle = message.extraStyle;
   var player, quotedMessage;
   var contentClass = getContentClasses(message).join(" ") + " ";
 
-  const hasNameplate = isPlayerMessage || isAnonymousMessage;
-  const isRightAligned = isVoteMessage;
   const useAbsoluteTimestamp = (chainToPrevious || isServerMessage) && !isRightAligned && !denseMessages;
   const showThumbtack = !props.review && !message.isQuote && isHovering && (props.stateViewing >= 0);
   const thumbtackFaClass = props.isMessagePinned(message) ? "fas fa-thumbtack" : "fas fa-thumbtack fa-rotate-270";
@@ -1445,9 +1458,17 @@ function Message(props) {
   if (props.unfocusedMessage) {
     messageStyle.opacity = "0.2";
   }
+
+  // Make room for floated avatar if not using compact messages by padding the left side of the message
   if (!denseMessages) {
-    messageStyle.paddingLeft = "32px"; // 24px avatar + 8px margin
+    if (smallAvatar || !hasNameplate) {
+      messageStyle.paddingLeft = "32px"; // 24px avatar + 8px margin
+    }
+    else {
+      messageStyle.paddingLeft = "56px"; // 40px avatar + 8px margin + 8px margin
+    }
   }
+
   if (!denseMessages && !chainToPrevious) {
     messageStyle.marginTop = "8px";
   }
@@ -1526,11 +1547,17 @@ function Message(props) {
     setIsHovering(false);
   }
 
-  // if right aligned, use row-reverse to put timestamp on right hand side
-  // otherwise if in compact mode AKA denseMessages, keep everything as a row for vertical density
-  // otherwise if there is no nameplate, use row to keep everything on the same line
-  // otherwise, use column when in non-compact mode so that nameplate can appear above
-  const innerClassName = isRightAligned ? "message-inner-rightaligned" : denseMessages || !hasNameplate ? "message-inner-onelined" : "message-inner-nameplated";
+  // if right aligned, use flex direction row-reverse to put timestamp on right hand side
+  // otherwise if in compact mode AKA denseMessages, use inline display to keep everyone on one line if possible
+  // otherwise, use flex direction column when in non-compact mode so that nameplate can appear above content
+  // otherwise if there is no nameplate, use row to always keep everything on the same line
+  const innerClassName =
+    isRightAligned ? "message-inner-rightaligned" :
+    hasNameplate && denseMessages ? "message-inner-inline" :
+    hasNameplate ? "message-inner-nameplated" :
+    "message-inner-onelined";
+  
+  const nameplateClassName = alignedNameplate ? "nameplate-aligned" : "nameplate";
 
   return (
     <div
@@ -1543,7 +1570,12 @@ function Message(props) {
       onTouchEnd={messageLongPress.onTouchEnd}
     >
       <div className={innerClassName}>
-        {(!chainToPrevious || denseMessages || isRightAligned) && (<div className="nameplate">
+        {(!chainToPrevious || denseMessages || isRightAligned) && (<div
+          className={nameplateClassName}
+          style={{
+            flexDirection: denseMessages ? "row" : undefined,
+          }}
+        >
           &#8203;
           {props.settings.timestamps && (<div style={{
               position: useAbsoluteTimestamp ? "absolute" : undefined,
@@ -1564,16 +1596,16 @@ function Message(props) {
                   : ""
               }
               noLink
-              small
-              absoluteLeftAvatarPx={denseMessages ? undefined : "8px"}
+              small={smallAvatar}
+              absoluteLeftAvatarPx={absoluteLeftAvatarPx}
             />
           )}
           {isAnonymousMessage && (
             <NameWithAvatar
               name="Anonymous"
               noLink
-              small
-              absoluteLeftAvatarPx={denseMessages ? undefined : "8px"}
+              small={smallAvatar}
+              absoluteLeftAvatarPx={absoluteLeftAvatarPx}
             />
           )}
         </div>)}
@@ -3302,10 +3334,28 @@ export function SettingsMenu(props) {
       value: settings.terminologyEmoticons,
     },
     {
-      label: "Compact Messages",
-      ref: "denseMessages",
-      type: "boolean",
-      value: settings.denseMessages,
+      label: "Message Layout",
+      ref: "messageLayout",
+      type: "select",
+      options: [
+        {
+          label: "Default",
+          value: "default",
+        },
+        {
+          label: "Default (large nameplate)",
+          value: "defaultLarge",
+        },
+        {
+          label: "Compact (inline)",
+          value: "compactInline",
+        },
+        {
+          label: "Compact (vertically aligned)",
+          value: "compactAligned",
+        },
+      ],
+      value: settings.messageLayout,
     },
     {
       label: "Disable Animations",
@@ -3568,7 +3618,7 @@ export function PinnedMessages() {
       onPinMessage={game.onPinMessage}
       isMessagePinned={game.isMessagePinned}
       settings={game.settings}
-      disableDenseMessages
+      forceDefaultStyling
     />
   )});
 
@@ -4121,7 +4171,7 @@ export function useSettingsReducer() {
     music: true,
     volume: 1,
     terminologyEmoticons: true,
-    denseMessages: false,
+    messageLayout: "default",
     noAnimation : false,
   };
 

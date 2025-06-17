@@ -185,6 +185,8 @@
   flex-flow: row-reverse nowrap;
 
   gap: 4px;
+
+  text-align: right;
 }
 
 .game .message .message-inner-nameplated {
@@ -201,14 +203,53 @@
   gap: 4px;
 }
 
+.game .message .message-inner-inline {
+  display: block;
+}
+
 .game .message .nameplate {
   display: inline-flex;
-  flex-flow: row;
+  flex-flow: row-reverse;
 
   align-items: center;
   justify-content: start;
 
   gap: 4px;
+}
+
+.game .message .nameplate-aligned {
+  display: inline-flex;
+  flex-flow: row nowrap;
+
+  align-items: center;
+  justify-content: start;
+
+  min-width: 175px;
+  max-width: 175px;
+
+  gap: 4px;
+  padding-right: 10px;
+
+  border-right: 1px solid #bd4c4c;
+}
+
+@media (max-width:700px) {
+  .game .message .nameplate-aligned {
+    min-width: 108px !important;
+    max-width: 108px !important;
+  }
+}
+
+.game .message .nameplate-aligned .user-name {
+  font-weight: bold;
+}
+
+.game .message .nameplate .user-name {
+  font-weight: bold;
+}
+
+.game .message .nameplate-aligned .name-with-avatar {
+  overflow-x: hidden;
 }
 
 .game .message:last-child {
@@ -237,7 +278,6 @@
 .game .message .content.dense {
   margin-left: 4px;
   padding-left: 4px;
-  border-left: 1px solid rgb(128, 128, 128);
 }
 
 .game .message .content.dark {
@@ -1013,10 +1053,6 @@
 
   .game .message .sender {
     padding-left: 0px;
-  }
-
-  .game .message .time {
-    display: none;
   }
 }
 
