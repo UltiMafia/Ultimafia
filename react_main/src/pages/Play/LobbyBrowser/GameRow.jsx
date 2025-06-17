@@ -38,7 +38,7 @@ const GameStatus = (props) => {
     buttonVariant = "contained";
   } else if (props.game.status === "In Progress") {
     if (props.game.spectating || user.perms.canSpectateAny) {
-      buttonUrl = `/game/${props.game.id}`;
+      buttonUrl = `/game/${props.game.id}?spectate=true`; 
       buttonText = "Spectate";
       buttonColor = "info";
       buttonVariant = "contained";
