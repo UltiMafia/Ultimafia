@@ -99,7 +99,6 @@ const artContributors = {
       "Toreador",
       "Gossiper",
       "Enforcer",
-      "Rat",
       "Witch",
       "Baphomet",
       "Druid",
@@ -128,7 +127,6 @@ const artContributors = {
       "Banshee",
       "Auditor",
       "Vampire",
-      "Tourist",
     ],
   },
   bee: {
@@ -401,7 +399,9 @@ const artContributors = {
       "Bloodhound",
       "Rottweiler",
       "Mass Hysteria",
-      "Clairvoyant"
+      "Clairvoyant",
+      "Rat",
+      "Tourist",
     ],
     Resistance: [
       "Assassin",
@@ -417,7 +417,7 @@ const artContributors = {
     ],
   },
   aleph: {
-    Mafia: ["Count", "Harpy", "Bawd", "Diplomat", "Associate", "Reaper", "Lifeguard", "Sidhe"],
+    Mafia: ["Count", "Harpy", "Bawd", "Diplomat", "Associate", "Reaper", "Lifeguard", "Sidhe", "Jack"],
     Battlesnakes: ["Snake"],
   },
 };

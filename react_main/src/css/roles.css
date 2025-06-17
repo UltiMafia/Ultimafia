@@ -1514,6 +1514,14 @@
   background-image: url("/images/roles/lamia-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Sidhe {
+  background-image: url("/images/roles/sidhe-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Jack {
+  background-image: url("/images/roles/jack-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Enchantress {
   background-image: url("/images/roles/enchantress-vivid.png");
 }
