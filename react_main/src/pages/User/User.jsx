@@ -234,6 +234,10 @@ export function Avatar(props) {
   if (absoluteLeftAvatarPx) {
     style.position = "absolute";
     style.left = absoluteLeftAvatarPx;
+
+    if (!small) {
+      style.transform = "translateY(12px)";
+    }
   }
 
   if (hasImage && !imageUrl && id && avatarId) {
