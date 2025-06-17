@@ -214,6 +214,7 @@ router.get("/:id/connect", async function (req, res) {
     var gameId = String(req.params.id);
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var game = await redis.getGameInfo(gameId, true);
+    const isSpectating = req.query.spectate === 'true';
 
     if (!game) {
       res.status(500);
@@ -227,7 +228,7 @@ router.get("/:id/connect", async function (req, res) {
       return;
     }
 
-    if (game.settings.ranked) {
+    if (game.settings.ranked && !isSpectating) {
       const user = await models.User.findOne({ id: userId }).select(
         "redHearts"
       );

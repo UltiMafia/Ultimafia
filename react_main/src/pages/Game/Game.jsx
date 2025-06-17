@@ -721,8 +721,12 @@ function GameWrapper(props) {
   }, [connected]);
 
   function getConnectionInfo() {
-    axios
-      .get(`/game/${gameId}/connect`)
+    const urlParams = new URLSearchParams(window.location.search);
+    const isSpectating = urlParams.get('spectate') === 'true';
+    
+    const url = `/game/${gameId}/connect${isSpectating ? '?spectate=true' : ''}`;
+    
+    axios.get(url)
       .then((res) => {
         setGameType(res.data.type);
         setPort(res.data.port);
@@ -730,7 +734,6 @@ function GameWrapper(props) {
       })
       .catch((e) => {
         var msg = e && e.response && e.response.data;
-
         if (msg === "Game not found.") setLeave("review");
         else {
           setLeave(true);
