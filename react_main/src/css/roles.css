@@ -1534,6 +1534,10 @@
   background-image: url("/images/roles/sidhe-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Consigliere {
+  background-image: url("/images/roles/consigliere-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Jack {
   background-image: url("/images/roles/jack-vivid.png");
 }
