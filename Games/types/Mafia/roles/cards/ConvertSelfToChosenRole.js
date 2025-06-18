@@ -9,7 +9,9 @@ module.exports = class ConvertSelfToChosenRole extends Card {
       "Become Role": {
         states: ["Night"],
         flags: ["voting"],
-        inputType: "custom",
+        inputType: "AllRoles",
+        AllRolesFilters: ["aligned"],
+        //targets: { include: [], exclude: ["aligned"] },
         //targets: { targetOptions },
         action: {
           labels: ["convert", "role"],
@@ -62,7 +64,7 @@ module.exports = class ConvertSelfToChosenRole extends Card {
         },
       },
     };
-
+    /*
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -86,5 +88,6 @@ module.exports = class ConvertSelfToChosenRole extends Card {
         this.meetings["Become Role"].targets = ConvertOptions;
       },
     };
+    */
   }
 };

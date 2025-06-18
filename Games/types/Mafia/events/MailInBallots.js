@@ -6,9 +6,9 @@ const {
   PRIORITY_BECOME_DEAD_ROLE,
 } = require("../const/Priority");
 
-module.exports = class MailInVoting extends Event {
+module.exports = class MailInBallots extends Event {
   constructor(modifiers, game) {
-    super("Mail In Voting", modifiers, game);
+    super("Mail In Ballots", modifiers, game);
   }
 
   getNormalRequirements() {
@@ -28,12 +28,24 @@ module.exports = class MailInVoting extends Event {
       run: function () {
         if (this.game.SilentEvents != false) {
           this.game.queueAlert(
-            `Event: Mail In Voting, No players can switch votes!`
+            `Event: Mail In Ballots, No players can switch votes!`
           );
         }
         for (const player of this.event.generatePossibleVictims()) {
-          player.giveEffect("CannotChangeVote", 1);
+          player.giveEffect("CannotChangeVotesAtDay", 1);
         }
+        if (
+                this.game.RoomOne.length > 0 &&
+                this.game.RoomTwo.length > 0
+              ) {
+                for (const player of this.game.RoomOne) {
+                  player.giveEffect("CannotChangeVotesAtDay", 1, "Room 1");
+                }
+                for (const player of this.game.RoomTwo) {
+                  player.giveEffect("CannotChangeVotesAtDay", 1, "Room 2");
+                }
+                return;
+              }
       },
     });
     this.game.queueAction(this.action);

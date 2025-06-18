@@ -545,6 +545,16 @@ const roleData = {
         "Tracks a player each night and learns if they visited anybody.",
       ],
       nightOrder: [["Binary Track",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+      ],
     },
     "Bounty Hunter": {
       alignment: "Village",
@@ -705,6 +715,16 @@ const roleData = {
       tags: ["Information", "Excess Roles", "Advanced"],
       description: ["At night, reveals 1-3 Excess roles to All Players."],
       nightOrder: [["Reveal Roles",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+      ],
     },
     Manhunter: {
       alignment: "Village",
@@ -2175,6 +2195,16 @@ const roleData = {
         "Works through roleblocking and protection.",
       ],
       nightOrder: [["Strength Kill",(PRIORITY_MODIFY_ACTION_LABELS)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+      ],
     },
     Spy: {
       alignment: "Mafia",
@@ -2326,6 +2356,16 @@ const roleData = {
       tags: ["Items", "Night-Acting", "Visiting", "Advanced"],
       description: ["Chooses a player to steal an item from each night."],
       nightOrder: [["Steal Items",(PRIORITY_ITEM_TAKER_DEFAULT)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+      ],
     },
     Crank: {
       alignment: "Mafia",
@@ -4556,6 +4596,14 @@ const roleData = {
         "Frustrated players cannot be condemned by majority vote. A non-zero minority vote will kill a frustrated player.",
       ],
       nightOrder: [["Make Frustrated",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
+    },
+    "Mail in Ballots": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, players can not switch votes.",
+      ],
+      nightOrder: [["Apply disable vote switching effect",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
     Flood: {
       alignment: "Event",
