@@ -565,6 +565,43 @@ module.exports = class Meeting {
       }
     }
 
+    if(targetType == "AllRoles"){
+     let temp = this.game.PossibleRoles.filter((r) => r);
+      
+      for (let type of ["include", "AllRoles"]) {
+        if (!targets[type]) continue;
+
+        for (let tag of targets[type]) {
+          let include = type == "include";
+
+          switch (tag) {
+            case "addedRoles"
+            temp = temp.concat(this.game.AddedRoles);
+            break;
+            case "self":
+              temp = temp.filter((r) => r != self.role.name);
+              if (player == self) includePlayer[player.id] = include;
+              break;
+            case "aligned":
+              temp = temp.filter((r) => this.game.getRoleAlignment(r) == this.game.getRoleAlignment(self.role.name));
+              break;
+            case "banished"
+              temp = temp.filter((r) => (r.split(":")[1] && r.split(":")[1].toLowerCase().includes("banished")));
+              break;
+            case "NoDemonic"
+              temp = temp.filter((r) => !(r.split(":")[1] && r.split(":")[1].toLowerCase().includes("demonic")));
+              break;
+            case "blacklist"
+                temp = temp.filter((r) => !self.role.roleBlacklist.includes(r.split(":")[0]));
+              break;
+            default:
+              
+          }
+        }
+      }
+      return temp;
+    }
+
     if (targetType == "player") finalTargets = playerList;
     else finalTargets = Random.randomizeArray(Object.keys(roleList));
 
