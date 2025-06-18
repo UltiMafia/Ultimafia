@@ -2614,7 +2614,7 @@ const roleData = {
         "During an eclipse all speech and votes are anonymous.",
       ],
     },
-    Expediter: {
+    Umpire: {
       alignment: "Mafia",
       tags: ["Timer", "Day Actions", "Basic"],
       description: [
