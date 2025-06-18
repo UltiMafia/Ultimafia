@@ -11,6 +11,7 @@ module.exports = class GuessRole extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
           run: function () {
             this.actor.role.data.targetPlayer = this.target;
@@ -20,7 +21,8 @@ module.exports = class GuessRole extends Card {
       "Guess Role": {
         states: ["Night"],
         flags: ["voting"],
-        inputType: "custom",
+        inputType: "AllRoles",
+        AllRolesFilters: ["addedRoles"],
         action: {
           labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
@@ -44,7 +46,7 @@ module.exports = class GuessRole extends Card {
         },
       },
     };
-
+    /*
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -66,5 +68,6 @@ module.exports = class GuessRole extends Card {
         this.meetings["Guess Role"].targets = guessOptions;
       },
     };
+    */
   }
 };

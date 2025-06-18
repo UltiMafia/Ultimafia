@@ -11,7 +11,7 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
       "Block Role": {
         states: ["Night"],
         flags: ["voting"],
-        inputType: "custom",
+        inputType: "AllRoles",
         //targets: { targetOptions },
         shouldMeet: function () {
           return !this.hasBlocked;
@@ -77,6 +77,7 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
       },
     ];
 */
+
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -89,6 +90,7 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
       },
       // refresh cooldown
       state: function (stateInfo) {
+        /*
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
@@ -96,7 +98,9 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
         blockOptions.push("None");
 
         this.meetings["Block Role"].targets = blockOptions;
+        */
       },
     };
+    
   }
 };

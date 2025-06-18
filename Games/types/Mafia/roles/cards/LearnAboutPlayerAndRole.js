@@ -44,7 +44,8 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         actionName: "Select Role",
         states: ["Day"],
         flags: ["voting", "instant"],
-        inputType: "custom",
+        inputType: "AllRoles",
+        AllRolesFilters: ["addedRoles"],
         shouldMeet: function () {
           return !this.revived;
         },
@@ -211,6 +212,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         },
       ]);
 */
+
       (this.listeners = {
         roleAssigned: function (player) {
           if (player !== this.player) {
@@ -220,6 +222,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
           this.data.ConvertOptions = this.game.PossibleRoles.filter((r) => r);
         },
         // refresh cooldown
+        /*
         state: function (stateInfo) {
           if (stateInfo.name.match(/Day/)) {
             var ConvertOptions = this.data.ConvertOptions;
@@ -258,6 +261,8 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
             //this.game.queueAction(action2);
           }
         },
+        */
       });
+      
   }
 };

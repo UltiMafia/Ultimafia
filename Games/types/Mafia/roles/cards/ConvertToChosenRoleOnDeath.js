@@ -20,7 +20,8 @@ module.exports = class ConvertToChosenRole extends Card {
       "Role to Become": {
         states: ["Night"],
         flags: ["voting"],
-        inputType: "custom",
+        inputType: "AllRoles",
+        AllRolesFilters: ["aligned", "NoDemonic"],
         action: {
           labels: ["convert", "role"],
           priority: PRIORITY_CONVERT_DEFAULT,
@@ -41,7 +42,7 @@ module.exports = class ConvertToChosenRole extends Card {
         },
       },
     };
-
+/*
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -65,5 +66,6 @@ module.exports = class ConvertToChosenRole extends Card {
         this.meetings["Role to Become"].targets = ConvertOptions;
       },
     };
+    */
   }
 };

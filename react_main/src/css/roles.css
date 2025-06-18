@@ -349,6 +349,10 @@
   background-image: url("/images/roles/bloodhound-vivid.png");
 }
 
+.role-icon-old-Mafia-Bloodhound {
+  background-image: url("/images/roles/bloodhound-old.png");
+}
+
 .role-icon-vivid-Mafia-Voyeur {
   background-image: url("/images/roles/voyeur-vivid.png");
 }
@@ -929,6 +933,10 @@
   background-image: url("/images/roles/tourist-vivid.png");
 }
 
+.role-icon-old-Mafia-Tourist {
+  background-image: url("/images/roles/tourist-old.png");
+}
+
 .role-icon-vivid-Mafia-Drama-Queen {
   background-image: url("/images/roles/drama-queen-vivid.png");
 }
@@ -1216,6 +1224,10 @@
   background-image: url("/images/roles/thief-vivid.png");
 }
 
+.role-icon-old-Mafia-Thief {
+  background-image: url("/images/roles/thief-old.png");
+}
+
 .role-icon-vivid-Mafia-Crank {
   background-image: url("/images/roles/crank-vivid.png");
 }
@@ -1274,6 +1286,10 @@
 
 .role-icon-vivid-Mafia-Strongman {
   background-image: url("/images/roles/strongman-vivid.png");
+}
+
+.role-icon-old-Mafia-Strongman {
+  background-image: url("/images/roles/strongman-old.png");
 }
 
 .role-icon-vivid-Mafia-Blinder {

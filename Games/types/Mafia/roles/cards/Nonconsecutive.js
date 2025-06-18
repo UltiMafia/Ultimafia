@@ -16,7 +16,7 @@ module.exports = class Nonconsecutive extends Card {
     super(role);
   
     this.listeners = {
-            state: function (stateInfo) {
+        state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }

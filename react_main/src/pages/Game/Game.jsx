@@ -2394,6 +2394,7 @@ export function ActionList(props) {
         case "alignment":
         case "custom":
         case "customBoolean":
+        case "AllRoles":
         case "select":
           action = (
             <ActionSelect
@@ -3098,6 +3099,7 @@ function getTargetDisplay(targets, meeting, players) {
       case "boolean":
         if (target === "*") target = "No";
         else if (!target) target = "";
+        break;
       default:
         if (target === "*") target = "None";
         else if (!target) target = "";

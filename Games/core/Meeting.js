@@ -48,6 +48,7 @@ module.exports = class Meeting {
 
     this.inputType = "player";
     this.targets = { include: ["alive"], exclude: ["members"] };
+    this.AllRolesFilters = [];
     this.messages = [];
     this.members = new ArrayHash();
     this.votes = {};
@@ -109,6 +110,8 @@ module.exports = class Meeting {
     if (options.noGroup) this.group = false;
 
     if (options.targets) this.targets = options.targets;
+
+    if (options.AllRolesFilters) this.AllRolesFilters = options.AllRolesFilters;
 
     if (options.inputType) this.inputType = options.inputType;
     this.textOptions = options.textOptions;
@@ -389,6 +392,9 @@ module.exports = class Meeting {
       if (!this.mustAct || this.includeNo) this.targets = ["Yes", "No"];
       else this.targets = ["Yes"];
     }
+     else if (this.inputType == "AllRoles") {
+      this.targets = this.getAllRolesTargets( this.inputType, this.members.length == 1 ? this.members.at(0).player : null);
+    }
 
     for (let member of this.members) {
       for (let ability of member.speechAbilities) {
@@ -440,6 +446,44 @@ module.exports = class Meeting {
         // re-enable voting even during kicks
         this.members[voterId].canUpdateVote = true;
       }
+    }
+  }
+
+    getAllRolesTargets(targetType, self){
+    if(targetType == "AllRoles"){
+     let temp = this.game.PossibleRoles.filter((r) => r);
+
+        for (let tag of this.AllRolesFilters) {
+
+          switch (tag) {
+            case "addedRoles":
+           temp = temp.concat(this.game.AddedRoles);
+            break;
+            case "self":
+              temp = temp.filter((r) => r != self.role.name);
+              break;
+            case "aligned":
+              temp = temp.filter((r) => this.game.getRoleAlignment(r) == this.game.getRoleAlignment(self.role.name));
+              break;
+            case "banished":
+              temp = temp.filter((r) => (r.split(":")[1] && r.split(":")[1].toLowerCase().includes("banished")));
+              break;
+            case "NoDemonic":
+              temp = temp.filter((r) => !(r.split(":")[1] && r.split(":")[1].toLowerCase().includes("demonic")));
+              break;
+            case "blacklist":
+                temp = temp.filter((r) => !self.role.data.roleBlacklist.includes(r.split(":")[0]));
+                temp = temp.filter((r) => !self.role.data.roleBlacklist2.includes(r));
+              break;
+            default:
+              
+          }
+        }
+      
+      if((!this.mustAct || temp.length <= 0) && !temp.includes("None")){
+        temp.push("None");
+      }
+      return temp;
     }
   }
 

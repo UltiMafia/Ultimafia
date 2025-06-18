@@ -20,8 +20,9 @@ module.exports = class GuessRoleOrDie extends Card {
       },
       "Guess Role": {
         states: ["Night"],
-        flags: ["voting"],
-        inputType: "custom",
+        flags: ["voting", "mustAct"],
+        inputType: "AllRoles",
+        AllRolesFilters: ["addedRoles"],
         action: {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT,
@@ -50,7 +51,7 @@ module.exports = class GuessRoleOrDie extends Card {
         },
       },
     };
-
+/*
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -72,5 +73,6 @@ module.exports = class GuessRoleOrDie extends Card {
         this.meetings["Guess Role"].targets = guessOptions;
       },
     };
+    */
   }
 };

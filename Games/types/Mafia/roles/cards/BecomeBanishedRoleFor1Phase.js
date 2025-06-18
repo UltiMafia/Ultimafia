@@ -5,19 +5,22 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
   constructor(role) {
     super(role);
 
+
+
     this.meetings = {
       "Use Power": {
         states: ["Night"],
         flags: ["voting", "instant"],
-        inputType: "custom",
+        inputType: "AllRoles",
+        AllRolesFilters: ["banished", "blacklist", "aligned"],
         action: {
           run: function () {
             if(this.target == "None"){
             return;
             }
 
-            this.actor.role.data.ConvertOptions.splice(this.actor.role.data.ConvertOptions.indexOf(this.target),1);
-
+            //this.actor.role.data.ConvertOptions.splice(this.actor.role.data.ConvertOptions.indexOf(this.target),1);
+            this.actor.role.data.roleBlacklist2.push(this.target);
             let currRole = this.actor.role.name;
             let currModifiers = this.actor.role.modifier;
             let currData = this.actor.role.data;
@@ -66,6 +69,9 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
           return;
         }
 
+        this.data.roleBlacklist = roleBlacklist.filter((r) => r);
+        this.data.roleBlacklist2 = [];
+        /*
         this.data.ConvertOptions = this.game.PossibleRoles.filter(
           (r) =>
             this.game.getRoleAlignment(r) ==
@@ -73,8 +79,10 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
         && !roleBlacklist.includes(r.split(":")[0])
         
         );
+        */
       },
       // refresh cooldown
+      /*
       state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
           return;
@@ -86,6 +94,7 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
 
         this.meetings["Use Power"].targets = ConvertOptions;
       },
+      */
     };
 
   }
