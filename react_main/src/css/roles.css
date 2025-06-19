@@ -1538,6 +1538,10 @@
   background-image: url("/images/roles/consigliere-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Umpire {
+  background-image: url("/images/roles/umpire-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Jack {
   background-image: url("/images/roles/jack-vivid.png");
 }
