@@ -170,7 +170,7 @@ export default function Setup(props) {
         <Stack direction="column" sx={{
           padding: "8px",
         }}>
-          <Typography variant="body2">
+          <Typography variant="body2" className="setup-name">
             {filterProfanity(props.setup.name, user.settings)}
           </Typography>
           <Grid container>
