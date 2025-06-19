@@ -41,8 +41,8 @@
     max-height: 100px;
     width: 100%;
 
-    margin-top: 12px;
-    margin-bottom: 12px;
+    margin-top: 8px;
+    margin-bottom: 8px;
 
     font-family: 'Playfair Display', serif;
     font-weight: 900;
@@ -69,8 +69,6 @@
     /* display: inline-block; */
     overflow: hidden;
 
-    margin-bottom: 8px;
-
     /* text-wrap: balance; */
     /* text-align: justify;
     hyphens: auto; */
@@ -78,7 +76,6 @@
 
 .newspaper .obituary {
     margin-top: 8px;
-    margin-bottom: 8px;
 }
 
 .newspaper .obituary-header {
@@ -86,10 +83,6 @@
     font-size: 20px;
     text-transform: uppercase;
     /* text-align: right; */
-}
-
-.newspaper .obituary-header::after {
-    margin-top: 0px;
 }
 
 .newspaper .newspaper-emphasis {

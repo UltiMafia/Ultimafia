@@ -6,7 +6,7 @@ import Typewriter from 'typewriter-effect';
 
 import "../css/newspaper.css";
 
-const speedModifier = 1;
+const speedModifier = 2;
 
 const TIMINGS = {
     initialDelay: 1000,
@@ -164,11 +164,9 @@ function PhaseInSection(props) {
 }
 
 function ObituaryItem({death, onFullyAnimated, parentProps}) {
-    const roleName = getRoleName(death.revealMessage);
-    const reformattedRoleName = reformatRoleName(roleName);
-
     const noAnimation = parentProps.noAnimation || false;
     const playAudio = parentProps.playAudio || null;
+    const isAlignmentReveal = parentProps.isAlignmentReveal || false;
 
     // STATIC vs NOT STATIC: why?
     // We have two separate ways of generating the content of these pieces because
@@ -179,11 +177,13 @@ function ObituaryItem({death, onFullyAnimated, parentProps}) {
     const deathMessage = emotifyInline(death.deathMessage);
     const deathMessageStatic = emotify(death.deathMessage);
 
-    const revealMessage = `${death.name}'s role was: <span class="newspaper-emphasis">${reformattedRoleName}</span>`;
+    // Bolding the role name requires us to parse the reveal message
+    const revealType = isAlignmentReveal ? "alignment" : "role";
+    const revealResult = isAlignmentReveal ? getAlignmentName(death.revealMessage) : reformatRoleName(getRoleName(death.revealMessage));
+    const revealMessage = `${death.name}'s ${revealType} was: <span class="newspaper-emphasis">${revealResult}</span>`;
     const revealMessageStatic = (<>
-        {death.name}
-        's role was:
-        <span className="newspaper-emphasis"> {reformattedRoleName}</span>
+        {death.name}'s {revealType} was:
+        <span className="newspaper-emphasis"> {revealResult}</span>
     </>);
 
     const lastWill = death.lastWill ? emotifyInline(death.lastWill) : null;
@@ -299,6 +299,7 @@ export default function Newspaper(props) {
     const dayCount = props.dayCount || 0;
     const onFullyAnimated = props.onFullyAnimated || null;
     const playAudio = props.playAudio || null;
+    const isAlignmentReveal = props.isAlignmentReveal || false;
     
     // Example props.deaths input data:
     /* [{
@@ -423,6 +424,16 @@ function getRoleName(text) {
 
     const indexStart = text.lastIndexOf(ROLE_SEARCH_TERM);
     const indexEnd = indexStart + ROLE_SEARCH_TERM.length;
+
+    return text.substring(indexEnd, text.length);
+}
+
+const ALIGNMENT_SEARCH_TERM = "'s alignment is ";
+function getAlignmentName(text) {
+    if (!text) return "???";
+
+    const indexStart = text.lastIndexOf(ALIGNMENT_SEARCH_TERM);
+    const indexEnd = indexStart + ALIGNMENT_SEARCH_TERM.length;
 
     return text.substring(indexEnd, text.length);
 }
