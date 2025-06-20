@@ -460,10 +460,14 @@ module.exports = class Meeting {
            temp = temp.concat(this.game.AddedRoles);
             break;
             case "self":
+              if(self){
               temp = temp.filter((r) => r != self.role.name);
+              }
               break;
             case "aligned":
+              if(self){
               temp = temp.filter((r) => this.game.getRoleAlignment(r) == this.game.getRoleAlignment(self.role.name));
+              }
               break;
             case "banished":
               temp = temp.filter((r) => (r.split(":")[1] && r.split(":")[1].toLowerCase().includes("banished")));
@@ -472,8 +476,10 @@ module.exports = class Meeting {
               temp = temp.filter((r) => !(r.split(":")[1] && r.split(":")[1].toLowerCase().includes("demonic")));
               break;
             case "blacklist":
+                if(self && self.role.data.roleBlacklist){
                 temp = temp.filter((r) => !self.role.data.roleBlacklist.includes(r.split(":")[0]));
                 temp = temp.filter((r) => !self.role.data.roleBlacklist2.includes(r));
+                }
               break;
             default:
               
