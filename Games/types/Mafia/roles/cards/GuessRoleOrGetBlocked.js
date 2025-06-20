@@ -65,7 +65,7 @@ module.exports = class GuessRoleOrGetBlocked extends Card {
         },
       },
     };
-
+/*
     this.listeners = {
       state: function (stateInfo) {
         if (!this.player.hasAbility(["Blocking", "Modifier"])) {
@@ -122,5 +122,6 @@ module.exports = class GuessRoleOrGetBlocked extends Card {
         this.game.queueAction(action);
       },
     };
+    */
   }
 };
