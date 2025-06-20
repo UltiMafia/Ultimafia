@@ -402,6 +402,7 @@ const artContributors = {
       "Clairvoyant",
       "Rat",
       "Tourist",
+      "Umpire",
     ],
     Resistance: [
       "Assassin",
