@@ -17,7 +17,7 @@ import {
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
-  signInWithRedirect,
+  signInWithPopup,
 } from "firebase/auth";
 import { verifyRecaptcha } from "../../utils";
 import axios from "axios";
@@ -105,7 +105,16 @@ export const LoginDialog = ({ open, setOpen }) => {
       if (process.env.REACT_APP_ENVIRONMENT !== "development") {
         await verifyRecaptcha("auth");
       }
-      await signInWithRedirect(getAuth(), googleProvider);
+      const userCred = await signInWithPopup(getAuth(), googleProvider);
+      const idToken = await userCred.user.getIdToken(true);
+      
+      try {
+        await axios.post("/auth", { idToken });
+        window.location.reload();
+      } catch (err) {
+        snackbarHook.popUnexpectedError();
+        console.error(err);
+      }
     } catch (err) {
       if (err.message.includes("(auth/too-many-requests)")) {
         snackbarHook.popTooManyLoginAttempts();
