@@ -557,12 +557,12 @@ module.exports = class Meeting {
               if (!player.alive) includePlayer[player.id] = include;
               break;
             case "previous":
-              if(self.role.data.LimitedLastNightVisits && self.role.data.LimitedLastNightVisits.includes(player)){
+              if(self && self.role.data.LimitedLastNightVisits && self.role.data.LimitedLastNightVisits.includes(player)){
                 includePlayer[player.id] = include;
               }
               break;
             case "previousAll":
-              if(self.role.data.LimitedAllVisits && self.role.data.LimitedAllVisits.includes(player)){
+              if(self && self.role.data.LimitedAllVisits && self.role.data.LimitedAllVisits.includes(player)){
                 includePlayer[player.id] = include;
               }
               break;
