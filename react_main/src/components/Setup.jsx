@@ -138,6 +138,7 @@ export default function Setup(props) {
         style={{
           alignSelf: "flex-end",
           marginLeft: "5px",
+          cursor: "pointer",
         }}
         key="ellipses"
       />
