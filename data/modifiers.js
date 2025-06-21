@@ -142,6 +142,12 @@ const modifierData = {
         "Announces the player's role to the targets of their night actions.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    Choosy: {
+      internal: ["GuessRoleToGetBlocked"],
+      tags: ["Self Block"],
+      description: "Each night chooses a role. Actions will be blocked if visiting a player with that role.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Complex: {
       internal: ["Complex"],
       tags: ["Visits", "Block Self", "Vanilla"],
@@ -494,6 +500,12 @@ const modifierData = {
       description: "Can only perform actions once.",
       eventDescription: "This Event will only occur once.",
       incompatible: ["Exhausted"],
+    },
+    Picky: {
+      internal: ["GuessRoleOrGetBlocked"],
+      tags: ["Self Block"],
+      description: "Each night chooses a role. Actions will be blocked unless visiting a player with that role.",
+      eventDescription: "This modifier does nothing when on an Event.",
     },
     Pious: {
       internal: ["ConvertKillersOnDeath"],

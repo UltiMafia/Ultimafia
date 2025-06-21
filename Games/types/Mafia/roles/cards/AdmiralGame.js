@@ -66,7 +66,17 @@ module.exports = class AdmiralGame extends Card {
       },
       state: function (stateInfo) {
         if (!this.player.alive) {
+          this.game.HaveTreasureChestState = false;
           return;
+        }
+        let isChest = false;
+        for(let player of this.game.alivePlayers()){
+        if(player.hasItem("TreasureChest")){
+          isChest = true;
+        }
+        }
+        if(isChest != true){
+        this.game.HaveTreasureChestState = false
         }
         if (stateInfo.name.match(/Treasure Chest/)) {
           if (this.game.AdmiralStateBlock == null) {
