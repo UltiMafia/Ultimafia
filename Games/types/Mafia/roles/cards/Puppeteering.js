@@ -21,6 +21,9 @@ module.exports = class Puppeteering extends Card {
               "Control " + this.target.name,
               this.target
             );
+            if(this.actor.role.data.controlledPlayers == null){
+              this.actor.role.data.controlledPlayers = [];
+            }
             this.actor.role.data.controlledPlayers.push(this.target);
           },
         },
