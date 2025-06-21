@@ -30,7 +30,7 @@
 } */
 /*SANTA CHANGES*/
 
-.avatar.small.dead {
+.avatar.dead {
   filter: grayscale(1) !important;
 }
 
