@@ -691,7 +691,7 @@ function GameWrapper(props) {
         messageId: message.id,
         toMeetingId: history.states[history.currentState].selTab,
         fromMeetingId: message.meetingId,
-        fromState: stateViewing,
+        fromState: message.fromState ? message.fromState : stateViewing,
       });
     }
   }
@@ -1452,6 +1452,7 @@ function Message(props) {
   if (!message.isQuote && message.content?.indexOf("/me ") === 0) {
     message = { ...message };
     message.content = message.content.replace("/me ", "");
+    contentClass += "me ";
   }
 
   const messageStyle = {};
@@ -1494,7 +1495,7 @@ function Message(props) {
         player.name + " says something, but you cannot hear them!"
       ) || false;
     if (playerDead) {
-      contentClass += "dead";
+      contentClass += "dead ";
     } else if (
       stateMeetingDefined &&
       stateMeetings[message.meetingId].name === "Party!"
