@@ -1509,6 +1509,7 @@ const roleData = {
     Debtor: {
       alignment: "Village",
       category: "Killing",
+      disabled: true,
       tags: ["Guess", "Roles", "Visiting", "Self Kill", "Advanced"],
       description: [
         "Each night must choose a player and role from the Setup.",
@@ -3997,7 +3998,7 @@ const roleData = {
       description: [
         "Chooses two players each night to force into a duel.",
         "During the following day, only the two duelists may be voted.",
-        "Must predict during the sunrise which duelist will survive.",
+        "Must predict which duelist will survive.",
         "Wins if they predict correctly twice.",
       ],
        nightOrder: [["Duel",(PRIORITY_EFFECT_GIVER_DEFAULT + 1)]],

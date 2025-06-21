@@ -75,7 +75,7 @@ module.exports = class ImperialDecree extends Card {
     this.listeners = {
       death: function (player, killer, deathType) {
         if (
-          player != this.predictedVote && this.actor.role.duelists.includes(player)
+          player != this.predictedVote && this.player.role.duelists.includes(player)
         ){
         this.duelistWasKilled = true;
         }
