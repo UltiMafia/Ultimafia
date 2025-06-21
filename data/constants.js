@@ -310,6 +310,13 @@ module.exports = {
   redHeartRefreshIntervalMillis: 82800000,
   goldHeartRefreshIntervalMillis: 82800000,
 
+  // Penalty starts at 10 minutes with level 0, up to 60 minutes with level 5
+  leavePenaltyMinimumMillis: 600000,
+  leavePenaltyMaximumMillis: 3600000,
+  leavePenaltyPerLevelMillis: 600000,
+  // Penalties reset in level after 3 days
+  leavePenaltyDurationMillis: 259200000,
+
   // Perms given to all users
   defaultPerms: [
     "signIn",

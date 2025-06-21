@@ -568,6 +568,11 @@ module.exports = class Game {
       if (this.started && !this.finished && player.alive) {
         this.makeUnranked();
         this.makeUncompetitive();
+
+        if (!player.isBot) {
+          const userId = player.userId || player.user.id;
+          this.penalizePlayerForLeaving(userId);
+        }
       }
 
       if (!this.postgameOver && this.players[player.id]) {
@@ -607,6 +612,11 @@ module.exports = class Game {
     if (player.left) return;
     this.makeUnranked();
     this.makeUncompetitive();
+
+    if (!player.isBot) {
+      const userId = player.userId || player.user.id;
+      this.penalizePlayerForLeaving(userId);
+    }
 
     this.queueAction(
       new Action({
@@ -2469,6 +2479,42 @@ module.exports = class Game {
     } catch (e) {
       logger.error(e);
       // this.handleError(e);
+    }
+  }
+
+  async penalizePlayerForLeaving(userId) {
+    let leavePenalty = await models.LeavePenalty.findOne({ userId: userId }).select("level");
+
+    const now = Date.now();
+
+    if (!leavePenalty) {
+      // No penalty recorded - create a new one starting at level 0 with minimum penalty
+      leavePenalty = new models.LeavePenalty({
+        userId: userId,
+        expiresOn: now + constants.leavePenaltyDurationMillis,
+        canPlayAfter: now + constants.leavePenaltyMinimumMillis,
+        level: 0,
+      });
+      await leavePenalty.save();
+    }
+    else {
+      // Penalty already recorded - calculate the penalty based on level up to a maximum then push back the record expiration as if it were new
+      var penaltyMillis =  constants.leavePenaltyMinimumMillis + ((leavePenalty.level + 1) * constants.leavePenaltyPerLevelMillis);
+      if (penaltyMillis > constants.leavePenaltyMaximumMillis) {
+        penaltyMillis = constants.leavePenaltyMaximumMillis;
+      }
+      await models.LeavePenalty.updateOne(
+        { userId: userId },
+        {
+          $inc: {
+            level: 1,
+          },
+          $set: {
+            expiresOn: now + constants.leavePenaltyDurationMillis,
+            canPlayAfter: now + penaltyMillis,
+          }
+        }
+      ).exec();
     }
   }
 

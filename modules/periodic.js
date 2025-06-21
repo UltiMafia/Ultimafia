@@ -200,6 +200,30 @@ module.exports = function () {
       },
       interval: 1000 * 7200,
     },
+    expireLeavePenalties: {
+      run: async function () {
+        const now = Date.now();
+
+        // Query all heart refreshes that have elapsed
+        let leavePenalties = await models.LeavePenalty.find({
+          expiresOn: { $lt: now },
+        }).select("userId type");
+        for (let leavePenalty of leavePenalties) {
+          const userId = leavePenalty.userId;
+
+          // Remove the penalty, thereby resetting the penalty level back to default
+          const result2 = await models.LeavePenalty.deleteOne({
+            userId: userId,
+          }).exec();
+          if (result2.deletedCount === 0) {
+            console.warn(
+              `Failed to delete leave penalty for userId[${userId}]`
+            );
+          }
+        }
+      },
+      interval: 1000 * 60 * 10,
+    },
     gamesWebhook: {
       run: async function () {
         try {
