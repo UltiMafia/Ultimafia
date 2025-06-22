@@ -183,6 +183,19 @@ module.exports = class MafiaGame extends Game {
     }
     if (this.getStateName() == "Day") {
       this.infoLog = [];
+    var actionVisitDay = new Action({
+        game: this,
+        priority: 100,
+        labels: ["hidden", "absolute"],
+        run: function () {
+          this.game.hasBeenDay = true;
+          if(this.game.IsBloodMoon == true){
+            this.game.hasBeenBloodMoonDay = true;
+          }
+        },
+      });
+
+      this.queueAction(actionVisitDay);
     }
     if (this.getStateName() == "Night") {
       var actionVisit = new Action({
@@ -203,6 +216,8 @@ module.exports = class MafiaGame extends Game {
               }
             }
           }
+
+          this.game.hasBeenNight = true;
 
           this.game.lastNightVisits = [];
           for (let action of this.game.actions[0]) {
@@ -418,12 +433,12 @@ module.exports = class MafiaGame extends Game {
       finished = true;
     }
 
-    if (this.isOneNightMode() && this.hasBeenDay == true) {
+    if (this.IsBloodMoon == true && this.hasBeenBloodMoonDay == true) {
       finished = true;
     }
 
     if (
-      this.isOneNightMode() == true &&
+      this.IsBloodMoon == true &&
       this.hasBeenDay == true &&
       winners.groupAmt() <= 0
     ) {
