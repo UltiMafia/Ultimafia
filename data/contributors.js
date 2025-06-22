@@ -403,6 +403,15 @@ const artContributors = {
       "Rat",
       "Tourist",
       "Umpire",
+      "Mail-In Ballots",
+      "Vaccination",
+      "Necronomicon",
+      "Haunted House",
+      "Fog",
+      "Meteor",
+      "Prince",
+      "Sabbath",
+      "Flood",
     ],
     Resistance: [
       "Assassin",
@@ -418,7 +427,7 @@ const artContributors = {
     ],
   },
   aleph: {
-    Mafia: ["Count", "Harpy", "Bawd", "Diplomat", "Associate", "Reaper", "Lifeguard", "Sidhe", "Jack", "Consigliere"],
+    Mafia: ["Count", "Harpy", "Bawd", "Diplomat", "Associate", "Reaper", "Lifeguard", "Sidhe", "Jack", "Consigliere", "Cult Leader"],
     Battlesnakes: ["Snake"],
   },
 };

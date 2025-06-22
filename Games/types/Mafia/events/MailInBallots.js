@@ -8,7 +8,7 @@ const {
 
 module.exports = class MailInBallots extends Event {
   constructor(modifiers, game) {
-    super("Mail In Ballots", modifiers, game);
+    super("Mail-In Ballots", modifiers, game);
   }
 
   getNormalRequirements() {
@@ -28,7 +28,7 @@ module.exports = class MailInBallots extends Event {
       run: function () {
         if (this.game.SilentEvents != false) {
           this.game.queueAlert(
-            `Event: Mail In Ballots, No players can switch votes!`
+            `Event: Mail-In Ballots, No players can switch votes!`
           );
         }
         for (const player of this.event.generatePossibleVictims()) {
