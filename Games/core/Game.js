@@ -2488,11 +2488,11 @@ module.exports = class Game {
     const now = Date.now();
 
     if (!leavePenalty) {
-      // No penalty recorded - create a new one starting at level 0 with minimum penalty
+      // No penalty recorded - create a new one starting at level 0 with no penalty (1st leave per record is forgiven)
       leavePenalty = new models.LeavePenalty({
         userId: userId,
         expiresOn: now + constants.leavePenaltyDurationMillis,
-        canPlayAfter: now + constants.leavePenaltyMinimumMillis,
+        canPlayAfter: 0,
         level: 0,
       });
       await leavePenalty.save();
