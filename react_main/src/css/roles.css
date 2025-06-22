@@ -405,6 +405,10 @@
   background-image: url("/images/roles/celebrity-vivid.png");
 }
 
+.role-icon-noir-Mafia-Celebrity {
+  background-image: url("/images/roles/celebrity-noir.png");
+}
+
 .role-icon-vivid-Mafia-Priest {
   background-image: url("/images/roles/priest-vivid.png");
 }
@@ -957,6 +961,10 @@
   background-image: url("/images/roles/painter-vivid.png");
 }
 
+.role-icon-noir-Mafia-Painter {
+  background-image: url("/images/roles/painter-noir.png");
+}
+
 .role-icon-vivid-Mafia-Flapper {
   background-image: url("/images/roles/flapper-vivid.png");
 }
@@ -975,6 +983,10 @@
 
 .role-icon-vivid-Mafia-Jazzman {
   background-image: url("/images/roles/jazzman-vivid.png");
+}
+
+.role-icon-noir-Mafia-Jazzman {
+  background-image: url("/images/roles/jazzman-noir.png");
 }
 
 .role-icon-vivid-Mafia-Impersonator {
@@ -1578,6 +1590,10 @@
   background-image: url("/images/roles/vampire-vivid.png");
 }
 
+.role-icon-noir-Mafia-Vampire {
+  background-image: url("/images/roles/vampire-noir.png");
+}
+
 .role-icon-vivid-Mafia-Psion {
   background-image: url("/images/roles/mindwarper-vivid.png");
 }
@@ -1632,6 +1648,10 @@
 
 .role-icon-vivid-Mafia-Succubus {
   background-image: url("/images/roles/succubus-vivid.png");
+}
+
+.role-icon-noir-Mafia-Succubus {
+  background-image: url("/images/roles/succubus-noir.png");
 }
 
 .role-icon-vivid-Mafia-Shadow {
@@ -1704,6 +1724,10 @@
 
 .role-icon-vivid-Mafia-Lover {
   background-image: url("/images/roles/lover-vivid.png");
+}
+
+.role-icon-noir-Mafia-Lover {
+  background-image: url("/images/roles/lover-noir.png");
 }
 
 .role-icon-vivid-Mafia-Matchmaker {
@@ -1925,6 +1949,38 @@
 
 .role-icon-vivid-Mafia-Evolution {
   background-image: url("/images/roles/evolution-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Mail-In-Ballots {
+  background-image: url("/images/roles/mail-in-ballots-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Vaccination {
+  background-image: url("/images/roles/vaccination-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Necronomicon {
+  background-image: url("/images/roles/necronomicon-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Fog {
+  background-image: url("/images/roles/fog-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Haunted-House {
+  background-image: url("/images/roles/haunted-house-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Meteor {
+  background-image: url("/images/roles/meteor-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Sabbath {
+  background-image: url("/images/roles/sabbath-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Flood {
+  background-image: url("/images/roles/flood-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Eclipse {

@@ -100,6 +100,16 @@ const roleData = {
       description: [
         "Identity is publicly revealed to all players at the start of the game.",
       ],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     Commuter: {
       alignment: "Village",
@@ -1278,6 +1288,16 @@ const roleData = {
           "If an Assassin is Present, All players are Delirious if an Evil Player is Elected as Room Leader.",
         ],
       },
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     Princess: {
       alignment: "Village",
@@ -1497,6 +1517,16 @@ const roleData = {
       description: [
         "When a Painter dies they will announce all players who ever visited them."
       ],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     Priest: {
       alignment: "Village",
@@ -1616,6 +1646,16 @@ const roleData = {
         "Identity is not revealed to the dead player.",
       ],
       graveyardParticipation: "all",
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     Mourner: {
       alignment: "Village",
@@ -3193,6 +3233,16 @@ const roleData = {
         "Delirious players get False Info and have other abilites disabled.",
       ],
       nightOrder: [["Give Delirium",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     Witch: {
       alignment: "Cult",
@@ -3566,6 +3616,16 @@ const roleData = {
         "Cult can only win when One or fewer Village players are alive.",
       ],
       nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     //Other
     Theocrat: {
@@ -3761,6 +3821,16 @@ const roleData = {
         "Wins if both players survive until the end of the game.",
       ],
       nightOrder: [["Fall in love",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     Prophet: {
       alignment: "Independent",
@@ -4598,7 +4668,7 @@ const roleData = {
       ],
       nightOrder: [["Make Frustrated",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
-    "Mail in Ballots": {
+    "Mail-In Ballots": {
       alignment: "Event",
       tags: ["Event"],
       description: [
