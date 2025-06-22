@@ -109,7 +109,7 @@ export const AchievementData = {
       reward: 15,
       roles: ["Inquisitor"],
     },
-    VTS: {
+    "Vanishing Twin Syndrome": {
       ID: "Mafia16",
       internal: ["ChangelingWin"],
       description:
