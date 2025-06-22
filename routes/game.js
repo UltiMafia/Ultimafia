@@ -214,6 +214,8 @@ router.get("/:id/connect", async function (req, res) {
     var gameId = String(req.params.id);
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var game = await redis.getGameInfo(gameId, true);
+
+    const now = Date.now();
     const isSpectating = req.query.spectate === 'true';
 
     if (!game) {
@@ -228,7 +230,7 @@ router.get("/:id/connect", async function (req, res) {
       return;
     }
 
-    if (game.settings.ranked && !isSpectating) {
+    if (userId && game.settings.ranked && !isSpectating) {
       const user = await models.User.findOne({ id: userId }).select(
         "redHearts"
       );
@@ -238,6 +240,19 @@ router.get("/:id/connect", async function (req, res) {
         res.send(
           "You cannot join ranked games because your Red Hearts are depleted."
         );
+        return;
+      }
+    }
+
+    if (userId && !isSpectating) {
+      const leavePentalty = await models.LeavePenalty.findOne({ userId: userId }).select(
+        "canPlayAfter"
+      );
+
+      if (leavePentalty && now < leavePentalty.canPlayAfter) {
+        const minutesUntilCanPlayAgain = Math.trunc((leavePentalty.canPlayAfter - now) / 60000);
+        res.status(400);
+        res.send(`You are unable to play games for another ${minutesUntilCanPlayAgain} minutes due to leaving game(s).`);
         return;
       }
     }
@@ -435,6 +450,8 @@ router.post("/host", async function (req, res) {
     var rehostId = req.body.rehost && String(req.body.rehost);
     var scheduled = Number(req.body.scheduled);
 
+    const now = Date.now();
+
     if (
       !routeUtils.validProp(gameType) ||
       constants.gameTypes.indexOf(gameType) == -1
@@ -577,6 +594,18 @@ router.post("/host", async function (req, res) {
         res.send(
           "You cannot host ranked games because your Red Hearts are depleted."
         );
+        return;
+      }
+    }
+
+    const leavePentalty = await models.LeavePenalty.findOne({ userId: userId }).select(
+      "canPlayAfter"
+    );
+    if (leavePentalty) {
+      if (now < leavePentalty.canPlayAfter) {
+        const minutesUntilCanPlayAgain = Math.trunc((leavePentalty.canPlayAfter - now) / 60000);
+        res.status(400);
+        res.send(`You are unable to play games for another ${minutesUntilCanPlayAgain} minutes due to leaving game(s).`);
         return;
       }
     }

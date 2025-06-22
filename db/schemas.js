@@ -523,6 +523,12 @@ var schemas = {
     when: { type: Number, index: true },
     type: { type: String, index: true },
   }),
+  LeavePenalty: new mongoose.Schema({
+    userId: { type: String, index: true },
+    expiresOn: { type: Number, index: true },
+    canPlayAfter: { type: Number },
+    level: { type: Number, default: 0 },
+  }),
 };
 
 schemas.ForumVote.virtual("user", {
