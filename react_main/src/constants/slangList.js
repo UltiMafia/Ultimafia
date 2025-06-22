@@ -359,6 +359,14 @@ export const slangList = {
     definition:
       "Out of Game Influence. When something from outside of the game is brought into the game to influence the game.",
   },
+  NAI: {
+    definition:
+      "Not alignment indicative. When something that a player says or does isn't a good indicator of whether they're good or evil aligned.",
+  },
+  ATE: {
+    definition:
+      "Appeal to emotion. When a player tries to persuade using emotional means.",
+  },
 
   // mgg theft 2
   Town: {
