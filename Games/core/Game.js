@@ -2264,9 +2264,15 @@ module.exports = class Game {
 
   canChangeSetup(){
     if(this.ranked == true || this.competitive == true){
+              this.sendAlert(
+              `The setup cannot be changed in ranked games.`, this.players.filter((p) => p.user.id == this.hostId)
+            );
       return false;
     }
     if(this.started == true){
+                this.sendAlert(
+              `The setup cannot be changed midgame.`, this.players.filter((p) => p.user.id == this.hostId)
+            );
       return false;
     }
     if(this.finished == true){
@@ -2277,6 +2283,9 @@ module.exports = class Game {
 
   async changeSetup(setupID){
     if(!setupID){
+          this.sendAlert(
+              `The setup not found, enter a valid Setup ID.`, this.players.filter((p) => p.user.id == this.hostId)
+            );
       return;
     }
     
@@ -2293,13 +2302,13 @@ module.exports = class Game {
       //setup = setup.toJSON();
       if(setup.total < this.players.length){
             this.sendAlert(
-              `The setup must have at least ${this.players.length} players.`, this.game.players.filter((p) => p.user.id == this.hostId)
+              `The setup must have at least ${this.players.length} players.`, this.players.filter((p) => p.user.id == this.hostId)
             );
         return;
       }
       if(setup.gameType != this.type){
                this.sendAlert(
-              `The setup must be a ${this.type} setup.`, this.game.players.filter((p) => p.user.id == this.hostId)
+              `The setup must be a ${this.type} setup.`, this.players.filter((p) => p.user.id == this.hostId)
             );
         return;
       }
@@ -2342,7 +2351,7 @@ module.exports = class Game {
     }
     else{
           this.sendAlert(
-              `Setup not found.`, this.game.players.filter((p) => p.user.id == this.hostId)
+              `Setup not found.`, this.players.filter((p) => p.user.id == this.hostId)
             );
     }
   }
