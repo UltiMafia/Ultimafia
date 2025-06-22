@@ -314,6 +314,7 @@ module.exports = {
   leavePenaltyMinimumMillis: 600000,
   leavePenaltyMaximumMillis: 3600000,
   leavePenaltyPerLevelMillis: 600000,
+  leavePenaltyForgivenessAmount: 2,
   // Penalties reset in level after 3 days
   leavePenaltyDurationMillis: 259200000,
 
