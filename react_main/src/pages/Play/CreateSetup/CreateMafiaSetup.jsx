@@ -22,7 +22,6 @@ export default function CreateMafiaSetup() {
       label: "Day Start",
       ref: "startState",
       type: "boolean",
-      showIf: ["!OneNightMode"],
     },
     {
       label: "Dawn",
@@ -161,11 +160,10 @@ export default function CreateMafiaSetup() {
       type: "boolean",
     },
     {
-      label: "One Night Mode",
-      ref: "OneNightMode",
+      label: "Maority Voting",
+      ref: "majorityVoting",
       value: false,
       type: "boolean",
-      showIf: ["!startState"],
     },
     {
       label: "Hidden Conversions",
@@ -281,7 +279,7 @@ export default function CreateMafiaSetup() {
         banished: Number(formFields[20].value),
         talkingDead: formFields[21].value,
         votingDead: formFields[22].value,
-        OneNightMode: formFields[23].value,
+        majorityVoting: formFields[23].value,
         hiddenConverts: formFields[24].value,
         RoleShare: formFields[25].value,
         AlignmentShare: formFields[26].value,
