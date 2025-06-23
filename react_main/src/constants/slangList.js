@@ -249,7 +249,7 @@ export const slangList = {
   scumread: {
     definition:
       "Scumread. To characterize a player or their actions as scum, usually without explicit evidence.",
-    emoji: "📖",
+    emoji: "👎",
   },
   scumhunting: {
     definition:
@@ -369,16 +369,6 @@ export const slangList = {
       "Appeal to emotion. When a player tries to persuade using emotional means.",
     emoji: "🥺",
   },
-  sr: {
-    definition:
-      "Scum read. When someone suspects that a player is evil aligned.",
-    emoji: "👎",
-  },
-  tr: {
-    definition:
-      "Town read. When someone suspects that a player is good aligned.",
-    emoji: "👍",
-  },
   rr: {
     definition:
       "Reread. When someone wants to go through the game history to get a better clue of who's good and who's bad.",
@@ -391,18 +381,10 @@ export const slangList = {
   },
   vest: {
     definition:
-      "Vest. An item that protects the holder from one attack.",
+      "Armored vest. An item that protects the holder from one attack.",
     emoji: "🦺",
   },
   "uncc": {
-    definition:
-      "The opposite of cc'ed (counter claimed). An adjective for a player whose power role claim is not contested by anyone else.",
-  },
-  "uncced": {
-    definition:
-      "The opposite of cc'ed (counter claimed). An adjective for a player whose power role claim is not contested by anyone else.",
-  },
-  "uncc'ed": {
     definition:
       "The opposite of cc'ed (counter claimed). An adjective for a player whose power role claim is not contested by anyone else.",
   },
@@ -642,3 +624,9 @@ slangList.rb = slangList.Block;
 slangList.res = slangList.Resurrect;
 slangList.raise = slangList.Resurrect;
 slangList.rizz = slangList.Resurrect;
+slangList.scummy = slangList.scum;
+slangList.sr = slangList.scumread;
+slangList.tr = slangList.townread;
+slangList["uncc'ed"] = slangList.uncc;
+slangList["uncced"] = slangList.uncc;
+slangList.vested = slangList.vest;
