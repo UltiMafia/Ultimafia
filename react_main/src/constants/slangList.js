@@ -183,10 +183,10 @@ export const slangList = {
   //     "Details about one's night actions. More generally, can be used to refer to anything a player has recorded about the game in progress, whether provided by system messages or by the player's own deductions.",
   //   emoji: "📝",
   // },
-  RR: {
-    definition:
-      "Role Reveal. To publically announce one's role. Synonymous with Claim.",
-  },
+  //RR: {
+  //  definition:
+  //    "Role Reveal. To publically announce one's role. Synonymous with Claim.",
+  //},
   // CC: {
   //   definition:
   //     "1. Verb. Counterclaim. To state that another's PR Claim is false, either because you are the only holder of that role, or because you have contradictory information. 2. Noun. A state in which two players' claims are incompatible.",
@@ -249,7 +249,7 @@ export const slangList = {
   scumread: {
     definition:
       "Scumread. To characterize a player or their actions as scum, usually without explicit evidence.",
-    emoji: "📖",
+    emoji: "👎",
   },
   scumhunting: {
     definition:
@@ -358,6 +358,35 @@ export const slangList = {
   OGI: {
     definition:
       "Out of Game Influence. When something from outside of the game is brought into the game to influence the game.",
+  },
+  NAI: {
+    definition:
+      "Not alignment indicative. When something that a player says or does isn't a good indicator of whether they're good or evil aligned.",
+    emoji: "😐",
+  },
+  ATE: {
+    definition:
+      "Appeal to emotion. When a player tries to persuade using emotional means.",
+    emoji: "🥺",
+  },
+  rr: {
+    definition:
+      "Reread. When someone wants to go through the game history to get a better clue of who's good and who's bad.",
+    emoji: "📖",
+  },
+  flip: {
+    definition:
+      "To change the town's vote to a different player than the one already being voted.",
+    emoji: "🔄",
+  },
+  vest: {
+    definition:
+      "Armored vest. An item that protects the holder from one attack.",
+    emoji: "🦺",
+  },
+  "uncc": {
+    definition:
+      "The opposite of cc'ed (counter claimed). An adjective for a player whose power role claim is not contested by anyone else.",
   },
 
   // mgg theft 2
@@ -595,3 +624,9 @@ slangList.rb = slangList.Block;
 slangList.res = slangList.Resurrect;
 slangList.raise = slangList.Resurrect;
 slangList.rizz = slangList.Resurrect;
+slangList.scummy = slangList.scum;
+slangList.sr = slangList.scumread;
+slangList.tr = slangList.townread;
+slangList["uncc'ed"] = slangList.uncc;
+slangList["uncced"] = slangList.uncc;
+slangList.vested = slangList.vest;

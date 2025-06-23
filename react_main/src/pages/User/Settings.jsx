@@ -552,7 +552,7 @@ export default function Settings() {
   }
 
   function onDeleteClick() {
-    if (window.confirm("Are you sure you wish to delete your account?")) {
+    if (window.confirm("Are you sure you wish to **DELETE** your account?")) {
       axios
         .post("/user/delete")
         .then(() => {
