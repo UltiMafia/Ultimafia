@@ -109,6 +109,7 @@ var schemas = {
     competitivePoints: { type: Number, default: 0 },
     kudos: { type: Number, default: 0 },
     karma: { type: Number, default: 0 },
+    dailyChallenges: [],
     nameChanged: false,
     bdayChanged: false,
     playedGame: false,
