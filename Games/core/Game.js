@@ -58,6 +58,7 @@ module.exports = class Game {
     this.lobbyName = options.settings.lobbyName;
     this.private = options.settings.private;
     this.guests = options.settings.guests;
+    this.hasIntegrity = true;
     this.ranked = options.settings.ranked;
     this.competitive = options.settings.competitive;
     this.spectating = options.settings.spectating;
@@ -569,9 +570,11 @@ module.exports = class Game {
         this.makeUnranked();
         this.makeUncompetitive();
 
-        if (!player.isBot) {
-          const userId = player.userId || player.user.id;
-          this.penalizePlayerForLeaving(userId);
+        if (this.breakIntegrity()) {
+          if (!player.isBot) {
+            const userId = player.userId || player.user.id;
+            this.penalizePlayerForLeaving(userId);
+          }
         }
       }
 
@@ -613,9 +616,11 @@ module.exports = class Game {
     this.makeUnranked();
     this.makeUncompetitive();
 
-    if (!player.isBot) {
-      const userId = player.userId || player.user.id;
-      this.penalizePlayerForLeaving(userId);
+    if (this.breakIntegrity()) {
+      if (!player.isBot) {
+        const userId = player.userId || player.user.id;
+        this.penalizePlayerForLeaving(userId);
+      }
     }
 
     this.queueAction(
@@ -650,6 +655,18 @@ module.exports = class Game {
 
     this.broadcast("spectatorCount", this.spectators.length);
     redis.setSpectatorCount(this.id, this.spectators.length);
+  }
+
+  // Returns if the integrity of the game was broken for the first time or not
+  breakIntegrity() {
+    const hadIntegrity = this.hasIntegrity;
+    this.hasIntegrity = false;
+
+    if (hadIntegrity) {
+      this.queueAlert("The game is now safe to leave without penalty.");
+    }
+
+    return hadIntegrity;
   }
 
   makeUnranked() {
@@ -2496,22 +2513,33 @@ module.exports = class Game {
 
     const now = Date.now();
 
+    // Determine the penalty level based on number of violations associated with record (if any) and amount of grace
+    const penaltyLevel = (leavePenalty ? leavePenalty.level : 0) - constants.leavePenaltyForgivenessAmount;
+    const isForgiven = penaltyLevel < 0;
+
+    var penaltyMillis = constants.leavePenaltyMinimumMillis + (penaltyLevel * constants.leavePenaltyPerLevelMillis);
+    if (penaltyMillis > constants.leavePenaltyMaximumMillis) {
+      penaltyMillis = constants.leavePenaltyMaximumMillis;
+    }
+    if (isForgiven) {
+      penaltyMillis = 0;
+    }
+
+    const expiresOn = now + constants.leavePenaltyDurationMillis;
+    const canPlayAfter = now + penaltyMillis;
+
     if (!leavePenalty) {
-      // No penalty recorded - create a new one starting at level 0 with no penalty (1st leave per record is forgiven)
+      // No penalty recorded - create a new record
       leavePenalty = new models.LeavePenalty({
         userId: userId,
-        expiresOn: now + constants.leavePenaltyDurationMillis,
-        canPlayAfter: 0,
+        expiresOn: expiresOn,
+        canPlayAfter: canPlayAfter,
         level: 0,
       });
       await leavePenalty.save();
     }
     else {
-      // Penalty already recorded - calculate the penalty based on level up to a maximum then push back the record expiration as if it were new
-      var penaltyMillis =  constants.leavePenaltyMinimumMillis + ((leavePenalty.level + 1) * constants.leavePenaltyPerLevelMillis);
-      if (penaltyMillis > constants.leavePenaltyMaximumMillis) {
-        penaltyMillis = constants.leavePenaltyMaximumMillis;
-      }
+      // Penalty already recorded - update the existing one
       await models.LeavePenalty.updateOne(
         { userId: userId },
         {
@@ -2519,8 +2547,8 @@ module.exports = class Game {
             level: 1,
           },
           $set: {
-            expiresOn: now + constants.leavePenaltyDurationMillis,
-            canPlayAfter: now + penaltyMillis,
+            expiresOn: expiresOn,
+            canPlayAfter: canPlayAfter,
           }
         }
       ).exec();
