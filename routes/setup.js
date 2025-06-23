@@ -51,7 +51,7 @@ function generateMafiaSetupManifest(setup, roles) {
       `Banished count: ${setup.banished}`,
       `Talking dead enabled: ${setup.talkingDead}`,
       `Voting dead enabled: ${setup.votingDead}`,
-      `One night mode: ${setup.OneNightMode}`,
+      `Majority Voting: ${setup.majorityVoting}`,
       `Hidden converts: ${setup.hiddenConverts}`,
       `Role sharing: ${setup.RoleShare}`,
       `Alignment sharing: ${setup.AlignmentShare}`,
@@ -613,7 +613,7 @@ router.post("/create", async function (req, res) {
     setup.banished = Number(setup.banished || 0);
     setup.talkingDead = Boolean(setup.talkingDead);
     setup.votingDead = Boolean(setup.votingDead);
-    setup.OneNightMode = Boolean(setup.OneNightMode);
+    setup.majorityVoting = Boolean(setup.majorityVoting);
     setup.hiddenConverts = Boolean(setup.hiddenConverts);
     setup.RoleShare = Boolean(setup.RoleShare);
     setup.AlignmentShare = Boolean(setup.AlignmentShare);
