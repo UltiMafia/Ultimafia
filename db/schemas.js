@@ -151,7 +151,7 @@ var schemas = {
     banished: Number,
     talkingDead: Boolean,
     votingDead: Boolean,
-    OneNightMode: Boolean,
+    majorityVoting: Boolean,
     hiddenConverts: Boolean,
     RoleShare: Boolean,
     AlignmentShare: Boolean,

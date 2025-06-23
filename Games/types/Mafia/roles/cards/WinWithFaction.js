@@ -18,7 +18,7 @@ const {
 module.exports = class WinWithFaction extends Card {
   constructor(role) {
     super(role);
-
+/*
     this.actions = [
       {
         priority: PRIORITY_DAY_DEFAULT + 20,
@@ -45,13 +45,13 @@ module.exports = class WinWithFaction extends Card {
             this.game.getStateName() == "Night" ||
             this.game.getStateName() == "Dawn"
           ) {
-            if (this.game.isOneNightMode() && MAFIA_IN_GAME && CULT_IN_GAME) {
+            if (this.game.IsBloodMoon && MAFIA_IN_GAME && CULT_IN_GAME) {
               for (let player of this.game.players) {
                 player.holdItem("ExtraCondemn", "Extra Condemn");
               }
             }
             if (
-              this.game.isOneNightMode() &&
+              this.game.IsBloodMoon &&
               (MAFIA_IN_GAME || CULT_IN_GAME) &&
               SUPERHERO_IN_GAME
             ) {
@@ -64,7 +64,7 @@ module.exports = class WinWithFaction extends Card {
         },
       },
     ];
-
+*/
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
@@ -73,7 +73,7 @@ module.exports = class WinWithFaction extends Card {
         }
 
         //Const
-        const ONE_NIGHT = this.game.isOneNightMode();
+        const ONE_NIGHT = (this.game.IsBloodMoon == true);
         const CULT_IN_GAME =
           this.game.players.filter((p) => CULT_FACTIONS.includes(p.faction))
             .length > 0;
@@ -331,27 +331,7 @@ module.exports = class WinWithFaction extends Card {
         if (this.game.hasBeenDay == true) {
           //Cult
           if (CULT_FACTIONS.includes(this.player.faction) && ONE_NIGHT) {
-            var deadCult = this.game
-              .deadPlayers()
-              .filter((p) => p.faction == this.player.faction);
-            var deadThird = this.game
-              .deadPlayers()
-              .filter(
-                (p) => this.game.getRoleAlignment(p.role.name) == "Independent"
-              );
-            var deadMafia = this.game
-              .deadPlayers()
-              .filter((p) => MAFIA_FACTIONS.includes(p.faction));
-            if (
-              (MAFIA_IN_GAME && deadMafia.length <= 0) ||
-              this.game.deadPlayers().length <= 0
-            )
-              return;
-            if (
-              (SUPERHERO_IN_GAME && deadThird.length <= 0) ||
-              this.game.deadPlayers().length <= 0
-            )
-              return;
+            var deadCult = this.game.BloodMoonKills.filter((p) => p.faction == this.player.faction);
             if (deadCult.length <= 0 || this.game.deadPlayers().length <= 0) {
               factionWin(this);
               return;
@@ -360,27 +340,7 @@ module.exports = class WinWithFaction extends Card {
 
           //Mafia
           if (MAFIA_FACTIONS.includes(this.player.faction) && ONE_NIGHT) {
-            var deadMafia = this.game
-              .deadPlayers()
-              .filter((p) => p.faction == this.player.faction);
-            var deadThird = this.game
-              .deadPlayers()
-              .filter(
-                (p) => this.game.getRoleAlignment(p.role.name) == "Independent"
-              );
-            var deadCult = this.game
-              .deadPlayers()
-              .filter((p) => CULT_FACTIONS.includes(p.faction));
-            if (
-              (CULT_IN_GAME && deadCult.length <= 0) ||
-              this.game.deadPlayers().length <= 0
-            )
-              return;
-            if (
-              SUPERHERO_IN_GAME == true &&
-              (deadThird.length <= 0 || this.game.deadPlayers().length <= 0)
-            )
-              return;
+            var deadMafia = this.game.BloodMoonKills.filter((p) => p.faction == this.player.faction);
             if (deadMafia.length <= 0 || this.game.deadPlayers().length <= 0) {
               factionWin(this);
               return;
@@ -389,20 +349,12 @@ module.exports = class WinWithFaction extends Card {
 
           //Village
           if (this.player.faction == "Village" && ONE_NIGHT) {
-            var deadMafia = this.game
-              .deadPlayers()
-              .filter((p) => MAFIA_FACTIONS.includes(p.faction));
-            var deadCult = this.game
-              .deadPlayers()
-              .filter((p) => CULT_FACTIONS.includes(p.faction));
-            var deadThird = this.game
-              .deadPlayers()
-              .filter(
+            var deadMafia = this.game.BloodMoonKills.filter((p) => MAFIA_FACTIONS.includes(p.faction));
+            var deadCult = this.game.BloodMoonKills.filter((p) => CULT_FACTIONS.includes(p.faction));
+            var deadThird = this.game.BloodMoonKills.filter(
                 (p) => this.game.getRoleAlignment(p.role.name) == "Independent"
               );
-            var deadVillage = this.game
-              .deadPlayers()
-              .filter((p) => p.faction == "Village");
+            var deadVillage = this.game.BloodMoonKills.filter((p) => p.faction == "Village");
             if (
               CULT_IN_GAME == true &&
               (deadCult.length <= 0 || this.game.deadPlayers().length <= 0)
@@ -536,7 +488,7 @@ module.exports = class WinWithFaction extends Card {
 
         if (
           this.game.IndependentFaction == true &&
-          this.game.isOneNightMode()
+          this.game.IsBloodMoon == true
         ) {
           this.player.queueAlert(
             "If a Superhero Spawns, You will need to kill an Independent role in order to win in addition to a Mafia/Cult."
@@ -644,6 +596,14 @@ module.exports = class WinWithFaction extends Card {
           }
           this.killedAssassin = true;
         }
+
+      if(this.game.IsBloodMoon == true){
+        if(this.game.BloodMoonKills == null){
+          this.game.BloodMoonKills = [];
+        }
+        this.game.BloodMoonKills.push(player);
+      }
+        
       },
       state: function (stateInfo) {
         if (stateInfo.name.match(/Dawn/) || stateInfo.name.match(/Dusk/)) {

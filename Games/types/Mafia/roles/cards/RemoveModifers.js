@@ -22,9 +22,9 @@ module.exports = class RemoveModifers extends Card {
             let currRoleData = this.target.role.data;
 
             this.target.setRole(`${currRoleName}`, currRoleData,
-              true,
-              true,
-              true,
+              false,
+              false,
+              false,
               "No Change", "NoStartingItems");
           },
         },

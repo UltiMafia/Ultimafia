@@ -4525,11 +4525,11 @@ const roleData = {
       alignment: "Independent",
       tags: ["Speaking", "Redirection", "Control", "Visiting", "Hostile", "Advanced"],
       description: [
-        "Attaches strings to a player each night.",
+        "Attaches strings to a player each night and learn their role.",
         "Can redirect all players with attached strings at night.",
         "Wins among the last two standing.",
       ],
-      nightOrder: [["Control Players",(PRIORITY_REDIRECT_ACTION)]],
+      nightOrder: [["Control Players",(PRIORITY_REDIRECT_ACTION)], ["Attach Strings",(0)] ],
     },
 
     //Events
@@ -4738,6 +4738,16 @@ const roleData = {
       description: [
         "If this Event occurs, The game will end in 5 Minutes and No One wins if the game doesn't end before the 5 Minutes are up.",
         "This is uneffected by Win-con altering abilites.",
+      ],
+    },
+    "Blood Moon": {
+      alignment: "Event",
+      tags: ["Event", "Game Ender"],
+      description: [
+        "If this Event Occurs, The game will end the following day.",
+        "If all Mafia survive, Mafia wins.",
+        "If all Cult survive, Cult wins.",
+        "If at least 1 member from each Evil faction is killed, Village Wins.",
       ],
     },
     Necronomicon: {

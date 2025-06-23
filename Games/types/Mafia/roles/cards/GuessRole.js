@@ -12,9 +12,22 @@ module.exports = class GuessRole extends Card {
         flags: ["voting"],
         action: {
           labels: ["investigate", "role"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
-            this.actor.role.data.targetPlayer = this.target;
+            //this.actor.role.data.targetPlayer = this.target;
+            let targetRole = this.actor.role.data.targetRole;
+              if (targetRole) {
+              let info = this.game.createInformation(
+                "GuessRoleInfo",
+                this.actor,
+                this.game,
+                [this.target],
+                [targetRole]
+              );
+              info.processInfo();
+
+              this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
+              delete this.actor.role.data.targetRole;
           },
         },
       },
@@ -25,8 +38,11 @@ module.exports = class GuessRole extends Card {
         AllRolesFilters: ["addedRoles"],
         action: {
           labels: ["investigate", "role"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT-1,
           run: function () {
+            
+            this.actor.role.data.targetRole = this.target;
+            /*
             let targetPlayer = this.actor.role.data.targetPlayer;
 
             if (targetPlayer) {
@@ -41,6 +57,7 @@ module.exports = class GuessRole extends Card {
 
               this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
               delete this.actor.role.data.targetPlayer;
+              */
             }
           },
         },
