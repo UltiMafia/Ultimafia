@@ -25,6 +25,15 @@ module.exports = class Puppeteering extends Card {
               this.actor.role.data.controlledPlayers = [];
             }
             this.actor.role.data.controlledPlayers.push(this.target);
+            let info = this.game.createInformation(
+              "RoleInfo",
+              this.actor,
+              this.game,
+              this.target
+            );
+            info.processInfo();
+            var alert = `:invest: ${info.getInfoFormated()}.`;
+            this.actor.queueAlert(alert);
           },
         },
       },

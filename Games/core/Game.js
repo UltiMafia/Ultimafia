@@ -1706,10 +1706,10 @@ module.exports = class Game {
         ),
       ];
     }
-    if (this.setup.OneNightMode && this.currentState == 0) {
+    if (this.setup.majorityVoting && this.currentState == 0) {
       [
         this.sendAlert(
-          `:crystal2: ${this.setup.name}: This setup is using One Night Mode! The game will end after Day 1. If all members of the mafia/cult are alive Mafia/cult wins. If any mafia member is killed town wins. If No Mafia/Cult are in game if any village aligned players die, Village loses. If Mafia and Cult are in a game, Then 1 mafia and 1 Cult must be killed for village to win, 1 Cult and 0 mafia must be killed for Mafia to win, 1 Mafia and 0 cult must be killed for cult to win.`,
+          `:crystal2: ${this.setup.name}: This setup is using Majority Voting! A player must get at least 50% of the vote to be condemned`,
           undefined,
           { color: " #713cfe" }
         ),
@@ -2267,8 +2267,8 @@ module.exports = class Game {
     return this.votingDead || this.setup.votingDead;
   }
 
-  isOneNightMode() {
-    return this.setup.OneNightMode;
+  isMajorityVoting() {
+    return this.setup.majorityVoting;
   }
 
   isNoVeg() {

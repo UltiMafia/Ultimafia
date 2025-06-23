@@ -160,7 +160,7 @@ export default function CreateMafiaSetup() {
       type: "boolean",
     },
     {
-      label: "Maority Voting",
+      label: "Majority Voting",
       ref: "majorityVoting",
       value: false,
       type: "boolean",

@@ -2,6 +2,16 @@ const Event = require("../Event");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 const {
+  EVIL_FACTIONS,
+  NOT_EVIL_FACTIONS,
+  CULT_FACTIONS,
+  MAFIA_FACTIONS,
+  FACTION_LEARN_TEAM,
+  FACTION_WIN_WITH_MAJORITY,
+  FACTION_WITH_MEETING,
+  FACTION_KILL,
+} = require("../const/FactionList");
+const {
   PRIORITY_ITEM_GIVER_DEFAULT,
   PRIORITY_BECOME_DEAD_ROLE,
 } = require("../const/Priority");
@@ -28,6 +38,10 @@ module.exports = class BloodMoon extends Event {
           );
         }
         this.game.IsBloodMoon = true;
+
+        if(this.game.BloodMoonKills == null){
+          this.game.BloodMoonKills = [];
+        }
 
             const CULT_IN_GAME =
             this.game.players.filter((p) => CULT_FACTIONS.includes(p.faction))

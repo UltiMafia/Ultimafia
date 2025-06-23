@@ -31,7 +31,7 @@ module.exports = class Meeting {
     this.noRecord = false;
     this.liveJoin = false;
     this.randomizeTieResults = false;
-    this.requireMajority = false;
+    this.requireMajority = (game.isMajorityVoting() && this.name == "Village");
     this.votesInvisible = game.setup.votesInvisible;
     this.mustAct = game.isMustAct() && this.name != "Village";
     this.mustCondemn = game.isMustCondemn() && this.name == "Village";
@@ -845,7 +845,7 @@ module.exports = class Meeting {
           else finalTarget = "No";
         } else finalTarget = highest.targets[0];
 
-      if(this.requireMajority == true && !(highest.votes > Math.floor(totalVoteCount/2))){
+      if(this.requireMajority == true && (highest.votes < Math.ceil(totalVoteCount/2))){
         finalTarget = "*";
       }
       } else {
