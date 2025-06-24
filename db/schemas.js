@@ -528,7 +528,6 @@ var schemas = {
   DailyChallengeRefresh: new mongoose.Schema({
     userId: { type: String, index: true },
     when: { type: Number, index: true },
-    type: { type: String, index: true },
   }),
   LeavePenalty: new mongoose.Schema({
     userId: { type: String, index: true },
