@@ -110,6 +110,7 @@ var schemas = {
     kudos: { type: Number, default: 0 },
     karma: { type: Number, default: 0 },
     dailyChallenges: [],
+    dailyChallengesCompleted: { type: Number, default: 0 },
     nameChanged: false,
     bdayChanged: false,
     playedGame: false,
