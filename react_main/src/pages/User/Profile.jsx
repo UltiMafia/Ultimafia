@@ -259,19 +259,26 @@ export default function Profile() {
   }
 
   function onLoveUserClick() {
-    if (isLove && (love === null || love === undefined)) {
-      var shouldCancel = window.confirm(
-        "Are you sure you want to cancel your love? </3"
-      );
-      if (!shouldCancel) {
-        return;
+    if (isLove) {
+      if ((love === null || love === undefined)) {
+        var shouldCancel = window.confirm(
+          "Are you sure you want to cancel your love?"
+        );
+        if (!shouldCancel) {
+          return;
+        }
+      }
+      else if (love.type === "Lover") {
+        var shouldBreakup = window.confirm(
+          "Are you sure you want to break up?"
+        );
+        if (!shouldBreakup) {
+          return;
+        }
       }
     }
-    if (isLove && love.type === "Lover") {
-      var shouldBreakup = window.confirm(
-        "Are you sure you want to break up? </3"
-      );
-      if (!shouldBreakup) {
+    else {
+      if (!window.confirm("Are you sure you wish to send a love request?")) {
         return;
       }
     }
@@ -309,7 +316,7 @@ export default function Profile() {
     }
     if (isMarried && love.type === "Married") {
       var shouldDivorce = window.confirm(
-        "Are you sure you want to divorce? </3"
+        "Are you sure you want to divorce?"
       );
       if (!shouldDivorce) {
         return;
