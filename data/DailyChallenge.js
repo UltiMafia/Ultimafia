@@ -13,6 +13,7 @@ const DailyChallengeData = {
       tier: 1,
       internal: ["PlayTypeOfGame"],
       description: "Complete a game of (GameType) with no vegs or leavers.",
+      extraData: "Game Type",
       reward: 2,
     },
     "Play 3 Games": {
@@ -50,12 +51,13 @@ const DailyChallengeData = {
       tier: 2,
       internal: ["WinAsRole"],
       description: "Win as (RoleName) in a game with no vegs or leavers.",
+      extraData: "Role Name",
       reward: 5,
     },
     "Win in a Featured Setup": {
       ID: "Advanced3",
       tier: 2,
-      internal: ["WinAsRole"],
+      internal: ["WinFeatured"],
       description: "Win in a featured mafia setup in a game with no vegs or leavers.",
       reward: 5,
       incompatible: ["Basic4"],
