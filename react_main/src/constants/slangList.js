@@ -232,6 +232,10 @@ export const slangList = {
     definition: "Villager.",
     emoji: "💙",
   },
+  lb: {
+    definition: "Last blue. Refers to the last remaining Villager alive.",
+    emoji: "💙",
+  },
   townread: {
     definition:
       "Townread. To characterize a player or their actions as town, usually without explicit evidence.",
