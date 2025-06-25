@@ -43,7 +43,7 @@ export const AchievementData = {
       reward: 20,
       roles: ["Mafioso"],
     },
-    "Acceptable Losses": {
+    "Even Death May Die": {
       ID: "Mafia7",
       internal: ["AllDeadAreCult"],
       description:
@@ -91,7 +91,7 @@ export const AchievementData = {
       ID: "Mafia13",
       internal: ["Fiddle2PRRoles"],
       description:
-        "As Fiddler, Fiddle 2 diffrent village power roles during a game.",
+        "As Fiddler, Fiddle 2 different village power roles during a game.",
       reward: 15,
       roles: ["Fiddler"],
     },
@@ -264,7 +264,7 @@ export const AchievementData = {
       ID: "Mafia36",
       internal: ["SilencerSilence2PR"],
       description:
-        "As Silencer, Silence 2 diffrent village power roles during a game.",
+        "As Silencer, Silence 2 different village power roles during a game.",
       reward: 15,
       roles: ["Silencer"],
     },
