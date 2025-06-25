@@ -4231,6 +4231,16 @@ const roleData = {
         "Wins if Hellhounds outnumber all other living parties.",
       ],
       nightOrder: [["Kill",(PRIORITY_KILL_GUESS_ROLE)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Goofy",
+          value: "goofy",
+        },
+      ],
     },
     Shinigami: {
       alignment: "Independent",
