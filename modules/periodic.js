@@ -4,6 +4,7 @@ const path = require("path");
 const child_process = require("child_process");
 
 const constants = require("../data/constants");
+const DailyChallengeData = require("../data/DailyChallenge");
 const models = require("../db/models");
 const redis = require("./redis");
 const logger = require("./logging")(".");
@@ -199,6 +200,61 @@ module.exports = function () {
         }
       },
       interval: 1000 * 7200,
+    },
+    refreshDailyChallenges: {
+      run: async function () {
+        const now = Date.now();
+
+        // Query all heart refreshes that have elapsed
+        let refreshedHearts = await models.DailyChallengeRefresh.find({
+          when: { $lt: now },
+        }).select("userId type");
+        for (let refreshedHeart of refreshedHearts) {
+          const userId = refreshedHeart.userId;
+          const type = refreshedHeart.type;
+
+           let  Object.entries(DailyChallengeData);
+          
+          let tierOne = Random.randArrayVal(Object.entries(DailyChallengeData).filter((c) => c[1].tier == 1));
+          let tierTwo = Random.randArrayVal(Object.entries(DailyChallengeData).filter((c) => c[1].tier == 2));
+          let tierThree = Random.randArrayVal(Object.entries(DailyChallengeData).filter((c) => c[1].tier == 3));
+          //let tierFour = Random.randArrayVal(Object.entries(DailyChallengeData).filter((c) => c[1].tier == 4));
+          //Format is [ID, progress, extraData]
+          let firstChallenge = [tierOne.ID, 0, tierOne.extraData];
+          let secondChallenge = [tierTwo.ID, 0, tierTwo.extraData];
+          let thridChallenge = [tierThree.ID, 0, tierThree.extraData];
+
+          // Refresh the user's heart type to capacity
+
+        const result1 = await models.User.updateOne(
+          { id: player.user.id },
+          {
+            $set: {
+              dailyChallenges: [firstChallenge, secondChallenge, thridChallenge],
+            },
+          }
+        ).exec();
+          
+          if (result1.modifiedCount === 0) {
+            console.warn(
+              `Failed to refresh daily challenges for userId[${userId}]`
+            );
+          }
+
+          // Remove the heart refresh so that it won't trigger again
+          const result2 = await models.DailyChallengeRefresh.deleteOne({
+            userId: userId,
+          }).exec();
+          if (result2.deletedCount === 0) {
+            console.warn(
+              `Failed to delete daily Challenge refresh for userId[${userId}]`
+            );
+          }
+
+          await redis.cacheUserInfo(userId, true);
+        }
+      },
+      interval: 1000 * 60,
     },
     expireLeavePenalties: {
       run: async function () {
