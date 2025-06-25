@@ -1,4 +1,5 @@
 const shortid = require("shortid");
+const DailyChallengeData = require("../../data/DailyChallenge");
 
 module.exports = class DailyChallenge {
   constructor(name, player) {
@@ -6,6 +7,11 @@ module.exports = class DailyChallenge {
     this.name = name;
     this.game = player.game;
     this.player = player;
+
+    this.ID = Object.entries(DailyChallengeData)[this.name].ID;
+    this.reward = Object.entries(DailyChallengeData)[this.name].reward;
+
+    
     this.listeners = {};
   }
 
