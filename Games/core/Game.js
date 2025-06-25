@@ -2758,6 +2758,11 @@ module.exports = class Game {
         } else {
           player.EarnedAchievements = [];
         }
+
+        if(this.hasIntegrity && !this.private){
+         coinsEarned += player.DailyPayout;
+        }
+        
         await models.User.updateOne(
           { id: player.user.id },
           {
@@ -2765,6 +2770,7 @@ module.exports = class Game {
             $addToSet: { achievements: { $each: player.EarnedAchievements } },
             $set: {
               stats: player.user.stats,
+              dailyChallenges: player.user.dailyChallenges,
               playedGame: true,
               achievementCount: player.user.achievements.length,
               winRate:
@@ -2775,6 +2781,7 @@ module.exports = class Game {
               rankedPoints: rankedPoints,
               competitivePoints: competitivePoints,
               coins: coinsEarned,
+              dailyChallengesCompleted: player.DailyCompleted,
               redHearts: this.ranked ? -1 : 0,
               goldHearts: this.competitive ? -1 : 0,
               kudos:
