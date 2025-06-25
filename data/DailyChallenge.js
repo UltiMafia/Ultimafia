@@ -8,11 +8,11 @@
 //Currently thinking 2/5/7 for coin rewards
 
 const DailyChallengeData = {
-    "Play a game of (GameType)": {
+    "Play a game of (ExtraData)": {
       ID: "Basic1",
       tier: 1,
       internal: ["PlayTypeOfGame"],
-      description: "Complete a game of (GameType) with no vegs or leavers.",
+      description: "Complete a game of (ExtraData) with no vegs or leavers.",
       extraData: "Game Type",
       reward: 2,
     },
@@ -50,11 +50,11 @@ const DailyChallengeData = {
       reward: 5,
     },
     */
-    "Win as (Role)": {
+    "Win as (ExtraData)": {
       ID: "Advanced2",
       tier: 2,
       internal: ["WinAsRole"],
-      description: "Win as (RoleName) in a game with no vegs or leavers.",
+      description: "Win as (ExtraData) in a game with no vegs or leavers.",
       extraData: "Role Name",
       reward: 5,
     },
