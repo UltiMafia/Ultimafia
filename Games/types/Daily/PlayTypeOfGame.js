@@ -1,5 +1,4 @@
 const DailyChallenge = require("../../core/DailyChallenge");
-const DailyChallengeData = require("../../data/DailyChallenge");
 
 module.exports = class PlayTypeOfGame extends DailyChallenge {
   constructor(name, player) {
