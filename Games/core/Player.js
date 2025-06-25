@@ -466,6 +466,31 @@ module.exports = class Player {
           `:system: Achievement Info for ${achievementNameToQuery}- ${achievement.description}| ${hasComplete}`
         );
         return;
+        case "daily":
+        let dailyInfo = [];
+        let tempDailyChallenge = this.user.dailyChallenges.map((d) => d[0]);
+        for (let Challenge of Object.entries(
+        DailyChallengeData).filter((DailyChallenge) => !tempDailyChallenge.includes(DailyChallenge[1].ID))) {
+        let extraData;
+        for(let day of this.user.dailyChallenges){
+          if(day[0] == Challenge.ID){
+            extraData == day[2];
+          }
+        }
+          
+        dailyInfo.push(`${Challenge[0].replace(`(ExtraData)`,extraData)}: ${Challenge[1].description.replace(`(ExtraData)`,extraData)}.`)
+      } //End For Loop
+        
+        if (dailyInfo <= 0) {
+          this.sendAlert(
+            `:system: No daily challenges.`
+          );
+          return;
+        }
+        this.sendAlert(
+          `:system: ${dailyInfo.join(" ,")}`
+        );
+        return;
       case "ban":
       case "kick":
         // Allow /kick to be used to kick players during veg votekick.
