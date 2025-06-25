@@ -1774,6 +1774,8 @@ router.post("/delete", async function (req, res) {
           itemsOwned: "",
           stats: "",
           achievements: "",
+          dailyChallenges: "",
+          dailyChallengesCompleted: "",
         },
       }
     ).exec();

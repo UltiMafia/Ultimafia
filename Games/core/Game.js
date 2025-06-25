@@ -2770,7 +2770,6 @@ module.exports = class Game {
             $addToSet: { achievements: { $each: player.EarnedAchievements } },
             $set: {
               stats: player.user.stats,
-              dailyChallenges: player.user.dailyChallenges,
               playedGame: true,
               achievementCount: player.user.achievements.length,
               winRate:
@@ -2781,7 +2780,6 @@ module.exports = class Game {
               rankedPoints: rankedPoints,
               competitivePoints: competitivePoints,
               coins: coinsEarned,
-              dailyChallengesCompleted: player.DailyCompleted,
               redHearts: this.ranked ? -1 : 0,
               goldHearts: this.competitive ? -1 : 0,
               kudos:
@@ -2789,6 +2787,20 @@ module.exports = class Game {
             },
           }
         ).exec();
+
+        if(player.dailyTracker && player.dailyTracker.length >= 1){
+        await models.User.updateOne(
+          { id: player.user.id },
+          {
+            $set: {
+              dailyChallenges: player.user.dailyChallenges.map((day) => `${day[0]}:${day[1]}:${day[2]}`),
+            },
+            $inc: {
+              dailyChallengesCompleted: player.DailyCompleted,
+            },
+          }
+        ).exec(); 
+        }
 
         if (heartType && !player.isBot) {
           let heartRefresh = await models.HeartRefresh.findOne({

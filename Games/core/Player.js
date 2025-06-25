@@ -469,8 +469,7 @@ module.exports = class Player {
         case "daily":
         let dailyInfo = [];
         let tempDailyChallenge = this.user.dailyChallenges.map((d) => d[0]);
-        for (let Challenge of Object.entries(
-        DailyChallengeData).filter((DailyChallenge) => !tempDailyChallenge.includes(DailyChallenge[1].ID))) {
+        for (let Challenge of Object.entries(DailyChallengeData).filter((DailyChallenge) => tempDailyChallenge.includes(DailyChallenge[1].ID))) {
         let extraData;
         for(let day of this.user.dailyChallenges){
           if(day[0] == Challenge.ID){
@@ -480,6 +479,10 @@ module.exports = class Player {
           
         dailyInfo.push(`${Challenge[0].replace(`(ExtraData)`,extraData)}: ${Challenge[1].description.replace(`(ExtraData)`,extraData)}.`)
       } //End For Loop
+
+       this.sendAlert(
+            `:system: ${this.user.DailyChallenges}`
+          );
         
         if (dailyInfo <= 0) {
           this.sendAlert(
@@ -826,7 +829,7 @@ module.exports = class Player {
         DailyChallengeData
       ).filter(
         (DailyChallenge) =>
-          !tempDailyChallenge.includes(DailyChallenge[1].ID)
+          tempDailyChallenge.includes(DailyChallenge[1].ID)
       )) {
         let atemp = this.DailyTracker.filter(
           (a) => a.name == Challenge[0]

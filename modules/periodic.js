@@ -2,7 +2,7 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const child_process = require("child_process");
-
+const Random = require("../lib/Random");
 const constants = require("../data/constants");
 const DailyChallengeData = require("../data/DailyChallenge");
 const models = require("../db/models");
@@ -211,7 +211,6 @@ module.exports = function () {
         }).select("userId type");
         for (let refreshedHeart of refreshedHearts) {
           const userId = refreshedHeart.userId;
-          const type = refreshedHeart.type;
 
           //let  Object.entries(DailyChallengeData);
           
@@ -235,11 +234,12 @@ module.exports = function () {
               }
             }
           }
+          Challenges = Challenges.map((p) => `${p[0]}:${p[1]}:${p[2]}`);
 
           // Refresh the user's heart type to capacity
 
         const result1 = await models.User.updateOne(
-          { id: player.user.id },
+          { id: userId },
           {
             $set: {
               dailyChallenges: Challenges,

@@ -109,7 +109,7 @@ var schemas = {
     competitivePoints: { type: Number, default: 0 },
     kudos: { type: Number, default: 0 },
     karma: { type: Number, default: 0 },
-    dailyChallenges: [],
+    dailyChallenges: [String],
     dailyChallengesCompleted: { type: Number, default: 0 },
     nameChanged: false,
     bdayChanged: false,

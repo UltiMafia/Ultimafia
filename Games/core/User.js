@@ -16,7 +16,7 @@ module.exports = class User {
     this.competitiveCount = props.competitiveCount;
     this.stats = props.stats || dbStats.allStats();
     this.achievements = props.achievements || [];
-    this.dailyChallenges = props.dailyChallenges || [];
+    this.dailyChallenges = props.dailyChallenges.map((m) => m.split(":")) || [];
     this.playedGame = props.playedGame;
     this.referrer = props.referrer;
     this.guestId = props.guestId;

@@ -172,7 +172,7 @@ async function cacheUserInfo(userId, reset) {
     await client.setAsync(`user:${userId}:info:goldHearts`, user.goldHearts);
     await client.setAsync(`user:${userId}:info:redHeartRefreshTimestamp`, redHeartRefreshTimestamp);
     await client.setAsync(`user:${userId}:info:goldHeartRefreshTimestamp`, goldHeartRefreshTimestamp);
-    await client.setAsync(`user:${userId}:info:dailyChallenges`, user.dailyChallenges);
+    await client.setAsync(`user:${userId}:info:dailyChallenges`, JSON.stringify(user.dailyChallenges || []));
     await client.setAsync(
       `user:${userId}:info:blockedUsers`,
       JSON.stringify(user.blockedUsers || [])
@@ -250,7 +250,7 @@ async function getUserInfo(userId) {
   info.goldHearts = await client.getAsync(`user:${userId}:info:goldHearts`);
   info.redHeartRefreshTimestamp = await client.getAsync(`user:${userId}:info:redHeartRefreshTimestamp`);
   info.goldHeartRefreshTimestamp = await client.getAsync(`user:${userId}:info:goldHeartRefreshTimestamp`);
- info.dailyChallenges = await client.getAsync(`user:${userId}:info:dailyChallenges`);
+ info.dailyChallenges = JSON.parse( await client.getAsync(`user:${userId}:info:dailyChallenges`));
   info.status = await client.getAsync(`user:${userId}:info:status`);
   info.blockedUsers = JSON.parse(
     await client.getAsync(`user:${userId}:info:blockedUsers`)
