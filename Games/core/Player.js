@@ -12,6 +12,7 @@ const logger = require("../../modules/logging")("games");
 const dbStats = require("../../db/stats");
 const roleData = require("../../data/roles");
 const gameAchievements = require("../../data/Achievements");
+const DailyChallengeData = require("../../data/Achievements");
 const itemData = require("../../data/items");
 const modifierData = require("../../data/modifiers");
 const commandData = require("../../data/commands");
@@ -39,6 +40,7 @@ module.exports = class Player {
     this.effects = [];
     this.passiveEffects = [];
     this.AchievementTracker = [];
+    this.DailyTracker = [];
     this.EarnedAchievements = [];
     this.tempImmunity = {};
     this.tempAppearance = {};
@@ -787,6 +789,30 @@ module.exports = class Player {
           );
           let temp = new aClass(achievement[0], this);
           this.AchievementTracker.push(temp);
+          temp.start();
+        }
+      } //End For Loop
+    }
+    if (this.game.hasIntegrity && this.DailyTracker.length <= 0) {
+      let tempDailyChallenge = this.user.dailyChallenges.map((d) => d[0]);
+      for (let Challenge of Object.entries(
+        DailyChallengeData
+      ).filter(
+        (DailyChallenge) =>
+          !tempDailyChallenge.includes(DailyChallenge[1].ID)
+      )) {
+        let atemp = this.DailyTracker.filter(
+          (a) => a.name == Challenge[0]
+        );
+        if (atemp.length <= 0) {
+          let internal = Challenge[1].internal;
+
+          let aClass = Utils.importGameClass(
+            "Daily",
+            `${internal}`
+          );
+          let temp = new aClass(Challenge[0], this);
+          this.DailyTracker.push(temp);
           temp.start();
         }
       } //End For Loop
