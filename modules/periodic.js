@@ -224,6 +224,18 @@ module.exports = function () {
           let secondChallenge = [tierTwo.ID, 0, tierTwo.extraData];
           let thridChallenge = [tierThree.ID, 0, tierThree.extraData];
 
+          let Challenges = [firstChallenge, secondChallenge, thridChallenge];
+          for(let c of Challenges){
+            if(c[2] != null){
+              if(c[2] == "Game Type"){
+                c[2] = Random.randArrayVal(constants.gameTypes);
+              }
+              else if(c[2] == "Role Name"){
+                c[2] = Random.randArrayVal(["Villager", "Mafioso", "Hooker"]);
+              }
+            }
+          }
+
           // Refresh the user's heart type to capacity
 
         const result1 = await models.User.updateOne(
