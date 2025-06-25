@@ -23,6 +23,7 @@ const DailyChallengeData = {
       description: "Complete 3 games with no vegs or leavers.",
       reward: 2,
     },
+    /*
     "Play 3 Diffrent Setups": {
       ID: "Basic3",
       tier: 1,
@@ -39,6 +40,8 @@ const DailyChallengeData = {
       reward: 2,
       incompatible: ["Advanced3"],
     },
+    */
+    /*
     "Win a ranked game": {
       ID: "Advanced1",
       tier: 2,
@@ -46,6 +49,7 @@ const DailyChallengeData = {
       description: "Win a ranked game.",
       reward: 5,
     },
+    */
     "Win as (Role)": {
       ID: "Advanced2",
       tier: 2,
@@ -54,6 +58,7 @@ const DailyChallengeData = {
       extraData: "Role Name",
       reward: 5,
     },
+    /*
     "Win in a Featured Setup": {
       ID: "Advanced3",
       tier: 2,
@@ -62,6 +67,7 @@ const DailyChallengeData = {
       reward: 5,
       incompatible: ["Basic4"],
     },
+    */
     "Win 5 Games": {
       ID: "Hard1",
       tier: 3,
@@ -69,6 +75,7 @@ const DailyChallengeData = {
       description: "Win 5 games with no vegs or leavers.",
       reward: 10,
     },
+    /*
     "Win 3 games in a row": {
       ID: "Hard2",
       tier: 3,
@@ -119,6 +126,7 @@ const DailyChallengeData = {
       description: "Use a Gun 10 times.",
       reward: 5,
     },
+    */
 };
 
 //export const achievementList = AchievementData
