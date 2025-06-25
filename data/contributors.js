@@ -90,7 +90,6 @@ const artContributors = {
       "Illusionist",
       "Librarian",
       "Slasher",
-      "Trespasser",
       "Interrogator",
       "Fiddler",
       "Silencer",
@@ -403,6 +402,9 @@ const artContributors = {
       "Rat",
       "Tourist",
       "Umpire",
+      "Trespasser",
+      "Caser",
+      "Graverobber",
       "Mail-In Ballots",
       "Vaccination",
       "Necronomicon",
@@ -427,7 +429,7 @@ const artContributors = {
     ],
   },
   aleph: {
-    Mafia: ["Count", "Harpy", "Bawd", "Diplomat", "Associate", "Reaper", "Lifeguard", "Sidhe", "Jack", "Consigliere", "Cult Leader"],
+    Mafia: ["Count", "Harpy", "Bawd", "Diplomat", "Associate", "Reaper", "Lifeguard", "Sidhe", "Jack", "Consigliere", "Cult Leader", "Analyst"],
     Battlesnakes: ["Snake"],
   },
 };
