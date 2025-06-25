@@ -224,7 +224,7 @@ async function deleteUserInfo(userId) {
   await client.delAsync(`user:${userId}:info:goldHearts`);
   await client.delAsync(`user:${userId}:info:redHeartRefreshTimestamp`);
   await client.delAsync(`user:${userId}:info:goldHeartRefreshTimestamp`);
-  await client.setAsync(`user:${userId}:info:dailyChallenges`, user.dailyChallenges);
+  await client.delAsync(`user:${userId}:info:dailyChallenges`);
   await client.delAsync(`user:${userId}:info:status`);
   await client.delAsync(`user:${userId}:info:blockedUsers`);
   await client.delAsync(`user:${userId}:info:settings`);
@@ -250,7 +250,7 @@ async function getUserInfo(userId) {
   info.goldHearts = await client.getAsync(`user:${userId}:info:goldHearts`);
   info.redHeartRefreshTimestamp = await client.getAsync(`user:${userId}:info:redHeartRefreshTimestamp`);
   info.goldHeartRefreshTimestamp = await client.getAsync(`user:${userId}:info:goldHeartRefreshTimestamp`);
-  info.dailyChallenges = await client.setAsync(`user:${userId}:info:dailyChallenges`, user.dailyChallenges);
+ info.dailyChallenges = await client.getAsync(`user:${userId}:info:dailyChallenges`);
   info.status = await client.getAsync(`user:${userId}:info:status`);
   info.blockedUsers = JSON.parse(
     await client.getAsync(`user:${userId}:info:blockedUsers`)

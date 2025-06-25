@@ -213,7 +213,7 @@ module.exports = function () {
           const userId = refreshedHeart.userId;
           const type = refreshedHeart.type;
 
-           let  Object.entries(DailyChallengeData);
+          //let  Object.entries(DailyChallengeData);
           
           let tierOne = Random.randArrayVal(Object.entries(DailyChallengeData).filter((c) => c[1].tier == 1));
           let tierTwo = Random.randArrayVal(Object.entries(DailyChallengeData).filter((c) => c[1].tier == 2));
@@ -242,7 +242,7 @@ module.exports = function () {
           { id: player.user.id },
           {
             $set: {
-              dailyChallenges: [firstChallenge, secondChallenge, thridChallenge],
+              dailyChallenges: Challenges,
             },
           }
         ).exec();
