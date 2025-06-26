@@ -74,7 +74,7 @@ export function RoleCount(props) {
     modifiers = props.role.modifier;
   }
 let userRoleSkins1;
-  if(typeof user.settings.roleSkins == "string"){
+  if(user.settings && typeof user.settings.roleSkins == "string"){
 userRoleSkins1 = user.settings.roleSkins.split(",");
   }
 

@@ -23,7 +23,7 @@ module.exports = class WinWithIndependentMajority extends Card {
           return;
         }
 
-        const ONE_NIGHT = this.game.isOneNightMode();
+        const ONE_NIGHT = this.game.IsBloodMoon;
         const CULT_IN_GAME =
           this.game.players.filter((p) => CULT_FACTIONS.includes(p.faction))
             .length > 0;
@@ -81,7 +81,7 @@ module.exports = class WinWithIndependentMajority extends Card {
         if (player !== this.player) {
           return;
         }
-        if (this.game.isOneNightMode()) {
+        if (this.game.IsBloodMoon) {
           this.player.queueAlert(
             "Because It is One Night mode, You win if no Independents are killed. If Mafia or Cult are present then will you will need one from each to be killed to win."
           );

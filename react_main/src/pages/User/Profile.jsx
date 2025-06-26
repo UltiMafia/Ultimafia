@@ -36,6 +36,7 @@ import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 export const KUDOS_ICON = `/images/kudos.png`;
 export const KARMA_ICON = `/images/karma.png`;
 export const ACHIEVEMENTS_ICON = `/images/achievements.png`;
+export const DAILY_ICON = `/images/dailyChallenges.png`;
 
 const DEFAULT_PRONOUNS_TEXT = "Click to edit your pronouns";
 

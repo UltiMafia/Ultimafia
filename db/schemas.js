@@ -109,6 +109,8 @@ var schemas = {
     competitivePoints: { type: Number, default: 0 },
     kudos: { type: Number, default: 0 },
     karma: { type: Number, default: 0 },
+    dailyChallenges: [String],
+    dailyChallengesCompleted: { type: Number, default: 0 },
     nameChanged: false,
     bdayChanged: false,
     playedGame: false,
@@ -522,6 +524,10 @@ var schemas = {
     userId: { type: String, index: true },
     when: { type: Number, index: true },
     type: { type: String, index: true },
+  }),
+  DailyChallengeRefresh: new mongoose.Schema({
+    userId: { type: String, index: true },
+    when: { type: Number, index: true },
   }),
   LeavePenalty: new mongoose.Schema({
     userId: { type: String, index: true },

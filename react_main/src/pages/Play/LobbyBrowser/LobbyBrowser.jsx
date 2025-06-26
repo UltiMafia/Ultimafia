@@ -26,6 +26,7 @@ import { useLoading } from "../../../hooks/useLoading";
 import { GameRow } from "./GameRow";
 import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
 import { RecentlyPlayedSetups } from "./RecentlyPlayedSetups";
+import { DailyChallenges } from "./DailyChallengeDisplay";
 import { getRowStubColor } from "./gameRowColors.js";
 
 const lobbies = [
@@ -262,6 +263,11 @@ export const LobbyBrowser = () => {
       <RecentlyPlayedSetups />
     </Grid>
   );
+  const DailyChallengesInfo = (
+     <Grid item xs={12} md={5}>
+    <DailyChallenges />
+    </Grid>
+  );
   const mobileRecentlyPlayedSetups = (
     <Grid item xs={12} md={5} sx={{ mb: 1 }}>
       <RecentlyPlayedSetups />
@@ -288,6 +294,7 @@ export const LobbyBrowser = () => {
           />
         </Grid>
         {!isPhoneDevice && desktopRecentlyPlayedSetups}
+        {DailyChallengesInfo}
       </Grid>
     </>
   );

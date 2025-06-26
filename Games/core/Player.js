@@ -12,6 +12,7 @@ const logger = require("../../modules/logging")("games");
 const dbStats = require("../../db/stats");
 const roleData = require("../../data/roles");
 const gameAchievements = require("../../data/Achievements");
+const DailyChallengeData = require("../../data/DailyChallenge");
 const itemData = require("../../data/items");
 const modifierData = require("../../data/modifiers");
 const commandData = require("../../data/commands");
@@ -39,7 +40,11 @@ module.exports = class Player {
     this.effects = [];
     this.passiveEffects = [];
     this.AchievementTracker = [];
+    this.DailyTracker = [];
     this.EarnedAchievements = [];
+    this.DailyPayout = 0;
+    this.DailyCompleted = 0;
+    this.CompletedDailyChallenges = [];
     this.tempImmunity = {};
     this.tempAppearance = {};
     this.tempAppearanceMods = {};
@@ -462,6 +467,41 @@ module.exports = class Player {
           `:system: Achievement Info for ${achievementNameToQuery}- ${achievement.description}| ${hasComplete}`
         );
         return;
+        case "daily":
+        let dailyInfo = [];
+        let tempDailyChallenge = this.user.dailyChallenges.map((d) => d[0]);
+        for (let Challenge of Object.entries(DailyChallengeData).filter((DailyChallenge) => tempDailyChallenge.includes(DailyChallenge[1].ID))) {
+        let extraData;
+        for(let day of this.user.dailyChallenges){
+          if(day[0] == Challenge[1].ID){
+            /*
+          this.sendAlert(
+            `:system: day 0 ${day[0]} day 1 ${day[1]} day 2 ${day[2]}`
+          );
+          */
+            extraData = day[2];
+            dailyInfo.push(`${Challenge[0].replace(`ExtraData`,extraData)}: ${Challenge[1].description.replace(`ExtraData`,extraData)}`);
+          }
+        }
+      } //End For Loop
+      /*
+       this.sendAlert(
+            `:system: ${this.user.dailyChallenges.join(", ")}`
+          );
+          */
+        
+        if (dailyInfo.length <= 0) {
+          this.sendAlert(
+            `:system: No daily challenges.`
+          );
+          return;
+        }
+        for(let info of dailyInfo){
+          this.sendAlert(
+          `:system: ${info}`
+        );
+        }
+        return;
       case "ban":
       case "kick":
         // Allow /kick to be used to kick players during veg votekick.
@@ -787,6 +827,30 @@ module.exports = class Player {
           );
           let temp = new aClass(achievement[0], this);
           this.AchievementTracker.push(temp);
+          temp.start();
+        }
+      } //End For Loop
+    }
+    if (this.game.hasIntegrity && this.DailyTracker.length <= 0) {
+      let tempDailyChallenge = this.user.dailyChallenges.map((d) => d[0]);
+      for (let Challenge of Object.entries(
+        DailyChallengeData
+      ).filter(
+        (DailyChallenge) =>
+          tempDailyChallenge.includes(DailyChallenge[1].ID)
+      )) {
+        let atemp = this.DailyTracker.filter(
+          (a) => a.name == Challenge[0]
+        );
+        if (atemp.length <= 0) {
+          let internal = Challenge[1].internal;
+
+          let aClass = Utils.importGameClass(
+            "Daily",
+            `${internal}`
+          );
+          let temp = new aClass(Challenge[0], this);
+          this.DailyTracker.push(temp);
           temp.start();
         }
       } //End For Loop

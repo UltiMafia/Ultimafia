@@ -309,6 +309,7 @@ module.exports = {
   // Refresh every 23 hours
   redHeartRefreshIntervalMillis: 82800000,
   goldHeartRefreshIntervalMillis: 82800000,
+  dailyChallengesRefreshIntervalMillis: 82800000,
 
   // Penalty starts at 10 minutes with level 0, up to 60 minutes with level 5
   leavePenaltyMinimumMillis: 600000,
@@ -419,6 +420,7 @@ module.exports = {
     giveCoins: true,
     refundRedHearts: true,
     refundGoldHearts: true,
+    refundDailyChallenge: true,
     changeUsersName: true,
     whitelist: true,
     scheduleRestart: true,
@@ -491,6 +493,7 @@ module.exports = {
         "clearAllUserContent",
         "refundRedHearts",
         "refundGoldHearts",
+        "refundDailyChallenge",
         "whitelist",
         "disableAllCensors",
         "kick",

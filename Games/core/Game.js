@@ -18,6 +18,7 @@ const models = require("../../db/models");
 const redis = require("../../modules/redis");
 const roleData = require("../../data/roles");
 const gameAchievements = require("../../data/Achievements");
+const dailyChallengesData = require("../../data/DailyChallenge");
 const modifierData = require("../../data/modifiers");
 const protips = require("../../data/protips");
 const logger = require("../../modules/logging")("games");
@@ -1577,6 +1578,14 @@ module.exports = class Game {
     }
   }
 
+   getDailyChallenge(ID, extraData) {
+    for (let daily of Object.entries(dailyChallengesData).filter(
+      (day) => ID == day[1].ID
+    )) {
+      return `${daily[0].replace(`ExtraData`,extraData)}- ${daily[1].description.replace(`ExtraData`,extraData)} (${daily[1].reward} Coins)`;
+    }
+  }
+
   getAchievementReward(ID) {
     for (let achievement of Object.entries(gameAchievements[this.type]).filter(
       (achievementData) => ID == achievementData[1].ID
@@ -1765,6 +1774,7 @@ module.exports = class Game {
       let special;
       for (let role of this.SpecialInteractionRoles) {
         special = this.getSpecialInteractions(role);
+        /*
         if (this.isOneNightMode() && special["OneNightMode"]) {
           this.SpecialInteractionText.push(
             `:journ: ${
@@ -1774,6 +1784,7 @@ module.exports = class Game {
             }`
           );
         }
+        */
         for (let r of this.PossibleRoles) {
           if (
             special[r.split(":")[0]] &&
@@ -2482,6 +2493,24 @@ module.exports = class Game {
         }
       }
 
+      for(let player of this.players){
+          if (player.CompletedDailyChallenges.length > 0) {
+            for (let x = 0; x < player.CompletedDailyChallenges.length; x++) {
+                //this.getDailyChallenge(player.CompletedDailyChallenges[x]);
+                this.sendAlert(
+                  `:star: ${
+                    player.name
+                  } has completed the Daily Challenge: ${this.getDailyChallenge(
+                    player.CompletedDailyChallenges[x][0],player.CompletedDailyChallenges[x][1]
+                  )}`,
+                  undefined,
+                  { color: "#d1cdab" }
+                );
+              
+            }
+          }
+      }
+
       if (this.isTest) {
         this.broadcast("finished");
         await redis.deleteGame(this.id);
@@ -2758,6 +2787,11 @@ module.exports = class Game {
         } else {
           player.EarnedAchievements = [];
         }
+
+        if(this.hasIntegrity && !this.private){
+         coinsEarned += player.DailyPayout;
+        }
+        
         await models.User.updateOne(
           { id: player.user.id },
           {
@@ -2783,6 +2817,20 @@ module.exports = class Game {
           }
         ).exec();
 
+        if(player.DailyTracker && player.DailyTracker.length >= 1){
+        await models.User.updateOne(
+          { id: player.user.id },
+          {
+            $set: {
+              dailyChallenges: player.user.dailyChallenges.map((day) => `${day[0]}:${day[1]}:${day[2]}`),
+            },
+            $inc: {
+              dailyChallengesCompleted: player.DailyCompleted,
+            },
+          }
+        ).exec(); 
+        }
+
         if (heartType && !player.isBot) {
           let heartRefresh = await models.HeartRefresh.findOne({
             userId: player.user.id,
@@ -2797,6 +2845,17 @@ module.exports = class Game {
             await heartRefresh.save();
           }
         }
+          let dailyRefresh = await models.DailyChallengeRefresh.findOne({
+            userId: player.user.id,
+          }).select("_id");
+          if (!dailyRefresh) {
+            dailyRefresh = new models.DailyChallengeRefresh({
+              userId: player.user.id,
+              when: Date.now() + constants.dailyChallengesRefreshIntervalMillis,
+            });
+            await dailyRefresh.save();
+          }
+        
 
         if (!player.isBot) {
           await redis.cacheUserInfo(player.user.id, true);

@@ -7,7 +7,7 @@
 //The joke ones could have a 1/100 chance to replace a real challenge
 //Currently thinking 2/5/7 for coin rewards
 
-const DailyChallengeData = {
+export const DailyChallengeData = {
     "Play a game of ExtraData": {
       ID: "Basic1",
       tier: 1,
@@ -130,5 +130,3 @@ const DailyChallengeData = {
 };
 
 //export const achievementList = AchievementData
-
-module.exports = DailyChallengeData;

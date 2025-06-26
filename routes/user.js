@@ -64,12 +64,16 @@ router.get("/leaderboard", async function (req, res) {
     var leadingAchievementUsers = await redis.getLeaderBoardStat(
       "achievementCount"
     );
+    var leadingDailyChallengesUsers = await redis.getLeaderBoardStat(
+      "dailyChallengesCompleted"
+    );
 
     res.send({
       leadingKarmaUsers: leadingKarmaUsers,
       leadingKudosUsers: leadingKudosUsers,
       leadingStatsUsers: leadingStatsUsers,
       leadingAchievementUsers: leadingAchievementUsers,
+      leadingDailyChallengesUsers: leadingDailyChallengesUsers,
     });
   } catch (e) {
     logger.error(e);
@@ -1774,6 +1778,8 @@ router.post("/delete", async function (req, res) {
           itemsOwned: "",
           stats: "",
           achievements: "",
+          dailyChallenges: "",
+          dailyChallengesCompleted: "",
         },
       }
     ).exec();
