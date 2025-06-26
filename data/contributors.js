@@ -145,7 +145,6 @@ const artContributors = {
       "Cannibal",
       "Vengeful Spirit",
       "Serial Killer",
-      "Mastermind",
       "Alien",
     ],
   },
@@ -429,7 +428,7 @@ const artContributors = {
     ],
   },
   aleph: {
-    Mafia: ["Count", "Harpy", "Bawd", "Diplomat", "Associate", "Reaper", "Lifeguard", "Sidhe", "Jack", "Consigliere", "Cult Leader", "Analyst"],
+    Mafia: ["Count", "Harpy", "Bawd", "Diplomat", "Associate", "Reaper", "Lifeguard", "Sidhe", "Jack", "Consigliere", "Cult Leader", "Analyst", "Mastermind"],
     Battlesnakes: ["Snake"],
   },
 };
