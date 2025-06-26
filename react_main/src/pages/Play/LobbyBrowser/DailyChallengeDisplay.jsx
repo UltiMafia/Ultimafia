@@ -18,7 +18,8 @@ export const DailyChallenges = () => {
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
 
-   let dailys = user.DailyChallenges?.map((m) => m.split(","));
+   let dailys = user.dailyChallenges?.map((m) => m.split(":"));
+   
   if (!dailys || dailys.length <= 0) {
     return "";
   }
@@ -30,7 +31,7 @@ export const DailyChallenges = () => {
     let description = thing[0][1].description.replace(`ExtraData`,quest[2]);
     return (
           <div className="setup-row-info">
-            <div className="title">{name}</div>
+            <div className="title">{name}-</div>
             <div className="content">{description}</div>
             </div>
     );
@@ -45,9 +46,6 @@ export const DailyChallenges = () => {
         <Stack spacing={1}>
           {dailyRows}
         </Stack>
-        <Box sx={{ mt: 2 }}>
-          <svg ref={svgRef} />
-        </Box>
       </Box>
     </Paper>
   );

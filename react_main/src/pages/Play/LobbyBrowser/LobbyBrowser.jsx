@@ -260,14 +260,17 @@ export const LobbyBrowser = () => {
 
   const desktopRecentlyPlayedSetups = (
     <Grid item xs={12} md={5}>
+      <DailyChallenges />
       <RecentlyPlayedSetups />
     </Grid>
   );
+  /*
   const DailyChallengesInfo = (
      <Grid item xs={12} md={5}>
-    <DailyChallenges />
+    <DailyChallenges /> //{DailyChallengesInfo}
     </Grid>
   );
+  */
   const mobileRecentlyPlayedSetups = (
     <Grid item xs={12} md={5} sx={{ mb: 1 }}>
       <RecentlyPlayedSetups />
@@ -294,7 +297,7 @@ export const LobbyBrowser = () => {
           />
         </Grid>
         {!isPhoneDevice && desktopRecentlyPlayedSetups}
-        {DailyChallengesInfo}
+        
       </Grid>
     </>
   );
