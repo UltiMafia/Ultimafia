@@ -8,8 +8,8 @@ module.exports = class DailyChallenge {
     this.game = player.game;
     this.player = player;
 
-    this.ID = Object.entries(DailyChallengeData)[this.name].ID;
-    this.reward = Object.entries(DailyChallengeData)[this.name].reward;
+    this.ID = DailyChallengeData[this.name].ID;
+    this.reward = DailyChallengeData[this.name].reward;
 
     
     this.listeners = {};

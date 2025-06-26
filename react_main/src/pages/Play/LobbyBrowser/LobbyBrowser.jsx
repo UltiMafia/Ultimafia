@@ -261,7 +261,11 @@ export const LobbyBrowser = () => {
   const desktopRecentlyPlayedSetups = (
     <Grid item xs={12} md={5}>
       <RecentlyPlayedSetups />
-      <DailyChallenges />
+    </Grid>
+  );
+  const DailyChallengesInfo = (
+     <Grid item xs={12} md={5}>
+    <DailyChallenges />
     </Grid>
   );
   const mobileRecentlyPlayedSetups = (
@@ -290,6 +294,7 @@ export const LobbyBrowser = () => {
           />
         </Grid>
         {!isPhoneDevice && desktopRecentlyPlayedSetups}
+        {DailyChallengesInfo}
       </Grid>
     </>
   );

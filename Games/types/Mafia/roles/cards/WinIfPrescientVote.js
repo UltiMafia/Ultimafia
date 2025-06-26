@@ -29,8 +29,8 @@ module.exports = class WinIfPrescientVote extends Card {
           this.player.alive
         ) {
           this.predictedCorrect += 1;
-          if (this.game.isOneNightMode()) {
-            this.predictedCorrect += 1;
+          if (this.game.IsBloodMoon) {
+            this.predictedCorrect = 2;
           }
           this.player.giveEffect("ExtraLife");
           this.player.queueAlert(

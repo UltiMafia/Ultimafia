@@ -12,7 +12,7 @@ module.exports = class PlayTypeOfGame extends DailyChallenge {
         let gameType;
         for(let Challenge of this.player.user.dailyChallenges){
           if(Challenge[0] == this.ID){
-            gameType == Challenge[2];
+            gameType = Challenge[2];
           }
         }
         if(this.game.type == gameType){
@@ -20,10 +20,14 @@ module.exports = class PlayTypeOfGame extends DailyChallenge {
           this.player.DailyCompleted += 1;
           for(let Challenge of this.player.user.dailyChallenges){
           if(Challenge[0] == this.ID){
+            this.player.sendAlert(
+            `:system: Index Of Challenge ${this.player.user.dailyChallenges.indexOf(Challenge)}`
+          );
           this.player.user.dailyChallenges.splice(
           this.player.user.dailyChallenges.indexOf(Challenge),1);
           }
         }
+        this.player.CompletedDailyChallenges.push([this.ID, gameType]);
         return;
         }
      

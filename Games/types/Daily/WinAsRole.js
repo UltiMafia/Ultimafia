@@ -12,7 +12,7 @@ module.exports = class WinAsRole extends DailyChallenge {
         let roleName;
         for(let Challenge of this.player.user.dailyChallenges){
           if(Challenge[0] == this.ID){
-            roleName == Challenge[2];
+            roleName = Challenge[2];
           }
         }
         if(this.player.role.name == roleName){
@@ -25,10 +25,10 @@ module.exports = class WinAsRole extends DailyChallenge {
           this.player.DailyCompleted += 1;
           for(let Challenge of this.player.user.dailyChallenges){
           if(Challenge[0] == this.ID){
-          this.player.user.dailyChallenges.splice(
-          this.player.user.dailyChallenges.indexOf(Challenge),1);
+          this.player.user.dailyChallenges.splice(this.player.user.dailyChallenges.indexOf(Challenge),1);
           }
         }
+        this.player.CompletedDailyChallenges.push([this.ID, roleName]);
         return;
         }
         }

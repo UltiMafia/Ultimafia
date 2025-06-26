@@ -44,6 +44,7 @@ module.exports = class Player {
     this.EarnedAchievements = [];
     this.DailyPayout = 0;
     this.DailyCompleted = 0;
+    this.CompletedDailyChallenges = [];
     this.tempImmunity = {};
     this.tempAppearance = {};
     this.tempAppearanceMods = {};
@@ -472,27 +473,34 @@ module.exports = class Player {
         for (let Challenge of Object.entries(DailyChallengeData).filter((DailyChallenge) => tempDailyChallenge.includes(DailyChallenge[1].ID))) {
         let extraData;
         for(let day of this.user.dailyChallenges){
-          if(day[0] == Challenge.ID){
-            extraData == day[2];
+          if(day[0] == Challenge[1].ID){
+            /*
+          this.sendAlert(
+            `:system: day 0 ${day[0]} day 1 ${day[1]} day 2 ${day[2]}`
+          );
+          */
+            extraData = day[2];
+            dailyInfo.push(`${Challenge[0].replace(`ExtraData`,extraData)}: ${Challenge[1].description.replace(`ExtraData`,extraData)}`);
           }
         }
-          
-        dailyInfo.push(`${Challenge[0].replace(`(ExtraData)`,extraData)}: ${Challenge[1].description.replace(`(ExtraData)`,extraData)}.`)
       } //End For Loop
-
+      /*
        this.sendAlert(
-            `:system: ${this.user.DailyChallenges}`
+            `:system: ${this.user.dailyChallenges.join(", ")}`
           );
+          */
         
-        if (dailyInfo <= 0) {
+        if (dailyInfo.length <= 0) {
           this.sendAlert(
             `:system: No daily challenges.`
           );
           return;
         }
-        this.sendAlert(
-          `:system: ${dailyInfo.join(" ,")}`
+        for(let info of dailyInfo){
+          this.sendAlert(
+          `:system: ${info}`
         );
+        }
         return;
       case "ban":
       case "kick":

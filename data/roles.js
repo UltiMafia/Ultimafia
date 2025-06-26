@@ -3313,7 +3313,7 @@ const roleData = {
       category: "Chaos",
       tags: ["Conversion", "Demonic Interaction", "Basic"],
       description: [
-        "If a Demonic or Lichpin Cult role dies, the Devotee will convert to that role.",
+        "If a Demonic or Linchpin Cult role dies, the Devotee will convert to that role.",
       ],
     },
     Zealot: {
@@ -3321,7 +3321,7 @@ const roleData = {
       category: "Chaos",
       tags: ["Win Con", "Condemn Interaction", "Demonic Interaction", "Advanced"],
       description: [
-        "If a Demonic or Lichpin Cult role is condemned and the game would have ended, the game will continue for 1 more day.",
+        "If a Demonic or Linchpin Cult role is condemned and the game would have ended, the game will continue for 1 more day.",
         "On the extra Day, If a Village Aligned player is condemned, Cult Wins.",
         "If no one is condemned or a Non-Village player is condemned on the extra day, All Cult-aligned players die.",
       ],
@@ -3853,7 +3853,7 @@ const roleData = {
       tags: ["Neighbors", "Death", "Basic"],
       description: ["Wins if both of their starting neighbors are dead."],
       SpecialInteractions: {
-        OneNightMode: [
+        "Blood Moon": [
           "In One Night Mode, Fumigator Wins if one of their neighbors is killed.",
         ],
       },
@@ -4026,7 +4026,7 @@ const roleData = {
         Assassin: [
           "If an Assassin is Present, The Warlock wins if they can guess a player who is Elected as Room Leader Twice.",
         ],
-        OneNightMode: [
+        "Blood Moon": [
           "In One Night Mode, The Warlock wins if they predict the condemnation correctly Once.",
         ],
       },
@@ -4109,7 +4109,7 @@ const roleData = {
       ],
       nightOrder: [["Give Superpower",(PRIORITY_INVESTIGATIVE_DEFAULT)], ["Swap Roles", (PRIORITY_SWAP_ROLES - 1)]],
       SpecialInteractions: {
-        OneNightMode: [
+        "Blood Moon": [
           "In One Night Mode, Superheros Wins if no Independents die.",
           "In One Night Mode, Village must kill an Independent to win in addition to other evil Factions.",
           "In One Night Mode, Mafia/Cult must kill an Independent to win in addition to competing evil Factions.",

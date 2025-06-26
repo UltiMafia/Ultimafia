@@ -9,7 +9,7 @@ module.exports = class Win5Games extends DailyChallenge {
         if (!this.game.hasIntegrity || this.game.private) {
           return;
         }
-        if (Object.values(this.game.winners.groups).flat().find((p) => p === this.player)) {
+        if (!Object.values(this.game.winners.groups).flat().find((p) => p === this.player)) {
           return;
         }
         let gameType;
@@ -20,6 +20,7 @@ module.exports = class Win5Games extends DailyChallenge {
           this.player.DailyPayout += this.reward;
           this.player.DailyCompleted += 1;
           this.player.user.dailyChallenges.splice(this.player.user.dailyChallenges.indexOf(Challenge),1);
+          this.player.CompletedDailyChallenges.push([this.ID, ""]);
               return;
             }
           }
