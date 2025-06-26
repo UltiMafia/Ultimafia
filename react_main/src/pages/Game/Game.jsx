@@ -231,6 +231,11 @@ function GameWrapper(props) {
       obituariesWatchedData = JSON.parse(obituariesWatchedData);
     }
 
+    // Somehow it seems possible for obituariesWatchedData to exist but not have a state key. So we null check it to prevent crashes.
+    if (!obituariesWatchedData.state) {
+      obituariesWatchedData = { gameId: gameId, state: {} };
+    }
+
     if (obituariesWatchedData.gameId !== gameId){
       window.localStorage.removeItem("obituariesWatchedData");
       obituariesWatchedData = {};
@@ -1706,7 +1711,13 @@ function ObituariesMessage(props) {
   const noAnimation = props?.settings?.noAnimation || !shouldAnimateSource || alreadyWatched || game.review;
 
   useEffect(() => {
-    game.toggleObituaryWatched(props.stateViewing, message.source);
+    try {
+      game.toggleObituaryWatched(props.stateViewing, message.source);
+    }
+    catch (error) {
+      console.error("Failed to toggle obituary watched", e);
+    }
+
     if (!noAnimation) {
       game.setIsObituaryPlaying(true);
     }
