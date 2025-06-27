@@ -214,7 +214,7 @@ const roleData = {
       description: [
         "Guards one player every night",
         "If the target was attacked, the Bodyguard will kill one attacker and die.",
-        "If the target was the Celebrity, the Bodyguard will kill all attackers and die.",
+        //"If the target was the Celebrity, the Bodyguard will kill all attackers and die.",
       ],
       nightOrder: [["Protect",(PRIORITY_NIGHT_SAVER)],["Kill Attacker",(PRIORITY_KILL_DEFAULT)]],
       SpecialInteractions: {
@@ -1195,7 +1195,7 @@ const roleData = {
       tags: ["Condemn Interaction", "Protective", "Conversion", "Basic"],
       description: [
         "If condemned by the village, no one will die the following night.",
-        "If visited by Hooker, gets turned into Villager.",
+        //"If visited by Hooker, gets turned into Villager.",
       ],
       SpecialInteractions: {
         Hooker: [
@@ -2114,7 +2114,7 @@ const roleData = {
         "Players who visit A will be redirected to B.",
         "Players who visit B will be redirected to A.",
         "Redirection cannot be roleblocked.",
-        "Dies if visited by Drunk.",
+        //"Dies if visited by Drunk.",
       ],
       nightOrder: [["Swap Visitors",(PRIORITY_SWAP_VISITORS)]],
       SpecialInteractions: {
