@@ -2301,6 +2301,10 @@ const roleData = {
           value: "vivid",
         },
         {
+          label: "Old",
+          value: "old",
+        },
+        {
           label: "Noir",
           value: "noir",
         },
@@ -3825,6 +3829,10 @@ const roleData = {
         {
           label: "Vivid",
           value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
         },
         {
           label: "Noir",

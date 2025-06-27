@@ -64,8 +64,9 @@ export default function Contributors(props) {
           <RoleCount
             key={i}
             scheme="vivid"
-            role={roleName}
+            role={roleName.split(":")[0]}
             gameType={gameType}
+            skin={roleName.split(":")[1] || "vivid"}
           />
         ))
       );
