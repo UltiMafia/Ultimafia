@@ -236,6 +236,9 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
   let hasSpecials = (specials.length > 0);
   const SpecialInteractions = hasSpecials ? (
     <List dense sx={{ paddingTop: "0" }}>
+          <div>
+          <span style={{ fontWeight: "bold" }}>Special Interactions</span>
+          </div>
       {specials.map((special, i) => (
         <ListItem
           key={special[0] + i}
