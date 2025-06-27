@@ -1714,7 +1714,7 @@ function ObituariesMessage(props) {
     try {
       game.toggleObituaryWatched(props.stateViewing, message.source);
     }
-    catch (error) {
+    catch (e) {
       console.error("Failed to toggle obituary watched", e);
     }
 
