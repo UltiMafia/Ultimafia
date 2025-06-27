@@ -34,13 +34,13 @@ export const DailyChallenges = () => {
     let isRole = thing[0][1].extraData == "Role Name";
     return (
           <div className="setup-row-info">
-            <div className="title">{name}-{reward} Coins</div>
-            <div className="content">{isRole ? (<RoleCount
+            <div className="title">{name}- {reward} Coins {isRole ? (<RoleCount
       key={0}
       scheme="vivid"
       role={quest[2]}
       gameType={"Mafia"}
-                />) : ("")} {description}</div>
+                />) : ("")}</div>
+            <div className="content"> {description}</div>
             </div>
     );
   });
