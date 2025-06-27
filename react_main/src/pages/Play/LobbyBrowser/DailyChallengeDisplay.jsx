@@ -7,6 +7,7 @@ import { useErrorAlert } from "../../../components/Alerts";
 import { useTheme } from "@mui/styles";
 import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
 import { DailyChallengeData } from "../../../constants/DailyChallenge";
+import { RoleCount } from "../../../components/Roles";
 
 export const DailyChallenges = () => {
   const theme = useTheme();
@@ -29,10 +30,17 @@ export const DailyChallenges = () => {
    let thing = Object.entries(DailyChallengeData).filter((DailyChallenge) => quest[0] == DailyChallenge[1].ID);
   let name = thing[0][0].replace(`ExtraData`,quest[2]);
     let description = thing[0][1].description.replace(`ExtraData`,quest[2]);
+    let reward = thing[0][1].reward;
+    let isRole = thing[0][1].extraData == "Role Name";
     return (
           <div className="setup-row-info">
-            <div className="title">{name}-</div>
-            <div className="content">{description}</div>
+            <div className="title">{name}- {reward} Coins {isRole ? (<RoleCount
+      key={0}
+      scheme="vivid"
+      role={quest[2]}
+      gameType={"Mafia"}
+                />) : ("")}</div>
+            <div className="content"> {description}</div>
             </div>
     );
   });

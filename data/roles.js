@@ -214,7 +214,7 @@ const roleData = {
       description: [
         "Guards one player every night",
         "If the target was attacked, the Bodyguard will kill one attacker and die.",
-        "If the target was the Celebrity, the Bodyguard will kill all attackers and die.",
+        //"If the target was the Celebrity, the Bodyguard will kill all attackers and die.",
       ],
       nightOrder: [["Protect",(PRIORITY_NIGHT_SAVER)],["Kill Attacker",(PRIORITY_KILL_DEFAULT)]],
       SpecialInteractions: {
@@ -497,7 +497,7 @@ const roleData = {
       description: [
         "Gives out a Rifle each night.",
         "Guns can be used to shoot and kill someone during the day.",
-        "If a player shot by a Rifle shares alignment with shooter, shooter will die too. If a player shot by a Rifle is of an opposing alignment, shooter gains another rifle.",
+        "If a player killed by a Rifle shares alignment with shooter, shooter will die too. If a player killed by a Rifle is of an opposing alignment, shooter gains another rifle.",
       ],
       nightOrder: [["Give Rifle",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
@@ -1195,7 +1195,7 @@ const roleData = {
       tags: ["Condemn Interaction", "Protective", "Conversion", "Basic"],
       description: [
         "If condemned by the village, no one will die the following night.",
-        "If visited by Hooker, gets turned into Villager.",
+        //"If visited by Hooker, gets turned into Villager.",
       ],
       SpecialInteractions: {
         Hooker: [
@@ -2114,7 +2114,7 @@ const roleData = {
         "Players who visit A will be redirected to B.",
         "Players who visit B will be redirected to A.",
         "Redirection cannot be roleblocked.",
-        "Dies if visited by Drunk.",
+        //"Dies if visited by Drunk.",
       ],
       nightOrder: [["Swap Visitors",(PRIORITY_SWAP_VISITORS)]],
       SpecialInteractions: {
@@ -3854,7 +3854,7 @@ const roleData = {
       description: ["Wins if both of their starting neighbors are dead."],
       SpecialInteractions: {
         "Blood Moon": [
-          "In One Night Mode, Fumigator Wins if one of their neighbors is killed.",
+          "During the Blood Moon Event, Fumigator Wins if one of their neighbors is killed.",
         ],
       },
     },
@@ -4027,7 +4027,7 @@ const roleData = {
           "If an Assassin is Present, The Warlock wins if they can guess a player who is Elected as Room Leader Twice.",
         ],
         "Blood Moon": [
-          "In One Night Mode, The Warlock wins if they predict the condemnation correctly Once.",
+          "During the Blood Moon Event, The Warlock wins if they predict the condemnation correctly Once.",
         ],
       },
     },
@@ -4110,10 +4110,7 @@ const roleData = {
       nightOrder: [["Give Superpower",(PRIORITY_INVESTIGATIVE_DEFAULT)], ["Swap Roles", (PRIORITY_SWAP_ROLES - 1)]],
       SpecialInteractions: {
         "Blood Moon": [
-          "In One Night Mode, Superheros Wins if no Independents die.",
-          "In One Night Mode, Village must kill an Independent to win in addition to other evil Factions.",
-          "In One Night Mode, Mafia/Cult must kill an Independent to win in addition to competing evil Factions.",
-          "In One Night Mode, Independents with the (Lone) Modifier are not counted as Independents for any of these Win Con",
+          "During the Blood Moon Event, Superheros Wins if no Independents die and non-Lone Independents are counted as an Evil Faction for Village.",
         ],
       },
     },

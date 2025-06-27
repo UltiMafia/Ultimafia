@@ -63,8 +63,15 @@ export function RoleCount(props) {
   // Choose from list of icons to predict from
   const makeRolePrediction = props.makeRolePrediction;
 
-  var roleName, modifiers, roleSkin;
-
+  var roleName, modifiers, roleSkin, otherRoles;
+  if(props.otherRoles){
+  if(typeof props.otherRoles == "string"){
+  otherRoles = JSON.parse(props.otherRoles);
+  }
+  else{
+  otherRoles = props.otherRoles;
+  }
+  }
 
   if (typeof props.role == "string") {
     roleName = props.role.split(":")[0];
@@ -213,6 +220,57 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
   ) : (
     ""
   );
+  let specials = [];
+    if(otherRoles && otherRoles.length > 0){
+      if(roleData?.SpecialInteractions){
+      for(let i in otherRoles){
+        let roleSet = otherRoles[i];
+        for(let thing in roleSet){ //!specials.includes([thing.split(":")[0],roleData.SpecialInteractions[thing.split(":")[0]]])
+      if(roleData.SpecialInteractions[thing.split(":")[0]]){
+        specials.push([thing.split(":")[0], roleData.SpecialInteractions[thing.split(":")[0]]]);
+      }
+    }
+      }
+      }
+  }
+  let hasSpecials = (specials.length > 0);
+  const SpecialInteractions = hasSpecials ? (
+    <List dense sx={{ paddingTop: "0" }}>
+          <div>
+          <span style={{ fontWeight: "bold" }}>Special Interactions</span>
+          </div>
+      {specials.map((special, i) => (
+        <ListItem
+          key={special[0] + i}
+          sx={{
+            paddingBottom: "0",
+            paddingTop: "0",
+          }}
+        >
+          <ListItemIcon
+            sx={{
+              minWidth: "0",
+              marginRight: "8px",
+            }}
+          >
+            <i className={`role role-icon-vivid-${hyphenDelimit(props.gameType)}-${hyphenDelimit(special[0])} "small"`} />
+          </ListItemIcon>
+          <ListItemText
+            disableTypography
+            className={"mui-popover-text"}
+            primary={
+              <div>
+                <span style={{ fontWeight: "bold" }}>{special[0]}</span>:{" "}
+                {special[1][0]}
+              </div>
+            }
+          />
+        </ListItem>
+      ))}
+    </List>
+  ) : (
+    ""
+  );
 
   if (props.closed && (props.count > 0 || props.hideCount)) {
     return (
@@ -300,6 +358,7 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
                 </div>
                 {DescriptionLines}
                 {Modifiers}
+                {SpecialInteractions}
               </div>
             </div>
           </Popover>
