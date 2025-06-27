@@ -96,7 +96,11 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
   else{
     roleSkin = "vivid";
   }
-
+  
+  if(props.skin){
+    roleSkin = props.skin;
+  }
+  
   useEffect(() => {
     setRoleData({
       ...siteInfo.rolesRaw[props.gameType][roleName],
