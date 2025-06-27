@@ -359,7 +359,7 @@ const artContributors = {
       "Lamia",
     ],
   },
-  JaNa: {
+  shego: {
     Mafia: [
       "Sorcerer",
       "Vizier",
