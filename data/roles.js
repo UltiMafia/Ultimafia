@@ -4110,11 +4110,8 @@ const roleData = {
       nightOrder: [["Give Superpower",(PRIORITY_INVESTIGATIVE_DEFAULT)], ["Swap Roles", (PRIORITY_SWAP_ROLES - 1)]],
       SpecialInteractions: {
         "Blood Moon": [
-          "In One Night Mode, Superheros Wins if no Independents die.",
-          "In One Night Mode, Village must kill an Independent to win in addition to other evil Factions.",
-          "In One Night Mode, Mafia/Cult must kill an Independent to win in addition to competing evil Factions.",
-          "In One Night Mode, Independents with the (Lone) Modifier are not counted as Independents for any of these Win Con",
-        ],
+          "During the Blood Moon Event, Superheros Wins if no Independents die and non-Lone Independents are counted as an Evil Faction for Village.",
+          },
       },
     },
     Ghost: {
