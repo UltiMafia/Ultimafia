@@ -106,7 +106,7 @@ const artContributors = {
       "Invader:vivid",
       "Shadow:vivid",
       "Dodo:vivid",
-      "Bully:vivid",
+      "Dealer:vivid",
       "Survivor:vivid",
       "Old Maid:vivid",
       "Devotee:vivid",
@@ -131,7 +131,9 @@ const artContributors = {
       "Bloodhound:old",
       "Thief:old",
       "Strongman:old",
-      "Hooker:old"
+      "Hooker:old",
+      "Lover:old",
+      "Heartbreaker:old",
     ],
   },
   bee: {
@@ -217,6 +219,8 @@ const artContributors = {
       "Televangelist:vivid",
       "Dragoon:vivid",
       "Barista:vivid",
+      //Skins
+      "Psion:noir",
     ],
   },
   grr: {
@@ -270,6 +274,7 @@ const artContributors = {
       "Painter:noir",
       "Succubus:noir",
       "Vampire:noir",
+      "Heartbreaker:noir"
     ],
   },
   kirigiri: {
@@ -344,7 +349,7 @@ const artContributors = {
       "Black Hole:vivid",
       "Grey Goo:vivid",
       "Mooncalf:vivid",
-      "Egg:vivid"
+      "Egg:vivid",
       //Skins
       "Sheep:noir",
       "Eclipse:noir",

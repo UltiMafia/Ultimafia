@@ -593,6 +593,10 @@
   background-image: url("/images/roles/medium-vivid.png");
 }
 
+.role-icon-noir-Mafia-Medium {
+  background-image: url("/images/roles/medium-noir.png");
+}
+
 .role-icon-vivid-Mafia-Robin-Hood {
   background-image: url("/images/roles/robin-hood-vivid.png");
 }
@@ -1164,6 +1168,10 @@
   background-image: url("/images/roles/heartbreaker-noir.png");
 }
 
+.role-icon-old-Mafia-Heartbreaker {
+  background-image: url("/images/roles/heartbreaker-old.png");
+}
+
 .role-icon-vivid-Mafia-Yakuza {
   background-image: url("/images/roles/yakuza-vivid.png");
 }
@@ -1732,6 +1740,10 @@
 
 .role-icon-noir-Mafia-Lover {
   background-image: url("/images/roles/lover-noir.png");
+}
+
+.role-icon-old-Mafia-Lover {
+  background-image: url("/images/roles/lover-old.png");
 }
 
 .role-icon-vivid-Mafia-Matchmaker {
