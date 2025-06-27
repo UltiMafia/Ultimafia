@@ -64,8 +64,14 @@ export function RoleCount(props) {
   const makeRolePrediction = props.makeRolePrediction;
 
   var roleName, modifiers, roleSkin, otherRoles;
-
-  otherRoles = props.OtherRoles;
+  if(props.otherRoles){
+  if(typeof props.otherRoles == "string"){
+  otherRoles = JSON.parse(props.otherRoles);
+  }
+  else{
+  otherRoles = props.otherRoles;
+  }
+  }
 
   if (typeof props.role == "string") {
     roleName = props.role.split(":")[0];
@@ -215,19 +221,22 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
     ""
   );
   let specials = [];
-    if(otherRoles && otherRoles.length <= 0){
-      if(roleData?.SpecialInteractions?){
-      for(let thing of otherRoles){
-      if(roleData.SpecialInteractions[thing.split(":")[0]] && !specials.includes([thing.split(":"),roleData.SpecialInteractions[thing.split(":")[0]]])){
-        specials.push([thing.split(":"),roleData.SpecialInteractions[thing.split(":")[0]]]);
+    if(otherRoles && otherRoles.length > 0){
+      if(roleData?.SpecialInteractions){
+      for(let i in otherRoles){
+        let roleSet = otherRoles[i];
+        for(let thing in roleSet){ //!specials.includes([thing.split(":")[0],roleData.SpecialInteractions[thing.split(":")[0]]])
+      if(roleData.SpecialInteractions[thing.split(":")[0]]){
+        specials.push([thing.split(":")[0], roleData.SpecialInteractions[thing.split(":")[0]]]);
       }
+    }
       }
       }
   }
   let hasSpecials = (specials.length > 0);
-  const SpecialInteractions = hasModifiers ? (
+  const SpecialInteractions = hasSpecials ? (
     <List dense sx={{ paddingTop: "0" }}>
-      {roleData?.modifiers?.map((special, i) => (
+      {specials.map((special, i) => (
         <ListItem
           key={special[0] + i}
           sx={{

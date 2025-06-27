@@ -3854,7 +3854,7 @@ const roleData = {
       description: ["Wins if both of their starting neighbors are dead."],
       SpecialInteractions: {
         "Blood Moon": [
-          "In One Night Mode, Fumigator Wins if one of their neighbors is killed.",
+          "During the Blood Moon Event, Fumigator Wins if one of their neighbors is killed.",
         ],
       },
     },
@@ -4027,7 +4027,7 @@ const roleData = {
           "If an Assassin is Present, The Warlock wins if they can guess a player who is Elected as Room Leader Twice.",
         ],
         "Blood Moon": [
-          "In One Night Mode, The Warlock wins if they predict the condemnation correctly Once.",
+          "During the Blood Moon Event, The Warlock wins if they predict the condemnation correctly Once.",
         ],
       },
     },
@@ -4111,7 +4111,7 @@ const roleData = {
       SpecialInteractions: {
         "Blood Moon": [
           "During the Blood Moon Event, Superheros Wins if no Independents die and non-Lone Independents are counted as an Evil Faction for Village.",
-          },
+        ],
       },
     },
     Ghost: {

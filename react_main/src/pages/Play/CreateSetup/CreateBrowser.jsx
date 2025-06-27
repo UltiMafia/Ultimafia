@@ -234,6 +234,7 @@ export default function CreateSetup(props) {
           }}
           key={role}
           showPopover
+          otherRoles={roleData.roles}
         />
       );
     }

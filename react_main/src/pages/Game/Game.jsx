@@ -2217,6 +2217,7 @@ export function PlayerRows(props) {
             isRolePrediction={rolePrediction !== undefined}
             gameType={props.gameType}
             showPopover
+            otherRoles={props.setup?.roles}
           />
         )}
         <NameWithAvatar
@@ -2308,6 +2309,7 @@ export function PlayerList(props) {
             gameType={props.gameType}
             stateViewing={props.stateViewing}
             activity={props.activity}
+            setup={props.setup}
           />
           {deadPlayers.length > 0 && (
             <div className="section-title">
@@ -2323,6 +2325,7 @@ export function PlayerList(props) {
             stateViewing={props.stateViewing}
             activity={props.activity}
             className="dead"
+            setup={props.setup}
           />
           {exorcisedPlayers.length > 0 && (
             <div className="section-title">
@@ -2338,6 +2341,7 @@ export function PlayerList(props) {
             stateViewing={props.stateViewing}
             activity={props.activity}
             className="dead"
+            setup={props.setup}
           />
         </div>
       }
