@@ -4244,12 +4244,12 @@ const roleData = {
         {
           label: "Goofy",
           value: "goofy",
-          achCount: 7,
+          //achCount: 7,
         },
         {
           label: "Old",
           value: "old",
-          achReq: "Mafia25",
+          //achReq: "Mafia25",
         },
       ],
     },
