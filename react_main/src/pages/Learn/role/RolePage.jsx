@@ -116,7 +116,16 @@ export function RoleThings() {
       },
     ]);
   }, [achievements, role]);
-  
+/*
+  const updateFieldsFromData = (data) => {
+    let changes = Object.keys(data).map((ref) => ({
+      ref,
+      prop: "value",
+      value: data[ref],
+    }));
+    updateSiteFields(changes);
+  };
+  */
   if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
   // TODO if setupId not set, redirect to a setup page
 
@@ -154,7 +163,7 @@ else{
               <Form
               fields={siteFields}
               deps={{ user }}
-              onChange={(action) => onRoleSkinChange(action, RoleName, updateSiteFields, user, roleSkins)}
+              onChange={(action) => onRoleSkinChange(action, RoleName, null, user, roleSkins)}
             />
           </div>
         </div>
@@ -200,7 +209,7 @@ function SetupRowInfo(props) {
         })
         .then(() => user.updateSetting(action.ref, strArray));
     }
-    update(action);
+    //update(action);
 
    
    /*
