@@ -4244,6 +4244,12 @@ const roleData = {
         {
           label: "Goofy",
           value: "goofy",
+          achCount: 5,
+        },
+        {
+          label: "Old",
+          value: "old",
+          achReq: "Mafia8",
         },
       ],
     },
