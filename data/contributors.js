@@ -134,6 +134,7 @@ const artContributors = {
       "Hooker:old",
       "Lover:old",
       "Heartbreaker:old",
+      "Hellhound:old",
     ],
   },
   bee: {

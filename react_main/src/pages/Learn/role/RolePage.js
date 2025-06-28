@@ -54,69 +54,64 @@ export default function RolePage() {
 export function RoleThings() {
   const [setup, setSetup] = useState();
   const user = useContext(UserContext);
+  const [achievements, setAchievements] = useState([]);
   const siteInfo = useContext(SiteInfoContext);
   const history = useHistory();
   const errorAlert = useErrorAlert();
   const { RoleName } = useParams();
   const [gameType, setGameType] = useState("");
   const [diff, setDiff] = useState([]); // Changelog diff
-/*
-  useEffect(() => {
-    if (setupId) {
+
       axios
-        .get(`/setup/${setupId}`, { headers: { includeStats: true } })
+        .get(`/user/${user.id}/profile`)
         .then((res) => {
-          let setup = res.data;
-          setup.roles = JSON.parse(setup.roles);
-          setSetup(res.data);
-          setGameType(setup.gameType);
-          setCurrentVersionNum(setup.version);
-          setSelectedVersionNum(setup.version);
-          setVersionTimestamp(setup.setupVersion.timestamp);
-
-          document.title = `Setup | ${res.data.name} | UltiMafia`;
-
-          if (setup.gameType === "Mafia") {
-            setPieData(
-              getBasicPieStats(
-                setup.stats.alignmentWinrate,
-                setup.stats.roleWinrate,
-                siteInfo.rolesRaw["Mafia"]
-              )
-            );
-
-            const changelog = setup.setupVersion.changelog;
-            if (changelog) {
-              setDiff(JSON.parse(changelog));
-            }
-          }
+          setAchievements(res.data.achievements);
         })
         .catch((e) => {
-          console.error(e);
           errorAlert(e);
+          history.push("/play");
         });
-    }
-  }, [setupId]);
-*/
 
 
 
 let role = [RoleName, siteInfo.rolesRaw["Mafia"][RoleName]];
-
-  let achievements = user.achievements;
-  let achCount = achievements.length;
-
-    const [siteFields, updateSiteFields] = useForm([
-    {
-      label: "Role Skin",
-      ref: "roleSkins",
-      type: "select",
-      options: role[1].skins.filter((s)=> (s.achCount == null || s.achCount >= achCount) && (s.achReq == null || achievements.includes(s.achReq))) || [
+let tempSkins = [
         {
           label: "Vivid",
           value: "vivid",
         },
-      ],
+      ];
+      /*
+if(role[1].skins){
+//role[1].skins = role[1].skins.filter((s)=> (s.achCount ? parseInt(s.achCount) <= achCount : true) && (s.achReq ? achievements.includes(s.achReq) : true));
+//role[1].skins = role[1].skins.filter((s)=> (s.achReq != null ? achievements.includes(s.achReq) : true));
+
+
+}
+*/
+for(let skin of role[1].skins){
+  if(skin.value == "vivid"){
+    continue;
+  }
+  if(skin.achCount == null && skin.achReq == null ){
+    tempSkins.push(skin);
+  }
+  else if(skin.achReq == null){
+    if(parseInt(skin.achCount) <= achievements.length){
+      tempSkins.push(skin);
+    }
+  }
+  else if(achievements.includes(skin.achReq)){
+      tempSkins.push(skin);
+    }
+}
+
+    let [siteFields, updateSiteFields] = useForm([
+    {
+      label: "Role Skin",
+      ref: "roleSkins",
+      type: "select",
+      options: tempSkins,
     },
   ]);
 
@@ -160,10 +155,12 @@ else{
       <div className="setup-page">
         <div className="span-panel main">
           <div className="heading">Role Info</div>
-
           <div className="meta">
             <SetupRowInfo title="Name" content={RoleName} />
             <SetupRowInfo title="Tags" content={role[1].tags.sort().join(", ")} />
+            <SetupRowInfo title="Achievements" content={achievements.join(", ")} />
+            <SetupRowInfo title="Achievements has mafia8" content={achievements.includes("Mafia8") ? "Yes" : "No"} />
+            <SetupRowInfo title="Skins mapped to achReq" content={role[1].skins.map((s) => s.achReq)} />
               <Form
               fields={siteFields}
               deps={{ user }}
