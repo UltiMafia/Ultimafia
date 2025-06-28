@@ -52,84 +52,71 @@ export default function RolePage() {
 }
 
 export function RoleThings() {
-  const [setup, setSetup] = useState();
+  const { RoleName } = useParams();
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const history = useHistory();
   const errorAlert = useErrorAlert();
-  const { RoleName } = useParams();
-  const [gameType, setGameType] = useState("");
-  const [diff, setDiff] = useState([]); // Changelog diff
-/*
-  useEffect(() => {
-    if (setupId) {
-      axios
-        .get(`/setup/${setupId}`, { headers: { includeStats: true } })
-        .then((res) => {
-          let setup = res.data;
-          setup.roles = JSON.parse(setup.roles);
-          setSetup(res.data);
-          setGameType(setup.gameType);
-          setCurrentVersionNum(setup.version);
-          setSelectedVersionNum(setup.version);
-          setVersionTimestamp(setup.setupVersion.timestamp);
 
-          document.title = `Setup | ${res.data.name} | UltiMafia`;
-
-          if (setup.gameType === "Mafia") {
-            setPieData(
-              getBasicPieStats(
-                setup.stats.alignmentWinrate,
-                setup.stats.roleWinrate,
-                siteInfo.rolesRaw["Mafia"]
-              )
-            );
-
-            const changelog = setup.setupVersion.changelog;
-            if (changelog) {
-              setDiff(JSON.parse(changelog));
-            }
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          errorAlert(e);
-        });
-    }
-  }, [setupId]);
-*/
-
-
-
-let role = [RoleName, siteInfo.rolesRaw["Mafia"][RoleName]];
-
-
-    const [siteFields, updateSiteFields] = useForm([
+  const [achievements, setAchievements] = useState(null);
+  const [tempSkins, setTempSkins] = useState([
+    { label: "Vivid", value: "vivid" },
+  ]);
+  const [siteFields, updateSiteFields] = useForm([
     {
       label: "Role Skin",
       ref: "roleSkins",
       type: "select",
-      options: role[1].skins || [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-      ],
-        /*
-        [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-        {
-          label: "Noir",
-          value: "noir",
-        },
-      ],
-      */
+      options: [{ label: "Vivid", value: "vivid" }],
     },
   ]);
 
+  const role = RoleName && siteInfo.rolesRaw?.["Mafia"]?.[RoleName]
+    ? [RoleName, siteInfo.rolesRaw["Mafia"][RoleName]]
+    : null;
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    axios
+      .get(`/user/${user.id}/profile`)
+      .then((res) => setAchievements(res.data.achievements))
+      .catch((e) => {
+        errorAlert(e);
+        history.push("/play");
+      });
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!role || !achievements) return;
+
+    const skins = role[1].skins || [];
+    const filtered = skins.filter((skin) => {
+      if (skin.value === "vivid") return false;
+      if (!skin.achCount && !skin.achReq) return true;
+      if (skin.achReq && achievements.includes(skin.achReq)) return true;
+      if (skin.achCount && parseInt(skin.achCount) <= achievements.length) return true;
+      return false;
+    });
+
+    const finalOptions = [
+      { label: "Vivid", value: "vivid" },
+      ...filtered.map((skin) => ({
+        label: skin.label || skin.value,
+        value: skin.value,
+      })),
+    ];
+
+    setTempSkins(finalOptions);
+    updateSiteFields([
+      {
+        ref: "roleSkins",
+        prop: "options",
+        value: finalOptions,
+      },
+    ]);
+  }, [achievements, role]);
+/*
   const updateFieldsFromData = (data) => {
     let changes = Object.keys(data).map((ref) => ({
       ref,
@@ -138,7 +125,7 @@ let role = [RoleName, siteInfo.rolesRaw["Mafia"][RoleName]];
     }));
     updateSiteFields(changes);
   };
-  
+  */
   if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
   // TODO if setupId not set, redirect to a setup page
 
@@ -170,14 +157,13 @@ else{
       <div className="setup-page">
         <div className="span-panel main">
           <div className="heading">Role Info</div>
-
           <div className="meta">
             <SetupRowInfo title="Name" content={RoleName} />
             <SetupRowInfo title="Tags" content={role[1].tags.sort().join(", ")} />
               <Form
               fields={siteFields}
               deps={{ user }}
-              onChange={(action) => onRoleSkinChange(action, RoleName, updateSiteFields, user, roleSkins)}
+              onChange={(action) => onRoleSkinChange(action, RoleName, null, user, roleSkins)}
             />
           </div>
         </div>
@@ -223,7 +209,7 @@ function SetupRowInfo(props) {
         })
         .then(() => user.updateSetting(action.ref, strArray));
     }
-    update(action);
+    //update(action);
 
    
    /*

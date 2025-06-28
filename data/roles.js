@@ -2880,6 +2880,7 @@ const roleData = {
         {
           label: "Jockey",
           value: "jockey",
+          achCount: 5,
         },
       ],
     },
@@ -4244,6 +4245,11 @@ const roleData = {
         {
           label: "Goofy",
           value: "goofy",
+          achReq: "Mafia29",
+        },
+        {
+          label: "Old",
+          value: "old",
         },
       ],
     },
