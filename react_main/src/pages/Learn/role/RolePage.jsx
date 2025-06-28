@@ -61,7 +61,8 @@ export function RoleThings() {
   const { RoleName } = useParams();
   const [gameType, setGameType] = useState("");
   const [diff, setDiff] = useState([]); // Changelog diff
-
+  const userId = user.id;
+useEffect(() =>{
       axios
         .get(`/user/${user.id}/profile`)
         .then((res) => {
@@ -71,7 +72,7 @@ export function RoleThings() {
           errorAlert(e);
           history.push("/play");
         });
-
+   }, [userId]);
 
 
 let role = [RoleName, siteInfo.rolesRaw["Mafia"][RoleName]];
@@ -127,7 +128,7 @@ for(let skin of role[1].skins){
   if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
   // TODO if setupId not set, redirect to a setup page
 
-  if (!role || !user.loaded) return <NewLoading small />;
+  if (!role || !user.loaded || achievements.length === 0) return <NewLoading small />;
 
   let commentLocation = `role/${RoleName}`;
   let temproleSkins;
