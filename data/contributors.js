@@ -85,7 +85,7 @@ const artContributors = {
       "Heartbreaker:vivid",
       "Yakuza:vivid",
       "Poltergeist:vivid",
-      "Jinx:vivid",
+      "Jinx:old",
       "Clown:vivid",
       "Illusionist:vivid",
       "Librarian:vivid",
@@ -149,7 +149,7 @@ const artContributors = {
       "Arsonist:vivid",
       "Queen Bee:vivid",
       "Mummy:vivid",
-      "Jinx:vivid",
+      "Jinx:old",
       "Hitman:vivid",
       "Cannibal:vivid",
       "Vengeful Spirit:vivid",
@@ -298,7 +298,7 @@ const artContributors = {
   },
   Kobeni: {
     Mafia: [
-      "Chef:vivid",
+      "Chef:old",
       "Baker:vivid",
       "Fungoid:vivid",
       "Gorgon:vivid",
@@ -440,6 +440,7 @@ const artContributors = {
       "Prince:vivid",
       "Sabbath:vivid",
       "Flood:vivid",
+      "Chef:vivid"
       //Skins
       "Hellhound:goofy",
     ],
@@ -457,7 +458,17 @@ const artContributors = {
     ],
   },
   aleph: {
-    Mafia: ["Count:vivid", "Harpy:vivid", "Bawd:vivid", "Diplomat:vivid", "Associate:vivid", "Reaper:vivid", "Lifeguard:vivid", "Sidhe:vivid", "Jack:vivid", "Consigliere:vivid", "Cult Leader:vivid", "Analyst:vivid", "Mastermind:vivid", "Emperor:vivid"],
+    Mafia: [
+      "Count:vivid",
+      "Harpy:vivid",
+      "Bawd:vivid",
+      "Diplomat:vivid",
+      "Associate:vivid",
+      "Reaper:vivid",
+      "Lifeguard:vivid",
+      "Sidhe:vivid",
+      "Jack:vivid",
+      "Consigliere:vivid", "Cult Leader:vivid", "Analyst:vivid", "Mastermind:vivid", "Emperor:vivid", "Jinx:vivid"],
     Battlesnakes: ["Snake:vivid"],
   },
 };

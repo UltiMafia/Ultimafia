@@ -489,6 +489,10 @@
   background-image: url("/images/roles/chef-vivid.png");
 }
 
+.role-icon-old-Mafia-Chef {
+  background-image: url("/images/roles/chef-old.png");
+}
+
 .role-icon-vivid-Mafia-Journalist {
   background-image: url("/images/roles/journalist-vivid.png");
 }
@@ -1206,6 +1210,10 @@
 
 .role-icon-vivid-Mafia-Jinx {
   background-image: url("/images/roles/jinx-vivid.png");
+}
+
+.role-icon-old-Mafia-Jinx {
+  background-image: url("/images/roles/jinx-old.png");
 }
 
 .role-icon-vivid-Mafia-Clown {
