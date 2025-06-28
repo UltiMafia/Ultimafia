@@ -52,83 +52,75 @@ export default function RolePage() {
 }
 
 export function RoleThings() {
-  const [setup, setSetup] = useState();
+  const { RoleName } = useParams();
   const user = useContext(UserContext);
-  const [achievements, setAchievements] = useState([]);
   const siteInfo = useContext(SiteInfoContext);
   const history = useHistory();
   const errorAlert = useErrorAlert();
-  const { RoleName } = useParams();
-  const [gameType, setGameType] = useState("");
-  const [diff, setDiff] = useState([]); // Changelog diff
-  const userId = user.id;
-useEffect(() =>{
-      axios
-        .get(`/user/${user.id}/profile`)
-        .then((res) => {
-          setAchievements(res.data.achievements);
-        })
-        .catch((e) => {
-          errorAlert(e);
-          history.push("/play");
-        });
-   }, [userId]);
 
-
-let role = [RoleName, siteInfo.rolesRaw["Mafia"][RoleName]];
-let tempSkins = [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-      ];
-      /*
-if(role[1].skins){
-//role[1].skins = role[1].skins.filter((s)=> (s.achCount ? parseInt(s.achCount) <= achCount : true) && (s.achReq ? achievements.includes(s.achReq) : true));
-//role[1].skins = role[1].skins.filter((s)=> (s.achReq != null ? achievements.includes(s.achReq) : true));
-
-
-}
-*/
-for(let skin of role[1].skins){
-  if(skin.value == "vivid"){
-    continue;
-  }
-  if(skin.achCount == null && skin.achReq == null ){
-    tempSkins.push(skin);
-  }
-  else if(skin.achReq == null){
-    if(parseInt(skin.achCount) <= achievements.length){
-      tempSkins.push(skin);
-    }
-  }
-  else if(achievements.includes(skin.achReq)){
-      tempSkins.push(skin);
-    }
-}
-
-    let [siteFields, updateSiteFields] = useForm([
+  const [achievements, setAchievements] = useState(null);
+  const [tempSkins, setTempSkins] = useState([
+    { label: "Vivid", value: "vivid" },
+  ]);
+  const [siteFields, updateSiteFields] = useForm([
     {
       label: "Role Skin",
       ref: "roleSkins",
       type: "select",
-      options: tempSkins,
+      options: [{ label: "Vivid", value: "vivid" }],
     },
   ]);
 
-  const updateFieldsFromData = (data) => {
-    let changes = Object.keys(data).map((ref) => ({
-      ref,
-      prop: "value",
-      value: data[ref],
-    }));
-    updateSiteFields(changes);
-  };
+  const role = RoleName && siteInfo.rolesRaw?.["Mafia"]?.[RoleName]
+    ? [RoleName, siteInfo.rolesRaw["Mafia"][RoleName]]
+    : null;
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    axios
+      .get(`/user/${user.id}/profile`)
+      .then((res) => setAchievements(res.data.achievements))
+      .catch((e) => {
+        errorAlert(e);
+        history.push("/play");
+      });
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!role || !achievements) return;
+
+    const skins = role[1].skins || [];
+    const filtered = skins.filter((skin) => {
+      if (skin.value === "vivid") return false;
+      if (!skin.achCount && !skin.achReq) return true;
+      if (skin.achReq && achievements.includes(skin.achReq)) return true;
+      if (skin.achCount && parseInt(skin.achCount) <= achievements.length) return true;
+      return false;
+    });
+
+    const finalOptions = [
+      { label: "Vivid", value: "vivid" },
+      ...filtered.map((skin) => ({
+        label: skin.label || skin.value,
+        value: skin.value,
+      })),
+    ];
+
+    setTempSkins(finalOptions);
+    updateSiteFields([
+      {
+        ref: "roleSkins",
+        prop: "options",
+        value: finalOptions,
+      },
+    ]);
+  }, [achievements, role]);
   
   if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
   // TODO if setupId not set, redirect to a setup page
 
-  if (!role || !user.loaded || achievements.length === 0) return <NewLoading small />;
+  if (!role || !user.loaded) return <NewLoading small />;
 
   let commentLocation = `role/${RoleName}`;
   let temproleSkins;
@@ -159,9 +151,6 @@ else{
           <div className="meta">
             <SetupRowInfo title="Name" content={RoleName} />
             <SetupRowInfo title="Tags" content={role[1].tags.sort().join(", ")} />
-            <SetupRowInfo title="Achievements" content={achievements.join(", ")} />
-            <SetupRowInfo title="Achievements has mafia8" content={achievements.includes("Mafia8") ? "Yes" : "No"} />
-            <SetupRowInfo title="Skins mapped to achReq" content={role[1].skins.map((s) => s.achReq)} />
               <Form
               fields={siteFields}
               deps={{ user }}
