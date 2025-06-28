@@ -458,6 +458,23 @@ module.exports = class MafiaInformation {
     return notRoles;
   }
 
+  isAppearanceDemonic(player, type) {
+    let revealType = type || "investigate";
+    if (
+      player.getRoleAppearance(revealType) ==
+      this.game.formatRole(
+        this.game.formatRoleInternal(player.role.name, player.role.modifier)
+      )
+    ) {
+      return player.isDemonic(true);
+    }
+
+    if (player.getRoleAppearance().split(" (")[1] && player.getRoleAppearance().split(" (")[1].includes("Demonic")) {
+      return true;
+    }
+    return false;
+  }
+
   getMostValuableEvilPlayer() {
     let score = 5;
     let highest = 0;
