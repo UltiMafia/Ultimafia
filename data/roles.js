@@ -2573,11 +2573,11 @@ const roleData = {
         "If condemned, can choose to reveal the role of one player to the Mafia.",
       ],
     },
-    Filibuster: {
+    Fed: {
       alignment: "Mafia",
       tags: ["Condemn", "Voting", "Advanced"],
       description: [
-        "Votes for a Filibuster will not count unless every Village-Aligned votes for them.",
+        "Votes for a Fed will not count unless every Village-aligned player votes for them.",
       ],
     },
     Rainmaker: {
