@@ -103,30 +103,20 @@ export function RoleThings() {
 
 let role = [RoleName, siteInfo.rolesRaw["Mafia"][RoleName]];
 
+  let achievements = user.achievements;
+  let achCount = achievements.length;
 
     const [siteFields, updateSiteFields] = useForm([
     {
       label: "Role Skin",
       ref: "roleSkins",
       type: "select",
-      options: role[1].skins || [
+      options: role[1].skins.filter((s)=> (s.achCount == null || s.achCount >= achCount) && (s.achReq == null || achievements.includes(s.achReq))) || [
         {
           label: "Vivid",
           value: "vivid",
         },
       ],
-        /*
-        [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-        {
-          label: "Noir",
-          value: "noir",
-        },
-      ],
-      */
     },
   ]);
 
