@@ -1518,6 +1518,10 @@
   background-image: url("/images/roles/hellhound-goofy.png");
 }
 
+.role-icon-old-Mafia-Hellhound {
+  background-image: url("/images/roles/hellhound-old.png");
+}
+
 .role-icon-vivid-Mafia-Shinigami {
   background-image: url("/images/roles/shinigami-vivid.png");
 }
