@@ -1438,6 +1438,16 @@ const roleData = {
         "Chooses two players during the day to attend a banquet the following evening.",
         "Players chosen to attend the banquet meet anonymously with their roles revealed to one another.",
       ],
+       skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+      ],
     },
     Freemason: {
       alignment: "Village",
@@ -1931,6 +1941,16 @@ const roleData = {
         "If the player speaks the word the next day, they will die.",
       ],
       nightOrder: [["Curse Word",( PRIORITY_EFFECT_GIVER_DEFAULT)]],
+       skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+      ],
     },
     Poisoner: {
       alignment: "Mafia",
@@ -2553,11 +2573,11 @@ const roleData = {
         "If condemned, can choose to reveal the role of one player to the Mafia.",
       ],
     },
-    Filibuster: {
+    Fed: {
       alignment: "Mafia",
       tags: ["Condemn", "Voting", "Advanced"],
       description: [
-        "Votes for a Filibuster will not count unless every Village-Aligned votes for them.",
+        "Votes for a Fed will not count unless every Village-aligned player votes for them.",
       ],
     },
     Rainmaker: {

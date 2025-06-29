@@ -489,6 +489,10 @@
   background-image: url("/images/roles/chef-vivid.png");
 }
 
+.role-icon-old-Mafia-Chef {
+  background-image: url("/images/roles/chef-old.png");
+}
+
 .role-icon-vivid-Mafia-Journalist {
   background-image: url("/images/roles/journalist-vivid.png");
 }
@@ -1208,6 +1212,10 @@
   background-image: url("/images/roles/jinx-vivid.png");
 }
 
+.role-icon-old-Mafia-Jinx {
+  background-image: url("/images/roles/jinx-old.png");
+}
+
 .role-icon-vivid-Mafia-Clown {
   background-image: url("/images/roles/clown-vivid.png");
 }
@@ -1432,8 +1440,8 @@
   background-image: url("/images/roles/scrambler-vivid.png");
 }
 
-.role-icon-vivid-Mafia-Filibuster {
-  background-image: url("/images/roles/filibuster-vivid.png");
+.role-icon-vivid-Mafia-Fed {
+  background-image: url("/images/roles/fed-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Enforcer {

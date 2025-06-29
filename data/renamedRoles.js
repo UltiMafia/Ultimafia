@@ -33,6 +33,7 @@ module.exports = {
     Whistleblower: "Magistrate",
     Innkeeper: "Bawd",
     Bard: "Jazzman",
+    Filibuster: "Fed",
     // deprecated roles
     Veteran: "Villager",
     Bomb: "Villager",
