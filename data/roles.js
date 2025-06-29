@@ -711,6 +711,15 @@ const roleData = {
       ],
       nightOrder: [["Learn Info",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
+    "Fortune Teller": {
+      alignment: "Village",
+      category: "Investigative",
+      tags: ["Information", "Alignment", "Visiting", "Basic"],
+      description: [
+        "Investigates two players at night and learns if one of them is Mafia or Demonic.",
+      ],
+      nightOrder: [["Check for Demons",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
+    },
     Scientist: {
       alignment: "Village",
       category: "Investigative",
@@ -4145,6 +4154,7 @@ const roleData = {
         "Meets with All Independents",
         "Grants All Independents a random Infomation or Role Swapping ability.",
         "Wins if Independents have majority.",
+        "Lone Independents do not meet or count for majority",
       ],
       nightOrder: [["Give Superpower",(PRIORITY_INVESTIGATIVE_DEFAULT)], ["Swap Roles", (PRIORITY_SWAP_ROLES - 1)]],
       SpecialInteractions: {
@@ -4750,6 +4760,15 @@ const roleData = {
         "If this Event occurs, 1-3 Players learn if their role changed.",
       ],
       nightOrder: [["Tell about role",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5)]],
+    },
+    "Stand Up": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, All players learn that a player is 1 of 3 roles.",
+        "One of the roles is always Evil.",
+      ],
+      nightOrder: [["Tell Joke",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10)]],
     },
     "Culture Exchange": {
       alignment: "Event",
