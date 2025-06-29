@@ -2828,6 +2828,16 @@ const roleData = {
       ],
       nightOrder: [["Kill players in Room",(PRIORITY_KILL_DEFAULT)]],
       RolesMadeBy: ["President"],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+      ],
     },
     Stylist: {
       alignment: "Mafia",
