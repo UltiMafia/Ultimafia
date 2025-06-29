@@ -1049,6 +1049,10 @@
   background-image: url("/images/roles/snake-charmer-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Fortune-Teller {
+  background-image: url("/images/roles/fortune-teller-vivid.png");
+}
+
 /* 
 /*------------------Mafia Roles----------------------*/
 
@@ -2169,6 +2173,10 @@ background-image: url("/images/modifiers/backup.png");
 
 .modifier-Mafia-Banished {
 background-image: url("/images/modifiers/banished.png");
+}
+
+.modifier-Mafia-Biased {
+background-image: url("/images/modifiers/biased.png");
 }
 
 .modifier-Mafia-Birdbrained {
