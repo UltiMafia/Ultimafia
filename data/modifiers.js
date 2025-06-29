@@ -49,6 +49,12 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
+    Biased: {
+      internal: ["OnePlayerShowsAsEvil"],
+      tags: ["Information"],
+      description: "One Village-aligned player will have unfavorable results to this role's information abilities.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Blessed: {
       internal: ["StartWithExtraLife"],
       tags: ["Extra Lives"],
