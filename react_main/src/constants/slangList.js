@@ -92,7 +92,7 @@ export const slangList = {
   },
   condemn: {
     definition:
-      "To condemn: to condemn somebody to burning, during the day meeting of the town. A plurality (not necessarily a majority) of votes on a player are needed to condemn that player.",
+      "To condemn: eliminating somebody during the town's day meeting. A plurality (not necessarily a majority) of votes on a player are needed to condemn that player.",
     emoji: "🔪",
   },
   meta: {
