@@ -267,6 +267,7 @@ const artContributors = {
       "Lightning Strike",
       "Feast:vivid",
       "Famine:vivid",
+      "Bondsman:vivid",
       //Skins
       "Celebrity:noir",
       "Jazzman:noir",
@@ -440,7 +441,8 @@ const artContributors = {
       "Prince:vivid",
       "Sabbath:vivid",
       "Flood:vivid",
-      "Chef:vivid"
+      "Chef:vivid",
+       "Assassin:old",
       //Skins
       "Hellhound:goofy",
     ],
@@ -468,7 +470,12 @@ const artContributors = {
       "Lifeguard:vivid",
       "Sidhe:vivid",
       "Jack:vivid",
-      "Consigliere:vivid", "Cult Leader:vivid", "Analyst:vivid", "Mastermind:vivid", "Emperor:vivid", "Jinx:vivid"],
+      "Consigliere:vivid",
+      "Cult Leader:vivid",
+      "Analyst:vivid",
+      "Mastermind:vivid",
+      "Emperor:vivid",
+      "Jinx:vivid"],
     Battlesnakes: ["Snake:vivid"],
   },
 };
