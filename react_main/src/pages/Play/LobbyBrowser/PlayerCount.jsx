@@ -9,7 +9,6 @@ export const PlayerCount = (props) => {
   const game = props.game;
   const numSlotsTotal = game.setup.total;
   const gameId = props.gameId;
-  const anonymousGame = props.anonymousGame;
   const status = props.status;
   const numSlotsTaken = Math.min(props.numSlotsTaken || 0, numSlotsTotal);
   const spectatingAllowed = props.spectatingAllowed || false;
@@ -59,10 +58,6 @@ export const PlayerCount = (props) => {
       onMouseOver={onInfoClick}
       style={extraStyles}
     >
-      {anonymousGame && (<i 
-        className="fas fa-theater-masks"
-        title="Anonymous game"
-      />)}
       <Typography>
         {numSlotsTaken}/{numSlotsTotal}
       </Typography>

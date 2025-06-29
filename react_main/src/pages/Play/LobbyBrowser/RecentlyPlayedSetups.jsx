@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
-import { Box, IconButton, Paper, Stack, Typography } from "@mui/material";
+import { Box, Divider, IconButton, Paper, Stack, Typography } from "@mui/material";
 import { UserContext } from "../../../Contexts";
 import { useErrorAlert } from "../../../components/Alerts";
 import { getRecentlyPlayedSetups } from "../../../services/gameService";
@@ -11,7 +11,7 @@ import { getRecentlyPlayedSetupsChart } from "./getRecentlyPlayedSetupsChart";
 import { useTheme } from "@mui/styles";
 import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
 
-export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
+export const RecentlyPlayedSetups = ({ lobby }) => {
   const theme = useTheme();
   const svgRef = useRef();
   const [setups, setSetups] = useState([]);
@@ -23,10 +23,10 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
 
   useEffect(() => {
     (async () => {
-      const playedSetups = await getRecentlyPlayedSetups({ daysInterval });
+      const playedSetups = await getRecentlyPlayedSetups({ lobby });
       setSetups(playedSetups);
     })();
-  }, []);
+  }, [lobby]);
 
   useEffect(() => {
     if (setups?.length) {
@@ -100,6 +100,7 @@ export const RecentlyPlayedSetups = ({ daysInterval = 7 }) => {
         <Typography color="primary" gutterBottom>
           Most popular setups
         </Typography>
+        <Divider orientation="horizontal" flexItem sx={{ mb: 1 }} />
         <Stack spacing={1}>
           {setupRows}
         </Stack>
