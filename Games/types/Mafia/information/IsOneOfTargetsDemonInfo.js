@@ -23,7 +23,7 @@ module.exports = class IsOneOfTargetsDemonInfo extends Information {
     this.target = targets
   this.mainInfo = "No";
     for(let player of this.target){
-      if(MAFIA_FACTIONS.includes.(this.getAppearanceAlignment(player))){
+      if(MAFIA_FACTIONS.includes(this.getAppearanceAlignment(player))){
         this.mainInfo = "Yes";
         break;
       }
@@ -41,12 +41,17 @@ module.exports = class IsOneOfTargetsDemonInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    return `You learn that of ${this.targetA.name} and ${this.targetB.name}, ${this.mainInfo} of them received reports or visited another player.`;
+    if(this.mainInfo == "Yes"){
+    return `You learn that at least one of ${this.target[0].name} and ${this.target[1].name} is Mafia or Demonic.`;
+    }
+    else{
+      return `You learn that neither of ${this.target[0].name} and ${this.target[1].name} is Mafia or Demonic.`
+    }
   }
 
   isTrue() {
       for(let player of this.target){
-      if(MAFIA_FACTIONS.includes.(player.faction) && this.mainInfo == "Yes"){
+      if(MAFIA_FACTIONS.includes(player.faction) && this.mainInfo == "Yes"){
        return true; 
       }
       if(player.isDemonic(true) && this.mainInfo == "Yes"){
@@ -83,7 +88,7 @@ module.exports = class IsOneOfTargetsDemonInfo extends Information {
   makeTrue() {
     this.mainInfo = "No";
       for(let player of this.target){
-      if(MAFIA_FACTIONS.includes.(player.faction)){
+      if(MAFIA_FACTIONS.includes(player.faction)){
        this.mainInfo = "Yes";
       }
       if(player.isDemonic(true) && this.mainInfo == "Yes"){

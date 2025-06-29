@@ -20,7 +20,7 @@ module.exports = class StandUp extends Event {
       target: victim,
       game: this.game,
       event: this,
-      priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5,
+      priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
       labels: ["hidden", "absolute"],
       run: function () {
         
@@ -37,8 +37,8 @@ module.exports = class StandUp extends Event {
             info.processInfo();
 
             let roles = info.getInfoRaw();
-            roles.push(info.getFakeRole(this.target,1,false,this.investType,"Good"));
-            roles = Random.randomizeArray(roles).map((p) => addArticle(p);
+            roles.push(info.getFakeRole(this.target,1,false,this.investType,"Good")[0]);
+            roles = Random.randomizeArray(roles).map((p) => addArticle(p));
             roles = `${roles[0]}, ${roles[1]} and ${roles[2]}`;
             var alert = `:carol: ${roles} walk into a bar, and one of them is ${info.target.name}.`;
             this.game.queueAlert(alert);

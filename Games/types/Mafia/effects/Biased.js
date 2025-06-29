@@ -1,5 +1,6 @@
 const Effect = require("../Effect");
 const Action = require("../Action");
+const Player = require("../Player");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../const/Priority");
 
 module.exports = class Biased extends Effect {
