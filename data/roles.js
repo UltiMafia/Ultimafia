@@ -711,6 +711,15 @@ const roleData = {
       ],
       nightOrder: [["Learn Info",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
+    "Fortune Teller": {
+      alignment: "Village",
+      category: "Investigative",
+      tags: ["Information", "Alignment", "Visiting", "Basic"],
+      description: [
+        "Investigates two players at night and learns if one of them is Mafia or Demonic.",
+      ],
+      nightOrder: [["Check for Demons",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
+    },
     Scientist: {
       alignment: "Village",
       category: "Investigative",
