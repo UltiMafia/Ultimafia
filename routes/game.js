@@ -190,9 +190,7 @@ router.get("/list", async function (req, res) {
         [
           "setup",
           "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id",
-        ],
-        //["anonymousDeck", "id name disabled profiles -_id"]
-        ["anonymousDeck"]
+        ]
       );
       finishedGames = finishedGames.map((game) => ({
         ...game.toJSON(),
@@ -323,8 +321,7 @@ router.get("/:id/review/data", async function (req, res) {
             select: "id extension name -_id",
           },
         ],
-      })
-      //.populate("anonymousDeck", "-_id -__v -creator");
+      });
 
     if (!game || !userId) {
       res.status(500);
@@ -383,7 +380,6 @@ router.get("/:id/info", async function (req, res) {
           "type users players left stateLengths lobbyName ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions -_id"
         )
         .populate("users", "id name avatar -_id")
-        //.populate("anonymousDeck", "-_id -__v -creator");
 
       if (!game) {
         res.status(500);

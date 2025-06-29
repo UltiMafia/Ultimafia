@@ -3,6 +3,15 @@ var stats = require("./stats");
 
 const accessibilityThemeValues = ["", "Higher Contrast"];
 
+const anonymousDeck = new mongoose.Schema({
+  id: { type: String, index: true },
+  name: { type: String, index: true },
+  creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
+  profiles: [{ type: mongoose.Schema.Types.ObjectId, ref: "DeckProfile" }],
+  disabled: { type: Boolean, default: 0 },
+  featured: { type: Boolean, index: true },
+});
+
 var schemas = {
   User: new mongoose.Schema({
     id: { type: String, index: true },
@@ -192,14 +201,7 @@ var schemas = {
     alignmentWins: {},
     dayCountWins: {},
   }),
-  AnonymousDeck: new mongoose.Schema({
-    id: { type: String, index: true },
-    name: { type: String, index: true },
-    creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
-    profiles: [{ type: mongoose.Schema.Types.ObjectId, ref: "DeckProfile" }],
-    disabled: { type: Boolean, default: 0 },
-    featured: { type: Boolean, index: true },
-  }),
+  AnonymousDeck: anonymousDeck,
   CustomEmote: new mongoose.Schema({
     id: { type: String, index: true },
     name: { type: String, index: true },
@@ -241,13 +243,8 @@ var schemas = {
     broken: Boolean,
     kudosReceiver: { type: String, default: "" },
     anonymousGame: Boolean,
-    anonymousDeck: [],
-    /*
-     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "AnonymousDeck",
-    },
-    */
+    // This is a mongoose subdocument. It won't change if the anonyonous deck that the game was started with changes.
+    anonymousDeck: [ anonymousDeck ],
   }),
   ArchivedGame: new mongoose.Schema({
     user: {

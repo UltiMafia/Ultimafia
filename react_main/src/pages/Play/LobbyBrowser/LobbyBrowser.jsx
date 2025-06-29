@@ -17,6 +17,8 @@ import {
   Grid,
   List,
   ListItem,
+  Paper,
+  Stack,
   Tab,
   Tabs,
   Typography,
@@ -193,12 +195,6 @@ export const LobbyBrowser = () => {
             />
           ))}
       </Tabs>
-      <div
-        onClick={refreshGames}
-        style={{ display: "flex", marginLeft: "auto" }}
-      >
-        <RefreshButton isSpinning={refreshButtonIsSpinning} />
-      </div>
     </Box>
   );
 
@@ -206,10 +202,10 @@ export const LobbyBrowser = () => {
   const gameList = loading ? (
     <NewLoading small />
   ) : games.length ? (
-    <List sx={{ my: -0.5 }} disablePadding>
+    <Stack direction="column" spacing={1}>
       {games.map((game) => {
         return (
-          <ListItem disablePadding sx={{ py: 1 }} key={game.id}>
+          <ListItem disablePadding key={game.id}>
             <Box className={game.competitive ? "metallic-gold" : undefined} sx={{
               backgroundColor: getRowStubColor(game),
               borderTopLeftRadius: "5px",
@@ -229,76 +225,58 @@ export const LobbyBrowser = () => {
             />
           </ListItem>
       )})}
-    </List>
+    </Stack>
   ) : (
     <Typography style={{ textAlign: "center" }}>
       No games played recently.
     </Typography>
   );
 
-  const PageNavGames = (
-    <PageNav page={page} onNav={(page) => getGameList(listType, page)} />
-  );
-
   const buttons = (
-    <>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginTop: 1,
-        }}
-      >
-        {!isPhoneDevice && PageNavGames}
-      </Box>
-      {isPhoneDevice && (
-        <Box style={{ marginLeft: "auto" }}>{PageNavGames}</Box>
-      )}
-    </>
+    <Paper>
+      <Stack direction="row" sx={{
+        width: "100%",
+        alignItems: "center",
+        justifyContent: "space-between",
+        mb: 1,
+      }}>
+        <PageNav page={page} onNav={(page) => getGameList(listType, page)} />
+        <Typography color="primary">
+          Games
+        </Typography>
+        <div onClick={refreshGames}>
+          <RefreshButton isSpinning={refreshButtonIsSpinning} />
+        </div>
+      </Stack>
+    </Paper>
   );
 
-  const desktopRecentlyPlayedSetups = (
-    <Grid item xs={12} md={5}>
-      <DailyChallenges />
-      <RecentlyPlayedSetups />
-    </Grid>
-  );
-  /*
-  const DailyChallengesInfo = (
-     <Grid item xs={12} md={5}>
-    <DailyChallenges /> //{DailyChallengesInfo}
-    </Grid>
-  );
-  */
-  const mobileRecentlyPlayedSetups = (
-    <Grid item xs={12} md={5} sx={{ mb: 1 }}>
-      <RecentlyPlayedSetups />
-    </Grid>
-  );
-
-  return (
-    <>
-      {buttons}
-      {lobbyTabs}
-      <Divider sx={{ my: 1 }}/>
-      {gameList}
-
-      <Grid container sx={{ mt: 4 * 1 }} columnSpacing={4}>
-        {isPhoneDevice && mobileRecentlyPlayedSetups}
-        <Grid item xs={12} md={7}>
-          <Comments
-            fullWidth
-            location={
-              lobbyName === "Main" || lobbyName === "All"
-                ? "lobby"
-                : `lobby-${lobbyName}`
-            }
-          />
-        </Grid>
-        {!isPhoneDevice && desktopRecentlyPlayedSetups}
-        
+  return (<Box sx={{
+    mt: 1,
+  }}>
+    {lobbyTabs}
+    <Divider sx={{ my: 1 }}/>
+    <Grid container rowSpacing={2} columnSpacing={2}>
+      <Grid item xs={12} md={8}>
+        {buttons}
+        {gameList}
       </Grid>
-    </>
-  );
+      <Grid item xs={12} md={4}>
+        <Stack spacing={1}>
+          <DailyChallenges />
+          <RecentlyPlayedSetups lobby={lobbyName} />
+        </Stack>
+      </Grid>
+      <Grid item xs={12} md={8}>
+        <Comments
+          fullWidth
+          location={
+            lobbyName === "Main" || lobbyName === "All"
+              ? "lobby"
+              : `lobby-${lobbyName}`
+          }
+        />
+      </Grid>
+    </Grid>
+  </Box>);
 };

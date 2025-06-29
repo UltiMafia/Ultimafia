@@ -1,7 +1,6 @@
 import axios from "axios";
 
-export const getRecentlyPlayedSetups = async ({ daysInterval }) => {
-  const lobby = localStorage.getItem("lobby") || "Main";
+export const getRecentlyPlayedSetups = async ({ lobby }) => {
   // by default, returns the 1st announcement (no DATE provided in URLfilter)
   try {
     const res = await axios.get(
