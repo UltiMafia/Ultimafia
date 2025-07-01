@@ -2788,8 +2788,15 @@ module.exports = class Game {
           player.EarnedAchievements = [];
         }
 
-        if(this.hasIntegrity && !this.private){
+        if(this.hasIntegrity && !this.private && player.DailyTracker && player.DailyTracker.length >= 1){
          coinsEarned += player.DailyPayout;
+        if(player.user.dailyChallenges && player.user.dailyChallenges.length <= 0){
+          coinsEarned += 20;
+          player.DailyCompleted = 1;
+        }
+        else{
+          player.DailyCompleted = 0;
+        }
         }
         
         await models.User.updateOne(

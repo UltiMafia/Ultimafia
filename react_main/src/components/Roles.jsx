@@ -211,10 +211,10 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
             primary={
               <div>
                 <span style={{ fontWeight: "bold" }}>{modifier.name}</span>:{" "}
-                {roleData?.alignment == "Event" &&
+                {(roleData?.SpecialInteractionsModifiers && roleData?.SpecialInteractionsModifiers[modifier.name]) ? roleData?.SpecialInteractionsModifiers[modifier.name] : (roleData?.alignment == "Event" &&
                 modifier.eventDescription != null
                   ? modifier.eventDescription
-                  : modifier.description}
+                  : modifier.description)}
               </div>
             }
           />

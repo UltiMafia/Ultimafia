@@ -710,6 +710,32 @@ const roleData = {
         "On Night 1, learns that 1 of 2 players is a particular role.",
       ],
       nightOrder: [["Learn Info",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
+      SpecialInteractionsModifiers: {
+      Loyal: [
+          "Will only learn about Good Roles.",
+        ],
+      Disloyal: [
+          "Will only learn about Evil Roles.",
+        ],
+      Holy: [
+          "Will only learn about non-Demonic Roles.",
+        ],
+      Unholy: [
+          "Will only learn about Demonic Roles.",
+      ],
+      Simple: [
+          "Will only learn about Vanilla Roles.",
+      ],
+      Complex: [
+          "Will only learn about PR Roles.",
+      ],
+      Refined: [
+          "Will only learn about non-Banished Roles.",
+      ],
+      Unrefined: [
+          "Will only learn about Banished Roles.",
+      ],
+      },
     },
     "Fortune Teller": {
       alignment: "Village",
