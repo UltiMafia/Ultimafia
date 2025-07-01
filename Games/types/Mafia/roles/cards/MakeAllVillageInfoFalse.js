@@ -33,7 +33,7 @@ module.exports = class MakeAllVillageInfoFalse extends Card {
         }
         for (let x = 0; x < this.FalseModeVillageEffects.length; x++) {
           if (this.FalseModeVillageEffects[x].player) {
-            var index = this.FalseModeVillageEffects[x].player.passiveEffects.indexOf(
+            var index = this.player.passiveEffects.indexOf(
               this.FalseModeVillageEffects[x]
             );
             if (index != -1) {
@@ -44,10 +44,6 @@ module.exports = class MakeAllVillageInfoFalse extends Card {
         }
         this.FalseModeVillageEffects = [];
         if (this.player.hasAbility(["Deception"])) {
-          let neighbors = this.player.getNeighbors();
-          if (neighbors[0].isEvil() == true || neighbors[1].isEvil() == true) {
-            return;
-          }
           for (let player of this.game.players.filter((p) => p.role.alignment == "Village")) {
             let effect = player.giveEffect("FalseMode", Infinity);
             this.player.passiveEffects.push(effect);

@@ -23,16 +23,16 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
     if (amount == null || amount <= 0) {
       amount = 2;
     }
-    
+    this.amount = amount;
 
     if(validRoles.length <= 0){
       this.mainInfo = "None";
       return;
     }
-  let formattedRoles = validRoles.map((r) => this.formatRole(r));
+  let formattedRoles = validRoles.map((r) => this.game.formatRole(r));
     let validPlayers = this.game.alivePlayers().filter((p) => formattedRoles.includes(p.getRoleAppearance(this.investType)) && p != this.creator);
     if(validPlayers.length <= 0){
-      validPlayers = this.game.player.filter((p) => formattedRoles.includes(p.getRoleAppearance(this.investType)) && p != this.creator);
+      validPlayers = this.game.players.filter((p) => formattedRoles.includes(p.getRoleAppearance(this.investType)) && p != this.creator);
     }
     if(validPlayers.length <= 0){
       this.mainInfo = "None";
@@ -41,17 +41,15 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
 
       target = [];
       target.push(Random.randArrayVal(validPlayers.filter((p) => !target.includes(p) && p != this.creator)));
-      let role = temp.getRoleAppearance(this.investType);
+      let role = target[0].getRoleAppearance(this.investType);
+      this.targetRole = target[0].getRoleAppearance(this.investType).split((" ("))[0];
       for (let x = 0; x < amount-1; x++) {
         target.push(Random.randArrayVal(this.game.alivePlayers().filter((p) => !target.includes(p) && p != this.creator)));
       }
     
     this.target = target;
-    let temp = this.target[0];
-    this.targetRole = temp.getRoleAppearance(this.investType);
     
-    let role = temp.getRoleAppearance(this.investType);
-    let trueRole = this.game.formatRoleInternal(temp.role.name, temp.role.modifier);
+    let trueRole = this.game.formatRoleInternal(target[0].role.name, target[0].role.modifier);
     this.trueRole = this.game.formatRole(trueRole);
     this.mainInfo = role;
 
@@ -68,6 +66,7 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
     if(this.mainInfo == "None"){
       return `You couldn't find anyone to do the laundry of!`;
     }
+    this.target = Random.randomizeArray(this.target);
     return `You did ${this.target[0].name} and ${this.target[1].name} laundry... one of them wears the clothes of a ${this.mainInfo}!`;
     //return `You Learn that your Target's Role is ${this.mainInfo}`
   }
@@ -119,7 +118,7 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
     }
     if (
       this.game.getRoleAlignment(this.targetRole) == "Village" || (this.game.getRoleAlignment(this.targetRole) == "Independent" && !this.game.getRoleTags(this.targetRole).includes("Hostile")
-    ) {
+    )) {
       return false;
     } else {
       return true;
@@ -135,32 +134,26 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
 
     let validPlayers = this.game.alivePlayers().filter((p) => validRoles.includes(this.game.formatRoleInternal(p.role.name, p.role.modifier)) && p != this.creator);
     if(validPlayers.length <= 0){
-      validPlayers = this.game.player.filter((p) => validRoles.includes(this.game.formatRoleInternal(p.role.name, p.role.modifier)) && p != this.creator);
+      validPlayers = this.game.players.filter((p) => validRoles.includes(this.game.formatRoleInternal(p.role.name, p.role.modifier)) && p != this.creator);
     }
     if(validPlayers.length <= 0){
       this.mainInfo = "None";
       return;
     }
 
-      target = [];
+      let target = [];
       target.push(Random.randArrayVal(validPlayers.filter((p) => !target.includes(p) && p != this.creator)));
-      this.targetRole = this.game.formatRoleInternal(target[0].role.name, target[0].role.modifier);
-      for (let x = 0; x < amount-1; x++) {
+      this.targetRole = target[0].role.name;
+      this.trueRole = this.game.formatRoleInternal(target[0].role.name, target[0].role.modifier);
+      for (let x = 0; x <  this.amount-1; x++) {
         target.push(Random.randArrayVal(this.game.alivePlayers().filter((p) => !target.includes(p) && p != this.creator)));
       }
 
     this.target = target;
-    this.targetRole = this.game.formatRole(this.game.formatRoleInternal(temp.role.name, temp.role.modifier));
     
-    let role = temp.getRoleAppearance(this.investType);
-    let trueRole = this.game.formatRoleInternal(temp.role.name, temp.role.modifier);
+
+    let trueRole = this.trueRole;
     this.trueRole = this.game.formatRole(trueRole);
-    this.mainInfo = role;
-  
-    
-    
-    let temp = Random.randArrayVal(this.target);
-    this.targetRole = temp.role.name;
     this.mainInfo = this.trueRole;
   }
   makeFalse() {
@@ -170,7 +163,7 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
       this.mainInfo = "None";
       return;
     }
-    if(this.mainInfo == "None";){
+    if(this.mainInfo == "None"){
       this.mainInfo = this.game.formatRole(Random.randArrayVal(validRoles));
     }
     let fakePlayers = this.game
@@ -208,14 +201,14 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
 
 getAllowedRoles(){
   let roles = this.game.PossibleRoles;
-  let isLoyal = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Loyal");
-  let isDisloyal = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Disloyal");
-  let isSimple = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Simple");
-  let isComplex = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Complex");
-  let isHoly = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Holy");
-  let isUnholy = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Unholy");
-  let isRefined = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Refined");
-  let isUnrefined = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Unrefined");
+  let isLoyal = this.game.getRoleTags(this.game.formatRoleInternal(this.creator.role.name, this.creator.role.modifier)).includes("Loyal");
+  let isDisloyal = this.game.getRoleTags(this.game.formatRoleInternal(this.creator.role.name, this.creator.role.modifier)).includes("Disloyal");
+  let isSimple = this.game.getRoleTags(this.game.formatRoleInternal(this.creator.role.name, this.creator.role.modifier)).includes("Simple");
+  let isComplex = this.game.getRoleTags(this.game.formatRoleInternal(this.creator.role.name, this.creator.role.modifier)).includes("Complex");
+  let isHoly = this.game.getRoleTags(this.game.formatRoleInternal(this.creator.role.name, this.creator.role.modifier)).includes("Holy");
+  let isUnholy = this.game.getRoleTags(this.game.formatRoleInternal(this.creator.role.name, this.creator.role.modifier)).includes("Unholy");
+  let isRefined = this.game.getRoleTags(this.game.formatRoleInternal(this.creator.role.name, this.creator.role.modifier)).includes("Refined");
+  let isUnrefined = this.game.getRoleTags(this.game.formatRoleInternal(this.creator.role.name, this.creator.role.modifier)).includes("Unrefined");
 
   if(isLoyal){
     roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village" || (this.game.getRoleAlignment(r) == "Independent" && !this.game.getRoleTags(r).includes("Hostile")));
