@@ -85,6 +85,11 @@ module.exports = class MafiaEvent extends Event {
       } else if (this.modifiers.includes("Unholy") && !player.isDemonic(true)) {
         return false;
       }
+      if (this.modifiers.includes("Refined") && player.role.data.banished == true) {
+        return false;
+      } else if (this.modifiers.includes("Unrefined") && player.role.data.banished != true) {
+        return false;
+      }
       if (this.modifiers.includes("Simple") && !this.isVanilla(p)) {
         return false;
       } else if (this.modifiers.includes("Complex") && this.isVanilla(p)) {
