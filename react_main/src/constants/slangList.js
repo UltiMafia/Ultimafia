@@ -392,6 +392,22 @@ export const slangList = {
     definition:
       "The opposite of cc'ed (counter claimed). An adjective for a player whose power role claim is not contested by anyone else.",
   },
+  dumbtell: {
+    definition:
+      "When a player gives away that they're town because they don't know something that would be obvious to them if they were evil. Can be faked."
+  },
+  softing: {
+    definition:
+      "Softclaim. When a player hints towards what their role is without explicitly saying it. A soft can be used to strengthen one's eventual hard claim."
+  },
+  gamesolve: {
+    definition:
+      "Gamesolving. When a player is actively using deduction to figure out who the evil players are."
+  },
+  nilla: {
+    definition:
+      "Vanilla. Refers to the most plain mafia role, Mafioso."
+  },
 
   // mgg theft 2
   Town: {
@@ -634,3 +650,6 @@ slangList.tr = slangList.townread;
 slangList["uncc'ed"] = slangList.uncc;
 slangList["uncced"] = slangList.uncc;
 slangList.vested = slangList.vest;
+slangList.gamesolving = slangList.gamesolve;
+slangList.gamesolved = slangList.gamesolve;
+slangList.gamesolves = slangList.gamesolve;
