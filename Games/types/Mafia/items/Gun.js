@@ -27,7 +27,7 @@ module.exports = class Gun extends Item {
           item: this,
           run: function () {
             this.item.drop();
-            this.game.broadcast("gunshot");
+            
 
             var shooterMask = this.item.shooterMask;
             var reveal = shooterMask ? true : this.item.reveal;
@@ -58,12 +58,16 @@ module.exports = class Gun extends Item {
                 return;
               }
             }
-            
+            this.game.broadcast("gunshot");
 
             if (broken) {
               this.target = this.actor;
             }
-
+            /*
+             this.game.queueAlert(
+                `Use Mods ${this.item.useModifiers} , Mods ${this.item.modifiers}!`
+              );
+              */
             if (reveal && broken)
               this.game.queueAlert(
                 `:gunfab: ${shooterMask} pulls a gun, it backfires!`
@@ -122,7 +126,7 @@ module.exports = class Gun extends Item {
             if (this.dominates()) {
               this.target.kill("gun", this.actor, true);
 
-              if(this.item.modifiers.includes("Regretful")){
+              if(this.item.useModifiers && this.item.modifiers && this.item.modifiers.includes("Regretful")){
                 let selfKill2 = new Action({
                 actor: this.actor,
                 target: this.actor,
@@ -161,9 +165,9 @@ module.exports = class Gun extends Item {
   }
 
   hold(player){
-    super(player);
+    super.hold(player);
     if(this.useModifiers == true){
-      this.modifiers = this.holder.role.modifiers;
+      this.modifiers = this.holder.role.modifier;
     }
   }
 
@@ -186,7 +190,7 @@ module.exports = class Gun extends Item {
           return false;
       }
     }
-    if(player.role.name == "Villager" || player.role.name == "Mafioso" player.role.name == "Cultist" player.role.name == "Grouch"){
+    if(player.role.name == "Villager" || player.role.name == "Mafioso" || player.role.name == "Cultist" || player.role.name == "Grouch"){
        if(this.modifiers.includes("Complex")){
           return false;
       }

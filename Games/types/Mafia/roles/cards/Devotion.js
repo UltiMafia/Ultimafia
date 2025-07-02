@@ -12,23 +12,26 @@ module.exports = class Devotion extends Card {
 */
 
     this.listeners = {
+      state: function (stateInfo) {
+        this.game.events.emit("AbilityToggle", this.player);
+      },
       AbilityToggle: function (player) {
-        if (player != this.player) {
-          return;
-        }
         if (this.player.hasAbility(["Win-Con"])) {
-          this.role.data.DevotionCult = true;
-          if (this.role.name == "Devotee" && this.game.alivePlayers().length >= 4) {
-            this.role.data.BackUpConvert = true;
-          }
-          else{
-            this.role.data.BackUpConvert = false;
-            this.role.data.DevotionCult = false;
+          //this.game.queueAlert(`${this.game.alivePlayers().length} players are alive`);
+          this.player.role.data.DevotionCult = true;
+          if (this.name == "Devotee") {
+            if(this.game.alivePlayers().length >= 5){
+              this.player.role.data.BackUpConvert = true;
+            }
+            else{
+              this.player.role.data.DevotionCult = false;
+              this.player.role.data.BackUpConvert = false;
+            }
           }
           
         } else {
-          this.role.data.BackUpConvert = false;
-          this.role.data.DevotionCult = false;
+          this.player.role.data.BackUpConvert = false;
+          this.player.role.data.DevotionCult = false;
         }
       },
     };
