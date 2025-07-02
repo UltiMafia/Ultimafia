@@ -138,6 +138,50 @@ const roleData = {
         "Starts with a gun.",
         "This gun never reveals the deputy when shot.",
       ],
+            SpecialInteractionsModifiers: {
+      Loyal: [
+          "Gun will do nothing when shooting players of a diffrent alignment.",
+        ],
+      Disloyal: [
+          "Gun will do nothing when shooting players of the same alignment.",
+        ],
+      Holy: [
+          "Gun will do nothing when shooting players with Demonic roles.",
+        ],
+      Unholy: [
+          "Gun will do nothing when shooting players with non-Demonic roles.",
+      ],
+      Simple: [
+          "Gun will do nothing when shooting players with Vanilla Roles.",
+      ],
+      Complex: [
+          "Gun will do nothing when shooting players with PR Roles.",
+      ],
+      Refined: [
+          "Gun will do nothing when shooting players with Banished Roles.",
+      ],
+      Unrefined: [
+          "Gun will do nothing when shooting players with non-Banished Roles.",
+      ],
+      Vain: [
+          "Will die when shooting players of the same alignment.",
+      ],
+      Weak: [
+          "Will die when shooting players of a diffrent alignment.",
+      ],
+      Sacrificial: [
+          "Will die when shooting the gun.",
+      ],
+      Regretful: [
+          "Will die when killing a player with the gun.",
+      ],
+      Random: [
+          "Gun will shoot a Random player when used.",
+      ],
+      Narcissistic: [
+          "Gun will have 50% chance to self target when used.",
+      ],
+      },
     },
     Loudmouth: {
       alignment: "Village",
@@ -188,6 +232,50 @@ const roleData = {
         "Starts with a gun.",
         "This gun always reveals the sheriff when shot.",
       ],
+      SpecialInteractionsModifiers: {
+      Loyal: [
+          "Gun will do nothing when shooting players of a diffrent alignment.",
+        ],
+      Disloyal: [
+          "Gun will do nothing when shooting players of the same alignment.",
+        ],
+      Holy: [
+          "Gun will do nothing when shooting players with Demonic roles.",
+        ],
+      Unholy: [
+          "Gun will do nothing when shooting players with non-Demonic roles.",
+      ],
+      Simple: [
+          "Gun will do nothing when shooting players with Vanilla Roles.",
+      ],
+      Complex: [
+          "Gun will do nothing when shooting players with PR Roles.",
+      ],
+      Refined: [
+          "Gun will do nothing when shooting players with Banished Roles.",
+      ],
+      Unrefined: [
+          "Gun will do nothing when shooting players with non-Banished Roles.",
+      ],
+      Vain: [
+          "Will die when shooting players of the same alignment.",
+      ],
+      Weak: [
+          "Will die when shooting players of a diffrent alignment.",
+      ],
+      Sacrificial: [
+          "Will die when shooting the gun.",
+      ],
+      Regretful: [
+          "Will die when killing a player with the gun.",
+      ],
+      Random: [
+          "Gun will shoot a Random player when used.",
+      ],
+      Narcissistic: [
+          "Gun will have 50% chance to self target when used.",
+      ],
+      },
     },
     Sleepwalker: {
       alignment: "Village",
@@ -1926,6 +2014,50 @@ const roleData = {
         "Starts with a gun.",
         "Gun does not reveal identity when fired.",
       ],
+            SpecialInteractionsModifiers: {
+      Loyal: [
+          "Gun will do nothing when shooting players of a diffrent alignment.",
+        ],
+      Disloyal: [
+          "Gun will do nothing when shooting players of the same alignment.",
+        ],
+      Holy: [
+          "Gun will do nothing when shooting players with Demonic roles.",
+        ],
+      Unholy: [
+          "Gun will do nothing when shooting players with non-Demonic roles.",
+      ],
+      Simple: [
+          "Gun will do nothing when shooting players with Vanilla Roles.",
+      ],
+      Complex: [
+          "Gun will do nothing when shooting players with PR Roles.",
+      ],
+      Refined: [
+          "Gun will do nothing when shooting players with Banished Roles.",
+      ],
+      Unrefined: [
+          "Gun will do nothing when shooting players with non-Banished Roles.",
+      ],
+      Vain: [
+          "Will die when shooting players of the same alignment.",
+      ],
+      Weak: [
+          "Will die when shooting players of a diffrent alignment.",
+      ],
+      Sacrificial: [
+          "Will die when shooting the gun.",
+      ],
+      Regretful: [
+          "Will die when killing a player with the gun.",
+      ],
+      Random: [
+          "Gun will shoot a Random player when used.",
+      ],
+      Narcissistic: [
+          "Gun will have 50% chance to self target when used.",
+      ],
+      },
     },
     //killing roles
     Arsonist: {
@@ -2829,6 +2961,50 @@ const roleData = {
         "Will gain a gun once per game if Mafia chose to abstain from killing the previous night.",
         "Gun will always reveal the shooter.",
       ],
+      SpecialInteractionsModifiers: {
+      Loyal: [
+          "Gun will do nothing when shooting players of a diffrent alignment.",
+        ],
+      Disloyal: [
+          "Gun will do nothing when shooting players of the same alignment.",
+        ],
+      Holy: [
+          "Gun will do nothing when shooting players with Demonic roles.",
+        ],
+      Unholy: [
+          "Gun will do nothing when shooting players with non-Demonic roles.",
+      ],
+      Simple: [
+          "Gun will do nothing when shooting players with Vanilla Roles.",
+      ],
+      Complex: [
+          "Gun will do nothing when shooting players with PR Roles.",
+      ],
+      Refined: [
+          "Gun will do nothing when shooting players with Banished Roles.",
+      ],
+      Unrefined: [
+          "Gun will do nothing when shooting players with non-Banished Roles.",
+      ],
+      Vain: [
+          "Will die when shooting players of the same alignment.",
+      ],
+      Weak: [
+          "Will die when shooting players of a diffrent alignment.",
+      ],
+      Sacrificial: [
+          "Will die when shooting the gun.",
+      ],
+      Regretful: [
+          "Will die when killing a player with the gun.",
+      ],
+      Random: [
+          "Gun will shoot a Random player when used.",
+      ],
+      Narcissistic: [
+          "Gun will have 50% chance to self target when used.",
+      ],
+      },
       nightOrder: [["Gain Gun",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Imposter: {
