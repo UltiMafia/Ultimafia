@@ -24,54 +24,42 @@ export const PlayerCount = (props) => {
     );
   }
   const gameNotFinished = ["Open", "In Progress"].includes(status);
-  const numSlotsOpen = numSlotsTotal - numSlotsTaken;
-
-  const gradientColor = "var(--gradient-color)";
-  const backgroundColor = "var(--scheme-color)";
-  const extraFillColors = `${gradientColor} ,`.repeat(
-    Math.max(numSlotsTaken, 0) // Math.max because if we SOMEHOW magically have 8/7 players in the lobby, I'd rather not crash the whole app
-  );
-  const extraBackgroundColors = `${backgroundColor}, `.repeat(
-    Math.max(numSlotsOpen - 1, 0)
-  ); // -1 to avoid THE trailing comma
-  const extraLastColor = numSlotsOpen > 0 ? backgroundColor : gradientColor; // If the game is filled, make the gradient "full"
-
-  const backgroundImage = gameNotFinished
-    ? `linear-gradient(to right, ${gradientColor}, ${extraFillColors}${extraBackgroundColors}${extraLastColor})`
-    : "";
-  const extraStyles = {
-    backgroundImage,
-  };
 
   return (
-    <Stack
+    <Box
       className="player-count"
-      direction="row"
-      spacing={0.5}
-      sx={{
-        p: 0.5,
-        width: "100px",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-      ref={infoRef}
       onMouseOver={onInfoClick}
-      style={extraStyles}
+      ref={infoRef}
     >
-      <Typography>
-        {numSlotsTaken}/{numSlotsTotal}
-      </Typography>
-      {gameNotFinished && !spectatingAllowed && (
-        <i className="fas fa-eye-slash" />
-      )}
-      {gameNotFinished && spectatingAllowed && (
-        <>
-          <i className="fas fa-eye" />
-          <Typography>
-            {spectatorCount}
-          </Typography>
-        </>
-      )}
-    </Stack>
+      <progress value={numSlotsTaken} max={numSlotsTotal}/>
+      <Stack
+        direction="row"
+        spacing={0.5}
+        sx={{
+          position: "relative",
+          zIndex: 1,
+          height: "100%",
+          p: 0.5,
+          alignItems: "center",
+          justifyContent: "center",
+          pointerEvents: "none",
+        }}
+      >
+        <Typography>
+          {numSlotsTaken}/{numSlotsTotal}
+        </Typography>
+        {gameNotFinished && !spectatingAllowed && (
+          <i className="fas fa-eye-slash" />
+        )}
+        {gameNotFinished && spectatingAllowed && (
+          <>
+            <i className="fas fa-eye" />
+            <Typography>
+              {spectatorCount}
+            </Typography>
+          </>
+        )}
+      </Stack>
+    </Box>
   );
 };

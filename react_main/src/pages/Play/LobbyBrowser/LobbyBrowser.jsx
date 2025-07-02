@@ -255,7 +255,7 @@ export const LobbyBrowser = () => {
     mt: 1,
   }}>
     {lobbyTabs}
-    <Divider sx={{ my: 1 }}/>
+    <Divider sx={{ mb: 1 }}/>
     <Grid container rowSpacing={2} columnSpacing={2}>
       <Grid item xs={12} md={8}>
         {buttons}

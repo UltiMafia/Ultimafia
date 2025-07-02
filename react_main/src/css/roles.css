@@ -2067,6 +2067,18 @@
   background-image: url("/images/roles/feast-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Culture-Exchange {
+  background-image: url("/images/roles/culture-exchange-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Stand-Up {
+  background-image: url("/images/roles/stand-up-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Sensible-Mood {
+  background-image: url("/images/roles/sensible-mood-vivid.png");
+}
+
 /*
 /*
 /*------------------Items----------------------*/
@@ -2459,6 +2471,10 @@ background-image: url("/images/modifiers/random.png");
 background-image: url("/images/modifiers/reactionary.png");
 }
 
+.modifier-Mafia-Refined {
+background-image: url("/images/modifiers/refined.png");
+}
+
 .modifier-Mafia-Resolute {
 background-image: url("/images/modifiers/resolute.png");
 }
@@ -2565,6 +2581,10 @@ background-image: url("/images/modifiers/unkillable.png");
 
 .modifier-Mafia-Unlucky {
 background-image: url("/images/modifiers/unlucky.png");
+}
+
+.modifier-Mafia-Unrefined {
+background-image: url("/images/modifiers/unrefined.png");
 }
 
 .modifier-Mafia-Unwavering {
