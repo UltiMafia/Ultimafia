@@ -445,6 +445,8 @@ const artContributors = {
       "Assassin:old",
       "Cultural Exchange:vivid",
       "Self-Awareness:vivid",
+      "Missing Supplies:vivid",
+      "Evolution:vivid",
       //Skins
       "Hellhound:goofy",
     ],
