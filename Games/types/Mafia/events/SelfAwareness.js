@@ -6,9 +6,9 @@ const {
   PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
 } = require("../const/Priority");
 
-module.exports = class SensibleMood extends Event {
+module.exports = class SelfAwareness extends Event {
   constructor(modifiers, game) {
-    super("Sensible Mood", modifiers, game);
+    super("Self-Awareness", modifiers, game);
   }
 
   doEvent() {
@@ -24,7 +24,7 @@ module.exports = class SensibleMood extends Event {
       run: function () {
         if (this.game.SilentEvents != false) {
           this.game.queueAlert(
-            `Event: Sensible Mood! 1-3 Players will Learn if their role has changed!`
+            `Event: Self-Awareness! 1-3 Players will Learn if their role has changed!`
           );
         }
         let players = this.event.generatePossibleVictims();

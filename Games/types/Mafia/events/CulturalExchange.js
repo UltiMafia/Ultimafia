@@ -6,9 +6,9 @@ const {
   PRIORITY_BECOME_DEAD_ROLE,
 } = require("../const/Priority");
 
-module.exports = class CultureExchange extends Event {
+module.exports = class CulturalExchange extends Event {
   constructor(modifiers, game) {
-    super("Culture Exchange", modifiers, game);
+    super("Cultural Exchange", modifiers, game);
   }
 
   doEvent() {
@@ -22,7 +22,7 @@ module.exports = class CultureExchange extends Event {
       run: function () {
         if (this.game.SilentEvents != false) {
           this.game.queueAlert(
-            `Event: Culture Exchange! 1 player wil gain the ability to role share today!`
+            `Event: Cultural Exchange! 1 player wil gain the ability to role share today!`
           );
         }
 

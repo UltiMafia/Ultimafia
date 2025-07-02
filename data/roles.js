@@ -4956,7 +4956,7 @@ const roleData = {
       ],
       nightOrder: [["Protect Players",(PRIORITY_FULL_DISABLE+3)]],
     },
-    "Sensible Mood": {
+    "Self-Awareness": {
       alignment: "Event",
       tags: ["Event"],
       description: [
@@ -4964,7 +4964,7 @@ const roleData = {
       ],
       nightOrder: [["Tell about role",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5)]],
     },
-    "Stand Up": {
+    "Stand-Up": {
       alignment: "Event",
       tags: ["Event"],
       description: [
@@ -4973,7 +4973,7 @@ const roleData = {
       ],
       nightOrder: [["Tell Joke",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10)]],
     },
-    "Culture Exchange": {
+    "Cultural Exchange": {
       alignment: "Event",
       tags: ["Event"],
       description: [

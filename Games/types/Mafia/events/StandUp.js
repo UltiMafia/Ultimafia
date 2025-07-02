@@ -9,7 +9,7 @@ const {
 
 module.exports = class StandUp extends Event {
   constructor(modifiers, game) {
-    super("Stand Up", modifiers, game);
+    super("Stand-Up", modifiers, game);
   }
 
   doEvent() {
@@ -25,7 +25,7 @@ module.exports = class StandUp extends Event {
       run: function () {
         
           this.game.queueAlert(
-            `Event: Stand Up! All players hear an amazing Joke!`
+            `Event: Stand-Up! All players hear an amazing Joke!`
           );
 
             let info = this.game.createInformation(
