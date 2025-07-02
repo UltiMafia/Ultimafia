@@ -2243,6 +2243,10 @@ background-image: url("/images/modifiers/chaotic.png");
 background-image: url("/images/modifiers/checking.png");
 }
 
+.modifier-Mafia-Choosy {
+background-image: url("/images/modifiers/choosy.png");
+}
+
 .modifier-Mafia-Churchgoing {
 background-image: url("/images/modifiers/churchgoing.png");
 }
@@ -2253,6 +2257,10 @@ background-image: url("/images/modifiers/clannish.png");
 
 .modifier-Mafia-Clueless {
 background-image: url("/images/modifiers/clueless.png");
+}
+
+.modifier-Mafia-Clumsy {
+background-image: url("/images/modifiers/clumsy.png");
 }
 
 .modifier-Mafia-Commuting {
@@ -2311,16 +2319,24 @@ background-image: url("/images/modifiers/even.png");
 background-image: url("/images/modifiers/exclusive.png");
 }
 
+.modifier-Mafia-Explosive {
+background-image: url("/images/modifiers/explosive.png");
+}
+
 .modifier-Mafia-Exposed {
 background-image: url("/images/modifiers/exposed.png");
+}
+
+.modifier-Mafia-Faceless {
+background-image: url("/images/modifiers/faceless.png");
 }
 
 .modifier-Mafia-Fair {
 background-image: url("/images/modifiers/fair.png");
 }
 
-.modifier-Mafia-Felonius {
-background-image: url("/images/modifiers/felonius.png");
+.modifier-Mafia-Felonious {
+background-image: url("/images/modifiers/felonious.png");
 }
 
 .modifier-Mafia-Frustrated {
@@ -2328,7 +2344,7 @@ background-image: url("/images/modifiers/frustrated.png");
 }
 
 .modifier-Mafia-Global {
-background-image: url("/images/modifiers/Global.png");
+background-image: url("/images/modifiers/global.png");
 }
 
 .modifier-Mafia-Gunslinging {
@@ -2384,7 +2400,7 @@ background-image: url("/images/modifiers/loud.png");
 }
 
 .modifier-Mafia-Loyal {
-background-image: url("/images/modifiers/Loyal.png");
+background-image: url("/images/modifiers/loyal.png");
 }
 
 .modifier-Mafia-Luminous {
@@ -2443,12 +2459,20 @@ background-image: url("/images/modifiers/nonconsecutive.png");
 background-image: url("/images/modifiers/odd.png");
 }
 
+.modifier-Mafia-Omniscient {
+background-image: url("/images/modifiers/omniscient.png");
+}
+
 .modifier-Mafia-One-Shot {
 background-image: url("/images/modifiers/one-shot.png");
 }
 
 .modifier-Mafia-Paranoid {
 background-image: url("/images/modifiers/paranoid.png");
+}
+
+.modifier-Mafia-Picky {
+background-image: url("/images/modifiers/picky.png");
 }
 
 .modifier-Mafia-Pious {
@@ -2463,12 +2487,24 @@ background-image: url("/images/modifiers/preoccupied.png");
 background-image: url("/images/modifiers/nonconsecutive.png");
 }
 
+.modifier-Mafia-Prosaic {
+background-image: url("/images/modifiers/prosaic.png");
+}
+
+.modifier-Mafia-Provocative {
+background-image: url("/images/modifiers/provocative.png");
+}
+
 .modifier-Mafia-Random {
 background-image: url("/images/modifiers/random.png");
 }
 
 .modifier-Mafia-Reactionary {
 background-image: url("/images/modifiers/reactionary.png");
+}
+
+.modifier-Mafia-Reclusive {
+background-image: url("/images/modifiers/reclusive.png");
 }
 
 .modifier-Mafia-Refined {
@@ -2520,11 +2556,15 @@ background-image: url("/images/modifiers/sensible.png");
 }
 
 .modifier-Mafia-Shady {
-background-image: url("/images/modifiers/shady.png");
+background-image: url("/images/modifiers/shady-suspect.png");
 }
 
-.modifier-Mafia-Shield {
-background-image: url("/images/modifiers/shield.png");
+.modifier-Mafia-Suspect {
+background-image: url("/images/modifiers/shady-suspect.png");
+}
+
+.modifier-Mafia-Shielded {
+background-image: url("/images/modifiers/shielded.png");
 }
 
 .modifier-Mafia-Simple {
