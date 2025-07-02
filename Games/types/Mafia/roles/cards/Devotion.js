@@ -18,7 +18,7 @@ module.exports = class Devotion extends Card {
         }
         if (this.player.hasAbility(["Win-Con"])) {
           this.role.data.DevotionCult = true;
-          if (this.role.name == "Devotee" && this.game.alivePlayers().length >= 5) {
+          if (this.role.name == "Devotee" && this.game.alivePlayers().length >= 4) {
             this.role.data.BackUpConvert = true;
           }
           else{
