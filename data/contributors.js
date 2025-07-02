@@ -442,7 +442,7 @@ const artContributors = {
       "Sabbath:vivid",
       "Flood:vivid",
       "Chef:vivid",
-       "Assassin:old",
+      "Assassin:old",
       //Skins
       "Hellhound:goofy",
     ],
@@ -475,7 +475,8 @@ const artContributors = {
       "Analyst:vivid",
       "Mastermind:vivid",
       "Emperor:vivid",
-      "Jinx:vivid"],
+      "Jinx:vivid",
+      "Fortune Teller:vivid"],
     Battlesnakes: ["Snake:vivid"],
   },
 };
