@@ -156,9 +156,44 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
     this.trueRole = this.game.formatRole(trueRole);
     this.mainInfo = this.trueRole;
   }
-  makeFalse() {
-    this.makeTrue();
+
+makeKindfOfTrue(){
     let validRoles = this.getAllowedRoles();
+    validRoles = validRoles.filter((r) => !this.game.getRoleTags(r).includes("No Investigate"));
+    if(validRoles.length <= 0){
+      this.mainInfo = "None";
+      return;
+    }
+
+    let validPlayers = this.game.alivePlayers().filter((p) => validRoles.includes(this.game.formatRoleInternal(p.role.name, p.role.modifier)) && p != this.creator);
+    if(validPlayers.length <= 0){
+      validPlayers = this.game.players.filter((p) => validRoles.includes(this.game.formatRoleInternal(p.role.name, p.role.modifier)) && p != this.creator);
+    }
+    if(validPlayers.length <= 0){
+      this.mainInfo = "None";
+      return;
+    }
+
+      let target = [];
+      target.push(Random.randArrayVal(validPlayers.filter((p) => !target.includes(p) && p != this.creator)));
+      this.targetRole = target[0].role.name;
+      this.trueRole = this.game.formatRoleInternal(target[0].role.name, target[0].role.modifier);
+      for (let x = 0; x <  this.amount-1; x++) {
+        target.push(Random.randArrayVal(this.game.alivePlayers().filter((p) => !target.includes(p) && p != this.creator)));
+      }
+
+    this.target = target;
+    
+
+    let trueRole = this.trueRole;
+    this.trueRole = this.game.formatRole(trueRole);
+    this.mainInfo = this.trueRole;
+}
+  
+  makeFalse() {
+    this.makeKindfOfTrue();
+    let validRoles = this.getAllowedRoles();
+    validRoles = validRoles.filter((r) => !this.game.getRoleTags(r).includes("No Investigate"));
     if(validRoles.length <= 0){
       this.mainInfo = "None";
       return;
@@ -180,6 +215,7 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
   }
   makeFavorable() {
     let validRoles = this.getAllowedRoles();
+    validRoles = validRoles.filter((r) => !this.game.getRoleTags(r).includes("No Investigate"));
    let villageRoles = validRoles.filter((r) => this.game.getRoleAlignment(r) == "Village" || (this.game.getRoleAlignment(r) == "Independent" && !this.game.getRoleTags(r).includes("Hostile")));
     if(villageRoles.length <= 0){
       return;
@@ -190,6 +226,7 @@ module.exports = class OneOfPlayersIsRoleInfo extends Information {
   }
   makeUnfavorable() {
     let validRoles = this.getAllowedRoles();
+    validRoles = validRoles.filter((r) => !this.game.getRoleTags(r).includes("No Investigate"));
    let villageRoles = validRoles.filter((r) => this.game.getRoleAlignment(r) != "Village" && !(this.game.getRoleAlignment(r) == "Independent" && !this.game.getRoleTags(r).includes("Hostile")));
     if(villageRoles.length <= 0){
       return;
