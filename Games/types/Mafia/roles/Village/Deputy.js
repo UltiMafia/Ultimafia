@@ -9,7 +9,7 @@ module.exports = class Deputy extends Role {
     this.startItems = [
       {
         type: "Gun",
-        args: [{ reveal: false }],
+        args: [{ reveal: false, modifiers: true }],
       },
     ];
   }
