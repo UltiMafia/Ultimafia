@@ -67,7 +67,7 @@ export const DailyChallenges = () => {
     <Paper>
       <Box sx={{ p: 2 }}>
         <Typography color="primary" gutterBottom>
-          Daily Challenges
+          Daily Challenges - No Vegs
         </Typography>
         <Divider orientation="horizontal" flexItem />
         <Stack
