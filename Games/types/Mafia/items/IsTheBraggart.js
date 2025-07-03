@@ -9,7 +9,6 @@ module.exports = class IsTheBraggart extends Item {
 
     this.modifier = modifier;
 
-    this.lifespan = lifespan || Infinity;
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
     this.listeners = {
