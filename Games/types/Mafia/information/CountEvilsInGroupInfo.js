@@ -11,9 +11,9 @@ const {
   FACTION_KILL,
 } = require("../const/FactionList");
 
-module.exports = class EvilDeadCountInfo extends Information {
+module.exports = class CountEvilsInGroupInfo extends Information {
   constructor(creator, game, group) {
-    super("Evil Dead Count Info", creator, game);
+    super("Count Evils In Group Info", creator, game);
 
     let evilCount;
     this.group = group;
