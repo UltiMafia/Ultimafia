@@ -46,7 +46,7 @@ module.exports = class BecomeDeliriousRole extends Card {
         if (player != this.player) return;
         switchRoleBefore(this.player.role);
         this.player.role.data.reroll = true;
-        this.player.holdItem("IsTheBraggart");
+        this.player.holdItem("IsTheBraggart", this.player.role.modifier);
 
         this.player.setRole(
           this.player.role.newRole,
@@ -61,7 +61,7 @@ module.exports = class BecomeDeliriousRole extends Card {
         if (player !== this.player) {
           return;
         }
-        this.player.holdItem("IsTheBraggart");
+        this.player.holdItem("IsTheBraggart", this.player.role.modifier);
         this.player.setRole(
           this.player.role.newRole,
           undefined,
