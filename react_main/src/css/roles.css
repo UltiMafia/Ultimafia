@@ -1968,7 +1968,7 @@
 
 /*Events*/
 .role-icon-vivid-Mafia-No-Event {
-  background-image: url("/images/roles/noevent-vivid.png");
+  background-image: url("/images/roles/no-event-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Missing-Supplies {
@@ -2052,7 +2052,7 @@
 }
 
 .role-icon-vivid-Mafia-Brain-Blast {
-  background-image: url("/images/roles/brainblast-vivid.png");
+  background-image: url("/images/roles/brain-blast-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Cave-In {
@@ -2484,7 +2484,7 @@ background-image: url("/images/modifiers/preoccupied.png");
 }
 
 .modifier-Mafia-Proactive {
-background-image: url("/images/modifiers/nonconsecutive.png");
+background-image: url("/images/modifiers/proactive.png");
 }
 
 .modifier-Mafia-Prosaic {

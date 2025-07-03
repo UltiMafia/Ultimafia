@@ -445,6 +445,11 @@ const artContributors = {
       "Assassin:old",
       "Cultural Exchange:vivid",
       "Self-Awareness:vivid",
+      "Missing Supplies:vivid",
+      "Evolution:vivid",
+      "Cave In:vivid",
+      "No Event:vivid",
+      "Brain Blast:vivid",
       //Skins
       "Hellhound:goofy",
     ],
