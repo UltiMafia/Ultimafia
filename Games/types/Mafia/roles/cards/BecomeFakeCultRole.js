@@ -71,7 +71,7 @@ module.exports = class BecomeFakeCultRole extends Card {
         if (player != this.player) return;
         switchRoleBefore(this.player.role);
         this.player.role.data.reroll = true;
-        this.player.holdItem("IsTheTelevangelist");
+        this.player.holdItem("IsTheTelevangelist", this.player.role.modifier);
 
         this.player.setRole(
           this.player.role.newRole,
@@ -91,7 +91,7 @@ module.exports = class BecomeFakeCultRole extends Card {
         if (player !== this.player) {
           return;
         }
-        this.player.holdItem("IsTheTelevangelist");
+        this.player.holdItem("IsTheTelevangelist", this.player.role.modifier);
         this.player.setRole(
           this.player.role.newRole,
           undefined,

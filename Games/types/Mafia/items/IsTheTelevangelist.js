@@ -5,10 +5,10 @@ const Random = require("../../../../lib/Random");
 const { PRIORITY_FULL_DISABLE } = require("../const/Priority");
 
 module.exports = class IsTheTelevangelist extends Item {
-  constructor(lifespan) {
+  constructor(modifier) {
     super("IsTheTelevangelist");
 
-    this.lifespan = lifespan || Infinity;
+    this.modifier = modifier;
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
     this.roleAssignedCounter = 0;
@@ -23,6 +23,7 @@ module.exports = class IsTheTelevangelist extends Item {
           game: this.game,
           priority: PRIORITY_FULL_DISABLE + 1,
           labels: ["hidden", "block"],
+          item: this,
           run: function () {
             if (this.roleAssignedCounter > 1) {
               return;
@@ -33,13 +34,19 @@ module.exports = class IsTheTelevangelist extends Item {
             this.target.role.appearance.reveal = "Televangelist";
             this.target.role.appearance.investigate = "Televangelist";
             this.target.role.appearance.condemn = "Televangelist";
+             this.target.role.appearanceMods.death = this.item.modifier;
+            this.target.role.appearanceMods.reveal = this.item.modifier;
+            this.target.role.appearanceMods.investigate = this.item.modifier;
+            this.target.role.appearanceMods.condemn = this.item.modifier;
+            //this.target.role.modifier = this.item.modifier;
+            /*
             this.target.role.hideModifier = {
               death: true,
               reveal: true,
               investigate: true,
               condemn: true,
             };
-
+            */
             this.target.role.data.banished = true;
 
             if (this.dominates(this.target)) {
@@ -72,6 +79,7 @@ module.exports = class IsTheTelevangelist extends Item {
           actor: this.holder,
           target: this.holder,
           game: this.game,
+          item: this,
           priority: PRIORITY_FULL_DISABLE + 1,
           labels: ["hidden", "block"],
           run: function () {
@@ -80,13 +88,19 @@ module.exports = class IsTheTelevangelist extends Item {
             this.target.role.appearance.reveal = "Televangelist";
             this.target.role.appearance.investigate = "Televangelist";
             this.target.role.appearance.condemn = "Televangelist";
+             this.target.role.appearanceMods.death = this.item.modifier;
+            this.target.role.appearanceMods.reveal = this.item.modifier;
+            this.target.role.appearanceMods.investigate = this.item.modifier;
+            this.target.role.appearanceMods.condemn = this.item.modifier;
+            //this.target.role.modifier = this.item.modifier;
+            /*
             this.target.role.hideModifier = {
               death: true,
               reveal: true,
               investigate: true,
               condemn: true,
             };
-
+            */
             this.target.role.data.banished = true;
 
             let cultPlayers = this.game.players.filter(

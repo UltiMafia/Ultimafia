@@ -4973,6 +4973,16 @@ const roleData = {
       ],
       nightOrder: [["Tell Joke",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10)]],
     },
+    "Block Buster": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, 3 players can attend a Movie.",
+        "Players attending the movie learn how many evil players are attending the movie.",
+        "1 Player attending will learn the wrong number.",
+      ],
+      nightOrder: [["Movie Info",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10)]],
+    },
     "Cultural Exchange": {
       alignment: "Event",
       tags: ["Event"],

@@ -28,6 +28,7 @@ module.exports = class GuessRole extends Card {
 
               this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
               delete this.actor.role.data.targetRole;
+            }
           },
         },
       },
@@ -61,8 +62,7 @@ module.exports = class GuessRole extends Card {
             }
           },
         },
-      },
-    };
+      };
     /*
     this.listeners = {
       roleAssigned: function (player) {
