@@ -3376,12 +3376,12 @@ export function SettingsMenu(props) {
       ],
       value: settings.messageLayout,
     },
-    {
+    /* {
       label: "Disable Animations",
       ref: "noAnimation",
       type: "boolean",
       value: settings.noAnimation,
-    },
+    }, */
   ]);
 
   function cancel() {
