@@ -638,44 +638,6 @@ module.exports = class Player {
         this.sendAlert(`The Night Order is: ${this.game.NightOrder}`);
 
         return;
-      case "special":
-        if (!this.game.started) {
-          this.sendAlert(`This command can only be used during the game`);
-          return;
-        }
-        if (this.specialCooldown == true) {
-          this.sendAlert(`This command has a 20 seconds cooldown, wait plz`);
-          return;
-        }
-        if (this.game.type != "Mafia") {
-          this.sendAlert(`This command is only supported in Mafia games`);
-          return;
-        }
-        this.specialCooldown = true;
-        setTimeout(() => {
-          this.specialCooldown = false;
-        }, 20000);
-
-        if (
-          this.game.SpecialInteractionText &&
-          this.game.SpecialInteractionText.length > 0
-        ) {
-          this.sendAlert(
-            `:crystal: ${this.game.setup.name} has the following special interactions:`,
-            undefined,
-            { color: " #eb347a" }
-          );
-          for (let text of this.game.SpecialInteractionText) {
-            this.sendAlert(text, undefined, { color: " #eb347a" });
-          }
-        } else {
-          this.sendAlert(
-            `:crystal: ${this.game.setup.name}: has no special role interactions.`
-          );
-        }
-        //this.sendAlert(`The Night Order is: ${this.game.NightOrder}`);
-
-        return;
     }
 
     return cmd;

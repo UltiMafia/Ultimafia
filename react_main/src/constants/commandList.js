@@ -46,10 +46,6 @@ export const commandList = {
     description:
       "Lists the Night Order for the Setup (Ties are resloved by Player Order).",
   },
-  "/special": {
-    input: "N/A",
-    description: "Lists Any Special Role Interactions for the Setup.",
-  },
   "/help": {
     input: "N/A",
     description: "Lists the commands on the site.",

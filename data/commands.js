@@ -43,10 +43,6 @@ const commandData = {
     input: "Setup ID",
     description: "Can be used by host to change the setup.",
   },
-  "/special": {
-    input: "N/A",
-    description: "Lists Any Special Role Interactions for the Setup.",
-  },
   "/help": {
     input: "N/A",
     description: "Lists the commands on the site.",

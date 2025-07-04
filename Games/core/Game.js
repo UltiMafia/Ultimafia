@@ -1754,7 +1754,7 @@ module.exports = class Game {
     if (this.setup.PrivateShare && this.currentState == 0) {
       [
         this.sendAlert(
-          `:message: ${this.setup.name}: This Setup is has Private Revealing Enabled! Do /privatereveal to privatly reveal your role to a player.`,
+          `:message: ${this.setup.name}: This Setup has Private Revealing enabled! Do /privatereveal to privatly reveal your role to a player.`,
           undefined,
           { color: "#F1F1F1" }
         ),
@@ -1763,85 +1763,11 @@ module.exports = class Game {
     if (this.setup.PublicShare && this.currentState == 0) {
       [
         this.sendAlert(
-          `:message: ${this.setup.name}: This Setup is has Public Revealing Enabled! Do /publicreveal to publicly reveal your role.`,
+          `:message: ${this.setup.name}: This Setup has Public Revealing enabled! Do /publicreveal to publicly reveal your role.`,
           undefined,
           { color: "#F1F1F1" }
         ),
       ];
-    }
-    if (this.SpecialInteractionRoles.length > 0 && this.currentState == 0) {
-      this.SpecialInteractionText = [];
-      let special;
-      for (let role of this.SpecialInteractionRoles) {
-        special = this.getSpecialInteractions(role);
-        /*
-        if (this.isOneNightMode() && special["OneNightMode"]) {
-          this.SpecialInteractionText.push(
-            `:journ: ${
-              role.split(":")[0]
-            } has a Special Interaction With One Night Mode, ${
-              special["OneNightMode"]
-            }`
-          );
-        }
-        */
-        for (let r of this.PossibleRoles) {
-          if (
-            special[r.split(":")[0]] &&
-            !this.SpecialInteractionText.includes(
-              `:journ: ${role.split(":")[0]} + ${r.split(":")[0]}: ${
-                special[r.split(":")[0]]
-              }`
-            )
-          ) {
-            this.SpecialInteractionText.push(
-              `:journ: ${role.split(":")[0]} + ${r.split(":")[0]}: ${
-                special[r.split(":")[0]]
-              }`
-            );
-          }
-        }
-        for (let addRole = 0; addRole < this.AddedRoles.length; addRole++) {
-          if (
-            this.AddedRoles[addRole] &&
-            special[this.AddedRoles[addRole].split(":")[0]] &&
-            !this.SpecialInteractionText.includes(
-              `:journ: ${role.split(":")[0]} + ${
-                this.AddedRoles[addRole].split(":")[0]
-              }: ${special[this.AddedRoles[addRole].split(":")[0]]}`
-            )
-          ) {
-            this.SpecialInteractionText.push(
-              `:journ: ${role.split(":")[0]} + ${
-                this.AddedRoles[addRole].split(":")[0]
-              }: ${special[this.AddedRoles[addRole].split(":")[0]]}`
-            );
-          }
-        }
-        for (let r of this.PossibleEvents) {
-          if (
-            special[r.split(":")[0]] &&
-            !this.SpecialInteractionText.includes(
-              `:journ: ${role.split(":")[0]} + ${r.split(":")[0]}: ${
-                special[r.split(":")[0]]
-              }`
-            )
-          ) {
-            this.SpecialInteractionText.push(
-              `:journ: ${role.split(":")[0]} + ${r.split(":")[0]}: ${
-                special[r.split(":")[0]]
-              }`
-            );
-          }
-        }
-      }
-      if (this.SpecialInteractionText.length > 0) {
-        this.sendAlert(
-          `:crystal: ${this.setup.name}: This setup has special role interactions! Type /special to read about them.`,
-          undefined,
-          { color: " #eb347a" }
-        );
-      }
     }
 
     // Check for inactivity

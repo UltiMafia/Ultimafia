@@ -2548,7 +2548,7 @@ const roleData = {
       tags: ["Speech", "Whispers", "Silence", "Advanced", "Speaking"],
       description: [
         "Vote counts as 0",
-        "Each Night chooses a 7-20 letter phrase.",
+        "Each Night chooses a 4-20 letter phrase.",
         "The Dilettante's voting power increases by 1 for every Village-Aligned player who said the phrase during the day. ",
         "All players who said the phrase can only speak in whispers the following day.",
         "The Dilettante's voting power resets at night.",
