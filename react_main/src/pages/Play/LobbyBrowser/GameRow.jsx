@@ -239,7 +239,7 @@ export const GameRow = (props) => {
         <Stack direction="column" sx={{
           marginLeft: "auto"
         }}>
-          <Stack sx={{
+          {showLobbyName && (<Stack sx={{
               flexFlow: "row nowrap",
               alignItems: "center",
               /* sorry for manually sizing things. it will happen again. */
@@ -265,7 +265,7 @@ export const GameRow = (props) => {
                 title="Anonymous game"
               />)}
             </Stack>
-            {showLobbyName && (<Box sx={{
+            <Box sx={{
               ml: .5,
               flexShrink: "1",
               overflowX: "hidden",
@@ -275,7 +275,7 @@ export const GameRow = (props) => {
               }}>
                 {filterProfanity(lobbyName, user.settings)}
               </Typography>
-            </Box>)}
+            </Box>
             {showRedoButton && (<Box style={{
               marginLeft: "auto",
               width: "32px",
@@ -288,7 +288,7 @@ export const GameRow = (props) => {
                 )}
               </Box>
             )}
-          </Stack>
+          </Stack>)}
           <Box
             sx={{
               display: "flex",
