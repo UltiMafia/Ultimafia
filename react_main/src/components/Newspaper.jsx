@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 
 import { emotify, Emotes } from "./Emotes"
 import { Avatar } from "../pages/User/User";
-import Typewriter from 'typewriter-effect';
 
 import "../css/newspaper.css";
 
@@ -88,7 +87,7 @@ function ChainedTypewriter(props) {
                     display: "inline",
                     position: "relative",
                 }}>
-                    {!noAnimation && (<span style={{
+                    {/* !noAnimation && (<span style={{
                         display: "inline-block",
                         visibility: "visible",
                         position: "absolute",
@@ -133,7 +132,7 @@ function ChainedTypewriter(props) {
                                 typewriter.start();
                             }}
                         />
-                    </span>)}
+                    </span>) */}
                     <span style={{
                         display: "inline-block",
                         width: "101%",
@@ -294,7 +293,7 @@ function ObituaryItem({death, onFullyAnimated, parentProps}) {
 export default function Newspaper(props) {
     const title = props.title || "Obituary";
     const timestamp = props.timestamp || Date.now();
-    const noAnimation = props.noAnimation || false;
+    const noAnimation = true;//props.noAnimation || false;
     const deaths = props.deaths || [];
     const dayCount = props.dayCount || 0;
     const onFullyAnimated = props.onFullyAnimated || null;
