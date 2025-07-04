@@ -69,7 +69,6 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
     if (redirect) return <Redirect to={redirect} />;
 
     const showRedoButton = isPhoneDevice ? user.loggedIn : true;
-    const maxRolesCount = isPhoneDevice ? 6 : 8;
 
     return (
       <Box
@@ -80,7 +79,7 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
           alignItems: "center",
         }}
       >
-        <Setup setup={setup.setupDetails} maxRolesCount={maxRolesCount} fixedWidth/>
+        <Setup setup={setup.setupDetails} maxRolesCount={6} fixedWidth/>
         {showRedoButton && (
           <Box style={{ mx: 1, width: "32px", textAlign: "center" }}>
             {user.loggedIn && (
