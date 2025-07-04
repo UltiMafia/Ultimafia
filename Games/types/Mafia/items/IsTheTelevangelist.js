@@ -34,7 +34,11 @@ module.exports = class IsTheTelevangelist extends Item {
             this.target.role.appearance.reveal = "Televangelist";
             this.target.role.appearance.investigate = "Televangelist";
             this.target.role.appearance.condemn = "Televangelist";
-            this.target.role.modifier = this.item.modifier;
+             this.target.role.appearanceMods.death = this.item.modifier;
+            this.target.role.appearanceMods.reveal = this.item.modifier;
+            this.target.role.appearanceMods.investigate = this.item.modifier;
+            this.target.role.appearanceMods.condemn = this.item.modifier;
+            //this.target.role.modifier = this.item.modifier;
             /*
             this.target.role.hideModifier = {
               death: true,
@@ -84,7 +88,11 @@ module.exports = class IsTheTelevangelist extends Item {
             this.target.role.appearance.reveal = "Televangelist";
             this.target.role.appearance.investigate = "Televangelist";
             this.target.role.appearance.condemn = "Televangelist";
-            this.target.role.modifier = this.item.modifier;
+             this.target.role.appearanceMods.death = this.item.modifier;
+            this.target.role.appearanceMods.reveal = this.item.modifier;
+            this.target.role.appearanceMods.investigate = this.item.modifier;
+            this.target.role.appearanceMods.condemn = this.item.modifier;
+            //this.target.role.modifier = this.item.modifier;
             /*
             this.target.role.hideModifier = {
               death: true,

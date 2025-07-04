@@ -1,7 +1,7 @@
 const Effect = require("../Effect");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
-const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../const/Priority");
+const { PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT } = require("../const/Priority");
 
 module.exports = class MovieNight extends Effect {
   constructor(lifespan) {
@@ -10,14 +10,13 @@ module.exports = class MovieNight extends Effect {
     this.listeners = {
       state: function () {
         if (this.game.getStateName() != "Night") return;
-        if (!this.player.alive) return;
 
         var action = new Action({
           labels: ["hidden"],
           actor: null,
           target: null,
           game: this.player.game,
-          priority: PRIORITY_NIGHT_ROLE_BLOCKER,
+          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-10,
           run: function () {
             let info = this.game.createInformation(
               "CountEvilsInGroupInfo",
@@ -37,6 +36,7 @@ module.exports = class MovieNight extends Effect {
             this.game.MovieWatchers[2].queueAlert(
                 `${info.mainInfo} Evil players attended the Movie!`
               );
+            this.game.MovieWatchers = null;
           },
         });
 

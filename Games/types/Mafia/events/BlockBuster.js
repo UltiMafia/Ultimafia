@@ -25,7 +25,7 @@ module.exports = class BlockBuster extends Event {
           this.game.queueAlert(`Event: Block Buster, 3 Players may attend the release of a new feature flim!`);
         }
         for (const player of this.event.generatePossibleVictims()) {
-          player.holdItem("MovieTickets");
+          player.holdItem("MovieTicket");
         }
       },
     });

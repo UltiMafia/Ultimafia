@@ -29,7 +29,11 @@ module.exports = class IsTheBraggart extends Item {
             this.target.role.appearance.reveal = "Braggart";
             this.target.role.appearance.investigate = "Braggart";
             this.target.role.appearance.condemn = "Braggart";
-            this.target.role.modifier = this.item.modifier;
+            this.target.role.appearanceMods.death = this.item.modifier;
+            this.target.role.appearanceMods.reveal = this.item.modifier;
+            this.target.role.appearanceMods.investigate = this.item.modifier;
+            this.target.role.appearanceMods.condemn = this.item.modifier;
+            //this.target.role.modifier = this.item.modifier;
               /*
             this.target.role.hideModifier = {
               death: true,
@@ -74,7 +78,11 @@ module.exports = class IsTheBraggart extends Item {
             this.target.role.appearance.reveal = "Braggart";
             this.target.role.appearance.investigate = "Braggart";
             this.target.role.appearance.condemn = "Braggart";
-            this.target.role.modifier = this.item.modifier;
+            this.target.role.appearanceMods.death = this.item.modifier;
+            this.target.role.appearanceMods.reveal = this.item.modifier;
+            this.target.role.appearanceMods.investigate = this.item.modifier;
+            this.target.role.appearanceMods.condemn = this.item.modifier;
+            //this.target.role.modifier = this.item.modifier;
             /*
             this.target.role.hideModifier = {
               death: true,

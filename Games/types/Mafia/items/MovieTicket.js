@@ -3,9 +3,10 @@ const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 
 module.exports = class MovieTicket extends Item {
-  constructor(options) {
+  constructor(lifespan) {
     super("MovieTicket");
 
+    this.lifespan = lifespan || 1;
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
 
@@ -34,7 +35,7 @@ module.exports = class MovieTicket extends Item {
             }
             if(this.game.MovieWatchers.length >= 3){
                   this.game.queueAlert(
-                `${this.game.MovieWatchers[0].name}, ${this.game.MovieWatchers[1].name}, and ${this.game.MovieWatchers[2].name} will be attending the movie release tonight!`
+                `All seats are full ${this.game.MovieWatchers[0].name}, ${this.game.MovieWatchers[1].name}, and ${this.game.MovieWatchers[2].name} will be attending the movie release tonight!`
               );
               this.game.MovieWatchers[0].giveEffect("MovieNight");
               for(let player of this.game.players){

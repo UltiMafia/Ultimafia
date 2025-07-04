@@ -217,6 +217,10 @@ module.exports = class MafiaGame extends Game {
             }
           }
 
+          if(this.game.MovieWatchers && this.game.MovieWatchers.length <= 2){
+            this.game.MovieWatchers = null;
+          }
+
           this.game.hasBeenNight = true;
 
           this.game.lastNightVisits = [];
