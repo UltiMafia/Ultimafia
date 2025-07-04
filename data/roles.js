@@ -4973,7 +4973,7 @@ const roleData = {
       ],
       nightOrder: [["Tell Joke",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10)]],
     },
-    "Block Buster": {
+    Opera: {
       alignment: "Event",
       tags: ["Event"],
       description: [

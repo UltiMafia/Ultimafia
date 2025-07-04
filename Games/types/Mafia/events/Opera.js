@@ -3,9 +3,9 @@ const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../const/Priority");
 
-module.exports = class BlockBuster extends Event {
+module.exports = class Opera extends Event {
   constructor(modifiers, game) {
-    super("Block Buster", modifiers, game);
+    super("Opera", modifiers, game);
   }
 
   getNormalRequirements() {
@@ -22,7 +22,7 @@ module.exports = class BlockBuster extends Event {
       event: this,
       run: function () {
         if (this.game.SilentEvents != false) {
-          this.game.queueAlert(`Event: Block Buster, 3 Players may attend the release of a new feature flim!`);
+          this.game.queueAlert(`Event: Opera, 3 players may attend a night at the Opera!`);
         }
         for (const player of this.event.generatePossibleVictims()) {
           player.holdItem("MovieTicket");
