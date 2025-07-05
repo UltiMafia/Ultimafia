@@ -6,7 +6,7 @@ const {
   PRIORITY_BECOME_DEAD_ROLE,
 } = require("../const/Priority");
 
-module.exports = class MissingSupplies extends Event {
+module.exports = class NoEvent extends Event {
   constructor(modifiers, game) {
     super("No Event", modifiers, game);
   }

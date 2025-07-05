@@ -6,9 +6,9 @@ const {
   PRIORITY_BECOME_DEAD_ROLE,
 } = require("../const/Priority");
 
-module.exports = class MissingSupplies extends Event {
+module.exports = class Airdrop extends Event {
   constructor(modifiers, game) {
-    super("Missing Supplies", modifiers, game);
+    super("Airdrop", modifiers, game);
     //this.game.queueAlert(`Supplies ${modifiers}`);
   }
 
@@ -23,7 +23,7 @@ module.exports = class MissingSupplies extends Event {
       run: function () {
         if (this.game.SilentEvents != false) {
           this.game.queueAlert(
-            `Event: Missing Supplies, The Sheriff's Office has reported a Missing Gun!`
+            `Event: Airdrop! A cargo plane just dumped a crate containing a gun on someone's lawn!`
           );
         }
         this.target.holdItem("Gun");
