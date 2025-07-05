@@ -445,7 +445,7 @@ const artContributors = {
       "Assassin:old",
       "Cultural Exchange:vivid",
       "Self-Awareness:vivid",
-      "Missing Supplies:vivid",
+      "Airdrop:vivid",
       "Evolution:vivid",
       "Cave In:vivid",
       "No Event:vivid",

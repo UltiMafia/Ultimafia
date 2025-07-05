@@ -4804,7 +4804,7 @@ const roleData = {
         "Put this in a setup with other Events to have a chance for no Events to occur.",
       ],
     },
-    "Missing Supplies": {
+    Airdrop: {
       alignment: "Event",
       tags: ["Event", "Items"],
       description: [
