@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import update from "immutability-helper";
-import ReactHtmlParser from "react-html-parser";
 
 import { useErrorAlert } from "../../components/Alerts";
 import { SearchSelect, UserSearchSelect } from "../../components/Form";
@@ -209,7 +208,7 @@ function ModCommands(props) {
           Run
         </div>
       )}
-      <div className="results-wip">{ReactHtmlParser(props.results)}</div>
+      <div className="results-wip">{props.results}</div>
     </div>
   );
 }

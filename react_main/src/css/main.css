@@ -72,7 +72,7 @@ body {
 
   overflow-x: initial;
   background-color: #151514;
-  background-image: url("/images/white-diamond-dark.png");
+  background-image: url("/src/images/white-diamond-dark.png");
   /* background-size: cover;
   background-repeat: no-repeat; */
   color: white;
@@ -151,15 +151,15 @@ a {
 }
 
 .header .default-logo {
-  background-image: url("/images/fadelogohat.png");
+  background-image: url("/src/images/fadelogohat.png");
 }
 
 .header .pride-logo {
-  background-image: url("/images/holiday/umpride2.png");
+  background-image: url("/src/images/holiday/umpride2.png");
 }
 
 .header .bloody-logo {
-  background-image: url("/images/holiday/logobloody.png");
+  background-image: url("/src/images/holiday/logobloody.png");
 }
 
 .nav-wrapper {
@@ -704,27 +704,27 @@ input:focus {
 
 @font-face {
   font-family: JuiceITC;
-  src: url("/fonts/juiceitc.ttf");
+  src: url("/src/fonts/juiceitc.ttf");
 }
 
 @font-face {
   font-family: Spooky;
-  src: url("/fonts/spooky.ttf");
+  src: url("/src/fonts/spooky.ttf");
 }
 
 @font-face {
   font-family: Autophobia;
-  src: url("/fonts/autophobia.ttf");
+  src: url("/src/fonts/autophobia.ttf");
 }
 
 @font-face {
   font-family: Nabla;
-  src: url("/fonts/Nabla-Regular-VariableFont_EDPT,EHLT.ttf");
+  src: url("/src/fonts/Nabla-Regular-VariableFont_EDPT,EHLT.ttf");
 }
 
 @font-face {
   font-family: RobotoSlab;
-  src: url("/fonts/RobotoSlab-VariableFont_wght.ttf");
+  src: url("/src/fonts/RobotoSlab-VariableFont_wght.ttf");
 }
 
 .glow-on-hover {
