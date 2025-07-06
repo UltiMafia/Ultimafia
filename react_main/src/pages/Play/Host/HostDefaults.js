@@ -127,6 +127,7 @@ var defaultOptions = {
     turnOnCaps: true,
     dayLength: 5,
     nightLength: 2,
+    isRankedChoice: false,
   },
   Battlesnakes: existingHostOptions["Battlesnakes"] || {
     ...commonHostOptions,
