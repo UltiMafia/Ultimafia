@@ -69,6 +69,12 @@ export default function HostWackyWords() {
       value: defaults.isRankedChoice,
     },
     {
+      label: "Votes into Points",
+      ref: "votesToPoints",
+      type: "boolean",
+      value: defaults.votesToPoints,
+    },
+    {
       label: "Lobby",
       ref: "lobby",
       type: "select",
@@ -192,6 +198,9 @@ export default function HostWackyWords() {
           ),
           isRankedChoice: getFormFieldValue(
             "isRankedChoice"
+          ),
+          votesToPoints: getFormFieldValue(
+            "votesToPoints"
           ),
           turnOnCaps: getFormFieldValue("turnOnCaps"),
           anonymousGame: getFormFieldValue("anonymousGame"),

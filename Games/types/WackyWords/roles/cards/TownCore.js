@@ -18,7 +18,7 @@ module.exports = class TownCore extends Card {
         inputType: "custom",
         targets: [],
         action: {
-          priority: -1,
+          priority: -3,
           run: function () {
             if (this.game.hasGambler) {
               //this.game.recordResponse(this.actor, this.target);
@@ -56,13 +56,13 @@ module.exports = class TownCore extends Card {
         passiveDead: true,
       },
       "Pick 2nd Favorite Response": {
-        actionName: "Pick Favorite Response",
+        actionName: "Pick 2nd Favorite Response",
         states: ["Day"],
         flags: ["voting", "noVeg"],
         inputType: "custom",
         targets: [],
         action: {
-          priority: 0,
+          priority: -2,
           run: function () {
            
 
@@ -84,13 +84,13 @@ module.exports = class TownCore extends Card {
         passiveDead: true,
       },
       "Pick 3rd Favorite Response": {
-        actionName: "Pick Favorite Response",
+        actionName: "Pick 3rd Favorite Response",
         states: ["Day"],
         flags: ["voting", "noVeg"],
         inputType: "custom",
         targets: [],
         action: {
-          priority: 1,
+          priority: -1,
           run: function () {
             
             this.game.recordVote(this.actor, this.target, 1);
