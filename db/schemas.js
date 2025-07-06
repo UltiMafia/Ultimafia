@@ -112,6 +112,8 @@ var schemas = {
     winRate: { type: Number, default: 0 },
     achievements: [],
     achievementCount: { type: Number, default: 0 },
+    ownedStamps: [],
+    availableStamps: [],
     redHearts: { type: Number, default: 0 },
     goldHearts: { type: Number, default: 0 },
     rankedPoints: { type: Number, default: 0 },

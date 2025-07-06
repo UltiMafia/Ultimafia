@@ -11,5 +11,6 @@ module.exports = {
     Acquainted: "Social",
     Rotten: "Insane",
     Infected: "Confused",
+    "One Shot": "X-Shot",
   },
 };

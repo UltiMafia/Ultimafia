@@ -500,11 +500,12 @@ const modifierData = {
       description: "Each night see all visits and learn all players roles.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
-    "One Shot": {
+    "X-Shot": {
       internal: ["OneShot"],
-      tags: ["One Shot"],
-      description: "Can only perform actions once.",
+      tags: ["X-Shot"],
+      description: "Can only perform actions X times. X is equal the number of times this modifier is added.",
       eventDescription: "This Event will only occur once.",
+      allowDuplicate: true,
       incompatible: ["Exhausted"],
     },
     Picky: {
@@ -704,7 +705,7 @@ const modifierData = {
         "Can only attend secondary meetings for the first day and night.",
       eventDescription: "This Event can only occur on the first night.",
       allowDuplicate: true,
-      incompatible: ["Lazy", "Odd", "One Shot", "Even", "Delayed"],
+      incompatible: ["Lazy", "Odd", "X-Shot", "Even", "Delayed"],
     },
     Telepathic: {
       internal: ["ModifierTelepathic"],
