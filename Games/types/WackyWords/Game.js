@@ -40,6 +40,7 @@ module.exports = class WackyWordsGame extends Game {
     this.enablePunctuation = options.settings.enablePunctuation;
     this.standardiseCapitalisation = options.settings.standardiseCapitalisation;
     this.turnOnCaps = options.settings.turnOnCaps;
+    this.isRankedChoice = options.settings.isRankedChoice;
 
     this.hasAlien = this.setup.roles[0]["Alien:"];
     this.hasNeighbor = this.setup.roles[0]["Neighbor:"];
