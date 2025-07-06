@@ -63,6 +63,7 @@ export default function MafiaGame() {
     { fileName: "music/NightWinter", loops: true, overrides: false, volumes: 1 },
     { fileName: "music/NightFool", loops: true, overrides: false, volumes: 0.6 },
     { fileName: "music/NightClockmaker", loops: true, overrides: false, volumes: 1 },
+    { fileName: "music/NightGeneric", loops: true, overrides: false, volumes: 0.6 },
     { fileName: "music/Draw", loops: false, overrides: false, volumes: 1, },
     { fileName: "music/WinAlien", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinAnarchist", loops: false, overrides: false, volumes: 1, },
@@ -203,7 +204,8 @@ export default function MafiaGame() {
               game.playAudio("music/NightMafia");
             }
             else {
-              console.log(`${currentRoleName} has no night music`);
+              // If the role isn't listed above then the generic track plays
+              game.playAudio("music/NightGeneric");
             }
             break;
         }
@@ -312,10 +314,6 @@ export default function MafiaGame() {
     socket.on("explosion", () => {
       game.playAudio("explosion");
     });
-    // night music
-    // socket.on("NightFool", () => {
-    //     game.playAudio("music/NightFool");
-    // });
   }, game.socket);
 
   return (
