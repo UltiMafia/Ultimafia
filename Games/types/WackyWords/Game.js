@@ -346,9 +346,17 @@ module.exports = class WackyWordsGame extends Game {
     };
   }
 
-  recordVote(player, response) {
+  recordVote(player, response, ranking) {
+    if(this.currentResponses[response].voters.includes(player)){
+      return;
+    }
     this.currentResponses[response].voters.push(player);
+    if(ranking == null){
     this.currentResponses[response].score += 1;
+    }
+    else{
+      this.currentResponses[response].score += ranking;
+    }
   }
 
   tabulateScores() {
