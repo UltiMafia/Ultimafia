@@ -15,8 +15,8 @@ import {
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
 
-import "../../css/game.css";
-import "../../css/gameCardGames.css";
+import "css/game.css";
+import "css/gameCardGames.css";
 
 export default function CardGamesGame(props) {
   const game = useContext(GameContext);

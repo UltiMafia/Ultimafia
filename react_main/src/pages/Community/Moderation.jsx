@@ -13,7 +13,7 @@ import {
   MaxBoardDescLength,
 } from "../../Constants";
 
-import "../../css/moderation.css";
+import "css/moderation.css";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { Time } from "../../components/Basic";
 import { Link } from "react-router-dom";

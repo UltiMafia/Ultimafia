@@ -10,7 +10,7 @@ import { RoleCount } from "../../components/Roles";
 import { Time } from "../../components/Basic";
 import { capitalize } from "../../utils";
 
-import "../../css/gameReview.css";
+import "css/gameReview.css";
 
 export default function Review() {
   const [game, setGame] = useState();

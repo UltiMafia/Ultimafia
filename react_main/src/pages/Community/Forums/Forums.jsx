@@ -16,7 +16,7 @@ import { useErrorAlert } from "../../../components/Alerts";
 import { UserContext } from "../../../Contexts";
 import { Avatar } from "../../User/User";
 
-import "../../../css/forums.css";
+import "css/forums.css";
 import { IconButton } from "@mui/material";
 import { useTheme } from "@mui/styles";
 

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import "../../../css/host.css";
-import "../../../css/deck.css";
-import "../../../css/play.css";
+import "css/host.css";
+import "css/deck.css";
+import "css/play.css";
 import { BotBarLink } from "../Play";
 import { useLocation } from "react-router-dom/cjs/react-router-dom";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";

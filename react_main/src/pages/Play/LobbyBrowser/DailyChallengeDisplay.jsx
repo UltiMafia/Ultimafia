@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
 import { Box, Divider, Paper, Stack, Typography } from "@mui/material";
-import { UserContext } from "../../../Contexts";
-import { useErrorAlert } from "../../../components/Alerts";
-import { useTheme } from "@mui/styles";
-import { DailyChallengeData } from "../../../constants/DailyChallenge";
-import { RoleCount } from "../../../components/Roles";
+import { UserContext } from "Contexts";
+import { DailyChallengeData } from "constants/DailyChallenge";
+import { RoleCount } from "components/Roles";
+
+import umcoin from "images/umcoin.png";
 
 export const DailyChallenges = () => {
   const user = useContext(UserContext);
@@ -53,7 +53,7 @@ export const DailyChallenges = () => {
         }}>
           {reward} 
         </Typography>
-        <img src="/images/umcoin.png" alt="Coin Icon" style={{ 
+        <img src={umcoin} alt="Coin Icon" style={{ 
           width: "20px",
           height: "20px",
           marginLeft: "4px",

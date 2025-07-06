@@ -16,7 +16,7 @@ import {
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
 
-import "../../css/gameGhost.css";
+import "css/gameGhost.css";
 
 export default function GhostGame(props) {
   const game = useContext(GameContext);

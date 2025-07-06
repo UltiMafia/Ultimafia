@@ -43,7 +43,7 @@ import Popover, { usePopover } from "./components/Popover";
 import CookieBanner from "./components/CookieBanner";
 import Chat from "./pages/Chat/Chat";
 
-import "./css/main.css";
+import "css/main.css";
 import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
 import { NewLoading } from "./pages/Welcome/NewLoading";
@@ -56,6 +56,10 @@ import {
 import { Announcement } from "./components/alerts/Announcement";
 import { BadTextContrast } from "./components/alerts/BadTextContrast";
 import { useIsPhoneDevice } from "./hooks/useIsPhoneDevice";
+
+import umpride2 from "images/holiday/umpride2.png";
+import logobloody from "images/holiday/logobloody.png";
+import fadelogohat from "images/fadelogohat.png";
 
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
@@ -327,9 +331,21 @@ function Header({ setShowAnnouncementTemporarily }) {
 
   const getLogoSrc = () => {
     const currentMonth = new Date().getMonth();
-    if (currentMonth === 5) return "../../images/holiday/umpride2.png"; // June (Pride)
-    if (currentMonth === 9) return "../../images/holiday/logobloody.png"; // October (Halloween)
-    return "../../images/fadelogohat.png";
+    // 0 = January
+    // 11 = December
+
+    // Pride logo for June
+    if (currentMonth === 5) {
+      return umpride2;
+    }
+
+    // Bloody logo for Halloween
+    if (currentMonth === 9) {
+      return logobloody;
+    }
+
+    // Default logo
+    return fadelogohat;
   };
 
   return (

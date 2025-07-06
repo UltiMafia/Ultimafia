@@ -14,8 +14,8 @@ import {
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
 
-import "../../css/game.css";
-import "../../css/gameJotto.css";
+import "css/game.css";
+import "css/gameJotto.css";
 
 export default function JottoGame(props) {
   const game = useContext(GameContext);

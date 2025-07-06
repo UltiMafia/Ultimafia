@@ -7,8 +7,8 @@ import { SiteInfoContext } from "../../../Contexts";
 import { useFieldArray, useForm } from "react-hook-form";
 import axios from "axios";
 import { useErrorAlert } from "../../../components/Alerts";
-import "../../../css/deck.css";
-import "../../../css/form.css";
+import "css/deck.css";
+import "css/form.css";
 
 export default function CreateDecks() {
   const location = useLocation();

@@ -7,17 +7,19 @@ import update from "immutability-helper";
 import Profile, { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "./Profile";
 import Settings from "./Settings";
 import Shop from "./Shop";
-import { UserContext, SiteInfoContext, GameContext } from "../../Contexts";
-import { HiddenUpload } from "../../components/Form";
+import { UserContext, SiteInfoContext, GameContext } from "Contexts";
+import { HiddenUpload } from "components/Form";
 
-import "../../css/user.css";
-import { youtubeRegex } from "../../components/Basic";
+import "css/user.css";
+import { youtubeRegex } from "components/Basic";
 import { useTheme } from "@mui/styles";
 import { Link as MuiLink, Popover } from "@mui/material";
 import { Box, Card, AppBar, Toolbar } from "@mui/material";
 import { PieChart } from "./PieChart";
-import { usePopoverOpen } from "../../hooks/usePopoverOpen";
-import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { usePopoverOpen } from "hooks/usePopoverOpen";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+
+import santaDir from "images/holiday/santahat.png";
 
 export function YouTubeEmbed(props) {
   const embedId = props.embedId;
@@ -209,8 +211,6 @@ export function Avatar(props) {
   const deckProfile = props.deckProfile;
   const absoluteLeftAvatarPx = props.absoluteLeftAvatarPx;
   const isSquare = props.isSquare || false;
-
-  const santaDir = "/images/holiday/santahat.png";
 
   const siteInfo = useContext(SiteInfoContext);
   const style = {};

@@ -42,7 +42,7 @@ import {
 } from "../../Constants";
 import { textIncludesSlurs } from "../../lib/profanity";
 
-import "../../css/game.css";
+import "css/game.css";
 import EmotePicker from "../../components/EmotePicker";
 import JottoGame from "./JottoGame";
 import "./Game.css";
@@ -70,10 +70,10 @@ import BattlesnakesGame from "./BattlesnakesGame";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
 
-const lore = `/images/emotes/lore.webp`;
-const poison = `/images/emotes/poison.webp`;
-const exit = `/images/emotes/exit.webp`;
-const veg = `/images/emotes/veg.webp`;
+import lore from "images/emotes/lore.webp";
+import poison from "images/emotes/poison.webp";
+import exit from "images/emotes/exit.webp";
+import veg from "images/emotes/veg.webp";
 
 export default function Game() {
   return (
@@ -1708,7 +1708,7 @@ function ObituariesMessage(props) {
     title = "Breaking News";
   }
 
-  const noAnimation = props?.settings?.noAnimation || !shouldAnimateSource || alreadyWatched || game.review;
+  const noAnimation = true;//props?.settings?.noAnimation || !shouldAnimateSource || alreadyWatched || game.review;
 
   useEffect(() => {
     try {

@@ -4,7 +4,7 @@ import { useOnOutsideClick } from "./Basic";
 import { Button, Tooltip } from "@mui/material";
 import { UserContext } from "../Contexts";
 
-const happy = `/images/emotes/happy.webp`;
+import happy from "images/emotes/happy.webp";
 
 export default function EmotePicker(props) {
   const [isPanelVisible, setPanelVisible] = useState(false);

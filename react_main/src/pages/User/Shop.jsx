@@ -17,8 +17,8 @@ import {
   TextField,
 } from "@mui/material";
 
-import "../../css/shop.css";
-import { NewLoading } from "../Welcome/NewLoading";
+import "css/shop.css";
+import { NewLoading } from "pages/Welcome/NewLoading";
 
 const coin = `/images/umcoin.png`;
 

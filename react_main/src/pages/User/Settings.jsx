@@ -23,7 +23,7 @@ import Form, { useForm } from "../../components/Form";
 import { useErrorAlert } from "../../components/Alerts";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 
-import "../../css/settings.css";
+import "css/settings.css";
 import { setCaptchaVisible } from "../../utils";
 import { NewLoading } from "../Welcome/NewLoading";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";

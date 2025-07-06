@@ -8,7 +8,7 @@ import { useErrorAlert } from "../../../components/Alerts";
 import { camelCase } from "../../../utils";
 import Comments from "../../Community/Comments";
 import { Lobbies } from "../../../Constants";
-import "../../../css/join.css";
+import "css/join.css";
 import { RefreshButton } from "./RefreshButton";
 import { NewLoading } from "../../Welcome/NewLoading";
 import {
