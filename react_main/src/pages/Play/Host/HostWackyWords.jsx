@@ -63,6 +63,12 @@ export default function HostWackyWords() {
       showIf: "standardiseCapitalisation",
     },
     {
+      label: "Ranked Choice Voting",
+      ref: "isRankedChoice",
+      type: "boolean",
+      value: defaults.isRankedChoice,
+    },
+    {
       label: "Lobby",
       ref: "lobby",
       type: "select",
@@ -183,6 +189,9 @@ export default function HostWackyWords() {
           enablePunctuation: getFormFieldValue("enablePunctuation"),
           standardiseCapitalisation: getFormFieldValue(
             "standardiseCapitalisation"
+          ),
+          isRankedChoice: getFormFieldValue(
+            "isRankedChoice"
           ),
           turnOnCaps: getFormFieldValue("turnOnCaps"),
           anonymousGame: getFormFieldValue("anonymousGame"),
