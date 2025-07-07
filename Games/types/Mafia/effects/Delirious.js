@@ -26,6 +26,9 @@ module.exports = class Delirious extends Effect {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER + 1,
           labels: ["block", "hidden"],
           run: function () {
+            if(!this.target.isDelirious()){
+              return;
+            }
             if (this.actor.hasAbility(this.effect.types)) {
               this.blockWithDelirium(this.target, true);
             }

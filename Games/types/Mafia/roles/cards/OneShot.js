@@ -135,7 +135,7 @@ module.exports = class OneShot extends Card {
       },
       state: function (stateInfo) {
         this.player.role.OneShotMax = this.player.role.modifier.split("/").filter((m) => m == "X-Shot").length;
-        this.game.queueAlert(`Night ${this.player.role.OneShotNight} Day ${this.player.role.OneShotDay} Max ${this.player.role.OneShotMax}`);
+        //this.game.queueAlert(`Night ${this.player.role.OneShotNight} Day ${this.player.role.OneShotDay} Max ${this.player.role.OneShotMax}`);
         if (stateInfo.name.match(/Day/)) {
           if (this.player.role.OneShotNight == this.player.role.OneShotMax && this.player.role.isUsingOneShotNight) {
             this.player.role.OneShotNight = this.player.role.OneShotMax+1;
