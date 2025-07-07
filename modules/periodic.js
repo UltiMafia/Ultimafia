@@ -209,9 +209,8 @@ module.exports = function () {
         // Query all heart refreshes that have elapsed
         let refreshedHearts = await models.DailyChallengeRefresh.find({
           when: { $lt: now },
-        }).select("userId type");
+        })
         for (let refreshedHeart of refreshedHearts) {
-          const userId = refreshedHeart.userId;
 
           //let  Object.entries(DailyChallengeData);
           
@@ -239,8 +238,11 @@ module.exports = function () {
 
           // Refresh the user's heart type to capacity
 
-        const result1 = await models.User.updateOne(
-          { id: userId },
+        let users = await models.User.find({ deleted: false }).select("id -_id");
+          
+        for(let userId of users){
+        let result1 = await models.User.updateOne(
+          { id: userId.id },
           {
             $set: {
               dailyChallenges: Challenges,
@@ -250,21 +252,29 @@ module.exports = function () {
           
           if (result1.modifiedCount === 0) {
             console.warn(
-              `Failed to refresh daily challenges for userId[${userId}]`
+              `Failed to refresh daily challenges for userId[${userId.id}]`
             );
           }
-
+          await redis.cacheUserInfo(userId.id, true);
+        }
           // Remove the heart refresh so that it won't trigger again
           const result2 = await models.DailyChallengeRefresh.deleteOne({
-            userId: userId,
+            when: { $lt: now },
           }).exec();
           if (result2.deletedCount === 0) {
             console.warn(
-              `Failed to delete daily Challenge refresh for userId[${userId}]`
+              `Failed to delete daily Challenge refresh for userId[]`
             );
           }
-
-          await redis.cacheUserInfo(userId, true);
+          /*
+          let dailyRefreshNew = await models.DailyChallengeRefresh.select("_id");
+          if (!dailyRefreshNew) {
+            dailyRefreshNew = new models.DailyChallengeRefresh({
+              when: Date.now() + constants.dailyChallengesRefreshIntervalMillis,
+            });
+            await dailyRefreshNew.save();
+          }
+          */
         }
       },
       interval: 1000 * 60,

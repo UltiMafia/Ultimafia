@@ -73,16 +73,17 @@ export const DailyChallengeData = {
       tier: 3,
       internal: ["Win5Games"],
       description: "Win 5 games.",
-      reward: 10,
+      reward: 7,
     },
-    /*
+    
     "Win 3 games in a row": {
       ID: "Hard2",
       tier: 3,
       internal: ["Win3GamesInRow"],
-      description: "Win 3 games with no vegs or leavers in a row (Games with vegs/leavers will not disrupt the win streak).",
-      reward: 10,
+      description: "Win 3 games with in a row.",
+      reward: 7,
     },
+    /*
     "Earn a Kudos": {
       ID: "Hard3",
       tier: 3,

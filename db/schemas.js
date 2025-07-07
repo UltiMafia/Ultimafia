@@ -112,6 +112,8 @@ var schemas = {
     winRate: { type: Number, default: 0 },
     achievements: [],
     achievementCount: { type: Number, default: 0 },
+    ownedStamps: [],
+    availableStamps: [],
     redHearts: { type: Number, default: 0 },
     goldHearts: { type: Number, default: 0 },
     rankedPoints: { type: Number, default: 0 },
@@ -523,7 +525,6 @@ var schemas = {
     type: { type: String, index: true },
   }),
   DailyChallengeRefresh: new mongoose.Schema({
-    userId: { type: String, index: true },
     when: { type: Number, index: true },
   }),
   LeavePenalty: new mongoose.Schema({

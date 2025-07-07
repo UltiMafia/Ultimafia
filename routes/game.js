@@ -1124,6 +1124,8 @@ const settingsChecks = {
     let enablePunctuation = settings.enablePunctuation;
     let standardiseCapitalisation = settings.standardiseCapitalisation;
     let turnOnCaps = settings.turnOnCaps;
+    let isRankedChoice = settings.isRankedChoice;
+    let votesToPoints = settings.votesToPoints;
 
     return {
       roundAmt,
@@ -1131,6 +1133,8 @@ const settingsChecks = {
       enablePunctuation,
       standardiseCapitalisation,
       turnOnCaps,
+      isRankedChoice,
+      votesToPoints,
     };
   },
   "Liars Dice": (settings, setup) => {
