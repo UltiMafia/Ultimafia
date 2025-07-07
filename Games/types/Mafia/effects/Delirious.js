@@ -36,4 +36,18 @@ module.exports = class Delirious extends Effect {
       },
     };
   }
+
+  apply(player) {
+    super.apply(player);
+
+
+    this.falseModeEffect = player.giveEffect("FalseMode", Infinity);
+  }
+
+   remove() {
+    this.falseModeEffect.remove();
+    super.remove();
+  }
+
+  
 };
