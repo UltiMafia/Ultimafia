@@ -242,7 +242,7 @@ module.exports = function () {
           
         for(let userId of users){
         let result1 = await models.User.updateOne(
-          { id: userId },
+          { id: userId.id },
           {
             $set: {
               dailyChallenges: Challenges,
@@ -252,10 +252,10 @@ module.exports = function () {
           
           if (result1.modifiedCount === 0) {
             console.warn(
-              `Failed to refresh daily challenges for userId[${userId}]`
+              `Failed to refresh daily challenges for userId[${userId.id}]`
             );
           }
-          await redis.cacheUserInfo(userId, true);
+          await redis.cacheUserInfo(userId.id, true);
         }
           // Remove the heart refresh so that it won't trigger again
           const result2 = await models.DailyChallengeRefresh.deleteOne({
@@ -263,10 +263,10 @@ module.exports = function () {
           }).exec();
           if (result2.deletedCount === 0) {
             console.warn(
-              `Failed to delete daily Challenge refresh for userId[${userId}]`
+              `Failed to delete daily Challenge refresh for userId[]`
             );
           }
-
+          /*
           let dailyRefreshNew = await models.DailyChallengeRefresh.select("_id");
           if (!dailyRefreshNew) {
             dailyRefreshNew = new models.DailyChallengeRefresh({
@@ -274,7 +274,7 @@ module.exports = function () {
             });
             await dailyRefreshNew.save();
           }
-
+          */
         }
       },
       interval: 1000 * 60,

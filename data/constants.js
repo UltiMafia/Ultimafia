@@ -312,7 +312,7 @@ module.exports = {
   // Refresh every 23 hours
   redHeartRefreshIntervalMillis: 82800000,
   goldHeartRefreshIntervalMillis: 82800000,
-  dailyChallengesRefreshIntervalMillis: 82800000,
+  dailyChallengesRefreshIntervalMillis: 300000,
 
   // Penalty starts at 10 minutes with level 0, up to 60 minutes with level 5
   leavePenaltyMinimumMillis: 600000,

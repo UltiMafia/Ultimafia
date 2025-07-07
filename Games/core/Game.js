@@ -2779,7 +2779,7 @@ module.exports = class Game {
           }
         }
         
-          let dailyRefresh = await models.DailyChallengeRefresh.select("_id");
+          let dailyRefresh = await models.DailyChallengeRefresh.findOne().select("_id");
           if (!dailyRefresh) {
             dailyRefresh = new models.DailyChallengeRefresh({
               when: Date.now() + constants.dailyChallengesRefreshIntervalMillis,
