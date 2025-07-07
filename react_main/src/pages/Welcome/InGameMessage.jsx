@@ -1,7 +1,7 @@
 import { NameWithAvatar } from "../User/User";
 import { UserText } from "../../components/Basic";
 import React, { useEffect, useRef, useState } from "react";
-import "../../css/game.css";
+import "css/game.css";
 import { Fade } from "@mui/material";
 
 export const InGameMessage = ({

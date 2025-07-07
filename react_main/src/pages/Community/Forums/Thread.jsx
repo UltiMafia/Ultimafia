@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
 import { Redirect, Link, useParams, useLocation } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
+import Markdown from 'react-markdown';
 import update from "immutability-helper";
 
 import { useErrorAlert } from "../../../components/Alerts";
@@ -446,7 +446,7 @@ function Post(props) {
         </div>
         {!editing && (
           <div className="md-content">
-            <ReactMarkdown source={content} />
+            <Markdown>{content}</Markdown>
           </div>
         )}
         {editing && (

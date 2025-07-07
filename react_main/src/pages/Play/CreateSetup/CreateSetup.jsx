@@ -23,20 +23,8 @@ import CreateLiarsDiceSetup from "./CreateLiarsDiceSetup";
 import CreateCardGamesSetup from "./CreateCardGamesSetup";
 import CreateBattlesnakesSetup from "./CreateBattlesnakesSetup";
 
-import { GameTypes } from "../../../Constants";
-
-const gamesIcons = {
-  Mafia: "/images/game_icons/Mafia.png",
-  Resistance: "/images/game_icons/Resistance.png",
-  Ghost: "/images/game_icons/Ghost.png",
-  Jotto: "/images/game_icons/Jotto.png",
-  Acrotopia: "/images/game_icons/Acrotopia.png",
-  "Secret Dictator": "/images/game_icons/SecretDictator.png",
-  "Wacky Words": "/images/game_icons/WackyWords.png",
-  "Liars Dice": "/images/game_icons/LiarsDice.png",
-  "Card Games": "/images/game_icons/CardGames.png",
-  Battlesnakes: "/images/game_icons/Battlesnakes.png",
-};
+import { GameTypes } from "Constants";
+import GameIcon from "components/GameIcon";
 
 export default function CreateSetup(props) {
   const theme = useTheme();
@@ -84,7 +72,7 @@ export default function CreateSetup(props) {
           boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
         }}
       >
-        <img src={gamesIcons[gameType]} alt={gameType} width="30" height="30" />
+        <GameIcon gameType={gameType} size={30} />
       </IconButton>
       <Paper
         onClick={toggleDrawer(true)}
@@ -119,7 +107,7 @@ export default function CreateSetup(props) {
               onClick={() => handleListItemClick(game)}
             >
               <ListItemIcon>
-                <img src={gamesIcons[game]} alt={game} width="24" height="24" />
+                <GameIcon gameType={game} size={24} />
               </ListItemIcon>
               <ListItemText primary={game} />
             </ListItem>

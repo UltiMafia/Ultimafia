@@ -9,7 +9,7 @@ import Form from "../../../components/Form";
 import { ItemList, filterProfanity } from "../../../components/Basic";
 import { useErrorAlert } from "../../../components/Alerts";
 
-import "../../../css/host.css";
+import "css/host.css";
 import { BotBarLink } from "../Play";
 import { clamp } from "../../../lib/MathExt";
 import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";

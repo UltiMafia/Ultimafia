@@ -7,8 +7,8 @@ import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { TextEditor } from "../../components/Form";
 import { UserContext } from "../../Contexts";
 
-import "../../css/forums.css";
-import "../../css/comments.css";
+import "css/forums.css";
+import "css/comments.css";
 import { NewLoading } from "../Welcome/NewLoading";
 import { Box, Button } from "@mui/material";
 import { Comment } from "./Comment";

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { Redirect, useParams, useHistory } from "react-router-dom";
 import axios from "axios";
-import ReactMarkdown from "react-markdown";
+import Markdown from 'react-markdown';
 import update from "immutability-helper";
 
 import { UserContext, SiteInfoContext } from "../../Contexts";
@@ -24,7 +24,7 @@ import { AchievementData } from "../../constants/Achievements";
 import { capitalize } from "../../utils";
 import Comments from "../Community/Comments";
 
-import "../../css/user.css";
+import "css/user.css";
 import { Modal } from "../../components/Modal";
 import { PieChart } from "./PieChart";
 import { NewLoading } from "../Welcome/NewLoading";
@@ -33,10 +33,10 @@ import { Box, IconButton, Typography } from "@mui/material";
 import { useTheme } from "@mui/styles";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 
-export const KUDOS_ICON = `/images/kudos.png`;
-export const KARMA_ICON = `/images/karma.png`;
-export const ACHIEVEMENTS_ICON = `/images/achievements.png`;
-export const DAILY_ICON = `/images/dailyChallenges.png`;
+export const KUDOS_ICON = require(`images/kudos.png`);
+export const KARMA_ICON = require(`images/karma.png`);
+export const ACHIEVEMENTS_ICON = require(`images/achievements.png`);
+export const DAILY_ICON = require(`images/dailyChallenges.png`);
 
 const DEFAULT_PRONOUNS_TEXT = "Click to edit your pronouns";
 
@@ -712,10 +712,7 @@ export default function Profile() {
               >
                 {!editingPronouns && (
                   <div className="md-content">
-                    <ReactMarkdown
-                      renderers={basicRenderers()}
-                      source={pronouns}
-                    />
+                    <Markdown>{pronouns}</Markdown>
                   </div>
                 )}
                 {editingPronouns && (
@@ -742,7 +739,7 @@ export default function Profile() {
             >
               {!editingBio && (
                 <div className="md-content">
-                  <ReactMarkdown renderers={basicRenderers()} source={bio} />
+                  <Markdown>{bio}</Markdown>
                 </div>
               )}
               {editingBio && (

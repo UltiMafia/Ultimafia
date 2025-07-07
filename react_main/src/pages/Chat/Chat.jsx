@@ -18,7 +18,7 @@ import { MaxChatMessageLength } from "../../Constants";
 import { Time, UserText } from "../../components/Basic";
 import { NotificationHolder, useOnOutsideClick } from "../../components/Basic";
 
-import "../../css/chat.css";
+import "css/chat.css";
 
 export default function Chat(/*{ setShowChatTab }*/) {
   // TODO: Remove comments

@@ -8,7 +8,7 @@ import Games from "./Games";
 import Terminology from "./Terminology";
 import Achievements from "./Achievements";
 
-import "../../css/play.css";
+import "css/play.css";
 
 import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
 import { useTheme } from "@mui/styles";

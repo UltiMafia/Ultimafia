@@ -11,7 +11,7 @@ import {
 } from "./Game";
 import { GameContext } from "../../Contexts";
 
-import "../../css/gameGhost.css";
+import "css/gameGhost.css";
 import SnakeGameDisplay from "./SnakeGameDisplay";
 
 function SnakeGame(props) {

@@ -29,7 +29,7 @@ import axios from "axios";
 import { UserContext, SiteInfoContext } from "../../../Contexts";
 import Comments from "../../Community/Comments";
 
-import "../../../css/setupPage.css";
+import "css/setupPage.css";
 
 import { useErrorAlert } from "../../../components/Alerts";
 import { NewLoading } from "../../Welcome/NewLoading";

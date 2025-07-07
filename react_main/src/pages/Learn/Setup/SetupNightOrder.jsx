@@ -6,7 +6,7 @@ import {
   useParams,
   useHistory,
 } from "react-router-dom";
-import "../../../css/play.css";
+import "css/play.css";
 import axios from "axios";
 import { UserContext, SiteInfoContext } from "../../../Contexts";
 import {

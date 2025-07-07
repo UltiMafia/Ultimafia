@@ -1,19 +1,15 @@
 import React from "react";
-import "../css/emotes.css";
+import "css/emotes.css";
 
 export function Emote(props) {
   const emoteKey = props.emote.toLowerCase();
   const emote = Emotes[emoteKey];
 
   return (
-    <div
+    <img
       className="emote"
       title={emote.name}
-      style={{
-        backgroundImage: `url('/images/emotes/${emote.name.toLowerCase()}.${
-          emote.type
-        }')`,
-      }}
+      src={require(`images/emotes/${emote.name.toLowerCase()}.${emote.type}`)}
     />
   );
 }

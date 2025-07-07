@@ -81,7 +81,7 @@
   width: 43px;
   height: 59px;
   margin: 0px;
-  background-image: url("/images/cardsLarge_tilemap_packed.png");
+  background-image: url("/src/images/cardsLarge_tilemap_packed.png");
   background-repeat: no-repeat;
   background-size: 896px 256px;
   transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;

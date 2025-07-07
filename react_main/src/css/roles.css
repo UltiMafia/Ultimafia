@@ -79,14 +79,14 @@
   width: 16px;
   height: 16px;
 
-  background-image: url("/images/items.png");
+  background-image: url("/src/images/items.png");
 }
 
 .modifier {
   width: 16px;
   height: 16px;
 
-  background-image: url("/images/modifiers/unknown-modifier.png");
+  background-image: url("/src/images/modifiers/unknown-modifier.png");
 }
 
 .role-count-wrap {
@@ -115,7 +115,7 @@
   width: 30px;
   height: 30px;
   border-radius: 3px;
-  background-image: url("/images/roles/01-default-tall.png");
+  background-image: url("/src/images/roles/01-default-tall.png");
 }
 
 .role.bg {
@@ -169,7 +169,7 @@
 }
 
 .role-icon-vivid-null {
-  background-image: url("/images/roles/02-unknown-vivid.png");
+  background-image: url("/src/images/roles/02-unknown-vivid.png");
 
   -webkit-filter: none;
   filter: none;
@@ -180,7 +180,7 @@
 */
 
 .role-Silhouette {
-  background-image: url("/images/roles/01-default-tall.png");
+  background-image: url("/src/images/roles/01-default-tall.png");
 }
 
 /***********
@@ -210,43 +210,43 @@
 }
 
 .digit.digit-0 {
-  background-image: url("/images/digits/0.webp");
+  background-image: url("/src/images/digits/0.webp");
 }
 
 .digit.digit-1 {
-  background-image: url("/images/digits/1.webp");
+  background-image: url("/src/images/digits/1.webp");
 }
 
 .digit.digit-2 {
-  background-image: url("/images/digits/2.webp");
+  background-image: url("/src/images/digits/2.webp");
 }
 
 .digit.digit-3 {
-  background-image: url("/images/digits/3.webp");
+  background-image: url("/src/images/digits/3.webp");
 }
 
 .digit.digit-4 {
-  background-image: url("/images/digits/4.webp");
+  background-image: url("/src/images/digits/4.webp");
 }
 
 .digit.digit-5 {
-  background-image: url("/images/digits/5.webp");
+  background-image: url("/src/images/digits/5.webp");
 }
 
 .digit.digit-6 {
-  background-image: url("/images/digits/6.webp");
+  background-image: url("/src/images/digits/6.webp");
 }
 
 .digit.digit-7 {
-  background-image: url("/images/digits/7.webp");
+  background-image: url("/src/images/digits/7.webp");
 }
 
 .digit.digit-8 {
-  background-image: url("/images/digits/8.webp");
+  background-image: url("/src/images/digits/8.webp");
 }
 
 .digit.digit-9 {
-  background-image: url("/images/digits/9.webp");
+  background-image: url("/src/images/digits/9.webp");
 }
 
 /***********
@@ -259,1451 +259,1451 @@
 /* Alignment Icons */
 
 .role-icon-vivid-Mafia-Village {
-  background-image: url("/images/roles/village-vivid.png");
+  background-image: url("/src/images/roles/village-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Mafia {
-  background-image: url("/images/roles/mafia-vivid.png");
+  background-image: url("/src/images/roles/mafia-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Cult {
-  background-image: url("/images/roles/cult-vivid.png");
+  background-image: url("/src/images/roles/cult-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Independent {
-  background-image: url("/images/roles/independent-vivid.png");
+  background-image: url("/src/images/roles/independent-vivid.png");
 }
 
 /* 
 /*------------------Village Roles----------------------*/
 
 .role-icon-vivid-Mafia-Villager {
-  background-image: url("/images/roles/villager-vivid.png");
+  background-image: url("/src/images/roles/villager-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Doctor {
-  background-image: url("/images/roles/doctor-vivid.png");
+  background-image: url("/src/images/roles/doctor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Nurse {
-  background-image: url("/images/roles/nurse-vivid.png");
+  background-image: url("/src/images/roles/nurse-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Surgeon {
-  background-image: url("/images/roles/surgeon-vivid.png");
+  background-image: url("/src/images/roles/surgeon-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Bodyguard {
-  background-image: url("/images/roles/bodyguard-vivid.png");
+  background-image: url("/src/images/roles/bodyguard-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Cop {
-  background-image: url("/images/roles/cop-vivid.png");
+  background-image: url("/src/images/roles/cop-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Gunsmith {
-  background-image: url("/images/roles/gunsmith-vivid.png");
+  background-image: url("/src/images/roles/gunsmith-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Oracle {
-  background-image: url("/images/roles/oracle-vivid.png");
+  background-image: url("/src/images/roles/oracle-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Vigilante {
-  background-image: url("/images/roles/vigilante-vivid.png");
+  background-image: url("/src/images/roles/vigilante-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Detective {
-  background-image: url("/images/roles/detective-vivid.png");
+  background-image: url("/src/images/roles/detective-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Drunk {
-  background-image: url("/images/roles/drunk-vivid.png");
+  background-image: url("/src/images/roles/drunk-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Blacksmith {
-  background-image: url("/images/roles/blacksmith-vivid.png");
+  background-image: url("/src/images/roles/blacksmith-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Hunter {
-  background-image: url("/images/roles/hunter-vivid.png");
+  background-image: url("/src/images/roles/hunter-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Watcher {
-  background-image: url("/images/roles/watcher-vivid.png");
+  background-image: url("/src/images/roles/watcher-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Tracker {
-  background-image: url("/images/roles/tracker-vivid.png");
+  background-image: url("/src/images/roles/tracker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Witness {
-  background-image: url("/images/roles/witness-vivid.png");
+  background-image: url("/src/images/roles/witness-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Analyst {
-  background-image: url("/images/roles/analyst-vivid.png");
+  background-image: url("/src/images/roles/analyst-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Bloodhound {
-  background-image: url("/images/roles/bloodhound-vivid.png");
+  background-image: url("/src/images/roles/bloodhound-vivid.png");
 }
 
 .role-icon-old-Mafia-Bloodhound {
-  background-image: url("/images/roles/bloodhound-old.png");
+  background-image: url("/src/images/roles/bloodhound-old.png");
 }
 
 .role-icon-vivid-Mafia-Voyeur {
-  background-image: url("/images/roles/voyeur-vivid.png");
+  background-image: url("/src/images/roles/voyeur-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Governor {
-  background-image: url("/images/roles/governor-vivid.png");
+  background-image: url("/src/images/roles/governor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Monkey {
-  background-image: url("/images/roles/monkey-vivid.png");
+  background-image: url("/src/images/roles/monkey-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Seeker {
-  background-image: url("/images/roles/seeker-vivid.png");
+  background-image: url("/src/images/roles/seeker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Sheriff {
-  background-image: url("/images/roles/sheriff-vivid.png");
+  background-image: url("/src/images/roles/sheriff-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Deputy {
-  background-image: url("/images/roles/deputy-vivid.png");
+  background-image: url("/src/images/roles/deputy-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Medic {
-  background-image: url("/images/roles/medic-vivid.png");
+  background-image: url("/src/images/roles/medic-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Granny {
-  background-image: url("/images/roles/granny-vivid.png");
+  background-image: url("/src/images/roles/granny-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Templar {
-  background-image: url("/images/roles/templar-vivid.png");
+  background-image: url("/src/images/roles/templar-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Matron {
-  background-image: url("/images/roles/matron-vivid.png");
+  background-image: url("/src/images/roles/matron-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Miller {
-  background-image: url("/images/roles/miller-vivid.png");
+  background-image: url("/src/images/roles/miller-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Wannabe {
-  background-image: url("/images/roles/wannabe-vivid.png");
+  background-image: url("/src/images/roles/wannabe-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Celebrity {
-  background-image: url("/images/roles/celebrity-vivid.png");
+  background-image: url("/src/images/roles/celebrity-vivid.png");
 }
 
 .role-icon-noir-Mafia-Celebrity {
-  background-image: url("/images/roles/celebrity-noir.png");
+  background-image: url("/src/images/roles/celebrity-noir.png");
 }
 
 .role-icon-vivid-Mafia-Priest {
-  background-image: url("/images/roles/priest-vivid.png");
+  background-image: url("/src/images/roles/priest-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Apothecary {
-  background-image: url("/images/roles/apothecary-vivid.png");
+  background-image: url("/src/images/roles/apothecary-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Scientist {
-  background-image: url("/images/roles/clinician-vivid.png");
+  background-image: url("/src/images/roles/clinician-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Forensicist {
-  background-image: url("/images/roles/forensicist-vivid.png");
+  background-image: url("/src/images/roles/forensicist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Televangelist {
-  background-image: url("/images/roles/televangelist-vivid.png");
+  background-image: url("/src/images/roles/televangelist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Sicario {
-  background-image: url("/images/roles/sicario-vivid.png");
+  background-image: url("/src/images/roles/sicario-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Farmer {
-  background-image: url("/images/roles/farmer-vivid.png");
+  background-image: url("/src/images/roles/farmer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Freemason {
-  background-image: url("/images/roles/mason-vivid.png");
+  background-image: url("/src/images/roles/mason-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Jailer {
-  background-image: url("/images/roles/jailer-vivid.png");
+  background-image: url("/src/images/roles/jailer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Agent {
-  background-image: url("/images/roles/agent-vivid.png");
+  background-image: url("/src/images/roles/agent-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Funsmith {
-  background-image: url("/images/roles/funsmith-vivid.png");
+  background-image: url("/src/images/roles/funsmith-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Soldier {
-  background-image: url("/images/roles/soldier-vivid.png");
+  background-image: url("/src/images/roles/soldier-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Town-Crier {
-  background-image: url("/images/roles/town-crier-vivid.png");
+  background-image: url("/src/images/roles/town-crier-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Capybara {
-  background-image: url("/images/roles/capybara-vivid.png");
+  background-image: url("/src/images/roles/capybara-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Vegan {
-  background-image: url("/images/roles/neighbor-vivid.png");
+  background-image: url("/src/images/roles/neighbor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Comedian {
-  background-image: url("/images/roles/comedian-vivid.png");
+  background-image: url("/src/images/roles/comedian-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Commuter {
-  background-image: url("/images/roles/commuter-vivid.png");
+  background-image: url("/src/images/roles/commuter-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Caroler {
-  background-image: url("/images/roles/caroler-vivid.png");
+  background-image: url("/src/images/roles/caroler-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Dreamer {
-  background-image: url("/images/roles/dreamer-vivid.png");
+  background-image: url("/src/images/roles/dreamer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Chef {
-  background-image: url("/images/roles/chef-vivid.png");
+  background-image: url("/src/images/roles/chef-vivid.png");
 }
 
 .role-icon-old-Mafia-Chef {
-  background-image: url("/images/roles/chef-old.png");
+  background-image: url("/src/images/roles/chef-old.png");
 }
 
 .role-icon-vivid-Mafia-Journalist {
-  background-image: url("/images/roles/journalist-vivid.png");
+  background-image: url("/src/images/roles/journalist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Cutler {
-  background-image: url("/images/roles/cutler-vivid.png");
+  background-image: url("/src/images/roles/cutler-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Pharmacist {
-  background-image: url("/images/roles/pharmacist-vivid.png");
+  background-image: url("/src/images/roles/pharmacist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Snoop {
-  background-image: url("/images/roles/snoop-vivid.png");
+  background-image: url("/src/images/roles/snoop-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Justice {
-  background-image: url("/images/roles/justice-vivid.png");
+  background-image: url("/src/images/roles/justice-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Invisible-Man {
-  background-image: url("/images/roles/invisible-man-vivid.png");
+  background-image: url("/src/images/roles/invisible-man-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Chauffeur {
-  background-image: url("/images/roles/chauffeur-vivid.png");
+  background-image: url("/src/images/roles/chauffeur-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Lobotomist {
-  background-image: url("/images/roles/lobotomist-vivid.png");
+  background-image: url("/src/images/roles/lobotomist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Pedagogue {
-  background-image: url("/images/roles/pedagogue-vivid.png");
+  background-image: url("/src/images/roles/pedagogue-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Bartender {
-  background-image: url("/images/roles/bartender-vivid.png");
+  background-image: url("/src/images/roles/bartender-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Sapling {
-  background-image: url("/images/roles/tree-vivid.png");
+  background-image: url("/src/images/roles/tree-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Baker {
-  background-image: url("/images/roles/baker-vivid.png");
+  background-image: url("/src/images/roles/baker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Virgin {
-  background-image: url("/images/roles/virgin-vivid.png");
+  background-image: url("/src/images/roles/virgin-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Sheep {
-  background-image: url("/images/roles/sheep-vivid.png");
+  background-image: url("/src/images/roles/sheep-vivid.png");
 }
 
 .role-icon-noir-Mafia-Sheep {
-  background-image: url("/images/roles/sheep-noir.png");
+  background-image: url("/src/images/roles/sheep-noir.png");
 }
 
 .role-icon-vivid-Mafia-Schoolmarm {
-  background-image: url("/images/roles/schoolmarm-vivid.png");
+  background-image: url("/src/images/roles/schoolmarm-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Mime {
-  background-image: url("/images/roles/mime-vivid.png");
+  background-image: url("/src/images/roles/mime-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Attorney {
-  background-image: url("/images/roles/attorney-vivid.png");
+  background-image: url("/src/images/roles/attorney-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Party-Host {
-  background-image: url("/images/roles/party-host-vivid.png");
+  background-image: url("/src/images/roles/party-host-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Ghost {
-  background-image: url("/images/roles/ghost-vivid.png");
+  background-image: url("/src/images/roles/ghost-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Lightkeeper {
-  background-image: url("/images/roles/lightkeeper-vivid.png");
+  background-image: url("/src/images/roles/lightkeeper-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Typist {
-  background-image: url("/images/roles/typist-vivid.png");
+  background-image: url("/src/images/roles/typist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Reanimator {
-  background-image: url("/images/roles/reanimator-vivid.png");
+  background-image: url("/src/images/roles/reanimator-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Resurrectionist {
-  background-image: url("/images/roles/resurrectionist-vivid.png");
+  background-image: url("/src/images/roles/resurrectionist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Trickster {
-  background-image: url("/images/roles/trickster-vivid.png");
+  background-image: url("/src/images/roles/trickster-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Medium {
-  background-image: url("/images/roles/medium-vivid.png");
+  background-image: url("/src/images/roles/medium-vivid.png");
 }
 
 .role-icon-noir-Mafia-Medium {
-  background-image: url("/images/roles/medium-noir.png");
+  background-image: url("/src/images/roles/medium-noir.png");
 }
 
 .role-icon-vivid-Mafia-Robin-Hood {
-  background-image: url("/images/roles/robin-hood-vivid.png");
+  background-image: url("/src/images/roles/robin-hood-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Gemcutter {
-  background-image: url("/images/roles/gemcutter-vivid.png");
+  background-image: url("/src/images/roles/gemcutter-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Coroner {
-  background-image: url("/images/roles/coroner-vivid.png");
+  background-image: url("/src/images/roles/coroner-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Mourner {
-  background-image: url("/images/roles/mourner-vivid.png");
+  background-image: url("/src/images/roles/mourner-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Santa {
-  background-image: url("/images/roles/santa-vivid.png");
+  background-image: url("/src/images/roles/santa-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Mechanic {
-  background-image: url("/images/roles/mechanic-vivid.png");
+  background-image: url("/src/images/roles/mechanic-vivid.png");
 }
 
 .role-icon-vivid-Mafia-King {
-  background-image: url("/images/roles/king-vivid.png");
+  background-image: url("/src/images/roles/king-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Kingmaker {
-  background-image: url("/images/roles/kingmaker-vivid.png");
+  background-image: url("/src/images/roles/kingmaker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Rat {
-  background-image: url("/images/roles/rat-vivid.png");
+  background-image: url("/src/images/roles/rat-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Cannoneer {
-  background-image: url("/images/roles/cannoneer-vivid.png");
+  background-image: url("/src/images/roles/cannoneer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Zombie {
-  background-image: url("/images/roles/zombie-vivid.png");
+  background-image: url("/src/images/roles/zombie-vivid.png");
 }
 
 .role-icon-jockey-Mafia-Zombie {
-  background-image: url("/images/roles/zombie-jockey.png");
+  background-image: url("/src/images/roles/zombie-jockey.png");
 }
 
 .role-icon-vivid-Mafia-Parasite {
-  background-image: url("/images/roles/parasite-vivid.png");
+  background-image: url("/src/images/roles/parasite-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Satyr {
-  background-image: url("/images/roles/satyr-vivid.png");
+  background-image: url("/src/images/roles/satyr-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Hexer {
-  background-image: url("/images/roles/hexer-vivid.png");
+  background-image: url("/src/images/roles/hexer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Devotee {
-  background-image: url("/images/roles/devotee-vivid.png");
+  background-image: url("/src/images/roles/devotee-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Imp {
-  background-image: url("/images/roles/imp-vivid.png");
+  background-image: url("/src/images/roles/imp-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Manhunter {
-  background-image: url("/images/roles/manhunter-vivid.png");
+  background-image: url("/src/images/roles/manhunter-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Bondsman {
-  background-image: url("/images/roles/bondsman-vivid.png");
+  background-image: url("/src/images/roles/bondsman-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Snitch {
-  background-image: url("/images/roles/snitch-vivid.png");
+  background-image: url("/src/images/roles/snitch-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Cannoneer {
-  background-image: url("/images/roles/cannoneer-vivid.png");
+  background-image: url("/src/images/roles/cannoneer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Undertaker {
-  background-image: url("/images/roles/undertaker-vivid.png");
+  background-image: url("/src/images/roles/undertaker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Diviner {
-  background-image: url("/images/roles/diviner-vivid.png");
+  background-image: url("/src/images/roles/diviner-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Emperor {
-  background-image: url("/images/roles/emperor-vivid.png");
+  background-image: url("/src/images/roles/emperor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Bogeyman {
-  background-image: url("/images/roles/bogeyman-vivid.png");
+  background-image: url("/src/images/roles/bogeyman-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Vizier {
-  background-image: url("/images/roles/vizier-vivid.png");
+  background-image: url("/src/images/roles/vizier-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Sorcerer {
-  background-image: url("/images/roles/sorcerer-vivid.png");
+  background-image: url("/src/images/roles/sorcerer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Ghostbuster {
-  background-image: url("/images/roles/ghostbuster-vivid.png");
+  background-image: url("/src/images/roles/ghostbuster-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Exorcist {
-  background-image: url("/images/roles/exorcist-vivid.png");
+  background-image: url("/src/images/roles/exorcist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Lunch-Lady {
-  background-image: url("/images/roles/lunch-lady-vivid.png");
+  background-image: url("/src/images/roles/lunch-lady-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Knight {
-  background-image: url("/images/roles/knight-vivid.png");
+  background-image: url("/src/images/roles/knight-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Plastician {
-  background-image: url("/images/roles/plastician-vivid.png");
+  background-image: url("/src/images/roles/plastician-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Bounty-Hunter {
-  background-image: url("/images/roles/bounty-hunter-vivid.png");
+  background-image: url("/src/images/roles/bounty-hunter-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Sailor {
-  background-image: url("/images/roles/sailor-vivid.png");
+  background-image: url("/src/images/roles/sailor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Zealot {
-  background-image: url("/images/roles/zealot-vivid.png");
+  background-image: url("/src/images/roles/zealot-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Count {
-  background-image: url("/images/roles/count-vivid.png");
+  background-image: url("/src/images/roles/count-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Harpy {
-  background-image: url("/images/roles/harpy-vivid.png");
+  background-image: url("/src/images/roles/harpy-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Assassin {
-  background-image: url("/images/roles/assassin-vivid.png");
+  background-image: url("/src/images/roles/assassin-vivid.png");
 }
 
 .role-icon-old-Mafia-Assassin {
-  background-image: url("/images/roles/assassin-old.png");
+  background-image: url("/src/images/roles/assassin-old.png");
 }
 
 .role-icon-vivid-Mafia-Stylist {
-  background-image: url("/images/roles/stylist-vivid.png");
+  background-image: url("/src/images/roles/stylist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Suitress {
-  background-image: url("/images/roles/suitress-vivid.png");
+  background-image: url("/src/images/roles/suitress-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Sleepwalker {
-  background-image: url("/images/roles/sleepwalker-vivid.png");
+  background-image: url("/src/images/roles/sleepwalker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Mailman {
-  background-image: url("/images/roles/mailman-vivid.png");
+  background-image: url("/src/images/roles/mailman-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Visitor {
-  background-image: url("/images/roles/visitor-vivid.png");
+  background-image: url("/src/images/roles/visitor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Waitress {
-  background-image: url("/images/roles/waitress-vivid.png");
+  background-image: url("/src/images/roles/waitress-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Keymaker {
-  background-image: url("/images/roles/keymaker-vivid.png");
+  background-image: url("/src/images/roles/keymaker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Senator {
-  background-image: url("/images/roles/senator-vivid.png");
+  background-image: url("/src/images/roles/senator-vivid.png");
 }
 
 .role-icon-vivid-Mafia-President {
-  background-image: url("/images/roles/president-vivid.png");
+  background-image: url("/src/images/roles/president-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Penguin {
-  background-image: url("/images/roles/penguin-vivid.png");
+  background-image: url("/src/images/roles/penguin-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Butterfly {
-  background-image: url("/images/roles/butterfly-vivid.png");
+  background-image: url("/src/images/roles/butterfly-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Trapper {
-  background-image: url("/images/roles/trapper-vivid.png");
+  background-image: url("/src/images/roles/trapper-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Pathologist {
-  background-image: url("/images/roles/pathologist-vivid.png");
+  background-image: url("/src/images/roles/pathologist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Historian {
-  background-image: url("/images/roles/historian-vivid.png");
+  background-image: url("/src/images/roles/historian-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Demolitionist {
-  background-image: url("/images/roles/demolitionist-vivid.png");
+  background-image: url("/src/images/roles/demolitionist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Psychic {
-  background-image: url("/images/roles/psychic-vivid.png");
+  background-image: url("/src/images/roles/psychic-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Clairvoyant {
-  background-image: url("/images/roles/clairvoyant-vivid.png");
+  background-image: url("/src/images/roles/clairvoyant-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Shrink {
-  background-image: url("/images/roles/shrink-vivid.png");
+  background-image: url("/src/images/roles/shrink-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Turncoat {
-  background-image: url("/images/roles/turncoat-vivid.png");
+  background-image: url("/src/images/roles/turncoat-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Barista {
-  background-image: url("/images/roles/barista-vivid.png");
+  background-image: url("/src/images/roles/barista-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Chandler {
-  background-image: url("/images/roles/chandler-vivid.png");
+  background-image: url("/src/images/roles/chandler-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Falconer {
-  background-image: url("/images/roles/falconer-vivid.png");
+  background-image: url("/src/images/roles/falconer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Missionary {
-  background-image: url("/images/roles/missionary-vivid.png");
+  background-image: url("/src/images/roles/missionary-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Coward {
-  background-image: url("/images/roles/coward-vivid.png");
+  background-image: url("/src/images/roles/coward-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Avenger {
-  background-image: url("/images/roles/avenger-vivid.png");
+  background-image: url("/src/images/roles/avenger-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Mistress {
-  background-image: url("/images/roles/mistress-vivid.png");
+  background-image: url("/src/images/roles/mistress-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Framer {
-  background-image: url("/images/roles/framer-vivid.png");
+  background-image: url("/src/images/roles/framer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Warden {
-  background-image: url("/images/roles/warden-vivid.png");
+  background-image: url("/src/images/roles/warden-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Snallygaster {
-  background-image: url("/images/roles/snallygaster-vivid.png");
+  background-image: url("/src/images/roles/snallygaster-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Theocrat {
-  background-image: url("/images/roles/theocrat-vivid.png");
+  background-image: url("/src/images/roles/theocrat-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Incubus {
-  background-image: url("/images/roles/incubus-vivid.png");
+  background-image: url("/src/images/roles/incubus-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Weatherman {
-  background-image: url("/images/roles/weatherman-vivid.png");
+  background-image: url("/src/images/roles/weatherman-vivid.png");
 }
 
 .role-icon-blue-Mafia-Weatherman {
-  background-image: url("/images/roles/weatherman-blue.png");
+  background-image: url("/src/images/roles/weatherman-blue.png");
 }
 
 .role-icon-vivid-Mafia-Mooncalf {
-  background-image: url("/images/roles/mooncalf-vivid.png");
+  background-image: url("/src/images/roles/mooncalf-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Orienteer {
-  background-image: url("/images/roles/orienteer-vivid.png");
+  background-image: url("/src/images/roles/orienteer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Firebrand {
-  background-image: url("/images/roles/firebrand-vivid.png");
+  background-image: url("/src/images/roles/firebrand-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Pyromaniac {
-  background-image: url("/images/roles/pyromaniac-vivid.png");
+  background-image: url("/src/images/roles/pyromaniac-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Superhero {
-  background-image: url("/images/roles/superhero-vivid.png");
+  background-image: url("/src/images/roles/superhero-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Guard {
-  background-image: url("/images/roles/guard-vivid.png");
+  background-image: url("/src/images/roles/guard-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Troublemaker {
-  background-image: url("/images/roles/troublemaker-vivid.png");
+  background-image: url("/src/images/roles/troublemaker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Seer {
-  background-image: url("/images/roles/seer-vivid.png");
+  background-image: url("/src/images/roles/seer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Begum {
-  background-image: url("/images/roles/begum-vivid.png");
+  background-image: url("/src/images/roles/begum-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Martyr {
-  background-image: url("/images/roles/martyr-vivid.png");
+  background-image: url("/src/images/roles/martyr-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Secretary {
-  background-image: url("/images/roles/secretary-vivid.png");
+  background-image: url("/src/images/roles/secretary-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Bleeder {
-  background-image: url("/images/roles/bleeder-vivid.png");
+  background-image: url("/src/images/roles/bleeder-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Loudmouth {
-  background-image: url("/images/roles/loudmouth-vivid.png");
+  background-image: url("/src/images/roles/loudmouth-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Empath {
-  background-image: url("/images/roles/empath-vivid.png");
+  background-image: url("/src/images/roles/empath-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Tourist {
-  background-image: url("/images/roles/tourist-vivid.png");
+  background-image: url("/src/images/roles/tourist-vivid.png");
 }
 
 .role-icon-old-Mafia-Tourist {
-  background-image: url("/images/roles/tourist-old.png");
+  background-image: url("/src/images/roles/tourist-old.png");
 }
 
 .role-icon-vivid-Mafia-Drama-Queen {
-  background-image: url("/images/roles/drama-queen-vivid.png");
+  background-image: url("/src/images/roles/drama-queen-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Gatekeeper {
-  background-image: url("/images/roles/gatekeeper-vivid.png");
+  background-image: url("/src/images/roles/gatekeeper-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Groundskeeper {
-  background-image: url("/images/roles/groundskeeper-vivid.png");
+  background-image: url("/src/images/roles/groundskeeper-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Tea-Lady {
-  background-image: url("/images/roles/tea-lady-vivid.png");
+  background-image: url("/src/images/roles/tea-lady-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Painter {
-  background-image: url("/images/roles/painter-vivid.png");
+  background-image: url("/src/images/roles/painter-vivid.png");
 }
 
 .role-icon-noir-Mafia-Painter {
-  background-image: url("/images/roles/painter-noir.png");
+  background-image: url("/src/images/roles/painter-noir.png");
 }
 
 .role-icon-vivid-Mafia-Flapper {
-  background-image: url("/images/roles/flapper-vivid.png");
+  background-image: url("/src/images/roles/flapper-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Jiangshi {
-  background-image: url("/images/roles/jiangshi-vivid.png");
+  background-image: url("/src/images/roles/jiangshi-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Admiral {
-  background-image: url("/images/roles/admiral-vivid.png");
+  background-image: url("/src/images/roles/admiral-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Magus {
-  background-image: url("/images/roles/magus-vivid.png");
+  background-image: url("/src/images/roles/magus-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Jazzman {
-  background-image: url("/images/roles/jazzman-vivid.png");
+  background-image: url("/src/images/roles/jazzman-vivid.png");
 }
 
 .role-icon-noir-Mafia-Jazzman {
-  background-image: url("/images/roles/jazzman-noir.png");
+  background-image: url("/src/images/roles/jazzman-noir.png");
 }
 
 .role-icon-vivid-Mafia-Impersonator {
-  background-image: url("/images/roles/impersonator-vivid.png");
+  background-image: url("/src/images/roles/impersonator-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Accountant {
-  background-image: url("/images/roles/accountant-vivid.png");
+  background-image: url("/src/images/roles/accountant-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Barber {
-  background-image: url("/images/roles/barber-vivid.png");
+  background-image: url("/src/images/roles/barber-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Butler {
-  background-image: url("/images/roles/butler-vivid.png");
+  background-image: url("/src/images/roles/butler-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Geologist {
-  background-image: url("/images/roles/geologist-vivid.png");
+  background-image: url("/src/images/roles/geologist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Laundress {
-  background-image: url("/images/roles/laundress-vivid.png");
+  background-image: url("/src/images/roles/laundress-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Mayor {
-  background-image: url("/images/roles/mayor-vivid.png");
+  background-image: url("/src/images/roles/mayor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Nun {
-  background-image: url("/images/roles/nun-vivid.png");
+  background-image: url("/src/images/roles/nun-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Photographer {
-  background-image: url("/images/roles/photographer-vivid.png");
+  background-image: url("/src/images/roles/photographer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Saint {
-  background-image: url("/images/roles/saint-vivid.png");
+  background-image: url("/src/images/roles/saint-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Slayer {
-  background-image: url("/images/roles/slayer-vivid.png");
+  background-image: url("/src/images/roles/slayer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Snake-Charmer {
-  background-image: url("/images/roles/snake-charmer-vivid.png");
+  background-image: url("/src/images/roles/snake-charmer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Fortune-Teller {
-  background-image: url("/images/roles/fortune-teller-vivid.png");
+  background-image: url("/src/images/roles/fortune-teller-vivid.png");
 }
 
 /* 
 /*------------------Mafia Roles----------------------*/
 
 .role-icon-vivid-Mafia-Mafioso {
-  background-image: url("/images/roles/mafioso-vivid.png");
+  background-image: url("/src/images/roles/mafioso-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Poisoner {
-  background-image: url("/images/roles/poisoner-vivid.png");
+  background-image: url("/src/images/roles/poisoner-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Stalker {
-  background-image: url("/images/roles/stalker-vivid.png");
+  background-image: url("/src/images/roles/stalker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Hooker {
-  background-image: url("/images/roles/hooker-vivid.png");
+  background-image: url("/src/images/roles/hooker-vivid.png");
 }
 
 .role-icon-old-Mafia-Hooker {
-  background-image: url("/images/roles/hooker-old.png");
+  background-image: url("/src/images/roles/hooker-old.png");
 }
 
 .role-icon-vivid-Mafia-Pimp {
-  background-image: url("/images/roles/pimp-vivid.png");
+  background-image: url("/src/images/roles/pimp-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Tattooist {
-  background-image: url("/images/roles/tattooist-vivid.png");
+  background-image: url("/src/images/roles/tattooist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Godfather {
-  background-image: url("/images/roles/godfather-vivid.png");
+  background-image: url("/src/images/roles/godfather-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Don {
-  background-image: url("/images/roles/don-vivid.png");
+  background-image: url("/src/images/roles/don-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Driver {
-  background-image: url("/images/roles/driver-vivid.png");
+  background-image: url("/src/images/roles/driver-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Gondolier {
-  background-image: url("/images/roles/gondolier-vivid.png");
+  background-image: url("/src/images/roles/gondolier-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Ninja {
-  background-image: url("/images/roles/ninja-vivid.png");
+  background-image: url("/src/images/roles/ninja-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Lawyer {
-  background-image: url("/images/roles/lawyer-vivid.png");
+  background-image: url("/src/images/roles/lawyer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Disguiser {
-  background-image: url("/images/roles/disguiser-vivid.png");
+  background-image: url("/src/images/roles/disguiser-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Janitor {
-  background-image: url("/images/roles/janitor-vivid.png");
+  background-image: url("/src/images/roles/janitor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Spy {
-  background-image: url("/images/roles/spy-vivid.png");
+  background-image: url("/src/images/roles/spy-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Gunrunner {
-  background-image: url("/images/roles/gunrunner-vivid.png");
+  background-image: url("/src/images/roles/gunrunner-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Gramps {
-  background-image: url("/images/roles/gramps-vivid.png");
+  background-image: url("/src/images/roles/gramps-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Lookout {
-  background-image: url("/images/roles/lookout-vivid.png");
+  background-image: url("/src/images/roles/lookout-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Scout {
-  background-image: url("/images/roles/scout-vivid.png");
+  background-image: url("/src/images/roles/scout-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Arsonist {
-  background-image: url("/images/roles/arsonist-vivid.png");
+  background-image: url("/src/images/roles/arsonist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Killer-Bee {
-  background-image: url("/images/roles/killer-bee-vivid.png");
+  background-image: url("/src/images/roles/killer-bee-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Queen-Bee {
-  background-image: url("/images/roles/queen-bee-vivid.png");
+  background-image: url("/src/images/roles/queen-bee-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Diabolist {
-  background-image: url("/images/roles/diabolist-vivid.png");
+  background-image: url("/src/images/roles/diabolist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Scrutineer {
-  background-image: url("/images/roles/scrutineer-vivid.png");
+  background-image: url("/src/images/roles/scrutineer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Tailor {
-  background-image: url("/images/roles/tailor-vivid.png");
+  background-image: url("/src/images/roles/tailor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Actress {
-  background-image: url("/images/roles/actress-vivid.png");
+  background-image: url("/src/images/roles/actress-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Prosecutor {
-  background-image: url("/images/roles/prosecutor-vivid.png");
+  background-image: url("/src/images/roles/prosecutor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Fabricator {
-  background-image: url("/images/roles/fabricator-vivid.png");
+  background-image: url("/src/images/roles/fabricator-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Heartbreaker {
-  background-image: url("/images/roles/heartbreaker-vivid.png");
+  background-image: url("/src/images/roles/heartbreaker-vivid.png");
 }
 
 .role-icon-noir-Mafia-Heartbreaker {
-  background-image: url("/images/roles/heartbreaker-noir.png");
+  background-image: url("/src/images/roles/heartbreaker-noir.png");
 }
 
 .role-icon-old-Mafia-Heartbreaker {
-  background-image: url("/images/roles/heartbreaker-old.png");
+  background-image: url("/src/images/roles/heartbreaker-old.png");
 }
 
 .role-icon-vivid-Mafia-Yakuza {
-  background-image: url("/images/roles/yakuza-vivid.png");
+  background-image: url("/src/images/roles/yakuza-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Necromancer {
-  background-image: url("/images/roles/necromancer-vivid.png");
+  background-image: url("/src/images/roles/necromancer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Debtor {
-  background-image: url("/images/roles/debtor-vivid.png");
+  background-image: url("/src/images/roles/debtor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Mummy {
-  background-image: url("/images/roles/mummy-vivid.png");
+  background-image: url("/src/images/roles/mummy-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Poltergeist {
-  background-image: url("/images/roles/poltergeist-vivid.png");
+  background-image: url("/src/images/roles/poltergeist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Rottweiler {
-  background-image: url("/images/roles/rottweiler-vivid.png");
+  background-image: url("/src/images/roles/rottweiler-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Riflemaster {
-  background-image: url("/images/roles/riflemaster-vivid.png");
+  background-image: url("/src/images/roles/riflemaster-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Lifeguard {
-  background-image: url("/images/roles/lifeguard-vivid.png");
+  background-image: url("/src/images/roles/lifeguard-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Jinx {
-  background-image: url("/images/roles/jinx-vivid.png");
+  background-image: url("/src/images/roles/jinx-vivid.png");
 }
 
 .role-icon-old-Mafia-Jinx {
-  background-image: url("/images/roles/jinx-old.png");
+  background-image: url("/src/images/roles/jinx-old.png");
 }
 
 .role-icon-vivid-Mafia-Clown {
-  background-image: url("/images/roles/clown-vivid.png");
+  background-image: url("/src/images/roles/clown-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Graverobber {
-  background-image: url("/images/roles/graverobber-vivid.png");
+  background-image: url("/src/images/roles/graverobber-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Saboteur {
-  background-image: url("/images/roles/saboteur-vivid.png");
+  background-image: url("/src/images/roles/saboteur-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Gorgon {
-  background-image: url("/images/roles/gorgon-vivid.png");
+  background-image: url("/src/images/roles/gorgon-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Illusionist {
-  background-image: url("/images/roles/illusionist-vivid.png");
+  background-image: url("/src/images/roles/illusionist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Slasher {
-  background-image: url("/images/roles/slasher-vivid.png");
+  background-image: url("/src/images/roles/slasher-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Trespasser {
-  background-image: url("/images/roles/trespasser-vivid.png");
+  background-image: url("/src/images/roles/trespasser-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Housekeeper {
-  background-image: url("/images/roles/housekeeper-vivid.png");
+  background-image: url("/src/images/roles/housekeeper-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Thief {
-  background-image: url("/images/roles/thief-vivid.png");
+  background-image: url("/src/images/roles/thief-vivid.png");
 }
 
 .role-icon-old-Mafia-Thief {
-  background-image: url("/images/roles/thief-old.png");
+  background-image: url("/src/images/roles/thief-old.png");
 }
 
 .role-icon-vivid-Mafia-Crank {
-  background-image: url("/images/roles/crank-vivid.png");
+  background-image: url("/src/images/roles/crank-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Interrogator {
-  background-image: url("/images/roles/interrogator-vivid.png");
+  background-image: url("/src/images/roles/interrogator-vivid.png");
 }
 
 .role-icon-gator-Mafia-Interrogator {
-  background-image: url("/images/roles/interrogator-gator.png");
+  background-image: url("/src/images/roles/interrogator-gator.png");
 }
 
 .role-icon-vivid-Mafia-Informant {
-  background-image: url("/images/roles/informant-vivid.png");
+  background-image: url("/src/images/roles/informant-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Revisionist {
-  background-image: url("/images/roles/propagandist-vivid.png");
+  background-image: url("/src/images/roles/propagandist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Hitman {
-  background-image: url("/images/roles/hitman-vivid.png");
+  background-image: url("/src/images/roles/hitman-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Bookie {
-  background-image: url("/images/roles/bookie-vivid.png");
+  background-image: url("/src/images/roles/bookie-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Ape {
-  background-image: url("/images/roles/ape-vivid.png");
+  background-image: url("/src/images/roles/ape-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Apothecary {
-  background-image: url("/images/roles/apothecary-vivid.png");
+  background-image: url("/src/images/roles/apothecary-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Santista {
-  background-image: url("/images/roles/santista-vivid.png");
+  background-image: url("/src/images/roles/santista-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Terrorist {
-  background-image: url("/images/roles/terrorist-vivid.png");
+  background-image: url("/src/images/roles/terrorist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Apprentice {
-  background-image: url("/images/roles/apprentice-vivid.png");
+  background-image: url("/src/images/roles/apprentice-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Ventriloquist {
-  background-image: url("/images/roles/ventriloquist-vivid.png");
+  background-image: url("/src/images/roles/ventriloquist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Sniper {
-  background-image: url("/images/roles/sniper-vivid.png");
+  background-image: url("/src/images/roles/sniper-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Strongman {
-  background-image: url("/images/roles/strongman-vivid.png");
+  background-image: url("/src/images/roles/strongman-vivid.png");
 }
 
 .role-icon-old-Mafia-Strongman {
-  background-image: url("/images/roles/strongman-old.png");
+  background-image: url("/src/images/roles/strongman-old.png");
 }
 
 .role-icon-vivid-Mafia-Blinder {
-  background-image: url("/images/roles/blinder-vivid.png");
+  background-image: url("/src/images/roles/blinder-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Fiddler {
-  background-image: url("/images/roles/fiddler-vivid.png");
+  background-image: url("/src/images/roles/fiddler-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Silencer {
-  background-image: url("/images/roles/silencer-vivid.png");
+  background-image: url("/src/images/roles/silencer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Paralyzer {
-  background-image: url("/images/roles/paralyzer-vivid.png");
+  background-image: url("/src/images/roles/paralyzer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Electrician {
-  background-image: url("/images/roles/electrician-vivid.png");
+  background-image: url("/src/images/roles/electrician-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Paparazzo {
-  background-image: url("/images/roles/paparazzo-vivid.png");
+  background-image: url("/src/images/roles/paparazzo-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Whistleblower {
-  background-image: url("/images/roles/whistleblower-vivid.png");
+  background-image: url("/src/images/roles/whistleblower-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Grizzly-Bear {
-  background-image: url("/images/roles/grizzly-bear-vivid.png");
+  background-image: url("/src/images/roles/grizzly-bear-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Polar-Bear {
-  background-image: url("/images/roles/polar-bear-vivid.png");
+  background-image: url("/src/images/roles/polar-bear-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Panda-Bear {
-  background-image: url("/images/roles/panda-bear-vivid.png");
+  background-image: url("/src/images/roles/panda-bear-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Fumigator {
-  background-image: url("/images/roles/fumigator-vivid.png");
+  background-image: url("/src/images/roles/fumigator-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Egg {
-  background-image: url("/images/roles/egg-vivid.png");
+  background-image: url("/src/images/roles/egg-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Grey-Goo {
-  background-image: url("/images/roles/grey-goo-vivid.png");
+  background-image: url("/src/images/roles/grey-goo-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Samurai {
-  background-image: url("/images/roles/samurai-vivid.png");
+  background-image: url("/src/images/roles/samurai-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Snowman {
-  background-image: url("/images/roles/snowman-vivid.png");
+  background-image: url("/src/images/roles/snowman-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Judge {
-  background-image: url("/images/roles/judge-vivid.png");
+  background-image: url("/src/images/roles/judge-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Puppeteer {
-  background-image: url("/images/roles/puppeteer-vivid.png");
+  background-image: url("/src/images/roles/puppeteer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Benandante {
-  background-image: url("/images/roles/benandante-vivid.png");
+  background-image: url("/src/images/roles/benandante-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Toreador {
-  background-image: url("/images/roles/toreador-vivid.png");
+  background-image: url("/src/images/roles/toreador-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Rainmaker {
-  background-image: url("/images/roles/rainmaker-vivid.png");
+  background-image: url("/src/images/roles/rainmaker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Quack {
-  background-image: url("/images/roles/quack-vivid.png");
+  background-image: url("/src/images/roles/quack-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Homeopath {
-  background-image: url("/images/roles/homeopath-vivid.png");
+  background-image: url("/src/images/roles/homeopath-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Queen {
-  background-image: url("/images/roles/queen-vivid.png");
+  background-image: url("/src/images/roles/queen-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Gossiper {
-  background-image: url("/images/roles/gossiper-vivid.png");
+  background-image: url("/src/images/roles/gossiper-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Caporegime {
-  background-image: url("/images/roles/caporegime-vivid.png");
+  background-image: url("/src/images/roles/caporegime-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Hider {
-  background-image: url("/images/roles/hider-vivid.png");
+  background-image: url("/src/images/roles/hider-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Busybody {
-  background-image: url("/images/roles/busybody-vivid.png");
+  background-image: url("/src/images/roles/busybody-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Lurker {
-  background-image: url("/images/roles/lurker-vivid.png");
+  background-image: url("/src/images/roles/lurker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Caser {
-  background-image: url("/images/roles/caser-vivid.png");
+  background-image: url("/src/images/roles/caser-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Scrambler {
-  background-image: url("/images/roles/scrambler-vivid.png");
+  background-image: url("/src/images/roles/scrambler-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Fed {
-  background-image: url("/images/roles/fed-vivid.png");
+  background-image: url("/src/images/roles/fed-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Enforcer {
-  background-image: url("/images/roles/enforcer-vivid.png");
+  background-image: url("/src/images/roles/enforcer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Forger {
-  background-image: url("/images/roles/forger-vivid.png");
+  background-image: url("/src/images/roles/forger-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Bouncer {
-  background-image: url("/images/roles/bouncer-vivid.png");
+  background-image: url("/src/images/roles/bouncer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Plumber {
-  background-image: url("/images/roles/plumber-vivid.png");
+  background-image: url("/src/images/roles/plumber-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Reaper {
-  background-image: url("/images/roles/reaper-vivid.png");
+  background-image: url("/src/images/roles/reaper-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Mole {
-  background-image: url("/images/roles/mole-vivid.png");
+  background-image: url("/src/images/roles/mole-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Cyclist {
-  background-image: url("/images/roles/cyclist-vivid.png");
+  background-image: url("/src/images/roles/cyclist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Librarian {
-  background-image: url("/images/roles/librarian-vivid.png");
+  background-image: url("/src/images/roles/librarian-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Dilettante {
-  background-image: url("/images/roles/dilettante-vivid.png");
+  background-image: url("/src/images/roles/dilettante-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Lobotomist {
-  background-image: url("/images/roles/lobotomist-vivid.png");
+  background-image: url("/src/images/roles/lobotomist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Imposter {
-  background-image: url("/images/roles/imposter-vivid.png");
+  background-image: url("/src/images/roles/imposter-vivid.png");
 }
 
 /*------------------Cult----------------------*/
 
 .role-icon-vivid-Mafia-Cat-Lady {
-  background-image: url("/images/roles/cat-lady-vivid.png");
+  background-image: url("/src/images/roles/cat-lady-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Werewolf {
-  background-image: url("/images/roles/werewolf-vivid.png");
+  background-image: url("/src/images/roles/werewolf-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Witch {
-  background-image: url("/images/roles/witch-vivid.png");
+  background-image: url("/src/images/roles/witch-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Cult-Leader {
-  background-image: url("/images/roles/cult-leader-vivid.png");
+  background-image: url("/src/images/roles/cult-leader-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Doomsayer {
-  background-image: url("/images/roles/doomsayer-vivid.png");
+  background-image: url("/src/images/roles/doomsayer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Cultist {
-  background-image: url("/images/roles/cultist-vivid.png");
+  background-image: url("/src/images/roles/cultist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Cthulhu {
-  background-image: url("/images/roles/cthulhu-vivid.png");
+  background-image: url("/src/images/roles/cthulhu-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Hellhound {
-  background-image: url("/images/roles/hellhound-vivid.png");
+  background-image: url("/src/images/roles/hellhound-vivid.png");
 }
 
 .role-icon-goofy-Mafia-Hellhound {
-  background-image: url("/images/roles/hellhound-goofy.png");
+  background-image: url("/src/images/roles/hellhound-goofy.png");
 }
 
 .role-icon-old-Mafia-Hellhound {
-  background-image: url("/images/roles/hellhound-old.png");
+  background-image: url("/src/images/roles/hellhound-old.png");
 }
 
 .role-icon-vivid-Mafia-Shinigami {
-  background-image: url("/images/roles/shinigami-vivid.png");
+  background-image: url("/src/images/roles/shinigami-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Blob {
-  background-image: url("/images/roles/blob-vivid.png");
+  background-image: url("/src/images/roles/blob-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Leech {
-  background-image: url("/images/roles/leech-vivid.png");
+  background-image: url("/src/images/roles/leech-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Runemaster {
-  background-image: url("/images/roles/runemaster-vivid.png");
+  background-image: url("/src/images/roles/runemaster-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Fungoid {
-  background-image: url("/images/roles/fungoid-vivid.png");
+  background-image: url("/src/images/roles/fungoid-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Mi-Go {
-  background-image: url("/images/roles/mi-go-vivid.png");
+  background-image: url("/src/images/roles/mi-go-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Shoggoth {
-  background-image: url("/images/roles/shoggoth-vivid.png");
+  background-image: url("/src/images/roles/shoggoth-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Lich {
-  background-image: url("/images/roles/lich-vivid.png");
+  background-image: url("/src/images/roles/lich-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Lamia {
-  background-image: url("/images/roles/lamia-vivid.png");
+  background-image: url("/src/images/roles/lamia-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Sidhe {
-  background-image: url("/images/roles/sidhe-vivid.png");
+  background-image: url("/src/images/roles/sidhe-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Consigliere {
-  background-image: url("/images/roles/consigliere-vivid.png");
+  background-image: url("/src/images/roles/consigliere-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Umpire {
-  background-image: url("/images/roles/umpire-vivid.png");
+  background-image: url("/src/images/roles/umpire-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Jack {
-  background-image: url("/images/roles/jack-vivid.png");
+  background-image: url("/src/images/roles/jack-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Enchantress {
-  background-image: url("/images/roles/enchantress-vivid.png");
+  background-image: url("/src/images/roles/enchantress-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Statistician {
-  background-image: url("/images/roles/statistician-vivid.png");
+  background-image: url("/src/images/roles/statistician-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Auditor {
-  background-image: url("/images/roles/auditor-vivid.png");
+  background-image: url("/src/images/roles/auditor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Broker {
-  background-image: url("/images/roles/broker-vivid.png");
+  background-image: url("/src/images/roles/broker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Philosopher {
-  background-image: url("/images/roles/philosopher-vivid.png");
+  background-image: url("/src/images/roles/philosopher-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Mediator {
-  background-image: url("/images/roles/mediator-vivid.png");
+  background-image: url("/src/images/roles/mediator-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Banshee {
-  background-image: url("/images/roles/banshee-vivid.png");
+  background-image: url("/src/images/roles/banshee-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Vampire {
-  background-image: url("/images/roles/vampire-vivid.png");
+  background-image: url("/src/images/roles/vampire-vivid.png");
 }
 
 .role-icon-noir-Mafia-Vampire {
-  background-image: url("/images/roles/vampire-noir.png");
+  background-image: url("/src/images/roles/vampire-noir.png");
 }
 
 .role-icon-vivid-Mafia-Psion {
-  background-image: url("/images/roles/mindwarper-vivid.png");
+  background-image: url("/src/images/roles/mindwarper-vivid.png");
 }
 
 .role-icon-noir-Mafia-Psion {
-  background-image: url("/images/roles/mindwarper-noir.png");
+  background-image: url("/src/images/roles/mindwarper-noir.png");
 }
 
 .role-icon-vivid-Mafia-War-Demon {
-  background-image: url("/images/roles/war-demon-vivid.png");
+  background-image: url("/src/images/roles/war-demon-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Selkie {
-  background-image: url("/images/roles/selkie-vivid.png");
+  background-image: url("/src/images/roles/selkie-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Cannibal {
-  background-image: url("/images/roles/cannibal-vivid.png");
+  background-image: url("/src/images/roles/cannibal-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Baphomet {
-  background-image: url("/images/roles/baphomet-vivid.png");
+  background-image: url("/src/images/roles/baphomet-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Alchemist {
-  background-image: url("/images/roles/alchemist-vivid.png");
+  background-image: url("/src/images/roles/alchemist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Druid {
-  background-image: url("/images/roles/druid-vivid.png");
+  background-image: url("/src/images/roles/druid-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Snow-Queen {
-  background-image: url("/images/roles/snow-queen-vivid.png");
+  background-image: url("/src/images/roles/snow-queen-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Inquisitor {
-  background-image: url("/images/roles/inquisitor-vivid.png");
+  background-image: url("/src/images/roles/inquisitor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Invader {
-  background-image: url("/images/roles/invader-vivid.png");
+  background-image: url("/src/images/roles/invader-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Witch-Doctor {
-  background-image: url("/images/roles/witch-doctor-vivid.png");
+  background-image: url("/src/images/roles/witch-doctor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Gremlin {
-  background-image: url("/images/roles/gremlin-vivid.png");
+  background-image: url("/src/images/roles/gremlin-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Succubus {
-  background-image: url("/images/roles/succubus-vivid.png");
+  background-image: url("/src/images/roles/succubus-vivid.png");
 }
 
 .role-icon-noir-Mafia-Succubus {
-  background-image: url("/images/roles/succubus-noir.png");
+  background-image: url("/src/images/roles/succubus-noir.png");
 }
 
 .role-icon-vivid-Mafia-Shadow {
-  background-image: url("/images/roles/shadow-vivid.png");
+  background-image: url("/src/images/roles/shadow-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Haruspex {
-  background-image: url("/images/roles/ritualist-vivid.png");
+  background-image: url("/src/images/roles/ritualist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Changeling {
-  background-image: url("/images/roles/changeling-vivid.png");
+  background-image: url("/src/images/roles/changeling-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Tormentor {
-  background-image: url("/images/roles/tormentor-vivid.png");
+  background-image: url("/src/images/roles/tormentor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Puca {
-  background-image: url("/images/roles/puca-vivid.png");
+  background-image: url("/src/images/roles/puca-vivid.png");
 }
 
 /* 
@@ -1711,372 +1711,372 @@
 */
 
 .role-icon-vivid-Mafia-Joker {
-  background-image: url("/images/roles/joker-vivid.png");
+  background-image: url("/src/images/roles/joker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Fool {
-  background-image: url("/images/roles/fool-vivid.png");
+  background-image: url("/src/images/roles/fool-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Executioner {
-  background-image: url("/images/roles/executioner-vivid.png");
+  background-image: url("/src/images/roles/executioner-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Serial-Killer {
-  background-image: url("/images/roles/serial-killer-vivid.png");
+  background-image: url("/src/images/roles/serial-killer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Amnesiac {
-  background-image: url("/images/roles/amnesiac-vivid.png");
+  background-image: url("/src/images/roles/amnesiac-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Survivor {
-  background-image: url("/images/roles/survivor-vivid.png");
+  background-image: url("/src/images/roles/survivor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Alien {
-  background-image: url("/images/roles/alien-vivid.png");
+  background-image: url("/src/images/roles/alien-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Old-Maid {
-  background-image: url("/images/roles/old-maid-vivid.png");
+  background-image: url("/src/images/roles/old-maid-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Traitor {
-  background-image: url("/images/roles/traitor-vivid.png");
+  background-image: url("/src/images/roles/traitor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Mastermind {
-  background-image: url("/images/roles/mastermind-vivid.png");
+  background-image: url("/src/images/roles/mastermind-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Autocrat {
-  background-image: url("/images/roles/autocrat-vivid.png");
+  background-image: url("/src/images/roles/autocrat-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Lover {
-  background-image: url("/images/roles/lover-vivid.png");
+  background-image: url("/src/images/roles/lover-vivid.png");
 }
 
 .role-icon-noir-Mafia-Lover {
-  background-image: url("/images/roles/lover-noir.png");
+  background-image: url("/src/images/roles/lover-noir.png");
 }
 
 .role-icon-old-Mafia-Lover {
-  background-image: url("/images/roles/lover-old.png");
+  background-image: url("/src/images/roles/lover-old.png");
 }
 
 .role-icon-vivid-Mafia-Matchmaker {
-  background-image: url("/images/roles/matchmaker-vivid.png");
+  background-image: url("/src/images/roles/matchmaker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Tofurkey {
-  background-image: url("/images/roles/tofurkey-vivid.png");
+  background-image: url("/src/images/roles/tofurkey-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Turkey {
-  background-image: url("/images/roles/turkey-vivid.png");
+  background-image: url("/src/images/roles/turkey-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Prophet {
-  background-image: url("/images/roles/prophet-vivid.png");
+  background-image: url("/src/images/roles/prophet-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Fatalist {
-  background-image: url("/images/roles/fatalist-vivid.png");
+  background-image: url("/src/images/roles/fatalist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Doppelgänger {
-  background-image: url("/images/roles/doppelganger-vivid.png");
+  background-image: url("/src/images/roles/doppelganger-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Dentist {
-  background-image: url("/images/roles/dentist-vivid.png");
+  background-image: url("/src/images/roles/dentist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Hitchhiker {
-  background-image: url("/images/roles/hitchhiker-vivid.png");
+  background-image: url("/src/images/roles/hitchhiker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Prankster {
-  background-image: url("/images/roles/prankster-vivid.png");
+  background-image: url("/src/images/roles/prankster-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Vengeful-Spirit {
-  background-image: url("/images/roles/vengeful-spirit-vivid.png");
+  background-image: url("/src/images/roles/vengeful-spirit-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Clockmaker {
-  background-image: url("/images/roles/clockmaker-vivid.png");
+  background-image: url("/src/images/roles/clockmaker-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Pyromaniac {
-  background-image: url("/images/roles/pyromaniac-vivid.png");
+  background-image: url("/src/images/roles/pyromaniac-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Phantom {
-  background-image: url("/images/roles/phantom-vivid.png");
+  background-image: url("/src/images/roles/phantom-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Nomad {
-  background-image: url("/images/roles/nomad-vivid.png");
+  background-image: url("/src/images/roles/nomad-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Anarchist {
-  background-image: url("/images/roles/anarchist-vivid.png");
+  background-image: url("/src/images/roles/anarchist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Dragoon {
-  background-image: url("/images/roles/dragoon-vivid.png");
+  background-image: url("/src/images/roles/dragoon-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Communist {
-  background-image: url("/images/roles/communist-vivid.png");
+  background-image: url("/src/images/roles/communist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Creepy-Girl {
-  background-image: url("/images/roles/creepy-girl-vivid.png");
+  background-image: url("/src/images/roles/creepy-girl-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Host {
-  background-image: url("/images/roles/host-vivid.png");
+  background-image: url("/src/images/roles/host-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Siren {
-  background-image: url("/images/roles/siren-vivid.png");
+  background-image: url("/src/images/roles/siren-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Gambler {
-  background-image: url("/images/roles/gambler-vivid.png");
+  background-image: url("/src/images/roles/gambler-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Warlock {
-  background-image: url("/images/roles/warlock-vivid.png");
+  background-image: url("/src/images/roles/warlock-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Revisionist {
-  background-image: url("/images/roles/revisionist-vivid.png");
+  background-image: url("/src/images/roles/revisionist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Prince {
-  background-image: url("/images/roles/prince-vivid.png");
+  background-image: url("/src/images/roles/prince-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Princess {
-  background-image: url("/images/roles/princess-vivid.png");
+  background-image: url("/src/images/roles/princess-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Astrologer {
-  background-image: url("/images/roles/astrologer-vivid.png");
+  background-image: url("/src/images/roles/astrologer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Gingerbread-Man {
-  background-image: url("/images/roles/gingerbread-man-vivid.png");
+  background-image: url("/src/images/roles/gingerbread-man-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Angel {
-  background-image: url("/images/roles/angel-vivid.png");
+  background-image: url("/src/images/roles/angel-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Yandere {
-  background-image: url("/images/roles/yandere-vivid.png");
+  background-image: url("/src/images/roles/yandere-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Leprechaun {
-  background-image: url("/images/roles/leprechaun-vivid.png");
+  background-image: url("/src/images/roles/leprechaun-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Dodo {
-  background-image: url("/images/roles/dodo-vivid.png");
+  background-image: url("/src/images/roles/dodo-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Dealer {
-  background-image: url("/images/roles/dealer-vivid.png");
+  background-image: url("/src/images/roles/dealer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Bawd {
-  background-image: url("/images/roles/bawd-vivid.png");
+  background-image: url("/src/images/roles/bawd-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Diplomat {
-  background-image: url("/images/roles/diplomat-vivid.png");
+  background-image: url("/src/images/roles/diplomat-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Magistrate {
-  background-image: url("/images/roles/magistrate-vivid.png");
+  background-image: url("/src/images/roles/magistrate-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Associate {
-  background-image: url("/images/roles/associate-vivid.png");
+  background-image: url("/src/images/roles/associate-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Braggart {
-  background-image: url("/images/roles/braggart-vivid.png");
+  background-image: url("/src/images/roles/braggart-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Palladist {
-  background-image: url("/images/roles/palladist-vivid.png");
+  background-image: url("/src/images/roles/palladist-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Vice-President {
-  background-image: url("/images/roles/vice-president-vivid.png");
+  background-image: url("/src/images/roles/vice-president-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Politician {
-  background-image: url("/images/roles/politician-vivid.png");
+  background-image: url("/src/images/roles/politician-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Grouch {
-  background-image: url("/images/roles/grouch-vivid.png");
+  background-image: url("/src/images/roles/grouch-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Sidekick {
-  background-image: url("/images/roles/sidekick-vivid.png");
+  background-image: url("/src/images/roles/sidekick-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Supervillain {
-  background-image: url("/images/roles/supervillain-vivid.png");
+  background-image: url("/src/images/roles/supervillain-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Monk {
-  background-image: url("/images/roles/monk-vivid.png");
+  background-image: url("/src/images/roles/monk-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Rival {
-  background-image: url("/images/roles/rival-vivid.png");
+  background-image: url("/src/images/roles/rival-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Picciotto {
-  background-image: url("/images/roles/picciotto-vivid.png");
+  background-image: url("/src/images/roles/picciotto-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Ripper {
-  background-image: url("/images/roles/ripper-vivid.png");
+  background-image: url("/src/images/roles/ripper-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Usurper {
-  background-image: url("/images/roles/usurper-vivid.png");
+  background-image: url("/src/images/roles/usurper-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Mutineer {
-  background-image: url("/images/roles/mutineer-vivid.png");
+  background-image: url("/src/images/roles/mutineer-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Nyarlathotep {
-  background-image: url("/images/roles/nyarlathotep-vivid.png");
+  background-image: url("/src/images/roles/nyarlathotep-vivid.png");
 }
 
 /*Events*/
 .role-icon-vivid-Mafia-No-Event {
-  background-image: url("/images/roles/no-event-vivid.png");
+  background-image: url("/src/images/roles/no-event-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Airdrop {
-  background-image: url("/images/roles/airdrop-vivid.png");
+  background-image: url("/src/images/roles/airdrop-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Ominous-Warning {
-  background-image: url("/images/roles/ominouswarning-vivid.png");
+  background-image: url("/src/images/roles/ominouswarning-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Moonshine {
-  background-image: url("/images/roles/moonshine-vivid.png");
+  background-image: url("/src/images/roles/moonshine-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Evolution {
-  background-image: url("/images/roles/evolution-vivid.png");
+  background-image: url("/src/images/roles/evolution-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Mail-In-Ballots {
-  background-image: url("/images/roles/mail-in-ballots-vivid.png");
+  background-image: url("/src/images/roles/mail-in-ballots-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Vaccination {
-  background-image: url("/images/roles/vaccination-vivid.png");
+  background-image: url("/src/images/roles/vaccination-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Necronomicon {
-  background-image: url("/images/roles/necronomicon-vivid.png");
+  background-image: url("/src/images/roles/necronomicon-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Blood-Moon {
-  background-image: url("/images/roles/blood-moon-vivid.png");
+  background-image: url("/src/images/roles/blood-moon-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Fog {
-  background-image: url("/images/roles/fog-vivid.png");
+  background-image: url("/src/images/roles/fog-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Haunted-House {
-  background-image: url("/images/roles/haunted-house-vivid.png");
+  background-image: url("/src/images/roles/haunted-house-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Meteor {
-  background-image: url("/images/roles/meteor-vivid.png");
+  background-image: url("/src/images/roles/meteor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Sabbath {
-  background-image: url("/images/roles/sabbath-vivid.png");
+  background-image: url("/src/images/roles/sabbath-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Flood {
-  background-image: url("/images/roles/flood-vivid.png");
+  background-image: url("/src/images/roles/flood-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Eclipse {
-  background-image: url("/images/roles/eclipse-vivid.png");
+  background-image: url("/src/images/roles/eclipse-vivid.png");
 }
 
 .role-icon-noir-Mafia-Eclipse {
-  background-image: url("/images/roles/eclipse-noir.png");
+  background-image: url("/src/images/roles/eclipse-noir.png");
 }
 
 .role-icon-vivid-Mafia-Mass-Hysteria {
-  background-image: url("/images/roles/mass-hysteria-vivid.png");
+  background-image: url("/src/images/roles/mass-hysteria-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Black-Hole {
-  background-image: url("/images/roles/blackhole-vivid.png");
+  background-image: url("/src/images/roles/blackhole-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Lightning-Strike {
-  background-image: url("/images/roles/lightning-strike-vivid.png");
+  background-image: url("/src/images/roles/lightning-strike-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Volcanic-Eruption {
-  background-image: url("/images/roles/volcanic-eruption-vivid.png");
+  background-image: url("/src/images/roles/volcanic-eruption-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Time-Loop {
-  background-image: url("/images/roles/timeloop-vivid.png");
+  background-image: url("/src/images/roles/timeloop-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Brain-Blast {
-  background-image: url("/images/roles/brain-blast-vivid.png");
+  background-image: url("/src/images/roles/brain-blast-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Cave-In {
-  background-image: url("/images/roles/cave-in-vivid.png");
+  background-image: url("/src/images/roles/cave-in-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Famine {
-  background-image: url("/images/roles/famine-vivid.png");
+  background-image: url("/src/images/roles/famine-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Feast {
-  background-image: url("/images/roles/feast-vivid.png");
+  background-image: url("/src/images/roles/feast-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Cultural-Exchange {
-  background-image: url("/images/roles/cultural-exchange-vivid.png");
+  background-image: url("/src/images/roles/cultural-exchange-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Stand-Up {
-  background-image: url("/images/roles/stand-up-vivid.png");
+  background-image: url("/src/images/roles/stand-up-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Self-Awareness {
-  background-image: url("/images/roles/self-awareness-vivid.png");
+  background-image: url("/src/images/roles/self-awareness-vivid.png");
 }
 
 /*
@@ -2164,303 +2164,303 @@
 */
 
 .modifier-Mafia-Apprehensive {
-background-image: url("/images/modifiers/apprehensive.png");
+background-image: url("/src/images/modifiers/apprehensive.png");
 }
 
 .modifier-Mafia-Armed {
-background-image: url("/images/modifiers/armed.png");
+background-image: url("/src/images/modifiers/armed.png");
 }
 
 .modifier-Mafia-Ascetic {
-background-image: url("/images/modifiers/ascetic.png");
+background-image: url("/src/images/modifiers/ascetic.png");
 }
 
 .modifier-Mafia-Astral {
-background-image: url("/images/modifiers/astral.png");
+background-image: url("/src/images/modifiers/astral.png");
 }
 
 .modifier-Mafia-Backup {
-background-image: url("/images/modifiers/backup.png");
+background-image: url("/src/images/modifiers/backup.png");
 }
 
 .modifier-Mafia-Banished {
-background-image: url("/images/modifiers/banished.png");
+background-image: url("/src/images/modifiers/banished.png");
 }
 
 .modifier-Mafia-Biased {
-background-image: url("/images/modifiers/biased.png");
+background-image: url("/src/images/modifiers/biased.png");
 }
 
 .modifier-Mafia-Birdbrained {
-background-image: url("/images/modifiers/birdbrained.png");
+background-image: url("/src/images/modifiers/birdbrained.png");
 }
 
 .modifier-Mafia-Blessed {
-background-image: url("/images/modifiers/blessed-holy.png");
+background-image: url("/src/images/modifiers/blessed-holy.png");
 }
 
 .modifier-Mafia-Holy {
-background-image: url("/images/modifiers/blessed-holy.png");
+background-image: url("/src/images/modifiers/blessed-holy.png");
 }
 
 .modifier-Mafia-Blind {
-background-image: url("/images/modifiers/blind.png");
+background-image: url("/src/images/modifiers/blind.png");
 }
 
 .modifier-Mafia-Bloodthirsty {
-background-image: url("/images/modifiers/bloodthirsty-hemophilic.png");
+background-image: url("/src/images/modifiers/bloodthirsty-hemophilic.png");
 }
 
 .modifier-Mafia-Hemophilic {
-background-image: url("/images/modifiers/bloodthirsty-hemophilic.png");
+background-image: url("/src/images/modifiers/bloodthirsty-hemophilic.png");
 }
 
 .modifier-Mafia-Bouncy {
-background-image: url("/images/modifiers/bouncy.png");
+background-image: url("/src/images/modifiers/bouncy.png");
 }
 
 .modifier-Mafia-Braggadocious {
-background-image: url("/images/modifiers/braggadocious.png");
+background-image: url("/src/images/modifiers/braggadocious.png");
 }
 
 .modifier-Mafia-Brutish {
-background-image: url("/images/modifiers/brutish.png");
+background-image: url("/src/images/modifiers/brutish.png");
 }
 
 .modifier-Mafia-Bulletproof {
-background-image: url("/images/modifiers/bulletproof.png");
+background-image: url("/src/images/modifiers/bulletproof.png");
 }
 
 .modifier-Mafia-Camouflaged {
-background-image: url("/images/modifiers/camouflaged.png");
+background-image: url("/src/images/modifiers/camouflaged.png");
 }
 
 .modifier-Mafia-Chaotic {
-background-image: url("/images/modifiers/chaotic.png");
+background-image: url("/src/images/modifiers/chaotic.png");
 }
 
 .modifier-Mafia-Checking {
-background-image: url("/images/modifiers/checking.png");
+background-image: url("/src/images/modifiers/checking.png");
 }
 
 .modifier-Mafia-Choosy {
-background-image: url("/images/modifiers/choosy.png");
+background-image: url("/src/images/modifiers/choosy.png");
 }
 
 .modifier-Mafia-Churchgoing {
-background-image: url("/images/modifiers/churchgoing.png");
+background-image: url("/src/images/modifiers/churchgoing.png");
 }
 
 .modifier-Mafia-Clannish {
-background-image: url("/images/modifiers/clannish.png");
+background-image: url("/src/images/modifiers/clannish.png");
 }
 
 .modifier-Mafia-Clueless {
-background-image: url("/images/modifiers/clueless.png");
+background-image: url("/src/images/modifiers/clueless.png");
 }
 
 .modifier-Mafia-Clumsy {
-background-image: url("/images/modifiers/clumsy.png");
+background-image: url("/src/images/modifiers/clumsy.png");
 }
 
 .modifier-Mafia-Commuting {
-background-image: url("/images/modifiers/commuting.png");
+background-image: url("/src/images/modifiers/commuting.png");
 }
 
 .modifier-Mafia-Complex {
-background-image: url("/images/modifiers/complex.png");
+background-image: url("/src/images/modifiers/complex.png");
 }
 
 .modifier-Mafia-Confused {
-background-image: url("/images/modifiers/confused.png");
+background-image: url("/src/images/modifiers/confused.png");
 }
 
 .modifier-Mafia-Consecutive {
-background-image: url("/images/modifiers/consecutive.png");
+background-image: url("/src/images/modifiers/consecutive.png");
 }
 
 .modifier-Mafia-Complex {
-background-image: url("/images/modifiers/complex.png");
+background-image: url("/src/images/modifiers/complex.png");
 }
 
 .modifier-Mafia-Crystalline {
-background-image: url("/images/modifiers/crystalline.png");
+background-image: url("/src/images/modifiers/crystalline.png");
 }
 
 .modifier-Mafia-Dead {
-background-image: url("/images/modifiers/dead.png");
+background-image: url("/src/images/modifiers/dead.png");
 }
 
 .modifier-Mafia-Delayed {
-background-image: url("/images/modifiers/delayed.png");
+background-image: url("/src/images/modifiers/delayed.png");
 }
 
 .modifier-Mafia-Demonic {
-background-image: url("/images/modifiers/demonic.png");
+background-image: url("/src/images/modifiers/demonic.png");
 }
 
 .modifier-Mafia-Diplomatic {
-background-image: url("/images/modifiers/diplomatic.png");
+background-image: url("/src/images/modifiers/diplomatic.png");
 }
 
 .modifier-Mafia-Disloyal {
-background-image: url("/images/modifiers/disloyal.png");
+background-image: url("/src/images/modifiers/disloyal.png");
 }
 
 .modifier-Mafia-Dovish {
-background-image: url("/images/modifiers/dovish.png");
+background-image: url("/src/images/modifiers/dovish.png");
 }
 
 .modifier-Mafia-Even {
-background-image: url("/images/modifiers/even.png");
+background-image: url("/src/images/modifiers/even.png");
 }
 
 .modifier-Mafia-Exclusive {
-background-image: url("/images/modifiers/exclusive.png");
+background-image: url("/src/images/modifiers/exclusive.png");
 }
 
 .modifier-Mafia-Explosive {
-background-image: url("/images/modifiers/explosive.png");
+background-image: url("/src/images/modifiers/explosive.png");
 }
 
 .modifier-Mafia-Exposed {
-background-image: url("/images/modifiers/exposed.png");
+background-image: url("/src/images/modifiers/exposed.png");
 }
 
 .modifier-Mafia-Faceless {
-background-image: url("/images/modifiers/faceless.png");
+background-image: url("/src/images/modifiers/faceless.png");
 }
 
 .modifier-Mafia-Fair {
-background-image: url("/images/modifiers/fair.png");
+background-image: url("/src/images/modifiers/fair.png");
 }
 
 .modifier-Mafia-Felonious {
-background-image: url("/images/modifiers/felonious.png");
+background-image: url("/src/images/modifiers/felonious.png");
 }
 
 .modifier-Mafia-Frustrated {
-background-image: url("/images/modifiers/frustrated.png");
+background-image: url("/src/images/modifiers/frustrated.png");
 }
 
 .modifier-Mafia-Global {
-background-image: url("/images/modifiers/global.png");
+background-image: url("/src/images/modifiers/global.png");
 }
 
 .modifier-Mafia-Gunslinging {
-background-image: url("/images/modifiers/gunslinging.png");
+background-image: url("/src/images/modifiers/gunslinging.png");
 }
 
 .modifier-Mafia-Humble {
-background-image: url("/images/modifiers/humble.png");
+background-image: url("/src/images/modifiers/humble.png");
 }
 
 .modifier-Mafia-Inclusive {
-background-image: url("/images/modifiers/inclusive.png");
+background-image: url("/src/images/modifiers/inclusive.png");
 }
 
 .modifier-Mafia-Insane {
-background-image: url("/images/modifiers/insane.png");
+background-image: url("/src/images/modifiers/insane.png");
 }
 
 .modifier-Mafia-Insightful {
-background-image: url("/images/modifiers/insightful.png");
+background-image: url("/src/images/modifiers/insightful.png");
 }
 
 .modifier-Mafia-Inverse {
-background-image: url("/images/modifiers/inverse.png");
+background-image: url("/src/images/modifiers/inverse.png");
 }
 
 .modifier-Mafia-Kleptomaniac {
-background-image: url("/images/modifiers/kleptomaniac.png");
+background-image: url("/src/images/modifiers/kleptomaniac.png");
 }
 
 .modifier-Mafia-Klutzy {
-background-image: url("/images/modifiers/klutzy.png");
+background-image: url("/src/images/modifiers/klutzy.png");
 }
 
 .modifier-Mafia-Lazy {
-background-image: url("/images/modifiers/lazy.png");
+background-image: url("/src/images/modifiers/lazy.png");
 }
 
 .modifier-Mafia-Liminal {
-background-image: url("/images/modifiers/liminal.png");
+background-image: url("/src/images/modifiers/liminal.png");
 }
 
 .modifier-Mafia-Linchpin {
-background-image: url("/images/modifiers/linchpin.png");
+background-image: url("/src/images/modifiers/linchpin.png");
 }
 
 .modifier-Mafia-Lone {
-background-image: url("/images/modifiers/lone.png");
+background-image: url("/src/images/modifiers/lone.png");
 }
 
 .modifier-Mafia-Loud {
-background-image: url("/images/modifiers/loud.png");
+background-image: url("/src/images/modifiers/loud.png");
 }
 
 .modifier-Mafia-Loyal {
-background-image: url("/images/modifiers/loyal.png");
+background-image: url("/src/images/modifiers/loyal.png");
 }
 
 .modifier-Mafia-Luminous {
-background-image: url("/images/modifiers/luminous.png");
+background-image: url("/src/images/modifiers/luminous.png");
 }
 
 .modifier-Mafia-Macabre {
-background-image: url("/images/modifiers/macabre.png");
+background-image: url("/src/images/modifiers/macabre.png");
 }
 
 .modifier-Mafia-Macho {
-background-image: url("/images/modifiers/macho.png");
+background-image: url("/src/images/modifiers/macho.png");
 }
 
 .modifier-Mafia-Married {
-background-image: url("/images/modifiers/married.png");
+background-image: url("/src/images/modifiers/married.png");
 }
 
 .modifier-Mafia-Masked {
-background-image: url("/images/modifiers/masked.png");
+background-image: url("/src/images/modifiers/masked.png");
 }
 
 .modifier-Mafia-Modest {
-background-image: url("/images/modifiers/modest.png");
+background-image: url("/src/images/modifiers/modest.png");
 }
 
 .modifier-Mafia-Morbid {
-background-image: url("/images/modifiers/morbid.png");
+background-image: url("/src/images/modifiers/morbid.png");
 }
 
 .modifier-Mafia-Naive {
-background-image: url("/images/modifiers/naive.png");
+background-image: url("/src/images/modifiers/naive.png");
 }
 
 .modifier-Mafia-Narcissistic {
-background-image: url("/images/modifiers/narcissistic-vain.png");
+background-image: url("/src/images/modifiers/narcissistic-vain.png");
 }
 
 .modifier-Mafia-Vain {
-background-image: url("/images/modifiers/narcissistic-vain.png");
+background-image: url("/src/images/modifiers/narcissistic-vain.png");
 }
 
 .modifier-Mafia-Neighborly {
-background-image: url("/images/modifiers/neighborly.png");
+background-image: url("/src/images/modifiers/neighborly.png");
 }
 
 .modifier-Mafia-Noisy {
-background-image: url("/images/modifiers/noisy.png");
+background-image: url("/src/images/modifiers/noisy.png");
 }
 
 .modifier-Mafia-Nonconsecutive {
-background-image: url("/images/modifiers/nonconsecutive.png");
+background-image: url("/src/images/modifiers/nonconsecutive.png");
 }
 
 .modifier-Mafia-Odd {
-background-image: url("/images/modifiers/odd.png");
+background-image: url("/src/images/modifiers/odd.png");
 }
 
 .modifier-Mafia-Omniscient {
-background-image: url("/images/modifiers/omniscient.png");
+background-image: url("/src/images/modifiers/omniscient.png");
 }
 
 .modifier-Mafia-X-Shot {
@@ -2468,192 +2468,192 @@ background-image: url("/images/modifiers/x-shot.png");
 }
 
 .modifier-Mafia-Paranoid {
-background-image: url("/images/modifiers/paranoid.png");
+background-image: url("/src/images/modifiers/paranoid.png");
 }
 
 .modifier-Mafia-Picky {
-background-image: url("/images/modifiers/picky.png");
+background-image: url("/src/images/modifiers/picky.png");
 }
 
 .modifier-Mafia-Pious {
-background-image: url("/images/modifiers/pious.png");
+background-image: url("/src/images/modifiers/pious.png");
 }
 
 .modifier-Mafia-Preoccupied {
-background-image: url("/images/modifiers/preoccupied.png");
+background-image: url("/src/images/modifiers/preoccupied.png");
 }
 
 .modifier-Mafia-Proactive {
-background-image: url("/images/modifiers/proactive.png");
+background-image: url("/src/images/modifiers/proactive.png");
 }
 
 .modifier-Mafia-Prosaic {
-background-image: url("/images/modifiers/prosaic.png");
+background-image: url("/src/images/modifiers/prosaic.png");
 }
 
 .modifier-Mafia-Provocative {
-background-image: url("/images/modifiers/provocative.png");
+background-image: url("/src/images/modifiers/provocative.png");
 }
 
 .modifier-Mafia-Random {
-background-image: url("/images/modifiers/random.png");
+background-image: url("/src/images/modifiers/random.png");
 }
 
 .modifier-Mafia-Reactionary {
-background-image: url("/images/modifiers/reactionary.png");
+background-image: url("/src/images/modifiers/reactionary.png");
 }
 
 .modifier-Mafia-Reclusive {
-background-image: url("/images/modifiers/reclusive.png");
+background-image: url("/src/images/modifiers/reclusive.png");
 }
 
 .modifier-Mafia-Refined {
-background-image: url("/images/modifiers/refined.png");
+background-image: url("/src/images/modifiers/refined.png");
 }
 
 .modifier-Mafia-Resolute {
-background-image: url("/images/modifiers/resolute.png");
+background-image: url("/src/images/modifiers/resolute.png");
 }
 
 .modifier-Mafia-Respected {
-background-image: url("/images/modifiers/respected.png");
+background-image: url("/src/images/modifiers/respected.png");
 }
 
 .modifier-Mafia-Restless {
-background-image: url("/images/modifiers/restless.png");
+background-image: url("/src/images/modifiers/restless.png");
 }
 
 .modifier-Mafia-Retired {
-background-image: url("/images/modifiers/retired.png");
+background-image: url("/src/images/modifiers/retired.png");
 }
 
 .modifier-Mafia-Sacrificial {
-background-image: url("/images/modifiers/sacrificial-steeled.png");
+background-image: url("/src/images/modifiers/sacrificial-steeled.png");
 }
 
 .modifier-Mafia-Steeled {
-background-image: url("/images/modifiers/sacrificial-steeled.png");
+background-image: url("/src/images/modifiers/sacrificial-steeled.png");
 }
 
 .modifier-Mafia-Sane {
-background-image: url("/images/modifiers/sane.png");
+background-image: url("/src/images/modifiers/sane.png");
 }
 
 .modifier-Mafia-Scatterbrained {
-background-image: url("/images/modifiers/scatterbrained.png");
+background-image: url("/src/images/modifiers/scatterbrained.png");
 }
 
 .modifier-Mafia-Seductive {
-background-image: url("/images/modifiers/seductive.png");
+background-image: url("/src/images/modifiers/seductive.png");
 }
 
 .modifier-Mafia-Selfish {
-background-image: url("/images/modifiers/selfish.png");
+background-image: url("/src/images/modifiers/selfish.png");
 }
 
 .modifier-Mafia-Sensible {
-background-image: url("/images/modifiers/sensible.png");
+background-image: url("/src/images/modifiers/sensible.png");
 }
 
 .modifier-Mafia-Shady {
-background-image: url("/images/modifiers/shady-suspect.png");
+background-image: url("/src/images/modifiers/shady-suspect.png");
 }
 
 .modifier-Mafia-Suspect {
-background-image: url("/images/modifiers/shady-suspect.png");
+background-image: url("/src/images/modifiers/shady-suspect.png");
 }
 
 .modifier-Mafia-Shielded {
-background-image: url("/images/modifiers/shielded.png");
+background-image: url("/src/images/modifiers/shielded.png");
 }
 
 .modifier-Mafia-Simple {
-background-image: url("/images/modifiers/simple.png");
+background-image: url("/src/images/modifiers/simple.png");
 }
 
 .modifier-Mafia-Social {
-background-image: url("/images/modifiers/social.png");
+background-image: url("/src/images/modifiers/social.png");
 }
 
 .modifier-Mafia-Strong {
-background-image: url("/images/modifiers/strong.png");
+background-image: url("/src/images/modifiers/strong.png");
 }
 
 .modifier-Mafia-Suspended {
-background-image: url("/images/modifiers/suspended.png");
+background-image: url("/src/images/modifiers/suspended.png");
 }
 
 .modifier-Mafia-Telepathic {
-background-image: url("/images/modifiers/telepathic.png");
+background-image: url("/src/images/modifiers/telepathic.png");
 }
 
 .modifier-Mafia-Temporary {
-background-image: url("/images/modifiers/temporary.png");
+background-image: url("/src/images/modifiers/temporary.png");
 }
 
 .modifier-Mafia-Tinkering {
-background-image: url("/images/modifiers/tinkering.png");
+background-image: url("/src/images/modifiers/tinkering.png");
 }
 
 .modifier-Mafia-Traitorous {
-background-image: url("/images/modifiers/traitorous.png");
+background-image: url("/src/images/modifiers/traitorous.png");
 }
 
 .modifier-Mafia-Transcendent {
-background-image: url("/images/modifiers/transcendent.png");
+background-image: url("/src/images/modifiers/transcendent.png");
 }
 
 .modifier-Mafia-Trustworthy {
-background-image: url("/images/modifiers/trustworthy.png");
+background-image: url("/src/images/modifiers/trustworthy.png");
 }
 
 .modifier-Mafia-Unassuming {
-background-image: url("/images/modifiers/unassuming.png");
+background-image: url("/src/images/modifiers/unassuming.png");
 }
 
 .modifier-Mafia-Unholy {
-background-image: url("/images/modifiers/unholy.png");
+background-image: url("/src/images/modifiers/unholy.png");
 }
 
 .modifier-Mafia-Unkillable {
-background-image: url("/images/modifiers/unkillable.png");
+background-image: url("/src/images/modifiers/unkillable.png");
 }
 
 .modifier-Mafia-Unlucky {
-background-image: url("/images/modifiers/unlucky.png");
+background-image: url("/src/images/modifiers/unlucky.png");
 }
 
 .modifier-Mafia-Unrefined {
-background-image: url("/images/modifiers/unrefined.png");
+background-image: url("/src/images/modifiers/unrefined.png");
 }
 
 .modifier-Mafia-Unwavering {
-background-image: url("/images/modifiers/unwavering.png");
+background-image: url("/src/images/modifiers/unwavering.png");
 }
 
 .modifier-Mafia-Verrucose {
-background-image: url("/images/modifiers/verrucose.png");
+background-image: url("/src/images/modifiers/verrucose.png");
 }
 
 .modifier-Mafia-Versatile {
-background-image: url("/images/modifiers/versatile.png");
+background-image: url("/src/images/modifiers/versatile.png");
 }
 
 .modifier-Mafia-Wannabe {
-background-image: url("/images/modifiers/wannabe.png");
+background-image: url("/src/images/modifiers/wannabe.png");
 }
 
 .modifier-Mafia-Weak {
-background-image: url("/images/modifiers/weak.png");
+background-image: url("/src/images/modifiers/weak.png");
 }
 
 .modifier-Mafia-Wise {
-background-image: url("/images/modifiers/wise.png");
+background-image: url("/src/images/modifiers/wise.png");
 }
 
 /* for role prediction */
 .modifier-Mafia-Unknown {
- background-image: url("/images/modifiers/unknown-modifier.png");
+ background-image: url("/src/images/modifiers/unknown-modifier.png");
 }
 
 /***********
@@ -2667,23 +2667,23 @@ background-image: url("/images/modifiers/wise.png");
 */
 
 .role-icon-vivid-Resistance-Rebel {
-  background-image: url("/images/roles/res-rebel-vivid.png");
+  background-image: url("/src/images/roles/res-rebel-vivid.png");
 }
 
 .role-icon-vivid-Resistance-Merlin {
-  background-image: url("/images/roles/res-merlin-vivid.png");
+  background-image: url("/src/images/roles/res-merlin-vivid.png");
 }
 
 .role-icon-vivid-Resistance-Percival {
-  background-image: url("/images/roles/res-percival-vivid.png");
+  background-image: url("/src/images/roles/res-percival-vivid.png");
 }
 
 .role-icon-vivid-Resistance-Tristan {
-  background-image: url("/images/roles/res-tristan-vivid.png");
+  background-image: url("/src/images/roles/res-tristan-vivid.png");
 }
 
 .role-icon-vivid-Resistance-Isolde {
-  background-image: url("/images/roles/res-isolde-vivid.png");
+  background-image: url("/src/images/roles/res-isolde-vivid.png");
 }
 
 /*
@@ -2691,23 +2691,23 @@ background-image: url("/images/modifiers/wise.png");
 */
 
 .role-icon-vivid-Resistance-Spy {
-  background-image: url("/images/roles/res-spy-vivid.png");
+  background-image: url("/src/images/roles/res-spy-vivid.png");
 }
 
 .role-icon-vivid-Resistance-Morgana {
-  background-image: url("/images/roles/res-morgana-vivid.png");
+  background-image: url("/src/images/roles/res-morgana-vivid.png");
 }
 
 .role-icon-vivid-Resistance-Mordred {
-  background-image: url("/images/roles/res-mordred-vivid.png");
+  background-image: url("/src/images/roles/res-mordred-vivid.png");
 }
 
 .role-icon-vivid-Resistance-Assassin {
-  background-image: url("/images/roles/res-assassin-vivid.png");
+  background-image: url("/src/images/roles/res-assassin-vivid.png");
 }
 
 .role-icon-vivid-Resistance-Oberon {
-  background-image: url("/images/roles/res-oberon-vivid.png");
+  background-image: url("/src/images/roles/res-oberon-vivid.png");
 }
 
 /* for role prediction */
@@ -2722,11 +2722,11 @@ background-image: url("/images/modifiers/wise.png");
 ***********/
 
 .role-icon-vivid-Battlesnakes-Snake {
-  background-image: url("/images/roles/snake-vivid.png");
+  background-image: url("/src/images/roles/snake-vivid.png");
 }
 
 .role-icon-vivid-Battlesnakes-Host {
-  background-image: url("/images/roles/host-vivid.png");
+  background-image: url("/src/images/roles/host-vivid.png");
 }
 
 /***********
@@ -2740,14 +2740,14 @@ background-image: url("/images/modifiers/wise.png");
 */
 
 .role-icon-vivid-Ghost-Villager {
-  background-image: url("/images/roles/villager-vivid.png");
+  background-image: url("/src/images/roles/villager-vivid.png");
 }
 
 .role-icon-vivid-Ghost-Fool {
-  background-image: url("/images/roles/fool-vivid.png");
+  background-image: url("/src/images/roles/fool-vivid.png");
 }
 .role-icon-vivid-Ghost-Saint {
-  background-image: url("/images/roles/saint-vivid.png");
+  background-image: url("/src/images/roles/saint-vivid.png");
 }
 
 /*
@@ -2755,10 +2755,10 @@ background-image: url("/images/modifiers/wise.png");
 */
 
 .role-icon-vivid-Ghost-Ghost {
-  background-image: url("/images/roles/ghost-vivid.png");
+  background-image: url("/src/images/roles/ghost-vivid.png");
 }
 .role-icon-vivid-Ghost-Vengeful-Spirit {
-  background-image: url("/images/roles/vengeful-spirit-vivid.png");
+  background-image: url("/src/images/roles/vengeful-spirit-vivid.png");
 }
 
 /*
@@ -2766,7 +2766,7 @@ background-image: url("/images/modifiers/wise.png");
 */
 
 .role-icon-vivid-Ghost-Host {
-  background-image: url("/images/roles/host-vivid.png");
+  background-image: url("/src/images/roles/host-vivid.png");
 }
 
 /* for role prediction */
@@ -2781,7 +2781,7 @@ background-image: url("/images/modifiers/wise.png");
 ***********/
 
 .role-icon-vivid-Jotto-Player {
-  background-image: url("/images/roles/villager-vivid.png");
+  background-image: url("/src/images/roles/villager-vivid.png");
 }
 
 /***********
@@ -2791,7 +2791,7 @@ background-image: url("/images/modifiers/wise.png");
 ***********/
 
 .role-icon-vivid-Acrotopia-Player {
-  background-image: url("/images/roles/villager-vivid.png");
+  background-image: url("/src/images/roles/villager-vivid.png");
 }
 
 /***********
@@ -2805,7 +2805,7 @@ background-image: url("/images/modifiers/wise.png");
 */
 
 .role-icon-vivid-Secret-Dictator-Liberal {
-  background-image: url("/images/roles/villager-vivid.png");
+  background-image: url("/src/images/roles/villager-vivid.png");
 }
 
 /*
@@ -2813,19 +2813,19 @@ background-image: url("/images/modifiers/wise.png");
 */
 
 .role-Secret-Dictator-Fascist {
-  background-image: url("/images/roles/mafioso-vivid.png");
+  background-image: url("/src/images/roles/mafioso-vivid.png");
 }
 
 .role-icon-vivid-Secret-Dictator-Fascist {
-  background-image: url("/images/roles/mafioso-vivid.png");
+  background-image: url("/src/images/roles/mafioso-vivid.png");
 }
 
 .role-Secret-Dictator-Dictator {
-  background-image: url("/images/roles/godfather-vivid.png");
+  background-image: url("/src/images/roles/godfather-vivid.png");
 }
 
 .role-icon-vivid-Secret-Dictator-Dictator {
-  background-image: url("/images/roles/godfather-vivid.png");
+  background-image: url("/src/images/roles/godfather-vivid.png");
 }
 
 /***********
@@ -2835,27 +2835,27 @@ background-image: url("/images/modifiers/wise.png");
 ***********/
 
 .role-icon-vivid-Wacky-Words-Player {
-  background-image: url("/images/roles/villager-vivid.png");
+  background-image: url("/src/images/roles/villager-vivid.png");
 }
 
 .role-icon-vivid-Wacky-Words-Alien {
-  background-image: url("/images/roles/alien-vivid.png");
+  background-image: url("/src/images/roles/alien-vivid.png");
 }
 
 .role-icon-vivid-Wacky-Words-Neighbor {
-  background-image: url("/images/roles/neighbor-vivid.png");
+  background-image: url("/src/images/roles/neighbor-vivid.png");
 }
 
 .role-icon-vivid-Wacky-Words-Governor {
-  background-image: url("/images/roles/governor-vivid.png");
+  background-image: url("/src/images/roles/governor-vivid.png");
 }
 
 .role-icon-vivid-Wacky-Words-Gambler {
-  background-image: url("/images/roles/gambler-vivid.png");
+  background-image: url("/src/images/roles/gambler-vivid.png");
 }
 
 .role-icon-vivid-Wacky-Words-Host {
-  background-image: url("/images/roles/host-vivid.png");
+  background-image: url("/src/images/roles/host-vivid.png");
 }
 
 /***********
@@ -2865,31 +2865,31 @@ background-image: url("/images/modifiers/wise.png");
 ***********/
 
 .role-icon-vivid-Liars-Dice-Liar {
-  background-image: url("/images/roles/buccaneer-vivid.png");
+  background-image: url("/src/images/roles/buccaneer-vivid.png");
 }
 .role-icon-vivid-Liars-Dice-Snoop {
-  background-image: url("/images/roles/snoop-vivid.png");
+  background-image: url("/src/images/roles/snoop-vivid.png");
 }
 .role-icon-vivid-Liars-Dice-Thief {
-  background-image: url("/images/roles/thief-vivid.png");
+  background-image: url("/src/images/roles/thief-vivid.png");
 }
 .role-icon-vivid-Liars-Dice-Graverobber {
-  background-image: url("/images/roles/graverobber-vivid.png");
+  background-image: url("/src/images/roles/graverobber-vivid.png");
 }
 .role-icon-vivid-Liars-Dice-Sniper {
-  background-image: url("/images/roles/sniper-vivid.png");
+  background-image: url("/src/images/roles/sniper-vivid.png");
 }
 .role-icon-vivid-Liars-Dice-Spy {
-  background-image: url("/images/roles/spy-vivid.png");
+  background-image: url("/src/images/roles/spy-vivid.png");
 }
 .role-icon-vivid-Liars-Dice-Suitress {
-  background-image: url("/images/roles/suitress-vivid.png");
+  background-image: url("/src/images/roles/suitress-vivid.png");
 }
 .role-icon-vivid-Liars-Dice-Soldier {
-  background-image: url("/images/roles/soldier-vivid.png");
+  background-image: url("/src/images/roles/soldier-vivid.png");
 }
 .role-icon-vivid-Liars-Dice-Host {
-  background-image: url("/images/roles/host-vivid.png");
+  background-image: url("/src/images/roles/host-vivid.png");
 }
 
 /***********
@@ -2898,11 +2898,11 @@ background-image: url("/images/modifiers/wise.png");
 *
 ************/
 .role-icon-vivid-Card-Games-Player {
-  background-image: url("/images/roles/gambler-vivid.png");
+  background-image: url("/src/images/roles/gambler-vivid.png");
 }
 
 .role-icon-vivid-Card-Games-Host {
-  background-image: url("/images/roles/host-vivid.png");
+  background-image: url("/src/images/roles/host-vivid.png");
 }
 
 /***********
@@ -2912,25 +2912,25 @@ background-image: url("/images/modifiers/wise.png");
 ***********/
 
 .role-icon-vivid-redmafiac {
-  background-image: url("/images/holiday/redmafiac.png");
+  background-image: url("/src/images/holiday/redmafiac.png");
 }
 
 .role-icon-vivid-yellowmafiac {
-  background-image: url("/images/holiday/yellowmafiac.png");
+  background-image: url("/src/images/holiday/yellowmafiac.png");
 }
 
 .role-icon-vivid-greenmafiac {
-  background-image: url("/images/holiday/greenmafiac.png");
+  background-image: url("/src/images/holiday/greenmafiac.png");
 }
 
 .role-icon-vivid-bluemafiac {
-  background-image: url("/images/holiday/bluemafiac.png");
+  background-image: url("/src/images/holiday/bluemafiac.png");
 }
 
 .role-icon-vivid-purplemafiac {
-  background-image: url("/images/holiday/purplemafiac.png");
+  background-image: url("/src/images/holiday/purplemafiac.png");
 }
 
 .role-icon-vivid-pinkmafiac {
-  background-image: url("/images/holiday/pinkmafiac.png");
+  background-image: url("/src/images/holiday/pinkmafiac.png");
 }

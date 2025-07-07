@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../Contexts";
 import { useErrorAlert } from "../../components/Alerts";
-import ReactMarkdown from "react-markdown";
+import Markdown from 'react-markdown';
 import { basicRenderers, Time } from "../../components/Basic";
 import axios from "axios";
 import {
@@ -28,14 +28,7 @@ export const Comment = (props) => {
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
 
-  let [CommentMarkdown, setCommentMarkdown] = useState("asdfff");
-
   var content = comment.content;
-  useEffect(() => {
-    setCommentMarkdown(
-      <ReactMarkdown renderers={basicRenderers()} source={content} />
-    );
-  }, [content]);
 
   function onDeleteClick() {
     const shouldDelete = window.confirm(
@@ -129,7 +122,7 @@ export const Comment = (props) => {
                   color: `${theme.palette.text.primary} !important`,
                 }}
               >
-                {CommentMarkdown}
+                <Markdown>{content}</Markdown>
               </Box>
             </div>
           </CardContent>

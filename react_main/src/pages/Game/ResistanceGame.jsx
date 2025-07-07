@@ -16,7 +16,7 @@ import {
 import { GameContext } from "../../Contexts";
 
 import { SideMenu } from "./Game";
-import "../../css/game.css";
+import "css/game.css";
 
 export default function ResistanceGame(props) {
   const game = useContext(GameContext);
