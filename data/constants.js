@@ -277,6 +277,9 @@ module.exports = {
   boardRecentReplyAmt: 3,
   maxAnnouncementLength: 1000,
 
+  maxBioContentLength: 20000,
+  maxPronounsContentLength: 24,
+
   maxChatMessageLength: 240,
   chatMessagesPerLoad: 20,
   maxChannelNameLength: 20,

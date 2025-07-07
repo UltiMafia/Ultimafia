@@ -987,12 +987,12 @@ router.post("/bio", async function (req, res) {
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    if (bio.length < 10000) {
+    if (bio.length < constants.maxBioContentLength) {
       await models.User.updateOne({ id: userId }, { $set: { bio: bio } });
       res.sendStatus(200);
-    } else if (bio.length >= 10000) {
+    } else if (bio.length >= constants.maxBioContentLength) {
       res.status(500);
-      res.send("Bio must be less than 10000 characters");
+      res.send(`Bio must be less than ${constants.maxBioContentLength} characters`);
     } else {
       res.status(500);
       res.send("Error editing bio");
@@ -1013,15 +1013,15 @@ router.post("/pronouns", async function (req, res) {
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    if (pronouns.length < 15) {
+    if (pronouns.length < constants.maxPronounsContentLength) {
       await models.User.updateOne(
         { id: userId },
         { $set: { pronouns: pronouns } }
       );
       res.sendStatus(200);
-    } else if (pronouns.length >= 15) {
+    } else if (pronouns.length >= constants.maxPronounsContentLength) {
       res.status(500);
-      res.send("Pronouns must be less than 15 characters");
+      res.send(`Pronouns must be less than ${constants.maxPronounsContentLength} characters`);
     } else {
       res.status(500);
       res.send("Error editing pronouns");
