@@ -2778,18 +2778,15 @@ module.exports = class Game {
             await heartRefresh.save();
           }
         }
-        /*
-          let dailyRefresh = await models.DailyChallengeRefresh.findOne({
-            userId: player.user.id,
-          }).select("_id");
+        
+          let dailyRefresh = await models.DailyChallengeRefresh.select("_id");
           if (!dailyRefresh) {
             dailyRefresh = new models.DailyChallengeRefresh({
-              userId: player.user.id,
               when: Date.now() + constants.dailyChallengesRefreshIntervalMillis,
             });
             await dailyRefresh.save();
           }
-        */
+        
         
 
         if (!player.isBot) {
