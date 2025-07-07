@@ -209,9 +209,8 @@ module.exports = function () {
         // Query all heart refreshes that have elapsed
         let refreshedHearts = await models.DailyChallengeRefresh.find({
           when: { $lt: now },
-        }).select("userId type");
+        })
         for (let refreshedHeart of refreshedHearts) {
-          const userId = refreshedHeart.userId;
 
           //let  Object.entries(DailyChallengeData);
           
@@ -239,7 +238,10 @@ module.exports = function () {
 
           // Refresh the user's heart type to capacity
 
-        const result1 = await models.User.updateOne(
+        let users = await models.User.find({ deleted: false }).select("id -_id");
+          
+        for(let userId of users){
+        let result1 = await models.User.updateOne(
           { id: userId },
           {
             $set: {
@@ -253,10 +255,11 @@ module.exports = function () {
               `Failed to refresh daily challenges for userId[${userId}]`
             );
           }
-
+          await redis.cacheUserInfo(userId, true);
+        }
           // Remove the heart refresh so that it won't trigger again
           const result2 = await models.DailyChallengeRefresh.deleteOne({
-            userId: userId,
+            when: { $lt: now },
           }).exec();
           if (result2.deletedCount === 0) {
             console.warn(
@@ -264,7 +267,14 @@ module.exports = function () {
             );
           }
 
-          await redis.cacheUserInfo(userId, true);
+          let dailyRefreshNew = await models.DailyChallengeRefresh.select("_id");
+          if (!dailyRefreshNew) {
+            dailyRefreshNew = new models.DailyChallengeRefresh({
+              when: Date.now() + constants.dailyChallengesRefreshIntervalMillis,
+            });
+            await dailyRefreshNew.save();
+          }
+
         }
       },
       interval: 1000 * 60,
