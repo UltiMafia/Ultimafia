@@ -2778,6 +2778,7 @@ module.exports = class Game {
             await heartRefresh.save();
           }
         }
+        /*
           let dailyRefresh = await models.DailyChallengeRefresh.findOne({
             userId: player.user.id,
           }).select("_id");
@@ -2788,6 +2789,7 @@ module.exports = class Game {
             });
             await dailyRefresh.save();
           }
+        */
         
 
         if (!player.isBot) {
