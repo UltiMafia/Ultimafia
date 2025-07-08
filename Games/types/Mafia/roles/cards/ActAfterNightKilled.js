@@ -16,20 +16,14 @@ module.exports = class ActAfterNightKilled extends Card {
         if (player !== this.player) {
           return;
         }
-
-        const nonMafia = this.game.players.filter(
-          (p) => p.role.alignment === "Village" && p.alive && p !== this.player
-        );
-        let shuffledPlayers = Random.randomizeArray(nonMafia);
-        if (nonMafia.length <= 0) return;
-        this.player.role.targetPlayer = Random.randArrayVal(nonMafia);
+        this.HasBeenNightKilled = false;
       },
       death: function (player, killer, deathType, instant) {
         if(player != this.player){
           return;
         }
         if (this.game.getStateName() != "Night") return;
-        this.HasBeenNightKilled == true;
+        this.HasBeenNightKilled = true;
       },
       revival: function (player, killer, deathType, instant) {
         if(player != this.player){
@@ -38,7 +32,7 @@ module.exports = class ActAfterNightKilled extends Card {
         if(!this.player.alive){
           return;
         }
-        this.HasBeenNightKilled == false;
+        this.HasBeenNightKilled = false;
       },
     };
     

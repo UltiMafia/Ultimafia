@@ -13,7 +13,7 @@ module.exports = class GreyGooConvert extends Card {
       "Convert Player": {
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive"], exclude: ["Mafia"] },
+        targets: { include: ["alive"], exclude: ["self"] },
         action: {
           labels: ["convert", "seppuku"],
           priority: PRIORITY_CONVERT_DEFAULT+5,

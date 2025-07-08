@@ -599,6 +599,7 @@ const modifierData = {
       tags: ["Dead", "Graveyard", "Restless", "Graveyard Participation"],
       description: "Can only perform secondary actions while dead.",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Transcendent", "Vengeful"],
     },
     Retired: {
       internal: ["Retired"],
@@ -737,6 +738,7 @@ const modifierData = {
       tags: ["Dead", "Graveyard", "Transcendent", "Graveyard Participation"],
       description: "Can perform secondary actions while either alive or dead.",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Restless", "Vengeful"],
     },
     Trustworthy: {
       internal: ["VotingPowerIncrease"],
@@ -800,6 +802,7 @@ const modifierData = {
       tags: ["Graveyard", "Vengeful", "Graveyard Participation"],
       description: "Can perform secondary actions after being killed at night",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Transcendent", "Restless"],
     },
     Verrucose: {
       internal: ["GivePermaDelirium"],
