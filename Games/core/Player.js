@@ -1048,12 +1048,6 @@ module.exports = class Player {
 
       //TODO: Check logic to see if whileDead/whileAlive/shouldMeet
       //      can be condensed.
-      if((options.shouldMeetOneShot != null && !options.shouldMeetOneShot.bind(this.role)(meetingName, options))){
-        this.game.queueAlert(`One Shot Test Failed`);
-      }
-      if((options.shouldMeetDeadMod != null && !options.shouldMeetDeadMod.bind(this.role)(meetingName, options))){
-        this.game.queueAlert(`Restless Test Failed`);
-      }
       if (
         disabled ||
         (options.states.indexOf(currentStateName) == -1 &&

@@ -86,6 +86,7 @@ module.exports = class Role {
 
     // Initialize role cards
     for (let i in this.cards) {
+
       var card = Utils.importGameClass(
         this.game.type,
         "roles/cards",
@@ -95,7 +96,6 @@ module.exports = class Role {
       card.init();
       this.cards.splice(i, 1, card);
     }
-
     // Set default times of meetings
     for (let meetingName in this.meetings) {
       if (this.meetings[meetingName].times == null)
@@ -110,7 +110,7 @@ module.exports = class Role {
       if (meetingName != "*" && this.meetings[meetingName]) {
         meetings = [this.meetings[meetingName]];
         meetingNames = [meetingName];
-      } else if (meetingName == "*") {
+      } else if (meetingName == "*" || meetingName.includes("*")) {
         meetings = Object.values(this.meetings);
         meetingNames = Object.keys(this.meetingMods);
       }
@@ -119,8 +119,11 @@ module.exports = class Role {
         let meeting = meetings[i];
 
         for (let key in this.meetingMods[meetingName]) {
-          if (key != "shouldMeet" || meeting.shouldMeet == null)
+          //this.game.queueAlert(`Meeting Player: ${this.player.name} Meeting: ${meetingName} Key: ${key}`);
+          
+          if (key != "shouldMeet" || meeting.shouldMeet == null){
             meeting[key] = this.meetingMods[meetingName][key];
+          }
           else {
             let existingShouldMeet = meeting.shouldMeet.bind(this);
             let cardShouldMeet =
@@ -133,6 +136,7 @@ module.exports = class Role {
               );
             };
           }
+        
         }
       }
     }
