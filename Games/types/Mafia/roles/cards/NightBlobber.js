@@ -72,7 +72,13 @@ module.exports = class NightBlobber extends Card {
 
             this.target.kill("basic", this.actor);
             this.target.holdItem("Blobbed", this.actor.role.data.meetingName);
-            this.actor.giveEffect("ExtraLife", this.actor);
+            if(this.actor.role.BlobKills == null){
+              this.actor.role.BlobKills = 0;
+            }
+            this.actor.role.BlobKills += 1;
+            if(this.actor.role.BlobKills % 2 == 0){
+             this.actor.giveEffect("ExtraLife", this.actor); 
+            }
           },
         },
       },
