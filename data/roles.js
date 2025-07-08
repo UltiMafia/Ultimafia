@@ -3550,7 +3550,7 @@ const roleData = {
       tags: ["Win Con", "Condemn Interaction", "Speaking", "Expert"],
       description: [
         'If a Reaper says "I claim Reaper and choose (Player Name)" within the first minute of the day.',
-        "If the choosen player survives until the end of the day, their team wins.",
+        "If the chosen player survives until the end of the day, that player's team wins.",
         "A Reaper cannot choose themselves.",
       ],
     },
