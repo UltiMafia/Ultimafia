@@ -795,6 +795,12 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Weak"],
     },
+    Vengeful: {
+      internal: ["ActAfterNightKilled"],
+      tags: ["Graveyard", "Vengeful", "Graveyard Participation"],
+      description: "Can perform secondary actions after being killed at night",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Verrucose: {
       internal: ["GivePermaDelirium"],
       tags: ["Sacrificial", "Manipulative", "Delirium"],
