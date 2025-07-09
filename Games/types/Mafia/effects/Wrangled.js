@@ -32,15 +32,16 @@ module.exports = class Wrangled extends Effect {
             labels: ["hidden", "investigate", "role"],
             effect: this,
             run: function () {
-            let info = this.game.createInformation(
-              "RoleInfo",
+          let info = this.game.createInformation(
+              "RevealInfo",
               this.actor,
               this.game,
-              this.target
+              this.target,
+              null,
+              "Faction"
             );
             info.processInfo();
-            var alert = `:invest: ${info.getInfoFormated()}.`;
-            this.actor.queueAlert(alert);
+            info.getInfoRaw();
 
               this.effect.remove();
             },
@@ -53,7 +54,7 @@ module.exports = class Wrangled extends Effect {
   }
 
   hear(message){
-          if(this.NotFirstVoter && this.NotFirstSpeaker){
+        if(this.NotFirstVoter && this.NotFirstSpeaker){
           this.remove();
         }
         if(this.NotFirstSpeaker == true){
@@ -79,15 +80,16 @@ module.exports = class Wrangled extends Effect {
             labels: ["hidden", "investigate", "role"],
             effect: this,
             run: function () {
-            let info = this.game.createInformation(
-              "RoleInfo",
+          let info = this.game.createInformation(
+              "RevealInfo",
               this.actor,
               this.game,
-              this.target
+              this.target,
+              null,
+              "Faction"
             );
             info.processInfo();
-            var alert = `:invest: ${info.getInfoFormated()}.`;
-            this.actor.queueAlert(alert);
+            info.getInfoRaw();
 
               this.effect.remove();
             },
