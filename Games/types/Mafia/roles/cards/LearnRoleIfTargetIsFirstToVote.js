@@ -18,7 +18,6 @@ module.exports = class LearnRoleIfTargetIsFirstToVote extends Card {
               this.target.giveEffect(
                 "Wrangled",
                 this.actor,
-                this.actor.role.cursedWord,
                 1
               );
           },
