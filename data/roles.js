@@ -2254,6 +2254,13 @@ const roleData = {
       description: ["Stalks one player each night and learns their role."],
       nightOrder: [["Learn Role",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
+    Wrangler: {
+      alignment: "Mafia",
+      category: "Investigative",
+      tags: ["Information", "Roles", "Visiting", "Basic"],
+      description: ["Each night visits a player, If that player is first to speak or vote the following day, that player's role is revealed to the Mafia."],
+      nightOrder: [["Learn Role",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
+    },
     //unsorted
     Hooker: {
       alignment: "Mafia",
