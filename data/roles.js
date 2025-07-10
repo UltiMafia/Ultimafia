@@ -1949,7 +1949,7 @@ const roleData = {
       category: "Linked",
       tags: ["Information", "Alignment", "Advanced"],
       description: [
-        "Once per game during the day, can open the door.",
+        "During the day, can open the door.",
         "When the Mistress opens the Door all players will learn that the Mistress opened the door.",
         "When the door is opened, the Mistress will learn an evil player.",
         "After the Door was opened, The Mistress will Die the at night unless visited by a town-aligned player at night.",
