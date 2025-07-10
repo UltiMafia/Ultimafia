@@ -17,6 +17,9 @@ module.exports = class SpeakOnlyWhispers extends Effect {
   }
 
   hear(message) {
+    if (message.abilityName === "Whisper") {
+      message.forceLeak = false;
+    }
     if (
       message.abilityName != "Whisper" &&
       message.abilityTarget == this.player.id
@@ -29,12 +32,6 @@ module.exports = class SpeakOnlyWhispers extends Effect {
     quote.recipients = [this.player];
     quote.modified = true;
     quote.parseForReview = this.parseForReview;
-  }
-
-  hear(message) {
-    if (message.abilityName === "Whisper") {
-      message.forceLeak = false;
-    }
   }
 
   parseForReview(message) {

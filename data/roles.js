@@ -352,7 +352,7 @@ const roleData = {
       category: "Protective",
       tags: ["Revive", "Graveyard", "Visiting", "Dead", "Basic"],
       description: [
-        "Visits a dead player during the night once per game.",
+        "Visits a dead player during the night.",
         "That player will be resurrected the following day.",
         "If player's identity was revealed upon death, they will remain revealed when resurrected.",
       ],
@@ -795,7 +795,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Roles", "Basic"],
       description: [
-        "On Night 1, learns that 1 of 2 players is a particular role.",
+        "On their first night, learns that 1 of 2 players is a particular role.",
       ],
       nightOrder: [["Learn Info",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
       SpecialInteractionsModifiers: {
@@ -825,6 +825,14 @@ const roleData = {
       ],
       },
     },
+    Noble: {
+      alignment: "Village",
+      tags: ["Information", "Alignment", "Basic"],
+      description: [
+        "On their first night, learns 3 players 1 will be Evil and other 2 will be good.",
+      ],
+      nightOrder: [["Learn Players",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
+    },
     "Fortune Teller": {
       alignment: "Village",
       category: "Investigative",
@@ -839,7 +847,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Roles", "Neighbors", "Visits", "Guess", "Day Actions", "Advanced"],
       description: [
-        "Once per game during the Day, can learn about the relation between a player and a role.",
+        "During the Day, can learn about the relation between a player and a role.",
       ],
     },
     Tourist: {
@@ -1949,7 +1957,7 @@ const roleData = {
       category: "Linked",
       tags: ["Information", "Alignment", "Advanced"],
       description: [
-        "Once per game during the day, can open the door.",
+        "During the day, can open the door.",
         "When the Mistress opens the Door all players will learn that the Mistress opened the door.",
         "When the door is opened, the Mistress will learn an evil player.",
         "After the Door was opened, The Mistress will Die the at night unless visited by a town-aligned player at night.",
@@ -2254,6 +2262,13 @@ const roleData = {
       description: ["Stalks one player each night and learns their role."],
       nightOrder: [["Learn Role",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
+    Wrangler: {
+      alignment: "Mafia",
+      category: "Investigative",
+      tags: ["Information", "Roles", "Visiting", "Basic"],
+      description: ["Each night visits a player, If that player is first to speak or vote the following day, that player's role is revealed to the Mafia."],
+      nightOrder: [["Learn Role",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
+    },
     //unsorted
     Hooker: {
       alignment: "Mafia",
@@ -2510,7 +2525,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Revive", "Protective", "Graveyard", "Visiting", "Basic"],
       description: [
-        "Visits a dead player during the night once per game.",
+        "Visits a dead player during the night.",
         "That player will be resurrected the following day.",
         "If player's role identity was revealed upon death, they will remain revealed when resurrected.",
       ],
@@ -2843,7 +2858,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Deception", "Will", "Information", "Advanced"],
       description: [
-        "Once per night can forge the will of another player.",
+        "Each night can forge the will of another player.",
         "Learns that player's real will on the next day.",
       ],
       nightOrder: [["Forge Will",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
