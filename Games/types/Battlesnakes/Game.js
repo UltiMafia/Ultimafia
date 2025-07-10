@@ -245,7 +245,7 @@ module.exports = class BattlesnakesGame extends Game {
       right: "left",
     };
 
-    if (direction !== opposite[snake.direction] && snake.directionChanged === false) {
+    if (direction !== opposite[snake.direction] && direction !== snake.direction && snake.directionChanged === false) {
       snake.direction = direction;
       snake.directionChanged = true;
     }
