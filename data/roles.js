@@ -795,7 +795,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Roles", "Basic"],
       description: [
-        "On Night 1, learns that 1 of 2 players is a particular role.",
+        "On their first night, learns that 1 of 2 players is a particular role.",
       ],
       nightOrder: [["Learn Info",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
       SpecialInteractionsModifiers: {
@@ -824,6 +824,14 @@ const roleData = {
           "Will only learn about Banished Roles.",
       ],
       },
+    },
+    Noble: {
+      alignment: "Village",
+      tags: ["Information", "Alignment", "Basic"],
+      description: [
+        "On their first night, learns 3 players 1 will be Evil and other 2 will be good.",
+      ],
+      nightOrder: [["Learn Players",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
     "Fortune Teller": {
       alignment: "Village",
