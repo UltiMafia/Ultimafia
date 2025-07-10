@@ -117,6 +117,8 @@ module.exports = class BattlesnakesGame extends Game {
   gameTick() {
     // Move each snake if alive
     for (const [playerId, snake] of Object.entries(this.positions)) {
+      snake.directionChanged = false; // this flag prevents the so-called "turn bug"
+
       if (!snake.alive) continue;
       const head = { ...snake.segments[0] };
       switch (snake.direction) {
@@ -242,8 +244,10 @@ module.exports = class BattlesnakesGame extends Game {
       left: "right",
       right: "left",
     };
-    if (direction !== opposite[snake.direction]) {
+
+    if (direction !== opposite[snake.direction] && snake.directionChanged === false) {
       snake.direction = direction;
+      snake.directionChanged = true;
     }
   }
 };
