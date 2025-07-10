@@ -352,7 +352,7 @@ const roleData = {
       category: "Protective",
       tags: ["Revive", "Graveyard", "Visiting", "Dead", "Basic"],
       description: [
-        "Visits a dead player during the night once per game.",
+        "Visits a dead player during the night.",
         "That player will be resurrected the following day.",
         "If player's identity was revealed upon death, they will remain revealed when resurrected.",
       ],
@@ -839,7 +839,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Roles", "Neighbors", "Visits", "Guess", "Day Actions", "Advanced"],
       description: [
-        "Once per game during the Day, can learn about the relation between a player and a role.",
+        "During the Day, can learn about the relation between a player and a role.",
       ],
     },
     Tourist: {
@@ -2510,7 +2510,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Revive", "Protective", "Graveyard", "Visiting", "Basic"],
       description: [
-        "Visits a dead player during the night once per game.",
+        "Visits a dead player during the night.",
         "That player will be resurrected the following day.",
         "If player's role identity was revealed upon death, they will remain revealed when resurrected.",
       ],
