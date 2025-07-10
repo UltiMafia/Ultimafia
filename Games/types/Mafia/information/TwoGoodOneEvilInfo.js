@@ -33,7 +33,7 @@ module.exports = class TwoGoodOneEvilInfo extends Information {
       this.mainInfo = "No Evil Players Exist";
       return;
       }
-      if(goodPlayers.length <= 0)){
+      if(goodPlayers.length <= 0){
       this.mainInfo = "Not Enough Good Players Exist";
       return;
       }
@@ -143,7 +143,7 @@ module.exports = class TwoGoodOneEvilInfo extends Information {
       this.mainInfo = "No Evil Players Exist";
       return;
       }
-      if(goodPlayers.length <= 0)){
+      if(goodPlayers.length <= 0){
       this.mainInfo = "Not Enough Good Players Exist";
       return;
       }

@@ -450,6 +450,7 @@ const artContributors = {
       "Cave In:vivid",
       "No Event:vivid",
       "Brain Blast:vivid",
+      "Wrangler:vivid",
       //Skins
       "Hellhound:goofy",
     ],

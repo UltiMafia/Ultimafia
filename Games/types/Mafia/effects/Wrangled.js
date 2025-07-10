@@ -18,12 +18,11 @@ module.exports = class Wrangled extends Effect {
         if (
           (vote.meeting.name === "Village" ||
             vote.meeting.name === "Room 1" ||
-            vote.meeting.name === "Room 2") &&
-          vote.voter === this.player &&
-          vote.target === this.target.id
+            vote.meeting.name === "Room 2")
         ) {
             if(vote.voter != this.player){
               this.NotFirstVoter = true;
+              return;
             }
           let action = new Action({
             actor: this.curser,
