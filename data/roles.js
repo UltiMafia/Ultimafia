@@ -2843,7 +2843,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Deception", "Will", "Information", "Advanced"],
       description: [
-        "Once per night can forge the will of another player.",
+        "Each night can forge the will of another player.",
         "Learns that player's real will on the next day.",
       ],
       nightOrder: [["Forge Will",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
