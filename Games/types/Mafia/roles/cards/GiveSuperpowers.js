@@ -16,18 +16,15 @@ module.exports = class GiveSuperpowers extends Card {
           if (!this.actor.alive) return;
           if (this.game.getStateName() != "Dusk") return;
 
-          for (let v = 0; v < this.game.players.length; v++) {
-            if (
-              this.game.getRoleAlignment(
-                this.game.players.filter((p) => p)[v].role.name
-              ) == "Independent"
-            ) {
-              //this.game.players.filter((p) =>p)[v].faction = this.actor.faction;
-              this.game.players
+        let teammates = this.game.players.filter((p) => this.game.getRoleAlignment(p.role.name) ==
+        "Independent" &&
+        !this.game.getRoleTags(this.game.formatRoleInternal(p.role.name, p.role.modifier)).includes("Lone"));
+
+          for (let v = 0; v < teammates.length; v++) {
+               teammates
                 .filter((p) => p)
                 [v].holdItem("WackyJoinFactionMeeting", this.actor.role.name);
-              //this.game.players.filter((p) =>p)[v].queueAlert(`You have been recurited by a Ringleader, You join the Mafia Meeting but you do not win with mafia!`);
-            }
+            
           }
 
           let randomNumber = Random.randInt(1, 7);
@@ -50,23 +47,16 @@ module.exports = class GiveSuperpowers extends Card {
 
           switch (randomNumber) {
             case 1:
-              for (let player of this.game.players) {
-                if (
-                  this.game.getRoleAlignment(player.role.name) == "Independent"
-                ) {
+              for (let player of teammates) {
                   player.queueAlert(
                     `A ${this.actor.role.name} has Granted your team the Ability to have Each Member learn a player's role.`
                   );
                   player.holdItem("WackyRoleLearner", targetType, "Night");
-                }
               }
               return;
               break;
             case 2:
-              for (let player of this.game.players) {
-                if (
-                  this.game.getRoleAlignment(player.role.name) == "Independent"
-                ) {
+              for (let player of  teammates) {
                   player.queueAlert(
                     `A ${this.actor.role.name} has Granted your team the Ability to reveal a player's role to the Team.`
                   );
@@ -74,37 +64,32 @@ module.exports = class GiveSuperpowers extends Card {
                     "WackyFactionRoleReveal",
                     `Reveal to Independent`
                   );
-                }
+                
               }
               return;
               break;
             case 3:
-              for (let player of this.game.players) {
-                if (
-                  this.game.getRoleAlignment(player.role.name) == "Independent"
-                ) {
-                  player.queueAlert(
-                    `A ${this.actor.role.name} has Granted your team the Ability to learn 1 Excess Role.`
-                  );
                   let info = this.game.createInformation(
                     "ExcessRolesInfo",
                     this.actor,
                     this.game,
-                    player,
                     1,
                     false
                   );
                   info.processInfo();
+              for (let player of teammates) {
+                  player.queueAlert(
+                    `A ${this.actor.role.name} has Granted your team the Ability to learn 1 Excess Role.`
+                  );
                   var alert = `:invest: ${
                     this.actor.role.name
                   } Lets ${info.getInfoFormated()}.`;
                   player.queueAlert(alert);
-                }
               }
               return;
               break;
             case 4:
-              for (let player of this.game.players) {
+              for (let player of teammates) {
                 if (
                   this.game.getRoleAlignment(player.role.name) == "Independent"
                 ) {
@@ -116,49 +101,34 @@ module.exports = class GiveSuperpowers extends Card {
               return;
               break;
             case 5:
-              for (let player of this.game.players) {
-                if (
-                  this.game.getRoleAlignment(player.role.name) == "Independent"
-                ) {
+              for (let player of teammates) {
                   player.queueAlert(
                     `A ${this.actor.role.name} has Granted your team an Ability that makes all Team member give their role to the closest team member below them on the list at the end of the night! (Looping around at the bottem)`
                   );
-                }
               }
               this.actor.role.data.swapFaction = "Right";
 
               return;
               break;
             case 6:
-              for (let player of this.game.players) {
-                if (
-                  this.game.getRoleAlignment(player.role.name) == "Independent"
-                ) {
+              for (let player of teammates) {
                   player.queueAlert(
                     `A ${this.actor.role.name} has Granted your team an Ability that makes all Team member give their role to the closest team member above them on the list at the end of the night! (Looping around at the Top)`
                   );
-                }
               }
               this.actor.role.data.swapFaction = "Left";
 
               return;
               break;
             case 7:
-              for (let player of this.game.players) {
-                if (
-                  this.game.getRoleAlignment(player.role.name) == "Independent"
-                ) {
+              for (let player of teammates) {
                   player.queueAlert(
                     `A ${this.actor.role.name} has Granted your team the Ability to learn Eachothers roles!`
                   );
-                  for (let p of this.game.players) {
-                    if (
-                      this.game.getRoleAlignment(p.role.name) == "Independent"
-                    ) {
+                  for (let p of teammates) {
                       player.role.revealToPlayer(p);
-                    }
                   }
-                }
+                
               }
               return;
               break;
@@ -175,11 +145,11 @@ module.exports = class GiveSuperpowers extends Card {
           )
             return;
 
-          let teammates = this.game.players.filter(
-            (p) =>
-              this.game.getRoleAlignment(p.role.name) == "Independent" &&
-              p.alive
-          );
+          let teammates = this.game.players.filter((p) => this.game.getRoleAlignment(p.role.name) ==
+        "Independent" &&
+        !this.game
+          .getRoleTags(this.game.formatRoleInternal(p.role.name, p.role.modifier))
+          .includes("Lone") && p.alive);
           //var indexOfActor = players.indexOf(this.actor);
           //let leftIndex = (indexOfActor - 1 + players.length) % players.length;
           //let rightIdx = (indexOfActor + 1) % players.length;

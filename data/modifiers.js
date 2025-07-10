@@ -38,7 +38,7 @@ const modifierData = {
       internal: ["BanishedRole"],
       tags: ["Banished"],
       description:
-        "Banished roles have abnormal spawn conditions. Banished roles will only spawn if the Banished count is increased, or if another roles adds Banished roles to the game.",
+        "Banished roles will only spawn if the Banished count is increased, or if another roles adds Banished roles to the game.",
       eventDescription: "This Event will not occur normally.",
       incompatible: ["Inclusive", "Exclusive"],
     },
@@ -48,6 +48,12 @@ const modifierData = {
       description: "Starts with a falcon.",
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
+    },
+    Biased: {
+      internal: ["OnePlayerShowsAsEvil"],
+      tags: ["Information"],
+      description: "One Village-aligned player will have unfavorable results to this role's information abilities.",
+      eventDescription: "This modifier does nothing when on an Event.",
     },
     Blessed: {
       internal: ["StartWithExtraLife"],
@@ -99,7 +105,7 @@ const modifierData = {
       internal: ["AppearAsRandomRole"],
       tags: ["Roles", "Deception"],
       description:
-        "Appears as a random role in the game that is not Villager, Impersonator or Impostor.",
+        "Appears on death and to information roles as a random role in the game that is not Villager, Impersonator or Impostor.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Chaotic: {
@@ -142,9 +148,15 @@ const modifierData = {
         "Announces the player's role to the targets of their night actions.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    Choosy: {
+      internal: ["GuessRoleToGetBlocked"],
+      tags: ["Self Block"],
+      description: "Each night chooses a role. Actions will be blocked if visiting a player with that role.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Complex: {
       internal: ["Complex"],
-      tags: ["Visits", "Block Self", "Vanilla"],
+      tags: ["Visits", "Block Self", "Vanilla", "Complex"],
       description:
         "If this player visits a player with a vanilla role, all their actions will be blocked.",
       eventDescription:
@@ -209,7 +221,7 @@ const modifierData = {
     },
     Disloyal: {
       internal: ["Disloyal"],
-      tags: ["Visits", "Block Self", "Alignments"],
+      tags: ["Visits", "Block Self", "Alignments", "Disloyal"],
       description:
         "If this player visits a player of the same alignment, their secondary actions will be blocked.",
       eventDescription: "This Event will not apply to Non-Evil players.",
@@ -304,7 +316,7 @@ const modifierData = {
     },
     Holy: {
       internal: ["Holy"],
-      tags: ["Visits", "Block Self", "Modifiers"],
+      tags: ["Visits", "Block Self", "Modifiers", "Holy"],
       description:
         "If this player visits a player with a Demonic role, their secondary actions will be blocked.",
       eventDescription: "This Event will not apply to Demonic players.",
@@ -395,7 +407,7 @@ const modifierData = {
     },
     Loyal: {
       internal: ["Loyal"],
-      tags: ["Visits", "Block Self", "Alignments"],
+      tags: ["Visits", "Block Self", "Alignments", "Loyal"],
       description:
         "If this player visits a player of the opposite alignment, their secondary actions will be blocked.",
       eventDescription: "This Event will not apply to Evil players.",
@@ -488,12 +500,19 @@ const modifierData = {
       description: "Each night see all visits and learn all players roles.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
-    "One Shot": {
+    "X-Shot": {
       internal: ["OneShot"],
-      tags: ["One Shot", "Dawn", "Dusk", "Pregame Actions"],
-      description: "Can only perform actions once.",
+      tags: ["X-Shot"],
+      description: "Can only perform actions X times. X is equal the number of times this modifier is added.",
       eventDescription: "This Event will only occur once.",
+      allowDuplicate: true,
       incompatible: ["Exhausted"],
+    },
+    Picky: {
+      internal: ["GuessRoleOrGetBlocked"],
+      tags: ["Self Block"],
+      description: "Each night chooses a role. Actions will be blocked unless visiting a player with that role.",
+      eventDescription: "This modifier does nothing when on an Event.",
     },
     Pious: {
       internal: ["ConvertKillersOnDeath"],
@@ -553,6 +572,14 @@ const modifierData = {
       description: "Will be killed if their target was killed.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    Refined: {
+      internal: ["Refined"],
+      tags: ["Visits", "Block Self", "Modifiers", "Refined"],
+      description:
+        "If this player visits a player with a Banished role, their secondary actions will be blocked.",
+      eventDescription: "This Event will not apply to Banished players.",
+      incompatible: ["Unrefined"],
+    },
     Resolute: {
       internal: ["Resolute"],
       tags: ["Unblockable"],
@@ -572,6 +599,7 @@ const modifierData = {
       tags: ["Dead", "Graveyard", "Restless", "Graveyard Participation"],
       description: "Can only perform secondary actions while dead.",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Transcendent", "Vengeful"],
     },
     Retired: {
       internal: ["Retired"],
@@ -629,7 +657,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Faceless", "Unassuming", "Suspect"],
     },
-    Sheilded: {
+    Shielded: {
       internal: ["StartWithShield"],
       tags: ["Items"],
       description: "Starts with a Shield.",
@@ -646,7 +674,7 @@ const modifierData = {
     },
     Simple: {
       internal: ["Simple"],
-      tags: ["Visits", "Block Self", "Vanilla"],
+      tags: ["Visits", "Block Self", "Vanilla", "Simple"],
       description:
         "If this player visits a player with a power role, all their actions will be blocked.",
       eventDescription: "This Event will not apply to non-Vanilla players.",
@@ -678,7 +706,7 @@ const modifierData = {
         "Can only attend secondary meetings for the first day and night.",
       eventDescription: "This Event can only occur on the first night.",
       allowDuplicate: true,
-      incompatible: ["Lazy", "Odd", "One Shot", "Even", "Delayed"],
+      incompatible: ["Lazy", "Odd", "X-Shot", "Even", "Delayed"],
     },
     Telepathic: {
       internal: ["ModifierTelepathic"],
@@ -710,6 +738,7 @@ const modifierData = {
       tags: ["Dead", "Graveyard", "Transcendent", "Graveyard Participation"],
       description: "Can perform secondary actions while either alive or dead.",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Restless", "Vengeful"],
     },
     Trustworthy: {
       internal: ["VotingPowerIncrease"],
@@ -728,7 +757,7 @@ const modifierData = {
     },
     Unholy: {
       internal: ["Unholy"],
-      tags: ["Visits", "Block Self", "Modifiers"],
+      tags: ["Visits", "Block Self", "Modifiers", "Unholy"],
       description:
         "If this player visits a player with a non-Demonic role, their secondary actions will be blocked.",
       eventDescription: "This Event will not apply to non-Demonic players.",
@@ -746,6 +775,14 @@ const modifierData = {
       description: "After Night 1, You can die at any time.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    Unrefined: {
+      internal: ["Unrefined"],
+      tags: ["Visits", "Block Self", "Modifiers", "Unrefined"],
+      description:
+        "If this player visits a player with a non-Banished role, their secondary actions will be blocked.",
+      eventDescription: "This Event will not apply to non-Banished players.",
+      incompatible: ["Refined"],
+    },
     Unwavering: {
       internal: ["ConvertImmune"],
       tags: ["Convert Saver"],
@@ -759,6 +796,13 @@ const modifierData = {
         "If this player visits a player of the same alignment, they die.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Weak"],
+    },
+    Vengeful: {
+      internal: ["ActAfterNightKilled"],
+      tags: ["Graveyard", "Vengeful", "Graveyard Participation"],
+      description: "Can perform secondary actions after being killed at night",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Transcendent", "Restless"],
     },
     Verrucose: {
       internal: ["GivePermaDelirium"],

@@ -59,9 +59,7 @@ export const InGameMessage = ({
           )}
         </div>
         <div
-          className={`gameMessageContent ${
-            isServerMessage ? "gameMessageContentServer" : ""
-          } ${highlightMessage ? "highlightMessage" : ""}`}
+          className={`content ${isServerMessage ? "server" : ""} ${highlightMessage ? "highlightMessage" : ""}`}
           style={{
             cursor: "default",
             ...(isServerMessage ? { borderLeft: "none" } : null),

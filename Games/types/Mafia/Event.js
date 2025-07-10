@@ -36,7 +36,7 @@ module.exports = class MafiaEvent extends Event {
   doEvent() {
     if (this.modifiers != null) {
       if (
-        this.modifiers.includes("One Shot") &&
+        this.modifiers.includes("X-Shot") &&
         !this.modifiers.includes("Banished")
       ) {
         this.game.CurrentEvents.splice(
@@ -44,7 +44,7 @@ module.exports = class MafiaEvent extends Event {
           1
         );
       } else if (
-        this.modifiers.includes("One Shot") &&
+        this.modifiers.includes("X-Shot") &&
         this.modifiers.includes("Banished")
       ) {
         this.game.BanishedEvents.splice(
@@ -83,6 +83,11 @@ module.exports = class MafiaEvent extends Event {
       if (this.modifiers.includes("Holy") && player.isDemonic(true)) {
         return false;
       } else if (this.modifiers.includes("Unholy") && !player.isDemonic(true)) {
+        return false;
+      }
+      if (this.modifiers.includes("Refined") && player.role.data.banished == true) {
+        return false;
+      } else if (this.modifiers.includes("Unrefined") && player.role.data.banished != true) {
         return false;
       }
       if (this.modifiers.includes("Simple") && !this.isVanilla(p)) {

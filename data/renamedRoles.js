@@ -33,6 +33,9 @@ module.exports = {
     Whistleblower: "Magistrate",
     Innkeeper: "Bawd",
     Bard: "Jazzman",
+    Filibuster: "Fed",
+    "Sensible Mood": "Self-Awareness",
+    "Culture Exchange": "Cultural Exchange",
     // deprecated roles
     Veteran: "Villager",
     Bomb: "Villager",

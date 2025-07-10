@@ -40,6 +40,8 @@ module.exports = class WackyWordsGame extends Game {
     this.enablePunctuation = options.settings.enablePunctuation;
     this.standardiseCapitalisation = options.settings.standardiseCapitalisation;
     this.turnOnCaps = options.settings.turnOnCaps;
+    this.isRankedChoice = options.settings.isRankedChoice;
+     this.votesToPoints = options.settings.votesToPoints;
 
     this.hasAlien = this.setup.roles[0]["Alien:"];
     this.hasNeighbor = this.setup.roles[0]["Neighbor:"];
@@ -346,9 +348,19 @@ module.exports = class WackyWordsGame extends Game {
     };
   }
 
-  recordVote(player, response) {
+  recordVote(player, response, ranking) {
+   
+    if(this.currentResponses[response].voters.includes(player)){
+      return;
+    }
     this.currentResponses[response].voters.push(player);
+    if(ranking == null){
     this.currentResponses[response].score += 1;
+    }
+    else{
+      this.currentResponses[response].score += ranking;
+    }
+    
   }
 
   tabulateScores() {
@@ -374,6 +386,17 @@ module.exports = class WackyWordsGame extends Game {
       `The winning response(s) for "${this.currentQuestion}" are…`
     );
 
+    if(this.votesToPoints){
+      for (let response in this.currentResponses){
+        let responseObj = this.currentResponses[response];
+        responseObj.player.addScore(responseObj.score);
+      }
+      for (let response of winningResponses) {
+      let responseObj = this.currentResponses[response];
+      this.queueAlert(`${responseObj.player.name}: ${response}`);
+    }
+    }
+    else{
     let hasMultipleWinners = winningResponses.length > 1;
     let scoreToGive = hasMultipleWinners
       ? Math.round(10 / winningResponses.length)
@@ -384,6 +407,7 @@ module.exports = class WackyWordsGame extends Game {
       responseObj.isWinner = true;
       this.queueAlert(`${responseObj.player.name}: ${response}`);
     }
+  }
   }
 
   saveResponseHistory(type) {
@@ -609,6 +633,8 @@ module.exports = class WackyWordsGame extends Game {
       enablePunctuation: this.enablePunctuation,
       standardiseCapitalisation: this.standardiseCapitalisation,
       turnOnCaps: this.turnOnCaps,
+      isRankedChoice: this.isRankedChoice,
+      votesToPoints: this.votesToPoints,
     };
   }
 };

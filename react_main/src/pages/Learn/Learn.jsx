@@ -3,6 +3,7 @@ import { Route, Switch, Redirect, useLocation } from "react-router-dom";
 
 import Setups from "./Setup/SetupPage";
 import SetupsNightOrder from "./Setup/SetupNightOrder";
+import RolePage from "./role/RolePage";
 import Games from "./Games";
 import Terminology from "./Terminology";
 import Achievements from "./Achievements";
@@ -71,6 +72,11 @@ export default function Learn(props) {
                 exact
                 path="/learn/setup/:setupId/nightorder"
                 render={() => <SetupsNightOrder />}
+              />
+              <Route
+                exact
+                path="/learn/role/:RoleName"
+                render={() => <RolePage />}
               />
               <Route
                 exact

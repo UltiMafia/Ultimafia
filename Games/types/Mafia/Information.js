@@ -196,6 +196,14 @@ module.exports = class MafiaInformation {
       return this.isEvil(player);
     }
 
+    for(let effect of player.effects){
+      if(effect.name == "Biased"){
+        if(effect.effecter && effect.effecter == this.creator){
+          return true;
+        }
+      }
+    }
+
     if (
       this.game.getRoleAlignment(player.getRoleAppearance().split(" (")[0]) ==
         "Cult" ||
@@ -224,6 +232,16 @@ module.exports = class MafiaInformation {
 
   getAppearanceAlignment(player, type) {
     let revealType = type || "investigate";
+
+      for(let effect of player.effects){
+      if(effect.name == "Biased"){
+        if(effect.effecter && effect.effecter == this.creator){
+        let evilRole = this.getFakeRole(player, 1, null, revealType, "Evil");
+          return this.game.getRoleAlignment(evilRole[0].split(" (")[0]);
+        }
+      }
+    }
+    
     if (
       player.getRoleAppearance(revealType) ==
       this.game.formatRole(
@@ -257,7 +275,8 @@ module.exports = class MafiaInformation {
     excludeCreator,
     InvestType,
     alignment,
-    forceFalse
+    forceFalse,
+    UseAppear
   ) {
     if (count == null || count <= 0) {
       count = 1;
@@ -267,6 +286,9 @@ module.exports = class MafiaInformation {
     }
     if (forceFalse == null) {
       forceFalse = false;
+    }
+    if (UseAppear == null) {
+      UseAppear = false;
     }
     let fakeRoles = [];
     let returnRoles = [];
@@ -285,17 +307,11 @@ module.exports = class MafiaInformation {
                 .includes("Exposed")
           )
       );
+      if (UseAppear) {
+        randomPlayers = randomPlayers.filter((p) => p.getRoleAppearance() != player.getRoleAppearance());
+      }
       if (forceFalse) {
-        randomPlayers = randomPlayers.filter(
-          (p) =>
-            p.getRoleAppearance() ==
-            this.game.formatRole(
-              this.game.formatRoleInternal(
-                player.role.name,
-                player.role.modifier
-              )
-            )
-        );
+        randomPlayers = randomPlayers.filter((p) => p.getRoleAppearance() != this.game.formatRole(this.game.formatRoleInternal(player.role.name,player.role.modifier)));
       }
       if (
         alignment &&
@@ -410,6 +426,80 @@ module.exports = class MafiaInformation {
       }
       return returnRoles;
     }
+  }
+
+  getNotRoles(player, count, investType, forceTrue, alignment){
+    let role = player.getRoleAppearance(investType);
+    if(forceTrue == true){
+      role = this.game.formatRole(this.game.formatRoleInternal(player.role.name,player.role.modifier));
+    }
+    let notRoles = [];
+    let rolesToUse = this.game.PossibleRoles.filter(
+      (r) =>
+        this.game.formatRole(r) != role &&
+        !this.game.getRoleTags(r).includes("Exposed")
+    );
+    if(alignment){
+          if (alignment == "Evil") {
+      rolesToUse = rolesToUse.filter(
+        (r) =>
+          this.game.getRoleAlignment(r) == "Cult" ||
+          this.game.getRoleAlignment(r) == "Mafia" ||
+          (this.game.getRoleAlignment(r) == "Independent" &&
+            this.game.getRoleTags(r).includes("Hostile"))
+      );
+    }
+    if (alignment == "Good") {
+      rolesToUse = rolesToUse.filter(
+        (r) =>
+          this.game.getRoleAlignment(r) != "Cult" &&
+          this.game.getRoleAlignment(r) != "Mafia" &&
+          !(
+            this.game.getRoleAlignment(r) == "Independent" &&
+            this.game.getRoleTags(r).includes("Hostile")
+          )
+      );
+    }
+    }
+    rolesToUse = Random.randomizeArray(rolesToUse);
+
+    for(let x = 0; x < count && x < rolesToUse.length; x++){
+      notRoles.push(rolesToUse[x]);
+    }
+    if(notRoles.length < count){
+      while(notRoles.length < count){
+        notRoles.push(notRoles[0]);
+      }
+    }
+    
+
+    return notRoles;
+  }
+
+  isAppearanceDemonic(player, type) {
+    let revealType = type || "investigate";
+
+    for(let effect of player.effects){
+      if(effect.name == "Biased"){
+        if(effect.effecter && effect.effecter == this.creator){
+          return true;
+        }
+      }
+    }
+    
+    if (
+      player.getRoleAppearance(revealType) ==
+      this.game.formatRole(
+        this.game.formatRoleInternal(player.role.name, player.role.modifier)
+      )
+    ) {
+      return player.isDemonic(true);
+    }
+
+    if (player.getRoleAppearance().split(" (")[1] && player.getRoleAppearance().split(" (")[1].includes("Demonic")) {
+      return true;
+    }
+    return false;
   }
 
   getMostValuableEvilPlayer() {

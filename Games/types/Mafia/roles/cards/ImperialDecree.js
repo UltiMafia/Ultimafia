@@ -20,13 +20,14 @@ module.exports = class ImperialDecree extends Card {
     this.meetings = {
       "Declare Duelists (2)": {
         states: ["Night"],
-        flags: ["voting", "multi"],
+        flags: ["voting", "multi", "mustAct"],
         multiMin: 2,
         multiMax: 2,
         action: {
           labels: ["effect", "cannotBeVoted"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
+            this.duelistWasKilled = false;
             this.actor.role.calledDuel = true;
             this.actor.role.duelists = [];
             this.target.forEach((p) => {
@@ -54,7 +55,7 @@ module.exports = class ImperialDecree extends Card {
               }
             }
             this.actor.role.predictedVote = this.target;
-            delete this.actor.role.duelists;
+            //delete this.actor.role.duelists;
           },
         },
       },
@@ -65,7 +66,6 @@ module.exports = class ImperialDecree extends Card {
       check: function (counts, winners) {
         if (
           this.player.alive &&
-          !winners.groups[this.name] &&
           this.predictedCorrect >= 2
         ) {
           winners.addPlayer(this.player, this.name);
@@ -75,17 +75,9 @@ module.exports = class ImperialDecree extends Card {
     this.listeners = {
       death: function (player, killer, deathType) {
         if (
-          player === this.predictedVote &&
-          deathType === "condemn" &&
-          this.player.alive
-        )
-          return;
-        else {
-          this.predictedCorrect += 1;
-          this.player.queueAlert(
-            `${this.predictedVote?.name} has survived the duel! They will make an excellent legatus for your Empire.`
-          );
-          this.player.role.calledDuel = false;
+          player != this.predictedVote && this.player.role.duelists.includes(player)
+        ){
+        this.duelistWasKilled = true;
         }
       },
       state: function (stateInfo) {
@@ -100,6 +92,19 @@ module.exports = class ImperialDecree extends Card {
           this.causeDuel = true;
         } else if (stateInfo.name.match(/Dawn/)) {
           delete this.predictedVote;
+        }
+        
+      },
+      afterActions: function (){
+        if(this.game.getStateName() == "Day" || this.game.getStateName() == "Dusk"){
+          if(this.predictedVote && this.predictedVote.alive && this.duelistWasKilled == true){
+          this.predictedCorrect += 1;
+          this.player.queueAlert(
+            `${this.predictedVote?.name} has survived the duel! They will make an excellent legatus for your Empire.`
+          );
+          this.player.role.calledDuel = false;
+          }
+          this.duelistWasKilled = false;
         }
       },
     };

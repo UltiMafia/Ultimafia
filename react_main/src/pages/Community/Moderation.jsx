@@ -1192,6 +1192,25 @@ function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+  "Refund Daily Challenge": {
+      perm: "refundDailyChallenge",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/mod/refundDailyChallenge", argValues)
+          .then(() => {
+            siteInfo.showAlert("Daily Challenge refunded.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Break Game": {
       perm: "breakGame",
       args: [

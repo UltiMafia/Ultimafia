@@ -5,27 +5,25 @@ module.exports = class BecomeRoleInstantly extends Card {
     super(role);
     this.meetings = {
       "Copy Role": {
-        states: ["Dusk"],
+        states: ["Night"],
         flags: ["voting", "instant", "mustAct"],
         action: {
           run: function () {
             this.actor.faction = this.target.faction;
             this.actor.setRole(
-              `${this.target.role.name}:${this.target.role.modifier}`
+              `${this.target.role.name}:${this.target.role.modifier}`,
+              this.target.role.data,
+              true,
+              true,
+              false,
+              this.target.faction
             );
 
-            //this.actor.role.priorityOffset = -1;
-            /*
-            if (this.actor.role.name != "Clone") {
-              //this.incrementMeetingName();
-              //this.game.instantMeeting(this.actor.role.meetings, [this.actor]);
-              //this.events.emit("state", this.game.getStateInfo(this.game.currentState));
-              this.actor.joinMeetings(this.actor.role.meetings);
-              //this.actor.role.meetings.generateTargets();
-              this.actor.sendMeetings();
-              
+            this.actor.joinMeetings(this.actor.role.meetings);
+            for (let meeting of this.game.meetings){
+               meeting.generateTargets();
             }
-            */
+            this.actor.sendMeetings();
           },
         },
       },

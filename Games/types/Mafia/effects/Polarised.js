@@ -5,7 +5,7 @@ const { PRIORITY_KILL_DEFAULT } = require("../const/Priority");
 module.exports = class Polarised extends Effect {
   constructor(bear) {
     super("Polarised");
-
+/*
     this.bear = bear;
     this.listeners = {
       actionsNext: function () {
@@ -41,5 +41,6 @@ module.exports = class Polarised extends Effect {
         this.game.queueAction(action);
       },
     };
+    */
   }
 };

@@ -11,7 +11,12 @@ module.exports = class Illusionist extends Role {
       "MeetingFaction",
 
       "ShooterFramer",
-      "StartWithGun",
+    ];
+    this.startItems = [
+      {
+        type: "Gun",
+        args: [{ reveal: true }],
+      },
     ];
   }
 };

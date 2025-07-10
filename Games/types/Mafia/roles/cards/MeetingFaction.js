@@ -411,6 +411,12 @@ module.exports = class MeetingFaction extends Card {
 
 function excludeMafiaOnlyIfNotAnonymous(player) {
   let mafiaMeeting = player.game.getMeetingByName("Faction Kill");
+  
+  for(let person of player.game.alivePlayers()){
+     if(player.game.getRoleTags(person.role.name).includes("AnonymizeMeeting")){
+       return false;
+     }
+  }
   if (
     mafiaMeeting &&
     mafiaMeeting.anonymous &&

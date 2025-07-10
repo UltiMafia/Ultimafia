@@ -100,6 +100,16 @@ const roleData = {
       description: [
         "Identity is publicly revealed to all players at the start of the game.",
       ],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     Commuter: {
       alignment: "Village",
@@ -128,6 +138,50 @@ const roleData = {
         "Starts with a gun.",
         "This gun never reveals the deputy when shot.",
       ],
+            SpecialInteractionsModifiers: {
+      Loyal: [
+          "Gun will do nothing when shooting players of a diffrent alignment.",
+        ],
+      Disloyal: [
+          "Gun will do nothing when shooting players of the same alignment.",
+        ],
+      Holy: [
+          "Gun will do nothing when shooting players with Demonic roles.",
+        ],
+      Unholy: [
+          "Gun will do nothing when shooting players with non-Demonic roles.",
+      ],
+      Simple: [
+          "Gun will do nothing when shooting players with Vanilla Roles.",
+      ],
+      Complex: [
+          "Gun will do nothing when shooting players with PR Roles.",
+      ],
+      Refined: [
+          "Gun will do nothing when shooting players with Banished Roles.",
+      ],
+      Unrefined: [
+          "Gun will do nothing when shooting players with non-Banished Roles.",
+      ],
+      Vain: [
+          "Will die when shooting players of the same alignment.",
+      ],
+      Weak: [
+          "Will die when shooting players of a diffrent alignment.",
+      ],
+      Sacrificial: [
+          "Will die when shooting the gun.",
+      ],
+      Regretful: [
+          "Will die when killing a player with the gun.",
+      ],
+      Random: [
+          "Gun will shoot a Random player when used.",
+      ],
+      Narcissistic: [
+          "Gun will have 50% chance to self target when used.",
+      ],
+      },
     },
     Loudmouth: {
       alignment: "Village",
@@ -178,6 +232,50 @@ const roleData = {
         "Starts with a gun.",
         "This gun always reveals the sheriff when shot.",
       ],
+      SpecialInteractionsModifiers: {
+      Loyal: [
+          "Gun will do nothing when shooting players of a diffrent alignment.",
+        ],
+      Disloyal: [
+          "Gun will do nothing when shooting players of the same alignment.",
+        ],
+      Holy: [
+          "Gun will do nothing when shooting players with Demonic roles.",
+        ],
+      Unholy: [
+          "Gun will do nothing when shooting players with non-Demonic roles.",
+      ],
+      Simple: [
+          "Gun will do nothing when shooting players with Vanilla Roles.",
+      ],
+      Complex: [
+          "Gun will do nothing when shooting players with PR Roles.",
+      ],
+      Refined: [
+          "Gun will do nothing when shooting players with Banished Roles.",
+      ],
+      Unrefined: [
+          "Gun will do nothing when shooting players with non-Banished Roles.",
+      ],
+      Vain: [
+          "Will die when shooting players of the same alignment.",
+      ],
+      Weak: [
+          "Will die when shooting players of a diffrent alignment.",
+      ],
+      Sacrificial: [
+          "Will die when shooting the gun.",
+      ],
+      Regretful: [
+          "Will die when killing a player with the gun.",
+      ],
+      Random: [
+          "Gun will shoot a Random player when used.",
+      ],
+      Narcissistic: [
+          "Gun will have 50% chance to self target when used.",
+      ],
+      },
     },
     Sleepwalker: {
       alignment: "Village",
@@ -204,7 +302,7 @@ const roleData = {
       description: [
         "Guards one player every night",
         "If the target was attacked, the Bodyguard will kill one attacker and die.",
-        "If the target was the Celebrity, the Bodyguard will kill all attackers and die.",
+        //"If the target was the Celebrity, the Bodyguard will kill all attackers and die.",
       ],
       nightOrder: [["Protect",(PRIORITY_NIGHT_SAVER)],["Kill Attacker",(PRIORITY_KILL_DEFAULT)]],
       SpecialInteractions: {
@@ -428,10 +526,10 @@ const roleData = {
       category: "Gifting",
       tags: ["Redirection", "Items", "Shield", "Visiting", "Advanced"],
       description: [
-        "Gives out sheild to one player each night.",
+        "Gives out shield to one player each night.",
         "Shields can be used at night to redirect kills targeting the holder on to a random player of the same alignment if possible.",
       ],
-      nightOrder: [["Give Sheild",(PRIORITY_ITEM_GIVER_DEFAULT)]],
+      nightOrder: [["Give Shield",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Mailman: {
       alignment: "Village",
@@ -479,6 +577,17 @@ const roleData = {
       ],
       nightOrder: [["Give Syringe",(PRIORITY_ITEM_GIVER_DEFAULT)]],
       graveyardParticipation: "all",
+    },
+    Riflemaster: {
+      alignment: "Village",
+      category: "Gifting",
+      tags: ["Killing", "Items", "Gun", "Visiting", "Day Actions", "Basic"],
+      description: [
+        "Gives out a Rifle each night.",
+        "Guns can be used to shoot and kill someone during the day.",
+        "If a player killed by a Rifle shares alignment with shooter, shooter will die too. If a player killed by a Rifle is of an opposing alignment, shooter gains another rifle.",
+      ],
+      nightOrder: [["Give Rifle",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Santa: {
       alignment: "Village",
@@ -534,6 +643,16 @@ const roleData = {
         "Tracks a player each night and learns if they visited anybody.",
       ],
       nightOrder: [["Binary Track",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+      ],
     },
     "Bounty Hunter": {
       alignment: "Village",
@@ -679,6 +798,41 @@ const roleData = {
         "On Night 1, learns that 1 of 2 players is a particular role.",
       ],
       nightOrder: [["Learn Info",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
+      SpecialInteractionsModifiers: {
+      Loyal: [
+          "Will only learn about Good Roles.",
+        ],
+      Disloyal: [
+          "Will only learn about Evil Roles.",
+        ],
+      Holy: [
+          "Will only learn about non-Demonic Roles.",
+        ],
+      Unholy: [
+          "Will only learn about Demonic Roles.",
+      ],
+      Simple: [
+          "Will only learn about Vanilla Roles.",
+      ],
+      Complex: [
+          "Will only learn about PR Roles.",
+      ],
+      Refined: [
+          "Will only learn about non-Banished Roles.",
+      ],
+      Unrefined: [
+          "Will only learn about Banished Roles.",
+      ],
+      },
+    },
+    "Fortune Teller": {
+      alignment: "Village",
+      category: "Investigative",
+      tags: ["Information", "Alignment", "Visiting", "Basic"],
+      description: [
+        "Investigates two players at night and learns if one of them is Mafia or Demonic.",
+      ],
+      nightOrder: [["Check for Demons",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
     Scientist: {
       alignment: "Village",
@@ -694,6 +848,16 @@ const roleData = {
       tags: ["Information", "Excess Roles", "Advanced"],
       description: ["At night, reveals 1-3 Excess roles to All Players."],
       nightOrder: [["Reveal Roles",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+      ],
     },
     Manhunter: {
       alignment: "Village",
@@ -724,9 +888,23 @@ const roleData = {
         "Basic",
       ],
       description: [
-        "At night, learns either one player's role or two excess roles.",
+        "Each night can choose to learn a player's role or two excess roles"
       ],
       nightOrder: [["Learn Role or Excess Roles",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
+    },
+    Clairvoyant: {
+      alignment: "Village",
+      category: "Investigative",
+      tags: [
+        "Information",
+        "Roles",
+        "Basic",
+        "Visiting"
+      ],
+      description: [
+        "Visits one player each night and learns two roles that are not that player's role.",
+      ],
+      nightOrder: [["Learn Not Roles",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
     Auditor: {
       alignment: "Village",
@@ -878,7 +1056,7 @@ const roleData = {
       description: [
         "Visits one player each night and makes them Delirious.",
         "Delirious players get False Info and have other abilites disabled.",
-        "A Sailor can't be killed unless roleblocked/made delirious.",
+        "A Sailor can not die unless roleblocked/made delirious.",
       ],
       nightOrder: [["Give Delirium",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
     },
@@ -938,7 +1116,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Modifiers", "Conversion", "Visiting", "Advanced"],
       description: ["Removes modifiers from other players at night"],
-      nightOrder: [["Remove Modifiers",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Remove Modifiers",(PRIORITY_CONVERT_DEFAULT+7)]],
     },
     Plastician: {
       alignment: "Village",
@@ -948,7 +1126,7 @@ const roleData = {
         "Each night visits a player and gives them a random Modifier",
         "The modifier cannot be Exclusive, Clannish, Inclusive, or a Starting Item modifier."
         ],
-      nightOrder: [["Add Modifiers",(PRIORITY_CONVERT_DEFAULT-1)]],
+      nightOrder: [["Add Modifiers",(PRIORITY_CONVERT_DEFAULT+6)]],
     },
     Photographer: {
       alignment: "Village",
@@ -965,7 +1143,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Deception", "No Investigate", "Advanced"],
       description: [
-        "Chooses a role each night to imitate.",
+        "Chooses a role each night to appear as on death and to information role.",
         "Can not be seen as a Villager, Impersonator or Imposter",
       ],
       nightOrder: [["Disguise Self",(PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT)]],
@@ -1044,7 +1222,7 @@ const roleData = {
       category: "Sacrificial",
       tags: ["Kill Interaction", "Items", "Conversion", "Role Swapping", "Expert"],
       description: [
-        "If killed, the kill receives a can of shaving cream.",
+        "When a Barber dies, an Evil player receives a can of shaving cream.",
         "While holding the shaving cream, a Mafia or Cult-aligned player may swap the roles of two living players.",
         "Excluding players who started as Independent, the swapped players will keep their original alignments.",
       ],
@@ -1086,7 +1264,7 @@ const roleData = {
       category: "Sacrificial",
       tags: ["Kill Interaction", "Conversion", "Villager", "Basic"],
       description: [
-        "If killed, all Village-aligned players convert to Villager.",
+        "When a Schoolmarm dies, all Village-aligned players convert to Villager.",
       ],
       RolesMadeBy: ["Villager"],
     },
@@ -1105,6 +1283,16 @@ const roleData = {
       description: [
         "If one Sheep dies, all Sheep die.",
         "Adds 1 Sheep in Closed setups",
+      ],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
       ],
     },
     Turncoat: {
@@ -1130,7 +1318,7 @@ const roleData = {
       tags: ["Condemn Interaction", "Protective", "Conversion", "Basic"],
       description: [
         "If condemned by the village, no one will die the following night.",
-        "If visited by Hooker, gets turned into Villager.",
+        //"If visited by Hooker, gets turned into Villager.",
       ],
       SpecialInteractions: {
         Hooker: [
@@ -1192,6 +1380,14 @@ const roleData = {
       ],
       nightOrder: [["Give Sceptre",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
+    Lifeguard: {
+      alignment: "Village",
+      category: "Voting",
+      tags: ["Voting", "Advanced"],
+      description: [
+        "All votes for whoever a Lifeguard is voting for do not count.",
+      ],
+    },
     Magistrate: {
       alignment: "Village",
       category: "Voting",
@@ -1215,6 +1411,16 @@ const roleData = {
           "If an Assassin is Present, All players are Delirious if an Evil Player is Elected as Room Leader.",
         ],
       },
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     Princess: {
       alignment: "Village",
@@ -1282,7 +1488,7 @@ const roleData = {
     Monkey: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Copy Actions", "Dusk", "Pregame Actions", "Advanced"],
+      tags: ["Copy Actions", "Advanced"],
       description: [
         "Before each Night chooses a player.",
         "Copies the actions of the choosen player at night.",
@@ -1294,9 +1500,18 @@ const roleData = {
       tags: ["Conversion", "Delirium", "Advanced"],
       description: [
         "At night may choose to convert to a Village aligned role that can spawn in the setup.",
-        "If the selected role is already in play, The player with that role will be Delirious until the Philosopher is killed.",
+        "If the selected role is already in play, The player with that role will be Delirious until the Philosopher dies.",
       ],
       nightOrder: [["Become Role and Make Delirious",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
+    },
+    Jack: {
+      alignment: "Village",
+      category: "Manipulative",
+      tags: ["Advanced", "Banished Interaction",],
+      description: [
+        "At night chooses a banished Village role, gains it's abilities until the next night",
+        "Cannot select a role they already selected.",
+      ],
     },
     Student: {
       alignment: "Village",
@@ -1346,6 +1561,16 @@ const roleData = {
         "Chooses two players during the day to attend a banquet the following evening.",
         "Players chosen to attend the banquet meet anonymously with their roles revealed to one another.",
       ],
+       skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+      ],
     },
     Freemason: {
       alignment: "Village",
@@ -1358,7 +1583,7 @@ const roleData = {
         "Attempting to convert a Whig into a Freemason will fail.",
         "All Cultists die if targeted by a Freemason meeting.",
       ],
-      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
+      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT+2)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
     },
     "Invisible Man": {
       alignment: "Village",
@@ -1423,7 +1648,17 @@ const roleData = {
       category: "Reflexive",
       tags: ["Reflexive", "Information", "Kill Interaction", "Basic", "Visit Interaction"],
       description: [
-        "When killed will announce all players who ever visited them."
+        "When a Painter dies they will announce all players who ever visited them."
+      ],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
       ],
     },
     Priest: {
@@ -1437,6 +1672,7 @@ const roleData = {
     Debtor: {
       alignment: "Village",
       category: "Killing",
+      disabled: true,
       tags: ["Guess", "Roles", "Visiting", "Self Kill", "Advanced"],
       description: [
         "Each night must choose a player and role from the Setup.",
@@ -1543,6 +1779,16 @@ const roleData = {
         "Identity is not revealed to the dead player.",
       ],
       graveyardParticipation: "all",
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     Mourner: {
       alignment: "Village",
@@ -1750,7 +1996,7 @@ const roleData = {
       ],
       description: [
         "Learns role of any player who visits them.",
-        "Cannot be killed normally.",
+       // "Cannot be killed normally.",
       ],
       nightOrder: [["Learn Visitors",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
@@ -1768,6 +2014,50 @@ const roleData = {
         "Starts with a gun.",
         "Gun does not reveal identity when fired.",
       ],
+            SpecialInteractionsModifiers: {
+      Loyal: [
+          "Gun will do nothing when shooting players of a diffrent alignment.",
+        ],
+      Disloyal: [
+          "Gun will do nothing when shooting players of the same alignment.",
+        ],
+      Holy: [
+          "Gun will do nothing when shooting players with Demonic roles.",
+        ],
+      Unholy: [
+          "Gun will do nothing when shooting players with non-Demonic roles.",
+      ],
+      Simple: [
+          "Gun will do nothing when shooting players with Vanilla Roles.",
+      ],
+      Complex: [
+          "Gun will do nothing when shooting players with PR Roles.",
+      ],
+      Refined: [
+          "Gun will do nothing when shooting players with Banished Roles.",
+      ],
+      Unrefined: [
+          "Gun will do nothing when shooting players with non-Banished Roles.",
+      ],
+      Vain: [
+          "Will die when shooting players of the same alignment.",
+      ],
+      Weak: [
+          "Will die when shooting players of a diffrent alignment.",
+      ],
+      Sacrificial: [
+          "Will die when shooting the gun.",
+      ],
+      Regretful: [
+          "Will die when killing a player with the gun.",
+      ],
+      Random: [
+          "Gun will shoot a Random player when used.",
+      ],
+      Narcissistic: [
+          "Gun will have 50% chance to self target when used.",
+      ],
+      },
     },
     //killing roles
     Arsonist: {
@@ -1818,6 +2108,16 @@ const roleData = {
         "If the player speaks the word the next day, they will die.",
       ],
       nightOrder: [["Curse Word",( PRIORITY_EFFECT_GIVER_DEFAULT)]],
+       skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+      ],
     },
     Poisoner: {
       alignment: "Mafia",
@@ -1963,6 +2263,16 @@ const roleData = {
         "Some actions cannot be blocked.",
       ],
       nightOrder: [["Block",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+      ],
     },
     Pimp: {
       alignment: "Mafia",
@@ -1991,7 +2301,7 @@ const roleData = {
         "Players who visit A will be redirected to B.",
         "Players who visit B will be redirected to A.",
         "Redirection cannot be roleblocked.",
-        "Dies if visited by Drunk.",
+        //"Dies if visited by Drunk.",
       ],
       nightOrder: [["Swap Visitors",(PRIORITY_SWAP_VISITORS)]],
       SpecialInteractions: {
@@ -2045,7 +2355,7 @@ const roleData = {
         "Shares a night meeting with the Freemasons.",
         "Can convert players to Freemasons.",
       ],
-      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
+      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT+2)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
       RolesMadeBy: ["Freemason"],
     },
     Lawyer: {
@@ -2113,6 +2423,16 @@ const roleData = {
         "Works through roleblocking and protection.",
       ],
       nightOrder: [["Strength Kill",(PRIORITY_MODIFY_ACTION_LABELS)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+      ],
     },
     Spy: {
       alignment: "Mafia",
@@ -2162,6 +2482,20 @@ const roleData = {
         "Both players will die if Heartbreaker dies.",
       ],
       nightOrder: [["Heart Break",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     Yakuza: {
       alignment: "Mafia",
@@ -2169,7 +2503,7 @@ const roleData = {
       description: [
         "Chooses to sacrifice self once per game to convert another player to Mafioso.",
       ],
-      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT)],["Self Kill",(PRIORITY_KILL_DEFAULT)]],
+      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT+1)],["Self Kill",(PRIORITY_KILL_DEFAULT)]],
       RolesMadeBy: ["Mafioso"],
     },
     Graverobber: {
@@ -2214,7 +2548,7 @@ const roleData = {
       tags: ["Speech", "Whispers", "Silence", "Advanced", "Speaking"],
       description: [
         "Vote counts as 0",
-        "Each Night chooses a 7-20 letter phrase.",
+        "Each Night chooses a 4-20 letter phrase.",
         "The Dilettante's voting power increases by 1 for every Village-Aligned player who said the phrase during the day. ",
         "All players who said the phrase can only speak in whispers the following day.",
         "The Dilettante's voting power resets at night.",
@@ -2254,6 +2588,16 @@ const roleData = {
       tags: ["Items", "Night-Acting", "Visiting", "Advanced"],
       description: ["Chooses a player to steal an item from each night."],
       nightOrder: [["Steal Items",(PRIORITY_ITEM_TAKER_DEFAULT)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+      ],
     },
     Crank: {
       alignment: "Mafia",
@@ -2280,6 +2624,16 @@ const roleData = {
         "Decides whether or not the prisoner should be executed.",
       ],
       nightOrder: [["Execute Prisoner",(PRIORITY_KILL_DEFAULT)],["Block Jailed Player's Visitors",(PRIORITY_UNTARGETABLE-5)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Gator",
+          value: "gator",
+        },
+      ],
     },
     Bookie: {
       alignment: "Mafia",
@@ -2297,7 +2651,7 @@ const roleData = {
     },
     Ape: {
       alignment: "Mafia",
-      tags: ["Manipulative", "Copy Actions", "Dusk", "Pregame Actions", "Advanced"],
+      tags: ["Manipulative", "Copy Actions", "Advanced"],
       description: [
         "Before each Night chooses a player.",
         "Copies the actions of the choosen player at night.",
@@ -2309,10 +2663,19 @@ const roleData = {
       tags: ["Manipulative", "Conversion", "Delirium", "Advanced"],
       description: [
         "At night may choose to convert to a Mafia aligned role that can spawn in the setup.",
-        "If the selected role is already in play, The player with that role will be Delirious until the Associate is killed.",
+        "If the selected role is already in play, The player with that role will be Delirious until the Associate dies.",
         "Does not attend the mafia meeting.",
       ],
       nightOrder: [["Become Role and Make Delirious",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
+    },
+    Consigliere: {
+      alignment: "Mafia",
+      category: "Manipulative",
+      tags: ["Advanced", "Banished Interaction"],
+      description: [
+        "At night chooses a banished Mafia role, gains it's abilities until the next night",
+        "Cannot select a role they already selected.",
+      ],
     },
     Apprentice: {
       alignment: "Mafia",
@@ -2377,11 +2740,11 @@ const roleData = {
         "If condemned, can choose to reveal the role of one player to the Mafia.",
       ],
     },
-    Filibuster: {
+    Fed: {
       alignment: "Mafia",
-      tags: ["Condemn", "Voting", "Condemn Immune", "Advanced"],
+      tags: ["Condemn", "Voting", "Advanced"],
       description: [
-        "Can only be condemned when every town role votes for them.",
+        "Votes for a Fed will not count unless every Village-aligned player votes for them.",
       ],
     },
     Rainmaker: {
@@ -2398,6 +2761,16 @@ const roleData = {
       description: [
         "At Night can Choose an Event.",
         "That Event will Occur in addition to any other events.",
+      ],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Blue",
+          value: "blue",
+        },
       ],
     },
     Toreador: {
@@ -2507,10 +2880,17 @@ const roleData = {
     },
     Electrician: {
       alignment: "Mafia",
-      tags: ["Voting", "Speech", "Eclipse", "Blind", "Basic"],
+      tags: ["Voting", "Speech", "Eclipse", "Blind", "Basic", "Day Actions"],
       description: [
         "Once per game, can cause an eclipse during the day.",
         "During an eclipse all speech and votes are anonymous.",
+      ],
+    },
+    Umpire: {
+      alignment: "Mafia",
+      tags: ["Timer", "Day Actions", "Basic"],
+      description: [
+        "Once per game during the day, can set the timer to 1 minute and disable extends.",
       ],
     },
     Lobotomist: {
@@ -2520,7 +2900,7 @@ const roleData = {
         "Each night, visits one player.",
         "Village roles convert to Villager. Cult roles convert to Cultist. Independent roles convert to Grouch.",
       ],
-      nightOrder: [["Convert to Vanilla",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Convert to Vanilla",(PRIORITY_CONVERT_DEFAULT+8)]],
       RolesMadeBy: ["Villager", "Cultist", "Grouch"],
     },
     Nun: {
@@ -2528,7 +2908,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Modifiers", "Conversion", "Visiting", "Advanced"],
       description: ["Removes modifiers from other players at night"],
-      nightOrder: [["Remove Modifiers",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Remove Modifiers",(PRIORITY_CONVERT_DEFAULT+7)]],
     },
     Tattooist: {
       alignment: "Mafia",
@@ -2538,7 +2918,7 @@ const roleData = {
         "Each night visits a player and gives them a random Modifier",
         "The modifier cannot be Exclusive, Clannish, Inclusive, or a Starting Item modifier."
         ],
-        nightOrder: [["Add Modifiers",(PRIORITY_CONVERT_DEFAULT-1)]],
+        nightOrder: [["Add Modifiers",(PRIORITY_CONVERT_DEFAULT+6)]],
     },
     Pedagogue: {
       alignment: "Mafia",
@@ -2546,7 +2926,7 @@ const roleData = {
       description: [
         "Each night, converts another Mafia teammate into a random Mafia-aligned role.",
       ],
-      nightOrder: [["Randomize Role",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Randomize Role",(PRIORITY_CONVERT_DEFAULT+3)]],
       RolesMadeBy: ["All Mafia Roles"],
     },
     Bartender: {
@@ -2581,13 +2961,57 @@ const roleData = {
         "Will gain a gun once per game if Mafia chose to abstain from killing the previous night.",
         "Gun will always reveal the shooter.",
       ],
+      SpecialInteractionsModifiers: {
+      Loyal: [
+          "Gun will do nothing when shooting players of a diffrent alignment.",
+        ],
+      Disloyal: [
+          "Gun will do nothing when shooting players of the same alignment.",
+        ],
+      Holy: [
+          "Gun will do nothing when shooting players with Demonic roles.",
+        ],
+      Unholy: [
+          "Gun will do nothing when shooting players with non-Demonic roles.",
+      ],
+      Simple: [
+          "Gun will do nothing when shooting players with Vanilla Roles.",
+      ],
+      Complex: [
+          "Gun will do nothing when shooting players with PR Roles.",
+      ],
+      Refined: [
+          "Gun will do nothing when shooting players with Banished Roles.",
+      ],
+      Unrefined: [
+          "Gun will do nothing when shooting players with non-Banished Roles.",
+      ],
+      Vain: [
+          "Will die when shooting players of the same alignment.",
+      ],
+      Weak: [
+          "Will die when shooting players of a diffrent alignment.",
+      ],
+      Sacrificial: [
+          "Will die when shooting the gun.",
+      ],
+      Regretful: [
+          "Will die when killing a player with the gun.",
+      ],
+      Random: [
+          "Gun will shoot a Random player when used.",
+      ],
+      Narcissistic: [
+          "Gun will have 50% chance to self target when used.",
+      ],
+      },
       nightOrder: [["Gain Gun",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Imposter: {
       alignment: "Mafia",
       tags: ["Deception", "Night-acting", "No Investigate","Basic"],
       description: [
-        "Chooses a role each night to imitate.",
+        "Chooses a role each night to appear as on death and to information role.",
         "Can not be seen as a Villager, Impersonator or Imposter",
       ],
       nightOrder: [["Disguise Self",(PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT)]],
@@ -2615,6 +3039,16 @@ const roleData = {
       ],
       nightOrder: [["Kill players in Room",(PRIORITY_KILL_DEFAULT)]],
       RolesMadeBy: ["President"],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+      ],
     },
     Stylist: {
       alignment: "Mafia",
@@ -2679,6 +3113,17 @@ const roleData = {
         "Survivors will be infected but will not turn.",
       ],
       nightOrder: [["Infect",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Jockey",
+          value: "jockey",
+          achCount: 5,
+        },
+      ],
     },
     Hexer: {
       alignment: "Cult",
@@ -2910,6 +3355,16 @@ const roleData = {
         "If that player is not visited by a non-Cult player during the next night, they will go insane.",
       ],
       nightOrder: [["Mind Warp",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     //Manipulative
     "Cat Lady": {
@@ -2936,7 +3391,7 @@ const roleData = {
       description: [
         "Each night, converts another Cult teammate into a random Cult-aligned role.",
       ],
-      nightOrder: [["Randomize Role",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Randomize Role",(PRIORITY_CONVERT_DEFAULT+3)]],
       RolesMadeBy: ["All Cult Roles"],
     },
     "Mi-Go": {
@@ -2956,7 +3411,7 @@ const roleData = {
         "If the selected role is already in play, The conversion fails.",
         "Independant roles can only be converted to other Independant roles.",
       ],
-      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT+4)]],
     },
     Incubus: {
       alignment: "Cult",
@@ -2972,10 +3427,19 @@ const roleData = {
       ],
       description: [
         "Each night chooses a player and a non-Demonic Cult role.",
-        "When that player dies they will be converted to that role and become Transcendent.",
+        "If that player is condemned they will be converted to that role and become Transcendent.",
       ],
       nightOrder: [["Apply Effect",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
       graveyardParticipation: "all",
+    },
+    Sidhe: {
+      alignment: "Cult",
+      category: "Manipulative",
+      tags: ["Advanced", "Banished Interaction"],
+      description: [
+        "At night chooses a banished Cult role, gains it's abilities until the next night",
+        "Cannot select a role they already selected.",
+      ],
     },
     "Queen Bee": {
       alignment: "Cult",
@@ -3015,6 +3479,16 @@ const roleData = {
         "Delirious players get False Info and have other abilites disabled.",
       ],
       nightOrder: [["Give Delirium",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     Witch: {
       alignment: "Cult",
@@ -3076,7 +3550,7 @@ const roleData = {
       tags: ["Win Con", "Condemn Interaction", "Speaking", "Expert"],
       description: [
         'If a Reaper says "I claim Reaper and choose (Player Name)" within the first minute of the day.',
-        "If the choosen player survives until the end of the day, their team wins.",
+        "If the chosen player survives until the end of the day, that player's team wins.",
         "A Reaper cannot choose themselves.",
       ],
     },
@@ -3085,9 +3559,8 @@ const roleData = {
       category: "Chaos",
       tags: ["Conversion", "Demonic Interaction", "Basic"],
       description: [
-        "If a Demonic or Lichpin Cult role dies, the Devotee will convert to that role.",
-        "Cult Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
-        "If the Target role is killed or Converted, The Devotee becomes that role.",
+        "If a Demonic or Linchpin Cult role dies, the Devotee will convert to that role.",
+        "If their is less then 5 players alive, the Devotee has no ability.",
       ],
     },
     Zealot: {
@@ -3095,7 +3568,7 @@ const roleData = {
       category: "Chaos",
       tags: ["Win Con", "Condemn Interaction", "Demonic Interaction", "Advanced"],
       description: [
-        "If a Demonic or Lichpin Cult role is condemned and the game would have ended, the game will continue for 1 more day.",
+        "If a Demonic or Linchpin Cult role is condemned and the game would have ended, the game will continue for 1 more day.",
         "On the extra Day, If a Village Aligned player is condemned, Cult Wins.",
         "If no one is condemned or a Non-Village player is condemned on the extra day, All Cult-aligned players die.",
       ],
@@ -3296,7 +3769,7 @@ const roleData = {
         "Each night, may choose a player to kill.",
         "On the first night chooses a player as a Vessel.",
         "The Vessel is Delirious.",
-        "A Lich can only be killed if their Vessel is killed.",
+        "A Lich can only die if their Vessel dies.",
       ],
       nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
     },
@@ -3390,6 +3863,16 @@ const roleData = {
         "Cult can only win when One or fewer Village players are alive.",
       ],
       nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     //Other
     Theocrat: {
@@ -3552,7 +4035,7 @@ const roleData = {
         "Immune to conversions.",
         "Wins instead of Village if there is a Freemason majority and counts toward their total.",
       ],
-      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
+      nightOrder: [["Convert to Mason",(PRIORITY_CONVERT_DEFAULT+2)],["Kill Cultist",(PRIORITY_KILL_DEFAULT + 1)]],
       RolesMadeBy: ["Freemason"],
     },
     "Panda Bear": {
@@ -3585,6 +4068,20 @@ const roleData = {
         "Wins if both players survive until the end of the game.",
       ],
       nightOrder: [["Fall in love",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     Prophet: {
       alignment: "Independent",
@@ -3607,16 +4104,16 @@ const roleData = {
       tags: ["Neighbors", "Death", "Basic"],
       description: ["Wins if both of their starting neighbors are dead."],
       SpecialInteractions: {
-        OneNightMode: [
-          "In One Night Mode, Fumigator Wins if one of their neighbors is killed.",
+        "Blood Moon": [
+          "During the Blood Moon Event, Fumigator Wins if one of their neighbors is killed.",
         ],
       },
     },
     Doppelgänger: {
       alignment: "Independent",
-      tags: ["Conversion", "Dusk", "Pregame Actions", "Basic"],
+      tags: ["Conversion", "Basic"],
       description: [
-        "Before Night chooses a player.",
+        "At Night chooses a player.",
         "Will instantly convert to that player's role.",
         "Cannot win the game as Doppelgänger.",
       ],
@@ -3780,8 +4277,8 @@ const roleData = {
         Assassin: [
           "If an Assassin is Present, The Warlock wins if they can guess a player who is Elected as Room Leader Twice.",
         ],
-        OneNightMode: [
-          "In One Night Mode, The Warlock wins if they predict the condemnation correctly Once.",
+        "Blood Moon": [
+          "During the Blood Moon Event, The Warlock wins if they predict the condemnation correctly Once.",
         ],
       },
     },
@@ -3822,7 +4319,7 @@ const roleData = {
       description: [
         "Chooses two players each night to force into a duel.",
         "During the following day, only the two duelists may be voted.",
-        "Must predict during the sunrise which duelist will survive.",
+        "Must predict which duelist will survive.",
         "Wins if they predict correctly twice.",
       ],
        nightOrder: [["Duel",(PRIORITY_EFFECT_GIVER_DEFAULT + 1)]],
@@ -3860,14 +4357,12 @@ const roleData = {
         "Meets with All Independents",
         "Grants All Independents a random Infomation or Role Swapping ability.",
         "Wins if Independents have majority.",
+        "Lone Independents do not meet or count for majority",
       ],
       nightOrder: [["Give Superpower",(PRIORITY_INVESTIGATIVE_DEFAULT)], ["Swap Roles", (PRIORITY_SWAP_ROLES - 1)]],
       SpecialInteractions: {
-        OneNightMode: [
-          "In One Night Mode, Superheros Wins if no Independents die.",
-          "In One Night Mode, Village must kill an Independent to win in addition to other evil Factions.",
-          "In One Night Mode, Mafia/Cult must kill an Independent to win in addition to competing evil Factions.",
-          "In One Night Mode, Independents with the (Lone) Modifier are not counted as Independents for any of these Win Con",
+        "Blood Moon": [
+          "During the Blood Moon Event, Superheros Wins if no Independents die and non-Lone Independents are counted as an Evil Faction for Village.",
         ],
       },
     },
@@ -3985,6 +4480,21 @@ const roleData = {
         "Wins if Hellhounds outnumber all other living parties.",
       ],
       nightOrder: [["Kill",(PRIORITY_KILL_GUESS_ROLE)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Goofy",
+          value: "goofy",
+          achReq: "Mafia29",
+        },
+        {
+          label: "Old",
+          value: "old",
+        },
+      ],
     },
     Shinigami: {
       alignment: "Independent",
@@ -4021,7 +4531,7 @@ const roleData = {
       description: [
         "Absorbs one person each night, killing them and cleaning their deaths.",
         "Absorbed players may speak amongst themselves inside of the Blob.",
-        "For each absorbed player, the Blob gains an extra life.",
+        "For every 2 absorbed players, the Blob gains an extra life.",
         "Upon death, everyone absorbed by the Blob is regurgitated.",
         "Wins if among the last two alive.",
       ],
@@ -4035,7 +4545,7 @@ const roleData = {
         "Chooses to sacrifice self at night to convert another player to Grey Goo.",
         "Wins if a Grey Goo is in the last two alive.",
       ],
-      nightOrder: [["Convert and Die",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Convert and Die",(PRIORITY_CONVERT_DEFAULT+5)]],
     },
     Mastermind: {
       alignment: "Independent",
@@ -4063,7 +4573,7 @@ const roleData = {
         "Each night, chooses a player. If the player is sided with the mafia/cult, they become a Mafioso/Cultist.",
         "Wins when all mafia-aligned players are Mafiosos or all cult-aligned players are Cultists.",
       ],
-      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT+8)]],
       RolesMadeBy: ["Mafioso", "Cultist"],
     },
     Mutineer: {
@@ -4160,11 +4670,12 @@ const roleData = {
       alignment: "Independent",
       tags: ["Conversion", "Vanilla", "Visiting", "Hostile", "Basic"],
       description: [
+        "Meets with other Communists at night.",
         "Visits one player each night.",
         "Turns that player into their alignment's vanilla role.",
         "Wins if alive when all other players are vanilla.",
       ],
-      nightOrder: [["Convert to Vanilla",(PRIORITY_CONVERT_DEFAULT)]],
+      nightOrder: [["Convert to Vanilla",(PRIORITY_CONVERT_DEFAULT+8)]],
       RolesMadeBy: ["Villager", "Mafioso", "Cultist"],
     },
     Dragoon: {
@@ -4221,6 +4732,7 @@ const roleData = {
         "Advanced",
       ],
       description: [
+        "Meets with other Polar Bears at night.",
         "Visits two players each night, polarising them.",
         "A polarised player visiting another polarised player will kill both of them.",
         //"If visited by a Penguin, will eat it.",
@@ -4277,11 +4789,11 @@ const roleData = {
       alignment: "Independent",
       tags: ["Speaking", "Redirection", "Control", "Visiting", "Hostile", "Advanced"],
       description: [
-        "Attaches strings to a player each night.",
+        "Attaches strings to a player each night and learn their role.",
         "Can redirect all players with attached strings at night.",
         "Wins among the last two standing.",
       ],
-      nightOrder: [["Control Players",(PRIORITY_REDIRECT_ACTION)]],
+      nightOrder: [["Control Players",(PRIORITY_REDIRECT_ACTION)], ["Attach Strings",(0)] ],
     },
 
     //Events
@@ -4292,7 +4804,7 @@ const roleData = {
         "Put this in a setup with other Events to have a chance for no Events to occur.",
       ],
     },
-    "Missing Supplies": {
+    Airdrop: {
       alignment: "Event",
       tags: ["Event", "Items"],
       description: [
@@ -4392,6 +4904,16 @@ const roleData = {
         "If this Event occurs, all speech and votes are anonymous.",
       ],
       nightOrder: [["Blind",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Noir",
+          value: "noir",
+        },
+      ],
     },
     Fog: {
       alignment: "Event",
@@ -4410,7 +4932,31 @@ const roleData = {
       ],
       nightOrder: [["Make Frustrated",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
     },
-    "Sensible Mood": {
+    "Mail-In Ballots": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, players can not switch votes.",
+      ],
+      nightOrder: [["Apply disable vote switching effect",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
+    },
+    Flood: {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, All players will be blocked during the night.",
+      ],
+      nightOrder: [["Block Players",(PRIORITY_FULL_DISABLE+3)]],
+    },
+    Sabbath: {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, No one will die at night.",
+      ],
+      nightOrder: [["Protect Players",(PRIORITY_FULL_DISABLE+3)]],
+    },
+    "Self-Awareness": {
       alignment: "Event",
       tags: ["Event"],
       description: [
@@ -4418,7 +4964,26 @@ const roleData = {
       ],
       nightOrder: [["Tell about role",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5)]],
     },
-    "Culture Exchange": {
+    "Stand-Up": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, All players learn that a player is 1 of 3 roles.",
+        "One of the roles is always Evil.",
+      ],
+      nightOrder: [["Tell Joke",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10)]],
+    },
+    Opera: {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, 3 players can attend a Movie.",
+        "Players attending the movie learn how many evil players are attending the movie.",
+        "1 Player attending will learn the wrong number.",
+      ],
+      nightOrder: [["Movie Info",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10)]],
+    },
+    "Cultural Exchange": {
       alignment: "Event",
       tags: ["Event"],
       description: [
@@ -4456,6 +5021,16 @@ const roleData = {
       description: [
         "If this Event occurs, The game will end in 5 Minutes and No One wins if the game doesn't end before the 5 Minutes are up.",
         "This is uneffected by Win-con altering abilites.",
+      ],
+    },
+    "Blood Moon": {
+      alignment: "Event",
+      tags: ["Event", "Game Ender"],
+      description: [
+        "If this Event Occurs, The game will end the following day.",
+        "If all Mafia survive, Mafia wins.",
+        "If all Cult survive, Cult wins.",
+        "If at least 1 member from each Evil faction is killed, Village Wins.",
       ],
     },
     Necronomicon: {

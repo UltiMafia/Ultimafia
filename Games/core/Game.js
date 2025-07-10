@@ -18,6 +18,7 @@ const models = require("../../db/models");
 const redis = require("../../modules/redis");
 const roleData = require("../../data/roles");
 const gameAchievements = require("../../data/Achievements");
+const dailyChallengesData = require("../../data/DailyChallenge");
 const modifierData = require("../../data/modifiers");
 const protips = require("../../data/protips");
 const logger = require("../../modules/logging")("games");
@@ -58,6 +59,7 @@ module.exports = class Game {
     this.lobbyName = options.settings.lobbyName;
     this.private = options.settings.private;
     this.guests = options.settings.guests;
+    this.hasIntegrity = true;
     this.ranked = options.settings.ranked;
     this.competitive = options.settings.competitive;
     this.spectating = options.settings.spectating;
@@ -93,6 +95,8 @@ module.exports = class Game {
     this.spectatorMeetFilter = { "*": true };
     this.timers = {};
     this.actions = [new Queue()];
+    this.useObituaries = false;
+    this.obituaryQueue = {};
     this.alertQueue = new Queue();
     this.deathQueue = new Queue();
     this.exorciseQueue = new Queue();
@@ -222,10 +226,11 @@ module.exports = class Game {
     for (let spectator of this.spectators) spectator.send(eventName, data);
   }
 
-  sendAlert(message, recipients, extraStyle = {}) {
+  sendAlert(message, recipients, extraStyle = {}, tags = []) {
     message = new Message({
       content: message,
       recipients: recipients,
+      tags: tags,
       game: this,
       isServer: true,
       extraStyle: extraStyle,
@@ -236,14 +241,55 @@ module.exports = class Game {
 
   processAlertQueue() {
     for (let item of this.alertQueue)
-      this.sendAlert(item.message, item.recipients);
+      this.sendAlert(item.message, item.recipients, undefined, item.tags);
 
     this.alertQueue.empty();
   }
 
-  queueAlert(message, priority, recipients) {
+  queueAlert(message, priority, recipients, tags = []) {
     priority = priority || 0;
-    this.alertQueue.enqueue({ message, priority, recipients });
+    this.alertQueue.enqueue({ message, priority, recipients, tags });
+  }
+
+  addToObituary(playerId, snippetKey, text) {
+    if (!this.obituaryQueue[playerId]) {
+      this.obituaryQueue[playerId] = {
+        snippets: {}
+      };
+    }
+    this.obituaryQueue[playerId].snippets[snippetKey] = text;
+  }
+
+  processObituaryQueue(source) {
+    const obituaries = [];
+
+    for (let playerId in this.obituaryQueue) {
+      const obituary = this.obituaryQueue[playerId];
+      delete this.obituaryQueue[playerId];
+
+      const player = this.getPlayer(playerId);
+
+      obituary.id = player.id;
+      obituary.playerInfo = player.getPlayerInfo();
+
+      if (!player.alive) {
+        obituaries.push(obituary);
+      }
+    }
+
+    const obituariesMessage = {
+      id: `${this.currentState}:${source}`,
+      obituaries: obituaries,
+      source: source,
+      time: Date.now(),
+      dayCount: "dayCount" in this ? this.dayCount - 1 : 0,
+    };
+
+    if ((obituaries.length > 0) || (source === "Night")) {
+      this.history.addObituaries(obituariesMessage);
+      this.addObituaries(obituariesMessage);
+      this.broadcast("obituaries", obituariesMessage);
+    }
   }
 
   processDeathQueue() {
@@ -500,7 +546,7 @@ module.exports = class Game {
 
     this.playerLeave(player);
 
-    if (player.alive) this.sendAlert(`${player.name} has left.`);
+    if (player.alive) this.sendAlert(`${player.name} has left.`, undefined, undefined, ["info"]);
   }
 
   async playerLeave(player) {
@@ -524,6 +570,13 @@ module.exports = class Game {
       if (this.started && !this.finished && player.alive) {
         this.makeUnranked();
         this.makeUncompetitive();
+
+        if (this.breakIntegrity()) {
+          if (!player.isBot) {
+            const userId = player.userId || player.user.id;
+            this.penalizePlayerForLeaving(userId);
+          }
+        }
       }
 
       if (!this.postgameOver && this.players[player.id]) {
@@ -564,6 +617,13 @@ module.exports = class Game {
     this.makeUnranked();
     this.makeUncompetitive();
 
+    if (this.breakIntegrity()) {
+      if (!player.isBot) {
+        const userId = player.userId || player.user.id;
+        this.penalizePlayerForLeaving(userId);
+      }
+    }
+
     this.queueAction(
       new Action({
         actor: player,
@@ -596,6 +656,18 @@ module.exports = class Game {
 
     this.broadcast("spectatorCount", this.spectators.length);
     redis.setSpectatorCount(this.id, this.spectators.length);
+  }
+
+  // Returns if the integrity of the game was broken for the first time or not
+  breakIntegrity() {
+    const hadIntegrity = this.hasIntegrity;
+    this.hasIntegrity = false;
+
+    if (hadIntegrity) {
+      this.queueAlert("The game is now safe to leave without penalty.");
+    }
+
+    return hadIntegrity;
   }
 
   makeUnranked() {
@@ -707,7 +779,7 @@ module.exports = class Game {
       if (player != newPlayer)
         player.send("playerJoin", newPlayer.getPlayerInfo(player));
     }
-    this.sendAlert(`${newPlayer.name} has joined.`);
+    this.sendAlert(`${newPlayer.name} has joined.`, undefined, undefined, ["info"]);
     if (newPlayer.user && newPlayer.user.Protips == false) {
       let allTips = protips[this.type].filter((p) => p);
       for (let tip of protips["Any"]) {
@@ -764,7 +836,7 @@ module.exports = class Game {
     for (let member of this.readyMeeting.members) {
       if (!member.ready) {
         this.kickPlayer(member.player);
-        this.sendAlert(`${member.player.name} was kicked for inactivity.`);
+        this.sendAlert(`${member.player.name} was kicked for inactivity.`, undefined, undefined, ["info"]);
       }
     }
 
@@ -1052,11 +1124,15 @@ module.exports = class Game {
     let toDelete = [];
     for (let roleName in roleset) {
       let role = roleName.split(":")[0];
+      let modifiers = roleName.split(":")[1];
       if (this.getRoleAlignment(role) == "Event") {
         toDelete.push(roleName);
         if (!this.BanishedEvents.includes(roleName)) {
           this.CurrentEvents.push(roleName);
         }
+      }
+      else if (modifiers && modifiers.toLowerCase().includes("banished")) {
+        toDelete.push(roleName);
       }
       if (role != "Host") {
         continue;
@@ -1502,12 +1578,27 @@ module.exports = class Game {
     }
   }
 
+   getDailyChallenge(ID, extraData) {
+    for (let daily of Object.entries(dailyChallengesData).filter(
+      (day) => ID == day[1].ID
+    )) {
+      return `${daily[0].replace(`ExtraData`,extraData)}- ${daily[1].description.replace(`ExtraData`,extraData)} (${daily[1].reward} Coins)`;
+    }
+  }
+
   getAchievementReward(ID) {
     for (let achievement of Object.entries(gameAchievements[this.type]).filter(
       (achievementData) => ID == achievementData[1].ID
     )) {
       return achievement[1].reward;
     }
+  }
+
+  addObituaries(obituaries) {
+    for (let _player of this.players)
+      _player.history.addObituaries(obituaries);
+
+    this.spectatorHistory.addObituaries(obituaries);
   }
 
   recordRole(player, appearance) {
@@ -1553,6 +1644,8 @@ module.exports = class Game {
 
     // Check win conditions
     if (this.checkGameEnd()) return;
+
+    const previousStateName = this.getStateName();
 
     // Set next state
     this.incrementState(index, skipped);
@@ -1622,10 +1715,10 @@ module.exports = class Game {
         ),
       ];
     }
-    if (this.setup.OneNightMode && this.currentState == 0) {
+    if (this.setup.majorityVoting && this.currentState == 0) {
       [
         this.sendAlert(
-          `:crystal2: ${this.setup.name}: This setup is using One Night Mode! The game will end after Day 1. If all members of the mafia/cult are alive Mafia/cult wins. If any mafia member is killed town wins. If No Mafia/Cult are in game if any village aligned players die, Village loses. If Mafia and Cult are in a game, Then 1 mafia and 1 Cult must be killed for village to win, 1 Cult and 0 mafia must be killed for Mafia to win, 1 Mafia and 0 cult must be killed for cult to win.`,
+          `:crystal2: ${this.setup.name}: This setup is using Majority Voting! A player must get at least 50% of the vote to be condemned`,
           undefined,
           { color: " #713cfe" }
         ),
@@ -1661,7 +1754,7 @@ module.exports = class Game {
     if (this.setup.PrivateShare && this.currentState == 0) {
       [
         this.sendAlert(
-          `:message: ${this.setup.name}: This Setup is has Private Revealing Enabled! Do /privatereveal to privatly reveal your role to a player.`,
+          `:message: ${this.setup.name}: This Setup has Private Revealing enabled! Do /privatereveal to privatly reveal your role to a player.`,
           undefined,
           { color: "#F1F1F1" }
         ),
@@ -1670,89 +1763,18 @@ module.exports = class Game {
     if (this.setup.PublicShare && this.currentState == 0) {
       [
         this.sendAlert(
-          `:message: ${this.setup.name}: This Setup is has Public Revealing Enabled! Do /publicreveal to publicly reveal your role.`,
+          `:message: ${this.setup.name}: This Setup has Public Revealing enabled! Do /publicreveal to publicly reveal your role.`,
           undefined,
           { color: "#F1F1F1" }
         ),
       ];
-    }
-    if (this.SpecialInteractionRoles.length > 0 && this.currentState == 0) {
-      this.SpecialInteractionText = [];
-      let special;
-      for (let role of this.SpecialInteractionRoles) {
-        special = this.getSpecialInteractions(role);
-        if (this.isOneNightMode() && special["OneNightMode"]) {
-          this.SpecialInteractionText.push(
-            `:journ: ${
-              role.split(":")[0]
-            } has a Special Interaction With One Night Mode, ${
-              special["OneNightMode"]
-            }`
-          );
-        }
-        for (let r of this.PossibleRoles) {
-          if (
-            special[r.split(":")[0]] &&
-            !this.SpecialInteractionText.includes(
-              `:journ: ${role.split(":")[0]} + ${r.split(":")[0]}: ${
-                special[r.split(":")[0]]
-              }`
-            )
-          ) {
-            this.SpecialInteractionText.push(
-              `:journ: ${role.split(":")[0]} + ${r.split(":")[0]}: ${
-                special[r.split(":")[0]]
-              }`
-            );
-          }
-        }
-        for (let addRole = 0; addRole < this.AddedRoles.length; addRole++) {
-          if (
-            this.AddedRoles[addRole] &&
-            special[this.AddedRoles[addRole].split(":")[0]] &&
-            !this.SpecialInteractionText.includes(
-              `:journ: ${role.split(":")[0]} + ${
-                this.AddedRoles[addRole].split(":")[0]
-              }: ${special[this.AddedRoles[addRole].split(":")[0]]}`
-            )
-          ) {
-            this.SpecialInteractionText.push(
-              `:journ: ${role.split(":")[0]} + ${
-                this.AddedRoles[addRole].split(":")[0]
-              }: ${special[this.AddedRoles[addRole].split(":")[0]]}`
-            );
-          }
-        }
-        for (let r of this.PossibleEvents) {
-          if (
-            special[r.split(":")[0]] &&
-            !this.SpecialInteractionText.includes(
-              `:journ: ${role.split(":")[0]} + ${r.split(":")[0]}: ${
-                special[r.split(":")[0]]
-              }`
-            )
-          ) {
-            this.SpecialInteractionText.push(
-              `:journ: ${role.split(":")[0]} + ${r.split(":")[0]}: ${
-                special[r.split(":")[0]]
-              }`
-            );
-          }
-        }
-      }
-      if (this.SpecialInteractionText.length > 0) {
-        this.sendAlert(
-          `:crystal: ${this.setup.name}: This setup has special role interactions! Type /special to read about them.`,
-          undefined,
-          { color: " #eb347a" }
-        );
-      }
     }
 
     // Check for inactivity
     this.inactivityCheck();
 
     // Make meetings and send deaths, reveals, alerts
+    this.processObituaryQueue(previousStateName);
     this.processDeathQueue();
     this.processExorciseQueue();
     this.processRevealQueue();
@@ -2144,6 +2166,7 @@ module.exports = class Game {
     this.processExorciseQueue();
     this.processRevealQueue();
     this.processAlertQueue();
+    this.processObituaryQueue(`instant-${Date.now()}`);
   }
 
   // A test branch version of this.makeMeetings()
@@ -2181,8 +2204,8 @@ module.exports = class Game {
     return this.votingDead || this.setup.votingDead;
   }
 
-  isOneNightMode() {
-    return this.setup.OneNightMode;
+  isMajorityVoting() {
+    return this.setup.majorityVoting;
   }
 
   isNoVeg() {
@@ -2201,6 +2224,100 @@ module.exports = class Game {
   achievementsAllowed() {
     return this.ranked || this.competitive;
     //return true;
+  }
+
+  canChangeSetup(){
+    if(this.ranked == true || this.competitive == true){
+              this.sendAlert(
+              `The setup cannot be changed in ranked games.`, this.players.filter((p) => p.user.id == this.hostId)
+            );
+      return false;
+    }
+    if(this.started == true){
+                this.sendAlert(
+              `The setup cannot be changed midgame.`, this.players.filter((p) => p.user.id == this.hostId)
+            );
+      return false;
+    }
+    if(this.finished == true){
+      return false;
+    } 
+    return true;
+  }
+
+  async changeSetup(setupID){
+    if(!setupID){
+          this.sendAlert(
+              `The setup not found, enter a valid Setup ID.`, this.players.filter((p) => p.user.id == this.hostId)
+            );
+      return;
+    }
+    
+    if(this.canChangeSetup() != true){
+      return;
+    }
+         let setup = await models.Setup.findOne({
+        id: setupID,
+      })
+      /*.select(
+        "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
+      );*/
+    if(setup && setup.total){
+      //setup = setup.toJSON();
+      if(setup.total < this.players.length){
+            this.sendAlert(
+              `The setup must have at least ${this.players.length} players.`, this.players.filter((p) => p.user.id == this.hostId)
+            );
+        return;
+      }
+      if(setup.gameType != this.type){
+               this.sendAlert(
+              `The setup must be a ${this.type} setup.`, this.players.filter((p) => p.user.id == this.hostId)
+            );
+        return;
+      }
+      this.setup = setup.toJSON();
+      this.setup.roles = JSON.parse(this.setup.roles);
+      if(this.type == "Mafia"){
+        this.noDeathLimit = this.setup.noDeathLimit;
+         this.ForceMustAct = this.setup.ForceMustAct;
+        this.EventsPerNight = this.setup.EventsPerNight;
+        this.GameEndEvent = this.setup.GameEndEvent;
+      }
+      else if(this.type == "Card Games"){
+        this.hasHost = this.setup.roles[0]["Host:"];
+      }
+      else if(this.type == "Ghost"){
+        this.hasFool = this.setup.roles[0]["Fool:"];
+      }
+      else if(this.type == "Liars Dice"){
+         this.hasHost = this.setup.roles[0]["Host:"];
+      }
+      else if(this.type == "Resistance"){
+        this.numMissions = this.setup.numMissions;
+         this.teamFailLimit = this.setup.teamFailLimit;
+        this.teamSizeSlope = (this.setup.lastTeamSize - this.setup.firstTeamSize) / this.numMissions;
+      }
+      else if(this.type == "Wacky Words"){
+    this.hasAlien = this.setup.roles[0]["Alien:"];
+    this.hasNeighbor = this.setup.roles[0]["Neighbor:"];
+    this.hasGovernor = this.setup.roles[0]["Governor:"];
+    this.hasGambler = this.setup.roles[0]["Gambler:"];
+    this.hasHost = this.setup.roles[0]["Host:"];
+      }
+
+       this.sendAlert(
+              `The setup has been changed to ${this.setup.name}.`
+            );
+    // Set game in progress in redis db
+    redis.setGameSetup(this.id, setupID);
+      this.checkGameStart();
+    }
+    else{
+          this.sendAlert(
+              `Setup not found.`, this.players.filter((p) => p.user.id == this.hostId)
+            );
+    }
   }
 
   checkGameEnd() {
@@ -2259,6 +2376,7 @@ module.exports = class Game {
       this.history.recordAllDead();
 
       winners.queueAlerts();
+      this.processObituaryQueue("Postgame");
       this.processDeathQueue();
       this.processExorciseQueue();
       this.processRevealQueue();
@@ -2301,6 +2419,24 @@ module.exports = class Game {
         }
       }
 
+      for(let player of this.players){
+          if (player.CompletedDailyChallenges.length > 0) {
+            for (let x = 0; x < player.CompletedDailyChallenges.length; x++) {
+                //this.getDailyChallenge(player.CompletedDailyChallenges[x]);
+                this.sendAlert(
+                  `:star: ${
+                    player.name
+                  } has completed the Daily Challenge: ${this.getDailyChallenge(
+                    player.CompletedDailyChallenges[x][0],player.CompletedDailyChallenges[x][1]
+                  )}`,
+                  undefined,
+                  { color: "#d1cdab" }
+                );
+              
+            }
+          }
+      }
+
       if (this.isTest) {
         this.broadcast("finished");
         await redis.deleteGame(this.id);
@@ -2324,6 +2460,53 @@ module.exports = class Game {
     } catch (e) {
       logger.error(e);
       // this.handleError(e);
+    }
+  }
+
+  async penalizePlayerForLeaving(userId) {
+    let leavePenalty = await models.LeavePenalty.findOne({ userId: userId }).select("level");
+
+    const now = Date.now();
+
+    // Determine the penalty level based on number of violations associated with record (if any) and amount of grace
+    const penaltyLevel = (leavePenalty ? leavePenalty.level : 0) - constants.leavePenaltyForgivenessAmount;
+    const isForgiven = penaltyLevel < 0;
+
+    var penaltyMillis = constants.leavePenaltyMinimumMillis + (penaltyLevel * constants.leavePenaltyPerLevelMillis);
+    if (penaltyMillis > constants.leavePenaltyMaximumMillis) {
+      penaltyMillis = constants.leavePenaltyMaximumMillis;
+    }
+    if (isForgiven) {
+      penaltyMillis = 0;
+    }
+
+    const expiresOn = now + constants.leavePenaltyDurationMillis;
+    const canPlayAfter = now + penaltyMillis;
+
+    if (!leavePenalty) {
+      // No penalty recorded - create a new record
+      leavePenalty = new models.LeavePenalty({
+        userId: userId,
+        expiresOn: expiresOn,
+        canPlayAfter: canPlayAfter,
+        level: 0,
+      });
+      await leavePenalty.save();
+    }
+    else {
+      // Penalty already recorded - update the existing one
+      await models.LeavePenalty.updateOne(
+        { userId: userId },
+        {
+          $inc: {
+            level: 1,
+          },
+          $set: {
+            expiresOn: expiresOn,
+            canPlayAfter: canPlayAfter,
+          }
+        }
+      ).exec();
     }
   }
 
@@ -2430,7 +2613,7 @@ module.exports = class Game {
         this.postgame.finish(true);
         if (this.postgame.finalTarget && this.postgame.finalTarget !== "*") {
           kudosTarget = this.postgame.finalTarget;
-          this.sendAlert(`${kudosTarget.name} has received kudos!`);
+          this.sendAlert(`${kudosTarget.name} has received kudos!`, undefined, undefined, ["info"]);
         }
       }
 
@@ -2530,6 +2713,18 @@ module.exports = class Game {
         } else {
           player.EarnedAchievements = [];
         }
+
+        if(this.hasIntegrity && !this.private && player.DailyTracker && player.DailyTracker.length >= 1){
+         coinsEarned += player.DailyPayout;
+        if(player.user.dailyChallenges && player.user.dailyChallenges.length <= 0){
+          coinsEarned += 20;
+          player.DailyCompleted = 1;
+        }
+        else{
+          player.DailyCompleted = 0;
+        }
+        }
+        
         await models.User.updateOne(
           { id: player.user.id },
           {
@@ -2555,6 +2750,20 @@ module.exports = class Game {
           }
         ).exec();
 
+        if(player.DailyTracker && player.DailyTracker.length >= 1){
+        await models.User.updateOne(
+          { id: player.user.id },
+          {
+            $set: {
+              dailyChallenges: player.user.dailyChallenges.map((day) => `${day[0]}:${day[1]}:${day[2]}`),
+            },
+            $inc: {
+              dailyChallengesCompleted: player.DailyCompleted,
+            },
+          }
+        ).exec(); 
+        }
+
         if (heartType && !player.isBot) {
           let heartRefresh = await models.HeartRefresh.findOne({
             userId: player.user.id,
@@ -2569,6 +2778,16 @@ module.exports = class Game {
             await heartRefresh.save();
           }
         }
+        
+          let dailyRefresh = await models.DailyChallengeRefresh.findOne().select("_id");
+          if (!dailyRefresh) {
+            dailyRefresh = new models.DailyChallengeRefresh({
+              when: Date.now() + constants.dailyChallengesRefreshIntervalMillis,
+            });
+            await dailyRefresh.save();
+          }
+        
+        
 
         if (!player.isBot) {
           await redis.cacheUserInfo(player.user.id, true);
@@ -2589,6 +2808,8 @@ module.exports = class Game {
       // this.handleError(e);
     }
   }
+
+  
 
   async queueScheduleNotifications() {
     var usersWhoReserved = await redis.getGameReservations(this.id);

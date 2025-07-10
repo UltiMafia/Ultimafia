@@ -3,6 +3,15 @@ var stats = require("./stats");
 
 const accessibilityThemeValues = ["", "Higher Contrast"];
 
+const anonymousDeck = new mongoose.Schema({
+  id: { type: String, index: true },
+  name: { type: String, index: true },
+  creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
+  profiles: [{ type: mongoose.Schema.Types.ObjectId, ref: "DeckProfile" }],
+  disabled: { type: Boolean, default: 0 },
+  featured: { type: Boolean, index: true },
+});
+
 var schemas = {
   User: new mongoose.Schema({
     id: { type: String, index: true },
@@ -51,6 +60,7 @@ var schemas = {
       roleIconScheme: { type: String, default: "vivid" },
       siteColorScheme: { type: String, default: "dark" },
       disableProTips: { type: Boolean, default: false },
+      roleSkins: String,
       autoplay: { type: Boolean, default: false },
       youtube: String,
       hideStatistics: { type: Boolean, default: false },
@@ -102,12 +112,16 @@ var schemas = {
     winRate: { type: Number, default: 0 },
     achievements: [],
     achievementCount: { type: Number, default: 0 },
+    ownedStamps: [],
+    availableStamps: [],
     redHearts: { type: Number, default: 0 },
     goldHearts: { type: Number, default: 0 },
     rankedPoints: { type: Number, default: 0 },
     competitivePoints: { type: Number, default: 0 },
     kudos: { type: Number, default: 0 },
     karma: { type: Number, default: 0 },
+    dailyChallenges: [String],
+    dailyChallengesCompleted: { type: Number, default: 0 },
     nameChanged: false,
     bdayChanged: false,
     playedGame: false,
@@ -150,7 +164,7 @@ var schemas = {
     banished: Number,
     talkingDead: Boolean,
     votingDead: Boolean,
-    OneNightMode: Boolean,
+    majorityVoting: Boolean,
     hiddenConverts: Boolean,
     RoleShare: Boolean,
     AlignmentShare: Boolean,
@@ -189,14 +203,7 @@ var schemas = {
     alignmentWins: {},
     dayCountWins: {},
   }),
-  AnonymousDeck: new mongoose.Schema({
-    id: { type: String, index: true },
-    name: { type: String, index: true },
-    creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
-    profiles: [{ type: mongoose.Schema.Types.ObjectId, ref: "DeckProfile" }],
-    disabled: { type: Boolean, default: 0 },
-    featured: { type: Boolean, index: true },
-  }),
+  AnonymousDeck: anonymousDeck,
   CustomEmote: new mongoose.Schema({
     id: { type: String, index: true },
     name: { type: String, index: true },
@@ -238,13 +245,8 @@ var schemas = {
     broken: Boolean,
     kudosReceiver: { type: String, default: "" },
     anonymousGame: Boolean,
-    anonymousDeck: [],
-    /*
-     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "AnonymousDeck",
-    },
-    */
+    // This is a mongoose subdocument. It won't change if the anonyonous deck that the game was started with changes.
+    anonymousDeck: [ anonymousDeck ],
   }),
   ArchivedGame: new mongoose.Schema({
     user: {
@@ -521,6 +523,15 @@ var schemas = {
     userId: { type: String, index: true },
     when: { type: Number, index: true },
     type: { type: String, index: true },
+  }),
+  DailyChallengeRefresh: new mongoose.Schema({
+    when: { type: Number, index: true },
+  }),
+  LeavePenalty: new mongoose.Schema({
+    userId: { type: String, index: true },
+    expiresOn: { type: Number, index: true },
+    canPlayAfter: { type: Number },
+    level: { type: Number, default: 0 },
   }),
 };
 

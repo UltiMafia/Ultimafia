@@ -100,6 +100,7 @@ var defaultOptions = {
     ...commonHostOptions,
     startingChips: 50,
     minimumBet: 2,
+    MaxRounds: 0,
     placeBetsLength: 2,
     showdownLength: 2,
   },
@@ -126,6 +127,8 @@ var defaultOptions = {
     turnOnCaps: true,
     dayLength: 5,
     nightLength: 2,
+    isRankedChoice: false,
+    votesToPoints: false,
   },
   Battlesnakes: existingHostOptions["Battlesnakes"] || {
     ...commonHostOptions,

@@ -12,12 +12,5 @@ module.exports = class Fool extends Role {
         actionName: "Fool Around",
       },
     };
-    // this.listeners = {
-    //   state: function (stateInfo) {
-    //     if (stateInfo.name.match(/Night/)) {
-    //       this.game.broadcast("NightFool")
-    //     }
-    //   },
-    // };
   }
 };

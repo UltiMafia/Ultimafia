@@ -70,7 +70,6 @@ function SnakeGame(props) {
             <span>Battlesnakes</span>
           </div>
         }
-        timer={<Timer timers={game.timers} history={history} />}
       />
       <ThreePanelLayout
         leftPanelContent={

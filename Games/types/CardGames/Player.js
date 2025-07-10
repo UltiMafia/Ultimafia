@@ -1,6 +1,6 @@
 const Player = require("../../core/Player");
 
-module.exports = class CardGamesPlayer extends Player {
+module.exports = class TexasHoldEmPlayer extends Player {
   constructor(user, game, isBot) {
     super(user, game, isBot);
     this.usesCount = 0;

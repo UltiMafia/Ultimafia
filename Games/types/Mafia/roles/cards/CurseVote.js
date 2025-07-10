@@ -9,7 +9,7 @@ module.exports = class CurseVote extends Card {
       Victim: {
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive"], exclude: ["Cult"] },
+        targets: { include: ["alive"], exclude: ["self"] },
         action: {
           priority: PRIORITY_KILL_DEFAULT - 1,
           run: function () {

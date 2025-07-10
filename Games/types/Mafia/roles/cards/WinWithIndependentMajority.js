@@ -23,37 +23,17 @@ module.exports = class WinWithIndependentMajority extends Card {
           return;
         }
 
-        const ONE_NIGHT = this.game.isOneNightMode();
-        const CULT_IN_GAME =
-          this.game.players.filter((p) => CULT_FACTIONS.includes(p.faction))
-            .length > 0;
-        const MAFIA_IN_GAME =
-          this.game.players.filter((p) => MAFIA_FACTIONS.includes(p.faction))
-            .length > 0;
+        const ONE_NIGHT = this.game.IsBloodMoon;
 
         if (this.game.hasBeenDay == true) {
           if (ONE_NIGHT) {
             var deadTeam = this.game
               .deadPlayers()
-              .filter(
-                (p) => this.game.getRoleAlignment(p.role.name) == "Independent"
-              );
-            var deadCult = this.game
-              .deadPlayers()
-              .filter((p) => CULT_FACTIONS.includes(p.faction));
-            var deadMafia = this.game
-              .deadPlayers()
-              .filter((p) => MAFIA_FACTIONS.includes(p.faction));
-            if (
-              (MAFIA_IN_GAME && deadMafia.length <= 0) ||
-              this.game.deadPlayers().length <= 0
-            )
-              return;
-            if (
-              (CULT_IN_GAME && deadCult.length <= 0) ||
-              this.game.deadPlayers().length <= 0
-            )
-              return;
+              filter((p) => this.game.getRoleAlignment(p.getRoleAppearance().split(" (")[0]) ==
+        "Independent" &&
+        !this.game
+          .getRoleTags(p.getRoleAppearance().split(" (")[0])
+          .includes("Lone"));
             if (deadTeam.length <= 0 || this.game.deadPlayers().length <= 0) {
               winners.addPlayer(this.player, this.name);
               return;
@@ -61,10 +41,11 @@ module.exports = class WinWithIndependentMajority extends Card {
           }
         }
         // win with majority
-        const numIndependentAlive = this.game.players.filter(
-          (p) =>
-            p.alive && this.game.getRoleAlignment(p.role.name) == "Independent"
-        ).length;
+        const numIndependentAlive = this.game.players.filter((p) => this.game.getRoleAlignment(p.role.name) ==
+        "Independent" &&
+        !this.game
+          .getRoleTags(this.game.formatRoleInternal(p.role.name, p.role.modifier))
+          .includes("Lone") && p.alive).length;
         if (
           aliveCount > 0 &&
           numIndependentAlive >= aliveCount / 2 &&
@@ -80,11 +61,6 @@ module.exports = class WinWithIndependentMajority extends Card {
       roleAssigned: function (player) {
         if (player !== this.player) {
           return;
-        }
-        if (this.game.isOneNightMode()) {
-          this.player.queueAlert(
-            "Because It is One Night mode, You win if no Independents are killed. If Mafia or Cult are present then will you will need one from each to be killed to win."
-          );
         }
       },
     };

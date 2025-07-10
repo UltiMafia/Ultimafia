@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Avatar } from "./User";
 import { useNow } from "../../hooks/useNow";
-import { Tooltip } from "@mui/material";
+import { Box, Divider, Stack, Tooltip, Typography } from "@mui/material";
 
 import "../../css/main.css";
 
@@ -51,46 +51,57 @@ export default function UserNotifications({
   }
 
   return (
-    <>
+    <Stack direction="row" sx={{
+      pl: .5,
+      alignItems: "center",
+    }}>
       <div
         style={{
-          marginTop: "8px",
-          textAlign: "center",
           display: "flex",
+          width: "40px",
           flexDirection: "column",
-          alignItems: "center",
+          alignItems: "stretch",
         }}
       >
-        <div>
+        <Stack direction="row">
+          <Typography sx={{ width: "24px", pr: .5, textAlign: "right" }}>
+            {user.redHearts ?? 0}
+          </Typography>
           <Tooltip title={getHeartRefreshMessage(user, "red")}>
             <i
               className="fas fa-heart"
-              style={{ color: "#e23b3b", marginRight: "4px" }}
+              style={{ color: "#e23b3b", marginLeft: "auto" }}
             ></i>
           </Tooltip>
-          {user.redHearts ?? 0}
-        </div>
-        <div>
+        </Stack>
+        <Stack direction="row">
+          <Typography sx={{ width: "24px", pr: .5, textAlign: "right" }}>
+            {user.goldHearts ?? 0}
+          </Typography>
           <Tooltip title="Not implemented yet.">
             <i
               className="fas fa-heart"
-              style={{ color: "#edb334", marginRight: "4px" }}
+              style={{ color: "#edb334", marginLeft: "auto" }}
             ></i>
           </Tooltip>
-          {user.goldHearts ?? 0}
-        </div>
+        </Stack>
       </div>
+      <Divider orientation="vertical" flexItem sx={{ mx: .5 }} />
       <i
         className="fas fa-bullhorn"
         onClick={() => openAnnouncements()}
         style={{ fontSize: "14px" }}
       />
       <SiteNotifs />
-      <div style={{ marginLeft: "6px" }}>
+      <Box sx={{
+        display: "inline-flex",
+        alignItems: "center",
+        mx: 1,
+      }}>
         <Link to="/user" className="profile-link">
           <Avatar id={user.id} name={user.name} hasImage={user.avatar} />
         </Link>
-      </div>
-    </>
+      </Box>
+    </Stack>
   );
 }

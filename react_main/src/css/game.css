@@ -161,46 +161,105 @@
   z-index: 1;
 }
 
-.game .message {
-  /*display: flex;*/
-  flex-wrap: wrap;
+.game .message:hover {
+  background-color: rgba(12, 12, 12, .15);
+}
 
-  margin-top: 6px;
-  margin-left: 8px;
+.game .message {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  position: relative;
+
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 8px;
+  padding-right: 4px;
 
   color: var(--scheme-color-text);
+}
+
+.game .message .message-inner-rightaligned {
+  display: flex;
+  flex-flow: row-reverse nowrap;
+
+  gap: 4px;
+
+  text-align: right;
+}
+
+.game .message .message-inner-nameplated {
+  display: flex;
+  flex-flow: column;
+}
+
+.game .message .message-inner-onelined {
+  display: flex;
+  flex-flow: row nowrap;
+
+  flex-grow: 1;
+
+  gap: 4px;
+}
+
+.game .message .message-inner-inline {
+  display: block;
+}
+
+.game .message .nameplate {
+  display: inline-flex;
+  flex-flow: row-reverse;
+
+  align-items: center;
+  justify-content: start;
+
+  gap: 4px;
+}
+
+.game .message .nameplate-aligned {
+  display: inline-flex;
+  flex-flow: row nowrap;
+
+  align-items: center;
+  justify-content: start;
+
+  min-width: 175px;
+  max-width: 175px;
+
+  gap: 4px;
+  padding-right: 10px;
+
+  border-right: 1px solid #bd4c4c;
+}
+
+@media (max-width:700px) {
+  .game .message .nameplate-aligned {
+    min-width: 108px !important;
+    max-width: 108px !important;
+  }
+}
+
+.game .message .nameplate-aligned .user-name {
+  font-weight: bold;
+}
+
+.game .message .nameplate .user-name {
+  font-weight: bold;
+}
+
+.game .message .nameplate-aligned .name-with-avatar {
+  overflow-x: hidden;
 }
 
 .game .message:last-child {
   padding-bottom: 10px;
 }
 
-.game .message .sender,
-.gameMessageSender {
-  display: inline-flex;
-  align-items: center;
-  /*flex-shrink: 0;*/
-  /*flex-basis: 170px;*/
-  /*align-self: flex-start;*/
-
-  /*display: flex;*/
-  /*flex-flow: row nowrap;*/
-  /*justify-content: flex-end;*/
-
-  overflow-x: hidden;
-}
-
-.game .message .sender .time {
-  margin-right: 8px;
+.game .message .time {
   opacity: 0.5;
-}
-
-.game .message .sender .name-with-avatar {
-  display: inline-flex;
-  margin-left: auto;
-
-  overflow-x: hidden;
-  font-weight: bold;
+  min-width: 40px;
+  font-size: 12px;
 }
 
 .game .message .prefix {
@@ -209,16 +268,16 @@
   font-style: italic;
 }
 
-.game .message .content,
-.gameMessageContent {
+.game .message .content {
   display: inline;
-  /*display: flex;*/
-  /*flex-flow: row wrap;*/
 
-  padding: 0px 4px;
-  /*border-left: 1px solid #616161;*/
-
+  word-break: break-word;
   white-space: pre-wrap;
+}
+
+.game .message .content.dense {
+  margin-left: 4px;
+  padding-left: 4px;
 }
 
 .game .message .content.dark {
@@ -309,15 +368,24 @@
   font-style: italic;
 }
 
-.game .message .content.server,
-.gameMessageContentServer {
-  border: none;
+.game .message .content.server {
+  flex-grow: 1;
+
+  padding: 4px 8px;
+
+  background-color: #121212;
+  border-radius: 8px;
+}
+
+.game .message .content.server.important {
   color: #bd4c4c;
-  margin-left: 21px;
+}
+
+.game .message .content.server.info {
+  color: #F1F1F1;
 }
 
 .game .message .content.vote-record {
-  border: none;
   opacity: 0.5;
   margin-left: 21px;
 }
@@ -351,17 +419,26 @@
   margin-right: 10px;
 }
 
+.game .message .pin-button-wrapper {
+  align-self: start;
+
+  min-width: 20px;
+  margin-left: auto;
+  transform: translateX(6px);
+}
+
 .game .speech-wrapper {
   flex-grow: 1;
   display: flex;
   flex-flow: column;
 
-  /* padding-top: 10px; */
-
   background-color: var(--theme-color);
 }
 
 .game .speech-display {
+  display: flex;
+  flex-flow: column;
+
   flex-grow: 1;
   flex-basis: 0px;
 
@@ -976,10 +1053,6 @@
 
   .game .message .sender {
     padding-left: 0px;
-  }
-
-  .game .message .time {
-    display: none;
   }
 }
 

@@ -78,12 +78,12 @@ module.exports = class Demonic extends Card {
         }
 
         var devotion = this.game.players.filter(
-          (p) => p.hasAbility(["Win-Con"]) && p.role.data.DevotionCult
+          (p) => p.hasAbility(["Win-Con"]) && p.role.data.DevotionCult == true
         );
         if (devotion.length > 0) {
-          var backUpTarget = devotion.filter((p) => p.role.data.BackUpConvert);
+          var backUpTarget = devotion.filter((p) => p.role.data.BackUpConvert == true);
           if (backUpTarget.length > 0) {
-            backUpTarget.setRole(
+            backUpTarget[0].setRole(
               `${this.player.role.name}:${this.player.role.modifier}`,
               this.player.role.data,
               false,

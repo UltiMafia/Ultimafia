@@ -11,7 +11,7 @@ module.exports = class ConvertToChosenRole extends Card {
         flags: ["voting"],
         targets: { include: ["alive", "self"] },
         action: {
-          priority: PRIORITY_CONVERT_DEFAULT - 1,
+          priority: PRIORITY_CONVERT_DEFAULT + 3,
           run: function () {
             this.actor.role.data.targetPlayer = this.target;
           },
@@ -20,11 +20,11 @@ module.exports = class ConvertToChosenRole extends Card {
       "Convert To": {
         states: ["Night"],
         flags: ["voting"],
-        inputType: "custom",
+        inputType: "AllRoles",
         //targets: { targetOptions },
         action: {
           labels: ["convert", "role"],
-          priority: PRIORITY_CONVERT_DEFAULT,
+          priority: PRIORITY_CONVERT_DEFAULT + 4,
           run: function () {
             let targetPlayer = this.actor.role.data.targetPlayer;
             if (targetPlayer) {
@@ -74,7 +74,7 @@ module.exports = class ConvertToChosenRole extends Card {
         },
       },
     };
-
+    /*
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -93,5 +93,6 @@ module.exports = class ConvertToChosenRole extends Card {
         this.meetings["Convert To"].targets = ConvertOptions;
       },
     };
+    */
   }
 };

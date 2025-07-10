@@ -44,6 +44,7 @@ module.exports = class MafiaGame extends Game {
         length: options.settings.stateLengths["Day"],
       },
     ];
+    this.useObituaries = true;
     this.pregameWaitLength = options.settings.pregameWaitLength;
     this.extendLength = options.settings.extendLength;
     this.broadcastClosedRoles = options.settings.broadcastClosedRoles;
@@ -70,7 +71,7 @@ module.exports = class MafiaGame extends Game {
     this.AdmiralEvilRoles = [];
     this.AdmiralGold = 15;
     this.EventsPerNight = this.setup.EventsPerNight;
-    this.GameEndEvent = this.setup.GameEndEvent;
+    this.GameEndEvent = this.setup.GameEndEvent || "Meteor";
     this.lastNightVisits = [];
     this.infoLog = [];
   }
@@ -182,6 +183,19 @@ module.exports = class MafiaGame extends Game {
     }
     if (this.getStateName() == "Day") {
       this.infoLog = [];
+    var actionVisitDay = new Action({
+        game: this,
+        priority: 100,
+        labels: ["hidden", "absolute"],
+        run: function () {
+          this.game.hasBeenDay = true;
+          if(this.game.IsBloodMoon == true){
+            this.game.hasBeenBloodMoonDay = true;
+          }
+        },
+      });
+
+      this.queueAction(actionVisitDay);
     }
     if (this.getStateName() == "Night") {
       var actionVisit = new Action({
@@ -202,6 +216,12 @@ module.exports = class MafiaGame extends Game {
               }
             }
           }
+
+          if(this.game.MovieWatchers && this.game.MovieWatchers.length <= 2){
+            this.game.MovieWatchers = null;
+          }
+
+          this.game.hasBeenNight = true;
 
           this.game.lastNightVisits = [];
           for (let action of this.game.actions[0]) {
@@ -417,12 +437,12 @@ module.exports = class MafiaGame extends Game {
       finished = true;
     }
 
-    if (this.isOneNightMode() && this.hasBeenDay == true) {
+    if (this.IsBloodMoon == true && this.hasBeenBloodMoonDay == true) {
       finished = true;
     }
 
     if (
-      this.isOneNightMode() == true &&
+      this.IsBloodMoon == true &&
       this.hasBeenDay == true &&
       winners.groupAmt() <= 0
     ) {

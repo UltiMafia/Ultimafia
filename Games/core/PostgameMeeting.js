@@ -9,12 +9,13 @@ module.exports = class PostgameMeeting extends Meeting {
     this.speakDead = true;
     this.noVeg = true;
     this.displayVoteCounter = true;
+    this.noOneDisplayName = "No Confidence";
 
     if (game.isKudosEligible()) {
       this.voting = true;
       this.randomizeTieResults = true;
       this.actionName = "Vote to give kudos";
-      this.targets = { include: ["members"], exclude: ["self"] };
+      this.targets = { include: ["all"], exclude: ["self"] };
     }
   }
 };

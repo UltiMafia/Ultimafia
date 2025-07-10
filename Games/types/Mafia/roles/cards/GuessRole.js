@@ -11,20 +11,39 @@ module.exports = class GuessRole extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
+          labels: ["investigate", "role"],
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
-            this.actor.role.data.targetPlayer = this.target;
+            //this.actor.role.data.targetPlayer = this.target;
+            let targetRole = this.actor.role.data.targetRole;
+              if (targetRole) {
+              let info = this.game.createInformation(
+                "GuessRoleInfo",
+                this.actor,
+                this.game,
+                [this.target],
+                [targetRole]
+              );
+              info.processInfo();
+
+              this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
+              delete this.actor.role.data.targetRole;
+            }
           },
         },
       },
       "Guess Role": {
         states: ["Night"],
         flags: ["voting"],
-        inputType: "custom",
+        inputType: "AllRoles",
+        AllRolesFilters: ["addedRoles"],
         action: {
           labels: ["investigate", "role"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT-1,
           run: function () {
+            
+            this.actor.role.data.targetRole = this.target;
+            /*
             let targetPlayer = this.actor.role.data.targetPlayer;
 
             if (targetPlayer) {
@@ -39,12 +58,12 @@ module.exports = class GuessRole extends Card {
 
               this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
               delete this.actor.role.data.targetPlayer;
+              */
             }
           },
         },
-      },
-    };
-
+      };
+    /*
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -66,5 +85,6 @@ module.exports = class GuessRole extends Card {
         this.meetings["Guess Role"].targets = guessOptions;
       },
     };
+    */
   }
 };

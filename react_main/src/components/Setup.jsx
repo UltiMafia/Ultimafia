@@ -53,6 +53,7 @@ export default function Setup(props) {
           count={props.setup.count[alignment]}
           gameType={props.setup.gameType}
           key={alignment}
+          otherRoles={props.setup.roles}
         />
       );
     }
@@ -72,6 +73,7 @@ export default function Setup(props) {
           role={Object.keys(roleGroupData)[0]}
           roleGroup={roleGroupData}
           gameType={props.setup.gameType}
+          otherRoles={props.setup.roles}
         />
       );
     }
@@ -88,6 +90,7 @@ export default function Setup(props) {
         count={props.setup.roles[index][role]}
         gameType={props.setup.gameType}
         key={role}
+        otherRoles={props.setup.roles}
       />
     ));
   }
@@ -138,6 +141,7 @@ export default function Setup(props) {
         style={{
           alignSelf: "flex-end",
           marginLeft: "5px",
+          cursor: "pointer",
         }}
         key="ellipses"
       />
@@ -170,7 +174,7 @@ export default function Setup(props) {
         <Stack direction="column" sx={{
           padding: "8px",
         }}>
-          <Typography variant="body2">
+          <Typography variant="body2" className="setup-name">
             {filterProfanity(props.setup.name, user.settings)}
           </Typography>
           <Grid container>
@@ -194,6 +198,7 @@ export function SmallRoleList(props) {
         key={role || "null"}
         showSecondaryHover
         gameType={props.gameType}
+        otherRoles={props.setup?.roles}
       />
     ));
   } else
@@ -205,6 +210,7 @@ export function SmallRoleList(props) {
         gameType={props.gameType}
         showSecondaryHover
         key={role}
+        otherRoles={props.setup?.roles}
       />
     ));
 

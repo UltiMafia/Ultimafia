@@ -68,7 +68,29 @@ module.exports = class Card {
 
           this.role.listeners[eventName].push(this.listeners[eventName]);
         }
-      } else if (this[key] && typeof this[key] == "object") {
+      } else if (key == "meetingMods") {
+        for (let prop in this[key]){
+          if(prop != "*"){
+           this.role[key][prop] = this[key][prop];
+          }
+          else if(!this.role[key]["*"]){
+            this.role[key][prop] = this[key][prop];
+          }
+          else{
+            let thing = "*";
+            for(let x = 0; x < 25; x++){
+              if(!this.role[key][thing]){
+                this.role[key][thing] = this[key][prop];
+              }
+              else{
+                thing += "*";
+              }
+            }
+
+          }
+        }
+      }
+       else if (this[key] && typeof this[key] == "object") {
         if (this.overwrites[key]) this.role[key] = this[key];
         else {
           for (let prop in this[key]) this.role[key][prop] = this[key][prop];

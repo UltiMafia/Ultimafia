@@ -27,7 +27,7 @@ module.exports = class TrueAndFalseInfo extends Information {
     }
     if (
       this.game.alivePlayers().length <= 3 ||
-      this.game.isOneNightMode() == true
+      this.game.IsBloodMoon == true
     ) {
       possibleInfo.push("BinaryAlignmentInfo");
     }
@@ -45,7 +45,7 @@ module.exports = class TrueAndFalseInfo extends Information {
     }
     if (
       this.game.alivePlayers().length <= 3 ||
-      this.game.isOneNightMode() == true
+      this.game.IsBloodMoon == true
     ) {
       possibleInfo.push("RoleInfo");
     }

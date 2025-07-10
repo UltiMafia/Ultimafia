@@ -31,6 +31,7 @@ module.exports = class Meeting {
     this.noRecord = false;
     this.liveJoin = false;
     this.randomizeTieResults = false;
+    this.requireMajority = (game.isMajorityVoting() && this.name == "Village");
     this.votesInvisible = game.setup.votesInvisible;
     this.mustAct = game.isMustAct() && this.name != "Village";
     this.mustCondemn = game.isMustCondemn() && this.name == "Village";
@@ -43,10 +44,12 @@ module.exports = class Meeting {
     this.hideAfterVote = false;
     this.Important = false;
     this.displayVoteCounter = false;
+    this.noOneDisplayName = null;
     /***/
 
     this.inputType = "player";
     this.targets = { include: ["alive"], exclude: ["members"] };
+    this.AllRolesFilters = [];
     this.messages = [];
     this.members = new ArrayHash();
     this.votes = {};
@@ -109,12 +112,18 @@ module.exports = class Meeting {
 
     if (options.targets) this.targets = options.targets;
 
+    if (options.AllRolesFilters) this.AllRolesFilters = options.AllRolesFilters;
+
     if (options.inputType) this.inputType = options.inputType;
     this.textOptions = options.textOptions;
     this.displayOptions = options.displayOptions;
 
     if (options.displayVoteCounter !== undefined) {
       this.displayVoteCounter = options.displayVoteCounter;
+    }
+
+    if (options.noOneDisplayName !== undefined) {
+      this.noOneDisplayName = options.noOneDisplayName;
     }
 
     if (this.multi) {
@@ -290,6 +299,7 @@ module.exports = class Meeting {
       instantButChangeable: this.instantButChangeable,
       hideAfterVote: this.hideAfterVote,
       displayVoteCounter: this.displayVoteCounter,
+      noOneDisplayName: this.noOneDisplayName,
       anonymous: this.anonymous,
       anonymousVotes: this.anonymousVotes,
       votesInvisible: this.votesInvisible,
@@ -383,6 +393,9 @@ module.exports = class Meeting {
       if (!this.mustAct || this.includeNo) this.targets = ["Yes", "No"];
       else this.targets = ["Yes"];
     }
+     else if (this.inputType == "AllRoles") {
+      this.targets = this.getAllRolesTargets( this.inputType, this.members.length == 1 ? this.members.at(0).player : null);
+    }
 
     for (let member of this.members) {
       for (let ability of member.speechAbilities) {
@@ -434,6 +447,50 @@ module.exports = class Meeting {
         // re-enable voting even during kicks
         this.members[voterId].canUpdateVote = true;
       }
+    }
+  }
+
+    getAllRolesTargets(targetType, self){
+    if(targetType == "AllRoles"){
+     let temp = this.game.PossibleRoles.filter((r) => r);
+
+        for (let tag of this.AllRolesFilters) {
+
+          switch (tag) {
+            case "addedRoles":
+           temp = temp.concat(this.game.AddedRoles);
+            break;
+            case "self":
+              if(self){
+              temp = temp.filter((r) => r != self.role.name);
+              }
+              break;
+            case "aligned":
+              if(self){
+              temp = temp.filter((r) => this.game.getRoleAlignment(r) == this.game.getRoleAlignment(self.role.name));
+              }
+              break;
+            case "banished":
+              temp = temp.filter((r) => (r.split(":")[1] && r.split(":")[1].toLowerCase().includes("banished")));
+              break;
+            case "NoDemonic":
+              temp = temp.filter((r) => !(r.split(":")[1] && r.split(":")[1].toLowerCase().includes("demonic")));
+              break;
+            case "blacklist":
+                if(self && self.role.data.roleBlacklist){
+                temp = temp.filter((r) => !self.role.data.roleBlacklist.includes(r.split(":")[0]));
+                temp = temp.filter((r) => !self.role.data.roleBlacklist2.includes(r));
+                }
+              break;
+            default:
+              
+          }
+        }
+      
+      if((!this.mustAct || temp.length <= 0) && !temp.includes("None")){
+        temp.push("None");
+      }
+      return temp;
     }
   }
 
@@ -507,12 +564,12 @@ module.exports = class Meeting {
               if (!player.alive) includePlayer[player.id] = include;
               break;
             case "previous":
-              if(self.role.data.LimitedLastNightVisits && self.role.data.LimitedLastNightVisits.includes(player)){
+              if(self && self.role.data.LimitedLastNightVisits && self.role.data.LimitedLastNightVisits.includes(player)){
                 includePlayer[player.id] = include;
               }
               break;
             case "previousAll":
-              if(self.role.data.LimitedAllVisits && self.role.data.LimitedAllVisits.includes(player)){
+              if(self && self.role.data.LimitedAllVisits && self.role.data.LimitedAllVisits.includes(player)){
                 includePlayer[player.id] = include;
               }
               break;
@@ -748,6 +805,7 @@ module.exports = class Meeting {
       if (this.useVotingPower == true) {
         this.events.emit("PreVotingPowers", this);
       }
+      let totalVoteCount = 0;
       for (let voterId in this.votes) {
         let member = this.members[voterId];
         let target = this.votes[voterId] || "*";
@@ -760,8 +818,10 @@ module.exports = class Meeting {
         if (!count[target]) count[target] = 0;
         if (this.useVotingPower != true) {
           count[target] += member.voteWeight;
+          totalVoteCount += member.voteWeight;
         } else {
           count[target] += member.player.getVotePower(this);
+          totalVoteCount += member.player.getVotePower(this);
         }
       }
       // Determine target with the most votes (ignores zero votes)
@@ -784,6 +844,10 @@ module.exports = class Meeting {
             finalTarget = highest.targets[0];
           else finalTarget = "No";
         } else finalTarget = highest.targets[0];
+
+      if(this.requireMajority == true && (highest.votes < Math.ceil(totalVoteCount/2))){
+        finalTarget = "*";
+      }
       } else {
         //Tie vote
         if (this.inputType == "boolean") finalTarget = "No";

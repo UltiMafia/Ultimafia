@@ -28,7 +28,6 @@ const GameStatus = (props) => {
     !props.game.private;
   const gameButtonDisabled =
     props?.status === "In Progress" && !props.game.spectating;
-  const stackedVertically = props.stackedVertically;
 
   let buttonUrl, buttonText, buttonVariant, buttonColor;
   if (props.game.status === "Open") {
@@ -38,7 +37,7 @@ const GameStatus = (props) => {
     buttonVariant = "contained";
   } else if (props.game.status === "In Progress") {
     if (props.game.spectating || user.perms.canSpectateAny) {
-      buttonUrl = `/game/${props.game.id}`;
+      buttonUrl = `/game/${props.game.id}?spectate=true`; 
       buttonText = "Spectate";
       buttonColor = "info";
       buttonVariant = "contained";
@@ -104,24 +103,41 @@ const GameStatus = (props) => {
   );
 
   return (
-    <Stack direction={stackedVertically ? "column" : "row-reverse"} spacing={1}
-      sx={{
-        alignItems: stackedVertically ? "stretch" : "center",
-        justifyContent: "center",
-        alignSelf: stackedVertically ? "stretch" : undefined,
-        ml: 1,
-        mr: .5,
+    <Stack direction="row" spacing={1} sx={{
+      ml: 1,
+      alignItems: "center",
+    }}>
+      {/* LOBBY ICON GOES HERE */}
+      {/* <Box sx={{
+        height: "60px",
+        width: "60px",
       }}>
-      <PlayerCount
-        game={props.game}
-        gameId={props.game.id}
-        anonymousGame={props.game.anonymousGame}
-        status={props.game.status}
-        numSlotsTaken={props.game.players}
-        spectatingAllowed={props.game.spectating}
-        spectatorCount={props.game.spectatorCount}
-      />
-      {gameButtonWrapped}
+      </Box> */}
+      <Stack direction="column" spacing={1}
+        sx={{
+          alignItems: "stretch",
+          justifyContent: "center",
+          alignSelf: "stretch",
+          ml: 1,
+          mr: .5,
+        }}>
+        <PlayerCount
+          game={props.game}
+          gameId={props.game.id}
+          anonymousGame={props.game.anonymousGame}
+          status={props.game.status}
+          numSlotsTaken={props.game.players}
+          spectatingAllowed={props.game.spectating}
+          spectatorCount={props.game.spectatorCount}
+        />
+        {gameButtonWrapped}
+      </Stack>
+      {/* GAME STATE ICON GOES HERE */}
+      {/* <Box sx={{
+        height: "60px",
+        width: "60px",
+      }}>
+      </Box> */}
     </Stack>
   );
 };
@@ -137,7 +153,6 @@ export const GameRow = (props) => {
   const showRedoButton = isPhoneDevice
     ? !props.small && props.game.status === "Finished" && user.loggedIn
     : !props.small;
-  const stackedVertically = props?.small || isPhoneDevice;
   const setupOnNewRow = isPhoneDevice || props.small;
   const maxRolesCount = props.maxRolesCount || undefined;
   const lobbyName = props.game.lobbyName;
@@ -169,7 +184,7 @@ export const GameRow = (props) => {
         readyCheck: props.game.readyCheck,
         noVeg: props.game.noVeg,
         anonymousGame: props.game.anonymousGame,
-        anonymousDeck: props.game.anonymousDeck,
+        anonymousDeckId: props.game.anonymousDeck.map((anonymousDeck => anonymousDeck.id)).join(","),
         stateLengths: stateLengths,
         ...JSON.parse(props.game.gameTypeOptions),
       })
@@ -185,16 +200,6 @@ export const GameRow = (props) => {
       key={props.game.setup.id}
       backgroundColor={getSetupBackgroundColor(props.game, true)}
     />
-  );
-
-  const redoButton = (
-    <Box style={{ mx: 1, width: "32px", textAlign: "center" }}>
-      {props.game.status === "Finished" && user.loggedIn && (
-        <IconButton color="primary" onClick={onRehostClick}>
-          <i className="rehost fas fa-redo" title="Rehost" />
-        </IconButton>
-      )}
-    </Box>
   );
 
   if (redirect) return <Redirect to={redirect} />;
@@ -219,7 +224,7 @@ export const GameRow = (props) => {
       <Box
         sx={{
           display: "flex",
-          flexWrap: "wrap",
+          flexWrap: "nowrap",
           alignItems: "center",
           width: "100%",
           zIndex: 1,
@@ -230,34 +235,60 @@ export const GameRow = (props) => {
           game={props.game}
           status={props.status}
           showGameTypeIcon={showGameTypeIcon}
-          stackedVertically={stackedVertically}
         />
-        {showLobbyName && !stackedVertically && (<Typography variant="body2" sx={{
-            maxWidth: "280px",
-            overflow: "hidden",
-            ml: .5
-          }}>
-            {filterProfanity(lobbyName, user.settings)}
-          </Typography>)}
-        <Stack direction={stackedVertically ? "column" : "row"} sx={{
+        <Stack direction="column" sx={{
           marginLeft: "auto"
         }}>
-          <Stack direction="row" sx={{
+          {showLobbyName && (<Stack sx={{
+              flexFlow: "row nowrap",
               alignItems: "center",
+              /* sorry for manually sizing things. it will happen again. */
+              maxWidth: isPhoneDevice ? "204px" : "354px",
               zIndex: 1,
             }}
           >
-            {showLobbyName && stackedVertically && (<Box sx={{
-              maxWidth: "180px",
-              overflow: "hidden",
-              ml: .5
+            {/* game option indicators go HERE */}
+            <Stack direction="row" spacing={.5} sx={{
+              alignItems: "center",
             }}>
-              <Typography variant="caption">
+              {props.game.ranked && (<i
+                className="fas fa-heart"
+                fontSize="16px"
+                title="ranked"
+                style={{
+                  color: "rgb(226, 59, 59)"
+                }}
+              />)}
+              {props.game.anonymousGame && (<i 
+                className="fas fa-theater-masks"
+                fontSize="16px"
+                title="Anonymous game"
+              />)}
+            </Stack>
+            <Box sx={{
+              ml: .5,
+              flexShrink: "1",
+              overflowX: "hidden",
+            }}>
+              <Typography noWrap variant="caption" style={{
+                wordBreak: "break-word",
+              }}>
                 {filterProfanity(lobbyName, user.settings)}
               </Typography>
-            </Box>)}
-            {showRedoButton && isPhoneDevice && (<Box sx={{ marginLeft: "auto" }}>{redoButton}</Box>)}
-          </Stack>
+            </Box>
+            {showRedoButton && (<Box style={{
+              marginLeft: "auto",
+              width: "32px",
+              textAlign: "center"
+            }}>
+                {props.game.status === "Finished" && user.loggedIn && (
+                  <IconButton size="small" color="primary" onClick={onRehostClick}>
+                    <i className="rehost fas fa-redo" style={{ fontSize: "16px" }} title="Rehost" />
+                  </IconButton>
+                )}
+              </Box>
+            )}
+          </Stack>)}
           <Box
             sx={{
               display: "flex",
@@ -269,7 +300,6 @@ export const GameRow = (props) => {
             }}
           >
             {!setupOnNewRow && SetupWrapped}
-            {showRedoButton && !isPhoneDevice && redoButton}
             <Box sx={{ marginX: "auto" }}>{setupOnNewRow && SetupWrapped}</Box>
           </Box>
         </Stack>

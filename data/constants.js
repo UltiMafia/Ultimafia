@@ -277,6 +277,9 @@ module.exports = {
   boardRecentReplyAmt: 3,
   maxAnnouncementLength: 1000,
 
+  maxBioContentLength: 20000,
+  maxPronounsContentLength: 24,
+
   maxChatMessageLength: 240,
   chatMessagesPerLoad: 20,
   maxChannelNameLength: 20,
@@ -300,7 +303,7 @@ module.exports = {
   referralGames: 5,
   referralCoins: 50,
 
-  minMafiaSetupTotal: 5,
+  minMafiaSetupTotal: process.env.NODE_ENV.includes("development") ? 3 : 5,
   captchaThreshold: 0.25,
 
   initialRedHeartCapacity: 15,
@@ -309,6 +312,15 @@ module.exports = {
   // Refresh every 23 hours
   redHeartRefreshIntervalMillis: 82800000,
   goldHeartRefreshIntervalMillis: 82800000,
+  dailyChallengesRefreshIntervalMillis: 82800000,
+
+  // Penalty starts at 10 minutes with level 0, up to 60 minutes with level 5
+  leavePenaltyMinimumMillis: 600000,
+  leavePenaltyMaximumMillis: 3600000,
+  leavePenaltyPerLevelMillis: 600000,
+  leavePenaltyForgivenessAmount: 2,
+  // Penalties reset in level after 3 days
+  leavePenaltyDurationMillis: 259200000,
 
   // Perms given to all users
   defaultPerms: [
@@ -411,6 +423,7 @@ module.exports = {
     giveCoins: true,
     refundRedHearts: true,
     refundGoldHearts: true,
+    refundDailyChallenge: true,
     changeUsersName: true,
     whitelist: true,
     scheduleRestart: true,
@@ -483,6 +496,7 @@ module.exports = {
         "clearAllUserContent",
         "refundRedHearts",
         "refundGoldHearts",
+        "refundDailyChallenge",
         "whitelist",
         "disableAllCensors",
         "kick",

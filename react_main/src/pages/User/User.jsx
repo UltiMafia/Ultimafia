@@ -207,6 +207,8 @@ export function Avatar(props) {
   const dead = props.dead;
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
+  const absoluteLeftAvatarPx = props.absoluteLeftAvatarPx;
+  const isSquare = props.isSquare || false;
 
   const santaDir = "/images/holiday/santahat.png";
 
@@ -228,6 +230,15 @@ export function Avatar(props) {
   if (small) size = "small";
   else if (large) size = "large";
   else size = "";
+
+  if (absoluteLeftAvatarPx) {
+    style.position = "absolute";
+    style.left = absoluteLeftAvatarPx;
+
+    if (!small) {
+      style.transform = "translateY(12px)";
+    }
+  }
 
   if (hasImage && !imageUrl && id && avatarId) {
     if (id === avatarId) {
@@ -293,7 +304,11 @@ var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/
       className={`avatar ${size} ${dead ? "dead" : ""} ${
         active ? "active" : ""
       }`}
-      style={{ ...style, display: "inline-block" }}
+      style={{
+        ...style,
+        display: "inline-block",
+        borderRadius: isSquare ? "0px" : undefined,
+      }}
     >
       {edit && (
         <HiddenUpload className="edit" name="avatar" onFileUpload={onUpload}>
@@ -329,6 +344,8 @@ export function NameWithAvatar(props) {
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
   const includeMiniprofile = props.includeMiniprofile;
+  const absoluteLeftAvatarPx = props.absoluteLeftAvatarPx;
+
   const game = useContext(GameContext);
   const [userProfile, setUserProfile] = useState(null);
   const [isClicked, setIsClicked] = useState(false);
@@ -365,6 +382,7 @@ export function NameWithAvatar(props) {
         dead={dead}
         active={active}
         deckProfile={deckProfile}
+        absoluteLeftAvatarPx={absoluteLeftAvatarPx}
       />
       <div
         className={`user-name ${props.dead ? "dead" : color}`}

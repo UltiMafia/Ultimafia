@@ -4,6 +4,7 @@ import React, {
   useReducer,
   useContext,
   useRef,
+  useMemo,
 } from "react";
 import { useParams, Switch, Route, Redirect } from "react-router-dom";
 import update from "immutability-helper";
@@ -11,6 +12,7 @@ import axios from "axios";
 import ReactLoading from "react-loading";
 
 import { UserText } from "../../components/Basic";
+import Newspaper from "../../components/Newspaper";
 import MafiaGame from "./MafiaGame";
 import ResistanceGame from "./ResistanceGame";
 import GhostGame from "./GhostGame";
@@ -50,6 +52,7 @@ import { ChangeHeadPing } from "../../components/ChangeHeadPing";
 
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { useLongPress } from "../../hooks/useLongPress.jsx";
 import {
   Accordion,
   AccordionSummary,
@@ -63,7 +66,6 @@ import {
   Stack,
   Divider,
 } from "@mui/material";
-import { useTheme } from "@mui/styles";
 import BattlesnakesGame from "./BattlesnakesGame";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
@@ -91,31 +93,30 @@ export default function Game() {
   );
 }
 
-const NO_ONE_NAME = "Condemn No One";
+const NO_ONE_NAME = "no one";
 const MAGUS_NAME = "Declare Magus Game";
 
 function GameWrapper(props) {
   const [loaded, setLoaded] = useState(false);
   const [leave, setLeave] = useState(false);
-  const [started, setStarted] = useState(null);
   const [finished, setFinished] = useState(false);
-  const [winners, setWinners] = useState(null);
   const [port, setPort] = useState();
   const [gameType, setGameType] = useState();
+  const [startTime, setStartTime] = useState(Date.now());
   const [token, setToken] = useState();
   const [socket, setSocket] = useState({});
   const [connected, setConnected] = useState(0);
   const [setup, setSetup] = useState();
   const [options, setOptions] = useState({});
   const [emojis, setEmojis] = useState({});
-  const [history, updateHistory] = useHistoryReducer();
+  const [isObituaryPlaying, setIsObituaryPlaying] = useState(false);
+  const [history, updateHistory] = useHistoryReducer(isObituaryPlaying);
   const [stateViewing, updateStateViewing] = useStateViewingReducer(history);
   const [players, updatePlayers] = usePlayersReducer();
   const [spectatorCount, setSpectatorCount] = useState(0);
   const [isSpectator, setIsSpectator] = useState(false);
   const [self, setSelf] = useState();
   const [lastWill, setLastWill] = useState("");
-  const [timers, updateTimers] = useTimersReducer();
   const [settings, updateSettings] = useSettingsReducer();
   const [showFirstGameModal, setShowFirstGameModal] = useState(false);
   const [speechFilters, setSpeechFilters] = useState({
@@ -131,15 +132,155 @@ function GameWrapper(props) {
 
   const playersRef = useRef();
   const selfRef = useRef();
-  const localAudioTrack = useRef();
   const noLeaveRef = useRef();
 
-  const [activity, updateActivity] = useActivity(localAudioTrack);
   const [playAudio, loadAudioFiles, stopAudio, stopAudios, setVolume] =
     useAudio(settings);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
   const { gameId } = useParams();
+
+  function PinnedMessagesReducer(state, action) {
+    var newState = state;
+
+    switch (action.type) {
+      case 'addMessage': {
+        if (action.message && action.message.id) {
+          newState = update(state, {[action.message.id]: {$set: action.message}});
+        }
+        break;
+      }
+      case 'removeMessage': {
+        if (action.messageId) {
+          newState = update(state, {$unset: [action.messageId]});
+        }
+        break;
+      }
+      case 'setMessages': {
+        newState = action.messages;
+        break;
+      }
+      default: {
+        throw Error('Unknown action: ' + action.type);
+      }
+    }
+
+    const pinnedMessageData = JSON.stringify({
+      state: newState,
+      gameId: gameId,
+    });
+
+    // Save data in localStorage for remembering it in future refreshes
+    window.localStorage.setItem("pinnedMessageData", pinnedMessageData);
+    return newState;
+  }
+  
+  const [pinnedMessages, updatePinnedMessages] = useReducer(PinnedMessagesReducer, {});
+
+  function isMessagePinned(message) {
+    return message && message.id in pinnedMessages;
+  }
+
+  function onPinMessage(message) {
+    if (isMessagePinned(message)) {
+      updatePinnedMessages({
+        type: "removeMessage",
+        messageId: message.id,
+      });
+    }
+    else {
+      updatePinnedMessages({
+        type: "addMessage",
+        message: message,
+      });
+    }
+  }
+
+  // If a user refreshes, retain their pinned messages
+  useEffect(() => {
+    var pinnedMessageData = window.localStorage.getItem("pinnedMessageData");
+
+    if (pinnedMessageData) {
+      pinnedMessageData = JSON.parse(pinnedMessageData);
+
+      if (pinnedMessageData.gameId !== gameId){
+        window.localStorage.removeItem("pinnedMessageData");
+      }
+      else {
+        updatePinnedMessages({
+          type: "setMessages",
+          messages: pinnedMessageData.state,
+        });
+      };
+    }
+  }, []);
+  
+  const [obituariesWatchedCookie, updateObituariesWatchedCookie] = useState({});
+
+  function wasObituaryWatched(state, source) {
+    return source && obituariesWatchedCookie[state] && obituariesWatchedCookie[state][source];
+  }
+
+  function toggleObituaryWatched(state, source) {
+    var obituariesWatchedData = window.localStorage.getItem("obituariesWatchedData");
+
+    if (!obituariesWatchedData) {
+      obituariesWatchedData = { gameId: gameId, state: {} };
+    }
+    else {
+      obituariesWatchedData = JSON.parse(obituariesWatchedData);
+    }
+
+    // Somehow it seems possible for obituariesWatchedData to exist but not have a state key. So we null check it to prevent crashes.
+    if (!obituariesWatchedData.state) {
+      obituariesWatchedData = { gameId: gameId, state: {} };
+    }
+
+    if (obituariesWatchedData.gameId !== gameId){
+      window.localStorage.removeItem("obituariesWatchedData");
+      obituariesWatchedData = {};
+    }
+
+    if (state && source) {
+      if (!obituariesWatchedData.state[state]) {
+        obituariesWatchedData.state[state] = {};
+      }
+      obituariesWatchedData.state[state][source] = true;
+    }
+    window.localStorage.setItem("obituariesWatchedData", JSON.stringify(obituariesWatchedData));
+  }
+
+  // If a user refreshes or views a different state, don't make them watch obituaries again
+  function refreshObituariesWatched() {
+    var obituariesWatchedData = window.localStorage.getItem("obituariesWatchedData");
+
+    if (obituariesWatchedData) {
+      obituariesWatchedData = JSON.parse(obituariesWatchedData);
+
+      if (obituariesWatchedData.gameId !== gameId){
+        window.localStorage.removeItem("obituariesWatchedData");
+      }
+      else {
+        updateObituariesWatchedCookie(obituariesWatchedData.state);
+      };
+    }
+  }
+
+  function onStateNavigation() {
+    refreshObituariesWatched();
+  }
+
+  useEffect(() => {
+    refreshObituariesWatched();
+  }, []);
+
+  useEffect(() => {
+    if (!isObituaryPlaying) {
+      for (let action of history.pausedActions) {
+        updateHistory(action);
+      }
+    }
+  }, [isObituaryPlaying]);
 
   const audioFileNames = ["bell", "ping", "tick", "vegPing"];
   const audioLoops = [false, false, false];
@@ -204,13 +345,6 @@ function GameWrapper(props) {
       loadAudioFiles(audioFileNames, audioLoops, audioOverrides, audioVolumes);
       requestNotificationAccess();
 
-      var timerInterval = setInterval(() => {
-        updateTimers({
-          type: "updateAll",
-          playAudio,
-        });
-      }, 200);
-
       function onKeydown() {
         var speechInput = document.getElementById("speechInput");
         var activeElName = document.activeElement.tagName;
@@ -228,10 +362,7 @@ function GameWrapper(props) {
       return () => {
         window.removeEventListener("keydown", onKeydown);
 
-        clearInterval(timerInterval);
         stopAudio();
-
-        if (localAudioTrack.current) localAudioTrack.current.close();
       };
     } else {
       document.title = `Review Game ${gameId} | UltiMafia`;
@@ -249,6 +380,7 @@ function GameWrapper(props) {
 
           setGameType(data.type);
           setSetup(data.setup);
+          setStartTime(data.startTime);
 
           setOptions({
             lobby: data.lobby,
@@ -351,9 +483,7 @@ function GameWrapper(props) {
       setEmojis(emojis);
     });
 
-    socket.on("start", () => setStarted(true));
     socket.on("finished", () => setFinished(true));
-    socket.on("isStarted", (isStarted) => setStarted(isStarted));
 
     socket.on("state", (state) => {
       updateHistory({ type: "addState", state: state });
@@ -393,6 +523,13 @@ function GameWrapper(props) {
 
     socket.on("self", (playerId) => {
       setSelf(playerId);
+    });
+
+    socket.on("obituaries", (info) => {
+      updateHistory({
+        type: "obituaries",
+        obituariesMessage: info,
+      });
     });
 
     socket.on("reveal", (info) => {
@@ -505,48 +642,6 @@ function GameWrapper(props) {
       setShowFirstGameModal(true);
     });
 
-    socket.on("timerInfo", (info) => {
-      if (info?.name === "vegKick") {
-        playAudio("vegPing");
-      }
-      updateTimers({
-        type: "create",
-        timer: info,
-      });
-
-      if (
-        info.name === "pregameCountdown" &&
-        Notification &&
-        Notification.permission === "granted" &&
-        !document.hasFocus()
-      ) {
-        new Notification("Your game is starting!");
-      }
-    });
-
-    socket.on("clearTimer", (name) => {
-      updateTimers({
-        type: "clear",
-        name,
-      });
-    });
-
-    socket.on("time", (info) => {
-      updateTimers({
-        type: "update",
-        name: info.name,
-        time: info.time,
-      });
-    });
-
-    socket.on("typing", (info) => {
-      updateActivity({
-        type: "typing",
-        playerId: info.playerId,
-        meetingId: info.meetingId,
-      });
-    });
-
     socket.on("isSpectator", () => {
       setIsSpectator(true);
     });
@@ -556,15 +651,6 @@ function GameWrapper(props) {
         setLeave(true);
         siteInfo.hideAllAlerts();
       }
-    });
-
-    socket.on("winners", ({ groups }) => {
-      const newGroups = groups.map((group) => {
-        if (group === "Village") return "⛪ Village";
-        if (group === "Mafia") return "🔪 Mafia";
-        return group;
-      });
-      setWinners(`${newGroups.join("/")} won!`);
     });
 
     socket.on("error", (error) => {
@@ -578,8 +664,12 @@ function GameWrapper(props) {
   }, [connected]);
 
   function getConnectionInfo() {
-    axios
-      .get(`/game/${gameId}/connect`)
+    const urlParams = new URLSearchParams(window.location.search);
+    const isSpectating = urlParams.get('spectate') === 'true';
+    
+    const url = `/game/${gameId}/connect${isSpectating ? '?spectate=true' : ''}`;
+    
+    axios.get(url)
       .then((res) => {
         setGameType(res.data.type);
         setPort(res.data.port);
@@ -587,13 +677,28 @@ function GameWrapper(props) {
       })
       .catch((e) => {
         var msg = e && e.response && e.response.data;
-
         if (msg === "Game not found.") setLeave("review");
         else {
           setLeave(true);
           errorAlert(e);
         }
       });
+  }
+  
+  function onMessageQuote(message) {
+    if (
+      !props.review &&
+      message.senderId !== "server" &&
+      !message.isQuote &&
+      message.quotable
+    ) {
+      socket.send("quote", {
+        messageId: message.id,
+        toMeetingId: history.states[history.currentState].selTab,
+        fromMeetingId: message.meetingId,
+        fromState: message.fromState ? message.fromState : stateViewing,
+      });
+    }
   }
 
   if (leave === "review") return <Redirect to={`/game/${gameId}/review`} />;
@@ -611,73 +716,51 @@ function GameWrapper(props) {
       socket: socket,
       review: props.review,
       setup: setup,
+      startTime: startTime,
       history: history,
       updateHistory: updateHistory,
       stateViewing: stateViewing,
       updateStateViewing: updateStateViewing,
+      onStateNavigation: onStateNavigation,
       self: self,
       isSpectator: isSpectator,
       players: players,
       updatePlayers: updatePlayers,
-      timers: timers,
       options: options,
       spectatorCount: spectatorCount,
       lastWill: lastWill,
       emojis: emojis,
       setLeave: setLeave,
-      started: started,
       finished: finished,
       settings: settings,
       updateSettings: updateSettings,
       speechFilters: speechFilters,
       setSpeechFilters: setSpeechFilters,
+      toggleObituaryWatched: toggleObituaryWatched,
+      wasObituaryWatched: wasObituaryWatched,
+      isObituaryPlaying: isObituaryPlaying,
+      setIsObituaryPlaying: setIsObituaryPlaying,
       isolationEnabled,
       setIsolationEnabled,
       isolatedPlayers,
       togglePlayerIsolation,
       rolePredictions,
       toggleRolePrediction,
+      pinnedMessages: pinnedMessages,
+      onPinMessage: onPinMessage,
+      isMessagePinned: isMessagePinned,
+      onMessageQuote: onMessageQuote,
       loadAudioFiles: loadAudioFiles,
       playAudio: playAudio,
       stopAudio: stopAudio,
       stopAudios: stopAudios,
       setRehostId: setRehostId,
-      localAudioTrack: localAudioTrack,
-      activity: activity,
       noLeaveRef,
       dev: dev,
     };
 
-    const numPlayers = Object.values(gameContext?.players).filter(
-      (p) => !p?.left
-    ).length;
-    const isFilled = numPlayers === gameContext?.setup?.total;
-    const filledEmoji = isFilled ? " 🔔🔔" : "";
-    const fillingTitle = `🔪 ${numPlayers}/${gameContext?.setup?.total}${filledEmoji} Ultimafia`;
-    const ChangeHeadFilling = <ChangeHead title={fillingTitle} />;
-
-    const currentState =
-      gameContext?.history?.states[gameContext?.history?.currentState]?.name;
-    const mainTimer = formatTimerTime(
-      gameContext?.timers?.main?.delay - gameContext?.timers?.main?.time
-    );
-    const ChangeHeadInProgress = (
-      <ChangeHead title={`🔪 ${mainTimer} - ${currentState}`} />
-    );
-    const isFinished = currentState === "Postgame";
-
-    let HeadChanges = null;
-    if (!props.review) {
-      if (isFinished) {
-        if (winners) HeadChanges = <ChangeHead title={winners} />;
-        else HeadChanges = <ChangeHead title=" Ultimafia" />;
-      } else if (started) HeadChanges = ChangeHeadInProgress;
-      else HeadChanges = ChangeHeadFilling;
-    }
-
     return (
       <GameContext.Provider value={gameContext}>
-        {HeadChanges}
         <ChangeHeadPing title={pingInfo?.msg} timestamp={pingInfo?.timestamp} />
         <div className="game no-highlight">
           <FirstGameModal
@@ -801,9 +884,10 @@ export function BotBar(props) {
             history={props.history}
             stateViewing={props.stateViewing}
             updateStateViewing={props.updateStateViewing}
+            onStateNavigation={game.onStateNavigation}
           />
         )}
-        {props.timer}
+        <Timer/>
       </div>
       <div
         className="misc-wrapper"
@@ -901,6 +985,7 @@ export function TextMeetingLayout(props) {
   const stateInfo = history.states[stateViewing];
   const meetings = stateInfo ? stateInfo.meetings : {};
   const alerts = stateInfo ? stateInfo.alerts : [];
+  const obituaries = stateInfo ? stateInfo.obituaries : {};
   const selTab = stateInfo && stateInfo.selTab;
 
   const [speechInput, setSpeechInput] = useState("");
@@ -956,26 +1041,6 @@ export function TextMeetingLayout(props) {
     setAutoScroll(true);
   }
 
-  function onMessageQuote(message) {
-    if (
-      !props.review &&
-      message.senderId !== "server" &&
-      !message.isQuote &&
-      message.quotable
-    ) {
-      const fromState = combineMessagesFromAllMeetings
-        ? message.fromState
-        : stateViewing;
-
-      props.socket.send("quote", {
-        messageId: message.id,
-        toMeetingId: history.states[history.currentState].selTab,
-        fromMeetingId: message.meetingId,
-        fromState: fromState,
-      });
-    }
-  }
-
   function onSpeechScroll() {
     if (!mouseMoved) {
       doAutoScroll();
@@ -1004,40 +1069,83 @@ export function TextMeetingLayout(props) {
     );
   });
 
-  var messages;
-  if (combineMessagesFromAllMeetings) {
-    messages = getAllMessagesToDisplay(history);
-  } else {
-    messages = getMessagesToDisplay(
-      meetings,
-      alerts,
-      selTab,
-      players,
-      props.settings,
-      props.filters
-    );
-  }
-  messages = messages.map((message, i) => {
-    const isNotServerMessage = message.senderId !== "server";
-    const unfocusedMessage =
-      isolationEnabled &&
-      isNotServerMessage &&
-      isolatedPlayers.size &&
-      !isolatedPlayers.has(message.senderId);
+  function shouldChainToPreviousMessage(message, previousMessage) {
+    if (!previousMessage) {
+      return false;
+    }
 
-    return (
-      <Message
-        message={message}
-        history={history}
-        players={players}
-        stateViewing={stateViewing}
-        key={message.id || message.messageId + message.time || i}
-        onMessageQuote={onMessageQuote}
-        settings={props.settings}
-        unfocusedMessage={unfocusedMessage}
-      />
-    );
-  });
+    if (message.senderId === "server" || message.senderId === "anonymous") {
+        return false;
+    }
+
+    if (Math.abs(message.time - previousMessage.time) > 30000) {
+      return false;
+    }
+  
+    if (message.senderId === previousMessage.senderId) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  const messages = useMemo(() => {
+    var messageData;
+    if (combineMessagesFromAllMeetings) {
+      messageData = getAllMessagesToDisplay(history);
+    } else {
+      messageData = getMessagesToDisplay(
+        meetings,
+        alerts,
+        obituaries,
+        selTab,
+        players,
+        props.settings,
+        props.filters,
+      );
+    }
+  
+    var previousMessage = null;
+    return messageData.map((message, i) => {
+      const isNotServerMessage = message.senderId !== "server";
+      const unfocusedMessage =
+        isolationEnabled &&
+        isNotServerMessage &&
+        isolatedPlayers.size &&
+        !isolatedPlayers.has(message.senderId);
+  
+      const chainToPrevious = shouldChainToPreviousMessage(message, previousMessage);
+      previousMessage = message;
+  
+      return (
+        <Message
+          message={message}
+          review={game.review}
+          history={history}
+          players={players}
+          stateViewing={stateViewing}
+          key={message.id || message.messageId + message.time || i}
+          onMessageQuote={game.onMessageQuote}
+          onPinMessage={game.onPinMessage}
+          isMessagePinned={game.isMessagePinned}
+          settings={props.settings}
+          unfocusedMessage={unfocusedMessage}
+          chainToPrevious={chainToPrevious}
+        />
+      );
+    });
+  }, [
+    /* MEMO DEPENDENCIES: These variables can affect the messages that are rendered in the game.
+       This is a performance improvement for preventing unnecessary re-renders caused by GameWrapper.
+    */
+    stateInfo,
+    props.settings,
+    props.filters,
+    isolationEnabled,
+    isolatedPlayers,
+    game.pinnedMessages,
+  ]);
 
   var canSpeak = selTab;
   canSpeak =
@@ -1048,7 +1156,6 @@ export function TextMeetingLayout(props) {
     stateViewing === history.currentState &&
     meetings[selTab].amMember &&
     meetings[selTab].canTalk;
-
   return (
     <>
       <div className="meeting-tabs">
@@ -1062,6 +1169,9 @@ export function TextMeetingLayout(props) {
           className="speech-display"
           onScroll={onSpeechScroll}
           ref={speechDisplayRef}
+          style={{
+            flexDirection: game.isObituaryPlaying ? "column-reverse" : undefined,
+          }}
         >
           {messages}
         </div>
@@ -1075,7 +1185,6 @@ export function TextMeetingLayout(props) {
               setup={props.setup}
               socket={props.socket}
               setAutoScroll={setAutoScroll}
-              localAudioTrack={props.localAudioTrack}
               speechInput={speechInput}
               setSpeechInput={setSpeechInput}
             />
@@ -1126,10 +1235,11 @@ function getAllMessagesToDisplay(history) {
 function getMessagesToDisplay(
   meetings,
   alerts,
+  obituaries,
   selTab,
   players,
   settings,
-  filters
+  filters,
 ) {
   var messages;
 
@@ -1157,6 +1267,19 @@ function getMessagesToDisplay(
         break;
       } else if (alert.time < messages[i].time) {
         messages.splice(i, 0, alert);
+        break;
+      }
+    }
+  }
+
+  for (let source in obituaries) {
+    const obituariesMessage = obituaries[source];
+    for (let i = 0; i <= messages.length; i++) {
+      if (i === messages.length) {
+        messages.push(obituariesMessage);
+        break;
+      } else if (obituariesMessage.time < messages[i].time) {
+        messages.splice(i, 0, obituariesMessage);
         break;
       }
     }
@@ -1220,24 +1343,87 @@ function areSameDay(first, second) {
   return false;
 }
 
+function getContentClasses(message) {
+  const contentClasses = ["content"];
+
+  const tags = message.tags || [];
+
+  const isVoteMessage = message.senderId === "vote";
+  const isServerMessage = message.senderId === "server";
+  const isAnonymousMessage = message.senderId === "anonymous";
+  const isPlayerMessage = !isVoteMessage && !isServerMessage && !isAnonymousMessage;
+
+  // First: get class for importance of message
+  if (tags.includes("important")) contentClasses.push("important");
+  else if (tags.includes("info")) contentClasses.push("info");
+  else contentClasses.push("important");
+
+  // Second: get class for kind of message
+  if (message.isQuote) contentClasses.push("quote");
+  else if (isServerMessage) contentClasses.push("server");
+  else if (isVoteMessage) contentClasses.push("vote-record");
+  
+  // Make content clickable if it's quotable
+  if ((isPlayerMessage || isAnonymousMessage) && !message.isQuote) {
+    contentClasses.push("clickable");
+  }
+
+  return contentClasses;
+}
+
+/* CAUTION: This is rendered with useMemo in TextMeetingLayout, if you want to add something new to messages
+    then you may need to update the memo dependencies!
+*/
 function Message(props) {
-  const theme = useTheme();
   const isPhoneDevice = useIsPhoneDevice();
+  const user = useContext(UserContext);
+  const [isHovering, setIsHovering] = useState(false);
+
+  // Mobile only - users pin message by long pressing them
+  const messageLongPress = useLongPress(() => props.onPinMessage(props.message), 300);
+
   const history = props.history;
   const players = props.players;
-  const user = useContext(UserContext);
-
+  const chainToPrevious = props.chainToPrevious;
   var message = props.message;
+
+  // message type flags
+  const isVoteMessage = message.senderId === "vote";
+  const isServerMessage = message.senderId === "server";
+  const isAnonymousMessage = message.senderId === "anonymous";
+  const isPlayerMessage = !isVoteMessage && !isServerMessage && !isAnonymousMessage;
+
+  const hasNameplate = isPlayerMessage || isAnonymousMessage;
+  const isRightAligned = isVoteMessage;
+  
+  // layout flags
+  const messageLayout = props.forceDefaultStyling ? "default" : props?.settings?.messageLayout || "default";
+  const denseMessages = (messageLayout === "compactInline" || messageLayout === "compactAligned");
+  const alignedNameplate = hasNameplate && messageLayout === "compactAligned";
+  
+  // nameplate styling
+  const absoluteLeftAvatarPx = denseMessages ? undefined : "8px";
+  const smallAvatar = messageLayout === "defaultLarge" ? false : true;
+
   const extraStyle = message.extraStyle;
   var player, quotedMessage;
-  var contentClass = "content ";
-  var isMe = false;
+  var contentClass = getContentClasses(message).join(" ") + " ";
 
-  if (
-    message.senderId !== "server" &&
-    message.senderId !== "vote" &&
-    message.senderId !== "anonymous"
-  ) {
+  const useAbsoluteTimestamp = (chainToPrevious || isServerMessage) && !isRightAligned && !denseMessages;
+  const showThumbtack = !props.review && !message.isQuote && isHovering && (props.stateViewing >= 0);
+  const thumbtackFaClass = props.isMessagePinned(message) ? "fas fa-thumbtack" : "fas fa-thumbtack fa-rotate-270";
+
+  // If message is obituary, then short circuit and render that instead
+  if (message.obituaries) {
+    return <ObituariesMessage
+      message={message}
+      stateViewing={props.stateViewing}
+      settings={props.settings}
+      history={history}
+    />;
+  }
+
+  if (isPlayerMessage) {
     player = players[message.senderId];
   }
   var customEmotes = player ? player.customEmotes : null;
@@ -1268,23 +1454,33 @@ function Message(props) {
 
   if (message.isQuote && !quotedMessage) return <></>;
 
-  if ((player || message.senderId === "anonymous") && !message.isQuote)
-    contentClass += "clickable ";
-
   if (!message.isQuote && message.content?.indexOf("/me ") === 0) {
-    isMe = true;
     message = { ...message };
     message.content = message.content.replace("/me ", "");
+    contentClass += "me ";
   }
-
-  if (message.isQuote) contentClass += "quote ";
-  else if (message.senderId === "server") contentClass += "server ";
-  else if (message.senderId === "vote") contentClass += "vote-record ";
-  else if (isMe) contentClass += "me ";
 
   const messageStyle = {};
   if (props.unfocusedMessage) {
     messageStyle.opacity = "0.2";
+  }
+
+  // Make room for floated avatar if not using compact messages by padding the left side of the message
+  if (!denseMessages) {
+    if (smallAvatar || !hasNameplate) {
+      messageStyle.paddingLeft = "32px"; // 24px avatar + 8px margin
+    }
+    else {
+      messageStyle.paddingLeft = "56px"; // 40px avatar + 8px margin + 8px margin
+    }
+  }
+
+  if (!denseMessages && !chainToPrevious) {
+    messageStyle.marginTop = "8px";
+  }
+
+  if (isRightAligned) {
+    messageStyle.justifyContent = "flex-end";
   }
 
   const stateMeetings = history.states[props.stateViewing].meetings;
@@ -1304,7 +1500,7 @@ function Message(props) {
         player.name + " says something, but you cannot hear them!"
       ) || false;
     if (playerDead) {
-      contentClass += "dead";
+      contentClass += "dead ";
     } else if (
       stateMeetingDefined &&
       stateMeetings[message.meetingId].name === "Party!"
@@ -1327,6 +1523,10 @@ function Message(props) {
     contentClass += "greentext ";
   }
 
+  if (denseMessages && isPlayerMessage) {
+    contentClass += "dense ";
+  }
+
   let avatarId;
 
   if (player !== undefined) {
@@ -1345,123 +1545,220 @@ function Message(props) {
     }
   }
 
-  const canStyleMessagesVertically =
-    player && props?.settings?.alignMessagesVertically;
-  const styleMessagesVertically = {
-    width: isPhoneDevice ? "107px" : "175px",
-    borderRight: `1px solid ${theme.palette.primary.main}`,
-    paddingRight: "10px",
-    marginRight: "6px",
-  };
-  const alignServerMessageStyles =
-    message.senderId === "server" &&
-    props.settings?.alignMessagesVertically &&
-    !isPhoneDevice
-      ? { paddingLeft: "108px" }
-      : {};
+  function messageOnMouseEnter() {
+    setIsHovering(true);
+  }
+
+  function messageOnMouseLeave() {
+    setIsHovering(false);
+  }
+
+  // if right aligned, use flex direction row-reverse to put timestamp on right hand side
+  // otherwise if in compact mode AKA denseMessages, use inline display to keep everyone on one line if possible
+  // otherwise, use flex direction column when in non-compact mode so that nameplate can appear above content
+  // otherwise if there is no nameplate, use row to always keep everything on the same line
+  const innerClassName =
+    isRightAligned ? "message-inner-rightaligned" :
+    hasNameplate && denseMessages ? "message-inner-inline" :
+    hasNameplate ? "message-inner-nameplated" :
+    "message-inner-onelined";
+  
+  const nameplateClassName = alignedNameplate ? "nameplate-aligned" : "nameplate";
+
   return (
     <div
       className="message"
       onDoubleClick={() => props.onMessageQuote(message)}
       style={messageStyle}
+      onMouseEnter={messageOnMouseEnter}
+      onMouseLeave={messageOnMouseLeave}
+      onTouchStart={messageLongPress.onTouchStart}
+      onTouchEnd={messageLongPress.onTouchEnd}
     >
-      <span
-        className="sender"
-        style={canStyleMessagesVertically ? styleMessagesVertically : {}}
-      >
-        &#8203;
-        {props.settings.timestamps && <Timestamp time={message.time} />}
-        {player && (
-          <NameWithAvatar
-            dead={playerDead && props.stateViewing > 0}
-            id={player.userId}
-            avatarId={avatarId}
-            name={player.name}
-            avatar={player.avatar}
-            color={
-              !user.settings?.ignoreTextColor && message.nameColor !== ""
-                ? message.nameColor
-                : ""
-            }
-            noLink
-            small
-          />
-        )}
-        {message.senderId === "anonymous" && (
-          <div className="name-with-avatar">Anonymous</div>
-        )}
-      </span>
-      <div
-        className={contentClass}
-        style={{
-          ...(!user.settings?.ignoreTextColor && message.textColor !== ""
-            ? // ? { color: flipTextColor(message.textColor) }
-              { color: message.textColor }
-            : contentClass == "content server "
-            ? extraStyle
-            : {}),
-          ...alignServerMessageStyles,
-        }}
-      >
-        {!message.isQuote && (
-          <>
-            {message.prefix && (
-              <div className="prefix" style={{ display: "inline" }}>
-                ({message.prefix})
-              </div>
-            )}
-            <UserText
-              text={message.content}
-              settings={user.settings}
-              players={players}
-              customEmotes={customEmotes}
-              filterProfanity
-              linkify
-              emotify
-              slangify
-              slangifySeed={message.time.toString()}
-              terminologyEmoticons={props.settings.terminologyEmoticons}
-              iconUsername
+      <div className={innerClassName}>
+        {(!chainToPrevious || denseMessages || isRightAligned) && (<div
+          className={nameplateClassName}
+          style={{
+            flexDirection: denseMessages ? "row" : undefined,
+          }}
+        >
+          &#8203;
+          {props.settings.timestamps && (<div style={{
+              position: useAbsoluteTimestamp ? "absolute" : undefined,
+              left: useAbsoluteTimestamp ? "4px" : undefined,
+            }}>
+            <Timestamp time={message.time}/>
+          </div>)}
+          {player && (
+            <NameWithAvatar
+              dead={playerDead && props.stateViewing > 0}
+              id={player.userId}
+              avatarId={avatarId}
+              name={player.name}
+              avatar={player.avatar}
+              color={
+                !user.settings?.ignoreTextColor && message.nameColor !== ""
+                  ? message.nameColor
+                  : ""
+              }
+              noLink
+              small={smallAvatar}
+              absoluteLeftAvatarPx={absoluteLeftAvatarPx}
             />
-          </>
-        )}
-        {message.isQuote && (
-          <>
-            <i className="fas fa-quote-left" />
-            <Timestamp time={quotedMessage.time} />
-            <span className="quote-info">
-              {`${quotedMessage.senderName} on ${quotedMessage.fromStateName}: `}
-            </span>
-            <span className="quote-content">
+          )}
+          {isAnonymousMessage && (
+            <NameWithAvatar
+              name="Anonymous"
+              noLink
+              small={smallAvatar}
+              absoluteLeftAvatarPx={absoluteLeftAvatarPx}
+            />
+          )}
+        </div>)}
+        <div
+          className={contentClass}
+          style={{
+            ...(!user.settings?.ignoreTextColor && message.textColor !== ""
+              ? // ? { color: flipTextColor(message.textColor) }
+                { color: message.textColor }
+              : contentClass.includes("content")
+              ? extraStyle
+              : {}),
+          }}
+        >
+          {!message.isQuote && (
+            <>
+              {message.prefix && (
+                <div className="prefix" style={{ display: "inline" }}>
+                  ({message.prefix})
+                </div>
+              )}
               <UserText
-                text={quotedMessage.content}
+                text={message.content}
                 settings={user.settings}
                 players={players}
                 customEmotes={customEmotes}
                 filterProfanity
                 linkify
                 emotify
-                slangifySeed={quotedMessage.time.toString()}
+                slangify
+                slangifySeed={message.time.toString()}
+                terminologyEmoticons={props.settings.terminologyEmoticons}
                 iconUsername
               />
-            </span>
-            <i className="fas fa-quote-right" />
-          </>
-        )}
+            </>
+          )}
+          {message.isQuote && (
+            <>
+              <i className="fas fa-quote-left" />
+              <Timestamp time={quotedMessage.time}/>
+              <span className="quote-info">
+                {`${quotedMessage.senderName} on ${quotedMessage.fromStateName}: `}
+              </span>
+              <span className="quote-content">
+                <UserText
+                  text={quotedMessage.content}
+                  settings={user.settings}
+                  players={players}
+                  customEmotes={customEmotes}
+                  filterProfanity
+                  linkify
+                  emotify
+                  slangifySeed={quotedMessage.time.toString()}
+                  iconUsername
+                />
+              </span>
+              <i className="fas fa-quote-right" />
+            </>
+          )}
+        </div>
       </div>
+      {!isPhoneDevice && !isRightAligned && (<div className="pin-button-wrapper" onClick={() => props.onPinMessage(message)}>
+        {showThumbtack && (<i
+          className={thumbtackFaClass}
+          style={{ cursor: "pointer", textAlign: "center" }}
+          />
+        )}
+      </div>)}
     </div>
+  );
+}
+
+function ObituariesMessage(props) {
+  const game = useContext(GameContext);
+
+  const message = props.message;
+  const history = props.history;
+
+  const alreadyWatched = game.wasObituaryWatched(props.stateViewing, message.source) || props.stateViewing !== history.currentState;
+
+  var shouldAnimateSource = false;
+  var title = null;
+  if (message.source === "Day") {
+    title = "Evening News";
+  }
+  else if (message.source === "Night") {
+    title = "Obituaries";
+    shouldAnimateSource = true;
+  }
+  else if (message.source === "Postgame") {
+    title = "The Miller Times";
+  }
+  else {
+    title = "Breaking News";
+  }
+
+  const noAnimation = props?.settings?.noAnimation || !shouldAnimateSource || alreadyWatched || game.review;
+
+  useEffect(() => {
+    try {
+      game.toggleObituaryWatched(props.stateViewing, message.source);
+    }
+    catch (e) {
+      console.error("Failed to toggle obituary watched", e);
+    }
+
+    if (!noAnimation) {
+      game.setIsObituaryPlaying(true);
+    }
+  }, []);
+
+  const deaths = message.obituaries.map((obituary) => { return {
+    id: obituary.playerInfo.userId,
+    name: obituary.playerInfo.name,
+    avatar: obituary.playerInfo.avatar,
+    customEmotes: obituary.playerInfo.customEmotes,
+    deathMessage: obituary.snippets.deathMessage,
+    revealMessage: obituary.snippets.revealMessage,
+    lastWill: obituary.snippets.lastWill,
+  }});
+
+  return (
+    <>
+      <Newspaper
+        title={title}
+        timestamp={message.time}
+        dayCount={message.dayCount}
+        noAnimation={noAnimation}
+        deaths={deaths}
+        onFullyAnimated={() => game.setIsObituaryPlaying(false)}
+        playAudio={game.playAudio}
+        isAlignmentReveal={game.setup?.alignmentReveal}
+      />
+    </>
   );
 }
 
 export function Timestamp(props) {
   const time = new Date(props.time);
+
   var hours = String(time.getHours()).padStart(2, "0");
   var minutes = String(time.getMinutes()).padStart(2, "0");
   var seconds = String(time.getSeconds()).padStart(2, "0");
 
   return (
     <span className="time">
-      {hours}:{minutes}:{seconds}
+      {minutes}:{seconds}
     </span>
   );
 }
@@ -1693,6 +1990,7 @@ export function StateSwitcher(props) {
 
   function onStateNameClick() {
     props.updateStateViewing({ type: "current" });
+    props.onStateNavigation();
   }
 
   return (
@@ -1701,7 +1999,7 @@ export function StateSwitcher(props) {
         className={`hist-arrow fas fa-caret-left ${
           leftArrowVisible ? "" : "invisible"
         }`}
-        onClick={() => props.updateStateViewing({ type: "backward" })}
+        onClick={() => { props.updateStateViewing({ type: "backward" }); props.onStateNavigation() }}
       />
       <div className="state-name" onClick={onStateNameClick}>
         {stateName.toUpperCase()}
@@ -1710,7 +2008,7 @@ export function StateSwitcher(props) {
         className={`hist-arrow fas fa-caret-right ${
           rigthArrowVisible ? "" : "invisible"
         }`}
-        onClick={() => props.updateStateViewing({ type: "forward" })}
+        onClick={() => { props.updateStateViewing({ type: "forward" }); props.onStateNavigation(); }}
       />
     </div>
   );
@@ -1746,6 +2044,7 @@ export function SideMenuNew({
   onChange,
   defaultExpanded = false,
   disabled = false,
+  contentPadding = "8px 16px",
 }) {
   const handleToggle = () => {
     if (!disabled && onChange) {
@@ -1772,7 +2071,7 @@ export function SideMenuNew({
         className="side-menu-title"
         sx={{
           minHeight: "30px",
-          padding: "4px 16px",
+          padding: "4px 8px",
           "& .MuiAccordionSummary-content": {
             margin: "4px 0",
           },
@@ -1787,7 +2086,7 @@ export function SideMenuNew({
       <AccordionDetails
         className="side-menu-content"
         sx={{
-          padding: "8px 16px", // Adjust padding inside the expanded section
+          padding: contentPadding, // Adjust padding inside the expanded section
         }}
       >
         {content}
@@ -1836,11 +2135,25 @@ function RoleMarkerToggle(props) {
 
 export function PlayerRows(props) {
   const game = useContext(GameContext);
+  const [activity, updateActivity] = useActivity();
+  const socket = game.socket;
+
+  useEffect(() => {
+    if (socket && socket.on) {
+      socket.on("typing", (info) => {
+        updateActivity({
+          type: "typing",
+          playerId: info.playerId,
+          meetingId: info.meetingId,
+        });
+      });
+    }
+  }, []);
+
   const { isolationEnabled, togglePlayerIsolation, isolatedPlayers } = game;
   const { rolePredictions } = game;
   const history = props.history;
   const players = props.players;
-  const activity = props.activity;
   const stateViewingInfo = history.states[props.stateViewing];
   const selTab = stateViewingInfo && stateViewingInfo.selTab;
 
@@ -1904,6 +2217,7 @@ export function PlayerRows(props) {
             isRolePrediction={rolePrediction !== undefined}
             gameType={props.gameType}
             showPopover
+            otherRoles={props.setup?.roles}
           />
         )}
         <NameWithAvatar
@@ -1995,6 +2309,7 @@ export function PlayerList(props) {
             gameType={props.gameType}
             stateViewing={props.stateViewing}
             activity={props.activity}
+            setup={props.setup}
           />
           {deadPlayers.length > 0 && (
             <div className="section-title">
@@ -2010,6 +2325,7 @@ export function PlayerList(props) {
             stateViewing={props.stateViewing}
             activity={props.activity}
             className="dead"
+            setup={props.setup}
           />
           {exorcisedPlayers.length > 0 && (
             <div className="section-title">
@@ -2025,6 +2341,7 @@ export function PlayerList(props) {
             stateViewing={props.stateViewing}
             activity={props.activity}
             className="dead"
+            setup={props.setup}
           />
         </div>
       }
@@ -2094,6 +2411,7 @@ export function ActionList(props) {
         case "alignment":
         case "custom":
         case "customBoolean":
+        case "AllRoles":
         case "select":
           action = (
             <ActionSelect
@@ -2234,6 +2552,7 @@ function ActionSelect(props) {
 
   // Client side vote counting logic
   const shouldDisplayCounters = meeting.displayVoteCounter;
+  const noOneDisplayName = meeting.noOneDisplayName ? meeting.noOneDisplayName : NO_ONE_NAME;
   const canVoteNoOne = meeting.targets && Array.isArray(meeting.targets) && meeting.targets.includes("*");
   const canVoteMagus = meeting.targets && Array.isArray(meeting.targets) && meeting.targets.includes("*magus");
   const voteCounts = new Map();
@@ -2263,7 +2582,7 @@ function ActionSelect(props) {
       }
     }
 
-    if (voteCounts.has(NO_ONE_NAME) && voteCounts.get(NO_ONE_NAME) === highestVoteCount) {
+    if (voteCounts.has(noOneDisplayName) && voteCounts.get(noOneDisplayName) === highestVoteCount) {
       noOneHasMostVotes = true;
     }
   }
@@ -2288,7 +2607,7 @@ function ActionSelect(props) {
   var displayingNoOneTarget = false;
   var displayingMagusTarget = false;
 
-  // Also show how many people are voting NO_ONE_NAME if applicable
+  // Also show how many people are voting noOneDisplayName if applicable
   if (shouldDisplayCounters && canVoteNoOne) {
     displayingSpecialTarget = true;
     displayingNoOneTarget = true;
@@ -2308,7 +2627,7 @@ function ActionSelect(props) {
   if (displayingNoOneTarget) {
     rowItems.push({
       id: "*",
-      name: NO_ONE_NAME,
+      name: noOneDisplayName,
       canVote: false,
       selection: [],
     });
@@ -2366,7 +2685,7 @@ function ActionSelect(props) {
             )
           }
 
-          const rowIsNoOne = rowItem.name === NO_ONE_NAME;
+          const rowIsNoOne = rowItem.name === noOneDisplayName;
           const rowIsSpecial = rowItem.id.startsWith("*");
 
           var voteCount = 0;
@@ -2782,12 +3101,14 @@ function getTargetDisplay(targets, meeting, players) {
   else if (!targets) targets = [];
   else targets = [...targets];
 
+  const noOneDisplayName = meeting.noOneDisplayName ? meeting.noOneDisplayName : NO_ONE_NAME;
+
   for (let i in targets) {
     let target = targets[i];
 
     switch (meeting.inputType) {
       case "player":
-        if (target === "*") target = NO_ONE_NAME;
+        if (target === "*") target = noOneDisplayName;
         else if (target === "*magus") target = MAGUS_NAME;
         else if (target) target = players[target].name;
         else target = "";
@@ -2795,6 +3116,7 @@ function getTargetDisplay(targets, meeting, players) {
       case "boolean":
         if (target === "*") target = "No";
         else if (!target) target = "";
+        break;
       default:
         if (target === "*") target = "None";
         else if (!target) target = "";
@@ -2807,26 +3129,125 @@ function getTargetDisplay(targets, meeting, players) {
 }
 
 export function Timer(props) {
+  const game = useContext(GameContext);
+  const [timers, updateTimers] = useTimersReducer();
+  const [started, setStarted] = useState(null);
+  const [winners, setWinners] = useState(null);
+
+  const socket = game.socket;
+  const playAudio = game.playAudio;
+
+  useEffect(() => {
+    var timerInterval = setInterval(() => {
+      updateTimers({
+        type: "updateAll",
+        playAudio,
+      });
+    }, 200);
+
+    if (socket && socket.on) {
+      socket.on("timerInfo", (info) => {
+        if (info?.name === "vegKick") {
+          playAudio("vegPing");
+        }
+        updateTimers({
+          type: "create",
+          timer: info,
+        });
+
+        if (
+          info.name === "pregameCountdown" &&
+          Notification &&
+          Notification.permission === "granted" &&
+          !document.hasFocus()
+        ) {
+          new Notification("Your game is starting!");
+        }
+      });
+
+      socket.on("clearTimer", (name) => {
+        updateTimers({
+          type: "clear",
+          name,
+        });
+      });
+
+      socket.on("time", (info) => {
+        updateTimers({
+          type: "update",
+          name: info.name,
+          time: info.time,
+        });
+      });
+
+      socket.on("start", () => setStarted(true));
+
+      socket.on("isStarted", (isStarted) => setStarted(isStarted));
+
+      socket.on("winners", ({ groups }) => {
+        const newGroups = groups.map((group) => {
+          if (group === "Village") return "⛪ Village";
+          if (group === "Mafia") return "🔪 Mafia";
+          return group;
+        });
+        setWinners(`${newGroups.join("/")} won!`);
+      });
+    }
+
+    // cleanup
+    return () => {
+      clearInterval(timerInterval);
+    }
+  }, []);
+
+  const numPlayers = Object.values(game.players).filter(
+    (p) => !p?.left
+  ).length;
+
+  const isFilled = numPlayers === game.setup?.total;
+  const filledEmoji = isFilled ? " 🔔🔔" : "";
+  const fillingTitle = `🔪 ${numPlayers}/${game.setup?.total}${filledEmoji} Ultimafia`;
+  const ChangeHeadFilling = <ChangeHead title={fillingTitle} />;
+
+  const currentState = game.history?.states[game.history?.currentState]?.name;
+  const isFinished = currentState === "Postgame";
+
+  const mainTimer = formatTimerTime(
+    timers?.main?.delay - timers?.main?.time
+  );
+  const ChangeHeadInProgress = (
+    <ChangeHead title={`🔪 ${mainTimer} - ${currentState}`} />
+  );
+
+  let HeadChanges = null;
+  if (!game.review) {
+    if (isFinished) {
+      if (winners) HeadChanges = <ChangeHead title={winners} />;
+      else HeadChanges = <ChangeHead title=" Ultimafia" />;
+    } else if (started) HeadChanges = ChangeHeadInProgress;
+    else HeadChanges = ChangeHeadFilling;
+  }
+
   var timerName;
 
-  if (!props.timers["pregameCountdown"] && props.timers["pregameWait"])
+  if (!timers["pregameCountdown"] && timers["pregameWait"])
     timerName = "pregameWait";
-  else if (props.history.currentState == -1) timerName = "pregameCountdown";
-  else if (props.history.currentState == -2) timerName = "postgame";
-  else if (props.timers["secondary"]) timerName = "secondary";
-  else if (props.timers["vegKick"]) timerName = "vegKick";
-  else if (props.timers["vegKickCountdown"]) timerName = "vegKickCountdown";
+  else if (game.history.currentState == -1) timerName = "pregameCountdown";
+  else if (game.history.currentState == -2) timerName = "postgame";
+  else if (timers["secondary"]) timerName = "secondary";
+  else if (timers["vegKick"]) timerName = "vegKick";
+  else if (timers["vegKickCountdown"]) timerName = "vegKickCountdown";
   else timerName = "main";
 
-  const timer = props.timers[timerName];
+  const timer = timers[timerName];
 
   if (!timer) return <div className="state-timer"></div>;
 
   var time = timer.delay - timer.time;
 
-  if (props.timers["secondary"]) {
+  if (timers["secondary"]) {
     // show main timer if needed
-    const mainTimer = props.timers["main"];
+    const mainTimer = timers["main"];
     if (mainTimer) {
       var mainTime = mainTimer.delay - mainTimer.time;
       time = Math.min(time, mainTime);
@@ -2838,7 +3259,10 @@ export function Timer(props) {
   if (timerName === "vegKick") {
     return <div className="state-timer">Kicking in {time}</div>;
   }
-  return <div className="state-timer">{time}</div>;
+  return (<>
+        {HeadChanges}
+        <div className="state-timer">{time}</div>
+  </>);
 }
 
 export function LastWillEntry(props) {
@@ -2929,11 +3353,35 @@ export function SettingsMenu(props) {
       value: settings.terminologyEmoticons,
     },
     {
-      label: "Align Messages Vertically",
-      ref: "alignMessagesVertically",
-      type: "boolean",
-      value: settings.alignMessagesVertically,
+      label: "Message Layout",
+      ref: "messageLayout",
+      type: "select",
+      options: [
+        {
+          label: "Default",
+          value: "default",
+        },
+        {
+          label: "Default (large nameplate)",
+          value: "defaultLarge",
+        },
+        {
+          label: "Compact (inline)",
+          value: "compactInline",
+        },
+        {
+          label: "Compact (vertically aligned)",
+          value: "compactAligned",
+        },
+      ],
+      value: settings.messageLayout,
     },
+    /* {
+      label: "Disable Animations",
+      ref: "noAnimation",
+      type: "boolean",
+      value: settings.noAnimation,
+    }, */
   ]);
 
   function cancel() {
@@ -3158,6 +3606,54 @@ export function SpeechFilter(props) {
   );
 }
 
+export function PinnedMessages() {
+  const game = useContext(GameContext);
+
+  if (game.stateViewing < 0) return <></>;
+
+  function sortMessagesByTimestamp(a, b) {
+    if (a.time < b.time) {
+      return -1;
+    }
+    if (a.time > b.time) {
+      return 1;
+    }
+    else {
+      return 0
+    }
+  }
+
+  const sortedPinnedMessages = Object.values(game.pinnedMessages).sort(sortMessagesByTimestamp);
+
+  const pinnedMessages = sortedPinnedMessages.map((message, i) => {
+    return (<Message
+      message={message}
+      review={game.review}
+      history={game.history}
+      players={game.players}
+      stateViewing={game.stateViewing}
+      key={message.id || message.messageId + message.time || i}
+      onMessageQuote={game.onMessageQuote}
+      onPinMessage={game.onPinMessage}
+      isMessagePinned={game.isMessagePinned}
+      settings={game.settings}
+      forceDefaultStyling
+    />
+  )});
+
+  return (
+    <SideMenuNew
+      title="Pinned messages"
+      contentPadding="0px 0px"
+      content={
+        <div className="speech-display" style={{ minHeight: "40px", maxHeight: "240px" }}>
+          {pinnedMessages}
+        </div>
+      }
+    />
+  );
+}
+
 export function Notes(props) {
   const stateViewing = props.stateViewing;
   const [notes, setNotes] = useState("");
@@ -3201,15 +3697,23 @@ export function Notes(props) {
   );
 }
 
-function useHistoryReducer() {
+function useHistoryReducer(pauseHistoryUpdates) {
   return useReducer(
     (history, action) => {
       var newHistory;
 
+      if (pauseHistoryUpdates) {
+        return update(history, {
+          pausedActions: {
+            $push: [action],
+          },
+        });
+      }
+
       switch (action.type) {
         case "set":
           var stateIds = Object.keys(action.history).sort((a, b) => a - b);
-          newHistory = { states: action.history };
+          newHistory = { states: action.history, pausedActions: [] };
 
           if (stateIds[0] == -2) newHistory.currentState = -2;
           else newHistory.currentState = stateIds[stateIds.length - 1];
@@ -3230,6 +3734,7 @@ function useHistoryReducer() {
                     meetings: {},
                     alerts: [],
                     stateEvents: [],
+                    obituaries: {},
                     roles: { ...history.states[prevState].roles },
                     dead: { ...history.states[prevState].dead },
                     exorcised: { ...history.states[prevState].exorcised },
@@ -3487,6 +3992,21 @@ function useHistoryReducer() {
             });
           }
           break;
+        case "obituaries":
+          if (history.states[history.currentState]) {
+            newHistory = update(history, {
+              states: {
+                [history.currentState]: {
+                  obituaries: {
+                    [action.obituariesMessage.source]: {
+                      $set: action.obituariesMessage,
+                    },
+                  },
+                },
+              },
+            });
+          }
+          break;
         case "reveal":
           if (history.states[history.currentState]) {
             newHistory = update(history, {
@@ -3536,7 +4056,7 @@ function useHistoryReducer() {
 
       return newHistory || history;
     },
-    { states: {} }
+    { states: {}, pausedActions: [] }
   );
 }
 
@@ -3670,7 +4190,8 @@ export function useSettingsReducer() {
     music: true,
     volume: 1,
     terminologyEmoticons: true,
-    alignMessagesVertically: true,
+    messageLayout: "default",
+    noAnimation : false,
   };
 
   return useReducer((settings, action) => {
@@ -3710,7 +4231,7 @@ export function useSettingsReducer() {
   }, defaultSettings);
 }
 
-export function useActivity(localAudioTrack) {
+export function useActivity() {
   // const volumeThreshold = 0.001;
   const [activity, updateActivity] = useReducer(
     (activity, action) => {

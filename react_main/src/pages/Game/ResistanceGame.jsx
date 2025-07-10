@@ -11,6 +11,7 @@ import {
   SpeechFilter,
   SettingsMenu,
   Notes,
+  PinnedMessages,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 
@@ -93,7 +94,6 @@ export default function ResistanceGame(props) {
         updateStateViewing={updateStateViewing}
         players={players}
         gameName={<div className="game-name">Resistance</div>}
-        timer={<Timer timers={game.timers} history={history} />}
       />
       <ThreePanelLayout
         leftPanelContent={
@@ -150,7 +150,8 @@ export default function ResistanceGame(props) {
               history={history}
               stateViewing={stateViewing}
             />
-            {!isSpectator && <Notes stateViewing={stateViewing} />}
+            {!game.review && !isSpectator && (<PinnedMessages/>)}
+            {!game.review && !isSpectator && <Notes stateViewing={stateViewing} />}
           </>
         }
       />

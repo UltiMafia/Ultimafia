@@ -37,7 +37,7 @@ module.exports = class KillVisitors extends Card {
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_KILL_DEFAULT,
-          labels: ["kill", "hidden", "absolute"],
+          labels: ["kill", "hidden"],
           run: function () {
             let visitors = this.getVisitors();
 

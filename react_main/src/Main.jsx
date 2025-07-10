@@ -47,7 +47,7 @@ import "./css/main.css";
 import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
 import { NewLoading } from "./pages/Welcome/NewLoading";
-import { Box, ThemeProvider, CssBaseline } from "@mui/material";
+import { Box, Stack, ThemeProvider, CssBaseline } from "@mui/material";
 import {
   darkTheme,
   lightTheme,
@@ -100,10 +100,11 @@ function Main() {
 
     setTheme(colorScheme === "dark" ? darkTheme : lightTheme);
   }, [user?.settings?.siteColorScheme]);
-
+/*
   var roleIconScheme = user.settings?.roleIconScheme
     ? user.settings.roleIconScheme
     : "vivid";
+  var roleSkins = user.settings?.roleSkins ? user.settings.roleSkins : [];
 
   let toClear = ["role-icon-scheme-noir", "role-icon-scheme-vivid"];
   for (let scheme of toClear) {
@@ -111,7 +112,24 @@ function Main() {
       document.documentElement.classList.remove(scheme);
     }
   }
-  document.documentElement.classList.add(`role-icon-scheme-${roleIconScheme}`);
+  
+  if(roleSkins.length > 0){
+    let hasDone = false;
+    for(let skin of roleSkins){
+      if(document.documentElement.classList.contains(`role-Mafia-${skin.split(":")[0]}`)){
+        document.documentElement.classList.add(`role-icon-scheme-${skin.split(":")[1]}`);
+        hasDone = true;
+      }
+    }
+    if(hasDone == false){
+      document.documentElement.classList.add(`role-icon-scheme-${roleIconScheme}`);
+    }
+  }
+  else{
+ document.documentElement.classList.add(`role-icon-scheme-${roleIconScheme}`);
+  }
+  */
+  
 
   useEffect(() => {
     async function getInfo() {
@@ -316,19 +334,6 @@ function Header({ setShowAnnouncementTemporarily }) {
 
   return (
     <div className="header">
-      <Link to="/" className="logo-wrapper">
-        <Box
-          component="img"
-          sx={{
-            height: 105,
-            width: 179,
-            ml: "auto",
-            mr: "auto",
-          }}
-          alt="Site logo"
-          src={getLogoSrc()}
-        />
-      </Link>
       {new Date().getMonth() === 9 && (
         <img
           src="/images/holiday/spiderweb.gif"
@@ -344,47 +349,58 @@ function Header({ setShowAnnouncementTemporarily }) {
           }}
         />
       )}
-      <div
-        className="navbar nav-wrapper"
-        style={{
-          display: smallWidth === false ? "none" : "flex",
-          width: "100%",
-          justifyContent: "space-between",
-          alignItems: "center",
-          fontSize: "24px",
-          flexDirection: "row",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            flexGrow: 1,
-            fontWeight: "bold",
-          }}
-          onClick={toggleMenu}
-        >
-          <Icon
-            icon="material-symbols:menu-rounded"
-            style={{ marginRight: 8 }}
+      <Stack direction="row" sx={{
+        justifyContent: "space-between",
+      }}>
+        <Link to="/" className="logo-wrapper">
+          <Box
+            component="img"
+            sx={{
+              height: 105,
+              width: 179,
+            }}
+            alt="Site logo"
+            src={getLogoSrc()}
           />
-          <span>{expandedMenu === false ? "Menu" : "Close"}</span>
-        </div>
-        {user.loggedIn && (
-          <div className="nav" style={{ flexGrow: 0 }}>
-            <div
-              className="user-wrapper"
-              style={{ display: "flex", alignItems: "flex-start" }}
-            >
+        </Link>
+        <Stack direction="column">
+          {user.loggedIn && smallWidth && (
+            <div className="user-wrapper">
               <UserNotifications
                 openAnnouncements={openAnnouncements}
                 user={user}
                 SiteNotifs={SiteNotifs}
               />
             </div>
+          )}
+          <div
+            className="navbar nav-wrapper"
+            style={{
+              display: smallWidth === false ? "none" : "flex",
+              width: "100%",
+              justifyContent: "space-between",
+              alignItems: "center",
+              fontSize: "24px",
+              flexDirection: "row",
+            }}
+          >
+            <Stack direction="row" spacing={.5}
+              sx={{
+                alignItems: "center",
+                fontWeight: "bold",
+                marginLeft: "auto",
+              }}
+              onClick={toggleMenu}
+            >
+              <span>{expandedMenu === false ? "Menu" : "Close"}</span>
+              <Icon
+                icon="material-symbols:menu-rounded"
+                style={{ marginRight: 8 }}
+              />
+            </Stack>
           </div>
-        )}
-      </div>
+        </Stack>
+      </Stack>
       <div
         className="nav-wrapper"
         style={{
@@ -422,24 +438,14 @@ function Header({ setShowAnnouncementTemporarily }) {
             <span>Learn</span>
           </NavLink>
           <NavLink
-            to="/development"
-            className={"glow-on-hover"}
-            style={expandedMenu ? { width: "100%" } : { width: "auto" }}
-          >
-            <span>Dev</span>
-          </NavLink>
-          <NavLink
             to="/policy"
             className={"glow-on-hover"}
             style={expandedMenu ? { width: "100%" } : { width: "auto" }}
           >
             <span>Policy</span>
           </NavLink>
-          {user.loggedIn && (
-            <div
-              className="user-wrapper"
-              style={{ display: smallWidth === true ? "none" : "flex" }}
-            >
+          {user.loggedIn && !smallWidth && (
+            <div className="user-wrapper">
               <UserNotifications
                 openAnnouncements={openAnnouncements}
                 user={user}
@@ -677,6 +683,14 @@ function Footer() {
               rel="noopener noreferrer nofollow"
             >
               <i className="fab fa-youtube"></i> Featuring music by FredTheMole
+            </a>
+          </span>
+          <span>
+            <a
+              target="_blank"
+              href="https://ultimafia.com/user/2oDrE3Ueq"
+            >
+              Additional music by Jumpy
             </a>
           </span>
           <div>© {year} UltiMafia</div>

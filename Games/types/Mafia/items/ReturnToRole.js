@@ -1,4 +1,5 @@
 const Item = require("../Item");
+const Action = require("../Action");
 
 module.exports = class ReturnToRole extends Item {
   constructor(currRole, currModifier, currData, newRole) {
@@ -12,12 +13,32 @@ module.exports = class ReturnToRole extends Item {
     this.newRole = newRole;
 
     this.listeners = {
-      state: function (stateInfo) {
-        if (this.game.getStateName() != "Day") return;
+      afterActions: function () {
+        if (this.hasBeenDay != true) return;
         if (this.holder.role.name != this.currRole) {
           this.drop();
           return;
         }
+          this.holder.setRole(
+          `${currRole}:${currModifier}`,
+          this.currData,
+          true,
+          true,
+          true,
+          "No Change"
+        );
+        this.drop();
+      },
+      state: function (stateInfo) {
+        if (this.game.getStateName() == "Day"){
+          this.hasBeenDay = true;
+        };
+        if (this.holder.role.name != this.currRole) {
+          this.drop();
+          return;
+        }
+
+        /*
         this.holder.setRole(
           `${currRole}:${currModifier}`,
           this.currData,
@@ -27,6 +48,7 @@ module.exports = class ReturnToRole extends Item {
           "No Change"
         );
         this.drop();
+        */
       },
     };
 

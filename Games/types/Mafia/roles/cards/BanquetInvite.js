@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_DAY_DEFAULT } = require("../../const/Priority");
+const Random = require("../../../../../lib/Random");
 
 module.exports = class BanquetInvite extends Card {
   constructor(role) {
@@ -19,6 +20,7 @@ module.exports = class BanquetInvite extends Card {
             if (!this.actor.hasAbility(["Meeting"])) {
               return;
             }
+            this.target = Random.randomizeArray(this.target);
             this.target[0].holdItem("Invitation");
             this.target[1].holdItem("Invitation");
           },

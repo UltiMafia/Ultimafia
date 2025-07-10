@@ -12,6 +12,7 @@ const logger = require("../../modules/logging")("games");
 const dbStats = require("../../db/stats");
 const roleData = require("../../data/roles");
 const gameAchievements = require("../../data/Achievements");
+const DailyChallengeData = require("../../data/DailyChallenge");
 const itemData = require("../../data/items");
 const modifierData = require("../../data/modifiers");
 const commandData = require("../../data/commands");
@@ -39,7 +40,11 @@ module.exports = class Player {
     this.effects = [];
     this.passiveEffects = [];
     this.AchievementTracker = [];
+    this.DailyTracker = [];
     this.EarnedAchievements = [];
+    this.DailyPayout = 0;
+    this.DailyCompleted = 0;
+    this.CompletedDailyChallenges = [];
     this.tempImmunity = {};
     this.tempAppearance = {};
     this.tempAppearanceMods = {};
@@ -86,7 +91,7 @@ module.exports = class Player {
   makeNotAnonymous() {
     let p = this.originalProfile;
 
-    this.game.sendAlert(`${p.name}'s anonymous name was ${this.name}.`);
+    this.game.sendAlert(`${p.name}'s anonymous name was ${this.name}.`, undefined, undefined, ["info"]);
 
     this.user.id = p.userId;
     this.name = p.name;
@@ -462,6 +467,41 @@ module.exports = class Player {
           `:system: Achievement Info for ${achievementNameToQuery}- ${achievement.description}| ${hasComplete}`
         );
         return;
+        case "daily":
+        let dailyInfo = [];
+        let tempDailyChallenge = this.user.dailyChallenges.map((d) => d[0]);
+        for (let Challenge of Object.entries(DailyChallengeData).filter((DailyChallenge) => tempDailyChallenge.includes(DailyChallenge[1].ID))) {
+        let extraData;
+        for(let day of this.user.dailyChallenges){
+          if(day[0] == Challenge[1].ID){
+            /*
+          this.sendAlert(
+            `:system: day 0 ${day[0]} day 1 ${day[1]} day 2 ${day[2]}`
+          );
+          */
+            extraData = day[2];
+            dailyInfo.push(`${Challenge[0].replace(`ExtraData`,extraData)}: ${Challenge[1].description.replace(`ExtraData`,extraData)}`);
+          }
+        }
+      } //End For Loop
+      /*
+       this.sendAlert(
+            `:system: ${this.user.dailyChallenges.join(", ")}`
+          );
+          */
+        
+        if (dailyInfo.length <= 0) {
+          this.sendAlert(
+            `:system: No daily challenges.`
+          );
+          return;
+        }
+        for(let info of dailyInfo){
+          this.sendAlert(
+          `:system: ${info}`
+        );
+        }
+        return;
       case "ban":
       case "kick":
         // Allow /kick to be used to kick players during veg votekick.
@@ -492,11 +532,29 @@ module.exports = class Player {
           if (player.name.toLowerCase() === cmd.args[0].toLowerCase()) {
             this.game.kickPlayer(player, kickPermanently);
             this.game.sendAlert(
-              `${player.name} was kicked ${andBanned}from the game.`
+              `${player.name} was kicked ${andBanned}from the game.`, undefined, undefined, ["info"]
             );
             return;
           }
         }
+        return;
+        case "changeSetup":
+  
+        const setupToQuery = cmd.args;
+        if (
+          this.game.started ||
+          this.user.id != this.game.hostId ||
+          cmd.args.length == 0
+        ){
+          return;
+        }
+        if(this.game.canChangeSetup() != true){
+              this.game.sendAlert(
+              `The setup cannot be changed.`
+            );
+                return;
+              }
+        this.game.changeSetup(setupToQuery);
         return;
       case "diceroll":
         /* Code for cooldown, but it's not needed since only user can see the result :(
@@ -578,44 +636,6 @@ module.exports = class Player {
         }, 5000);
 
         this.sendAlert(`The Night Order is: ${this.game.NightOrder}`);
-
-        return;
-      case "special":
-        if (!this.game.started) {
-          this.sendAlert(`This command can only be used during the game`);
-          return;
-        }
-        if (this.specialCooldown == true) {
-          this.sendAlert(`This command has a 20 seconds cooldown, wait plz`);
-          return;
-        }
-        if (this.game.type != "Mafia") {
-          this.sendAlert(`This command is only supported in Mafia games`);
-          return;
-        }
-        this.specialCooldown = true;
-        setTimeout(() => {
-          this.specialCooldown = false;
-        }, 20000);
-
-        if (
-          this.game.SpecialInteractionText &&
-          this.game.SpecialInteractionText.length > 0
-        ) {
-          this.sendAlert(
-            `:crystal: ${this.game.setup.name} has the following special interactions:`,
-            undefined,
-            { color: " #eb347a" }
-          );
-          for (let text of this.game.SpecialInteractionText) {
-            this.sendAlert(text, undefined, { color: " #eb347a" });
-          }
-        } else {
-          this.sendAlert(
-            `:crystal: ${this.game.setup.name}: has no special role interactions.`
-          );
-        }
-        //this.sendAlert(`The Night Order is: ${this.game.NightOrder}`);
 
         return;
     }
@@ -769,6 +789,30 @@ module.exports = class Player {
           );
           let temp = new aClass(achievement[0], this);
           this.AchievementTracker.push(temp);
+          temp.start();
+        }
+      } //End For Loop
+    }
+    if (this.game.hasIntegrity && this.DailyTracker.length <= 0) {
+      let tempDailyChallenge = this.user.dailyChallenges.map((d) => d[0]);
+      for (let Challenge of Object.entries(
+        DailyChallengeData
+      ).filter(
+        (DailyChallenge) =>
+          tempDailyChallenge.includes(DailyChallenge[1].ID)
+      )) {
+        let atemp = this.DailyTracker.filter(
+          (a) => a.name == Challenge[0]
+        );
+        if (atemp.length <= 0) {
+          let internal = Challenge[1].internal;
+
+          let aClass = Utils.importGameClass(
+            "Daily",
+            `${internal}`
+          );
+          let temp = new aClass(Challenge[0], this);
+          this.DailyTracker.push(temp);
           temp.start();
         }
       } //End For Loop
@@ -1340,11 +1384,11 @@ module.exports = class Player {
 
     if (this.game.setup.alignmentReveal) {
       roleReveal = false;
-      this.role.revealAlignmentToAll(false, this.getRevealType(killType));
+      this.role.revealAlignmentToAll(false, this.getRevealType(killType), true);
     }
 
     if (roleReveal) {
-      this.role.revealToAll(false, this.getRevealType(killType));
+      this.role.revealToAll(false, this.getRevealType(killType), true);
     }
 
     this.queueLastWill();
@@ -1407,7 +1451,13 @@ module.exports = class Player {
       !this.game.anonymousGame
         ? customDeathMessage.replace("${name}", this.name)
         : this.deathMessages(type || "basic", this.name);
-    this.game.queueAlert(deathMessage);
+    
+    if (this.game.useObituaries) {
+      this.game.addToObituary(this.id, "deathMessage", deathMessage);
+    }
+    else {
+      this.game.queueAlert(deathMessage);
+    }
   }
 
   queueRevivalMessage(type) {
@@ -1424,7 +1474,12 @@ module.exports = class Player {
       will = `:will: As read from ${this.name}'s last will: ${this.lastWill}`;
     else will = `:will: ${this.name} did not leave a will.`;
 
-    this.game.queueAlert(will);
+    if (this.game.useObituaries) {
+      this.game.addToObituary(this.id, "lastWill", will);
+    }
+    else {
+      this.game.queueAlert(will);
+    }
   }
 
   recordStat(stat, inc) {

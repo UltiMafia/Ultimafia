@@ -5,6 +5,7 @@ import {
   Redirect,
   useParams,
   useHistory,
+  Link,
 } from "react-router-dom";
 import axios from "axios";
 
@@ -294,7 +295,12 @@ export function SetupPage() {
               title="Competitive Allowed"
               content={setup.competitive ? "Yes" : "No"}
             />
+            
             {closedRoleInfo}
+            <SetupRowInfo
+              title="Night Order"
+              content ={ <Link to= {`/learn/setup/${setupId}/nightorder`}>Click to Show</Link>}
+            />
           </div>
         </div>
         {shouldDisplayStats && (

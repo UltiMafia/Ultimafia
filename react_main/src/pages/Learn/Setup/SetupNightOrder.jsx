@@ -101,18 +101,22 @@ for (let i = 0; i < setup.roles.length; i++){
   const nightRoles = roles.filter((r) => r[1].nightOrder != null);
 let nightActions = [];
 //let hasMafia = false;
+if(hasMafia == true){
+  nightActions.push(["Mafia", ["Mafia Kill", -1]]);
+}
   for(let role of nightRoles){
     for(let item of role[1].nightOrder){
       nightActions.push([role[0], item]);
     }
   }
 
-if(hasMafia == true){
-  nightActions.push(["Mafia", ["Mafia Kill", -1]]);
-}
 
   let min = 100;
+  let values = [];
   for(let j = 0; j < nightActions.length; j++){
+    if(!values.includes(parseInt(nightActions[j][1][1]))){
+      values.push(parseInt(nightActions[j][1][1]));
+    }
     for(let u = 0; u < nightActions.length; u++){
       if(nightActions[u][1][1] > nightActions[j][1][1]){
         let temp = nightActions[j];
@@ -121,9 +125,25 @@ if(hasMafia == true){
       }
     }
   }
+/*
+    for(let h = 0; h < values.length; h++){
+    for(let v = 0; v < values.length; v++){
+      if(values[v] > values[h]){
+        let temp = values[h];
+        values[h] = values[v];
+        values[v] = temp;
+      }
+    }
+  }
+  */
+
+
+  
+  
+  
 
   const commandTableRows = nightActions.map((key) => {
-    
+    //key[1][1] = (values.indexOf(key[1][1])+1);
 
     return {
       roleIcon: (<RoleCount
@@ -173,11 +193,11 @@ if(hasMafia == true){
       </Typography>
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h6"> Order of how night actions occur</Typography>
+          <Typography variant="h6"> Below is the Night Order.</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography paragraph>
-            Below is the Night Order.
+            The night order resolves from the lowest priority to the highest. Ties in priority are resolved by the player list
           </Typography>
           <Box className="paragraph">{commandTable}</Box>
         </AccordionDetails>

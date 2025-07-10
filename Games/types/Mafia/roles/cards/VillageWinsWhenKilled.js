@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_DAY_EFFECT_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 const { CULT_FACTIONS, EVIL_FACTIONS } = require("../../const/FactionList");
 
 module.exports = class VillageWinsWhenKilled extends Card {

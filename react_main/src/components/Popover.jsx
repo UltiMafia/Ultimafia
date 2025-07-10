@@ -474,6 +474,7 @@ export function parseSetupPopover(setup, roleData) {
             <SmallRoleList
               roles={rolesByAlignment[alignment]}
               gameType={setup.gameType}
+              setup={setup}
             />
           }
           key={alignment}
@@ -494,6 +495,7 @@ export function parseSetupPopover(setup, roleData) {
           title={title}
           roles={roleset}
           gameType={setup.gameType}
+          setup={setup}
           key={i}
         />
       );
@@ -564,6 +566,7 @@ export function parseRolePredictionPopover(data) {
       roles={roleset}
       makeRolePrediction={data.toggleRolePrediction}
       gameType={data.gameType}
+      setup={data}
     />
   );
 }
@@ -571,7 +574,7 @@ export function parseRolePredictionPopover(data) {
 export function parseRoleGroupPopover(data) {
   let roleset = Object.keys(data.roles);
 
-  return <SmallRoleList roles={roleset} gameType={data.gameType} />;
+  return <SmallRoleList roles={roleset} gameType={data.gameType} setup={data.setup} />;
 }
 
 export function parseGamePopover(game) {
@@ -893,6 +896,13 @@ export function parseGamePopover(game) {
           title="Starting Chips"
           content={game.settings.gameTypeOptions.startingChips}
           key="startingChips"
+        />
+      );
+      result.push(
+        <InfoRow
+          title="Max Rounds"
+          content={game.settings.gameTypeOptions.MaxRounds}
+          key="MaxRounds"
         />
       );
       break;

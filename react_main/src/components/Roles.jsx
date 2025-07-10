@@ -1,5 +1,7 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
-
+import {
+  Link,
+} from "react-router-dom";
 import { UserContext, SiteInfoContext, PopoverContext } from "../Contexts";
 import { SearchBar } from "./Nav";
 import { hyphenDelimit } from "../utils";
@@ -27,6 +29,7 @@ import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 export function RoleCount(props) {
   const roleRef = useRef();
   const popover = useContext(PopoverContext);
+  const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const [roleData, setRoleData] = useState(null);
   const isPhoneDevice = useIsPhoneDevice();
@@ -60,7 +63,15 @@ export function RoleCount(props) {
   // Choose from list of icons to predict from
   const makeRolePrediction = props.makeRolePrediction;
 
-  var roleName, modifiers;
+  var roleName, modifiers, roleSkin, otherRoles;
+  if(props.otherRoles){
+  if(typeof props.otherRoles == "string"){
+  otherRoles = JSON.parse(props.otherRoles);
+  }
+  else{
+  otherRoles = props.otherRoles;
+  }
+  }
 
   if (typeof props.role == "string") {
     roleName = props.role.split(":")[0];
@@ -69,7 +80,27 @@ export function RoleCount(props) {
     roleName = props.role.name;
     modifiers = props.role.modifier;
   }
+let userRoleSkins1;
+  if(user.settings && typeof user.settings.roleSkins == "string"){
+userRoleSkins1 = user.settings.roleSkins.split(",");
+  }
 
+  let userRoleSkins = null;
+  if (userRoleSkins1) {
+    userRoleSkins = userRoleSkins1.filter((s) => s.split(":")[0] == roleName);
+  }
+
+  if(userRoleSkins && userRoleSkins.length == 1){
+    roleSkin = userRoleSkins[0].split(":")[1];
+  }
+  else{
+    roleSkin = "vivid";
+  }
+  
+  if(props.skin){
+    roleSkin = props.skin;
+  }
+  
   useEffect(() => {
     setRoleData({
       ...siteInfo.rolesRaw[props.gameType][roleName],
@@ -172,7 +203,7 @@ export function RoleCount(props) {
               marginRight: "8px",
             }}
           >
-            <i className={"fas fa-wrench"} />
+            <i className={`modifier modifier-${props.gameType}-${modifier.name}`} />
           </ListItemIcon>
           <ListItemText
             disableTypography
@@ -180,10 +211,61 @@ export function RoleCount(props) {
             primary={
               <div>
                 <span style={{ fontWeight: "bold" }}>{modifier.name}</span>:{" "}
-                {roleData?.alignment == "Event" &&
+                {(roleData?.SpecialInteractionsModifiers && roleData?.SpecialInteractionsModifiers[modifier.name]) ? roleData?.SpecialInteractionsModifiers[modifier.name] : (roleData?.alignment == "Event" &&
                 modifier.eventDescription != null
                   ? modifier.eventDescription
-                  : modifier.description}
+                  : modifier.description)}
+              </div>
+            }
+          />
+        </ListItem>
+      ))}
+    </List>
+  ) : (
+    ""
+  );
+  let specials = [];
+    if(otherRoles && otherRoles.length > 0){
+      if(roleData?.SpecialInteractions){
+      for(let i in otherRoles){
+        let roleSet = otherRoles[i];
+        for(let thing in roleSet){ //!specials.includes([thing.split(":")[0],roleData.SpecialInteractions[thing.split(":")[0]]])
+      if(roleData.SpecialInteractions[thing.split(":")[0]]){
+        specials.push([thing.split(":")[0], roleData.SpecialInteractions[thing.split(":")[0]]]);
+      }
+    }
+      }
+      }
+  }
+  let hasSpecials = (specials.length > 0);
+  const SpecialInteractions = hasSpecials ? (
+    <List dense sx={{ paddingTop: "0" }}>
+          <div>
+          <span style={{ fontWeight: "bold" }}>Special Interactions</span>
+          </div>
+      {specials.map((special, i) => (
+        <ListItem
+          key={special[0] + i}
+          sx={{
+            paddingBottom: "0",
+            paddingTop: "0",
+          }}
+        >
+          <ListItemIcon
+            sx={{
+              minWidth: "0",
+              marginRight: "8px",
+            }}
+          >
+            <i className={`role role-icon-vivid-${hyphenDelimit(props.gameType)}-${hyphenDelimit(special[0])} "small"`} />
+          </ListItemIcon>
+          <ListItemText
+            disableTypography
+            className={"mui-popover-text"}
+            primary={
+              <div>
+                <span style={{ fontWeight: "bold" }}>{special[0]}</span>:{" "}
+                {special[1][0]}
               </div>
             }
           />
@@ -209,9 +291,7 @@ export function RoleCount(props) {
       <div className="role-count-wrap">
         <div className="role-group-placeholder">
           <div
-            className={`role role-${roleClass} ${
-              props.scheme ? `role-icon-scheme-${props.scheme}` : ""
-            } ${props.small ? "small" : ""} ${props.bg ? "bg" : ""}`}
+            className={`role role-icon-${roleSkin}-${roleClass} ${props.small ? "small" : props.large ? "large" : ""} ${props.bg ? "bg" : ""}`}
             ref={roleRef}
             onClick={onRoleGroupClick}
           >
@@ -232,7 +312,7 @@ export function RoleCount(props) {
           onMouseLeave={handleMouseLeave}
         >
           <div
-            className={`role role-${roleClass} ${props.small ? "small" : ""} ${
+            className={`role role-icon-${roleSkin}-${roleClass} ${props.small ? "small" : props.large ? "large" : ""} ${
               props.bg ? "bg" : ""
             }`}
             ref={roleRef}
@@ -268,8 +348,8 @@ export function RoleCount(props) {
           >
             <div className={"mui-popover"}>
               <div className={"mui-popover-title"}>
-                <div className={`role role-${roleClass}`} />
-                &nbsp;{roleName}&nbsp;
+                <div className={`role role-icon-${roleSkin}-${roleClass}`} />
+                &nbsp;{<Link to= {`/learn/role/${roleName}`}>{roleName}</Link>}&nbsp;
               </div>
               <div style={{ margin: "6px" }}>
                 <div>
@@ -282,6 +362,7 @@ export function RoleCount(props) {
                 </div>
                 {DescriptionLines}
                 {Modifiers}
+                {SpecialInteractions}
               </div>
             </div>
           </Popover>

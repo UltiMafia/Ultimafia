@@ -90,7 +90,6 @@ export default function JottoGame(props) {
             <span>Jotto</span>
           </div>
         }
-        timer={<Timer timers={game.timers} history={history} />}
         hideStateSwitcher
       />
       <ThreePanelLayout

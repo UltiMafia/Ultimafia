@@ -95,7 +95,7 @@ module.exports = class MafiaAction extends Action {
         action.cancelActor(target);
       }
     }
-    target.giveEffect("FalseMode", 1);
+   // target.giveEffect("FalseMode", 1);
   }
 
   makeUntargetable(player, excludeLabel, excludeAlignment) {

@@ -16,17 +16,14 @@ module.exports = class BecomeUndercoverEvil extends Card {
       let tempModifier = playersAll[x].role.modifier;
       currentRoles.push(`${tempName}:${tempModifier}`);
     }
-    for (let y = 0; y < currentRoles.length; y++) {
-      roles = roles.filter(
-        (r) => r != currentRoles[y] && !currentRoles[y].includes(r)
-      );
-    }
-    roles = roles.filter((r) => !r.toLowerCase().includes("demonic"));
-    roles = roles.filter((r) => !r.toLowerCase().includes("linchpin"));
+      roles = roles.filter((r) => !currentRoles.includes(r));
+    
+    roles = roles.filter((r) => !(r.toLowerCase().includes("demonic")));
+    roles = roles.filter((r) => !(r.toLowerCase().includes("linchpin")));
     roles = roles.filter(
       (r) =>
-        this.game.getRoleAlignment(r) != "Village" &&
-        this.game.getRoleAlignment(r) != "Independent"
+        this.game.getRoleAlignment(r) == "Mafia" ||
+        this.game.getRoleAlignment(r) == "Cult"
     );
     if (roles.length <= 0) {
       roles = currentRoles;
@@ -46,9 +43,12 @@ module.exports = class BecomeUndercoverEvil extends Card {
     this.listeners = {
       SwitchRoleBefore: function (player) {
         if (player != this.player) return;
+        switchRoleBefore(this.player.role);
+
         if (this.player.faction == null) {
           this.player.faction = "Village";
         }
+
         this.player.role.data.reroll = true;
         this.player.holdItem("IsTheMole", this.player.faction);
 
@@ -90,6 +90,7 @@ module.exports = class BecomeUndercoverEvil extends Card {
           self: "Mole",
         };
         this.editAppearance(tempApp);
+        this.player.role.revealToSelf(true);
         this.game.graveyardParticipation = true;
       },
       roleAssigned: function (player) {
@@ -97,12 +98,55 @@ module.exports = class BecomeUndercoverEvil extends Card {
           return;
         }
         this.player.holdItem("IsTheMole", this.player.faction);
-        this.player.setRole(this.player.role, undefined, false, true, false);
+        this.player.setRole(this.player.role.newRole, undefined, false, true, false);
         let tempApp = {
           self: "Mole",
         };
         this.editAppearance(tempApp);
+        this.player.role.revealToSelf(true);
       },
     };
   }
+
+
+
 };
+
+function switchRoleBefore(role){
+  
+    let roles = role.game.PossibleRoles.filter((r) => r);
+    let currentRoles = [];
+    let playersAll = role.game.players.filter((p) => p.role);
+    for (let x = 0; x < playersAll.length; x++) {
+      //currentRoles.push(playersAll[x].role);
+      let tempName = playersAll[x].role.name;
+      let tempModifier = playersAll[x].role.modifier;
+      currentRoles.push(`${tempName}:${tempModifier}`);
+    }
+    for (let y = 0; y < currentRoles.length; y++) {
+      roles = roles.filter(
+        (r) => r != currentRoles[y] && !currentRoles[y].includes(r)
+      );
+    }
+    roles = roles.filter((r) => !(r.toLowerCase().includes("demonic")));
+    roles = roles.filter((r) => !(r.toLowerCase().includes("linchpin")));
+    roles = roles.filter(
+      (r) =>
+        role.game.getRoleAlignment(r) == "Mafia" ||
+        role.game.getRoleAlignment(r) == "Cult"
+    );
+    if (roles.length <= 0) {
+      roles = currentRoles;
+      roles = roles.filter((r) => !r.toLowerCase().includes("demonic"));
+      roles = roles.filter((r) => !r.toLowerCase().includes("linchpin"));
+      roles = roles.filter(
+        (r) =>
+          role.game.getRoleAlignment(r) != "Village" &&
+          role.game.getRoleAlignment(r) != "Independent"
+      );
+    }
+    if (roles.length <= 0) {
+      roles = ["Mafioso"];
+    }
+    role.newRole = Random.randArrayVal(roles);
+}

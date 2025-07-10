@@ -4,10 +4,11 @@ const Random = require("../../../../lib/Random");
 const { PRIORITY_FULL_DISABLE } = require("../const/Priority");
 
 module.exports = class IsTheBraggart extends Item {
-  constructor(lifespan) {
+  constructor(modifier) {
     super("IsTheBraggart");
 
-    this.lifespan = lifespan || Infinity;
+    this.modifier = modifier;
+
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
     this.listeners = {
@@ -19,6 +20,7 @@ module.exports = class IsTheBraggart extends Item {
           actor: this.holder,
           target: this.holder,
           game: this.game,
+          item: this,
           priority: PRIORITY_FULL_DISABLE + 1,
           labels: ["hidden", "block"],
           run: function () {
@@ -27,12 +29,19 @@ module.exports = class IsTheBraggart extends Item {
             this.target.role.appearance.reveal = "Braggart";
             this.target.role.appearance.investigate = "Braggart";
             this.target.role.appearance.condemn = "Braggart";
+            this.target.role.appearanceMods.death = this.item.modifier;
+            this.target.role.appearanceMods.reveal = this.item.modifier;
+            this.target.role.appearanceMods.investigate = this.item.modifier;
+            this.target.role.appearanceMods.condemn = this.item.modifier;
+            //this.target.role.modifier = this.item.modifier;
+              /*
             this.target.role.hideModifier = {
               death: true,
               reveal: true,
               investigate: true,
               condemn: true,
             };
+            */
 
             this.target.role.data.banished = true;
 
@@ -61,6 +70,7 @@ module.exports = class IsTheBraggart extends Item {
           actor: this.holder,
           target: this.holder,
           game: this.game,
+          item: this,
           priority: PRIORITY_FULL_DISABLE + 1,
           labels: ["hidden", "block"],
           run: function () {
@@ -68,13 +78,19 @@ module.exports = class IsTheBraggart extends Item {
             this.target.role.appearance.reveal = "Braggart";
             this.target.role.appearance.investigate = "Braggart";
             this.target.role.appearance.condemn = "Braggart";
+            this.target.role.appearanceMods.death = this.item.modifier;
+            this.target.role.appearanceMods.reveal = this.item.modifier;
+            this.target.role.appearanceMods.investigate = this.item.modifier;
+            this.target.role.appearanceMods.condemn = this.item.modifier;
+            //this.target.role.modifier = this.item.modifier;
+            /*
             this.target.role.hideModifier = {
               death: true,
               reveal: true,
               investigate: true,
               condemn: true,
             };
-
+            */
             this.target.role.data.banished = true;
 
             for (let item of this.target.items) {

@@ -48,7 +48,7 @@ const modifierData = {
       description:
         "When a player is killed while holding a bomb, the player who killed them will also die.",
     },
-    Sheild: {
+    Shield: {
       internal: ["Armor"],
       tags: ["Armor"],
       description:

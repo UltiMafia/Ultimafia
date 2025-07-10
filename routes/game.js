@@ -190,9 +190,7 @@ router.get("/list", async function (req, res) {
         [
           "setup",
           "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id",
-        ],
-        //["anonymousDeck", "id name disabled profiles -_id"]
-        ["anonymousDeck"]
+        ]
       );
       finishedGames = finishedGames.map((game) => ({
         ...game.toJSON(),
@@ -215,6 +213,9 @@ router.get("/:id/connect", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var game = await redis.getGameInfo(gameId, true);
 
+    const now = Date.now();
+    const isSpectating = req.query.spectate === 'true';
+
     if (!game) {
       res.status(500);
       res.send("Game not found.");
@@ -227,7 +228,7 @@ router.get("/:id/connect", async function (req, res) {
       return;
     }
 
-    if (game.settings.ranked) {
+    if (userId && game.settings.ranked && !isSpectating) {
       const user = await models.User.findOne({ id: userId }).select(
         "redHearts"
       );
@@ -237,6 +238,19 @@ router.get("/:id/connect", async function (req, res) {
         res.send(
           "You cannot join ranked games because your Red Hearts are depleted."
         );
+        return;
+      }
+    }
+
+    if (userId && !isSpectating) {
+      const leavePentalty = await models.LeavePenalty.findOne({ userId: userId }).select(
+        "canPlayAfter"
+      );
+
+      if (leavePentalty && now < leavePentalty.canPlayAfter) {
+        const minutesUntilCanPlayAgain = Math.trunc((leavePentalty.canPlayAfter - now) / 60000);
+        res.status(400);
+        res.send(`You are unable to play games for another ${minutesUntilCanPlayAgain} minutes due to leaving game(s).`);
         return;
       }
     }
@@ -307,8 +321,7 @@ router.get("/:id/review/data", async function (req, res) {
             select: "id extension name -_id",
           },
         ],
-      })
-      //.populate("anonymousDeck", "-_id -__v -creator");
+      });
 
     if (!game || !userId) {
       res.status(500);
@@ -367,7 +380,6 @@ router.get("/:id/info", async function (req, res) {
           "type users players left stateLengths lobbyName ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions -_id"
         )
         .populate("users", "id name avatar -_id")
-        //.populate("anonymousDeck", "-_id -__v -creator");
 
       if (!game) {
         res.status(500);
@@ -433,6 +445,8 @@ router.post("/host", async function (req, res) {
     var lobbyName = req.body.lobbyName ? String(req.body.lobbyName) : null;
     var rehostId = req.body.rehost && String(req.body.rehost);
     var scheduled = Number(req.body.scheduled);
+
+    const now = Date.now();
 
     if (
       !routeUtils.validProp(gameType) ||
@@ -576,6 +590,18 @@ router.post("/host", async function (req, res) {
         res.send(
           "You cannot host ranked games because your Red Hearts are depleted."
         );
+        return;
+      }
+    }
+
+    const leavePentalty = await models.LeavePenalty.findOne({ userId: userId }).select(
+      "canPlayAfter"
+    );
+    if (leavePentalty) {
+      if (now < leavePentalty.canPlayAfter) {
+        const minutesUntilCanPlayAgain = Math.trunc((leavePentalty.canPlayAfter - now) / 60000);
+        res.status(400);
+        res.send(`You are unable to play games for another ${minutesUntilCanPlayAgain} minutes due to leaving game(s).`);
         return;
       }
     }
@@ -1098,6 +1124,8 @@ const settingsChecks = {
     let enablePunctuation = settings.enablePunctuation;
     let standardiseCapitalisation = settings.standardiseCapitalisation;
     let turnOnCaps = settings.turnOnCaps;
+    let isRankedChoice = settings.isRankedChoice;
+    let votesToPoints = settings.votesToPoints;
 
     return {
       roundAmt,
@@ -1105,6 +1133,8 @@ const settingsChecks = {
       enablePunctuation,
       standardiseCapitalisation,
       turnOnCaps,
+      isRankedChoice,
+      votesToPoints,
     };
   },
   "Liars Dice": (settings, setup) => {
@@ -1121,10 +1151,12 @@ const settingsChecks = {
   "Card Games": (settings, setup) => {
     let minimumBet = settings.minimumBet;
     let startingChips = settings.startingChips;
+    let MaxRounds = settings.MaxRounds;
 
     return {
       minimumBet,
       startingChips,
+      MaxRounds,
     };
   },
   Battlesnakes: (settings, setup) => {
