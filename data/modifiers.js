@@ -521,7 +521,7 @@ const modifierData = {
       description: "Can only perform actions X times. X is equal the number of times this modifier is added.",
       eventDescription: "This Event will only occur once.",
       allowDuplicate: true,
-      incompatible: ["Exhausted"],
+      incompatible: ["Suspended"],
     },
     Picky: {
       internal: ["GuessRoleOrGetBlocked"],
