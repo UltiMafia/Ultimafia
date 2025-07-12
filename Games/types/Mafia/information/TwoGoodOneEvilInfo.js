@@ -65,7 +65,7 @@ module.exports = class TwoGoodOneEvilInfo extends Information {
     else if(this.mainInfo == "Not Enough Good Players Exist"){
       return `You Learn that ${this.mainInfo}`;
     }
-    return `You Learn that at Exactly One of ${this.mainInfo[0].name}, ${this.mainInfo[1].name}, or ${this.mainInfo[2].name} is Evil.`;
+    return `While conducting your symphony, you hear a sour note... exactly one of ${this.mainInfo[0].name}, ${this.mainInfo[1].name}, or ${this.mainInfo[2].name} is Evil.`;
   }
 
   isTrue() {

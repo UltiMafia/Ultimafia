@@ -825,7 +825,7 @@ const roleData = {
       ],
       },
     },
-    Noble: {
+    Maestro: {
       alignment: "Village",
       tags: ["Information", "Alignment", "Basic"],
       description: [
