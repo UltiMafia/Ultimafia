@@ -35,7 +35,6 @@ import Play from "./pages/Play/Play";
 import Community from "./pages/Community/Community";
 import Fame from "./pages/Fame/Fame";
 import Learn from "./pages/Learn/Learn";
-import Development from "./pages/Development/Development";
 import Policy from "./pages/Policy/Policy";
 import User, { Avatar, useUser } from "./pages/User/User";
 import UserNotifications from "./pages/User/UserNotifications";
@@ -266,10 +265,6 @@ function Main() {
                         <Route path="/play" render={() => <Play />} />
                         <Route path="/community" render={() => <Community />} />
                         <Route path="/fame" render={() => <Fame />} />
-                        <Route
-                          path="/development"
-                          render={() => <Development />}
-                        />
                         <Route path="/learn" render={() => <Learn />} />
                         <Route path="/policy" render={() => <Policy />} />
                         <Route path="/user" render={() => <User />} />

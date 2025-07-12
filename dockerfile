@@ -1,11 +1,5 @@
 # Use the official Node.js image as the base image
-FROM sitespeedio/node:ubuntu-20.04-nodejs-14.16.0
-
-# Install Supervisor
-RUN apt-get update && apt-get install -y supervisor
-
-# Copy Supervisor config file to proper directory
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+FROM node:22.17.0
 
 # Set the working directory in the container
 WORKDIR /home/um
@@ -20,7 +14,6 @@ RUN npm install
 RUN npm install pm2 -g
 
 # Expose Ports
-EXPOSE 80
 EXPOSE 2999
 EXPOSE 3000
 EXPOSE 3001
@@ -33,16 +26,5 @@ EXPOSE 9232
 # Copy the content of the local src directory to the working directory
 COPY . .
 
-# Change directory to react_main
-WORKDIR /home/um/react_main
-
-RUN npm install
-
-# Build static site
-RUN bash build.sh && echo "Build finished."
-
-# Change directory back to um root
-WORKDIR /home/um
-
 # Specify the command to run on container start
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["pm2-runtime", "start", "pm2.json"]

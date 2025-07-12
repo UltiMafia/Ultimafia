@@ -1,0 +1,19 @@
+services:
+  # frontend service via npm start
+  web:
+    depends_on:
+      - backend
+    container_name: "web"
+    restart: unless-stopped
+    build:
+      context: react_main
+      dockerfile: dockerfile
+      target: development
+    expose:
+      - 80
+    ports:
+      - "80:3001"
+    volumes:
+      - ./:/home/um/
+    networks:
+      - my_net
