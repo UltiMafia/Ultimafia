@@ -3,7 +3,7 @@ const Item = require("../Item");
 module.exports = class Suit extends Item {
   constructor(options) {
     super("Suit");
-    this.type = options?.type.split(":")[0];
+    this.type = options?.type;
     this.typeMods = options?.type.split(":")[1];
     this.concealed = options?.concealed;
     if (this.concealed) {

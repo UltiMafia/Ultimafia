@@ -210,7 +210,8 @@ const modifierData = {
       description:
         "Cannot attend secondary meetings for the first day and night.",
       eventDescription: "This Event will not occur on the first night.",
-      incompatible: ["Lazy", "Odd", "Even", "Exhausted"],
+      incompatible: ["Lazy", "Odd", "Even", "Suspended"],
+      allowDuplicate: true,
     },
     Diplomatic: {
       internal: ["CondemnImmune"],
@@ -337,6 +338,13 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
       incompatible: ["Banished", "Exclusive"],
+    },
+    Infamous: {
+      internal: ["RevealToEvils"],
+      tags: ["Reveal Self"],
+      description: "Starts revealed to all Evil players.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Exposed"],
     },
     Insane: {
       internal: ["FalseModifier"],
@@ -478,6 +486,13 @@ const modifierData = {
       description:
         "Announces the player's name to the targets of their night actions.",
       eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Notable: {
+      internal: ["RevealToVillage"],
+      tags: ["Reveal Self"],
+      description: "Starts revealed to all Village-aligned players.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Exposed"],
     },
     Nonconsecutive: {
       internal: ["Nonconsecutive"],

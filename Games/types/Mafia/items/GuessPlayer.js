@@ -1,6 +1,7 @@
 const Item = require("../Item");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
+const { PRIORITY_OVERTHROW_VOTE } = require("../const/Priority");
 
 module.exports = class GuessPlayer extends Item {
   constructor(player) {
@@ -17,7 +18,7 @@ module.exports = class GuessPlayer extends Item {
         actionName: "Guess Ogre",
         states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
-        targets: { include: ["dead"], exclude: ["alive", "self"] },
+        targets: { include: ["alive", "dead"], exclude: ["self"] },
         action: {
           item: this,
           run: function () {
@@ -27,11 +28,12 @@ module.exports = class GuessPlayer extends Item {
                 actor: this.actor,
                 target: this.target,
                 game: this.actor.game,
+                item: this.item,
                 priority: PRIORITY_OVERTHROW_VOTE - 1,
                 labels: ["hidden", "absolute", "condemn", "overthrow"],
                 run: function () {
                   //New code
-                  if (!this.actor.hasAbility(["Condemn"])) {
+                  if (!this.item.playerToGuess.hasAbility(["Condemn"])) {
                     return;
                   }
                   for (let action of this.game.actions[0]) {
@@ -57,11 +59,9 @@ module.exports = class GuessPlayer extends Item {
               this.game.gotoNextState();
             } //End if
             else {
-              if (this.actor.role.data.singer) {
-                this.actor.queueAlert(`Your guess was Incorrect. No Evil Player will get to Guess the Orge tomorrow!`
-                  this.item.playerToGuess.role.OrgeGuessUsedYesterday = true;
-                );
-              }
+                this.actor.queueAlert(`Your guess was Incorrect. No Evil Player will get to Guess the Orge tomorrow!`);
+                this.item.playerToGuess.role.OrgeGuessUsedYesterday = true;
+              
             }
           },
         },
