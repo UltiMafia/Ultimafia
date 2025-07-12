@@ -379,6 +379,14 @@ module.exports = class MafiaGame extends Game {
     super.checkVeg();
   }
 
+  isHostileVsMafia(){
+   return this.setup.HostileVsMafia;
+  }
+
+  isCultVsMafia(){
+    return this.setup.CultVsMafia;
+  }
+  
   isNoAct() {
     return (
       this.setup.dawn &&
@@ -519,6 +527,7 @@ module.exports = class MafiaGame extends Game {
 
     delete this.swaps;
   }
+
 
   getRoleNightOrder() {
     var roleName;
