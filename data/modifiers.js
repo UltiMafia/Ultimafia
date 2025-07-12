@@ -210,7 +210,8 @@ const modifierData = {
       description:
         "Cannot attend secondary meetings for the first day and night.",
       eventDescription: "This Event will not occur on the first night.",
-      incompatible: ["Lazy", "Odd", "Even", "Exhausted"],
+      incompatible: ["Suspended"],
+      allowDuplicate: true,
     },
     Diplomatic: {
       internal: ["CondemnImmune"],
@@ -240,7 +241,7 @@ const modifierData = {
       description:
         "Can only attend secondary meetings on even days and nights.",
       eventDescription: "This Event will only occur on Even nights.",
-      incompatible: ["Lazy", "Odd", "Delayed", "Exhausted"],
+      incompatible: ["Odd", "Delayed"],
     },
     Exclusive: {
       internal: ["Remove1Banished"],
@@ -338,6 +339,13 @@ const modifierData = {
       allowDuplicate: true,
       incompatible: ["Banished", "Exclusive"],
     },
+    Infamous: {
+      internal: ["RevealToEvils"],
+      tags: ["Reveal Self"],
+      description: "Starts revealed to all Evil players.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Exposed"],
+    },
     Insane: {
       internal: ["FalseModifier"],
       tags: ["FalseMode"],
@@ -377,7 +385,6 @@ const modifierData = {
       description:
         "Actions taken on night will only execute after a full day/night phase.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Delayed", "Odd", "Even", "Exhausted"],
     },
     Liminal: {
       internal: ["VisitDeadOrAlive"],
@@ -479,6 +486,13 @@ const modifierData = {
         "Announces the player's name to the targets of their night actions.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    Notable: {
+      internal: ["RevealToVillage"],
+      tags: ["Reveal Self"],
+      description: "Starts revealed to all Village-aligned players.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Exposed"],
+    },
     Nonconsecutive: {
       internal: ["Nonconsecutive"],
       tags: ["Visits", "Block Self", "Nonconsecutive"],
@@ -492,7 +506,7 @@ const modifierData = {
       tags: ["Odd", "Meetings"],
       description: "Can only attend secondary meetings on odd days and nights.",
       eventDescription: "This Event will only occur on Odd nights.",
-      incompatible: ["Lazy", "Even", "Delayed", "Exhausted"],
+      incompatible: ["Even"],
     },
     Omniscient: {
       internal: ["Omniscient"],
@@ -506,7 +520,6 @@ const modifierData = {
       description: "Can only perform actions X times. X is equal the number of times this modifier is added.",
       eventDescription: "This Event will only occur once.",
       allowDuplicate: true,
-      incompatible: ["Exhausted"],
     },
     Picky: {
       internal: ["GuessRoleOrGetBlocked"],
@@ -706,7 +719,7 @@ const modifierData = {
         "Can only attend secondary meetings for the first day and night.",
       eventDescription: "This Event can only occur on the first night.",
       allowDuplicate: true,
-      incompatible: ["Lazy", "Odd", "X-Shot", "Even", "Delayed"],
+      incompatible: ["Delayed"],
     },
     Telepathic: {
       internal: ["ModifierTelepathic"],
