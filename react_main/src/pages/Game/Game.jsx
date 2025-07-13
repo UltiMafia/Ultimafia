@@ -1708,7 +1708,7 @@ function ObituariesMessage(props) {
     title = "Breaking News";
   }
 
-  const noAnimation = props?.settings?.noAnimation || !shouldAnimateSource || alreadyWatched || game.review;
+  const noAnimation = true;// props?.settings?.noAnimation || !shouldAnimateSource || alreadyWatched || game.review;
 
   useEffect(() => {
     try {
