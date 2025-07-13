@@ -4,6 +4,7 @@ module.exports = class Suit extends Item {
   constructor(options) {
     super("Suit");
     this.type = options?.type;
+    this.typeMods = options?.type.split(":")[1];
     this.concealed = options?.concealed;
     if (this.concealed) {
       this.cannotBeSnooped = true;
@@ -12,10 +13,15 @@ module.exports = class Suit extends Item {
   }
 
   hold(player) {
-    player.role.appearance.death = this.type;
-    player.role.appearance.reveal = this.type;
-    player.role.appearance.investigate = this.type;
-    player.role.appearance.condemn = this.type;
+
+
+    let tempApp = {
+      death: this.type,
+      reveal: this.type,
+      investigate: this.type,
+      condemn: this.type,
+    };
+    player.role.editAppearance(tempApp);
     player.role.hideModifier = {
       death: true,
       reveal: true,

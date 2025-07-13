@@ -36,7 +36,7 @@ export default function Comments(props) {
     if (filterArg == null) return;
 
     axios
-      .get(`/comment?location=${location}&${filterArg}`)
+      .get(`/api/comment?location=${location}&${filterArg}`)
       .then((res) => {
         setLoaded(true);
 
@@ -57,7 +57,7 @@ export default function Comments(props) {
 
   function onPostSubmit() {
     axios
-      .post("/comment", { content: postContent, location })
+      .post("/api/comment", { content: postContent, location })
       .then(() => {
         onCommentsPageNav(1);
         setPostContent("");

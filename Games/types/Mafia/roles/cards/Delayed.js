@@ -9,6 +9,7 @@ const {
 module.exports = class Delayed extends Card {
   constructor(role) {
     super(role);
+    this.role.DelayedMax = this.role.modifier.split("/").filter((m) => m == "Delayed").length;
 
     this.meetingMods = {
       "*": {
@@ -25,7 +26,7 @@ module.exports = class Delayed extends Card {
           }
           if (meetingName == "Graveyard") return true;
 
-          return this.game.getStateInfo().id > 1;
+          return this.game.getStateInfo().dayCount > this.DelayedMax;
         },
       },
     };

@@ -46,7 +46,7 @@ module.exports = class CountVisitorsInfo extends Information {
     super.getInfoRaw();
 
     if (this.target == this.creator) {
-      return `You learn that You were visited by ${this.mainInfo} people during the night.`;
+      return `${this.mainInfo} people came to visit you during the night.`;
     }
 
     return `You learn that ${this.target.name} was visited by ${this.mainInfo} people during the night.`;

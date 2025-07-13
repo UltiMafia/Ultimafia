@@ -16,7 +16,7 @@ export default function Donors(props) {
     document.title = "Donors | UltiMafia";
 
     axios
-      .get("/site/donors")
+      .get("/api/site/donors")
       .then((res) => {
         setDonors(res.data);
         setLoaded(true);

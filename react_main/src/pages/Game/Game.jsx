@@ -42,7 +42,7 @@ import {
 } from "../../Constants";
 import { textIncludesSlurs } from "../../lib/profanity";
 
-import "css/game.css";
+import "../../css/game.css";
 import EmotePicker from "../../components/EmotePicker";
 import JottoGame from "./JottoGame";
 import "./Game.css";
@@ -70,10 +70,10 @@ import BattlesnakesGame from "./BattlesnakesGame";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
 
-import lore from "images/emotes/lore.webp";
-import poison from "images/emotes/poison.webp";
-import exit from "images/emotes/exit.webp";
-import veg from "images/emotes/veg.webp";
+const lore = `/images/emotes/lore.webp`;
+const poison = `/images/emotes/poison.webp`;
+const exit = `/images/emotes/exit.webp`;
+const veg = `/images/emotes/veg.webp`;
 
 export default function Game() {
   return (
@@ -368,7 +368,7 @@ function GameWrapper(props) {
       document.title = `Review Game ${gameId} | UltiMafia`;
 
       axios
-        .get(`/game/${gameId}/review/data`)
+        .get(`/api/game/${gameId}/review/data`)
         .then((res) => {
           var data = res.data;
 
@@ -667,7 +667,7 @@ function GameWrapper(props) {
     const urlParams = new URLSearchParams(window.location.search);
     const isSpectating = urlParams.get('spectate') === 'true';
     
-    const url = `/game/${gameId}/connect${isSpectating ? '?spectate=true' : ''}`;
+    const url = `/api/game/${gameId}/connect${isSpectating ? '?spectate=true' : ''}`;
     
     axios.get(url)
       .then((res) => {
@@ -836,7 +836,7 @@ export function BotBar(props) {
         stateLengths[stateName] = game.options.stateLengths[stateName] / 60000;
 
       axios
-        .post("/game/host", {
+        .post("/api/game/host", {
           rehost: gameId,
           gameType: props.gameType,
           setup: game.setup.id,
@@ -859,7 +859,7 @@ export function BotBar(props) {
 
   function onArchiveGameClick() {
     axios
-      .post(`/game/${gameId}/archive`)
+      .post(`/api/game/${gameId}/archive`)
       .then((res) => {
         siteInfo.showAlert(res.data, "success");
       })
@@ -1708,7 +1708,7 @@ function ObituariesMessage(props) {
     title = "Breaking News";
   }
 
-  const noAnimation = true;//props?.settings?.noAnimation || !shouldAnimateSource || alreadyWatched || game.review;
+  const noAnimation = true;// props?.settings?.noAnimation || !shouldAnimateSource || alreadyWatched || game.review;
 
   useEffect(() => {
     try {
@@ -2277,7 +2277,7 @@ export function PlayerList(props) {
         stateLengths[stateName] = props.options.stateLengths[stateName] / 60000;
 
       axios
-        .post("/game/host", {
+        .post("/api/game/host", {
           gameType: props.gameType,
           setup: props.setup.id,
           lobby: props.options.lobby,

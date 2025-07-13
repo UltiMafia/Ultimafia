@@ -225,12 +225,14 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
     ""
   );
   let specials = [];
+  let specialRoles = [];
     if(otherRoles && otherRoles.length > 0){
       if(roleData?.SpecialInteractions){
       for(let i in otherRoles){
         let roleSet = otherRoles[i];
         for(let thing in roleSet){ //!specials.includes([thing.split(":")[0],roleData.SpecialInteractions[thing.split(":")[0]]])
-      if(roleData.SpecialInteractions[thing.split(":")[0]]){
+      if(roleData.SpecialInteractions[thing.split(":")[0]] && !specialRoles.includes(thing.split(":")[0])){
+        specialRoles.push(thing.split(":")[0]);
         specials.push([thing.split(":")[0], roleData.SpecialInteractions[thing.split(":")[0]]]);
       }
     }
