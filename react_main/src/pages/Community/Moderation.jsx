@@ -38,7 +38,7 @@ export default function Moderation() {
     document.title = "Moderation | UltiMafia";
 
     axios
-      .get("/mod/groups")
+      .get("/api/mod/groups")
       .then((res) => {
         setGroups(res.data.sort((a, b) => b.rank - a.rank));
         setLoaded(true);
@@ -256,7 +256,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/group", argValues)
+          .post("/api/mod/group", argValues)
           .then(() => {
             siteInfo.showAlert("Group created.", "success");
             commandRan();
@@ -276,7 +276,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/group/delete", argValues)
+          .post("/api/mod/group/delete", argValues)
           .then(() => {
             siteInfo.showAlert("Group deleted.", "success");
             commandRan();
@@ -308,7 +308,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/forums/category", argValues)
+          .post("/api/forums/category", argValues)
           .then(() => {
             siteInfo.showAlert("Category created.", "success");
             commandRan();
@@ -358,7 +358,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/forums/board", argValues)
+          .post("/api/forums/board", argValues)
           .then(() => {
             siteInfo.showAlert("Board created.", "success");
             commandRan();
@@ -392,7 +392,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/groupPerms", argValues)
+          .post("/api/mod/groupPerms", argValues)
           .then(() => {
             siteInfo.showAlert("Group permissions updated.", "success");
             commandRan();
@@ -417,7 +417,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/addToGroup", argValues)
+          .post("/api/mod/addToGroup", argValues)
           .then(() => {
             siteInfo.showAlert("User added to group.", "success");
             commandRan();
@@ -442,7 +442,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/removeFromGroup", argValues)
+          .post("/api/mod/removeFromGroup", argValues)
           .then(() => {
             siteInfo.showAlert("User removed from group.", "success");
             commandRan();
@@ -462,7 +462,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .get(`/mod/groupPerms?name=${argValues.name}`)
+          .get(`/api/mod/groupPerms?name=${argValues.name}`)
           .then((res) => {
             alert(res.data.join(", "), "success");
             commandRan();
@@ -481,7 +481,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .get(`/mod/userPerms?userId=${argValues.userId}`)
+          .get(`/api/mod/userPerms?userId=${argValues.userId}`)
           .then((res) => {
             alert(res.data.join(", "), "success");
             commandRan();
@@ -502,7 +502,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/forums/board/delete", argValues)
+          .post("/api/forums/board/delete", argValues)
           .then(() => {
             siteInfo.showAlert("Board deleted.", "success");
             commandRan();
@@ -526,7 +526,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/forums/thread/move", argValues)
+          .post("/api/forums/thread/move", argValues)
           .then(() => {
             siteInfo.showAlert("Thread moved.", "success");
             commandRan();
@@ -558,7 +558,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/chat/room", argValues)
+          .post("/api/chat/room", argValues)
           .then(() => {
             siteInfo.showAlert("Room created.", "success");
             commandRan();
@@ -577,7 +577,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/chat/room/delete", argValues)
+          .post("/api/chat/room/delete", argValues)
           .then(() => {
             siteInfo.showAlert("Room deleted.", "success");
             commandRan();
@@ -601,7 +601,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/forumBan", argValues)
+          .post("/api/mod/forumBan", argValues)
           .then(() => {
             siteInfo.showAlert("User forum banned.", "success");
             commandRan();
@@ -625,7 +625,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/chatBan", argValues)
+          .post("/api/mod/chatBan", argValues)
           .then(() => {
             siteInfo.showAlert("User chat banned.", "success");
             commandRan();
@@ -649,7 +649,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/gameBan", argValues)
+          .post("/api/mod/gameBan", argValues)
           .then(() => {
             siteInfo.showAlert("User game banned.", "success");
             commandRan();
@@ -673,7 +673,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/rankedBan", argValues)
+          .post("/api/mod/rankedBan", argValues)
           .then(() => {
             siteInfo.showAlert("User ranked banned.", "success");
             commandRan();
@@ -697,7 +697,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/competitiveBan", argValues)
+          .post("/api/mod/competitiveBan", argValues)
           .then(() => {
             siteInfo.showAlert("User competitive banned.", "success");
             commandRan();
@@ -721,7 +721,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/siteBan", argValues)
+          .post("/api/mod/siteBan", argValues)
           .then(() => {
             siteInfo.showAlert("User site banned.", "success");
             commandRan();
@@ -740,7 +740,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/logout", argValues)
+          .post("/api/mod/logout", argValues)
           .then(() => {
             siteInfo.showAlert("User logged out.", "success");
             commandRan();
@@ -759,7 +759,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/forumUnban", argValues)
+          .post("/api/mod/forumUnban", argValues)
           .then(() => {
             siteInfo.showAlert("User forum unbanned.", "success");
             commandRan();
@@ -778,7 +778,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/chatUnban", argValues)
+          .post("/api/mod/chatUnban", argValues)
           .then(() => {
             siteInfo.showAlert("User chat unbanned.", "success");
             commandRan();
@@ -797,7 +797,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/gameUnban", argValues)
+          .post("/api/mod/gameUnban", argValues)
           .then(() => {
             siteInfo.showAlert("User game unbanned.", "success");
             commandRan();
@@ -816,7 +816,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/rankedUnban", argValues)
+          .post("/api/mod/rankedUnban", argValues)
           .then(() => {
             siteInfo.showAlert("User ranked unbanned.", "success");
             commandRan();
@@ -835,7 +835,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/competitiveUnban", argValues)
+          .post("/api/mod/competitiveUnban", argValues)
           .then(() => {
             siteInfo.showAlert("User competitive unbanned.", "success");
             commandRan();
@@ -854,7 +854,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/siteUnban", argValues)
+          .post("/api/mod/siteUnban", argValues)
           .then(() => {
             siteInfo.showAlert("User site unbanned.", "success");
             commandRan();
@@ -873,7 +873,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .get(`/mod/ips?userId=${argValues.userId}`)
+          .get(`/api/mod/ips?userId=${argValues.userId}`)
           .then((res) => {
             setResults(res.data.join(" "));
             commandRan();
@@ -892,7 +892,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .get(`/mod/alts?userId=${argValues.userId}`)
+          .get(`/api/mod/alts?userId=${argValues.userId}`)
           .then((res) => {
             alert(res.data.map((u) => `${u.name} (${u.id})`).join(", "));
             commandRan();
@@ -911,7 +911,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .get(`/mod/bans?userId=${argValues.userId}`)
+          .get(`/api/mod/bans?userId=${argValues.userId}`)
           .then((res) => {
             alert(
               res.data
@@ -939,7 +939,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .get(`/mod/flagged?userId=${argValues.userId}`)
+          .get(`/api/mod/flagged?userId=${argValues.userId}`)
           .then((res) => {
             if (res.data) alert("Flagged!");
             else alert("Not flagged");
@@ -960,7 +960,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/clearSetupName", argValues)
+          .post("/api/mod/clearSetupName", argValues)
           .then(() => {
             siteInfo.showAlert("Setup name cleared.", "success");
             commandRan();
@@ -979,7 +979,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/clearBio", argValues)
+          .post("/api/mod/clearBio", argValues)
           .then(() => {
             siteInfo.showAlert("Bio cleared.", "success");
             commandRan();
@@ -998,7 +998,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/clearVideo", argValues)
+          .post("/api/mod/clearVideo", argValues)
           .then(() => {
             siteInfo.showAlert("Video cleared.", "success");
             commandRan();
@@ -1017,7 +1017,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/clearBirthday", argValues)
+          .post("/api/mod/clearBirthday", argValues)
           .then(() => {
             siteInfo.showAlert("Birthday cleared.", "success");
             commandRan();
@@ -1036,7 +1036,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/clearAccountDisplay", argValues)
+          .post("/api/mod/clearAccountDisplay", argValues)
           .then(() => {
             siteInfo.showAlert("Account display cleared.", "success");
             commandRan();
@@ -1055,7 +1055,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/clearName", argValues)
+          .post("/api/mod/clearName", argValues)
           .then(() => {
             siteInfo.showAlert("Name cleared.", "success");
             commandRan();
@@ -1074,7 +1074,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/clearAvi", argValues)
+          .post("/api/mod/clearAvi", argValues)
           .then(() => {
             siteInfo.showAlert("Avatar cleared.", "success");
             commandRan();
@@ -1093,7 +1093,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/clearCustomEmotes", argValues)
+          .post("/api/mod/clearCustomEmotes", argValues)
           .then(() => {
             siteInfo.showAlert("Custom emotes cleared.", "success");
             commandRan();
@@ -1112,7 +1112,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/clearAllContent", argValues)
+          .post("/api/mod/clearAllContent", argValues)
           .then(() => {
             siteInfo.showAlert("User content cleared.", "success");
             commandRan();
@@ -1136,7 +1136,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/changeName", argValues)
+          .post("/api/mod/changeName", argValues)
           .then(() => {
             siteInfo.showAlert("Name changed.", "success");
             commandRan();
@@ -1160,7 +1160,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/refundRedHearts", argValues)
+          .post("/api/mod/refundRedHearts", argValues)
           .then(() => {
             siteInfo.showAlert("Red Hearts refunded.", "success");
             commandRan();
@@ -1184,7 +1184,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/refundGoldHearts", argValues)
+          .post("/api/mod/refundGoldHearts", argValues)
           .then(() => {
             siteInfo.showAlert("Gold Hearts refunded.", "success");
             commandRan();
@@ -1203,7 +1203,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/refundDailyChallenge", argValues)
+          .post("/api/mod/refundDailyChallenge", argValues)
           .then(() => {
             siteInfo.showAlert("Daily Challenge refunded.", "success");
             commandRan();
@@ -1222,7 +1222,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/breakGame", argValues)
+          .post("/api/mod/breakGame", argValues)
           .then(() => {
             siteInfo.showAlert("Game broken.", "success");
             commandRan();
@@ -1241,7 +1241,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/setup/feature", argValues)
+          .post("/api/setup/feature", argValues)
           .then(() => {
             siteInfo.showAlert("Setup feature toggled.", "success");
             commandRan();
@@ -1260,7 +1260,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/deck/feature", argValues)
+          .post("/api/deck/feature", argValues)
           .then(() => {
             siteInfo.showAlert("deck feature toggled.", "success");
             commandRan();
@@ -1279,7 +1279,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/setup/delete", { id: argValues["setupId"] })
+          .post("/api/setup/delete", { id: argValues["setupId"] })
           .then(() => {
             siteInfo.showAlert("Setup deleted.", "success");
             commandRan();
@@ -1298,7 +1298,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/deck/disable", argValues)
+          .post("/api/deck/disable", argValues)
           .then(() => {
             siteInfo.showAlert("Toggled deck disable status", "success");
             commandRan();
@@ -1311,7 +1311,7 @@ function useModCommands(argValues, commandRan, setResults) {
       args: [],
       run: function () {
         axios
-          .post("/mod/clearAllIPs", argValues)
+          .post("/api/mod/clearAllIPs", argValues)
           .then(() => {
             siteInfo.showAlert("IPs cleared.", "success");
             commandRan();
@@ -1330,7 +1330,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/whitelist", argValues)
+          .post("/api/mod/whitelist", argValues)
           .then(() => {
             siteInfo.showAlert("User whitelisted.", "success");
             commandRan();
@@ -1349,7 +1349,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/blacklist", argValues)
+          .post("/api/mod/blacklist", argValues)
           .then(() => {
             siteInfo.showAlert("User blacklisted.", "success");
             commandRan();
@@ -1368,7 +1368,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/scheduleRestart", argValues)
+          .post("/api/mod/scheduleRestart", argValues)
           .then(() => {
             siteInfo.showAlert("Restart scheduled.", "success");
             commandRan();
@@ -1387,7 +1387,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/kick", argValues)
+          .post("/api/mod/kick", argValues)
           .then(() => {
             siteInfo.showAlert("Kicked player.", "success");
             commandRan();
@@ -1406,7 +1406,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/breakPortGames", argValues)
+          .post("/api/mod/breakPortGames", argValues)
           .then(() => {
             siteInfo.showAlert("Games broken.", "success");
             commandRan();
@@ -1425,7 +1425,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/announcement", argValues)
+          .post("/api/mod/announcement", argValues)
           .then(() => {
             siteInfo.showAlert("Announcement created.", "success");
             commandRan();
@@ -1444,7 +1444,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/setup/ranked", argValues)
+          .post("/api/setup/ranked", argValues)
           .then(() => {
             siteInfo.showAlert("Setup ranked status toggled.", "success");
             commandRan();
@@ -1463,7 +1463,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/setup/competitive", argValues)
+          .post("/api/setup/competitive", argValues)
           .then(() => {
             siteInfo.showAlert("Setup competitive status toggled.", "success");
             commandRan();
@@ -1482,7 +1482,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/rankedApprove", argValues)
+          .post("/api/mod/rankedApprove", argValues)
           .then(() => {
             siteInfo.showAlert("User approved for ranked play.", "success");
             commandRan();
@@ -1501,7 +1501,7 @@ function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/mod/competitiveApprove", argValues)
+          .post("/api/mod/competitiveApprove", argValues)
           .then(() => {
             siteInfo.showAlert(
               "User approved for competitive play.",
@@ -1604,7 +1604,7 @@ function ModActions(props) {
     if (filterArg == null) return;
 
     axios
-      .get(`/mod/actions?${filterArg}`)
+      .get(`/api/mod/actions?${filterArg}`)
       .then((res) => {
         if (res.data.length > 0) {
           setActions(res.data);

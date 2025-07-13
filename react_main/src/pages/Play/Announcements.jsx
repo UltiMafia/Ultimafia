@@ -23,7 +23,7 @@
 //     if (filterArg == null) return;
 //
 //     axios
-//       .get(`/mod/announcements?${filterArg}`)
+//       .get(`/api/mod/announcements?${filterArg}`)
 //       .then((res) => {
 //         if (res.data.length > 0) {
 //           setAnnouncements(res.data);

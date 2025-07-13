@@ -84,7 +84,7 @@ function Main() {
 
   function onGameLeave(index) {
     axios
-      .post("/game/leave")
+      .post("/api/game/leave")
       .then(() => {
         siteInfo.hideAlert(index);
       })
@@ -134,13 +134,13 @@ function Main() {
   useEffect(() => {
     async function getInfo() {
       try {
-        var res = await axios.get("/user/info");
+        var res = await axios.get("/api/user/info");
 
         if (res.data.id) {
           setCaptchaVisible(false);
 
           axios.defaults.headers.common["x-csrf"] = res.data.csrf;
-          axios.post("/user/online");
+          axios.post("/api/user/online");
 
           res.data.loggedIn = true;
           res.data.loaded = true;
@@ -150,7 +150,7 @@ function Main() {
           var referrer = window.localStorage.getItem("referrer");
 
           if (referrer) {
-            axios.post("/user/referred", { referrer });
+            axios.post("/api/user/referred", { referrer });
             window.localStorage.removeItem("referrer");
           }
         } else {
@@ -188,13 +188,13 @@ function Main() {
           );
         }
 
-        res = await axios.get("/roles/all");
+        res = await axios.get("/api/roles/all");
         siteInfo.update("roles", res.data);
 
-        res = await axios.get("/roles/raw");
+        res = await axios.get("/api/roles/raw");
         siteInfo.update("rolesRaw", res.data);
 
-        res = await axios.get("/roles/modifiers");
+        res = await axios.get("/api/roles/modifiers");
         siteInfo.update("modifiers", res.data);
       } catch (e) {
         errorAlert(e);
@@ -206,7 +206,7 @@ function Main() {
     getInfo();
 
     var onlineInterval = setInterval(() => {
-      axios.post("/user/online");
+      axios.post("/api/user/online");
     }, 1000 * 30);
 
     return () => {
@@ -506,7 +506,7 @@ function SiteNotifs() {
 
   function getNotifs() {
     axios
-      .get("/notifs")
+      .get("/api/notifs")
       .then((res) => {
         var nextRestart = res.data[0];
         var notifs = res.data.slice(1);
@@ -523,7 +523,7 @@ function SiteNotifs() {
 
   function viewedNotifs() {
     axios
-      .post("/notifs/viewed")
+      .post("/api/notifs/viewed")
       .then(() => {
         updateNotifInfo({ type: "viewed" });
       })

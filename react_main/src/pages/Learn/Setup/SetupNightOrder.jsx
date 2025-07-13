@@ -62,7 +62,7 @@ export function NightOrder() {
     useEffect(() => {
     if (setupId) {
       axios
-        .get(`/setup/${setupId}`, { headers: { includeStats: true } })
+        .get(`/api/setup/${setupId}`, { headers: { includeStats: true } })
         .then((res) => {
           let setup = res.data;
           setup.roles = JSON.parse(setup.roles);
