@@ -70,10 +70,10 @@ import BattlesnakesGame from "./BattlesnakesGame";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
 
-const lore = `/images/emotes/lore.webp`;
-const poison = `/images/emotes/poison.webp`;
-const exit = `/images/emotes/exit.webp`;
-const veg = `/images/emotes/veg.webp`;
+import lore from "images/emotes/lore.webp";
+import poison from "images/emotes/poison.webp";
+import exit from "images/emotes/exit.webp";
+import veg from "images/emotes/veg.webp";
 
 export default function Game() {
   return (
@@ -2106,7 +2106,7 @@ function RoleMarkerToggle(props) {
     if (props.onClick) props.onClick();
 
     popover.onClick(
-      `/setup/${game.setup.id}`,
+      `/api/setup/${game.setup.id}`,
       "rolePrediction",
       roleMarkerRef.current,
       "Mark Role as",

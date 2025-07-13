@@ -1,7 +1,6 @@
 services:
   # nginx service
   nginx:
-    command: ["sleep", "infinity"]
     depends_on:
       - backend
     container_name: "nginx"
@@ -17,8 +16,12 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      - ./react_main/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./uploads:/uploads
+      - ./deckuploads:/deckuploads
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
+    env_file: ./react_main/.env
     networks:
       - my_net
   certbot:

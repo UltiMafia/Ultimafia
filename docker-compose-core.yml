@@ -1,7 +1,7 @@
 services:
   # Mongo service
   mongodb:
-    image: mongo:8
+    image: mongo:8.0.11
     container_name: mongodb
     restart: unless-stopped
     environment:
@@ -20,7 +20,7 @@ services:
 
   # Redis service
   redis:
-    image: "redis:latest"
+    image: redis:8.0.3
     container_name: redis
     restart: unless-stopped
     expose:

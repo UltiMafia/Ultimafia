@@ -16,6 +16,7 @@ RUN npm install --frozen-lockfile
 
 # Copy the rest of the application code and build for production
 COPY . ./
+RUN ls -al
 RUN npm run build
 
 # Stage 2: Production environment
