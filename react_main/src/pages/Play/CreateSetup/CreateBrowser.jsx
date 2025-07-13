@@ -134,7 +134,7 @@ export default function CreateSetup(props) {
 
     if (editSetup || copySetup) {
       axios
-        .get(`/api/setup/${editSetup || copySetup}`)
+        .get(`/setup/${editSetup || copySetup}`)
         .then((res) => {
           var setup = res.data;
 

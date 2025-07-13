@@ -44,7 +44,7 @@ export default function CreateLiarsDiceSetup() {
 
   function onCreateSetup(roleData, editing, setRedirect) {
     axios
-      .post("/api/setup/create", {
+      .post("/setup/create", {
         gameType: gameType,
         roles: roleData.roles,
         name: formFields[0].value,

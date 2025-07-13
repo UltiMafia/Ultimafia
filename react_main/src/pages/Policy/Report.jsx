@@ -20,7 +20,7 @@ export default function Report(props) {
 
   function submitReport() {
     axios
-      .post("/api/report/send", {
+      .post("/report/send", {
         title: reportTitle,
         value: report,
       })

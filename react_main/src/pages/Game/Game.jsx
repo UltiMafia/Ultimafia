@@ -368,7 +368,7 @@ function GameWrapper(props) {
       document.title = `Review Game ${gameId} | UltiMafia`;
 
       axios
-        .get(`/api/game/${gameId}/review/data`)
+        .get(`/game/${gameId}/review/data`)
         .then((res) => {
           var data = res.data;
 
@@ -667,7 +667,7 @@ function GameWrapper(props) {
     const urlParams = new URLSearchParams(window.location.search);
     const isSpectating = urlParams.get('spectate') === 'true';
     
-    const url = `/api/game/${gameId}/connect${isSpectating ? '?spectate=true' : ''}`;
+    const url = `/game/${gameId}/connect${isSpectating ? '?spectate=true' : ''}`;
     
     axios.get(url)
       .then((res) => {
@@ -836,7 +836,7 @@ export function BotBar(props) {
         stateLengths[stateName] = game.options.stateLengths[stateName] / 60000;
 
       axios
-        .post("/api/game/host", {
+        .post("/game/host", {
           rehost: gameId,
           gameType: props.gameType,
           setup: game.setup.id,
@@ -859,7 +859,7 @@ export function BotBar(props) {
 
   function onArchiveGameClick() {
     axios
-      .post(`/api/game/${gameId}/archive`)
+      .post(`/game/${gameId}/archive`)
       .then((res) => {
         siteInfo.showAlert(res.data, "success");
       })
@@ -2277,7 +2277,7 @@ export function PlayerList(props) {
         stateLengths[stateName] = props.options.stateLengths[stateName] / 60000;
 
       axios
-        .post("/api/game/host", {
+        .post("/game/host", {
           gameType: props.gameType,
           setup: props.setup.id,
           lobby: props.options.lobby,
