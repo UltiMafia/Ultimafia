@@ -17,7 +17,7 @@ export const PlayerCount = (props) => {
   function onInfoClick(e) {
     e.stopPropagation();
     popover.onClick(
-      `/api/game/${gameId}/info`,
+      `/game/${gameId}/info`,
       "game",
       infoRef.current,
       `Game ${gameId}`

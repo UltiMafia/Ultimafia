@@ -147,7 +147,7 @@ export function VoteWidget(props) {
     if (!user.perms.vote) return;
 
     axios
-      .post("/api/forums/vote", {
+      .post("/forums/vote", {
         item: itemId,
         itemType,
         direction,
@@ -188,7 +188,7 @@ export function VoteWidget(props) {
 
   function getVotes(itemId, direction) {
     if (!user.perms.viewVotes) return;
-    axios.get(`/api/forums/vote/${itemId}/${direction}`).then((res) => {
+    axios.get(`/forums/vote/${itemId}/${direction}`).then((res) => {
       setUserVotes(res.data);
       setShowVoteBox(true);
     });

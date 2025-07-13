@@ -364,7 +364,7 @@ export function NameWithAvatar(props) {
 
   useEffect(() => {
     if (includeMiniprofile && id) {
-      axios.get(`/api/user/${id}/profile`).then((res) => {
+      axios.get(`/user/${id}/profile`).then((res) => {
         res.data.props = props;
         setUserProfile(res.data);
       });
