@@ -42,7 +42,7 @@ import {
 } from "../../Constants";
 import { textIncludesSlurs } from "../../lib/profanity";
 
-import "../../css/game.css";
+import "css/game.css";
 import EmotePicker from "../../components/EmotePicker";
 import JottoGame from "./JottoGame";
 import "./Game.css";
