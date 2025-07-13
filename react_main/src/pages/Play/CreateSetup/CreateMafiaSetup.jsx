@@ -268,7 +268,7 @@ export default function CreateMafiaSetup() {
 
   function onCreateSetup(roleData, editing, setRedirect) {
     axios
-      .post("/api/setup/create", {
+      .post("/setup/create", {
         gameType: gameType,
         roles: roleData.roles,
         closed: roleData.closed,

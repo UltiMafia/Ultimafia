@@ -33,7 +33,7 @@ export default function Board(props) {
 
   useEffect(() => {
     axios
-      .get(`/api/forums/board/${boardId}`)
+      .get(`/forums/board/${boardId}`)
       .then((res) => {
         setBoardInfo(res.data);
         setLoaded(true);
@@ -77,7 +77,7 @@ export default function Board(props) {
     if (filterArg == null) return;
 
     axios
-      .get(`/api/forums/board/${boardId}?sortType=${sortType}&${filterArg}`)
+      .get(`/forums/board/${boardId}?sortType=${sortType}&${filterArg}`)
       .then((res) => {
         if (res.data.threads.length > 0) {
           setBoardInfo(res.data);
@@ -251,7 +251,7 @@ function CreateThreadModal(props) {
 
   function onPostThread() {
     axios
-      .post("/api/forums/thread", {
+      .post("/forums/thread", {
         board: props.boardId,
         title: props.threadTitle,
         content: props.threadContent,

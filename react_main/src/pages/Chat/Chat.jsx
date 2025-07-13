@@ -181,7 +181,7 @@ export default function Chat(/*{ setShowChatTab }*/) {
 
   function getToken() {
     axios
-      .get("/api/chat/connect")
+      .get("/chat/connect")
       .then((res) => {
         setToken(res.data);
       })
