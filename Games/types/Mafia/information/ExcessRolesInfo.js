@@ -76,12 +76,12 @@ module.exports = class ExcessRolesInfo extends Information {
       this.game.formatRole(r)
     );
     if (this.LimtedExcess && this.mainInfo.length <= 0) {
-      return `You Learn that there are 0 Excess Roles!`;
+      return `You learn that there are 0 Excess Roles!`;
     }
     if (this.LimtedExcess) {
-      return `You Learn that All of the Excess Roles are ${shuffledChosen}`;
+      return `You learn that all of the Excess Roles are ${shuffledChosen}`;
     }
-    return `You Learn that ${this.amount} of the Excess Roles are ${shuffledChosen}`;
+    return `You learn that ${this.amount} of the Excess Roles are ${shuffledChosen}`;
     //return `You Learn that your Target's Role is ${this.mainInfo}`
   }
 

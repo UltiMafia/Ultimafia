@@ -89,7 +89,7 @@ export default function HostBrowser(props) {
   useEffect(() => {
     if (preSelectedSetup) {
       axios
-        .get(`/setup/${preSelectedSetup}`)
+        .get(`/api/setup/${preSelectedSetup}`)
         .then((res) => {
           res.data.name = filterProfanity(res.data.name, user.settings);
           setSelSetup(res.data);
@@ -128,7 +128,7 @@ export default function HostBrowser(props) {
 
   function getSetupList(filters) {
     axios
-      .get(`/setup/search?${new URLSearchParams(filters).toString()}`)
+      .get(`/api/setup/search?${new URLSearchParams(filters).toString()}`)
       .then((res) => {
         setSetups(res.data.setups);
         setPageCount(res.data.pages);
@@ -166,7 +166,7 @@ export default function HostBrowser(props) {
   }
 
   function onFavSetup(favSetup) {
-    axios.post("/setup/favorite", { id: favSetup.id }).catch(errorAlert);
+    axios.post("/api/setup/favorite", { id: favSetup.id }).catch(errorAlert);
 
     var newSetups = [...setups];
 
@@ -190,7 +190,7 @@ export default function HostBrowser(props) {
 
   function onDelSetup(setup) {
     axios
-      .post("/setup/delete", { id: setup.id })
+      .post("/api/setup/delete", { id: setup.id })
       .then(() => {
         getSetupList(filters);
       })

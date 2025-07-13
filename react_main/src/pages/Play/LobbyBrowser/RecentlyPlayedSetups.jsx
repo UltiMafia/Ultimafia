@@ -55,7 +55,7 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
       }
 
       axios
-        .post("/game/host", {
+        .post("/api/game/host", {
           gameType: gameType,
           setup: setup.setupDetails.id,
           lobby: lobby,

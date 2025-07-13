@@ -22,7 +22,7 @@ export default function Review() {
 
   useEffect(() => {
     axios
-      .get(`/game/${gameId}/review`)
+      .get(`/api/game/${gameId}/review`)
       .then((res) => {
         res.data.history = JSON.parse(res.data.history);
         setGame(res.data);

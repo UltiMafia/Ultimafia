@@ -36,11 +36,11 @@ module.exports = class CountEvilsInGroupInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    return `You Learn that ${this.mainInfo} in the group are Evil.`;
+    return `You learn that ${this.mainInfo} in the group are Evil.`;
   }
 
   getInfoSpecial() {
-    return `There are ${this.mainInfo} Evil Players in the Group.`;
+    return `There are ${this.mainInfo} Evil players in the group.`;
   }
 
   isTrue() {
