@@ -18,53 +18,7 @@ const {
 module.exports = class WinWithFaction extends Card {
   constructor(role) {
     super(role);
-/*
-    this.actions = [
-      {
-        priority: PRIORITY_DAY_DEFAULT + 20,
-        run: function () {
-          const CULT_IN_GAME =
-            this.game.players.filter((p) => CULT_FACTIONS.includes(p.faction))
-              .length > 0;
-          const MAFIA_IN_GAME =
-            this.game.players.filter((p) => MAFIA_FACTIONS.includes(p.faction))
-              .length > 0;
-          const SUPERHERO_IN_GAME =
-            this.game.players.filter((p) => p.role.name == "Superhero").length >
-            0;
-          //if (!this.actor.alive) return;
-          //if (!this.game.isOneNightMode()) return;
-          if (
-            this.game.getStateName() == "Day" ||
-            (this.game.getStateName() == "Dusk" && this.game.hasBeenNight)
-          ) {
-            this.game.hasBeenDay = true;
-            return;
-          }
-          if (
-            this.game.getStateName() == "Night" ||
-            this.game.getStateName() == "Dawn"
-          ) {
-            if (this.game.IsBloodMoon && MAFIA_IN_GAME && CULT_IN_GAME) {
-              for (let player of this.game.players) {
-                player.holdItem("ExtraCondemn", "Extra Condemn");
-              }
-            }
-            if (
-              this.game.IsBloodMoon &&
-              (MAFIA_IN_GAME || CULT_IN_GAME) &&
-              SUPERHERO_IN_GAME
-            ) {
-              for (let player of this.game.players) {
-                player.holdItem("ExtraCondemn", "Bonus Condemn");
-              }
-            }
-            this.game.hasBeenNight = true;
-          }
-        },
-      },
-    ];
-*/
+
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
@@ -378,6 +332,20 @@ module.exports = class WinWithFaction extends Card {
             )
               return;
             factionWin(this);
+            return;
+          }
+        }
+        //Hostile blocker
+        if(EVIL_FACTIONS.includes(this.player.faction) && this.game.isHostileVsMafia()){
+          let hostile3rds = this.game.alivePlayers().filter((p) => (p.faction == "Independent" && !this.game.getRoleTags(p.role.name).includes("Hostile") && p.role.name != "Mastermind"));
+          if(hostile3rds.length > 0){
+            return;
+          }
+        }
+        //Competing Evil Factions
+          if(EVIL_FACTIONS.includes(this.player.faction) && this.game.isCultVsMafia()){
+          let hostile3rds = this.game.alivePlayers().filter((p) => (p.faction != this.player.faction && p.faction != "Evil"));
+          if(hostile3rds.length > 0){
             return;
           }
         }
