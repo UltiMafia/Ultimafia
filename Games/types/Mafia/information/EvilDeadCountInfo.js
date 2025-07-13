@@ -35,11 +35,11 @@ module.exports = class EvilDeadCountInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    return `You Learn that ${this.mainInfo} Dead Players are Evil.`;
+    return `You learn that there are ${this.mainInfo} evil souls among the dead.`;
   }
 
   getInfoSpecial() {
-    return `There are ${this.mainInfo} Dead Evil Players.`;
+    return `There are ${this.mainInfo} evil souls among the dead.`;
   }
 
   isTrue() {

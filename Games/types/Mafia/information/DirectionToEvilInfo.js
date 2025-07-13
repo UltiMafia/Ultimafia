@@ -67,12 +67,12 @@ module.exports = class DirectionToEvilInfo extends Information {
   getInfoFormated() {
     super.getInfoRaw();
     if (this.target == this.creator) {
-      return `You Learn that the closest Evil Player to you is ${this.mainInfo} you on the Player List`;
+      return `You learn that the closest Evil Player to you is ${this.mainInfo} you on the Player List`;
     }
     if (this.randomTarget == true) {
-      return `You Learn that the closest Evil Player to ${this.target.name} is ${this.mainInfo} them on the Player List`;
+      return `You learn that the closest Evil Player to ${this.target.name} is ${this.mainInfo} them on the Player List`;
     }
-    return `You Learn that the closest Evil Player to your Target is ${this.mainInfo} them on the Player List`;
+    return `You learn that the closest Evil Player to your Target is ${this.mainInfo} them on the Player List`;
   }
   getInfoSpecial() {
     if (this.target == this.creator) {

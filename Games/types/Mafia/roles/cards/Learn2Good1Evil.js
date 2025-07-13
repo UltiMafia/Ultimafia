@@ -33,7 +33,7 @@ module.exports = class Learn2Good1Evil extends Card {
               this.actor
             );
             info.processInfo();
-            var alert = `:invest: ${info.getInfoFormated()}.`;
+            var alert = `:carol: ${info.getInfoFormated()}.`;
             this.actor.queueAlert(alert);
           },
         });

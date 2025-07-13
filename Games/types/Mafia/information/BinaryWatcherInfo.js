@@ -34,7 +34,7 @@ module.exports = class BinaryTrackerInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    return `You learn that ${this.target.name} was ${this.mainInfo}.`;
+    return `You watched ${this.target.name}... they were ${this.mainInfo}.`;
     //return `You Learn that your Target is ${this.mainInfo}`
   }
 
