@@ -55,27 +55,26 @@ app.use(
     maxAge: 3600,
   })
 );
-app.use(
-  express.static(path.join(__dirname, "react_main/build_public"), {
-    maxAge: 3600,
-  })
-);
 
-app.use("/", indexRouter);
-app.use("/auth", authRouter);
-app.use("/game", gameRouter);
-app.use("/setup", setupRouter);
-app.use("/deck", deckRouter);
-app.use("/roles", roleRouter);
-app.use("/user", userRouter);
-app.use("/forums", forumsRouter);
-app.use("/comment", commentRouter);
-app.use("/mod", modRouter);
-app.use("/chat", chatRouter);
-app.use("/notifs", notifsRouter);
-app.use("/shop", shopRouter);
-app.use("/report", reportRouter);
-app.use("/site", siteRouter);
+const apiRouter = express.Router();
+
+apiRouter.use("/", indexRouter);
+apiRouter.use("/auth", authRouter);
+apiRouter.use("/game", gameRouter);
+apiRouter.use("/setup", setupRouter);
+apiRouter.use("/deck", deckRouter);
+apiRouter.use("/roles", roleRouter);
+apiRouter.use("/user", userRouter);
+apiRouter.use("/forums", forumsRouter);
+apiRouter.use("/comment", commentRouter);
+apiRouter.use("/mod", modRouter);
+apiRouter.use("/chat", chatRouter);
+apiRouter.use("/notifs", notifsRouter);
+apiRouter.use("/shop", shopRouter);
+apiRouter.use("/report", reportRouter);
+apiRouter.use("/site", siteRouter);
+
+app.use("/api", apiRouter)
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "react_main/build_public/index.html"));

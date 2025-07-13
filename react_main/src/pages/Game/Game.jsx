@@ -368,7 +368,7 @@ function GameWrapper(props) {
       document.title = `Review Game ${gameId} | UltiMafia`;
 
       axios
-        .get(`/game/${gameId}/review/data`)
+        .get(`/api/game/${gameId}/review/data`)
         .then((res) => {
           var data = res.data;
 
@@ -667,7 +667,7 @@ function GameWrapper(props) {
     const urlParams = new URLSearchParams(window.location.search);
     const isSpectating = urlParams.get('spectate') === 'true';
     
-    const url = `/game/${gameId}/connect${isSpectating ? '?spectate=true' : ''}`;
+    const url = `/api/game/${gameId}/connect${isSpectating ? '?spectate=true' : ''}`;
     
     axios.get(url)
       .then((res) => {
@@ -836,7 +836,7 @@ export function BotBar(props) {
         stateLengths[stateName] = game.options.stateLengths[stateName] / 60000;
 
       axios
-        .post("/game/host", {
+        .post("/api/game/host", {
           rehost: gameId,
           gameType: props.gameType,
           setup: game.setup.id,
@@ -859,7 +859,7 @@ export function BotBar(props) {
 
   function onArchiveGameClick() {
     axios
-      .post(`/game/${gameId}/archive`)
+      .post(`/api/game/${gameId}/archive`)
       .then((res) => {
         siteInfo.showAlert(res.data, "success");
       })
@@ -1708,7 +1708,7 @@ function ObituariesMessage(props) {
     title = "Breaking News";
   }
 
-  const noAnimation = true;//props?.settings?.noAnimation || !shouldAnimateSource || alreadyWatched || game.review;
+  const noAnimation = true;// props?.settings?.noAnimation || !shouldAnimateSource || alreadyWatched || game.review;
 
   useEffect(() => {
     try {
@@ -2106,7 +2106,7 @@ function RoleMarkerToggle(props) {
     if (props.onClick) props.onClick();
 
     popover.onClick(
-      `/setup/${game.setup.id}`,
+      `/api/setup/${game.setup.id}`,
       "rolePrediction",
       roleMarkerRef.current,
       "Mark Role as",
@@ -2277,7 +2277,7 @@ export function PlayerList(props) {
         stateLengths[stateName] = props.options.stateLengths[stateName] / 60000;
 
       axios
-        .post("/game/host", {
+        .post("/api/game/host", {
           gameType: props.gameType,
           setup: props.setup.id,
           lobby: props.options.lobby,

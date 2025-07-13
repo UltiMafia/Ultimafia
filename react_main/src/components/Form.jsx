@@ -707,7 +707,7 @@ export function UserSearchSelect(props) {
     if (query.length === 0) return;
 
     axios
-      .get(`/user/searchName?query=${query}`)
+      .get(`/api/user/searchName?query=${query}`)
       .then((res) => {
         var newIdMap = {};
 

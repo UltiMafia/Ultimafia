@@ -10,7 +10,7 @@ export default function AnonymousDeck(props) {
 
   function onClick() {
     popover.onClick(
-      `/deck/${props.deck.id}`,
+      `/api/deck/${props.deck.id}`,
       "deck",
       deckRef.current,
       filterProfanity(props.deck.name, user.settings)

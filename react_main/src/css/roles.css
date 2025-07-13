@@ -1224,6 +1224,10 @@
   background-image: url("/src/images/roles/jinx-old.png");
 }
 
+.role-icon-vivid-Mafia-Wrangler {
+  background-image: url("/src/images/roles/wrangler-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Clown {
   background-image: url("/src/images/roles/clown-vivid.png");
 }
@@ -1866,6 +1870,10 @@
   background-image: url("/src/images/roles/princess-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Ogre {
+  background-image: url("/src/images/roles/ogre-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Astrologer {
   background-image: url("/src/images/roles/astrologer-vivid.png");
 }
@@ -2464,7 +2472,7 @@ background-image: url("/src/images/modifiers/omniscient.png");
 }
 
 .modifier-Mafia-X-Shot {
-background-image: url("/images/modifiers/x-shot.png");
+background-image: url("/src/images/modifiers/x-shot.png");
 }
 
 .modifier-Mafia-Paranoid {

@@ -34,9 +34,7 @@ module.exports = class BinaryAlignmentInfo extends Information {
   getInfoFormated() {
     super.getInfoRaw();
 
-    return `You Learn that ${this.target.name} is ${this.mainInfo}`;
-
-    //return `You Learn that your Target is ${this.mainInfo}`
+    return `Your investigation shows that ${this.target.name} is ${this.mainInfo}`;
   }
   getInfoSpecial() {
     return `${this.target.name} is ${this.mainInfo}`;

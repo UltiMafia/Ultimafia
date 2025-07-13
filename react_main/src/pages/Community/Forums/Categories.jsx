@@ -18,7 +18,7 @@ export default function Categories(props) {
     props.updateForumNavInfo({ action: "home" });
 
     axios
-      .get("/forums/categories")
+      .get("/api/forums/categories")
       .then((res) => {
         var categories = res.data.sort(sortItems);
 
