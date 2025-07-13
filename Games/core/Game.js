@@ -1119,6 +1119,12 @@ module.exports = class Game {
     var roleset = this.generateRoleset();
     let players = this.players.array();
 
+
+    if(this.setup.AllExcessRoles && this.PossibleRoles && this.type == "Mafia"){
+            let AllRoles = Object.entries(roleData.Mafia).map((r) => r[0]);
+            this.PossibleRoles = this.PossibleRoles.concat(AllRoles);
+    }
+
     // force assign "Host"
     let hostCount = 0;
     let toDelete = [];
