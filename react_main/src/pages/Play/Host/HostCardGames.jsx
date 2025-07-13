@@ -160,7 +160,7 @@ export default function HostCardGames() {
 
     if (selSetup.id) {
       axios
-        .post("/game/host", {
+        .post("/api/game/host", {
           gameType: gameType,
           setup: selSetup.id,
           lobby: getFormFieldValue("lobby"),

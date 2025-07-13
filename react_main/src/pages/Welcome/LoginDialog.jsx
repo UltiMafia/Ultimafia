@@ -72,7 +72,7 @@ export const LoginDialog = ({ open, setOpen }) => {
       const idToken = await userCred.user.getIdToken(true);
 
       try {
-        await axios.post("/auth", { idToken });
+        await axios.post("/api/auth", { idToken });
         window.location.reload();
       } catch (err) {
         snackbarHook.popUnexpectedError();
@@ -109,7 +109,7 @@ export const LoginDialog = ({ open, setOpen }) => {
       const idToken = await userCred.user.getIdToken(true);
       
       try {
-        await axios.post("/auth", { idToken });
+        await axios.post("/api/auth", { idToken });
         window.location.reload();
       } catch (err) {
         snackbarHook.popUnexpectedError();

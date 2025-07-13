@@ -40,7 +40,7 @@ export default function Shop(props) {
   useEffect(() => {
     if (user.loaded && user.loggedIn) {
       axios
-        .get("/shop/info")
+        .get("/api/shop/info")
         .then((res) => {
           setShopInfo(res.data);
           setLoaded(true);
@@ -66,7 +66,7 @@ export default function Shop(props) {
     }
 
     axios
-      .post("/shop/transferCoins", {
+      .post("/api/shop/transferCoins", {
         recipientUsername: recipient,
         amount: parsedAmount,
       })
@@ -89,7 +89,7 @@ export default function Shop(props) {
     if (!shouldBuy) return;
 
     axios
-      .post("/shop/spendCoins", { item: index })
+      .post("/api/shop/spendCoins", { item: index })
       .then(() => {
         siteInfo.showAlert("Item purchased.", "success");
 

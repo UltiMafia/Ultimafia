@@ -24,7 +24,7 @@ export default function Leaderboard() {
 
   useEffect(() => {
     axios
-      .get(`/user/leaderboard`)
+      .get(`/api/user/leaderboard`)
       .then((res) => {
         const highkarmaUsers = res.data.leadingKarmaUsers.map((user) => ({
           id: user.id,

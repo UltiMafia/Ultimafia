@@ -9,7 +9,7 @@ export const useLoggedIn = () => {
     const getUserInfo = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("/user/info");
+        const res = await axios.get("/api/user/info");
         setLoggedIn(!!res?.data?.id);
       } catch (err) {
         console.log(err);
