@@ -235,7 +235,7 @@ export default function Settings() {
 
   const loadSettings = () => {
     axios
-      .get("/user/settings/data")
+      .get("/api/user/settings/data")
       .then((res) => {
         updateFieldsFromData(res.data);
         setSettingsLoaded(true);
@@ -245,7 +245,7 @@ export default function Settings() {
 
   const loadAccounts = () => {
     axios
-      .get("/user/accounts")
+      .get("/api/user/accounts")
       .then((res) => {
         setAccounts(res.data);
         setAccountsLoaded(true);
@@ -267,7 +267,7 @@ export default function Settings() {
   const handleAccessibilityThemeChange = async (e) => {
     const value = e.target.value;
     try {
-      await axios.post("/user/settings/update", {
+      await axios.post("/api/user/settings/update", {
         prop: "accessibilityTheme",
         value,
       });
@@ -432,7 +432,7 @@ export default function Settings() {
   function onSettingChange(action, update) {
     if (action.prop === "value" && !action.localOnly) {
       axios
-        .post("/user/settings/update", {
+        .post("/api/user/settings/update", {
           prop: action.ref,
           value: action.value,
         })
@@ -444,7 +444,7 @@ export default function Settings() {
 
   function onBirthdaySave(date, deps) {
     axios
-      .post("/user/birthday", { date })
+      .post("/api/user/birthday", { date })
       .then((res) => {
         deps.siteInfo.showAlert("Birthday set", "success");
 
@@ -462,7 +462,7 @@ export default function Settings() {
     var code = "";
 
     axios
-      .post("/user/name", { name, code })
+      .post("/api/user/name", { name, code })
       .then((res) => {
         deps.siteInfo.showAlert("Username changed", "success");
 
@@ -482,7 +482,7 @@ export default function Settings() {
 
   function onYoutubeSave(link, deps) {
     axios
-      .post("/user/youtube", { link })
+      .post("/api/user/youtube", { link })
       .then((res) => {
         deps.siteInfo.showAlert("Profile video changed", "success");
 
@@ -497,7 +497,7 @@ export default function Settings() {
 
   function onCustomDeathMessageSave(deathMessage, deps) {
     axios
-      .post("/user/deathMessage", { deathMessage })
+      .post("/api/user/deathMessage", { deathMessage })
       .then((res) => {
         deps.siteInfo.showAlert("Death message changed", "success");
 
@@ -523,7 +523,7 @@ export default function Settings() {
     formData.append("emoteText", emoteText);
 
     axios
-      .post("/user/customEmote/create", formData, {})
+      .post("/api/user/customEmote/create", formData, {})
       .then((res) => {
         deps.siteInfo.showAlert("Uploaded custom emote", "success");
       })
@@ -532,7 +532,7 @@ export default function Settings() {
 
   function onCustomEmoteDelete(id, deps) {
     axios
-      .post("/user/customEmote/delete", { id: id }, {})
+      .post("/api/user/customEmote/delete", { id: id }, {})
       .then((res) => {
         deps.siteInfo.showAlert("Deleted custom emote", "success");
       })
@@ -541,7 +541,7 @@ export default function Settings() {
 
   function onLogoutClick() {
     axios
-      .post("/user/logout")
+      .post("/api/user/logout")
       .then(() => {
         user.clear();
         setCaptchaVisible(true);
@@ -554,7 +554,7 @@ export default function Settings() {
   function onDeleteClick() {
     if (window.confirm("Are you sure you wish to **DELETE** your account?")) {
       axios
-        .post("/user/delete")
+        .post("/api/user/delete")
         .then(() => {
           user.clear();
           history.push("/");

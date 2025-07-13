@@ -36,7 +36,7 @@ export default function DeckSelector() {
       getDeckList("id", 1, params.get("deck"));
 
       axios
-        .get(`/deck/${params.get("deck")}`)
+        .get(`/api/deck/${params.get("deck")}`)
         .then((res) => {
           res.data.name = filterProfanity(res.data.name, user.settings);
           setSelDeck(res.data);
@@ -47,7 +47,7 @@ export default function DeckSelector() {
 
   function getDeckList(listType, page, query) {
     axios
-      .get(`/deck/${camelCase(listType)}?&page=${page}&query=${query || ""}`)
+      .get(`/api/deck/${camelCase(listType)}?&page=${page}&query=${query || ""}`)
       .then((res) => {
         setListType(listType);
         setPage(page);
@@ -87,7 +87,7 @@ export default function DeckSelector() {
 
   function onDelDeck(deck) {
     axios
-      .post("/deck/delete", { id: deck.id })
+      .post("/api/deck/delete", { id: deck.id })
       .then(() => {
         getDeckList(listType, page);
       })

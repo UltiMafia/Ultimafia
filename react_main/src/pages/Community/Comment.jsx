@@ -45,14 +45,14 @@ export const Comment = (props) => {
     if (!shouldDelete) return;
 
     axios
-      .post(`/comment/delete`, { comment: comment.id })
+      .post(`/api/comment/delete`, { comment: comment.id })
       .then(onDelete)
       .catch(errorAlert);
   }
 
   function onRestoreClick() {
     axios
-      .post(`/comment/restore`, { comment: comment.id })
+      .post(`/api/comment/restore`, { comment: comment.id })
       .then(onRestore)
       .catch(errorAlert);
   }
