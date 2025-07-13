@@ -1796,7 +1796,7 @@ module.exports = class Game {
     if (this.setup.CultVsMafia && this.currentState == 0) {
       [
         this.sendAlert(
-          `:crystal2: ${this.setup.name}: This setup is using Competing Evil Faction! Mafia/Cult must remove any other evil in order to win.`,
+          `:crystal2: ${this.setup.name}: This setup is using Competing Evil Factions! Mafia/Cult must remove any other evil in order to win.`,
           undefined,
           { color: " #713cfe" }
         ),
