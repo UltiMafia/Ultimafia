@@ -23,8 +23,8 @@ module.exports = class Learn2Good1Evil extends Card {
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           labels: ["investigate"],
           run: function () {
-            if (this.actor.role.hasNobleInfo) return;
-            this.actor.role.hasNobleInfo = true;
+            if (this.actor.role.hasMaestroInfo) return;
+            this.actor.role.hasMaestroInfo = true;
 
             let info = this.game.createInformation(
               "TwoGoodOneEvilInfo",
