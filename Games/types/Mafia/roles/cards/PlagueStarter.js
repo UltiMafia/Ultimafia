@@ -54,7 +54,9 @@ module.exports = class PlagueStarter extends Card {
                if(effect.name == "Virus"){
                  effect.InfectionTime++
                  if(effect.InfectionTime >= 2){
+                   if (this.dominates()) {
                    player.kill("basic", null);
+                   }
                  }
                }
              }
