@@ -16,11 +16,14 @@ module.exports = class RandomizeMafiaPartner extends Card {
           labels: ["convert"],
           priority: PRIORITY_CONVERT_DEFAULT+3,
           run: function () {
+            /*
             const randomMafiaRole = Random.randArrayVal(
               Object.entries(roles.Mafia)
                 .filter((roleData) => roleData[1].alignment === "Mafia")
                 .map((roleData) => roleData[0])
             );
+            */
+           const randomMafiaRole = Random.randArrayVal(this.game.PossibleRoles.filter((r) => this.game.getRoleAlignment(r) == "Mafia"));
             this.target.setRole(
               randomMafiaRole,
               null,
