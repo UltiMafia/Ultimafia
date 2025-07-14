@@ -14,10 +14,14 @@ module.exports = class PlagueStarter extends Card {
           labels: ["effect"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
+            this.actor.role.hasInfected = true;
             if (this.dominates()) {
               this.target.giveEffect("Virus");
             }
           },
+        },
+        shouldMeet: function () {
+          return !this.hasInfected;
         },
       },
     };
