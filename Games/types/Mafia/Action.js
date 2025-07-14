@@ -35,6 +35,7 @@ module.exports = class MafiaAction extends Action {
     target.removeEffect("Zombification", true);
     target.removeEffect("CannotRoleShare", true);
     target.removeEffect("MustRoleShare", true);
+    target.removeEffect("Virus", true);
   }
 
   preventConvert(power, target) {
