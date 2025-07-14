@@ -635,18 +635,11 @@ router.post("/host", async function (req, res) {
         res.send("This deck has been disabled by a moderator.");
         return;
       }
-      let profileError = false;
-      let deckProfiles = await models.DeckProfile.find(
-        { _id: { $in: deck.profiles } },
-        function (err, profiles) {
-          if (err) {
-            profileError = true;
-            return;
-          }
-        }
-      ).select("name avatar id deathMessage color");
+      let deckProfiles = await models.DeckProfile.find({ _id: { $in: deck.profiles } }).select(
+        "name avatar id deathMessage color"
+      );
 
-      if (profileError) {
+      if (!deckProfiles) {
         res.status(500);
         res.send("Unable to find profiles.");
         return;
