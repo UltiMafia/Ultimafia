@@ -1,5 +1,5 @@
 # Use the official Node.js image as the base image
-FROM sitespeedio/node:ubuntu-20.04-nodejs-14.16.0
+FROM sitespeedio/node:ubuntu-22.04-nodejs-16.14.2
 
 # Install Supervisor
 RUN apt-get update && apt-get install -y supervisor
