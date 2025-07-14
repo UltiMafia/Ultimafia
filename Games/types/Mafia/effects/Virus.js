@@ -30,7 +30,9 @@ module.exports = class Virus extends Effect {
                if(effect.name == "Virus"){
                  effect.InfectionTime++
                  if(effect.InfectionTime >= 2){
+                   if (this.dominates()) {
                    player.kill("basic", null);
+                   }
                  }
                }
              }
