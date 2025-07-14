@@ -1715,7 +1715,7 @@ module.exports = class Game {
     if (this.ExorciseVillageMeeting && this.currentState == 0) {
       [
         this.sendAlert(
-          `:scream: ${this.setup.name}: Dead players can be voted in the Village meeting. Condemned dead players are exorcised and sent to the Underworld.`,
+          `:scream: ${this.setup.name}: Dead players can be voted in the Village meeting. If the Poltergeist is condemned when dead they are exorcised.`,
           undefined,
           { color: " #713cfe" }
         ),
@@ -1796,7 +1796,7 @@ module.exports = class Game {
     if (this.setup.CultVsMafia && this.currentState == 0) {
       [
         this.sendAlert(
-          `:crystal2: ${this.setup.name}: This setup is using Competing Evil Factions! Mafia/Cult must remove any other evil in order to win.`,
+          `:crystal2: ${this.setup.name}: This setup is using Competing Evil Factions! Mafia/Cult must remove any other evil factions in order to win.`,
           undefined,
           { color: " #713cfe" }
         ),

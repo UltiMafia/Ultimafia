@@ -3844,7 +3844,7 @@ const roleData = {
         "Will count torwards Cult Majority when dead.",
         "If a Poltergeist is Exorcised, All Cult-aligned players die.",
         "If it is possible for a Poltergeist to spawn in a setup, Dead players can be voted in village meeting.",
-        "Condemned dead players are Exorcised.",
+        "If a dead Poltergeist is condemned in the Village Meeting, they are exorcised.",
       ],
       nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT)]],
       graveyardParticipation: "self",

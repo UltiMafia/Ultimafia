@@ -337,7 +337,7 @@ module.exports = class WinWithFaction extends Card {
         }
         //Hostile blocker
         if(EVIL_FACTIONS.includes(this.player.faction) && this.game.isHostileVsMafia()){
-          let hostile3rds = this.game.alivePlayers().filter((p) => (p.faction == "Independent" && !this.game.getRoleTags(p.role.name).includes("Hostile") && p.role.name != "Mastermind"));
+          let hostile3rds = this.game.alivePlayers().filter((p) => (p.faction == "Independent" && this.game.getRoleTags(p.role.name).includes("Hostile") && p.role.name != "Mastermind"));
           if(hostile3rds.length > 0){
             return;
           }
