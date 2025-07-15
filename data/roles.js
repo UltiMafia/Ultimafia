@@ -71,6 +71,8 @@ const {
   PRIORITY_LEADER_NINJA,
 } = require("../Games/types/Mafia/const/Priority");
 
+const MalEffects = "Malicious effects include poison, bleeding, insanity, polarization, gasoline, anesthetic gas, lovesick, zombification, alcoholism, lycanthropy, and viruses.";
+
 const roleData = {
   Mafia: {
     //Village
@@ -343,7 +345,7 @@ const roleData = {
       tags: ["Malicious Effects", "Visiting", "Basic"],
       description: [
         "Visits one player each night and cleanses them of malicious effects.",
-        "Malicious effects include poison, bleeding, insanity, and polarization.",
+        MalEffects
       ],
       nightOrder: [["Remove Effects",(PRIORITY_EFFECT_REMOVER_DEFAULT)]],
     },
@@ -1636,7 +1638,8 @@ const roleData = {
       tags: ["Reflexive", "Malicious Effects", "Role Share", "Advanced"],
       description: [
         "When visited, heals and cleanses all effects currently possessed by the visiting player.",
-        "Players who Role Share with an Apothecary are Cleansed.",
+        "Players who Role Share with an Apothecary are Cleansed of Malicious Effects.",
+        MalEffects
       ],
       nightOrder: [["Remove Effects from Visitors",(PRIORITY_EFFECT_REMOVER_DEFAULT)],["Kill Werewolf",(PRIORITY_KILL_DEFAULT)]],
     },
@@ -2823,7 +2826,8 @@ const roleData = {
       tags: ["Malicious Effects", "Visiting", "Advanced"],
       description: [
         "Visits one player each night and cleanses them of malicious effects.",
-        "Malicious effects include poison, bleeding, insanity, and polarization.",
+        MalEffects,
+        
       ],
       nightOrder: [["Remove Effects",(PRIORITY_EFFECT_REMOVER_DEFAULT)]],
     },
@@ -2833,7 +2837,8 @@ const roleData = {
       tags: ["Reflexive", "Malicious Effects", "Role Share", "Advanced"],
       description: [
         "When visited, heals and cleanses all effects currently possessed by the visiting player.",
-        "Players who Role Share with a Dealer are Cleansed.",
+        "Players who Role Share with a Dealer are Cleansed of Malicious Effects.",
+        MalEffects,
       ],
       nightOrder: [["Remove Effects",(PRIORITY_EFFECT_REMOVER_DEFAULT)]],
     },

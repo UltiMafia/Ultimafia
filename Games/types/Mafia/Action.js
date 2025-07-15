@@ -27,6 +27,7 @@ module.exports = class MafiaAction extends Action {
     target.setTempImmunity("poison", power);
     target.removeEffect("Poison", true);
     target.removeEffect("Bleeding", true);
+    target.removeEffect("BleedingCult", true);
     target.removeEffect("Insanity", true);
     target.removeEffect("Polarised", true);
     target.removeEffect("Gasoline", true);
@@ -36,6 +37,9 @@ module.exports = class MafiaAction extends Action {
     target.removeEffect("CannotRoleShare", true);
     target.removeEffect("MustRoleShare", true);
     target.removeEffect("Virus", true);
+    target.removeEffect("Alcoholic", true);
+    target.removeEffect("Lycan", true);
+    
   }
 
   preventConvert(power, target) {
@@ -162,7 +166,7 @@ module.exports = class MafiaAction extends Action {
       }
 
       for (let target of toCheck) {
-        if (target === player && !action.hasLabel("hidden")) {
+        if (target === player && !action.hasLabel("hidden") && action.actors.length > 0) {
           visitors.push(...action.actors);
         }
       }
@@ -186,7 +190,7 @@ module.exports = class MafiaAction extends Action {
       }
 
       for (let target of toCheck) {
-        if (target === player && !action.hasLabel("hidden")) {
+        if (target === player && !action.hasLabel("hidden") && action.actors.length > 0) {
           return true;
         }
       }

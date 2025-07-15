@@ -24,13 +24,15 @@ module.exports = class Virus extends Effect {
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill", "hidden", "absolute"],
           run: function () {
-          for(let player of this.game.players){
-           if(player.hasEffect("Virus")){
+
+             let infectedPlayers = this.game.players.filter((p) => p.hasEffect("Virus"));
+
+          for(let player of infectedPlayers){
              for(let effect of player.effects){
                if(effect.name == "Virus"){
                  effect.InfectionTime++
                  if(effect.InfectionTime >= 2){
-                   if (this.dominates()) {
+                   if (this.dominates(player)) {
                    player.kill("basic", null);
                    }
                  }
@@ -43,7 +45,7 @@ module.exports = class Virus extends Effect {
 
             neighbor.giveEffect("Virus");
             }
-          }
+          
           }
           },
         });

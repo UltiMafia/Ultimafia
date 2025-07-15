@@ -48,8 +48,14 @@ module.exports = class MakeKillHidden extends Card {
                 action.actors.includes(this.actor) &&
                 action.hasLabel("kill")
               ) {
-               action.actors = action.actors.splice(action.actors.indexOf(this.actor),1);
-
+          
+                
+               action.actors.splice(action.actors.indexOf(this.actor),1);
+               if(action.actors.length < 0){
+                action.actors = [];
+                action.actor = null;
+               }
+              
                 
                 //action.labels = [...action.labels, "hidden"];
               }

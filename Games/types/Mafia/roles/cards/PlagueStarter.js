@@ -1,12 +1,13 @@
 const Card = require("../../Card");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
+const Action = require("../../Action");
+const { PRIORITY_EFFECT_GIVER_DEFAULT, PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
 module.exports = class PlagueStarter extends Card {
   constructor(role) {
     super(role);
 
     this.meetings = {
-      Poison: {
+      Infect: {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["self"] },
@@ -48,13 +49,15 @@ module.exports = class PlagueStarter extends Card {
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill", "hidden", "absolute"],
           run: function () {
-          for(let player of this.game.players){
-           if(player.hasEffect("Virus")){
+
+            let infectedPlayers = this.game.players.filter((p) => p.hasEffect("Virus"));
+
+          for(let player of infectedPlayers){
              for(let effect of player.effects){
                if(effect.name == "Virus"){
                  effect.InfectionTime++
                  if(effect.InfectionTime >= 2){
-                   if (this.dominates()) {
+                   if (this.dominates(player)) {
                    player.kill("basic", null);
                    }
                  }
@@ -67,7 +70,7 @@ module.exports = class PlagueStarter extends Card {
 
             neighbor.giveEffect("Virus");
             }
-          }
+          
           }
           },
         });
