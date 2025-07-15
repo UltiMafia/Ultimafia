@@ -633,6 +633,20 @@ module.exports = class TexasHoldEmGame extends Game {
   }
 
   addToPot(player, type, amount) {
+    let soundNum = Random.randInt(0, 4);
+    if(soundNum == 0){
+      this.broadcast("chips_large1");
+    }
+    else if(soundNum == 1){
+      this.broadcast("chips_large2");
+    }
+    else if(soundNum == 2){
+      this.broadcast("chips_small1");
+    }
+    else{
+      this.broadcast("chips_small2");
+    }
+    
     if (type == "Bet") {
       this.sendAlert(`${player.name} bets ${amount} into the Pot!`);
       player.Chips = parseInt(player.Chips) - parseInt(amount);
