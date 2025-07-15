@@ -79,6 +79,18 @@ export default function CardGamesGame(props) {
     socket.on("cardShuffle", () => {
       game.playAudio("cardShuffle");
     });
+    socket.on("chips_large1", () => {
+      game.playAudio("chips_large1");
+    });
+  socket.on("chips_large2", () => {
+      game.playAudio("chips_large");
+    });
+    socket.on("chips_small1", () => {
+      game.playAudio("chips_small1");
+    });
+    socket.on("chips_small2", () => {
+      game.playAudio("chips_small2");
+    });
   }, game.socket);
 
   return (
