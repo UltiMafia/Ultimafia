@@ -36,7 +36,7 @@ export default function CardGamesGame(props) {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
-  const audioFileNames = ["cardShuffle", "gunshot"];
+  const audioFileNames = ["cardShuffle", "gunshot", "chips_large1", "chips_large2", "chips_small1", "chips_small2"];
   const audioLoops = [];
   const audioOverrides = [];
   const audioVolumes = [];
