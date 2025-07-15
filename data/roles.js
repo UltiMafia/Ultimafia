@@ -71,6 +71,8 @@ const {
   PRIORITY_LEADER_NINJA,
 } = require("../Games/types/Mafia/const/Priority");
 
+const MalEffects = "Malicious effects include poison, bleeding, insanity, polarization, gasoline, anesthetic gas, lovesick, zombification, alcoholism, lycanthropy, and viruses.";
+
 const roleData = {
   Mafia: {
     //Village
@@ -343,7 +345,7 @@ const roleData = {
       tags: ["Malicious Effects", "Visiting", "Basic"],
       description: [
         "Visits one player each night and cleanses them of malicious effects.",
-        "Malicious effects include poison, bleeding, insanity, and polarization.",
+        MalEffects
       ],
       nightOrder: [["Remove Effects",(PRIORITY_EFFECT_REMOVER_DEFAULT)]],
     },
@@ -1636,7 +1638,8 @@ const roleData = {
       tags: ["Reflexive", "Malicious Effects", "Role Share", "Advanced"],
       description: [
         "When visited, heals and cleanses all effects currently possessed by the visiting player.",
-        "Players who Role Share with an Apothecary are Cleansed.",
+        "Players who Role Share with an Apothecary are Cleansed of Malicious Effects.",
+        MalEffects
       ],
       nightOrder: [["Remove Effects from Visitors",(PRIORITY_EFFECT_REMOVER_DEFAULT)],["Kill Werewolf",(PRIORITY_KILL_DEFAULT)]],
     },
@@ -2823,7 +2826,8 @@ const roleData = {
       tags: ["Malicious Effects", "Visiting", "Advanced"],
       description: [
         "Visits one player each night and cleanses them of malicious effects.",
-        "Malicious effects include poison, bleeding, insanity, and polarization.",
+        MalEffects,
+        
       ],
       nightOrder: [["Remove Effects",(PRIORITY_EFFECT_REMOVER_DEFAULT)]],
     },
@@ -2833,7 +2837,8 @@ const roleData = {
       tags: ["Reflexive", "Malicious Effects", "Role Share", "Advanced"],
       description: [
         "When visited, heals and cleanses all effects currently possessed by the visiting player.",
-        "Players who Role Share with a Dealer are Cleansed.",
+        "Players who Role Share with a Dealer are Cleansed of Malicious Effects.",
+        MalEffects,
       ],
       nightOrder: [["Remove Effects",(PRIORITY_EFFECT_REMOVER_DEFAULT)]],
     },
@@ -3291,6 +3296,17 @@ const roleData = {
       ],
       nightOrder: [["Create Lycan",(PRIORITY_BITING_WOLF)],["Make Lycans Kill",(PRIORITY_KILL_DEFAULT)]],
     },
+    "Plague Doctor": {
+      alignment: "Cult",
+      category: "Killing",
+      tags: ["Killing", "Virus", "Effect", "Neighbors", "Visiting", "Advanced"],
+      description: [
+        "On their first night, choose a player to Infect with a Virus.",
+        "Each night the infected players will infect their neighbors.",
+        "Players who have been infected for 2 nights will die.",
+      ],
+      nightOrder: [["Infect Player",(PRIORITY_BITING_WOLF)],["Virus Kill",(PRIORITY_KILL_DEFAULT)]],
+    },
     //Speaking
     Banshee: {
       alignment: "Cult",
@@ -3524,6 +3540,15 @@ const roleData = {
         "Redirection cannot be role blocked.",
       ],
       nightOrder: [["Control Player",(PRIORITY_REDIRECT_ACTION)]],
+    },
+    Skinwalker: {
+      alignment: "Cult",
+      tags: ["Deception", "Night-acting", "Basic"],
+      description: [
+        "Chooses a role each night to appear as on death and to information role.",
+        "Can not be seen as a Villager, Impersonator or Imposter",
+      ],
+      nightOrder: [["Disguise Self",(PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT)]],
     },
     //Chaos
     Alchemist: {

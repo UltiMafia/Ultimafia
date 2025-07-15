@@ -176,7 +176,7 @@ module.exports = class MafiaInformation {
       }
 
       for (let target of toCheck) {
-        if (target === player && !action.hasLabel("hidden")) {
+        if (target === player && !action.hasLabel("hidden") && action.actors.length > 0) {
           visitors.push(...action.actors);
         }
       }
