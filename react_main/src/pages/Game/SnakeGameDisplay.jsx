@@ -228,10 +228,6 @@ export default function SnakeGameDisplay({ player, players, gameSocket }) {
       ArrowDown: "down",
       ArrowLeft: "left",
       ArrowRight: "right",
-      w: "up",
-      s: "down",
-      a: "left",
-      d: "right",
     };
     function keyListener(e) {
       const val = keyToDir[e.key];
