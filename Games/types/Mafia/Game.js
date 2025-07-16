@@ -388,6 +388,14 @@ module.exports = class MafiaGame extends Game {
     );
   }
 
+   isHostileVsMafia(){
+   return this.setup.HostileVsMafia;
+  }
+
+  isCultVsMafia(){
+    return this.setup.CultVsMafia;
+  }
+
   checkGameEnd() {
     var finished = super.checkGameEnd();
 

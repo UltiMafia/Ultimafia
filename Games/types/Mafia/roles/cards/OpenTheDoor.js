@@ -20,7 +20,6 @@ module.exports = class OpenTheDoor extends Card {
           run: function () {
             if (this.target == "No") return;
 
-            this.actor.role.openedDoor = true;
             this.actor.role.openedDoorLastNight = true;
 
             var evil = this.game
@@ -46,9 +45,6 @@ module.exports = class OpenTheDoor extends Card {
               } is evil and cannot be trusted!`
             );
           },
-        },
-        shouldMeet() {
-          return !this.openedDoor;
         },
       },
     };

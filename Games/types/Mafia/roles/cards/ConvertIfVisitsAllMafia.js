@@ -49,9 +49,7 @@ module.exports = class ConvertIfVisitsAllMafia extends Card {
             }
 
             const randomMafiaRole = Random.randArrayVal(
-              Object.entries(roles.Mafia)
-                .filter((roleData) => roleData[1].alignment === "Mafia")
-                .map((roleData) => roleData[0])
+              this.game.PossibleRoles.filter((r) => this.game.getRoleAlignment(r) == "Mafia")
             );
             this.actor.setRole(randomMafiaRole);
           },

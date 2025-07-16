@@ -42,9 +42,9 @@ module.exports = class GoodPlayerInfo extends Information {
   getInfoFormated() {
     super.getInfoRaw();
     if (this.mainInfo == "No Good Players Exist") {
-      return `You Learn that ${this.mainInfo}`;
+      return `You learn that ${this.mainInfo}`;
     }
-    return `You Learn that ${this.mainInfo.name} is Good.`;
+    return `You learn that ${this.mainInfo.name} is Good.`;
   }
 
   isTrue() {

@@ -71,6 +71,9 @@ function generateMafiaSetupManifest(setup, roles) {
       `No reveal: ${setup.noReveal}`,
       `Votes invisible: ${setup.votesInvisible}`,
       `Game ending event: ${setup.GameEndEvent}`,
+      `All Excess Roles: ${setup.AllExcessRoles}`,
+      `Mafia Vs Hostiles: ${setup.HostileVsMafia}`,
+      `Competing Evil Factions: ${setup.CultVsMafia}`,
     ];
 
     if (setup.useRoleGroups) {
@@ -623,6 +626,9 @@ router.post("/create", async function (req, res) {
     setup.noDeathLimit = Number(setup.noDeathLimit || 6);
     setup.ForceMustAct = Boolean(setup.ForceMustAct);
     setup.GameEndEvent = String(setup.GameEndEvent || "Meteor");
+    setup.AllExcessRoles = Boolean(setup.AllExcessRoles);
+    setup.HostileVsMafia = Boolean(setup.HostileVsMafia);
+    setup.CultVsMafia = Boolean(setup.CultVsMafia);
 
     if (
       !routeUtils.validProp(setup.gameType) ||

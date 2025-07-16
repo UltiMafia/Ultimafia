@@ -56,11 +56,7 @@ module.exports = class Evolution extends Event {
         }
         let victim = Random.randArrayVal(vanillaPlayers);
         const randomAlignedRole = Random.randArrayVal(
-          Object.entries(roles.Mafia)
-            .filter(
-              (roleData) => roleData[1].alignment === victim.role.alignment
-            )
-            .map((roleData) => roleData[0])
+        this.game.PossibleRoles.filter((r) => this.game.getRoleAlignment(r) == victim.role.alignment)
         );
         victim.setRole(
           randomAlignedRole,

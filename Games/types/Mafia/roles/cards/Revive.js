@@ -11,9 +11,6 @@ module.exports = class Revive extends Card {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["dead"], exclude: ["alive", "self"] },
-        shouldMeet: function () {
-          return !this.revived;
-        },
         action: {
           labels: ["revive"],
           priority: PRIORITY_NIGHT_REVIVER,
@@ -21,8 +18,6 @@ module.exports = class Revive extends Card {
             if (!this.dominates()) {
               return;
             }
-
-            this.actor.role.revived = true;
             this.target.revive("basic", this.actor);
           },
         },

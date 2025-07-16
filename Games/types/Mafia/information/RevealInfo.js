@@ -15,7 +15,7 @@ module.exports = class RevealInfo extends Information {
   constructor(creator, game, target, investType, revealTo) {
     super("Reveal Info", creator, game);
     if (investType == null) {
-      investType = "reveal";
+      investType = "investigate";
     }
     if (revealTo == null) {
       revealTo == "All";

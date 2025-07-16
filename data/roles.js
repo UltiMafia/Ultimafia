@@ -71,6 +71,8 @@ const {
   PRIORITY_LEADER_NINJA,
 } = require("../Games/types/Mafia/const/Priority");
 
+const MalEffects = "Malicious effects include poison, bleeding, insanity, polarization, gasoline, anesthetic gas, lovesick, zombification, alcoholism, lycanthropy, and viruses.";
+
 const roleData = {
   Mafia: {
     //Village
@@ -343,7 +345,7 @@ const roleData = {
       tags: ["Malicious Effects", "Visiting", "Basic"],
       description: [
         "Visits one player each night and cleanses them of malicious effects.",
-        "Malicious effects include poison, bleeding, insanity, and polarization.",
+        MalEffects
       ],
       nightOrder: [["Remove Effects",(PRIORITY_EFFECT_REMOVER_DEFAULT)]],
     },
@@ -352,7 +354,7 @@ const roleData = {
       category: "Protective",
       tags: ["Revive", "Graveyard", "Visiting", "Dead", "Basic"],
       description: [
-        "Visits a dead player during the night once per game.",
+        "Visits a dead player during the night.",
         "That player will be resurrected the following day.",
         "If player's identity was revealed upon death, they will remain revealed when resurrected.",
       ],
@@ -795,7 +797,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Roles", "Basic"],
       description: [
-        "On Night 1, learns that 1 of 2 players is a particular role.",
+        "On their first night, learns that 1 of 2 players is a particular role.",
       ],
       nightOrder: [["Learn Info",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
       SpecialInteractionsModifiers: {
@@ -825,6 +827,14 @@ const roleData = {
       ],
       },
     },
+    Maestro: {
+      alignment: "Village",
+      tags: ["Information", "Alignment", "Basic"],
+      description: [
+        "On their first night, learns 3 players 1 will be Evil and other 2 will be good.",
+      ],
+      nightOrder: [["Learn Players",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
+    },
     "Fortune Teller": {
       alignment: "Village",
       category: "Investigative",
@@ -839,7 +849,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Roles", "Neighbors", "Visits", "Guess", "Day Actions", "Advanced"],
       description: [
-        "Once per game during the Day, can learn about the relation between a player and a role.",
+        "During the Day, can learn about the relation between a player and a role.",
       ],
     },
     Tourist: {
@@ -1439,6 +1449,15 @@ const roleData = {
         "Once per game during the day, can force the next night phase to skip and two day phases to occur consecutively.",
       ],
     },
+    Ogre: {
+      alignment: "Village",
+      tags: ["Condemn Interaction", "Sacrificial", "Advanced"],
+      description: [
+        "Each day one Evil player will given a chance to guess who the Ogre is.",
+        "If the Ogre is correctly guessed, The day ends and that player is condemned",
+        "If an Incorrect guess is made, No one will get to guess the Ogre the following day.",
+      ],
+    },
     //manipulative roles
     Braggart: {
       alignment: "Village",
@@ -1619,7 +1638,8 @@ const roleData = {
       tags: ["Reflexive", "Malicious Effects", "Role Share", "Advanced"],
       description: [
         "When visited, heals and cleanses all effects currently possessed by the visiting player.",
-        "Players who Role Share with an Apothecary are Cleansed.",
+        "Players who Role Share with an Apothecary are Cleansed of Malicious Effects.",
+        MalEffects
       ],
       nightOrder: [["Remove Effects from Visitors",(PRIORITY_EFFECT_REMOVER_DEFAULT)],["Kill Werewolf",(PRIORITY_KILL_DEFAULT)]],
     },
@@ -1949,7 +1969,7 @@ const roleData = {
       category: "Linked",
       tags: ["Information", "Alignment", "Advanced"],
       description: [
-        "Once per game during the day, can open the door.",
+        "During the day, can open the door.",
         "When the Mistress opens the Door all players will learn that the Mistress opened the door.",
         "When the door is opened, the Mistress will learn an evil player.",
         "After the Door was opened, The Mistress will Die the at night unless visited by a town-aligned player at night.",
@@ -2254,6 +2274,13 @@ const roleData = {
       description: ["Stalks one player each night and learns their role."],
       nightOrder: [["Learn Role",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
+    Wrangler: {
+      alignment: "Mafia",
+      category: "Investigative",
+      tags: ["Information", "Roles", "Visiting", "Basic"],
+      description: ["Each night visits a player, If that player is first to speak or vote the following day, that player's role is revealed to the Mafia."],
+      nightOrder: [["Learn Role",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
+    },
     //unsorted
     Hooker: {
       alignment: "Mafia",
@@ -2510,7 +2537,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Revive", "Protective", "Graveyard", "Visiting", "Basic"],
       description: [
-        "Visits a dead player during the night once per game.",
+        "Visits a dead player during the night.",
         "That player will be resurrected the following day.",
         "If player's role identity was revealed upon death, they will remain revealed when resurrected.",
       ],
@@ -2799,7 +2826,8 @@ const roleData = {
       tags: ["Malicious Effects", "Visiting", "Advanced"],
       description: [
         "Visits one player each night and cleanses them of malicious effects.",
-        "Malicious effects include poison, bleeding, insanity, and polarization.",
+        MalEffects,
+        
       ],
       nightOrder: [["Remove Effects",(PRIORITY_EFFECT_REMOVER_DEFAULT)]],
     },
@@ -2809,7 +2837,8 @@ const roleData = {
       tags: ["Reflexive", "Malicious Effects", "Role Share", "Advanced"],
       description: [
         "When visited, heals and cleanses all effects currently possessed by the visiting player.",
-        "Players who Role Share with a Dealer are Cleansed.",
+        "Players who Role Share with a Dealer are Cleansed of Malicious Effects.",
+        MalEffects,
       ],
       nightOrder: [["Remove Effects",(PRIORITY_EFFECT_REMOVER_DEFAULT)]],
     },
@@ -2843,7 +2872,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Deception", "Will", "Information", "Advanced"],
       description: [
-        "Once per night can forge the will of another player.",
+        "Each night can forge the will of another player.",
         "Learns that player's real will on the next day.",
       ],
       nightOrder: [["Forge Will",(PRIORITY_EFFECT_GIVER_DEFAULT)]],
@@ -3267,6 +3296,17 @@ const roleData = {
       ],
       nightOrder: [["Create Lycan",(PRIORITY_BITING_WOLF)],["Make Lycans Kill",(PRIORITY_KILL_DEFAULT)]],
     },
+    "Plague Doctor": {
+      alignment: "Cult",
+      category: "Killing",
+      tags: ["Killing", "Virus", "Effect", "Neighbors", "Visiting", "Advanced"],
+      description: [
+        "On their first night, choose a player to Infect with a Virus.",
+        "Each night the infected players will infect their neighbors.",
+        "Players who have been infected for 2 nights will die.",
+      ],
+      nightOrder: [["Infect Player",(PRIORITY_BITING_WOLF)],["Virus Kill",(PRIORITY_KILL_DEFAULT)]],
+    },
     //Speaking
     Banshee: {
       alignment: "Cult",
@@ -3500,6 +3540,15 @@ const roleData = {
         "Redirection cannot be role blocked.",
       ],
       nightOrder: [["Control Player",(PRIORITY_REDIRECT_ACTION)]],
+    },
+    Skinwalker: {
+      alignment: "Cult",
+      tags: ["Deception", "Night-acting", "Basic"],
+      description: [
+        "Chooses a role each night to appear as on death and to information role.",
+        "Can not be seen as a Villager, Impersonator or Imposter",
+      ],
+      nightOrder: [["Disguise Self",(PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT)]],
     },
     //Chaos
     Alchemist: {
@@ -3820,7 +3869,7 @@ const roleData = {
         "Will count torwards Cult Majority when dead.",
         "If a Poltergeist is Exorcised, All Cult-aligned players die.",
         "If it is possible for a Poltergeist to spawn in a setup, Dead players can be voted in village meeting.",
-        "Condemned dead players are Exorcised.",
+        "If a dead Poltergeist is condemned in the Village Meeting, they are exorcised.",
       ],
       nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT)]],
       graveyardParticipation: "self",

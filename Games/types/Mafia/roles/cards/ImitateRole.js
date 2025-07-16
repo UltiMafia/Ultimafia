@@ -3,6 +3,7 @@ const {
   PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
 } = require("../../const/Priority");
 const { addArticle } = require("../../../../core/Utils");
+const roleBlacklist = ["Villager", "Imposter", "Impersonator", "Mole"];
 
 module.exports = class ImitateRole extends Card {
   constructor(role) {
@@ -13,6 +14,8 @@ module.exports = class ImitateRole extends Card {
         states: ["Night"],
         flags: ["voting"],
         inputType: "custom",
+        inputType: "AllRoles",
+        AllRolesFilters: ["blacklist"],
         action: {
           labels: ["investigate", "role"],
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
@@ -38,20 +41,8 @@ module.exports = class ImitateRole extends Card {
           return;
         }
 
-        let roles = [];
-
-        for (let player of this.game.players) {
-          let roleName = player.role.name;
-          if (
-            roleName != "Villager" &&
-            roleName != "Imposter" &&
-            roleName != "Impersonator"
-          ) {
-            roles.push(roleName);
-          }
-        }
-
-        this.meetings["Imitate Role"].targets = roles;
+         this.data.roleBlacklist = roleBlacklist.filter((r) => r);
+        this.data.roleBlacklist2 = [];
       },
     };
   }

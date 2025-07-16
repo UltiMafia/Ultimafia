@@ -16,7 +16,6 @@ module.exports = {
         useNewUrlParser: true,
       }
     );
-    mongoose.set("useCreateIndex", true);
 
     resolve(mongoose.connection);
   }),

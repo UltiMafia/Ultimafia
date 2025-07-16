@@ -11,7 +11,7 @@ const {
   FACTION_KILL,
 } = require("../const/FactionList");
 
-module.exports = class ReportsInfo extends Information {
+module.exports = class AllReportsInfo extends Information {
   constructor(creator, game, target) {
     super("Reports Info", creator, game);
     if (target == null) {
@@ -40,8 +40,6 @@ module.exports = class ReportsInfo extends Information {
     }
 
     return `You received all reports that ${this.target.name} has ever received: ${reportsToAlert}.`;
-
-    //return `You Learn that your Target is ${this.mainInfo}`
   }
 
   isTrue() {
