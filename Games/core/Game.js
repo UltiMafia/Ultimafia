@@ -1121,7 +1121,7 @@ module.exports = class Game {
 
 
     if(this.setup.AllExcessRoles && this.PossibleRoles && this.type == "Mafia"){
-            let AllRoles = Object.entries(roleData.Mafia).map((r) => r[0]);
+            let AllRoles = Object.entries(roleData.Mafia).filter((m) => m[1].alignment != "Event").map((r) => r[0]);
             this.PossibleRoles = this.PossibleRoles.concat(AllRoles);
     }
 
