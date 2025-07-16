@@ -187,7 +187,7 @@ router.get("/search", async function (req, res) {
             case "favorites":
               const favSetupsIds = (
                 await models.User.findOne({
-                  _id: mongoose.Types.ObjectId(sessionUserId),
+                  _id: new mongoose.Types.ObjectId(sessionUserId),
                 }).select("favSetups")
               )?.favSetups?.map((e) => e._id);
               search._id = { $in: favSetupsIds };
@@ -195,7 +195,7 @@ router.get("/search", async function (req, res) {
               break;
             case "yours":
               sort._id = -1;
-              search.creator = mongoose.Types.ObjectId(sessionUserId);
+              search.creator = new mongoose.Types.ObjectId(sessionUserId);
               break;
             default:
               break;
