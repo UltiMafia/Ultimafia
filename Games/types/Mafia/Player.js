@@ -564,6 +564,13 @@ if(this.game.extendLength == 0){
           this.game.formatRoleInternal(this.role.name, this.role.modifier)
         )
         .includes("Restless") && !this.hasEffect("NoModifiers");
+    if(!isRestless){
+    isRestless = this.game
+        .getRoleTags(
+          this.game.formatRoleInternal(this.role.name, this.role.modifier)
+        )
+        .includes("Vengeful") && !this.hasEffect("NoModifiers") && this.role.HasBeenNightKilled == true;
+    }
     let isTransendant =
       this.game
         .getRoleTags(
