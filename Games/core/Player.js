@@ -54,6 +54,7 @@ module.exports = class Player {
     this.deathMessages = deathMessages;
     this.revivalMessages = revivalMessages;
     this.docImmunity = [];
+    this.ExtraRoles = [];
   }
 
   init() {
@@ -819,6 +820,43 @@ module.exports = class Player {
     }
   }
 
+  addExtraRole(roleName, roleData, noReveal, noEmit,) {
+    const modifiers = roleName.split(":")[1];
+    roleName = roleName.split(":")[0];
+
+    for (let effect of this.passiveEffects) {
+      effect.remove();
+    }
+    this.passiveEffects = [];
+
+    const role = this.game.getRoleClass(roleName);
+
+    let oldAppearanceSelf = this.role?.appearance.self;
+    this.removeRole();
+   let newRole = new role(this, roleData);
+    newRole.init(modifiers);
+
+    if (this.game.started == true && this.game.setup.hiddenConverts == true) {
+      noReveal = true;
+    }
+
+    if (
+      !(
+        noReveal ||
+        (oldAppearanceSelf && oldAppearanceSelf === newRole.appearance.self) || newRole.appearance.self == "real"
+      )
+    ) {
+      newRole.revealToSelf(noAlert);
+    }
+    newRole.isExtraRole = true;
+    if (this.game.started && !noEmit) {
+      this.game.events.emit("roleAssigned", this, newRole);
+    }
+    this.game.events.emit("AbilityToggle", this, newRole);
+    this.ExtraRoles.push(newRole);
+    return newRole;
+  }
+
   removeRole() {
     if (this.role) this.role.remove();
   }
@@ -853,6 +891,12 @@ module.exports = class Player {
 
     if (this.role) this.role.speak(message);
 
+    if(this.ExtraRoles){
+      for(let extraRole of this.ExtraRoles){
+        extraRole.speak(message);
+      }
+    }
+
     if (message.cancel) return;
 
     for (let effect of this.effects) {
@@ -876,6 +920,12 @@ module.exports = class Player {
 
     if (this.role) this.role.speakQuote(quote);
 
+    if(this.ExtraRoles){
+      for(let extraRole of this.ExtraRoles){
+        extraRole.speakQuote(quote);
+      }
+    }
+
     if (quote.cancel) return;
 
     for (let effect of this.effects) {
@@ -894,6 +944,12 @@ module.exports = class Player {
     const originalMessage = message;
     message = new Message(message);
     if (this.role) this.role.hear(message);
+
+    if(this.ExtraRoles){
+      for(let extraRole of this.ExtraRoles){
+        extraRole.hear(message);
+      }
+    }
 
     if (message.cancel) return;
 
@@ -929,6 +985,12 @@ module.exports = class Player {
 
     if (this.role) this.role.hearQuote(quote);
 
+    if(this.ExtraRoles){
+      for(let extraRole of this.ExtraRoles){
+        extraRole.hearQuote(quote);
+      }
+    }
+
     if (quote.cancel) return;
 
     for (let effect of this.effects) {
@@ -949,6 +1011,12 @@ module.exports = class Player {
     vote = { ...vote };
 
     if (this.role) this.role.seeVote(vote);
+
+    if(this.ExtraRoles){
+      for(let extraRole of this.ExtraRoles){
+        extraRole.seeVote(vote);
+      }
+    }
 
     if (vote.cancel) return;
 
@@ -980,6 +1048,12 @@ module.exports = class Player {
 
     if (this.role) this.role.seeUnvote(info);
 
+    if(this.ExtraRoles){
+      for(let extraRole of this.ExtraRoles){
+        extraRole.seeUnvote(info);
+      }
+    }
+
     if (info.cancel) return;
 
     for (let effect of this.effects) {
@@ -1006,6 +1080,12 @@ module.exports = class Player {
   seeTyping(info) {
     if (this.role) this.role.seeTyping(info);
 
+    if(this.ExtraRoles){
+      for(let extraRole of this.ExtraRoles){
+        extraRole.seeTyping(info);
+      }
+    }
+
     if (info.cancel) return;
 
     for (let effect of this.effects) {
@@ -1027,6 +1107,12 @@ module.exports = class Player {
 
   meet() {
     if (this.role) this.joinMeetings(this.role.meetings);
+
+    if(this.ExtraRoles){
+      for(let extraRole of this.ExtraRoles){
+        this.joinMeetings(extraRole.meetings);
+      }
+    }
 
     for (let item of this.items) this.joinMeetings(item.meetings);
   }
@@ -1160,6 +1246,13 @@ module.exports = class Player {
 
   act(target, meeting, actors) {
     if (this.role) this.role.act(target, meeting, actors);
+    /*
+    if(this.ExtraRoles){
+      for(let extraRole of this.ExtraRoles){
+        extraRole.act(target, meeting, actors);
+      }
+    }
+    */
   }
 
   getImmunity(type) {
@@ -1168,8 +1261,23 @@ module.exports = class Player {
     if (this.tempImmunity[type] != null) return this.tempImmunity[type];
 
     if (this.role) immunity = this.role.getImmunity(type);
-    else immunity = 0;
 
+    if(immunity == null){
+      immunity = 0;
+    }
+
+      
+    if(this.ExtraRoles){
+      for(let extraRole of this.ExtraRoles){
+        let extraImmunity = extraRole.getImmunity(type)
+        if(immunity < extraImmunity){
+          immunity = extraImmunity;
+        }
+      }
+    }
+    if(immunity == null){
+      immunity = 0;
+    }
     for (let effect of this.effects) {
       let effectImmunity = effect.getImmunity(type);
 
@@ -1183,6 +1291,12 @@ module.exports = class Player {
     let maxImmunity = 0;
 
     maxImmunity = Math.max(maxImmunity, this.role.cancelImmunity[type] || 0);
+
+    if(this.ExtraRoles){
+      for(let extraRole of this.ExtraRoles){
+        Math.max(maxImmunity, extraRole.cancelImmunity[type] || 0);
+      }
+    }
 
     for (let effect of this.effects)
       maxImmunity = Math.max(maxImmunity, effect.cancelImmunity[type] || 0);
@@ -1209,6 +1323,16 @@ module.exports = class Player {
           : ":" + this.tempAppearanceMods[type]
       }`;
     }
+    if(this.ExtraRoles){
+      for(let extraRole of this.ExtraRoles){
+        if(extraRole.appearance[type] != extraRole.name){
+          return `${extraRole.appearance[type]}${
+      noModifier ? "" : ":" + extraRole.appearanceMods[type]
+    }`;
+        }
+      }
+    }
+    
     return `${this.role.appearance[type]}${
       noModifier ? "" : ":" + this.role.appearanceMods[type]
     }`;
@@ -1272,6 +1396,12 @@ module.exports = class Player {
 
   queueNonmeetActions() {
     if (this.role) this.role.queueActions();
+
+    if(this.ExtraRoles){
+      for(let extraRole of this.ExtraRoles){
+        extraRole.queueActions()
+      }
+    }
 
     for (let item of this.items) item.queueActions();
 
@@ -1571,6 +1701,20 @@ module.exports = class Player {
     player.role = tempRole;
     player.role.player = player;
     player.role.revealToSelf(true);
+
+  //Swap Extra Roles
+    var tempExtraRoles = this.ExtraRoles;
+    this.ExtraRoles = player.ExtraRoles;
+    player.ExtraRoles = tempExtraRoles;
+     
+      for(let extraRole of this.ExtraRoles){
+        extraRole.player = this;
+      }
+      for(let extraRole of player.ExtraRoles){
+        extraRole.player = player;
+      }
+    
+    
 
     // Swap items and effects
     var tempItems = this.items;
