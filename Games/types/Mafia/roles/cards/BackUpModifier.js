@@ -40,7 +40,7 @@ module.exports = class BackUpModifier extends Card {
         if(BackupPlayers.length > 0){
            this.BackUpEffect = this.player.giveEffect(
               "BackUp",
-              BackupPlayers
+              this.name
             );
             this.player.passiveEffects.push(this.BackUpEffect);
         }
