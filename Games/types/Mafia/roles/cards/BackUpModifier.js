@@ -26,24 +26,17 @@ module.exports = class BackUpModifier extends Card {
         } else if (this.player.role.alignment == "Cult") {
           newRole = "Devotee";
         }
-
+        
         this.player.queueAlert(
           `Backup: You are the Backup for ${currRole}. If a ${currRole} is killed you will gain your abilities.`
         );
-        let BackupPlayers = []; 
-        for(let player of this.game.alivePlayers()){
-          if(player.role.name == this.name){
-            BackupPlayers.push(player);
-          }
-        }
-
-        if(BackupPlayers.length > 0){
+        
            this.BackUpEffect = this.player.giveEffect(
               "BackUp",
               this.name
             );
             this.player.passiveEffects.push(this.BackUpEffect);
-        }
+        
 
 
         
