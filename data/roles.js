@@ -1532,21 +1532,14 @@ const roleData = {
         "Cannot select a role they already selected.",
       ],
     },
-    Student: {
+    Hermit: {
       alignment: "Village",
-      disabled: true,
       category: "Manipulative",
-      tags: ["Conversion"],
+      tags: ["Advanced", "Banished Interaction"],
       description: [
-        "Is Assigned a Village Aligned Role that is currently in the game.",
-        "If that role is killed or Converted, The Student becomes that role.",
-        "Village Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
+        "Has the abilites of up to 10 banished Village roles.",
+        "Cannot have the Hermit ability.",
       ],
-      SpecialInteractions: {
-        Assassin: [
-          "If an Assassin is Present, Students' with a President Target will not become President If the Assassin kills the President .",
-        ],
-      },
     },
     Trickster: {
       alignment: "Village",
