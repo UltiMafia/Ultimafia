@@ -66,26 +66,22 @@ module.exports = class Action {
   }
 
   async docSave(userId, saverId) {
-    await models.DocSave.findOne(
+    var existingDocSave = await models.DocSave.findOne(
       {
         $or: [
           { $and: [{ userId: userId }, { saverId: saverId }] },
           { $and: [{ userId: saverId }, { saverId: userId }] },
         ],
-      },
-      async (err, saved) => {
-        if (err) {
-          console.log(err);
-        } else if (!saved) {
-          var docSave = new models.DocSave({
-            userId: userId,
-            saverId: saverId,
-          });
-
-          await docSave.save();
-        }
       }
     );
+    if (!existingDocSave) {
+      var docSave = new models.DocSave({
+        userId: userId,
+        saverId: saverId,
+      });
+
+      await docSave.save();
+    }
   }
 
   hasLabel(label) {
