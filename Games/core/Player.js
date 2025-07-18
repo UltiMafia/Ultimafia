@@ -55,6 +55,7 @@ module.exports = class Player {
     this.revivalMessages = revivalMessages;
     this.docImmunity = [];
     this.ExtraRoles = [];
+    this.passiveExtraRoles = [];
   }
 
   init() {
@@ -685,6 +686,15 @@ module.exports = class Player {
     const modifiers = roleName.split(":")[1];
     roleName = roleName.split(":")[0];
 
+    
+    for(let extraRole of this.passiveExtraRoles){
+      var index = this.player.ExtraRoles.indexOf(extraRole);
+          if (index != -1) {
+            this.player.ExtraRoles.splice(index, 1);
+          }
+      extraRole.remove();
+    }
+    this.passiveExtraRoles = [];
     for (let effect of this.passiveEffects) {
       effect.remove();
     }
