@@ -28,9 +28,26 @@ module.exports = class BackUpModifier extends Card {
         }
 
         this.player.queueAlert(
-          `Backup: You are the Backup for ${currRole}. If a ${currRole} is killed or Converted you become ${currRole}.`
+          `Backup: You are the Backup for ${currRole}. If a ${currRole} is killed you will gain your abilities.`
         );
+        let BackupPlayers = []; 
+        for(let player of this.game.alivePlayers()){
+          if(player.role.name == this.name){
+            BackupPlayers.push(player);
+          }
+        }
 
+        if(BackupPlayers.length > 0){
+           this.BackUpEffect = this.player.giveEffect(
+              "BackUp",
+              BackupPlayers
+            );
+            this.player.passiveEffects.push(this.BackUpEffect);
+        }
+
+
+        
+      if(newRole == "Sidekick"){
         this.player.setRole(
           newRole,
           undefined,
@@ -40,8 +57,34 @@ module.exports = class BackUpModifier extends Card {
           "No Change"
         );
         this.player.role.data.FromBackUpModifier = currRole;
-        this.data.OldRole = currRole;
+        this.player.role.data.OldRole = currRole;
+      }
       },
     };
+
+
+    this.meetingMods = {
+      "*": {
+        shouldMeetMod: function (meetingName) {
+          for (let w = 0; w < IMPORTANT_MEETINGS_NIGHT.length; w++) {
+            if (meetingName == IMPORTANT_MEETINGS_NIGHT[w] || !meetingName) {
+              return true;
+            }
+          }
+          for (let w = 0; w < IMPORTANT_MEETINGS_DAY.length; w++) {
+            if (meetingName == IMPORTANT_MEETINGS_DAY[w] || !meetingName) {
+              return true;
+            }
+          }
+          if (meetingName == "Graveyard") return true;
+
+          return !this.player.hasEffect("BackUp");
+        },
+      },
+    };
+
+
+
+    
   }
 };
