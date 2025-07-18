@@ -1,5 +1,11 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
+const {
+  IMPORTANT_MEETINGS_NIGHT,
+  INVITED_MEETINGS,
+  STARTS_WITH_MEETINGS,
+  IMPORTANT_MEETINGS_DAY,
+} = require("../../const/ImportantMeetings");
 
 module.exports = class BackUpModifier extends Card {
   constructor(role) {
@@ -30,6 +36,8 @@ module.exports = class BackUpModifier extends Card {
         this.player.queueAlert(
           `Backup: You are the Backup for ${currRole}. If a ${currRole} is killed you will gain your abilities.`
         );
+
+        this.data.RoleTargetBackup = this.name;
         
            this.BackUpEffect = this.player.giveEffect(
               "BackUp",
@@ -52,6 +60,54 @@ module.exports = class BackUpModifier extends Card {
         this.player.role.data.FromBackUpModifier = currRole;
         this.player.role.data.OldRole = currRole;
       }
+      },
+      roleAssigned: function (player) {
+        if(player != this.player){
+          return;
+        }
+        if(this.data.RoleTargetBackup != null){
+          return;
+        }
+
+        let newRole = "Sidekick";
+        let currRole = this.player.role.name;
+
+        if (this.player.role.alignment == "Village") {
+          newRole = "Student";
+        } else if (this.player.role.alignment == "Mafia") {
+          newRole = "Understudy";
+        } else if (this.player.role.alignment == "Cult") {
+          newRole = "Devotee";
+        }
+        
+        this.player.queueAlert(
+          `Backup: You are the Backup for ${currRole}. If a ${currRole} is killed you will gain your abilities.`
+        );
+
+        this.data.RoleTargetBackup = this.name;
+        
+           this.BackUpEffect = this.player.giveEffect(
+              "BackUp",
+              this.name
+            );
+            this.player.passiveEffects.push(this.BackUpEffect);
+        
+
+
+        
+      if(newRole == "Sidekick"){
+        this.player.setRole(
+          newRole,
+          undefined,
+          false,
+          true,
+          false,
+          "No Change"
+        );
+        this.player.role.data.FromBackUpModifier = currRole;
+        this.player.role.data.OldRole = currRole;
+      }
+
       },
     };
 

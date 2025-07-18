@@ -198,7 +198,7 @@ export function SmallRoleList(props) {
         key={role || "null"}
         showSecondaryHover
         gameType={props.gameType}
-        otherRoles={props.setup?.roles}
+        otherRoles={(props.otherRoles) ? props.otherRoles : (props.setup?.roles)}
       />
     ));
   } else
@@ -210,7 +210,7 @@ export function SmallRoleList(props) {
         gameType={props.gameType}
         showSecondaryHover
         key={role}
-        otherRoles={props.setup?.roles}
+        otherRoles={(props.otherRoles) ? props.otherRoles : (props.setup?.roles)}
       />
     ));
 
