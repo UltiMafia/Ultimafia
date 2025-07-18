@@ -211,7 +211,7 @@ export const LobbyBrowser = () => {
               borderTopLeftRadius: "5px",
               borderBottomLeftRadius: "5px",
               alignSelf: "stretch",
-              width: "15px",
+              minWidth: "15px",
             }}/>
             <GameRow
               game={game}
