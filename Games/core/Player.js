@@ -820,7 +820,7 @@ module.exports = class Player {
     }
   }
 
-  addExtraRole(roleName, roleData, noReveal, noEmit,) {
+  addExtraRole(roleName, roleData, noReveal, noEmit) {
     const modifiers = roleName.split(":")[1];
     roleName = roleName.split(":")[0];
 
