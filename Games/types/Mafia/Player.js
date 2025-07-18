@@ -586,6 +586,9 @@ if(this.game.extendLength == 0){
     if (this.exorcised == true) {
       return false;
     }
+    if(this.hasEffect("BackUp")){
+      return false;
+    }
     if (isRetired == true && !types.includes("Modifier")) {
       return false;
     }
