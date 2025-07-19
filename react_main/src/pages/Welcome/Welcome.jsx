@@ -67,7 +67,7 @@ export const Welcome = () => {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const idToken = await auth.currentUser.getIdToken(true);
         axios
-          .post("/api/auth", { idToken })
+          .post("/auth", { idToken })
           .then(() => {
             window.location.reload();
           })

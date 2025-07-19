@@ -174,7 +174,7 @@ export default function HostMafia() {
 
     if (selSetup.id) {
       axios
-        .post("/api/game/host", {
+        .post("/game/host", {
           gameType,
           lobby,
           setup: selSetup.id,

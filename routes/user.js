@@ -338,17 +338,11 @@ router.get("/:id/profile", async function (req, res) {
               { $and: [{ userId: userId }, { saverId: reqUserId }] },
               { $and: [{ userId: reqUserId }, { saverId: userId }] },
             ],
-          },
-          (err, results) => {
-            if (err) {
-              console.error(err);
-            } else {
-              if (results.length > 0) {
-                user.saved = true;
-              }
-            }
           }
         );
+        if (docSave.length > 0) {
+          user.saved = true;
+        }
       }
     } else {
       user.love = {};

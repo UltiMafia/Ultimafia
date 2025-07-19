@@ -5,7 +5,7 @@ import axios from "axios";
 export const getAnnouncement = async (URLfilter = "") => {
   // by default, returns the 1st announcement (no DATE provided in URLfilter)
   try {
-    const res = await axios.get(`/api/mod/announcements${URLfilter}`);
+    const res = await axios.get(`/mod/announcements${URLfilter}`);
     let announcement;
     if (URLfilter.includes("first")) {
       announcement = res?.data?.pop();

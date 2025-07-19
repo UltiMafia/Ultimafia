@@ -236,6 +236,24 @@ export default function CreateMafiaSetup() {
         },
       ],
     },
+    {
+      label: "All Excess Roles",
+      ref: "AllExcessRoles",
+      value: false,
+      type: "boolean",
+    },
+    {
+      label: "Hostiles Vs Mafia",
+      ref: "HostileVsMafia",
+      value: false,
+      type: "boolean",
+    },
+    {
+      label: "Competing Evil Factions",
+      ref: "CultVsMafia",
+      value: false,
+      type: "boolean",
+    },
   ]);
 
   const formFieldValueMods = {
@@ -250,7 +268,7 @@ export default function CreateMafiaSetup() {
 
   function onCreateSetup(roleData, editing, setRedirect) {
     axios
-      .post("/api/setup/create", {
+      .post("/setup/create", {
         gameType: gameType,
         roles: roleData.roles,
         closed: roleData.closed,
@@ -289,6 +307,9 @@ export default function CreateMafiaSetup() {
         noDeathLimit: formFields[30].value,
         ForceMustAct: formFields[31].value,
         GameEndEvent: formFields[32].value,
+        AllExcessRoles: formFields[33].value,
+        HostileVsMafia: formFields[34].value,
+        CultVsMafia: formFields[35].value,
         editing: editing,
         id: params.get("edit"),
       })

@@ -106,7 +106,7 @@ export default function Profile() {
       setProfileLoaded(false);
 
       axios
-        .get(`/api/user/${userId}/profile`)
+        .get(`/user/${userId}/profile`)
         .then((res) => {
           setProfileLoaded(true);
           setName(res.data.name);
@@ -154,7 +154,7 @@ export default function Profile() {
         });
 
       axios
-        .get(`/api/user/${userId}/friends`)
+        .get(`/user/${userId}/friends`)
         .then((res) => {
           setFriends(res.data);
         })
@@ -182,7 +182,7 @@ export default function Profile() {
         el.value = "";
 
       axios
-        .post(`/api/user/${type}`, formData)
+        .post(`/user/${type}`, formData)
         .then((res) => {
           switch (type) {
             case "avatar":
@@ -212,7 +212,7 @@ export default function Profile() {
     }
 
     axios
-      .post("/api/user/friend", { user: userId })
+      .post("/user/friend", { user: userId })
       .then((res) => {
         setIsFriend(!isFriend);
         siteInfo.showAlert(res.data, "success");
@@ -228,7 +228,7 @@ export default function Profile() {
       if (!shouldUnfriend) return;
 
       axios
-        .post("/api/user/friend", { user: friendId })
+        .post("/user/friend", { user: friendId })
         .then((res) => {
           setIsFriend(false);
           siteInfo.showAlert(res.data, "success");
@@ -245,7 +245,7 @@ export default function Profile() {
       if (!shouldDelete) return;
 
       axios
-        .delete(`/api/game/${gameId}/archive`)
+        .delete(`/game/${gameId}/archive`)
         .then((res) => {
           siteInfo.showAlert(res.data, "success");
         })
@@ -285,7 +285,7 @@ export default function Profile() {
     }
 
     axios
-      .post("/api/user/love", { user: userId, type: love.type, reqType: "Love" })
+      .post("/user/love", { user: userId, type: love.type, reqType: "Love" })
       .then((res) => {
         setIsLove(!isLove);
         siteInfo.showAlert(res.data.message, "success");
@@ -325,7 +325,7 @@ export default function Profile() {
     }
 
     axios
-      .post("/api/user/love", { user: userId, type: love.type, reqType: "Marry" })
+      .post("/user/love", { user: userId, type: love.type, reqType: "Marry" })
       .then((res) => {
         setIsMarried(!isMarried);
         setIsLove(!isLove);
@@ -356,7 +356,7 @@ export default function Profile() {
     }
 
     axios
-      .post("/api/user/block", { user: userId })
+      .post("/user/block", { user: userId })
       .then(() => {
         user.blockUserToggle(userId);
 
@@ -378,7 +378,7 @@ export default function Profile() {
 
   function onEditBio(e) {
     axios
-      .post(`/api/user/bio`, { bio: bio })
+      .post(`/user/bio`, { bio: bio })
       .then(() => {
         setEditingBio(false);
         setBio(filterProfanity(bio, user.settings, "\\*"));
@@ -388,7 +388,7 @@ export default function Profile() {
 
   function onEditPronouns(e) {
     axios
-      .post(`/api/user/pronouns`, { pronouns: pronouns })
+      .post(`/user/pronouns`, { pronouns: pronouns })
       .then(() => {
         setEditingPronouns(false);
         setPronouns(filterProfanity(pronouns, user.settings, "\\*"));
@@ -410,7 +410,7 @@ export default function Profile() {
 
   function onAcceptFriend(_userId) {
     axios
-      .post("/api/user/friend", { user: _userId })
+      .post("/user/friend", { user: _userId })
       .then((res) => {
         var newFriendRequests = friendRequests
           .slice()
@@ -423,7 +423,7 @@ export default function Profile() {
 
   function onRejectFriend(_userId) {
     axios
-      .post("/api/user/friend/reject", { user: _userId })
+      .post("/user/friend/reject", { user: _userId })
       .then((res) => {
         var newFriendRequests = friendRequests
           .slice()
@@ -445,7 +445,7 @@ export default function Profile() {
     if (filterArg == null) return;
 
     axios
-      .get(`/api/user/${userId}/friends?${filterArg}`)
+      .get(`/user/${userId}/friends?${filterArg}`)
       .then((res) => {
         if (res.data.length) {
           setFriends(res.data);
@@ -896,7 +896,7 @@ export function KarmaVoteWidget(props) {
     if (!user.perms.vote) return;
 
     axios
-      .post("/api/user/karma", {
+      .post("/user/karma", {
         targetId: userId,
         direction,
       })

@@ -101,7 +101,7 @@ export function SetupPage() {
   useEffect(() => {
     if (setupId) {
       axios
-        .get(`/api/setup/${setupId}`, { headers: { includeStats: true } })
+        .get(`/setup/${setupId}`, { headers: { includeStats: true } })
         .then((res) => {
           let setup = res.data;
           setup.roles = JSON.parse(setup.roles);
@@ -183,7 +183,7 @@ export function SetupPage() {
 
     if (setupId) {
       axios
-        .get(`/api/setup/${setupId}/version/${newVersionNum}`)
+        .get(`/setup/${setupId}/version/${newVersionNum}`)
         .then((res) => {
           let setupVersion = res.data;
           setVersionTimestamp(setupVersion.timestamp);

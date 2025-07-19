@@ -87,7 +87,7 @@ export const LobbyBrowser = () => {
   }, [lobbyName]);
 
   const getOpenGameCounts = useCallback(async () => {
-    return axios.get(`/api/game/list?list=open`).then(({ data }) => {
+    return axios.get(`/game/list?list=open`).then(({ data }) => {
       const result = {};
       data.forEach((game) => {
         const { lobby } = game;
@@ -109,7 +109,7 @@ export const LobbyBrowser = () => {
     filterArg += `&page=${_page}`;
     try {
       const res = await axios.get(
-        `/api/game/list?list=${camelCase(
+        `/game/list?list=${camelCase(
           _listType
         )}&lobby=${lobbyName}&${filterArg}`
       );

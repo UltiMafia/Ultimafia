@@ -25,7 +25,7 @@ module.exports = class EvilPlayerInfo extends Information {
     var evilPlayers = alive.filter((p) => this.isAppearanceEvil(p));
 
     if (evilPlayers.length <= 0) {
-      this.mainInfo = "No Evil Players Exist";
+      this.mainInfo = "no Evildoers exist.";
       return;
     }
 
@@ -41,10 +41,10 @@ module.exports = class EvilPlayerInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    if (this.mainInfo == "No Evil Players Exist") {
-      return `You Learn that ${this.mainInfo}`;
+    if (this.mainInfo == "no Evildoers exist.") {
+      return `You learn that ${this.mainInfo}`;
     }
-    return `You Learn that ${this.mainInfo.name} is Evil.`;
+    return `You learn that ${this.mainInfo.name} is Evil.`;
   }
 
   isTrue() {
@@ -77,7 +77,7 @@ module.exports = class EvilPlayerInfo extends Information {
     var evilPlayers = alive.filter((p) => this.isEvil(p));
 
     if (evilPlayers.length <= 0) {
-      this.mainInfo = "No Evil Players Exist";
+      this.mainInfo = "no Evildoers exist.";
       return;
     }
 
@@ -95,7 +95,7 @@ module.exports = class EvilPlayerInfo extends Information {
     var goodPlayers = alive.filter((p) => !this.isEvil(p));
 
     if (goodPlayers.length <= 0) {
-      this.mainInfo = "No Evil Players Exist";
+      this.mainInfo = "no Evildoers exist.";
       return;
     }
 

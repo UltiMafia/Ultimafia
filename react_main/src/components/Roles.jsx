@@ -125,6 +125,8 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
           data: {
             roles: props.roleGroup,
             gameType: props.gameType,
+            setup: props,
+            otherRoles: props.otherRoles,
           },
         }),
         "roleGroup",

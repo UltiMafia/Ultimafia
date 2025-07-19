@@ -43,7 +43,7 @@ module.exports = class VillageCore extends Card {
 
             
             if (this.dominates()) {
-              if (!this.target.alive) {
+              if (!this.target.alive && this.target.role.name == "Poltergeist") {
                 this.game.exorcisePlayer(this.target);
               }
               this.target.kill("condemn", this.actor);
@@ -51,45 +51,6 @@ module.exports = class VillageCore extends Card {
           },
         },
       },
-      /*
-      "Magus Game": {
-        states: ["Day"],
-        inputType: "custom",
-        targets: ["Declare Magus Game", "No"],
-        flags: ["group", "voting", "useVotingPower"],
-        whileDead: true,
-        passiveDead: true,
-        speakDead: true,
-        shouldMeet: function () {
-          return this.game.MagusPossible == true;
-        },
-        action: {
-          labels: ["hidden", "magus"],
-          priority: PRIORITY_VILLAGE - 1,
-          power: 3,
-          run: function () {
-            if (this.target != "Declare Magus Game") return;
-            this.game.MagusGameDeclared = true;
-            let players = this.game.players.filter(
-              (p) => p.role.name == "Magus"
-            );
-            if (players.length <= 0) {
-              for (let p of this.game.alivePlayers()) {
-                if (p.role.alignment === "Village" || p.role.name === "Magus") {
-                  p.kill("basic", this.actor, true);
-                }
-              }
-            } else {
-              for (let p of this.game.players) {
-                if (p.role.alignment == "Village" || p.role.name == "Magus") {
-                  p.role.data.MagusWin = true;
-                }
-              }
-            }
-          },
-        },
-      },
-      */
       Graveyard: {
         states: ["Night"],
         flags: ["group", "speech", "liveJoin"],

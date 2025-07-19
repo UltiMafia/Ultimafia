@@ -29,14 +29,14 @@ export default function UserSearch(props) {
   useEffect(() => {
     if (searchVal.length > 0) {
       axios
-        .get(`/api/user/searchName?query=${searchVal}`)
+        .get(`/user/searchName?query=${searchVal}`)
         .then((res) => {
           setUserList(res.data);
         })
         .catch(useErrorAlert);
     } else {
       axios
-        .get("/api/user/online")
+        .get("/user/online")
         .then((res) => {
           setUserList(res.data);
         })
@@ -124,7 +124,7 @@ function NewestUsers(props) {
     if (filterArg == null) return;
 
     axios
-      .get(`/api/user/newest?${filterArg}`)
+      .get(`/user/newest?${filterArg}`)
       .then((res) => {
         if (res.data.length > 0) {
           setUsers(res.data);
@@ -180,7 +180,7 @@ function FlaggedUsers(props) {
     if (filterArg == null) return;
 
     axios
-      .get(`/api/user/flagged?${filterArg}`)
+      .get(`/user/flagged?${filterArg}`)
       .then((res) => {
         if (res.data.length > 0) {
           setUsers(res.data);

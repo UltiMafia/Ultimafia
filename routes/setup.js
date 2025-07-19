@@ -71,6 +71,9 @@ function generateMafiaSetupManifest(setup, roles) {
       `No reveal: ${setup.noReveal}`,
       `Votes invisible: ${setup.votesInvisible}`,
       `Game ending event: ${setup.GameEndEvent}`,
+      `All Excess Roles: ${setup.AllExcessRoles}`,
+      `Mafia Vs Hostiles: ${setup.HostileVsMafia}`,
+      `Competing Evil Factions: ${setup.CultVsMafia}`,
     ];
 
     if (setup.useRoleGroups) {
@@ -184,7 +187,7 @@ router.get("/search", async function (req, res) {
             case "favorites":
               const favSetupsIds = (
                 await models.User.findOne({
-                  _id: mongoose.Types.ObjectId(sessionUserId),
+                  _id: new mongoose.Types.ObjectId(sessionUserId),
                 }).select("favSetups")
               )?.favSetups?.map((e) => e._id);
               search._id = { $in: favSetupsIds };
@@ -192,7 +195,7 @@ router.get("/search", async function (req, res) {
               break;
             case "yours":
               sort._id = -1;
-              search.creator = mongoose.Types.ObjectId(sessionUserId);
+              search.creator = new mongoose.Types.ObjectId(sessionUserId);
               break;
             default:
               break;
@@ -623,6 +626,9 @@ router.post("/create", async function (req, res) {
     setup.noDeathLimit = Number(setup.noDeathLimit || 6);
     setup.ForceMustAct = Boolean(setup.ForceMustAct);
     setup.GameEndEvent = String(setup.GameEndEvent || "Meteor");
+    setup.AllExcessRoles = Boolean(setup.AllExcessRoles);
+    setup.HostileVsMafia = Boolean(setup.HostileVsMafia);
+    setup.CultVsMafia = Boolean(setup.CultVsMafia);
 
     if (
       !routeUtils.validProp(setup.gameType) ||

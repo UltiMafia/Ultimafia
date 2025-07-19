@@ -16,11 +16,14 @@ module.exports = class RandomizeCultPartner extends Card {
           labels: ["convert"],
           priority: PRIORITY_CONVERT_DEFAULT+3,
           run: function () {
+            /*
             const randomCultRole = Random.randArrayVal(
               Object.entries(roles.Mafia)
                 .filter((roleData) => roleData[1].alignment === "Cult")
                 .map((roleData) => roleData[0])
             );
+            */
+            const randomCultRole = Random.randArrayVal(this.game.PossibleRoles.filter((r) => this.game.getRoleAlignment(r) == "Cult"));
             this.target.setRole(
               randomCultRole,
               null,

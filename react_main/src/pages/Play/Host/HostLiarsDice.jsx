@@ -146,7 +146,7 @@ export default function HostLiarsDice() {
 
     if (selSetup.id) {
       axios
-        .post("/api/game/host", {
+        .post("/game/host", {
           gameType: gameType,
           setup: selSetup.id,
           lobby: getFormFieldValue("lobby"),

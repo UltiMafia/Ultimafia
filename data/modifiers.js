@@ -30,7 +30,7 @@ const modifierData = {
       internal: ["BackUpModifier"],
       tags: ["Conversion"],
       description:
-        "Will convert to Student/Understudy/Devotee/Sidekick with this role as the Target.",
+        "Independents will become a Sidekick with this role as the Target. Other roles will have no abilites until a player with their role dies.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Retired"],
     },

@@ -172,7 +172,7 @@ export const GameRow = (props) => {
     }
 
     axios
-      .post("/api/game/host", {
+      .post("/game/host", {
         gameType: gameType,
         setup: props.game.setup.id,
         lobby: lobby,

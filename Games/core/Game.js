@@ -1119,6 +1119,12 @@ module.exports = class Game {
     var roleset = this.generateRoleset();
     let players = this.players.array();
 
+
+    if(this.setup.AllExcessRoles && this.PossibleRoles && this.type == "Mafia"){
+            let AllRoles = Object.entries(roleData.Mafia).filter((m) => m[1].alignment != "Event").map((r) => r[0]);
+            this.PossibleRoles = this.PossibleRoles.concat(AllRoles);
+    }
+
     // force assign "Host"
     let hostCount = 0;
     let toDelete = [];
@@ -1709,7 +1715,7 @@ module.exports = class Game {
     if (this.ExorciseVillageMeeting && this.currentState == 0) {
       [
         this.sendAlert(
-          `:scream: ${this.setup.name}: Dead players can be voted in the Village meeting. Condemned dead players are exorcised and sent to the Underworld.`,
+          `:scream: ${this.setup.name}: Dead players can be voted in the Village meeting. If the Poltergeist is condemned when dead they are exorcised.`,
           undefined,
           { color: " #713cfe" }
         ),
@@ -1766,6 +1772,33 @@ module.exports = class Game {
           `:message: ${this.setup.name}: This Setup has Public Revealing enabled! Do /publicreveal to publicly reveal your role.`,
           undefined,
           { color: "#F1F1F1" }
+        ),
+      ];
+    }
+    if (this.setup.AllExcessRoles && this.currentState == 0) {
+      [
+        this.sendAlert(
+          `:crystal2: ${this.setup.name}: This setup is using All Excess Roles! Every role on the Site will be considered an Excess role in this setup.`,
+          undefined,
+          { color: " #713cfe" }
+        ),
+      ];
+    }
+    if (this.setup.HostileVsMafia && this.currentState == 0) {
+      [
+        this.sendAlert(
+          `:crystal2: ${this.setup.name}: This setup is using Hostiles Vs Mafia! Mafia/Cult will have to kill all Hostile Independents in order to win.`,
+          undefined,
+          { color: " #713cfe" }
+        ),
+      ];
+    }
+    if (this.setup.CultVsMafia && this.currentState == 0) {
+      [
+        this.sendAlert(
+          `:crystal2: ${this.setup.name}: This setup is using Competing Evil Factions! Mafia/Cult must remove any other evil factions in order to win.`,
+          undefined,
+          { color: " #713cfe" }
         ),
       ];
     }
