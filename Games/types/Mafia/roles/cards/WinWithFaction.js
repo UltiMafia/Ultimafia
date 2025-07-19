@@ -19,6 +19,10 @@ module.exports = class WinWithFaction extends Card {
   constructor(role) {
     super(role);
 
+    if(role.isExtraRole == true){
+      return;
+    }
+
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {

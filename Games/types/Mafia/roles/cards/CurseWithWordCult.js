@@ -18,9 +18,10 @@ module.exports = class CurseWithWordCult extends Card {
           submit: "Engrave",
         },
         action: {
+          role: this.role,
           priority: PRIORITY_EFFECT_GIVER_DEFAULT - 1,
           run: function () {
-            this.actor.role.cursedWord = this.target;
+            this.role.cursedWord = this.target;
           },
         },
       },
@@ -30,6 +31,7 @@ module.exports = class CurseWithWordCult extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["Cult"] },
         action: {
+          role: this.role,
           labels: ["effect"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
@@ -37,7 +39,7 @@ module.exports = class CurseWithWordCult extends Card {
               this.target.giveEffect(
                 "CursedCult",
                 this.actor,
-                this.actor.role.cursedWord,
+                this.role.cursedWord,
                 1
               );
           },

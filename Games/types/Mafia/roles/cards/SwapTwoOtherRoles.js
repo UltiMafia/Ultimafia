@@ -10,9 +10,10 @@ module.exports = class SwapTwoOtherRoles extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          role: this.role,
           priority: PRIORITY_SWAP_ROLES,
           run: function () {
-            this.actor.role.data.targetA = this.target;
+            this.role.data.targetA = this.target;
           },
         },
       },
@@ -20,12 +21,13 @@ module.exports = class SwapTwoOtherRoles extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          role: this.role,
           priority: PRIORITY_SWAP_ROLES + 1,
           run: function () {
-            if (this.actor.role.data.targetA == null) {
+            if (this.role.data.targetA == null) {
               return;
             }
-            var targetA = this.actor.role.data.targetA;
+            var targetA = this.role.data.targetA;
             var targetB = this.target;
             var oldARole = `${targetA.role.name}:${targetA.role.modifier}`;
             let oldFaction = targetA.faction;

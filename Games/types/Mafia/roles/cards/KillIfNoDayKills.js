@@ -21,9 +21,10 @@ module.exports = class KillIfNoDayKills extends Card {
         action: {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT,
+          role: this.role,
           run: function () {
             if (this.dominates()) this.target.kill("basic", this.actor);
-            this.actor.role.banishedDied = false;
+            this.role.banishedDied = false;
           },
         },
       },
@@ -45,7 +46,7 @@ module.exports = class KillIfNoDayKills extends Card {
       },
       roleAssigned: function (player) {
         if (player !== this.player) return;
-        this.player.banishedDied = true;
+        this.banishedDied = true;
       },
     };
   }

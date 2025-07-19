@@ -10,6 +10,7 @@ module.exports = class SwapRolesOnce extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          role: this.role,
           labels: ["convert"],
           priority: PRIORITY_SWAP_ROLES,
           run: function () {
@@ -17,11 +18,11 @@ module.exports = class SwapRolesOnce extends Card {
               return;
             }
 
-            if (this.actor.role.data.hasSwapped) {
+            if (this.role.data.hasSwapped) {
               return;
             }
 
-            this.actor.role.data.hasSwapped = true;
+            this.role.data.hasSwapped = true;
             let currRoleName = this.actor.role.name;
             let currRoleModifier = this.actor.role.modifier;
             let currRoleData = this.actor.role.data;

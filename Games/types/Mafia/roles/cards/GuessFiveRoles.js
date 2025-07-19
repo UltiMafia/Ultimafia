@@ -98,13 +98,13 @@ module.exports = class GuessFiveRoles extends Card {
           return;
         }
 
-        this.player.role.data.ConvertOptions = this.game.PossibleRoles.filter(
+        this.data.ConvertOptions = this.game.PossibleRoles.filter(
           (r) => r
         );
-        this.player.role.data.GuessingPlayers = [];
-        this.player.role.data.GuessingRoles = [];
-        this.player.role.data.GuessingCount = 0;
-        this.player.role.data.HasInformation = false;
+        this.data.GuessingPlayers = [];
+        this.data.GuessingRoles = [];
+        this.data.GuessingCount = 0;
+        this.data.HasInformation = false;
       },
       // refresh cooldown
       state: function (stateInfo) {
@@ -118,29 +118,30 @@ module.exports = class GuessFiveRoles extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
+          role: this,
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
           labels: ["investigate", "role", "hidden", "absolute"],
           run: function () {
             if (!this.actor.alive) return;
             if (
-              this.actor.role.data.GuessingPlayers == null ||
-              this.actor.role.data.GuessingPlayers.length <= 0
+              this.role.data.GuessingPlayers == null ||
+              this.role.data.GuessingPlayers.length <= 0
             )
               return;
             if (
-              this.actor.role.data.GuessingRoles == null ||
-              this.actor.role.data.GuessingRoles.length <= 0
+              this.role.data.GuessingRoles == null ||
+              this.role.data.GuessingRoles.length <= 0
             )
               return;
-            if (this.actor.role.data.HasInformation == true) return;
-            this.actor.role.data.HasInformation = true;
+            if (this.role.data.HasInformation == true) return;
+            this.role.data.HasInformation = true;
 
             let info = this.game.createInformation(
               "GuessRoleInfo",
               this.actor,
               this.game,
-              this.actor.role.data.GuessingPlayers,
-              this.actor.role.data.GuessingRoles,
+              this.role.data.GuessingPlayers,
+              this.role.data.GuessingRoles,
               true
             );
 

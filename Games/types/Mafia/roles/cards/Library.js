@@ -13,10 +13,11 @@ module.exports = class Library extends Card {
         action: {
           labels: ["effect"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          role: this.role,
           run: function () {
             if (this.target == "No") return;
 
-            this.actor.role.metLibrary = true;
+            this.role.metLibrary = true;
             for (let p of this.game.players) {
               p.giveEffect("SpeakOnlyWhispers", 1);
             }

@@ -102,8 +102,9 @@ module.exports = class EvilDirection extends Card {
           game: this.player.game,
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
           labels: ["investigate"],
+          role: this,
           run: function () {
-            if (this.actor.role.hasInfo) return;
+            if (this.role.hasInfo) return;
             if (!this.actor.alive) return;
             let info = this.game.createInformation(
               "DirectionToEvilInfo",
@@ -113,13 +114,13 @@ module.exports = class EvilDirection extends Card {
             );
             info.processInfo();
             if (info.mainInfo == "Not Applicable") {
-              this.actor.role.hasInfo = false;
+              this.role.hasInfo = false;
               this.actor.queueAlert(
                 `There wasn't enough evil players for your abilty to work!`
               );
               return;
             }
-            this.actor.role.hasInfo = true;
+            this.role.hasInfo = true;
             var alert = `:invest: ${info.getInfoFormated()}.`;
             this.actor.queueAlert(alert);
             /*

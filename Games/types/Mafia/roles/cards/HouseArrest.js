@@ -13,8 +13,9 @@ module.exports = class HouseArrest extends Card {
         action: {
           labels: ["effect", "whistleblown"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          role: this.role,
           run: function () {
-            this.actor.role.prevTarget = this.target;
+            this.role.prevTarget = this.target;
             this.target.giveEffect("Whistleblown", 1);
           },
         },

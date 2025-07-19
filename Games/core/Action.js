@@ -19,7 +19,12 @@ module.exports = class Action {
     this.item = options.item;
     this.event = options.event;
     this.achievement = options.achievement;
-
+    if(options.role){
+      this.role = options.role;
+    }
+    else{
+    this.role = this.actor?.role;
+    }
     this.priority += this.actor?.role?.priorityOffset ?? 0;
   }
 

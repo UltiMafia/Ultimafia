@@ -5,6 +5,8 @@ module.exports = class VillageCore extends Card {
   constructor(role) {
     super(role);
 
+    
+
     this.meetings = {
       Village: {
         type: "Village",

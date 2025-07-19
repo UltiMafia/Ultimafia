@@ -15,6 +15,10 @@ module.exports = class MeetingFaction extends Card {
   constructor(role) {
     super(role);
 
+    if(role.isExtraRole == true){
+      return;
+    }
+
     let meetingName = `${role.player.faction} Meeting`;
     let meetingNameKill = `${role.player.faction} Kill`;
     if (role.player.factionFake == null) {

@@ -12,15 +12,15 @@ module.exports = class CourtSession extends Card {
 
     this.listeners = {
       PreVotingPowers: function (meeting) {
-        if (this.player.role.data.master == 0) {
+        if (this.data.master == 0) {
           return;
         }
         if (meeting.name == "Court") {
-          this.player.role.VotePower = 3;
+          this.VotePower = 3;
         }
       },
       PostVotingPowers: function (meeting) {
-        this.player.role.VotePower = 1;
+        this.VotePower = 1;
       },
     };
 
@@ -31,10 +31,11 @@ module.exports = class CourtSession extends Card {
         flags: ["voting", "instant"],
         inputType: "boolean",
         action: {
+          role: this.role,
           priority: PRIORITY_DAY_EFFECT_DEFAULT,
           run: function () {
             if (this.target === "Yes") {
-              this.actor.role.bangedGavel++;
+              this.role.bangedGavel++;
               if (!this.actor.hasAbility(["Meeting"])) {
                 return;
               }
@@ -76,6 +77,7 @@ module.exports = class CourtSession extends Card {
         },
         action: {
           power: 3,
+          role: this.role,
           labels: ["kill", "condemn"],
           priority: PRIORITY_SUNSET_DEFAULT,
           run: function () {
@@ -83,7 +85,7 @@ module.exports = class CourtSession extends Card {
               this.target.kill("condemn", this.actor);
             }
 
-            this.actor.role.courtAdjourned++;
+            this.role.courtAdjourned++;
           },
         },
       },

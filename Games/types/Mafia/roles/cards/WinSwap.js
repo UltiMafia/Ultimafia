@@ -9,14 +9,14 @@ module.exports = class WinSwap extends Card {
 
     this.listeners = {
       roleAssigned: function (player) {
-        this.player.role.data.ShouldFlipWinCons = true;
+        this.data.ShouldFlipWinCons = true;
       },
       handleWinSwappers: function (winners) {
         if (!this.player.hasAbility(["Win-Con", "WhenDead"])) {
           return;
         }
         let losers = [];
-        if (this.player.role.data.ShouldFlipWinCons == true) {
+        if (this.data.ShouldFlipWinCons == true) {
           let AllPlayers = this.game.players.filter((p) => p);
           for (let x = 0; x < AllPlayers.length; x++) {
             if (
@@ -59,16 +59,17 @@ module.exports = class WinSwap extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
+          role: this.role,
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           labels: ["Swap"],
           run: function () {
-            this.actor.role.data.ShouldFlipWinCons = true;
+            this.role.data.ShouldFlipWinCons = true;
           },
         });
 
         this.game.queueAction(action);
 
-        this.player.role.data.ShouldFlipWinCons = false;
+        this.data.ShouldFlipWinCons = false;
       },
     };
   }

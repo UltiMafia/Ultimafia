@@ -20,11 +20,12 @@ module.exports = class Learn2Good1Evil extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
+          role: this.role,
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           labels: ["investigate"],
           run: function () {
-            if (this.actor.role.hasMaestroInfo) return;
-            this.actor.role.hasMaestroInfo = true;
+            if (this.role.hasMaestroInfo) return;
+            this.role.hasMaestroInfo = true;
 
             let info = this.game.createInformation(
               "TwoGoodOneEvilInfo",

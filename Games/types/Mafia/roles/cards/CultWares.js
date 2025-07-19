@@ -11,16 +11,17 @@ module.exports = class CultWares extends Card {
         flags: ["voting"],
         action: {
           labels: ["giveItem", "broken"],
+          role: this.role,
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,
           run: function () {
-            var itemType = this.actor.role.data.itemType;
+            var itemType = this.role.data.itemType;
             if (!itemType) {
               return;
             }
 
             this.target.holdItem(itemType, { magicCult: true });
             this.target.queueGetItemAlert(itemType);
-            delete this.actor.role.data.itemType;
+            delete this.role.data.itemType;
           },
         },
       },
@@ -43,9 +44,10 @@ module.exports = class CultWares extends Card {
           "Shield",
         ],
         action: {
+          role: this.role,
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 2,
           run: function () {
-            this.actor.role.data.itemType = this.target;
+            this.role.data.itemType = this.target;
           },
         },
       },

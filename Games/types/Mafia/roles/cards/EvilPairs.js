@@ -74,10 +74,11 @@ module.exports = class EvilPairs extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
+          role: this,
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
           labels: ["investigate"],
           run: function () {
-            if (this.actor.role.hasInfo) return;
+            if (this.role.hasInfo) return;
             if (!this.actor.alive) return;
             let info = this.game.createInformation(
               "EvilPairsInfo",
@@ -85,7 +86,7 @@ module.exports = class EvilPairs extends Card {
               this.game
             );
             info.processInfo();
-            this.actor.role.hasInfo = true;
+            this.role.hasInfo = true;
             var alert = `:invest: ${info.getInfoFormated()}.`;
             this.actor.queueAlert(alert);
             /*
