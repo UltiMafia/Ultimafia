@@ -566,7 +566,8 @@ export function parseRolePredictionPopover(data) {
       roles={roleset}
       makeRolePrediction={data.toggleRolePrediction}
       gameType={data.gameType}
-      setup={data}
+      setup={data.setup}
+      otherRoles={data.otherRoles}
     />
   );
 }
@@ -574,7 +575,7 @@ export function parseRolePredictionPopover(data) {
 export function parseRoleGroupPopover(data) {
   let roleset = Object.keys(data.roles);
 
-  return <SmallRoleList roles={roleset} gameType={data.gameType} setup={data.setup} />;
+  return <SmallRoleList roles={roleset} gameType={data.gameType} setup={data.setup} otherRoles={data.otherRoles} />;
 }
 
 export function parseGamePopover(game) {
