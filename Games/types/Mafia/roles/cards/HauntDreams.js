@@ -16,9 +16,10 @@ module.exports = class HauntDreams extends Card {
         action: {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
           labels: ["absolute"],
+          role: this.role,
           run: function () {
-            this.actor.role.loved = true;
-            this.actor.role.data.DreamHost = this.target;
+            this.role.loved = true;
+            this.role.data.DreamHost = this.target;
             this.actor.passiveEffects.push(
               this.target.giveEffect("Delirious", this.actor, Infinity)
             );
@@ -36,8 +37,8 @@ module.exports = class HauntDreams extends Card {
       AbilityToggle: function (player) {
         if (
           this.player.hasAbility(["OnlyWhenAlive"]) &&
-          this.player.role.data.DreamHost &&
-          this.player.role.data.DreamHost.alive
+          this.data.DreamHost &&
+          this.data.DreamHost.alive
         ) {
           if (
             this.DreamImmortalEffect == null ||
@@ -65,13 +66,14 @@ module.exports = class HauntDreams extends Card {
 
         if (
           this.player.hasAbility(["OnlyWhenAlive"]) &&
-          this.player.role.data.DreamHost &&
-          !this.player.role.data.DreamHost.alive
+          this.data.DreamHost &&
+          !this.data.DreamHost.alive
         ) {
           let action = new Action({
             actor: this.player,
             target: this.player,
             game: this.game,
+            role: this,
             labels: ["kill", "hidden"],
             power: 5,
             run: function () {

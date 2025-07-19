@@ -14,8 +14,9 @@ module.exports = class MindShifter extends Card {
         action: {
           labels: ["effect"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          role: this.role,
           run: function () {
-            this.actor.role.data.insane = this.target;
+            this.role.data.insane = this.target;
             this.target.queueAlert(
               "You will be driven insane if you are not visited by a non-Cult player tonight!"
             );
@@ -60,15 +61,16 @@ module.exports = class MindShifter extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
+          role: this.role,
           labels: ["giveEffect", "insanity"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT - 1,
           run: function () {
-            let target = this.actor.role.data.insane;
+            let target = this.role.data.insane;
             if (!target) {
               return;
             }
 
-            var visitors = this.getVisitors(this.actor.role.data.insane);
+            var visitors = this.getVisitors(this.role.data.insane);
             var becomesInsane = !visitors.find(
               (visitor) => visitor.role.alignment != "Cult"
             );
@@ -77,7 +79,7 @@ module.exports = class MindShifter extends Card {
               target.giveEffect("Insanity");
             }
 
-            delete this.actor.role.data.insane;
+            delete this.role.data.insane;
           },
         });
 

@@ -430,6 +430,10 @@ module.exports = class MafiaGame extends Game {
         winQueue.enqueue(effect.winCheck);
       }
 
+    for (let extraRole of player.ExtraRoles) {
+        winQueue.enqueue(extraRole.winCheckSpecial);
+      }
+
       winQueue.enqueue(player.role.winCheck);
       winQueue.enqueue(player.role.winCheckSpecial);
     }

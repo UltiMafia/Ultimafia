@@ -19,19 +19,20 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
           return !this.revived;
         },
         action: {
+          role: this.role,
           priority: PRIORITY_DAY_DEFAULT - 1,
           run: function () {
-            this.actor.role.revived = true;
+            this.role.revived = true;
 
             this.game.queueAlert(
-              `${this.actor.name} the ${this.actor.role.name} has selected ${this.target.name}. If ${this.target.name} is Village Aligned they will die tonight.`
+              `${this.actor.name} the ${this.role.name} has selected ${this.target.name}. If ${this.target.name} is Village Aligned they will die tonight.`
             );
 
             if (!this.actor.hasAbility(["Kill", "WhenDead"])) {
               return;
             }
             //this.hasChoosen = true;
-            this.actor.role.SelectedPlayer = this.target;
+            this.role.SelectedPlayer = this.target;
           },
         },
       },
@@ -68,13 +69,14 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_KILL_DEFAULT,
+          role: this,
           labels: ["hidden", "kill"],
           run: function () {
-            if (!this.actor.role.SelectedPlayer) return;
-            if (this.actor.role.SelectedPlayer.role.alignment != "Village")
+            if (!this.role.SelectedPlayer) return;
+            if (this.role.SelectedPlayer.role.alignment != "Village")
               return;
             if (this.dominates(this.target)) {
-              this.actor.role.SelectedPlayer.kill("basic", this.actor);
+              this.role.SelectedPlayer.kill("basic", this.actor);
             }
           },
         });

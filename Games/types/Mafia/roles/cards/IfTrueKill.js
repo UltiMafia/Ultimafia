@@ -17,8 +17,9 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         action: {
           labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 2,
+          role: this.role,
           run: function () {
-            this.actor.role.data.targetPlayer = this.target;
+            this.role.data.targetPlayer = this.target;
           },
         },
       },
@@ -29,10 +30,11 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         inputType: "custom",
         targets: ["Is", "Neighbors", "Was Visited By", "Has Visited"],
         action: {
+          role: this.role,
           labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
           run: function () {
-            this.actor.role.data.targetRealation = this.target;
+            this.role.data.targetRealation = this.target;
           },
         },
       },
@@ -42,10 +44,11 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         flags: ["voting", "instant"],
         inputType: "custom",
         action: {
+          role: this.role,
           labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
           run: function () {
-            this.actor.role.data.targetRole = this.target;
+            this.role.data.targetRole = this.target;
           },
         },
       },
@@ -54,33 +57,34 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         flags: ["voting", "instant"],
         inputType: "boolean",
         action: {
+          role: this.role,
           labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
             if (this.target === "No") return;
 
-            if (!this.actor.role.data.targetPlayer) return;
-            if (!this.actor.role.data.targetRealation) return;
-            if (!this.actor.role.data.targetRole) return;
-            if (this.actor.role.data.targetPlayer == "No One") return;
-            if (this.actor.role.data.targetRole == "None") return;
+            if (!this.role.data.targetPlayer) return;
+            if (!this.role.data.targetRealation) return;
+            if (!this.role.data.targetRole) return;
+            if (this.role.data.targetPlayer == "No One") return;
+            if (this.role.data.targetRole == "None") return;
 
             let isCorrect = true;
             let question = "";
 
-            if (this.actor.role.data.targetRealation == "Is") {
-              question = `You ask if ${this.actor.role.data.targetPlayer.name} Is ${this.actor.role.data.targetRole}?`;
-              let playerRole = this.actor.role.data.targetPlayer.role.name;
-              if (this.actor.role.data.targetRole == playerRole) {
+            if (this.role.data.targetRealation == "Is") {
+              question = `You ask if ${this.role.data.targetPlayer.name} Is ${this.role.data.targetRole}?`;
+              let playerRole = this.role.data.targetPlayer.role.name;
+              if (this.role.data.targetRole == playerRole) {
                 isCorrect = true;
               } else {
                 isCorrect = false;
               }
-            } else if (this.actor.role.data.targetRealation == "Neighbors") {
-              question = `You ask if ${this.actor.role.data.targetPlayer.name} Neighbors ${this.actor.role.data.targetRole}?`;
+            } else if (this.role.data.targetRealation == "Neighbors") {
+              question = `You ask if ${this.role.data.targetPlayer.name} Neighbors ${this.role.data.targetRole}?`;
               let alivePlayers = this.game.alivePlayers();
               let index = alivePlayers.indexOf(
-                this.actor.role.data.targetPlayer
+                this.role.data.targetPlayer
               );
               let rightIdx = (index + 1) % alivePlayers.length;
               let leftIdx =
@@ -90,44 +94,44 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
                 alivePlayers[leftIdx].role.name,
               ];
               if (
-                this.actor.role.data.targetRole == neighborRoles[0] ||
-                this.actor.role.data.targetRole == neighborRoles[1]
+                this.role.data.targetRole == neighborRoles[0] ||
+                this.role.data.targetRole == neighborRoles[1]
               ) {
                 isCorrect = true;
               } else {
                 isCorrect = false;
               }
             } else if (
-              this.actor.role.data.targetRealation == "Was Visited By"
+              this.role.data.targetRealation == "Was Visited By"
             ) {
-              question = `You ask if ${this.actor.role.data.targetPlayer.name} Was Visited By ${this.actor.role.data.targetRole}?`;
+              question = `You ask if ${this.role.data.targetPlayer.name} Was Visited By ${this.role.data.targetRole}?`;
 
-              let lastVisitorsAll = this.actor.role.data.LastNightVisitors;
-              let nightPlayers = this.actor.role.data.LastNightPlayers;
+              let lastVisitorsAll = this.role.data.LastNightVisitors;
+              let nightPlayers = this.role.data.LastNightPlayers;
               let indexOfTarget = nightPlayers.indexOf(
-                this.actor.role.data.targetPlayer
+                this.role.data.targetPlayer
               );
               let lastVisitors = lastVisitorsAll[indexOfTarget];
               isCorrect = false;
 
               for (let y = 0; y < lastVisitors.length; y++) {
-                if (lastVisitors[y].name == this.actor.role.data.targetRole) {
+                if (lastVisitors[y].name == this.role.data.targetRole) {
                   isCorrect = true;
                 }
               }
-            } else if (this.actor.role.data.targetRealation == "Has Visited") {
-              question = `You ask if ${this.actor.role.data.targetPlayer.name} Has Visited ${this.actor.role.data.targetRole}?`;
+            } else if (this.role.data.targetRealation == "Has Visited") {
+              question = `You ask if ${this.role.data.targetPlayer.name} Has Visited ${this.role.data.targetRole}?`;
 
-              let lastVisitsAll = this.actor.role.data.LastNightVisits;
-              let nightPlayers = this.actor.role.data.LastNightPlayers;
+              let lastVisitsAll = this.role.data.LastNightVisits;
+              let nightPlayers = this.role.data.LastNightPlayers;
               let indexOfTarget = nightPlayers.indexOf(
-                this.actor.role.data.targetPlayer
+                this.role.data.targetPlayer
               );
               let lastVisits = lastVisitsAll[indexOfTarget];
               isCorrect = false;
 
               for (let y = 0; y < lastVisits.length; y++) {
-                if (lastVisits[y].name == this.actor.role.data.targetRole) {
+                if (lastVisits[y].name == this.role.data.targetRole) {
                   isCorrect = true;
                 }
               }
@@ -137,10 +141,10 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
             this.actor.queueAlert(
               `If the Answer is yes you will kill a random player Tonight.`
             );
-            this.actor.role.data.WasStatementTrue = isCorrect;
-            delete this.actor.role.data.targetPlayer;
-            delete this.actor.role.data.targetRealation;
-            delete this.actor.role.data.targetRole;
+            this.role.data.WasStatementTrue = isCorrect;
+            delete this.role.data.targetPlayer;
+            delete this.role.data.targetRealation;
+            delete this.role.data.targetRole;
           },
         },
       },
@@ -216,6 +220,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
             var action = new Action({
               actor: this.player,
               game: this.player.game,
+              role: this,
               priority: PRIORITY_INVESTIGATIVE_DEFAULT,
               labels: ["hidden", "absolute", "investigate"],
               run: function () {
@@ -234,20 +239,21 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
                   allVisitors.push(visitorNames);
                 }
 
-                this.actor.role.data.LastNightVisits = allVisits;
-                this.actor.role.data.LastNightVisitors = allVisitors;
-                this.actor.role.data.LastNightPlayers = alivePlayers;
+                this.role.data.LastNightVisits = allVisits;
+                this.role.data.LastNightVisitors = allVisitors;
+                this.role.data.LastNightPlayers = alivePlayers;
               },
             });
 
             var action2 = new Action({
               actor: this.player,
               game: this.player.game,
+              role: this,
               priority: PRIORITY_KILL_DEFAULT - 2,
               labels: ["hidden", "kill"],
               run: function () {
                 if (!this.actor.alive) return;
-                if (this.actor.role.data.WasStatementTrue != true) {
+                if (this.role.data.WasStatementTrue != true) {
                   return;
                 }
 

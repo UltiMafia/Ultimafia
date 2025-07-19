@@ -48,10 +48,11 @@ module.exports = class CountVisitors extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
+          role: this,
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           labels: ["hidden", "absolute"],
           run: function () {
-            let visitors = this.actor.role.data.visitors;
+            let visitors = this.role.data.visitors;
             if (visitors) {
               let unique = new Set(visitors);
 

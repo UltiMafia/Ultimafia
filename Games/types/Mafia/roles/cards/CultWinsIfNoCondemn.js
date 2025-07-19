@@ -30,7 +30,7 @@ module.exports = class CultWinsIfNoCondemn extends Card {
         }
             
               
-        if (this.player.role.data.NyarlathotepWin && this.player.hasAbility(["Win-Con"])) {
+        if (this.data.NyarlathotepWin && this.player.hasAbility(["Win-Con"])) {
           for(let player of this.game.players){
             if(CULT_FACTIONS.includes(player.faction)){
               winners.addPlayer(player, player.faction);

@@ -8,7 +8,7 @@ module.exports = class ConvertSave extends Card {
 
     this.listeners = {
       immune: function (action) {
-        if (action.target !== this.player.role.SavedPlayer) {
+        if (action.target !== this.SavedPlayer) {
           return;
         }
 
@@ -37,7 +37,7 @@ module.exports = class ConvertSave extends Card {
         if (!stateInfo.name.match(/Day/)) {
           return;
         }
-      this.player.role.SavedPlayer = null;
+      this.SavedPlayer = null;
       
       },
     };
@@ -48,9 +48,10 @@ module.exports = class ConvertSave extends Card {
         flags: ["voting"],
         action: {
           labels: ["save"],
+          role: this.role,
           priority: PRIORITY_NIGHT_SAVER,
           run: function () {
-            this.actor.role.SavedPlayer = this.target;
+            this.role.SavedPlayer = this.target;
             this.heal(1);
             /*
             let killers = this.getVisitors(this.target, "kill");

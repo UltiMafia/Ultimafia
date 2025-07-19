@@ -11,9 +11,10 @@ module.exports = class CurseVote extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
+          role: this.role,
           priority: PRIORITY_KILL_DEFAULT - 1,
           run: function () {
-            this.actor.role.data.victim = this.target;
+            this.role.data.victim = this.target;
           },
         },
       },
@@ -22,19 +23,20 @@ module.exports = class CurseVote extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
+          role: this.role,
           priority: PRIORITY_KILL_DEFAULT,
           run: function () {
-            if (!this.actor.role.data.victim) {
+            if (!this.role.data.victim) {
               return;
             }
 
-            this.actor.role.data.victim.giveEffect(
+            this.role.data.victim.giveEffect(
               "CursedVote",
               this.actor,
               this.target,
               1
             );
-            delete this.actor.role.data.victim;
+            delete this.role.data.victim;
           },
         },
       },

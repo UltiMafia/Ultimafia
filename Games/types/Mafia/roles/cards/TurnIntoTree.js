@@ -10,12 +10,13 @@ module.exports = class TurnIntoTree extends Card {
         flags: ["voting"],
         inputType: "boolean",
         action: {
+          role: this.role,
           priority: PRIORITY_NIGHT_SAVER,
           run: function () {
             if (this.target == "No") return;
             if (this.target === "Yes") {
               //this.actor.giveEffect("Tree", 1);
-              this.actor.role.isTree = true;
+              this.role.isTree = true;
               this.game.events.emit("AbilityToggle", this.actor);
             }
           },

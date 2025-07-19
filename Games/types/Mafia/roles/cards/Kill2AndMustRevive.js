@@ -19,32 +19,34 @@ module.exports = class KillorCharge extends Card {
         action: {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT + 2,
+          role: this.role,
           run: function () {
             let CultPlayers = this.game
               .alivePlayers()
               .filter((p) => p.faction == this.actor.faction);
             if (
-              this.actor.role.EatenPlayers != null &&
-              this.actor.role.EatenPlayers.length > 0
+              this.role.EatenPlayers != null &&
+              this.role.EatenPlayers.length > 0
             ) {
               if (
-                this.actor.role.revived != true &&
+                this.role.revived != true &&
                 Random.randInt(
                   0,
                   this.game.alivePlayers().length - CultPlayers.length
                 ) == 0
               ) {
                 let selectedPlayer = Random.randArrayVal(
-                  this.actor.role.EatenPlayers
+                  this.role.EatenPlayers
                 );
                 let action = new Action({
                   actor: this.actor,
                   target: selectedPlayer,
+                  role: this.role,
                   game: this.game,
                   labels: ["revive"],
                   run: function () {
                     if (this.dominates()) {
-                      this.actor.role.revived = true;
+                      this.role.revived = true;
                       this.target.revive("basic", this.actor);
                     }
                   },
@@ -52,11 +54,11 @@ module.exports = class KillorCharge extends Card {
                 action.do();
               }
             }
-            this.actor.role.EatenPlayers = [];
+            this.role.EatenPlayers = [];
             for (let x = 0; x < this.target.length; x++) {
               if (this.dominates(this.target[x])) {
                 this.target[x].kill("basic", this.actor);
-                this.actor.role.EatenPlayers.push(this.target[x]);
+                this.role.EatenPlayers.push(this.target[x]);
               }
             }
           },
@@ -68,8 +70,8 @@ module.exports = class KillorCharge extends Card {
         if (player !== this.player) {
           return;
         }
-        this.player.role.EatenPlayers = [];
-        this.player.role.revived = false;
+        this.EatenPlayers = [];
+        this.revived = false;
 
         this.data.ConvertOptions = this.game.PossibleRoles.filter(
           (r) => this.game.getRoleAlignment(r) == "Village"

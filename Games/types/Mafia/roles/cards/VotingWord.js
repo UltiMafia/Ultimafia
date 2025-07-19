@@ -20,9 +20,10 @@ module.exports = class VotingWord extends Card {
           submit: "Submit",
         },
         action: {
+          role: this.role,
           priority: PRIORITY_EFFECT_GIVER_DEFAULT - 1,
           run: function () {
-            this.actor.role.cursedWord = this.target;
+            this.role.cursedWord = this.target;
               for (let player of this.game.players) {
               player.giveEffect("WordTracker", 1, this.actor, player, this.target);
             }
@@ -46,8 +47,8 @@ module.exports = class VotingWord extends Card {
       },
       state: function () {
         if (this.game.getStateName() == "Day"){
-          this.player.role.data.PlayersWhoSaidPhrase = [];
-          this.player.role.VotePower = 1;
+          this.data.PlayersWhoSaidPhrase = [];
+          this.VotePower = 1;
         }
         if (this.game.getStateName() == "Night") {
           if(this.data.PlayersWhoSaidPhrase == null){
@@ -58,10 +59,11 @@ module.exports = class VotingWord extends Card {
           var action = new Action({
           actor: this.player,
           game: this.player.game,
+          role: this.role,
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           labels: ["effect"],
           run: function () {
-            let players = this.actor.role.data.PlayersWhoSaidPhrase;
+            let players = this.role.data.PlayersWhoSaidPhrase;
             for (let player of players) {
               player.giveEffect("SpeakOnlyWhispers", 1);
             }

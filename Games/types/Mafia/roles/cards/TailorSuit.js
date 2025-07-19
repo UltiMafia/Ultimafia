@@ -10,16 +10,17 @@ module.exports = class TailorSuit extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          role: this.role,
           labels: ["giveItem", "suit"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-            if (!this.actor.role.data.suit) {
+            if (!this.role.data.suit) {
               return;
             }
 
-            this.target.holdItem("Suit", { type: this.actor.role.data.suit });
+            this.target.holdItem("Suit", { type: this.role.data.suit });
             //this.target.queueAlert(":suit: You have received a suit!");
-            delete this.actor.role.data.suit;
+            delete this.role.data.suit;
           },
         },
       },
@@ -29,10 +30,11 @@ module.exports = class TailorSuit extends Card {
         inputType: "role",
         targets: { include: ["all"] },
         action: {
+          role: this.role,
           labels: ["giveItem", "suit"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,
           run: function () {
-            this.actor.role.data.suit = this.target;
+            this.role.data.suit = this.target;
           },
         },
       },

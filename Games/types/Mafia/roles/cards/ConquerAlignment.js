@@ -14,6 +14,7 @@ module.exports = class ConquerAlignment extends Card {
         flags: ["voting", "mustAct"],
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
+          role: this.role,
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
           run: function () {
             var princeAlignment = this.target.faction;
@@ -31,7 +32,7 @@ module.exports = class ConquerAlignment extends Card {
               0,
               this.game.players.filter((p) => p.faction === this.actor.faction)
             );
-            this.actor.role.conquered = true;
+            this.role.conquered = true;
           },
         },
         shouldMeet() {

@@ -18,10 +18,11 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
         },
         action: {
           labels: ["block", "role"],
+          role: this.role,
           priority: PRIORITY_NIGHT_ROLE_BLOCKER - 1,
           run: function () {
             if (this.target == "None") return;
-            this.actor.role.hasBlocked = true;
+            this.role.hasBlocked = true;
             //this.playersToBlock = [];
 
             let players = this.game.players.filter((p) => p.role);
@@ -43,7 +44,7 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
               if (this.target == currentRoles[y]) {
                 players[y].giveEffect("Delirious", this.actor, 4);
                 this.blockWithDelirium(players[y], true);
-                this.actor.role.playersToBlock.push(players[y]);
+                this.role.playersToBlock.push(players[y]);
                 //this.actor.role.blockCounter = 3;
               }
             }
@@ -83,8 +84,8 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
         if (player !== this.player) {
           return;
         }
-        this.player.role.playersToBlock = [];
-        this.player.role.data.blockOptions = this.game.PossibleRoles.filter(
+        this.playersToBlock = [];
+        this.data.blockOptions = this.game.PossibleRoles.filter(
           (r) => r
         );
       },

@@ -11,16 +11,17 @@ module.exports = class GivePresents extends Card {
         flags: ["voting"],
         action: {
           labels: ["giveItem"],
+          role: this.role,
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-            let itemType = this.actor.role.data.itemType;
+            let itemType = this.role.data.itemType;
             if (!itemType) {
               return;
             }
 
             this.target.holdItem(itemType);
             this.target.queueGetItemAlert(itemType);
-            delete this.actor.role.data.itemType;
+            delete this.role.data.itemType;
           },
         },
       },
@@ -45,9 +46,10 @@ module.exports = class GivePresents extends Card {
           "Shield",
         ],
         action: {
+          role: this.role,
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,
           run: function () {
-            this.actor.role.data.itemType = this.target;
+            this.role.data.itemType = this.target;
           },
         },
       },

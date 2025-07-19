@@ -18,9 +18,10 @@ module.exports = class KillIfBanishedDiedDuringDay extends Card {
         action: {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT,
+          role: this.role,
           run: function () {
             if (this.dominates()) this.target.kill("basic", this.actor);
-            this.banishedDied = false;
+            this.role.banishedDied = false;
           },
         },
       },

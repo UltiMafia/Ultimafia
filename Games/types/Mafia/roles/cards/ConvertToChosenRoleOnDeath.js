@@ -11,9 +11,10 @@ module.exports = class ConvertToChosenRole extends Card {
         flags: ["voting"],
         targets: { include: ["alive", "self"] },
         action: {
+          role: this.role,
           priority: PRIORITY_CONVERT_DEFAULT - 1,
           run: function () {
-            this.actor.role.data.targetPlayer = this.target;
+            this.role.data.targetPlayer = this.target;
           },
         },
       },
@@ -23,10 +24,11 @@ module.exports = class ConvertToChosenRole extends Card {
         inputType: "AllRoles",
         AllRolesFilters: ["aligned", "NoDemonic"],
         action: {
+          role: this.role,
           labels: ["convert", "role"],
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
-            let targetPlayer = this.actor.role.data.targetPlayer;
+            let targetPlayer = this.role.data.targetPlayer;
             if (targetPlayer) {
               if (this.dominates(targetPlayer)) {
                 targetPlayer.giveEffect(
@@ -36,7 +38,7 @@ module.exports = class ConvertToChosenRole extends Card {
                 );
               }
 
-              delete this.actor.role.data.targetPlayer;
+              delete this.role.data.targetPlayer;
             }
           },
         },

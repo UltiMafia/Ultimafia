@@ -15,7 +15,7 @@ module.exports = class EvilsWinWhenKilled extends Card {
    
             
               
-        if (this.player.role.killedPresident) {
+        if (this.killedPresident) {
           for(let player of this.game.players){
             if(EVIL_FACTIONS.includes(player.faction)){
               winners.addPlayer(player, player.faction);

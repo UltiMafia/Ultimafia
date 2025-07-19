@@ -26,12 +26,13 @@ module.exports = class ImperialDecree extends Card {
         action: {
           labels: ["effect", "cannotBeVoted"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          role: this.role,
           run: function () {
             this.duelistWasKilled = false;
-            this.actor.role.calledDuel = true;
-            this.actor.role.duelists = [];
+            this.role.calledDuel = true;
+            this.role.duelists = [];
             this.target.forEach((p) => {
-              this.actor.role.duelists.push(p);
+              this.role.duelists.push(p);
             });
           },
         },
@@ -41,20 +42,21 @@ module.exports = class ImperialDecree extends Card {
         flags: ["voting", "mustAct"],
         //targets: { include: [isSelectedByImperialDecree] },
         action: {
+          role: this.role,
           priority: PRIORITY_EFFECT_GIVER_DEFAULT + 1,
           run: function () {
-            if (!this.actor.role.duelists.includes(this.target)) {
+            if (!this.role.duelists.includes(this.target)) {
               this.actor.queueAlert(
                 `You inbred FOOL! ${this.target.name} was not one your selected duelists so your duel could not occur! You are a disappointment your Empire.`
               );
               return;
             }
             for (let player of this.game.players) {
-              if (!this.actor.role.duelists.includes(player)) {
+              if (!this.role.duelists.includes(player)) {
                 player.giveEffect("CannotBeVoted", 1);
               }
             }
-            this.actor.role.predictedVote = this.target;
+            this.role.predictedVote = this.target;
             //delete this.actor.role.duelists;
           },
         },
@@ -75,7 +77,7 @@ module.exports = class ImperialDecree extends Card {
     this.listeners = {
       death: function (player, killer, deathType) {
         if (
-          player != this.predictedVote && this.player.role.duelists.includes(player)
+          player != this.predictedVote && this.duelists.includes(player)
         ){
         this.duelistWasKilled = true;
         }
@@ -102,7 +104,7 @@ module.exports = class ImperialDecree extends Card {
           this.player.queueAlert(
             `${this.predictedVote?.name} has survived the duel! They will make an excellent legatus for your Empire.`
           );
-          this.player.role.calledDuel = false;
+          this.calledDuel = false;
           }
           this.duelistWasKilled = false;
         }

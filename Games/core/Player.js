@@ -688,9 +688,9 @@ module.exports = class Player {
 
     
     for(let extraRole of this.passiveExtraRoles){
-      var index = this.player.ExtraRoles.indexOf(extraRole);
+      var index = this.ExtraRoles.indexOf(extraRole);
           if (index != -1) {
-            this.player.ExtraRoles.splice(index, 1);
+            this.ExtraRoles.splice(index, 1);
           }
       extraRole.remove();
     }
@@ -830,7 +830,7 @@ module.exports = class Player {
     }
   }
 
-  addExtraRole(roleName, roleData, noReveal, noEmit) {
+  addExtraRole(roleName, roleData, noReveal, noAlert, noEmit, items) {
     const modifiers = roleName.split(":")[1];
     roleName = roleName.split(":")[0];
 
@@ -842,22 +842,26 @@ module.exports = class Player {
     const role = this.game.getRoleClass(roleName);
 
     let oldAppearanceSelf = this.role?.appearance.self;
-    this.removeRole();
+
+
+    //this.removeRole();
    let newRole = new role(this, roleData);
+    if(items == "NoStartingItems"){
+      newRole.startItems = [];
+    }
     newRole.init(modifiers);
-
-    if (this.game.started == true && this.game.setup.hiddenConverts == true) {
-      noReveal = true;
+  if(items == "NoStartingItems"){
+    for (let item of newRole.startItems) {
+      for(let item2 of this.items){
+        if(item2.name == item){
+          item2.drop();
+          break;
+        }
+      }
     }
+    this.startingItems = [];
+  }
 
-    if (
-      !(
-        noReveal ||
-        (oldAppearanceSelf && oldAppearanceSelf === newRole.appearance.self) || newRole.appearance.self == "real"
-      )
-    ) {
-      newRole.revealToSelf(noAlert);
-    }
     newRole.isExtraRole = true;
     if (this.game.started && !noEmit) {
       this.game.events.emit("roleAssigned", this, newRole);
@@ -1256,13 +1260,17 @@ module.exports = class Player {
 
   act(target, meeting, actors) {
     if (this.role) this.role.act(target, meeting, actors);
-    /*
+    
     if(this.ExtraRoles){
+      let tempNames = [this.role.name];
       for(let extraRole of this.ExtraRoles){
+        if(!tempNames.includes(extraRole.name)){
         extraRole.act(target, meeting, actors);
+        tempNames.push(extraRole.name);
+      }
       }
     }
-    */
+    
   }
 
   getImmunity(type) {

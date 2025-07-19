@@ -47,19 +47,20 @@ module.exports = class KillConverters extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
+          role: this,
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill", "hidden"],
           run: function () {
-            if (this.actor.role.killLimit <= 0) {
+            if (this.role.killLimit <= 0) {
               return;
             }
 
             var convertingVisitors = this.getVisitors(this.actor, "convert");
 
             for (let visitor of convertingVisitors) {
-              if (this.actor.role.killLimit > 0 && this.dominates(visitor)) {
+              if (this.role.killLimit > 0 && this.dominates(visitor)) {
                 visitor.kill("basic", this.actor);
-                this.actor.role.killLimit--;
+                this.role.killLimit--;
               }
             }
           },

@@ -18,10 +18,10 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
         );
         let shuffledPlayers = Random.randomizeArray(nonMafia);
         if (nonMafia.length <= 0) return;
-        this.player.role.targetPlayer = Random.randArrayVal(nonMafia);
+        this.targetPlayer = Random.randArrayVal(nonMafia);
       },
       death: function (player, killer, deathType, instant) {
-        if(this.player.role.targetPlayer && player != this.player.role.targetPlayer){
+        if(this.targetPlayer && player != this.targetPlayer){
           return;
         }
         if (this.game.getStateName() != "Night") return;
@@ -56,12 +56,13 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          role: this,
           labels: ["investigate", "role"],
           run: function () {
-            if (this.actor.role.hasInfo) return;
+            if (this.role.hasInfo) return;
 
             if (this.actor.role.targetPlayer) {
-              let learnPlayer = this.actor.role.targetPlayer;
+              let learnPlayer = this.role.targetPlayer;
               let learnRole;
 
               let info = this.game.createInformation(
@@ -78,7 +79,7 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
               );
             }
 
-            this.actor.role.hasInfo = true;
+            this.role.hasInfo = true;
           },
         });
 

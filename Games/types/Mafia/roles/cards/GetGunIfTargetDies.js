@@ -11,9 +11,10 @@ module.exports = class GetGunIfTargetDies extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          role: this.role,
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-            this.actor.role.avengeTarget = this.target;
+            this.role.avengeTarget = this.target;
           },
         },
       },

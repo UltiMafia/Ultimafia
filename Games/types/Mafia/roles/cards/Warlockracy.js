@@ -9,8 +9,9 @@ module.exports = class Warlockracy extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          role: this.role,
           run: function () {
-            this.actor.role.predictedVote = this.target;
+            this.role.predictedVote = this.target;
           },
         },
       },

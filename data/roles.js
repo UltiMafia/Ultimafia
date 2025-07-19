@@ -400,7 +400,7 @@ const roleData = {
     Barista: {
       alignment: "Village",
       category: "Gifting",
-      tags: ["Items", "Coffee", "Visiting", "Dawn", "Advanced"],
+      tags: ["Items", "Coffee", "Visiting", "Advanced"],
       description: [
         "Gives out coffee to one player each night.",
         "Coffee will allow a player to perform their night actions twice in one night.",
@@ -601,7 +601,6 @@ const roleData = {
         "Visiting",
         "Information",
         "Self Blocking",
-        "Dawn",
         "Day Actions",
         "Revive",
         "Advanced",
@@ -1537,7 +1536,7 @@ const roleData = {
       category: "Manipulative",
       tags: ["Advanced", "Banished Interaction"],
       description: [
-        "Has the abilites of up to 10 banished Village roles.",
+        "Has the abilites of up to 5 banished Village roles.",
         "Cannot have the Hermit ability.",
       ],
     },
@@ -2480,7 +2479,7 @@ const roleData = {
     },
     Fabricator: {
       alignment: "Mafia",
-      tags: ["Gifting", "Broken", "Items", "Visiting", "Dawn", "Advanced"],
+      tags: ["Gifting", "Broken", "Items", "Visiting", "Advanced"],
       description: [
         "Gives out a cursed item once per night.",
         "Cursed Guns and Knives will backfire against the player who used them.",

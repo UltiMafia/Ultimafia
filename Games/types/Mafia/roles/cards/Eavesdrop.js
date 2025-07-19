@@ -12,8 +12,9 @@ module.exports = class Eavesdrop extends Card {
         action: {
           labels: ["eavesdrop"],
           priority: PRIORITY_DAY_DEFAULT,
+          role: this.role,
           run: function () {
-            this.actor.role.data.stalk = this.target;
+            this.role.data.stalk = this.target;
           },
         },
       },
@@ -29,12 +30,13 @@ module.exports = class Eavesdrop extends Card {
     this.actions = [
       {
         labels: ["hidden", "absolute"],
+        role: this.role,
         run: function () {
           if (
             this.game.getStateName() === "Night" ||
             this.game.getStateName() === "Dawn"
           )
-            delete this.actor.role.data.stalk;
+            delete this.role.data.stalk;
         },
       },
     ];

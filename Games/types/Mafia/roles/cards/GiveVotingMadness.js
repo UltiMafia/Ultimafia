@@ -11,9 +11,10 @@ module.exports = class GiveVotingMadness extends Card {
         flags: ["voting"],
         targets: { include: ["alive", "self"], exclude: ["dead"] },
         action: {
+          role: this.role,
           priority: PRIORITY_KILL_DEFAULT - 1,
           run: function () {
-            this.actor.role.data.victim = this.target;
+            this.role.data.victim = this.target;
           },
         },
       },
@@ -22,23 +23,24 @@ module.exports = class GiveVotingMadness extends Card {
         flags: ["voting"],
         targets: { include: ["alive", "self"], exclude: ["dead"] },
         action: {
+          role: this.role,
           priority: PRIORITY_KILL_DEFAULT,
           run: function () {
-            if (!this.actor.role.data.victim) {
+            if (!this.role.data.victim) {
               return;
             }
-            let victim = this.actor.role.data.victim;
+            let victim = this.role.data.victim;
 
             victim.queueAlert(
               `A ${this.actor.role.name} has selected for you to be mad at ${this.target.name}. If ${this.target.name} does not receive votes from 1/3 or more of the living players, You, ${this.target.name}, or Both will Die!`
             );
-            this.actor.role.data.victim.giveEffect(
+            this.role.data.victim.giveEffect(
               "VotingMadness",
               this.actor,
               this.target,
               1
             );
-            delete this.actor.role.data.victim;
+            delete this.role.data.victim;
           },
         },
       },

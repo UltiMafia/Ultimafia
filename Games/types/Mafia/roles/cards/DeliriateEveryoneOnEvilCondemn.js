@@ -49,11 +49,12 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
         if (stateInfo.name.match(/Night/)) {
           var action = new Action({
             actor: this.player,
+            role: this.role,
             game: this.player.game,
             priority: PRIORITY_NIGHT_ROLE_BLOCKER - 1,
             labels: ["block"],
             run: function () {
-              if (!this.actor.role.evilDied) return;
+              if (!this.role.evilDied) return;
 
               let players = this.game.players.filter((p) => p != this.actor);
 
@@ -81,7 +82,7 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
         ) {
           if (deathType != "condemn") return;
 
-          this.player.role.evilDied = true;
+          this.evilDied = true;
         }
       },
       ElectedRoomLeader: function (leader, room, HasChanged) {
@@ -93,7 +94,7 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
             leader.getRoleAppearance().split(" (")[0]
           ) == "Mafia"
         ) {
-          this.player.role.evilDied = true;
+          this.evilDied = true;
         }
       },
     };

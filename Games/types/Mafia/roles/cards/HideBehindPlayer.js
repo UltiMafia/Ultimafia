@@ -16,8 +16,9 @@ module.exports = class HideBehindPlayer extends Card {
         action: {
           labels: ["save"],
           priority: PRIORITY_NIGHT_SAVER,
+          role: this.role,
           run: function () {
-            this.actor.role.hideBehind = this.target;
+            this.role.hideBehind = this.target;
             this.actor.tempImmunity["kill"] = Infinity;
           },
         },
@@ -37,6 +38,7 @@ module.exports = class HideBehindPlayer extends Card {
           var action = new Action({
             actor: this.player,
             game: this.player.game,
+            role: this,
             priority: PRIORITY_KILL_DEFAULT,
             labels: ["kill", "hidden", "absolute"],
             run: function () {
@@ -44,7 +46,7 @@ module.exports = class HideBehindPlayer extends Card {
 
               let visitors = this.getVisitors();
               for (let v of visitors) {
-                if (v == this.actor.role.hideBehind) {
+                if (v == this.role.hideBehind) {
                   // skip the dominates check, this kill is absolute
                   this.actor.kill("eaten", v);
                   this.actor.giveEffect("ExtraLife", this.actor);

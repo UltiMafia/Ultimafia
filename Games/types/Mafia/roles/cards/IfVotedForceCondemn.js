@@ -9,10 +9,10 @@ module.exports = class IfVotedForceCondemn extends Card {
     this.listeners = {
       vote: function (vote) {
         if (vote.meeting.name === "Village" && vote.target === this.player.id) {
-          if (this.player.role.data.hasBeenVoted == true) return;
+          if (this.data.hasBeenVoted == true) return;
 
-          this.player.role.data.hasBeenVoted = true;
-          this.player.role.data.playerVoter = 0;
+          this.data.hasBeenVoted = true;
+          this.data.playerVoter = 0;
           if (!this.player.hasAbility(["Condemn"])) {
             return;
           }
@@ -23,13 +23,14 @@ module.exports = class IfVotedForceCondemn extends Card {
           ) {
             return;
           }
-          this.player.role.data.playerVoter = vote.voter;
+          this.data.playerVoter = vote.voter;
 
           var action = new Action({
             actor: this.player,
-            target: this.player.role.data.playerVoter,
+            target: this.data.playerVoter,
             game: this.player.game,
             priority: PRIORITY_OVERTHROW_VOTE - 1,
+            role: this.role,
             labels: ["hidden", "absolute", "condemn", "overthrow"],
             run: function () {
               //New code
@@ -44,10 +45,10 @@ module.exports = class IfVotedForceCondemn extends Card {
                 }
               }
 
-              if (this.dominates(this.actor.role.data.playerVoter)) {
+              if (this.dominates(this.role.data.playerVoter)) {
                 this.target.kill("condemn", this.actor);
               }
-              this.actor.role.data.playerVoter = 0;
+              this.role.data.playerVoter = 0;
             },
           });
           this.game.queueAction(action);

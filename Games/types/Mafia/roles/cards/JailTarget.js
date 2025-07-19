@@ -31,15 +31,15 @@ module.exports = class JailTarget extends Card {
       },
       meetingsMade: function () {
         if (this.game.getStateName() == "Night") {
-          this.player.role.data.jailSuccess = false;
+          this.data.jailSuccess = false;
           let jailMeeting = this.game.getMeetingByName(
-            this.player.role.data.meetingName
+            this.data.meetingName
           );
           if (
             jailMeeting &&
-            jailMeeting.hasJoined(this.player.role.data.prisoner)
+            jailMeeting.hasJoined(this.data.prisoner)
           ) {
-            this.player.role.data.jailSuccess = true;
+            this.data.jailSuccess = true;
           }
         }
       },

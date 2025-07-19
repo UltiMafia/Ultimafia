@@ -15,7 +15,7 @@ module.exports = class VillageWinsWhenKilled extends Card {
       check: function (counts, winners, aliveCount, confirmedFinished) {
   
               
-        if (this.player.role.killedAssassin) {
+        if (this.killedAssassin) {
           for(let player of this.game.players){
             if(player.faction == "Village"){
               winners.addPlayer(player, player.faction);

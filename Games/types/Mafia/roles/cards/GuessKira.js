@@ -13,15 +13,16 @@ module.exports = class GuessKira extends Card {
         action: {
           labels: ["stealItem"],
           priority: PRIORITY_ITEM_TAKER_DEFAULT,
+          role: this.role,
           run: function () {
-            if (!this.actor.role.data.guessed) {
-              this.actor.role.data.guessed = 0;
+            if (!this.role.data.guessed) {
+              this.role.data.guessed = 0;
             }
             if (this.target.hasItem("Notebook")) {
               this.actor.queueAlert(
                 `:journ: You determine that ${this.target.name} has your notebook!`
               );
-              this.actor.role.data.guessed++;
+              this.role.data.guessed++;
             }
           },
         },
