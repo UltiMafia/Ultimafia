@@ -794,7 +794,7 @@ export default function Profile() {
           )}
           <div
             className="box-panel recent-games"
-            style={{ ...panelStyle, maxWidth: "350px" }}
+            style={panelStyle}
           >
             <div className="heading">Recent Games</div>
             <div className="content">
@@ -845,7 +845,7 @@ export default function Profile() {
           {archivedGamesRows.length !== 0 && (
             <div
               className="box-panel archived-games"
-              style={{ ...panelStyle, maxWidth: "350px" }}
+              style={panelStyle}
             >
               <div className="heading">
                 Archived Games{" "}
