@@ -13,9 +13,10 @@ module.exports = class GuessRole extends Card {
         action: {
           labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          role: this.role,
           run: function () {
             //this.actor.role.data.targetPlayer = this.target;
-            let targetRole = this.actor.role.data.targetRole;
+            let targetRole = this.role.data.targetRole;
               if (targetRole) {
               let info = this.game.createInformation(
                 "GuessRoleInfo",
@@ -27,7 +28,7 @@ module.exports = class GuessRole extends Card {
               info.processInfo();
 
               this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
-              delete this.actor.role.data.targetRole;
+              delete this.role.data.targetRole;
             }
           },
         },
@@ -38,11 +39,12 @@ module.exports = class GuessRole extends Card {
         inputType: "AllRoles",
         AllRolesFilters: ["addedRoles"],
         action: {
+          role: this.role,
           labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT-1,
           run: function () {
             
-            this.actor.role.data.targetRole = this.target;
+            this.role.data.targetRole = this.target;
             /*
             let targetPlayer = this.actor.role.data.targetPlayer;
 

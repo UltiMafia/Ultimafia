@@ -16,13 +16,24 @@ module.exports = class Coffee extends Item {
 
     this.meetings = {
       "Coffee Actions": {
-        states: ["Dawn"],
+        states: ["Night"],
         flags: ["voting", "instant"],
+        inputType: "boolean",
         item: this,
         action: {
           labels: ["hidden", "absolute"],
           item: this,
           run: function () {
+            if (this.target != "Yes") return;
+            this.item.drop();
+            let effect = this.actor.giveEffect("ExtraRoleEffect", this.game.formatRoleInternal(this.actor.role.name, this.actor.role.modifier) , 1);
+            this.actor.joinMeetings(effect.ExtraRole.meetings);
+            for (let meeting of this.game.meetings){
+               meeting.generateTargets();
+            }
+            this.actor.sendMeetings();
+
+            /*
             let actions = [];
             for (let action of this.game.actions[0]) {
               if (
@@ -89,7 +100,7 @@ module.exports = class Coffee extends Item {
               });
               this.game.queueAction(actionCopy2);
             }
-            this.item.drop();
+            */
           },
         },
       },

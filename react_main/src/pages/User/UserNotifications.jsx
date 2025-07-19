@@ -20,10 +20,7 @@ export default function UserNotifications({
     }
 
     var diff = timestamp - now;
-
-    // Allow for previous times
-    var sign = diff < 0? '-' : '';
-    diff = Math.abs(diff);
+    if (diff < 0) diff = 0;
 
     // Get time components
     var hours = diff/3.6e6 | 0;
@@ -31,7 +28,7 @@ export default function UserNotifications({
     var secs  = Math.round(diff%6e4 / 1e3);
 
     // Return formatted string
-    return sign + z(hours) + ':' + z(mins) + ':' + z(secs);   
+    return z(hours) + ':' + z(mins) + ':' + z(secs);   
   }
 
   function getHeartRefreshMessage(user, type) {

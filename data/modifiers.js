@@ -101,6 +101,13 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
+    Caffeinated: {
+      internal: ["StartWithCoffee"],
+      tags: ["Items", "Convert Saver", "Tract"],
+      description: "Starts with a tract.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      allowDuplicate: true,
+    },
     Camouflaged: {
       internal: ["AppearAsRandomRole"],
       tags: ["Roles", "Deception"],

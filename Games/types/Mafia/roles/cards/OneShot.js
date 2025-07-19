@@ -25,13 +25,14 @@ module.exports = class OneShot extends Card {
         whileDead: true,
         whileAlive: true,
         action: {
+          role: this.role,
           labels: ["hidden", "absolute"],
           priority: 0,
           run: function () {
             if (this.target == "No") return;
-            this.actor.role.OneShotNight += 1;
-            this.actor.role.isUsingOneShotNight = true;
-            this.actor.joinMeetings(this.actor.role.meetings);
+            this.role.OneShotNight += 1;
+            this.role.isUsingOneShotNight = true;
+            this.actor.joinMeetings(this.role.meetings);
             for (let meeting of this.game.meetings){
                meeting.generateTargets();
             }
@@ -50,14 +51,15 @@ module.exports = class OneShot extends Card {
         whileDead: true,
         whileAlive: true,
         action: {
+          role: this.role,
           labels: ["hidden", "absolute"],
           priority: 0,
           run: function () {
             if (this.target == "No") return;
 
-            this.actor.role.OneShotDay += 1;
-            this.actor.role.isUsingOneShotDay = true;
-            this.actor.joinMeetings(this.actor.role.meetings);
+            this.role.OneShotDay += 1;
+            this.role.isUsingOneShotDay = true;
+            this.actor.joinMeetings(this.role.meetings);
             for (let meeting of this.game.meetings){
                meeting.generateTargets();
             }
@@ -134,25 +136,25 @@ module.exports = class OneShot extends Card {
         else this.metCount[`meets:${meeting.name}`]++;
       },
       state: function (stateInfo) {
-        this.player.role.OneShotMax = this.player.role.modifier.split("/").filter((m) => m == "X-Shot").length;
+        this.OneShotMax = this.modifier.split("/").filter((m) => m == "X-Shot").length;
         //this.game.queueAlert(`Night ${this.player.role.OneShotNight} Day ${this.player.role.OneShotDay} Max ${this.player.role.OneShotMax}`);
         if (stateInfo.name.match(/Day/)) {
-          if (this.player.role.OneShotNight == this.player.role.OneShotMax && this.player.role.isUsingOneShotNight) {
-            this.player.role.OneShotNight = this.player.role.OneShotMax+1;
-            this.player.role.isUsingOneShotNight = false;
+          if (this.OneShotNight == this.OneShotMax && this.isUsingOneShotNight) {
+            this.OneShotNight = this.OneShotMax+1;
+            this.isUsingOneShotNight = false;
           }
-          if(this.player.role.isUsingOneShotNight){
-            this.player.role.isUsingOneShotNight = false;
+          if(this.isUsingOneShotNight){
+            this.isUsingOneShotNight = false;
           }
         }
         if (stateInfo.name.match(/Night/)) {
           
-          if (this.player.role.OneShotDay == this.player.role.OneShotMax && this.player.role.isUsingOneShotDay) {
-            this.player.role.OneShotDay = this.player.role.OneShotMax+1;
-            this.player.role.isUsingOneShotDay = false;
+          if (this.OneShotDay == this.OneShotMax && this.isUsingOneShotDay) {
+            this.OneShotDay = this.OneShotMax+1;
+            this.isUsingOneShotDay = false;
           }
-          if(this.player.role.isUsingOneShotDay){
-            this.player.role.isUsingOneShotDay = false;
+          if(this.isUsingOneShotDay){
+            this.isUsingOneShotDay = false;
           }
         }
       },

@@ -40,7 +40,7 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
           return;
         }
 
-        this.player.data.gainedGun = false;
+        this.data.gainedGun = false;
       },
       state: function (stateInfo) {
         if (!this.player.hasAbility(["Item"])) {
@@ -54,8 +54,9 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
           game: this.player.game,
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           labels: ["hidden", "absolute"],
+          role: this,
           run: function () {
-            if (this.actor.role.data.gainedGun) return;
+            if (this.role.data.gainedGun) return;
 
             let mafiaKilled = false;
             for (let action of this.game.actions[0]) {
@@ -68,7 +69,7 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
             if (!mafiaKilled) {
               this.actor.holdItem("Gun", { reveal: true, modifiers: true });
               this.actor.queueGetItemAlert("Gun");
-              this.actor.role.data.gainedGun = true;
+              this.role.data.gainedGun = true;
             }
           },
         });

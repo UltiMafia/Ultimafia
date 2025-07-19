@@ -11,13 +11,14 @@ module.exports = class DonateLife extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["dead", "self"] },
         action: {
+          role: this.role,
           priority: PRIORITY_NIGHT_SAVER - 1,
           run: function () {
             let killers = this.getVisitors(this.target, "kill");
             if (killers.length == 0) {
               return;
             }
-            this.actor.role.data.harvestedOrgans = this.target;
+            this.role.data.harvestedOrgans = this.target;
           },
         },
       },
@@ -26,17 +27,18 @@ module.exports = class DonateLife extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["dead", "self"] },
         action: {
+          role: this.role,
           priority: PRIORITY_NIGHT_SAVER,
           run: function () {
-            if (this.actor.role.data.harvestedOrgans) {
-              var harvestedOrgans = this.actor.role.data.harvestedOrgans;
+            if (this.role.data.harvestedOrgans) {
+              var harvestedOrgans = this.role.data.harvestedOrgans;
               if (harvestedOrgans.length == 0) {
                 return;
               }
               this.target.giveEffect("ExtraLife", this.actor);
               this.target.queueAlert("You gain an extra life!");
 
-              delete this.actor.role.data.harvestedOrgans;
+              delete this.role.data.harvestedOrgans;
             }
           },
         },

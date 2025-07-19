@@ -21,9 +21,10 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          role: this,
           labels: ["investigate"],
           run: function () {
-            if (this.actor.role.hasInfo) return;
+            if (this.role.hasInfo) return;
 
             var alive = this.game.players.filter(
               (p) => p.alive && p != this.actor
@@ -34,7 +35,7 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
               );
               return;
             }
-            this.actor.role.hasInfo = true;
+            this.role.hasInfo = true;
 
             let info = this.game.createInformation(
               "OneOfPlayersIsRoleInfo",

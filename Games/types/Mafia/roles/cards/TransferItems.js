@@ -11,10 +11,11 @@ module.exports = class TransferItems extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["dead", "self"] },
         action: {
+          role: this.role,
           labels: ["stealItem"],
           priority: PRIORITY_ITEM_TAKER_DEFAULT - 1,
           run: function () {
-            this.actor.role.data.victim = this.target;
+            this.role.data.victim = this.target;
           },
         },
       },
@@ -23,16 +24,17 @@ module.exports = class TransferItems extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["dead", "self"] },
         action: {
+          role: this.role,
           labels: ["stealItem"],
           priority: PRIORITY_ITEM_TAKER_DEFAULT,
           run: function () {
             if (
-              typeof this.actor.role.data.victim === "undefined" ||
+              typeof this.role.data.victim === "undefined" ||
               this.target.role.alignment === "Mafia"
             )
               return;
 
-            this.stealAllItems(this.actor.role.data.victim, this.target);
+            this.stealAllItems(this.role.data.victim, this.target);
           },
         },
       },

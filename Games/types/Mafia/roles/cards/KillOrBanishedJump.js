@@ -15,19 +15,20 @@ module.exports = class KillorBanishedJump extends Card {
         action: {
           labels: ["kill"],
           priority: PRIORITY_KILL_SPECIAL,
+          role: this.role,
           run: function () {
             let savers = this.getVisitors(this.target, "save");
             let saversSelf = this.getVisitors(this.actor, "save");
             if (
               savers.length == 0 &&
               this.target.role.data.banished &&
-              !this.actor.role.data.hasJumped
+              !this.role.data.hasJumped
             ) {
               if (saversSelf.length == 0) {
-                this.actor.role.data.hasJumped = true;
+                this.role.data.hasJumped = true;
                 this.target.setRole(
-                  `${this.actor.role.name}:${this.actor.role.modifier}`,
-                  this.actor.role.data
+                  `${this.role.name}:${this.role.modifier}`,
+                  this.role.data
                 );
                 this.actor.kill("basic");
               }

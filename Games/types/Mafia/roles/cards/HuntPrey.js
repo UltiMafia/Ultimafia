@@ -13,9 +13,10 @@ module.exports = class HuntPrey extends Card {
         action: {
           labels: ["kill", "consume"],
           priority: PRIORITY_KILL_GUESS_ROLE,
+          role: this.role,
           run: function () {
-            if (this.actor.role.data.prey) {
-              if (this.target.role.name === this.actor.role.data.prey) {
+            if (this.role.data.prey) {
+              if (this.target.role.name === this.role.data.prey) {
                 if (this.dominates()) {
                   this.target.kill("eaten", this.actor);
                   this.actor.role.data.immunity = true;
@@ -26,7 +27,7 @@ module.exports = class HuntPrey extends Card {
               } else {
                 this.actor.role.revealToAll();
               }
-              delete this.actor.role.data.prey;
+              delete this.role.data.prey;
             }
           },
         },
@@ -37,9 +38,10 @@ module.exports = class HuntPrey extends Card {
         inputType: "role",
         targets: { include: ["all"] },
         action: {
+          role: this.role,
           priority: PRIORITY_KILL_GUESS_ROLE - 1,
           run: function () {
-            this.actor.role.data.prey = this.target;
+            this.role.data.prey = this.target;
           },
         },
       },

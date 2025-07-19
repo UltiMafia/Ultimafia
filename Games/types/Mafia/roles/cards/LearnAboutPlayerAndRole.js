@@ -15,8 +15,9 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         action: {
           labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 2,
+          role: this.role,
           run: function () {
-            this.actor.role.data.targetPlayer = this.target;
+            this.role.data.targetPlayer = this.target;
           },
         },
       },
@@ -29,8 +30,9 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         action: {
           labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
+          role: this.role,
           run: function () {
-            this.actor.role.data.targetRelation = this.target;
+            this.role.data.targetRelation = this.target;
           },
         },
       },
@@ -43,8 +45,9 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         action: {
           labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
+          role: this.role,
           run: function () {
-            this.actor.role.data.targetRole = this.target;
+            this.role.data.targetRole = this.target;
           },
         },
       },
@@ -55,14 +58,15 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         action: {
           labels: ["investigate"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          role: this.role,
           run: function () {
             if (this.target === "No") return;
 
-            if (!this.actor.role.data.targetPlayer) return;
-            if (!this.actor.role.data.targetRelation) return;
-            if (!this.actor.role.data.targetRole) return;
-            if (this.actor.role.data.targetPlayer == "No One") return;
-            if (this.actor.role.data.targetRole == "None") return;
+            if (!this.role.data.targetPlayer) return;
+            if (!this.role.data.targetRelation) return;
+            if (!this.role.data.targetRole) return;
+            if (this.role.data.targetPlayer == "No One") return;
+            if (this.role.data.targetRole == "None") return;
 
             let isCorrect = true;
             let question = "";
@@ -71,18 +75,18 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
               "PlayerRoleRelationInfo",
               this.actor,
               this.game,
-              this.actor.role.data.targetPlayer,
-              this.actor.role.data.targetRole,
-              this.actor.role.data.targetRelation
+              this.role.data.targetPlayer,
+              this.role.data.targetRole,
+              this.role.data.targetRelation
             );
             info.processInfo();
             info.getGuessMessages();
             this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
 
          
-            delete this.actor.role.data.targetPlayer;
-            delete this.actor.role.data.targetRelation;
-            delete this.actor.role.data.targetRole;
+            delete this.role.data.targetPlayer;
+            delete this.role.data.targetRelation;
+            delete this.role.data.targetRole;
           },
         },
       },

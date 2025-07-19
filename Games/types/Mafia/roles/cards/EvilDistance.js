@@ -98,10 +98,11 @@ module.exports = class EvilDistance extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
+          role: this,
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
           labels: ["investigate"],
           run: function () {
-            if (this.actor.role.hasInfo) return;
+            if (this.role.hasInfo) return;
             if (!this.actor.alive) return;
 
             let info = this.game.createInformation(
@@ -111,13 +112,13 @@ module.exports = class EvilDistance extends Card {
             );
             info.processInfo();
             if (info.mainInfo == "Not Enough") {
-              this.actor.role.hasInfo = false;
+              this.role.hasInfo = false;
               this.actor.queueAlert(
                 `There wasn't enough evil players for your survey to work!`
               );
               return;
             }
-            this.actor.role.hasInfo = true;
+            this.role.hasInfo = true;
             var alert = `:invest: ${info.getInfoFormated()}.`;
             this.actor.queueAlert(alert);
 

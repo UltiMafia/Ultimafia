@@ -13,9 +13,10 @@ module.exports = class CreateFakeVisits extends Card {
         flags: ["voting"],
         targets: { include: ["alive"] },
         action: {
+          role: this.role,
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT - 1,
           run: function () {
-            this.actor.role.data.victim = this.target;
+            this.role.data.victim = this.target;
           },
         },
       },
@@ -24,17 +25,18 @@ module.exports = class CreateFakeVisits extends Card {
         flags: ["voting"],
         targets: { include: ["alive"] },
         action: {
+          role: this.role,
           labels: ["hidden"],
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
           run: function () {
-            if (!this.actor.role.data.victim) {
+            if (!this.role.data.victim) {
               return;
             }
 
-            this.actor.role.data.victim.giveEffect("FakeVisit", 1, [
+            this.role.data.victim.giveEffect("FakeVisit", 1, [
               this.target,
             ]);
-            delete this.actor.role.data.victim;
+            delete this.role.data.victim;
           },
         },
       },

@@ -11,9 +11,10 @@ module.exports = class SwapVisitors extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: [""] },
         action: {
+          role: this.role,
           priority: PRIORITY_SWAP_VISITORS - 1,
           run: function () {
-            this.actor.role.data.destinationA = this.target;
+            this.role.data.destinationA = this.target;
           },
         },
       },
@@ -22,10 +23,11 @@ module.exports = class SwapVisitors extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: [""] },
         action: {
+          role: this.role,
           priority: PRIORITY_SWAP_VISITORS,
           run: function () {
-            if (this.actor.role.data.destinationA) {
-              var destinationA = this.actor.role.data.destinationA;
+            if (this.role.data.destinationA) {
+              var destinationA = this.role.data.destinationA;
               var destinationB = this.target;
 
               for (let action of this.game.actions[0]) {
@@ -40,7 +42,7 @@ module.exports = class SwapVisitors extends Card {
                 }
               }
 
-              delete this.actor.role.data.destinationA;
+              delete this.role.data.destinationA;
             }
           },
         },

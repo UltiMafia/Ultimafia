@@ -9,11 +9,12 @@ module.exports = class GuessAdversaryKill extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          role: this.role,
           labels: ["kill"],
           run: function () {
-            if (this.actor.role.roleToGuess == null) return;
-            for (let x = 0; x < this.actor.role.roleToGuess.length; x++) {
-              if (this.target.role.name == this.actor.role.roleToGuess[x]) {
+            if (this.role.roleToGuess == null) return;
+            for (let x = 0; x < this.role.roleToGuess.length; x++) {
+              if (this.target.role.name == this.role.roleToGuess[x]) {
                 if (this.dominates()) this.target.kill("basic", this.actor);
               }
             }

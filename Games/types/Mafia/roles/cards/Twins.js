@@ -18,7 +18,7 @@ module.exports = class Twins extends Card {
           return;
         }
         
-        if (this.player.role.data.twincondemned && this.player.hasAbility(["Win-Con"])) {
+        if (this.data.twincondemned && this.player.hasAbility(["Win-Con"])) {
           for(let player of this.game.players){
             if(CULT_FACTIONS.includes(player.faction)){
               winners.addPlayer(player, player.faction);
@@ -71,7 +71,7 @@ module.exports = class Twins extends Card {
           deathType === "condemn" &&
           this.player.hasAbility(["Win-Con"])
         ) {
-          this.player.role.data.twincondemned = true;
+          this.data.twincondemned = true;
         }
       },
     };

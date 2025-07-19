@@ -15,10 +15,11 @@ module.exports = class HostParty extends Card {
           return !this.hostedParty;
         },
         action: {
+          role: this.role,
           priority: PRIORITY_DAY_EFFECT_DEFAULT,
           run: function () {
             if (this.target == "Yes") {
-              this.actor.role.hostedParty = true;
+              this.role.hostedParty = true;
               if (!this.actor.hasAbility(["Meeting"])) {
                 return;
               }

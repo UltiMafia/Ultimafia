@@ -117,11 +117,12 @@ module.exports = class CountEvilVotes extends Card {
         if (!this.player.alive) return;
 
         if (stateInfo.name.match(/Day/)) {
-          this.player.role.data.VotingLog = [];
+          this.data.VotingLog = [];
 
           var action = new Action({
             actor: this.player,
             game: this.player.game,
+            role: this,
             priority: PRIORITY_DAY_DEFAULT + 1,
             labels: ["hidden", "absolute"],
             run: function () {
@@ -143,8 +144,8 @@ module.exports = class CountEvilVotes extends Card {
 
               const minVotes = Math.min(...Object.values(voteCounts));
               const maxVotes = Math.max(...Object.values(voteCounts));
-              let villageVotes = this.actor.role.data.VotingLog;
-              this.actor.role.data.evilVoted = false;
+              let villageVotes = this.role.data.VotingLog;
+              this.role.data.evilVoted = false;
               let maxTarget;
               let tied = false;
               //this.actor.queueAlert(`${maxVotes}`);
@@ -164,8 +165,8 @@ module.exports = class CountEvilVotes extends Card {
                     } else if (villageVotes[x].target != maxTarget) {
                       tied = true;
                     }
-                    this.actor.role.data.evilVoted = true;
-                    this.actor.role.data.voteTied = tied;
+                    this.role.data.evilVoted = true;
+                    this.role.data.voteTied = tied;
                   }
                 }
               }
@@ -177,6 +178,7 @@ module.exports = class CountEvilVotes extends Card {
 
         if (stateInfo.name.match(/Night/)) {
           var action2 = new Action({
+            role: this,
             actor: this.player,
             game: this.player.game,
             priority: PRIORITY_INVESTIGATIVE_DEFAULT,
@@ -185,22 +187,22 @@ module.exports = class CountEvilVotes extends Card {
               let outcome = "No";
               var alert;
 
-              if (this.actor.role.data.voteTied == true) {
+              if (this.role.data.voteTied == true) {
                 alert = `:invest: There was no majority vote yesterday!`;
                 this.actor.queueAlert(alert);
                 return;
               }
 
-              if (this.actor.role.data.VotingLog.length <= 0) return;
+              if (this.role.data.VotingLog.length <= 0) return;
               if (this.actor.hasEffect("FalseMode")) {
-                if (this.actor.role.data.evilVoted) {
-                  this.actor.role.data.evilVoted = false;
+                if (this.role.data.evilVoted) {
+                  this.role.data.evilVoted = false;
                 } else {
-                  this.actor.role.data.evilVoted = true;
+                  this.role.data.evilVoted = true;
                 }
               }
 
-              if (this.actor.role.data.evilVoted == true) {
+              if (this.role.data.evilVoted == true) {
                 alert = `:invest: You ran the numbers... the forces of Evil did vote with the majority yesterday!`;
               } else {
                 alert = `:invest: You ran the numbers... the forces of Evil did NOT vote with the Majority yesterday!`;
@@ -210,7 +212,7 @@ module.exports = class CountEvilVotes extends Card {
                 this.game.RoomOne.length > 0 &&
                 this.game.RoomTwo.length > 0
               ) {
-                if (this.actor.role.data.evilVoted == true) {
+                if (this.role.data.evilVoted == true) {
                   alert = `:invest: You ran the numbers... the forces of Evil did vote with the Majority in your Room yesterday!`;
                 } else {
                   alert = `:invest: You ran the numbers... the forces of Evil did NOT vote with the Majority in your Room yesterday!`;
@@ -225,41 +227,41 @@ module.exports = class CountEvilVotes extends Card {
       },
       vote: function (vote) {
         if (vote.meeting.name === "Village") {
-          let votes = this.player.role.data.VotingLog;
+          let votes = this.data.VotingLog;
 
           for (let y = 0; y < votes.length; y++) {
             if (votes[y].voter == vote.voter) {
-              this.player.role.data.VotingLog[y] = vote;
+              this.data.VotingLog[y] = vote;
               return;
             }
           }
-          this.player.role.data.VotingLog.push(vote);
+          this.data.VotingLog.push(vote);
         } else if (
           vote.meeting.name === "Room 1" &&
           this.game.RoomOne.includes(this.player)
         ) {
-          let votes = this.player.role.data.VotingLog;
+          let votes = this.data.VotingLog;
 
           for (let y = 0; y < votes.length; y++) {
             if (votes[y].voter == vote.voter) {
-              this.player.role.data.VotingLog[y] = vote;
+              this.data.VotingLog[y] = vote;
               return;
             }
           }
-          this.player.role.data.VotingLog.push(vote);
+          this.data.VotingLog.push(vote);
         } else if (
           vote.meeting.name === "Room 2" &&
           this.game.RoomTwo.includes(this.player)
         ) {
-          let votes = this.player.role.data.VotingLog;
+          let votes = this.data.VotingLog;
 
           for (let y = 0; y < votes.length; y++) {
             if (votes[y].voter == vote.voter) {
-              this.player.role.data.VotingLog[y] = vote;
+              this.data.VotingLog[y] = vote;
               return;
             }
           }
-          this.player.role.data.VotingLog.push(vote);
+          this.data.VotingLog.push(vote);
         }
       },
     };

@@ -16,8 +16,8 @@ module.exports = class HuntEvilPlayers extends Card {
         }
       },
       death: function (player, killer, deathType) {
-        if (player === this.player.role.data.EvilTarget) {
-          this.player.role.data.EvilTarget = null;
+        if (player === this.data.EvilTarget) {
+          this.data.EvilTarget = null;
         }
       },
       state: function (stateInfo) {
@@ -33,8 +33,9 @@ module.exports = class HuntEvilPlayers extends Card {
           game: this.player.game,
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 20,
           labels: ["investigate"],
+          role: this.role,
           run: function () {
-            if (this.actor.role.data.EvilTarget != null) return;
+            if (this.role.data.EvilTarget != null) return;
             let learnPlayer;
             let info = this.game.createInformation(
               "EvilPlayerInfo",
@@ -47,7 +48,7 @@ module.exports = class HuntEvilPlayers extends Card {
             if (learnPlayer == "No Evil Players Exist") {
               this.actor.queueAlert(`You could not Find any Evil Players.`);
             } else {
-              this.actor.role.data.EvilTarget = learnPlayer;
+              this.role.data.EvilTarget = learnPlayer;
               this.actor.queueAlert(`You learn ${learnPlayer.name} is Evil!`);
             }
           },

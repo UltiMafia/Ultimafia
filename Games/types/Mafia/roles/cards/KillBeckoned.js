@@ -12,9 +12,10 @@ module.exports = class KillBeckoned extends Card {
         action: {
           labels: ["kill", "hidden"],
           priority: PRIORITY_KILL_SIREN,
+          role: this.role,
           run: function () {
-            if (!this.actor.role.data.beckoned) {
-              this.actor.role.data.beckoned = 0;
+            if (!this.role.data.beckoned) {
+              this.role.data.beckoned = 0;
             }
             const beckonedVisitor = this.getVisitors().includes(this.target);
             if (beckonedVisitor && this.dominates()) {
@@ -22,7 +23,7 @@ module.exports = class KillBeckoned extends Card {
                 `:mermaid: You successfully beckon ${this.target.name} with your song, dragging them to a watery grave.`
               );
               this.target.kill("basic", this.actor);
-              this.actor.role.data.beckoned++;
+              this.role.data.beckoned++;
             }
           },
         },

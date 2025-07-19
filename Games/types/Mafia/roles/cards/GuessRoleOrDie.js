@@ -12,9 +12,10 @@ module.exports = class GuessRoleOrDie extends Card {
         flags: ["voting", "mustAct"],
         targets: { include: ["alive", "self", "dead"] },
         action: {
+          role: this.role,
           priority: PRIORITY_KILL_DEFAULT - 1,
           run: function () {
-            this.actor.role.data.targetPlayer = this.target;
+            this.role.data.targetPlayer = this.target;
           },
         },
       },
@@ -26,8 +27,9 @@ module.exports = class GuessRoleOrDie extends Card {
         action: {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT,
+          role: this.role,
           run: function () {
-            let targetPlayer = this.actor.role.data.targetPlayer;
+            let targetPlayer = this.role.data.targetPlayer;
             if (targetPlayer) {
               let tempName = targetPlayer.role.name;
               let tempModifier = targetPlayer.role.modifier;
@@ -45,7 +47,7 @@ module.exports = class GuessRoleOrDie extends Card {
                   this.actor.kill("basic", this.actor);
               }
 
-              delete this.actor.role.data.targetPlayer;
+              delete this.role.data.targetPlayer;
             }
           },
         },

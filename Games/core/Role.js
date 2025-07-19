@@ -388,7 +388,9 @@ module.exports = class Role {
   }
 
   remove() {
-    this.player.role = null;
+    if(this.isExtraRole != true){
+      this.player.role = null;
+    }
     this.removeListeners();
   }
 

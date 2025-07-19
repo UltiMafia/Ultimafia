@@ -15,6 +15,7 @@ module.exports = class KillorPass extends Card {
         action: {
           labels: ["kill"],
           priority: PRIORITY_KILL_SPECIAL,
+          role: this.role,
           run: function () {
             let savers = this.getVisitors(this.target, "save");
             if (savers.length == 0 && this.target === this.actor) {
@@ -28,8 +29,8 @@ module.exports = class KillorPass extends Card {
               if (cultTargets.length > 0) {
                 const randomTarget = Random.randArrayVal(cultTargets);
                 randomTarget.setRole(
-                  `${this.actor.role.name}:${this.actor.role.modifier}`,
-                  this.actor.role.data
+                  `${this.role.name}:${this.role.modifier}`,
+                  this.role.data
                 );
                 this.actor.kill("basic");
               }

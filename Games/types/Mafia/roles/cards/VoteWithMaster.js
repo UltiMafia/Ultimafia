@@ -11,10 +11,11 @@ module.exports = class VoteWithMaster extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          role: this.role,
           labels: ["visit"],
           priority: PRIORITY_SUPPORT_VISIT_DEFAULT,
           run: function () {
-            this.actor.role.data.master = this.target;
+            this.role.data.master = this.target;
             //this.actor.role.data.MasterVote = 0;
             //this.actor.role.data.ButlerVote = 0;
           },
@@ -24,7 +25,7 @@ module.exports = class VoteWithMaster extends Card {
 
     this.listeners = {
       PreVotingPowers: function (meeting) {
-        if (this.player.role.data.master == 0) {
+        if (this.data.master == 0) {
           return;
         }
         if (!this.player.hasAbility(["Voting"])) {
@@ -35,7 +36,7 @@ module.exports = class VoteWithMaster extends Card {
           let member = meeting.members[voterId];
           let target = meeting.votes[voterId] || "*";
           if (!target) continue;
-          if (member.player == this.player.role.data.master) {
+          if (member.player == this.data.master) {
             masterTarget = target;
           }
         }
