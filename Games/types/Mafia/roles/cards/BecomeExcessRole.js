@@ -82,8 +82,6 @@ module.exports = class BecomeExcessRole extends Card {
           priority: PRIORITY_BECOME_DEAD_ROLE,
           labels: ["convert"],
           run: function () {
-            if (this.game.getStateName() != "Night") return;
-
             let roles = this.game.PossibleRoles.filter((r) => r);
             let players = this.game.players.filter((p) => p.role);
             let currentRoles = [];
