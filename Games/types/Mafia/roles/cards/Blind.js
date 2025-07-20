@@ -18,12 +18,12 @@ module.exports = class Blind extends Card {
             !this.player.effects.includes(this.BlindEffect)
           ) {
             this.BlindEffect = this.player.giveEffect("Blind", Infinity);
-            this.player.passiveEffects.push(this.BlindEffect);
+            this.passiveEffects.push(this.BlindEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(this.BlindEffect);
+          var index = this.passiveEffects.indexOf(this.BlindEffect);
           if (index != -1) {
-            this.player.passiveEffects.splice(index, 1);
+            this.passiveEffects.splice(index, 1);
           }
           if (this.BlindEffect != null) {
             this.BlindEffect.remove();
