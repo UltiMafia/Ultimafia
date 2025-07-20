@@ -3,11 +3,12 @@ const Action = require("../Action");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../const/Priority");
 
 module.exports = class ExtraRoleEffect extends Effect {
-  constructor(role, lifespan, data) {
+  constructor(role, lifespan, data, item) {
     super("ExtraRoleEffect");
     this.CopyingRole = role;
     this.lifespan = lifespan || Infinity;
     this.ExtraRoleData = data;
+    this.item = item || "NoStartingItems";
   }
 
   apply(player) {
