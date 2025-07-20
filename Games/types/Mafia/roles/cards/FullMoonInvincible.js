@@ -33,14 +33,14 @@ module.exports = class FullMoonInvincible extends Card {
               5,
               Infinity
             );
-            this.player.passiveEffects.push(this.FullMoonImmortalEffect);
+            this.passiveEffects.push(this.FullMoonImmortalEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(
+          var index = this.passiveEffects.indexOf(
             this.FullMoonImmortalEffect
           );
           if (index != -1) {
-            this.player.passiveEffects.splice(index, 1);
+            this.passiveEffects.splice(index, 1);
           }
           if (this.FullMoonImmortalEffect != null) {
             this.FullMoonImmortalEffect.remove();

@@ -12,6 +12,7 @@ module.exports = class LearnGoodAndEvilRole extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["self", isPrevTarget] },
         action: {
+          role: this.role,
           labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {

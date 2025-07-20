@@ -64,11 +64,11 @@ module.exports = class DeliriateNeighbors extends Card {
         }
         for (let x = 0; x < this.DeliriumNeighborEffects.length; x++) {
           if (this.DeliriumNeighborEffects[x].player) {
-            var index = this.DeliriumNeighborEffects[x].player.passiveEffects.indexOf(
+            var index = this.passiveEffects.indexOf(
               this.DeliriumNeighborEffects[x]
             );
             if (index != -1) {
-              this.player.passiveEffects.splice(index, 1);
+              this.passiveEffects.splice(index, 1);
             }
             this.DeliriumNeighborEffects[x].remove();
           }
@@ -119,7 +119,7 @@ module.exports = class DeliriateNeighbors extends Card {
           }
           for (let player of this.startingNeighbors) {
             let effect = player.giveEffect("Delirious", this.player, Infinity);
-            this.player.passiveEffects.push(effect);
+            this.passiveEffects.push(effect);
             this.DeliriumNeighborEffects.push(effect);
           }
         }

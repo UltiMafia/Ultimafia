@@ -12,6 +12,7 @@ module.exports = class NightConvertBlocker extends Card {
         action: {
           labels: ["convert blocker"],
           priority: PRIORITY_NIGHT_SAVER-1,
+          role: this.role,
           run: function () {
             // cure insanity
 
@@ -23,9 +24,9 @@ module.exports = class NightConvertBlocker extends Card {
               this.target.role.alignment == "Independent" &&
               this.game.getRoleTags(this.target.role.name).includes("Hostile")
             ) {
-              if (this.actor.role.name == "Shrink") {
+              if (this.role.name == "Shrink") {
                 this.target.setRole("Villager");
-              } else if (this.actor.role.name == "Enforcer") {
+              } else if (this.role.name == "Enforcer") {
                 this.target.setRole("Traitor");
               }
             }

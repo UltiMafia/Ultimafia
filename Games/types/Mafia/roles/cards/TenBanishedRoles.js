@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
-const roleBlacklist = ["Hermit","Jack", "Consigliere", "Sidhe"];
+const roleBlacklist = ["Hermit", "Jack", "Consigliere", "Sidhe"];
 
 module.exports = class TenBanishedRoles extends Card {
   constructor(role) {

@@ -18,6 +18,7 @@ module.exports = class NightBodyguard extends Card {
         action: {
           labels: ["save"],
           priority: PRIORITY_NIGHT_SAVER,
+          role: this.role,
           run: function () {
             this.heal(1);
 
@@ -26,8 +27,8 @@ module.exports = class NightBodyguard extends Card {
               return;
             }
 
-            this.actor.role.killers = killers;
-            this.actor.role.savedRole = this.target.role.name;
+            this.role.killers = killers;
+            this.role.savedRole = this.target.role.name;
           },
         },
       },
@@ -85,17 +86,18 @@ module.exports = class NightBodyguard extends Card {
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_KILL_DEFAULT,
+          role: this.role,
           labels: ["kill", "hidden", "absolute"],
           run: function () {
             // target was not attacked
-            let killers = this.actor.role.killers;
+            let killers = this.role.killers;
             if (!killers) {
               return;
             }
 
             // checks how many to kill
             let killsAllAttackers = false;
-            if (this.actor.role.savedRole === "Celebrity") {
+            if (this.role.savedRole === "Celebrity") {
               killsAllAttackers = true;
             }
 

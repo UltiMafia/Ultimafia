@@ -20,14 +20,14 @@ module.exports = class CondemnImmune extends Card {
               "CondemnImmune",
               Infinity
             );
-            this.player.passiveEffects.push(this.CondemnImmuneEffect);
+            this.passiveEffects.push(this.CondemnImmuneEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(
+          var index = this.passiveEffects.indexOf(
             this.CondemnImmuneEffect
           );
           if (index != -1) {
-            this.player.passiveEffects.splice(index, 1);
+            this.passiveEffects.splice(index, 1);
           }
           if (this.CondemnImmuneEffect != null) {
             this.CondemnImmuneEffect.remove();

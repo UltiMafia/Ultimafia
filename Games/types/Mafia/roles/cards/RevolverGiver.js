@@ -12,12 +12,13 @@ module.exports = class RevolverGiver extends Card {
         action: {
           labels: ["giveItem", "broken"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,
+          role: this.role,
           run: function () {
-            var itemType = this.actor.role.data.LoadedChamber;
+            var itemType = this.role.data.LoadedChamber;
 
             this.target.holdItem("Revolver", null, this.actor, itemType);
             this.target.queueGetItemAlert("Revolver");
-            delete this.actor.role.data.LoadedChamber;
+            delete this.role.data.LoadedChamber;
           },
         },
       },
@@ -28,8 +29,9 @@ module.exports = class RevolverGiver extends Card {
         targets: ["1", "2", "3", "4", "5", "6"],
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 2,
+          role: this.role,
           run: function () {
-            this.actor.role.data.LoadedChamber = this.target;
+            this.role.data.LoadedChamber = this.target;
           },
         },
       },

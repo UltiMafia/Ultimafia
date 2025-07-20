@@ -32,14 +32,15 @@ module.exports = class NightMatron extends Card {
           game: this.player.game,
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           labels: ["giveItem", "hidden"],
+          role: this.role,
           run: function () {
             let visitors = this.getVisitors(this.actor);
             visitors.map((v) =>
-              v.holdItem("CommonRoomPassword", this.actor.role.data.meetingName)
+              v.holdItem("CommonRoomPassword", this.role.data.meetingName)
             );
             this.actor.holdItem(
               "CommonRoomPassword",
-              this.actor.role.data.meetingName
+              this.role.data.meetingName
             );
           },
         });

@@ -24,7 +24,7 @@ module.exports = class NightBlobber extends Card {
 
         const cleanedPlayer = this.cleanedPlayer;
         if (!cleanedPlayer) return;
-        const lastCleanedAppearance = this.player.role.lastCleanedAppearance;
+        const lastCleanedAppearance = this.lastCleanedAppearance;
         if (!lastCleanedAppearance) return;
 
         if (!cleanedPlayer.alive) {
@@ -34,8 +34,8 @@ module.exports = class NightBlobber extends Card {
         }
 
         cleanedPlayer.role.appearance.death = lastCleanedAppearance;
-        cleanedPlayer.lastWill = this.player.role.lastCleanedWill;
-        this.player.role.lastCleanedAppearance = null;
+        cleanedPlayer.lastWill = this.lastCleanedWill;
+        this.lastCleanedAppearance = null;
       },
       death: function (player, killer, deathType) {
         if (player === this.player) {
@@ -59,24 +59,25 @@ module.exports = class NightBlobber extends Card {
         action: {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT + 1,
+          role: this.role,
           run: function () {
             if (!this.dominates()) return;
 
             const roleName = this.target.getRoleAppearance("death");
-            this.actor.role.lastCleanedAppearance = roleName;
+            this.role.lastCleanedAppearance = roleName;
             this.target.role.appearance.death = null;
-            this.actor.role.lastCleanedWill = this.target.lastWill;
+            this.role.lastCleanedWill = this.target.lastWill;
             this.target.lastWill = null;
 
-            this.actor.role.cleanedPlayer = this.target;
+            this.role.cleanedPlayer = this.target;
 
             this.target.kill("basic", this.actor);
-            this.target.holdItem("Blobbed", this.actor.role.data.meetingName);
-            if(this.actor.role.BlobKills == null){
-              this.actor.role.BlobKills = 0;
+            this.target.holdItem("Blobbed", this.role.data.meetingName);
+            if(this.role.BlobKills == null){
+              this.role.BlobKills = 0;
             }
-            this.actor.role.BlobKills += 1;
-            if(this.actor.role.BlobKills % 2 == 0){
+            this.role.BlobKills += 1;
+            if(this.role.BlobKills % 2 == 0){
              this.actor.giveEffect("ExtraLife", this.actor); 
             }
           },

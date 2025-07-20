@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const roleBlacklist = ["Monkey", "Ape", "Jack", "Consigliere", "Sidhe"];
+const roleBlacklist = ["Hermit", "Jack", "Consigliere", "Sidhe"];
 
 module.exports = class BecomeBanishedRoleFor1Phase extends Card {
   constructor(role) {
@@ -14,6 +14,7 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
         inputType: "AllRoles",
         AllRolesFilters: ["banished", "blacklist", "aligned"],
         action: {
+          role: this.role,
           run: function () {
             if(this.target == "None"){
             return;
@@ -21,6 +22,16 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
 
             //this.actor.role.data.ConvertOptions.splice(this.actor.role.data.ConvertOptions.indexOf(this.target),1);
             this.actor.role.data.roleBlacklist2.push(this.target);
+
+            let effect = this.actor.giveEffect("ExtraRoleEffect", this.target , 1, null);
+            this.actor.joinMeetings(effect.ExtraRole.meetings);
+            for (let meeting of this.game.meetings){
+               meeting.generateTargets();
+            }
+            this.actor.sendMeetings();
+
+
+            /*
             let currRole = this.actor.role.name;
             let currModifiers = this.actor.role.modifier;
             let currData = this.actor.role.data;
@@ -57,6 +68,7 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
               this.actor.role.appearance.condemn = currRole;
               this.actor.role.alignment = this.game.getRoleAlignment(currRole);
             }
+            */
           },
         },
       },
@@ -69,8 +81,10 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
           return;
         }
 
+        if(this.data.roleBlacklist == null){
         this.data.roleBlacklist = roleBlacklist.filter((r) => r);
         this.data.roleBlacklist2 = [];
+        }
         /*
         this.data.ConvertOptions = this.game.PossibleRoles.filter(
           (r) =>

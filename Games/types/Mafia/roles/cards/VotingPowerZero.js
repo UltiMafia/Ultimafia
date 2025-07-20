@@ -21,12 +21,12 @@ module.exports = class Clueless extends Card {
               "Voteless",
               Infinity
             );
-            this.player.passiveEffects.push(this.VotingZeroEffect);
+            this.passiveEffects.push(this.VotingZeroEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(this.VotingZeroEffect);
+          var index = this.passiveEffects.indexOf(this.VotingZeroEffect);
           if (index != -1) {
-            this.player.passiveEffects.splice(index, 1);
+            this.passiveEffects.splice(index, 1);
           }
           if (this.VotingZeroEffect != null) {
             this.VotingZeroEffect.remove();

@@ -15,6 +15,7 @@ module.exports = class RoamingAlignment extends Card {
         targets: { include: ["alive"], exclude: ["self", isPrevTarget] },
         action: {
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
+          role: this.role,
           run: function () {
             this.actor.role.data.prevTarget = this.target;
             let alignment = this.target.role.alignment;
@@ -23,7 +24,7 @@ module.exports = class RoamingAlignment extends Card {
               return;
             }
 
-            this.actor.role.data.alignment = alignment;
+            this.role.data.alignment = alignment;
             this.actor.queueAlert(
               `You follow ${this.target.name} and will win if they win.`
             );

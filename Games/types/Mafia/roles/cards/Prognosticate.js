@@ -13,8 +13,9 @@ module.exports = class Prognosticate extends Card {
         targets: ["1", "2", "3", "4", "5", "6", "7", "8"],
         action: {
           priority: PRIORITY_SUPPORT_VISIT_DEFAULT,
+          role: this.role,
           run: function () {
-            this.actor.role.prediction = this.target;
+            this.role.prediction = this.target;
           },
         },
         shouldMeet: function () {

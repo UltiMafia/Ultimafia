@@ -16,9 +16,10 @@ module.exports = class SetTimer extends Card {
         },
         action: {
           priority: PRIORITY_DAY_EFFECT_DEFAULT,
+          role: this.role,
           run: function () {
             if (this.target === "Yes") {
-              this.actor.role.hasSpeedUp = true;
+              this.role.hasSpeedUp = true;
               if (!this.actor.hasAbility(["Effect"])) {
                 return;
               }

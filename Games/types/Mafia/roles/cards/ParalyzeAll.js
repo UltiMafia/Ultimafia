@@ -15,10 +15,11 @@ module.exports = class ParalyzeAll extends Card {
           return !this.hasParalyzed;
         },
         action: {
+          role: this.role,
           priority: PRIORITY_DAY_EFFECT_DEFAULT,
           run: function () {
             if (this.target === "Yes") {
-              this.actor.role.hasParalyzed = true;
+              this.role.hasParalyzed = true;
               if (!this.actor.hasAbility(["Effect"])) {
                 return;
               }

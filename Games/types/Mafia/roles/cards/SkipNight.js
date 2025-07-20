@@ -10,16 +10,17 @@ module.exports = class SkipNight extends Card {
         flags: ["voting", "instant"],
         inputType: "boolean",
         shouldMeet: function () {
-          return !this.player.role.data.hasSkipped;
+          return !this.data.hasSkipped;
         },
         action: {
+          role: this.role,
           run: function () {
             if (this.target === "No") return;
-            this.actor.role.data.hasSkipped = true;
+            this.role.data.hasSkipped = true;
             if (!this.actor.hasAbility(["Voting"])) {
               return;
             }
-            this.actor.role.data.skipNight = true;
+            this.role.data.skipNight = true;
             this.game.queueAlert(
               "A troublemaker is making a ruckus! The Town will not be able to sleep tonight…"
             );
@@ -31,8 +32,8 @@ module.exports = class SkipNight extends Card {
       Night: {
         type: "shouldSkip",
         shouldSkip: function () {
-          if (this.player.role.data.skipNight) {
-            this.player.role.data.skipNight = false;
+          if (this.data.skipNight) {
+            this.data.skipNight = false;
             return true;
           }
           return false;

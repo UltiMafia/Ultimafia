@@ -12,8 +12,9 @@ module.exports = class MeetYourMatch extends Card {
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,
+          role: this.role,
           run: function () {
-            this.actor.role.data.lovebirdA = this.target;
+            this.role.data.lovebirdA = this.target;
           },
         },
       },
@@ -23,10 +24,11 @@ module.exports = class MeetYourMatch extends Card {
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
           labels: ["effect", "love"],
+          role: this.role,
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-            if (!this.actor.role.data.lovebirdA) return;
-            let lovebirdA = this.actor.role.data.lovebirdA;
+            if (!this.role.data.lovebirdA) return;
+            let lovebirdA = this.role.data.lovebirdA;
             let lovebirdB = this.target;
 
             let alignmentA = lovebirdA.role.winCount
@@ -44,7 +46,7 @@ module.exports = class MeetYourMatch extends Card {
               alert = `:hb: ${lovebirdA.name} and ${lovebirdB.name}'s date went poorly. Better luck next time.`;
             }
             this.actor.queueAlert(alert);
-            delete this.actor.role.data.lovebirdA;
+            delete this.role.data.lovebirdA;
           },
         },
       },

@@ -10,6 +10,16 @@ module.exports = class BecomeRoleForNight extends Card {
         flags: ["voting", "instant", "mustAct"],
         action: {
           run: function () {
+
+
+            let effect = this.actor.giveEffect("ExtraRoleEffect", this.game.formatRoleInternal(this.target.role.name, this.target.role.modifier) , 1,this.target.role.data);
+            this.actor.joinMeetings(effect.ExtraRole.meetings);
+            for (let meeting of this.game.meetings){
+               meeting.generateTargets();
+            }
+            this.actor.sendMeetings();
+
+            /*
             let currRole = this.actor.role.name;
             let currModifiers = this.actor.role.modifier;
             let currData = this.actor.role.data;
@@ -52,6 +62,7 @@ module.exports = class BecomeRoleForNight extends Card {
               this.actor.role.appearance.condemn = currRole;
               this.actor.role.alignment = this.game.getRoleAlignment(currRole);
             }
+            */
           },
         },
       },

@@ -12,13 +12,14 @@ module.exports = class OneWayBond extends Card {
         flags: ["voting"],
         action: {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          role: this.role,
           run: function () {
-            if (this.actor.role.name == "Yandere") {
+            if (this.role.name == "Yandere") {
               this.actor.giveEffect("Lovesick", this.target);
             }
             this.queueGetEffectAlert("Lovesick", this.actor, this.target.name);
 
-            this.actor.role.loved = true;
+            this.role.loved = true;
           },
         },
         shouldMeet() {
