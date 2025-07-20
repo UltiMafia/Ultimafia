@@ -94,7 +94,10 @@ domains=("my-domain.com")
 email="myemail@gmail.com"
 ```
 
-Now, run the init-letsencrypt.sh script.
+Now, run the init-letsencrypt.sh script from the top level directory:
+```bash
+./certbot/init-letsencrypt.sh
+```
 
 ### Building and composing containers
 

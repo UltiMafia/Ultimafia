@@ -2,11 +2,11 @@
 
 dockerComposeFiles="-f docker-compose-core.yml -f docker-compose-prod.yml"
 
-domains=("silver-journey-p69jqw47vxwc7j69-80.app.github.dev")
+domains=("mydomain.com")
 rsa_key_size=4096
 data_path="certbot"
-email="nearbearnearbear@gmail.com"
-staging=1 # Set to 1 if you're testing your setup to avoid hitting request limits
+email="myemail@myprovider.com"
+staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
 if [ -d "${data_path}/conf" ]; then
   read -p "Existing data found for certbot. Continue and replace existing certificate? (y/N) " decision
@@ -26,13 +26,15 @@ fi
 echo "### Creating dummy certificate for $domains ..."
 path="/etc/letsencrypt/live/$domains"
 mkdir -p "$data_path/conf/live/$domains"
-docker-compose ${dockerComposeFiles} run --rm --entrypoint "\
+docker compose ${dockerComposeFiles} run --rm --entrypoint "\
   openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1\
     -keyout '$path/privkey.pem' \
     -out '$path/fullchain.pem' \
     -subj '/CN=localhost'" certbot
 echo
 
+# Someone else can figure out a better solution for this problem in the future. Sorry non-AWS EC2 person that has to deal with this.
+sudo chown -R ec2-user:ec2-user certbot/conf/
 
 echo "### Starting nginx ..."
 docker compose ${dockerComposeFiles} up --force-recreate -d nginx

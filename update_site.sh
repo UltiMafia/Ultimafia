@@ -2,6 +2,8 @@ bash ./update_prep.sh
 
 git pull;
 
+docker compose -f docker-compose-core.yml -f docker-compose-prod.yml build nginx
+
 docker exec -it backend pm2 scale games +1 --no-autorestart --watch false;
 
 while read port; do
