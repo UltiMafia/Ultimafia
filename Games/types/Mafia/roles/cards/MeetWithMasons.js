@@ -15,12 +15,13 @@ module.exports = class MeetWithMasons extends Card {
         flags: ["group", "speech", "voting", "multiActor"],
         targets: { include: ["alive"], exclude: ["Freemason"] },
         action: {
+          role: this.role,
           labels: ["convert", "mason"],
           priority: PRIORITY_CONVERT_DEFAULT+2,
           run: function () {
             if (this.target.role.alignment == "Cult") {
-              this.actor.role.masonKills = [this.target];
-              this.actor.role.masonKiller = this.actor;
+              this.role.masonKills = [this.target];
+              this.role.masonKiller = this.actor;
               return;
             }
 
@@ -28,8 +29,8 @@ module.exports = class MeetWithMasons extends Card {
               this.target.role.alignment == "Mafia" ||
               this.target.role == "Serial Killer"
             ) {
-              this.actor.role.masonKills = this.actors;
-              this.actor.role.masonKiller = this.target;
+              this.role.masonKills = this.actors;
+              this.role.masonKiller = this.target;
               return;
             }
 
@@ -45,22 +46,23 @@ module.exports = class MeetWithMasons extends Card {
       {
         priority: PRIORITY_KILL_DEFAULT + 1,
         labels: ["kill", "hidden", "absolute"],
+        role: this.role,
         run: function () {
           if (this.game.getStateName() != "Night") return;
 
-          let targets = this.actor.role.masonKills;
+          let targets = this.role.masonKills;
           if (!targets) {
             return;
           }
 
           for (let t of targets) {
             if (this.dominates(t)) {
-              t.kill("basic", this.actor.role.masonKiller);
+              t.kill("basic", this.role.masonKiller);
             }
           }
 
-          delete this.actor.role.masonKill;
-          delete this.actor.role.masonKiller;
+          delete this.role.masonKill;
+          delete this.role.masonKiller;
         },
       },
     ];

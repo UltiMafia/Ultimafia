@@ -20,14 +20,14 @@ module.exports = class ConvertImmune extends Card {
               1,
               Infinity
             );
-            this.player.passiveEffects.push(this.ConvertImmuneEffect);
+            this.passiveEffects.push(this.ConvertImmuneEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(
+          var index = this.passiveEffects.indexOf(
             this.ConvertImmuneEffect
           );
           if (index != -1) {
-            this.player.passiveEffects.splice(index, 1);
+            this.passiveEffects.splice(index, 1);
           }
           if (this.ConvertImmuneEffect != null) {
             this.ConvertImmuneEffect.remove();

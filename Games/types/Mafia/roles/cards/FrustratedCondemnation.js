@@ -179,12 +179,12 @@ module.exports = class FrustratedCondemnation extends Card {
               "Frustrated",
               Infinity
             );
-            this.player.passiveEffects.push(this.FrustratedEffect);
+            this.passiveEffects.push(this.FrustratedEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(this.FrustratedEffect);
+          var index = this.passiveEffects.indexOf(this.FrustratedEffect);
           if (index != -1) {
-            this.player.passiveEffects.splice(index, 1);
+            this.passiveEffects.splice(index, 1);
           }
           if (this.FrustratedEffect != null) {
             this.FrustratedEffect.remove();

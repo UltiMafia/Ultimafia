@@ -47,7 +47,7 @@ module.exports = class StyleContest extends Card {
                   this.player,
                   player
                 );
-                this.player.passiveEffects.push(effect);
+                this.passiveEffects.push(effect);
               }
             }
           }

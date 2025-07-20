@@ -13,8 +13,9 @@ module.exports = class RevealTargetOnDeath extends Card {
         flags: ["voting"],
         action: {
           priority: PRIORITY_REVEAL_DEFAULT,
+          role: this.role,
           run: function () {
-            this.actor.role.data.playerToReveal = this.target;
+            this.role.data.playerToReveal = this.target;
           },
         },
       },

@@ -26,14 +26,14 @@ module.exports = class FavorableModifier extends Card {
               "FavorableMode",
               Infinity
             );
-            this.player.passiveEffects.push(this.FavorableModeEffect);
+            this.passiveEffects.push(this.FavorableModeEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(
+          var index = this.passiveEffects.indexOf(
             this.FavorableModeEffect
           );
           if (index != -1) {
-            this.player.passiveEffects.splice(index, 1);
+            this.passiveEffects.splice(index, 1);
           }
           if (this.FavorableModeEffect != null) {
             this.FavorableModeEffect.remove();

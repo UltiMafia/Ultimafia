@@ -16,10 +16,11 @@ module.exports = class PotionCaster extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          role: this.role,
           priority: PRIORITY_NIGHT_SAVER - 1,
           run: function () {
             // set target
-            this.actor.role.data.currentTarget = this.target;
+            this.role.data.currentTarget = this.target;
           },
         },
       },
@@ -30,9 +31,10 @@ module.exports = class PotionCaster extends Card {
         // needs to insert every state
         // targets: currentPotionList,
         action: {
+          role: this.role,
           priority: PRIORITY_NIGHT_SAVER - 2,
           run: function () {
-            this.actor.role.data.currentPotion = this.target;
+            this.role.data.currentPotion = this.target;
           },
         },
       },
@@ -186,10 +188,11 @@ module.exports = class PotionCaster extends Card {
           game: this.player.game,
           priority: PRIORITY_NIGHT_SAVER,
           labels: ["save"],
+          role: this.role,
           run: function () {
-            if (this.actor.role.data.currentPotion !== "Restoring") return;
+            if (this.role.data.currentPotion !== "Restoring") return;
 
-            let target = this.actor.role.data.currentTarget;
+            let target = this.role.data.currentTarget;
             if (!target) {
               return;
             }
@@ -197,14 +200,14 @@ module.exports = class PotionCaster extends Card {
             this.heal(1, target);
 
             // set cooldown
-            var potion = this.actor.role.data.currentPotion;
-            if (this.actor.role.data.potionCounter) {
-              this.actor.role.data.potionCounter[potion] =
-                this.actor.role.data.potionCooldown;
+            var potion = this.role.data.currentPotion;
+            if (this.role.data.potionCounter) {
+              this.role.data.potionCounter[potion] =
+                this.role.data.potionCooldown;
             }
 
-            delete this.actor.role.data.currentPotion;
-            delete this.actor.role.data.currentTarget;
+            delete this.role.data.currentPotion;
+            delete this.role.data.currentTarget;
           },
         });
 
@@ -213,10 +216,11 @@ module.exports = class PotionCaster extends Card {
           game: this.player.game,
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill"],
+          role: this.role,
           run: function () {
-            if (this.actor.role.data.currentPotion !== "Damaging") return;
+            if (this.role.data.currentPotion !== "Damaging") return;
 
-            let target = this.actor.role.data.currentTarget;
+            let target = this.role.data.currentTarget;
             if (!target) {
               return;
             }
@@ -226,26 +230,27 @@ module.exports = class PotionCaster extends Card {
             }
 
             // set cooldown
-            var potion = this.actor.role.data.currentPotion;
-            if (this.actor.role.data.potionCounter) {
-              this.actor.role.data.potionCounter[potion] =
-                this.actor.role.data.potionCooldown;
+            var potion = this.role.data.currentPotion;
+            if (this.role.data.potionCounter) {
+              this.role.data.potionCounter[potion] =
+                this.role.data.potionCooldown;
             }
 
-            delete this.actor.role.data.currentPotion;
-            delete this.actor.role.data.currentTarget;
+            delete this.role.data.currentPotion;
+            delete this.role.data.currentTarget;
           },
         });
 
         var action3 = new Action({
           actor: this.player,
           game: this.player.game,
+          role: this.role,
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           labels: ["investigate"],
           run: function () {
-            if (this.actor.role.data.currentPotion !== "Elucidating") return;
+            if (this.role.data.currentPotion !== "Elucidating") return;
 
-            let target = this.actor.role.data.currentTarget;
+            let target = this.role.data.currentTarget;
             if (!target) {
               return;
             }
@@ -261,13 +266,13 @@ module.exports = class PotionCaster extends Card {
             this.actor.queueAlert(alert);
 
             // set cooldown
-            var potion = this.actor.role.data.currentPotion;
-            if (this.actor.role.data.potionCounter) {
-              this.actor.role.data.potionCounter[potion] =
-                this.actor.role.data.potionCooldown;
+            var potion = this.role.data.currentPotion;
+            if (this.role.data.potionCounter) {
+              this.role.data.potionCounter[potion] =
+                this.role.data.potionCooldown;
             }
-            delete this.actor.role.data.currentPotion;
-            delete this.actor.role.data.currentTarget;
+            delete this.role.data.currentPotion;
+            delete this.role.data.currentTarget;
           },
         });
 

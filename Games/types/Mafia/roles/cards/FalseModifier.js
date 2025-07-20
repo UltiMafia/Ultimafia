@@ -51,12 +51,12 @@ module.exports = class FalseModifier extends Card {
               "FalseMode",
               Infinity
             );
-            this.player.passiveEffects.push(this.FalseModeEffect);
+            this.passiveEffects.push(this.FalseModeEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(this.FalseModeEffect);
+          var index = this.passiveEffects.indexOf(this.FalseModeEffect);
           if (index != -1) {
-            this.player.passiveEffects.splice(index, 1);
+            this.passiveEffects.splice(index, 1);
           }
           if (this.FalseModeEffect != null) {
             this.FalseModeEffect.remove();

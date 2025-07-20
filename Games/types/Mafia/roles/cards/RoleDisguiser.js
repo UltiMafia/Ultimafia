@@ -16,6 +16,7 @@ module.exports = class RoleDisguiser extends Card {
         action: {
           labels: ["investigate", "role"],
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
+          role: this.role,
           run: function () {
             let role = this.target.getAppearance("investigate", true);
             let info = this.game.createInformation(

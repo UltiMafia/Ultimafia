@@ -27,12 +27,13 @@ module.exports = class SeanceTarget extends Card {
         action: {
           labels: ["seance"],
           priority: PRIORITY_DAY_DEFAULT,
+          role: this.role,
           run: function () {
             if (!this.actor.hasAbility(["Meeting"])) {
               return;
             }
             if (this.dominates()) {
-              this.target.holdItem("Summon", this.actor.role.data.meetingName);
+              this.target.holdItem("Summon", this.role.data.meetingName);
             }
           },
         },

@@ -20,7 +20,7 @@ module.exports = class HauntDreams extends Card {
           run: function () {
             this.role.loved = true;
             this.role.data.DreamHost = this.target;
-            this.actor.passiveEffects.push(
+            this.role.passiveEffects.push(
               this.target.giveEffect("Delirious", this.actor, Infinity)
             );
             this.blockWithDelirium(this.target);
@@ -49,14 +49,14 @@ module.exports = class HauntDreams extends Card {
               5,
               Infinity
             );
-            this.player.passiveEffects.push(this.DreamImmortalEffect);
+            this.passiveEffects.push(this.DreamImmortalEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(
+          var index = this.passiveEffects.indexOf(
             this.DreamImmortalEffect
           );
           if (index != -1) {
-            this.player.passiveEffects.splice(index, 1);
+            this.passiveEffects.splice(index, 1);
           }
           if (this.DreamImmortalEffect != null) {
             this.DreamImmortalEffect.remove();

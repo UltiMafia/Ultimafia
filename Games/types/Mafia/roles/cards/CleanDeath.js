@@ -14,6 +14,7 @@ module.exports = class CleanDeath extends Card {
         action: {
           labels: ["clean"],
           priority: PRIORITY_CLEAN_DEATH,
+          role: this.role,
           run: function () {
             if (this.target == "No") return;
 
@@ -43,12 +44,12 @@ module.exports = class CleanDeath extends Card {
             this.actor.queueAlert(alert);
 
             const roleName = mafiaTarget.getRoleAppearance("death");
-            this.actor.role.lastCleanedAppearance = roleName;
+            this.role.lastCleanedAppearance = roleName;
             mafiaTarget.role.appearance.death = null;
-            this.actor.role.lastCleanedWill = mafiaTarget.lastWill;
+            this.role.lastCleanedWill = mafiaTarget.lastWill;
             mafiaTarget.lastWill = null;
 
-            this.actor.role.cleanedPlayer = mafiaTarget;
+            this.role.cleanedPlayer = mafiaTarget;
           },
         },
         shouldMeet() {
@@ -62,7 +63,7 @@ module.exports = class CleanDeath extends Card {
 
         const cleanedPlayer = this.cleanedPlayer;
         if (!cleanedPlayer) return;
-        const lastCleanedAppearance = this.player.role.lastCleanedAppearance;
+        const lastCleanedAppearance = this.lastCleanedAppearance;
         if (!lastCleanedAppearance) return;
         /*
         if (!cleanedPlayer.alive) {
@@ -87,8 +88,8 @@ module.exports = class CleanDeath extends Card {
         }
 */
         cleanedPlayer.role.appearance.death = lastCleanedAppearance;
-        cleanedPlayer.lastWill = this.player.role.lastCleanedWill;
-        this.player.role.lastCleanedAppearance = null;
+        cleanedPlayer.lastWill = this.lastCleanedWill;
+        this.lastCleanedAppearance = null;
       },
     };
   }

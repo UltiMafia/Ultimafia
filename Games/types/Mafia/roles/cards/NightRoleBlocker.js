@@ -12,20 +12,21 @@ module.exports = class NightRoleBlocker extends Card {
         action: {
           labels: ["block"],
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
+          role: this.role,
           run: function () {
             if (this.dominates()) {
               this.blockActions();
             }
 
             if (
-              this.actor.role.name === "Hooker" &&
+              this.role.name === "Hooker" &&
               this.target.role.name === "Virgin"
             ) {
               this.target.setRole("Villager");
             }
 
             if (
-              this.actor.role.name === "Drunk" &&
+              this.role.name === "Drunk" &&
               this.target.role.name === "Driver"
             ) {
               this.labels = ["kill"];

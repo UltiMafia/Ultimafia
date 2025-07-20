@@ -67,6 +67,7 @@ module.exports = class OverturnVote extends Card {
         action: {
           power: 3,
           labels: ["kill", "condemn", "overthrow"],
+          role: this.role,
           priority: PRIORITY_OVERTHROW_VOTE,
           run: function () {
             for (let action of this.game.actions[0]) {
@@ -85,7 +86,7 @@ module.exports = class OverturnVote extends Card {
               this.target.kill("condemn", this.actor);
             }
 
-            --this.actor.role.overturnsLeft;
+            --this.role.overturnsLeft;
           },
         },
       },
