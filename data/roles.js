@@ -994,7 +994,7 @@ const roleData = {
         "Each night, chooses a player.",
         "Gains that player's abilites if that player dies..",
       ],
-      nightOrder: [["Get Gun if Target dies",(PRIORITY_ITEM_GIVER_DEFAULT)]],
+      nightOrder: [["Gain abilites if Target dies",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     Avenger: {
       alignment: "Village",
