@@ -1453,7 +1453,7 @@ const roleData = {
       tags: ["Condemn Interaction", "Sacrificial", "Advanced"],
       description: [
         "Each day one Evil player will given a chance to guess who the Ogre is.",
-        "If the Ogre is correctly guessed, The day ends and that player is condemned",
+        "If the Ogre is correctly guessed, The day ends and the Ogre is condemned",
         "If an Incorrect guess is made, No one will get to guess the Ogre the following day.",
       ],
     },
