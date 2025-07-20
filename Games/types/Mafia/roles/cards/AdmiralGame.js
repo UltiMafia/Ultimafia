@@ -5,6 +5,10 @@ module.exports = class AdmiralGame extends Card {
   constructor(role) {
     super(role);
 
+    if(role.player.role.name != "Admiral"){
+      return;
+    }
+
     this.listeners = {
       ReplaceAlways: function (player) {
         if (player != this.player) return;
