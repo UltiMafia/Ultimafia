@@ -23,7 +23,7 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
             //this.actor.role.data.ConvertOptions.splice(this.actor.role.data.ConvertOptions.indexOf(this.target),1);
             this.actor.role.data.roleBlacklist2.push(this.target);
 
-            let effect = this.actor.giveEffect("ExtraRoleEffect", this.target , 1, null);
+            let effect = this.actor.giveEffect("ExtraRoleEffect", this.target , 1, null, "Yes");
             this.actor.joinMeetings(effect.ExtraRole.meetings);
             for (let meeting of this.game.meetings){
                meeting.generateTargets();
