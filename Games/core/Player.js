@@ -1731,6 +1731,10 @@ module.exports = class Player {
       for(let extraRole of player.ExtraRoles){
         extraRole.player = player;
       }
+
+    let temp = this.user.customEmotes;
+    this.user.customEmotes = player.user.customEmotes;
+    player.user.customEmotes = this.user.customEmotes;
     
     
 
