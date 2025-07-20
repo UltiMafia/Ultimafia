@@ -4337,11 +4337,10 @@ const roleData = {
       description: [
         "Every night, can visit a player.",
         "If that player is mafia, the Picciotto will be notified.",
-        "When the Picciotto has visited all the living mafia, they are converted into a random mafia.",
+        "When the Picciotto has visited all the living mafia, they are converted into a random mafia role.",
         "Does not win if not converted to mafia.",
       ],
-      nightOrder: [["Visit",(PRIORITY_KILL_DEFAULT)]],
-      RolesMadeBy: ["All Mafia Roles"],
+      nightOrder: [["Visit",(PRIORITY_KILL_DEFAULT)], ["Become Mafia",(PRIORITY_BECOME_DEAD_ROLE)]],
     },
     Angel: {
       alignment: "Independent",
