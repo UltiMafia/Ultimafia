@@ -1,5 +1,6 @@
 const Card = require("../../Card");
-const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const Action = require("../../Action");
+const { PRIORITY_KILL_DEFAULT, PRIORITY_BECOME_DEAD_ROLE } = require("../../const/Priority");
 const roles = require("../../../../../data/roles");
 const Random = require("../../../../../lib/Random");
 
@@ -67,7 +68,7 @@ module.exports = class ConvertIfVisitsAllMafia extends Card {
 
         this.visitedMentors = new Set();
       },
-      state: function (){
+      state: function (stateInfo){
         if (!this.player.hasAbility(["Convert"])) {
           return;
         }

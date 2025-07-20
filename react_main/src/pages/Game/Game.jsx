@@ -1969,6 +1969,7 @@ function SpeechInput(props) {
         />
         <EmotePicker
           className="speech-dropdown"
+          players={players}
           onEmoteSelected={onEmoteSelected}
         />
       </div>

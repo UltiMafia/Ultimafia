@@ -981,6 +981,21 @@ const roleData = {
       nightOrder: [["Watch Binary",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-5)]],
     },
     //night-acting roles
+    Avatar: {
+      alignment: "Village",
+      category: "Night-acting",
+      tags: [
+        "Kill Interaction",
+        "Killing",
+        "Visiting",
+        "Basic",
+      ],
+      description: [
+        "Each night, chooses a player.",
+        "Gains that player's abilites if that player dies..",
+      ],
+      nightOrder: [["Get Gun if Target dies",(PRIORITY_ITEM_GIVER_DEFAULT)]],
+    },
     Avenger: {
       alignment: "Village",
       category: "Night-acting",
