@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const roleBlacklist = ["Hermit", "Jack", "Consigliere", "Sidhe"];
+const roleBlacklist = ["Hermit", "Jack", "Consigliere", "Sidhe", "Admiral"];
 
 module.exports = class BecomeBanishedRoleFor1Phase extends Card {
   constructor(role) {
