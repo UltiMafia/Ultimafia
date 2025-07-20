@@ -5,7 +5,7 @@ module.exports = class AdmiralGame extends Card {
   constructor(role) {
     super(role);
 
-    if(role.player.role.name != "Admiral"){
+    if(role.isExtraRole == true){
       return;
     }
 
