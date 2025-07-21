@@ -293,7 +293,7 @@ const roleData = {
       tags: ["Protective", "Delirium", "Visiting", "Advanced"],
       description: [
         "Protects two players every night.",
-        "One of the players being protected is Delirious.",
+        "One of the players being protected is Delirious until the start of the next night.",
       ],
       nightOrder: [["Protect and Make Delirious",(PRIORITY_NIGHT_ROLE_BLOCKER + 2)]],
     },
@@ -1078,7 +1078,7 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Visits one player each night and makes them Delirious.",
+        "Visits one player each night and makes them Delirious until the start of the next night.",
         "Delirious players get False Info and have other abilites disabled.",
         "A Sailor can not die unless roleblocked/made delirious.",
       ],
@@ -2313,7 +2313,7 @@ const roleData = {
       category: "Manipulative",
       tags: ["Manipulative", "Delirium", "Visiting", "Advanced"],
       description: [
-        "Visits one player each night and makes them Delirious",
+        "Visits one player each night and makes them Delirious until the start of the next night.",
         "Delirious players get False Info and have other abilites disabled.",
       ],
       nightOrder: [["Give Delirium",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
@@ -3522,7 +3522,7 @@ const roleData = {
       category: "Manipulative",
       tags: ["Manipulative", "Delirium", "Visiting", "Advanced"],
       description: [
-        "Visits one player each night and makes them Delirious",
+        "Visits one player each night and makes them Delirious until the start of the next night.",
         "Delirious players get False Info and have other abilites disabled.",
       ],
       nightOrder: [["Give Delirium",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
