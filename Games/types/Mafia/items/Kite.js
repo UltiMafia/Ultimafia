@@ -53,7 +53,7 @@ module.exports = class Kite extends Item {
               this.target = Random.randArrayVal(players);
             }
 
-            this.game.queueAlert(`${this.actor.name} flys a Kite!`);
+            this.game.queueAlert(`${this.actor.name} flies a Kite!`);
 
             if (this.dominates()) {
               this.target.kill("basic", this.actor, true);
