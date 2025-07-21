@@ -293,7 +293,7 @@ const roleData = {
       tags: ["Protective", "Delirium", "Visiting", "Advanced"],
       description: [
         "Protects two players every night.",
-        "One of the players being protected is Delirious.",
+        "One of the players being protected is Delirious until the start of the next night.",
       ],
       nightOrder: [["Protect and Make Delirious",(PRIORITY_NIGHT_ROLE_BLOCKER + 2)]],
     },
@@ -981,6 +981,21 @@ const roleData = {
       nightOrder: [["Watch Binary",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-5)]],
     },
     //night-acting roles
+    Avatar: {
+      alignment: "Village",
+      category: "Night-acting",
+      tags: [
+        "Kill Interaction",
+        "Killing",
+        "Visiting",
+        "Basic",
+      ],
+      description: [
+        "Each night, chooses a player.",
+        "Gains that player's abilites if that player dies..",
+      ],
+      nightOrder: [["Gain abilites if Target dies",(PRIORITY_ITEM_GIVER_DEFAULT)]],
+    },
     Avenger: {
       alignment: "Village",
       category: "Night-acting",
@@ -1063,7 +1078,7 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Visits one player each night and makes them Delirious.",
+        "Visits one player each night and makes them Delirious until the start of the next night.",
         "Delirious players get False Info and have other abilites disabled.",
         "A Sailor can not die unless roleblocked/made delirious.",
       ],
@@ -1453,7 +1468,7 @@ const roleData = {
       tags: ["Condemn Interaction", "Sacrificial", "Advanced"],
       description: [
         "Each day one Evil player will given a chance to guess who the Ogre is.",
-        "If the Ogre is correctly guessed, The day ends and that player is condemned",
+        "If the Ogre is correctly guessed, The day ends and the Ogre is condemned",
         "If an Incorrect guess is made, No one will get to guess the Ogre the following day.",
       ],
     },
@@ -2298,7 +2313,7 @@ const roleData = {
       category: "Manipulative",
       tags: ["Manipulative", "Delirium", "Visiting", "Advanced"],
       description: [
-        "Visits one player each night and makes them Delirious",
+        "Visits one player each night and makes them Delirious until the start of the next night.",
         "Delirious players get False Info and have other abilites disabled.",
       ],
       nightOrder: [["Give Delirium",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
@@ -3507,7 +3522,7 @@ const roleData = {
       category: "Manipulative",
       tags: ["Manipulative", "Delirium", "Visiting", "Advanced"],
       description: [
-        "Visits one player each night and makes them Delirious",
+        "Visits one player each night and makes them Delirious until the start of the next night.",
         "Delirious players get False Info and have other abilites disabled.",
       ],
       nightOrder: [["Give Delirium",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
@@ -4337,11 +4352,10 @@ const roleData = {
       description: [
         "Every night, can visit a player.",
         "If that player is mafia, the Picciotto will be notified.",
-        "When the Picciotto has visited all the living mafia, they are converted into a random mafia.",
+        "When the Picciotto has visited all the living mafia, they are converted into a random mafia role.",
         "Does not win if not converted to mafia.",
       ],
-      nightOrder: [["Visit",(PRIORITY_KILL_DEFAULT)]],
-      RolesMadeBy: ["All Mafia Roles"],
+      nightOrder: [["Visit",(PRIORITY_KILL_DEFAULT)], ["Become Mafia",(PRIORITY_BECOME_DEAD_ROLE)]],
     },
     Angel: {
       alignment: "Independent",
