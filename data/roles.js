@@ -981,7 +981,7 @@ const roleData = {
       nightOrder: [["Watch Binary",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-5)]],
     },
     //night-acting roles
-    Avatar: {
+    Paladin: {
       alignment: "Village",
       category: "Night-acting",
       tags: [
@@ -992,7 +992,7 @@ const roleData = {
       ],
       description: [
         "Each night, chooses a player.",
-        "Gains that player's abilites if that player dies..",
+        "Gains that player's abilites if that player dies.",
       ],
       nightOrder: [["Gain abilites if Target dies",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
@@ -2691,6 +2691,21 @@ const roleData = {
         "Copies the actions of the choosen player at night.",
       ],
     },
+    Blackguard: {
+      alignment: "Mafia",
+      category: "Night-acting",
+      tags: [
+        "Kill Interaction",
+        "Killing",
+        "Visiting",
+        "Basic",
+      ],
+      description: [
+        "Each night, chooses a player.",
+        "Gains that player's abilites if that player dies.",
+      ],
+      nightOrder: [["Gain abilites if Target dies",(PRIORITY_ITEM_GIVER_DEFAULT)]],
+    },
     Associate: {
       alignment: "Mafia",
       category: "Manipulative",
@@ -3487,6 +3502,21 @@ const roleData = {
         "At night chooses a banished Cult role, gains it's abilities until the next night",
         "Cannot select a role they already selected.",
       ],
+    },
+    Yith: {
+      alignment: "Cult",
+      category: "Night-acting",
+      tags: [
+        "Kill Interaction",
+        "Killing",
+        "Visiting",
+        "Basic",
+      ],
+      description: [
+        "Each night, chooses a player.",
+        "Gains that player's abilites if that player dies.",
+      ],
+      nightOrder: [["Gain abilites if Target dies",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
     "Queen Bee": {
       alignment: "Cult",
