@@ -1,6 +1,10 @@
 PORT=3001
+
+# Leave as-is in development but change to https and your domain name in production
 REACT_APP_URL=http://localhost:3000
 REACT_APP_SOCKET_URI=localhost
+
+# change REACT_APP_SOCKET_PROTOCOL to wss in prod and set REACT_APP_USE_PORT to false 
 REACT_APP_SOCKET_PROTOCOL=ws
 REACT_APP_USE_PORT=true
 REACT_APP_CHAT_PORT=2999
@@ -19,4 +23,5 @@ REACT_APP_ENVIRONMENT=development
 # get your reCAPTCHA API key
 REACT_APP_RECAPTCHA_KEY=x
 
-REACT_APP_EMAIL_DOMAINS=["gmail.com"]
+REACT_APP_EMAIL_DOMAINS=["gmail.com", "hotmail.com", "aol.com", "msn.com", "yandex.ru", "live.com", "icloud.com", "gmail.com.sg", "yahoo.com", "mail.com", "outlook.com", "hotmail.co.uk"]
+

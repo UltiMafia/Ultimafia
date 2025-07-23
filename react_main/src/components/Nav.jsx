@@ -3,7 +3,7 @@ import { NavLink, useLocation } from "react-router-dom";
 
 import Dropdown from "./Dropdown";
 
-import "../css/nav.css";
+import "css/nav.css";
 import { IconButton, Box, Typography, TextField } from "@mui/material";
 
 export function Nav(props) {

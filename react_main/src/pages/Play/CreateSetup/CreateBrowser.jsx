@@ -7,7 +7,7 @@ import { RoleCount, RoleSearch } from "../../../components/Roles";
 import Form from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 
-import "../../../css/createSetup.css";
+import "css/createSetup.css";
 import { NewLoading } from "../../Welcome/NewLoading";
 
 export default function CreateSetup(props) {
@@ -134,7 +134,7 @@ export default function CreateSetup(props) {
 
     if (editSetup || copySetup) {
       axios
-        .get(`/setup/${editSetup || copySetup}`)
+        .get(`/api/setup/${editSetup || copySetup}`)
         .then((res) => {
           var setup = res.data;
 

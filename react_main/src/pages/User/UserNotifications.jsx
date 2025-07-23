@@ -4,7 +4,7 @@ import { Avatar } from "./User";
 import { useNow } from "../../hooks/useNow";
 import { Box, Divider, Stack, Tooltip, Typography } from "@mui/material";
 
-import "../../css/main.css";
+import "css/main.css";
 
 export default function UserNotifications({
   openAnnouncements,

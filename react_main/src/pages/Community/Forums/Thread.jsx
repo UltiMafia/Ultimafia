@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
 import { Redirect, Link, useParams, useLocation } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
+import Markdown from 'react-markdown';
 import update from "immutability-helper";
 
 import { useErrorAlert } from "../../../components/Alerts";
@@ -36,7 +36,7 @@ export default function Thread(props) {
 
   useEffect(() => {
     axios
-      .get(`/forums/thread/${threadId}?reply=${params.get("reply") || ""}`)
+      .get(`/api/forums/thread/${threadId}?reply=${params.get("reply") || ""}`)
       .then((res) => {
         res.data.content = filterProfanity(
           res.data.content,
@@ -109,7 +109,7 @@ export default function Thread(props) {
 
   function onPostReply() {
     axios
-      .post(`/forums/reply`, {
+      .post(`/api/forums/reply`, {
         thread: threadInfo.id,
         content: replyContent,
       })
@@ -130,7 +130,7 @@ export default function Thread(props) {
 
   function onThreadPageNav(page) {
     axios
-      .get(`/forums/thread/${threadId}?page=${page}`)
+      .get(`/api/forums/thread/${threadId}?page=${page}`)
       .then((res) => {
         res.data.content = filterProfanity(
           res.data.content,
@@ -291,14 +291,14 @@ function Post(props) {
     if (!shouldDelete) return;
 
     axios
-      .post(`/forums/${itemType}/delete`, { [itemType]: postInfo.id })
+      .post(`/api/forums/${itemType}/delete`, { [itemType]: postInfo.id })
       .then(onDelete)
       .catch(errorAlert);
   }
 
   function onRestoreClick() {
     axios
-      .post(`/forums/${itemType}/restore`, { [itemType]: postInfo.id })
+      .post(`/api/forums/${itemType}/restore`, { [itemType]: postInfo.id })
       .then(onRestore)
       .catch(errorAlert);
   }
@@ -309,7 +309,7 @@ function Post(props) {
 
   function onEditSave() {
     axios
-      .post(`/forums/${itemType}/edit`, {
+      .post(`/api/forums/${itemType}/edit`, {
         [itemType]: postInfo.id,
         content: editContent,
       })
@@ -330,21 +330,21 @@ function Post(props) {
 
   function onNotifyClick() {
     axios
-      .post(`/forums/thread/notify`, { thread: postInfo.id })
+      .post(`/api/forums/thread/notify`, { thread: postInfo.id })
       .then(onNotifyToggled)
       .catch(() => {});
   }
 
   function onTogglePinnedClick() {
     axios
-      .post(`/forums/thread/togglePinned`, { thread: postInfo.id })
+      .post(`/api/forums/thread/togglePinned`, { thread: postInfo.id })
       .then(onPinToggled)
       .catch(errorAlert);
   }
 
   function onToggleLockedClick() {
     axios
-      .post(`/forums/thread/toggleLocked`, { thread: postInfo.id })
+      .post(`/api/forums/thread/toggleLocked`, { thread: postInfo.id })
       .then(onLockToggled)
       .catch(errorAlert);
   }
@@ -446,7 +446,7 @@ function Post(props) {
         </div>
         {!editing && (
           <div className="md-content">
-            <ReactMarkdown source={content} />
+            <Markdown>{content}</Markdown>
           </div>
         )}
         {editing && (

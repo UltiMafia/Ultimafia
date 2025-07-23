@@ -8,6 +8,13 @@ WIP
 
 ## Setup
 
+It is recommended to set some kind of alias to shorten your docker compose commands, like so:
+```
+alias d="docker compose -f docker-compose-core.yml -f docker-compose-dev.yml"
+
+# From here 
+```
+
 The [EZ setup guide](/docs/setup-EZ-guide.md) is the best guide if you are a new contributor. If you have any questions or concerns please feel free to ask in our [Discord server](https://discord.gg/C5WMFpYRHQ).
 
 ### Prerequisites
@@ -16,8 +23,6 @@ Before building your developer environment locally, you will need the following 
 
 - NVM (should be provided with your Github Codespace)
 - Firebase
-- Recaptha
--
 
 ### Install and Build
 
@@ -29,40 +34,36 @@ $ bash totalsetup.sh
 
 If you want to perform your setup manually, follow these setups:
 
-1. Install the correct version of Node and NPM and set them to default
+0. Load the default development environment ENV files
    ```bash
+   $ cp ./docs/client_env ./react_main/.env
+   $ cp ./docs/server_env ./.env
+   ```
+
+1. Install NVM, node, npm, and backend dependencies
+   ```bash
+   $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
    $ source ~/nvm/nvm.sh
-   $ nvm install 14.16.0
-   $ nvm use 14.16.0
-   $ nvm alias default 14.16.0
-   ```
-2. Download project root and front-end dependencies
-
-   ```bash
-   $ npm i -g pm2
-   $ npm install
-   $ cd react_main
+   $ nvm install 22.17.0
+   $ nvm use 22.17.0
+   $ nvm alias default 22.17.0
    $ npm install
    ```
 
-3. Build the front-end
+2. Download front-end dependencies and build
 
    ```bash
    $ cd react_main
-   $ npm run build
-   $ rm -rf build_public
-   $ cp -r build build_public
-   $ rm -rf build
+   $ npm install
+   $ bash build.sh
    $ cd ..
    ```
 
-   You can run the `build.sh` in `react_main` script to automatically run these comands.
-
-4. Build and deploy the backend
+3. Build and deploy the containers using the dev docker compose
    ```bash
-   $ docker-compose up -d --build
+   $ docker compose -f docker-compose-core.yml -f docker-compose-dev.yml up -d
    ```
-   Use `docker-compose build` if you wish to build without running.
+   Use `docker compose -f docker-compose-core.yml -f docker-compose-dev.yml build` if you wish to build without running.
 
 There is a clean-up script you can run from the root project directory to remove all build files:
 
@@ -99,68 +100,6 @@ Once you log in, you should be redirected to the lobby page and the site should 
 ## Running the site on codespaces
 
 ### If you are a beginner, please follow [the easy setup guide](/docs/setup-EZ-guide.md) and ask in [Discord](https://discord.gg/C5WMFpYRHQ) if you are stuck at any step.
-
-## Running the site locally
-
-#### -OBSOLETE- This is for running your own development environment locally. You can still use this if you'd like by following the old [beginner's guide](/docs/setup-beginner-guide.md), but the easiest way is now the docker guide linked above.
-
-#### Prerequisites
-
-1. Install node.js, and set the version to `v14.16.0`.
-
-2. Install MongoDB and Redis and run them as services. You can refer to [this guide](/docs/setup-mongo-redis-docker.md) for setting up MongoDB and Redis via Docker.
-
-3. Clone your forked repository. Replace "UltiMafia" with your github username.
-
-```bash
-git clone https://github.com/UltiMafia/Ultimafia.git
-```
-
-#### Install node modules
-
-1. Install pm2 globally.
-
-```bash
-npm i -g pm2
-```
-
-2. Install backend node modules.
-
-```bash
-cd Ultimafia
-npm install
-```
-
-3. Install frontend node modules.
-
-```bash
-cd react_main
-npm install
-```
-
-#### Setup environment variables
-
-1. Create `.env` file for the server under `Ultimafia/.env`, and copy this [example file](/docs/server_env)
-
-2. Create a `.env` file for the React app under `Ultimafia/react_main/.env` and copy this [example file](/docs/client_env)
-
-3. Refer to [this guide](/docs/setup-dependencies.md) for retrieving your own test API keys for Firebase and reCAPTCHA.
-
-#### Start the site
-
-1. Start the backend server
-
-```bash
-cd Ultimafia
-npm start
-```
-
-2. Start the frontend React app
-
-```bash
-cd react_main
-npm start
-```
 
 ## Role and game creation
 

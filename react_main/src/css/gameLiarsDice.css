@@ -81,7 +81,7 @@
   width: 32px;
   height: 32px;
   margin: 4px;
-  background-image: url("/images/diceset.png");
+  background-image: url("/src/images/diceset.png");
   background-repeat: no-repeat;
   background-size: 256px 64px;
   transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;

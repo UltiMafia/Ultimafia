@@ -9,7 +9,7 @@ import { useErrorAlert } from "./Alerts";
 import { GameStates } from "../Constants";
 import { useOnOutsideClick } from "./Basic";
 
-import "../css/popover.css";
+import "css/popover.css";
 import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import { tempParseProfilesToWords } from "./Deck";
 

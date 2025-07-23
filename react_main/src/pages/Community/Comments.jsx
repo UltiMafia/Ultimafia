@@ -7,8 +7,8 @@ import { getPageNavFilterArg, PageNav } from "../../components/Nav";
 import { TextEditor } from "../../components/Form";
 import { UserContext } from "../../Contexts";
 
-import "../../css/forums.css";
-import "../../css/comments.css";
+import "css/forums.css";
+import "css/comments.css";
 import { NewLoading } from "../Welcome/NewLoading";
 import { Box, Button } from "@mui/material";
 import { Comment } from "./Comment";
@@ -36,7 +36,7 @@ export default function Comments(props) {
     if (filterArg == null) return;
 
     axios
-      .get(`/comment?location=${location}&${filterArg}`)
+      .get(`/api/comment?location=${location}&${filterArg}`)
       .then((res) => {
         setLoaded(true);
 
@@ -57,7 +57,7 @@ export default function Comments(props) {
 
   function onPostSubmit() {
     axios
-      .post("/comment", { content: postContent, location })
+      .post("/api/comment", { content: postContent, location })
       .then(() => {
         onCommentsPageNav(1);
         setPostContent("");

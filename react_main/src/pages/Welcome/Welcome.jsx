@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
-import "../../css/main.css";
+import "css/main.css";
 import "./Welcome.css";
 import { RegisterDialog } from "./RegisterDialog";
 import { LoginDialog } from "./LoginDialog";
 import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "../../lib/firebaseConfig";
+import { firebaseConfig } from "lib/firebaseConfig";
 import { Scenario2 } from "./Scenario2";
 import {
   getAuth,
@@ -14,9 +14,13 @@ import {
   inMemoryPersistence,
 } from "firebase/auth";
 import axios from "axios";
-import { useSnackbar } from "../../hooks/useSnackbar";
+import { useSnackbar } from "hooks/useSnackbar";
 import { NewLoading } from "./NewLoading";
-import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+
+import umpride2 from "images/holiday/umpride2.png";
+import logobloody from "images/holiday/logobloody.png";
+import fadelogohat from "images/fadelogohat.png";
 
 // localStorage.setItem('firebase:debug', 'true');
 
@@ -40,16 +44,16 @@ export const Welcome = () => {
 
     // Pride logo for June
     if (currentMonth === 5) {
-      return "../../images/holiday/umpride2.png";
+      return umpride2;
     }
 
     // Bloody logo for Halloween
     if (currentMonth === 9) {
-      return "../../images/holiday/logobloody.png";
+      return logobloody;
     }
 
     // Default logo
-    return "../../images/fadelogohat.png";
+    return fadelogohat;
   };
 
   useEffect(() => {
@@ -63,7 +67,7 @@ export const Welcome = () => {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const idToken = await auth.currentUser.getIdToken(true);
         axios
-          .post("/auth", { idToken })
+          .post("/api/auth", { idToken })
           .then(() => {
             window.location.reload();
           })

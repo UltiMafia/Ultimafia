@@ -12,7 +12,7 @@ import { useTheme } from "@mui/styles";
 
 import { UserContext } from "../../Contexts";
 
-import "../../css/play.css";
+import "css/play.css";
 
 import { LobbyBrowser } from "./LobbyBrowser/LobbyBrowser";
 import Host from "./Host/Host";

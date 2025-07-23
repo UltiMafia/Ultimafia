@@ -6,7 +6,7 @@ import {
   useParams,
   useHistory,
 } from "react-router-dom";
-import "../../../css/play.css";
+import "css/play.css";
 import axios from "axios";
 import { UserContext, SiteInfoContext } from "../../../Contexts";
 import {
@@ -62,7 +62,7 @@ export function NightOrder() {
     useEffect(() => {
     if (setupId) {
       axios
-        .get(`/setup/${setupId}`, { headers: { includeStats: true } })
+        .get(`/api/setup/${setupId}`, { headers: { includeStats: true } })
         .then((res) => {
           let setup = res.data;
           setup.roles = JSON.parse(setup.roles);

@@ -178,7 +178,7 @@ export async function verifyRecaptcha(action) {
           process.env.REACT_APP_RECAPTCHA_KEY,
           { action }
         );
-        await axios.post("/auth/verifyCaptcha", { token });
+        await axios.post("/api/auth/verifyCaptcha", { token });
         res(token);
       } catch (e) {
         rej(e);

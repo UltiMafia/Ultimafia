@@ -1,5 +1,5 @@
 import React from "react";
-import "../../css/play.css";
+import "css/play.css";
 import {
   Paper,
   Table,

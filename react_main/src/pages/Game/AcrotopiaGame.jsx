@@ -15,7 +15,7 @@ import {
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
 
-import "../../css/gameAcrotopia.css";
+import "css/gameAcrotopia.css";
 
 export default function AcrotopiaGame(props) {
   const game = useContext(GameContext);
