@@ -7,12 +7,7 @@ const constants = require("../data/constants");
 const Random = require("./../lib/Random");
 const utils = require("../lib/Utils");
 
-var client = null;
-if (process.env.NODE_ENV === "development_docker") {
-  client = redis.createClient({ url: "redis://redis:6379" });
-} else {
-  client = redis.createClient();
-}
+var client = redis.createClient({ url: "redis://redis:6379" });
 
 client.on("error", (e) => {
   throw e;
@@ -134,7 +129,7 @@ async function cacheUserInfo(userId, reset) {
 
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday achievements redHearts goldHearts dailyChallengesCompleted dailyChallenges"
+        "_id id name avatar blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday achievements redHearts goldHearts dailyChallengesCompleted dailyChallenges"
       )
       .populate({
         path: "customEmotes",
@@ -143,6 +138,14 @@ async function cacheUserInfo(userId, reset) {
       });
 
     if (!user) return false;
+
+    // Count the total games played - games are retained in this array even if they expire
+    const aggregation = await models.User.aggregate([
+      { '$match': { _id: user._id }},
+      { '$project': { 'count': { '$size': '$games' } } }
+    ]);
+    var gamesPlayed = 0;
+    aggregation.forEach(match => gamesPlayed = match.count);
 
     // Get all of the user's heart refreshes
     let heartRefreshes = await models.HeartRefresh.find({
@@ -168,6 +171,7 @@ async function cacheUserInfo(userId, reset) {
     await client.setAsync(`user:${userId}:info:avatar`, user.avatar);
     await client.setAsync(`user:${userId}:info:nameChanged`, user.nameChanged);
     await client.setAsync(`user:${userId}:info:bdayChanged`, user.bdayChanged);
+    await client.setAsync(`user:${userId}:info:gamesPlayed`, gamesPlayed);
     await client.setAsync(`user:${userId}:info:redHearts`, user.redHearts);
     await client.setAsync(`user:${userId}:info:goldHearts`, user.goldHearts);
     await client.setAsync(`user:${userId}:info:redHeartRefreshTimestamp`, redHeartRefreshTimestamp);
@@ -200,6 +204,7 @@ async function cacheUserInfo(userId, reset) {
   client.expire(`user:${userId}:info:nameChanged`, 3600);
   client.expire(`user:${userId}:info:bdayChanged`, 3600);
   client.expire(`user:${userId}:info:birthday`, 3600);
+  client.expire(`user:${userId}:info:gamesPlayed`, 3600);
   client.expire(`user:${userId}:info:redHearts`, 3600);
   client.expire(`user:${userId}:info:goldHearts`, 3600);
   client.expire(`user:${userId}:info:redHeartRefreshTimestamp`, 3600);
@@ -220,6 +225,7 @@ async function deleteUserInfo(userId) {
   await client.delAsync(`user:${userId}:info:nameChanged`);
   await client.delAsync(`user:${userId}:info:bdayChanged`);
   await client.delAsync(`user:${userId}:info:birthday`);
+  await client.delAsync(`user:${userId}:info:gamesPlayed`);
   await client.delAsync(`user:${userId}:info:redHearts`);
   await client.delAsync(`user:${userId}:info:goldHearts`);
   await client.delAsync(`user:${userId}:info:redHeartRefreshTimestamp`);
@@ -246,6 +252,7 @@ async function getUserInfo(userId) {
   info.bdayChanged =
     (await client.getAsync(`user:${userId}:info:bdayChanged`)) == "true";
   info.birthday = await client.getAsync(`user:${userId}:info:birthday`);
+  info.gamesPlayed = await client.getAsync(`user:${userId}:info:gamesPlayed`);
   info.redHearts = await client.getAsync(`user:${userId}:info:redHearts`);
   info.goldHearts = await client.getAsync(`user:${userId}:info:goldHearts`);
   info.redHeartRefreshTimestamp = await client.getAsync(`user:${userId}:info:redHeartRefreshTimestamp`);
@@ -384,6 +391,81 @@ async function getLeaderBoardStat(field) {
     client.expire(key, 120);
 
     return leadingUsers;
+  }
+}
+
+/*
+ * Gets the setup that appears in the ez-host feature.
+ * - New players should retrieve the classic setup
+ * - Everyone one else gets an hourly rotating setup from the featured setups
+ *
+ * @param featuredCategory either "classic", "main", or "minigames"
+*/
+async function getFeaturedSetup(featuredCategory) {
+  const key = `game:featuredSetup:${featuredCategory}`;
+
+  var setup = await client.getAsync(key);
+  if (setup) {
+    // Got cached result, no need to perform query
+    return JSON.parse(setup);
+  } else {
+    if (featuredCategory === "classic") {
+      // If the featuredCategory is classic, then we need to find *the* classic setup in the database
+      setup = await models.Setup.findOne({
+
+        // case sensitive, name is included in search for performance since it's indexed
+        name:	"Classic",
+
+        // A bit hacky but the roles are alphabetically sorted so hey it works
+        roles: '[{"Cop:":1,"Doctor:":1,"Villager:":3,"Mafioso:":2}]',
+
+        // ranked: true should prevent stale classic setups from being searched
+        ranked: true,
+
+      }).select(
+        "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
+      );
+      console.warn(setup)
+    }
+    else {
+      let filter = {
+        featured: true
+      };
+
+      // I would ideally like to incorporate setup tags into this one day so that tags can help separate featured setups for different lobbies
+      // For now, only minigames is separated
+      if (featuredCategory === "minigames") {
+        filter.gameType = { $ne: "Mafia" };
+      }
+      else {
+        filter.gameType = "Mafia";
+      }
+
+      var setups = await models.Setup.find(filter)
+        .sort({ _id: -1 })
+        .limit(100)
+        .select(
+          "id gameType name roles closed useRoleGroups roleGroupSizes count total featured -_id"
+        )
+        .populate("creator", "id name avatar tag -_id");
+      
+      const hoursSinceEpoch = Math.floor(Date.now() / (1000 * 60 * 60));
+      const index = hoursSinceEpoch % setups.length;
+
+      setup = setups[index];
+    }
+
+    if (!setup) {
+      return null;
+    }
+
+    // Cache the result in redis so that we don't have to do the query again for a little bit
+    await client.setAsync(key, JSON.stringify(setup));
+
+    // Allow cache to expire every ten minutes (an hour expiration could cause setups to be skipped)
+    client.expire(key, 600);
+
+    return setup;
   }
 }
 
@@ -988,6 +1070,7 @@ module.exports = {
   createAuthToken,
   authenticateToken,
   getLeaderBoardStat,
+  getFeaturedSetup,
   gameExists,
   inGame,
   hostingScheduled,

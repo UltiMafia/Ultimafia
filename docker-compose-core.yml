@@ -23,10 +23,6 @@ services:
     image: redis:8.0.3
     container_name: redis
     restart: unless-stopped
-    expose:
-      - 6379
-    ports:
-      - "6379:6379"
     volumes:
       - redis:/data
     networks:
@@ -60,8 +56,6 @@ services:
       - "9230:9230"
       - "9231:9231"
       - "9232:9232"
-    environment:
-      - "NODE_ENV=development_docker"
     volumes:
       - ./:/home/um/
     networks:
