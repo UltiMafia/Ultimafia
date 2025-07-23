@@ -8,7 +8,7 @@ import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 import { Lobbies } from "../../../Constants";
 
-import "../../../css/host.css";
+import "css/host.css";
 
 export default function HostMafia() {
   const gameType = "Mafia";
@@ -174,7 +174,7 @@ export default function HostMafia() {
 
     if (selSetup.id) {
       axios
-        .post("/game/host", {
+        .post("/api/game/host", {
           gameType,
           lobby,
           setup: selSetup.id,

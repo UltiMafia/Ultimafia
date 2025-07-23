@@ -89,24 +89,19 @@ read endVar
 
 echo "Great! Now the rest of this should be automatic… please wait…"
 
-# We use the appropriate Node/NPM versions
+# We use the appropriate Node/NPM versions then install the backend dependencies
 source ~/nvm/nvm.sh
-nvm install 14.16.0
-nvm use 14.16.0
-nvm alias default 14.16.0
-# Done setting Node/NPM version!
-
-
-# We install all NPM dependencies.
-npm i -g pm2
+nvm install 22.17.0
+nvm use 22.17.0
+nvm alias default 22.17.0
 npm install
+
+# Download front-end dependencies and build
 cd react_main
 npm install
-# Done installing!
-
-
-# Fianlly, we build everything and run.
 bash build.sh
 cd ..
-docker-compose up -d --build
+
+# Build and deploy the containers
+docker compose -f docker-compose-core.yml -f docker-compose-dev.yml up -d
 # Script done!

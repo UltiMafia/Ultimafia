@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { emotify, Emotes } from "./Emotes"
 import { Avatar } from "../pages/User/User";
 
-import "../css/newspaper.css";
+import "css/newspaper.css";
 
 const speedModifier = 2;
 

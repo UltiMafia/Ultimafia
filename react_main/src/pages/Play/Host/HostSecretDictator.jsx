@@ -9,7 +9,7 @@ import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
 import { Lobbies, PreferredDeckId } from "../../../Constants";
 
-import "../../../css/host.css";
+import "css/host.css";
 
 export default function HostSecretDictator() {
   const gameType = "Secret Dictator";
@@ -166,7 +166,7 @@ export default function HostSecretDictator() {
 
     if (selSetup.id) {
       axios
-        .post("/game/host", {
+        .post("/api/game/host", {
           gameType: gameType,
           setup: selSetup.id,
           lobby: getFormFieldValue("lobby"),

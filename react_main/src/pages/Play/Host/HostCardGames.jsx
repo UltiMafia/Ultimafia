@@ -9,7 +9,7 @@ import { useErrorAlert } from "../../../components/Alerts";
 import { SiteInfoContext } from "../../../Contexts";
 import { Lobbies } from "../../../Constants";
 
-import "../../../css/host.css";
+import "css/host.css";
 
 export default function HostCardGames() {
   const gameType = "Card Games";
@@ -160,7 +160,7 @@ export default function HostCardGames() {
 
     if (selSetup.id) {
       axios
-        .post("/game/host", {
+        .post("/api/game/host", {
           gameType: gameType,
           setup: selSetup.id,
           lobby: getFormFieldValue("lobby"),

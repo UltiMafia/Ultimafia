@@ -1,8 +1,9 @@
 import React from "react";
 import { createTheme } from "@mui/material";
 import { Box } from "@mui/material";
-const surprised = `/images/emotes/surprised.webp`;
-const sad = `/images/emotes/sad.webp`;
+
+import surprised from "images/emotes/surprised.webp";
+import sad from "images/emotes/sad.webp";
 
 const currentMonth = new Date().getMonth();
 const isHalloween = currentMonth === 9;

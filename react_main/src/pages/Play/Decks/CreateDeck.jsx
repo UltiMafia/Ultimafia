@@ -7,8 +7,8 @@ import { SiteInfoContext } from "../../../Contexts";
 import { useFieldArray, useForm } from "react-hook-form";
 import axios from "axios";
 import { useErrorAlert } from "../../../components/Alerts";
-import "../../../css/deck.css";
-import "../../../css/form.css";
+import "css/deck.css";
+import "css/form.css";
 
 export default function CreateDecks() {
   const location = useLocation();
@@ -58,7 +58,7 @@ export default function CreateDecks() {
   if (params.get("edit") && !editing) {
     setEditing(true);
     axios
-      .get(`/deck/${params.get("edit")}`)
+      .get(`/api/deck/${params.get("edit")}`)
       .then((res) => {
         let deck = res.data;
         setDeckName(deck.name);
@@ -88,7 +88,7 @@ export default function CreateDecks() {
   function onCreateDeck(editing, data) {
     let profiles = data.cards;
     axios
-      .post("/deck/create", {
+      .post("/api/deck/create", {
         name: deckName,
         profiles: profiles,
         editing: editing,
@@ -130,7 +130,7 @@ export default function CreateDecks() {
       }
 
       axios
-        .post(`/deck/profiles/create`, formData, {
+        .post(`/api/deck/profiles/create`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },

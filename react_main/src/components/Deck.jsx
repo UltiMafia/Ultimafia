@@ -1,7 +1,7 @@
 import React, { useContext, useRef } from "react";
 import { filterProfanity } from "./Basic";
 import { PopoverContext, UserContext } from "../Contexts";
-import "../css/deck.css";
+import "css/deck.css";
 
 export default function AnonymousDeck(props) {
   const user = useContext(UserContext);
@@ -10,7 +10,7 @@ export default function AnonymousDeck(props) {
 
   function onClick() {
     popover.onClick(
-      `/deck/${props.deck.id}`,
+      `/api/deck/${props.deck.id}`,
       "deck",
       deckRef.current,
       filterProfanity(props.deck.name, user.settings)

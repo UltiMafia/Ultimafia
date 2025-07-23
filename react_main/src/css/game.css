@@ -893,7 +893,7 @@
   border: none;
   padding: 5px;
 
-  background-image: url("/images/paper.png");
+  background-image: url("/src/images/paper.png");
   background-size: 100% 100%;
   background-repeat: no-repeat;
   color: #262626;

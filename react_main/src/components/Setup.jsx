@@ -8,8 +8,8 @@ import { hyphenDelimit } from "../utils";
 
 import { Box, Card, Divider, Grid, Stack, Typography } from "@mui/material";
 
-import "../css/setup.css";
-import "../css/roles.css";
+import "css/setup.css";
+import "css/roles.css";
 
 const ICON_WIDTH = 30;
 const ICON_LIST_PADDING = 8;
@@ -101,7 +101,7 @@ export default function Setup(props) {
     }
 
     popover.onClick(
-      `/setup/${props.setup.id}`,
+      `/api/setup/${props.setup.id}`,
       "setup",
       ref ? ref.current : setupRef.current,
       filterProfanity(props.setup.name, user.settings),

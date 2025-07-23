@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Emotes, emotify } from "../../components/Emotes";
-import "../../css/emotes.css";
+import "css/emotes.css";
 
 export default function EmoteList() {
   useEffect(() => {

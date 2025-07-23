@@ -4,7 +4,7 @@ export const getRecentlyPlayedSetups = async ({ lobby }) => {
   // by default, returns the 1st announcement (no DATE provided in URLfilter)
   try {
     const res = await axios.get(
-      `/game/mostPlayedRecently?lobby=${lobby}`
+      `/api/game/mostPlayedRecently?lobby=${lobby}`
     );
     return res?.data;
   } catch (err) {

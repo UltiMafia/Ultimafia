@@ -18,7 +18,7 @@ import { MaxChatMessageLength } from "../../Constants";
 import { Time, UserText } from "../../components/Basic";
 import { NotificationHolder, useOnOutsideClick } from "../../components/Basic";
 
-import "../../css/chat.css";
+import "css/chat.css";
 
 export default function Chat(/*{ setShowChatTab }*/) {
   // TODO: Remove comments
@@ -181,7 +181,7 @@ export default function Chat(/*{ setShowChatTab }*/) {
 
   function getToken() {
     axios
-      .get("/chat/connect")
+      .get("/api/chat/connect")
       .then((res) => {
         setToken(res.data);
       })

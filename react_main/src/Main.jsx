@@ -35,7 +35,6 @@ import Play from "./pages/Play/Play";
 import Community from "./pages/Community/Community";
 import Fame from "./pages/Fame/Fame";
 import Learn from "./pages/Learn/Learn";
-import Development from "./pages/Development/Development";
 import Policy from "./pages/Policy/Policy";
 import User, { Avatar, useUser } from "./pages/User/User";
 import UserNotifications from "./pages/User/UserNotifications";
@@ -43,7 +42,7 @@ import Popover, { usePopover } from "./components/Popover";
 import CookieBanner from "./components/CookieBanner";
 import Chat from "./pages/Chat/Chat";
 
-import "./css/main.css";
+import "css/main.css";
 import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
 import { NewLoading } from "./pages/Welcome/NewLoading";
@@ -56,6 +55,10 @@ import {
 import { Announcement } from "./components/alerts/Announcement";
 import { BadTextContrast } from "./components/alerts/BadTextContrast";
 import { useIsPhoneDevice } from "./hooks/useIsPhoneDevice";
+
+import umpride2 from "images/holiday/umpride2.png";
+import logobloody from "images/holiday/logobloody.png";
+import fadelogohat from "images/fadelogohat.png";
 
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
@@ -84,7 +87,7 @@ function Main() {
 
   function onGameLeave(index) {
     axios
-      .post("/game/leave")
+      .post("/api/game/leave")
       .then(() => {
         siteInfo.hideAlert(index);
       })
@@ -134,13 +137,13 @@ function Main() {
   useEffect(() => {
     async function getInfo() {
       try {
-        var res = await axios.get("/user/info");
+        var res = await axios.get("/api/user/info");
 
         if (res.data.id) {
           setCaptchaVisible(false);
 
           axios.defaults.headers.common["x-csrf"] = res.data.csrf;
-          axios.post("/user/online");
+          axios.post("/api/user/online");
 
           res.data.loggedIn = true;
           res.data.loaded = true;
@@ -150,7 +153,7 @@ function Main() {
           var referrer = window.localStorage.getItem("referrer");
 
           if (referrer) {
-            axios.post("/user/referred", { referrer });
+            axios.post("/api/user/referred", { referrer });
             window.localStorage.removeItem("referrer");
           }
         } else {
@@ -188,13 +191,13 @@ function Main() {
           );
         }
 
-        res = await axios.get("/roles/all");
+        res = await axios.get("/api/roles/all");
         siteInfo.update("roles", res.data);
 
-        res = await axios.get("/roles/raw");
+        res = await axios.get("/api/roles/raw");
         siteInfo.update("rolesRaw", res.data);
 
-        res = await axios.get("/roles/modifiers");
+        res = await axios.get("/api/roles/modifiers");
         siteInfo.update("modifiers", res.data);
       } catch (e) {
         errorAlert(e);
@@ -206,7 +209,7 @@ function Main() {
     getInfo();
 
     var onlineInterval = setInterval(() => {
-      axios.post("/user/online");
+      axios.post("/api/user/online");
     }, 1000 * 30);
 
     return () => {
@@ -262,10 +265,6 @@ function Main() {
                         <Route path="/play" render={() => <Play />} />
                         <Route path="/community" render={() => <Community />} />
                         <Route path="/fame" render={() => <Fame />} />
-                        <Route
-                          path="/development"
-                          render={() => <Development />}
-                        />
                         <Route path="/learn" render={() => <Learn />} />
                         <Route path="/policy" render={() => <Policy />} />
                         <Route path="/user" render={() => <User />} />
@@ -327,9 +326,21 @@ function Header({ setShowAnnouncementTemporarily }) {
 
   const getLogoSrc = () => {
     const currentMonth = new Date().getMonth();
-    if (currentMonth === 5) return "../../images/holiday/umpride2.png"; // June (Pride)
-    if (currentMonth === 9) return "../../images/holiday/logobloody.png"; // October (Halloween)
-    return "../../images/fadelogohat.png";
+    // 0 = January
+    // 11 = December
+
+    // Pride logo for June
+    if (currentMonth === 5) {
+      return umpride2;
+    }
+
+    // Bloody logo for Halloween
+    if (currentMonth === 9) {
+      return logobloody;
+    }
+
+    // Default logo
+    return fadelogohat;
   };
 
   return (
@@ -506,7 +517,7 @@ function SiteNotifs() {
 
   function getNotifs() {
     axios
-      .get("/notifs")
+      .get("/api/notifs")
       .then((res) => {
         var nextRestart = res.data[0];
         var notifs = res.data.slice(1);
@@ -523,7 +534,7 @@ function SiteNotifs() {
 
   function viewedNotifs() {
     axios
-      .post("/notifs/viewed")
+      .post("/api/notifs/viewed")
       .then(() => {
         updateNotifInfo({ type: "viewed" });
       })

@@ -29,7 +29,7 @@ import axios from "axios";
 import { UserContext, SiteInfoContext } from "../../../Contexts";
 import Comments from "../../Community/Comments";
 
-import "../../../css/setupPage.css";
+import "css/setupPage.css";
 
 import { useErrorAlert } from "../../../components/Alerts";
 import { NewLoading } from "../../Welcome/NewLoading";
@@ -79,7 +79,7 @@ export function RoleThings() {
     if (!user?.id) return;
 
     axios
-      .get(`/user/${user.id}/profile`)
+      .get(`/api/user/${user.id}/profile`)
       .then((res) => setAchievements(res.data.achievements))
       .catch((e) => {
         errorAlert(e);
@@ -203,7 +203,7 @@ function SetupRowInfo(props) {
    }
    let strArray = array.join(",");
       axios
-        .post("/user/settings/update", {
+        .post("/api/user/settings/update", {
           prop: action.ref,
           value: strArray,
         })

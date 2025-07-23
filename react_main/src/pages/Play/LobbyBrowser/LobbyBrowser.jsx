@@ -8,7 +8,7 @@ import { useErrorAlert } from "../../../components/Alerts";
 import { camelCase } from "../../../utils";
 import Comments from "../../Community/Comments";
 import { Lobbies } from "../../../Constants";
-import "../../../css/join.css";
+import "css/join.css";
 import { RefreshButton } from "./RefreshButton";
 import { NewLoading } from "../../Welcome/NewLoading";
 import {
@@ -87,7 +87,7 @@ export const LobbyBrowser = () => {
   }, [lobbyName]);
 
   const getOpenGameCounts = useCallback(async () => {
-    return axios.get(`/game/list?list=open`).then(({ data }) => {
+    return axios.get(`/api/game/list?list=open`).then(({ data }) => {
       const result = {};
       data.forEach((game) => {
         const { lobby } = game;
@@ -109,7 +109,7 @@ export const LobbyBrowser = () => {
     filterArg += `&page=${_page}`;
     try {
       const res = await axios.get(
-        `/game/list?list=${camelCase(
+        `/api/game/list?list=${camelCase(
           _listType
         )}&lobby=${lobbyName}&${filterArg}`
       );

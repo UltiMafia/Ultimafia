@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { Redirect, useParams, useHistory } from "react-router-dom";
 import axios from "axios";
-import ReactMarkdown from "react-markdown";
+import Markdown from 'react-markdown';
 import update from "immutability-helper";
 
 import { UserContext, SiteInfoContext } from "../../Contexts";
@@ -24,7 +24,7 @@ import { AchievementData } from "../../constants/Achievements";
 import { capitalize } from "../../utils";
 import Comments from "../Community/Comments";
 
-import "../../css/user.css";
+import "css/user.css";
 import { Modal } from "../../components/Modal";
 import { PieChart } from "./PieChart";
 import { NewLoading } from "../Welcome/NewLoading";
@@ -33,10 +33,10 @@ import { Box, IconButton, Typography } from "@mui/material";
 import { useTheme } from "@mui/styles";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 
-export const KUDOS_ICON = `/images/kudos.png`;
-export const KARMA_ICON = `/images/karma.png`;
-export const ACHIEVEMENTS_ICON = `/images/achievements.png`;
-export const DAILY_ICON = `/images/dailyChallenges.png`;
+export const KUDOS_ICON = require(`images/kudos.png`);
+export const KARMA_ICON = require(`images/karma.png`);
+export const ACHIEVEMENTS_ICON = require(`images/achievements.png`);
+export const DAILY_ICON = require(`images/dailyChallenges.png`);
 
 const DEFAULT_PRONOUNS_TEXT = "Click to edit your pronouns";
 
@@ -106,7 +106,7 @@ export default function Profile() {
       setProfileLoaded(false);
 
       axios
-        .get(`/user/${userId}/profile`)
+        .get(`/api/user/${userId}/profile`)
         .then((res) => {
           setProfileLoaded(true);
           setName(res.data.name);
@@ -154,7 +154,7 @@ export default function Profile() {
         });
 
       axios
-        .get(`/user/${userId}/friends`)
+        .get(`/api/user/${userId}/friends`)
         .then((res) => {
           setFriends(res.data);
         })
@@ -182,7 +182,7 @@ export default function Profile() {
         el.value = "";
 
       axios
-        .post(`/user/${type}`, formData)
+        .post(`/api/user/${type}`, formData)
         .then((res) => {
           switch (type) {
             case "avatar":
@@ -212,7 +212,7 @@ export default function Profile() {
     }
 
     axios
-      .post("/user/friend", { user: userId })
+      .post("/api/user/friend", { user: userId })
       .then((res) => {
         setIsFriend(!isFriend);
         siteInfo.showAlert(res.data, "success");
@@ -228,7 +228,7 @@ export default function Profile() {
       if (!shouldUnfriend) return;
 
       axios
-        .post("/user/friend", { user: friendId })
+        .post("/api/user/friend", { user: friendId })
         .then((res) => {
           setIsFriend(false);
           siteInfo.showAlert(res.data, "success");
@@ -245,7 +245,7 @@ export default function Profile() {
       if (!shouldDelete) return;
 
       axios
-        .delete(`/game/${gameId}/archive`)
+        .delete(`/api/game/${gameId}/archive`)
         .then((res) => {
           siteInfo.showAlert(res.data, "success");
         })
@@ -285,7 +285,7 @@ export default function Profile() {
     }
 
     axios
-      .post("/user/love", { user: userId, type: love.type, reqType: "Love" })
+      .post("/api/user/love", { user: userId, type: love.type, reqType: "Love" })
       .then((res) => {
         setIsLove(!isLove);
         siteInfo.showAlert(res.data.message, "success");
@@ -325,7 +325,7 @@ export default function Profile() {
     }
 
     axios
-      .post("/user/love", { user: userId, type: love.type, reqType: "Marry" })
+      .post("/api/user/love", { user: userId, type: love.type, reqType: "Marry" })
       .then((res) => {
         setIsMarried(!isMarried);
         setIsLove(!isLove);
@@ -356,7 +356,7 @@ export default function Profile() {
     }
 
     axios
-      .post("/user/block", { user: userId })
+      .post("/api/user/block", { user: userId })
       .then(() => {
         user.blockUserToggle(userId);
 
@@ -378,7 +378,7 @@ export default function Profile() {
 
   function onEditBio(e) {
     axios
-      .post(`/user/bio`, { bio: bio })
+      .post(`/api/user/bio`, { bio: bio })
       .then(() => {
         setEditingBio(false);
         setBio(filterProfanity(bio, user.settings, "\\*"));
@@ -388,7 +388,7 @@ export default function Profile() {
 
   function onEditPronouns(e) {
     axios
-      .post(`/user/pronouns`, { pronouns: pronouns })
+      .post(`/api/user/pronouns`, { pronouns: pronouns })
       .then(() => {
         setEditingPronouns(false);
         setPronouns(filterProfanity(pronouns, user.settings, "\\*"));
@@ -410,7 +410,7 @@ export default function Profile() {
 
   function onAcceptFriend(_userId) {
     axios
-      .post("/user/friend", { user: _userId })
+      .post("/api/user/friend", { user: _userId })
       .then((res) => {
         var newFriendRequests = friendRequests
           .slice()
@@ -423,7 +423,7 @@ export default function Profile() {
 
   function onRejectFriend(_userId) {
     axios
-      .post("/user/friend/reject", { user: _userId })
+      .post("/api/user/friend/reject", { user: _userId })
       .then((res) => {
         var newFriendRequests = friendRequests
           .slice()
@@ -445,7 +445,7 @@ export default function Profile() {
     if (filterArg == null) return;
 
     axios
-      .get(`/user/${userId}/friends?${filterArg}`)
+      .get(`/api/user/${userId}/friends?${filterArg}`)
       .then((res) => {
         if (res.data.length) {
           setFriends(res.data);
@@ -712,10 +712,7 @@ export default function Profile() {
               >
                 {!editingPronouns && (
                   <div className="md-content">
-                    <ReactMarkdown
-                      renderers={basicRenderers()}
-                      source={pronouns}
-                    />
+                    <Markdown>{pronouns}</Markdown>
                   </div>
                 )}
                 {editingPronouns && (
@@ -742,7 +739,7 @@ export default function Profile() {
             >
               {!editingBio && (
                 <div className="md-content">
-                  <ReactMarkdown renderers={basicRenderers()} source={bio} />
+                  <Markdown>{bio}</Markdown>
                 </div>
               )}
               {editingBio && (
@@ -899,7 +896,7 @@ export function KarmaVoteWidget(props) {
     if (!user.perms.vote) return;
 
     axios
-      .post("/user/karma", {
+      .post("/api/user/karma", {
         targetId: userId,
         direction,
       })

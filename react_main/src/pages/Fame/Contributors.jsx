@@ -17,7 +17,7 @@ export default function Contributors(props) {
     document.title = "Contributors | UltiMafia";
 
     axios
-      .get("/site/contributors")
+      .get("/api/site/contributors")
       .then((res) => {
         setContributors(res.data);
         setLoaded(true);

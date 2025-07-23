@@ -32,7 +32,7 @@ FIREBASE_APP_ID=x
 FIREBASE_MEASUREMENT_ID=x
 FIREBASE_JSON_FILE=firebase.json
 
-EMAIL_DOMAINS=["gmail.com"]
+EMAIL_DOMAINS=["gmail.com", "hotmail.com", "aol.com", "msn.com", "yandex.ru", "live.com", "icloud.com", "gmail.com.sg", "yahoo.com", "mail.com", "outlook.com", "hotmail.co.uk"]
 
 # optional
 IP_API_URL=https://ipqualityscore.com/api/json/ip

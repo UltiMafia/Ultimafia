@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
-import "../../../css/shiny.css";
+import "css/shiny.css";
 import { Link, Redirect } from "react-router-dom";
 import { PlayerCount } from "./PlayerCount";
 import { UserContext } from "../../../Contexts";
@@ -172,7 +172,7 @@ export const GameRow = (props) => {
     }
 
     axios
-      .post("/game/host", {
+      .post("/api/game/host", {
         gameType: gameType,
         setup: props.game.setup.id,
         lobby: lobby,

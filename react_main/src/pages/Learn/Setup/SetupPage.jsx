@@ -13,7 +13,7 @@ import { UserContext, SiteInfoContext } from "../../../Contexts";
 import Comments from "../../Community/Comments";
 import { PieChart } from "./PieChart";
 
-import "../../../css/setupPage.css";
+import "css/setupPage.css";
 
 import { useErrorAlert } from "../../../components/Alerts";
 import { NameWithAvatar } from "../../User/User";
@@ -101,7 +101,7 @@ export function SetupPage() {
   useEffect(() => {
     if (setupId) {
       axios
-        .get(`/setup/${setupId}`, { headers: { includeStats: true } })
+        .get(`/api/setup/${setupId}`, { headers: { includeStats: true } })
         .then((res) => {
           let setup = res.data;
           setup.roles = JSON.parse(setup.roles);
@@ -183,7 +183,7 @@ export function SetupPage() {
 
     if (setupId) {
       axios
-        .get(`/setup/${setupId}/version/${newVersionNum}`)
+        .get(`/api/setup/${setupId}/version/${newVersionNum}`)
         .then((res) => {
           let setupVersion = res.data;
           setVersionTimestamp(setupVersion.timestamp);

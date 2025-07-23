@@ -10,7 +10,7 @@ import { RoleCount } from "../../components/Roles";
 import { Time } from "../../components/Basic";
 import { capitalize } from "../../utils";
 
-import "../../css/gameReview.css";
+import "css/gameReview.css";
 
 export default function Review() {
   const [game, setGame] = useState();
@@ -22,7 +22,7 @@ export default function Review() {
 
   useEffect(() => {
     axios
-      .get(`/game/${gameId}/review`)
+      .get(`/api/game/${gameId}/review`)
       .then((res) => {
         res.data.history = JSON.parse(res.data.history);
         setGame(res.data);

@@ -12,22 +12,26 @@
     "color": "3.2.1",
     "color-contrast": "^1.0.0",
     "d3": "7.8.5",
-    "firebase": "^9.14.0",
+    "firebase": "^11.10.0",
     "immutability-helper": "^3.0.2",
-    "react": "^16.14.0",
+    "react": "^17.0.0",
     "react-color": "^2.18.0",
     "react-date-picker": "^9.2.0",
-    "react-dom": "^16.13.1",
+    "react-dom": "^17.0.1",
     "react-dropdown": "^1.7.0",
     "react-helmet": "6.1.0",
     "react-hook-form": "^7.45.2",
-    "react-html-parser": "^2.0.2",
     "react-loading": "^2.0.3",
-    "react-markdown": "^4.3.1",
-    "react-mde": "^10.1.0",
+    "react-markdown": "^8.0.0",
+    "react-mde": "^11.5.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.4.4",
+    "react-scripts": "^5.0.1",
     "react-sound": "^1.2.0"
+  },
+  "overrides": {
+    "react-sound": {
+      "react": "$react"
+    }
   },
   "scripts": {
     "start": "./node_modules/.bin/react-scripts start",
@@ -52,11 +56,12 @@
     ]
   },
   "devDependencies": {
-    "eslint-plugin-react-hooks": "^2.5.1",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-config-react-app": "^7.0.1",
     "react-error-overlay": "^6.0.9"
   },
   "resolutions": {
     "react-error-overlay": "6.0.9"
   },
-  "proxy": "http://127.0.0.1:3000"
+  "proxy": "http://backend:3000"
 }

@@ -13,8 +13,8 @@ import "react-mde/lib/styles/css/react-mde-editor.css";
 import "react-mde/lib/styles/css/react-mde-toolbar.css";
 import "react-mde/lib/styles/css/react-mde-suggestions.css";
 
-import "../css/form.css";
-import "../css/markdown.css";
+import "css/form.css";
+import "css/markdown.css";
 import { dateToHTMLString } from "../utils";
 import { colorHasGoodBackgroundContrast } from "../shared/colors";
 import {
@@ -707,7 +707,7 @@ export function UserSearchSelect(props) {
     if (query.length === 0) return;
 
     axios
-      .get(`/user/searchName?query=${query}`)
+      .get(`/api/user/searchName?query=${query}`)
       .then((res) => {
         var newIdMap = {};
 

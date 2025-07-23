@@ -1,9 +1,7 @@
-version: "3.7"
-
 services:
   # Mongo service
   mongodb:
-    image: mongo:latest
+    image: mongo:8.0.11
     container_name: mongodb
     restart: unless-stopped
     environment:
@@ -22,13 +20,9 @@ services:
 
   # Redis service
   redis:
-    image: "redis:latest"
+    image: redis:8.0.3
     container_name: redis
     restart: unless-stopped
-    expose:
-      - 6379
-    ports:
-      - "6379:6379"
     volumes:
       - redis:/data
     networks:
@@ -45,7 +39,6 @@ services:
       context: .
       dockerfile: dockerfile
     expose:
-      - 80
       - 2999
       - 3000
       - 3001
@@ -55,7 +48,6 @@ services:
       - 9231
       - 9232
     ports:
-      - "80:3001"
       - "2999:2999"
       - "3000:3000"
       - "3001:3001"
@@ -64,8 +56,6 @@ services:
       - "9230:9230"
       - "9231:9231"
       - "9232:9232"
-    environment:
-      - "NODE_ENV=development_docker"
     volumes:
       - ./:/home/um/
     networks:
