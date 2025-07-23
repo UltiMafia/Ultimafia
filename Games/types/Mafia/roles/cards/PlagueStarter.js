@@ -13,9 +13,10 @@ module.exports = class PlagueStarter extends Card {
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
           labels: ["effect"],
+          role: this.role,
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
-            this.actor.role.hasInfected = true;
+            this.role.hasInfected = true;
             if (this.dominates()) {
               this.target.giveEffect("Virus");
             }

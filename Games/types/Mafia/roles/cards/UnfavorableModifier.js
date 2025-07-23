@@ -26,14 +26,14 @@ module.exports = class UnfavorableModifier extends Card {
               "UnfavorableMode",
               Infinity
             );
-            this.player.passiveEffects.push(this.UnfavorableModeEffect);
+            this.passiveEffects.push(this.UnfavorableModeEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(
+          var index = this.passiveEffects.indexOf(
             this.UnfavorableModeEffect
           );
           if (index != -1) {
-            this.player.passiveEffects.splice(index, 1);
+            this.passiveEffects.splice(index, 1);
           }
           if (this.UnfavorableModeEffect != null) {
             this.UnfavorableModeEffect.remove();

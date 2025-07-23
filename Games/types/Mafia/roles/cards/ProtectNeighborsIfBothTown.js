@@ -37,11 +37,11 @@ module.exports = class ProtectNeighborsIfBothTown extends Card {
         }
         for (let x = 0; x < this.ImmortalEffects.length; x++) {
           if (this.ImmortalEffects[x].player) {
-            var index = this.ImmortalEffects[x].player.passiveEffects.indexOf(
+            var index = this.passiveEffects.indexOf(
               this.ImmortalEffects[x]
             );
             if (index != -1) {
-              this.player.passiveEffects.splice(index, 1);
+              this.passiveEffects.splice(index, 1);
             }
             this.ImmortalEffects[x].remove();
           }
@@ -54,7 +54,7 @@ module.exports = class ProtectNeighborsIfBothTown extends Card {
           }
           for (let player of neighbors) {
             let effect = player.giveEffect("Immortal", 5, Infinity);
-            this.player.passiveEffects.push(effect);
+            this.passiveEffects.push(effect);
             this.ImmortalEffects.push(effect);
           }
         }

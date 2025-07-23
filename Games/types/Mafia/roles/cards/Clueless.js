@@ -22,12 +22,12 @@ module.exports = class Clueless extends Card {
             !this.players.effects.includes(this.CluelessEffect)
           ) {
             this.CluelessEffect = this.player.giveEffect("Scrambled", Infinity);
-            this.player.passiveEffects.push(this.CluelessEffect);
+            this.passiveEffects.push(this.CluelessEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(this.CluelessEffect);
+          var index = this.passiveEffects.indexOf(this.CluelessEffect);
           if (index != -1) {
-            this.player.passiveEffects.splice(index, 1);
+            this.passiveEffects.splice(index, 1);
           }
           if (this.CluelessEffect != null) {
             this.CluelessEffect.remove();

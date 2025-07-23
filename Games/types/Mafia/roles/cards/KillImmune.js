@@ -26,12 +26,12 @@ module.exports = class KillImmune extends Card {
               5,
               Infinity
             );
-            this.player.passiveEffects.push(this.UnkillableEffect);
+            this.passiveEffects.push(this.UnkillableEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(this.UnkillableEffect);
+          var index = this.passiveEffects.indexOf(this.UnkillableEffect);
           if (index != -1) {
-            this.player.passiveEffects.splice(index, 1);
+            this.passiveEffects.splice(index, 1);
           }
           if (this.UnkillableEffect != null) {
             this.UnkillableEffect.remove();

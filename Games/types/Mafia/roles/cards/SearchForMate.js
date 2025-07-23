@@ -12,9 +12,10 @@ module.exports = class SearchForMate extends Card {
         targets: { include: ["alive"], exclude: ["self"] },
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         action: {
+          role: this.role,
           run: function () {
-            if (!this.actor.role.data.mated) {
-              this.actor.role.data.mated = 0;
+            if (!this.role.data.mated) {
+              this.role.data.mated = 0;
             }
             if (this.target.role == "Panda Bear") {
               this.target.giveEffect("Lovesick", this.actor);
@@ -29,7 +30,7 @@ module.exports = class SearchForMate extends Card {
                 this.actor,
                 this.target.name
               );
-              this.actor.role.data.mated++;
+              this.role.data.mated++;
               this.target.role.data.mated++;
               return;
             }

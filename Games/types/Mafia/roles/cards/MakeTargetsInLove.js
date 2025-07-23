@@ -14,6 +14,7 @@ module.exports = class MakeTargetsInLove extends Card {
         multiMin: 2,
         multiMax: 2,
         action: {
+          role: this.role,
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             var targetA = this.target[0];
@@ -27,7 +28,7 @@ module.exports = class MakeTargetsInLove extends Card {
             targetB.giveEffect("Lovesick", targetA);
             this.queueGetEffectAlert("Lovesick", targetB, targetA.name);
 
-            this.actor.role.pairedLovers = [targetA, targetB];
+            this.role.pairedLovers = [targetA, targetB];
           },
         },
         shouldMeet() {

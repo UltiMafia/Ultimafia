@@ -13,8 +13,9 @@ module.exports = class SacrificeSelf extends Card {
         action: {
           labels: ["save"],
           priority: PRIORITY_NIGHT_SAVER,
+          role: this.role,
           run: function () {
-            this.actor.role.savedPlayer = this.target;
+            this.role.savedPlayer = this.target;
 
             // power 5, lifespan 1
             this.target.giveEffect("CondemnImmune", 5, 1);

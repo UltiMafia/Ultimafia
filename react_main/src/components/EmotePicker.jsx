@@ -11,6 +11,17 @@ export default function EmotePicker(props) {
   const panelRef = useRef();
   const containerRef = useRef();
   const user = useContext(UserContext);
+  let emotesToUse = user.settings?.customEmotes || {};
+  /*
+  if(props.players){
+    for(let player of Object.values(props.players)){
+      if(player.user?.id == user.id){
+        emotesToUse = player.user.customEmotes;
+        break;
+      }
+    }
+  }
+  */
 
   useOnOutsideClick([panelRef, containerRef], () => setPanelVisible(false));
 
@@ -31,7 +42,7 @@ export default function EmotePicker(props) {
     panelRef.current.style.visibility = "visible";
   });
 
-  const userCustomEmotes = user.settings?.customEmotes || {};
+  const userCustomEmotes = emotesToUse || {};
   const customEmotes = (
     <>
       {Object.keys(userCustomEmotes).map((customEmote) => (

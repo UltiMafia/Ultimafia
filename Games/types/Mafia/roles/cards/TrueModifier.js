@@ -24,12 +24,12 @@ module.exports = class TrueModifier extends Card {
             !this.player.effects.includes(this.TrueModeEffect)
           ) {
             this.TrueModeEffect = this.player.giveEffect("TrueMode", Infinity);
-            this.player.passiveEffects.push(this.TrueModeEffect);
+            this.passiveEffects.push(this.TrueModeEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(this.TrueModeEffect);
+          var index = this.passiveEffects.indexOf(this.TrueModeEffect);
           if (index != -1) {
-            this.player.passiveEffects.splice(index, 1);
+            this.passiveEffects.splice(index, 1);
           }
           if (this.TrueModeEffect != null) {
             this.TrueModeEffect.remove();

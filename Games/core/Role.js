@@ -13,6 +13,7 @@ module.exports = class Role {
     this.data = data || {};
     this.cards = [];
     this.alignment = "";
+    this.passiveEffects = [];
 
     /* Card overwritable properties */
     this.winCount = null;
@@ -391,6 +392,10 @@ module.exports = class Role {
     if(this.isExtraRole != true){
       this.player.role = null;
     }
+    for(let effect of this.passiveEffects){
+      effect.remove();
+    }
+    this.passiveEffects = [];
     this.removeListeners();
   }
 

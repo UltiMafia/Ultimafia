@@ -41,12 +41,12 @@ module.exports = class TurnIntoTree extends Card {
             !this.player.effects.includes(this.TreeEffect)
           ) {
             this.TreeEffect = this.player.giveEffect("Tree", 1, Infinity);
-            this.player.passiveEffects.push(this.TreeEffect);
+            this.passiveEffects.push(this.TreeEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(this.TreeEffect);
+          var index = this.passiveEffects.indexOf(this.TreeEffect);
           if (index != -1) {
-            this.player.passiveEffects.splice(index, 1);
+            this.passiveEffects.splice(index, 1);
           }
           if (this.TreeEffect != null) {
             this.TreeEffect.remove();

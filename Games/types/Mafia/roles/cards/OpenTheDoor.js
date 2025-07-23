@@ -17,10 +17,11 @@ module.exports = class OpenTheDoor extends Card {
         inputType: "boolean",
         action: {
           priority: PRIORITY_DAY_DEFAULT,
+          role: this.role,
           run: function () {
             if (this.target == "No") return;
 
-            this.actor.role.openedDoorLastNight = true;
+            this.role.openedDoorLastNight = true;
 
             var evil = this.game
               .alivePlayers()
@@ -86,8 +87,9 @@ module.exports = class OpenTheDoor extends Card {
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_KILL_DEFAULT + 1,
+          role: this.role,
           run: function () {
-            if (!this.actor.role.openedDoorLastNight) return;
+            if (!this.role.openedDoorLastNight) return;
 
             var visitors = this.getVisitors();
             var imminentDeath = !visitors.find(
@@ -99,7 +101,7 @@ module.exports = class OpenTheDoor extends Card {
               this.actor.kill("mistress", this.actor);
             }
 
-            delete this.actor.role.openedDoorLastNight;
+            delete this.role.openedDoorLastNight;
           },
         });
 

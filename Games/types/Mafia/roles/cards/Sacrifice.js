@@ -12,16 +12,17 @@ module.exports = class Sacrifice extends Card {
         targets: { include: ["Cult"], exclude: ["dead", "self"] },
         action: {
           priority: PRIORITY_KILL_SPECIAL - 4,
+          role: this.role,
           run: function () {
             if (this.dominates()){
              this.target.kill("basic", this.actor);
-              if(this.actor.role.data.PlayerToGiveExtraLifeTo){
-              this.actor.role.data.PlayerToGiveExtraLifeTo.giveEffect("ExtraLife", this.actor);
-              this.actor.role.data.PlayerToGiveExtraLifeTo.queueAlert("You gain an extra life!");
+              if(this.role.data.PlayerToGiveExtraLifeTo){
+              this.role.data.PlayerToGiveExtraLifeTo.giveEffect("ExtraLife", this.actor);
+              this.role.data.PlayerToGiveExtraLifeTo.queueAlert("You gain an extra life!");
               }
             
             }
-            delete this.actor.role.data.PlayerToGiveExtraLifeTo;
+            delete this.role.data.PlayerToGiveExtraLifeTo;
           },
         },
       },
@@ -31,8 +32,9 @@ module.exports = class Sacrifice extends Card {
         targets: { include: ["Cult"], exclude: ["dead", "self"] },
         action: {
           priority: PRIORITY_KILL_SPECIAL -5,
+          role: this.role,
           run: function () {
-            this.actor.role.data.PlayerToGiveExtraLifeTo = this.target;
+            this.role.data.PlayerToGiveExtraLifeTo = this.target;
           },
         },
       },

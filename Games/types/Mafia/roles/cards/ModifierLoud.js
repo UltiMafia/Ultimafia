@@ -96,6 +96,7 @@ module.exports = class ModifierLoud extends Card {
             "absolute",
             "uncontrollable",
           ],
+          role: this.role,
           run: function () {
             let info = this.game.createInformation(
               "WatcherInfo",

@@ -13,8 +13,9 @@ module.exports = class MonkSave extends Card {
         action: {
           labels: ["save"],
           priority: PRIORITY_NIGHT_SAVER,
+          role: this.role,
           run: function () {
-            this.actor.role.savedPlayer = this.target;
+            this.role.savedPlayer = this.target;
 
             // power 5, lifespan 2
             this.target.giveEffect("Immortal", 5, 2);

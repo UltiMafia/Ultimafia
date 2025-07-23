@@ -27,14 +27,14 @@ module.exports = class OnePlayerShowsAsEvil extends Card {
               Infinity,
               this.player
             );
-            this.player.passiveEffects.push(this.OnePlayerShowsAsEvilEffect);
+            this.passiveEffects.push(this.OnePlayerShowsAsEvilEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(
+          var index = this.passiveEffects.indexOf(
             this.OnePlayerShowsAsEvilEffect
           );
           if (index != -1) {
-            this.player.passiveEffects.splice(index, 1);
+            this.passiveEffects.splice(index, 1);
           }
           if (this.OnePlayerShowsAsEvilEffect != null) {
             this.OnePlayerShowsAsEvilEffect.remove();

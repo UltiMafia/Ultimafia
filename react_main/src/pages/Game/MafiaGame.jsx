@@ -63,7 +63,7 @@ export default function MafiaGame() {
     { fileName: "music/NightWinter", loops: true, overrides: false, volumes: 1 },
     { fileName: "music/NightFool", loops: true, overrides: false, volumes: 0.6 },
     { fileName: "music/NightClockmaker", loops: true, overrides: false, volumes: 1 },
-    { fileName: "music/NightGeneric", loops: true, overrides: false, volumes: 0.6 },
+    { fileName: "music/NightCult", loops: true, overrides: false, volumes: 0.6 },
     { fileName: "music/Draw", loops: false, overrides: false, volumes: 1, },
     { fileName: "music/WinAlien", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinAnarchist", loops: false, overrides: false, volumes: 1, },
@@ -200,12 +200,15 @@ export default function MafiaGame() {
             break;
           default:
             if (currentAlignment === "Mafia") {
-              // If mafia isn't listed above then this track plays
+              // If mafia role isn't listed above the mafia track plays
               game.playAudio("music/NightMafia");
             }
+            else if (currentAlignment === "Cult") {
+              // If cult role isn't listed above then the cult track plays
+              game.playAudio("music/NightCult");
+            }
             else {
-              // If the role isn't listed above then the generic track plays
-              game.playAudio("music/NightGeneric");
+              console.log(`${currentRoleName} has no night music`);
             }
             break;
         }

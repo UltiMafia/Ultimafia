@@ -20,10 +20,11 @@ module.exports = class StartDrama extends Card {
         flags: ["voting"],
         action: {
           labels: ["drama"],
+          role: this.role,
           run: function () {
             this.target.holdItem(
               "Drama",
-              this.actor.role.data.meetingName,
+              this.role.data.meetingName,
               this.actor,
               this.target
             );

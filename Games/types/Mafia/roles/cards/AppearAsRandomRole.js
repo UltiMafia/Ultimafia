@@ -18,7 +18,8 @@ module.exports = class AppearAsRandomRole extends Card {
           if (
             roleName != "Villager" &&
             roleName != "Imposter" &&
-            roleName != "Impersonator"
+            roleName != "Impersonator" &&
+            roleName != "Skinwalker"
           ) {
             roles.push(roleName);
           }

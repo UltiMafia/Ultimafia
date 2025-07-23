@@ -12,6 +12,7 @@ module.exports = class ProposeMarriage extends Card {
           return !this.isMarried;
         },
         action: {
+          role: this.role,
           labels: ["marriage"],
           run: function () {
             this.game.queueAlert(`Someone proposes to ${this.target.name}.`);

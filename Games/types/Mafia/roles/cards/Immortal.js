@@ -36,12 +36,12 @@ module.exports = class Immortal extends Card {
               5,
               Infinity
             );
-            this.player.passiveEffects.push(this.ImmortalEffect);
+            this.passiveEffects.push(this.ImmortalEffect);
           }
         } else {
-          var index = this.player.passiveEffects.indexOf(this.ImmortalEffect);
+          var index = this.passiveEffects.indexOf(this.ImmortalEffect);
           if (index != -1) {
-            this.player.passiveEffects.splice(index, 1);
+            this.passiveEffects.splice(index, 1);
           }
           if (this.ImmortalEffect != null) {
             this.ImmortalEffect.remove();

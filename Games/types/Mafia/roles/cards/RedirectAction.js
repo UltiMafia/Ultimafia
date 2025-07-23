@@ -13,8 +13,9 @@ module.exports = class RedirectAction extends Card {
         flags: ["voting"],
         action: {
           priority: PRIORITY_REDIRECT_ACTION - 1,
+          role: this.role,
           run: function () {
-            this.actor.role.data.controlledActor = this.target;
+            this.role.data.controlledActor = this.target;
           },
         },
       },
@@ -26,14 +27,15 @@ module.exports = class RedirectAction extends Card {
         action: {
           labels: ["hidden"],
           priority: PRIORITY_REDIRECT_ACTION,
+          role: this.role,
           run: function () {
-            let toControl = this.actor.role.data.controlledActor;
+            let toControl = this.role.data.controlledActor;
             if (!toControl) {
               return;
             }
 
             this.redirectAllActions(toControl, this.target);
-            delete this.actor.role.data.controlledActor;
+            delete this.role.data.controlledActor;
           },
         },
       },
