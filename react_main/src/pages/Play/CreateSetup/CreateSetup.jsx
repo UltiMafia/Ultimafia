@@ -21,6 +21,7 @@ import CreateSecretDictatorSetup from "./CreateSecretDictatorSetup";
 import CreateWackyWordsSetup from "./CreateWackyWordsSetup";
 import CreateLiarsDiceSetup from "./CreateLiarsDiceSetup";
 import CreateCardGamesSetup from "./CreateCardGamesSetup";
+import CreateCheatSetup from "./CreateCheatSetup";
 import CreateBattlesnakesSetup from "./CreateBattlesnakesSetup";
 
 import { GameTypes } from "Constants";
@@ -139,6 +140,8 @@ export default function CreateSetup(props) {
                   return <CreateLiarsDiceSetup />;
                 case "Card Games":
                   return <CreateCardGamesSetup />;
+                case "Cheat":
+                  return <CreateCheatSetup />;
                 case "Battlesnakes":
                   return <CreateBattlesnakesSetup />;
                 default:
