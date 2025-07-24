@@ -22,11 +22,11 @@ module.exports = class CheatGame extends Game {
       },
       {
         name: "Play Cards",
-        length: options.settings.stateLengths["Place Bets"],
+        length: options.settings.stateLengths["Play Cards"],
       },
       {
         name: "Call Lie",
-        length: options.settings.stateLengths["Showdown"],
+        length: options.settings.stateLengths["Call Lie"],
       },
     ];
 
