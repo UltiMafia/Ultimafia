@@ -21,6 +21,7 @@ import HostSecretDictator from "./HostSecretDictator";
 import HostWackyWords from "./HostWackyWords";
 import HostLiarsDice from "./HostLiarsDice";
 import HostCardGames from "./HostCardGames";
+import HostCheat from "./HostCheat";
 import HostBattlesnakes from "./HostBattlesnakes";
 
 import GameIcon from "components/GameIcon";
@@ -139,6 +140,8 @@ export default function Host(props) {
                   return <HostLiarsDice />;
                 case "Card Games":
                   return <HostCardGames />;
+                case "Cheat":
+                  return <HostCheat />;
                 case "Battlesnakes":
                   return <HostBattlesnakes />;
                 default:
