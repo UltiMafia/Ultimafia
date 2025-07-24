@@ -56,6 +56,7 @@ module.exports = {
     "Wacky Words",
     "Liars Dice",
     "Card Games",
+    "Cheat",
     "Battlesnakes",
   ],
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
@@ -69,6 +70,7 @@ module.exports = {
     "Wacky Words": ["Town", "Host"],
     "Liars Dice": ["Liars", "Host"],
     "Card Games": ["Town", "Host"],
+    "Cheat": ["Town", "Host"],
     Battlesnakes: ["Town", "Host"],
   },
   startStates: {
@@ -81,6 +83,7 @@ module.exports = {
     "Wacky Words": ["Night"],
     "Liars Dice": ["Guess Dice"],
     "Card Games": ["Place Bets", "Showdown"],
+    "Cheat": ["Play Cards", "Call Lie"],
     Battlesnakes: ["Day"],
   },
   configurableStates: {
@@ -224,6 +227,18 @@ module.exports = {
         default: 1 * 60 * 1000,
       },
       Showdown: {
+        min: 30 * 1000,
+        max: 5 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+    },
+  "Cheat": {
+      "Play Cards": {
+        min: 30 * 1000,
+        max: 5 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+      "Call Lie": {
         min: 30 * 1000,
         max: 5 * 60 * 1000,
         default: 1 * 60 * 1000,
