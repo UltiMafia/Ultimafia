@@ -197,6 +197,7 @@ module.exports = class CheatGame extends Game {
       for(let player of this.randomizedPlayersCopy){
         player.hasLied = false;
       }
+      this.incrementCurrentIndex();
     }
 
     super.incrementState();
