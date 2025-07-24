@@ -189,7 +189,7 @@ export default function CheatGame(props) {
               self={self}
               history={history}
               stateViewing={stateViewing}
-              title="Make A Bid!"
+              title="Play your Cards!"
               style={{
                 color: history.states?.[stateViewing]?.extraInfo
                   ?.isTheFlyingDutchman
@@ -280,8 +280,6 @@ function LiarscardPlayerRow({
   isTheFlyingDutchman,
   whoseTurnIsIt,
 }) {
-  Chips = Chips || 0;
-  Bets = Bets || 0;
   const isSamePlayer = whoseTurnIsIt === userId;
   return (
     <div className="card-games-player-section">
