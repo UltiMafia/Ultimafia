@@ -5408,6 +5408,18 @@ const roleData = {
       description: ["Facilitates the game."],
     },
   },
+  "Cheat": {
+    Player: {
+      alignment: "Town",
+      tags: ["None"],
+      description: ["Can play cards and call lies."],
+    },
+    Host: {
+      alignment: "Host",
+      tags: ["None"],
+      description: ["Facilitates the game."],
+    },
+  },
   Battlesnakes: {
     Snake: {
       alignment: "Town",

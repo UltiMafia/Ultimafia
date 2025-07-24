@@ -189,6 +189,7 @@ const modifierData = {
     },
   },
   "Card Games": {},
+  "Cheat": {},
 };
 
 module.exports = modifierData;

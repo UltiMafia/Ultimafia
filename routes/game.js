@@ -1152,6 +1152,13 @@ const settingsChecks = {
       MaxRounds,
     };
   },
+  "Cheat": (settings, setup) => {
+    let MaxRounds = settings.MaxRounds;
+
+    return {
+      MaxRounds,
+    };
+  },
   Battlesnakes: (settings, setup) => {
     const boardSize = settings.boardSize;
 

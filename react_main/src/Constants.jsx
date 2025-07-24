@@ -8,6 +8,7 @@ export const GameTypes = [
   "Wacky Words",
   "Liars Dice",
   "Card Games",
+  "Cheat",
   "Battlesnakes",
 ];
 export const Lobbies = [
@@ -29,6 +30,7 @@ export const Alignments = {
   "Wacky Words": ["Town", "Host"],
   "Liars Dice": ["Liars", "Host"],
   "Card Games": ["Town", "Host"],
+  "Cheat": ["Town", "Host"],
   Battlesnakes: ["Town", "Host"],
 };
 
@@ -48,6 +50,7 @@ export const GameStates = {
   "Wacky Words": ["Day", "Night"],
   "Liars Dice": ["Guess Dice"],
   "Card Games": ["Place Bets", "Showdown"],
+  "Cheat": ["Play Cards", "Call Lie"],
   Battlesnakes: ["Day"],
 };
 

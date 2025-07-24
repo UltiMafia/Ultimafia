@@ -2320,6 +2320,9 @@ module.exports = class Game {
       else if(this.type == "Card Games"){
         this.hasHost = this.setup.roles[0]["Host:"];
       }
+      else if(this.type == "Cheat"){
+        this.hasHost = this.setup.roles[0]["Host:"];
+      }
       else if(this.type == "Ghost"){
         this.hasFool = this.setup.roles[0]["Fool:"];
       }

@@ -2913,6 +2913,15 @@ background-image: url("/src/images/modifiers/wise.png");
   background-image: url("/src/images/roles/host-vivid.png");
 }
 
+
+.role-icon-vivid-Cheat-Player {
+  background-image: url("/src/images/roles/gambler-vivid.png");
+}
+
+.role-icon-vivid-Cheat-Host {
+  background-image: url("/src/images/roles/host-vivid.png");
+}
+
 /***********
 *
 * Pride icons; not for game

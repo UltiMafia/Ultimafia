@@ -44,6 +44,11 @@ const protips = {
     "99% of gamblers quit before they win big!",
     "All In",
   ],
+  "Cheat": [
+    "Count the cards",
+    "Call It",
+    "Cheaters sometimes prosper",
+  ],
 };
 
 module.exports = protips;

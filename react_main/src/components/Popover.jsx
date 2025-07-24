@@ -907,6 +907,16 @@ export function parseGamePopover(game) {
         />
       );
       break;
+      case "Cheat":
+      
+      result.push(
+        <InfoRow
+          title="Max Rounds"
+          content={game.settings.gameTypeOptions.MaxRounds}
+          key="MaxRounds"
+        />
+      );
+      break;
   }
 
   //Created at

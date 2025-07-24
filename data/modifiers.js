@@ -897,6 +897,7 @@ const modifierData = {
   "Wacky Words": {},
   "Liars Dice": {},
   "Card Games": {},
+  "Cheat": {},
   Battlesnakes: {},
 };
 

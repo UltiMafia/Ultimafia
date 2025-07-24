@@ -112,7 +112,7 @@ export default function CheatGame(props) {
                   : "#8B0000",
               }}
             >
-              Card Games
+              Cheat
             </span>
           </div>
         }
