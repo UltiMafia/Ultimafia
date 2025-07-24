@@ -16,6 +16,7 @@ const HOST_OPTIONS_VERSIONS = {
   Resistance: 1,
   "Secret Dictator": 1,
   "Wacky Words": 1,
+  "Cheat": 1,
 };
 
 // Associate all of the existing saved options per game type into a map
@@ -103,6 +104,14 @@ var defaultOptions = {
     MaxRounds: 0,
     placeBetsLength: 2,
     showdownLength: 2,
+  },
+  "Cheat": existingHostOptions["Cheat"] || {
+    ...commonHostOptions,
+    MaxRounds: 0,
+    placeBetsLength: 2,
+    showdownLength: 2,
+    playCardsLength: 2,
+    callLieLength: 2,
   },
   Resistance: existingHostOptions["Resistance"] || {
     ...commonHostOptions,
