@@ -55,7 +55,7 @@ module.exports = {
     "Secret Dictator",
     "Wacky Words",
     "Liars Dice",
-    "Card Games",
+    "Texas Hold Em",
     "Cheat",
     "Battlesnakes",
   ],
@@ -69,7 +69,7 @@ module.exports = {
     "Secret Dictator": ["Liberals", "Fascists"],
     "Wacky Words": ["Town", "Host"],
     "Liars Dice": ["Liars", "Host"],
-    "Card Games": ["Town", "Host"],
+    "Texas Hold Em": ["Town", "Host"],
     "Cheat": ["Town", "Host"],
     Battlesnakes: ["Town", "Host"],
   },
@@ -82,7 +82,7 @@ module.exports = {
     "Secret Dictator": ["Nomination"],
     "Wacky Words": ["Night"],
     "Liars Dice": ["Guess Dice"],
-    "Card Games": ["Place Bets", "Showdown"],
+    "Texas Hold Em": ["Place Bets", "Showdown"],
     "Cheat": ["Play Cards", "Call Lie"],
     Battlesnakes: ["Day"],
   },
@@ -220,7 +220,7 @@ module.exports = {
         default: 1 * 60 * 1000,
       },
     },
-    "Card Games": {
+    "Texas Hold Em": {
       "Place Bets": {
         min: 30 * 1000,
         max: 5 * 60 * 1000,

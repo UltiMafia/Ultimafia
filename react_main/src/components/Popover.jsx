@@ -883,7 +883,7 @@ export function parseGamePopover(game) {
         />
       );
       break;
-    case "Card Games":
+    case "Texas Hold Em":
       result.push(
         <InfoRow
           title="Minimum Bet"

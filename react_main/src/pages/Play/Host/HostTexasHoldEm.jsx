@@ -11,8 +11,8 @@ import { Lobbies } from "../../../Constants";
 
 import "css/host.css";
 
-export default function HostCardGames() {
-  const gameType = "Card Games";
+export default function HostTexasHoldEm() {
+  const gameType = "Texas Hold Em";
   const [selSetup, setSelSetup] = useState({});
   const [redirect, setRedirect] = useState(false);
   const siteInfo = useContext(SiteInfoContext);
@@ -152,7 +152,7 @@ export default function HostCardGames() {
   ]);
 
   useEffect(() => {
-    document.title = "Host Card Games | UltiMafia";
+    document.title = "Host Texas Hold Em | UltiMafia";
   }, []);
 
   function onHostGame() {

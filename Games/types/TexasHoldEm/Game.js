@@ -11,7 +11,7 @@ module.exports = class TexasHoldEmGame extends Game {
   constructor(options) {
     super(options);
 
-    this.type = "Card Games";
+    this.type = "Texas Hold Em";
     this.Player = Player;
     this.states = [
       {

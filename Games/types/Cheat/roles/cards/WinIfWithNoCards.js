@@ -30,6 +30,12 @@ module.exports = class WinIfWithNoCards extends Card {
         if (this.player.HasNoCards == true){
           winners.addPlayer(this.player, this.name);
         }
+        let nonHostAlive = this.game
+          .alivePlayers()
+          .filter((p) => p.role.name != "Host");
+        if (nonHostAlive.length <= 1 && this.player.alive){
+          winners.addPlayer(this.player, this.name);
+        }
       },
     };
 

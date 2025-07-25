@@ -12,7 +12,7 @@ const HOST_OPTIONS_VERSIONS = {
   Jotto: 1,
   "Liars Dice": 1,
   Battlesnakes: 1,
-  "Card Games": 1,
+  "Texas Hold Em": 1,
   Resistance: 1,
   "Secret Dictator": 1,
   "Wacky Words": 1,
@@ -97,7 +97,7 @@ var defaultOptions = {
     spotOn: false,
     guessDiceLength: 2,
   },
-  "Card Games": existingHostOptions["Card Games"] || {
+  "Texas Hold Em": existingHostOptions["Texas Hold Em"] || {
     ...commonHostOptions,
     startingChips: 50,
     minimumBet: 2,

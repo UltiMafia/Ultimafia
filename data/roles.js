@@ -5396,7 +5396,7 @@ const roleData = {
       description: ["Facilitates the game."],
     },
   },
-  "Card Games": {
+  "Texas Hold Em": {
     Player: {
       alignment: "Town",
       tags: ["None"],

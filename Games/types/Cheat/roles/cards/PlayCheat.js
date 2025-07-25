@@ -9,15 +9,15 @@ module.exports = class PlayCheat extends Card {
       "Play Card": {
         actionName: "Choose Cards",
         states: ["Play Cards"],
-        flags: ["voting"],
+        flags: ["voting", "multi"],
         inputType: "playingCardButtons",
         multiMin: 1,
         multiMax: 4,
-        targets: this.PossibleCards,
+        targets: role.player.CardsInHand,
         action: {
           item: this,
           run: function () {
-          
+          this.game.sendAlert(`${this.actor.name} plays ${this.target.length} Cards!`);
           for(let card of this.target){
             let readCard = this.game.readCard(card);
             if(readCard[0] != this.game.RankNumber){
@@ -30,7 +30,7 @@ module.exports = class PlayCheat extends Card {
         },
         shouldMeet: function () {
           return (
-            this.player.name == this.game.randomizedPlayersCopy[this.game.currentIndex]
+            this.player.name == this.game.randomizedPlayersCopy[this.game.currentIndex].name
           );
         },
       },
@@ -45,7 +45,7 @@ module.exports = class PlayCheat extends Card {
         },
         shouldMeet: function () {
           return (
-            this.player.name == this.game.randomizedPlayersCopy[this.game.currentIndex]
+            this.player.name == this.game.randomizedPlayersCopy[this.game.currentIndex].name
           );
         },
       },
@@ -60,11 +60,11 @@ module.exports = class PlayCheat extends Card {
             if(this.target == "Don't Call Lie"){
               return;
             }
-          this.game.sendAlert(`${this.actor.name} calls ${this.game.randomizedPlayersCopy[this.game.currentIndex]} a Liar!`);
+          this.game.sendAlert(`${this.actor.name} calls ${this.game.randomizedPlayersCopy[this.game.currentIndex].name} a Liar!`);
             if(this.game.randomizedPlayersCopy[this.game.currentIndex].hasLied == true){
               this.game.randomizedPlayersCopy[this.game.currentIndex].CardsInHand.push(...this.game.TheStack);
               this.game.TheStack = [];
-              this.game.sendAlert(`${this.actor.name} was correct! ${this.game.randomizedPlayersCopy[this.game.currentIndex]} gains the Stack!`);
+              this.game.sendAlert(`${this.actor.name} was correct! ${this.game.randomizedPlayersCopy[this.game.currentIndex].name} gains the Stack!`);
             }
             else{
               this.actor.CardsInHand.push(...this.game.TheStack);
@@ -76,7 +76,7 @@ module.exports = class PlayCheat extends Card {
               for (let player of this.game.players) {
                 player.getMeetings().forEach((meeting) => {
                   if (IMPORTANT_MEETINGS.includes(meeting.name)) {
-                  meeting.leave(this.actor, true);
+                  meeting.leave(player, true);
                   }
                   else if (ROLE_MEETINGS.includes(meeting.name)) {
                     meeting.leave(player, true);
@@ -88,7 +88,7 @@ module.exports = class PlayCheat extends Card {
         },
         shouldMeet: function () {
           return (
-            this.player.name != this.game.randomizedPlayersCopy[this.game.currentIndex]
+            this.player.name != this.game.randomizedPlayersCopy[this.game.currentIndex].name
           );
         },
       },

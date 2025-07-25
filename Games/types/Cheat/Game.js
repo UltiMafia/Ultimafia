@@ -150,6 +150,7 @@ module.exports = class CheatGame extends Game {
       player.ScoreType = null;
       player.ShowdownCards = [];
     });
+    this.RoundNumber = 0;
     this.Phase = "First Bets";
     if (this.RoundNumber == 0) {
       this.Dealer = this.randomizedPlayersCopy[0];
@@ -191,6 +192,7 @@ module.exports = class CheatGame extends Game {
     if (previousState == "Call Lie") {
       this.RoundNumber++;
       this.RankNumber++;
+      this.sendAlert(`${(this.RankNumber != 1 && this.RankNumber != 11 && this.RankNumber != 12 && this.RankNumber != 13) ? (this.RankNumber) : (this.RankNumber == 1 ? "Ace" : (this.RankNumber == 11 ? "Jack" : (this.RankNumber == 12 ? "Queen" : ("King"))))}s must be played!`);
       if(this.RankNumber > 13){
         this.RankNumber = 1;
       }
@@ -198,6 +200,7 @@ module.exports = class CheatGame extends Game {
         player.hasLied = false;
       }
       this.incrementCurrentIndex();
+      this.sendAlert(`${this.randomizedPlayersCopy[this.currentIndex].name}'s Turn!`);
     }
 
     super.incrementState();
@@ -393,8 +396,8 @@ module.exports = class CheatGame extends Game {
         this.randomizedPlayersCopy?.[this.currentIndex]?.user.id ?? 0,
       ThePot: this.ThePot,
       RoundNumber: this.RoundNumber,
-      Phase: this.Phase,
-      CommunityCards: this.CommunityCards,
+      RankNumber: this.RankNumber,
+      TheStack: this.TheStack,
     };
     return info;
   }

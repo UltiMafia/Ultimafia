@@ -18,7 +18,7 @@ import { SideMenu } from "./Game";
 import "css/game.css";
 import "css/gameCardGames.css";
 
-export default function CardGamesGame(props) {
+export default function TexasHoldEmGame(props) {
   const game = useContext(GameContext);
 
   const history = game.history;
@@ -32,7 +32,7 @@ export default function CardGamesGame(props) {
 
   const playBellRef = useRef(false);
 
-  const gameType = "Card Games";
+  const gameType = "Texas Hold Em";
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
@@ -112,7 +112,7 @@ export default function CardGamesGame(props) {
                   : "#8B0000",
               }}
             >
-              Card Games
+              Texas Hold Em
             </span>
           </div>
         }

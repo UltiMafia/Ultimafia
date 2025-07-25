@@ -2902,14 +2902,14 @@ background-image: url("/src/images/modifiers/wise.png");
 
 /***********
 *
-* Card Games
+* Texas Hold Em
 *
 ************/
-.role-icon-vivid-Card-Games-Player {
+.role-icon-vivid-Texas-Hold-Em-Player {
   background-image: url("/src/images/roles/gambler-vivid.png");
 }
 
-.role-icon-vivid-Card-Games-Host {
+.role-icon-vivid-Texas-Hold-Em-Host {
   background-image: url("/src/images/roles/host-vivid.png");
 }
 

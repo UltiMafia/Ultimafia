@@ -23,8 +23,10 @@ export default function LearnCheat(props) {
         Learn Cheat
       </Typography>
       <Typography variant="body1" paragraph>
-        In Cheat players will try to get rid of all of the cards in there hand 
-        Each round players will be given 
+        In Cheat players will try to get to 0 cards.
+        Each round players will be given a Card type to play. They may play that card type or lie and play a diffrent card type.
+        After they play their cards other players may call them out for lying.
+        Players who called out for lying or incorrectly call out for lying must add all played cards to their hand.
       </Typography>
       <Accordion>
         <AccordionSummary>

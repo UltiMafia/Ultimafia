@@ -188,7 +188,7 @@ const modifierData = {
         "Can be shot once during the day to make a player lose a dice.",
     },
   },
-  "Card Games": {},
+  "Texas Hold Em": {},
   "Cheat": {},
 };
 

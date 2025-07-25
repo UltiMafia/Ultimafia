@@ -7,8 +7,8 @@ import { SiteInfoContext } from "../../../Contexts";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 
-export default function CreateCardGamesSetup() {
-  const gameType = "Card Games";
+export default function CreateTexasHoldEmSetup() {
+  const gameType = "Texas Hold Em";
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const errorAlert = useErrorAlert();
@@ -39,7 +39,7 @@ export default function CreateCardGamesSetup() {
   const siteInfo = useContext(SiteInfoContext);
 
   useEffect(() => {
-    document.title = "Create Card Games Setup | UltiMafia";
+    document.title = "Create Texas Hold Em Setup | UltiMafia";
   }, []);
 
   function onCreateSetup(roleData, editing, setRedirect) {

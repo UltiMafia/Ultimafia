@@ -1198,7 +1198,7 @@ const countChecks = {
     if (total < 2 || total > 50) return "Must have between 2 and 50 players.";
     return true;
   },
-  "Card Games": (roles, count, total, closed, unique) => {
+  "Texas Hold Em": (roles, count, total, closed, unique) => {
     if (total < 2 || total > 20) return "Must have between 2 and 20 players.";
     return true;
   },
@@ -1260,7 +1260,7 @@ const optionsChecks = {
   "Liars Dice": (setup) => {
     return setup;
   },
-  "Card Games": (setup) => {
+  "Texas Hold Em": (setup) => {
     return setup;
   },
   "Cheat": (setup) => {

@@ -20,7 +20,7 @@ import HostAcrotopia from "./HostAcrotopia";
 import HostSecretDictator from "./HostSecretDictator";
 import HostWackyWords from "./HostWackyWords";
 import HostLiarsDice from "./HostLiarsDice";
-import HostCardGames from "./HostCardGames";
+import HostTexasHoldEm from "./HostTexasHoldEm";
 import HostCheat from "./HostCheat";
 import HostBattlesnakes from "./HostBattlesnakes";
 
@@ -138,8 +138,8 @@ export default function Host(props) {
                   return <HostWackyWords />;
                 case "Liars Dice":
                   return <HostLiarsDice />;
-                case "Card Games":
-                  return <HostCardGames />;
+                case "Texas Hold Em":
+                  return <HostTexasHoldEm />;
                 case "Cheat":
                   return <HostCheat />;
                 case "Battlesnakes":

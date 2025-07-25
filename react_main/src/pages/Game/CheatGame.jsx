@@ -220,18 +220,17 @@ export function ThePot(props) {
       scrollable
       content={
         <table className="options-table">
-          <tbody>{extraInfo.Phase}</tbody>
           <tbody>
             Round:
             {extraInfo.RoundNumber}
           </tbody>
           <tbody>
-            Rank:
+           Current Card Rank:
             {(extraInfo.RankNumber != 1 && extraInfo.RankNumber != 11 && extraInfo.RankNumber != 12 && extraInfo.RankNumber != 13) ? (extraInfo.RankNumber) : (extraInfo.RankNumber == 1 ? "Ace" : (extraInfo.RankNumber == 11 ? "Jack" : (extraInfo.RankNumber == 12 ? "Queen" : ("King"))))}
           </tbody>
           <tbody>
             The Stack:
-            {extraInfo.ThePot}
+            {extraInfo.TheStack.length}
           </tbody>
         </table>
       }
