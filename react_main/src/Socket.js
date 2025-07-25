@@ -69,7 +69,9 @@ class Socket {
   }
 
   terminate() {
-    this.socket.close();
+    if (this.socket) {
+      this.socket.close();
+    }
   }
 
   get readyState() {
