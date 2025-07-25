@@ -5396,11 +5396,23 @@ const roleData = {
       description: ["Facilitates the game."],
     },
   },
-  "Card Games": {
+  "Texas Hold Em": {
     Player: {
       alignment: "Town",
       tags: ["None"],
       description: ["Can place bets and play cards."],
+    },
+    Host: {
+      alignment: "Host",
+      tags: ["None"],
+      description: ["Facilitates the game."],
+    },
+  },
+  "Cheat": {
+    Player: {
+      alignment: "Town",
+      tags: ["None"],
+      description: ["Can play cards and call lies."],
     },
     Host: {
       alignment: "Host",

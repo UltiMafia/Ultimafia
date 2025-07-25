@@ -883,7 +883,7 @@ export function parseGamePopover(game) {
         />
       );
       break;
-    case "Card Games":
+    case "Texas Hold Em":
       result.push(
         <InfoRow
           title="Minimum Bet"
@@ -899,6 +899,16 @@ export function parseGamePopover(game) {
           key="startingChips"
         />
       );
+      result.push(
+        <InfoRow
+          title="Max Rounds"
+          content={game.settings.gameTypeOptions.MaxRounds}
+          key="MaxRounds"
+        />
+      );
+      break;
+      case "Cheat":
+      
       result.push(
         <InfoRow
           title="Max Rounds"

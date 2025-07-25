@@ -7,7 +7,8 @@ export const gamesIcons = {
     "Secret Dictator": require("images/game_icons/SecretDictator.png"),
     "Wacky Words": require("images/game_icons/WackyWords.png"),
     "Liars Dice": require("images/game_icons/LiarsDice.png"),
-    "Card Games": require("images/game_icons/CardGames.png"),
+    "Texas Hold Em": require("images/game_icons/CardGames.png"),
+    "Cheat": require("images/game_icons/CardGames.png"),
     Battlesnakes: require("images/game_icons/Battlesnakes.png"),
 };
 

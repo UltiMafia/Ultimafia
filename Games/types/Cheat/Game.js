@@ -7,11 +7,11 @@ const Winners = require("../../core/Winners");
 
 const Random = require("../../../lib/Random");
 
-module.exports = class TexasHoldEmGame extends Game {
+module.exports = class CheatGame extends Game {
   constructor(options) {
     super(options);
 
-    this.type = "Card Games";
+    this.type = "Cheat";
     this.Player = Player;
     this.states = [
       {
@@ -21,13 +21,12 @@ module.exports = class TexasHoldEmGame extends Game {
         name: "Pregame",
       },
       {
-        name: "Place Bets",
-        length: options.settings.stateLengths["Place Bets"],
+        name: "Play Cards",
+        length: options.settings.stateLengths["Play Cards"],
       },
       {
-        name: "Showdown",
-        length: options.settings.stateLengths["Showdown"],
-        skipChecks: [() => this.Phase != "Showdown"],
+        name: "Call Lie",
+        length: options.settings.stateLengths["Call Lie"],
       },
     ];
 
@@ -38,10 +37,8 @@ module.exports = class TexasHoldEmGame extends Game {
     */
     this.drawDiscardPile = new DrawDiscardPile();
     this.drawDiscardPile.initCards();
-    this.startingChips = parseInt(options.settings.startingChips);
-    this.minimumBet = parseInt(options.settings.minimumBet);
     this.MaxRounds = parseInt(options.settings.MaxRounds) || 0;
-    this.CardGameType = "Texas Hold’em";
+    this.CardGameType = "Cheat";
 
     //VARIABLES
     this.randomizedPlayers = []; //All players after they get randomized. Used for showing players and their dice on left side of screen.
@@ -108,11 +105,8 @@ module.exports = class TexasHoldEmGame extends Game {
       );
     }
     */
-    if (this.startingChips) {
-      this.sendAlert(`Everyone starts with ${this.startingChips} chips.`);
-    }
     if(this.MaxRounds >= 1){
-      this.sendAlert(`The player with the most Chips wins after Round ${this.MaxRounds}.`);
+      this.sendAlert(`The player with the least Cards wins after Round ${this.MaxRounds}.`);
     }
     this.sendAlert(`Good luck... You'll probably need it.`);
 
@@ -134,11 +128,11 @@ module.exports = class TexasHoldEmGame extends Game {
 
     // super.start();
     //this.rollDice();
-    if (this.CardGameType == "Texas Hold’em") {
-      this.CommunityCards = [];
-      this.RoundNumber = 0;
+    if (this.CardGameType == "Cheat") {
+      this.TheStack = [];
+      this.RankNumber = 1;
       this.drawDiscardPile.shuffle();
-      this.setupNextRoundTexas();
+      this.setupCheat();
     }
     this.startRoundRobin();
 
@@ -146,7 +140,7 @@ module.exports = class TexasHoldEmGame extends Game {
   }
 
   //Start: Randomizes player order, and gives the microphone to first one.
-  setupNextRoundTexas() {
+  setupCheat() {
     this.ThePot = parseInt(0);
     this.randomizedPlayers.forEach((player) => {
       player.hasFolded = false;
@@ -156,90 +150,20 @@ module.exports = class TexasHoldEmGame extends Game {
       player.ScoreType = null;
       player.ShowdownCards = [];
     });
-    this.randomizedPlayers.forEach((player) => {
-      if (player.Chips < this.minimumBet) {
-        player.kill();
-      }
-    });
+    this.RoundNumber = 0;
     this.Phase = "First Bets";
     if (this.RoundNumber == 0) {
       this.Dealer = this.randomizedPlayersCopy[0];
       this.SmallBlind = this.randomizedPlayersCopy[1];
       this.BigBlind =
         this.randomizedPlayersCopy[(1 + 1) % this.randomizedPlayersCopy.length];
-    } else {
-      for (let x = 1; x < this.randomizedPlayersCopy.length; x++) {
-        if (
-          this.randomizedPlayersCopy[
-            (this.randomizedPlayersCopy.indexOf(this.Dealer) + x) %
-              this.randomizedPlayersCopy.length
-          ].alive
-        ) {
-          this.Dealer =
-            this.randomizedPlayersCopy[
-              (this.randomizedPlayersCopy.indexOf(this.Dealer) + x) %
-                this.randomizedPlayersCopy.length
-            ];
-          for (let y = 1; y < this.randomizedPlayersCopy.length; y++) {
-            if (
-              this.randomizedPlayersCopy[
-                (this.randomizedPlayersCopy.indexOf(this.Dealer) + y) %
-                  this.randomizedPlayersCopy.length
-              ].alive
-            ) {
-              this.SmallBlind =
-                this.randomizedPlayersCopy[
-                  (this.randomizedPlayersCopy.indexOf(this.Dealer) + y) %
-                    this.randomizedPlayersCopy.length
-                ];
+    } 
 
-              for (let w = 1; w < this.randomizedPlayersCopy.length; w++) {
-                if (
-                  this.randomizedPlayersCopy[
-                    (this.randomizedPlayersCopy.indexOf(this.SmallBlind) + w) %
-                      this.randomizedPlayersCopy.length
-                  ].alive
-                ) {
-                  this.BigBlind =
-                    this.randomizedPlayersCopy[
-                      (this.randomizedPlayersCopy.indexOf(this.SmallBlind) +
-                        w) %
-                        this.randomizedPlayersCopy.length
-                    ];
-                  this.currentIndex =
-                    parseInt(
-                      this.randomizedPlayersCopy.indexOf(this.BigBlind)
-                    ) % this.randomizedPlayersCopy.length;
-
-                  //Bidder
-                  break;
-                }
-              } //BigBlind
-
-              break;
-            } //SmallBlind
-          }
-          break;
-        } //Dealer
-      }
-    }
-    this.sendAlert(
-      `${this.SmallBlind.name} is The Small Blind and bets ${Math.ceil(
-        this.minimumBet / 2.0
-      )}.`
-    );
-    this.SmallBlind.Chips -= Math.ceil(this.minimumBet / 2.0);
-    this.SmallBlind.AmountBidding = Math.ceil(this.minimumBet / 2.0);
-    this.ThePot += Math.ceil(this.minimumBet / 2.0);
-    this.lastAmountBid = Math.ceil(this.minimumBet / 2.0);
-    this.sendAlert(
-      `${this.BigBlind.name} is The Big Blind and bets ${this.minimumBet}.`
-    );
-    this.BigBlind.Chips -= this.minimumBet;
-    this.BigBlind.AmountBidding = this.minimumBet;
     this.ThePot += this.minimumBet;
     this.lastAmountBid = this.minimumBet;
-    this.dealCards(2);
+    let cardAmount = Math.floor(52/this.randomizedPlayersCopy.length);
+    
+    this.dealCards(cardAmount);
   }
 
   startRoundRobin() {
@@ -264,300 +188,22 @@ module.exports = class TexasHoldEmGame extends Game {
   incrementState() {
     let previousState = this.getStateName();
 
-    if (previousState == "Place Bets") {
-      console.log(this.spectatorMeetFilter);
-      let tempPlayers = this.randomizedPlayersCopy.filter(
-        (p) =>
-          p.hasHadTurn != true && p.alive && p.hasFolded != true && p.Chips > 0
-      );
-      let playersInGame = this.randomizedPlayersCopy.filter(
-        (p) => p.alive && p.hasFolded != true
-      );
-      if (playersInGame.length == 1) {
-        this.sendAlert(`The Round has Concluded`);
-        this.RoundNumber++;
-        this.sendAlert(
-          `${playersInGame[0].name} has Won ${this.ThePot} from The Pot by not folding!`
-        );
-        playersInGame[0].Chips += parseInt(this.ThePot);
-
-        this.removeHands();
-        this.discardCommunityCards();
-        this.setupNextRoundTexas();
-      } else if (tempPlayers.length > 0) {
-        playersInGame = playersInGame.filter((p) => p.Chips > 0);
-        while (playersInGame.length > 0) {
-          this.incrementCurrentIndex();
-
-          let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
-          if (
-            nextPlayer.alive &&
-            nextPlayer.hasFolded != true &&
-            nextPlayer.Chips > 0
-          ) {
-            nextPlayer.holdItem("Microphone");
-            break;
-          }
-        }
-      } else if (this.Phase == "First Bets") {
-        this.lastAmountBid = 0;
-        this.Phase = "The Flop";
-        this.randomizedPlayers.forEach((player) => {
-          player.hasHadTurn = false;
-          player.AmountBidding = 0;
-        });
-        this.DrawCommunityCards(3);
-        this.currentIndex =
-          this.randomizedPlayersCopy.indexOf(this.Dealer) %
-          this.randomizedPlayersCopy.length;
-        playersInGame = playersInGame.filter((p) => p.Chips > 0);
-        while (playersInGame.length > 0) {
-          this.incrementCurrentIndex();
-
-          let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
-          if (
-            nextPlayer.alive &&
-            nextPlayer.hasFolded != true &&
-            nextPlayer.Chips > 0
-          ) {
-            nextPlayer.holdItem("Microphone");
-            break;
-          }
-        }
-      } else if (this.Phase == "The Flop" || this.Phase == "The Turn") {
-        this.lastAmountBid = 0;
-        if (this.Phase == "The Flop") {
-          this.Phase = "The Turn";
-        } else {
-          this.Phase = "The River";
-        }
-        this.randomizedPlayers.forEach((player) => {
-          player.hasHadTurn = false;
-          player.AmountBidding = 0;
-        });
-        this.DrawCommunityCards(1);
-        this.currentIndex =
-          this.randomizedPlayersCopy.indexOf(this.Dealer) %
-          this.randomizedPlayersCopy.length;
-        playersInGame = playersInGame.filter((p) => p.Chips > 0);
-        while (playersInGame.length > 0) {
-          this.incrementCurrentIndex();
-
-          let nextPlayer = this.randomizedPlayersCopy[this.currentIndex];
-          if (
-            nextPlayer.alive &&
-            nextPlayer.hasFolded != true &&
-            nextPlayer.Chips > 0
-          ) {
-            nextPlayer.holdItem("Microphone");
-            break;
-          }
-        }
-      } else if (this.Phase == "The River") {
-        this.Phase = "Showdown";
-        this.randomizedPlayers.forEach((player) => {
-          if (player.alive != true) {
-            return;
-          }
-          if (player.hasFolded == true) {
-            return;
-          }
-          player.holdItem("ShowdownTime");
-          player.hasHadTurn = false;
-          player.AmountBidding = 0;
-        });
-      }
-    } else if (previousState == "Showdown") {
-      this.AwardRoundWinner();
+    console.log(this.spectatorMeetFilter);
+    if (previousState == "Call Lie") {
       this.RoundNumber++;
-      this.removeHands();
-      this.discardCommunityCards();
-      this.setupNextRoundTexas();
+      this.RankNumber++;
+      this.sendAlert(`${(this.RankNumber != 1 && this.RankNumber != 11 && this.RankNumber != 12 && this.RankNumber != 13) ? (this.RankNumber) : (this.RankNumber == 1 ? "Ace" : (this.RankNumber == 11 ? "Jack" : (this.RankNumber == 12 ? "Queen" : ("King"))))}s must be played!`);
+      if(this.RankNumber > 13){
+        this.RankNumber = 1;
+      }
+      for(let player of this.randomizedPlayersCopy){
+        player.hasLied = false;
+      }
+      this.incrementCurrentIndex();
+      this.sendAlert(`${this.randomizedPlayersCopy[this.currentIndex].name}'s Turn!`);
     }
 
     super.incrementState();
-  }
-
-  AwardRoundWinner() {
-    this.randomizedPlayers.forEach((player) => {
-      if (player.alive != true) {
-        return;
-      }
-      if (player.hasFolded == true) {
-        return;
-      }
-      let allSameSuit = true;
-      let streight = true;
-      let lowAce = false;
-      var counts = [
-        0, //2-0
-        0, //3-1
-        0, //4-2
-        0, //5-3
-        0, //6-4
-        0, //7-5
-        0, //8-6
-        0, //9-7
-        0, //10-8
-        0, //Jack-9
-        0, //Queen-10
-        0, //King-11
-        0, //Ace-12
-      ];
-
-      player.ShowdownCards = this.sortCards(player.ShowdownCards);
-      this.sendAlert(`${player.name} uses ${player.ShowdownCards.join(", ")}!`);
-      for (let card of player.ShowdownCards) {
-        let tempCard = this.readCard(card);
-        if (!counts[tempCard[0]]) {
-          counts[tempCard[0]] = 0;
-        }
-        counts[tempCard[0] - 2]++;
-        for (let cardB of player.ShowdownCards) {
-          let tempCardB = this.readCard(cardB);
-          if (card == player.ShowdownCards[0]) {
-            if (card != cardB) {
-              //this.sendAlert(`${card} ${tempCard[0]}-${cardB} ${tempCardB[0]} is ${tempCard[0]-tempCardB[0]} Index ${player.ShowdownCards.indexOf(cardB)}!`);
-              if (
-                parseInt(tempCard[0] - tempCardB[0]) !=
-                parseInt(player.ShowdownCards.indexOf(cardB))
-              ) {
-                //Low Ace Check
-                if (
-                  this.readCard(player.ShowdownCards[0])[0] == 14 &&
-                  this.readCard(player.ShowdownCards[1])[0] == 5 &&
-                  this.readCard(player.ShowdownCards[2])[0] == 4 &&
-                  this.readCard(player.ShowdownCards[3])[0] == 3 &&
-                  this.readCard(player.ShowdownCards[4])[0] == 2
-                ) {
-                  streight = true;
-                  lowAce = true;
-                } else {
-                  streight = false;
-                }
-              }
-            }
-          }
-          if (card != cardB) {
-            if (tempCard[1] != tempCardB[1]) {
-              allSameSuit = false;
-            }
-          }
-        }
-      }
-      let score = 0;
-      let four = false;
-      let five = false;
-      let fiveValue;
-      let fourValue;
-      let three = false;
-      let threeValue;
-      let pairs = 0;
-      let pairValues = [];
-
-      for (let x = 0; x < counts.length; x++) {
-        //this.sendAlert(`Value ${x+2} Amounts ${counts[x]}!`);
-        if (counts[x] == 5) {
-          five = true;
-          fiveValue = x + 2;
-        }
-        if (counts[x] == 4) {
-          four = true;
-          fourValue = x + 2;
-        }
-        if (counts[x] == 3) {
-          three = true;
-          threeValue = x + 2;
-        }
-        if (counts[x] == 2) {
-          pairs += 1;
-          pairValues.push(x + 2);
-        }
-      }
-
-      if (five == true && allSameSuit == true) {
-        player.ScoreType = "Five Flush";
-        score += 13000;
-        score += fiveValue;
-      } else if (three == true && pairs > 0 && allSameSuit == true) {
-        player.ScoreType = "Flush house";
-        score += 12000;
-        score += threeValue;
-        score += pairValues[0];
-      } else if (five == true) {
-        player.ScoreType = "Five of a kind";
-        score += 11000;
-        score += fiveValue;
-      } else if (
-        streight == true &&
-        allSameSuit == true &&
-        this.readCard(player.ShowdownCards[0])[0] == 14 &&
-        lowAce != true
-      ) {
-        player.ScoreType = "Royal Flush";
-        score += 10000;
-      } else if (streight == true && allSameSuit == true) {
-        player.ScoreType = "Straight flush";
-        score += 9000;
-        score += this.readCard(player.ShowdownCards[0])[0];
-      } else if (four == true) {
-        player.ScoreType = "Four of a kind";
-        score += 8000;
-        score += fourValue;
-      } else if (three == true && pairs > 0) {
-        player.ScoreType = "Full house";
-        score += 7000;
-        score += threeValue;
-        score += pairValues[0];
-      } else if (allSameSuit == true) {
-        player.ScoreType = "Flush";
-        score += 6000;
-        score += this.readCard(player.ShowdownCards[0])[0];
-      } else if (streight == true) {
-        player.ScoreType = "Straight";
-        score += 5000;
-        score += this.readCard(player.ShowdownCards[0])[0];
-      } else if (three == true) {
-        player.ScoreType = "Three of a kind";
-        score += 4000;
-        score += threeValue;
-      } else if (pairs > 1) {
-        player.ScoreType = "Two Pairs";
-        score += 3000;
-        score += pairValues[0];
-        score += pairValues[1];
-      } else if (pairs > 0) {
-        player.ScoreType = "Pair";
-        score += 2000;
-        score += pairValues[0];
-      } else {
-        player.ScoreType = "High Card";
-        score += this.readCard(player.ShowdownCards[0])[0];
-      }
-      player.Score = score;
-    });
-    let highest = [
-      this.randomizedPlayers.filter((p) => p.alive && p.hasFolded != true)[0],
-    ];
-    for (let player of this.randomizedPlayers.filter(
-      (p) => p.alive && p.hasFolded != true
-    )) {
-      if (player.Score > highest[0].Score) {
-        highest = [player];
-      } else if (player != highest[0] && player.Score == highest[0].Score) {
-        highest.push(player);
-      }
-    }
-    this.sendAlert(`The Round has Concluded`);
-    for (let player of highest) {
-      this.sendAlert(
-        `${player.name} has Won ${Math.floor(
-          this.ThePot / highest.length
-        )} from The Pot with a ${player.ScoreType}!`
-      );
-      //this.sendAlert(`${player.name} had a score of ${player.Score}!`);
-      player.Chips += parseInt(Math.floor(this.ThePot / highest.length));
-    }
   }
 
   sortCards(cards) {
@@ -750,8 +396,8 @@ module.exports = class TexasHoldEmGame extends Game {
         this.randomizedPlayersCopy?.[this.currentIndex]?.user.id ?? 0,
       ThePot: this.ThePot,
       RoundNumber: this.RoundNumber,
-      Phase: this.Phase,
-      CommunityCards: this.CommunityCards,
+      RankNumber: this.RankNumber,
+      TheStack: this.TheStack,
     };
     return info;
   }

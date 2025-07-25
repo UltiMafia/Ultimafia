@@ -20,7 +20,8 @@ import LearnAcrotopia from "./LearnAcrotopia";
 import LearnSecretDictator from "./LearnSecretDictator";
 import LearnWackyWords from "./LearnWackyWords";
 import LearnLiarsDice from "./LearnLiarsDice";
-import LearnCardGames from "./LearnCardGames";
+import LearnTexasHoldEm from "./LearnTexasHoldEm";
+import LearnCheat from "./LearnCheat";
 
 import { GameTypes } from "Constants";
 import LearnBattlesnakes from "./LearnBattlesnakes";
@@ -137,10 +138,10 @@ export default function Games(props) {
                   return <LearnWackyWords />;
                 case "Liars Dice":
                   return <LearnLiarsDice />;
-                case "Card Games":
-                  return <LearnCardGames />;
-                case "Card Games":
-                  return <LearnCardGames />;
+                case "Texas Hold Em":
+                  return <LearnTexasHoldEm />;
+                case "Cheat":
+                  return <LearnCheat />;
                 case "Battlesnakes":
                   return <LearnBattlesnakes />;
                 default:

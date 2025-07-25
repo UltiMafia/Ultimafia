@@ -12,10 +12,11 @@ const HOST_OPTIONS_VERSIONS = {
   Jotto: 1,
   "Liars Dice": 1,
   Battlesnakes: 1,
-  "Card Games": 1,
+  "Texas Hold Em": 1,
   Resistance: 1,
   "Secret Dictator": 1,
   "Wacky Words": 1,
+  "Cheat": 1,
 };
 
 // Associate all of the existing saved options per game type into a map
@@ -96,13 +97,21 @@ var defaultOptions = {
     spotOn: false,
     guessDiceLength: 2,
   },
-  "Card Games": existingHostOptions["Card Games"] || {
+  "Texas Hold Em": existingHostOptions["Texas Hold Em"] || {
     ...commonHostOptions,
     startingChips: 50,
     minimumBet: 2,
     MaxRounds: 0,
     placeBetsLength: 2,
     showdownLength: 2,
+  },
+  "Cheat": existingHostOptions["Cheat"] || {
+    ...commonHostOptions,
+    MaxRounds: 0,
+    placeBetsLength: 2,
+    showdownLength: 2,
+    playCardsLength: 2,
+    callLieLength: 2,
   },
   Resistance: existingHostOptions["Resistance"] || {
     ...commonHostOptions,

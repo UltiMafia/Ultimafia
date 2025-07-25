@@ -2317,7 +2317,10 @@ module.exports = class Game {
         this.EventsPerNight = this.setup.EventsPerNight;
         this.GameEndEvent = this.setup.GameEndEvent;
       }
-      else if(this.type == "Card Games"){
+      else if(this.type == "Texas Hold Em"){
+        this.hasHost = this.setup.roles[0]["Host:"];
+      }
+      else if(this.type == "Cheat"){
         this.hasHost = this.setup.roles[0]["Host:"];
       }
       else if(this.type == "Ghost"){

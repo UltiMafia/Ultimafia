@@ -1141,7 +1141,7 @@ const settingsChecks = {
       startingDice,
     };
   },
-  "Card Games": (settings, setup) => {
+  "Texas Hold Em": (settings, setup) => {
     let minimumBet = settings.minimumBet;
     let startingChips = settings.startingChips;
     let MaxRounds = settings.MaxRounds;
@@ -1149,6 +1149,13 @@ const settingsChecks = {
     return {
       minimumBet,
       startingChips,
+      MaxRounds,
+    };
+  },
+  "Cheat": (settings, setup) => {
+    let MaxRounds = settings.MaxRounds;
+
+    return {
       MaxRounds,
     };
   },

@@ -8,11 +8,11 @@ import {
 import { useTheme } from "@mui/styles";
 import { RoleSearch } from "../../components/Roles";
 
-export default function LearnCardGames(props) {
-  const gameType = "Card Games";
+export default function LearnTexasHoldEm(props) {
+  const gameType = "Texas Hold Em";
 
   useEffect(() => {
-    document.title = "Learn Card Games | UltiMafia";
+    document.title = "Learn Texas Hold Em | UltiMafia";
   }, []);
 
   const theme = useTheme();
@@ -20,7 +20,7 @@ export default function LearnCardGames(props) {
   return (
     <div className="learn">
       <Typography variant="h4" gutterBottom>
-        Learn Card Games
+        Learn Texas Hold Em
       </Typography>
       <Typography variant="body1" paragraph>
         Texas Hold’em/Poker: In Texas Hold'em all players will be given two
@@ -28,15 +28,6 @@ export default function LearnCardGames(props) {
         are revealed. The player who creates the best hand using the commuity
         cards and the 2 cards they were given wins the bets. Players who are
         unable to make the minimum bet at the start of round die.
-      </Typography>
-      <Typography variant="body1" paragraph>
-        Cheat: Coming Soon
-      </Typography>
-      <Typography variant="body1" paragraph>
-        Crazy Eights: Coming Soon
-      </Typography>
-      <Typography variant="body1" paragraph>
-        Ratscrew: Coming Soon
       </Typography>
       <Accordion>
         <AccordionSummary>

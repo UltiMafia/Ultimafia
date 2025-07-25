@@ -306,7 +306,8 @@ const AchievementData = {
   "Secret Dictator": {},
   "Wacky Words": {},
   "Liars Dice": {},
-  "Card Games": {},
+  "Texas Hold Em": {},
+  "Cheat": {},
 };
 
 //export const achievementList = AchievementData
