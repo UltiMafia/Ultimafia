@@ -367,6 +367,8 @@ export function NameWithAvatar(props) {
       axios.get(`/api/user/${id}/profile`).then((res) => {
         res.data.props = props;
         setUserProfile(res.data);
+      }).catch(error => {
+        console.warn(`Couldn't retrieve profile for ${id} (this error is harmless if they're a bot)`)
       });
     }
   }, []);
