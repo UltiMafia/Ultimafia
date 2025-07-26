@@ -830,7 +830,7 @@ const roleData = {
       alignment: "Village",
       tags: ["Information", "Alignment", "Basic"],
       description: [
-        "On their first night, learns 3 players 1 will be Evil and other 2 will be good.",
+        "On their first night, learns about 3 players. 1 will be Evil, 2 will be good.",
       ],
       nightOrder: [["Learn Players",(PRIORITY_INVESTIGATIVE_DEFAULT)]],
     },
@@ -1867,6 +1867,27 @@ const roleData = {
         "When the game ends, Swaps the Winners and Losers.",
         "If Roleblocked/made Delirious will not Switch the Winners that night and the following day.",
         "If Multiple Brokers are in a game, The Winners and Losers can swapped Multiple Times.",
+      ],
+    },
+    Hero: {
+      alignment: "Village",
+      category: "Essential",
+      tags: ["Conversion", "Setup Change", "Visiting", "Expert", "Banished Interaction"],
+      description: [
+        "Attempts to guess the identity of the Damsal each night.",
+        "Converts them to a Random non-banished Village Role if Correct.",
+        "Forces a Damsal to Spawn in closed setups.",
+      ],
+      nightOrder: [["Guess Damsal",(0)]],
+      RolesMadeBy: ["Damsal"],
+    },
+    Damsal: {
+      alignment: "Village",
+      category: "Essential",
+      tags: ["Win Con", "Expert"],
+      description: [
+        'If the first Evil Player to say "I think the Damsel is (Player Name)" during the day is correct, Mafia and Cult win.',
+        "All Mafia and Cult players learn if a Damsel is in the game.",
       ],
     },
     President: {
