@@ -18,3 +18,29 @@ services:
       - ./:/home/um/
     networks:
       - my_net
+
+  # Overrides for exposing mongodb ports
+  mongodb:
+    expose:
+      - 27017
+    ports:
+      - "27017:27017"
+
+  # Overrides for exposing backend ports
+  backend:
+    expose:
+      - 2999
+      - 3000
+      - 5858
+      - 3010
+      - 9230
+      - 9231
+      - 9232
+    ports:
+      - "2999:2999"
+      - "3000:3000"
+      - "3010:3010"
+      - "5858:5858"
+      - "9230:9230"
+      - "9231:9231"
+      - "9232:9232"
