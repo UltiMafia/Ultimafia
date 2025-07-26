@@ -8,10 +8,6 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PW}
       MONGO_INITDB_DATABASE: ${MONGO_DB}
-    expose:
-      - 27017
-    ports:
-      - "27017:27017"
     volumes:
       - mongodb:/data/db
       - ./scripts/mongo:/scripts
@@ -38,22 +34,6 @@ services:
     build:
       context: .
       dockerfile: dockerfile
-    expose:
-      - 2999
-      - 3000
-      - 5858
-      - 3010
-      - 9230
-      - 9231
-      - 9232
-    ports:
-      - "2999:2999"
-      - "3000:3000"
-      - "3010:3010"
-      - "5858:5858"
-      - "9230:9230"
-      - "9231:9231"
-      - "9232:9232"
     volumes:
       - ./:/home/um/
     networks:
