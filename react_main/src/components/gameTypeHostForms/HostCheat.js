@@ -1,23 +1,12 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Redirect } from "react-router-dom";
 import axios from "axios";
 
-import HostBrowser from "./HostBrowser";
-import { getDefaults, persistDefaults } from "./HostDefaults";
-import { useForm } from "../../../components/Form";
-import { useErrorAlert } from "../../../components/Alerts";
-import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies } from "../../../Constants";
+import { getDefaults, persistDefaults } from "./DefaultValues";
+import { Lobbies } from "Constants";
 
 import "css/host.css";
 
-export default function HostTexasHoldEm() {
-  const gameType = "Texas Hold Em";
-  const [selSetup, setSelSetup] = useState({});
-  const [redirect, setRedirect] = useState(false);
-  const siteInfo = useContext(SiteInfoContext);
-  const errorAlert = useErrorAlert();
-
+export default function HostCheat() {
+  const gameType = "Cheat";
   const defaults = getDefaults(gameType);
 
   let defaultLobby = localStorage.getItem("lobby");
@@ -28,29 +17,8 @@ export default function HostTexasHoldEm() {
   ) {
     defaultLobby = "Games";
   }
-  const [formFields, updateFormFields] = useForm([
-    {
-      label: "Setup",
-      ref: "setup",
-      type: "text",
-      disabled: true,
-    },
-    {
-      label: "Minimum Bet",
-      ref: "minimumBet",
-      type: "number",
-      value: defaults.minimumBet,
-      min: 2,
-      max: 20,
-    },
-    {
-      label: "Starting Chips",
-      ref: "startingChips",
-      type: "number",
-      value: defaults.startingChips,
-      min: 5,
-      max: 500,
-    },
+
+  const initialFormFields = [
     {
       label: "Max Rounds",
       ref: "MaxRounds",
@@ -130,18 +98,18 @@ export default function HostTexasHoldEm() {
       value: defaults.configureDuration,
     },
     {
-      label: "Place Bets (minutes)",
-      ref: "placeBetsLength",
+      label: "Play Cards (minutes)",
+      ref: "playCardsLength",
       type: "number",
       showIf: "configureDuration",
       value: defaults.placeBetsLength,
       min: 0.5,
-      max: 5,
+      max: 3,
       step: 0.5,
     },
     {
-      label: "Showdown (minutes)",
-      ref: "showdownLength",
+      label: "Call Lie (minutes)",
+      ref: "callLieLength",
       type: "number",
       showIf: "configureDuration",
       value: defaults.showdownLength,
@@ -149,20 +117,16 @@ export default function HostTexasHoldEm() {
       max: 3,
       step: 0.5,
     },
-  ]);
+  ];
 
-  useEffect(() => {
-    document.title = "Host Texas Hold Em | UltiMafia";
-  }, []);
-
-  function onHostGame() {
+  function onHostGame(setupId, getFormFieldValue) {
     var scheduled = getFormFieldValue("scheduled");
 
-    if (selSetup.id) {
-      axios
+    if (setupId) {
+      const hostPromise = axios
         .post("/api/game/host", {
           gameType: gameType,
-          setup: selSetup.id,
+          setup: setupId,
           lobby: getFormFieldValue("lobby"),
           lobbyName: getFormFieldValue("lobbyName"),
           private: getFormFieldValue("private"),
@@ -172,22 +136,15 @@ export default function HostTexasHoldEm() {
             scheduled && new Date(getFormFieldValue("startDate")).getTime(),
           readyCheck: getFormFieldValue("readyCheck"),
           stateLengths: {
-            "Place Bets": getFormFieldValue("placeBetsLength"),
-            Showdown: getFormFieldValue("showdownLength"),
+            "Play Cards": getFormFieldValue("playCardsLength"),
+            "Call Lie": getFormFieldValue("callLieLength"),
           },
           startingChips: getFormFieldValue("startingChips"),
           minimumBet: getFormFieldValue("minimumBet"),
           MaxRounds: getFormFieldValue("MaxRounds"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
-        })
-        .then((res) => {
-          if (scheduled) {
-            siteInfo.showAlert(`Game scheduled.`, "success");
-            setRedirect("/");
-          } else setRedirect(`/game/${res.data}`);
-        })
-        .catch(errorAlert);
+        });
 
       defaults.private = getFormFieldValue("private");
       defaults.guests = getFormFieldValue("guests");
@@ -196,23 +153,12 @@ export default function HostTexasHoldEm() {
       defaults.anonymousGame = getFormFieldValue("anonymousGame");
       defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
       persistDefaults(gameType, defaults);
-    } else errorAlert("You must choose a setup");
+      return hostPromise;
+    }
+    else {
+      return null;
+    }
   }
 
-  function getFormFieldValue(ref) {
-    for (let field of formFields) if (field.ref === ref) return field.value;
-  }
-
-  if (redirect) return <Redirect to={redirect} />;
-
-  return (
-    <HostBrowser
-      gameType={gameType}
-      selSetup={selSetup}
-      setSelSetup={setSelSetup}
-      formFields={formFields}
-      updateFormFields={updateFormFields}
-      onHostGame={onHostGame}
-    />
-  );
+  return [initialFormFields, onHostGame];
 }

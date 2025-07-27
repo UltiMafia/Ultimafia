@@ -2,37 +2,60 @@ import React, { useState, useEffect, useContext, useReducer } from "react";
 import { useLocation, useHistory } from "react-router-dom";
 import axios from "axios";
 
-import { UserContext } from "../../../Contexts";
-import { PageNav, SearchBar } from "../../../components/Nav";
-import Setup from "../../../components/Setup";
-import Form from "../../../components/Form";
-import { ItemList, filterProfanity } from "../../../components/Basic";
-import { useErrorAlert } from "../../../components/Alerts";
+import { UserContext } from "Contexts";
+import { PageNav, SearchBar } from "components/Nav";
+import Setup from "components/Setup";
+import HostGameDialogue from "components/HostGameDialogue";
+import { ItemList, filterProfanity } from "components/Basic";
+import { useErrorAlert } from "components/Alerts";
 
 import "css/host.css";
 import { BotBarLink } from "../Play";
 import { clamp } from "../../../lib/MathExt";
-import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
-import { Stack } from "@mui/material";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import {
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Paper,
+  Stack,
+  Tab,
+  Tabs,
+  SwipeableDrawer,
+  useTheme,
+} from "@mui/material";
+
+import GameIcon from "components/GameIcon";
+import { GameTypes } from "Constants";
 
 export default function HostBrowser(props) {
-  const gameType = props.gameType;
-  const selSetup = props.selSetup;
-  const setSelSetup = props.setSelSetup;
+  const defaultGameType = "Mafia";
+  const defaultNavLabel = "Popular";
   const formFields = props.formFields;
-  const updateFormFields = props.updateFormFields;
-  const onHostGame = props.onHostGame;
 
+  const [selSetup, setSelSetup] = useState(null);
+  const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const [hostNavLabel, setHostNavLabel] = useState(defaultNavLabel);
   const [pageCount, setPageCount] = useState(1);
   const [setups, setSetups] = useState([]);
 
+  const isPhoneDevice = useIsPhoneDevice();
+  const theme = useTheme();
+  const errorAlert = useErrorAlert();
   const location = useLocation();
   const history = useHistory();
 
   const minSlots = 1;
   const maxSlots = 50;
 
-  const preSelectedSetup = new URLSearchParams(location.search).get("setup");
+  const params = new URLSearchParams(location.search);
   const preSelectedDeck = new URLSearchParams(location.search).get("deck");
 
   const [filters, dispatchFilters] = useReducer(
@@ -51,7 +74,7 @@ export default function HostBrowser(props) {
           return {
             gameType: action.value,
             page: 1,
-            option: "Popular",
+            option: defaultNavLabel,
             query: "",
           };
         }
@@ -63,39 +86,37 @@ export default function HostBrowser(props) {
         }
       }
     },
-    preSelectedSetup
-      ? {
-          gameType,
-          page: 1,
-          option: "Yours",
-          query: "",
-          minSlots: minSlots,
-          maxSlots: maxSlots,
-        }
-      : {
-          gameType,
-          page: 1,
-          option: "Popular",
-          query: "",
-          minSlots: minSlots,
-          maxSlots: maxSlots,
-        }
+    {
+      page: 1,
+      option: defaultNavLabel,
+      query: "",
+      minSlots: minSlots,
+      maxSlots: maxSlots,
+    }
   );
 
-  const errorAlert = useErrorAlert();
+  const [gameType, setGameType] = useState(
+    params.get("game") || localStorage.getItem("gameType") || defaultGameType
+  );
+  
+  const handleListItemClick = (newValue) => {
+    setGameType(newValue);
+    localStorage.setItem("gameType", newValue);
+    setDrawerOpen(false);
+  };
 
-  const user = useContext(UserContext);
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event &&
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+    setDrawerOpen(open);
+  };
 
   useEffect(() => {
-    if (preSelectedSetup) {
-      axios
-        .get(`/api/setup/${preSelectedSetup}`)
-        .then((res) => {
-          res.data.name = filterProfanity(res.data.name, user.settings);
-          setSelSetup(res.data);
-        })
-        .catch(errorAlert);
-    }
     if (preSelectedDeck) {
       let anonymousGameField = formFields.find(
         (field) => field.ref === "anonymousGame"
@@ -116,19 +137,11 @@ export default function HostBrowser(props) {
     return () => {
       window.clearTimeout(timeout);
     };
-  }, [filters]);
-
-  useEffect(() => {
-    updateFormFields({
-      ref: "setup",
-      prop: "value",
-      value: selSetup.name,
-    });
-  }, [selSetup]);
+  }, [filters, gameType]);
 
   function getSetupList(filters) {
     axios
-      .get(`/api/setup/search?${new URLSearchParams(filters).toString()}`)
+      .get(`/api/setup/search?${new URLSearchParams({ gameType: gameType, ...filters }).toString()}`)
       .then((res) => {
         setSetups(res.data.setups);
         setPageCount(res.data.pages);
@@ -137,6 +150,7 @@ export default function HostBrowser(props) {
 
   function onHostNavClick(listType) {
     dispatchFilters({ type: "ChangeList", value: listType });
+    setHostNavLabel(listType);
   }
 
   function onSearchInput(query) {
@@ -163,6 +177,11 @@ export default function HostBrowser(props) {
       maxSlots
     );
     dispatchFilters({ type: "ChangeMaxSlots", value });
+  }
+
+  function onSelectSetup(setup) {
+    setSelSetup(setup);
+    setIshostGameDialogueOpen(true);
   }
 
   function onFavSetup(favSetup) {
@@ -198,152 +217,295 @@ export default function HostBrowser(props) {
   }
 
   const hostButtonLabels = [
-    "Featured",
+    "Yours",
     "Popular",
+    "Favorites",
+    "Featured",
     "Ranked",
     "Competitive",
-    "Favorites",
-    "Yours",
   ];
-  const hostButtons = hostButtonLabels.map((label) => (
-    <BotBarLink
-      text={label}
-      sel={filters.option}
-      onClick={() => onHostNavClick(label)}
-      key={label}
-    />
-  ));
 
-  return (
-    <div className="span-panel main host">
-      <div className="bot-bar">{hostButtons}</div>
-      <div className="bot-bar">
-        <div className="range-wrapper-slots">
-          Min slots
-          <input
-            type="number"
-            min={minSlots}
-            max={Math.min(filters.maxSlots, maxSlots)}
-            step={1}
-            value={filters.minSlots}
-            onChange={onMinSlotsChange}
+  const hostNavTabs = (
+    <Tabs
+      value={hostNavLabel}
+      onChange={(_, newValue) => onHostNavClick(newValue)}
+      variant="scrollable"
+      scrollButtons="auto"
+      allowScrollButtonsMobile
+    >
+      {hostButtonLabels
+        .map((label) => (
+          <Tab
+            key={label}
+            label={
+              <div>
+                {label}
+              </div>
+            }
+            value={label}
           />
-          <input
-            type="range"
-            min={minSlots}
-            max={Math.min(filters.maxSlots, maxSlots)}
-            step={1}
-            value={filters.minSlots}
-            onChange={onMinSlotsChange}
-          />
-        </div>
-        <div className="range-wrapper-slots">
-          Max slots
-          <input
-            type="number"
-            min={Math.max(filters.minSlots, minSlots)}
-            max={maxSlots}
-            step={1}
-            value={filters.maxSlots}
-            onChange={onMaxSlotsChange}
-          />
-          <input
-            type="range"
-            min={Math.max(filters.minSlots, minSlots)}
-            max={maxSlots}
-            step={1}
-            value={filters.maxSlots}
-            onChange={onMaxSlotsChange}
-          />
-        </div>
-        <SearchBar
-          value={filters.query}
-          placeholder="🔎 Setup Name or Role"
-          onInput={onSearchInput}
-        />
-      </div>
-      <ItemList
-        items={setups}
-        map={(setup) => (
-          <SetupRow
-            setup={setup}
-            sel={selSetup}
-            listType={filters.option}
-            onSelect={setSelSetup}
-            onFav={onFavSetup}
-            onEdit={onEditSetup}
-            onCopy={onCopySetup}
-            onDel={onDelSetup}
-            odd={setups.indexOf(setup) % 2 === 1}
-            key={setup.id}
-          />
-        )}
-        empty="No setups"
-      />
-      <PageNav page={filters.page} maxPage={pageCount} onNav={onPageNav} />
-      {user.loggedIn && (
-        <Form
-          fields={formFields}
-          onChange={updateFormFields}
-          submitText="Host"
-          onSubmit={onHostGame}
-        />
-      )}
-    </div>
+        ))}
+    </Tabs>
   );
+
+  return (<>
+    {isPhoneDevice && (<>
+      <IconButton
+        edge="start"
+        color="inherit"
+        aria-label="menu"
+        onClick={toggleDrawer(true)}
+        sx={{
+          position: "fixed",
+          top: "50%",
+          left: 0,
+          zIndex: 1201,
+          visibility: drawerOpen ? "hidden" : "visible",
+          backgroundColor: theme.palette.secondary.main,
+          padding: "8px",
+          borderRadius: "50%",
+          boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
+        }}
+      >
+        <GameIcon gameType={gameType} size={30} />
+      </IconButton>
+      <Paper
+        onClick={toggleDrawer(true)}
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          height: "100%",
+          width: "10px",
+          backgroundColor: "transparent",
+          zIndex: 1200,
+          cursor: "pointer",
+        }}
+      />
+      <SwipeableDrawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={toggleDrawer(false)}
+        onOpen={toggleDrawer(true)}
+        sx={{
+          width: 240,
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: { width: 240, boxSizing: "border-box" },
+        }}
+      >
+        <List>
+          {GameTypes.map((game) => (
+            <ListItem
+              button
+              key={game}
+              selected={gameType === game}
+              onClick={() => handleListItemClick(game)}
+            >
+              <ListItemIcon>
+                <GameIcon gameType={game} size={24} />
+              </ListItemIcon>
+              <ListItemText primary={game} />
+            </ListItem>
+          ))}
+        </List>
+      </SwipeableDrawer>
+    </>)}
+    <Stack direction="column" className="host" sx={{
+      alignItems: "center",
+    }}>
+      <Stack direction="row" spacing={1} sx={{
+        justifyContent: "space-around",
+        mt: 1,
+        fontFamily: "var(--primaryFont)",
+        fontWeight: "bold",
+      }}>
+        <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1}>
+          <Stack direction="row" spacing={1}>
+            <Paper>
+              <div className="range-wrapper-slots">
+                <i className="fas fa-filter"/>
+                Min slots
+                <input
+                  type="number"
+                  min={minSlots}
+                  max={Math.min(filters.maxSlots, maxSlots)}
+                  step={1}
+                  value={filters.minSlots}
+                  onChange={onMinSlotsChange}
+                />
+                {!isPhoneDevice && (<input
+                  type="range"
+                  min={minSlots}
+                  max={Math.min(filters.maxSlots, maxSlots)}
+                  step={1}
+                  value={filters.minSlots}
+                  onChange={onMinSlotsChange}
+                />)}
+              </div>
+            </Paper>
+            <Paper>
+              <div className="range-wrapper-slots">
+                Max slots
+                <input
+                  type="number"
+                  min={Math.max(filters.minSlots, minSlots)}
+                  max={maxSlots}
+                  step={1}
+                  value={filters.maxSlots}
+                  onChange={onMaxSlotsChange}
+                />
+                {!isPhoneDevice && (<input
+                  type="range"
+                  min={Math.max(filters.minSlots, minSlots)}
+                  max={maxSlots}
+                  step={1}
+                  value={filters.maxSlots}
+                  onChange={onMaxSlotsChange}
+                />)}
+              </div>
+            </Paper>
+          </Stack>
+          <Paper>
+            <SearchBar
+              value={filters.query}
+              placeholder="🔎 Setup Name or Role"
+              onInput={onSearchInput}
+            />
+          </Paper>
+        </Stack>
+      </Stack>
+      <Box sx={{
+        alignSelf: "normal",
+      }}>
+        {hostNavTabs}
+      </Box>
+      <Box sx={{
+        alignSelf: "stretch",
+      }}>
+        <Divider sx={{ mb: 1 }}/>
+        <Stack direction="row" sx={{
+          alignItems: "stretch",
+        }}>
+          {!isPhoneDevice && (<Paper sx={{
+              mr: .5,
+              p: 0.5,
+            }}>
+              <Stack direction="column" spacing={0.5}>
+              {GameTypes.map((game) => (
+                <ListItem
+                  button
+                  key={game}
+                  selected={gameType === game}
+                  onClick={() => handleListItemClick(game)}
+                  sx={{
+                    borderRadius: "8px",
+                  }}
+                >
+                  <ListItemIcon>
+                    <GameIcon gameType={game} size={24} />
+                  </ListItemIcon>
+                  <ListItemText primary={game} />
+                </ListItem>
+              ))}
+            </Stack>
+          </Paper>)}
+          <ItemList
+            items={setups}
+            map={(setup) => (
+              <SetupRow
+                setup={setup}
+                listType={filters.option}
+                onSelect={onSelectSetup}
+                onFav={onFavSetup}
+                onEdit={onEditSetup}
+                onCopy={onCopySetup}
+                onDel={onDelSetup}
+                odd={setups.indexOf(setup) % 2 === 1}
+                key={setup.id}
+              />
+            )}
+            empty="No setups"
+          />
+        </Stack>
+      </Box>
+      <Paper sx={{
+        mt: 1,
+        mb: 1,
+      }}>
+        <PageNav page={filters.page} maxPage={pageCount} onNav={onPageNav} />
+      </Paper>
+      {selSetup && (<HostGameDialogue open={ishostGameDialogueOpen} setOpen={setIshostGameDialogueOpen} setup={selSetup} />)}
+    </Stack>
+  </>);
 }
 
 function SetupRow(props) {
   const user = useContext(UserContext);
   const isPhoneDevice = useIsPhoneDevice();
 
-  let selIconFormat = "far";
-  let favIconFormat = "far";
-
-  if (props.sel.id === props.setup.id) selIconFormat = "fas";
-
-  if (props.setup.favorite) favIconFormat = "fas";
-
-  const maxRolesCount = isPhoneDevice ? 7 : 12;
+  const favIconFormat = props.setup.favorite ? "fas" : "far";
+  const maxRolesCount = isPhoneDevice ? 8 : 12;
 
   return (
-    <div className={`row ${props.odd ? "odd" : ""}`}>
-      {user.loggedIn && (
-        <i
-          className={`select-setup fa-circle ${selIconFormat}`}
+    <Stack direction={isPhoneDevice ? "column-reverse" : "row"} spacing={1} className={`row ${props.odd ? "odd" : ""}`} sx={{
+      justifyContent: "start",
+      width: "100%",
+    }}>
+      {!isPhoneDevice && user.loggedIn && (
+        <Button
           onClick={() => props.onSelect(props.setup)}
-        />
+        >
+          Host
+        </Button>
       )}
-      <Setup setup={props.setup} maxRolesCount={maxRolesCount} fixedWidth />
-      <Stack direction="row" sx={{
-        marginLeft: "auto",
-        marginTop: "8px"
+      <Box sx={{
+        alignSelf: "stretch",
       }}>
-        {user.loggedIn && (
-          <i
-            className={`setup-btn fav-setup fa-star ${favIconFormat}`}
-            onClick={() => props.onFav(props.setup)}
-          />
+        <Setup setup={props.setup} maxRolesCount={maxRolesCount} fixedWidth />
+      </Box>
+      <Stack direction="row" sx={{
+        alignSelf: "stretch",
+        ml: isPhoneDevice ? undefined : "auto !important",
+      }}>
+        {isPhoneDevice && user.loggedIn && (
+          <Button onClick={() => props.onSelect(props.setup)}>
+            Host
+          </Button>
         )}
-        {user.loggedIn && props.setup.creator?.id === user.id && (
-          <i
-            className={`setup-btn edit-setup fa-pen-square fas`}
-            onClick={() => props.onEdit(props.setup)}
-          />
-        )}
-        {user.loggedIn && (
-          <i
-            className={`setup-btn copy-setup fa-copy fas`}
-            onClick={() => props.onCopy(props.setup)}
-          />
-        )}
-        {user.loggedIn && props.setup.creator?.id === user.id && (
-          <i
-            className={`setup-btn del-setup fa-times-circle fas`}
-            onClick={() => props.onDel(props.setup)}
-          />
-        )}
+        {user.loggedIn && (<Stack direction="row" sx={{ // Setup manipulation buttons
+          alignItems: "center",
+          ml: "auto !important",
+        }}>
+          <IconButton aria-label="favorite">
+            <i
+              className={`setup-btn fav-setup fa-star ${favIconFormat}`}
+              onClick={() => props.onFav(props.setup)}
+            />
+          </IconButton>
+          {props.setup.creator?.id === user.id && (
+            <IconButton aria-label="edit">
+              <i
+                className={`setup-btn edit-setup fa-pen-square fas`}
+                onClick={() => props.onEdit(props.setup)}
+              />
+            </IconButton>
+          )}
+          <IconButton aria-label="copy">
+            <i
+              className={`setup-btn copy-setup fa-copy fas`}
+              onClick={() => props.onCopy(props.setup)}
+            />
+          </IconButton>
+          {props.setup.creator?.id === user.id && (
+            <IconButton aria-label="delete">
+              <i
+                className={`setup-btn del-setup fa-times-circle fas`}
+                onClick={() => props.onDel(props.setup)}
+              />
+            </IconButton>
+          )}
+        </Stack>)}
       </Stack>
-    </div>
+    </Stack>
   );
 }

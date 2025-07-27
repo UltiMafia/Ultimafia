@@ -1,3 +1,21 @@
+.host {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.host .range-wrapper-slots {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+
+  padding: 8px;
+  gap: 8px;
+}
+
+.host .page-nav {
+  align-self: center;
+}
+
 .host .search-bar {
   display: flex;
   flex-flow: row nowrap;
@@ -26,23 +44,8 @@
   background-color: var(--theme-color-sec);
 }
 
-.host .row i:hover {
-  opacity: 0.8;
-}
-
-.host .row .select-setup {
-  margin-right: 10px;
-
-  font-size: 20px;
-  color: #62a0db;
-  cursor: pointer;
-}
-
 .host .row .setup-btn {
-  margin-left: 10px;
-
-  font-size: 20px;
-  cursor: pointer;
+  font-size: 32px;
 }
 
 .host .row .fav-setup {
@@ -55,16 +58,4 @@
 
 .host .row .del-setup {
   color: #e45050;
-}
-
-@media (max-width: 800px) {
-  .host .row {
-    flex-flow: row wrap;
-  }
-
-  .host .row .setup-name {
-    width: auto;
-    min-width: 50px;
-    max-width: 120px;
-  }
 }

@@ -1,23 +1,12 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Redirect } from "react-router-dom";
 import axios from "axios";
 
-import HostBrowser from "./HostBrowser";
-import { getDefaults, persistDefaults } from "./HostDefaults";
-import { useForm } from "../../../components/Form";
-import { useErrorAlert } from "../../../components/Alerts";
-import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies } from "../../../Constants";
+import { getDefaults, persistDefaults } from "./DefaultValues";
+import { Lobbies } from "Constants";
 
 import "css/host.css";
 
-export default function HostBattlesnakes() {
-  const gameType = "Battlesnakes";
-  const [selSetup, setSelSetup] = useState({});
-  const [redirect, setRedirect] = useState(false);
-  const siteInfo = useContext(SiteInfoContext);
-  const errorAlert = useErrorAlert();
-
+export default function HostResistance() {
+  const gameType = "Resistance";
   const defaults = getDefaults(gameType);
 
   let defaultLobby = localStorage.getItem("lobby");
@@ -29,21 +18,7 @@ export default function HostBattlesnakes() {
     defaultLobby = "Games";
   }
 
-  const [formFields, updateFormFields] = useForm([
-    {
-      label: "Setup",
-      ref: "setup",
-      type: "text",
-      disabled: true,
-    },
-    {
-      label: "Board Size",
-      ref: "boardSize",
-      type: "number",
-      min: 10,
-      max: 100,
-      value: defaults.boardSize,
-    },
+  const initialFormFields = [
     {
       label: "Lobby",
       ref: "lobby",
@@ -115,39 +90,44 @@ export default function HostBattlesnakes() {
       value: defaults.configureDuration,
     },
     {
-      label: "Night Length (minutes)",
-      ref: "nightLength",
+      label: "Team Selection Length (minutes)",
+      ref: "teamSelLength",
       type: "number",
       showIf: "configureDuration",
-      value: defaults.nightLength,
-      min: 0.5,
-      max: 1,
-      step: 0.5,
+      value: defaults.teamSelLength,
+      min: 1,
+      max: 5,
     },
     {
-      label: "Day Length (minutes)",
-      ref: "dayLength",
+      label: "Team Approval Length (minutes)",
+      ref: "teamApprovalLength",
       type: "number",
       showIf: "configureDuration",
-      value: defaults.dayLength,
-      min: 2,
-      max: 60,
-      step: 1,
+      value: defaults.teamApprovalLength,
+      min: 0.1,
+      max: 2,
+      step: 0.1,
     },
-  ]);
+    {
+      label: "Mission Length (minutes)",
+      ref: "missionLength",
+      type: "number",
+      showIf: "configureDuration",
+      value: defaults.missionLength,
+      min: 0.1,
+      max: 1,
+      step: 0.1,
+    },
+  ];
 
-  useEffect(() => {
-    document.title = "Host Battlesnakes | UltiMafia";
-  }, []);
-
-  function onHostGame() {
+  function onHostGame(setupId, getFormFieldValue) {
     var scheduled = getFormFieldValue("scheduled");
 
-    if (selSetup.id) {
-      axios
+    if (setupId) {
+      const hostPromise = axios
         .post("/api/game/host", {
           gameType: gameType,
-          setup: selSetup.id,
+          setup: setupId,
           lobby: getFormFieldValue("lobby"),
           lobbyName: getFormFieldValue("lobbyName"),
           private: getFormFieldValue("private"),
@@ -157,20 +137,13 @@ export default function HostBattlesnakes() {
             scheduled && new Date(getFormFieldValue("startDate")).getTime(),
           readyCheck: getFormFieldValue("readyCheck"),
           stateLengths: {
-            Night: getFormFieldValue("nightLength"),
-            Day: getFormFieldValue("dayLength"),
+            "Team Selection": getFormFieldValue("teamSelLength"),
+            "Team Approval": getFormFieldValue("teamApprovalLength"),
+            Mission: getFormFieldValue("missionLength"),
           },
-          boardSize: getFormFieldValue("boardSize"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
-        })
-        .then((res) => {
-          if (scheduled) {
-            siteInfo.showAlert(`Game scheduled.`, "success");
-            setRedirect("/");
-          } else setRedirect(`/game/${res.data}`);
-        })
-        .catch(errorAlert);
+        });
 
       Object.keys(defaults).forEach(function (key) {
         const submittedValue = getFormFieldValue(key);
@@ -179,23 +152,12 @@ export default function HostBattlesnakes() {
         }
       });
       persistDefaults(gameType, defaults);
-    } else errorAlert("You must choose a setup");
+      return hostPromise;
+    }
+    else {
+      return null;
+    }
   }
 
-  function getFormFieldValue(ref) {
-    for (let field of formFields) if (field.ref === ref) return field.value;
-  }
-
-  if (redirect) return <Redirect to={redirect} />;
-
-  return (
-    <HostBrowser
-      gameType={gameType}
-      selSetup={selSetup}
-      setSelSetup={setSelSetup}
-      formFields={formFields}
-      updateFormFields={updateFormFields}
-      onHostGame={onHostGame}
-    />
-  );
+  return [initialFormFields, onHostGame];
 }

@@ -1,23 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Redirect } from "react-router-dom";
 import axios from "axios";
 
-import HostBrowser from "./HostBrowser";
-import { getDefaults, persistDefaults } from "./HostDefaults";
-import { useForm } from "../../../components/Form";
-import { useErrorAlert } from "../../../components/Alerts";
-import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies } from "../../../Constants";
+import { getDefaults, persistDefaults } from "./DefaultValues";
+import { Lobbies } from "Constants";
 
-import "css/host.css";
-
-export default function HostGhost() {
-  const gameType = "Ghost";
-  const [selSetup, setSelSetup] = useState({});
-  const [redirect, setRedirect] = useState(false);
-  const siteInfo = useContext(SiteInfoContext);
-  const errorAlert = useErrorAlert();
-
+export default function HostJotto() {
+  const gameType = "Jotto";
   const defaults = getDefaults(gameType);
 
   let defaultLobby = localStorage.getItem("lobby");
@@ -28,40 +15,41 @@ export default function HostGhost() {
   ) {
     defaultLobby = "Games";
   }
-
-  const [formFields, updateFormFields] = useForm([
-    {
-      label: "Setup",
-      ref: "setup",
-      type: "text",
-      disabled: true,
-    },
-    {
-      label: "Configure Words",
-      ref: "configureWords",
-      type: "boolean",
-      value: defaults.configureWords,
-    },
+  const initialFormFields = [
     {
       label: "Word Length",
       ref: "wordLength",
       type: "number",
       value: defaults.wordLength,
-      min: 3,
-      max: 10,
-      showIf: "configureWords",
+      min: 4,
+      max: 5,
     },
     {
-      label: "Town Word",
-      ref: "townWord",
-      type: "text",
-      showIf: "configureWords",
+      label: "Duplicate Letters",
+      ref: "duplicateLetters",
+      type: "boolean",
+      value: defaults.duplicateLetters,
     },
     {
-      label: "Fool Word",
-      ref: "foolWord",
-      type: "text",
-      showIf: "configureWords",
+      label: "Competitive Mode",
+      ref: "competitiveMode",
+      type: "boolean",
+      value: defaults.competitiveMode,
+    },
+    {
+      label: "Win With Anagrams",
+      ref: "winOnAnagrams",
+      type: "boolean",
+      value: defaults.winOnAnagrams,
+    },
+    {
+      label: "No. Anagrams Required",
+      ref: "numAnagramsRequired",
+      type: "number",
+      value: defaults.numAnagramsRequired,
+      min: 1,
+      max: 4,
+      showIf: "winOnAnagrams",
     },
     {
       label: "Lobby",
@@ -134,34 +122,14 @@ export default function HostGhost() {
       value: defaults.configureDuration,
     },
     {
-      label: "Night Length (minutes)",
-      ref: "nightLength",
+      label: "Select Word Length (minutes)",
+      ref: "selectWordLength",
       type: "number",
       showIf: "configureDuration",
-      value: defaults.nightLength,
+      value: defaults.selectWordLength,
       min: 0.5,
-      max: 1,
-      step: 0.5,
-    },
-    {
-      label: "Give Clue Length (minutes)",
-      ref: "giveClueLength",
-      type: "number",
-      showIf: "configureDuration",
-      value: defaults.giveClueLength,
-      min: 1,
-      max: 2,
-      step: 0.5,
-    },
-    {
-      label: "Day Length (minutes)",
-      ref: "dayLength",
-      type: "number",
-      showIf: "configureDuration",
-      value: defaults.dayLength,
-      min: 2,
       max: 5,
-      step: 1,
+      step: 0.5,
     },
     {
       label: "Guess Word Length (minutes)",
@@ -169,24 +137,20 @@ export default function HostGhost() {
       type: "number",
       showIf: "configureDuration",
       value: defaults.guessWordLength,
-      min: 1,
-      max: 3,
+      min: 0.5,
+      max: 5,
       step: 0.5,
     },
-  ]);
+  ];
 
-  useEffect(() => {
-    document.title = "Host Ghost | UltiMafia";
-  }, []);
-
-  function onHostGame() {
+  function onHostGame(setupId, getFormFieldValue) {
     var scheduled = getFormFieldValue("scheduled");
 
-    if (selSetup.id) {
-      axios
+    if (setupId) {
+      const hostPromise = axios
         .post("/api/game/host", {
           gameType: gameType,
-          setup: selSetup.id,
+          setup: setupId,
           lobby: getFormFieldValue("lobby"),
           lobbyName: getFormFieldValue("lobbyName"),
           private: getFormFieldValue("private"),
@@ -196,27 +160,17 @@ export default function HostGhost() {
             scheduled && new Date(getFormFieldValue("startDate")).getTime(),
           readyCheck: getFormFieldValue("readyCheck"),
           stateLengths: {
-            Night: getFormFieldValue("nightLength"),
-            "Give Clue": getFormFieldValue("giveClueLength"),
-            Day: getFormFieldValue("dayLength"),
+            "Select Word": getFormFieldValue("selectWordLength"),
             "Guess Word": getFormFieldValue("guessWordLength"),
           },
-          wordOptions: {
-            configureWords: getFormFieldValue("configureWords"),
-            wordLength: getFormFieldValue("wordLength"),
-            townWord: getFormFieldValue("townWord"),
-            foolWord: getFormFieldValue("foolWord"),
-          },
+          wordLength: getFormFieldValue("wordLength"),
+          duplicateLetters: getFormFieldValue("duplicateLetters"),
+          competitiveMode: getFormFieldValue("competitiveMode"),
+          winOnAnagrams: getFormFieldValue("winOnAnagrams"),
+          numAnagramsRequired: getFormFieldValue("numAnagramsRequired"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
-        })
-        .then((res) => {
-          if (scheduled) {
-            siteInfo.showAlert(`Game scheduled.`, "success");
-            setRedirect("/");
-          } else setRedirect(`/game/${res.data}`);
-        })
-        .catch(errorAlert);
+        });
 
       Object.keys(defaults).forEach(function (key) {
         const submittedValue = getFormFieldValue(key);
@@ -225,23 +179,12 @@ export default function HostGhost() {
         }
       });
       persistDefaults(gameType, defaults);
-    } else errorAlert("You must choose a setup");
+      return hostPromise;
+    }
+    else {
+      return null;
+    }
   }
 
-  function getFormFieldValue(ref) {
-    for (let field of formFields) if (field.ref === ref) return field.value;
-  }
-
-  if (redirect) return <Redirect to={redirect} />;
-
-  return (
-    <HostBrowser
-      gameType={gameType}
-      selSetup={selSetup}
-      setSelSetup={setSelSetup}
-      formFields={formFields}
-      updateFormFields={updateFormFields}
-      onHostGame={onHostGame}
-    />
-  );
+  return [initialFormFields, onHostGame];
 }

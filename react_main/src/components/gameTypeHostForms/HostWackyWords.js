@@ -1,32 +1,13 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Redirect } from "react-router-dom";
 import axios from "axios";
 
-import HostBrowser from "./HostBrowser";
-import { getDefaults, persistDefaults } from "./HostDefaults";
-import { useForm } from "../../../components/Form";
-import { useErrorAlert } from "../../../components/Alerts";
-import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies, PreferredDeckId } from "../../../Constants";
-
-import "css/host.css";
+import { getDefaults, persistDefaults } from "./DefaultValues";
+import { Lobbies } from "Constants";
 
 export default function HostWackyWords() {
   const gameType = "Wacky Words";
-  const [selSetup, setSelSetup] = useState({});
-  const [redirect, setRedirect] = useState(false);
-  const siteInfo = useContext(SiteInfoContext);
-  const errorAlert = useErrorAlert();
-
   const defaults = getDefaults(gameType);
 
-  const [formFields, updateFormFields] = useForm([
-    {
-      label: "Setup",
-      ref: "setup",
-      type: "text",
-      disabled: true,
-    },
+  const initialFormFields = [
     {
       label: "Round Amount",
       ref: "roundAmt",
@@ -164,20 +145,16 @@ export default function HostWackyWords() {
       max: 5,
       step: 1,
     },
-  ]);
+  ];
 
-  useEffect(() => {
-    document.title = "Host Wacky Words | UltiMafia";
-  }, []);
-
-  function onHostGame() {
+  function onHostGame(setupId, getFormFieldValue) {
     var scheduled = getFormFieldValue("scheduled");
 
-    if (selSetup.id) {
-      axios
+    if (setupId) {
+      const hostPromise = axios
         .post("/api/game/host", {
           gameType: gameType,
-          setup: selSetup.id,
+          setup: setupId,
           lobby: getFormFieldValue("lobby"),
           lobbyName: getFormFieldValue("lobbyName"),
           private: getFormFieldValue("private"),
@@ -205,14 +182,7 @@ export default function HostWackyWords() {
           turnOnCaps: getFormFieldValue("turnOnCaps"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
-        })
-        .then((res) => {
-          if (scheduled) {
-            siteInfo.showAlert(`Game scheduled.`, "success");
-            setRedirect("/");
-          } else setRedirect(`/game/${res.data}`);
-        })
-        .catch(errorAlert);
+        });
 
       Object.keys(defaults).forEach(function (key) {
         const submittedValue = getFormFieldValue(key);
@@ -221,23 +191,12 @@ export default function HostWackyWords() {
         }
       });
       persistDefaults(gameType, defaults);
-    } else errorAlert("You must choose a setup");
+      return hostPromise;
+    }
+    else {
+      return null;
+    }
   }
 
-  function getFormFieldValue(ref) {
-    for (let field of formFields) if (field.ref === ref) return field.value;
-  }
-
-  if (redirect) return <Redirect to={redirect} />;
-
-  return (
-    <HostBrowser
-      gameType={gameType}
-      selSetup={selSetup}
-      setSelSetup={setSelSetup}
-      formFields={formFields}
-      updateFormFields={updateFormFields}
-      onHostGame={onHostGame}
-    />
-  );
+  return [initialFormFields, onHostGame];
 }

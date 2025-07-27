@@ -260,6 +260,7 @@ div.center {
 .item-list {
   display: flex;
   flex-flow: column nowrap;
+  flex-grow: 1;
 }
 
 .dropdown-control i:first-child {
@@ -785,6 +786,19 @@ input:focus {
   }
   100% {
     background-position: 0 0;
+  }
+}
+
+.glow-slightly {
+  animation: glowing-pulse 1s infinite alternate;
+}
+
+@keyframes glowing-pulse {
+  from {
+    box-shadow: 0 0 4px -4px #f4aeae;
+  }
+  to {
+    box-shadow: 0 0 4px 4px #f4aeae;
   }
 }
 

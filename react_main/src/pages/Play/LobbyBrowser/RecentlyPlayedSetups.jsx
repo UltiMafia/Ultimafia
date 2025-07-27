@@ -1,24 +1,22 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
-import axios from "axios";
-import { Redirect } from "react-router-dom";
+
 import { Box, Divider, IconButton, Paper, Stack, Typography } from "@mui/material";
-import { UserContext } from "../../../Contexts";
-import { useErrorAlert } from "../../../components/Alerts";
-import { getRecentlyPlayedSetups } from "../../../services/gameService";
-import { getDefaults } from "../Host/HostDefaults";
-import Setup from "../../../components/Setup";
+
+import { UserContext } from "Contexts";
+import { getRecentlyPlayedSetups } from "services/gameService";
+import HostGameDialogue from "components/HostGameDialogue";
+import Setup from "components/Setup";
 import { getRecentlyPlayedSetupsChart } from "./getRecentlyPlayedSetupsChart";
 import { useTheme } from "@mui/styles";
-import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 export const RecentlyPlayedSetups = ({ lobby }) => {
   const theme = useTheme();
   const svgRef = useRef();
   const [setups, setSetups] = useState([]);
-  const [redirect, setRedirect] = useState(false);
+  const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
 
   const user = useContext(UserContext);
-  const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
 
   useEffect(() => {
@@ -43,31 +41,6 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
   }
 
   const setupRows = setups.map((setup) => {
-    const onRehostClick = () => {
-      let lobby = localStorage.getItem("lobby") || "All";
-      let gameType = setup.setupDetails.gameType;
-
-      const defaults = getDefaults(gameType);
-
-      if (lobby === "All") lobby = "Main";
-      if (gameType !== "Mafia" && lobby === "Main") {
-        lobby = "Games";
-      }
-
-      axios
-        .post("/api/game/host", {
-          gameType: gameType,
-          setup: setup.setupDetails.id,
-          lobby: lobby,
-          ranked: setup.setupDetails.ranked,
-          ...defaults,
-        })
-        .then((res) => setRedirect(`/game/${res.data}`))
-        .catch(errorAlert);
-    };
-
-    if (redirect) return <Redirect to={redirect} />;
-
     const showRedoButton = isPhoneDevice ? user.loggedIn : true;
 
     return (
@@ -79,11 +52,12 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
           alignItems: "center",
         }}
       >
+        <HostGameDialogue open={ishostGameDialogueOpen} setOpen={setIshostGameDialogueOpen} setup={setup.setupDetails} />
         <Setup setup={setup.setupDetails} maxRolesCount={6} fixedWidth/>
         {showRedoButton && (
           <Box style={{ mx: 1, width: "32px", textAlign: "center" }}>
             {user.loggedIn && (
-              <IconButton color="primary" onClick={onRehostClick}>
+              <IconButton color="primary" onClick={() => setIshostGameDialogueOpen(true)}>
                 <i className="rehost fas fa-redo" title="Rehost" />
               </IconButton>
             )}

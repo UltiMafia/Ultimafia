@@ -683,6 +683,9 @@ export function useUser() {
     );
   }
 
+  user.gamesPlayed = user.gamesPlayed || 0;
+  user.canPlayRanked = user.gamesPlayed >= 5;
+
   return {
     ...user,
     state: user,

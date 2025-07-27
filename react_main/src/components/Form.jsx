@@ -529,7 +529,6 @@ class EmoteUpload extends React.Component {
 }
 
 export function useForm(initialFormFields) {
-  const [initFields] = useState(initialFormFields);
   const [fields, updateFields] = useReducer((formFields, actions) => {
     const newFormFields = [...formFields];
 
@@ -558,7 +557,7 @@ export function useForm(initialFormFields) {
   function resetFields() {
     var updates = [];
 
-    for (let field of initFields) {
+    for (let field of initialFormFields) {
       updates.push({
         ref: field.ref,
         prop: "value",

@@ -1,4 +1,4 @@
-import { PreferredDeckId } from "../../../Constants";
+import { PreferredDeckId } from "Constants";
 
 function getStorageKey(gameType) {
   return `${gameType.toLowerCase()} persisted options`;

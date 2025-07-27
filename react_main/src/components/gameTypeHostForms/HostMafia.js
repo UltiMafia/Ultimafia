@@ -1,30 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Redirect } from "react-router-dom";
 import axios from "axios";
 
-import HostBrowser from "./HostBrowser";
-import { getDefaults, persistDefaults } from "./HostDefaults";
-import { useForm } from "../../../components/Form";
-import { useErrorAlert } from "../../../components/Alerts";
-import { Lobbies } from "../../../Constants";
-
-import "css/host.css";
+import { getDefaults, persistDefaults } from "./DefaultValues";
+import { Lobbies } from "Constants";
 
 export default function HostMafia() {
   const gameType = "Mafia";
-  const [selSetup, setSelSetup] = useState({});
-  const [redirect, setRedirect] = useState(false);
-
   const defaults = getDefaults(gameType);
-
-  const errorAlert = useErrorAlert();
-  const [formFields, updateFormFields] = useForm([
-    {
-      label: "Setup",
-      ref: "setup",
-      type: "text",
-      disabled: true,
-    },
+  
+  const initialFormFields = [
     {
       label: "Lobby",
       ref: "lobby",
@@ -160,24 +143,20 @@ export default function HostMafia() {
       min: 0,
       max: 5,
     },
-  ]);
+  ];
 
-  useEffect(() => {
-    document.title = "Host Mafia | UltiMafia";
-  }, []);
-
-  function onHostGame() {
+  function onHostGame(setupId, getFormFieldValue) {
     // var scheduled = getFormFieldValue("scheduled");
     var lobby = getFormFieldValue("lobby");
 
     if (lobby === "All") lobby = "Main";
 
-    if (selSetup.id) {
-      axios
+    if (setupId) {
+      const hostPromise = axios
         .post("/api/game/host", {
           gameType,
           lobby,
-          setup: selSetup.id,
+          setup: setupId,
           lobbyName: getFormFieldValue("lobbyName"),
           private: getFormFieldValue("private"),
           guests: getFormFieldValue("guests"),
@@ -196,16 +175,7 @@ export default function HostMafia() {
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
           broadcastClosedRoles: getFormFieldValue("broadcastClosedRoles"),
-        })
-        .then((res) => {
-          // if (scheduled) {
-          //     siteInfo.showAlert(`Game scheduled.`, "success");
-          //     setRedirect("/");
-          // }
-          // else
-          setRedirect(`/game/${res.data}`);
-        })
-        .catch(errorAlert);
+        });
 
       defaults.private = getFormFieldValue("private");
       defaults.guests = getFormFieldValue("guests");
@@ -222,23 +192,12 @@ export default function HostMafia() {
       defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
       defaults.broadcastClosedRoles = getFormFieldValue("broadcastClosedRoles");
       persistDefaults(gameType, defaults);
-    } else errorAlert("You must choose a setup");
+      return hostPromise;
+    }
+    else {
+      return null;
+    }
   }
 
-  function getFormFieldValue(ref) {
-    for (let field of formFields) if (field.ref === ref) return field.value;
-  }
-
-  if (redirect) return <Redirect to={redirect} />;
-
-  return (
-    <HostBrowser
-      gameType={gameType}
-      selSetup={selSetup}
-      setSelSetup={setSelSetup}
-      formFields={formFields}
-      updateFormFields={updateFormFields}
-      onHostGame={onHostGame}
-    />
-  );
+  return [initialFormFields, onHostGame];
 }

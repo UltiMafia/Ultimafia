@@ -2,9 +2,10 @@ import React, { useState, useEffect, useContext, useCallback } from "react";
 import { Redirect, useLocation, useHistory, Link } from "react-router-dom";
 import axios from "axios";
 
-import { UserContext } from "../../../Contexts";
-import { getPageNavFilterArg, PageNav } from "../../../components/Nav";
-import { useErrorAlert } from "../../../components/Alerts";
+import { UserContext } from "Contexts";
+import { getPageNavFilterArg, PageNav } from "components/Nav";
+import Setup from "components/Setup";
+import { useErrorAlert } from "components/Alerts";
 import { camelCase } from "../../../utils";
 import Comments from "../../Community/Comments";
 import { Lobbies } from "../../../Constants";
@@ -28,6 +29,7 @@ import { useLoading } from "../../../hooks/useLoading";
 import { GameRow } from "./GameRow";
 import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
 import { RecentlyPlayedSetups } from "./RecentlyPlayedSetups";
+import { FeaturedSetup } from "./FeaturedSetup";
 import { DailyChallenges } from "./DailyChallengeDisplay";
 import { getRowStubColor } from "./gameRowColors.js";
 
@@ -48,6 +50,8 @@ export const LobbyBrowser = () => {
   const [openGamesCounts, setOpenGamesCounts] = useState({});
   const [refreshTimeoutId, setRefreshTimeoutId] = useState(null);
   const [refreshButtonIsSpinning, setRefreshButtonIsSpinning] = useState(false);
+  const [hasOneOpenUrankedGame, setHasOneOpenUrankedGame] = useState(false);
+  const [hasOneOpenGame, setHasOneOpenGame] = useState(false);
   const [listType, setListType] = useState("All");
   const [page, setPage] = useState(1);
   const [games, setGames] = useState([]);
@@ -61,14 +65,8 @@ export const LobbyBrowser = () => {
   const [lobbyName, setLobbyName] = useState(
     params.get("lobby") || localStorage.getItem("lobby") || defaultLobbyName
   );
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+
+  const glowingHostButton = user.canPlayRanked ? !hasOneOpenGame : !hasOneOpenUrankedGame;
 
   useEffect(() => {
     localStorage.setItem("lobby", lobbyName);
@@ -82,6 +80,8 @@ export const LobbyBrowser = () => {
   }, [location.pathname, lobbyName]);
 
   useEffect(() => {
+    setHasOneOpenGame(false);
+    setHasOneOpenUrankedGame(false);
     getGameList(listType, page);
     getOpenGameCounts();
   }, [lobbyName]);
@@ -95,6 +95,9 @@ export const LobbyBrowser = () => {
           result[lobby] = 0;
         }
         result[lobby]++;
+
+        if (!hasOneOpenGame) setHasOneOpenGame(true);
+        if (!hasOneOpenUrankedGame && !game.ranked) setHasOneOpenUrankedGame(true);
       });
       setOpenGamesCounts(result);
     });
@@ -263,6 +266,7 @@ export const LobbyBrowser = () => {
       </Grid>
       <Grid item xs={12} md={4}>
         <Stack spacing={1}>
+          <FeaturedSetup lobby={lobbyName} glowingHostButton={glowingHostButton} />
           <DailyChallenges />
           <RecentlyPlayedSetups lobby={lobbyName} />
         </Stack>
