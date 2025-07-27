@@ -455,7 +455,7 @@ module.exports = class MafiaGame extends Game {
 
     if (
       this.IsBloodMoon == true &&
-      this.hasBeenDay == true &&
+      this.hasBeenBloodMoonDay == true &&
       winners.groupAmt() <= 0
     ) {
       winners.addGroup("No one");

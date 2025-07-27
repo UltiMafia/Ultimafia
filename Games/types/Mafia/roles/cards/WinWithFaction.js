@@ -286,7 +286,7 @@ module.exports = class WinWithFaction extends Card {
         //Win Cons
 
         //One Night Win-Cons
-        if (this.game.hasBeenDay == true) {
+        if (this.game.hasBeenBloodMoonDay == true) {
           //Cult
           if (CULT_FACTIONS.includes(this.player.faction) && ONE_NIGHT) {
             var deadCult = this.game.BloodMoonKills.filter((p) => p.faction == this.player.faction);
