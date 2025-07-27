@@ -46,7 +46,7 @@ module.exports = class OneShot extends Card {
       "X-Shot Day": {
         actionName: "Use Day Ability?",
         states: ["Day"],
-        flags: ["voting"],
+        flags: ["voting", "instant"],
         inputType: "boolean",
         whileDead: true,
         whileAlive: true,
