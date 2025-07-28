@@ -1,23 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Redirect } from "react-router-dom";
 import axios from "axios";
 
-import HostBrowser from "./HostBrowser";
-import { getDefaults, persistDefaults } from "./HostDefaults";
-import { useForm } from "../../../components/Form";
-import { useErrorAlert } from "../../../components/Alerts";
-import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies } from "../../../Constants";
+import { getDefaults, persistDefaults } from "./DefaultValues";
+import { Lobbies } from "Constants";
 
-import "css/host.css";
-
-export default function HostLiarsDice() {
-  const gameType = "Liars Dice";
-  const [selSetup, setSelSetup] = useState({});
-  const [redirect, setRedirect] = useState(false);
-  const siteInfo = useContext(SiteInfoContext);
-  const errorAlert = useErrorAlert();
-
+export default function HostSecretDictator() {
+  const gameType = "Secret Dictator";
   const defaults = getDefaults(gameType);
 
   let defaultLobby = localStorage.getItem("lobby");
@@ -28,33 +15,8 @@ export default function HostLiarsDice() {
   ) {
     defaultLobby = "Games";
   }
-  const [formFields, updateFormFields] = useForm([
-    {
-      label: "Setup",
-      ref: "setup",
-      type: "text",
-      disabled: true,
-    },
-    {
-      label: "Wild Ones",
-      ref: "wildOnes",
-      type: "boolean",
-      value: defaults.wildOnes,
-    },
-    {
-      label: "Spot On",
-      ref: "spotOn",
-      type: "boolean",
-      value: defaults.spotOn,
-    },
-    {
-      label: "Starting Dice",
-      ref: "startingDice",
-      type: "number",
-      value: defaults.startingDice,
-      min: 1,
-      max: 20,
-    },
+
+  const initialFormFields = [
     {
       label: "Lobby",
       ref: "lobby",
@@ -126,29 +88,65 @@ export default function HostLiarsDice() {
       value: defaults.configureDuration,
     },
     {
-      label: "Guess Dice Length (minutes)",
-      ref: "guessDiceLength",
+      label: "Nomination Length (minutes)",
+      ref: "nominationLength",
       type: "number",
       showIf: "configureDuration",
-      value: defaults.guessDiceLength,
+      value: defaults.nominationLength,
       min: 0.5,
-      max: 5,
+      max: 30,
       step: 0.5,
     },
-  ]);
+    {
+      label: "Election Length (minutes)",
+      ref: "electionLength",
+      type: "number",
+      showIf: "configureDuration",
+      value: defaults.electionLength,
+      min: 0.5,
+      max: 30,
+      step: 0.5,
+    },
+    {
+      label: "Legislative Session Length (minutes)",
+      ref: "legislativeSessionLength",
+      type: "number",
+      showIf: "configureDuration",
+      value: defaults.legislativeSessionLength,
+      min: 0.5,
+      max: 30,
+      step: 0.5,
+    },
+    {
+      label: "Executive Action Length (minutes)",
+      ref: "executiveActionLength",
+      type: "number",
+      showIf: "configureDuration",
+      value: defaults.executiveActionLength,
+      min: 0.5,
+      max: 30,
+      step: 0.5,
+    },
+    {
+      label: "Special Nomination Length (minutes)",
+      ref: "specialNominationLength",
+      type: "number",
+      showIf: "configureDuration",
+      value: defaults.specialNominationLength,
+      min: 0.5,
+      max: 30,
+      step: 0.5,
+    },
+  ];
 
-  useEffect(() => {
-    document.title = "Host Liars Dice | UltiMafia";
-  }, []);
-
-  function onHostGame() {
+  function onHostGame(setupId, getFormFieldValue) {
     var scheduled = getFormFieldValue("scheduled");
 
-    if (selSetup.id) {
-      axios
+    if (setupId) {
+      const hostPromise = axios
         .post("/api/game/host", {
           gameType: gameType,
-          setup: selSetup.id,
+          setup: setupId,
           lobby: getFormFieldValue("lobby"),
           lobbyName: getFormFieldValue("lobbyName"),
           private: getFormFieldValue("private"),
@@ -158,21 +156,17 @@ export default function HostLiarsDice() {
             scheduled && new Date(getFormFieldValue("startDate")).getTime(),
           readyCheck: getFormFieldValue("readyCheck"),
           stateLengths: {
-            "Guess Dice": getFormFieldValue("guessDiceLength"),
+            Nomination: getFormFieldValue("nominationLength"),
+            Election: getFormFieldValue("electionLength"),
+            "Legislative Session": getFormFieldValue(
+              "legislativeSessionLength"
+            ),
+            "Executive Action": getFormFieldValue("executiveActionLength"),
+            "Special Nomination": getFormFieldValue("specialNominationLength"),
           },
-          wildOnes: getFormFieldValue("wildOnes"),
-          spotOn: getFormFieldValue("spotOn"),
-          startingDice: getFormFieldValue("startingDice"),
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
-        })
-        .then((res) => {
-          if (scheduled) {
-            siteInfo.showAlert(`Game scheduled.`, "success");
-            setRedirect("/");
-          } else setRedirect(`/game/${res.data}`);
-        })
-        .catch(errorAlert);
+        });
 
       Object.keys(defaults).forEach(function (key) {
         const submittedValue = getFormFieldValue(key);
@@ -181,23 +175,12 @@ export default function HostLiarsDice() {
         }
       });
       persistDefaults(gameType, defaults);
-    } else errorAlert("You must choose a setup");
+      return hostPromise;
+    }
+    else {
+      return null;
+    }
   }
 
-  function getFormFieldValue(ref) {
-    for (let field of formFields) if (field.ref === ref) return field.value;
-  }
-
-  if (redirect) return <Redirect to={redirect} />;
-
-  return (
-    <HostBrowser
-      gameType={gameType}
-      selSetup={selSetup}
-      setSelSetup={setSelSetup}
-      formFields={formFields}
-      updateFormFields={updateFormFields}
-      onHostGame={onHostGame}
-    />
-  );
+  return [initialFormFields, onHostGame];
 }

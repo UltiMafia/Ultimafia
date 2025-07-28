@@ -229,15 +229,17 @@ router.get("/:id/connect", async function (req, res) {
     }
 
     if (userId && game.settings.ranked && !isSpectating) {
-      const user = await models.User.findOne({ id: userId }).select(
-        "redHearts"
-      );
+      const user = await redis.getUserInfo(userId);
+
+      if (!user || user.gamesPlayed <= constants.minimumGamesForRanked) {
+        res.status(400);
+        res.send(`You cannot play ranked games until you've played ${constants.minimumGamesForRanked} games.`);
+        return;
+      }
 
       if (!user || user.redHearts <= 0) {
-        res.status(500);
-        res.send(
-          "You cannot join ranked games because your Red Hearts are depleted."
-        );
+        res.status(400);
+        res.send("You cannot play ranked games because your Red Hearts are depleted.");
         return;
       }
     }
@@ -581,15 +583,17 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    const user = await models.User.findOne({ id: userId }).select(
-      "redHearts name"
-    );
+    const user = await redis.getUserInfo(userId);
     if (req.body.ranked) {
+      if (user && user.gamesPlayed <= constants.minimumGamesForRanked) {
+        res.status(400);
+        res.send(`You cannot play ranked games until you've played ${constants.minimumGamesForRanked} games.`);
+        return;
+      }
+
       if (user && user.redHearts <= 0) {
-        res.status(500);
-        res.send(
-          "You cannot host ranked games because your Red Hearts are depleted."
-        );
+        res.status(400);
+        res.send("You cannot play ranked games because your Red Hearts are depleted.");
         return;
       }
     }

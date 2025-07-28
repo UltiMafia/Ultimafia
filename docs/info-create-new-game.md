@@ -8,3 +8,5 @@ We currently have eight game modes: Mafia, Resistance, Ghost, Secret Dictator, A
 - Update settings checks in game.js
 - Add roles to role data
 - Add roles to role css
+- Add game type host fields to react_main/components/gameTypeHostForms
+- Add game type default host fields to react_main/components/gameTypeHostForms/DefaultValues.js

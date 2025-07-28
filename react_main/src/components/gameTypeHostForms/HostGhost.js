@@ -1,23 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Redirect } from "react-router-dom";
 import axios from "axios";
 
-import HostBrowser from "./HostBrowser";
-import { getDefaults, persistDefaults } from "./HostDefaults";
-import { useForm } from "../../../components/Form";
-import { useErrorAlert } from "../../../components/Alerts";
-import { SiteInfoContext } from "../../../Contexts";
-import { Lobbies, PreferredDeckId } from "../../../Constants";
+import { getDefaults, persistDefaults } from "./DefaultValues";
+import { Lobbies } from "Constants";
 
-import "css/host.css";
-
-export default function HostSecretDictator() {
-  const gameType = "Secret Dictator";
-  const [selSetup, setSelSetup] = useState({});
-  const [redirect, setRedirect] = useState(false);
-  const siteInfo = useContext(SiteInfoContext);
-  const errorAlert = useErrorAlert();
-
+export default function HostGhost() {
+  const gameType = "Ghost";
   const defaults = getDefaults(gameType);
 
   let defaultLobby = localStorage.getItem("lobby");
@@ -28,12 +15,34 @@ export default function HostSecretDictator() {
   ) {
     defaultLobby = "Games";
   }
-  const [formFields, updateFormFields] = useForm([
+
+  const initialFormFields = [
     {
-      label: "Setup",
-      ref: "setup",
+      label: "Configure Words",
+      ref: "configureWords",
+      type: "boolean",
+      value: defaults.configureWords,
+    },
+    {
+      label: "Word Length",
+      ref: "wordLength",
+      type: "number",
+      value: defaults.wordLength,
+      min: 3,
+      max: 10,
+      showIf: "configureWords",
+    },
+    {
+      label: "Town Word",
+      ref: "townWord",
       type: "text",
-      disabled: true,
+      showIf: "configureWords",
+    },
+    {
+      label: "Fool Word",
+      ref: "foolWord",
+      type: "text",
+      showIf: "configureWords",
     },
     {
       label: "Lobby",
@@ -106,69 +115,55 @@ export default function HostSecretDictator() {
       value: defaults.configureDuration,
     },
     {
-      label: "Nomination Length (minutes)",
-      ref: "nominationLength",
+      label: "Night Length (minutes)",
+      ref: "nightLength",
       type: "number",
       showIf: "configureDuration",
-      value: defaults.nominationLength,
+      value: defaults.nightLength,
       min: 0.5,
-      max: 30,
+      max: 1,
       step: 0.5,
     },
     {
-      label: "Election Length (minutes)",
-      ref: "electionLength",
+      label: "Give Clue Length (minutes)",
+      ref: "giveClueLength",
       type: "number",
       showIf: "configureDuration",
-      value: defaults.electionLength,
-      min: 0.5,
-      max: 30,
+      value: defaults.giveClueLength,
+      min: 1,
+      max: 2,
       step: 0.5,
     },
     {
-      label: "Legislative Session Length (minutes)",
-      ref: "legislativeSessionLength",
+      label: "Day Length (minutes)",
+      ref: "dayLength",
       type: "number",
       showIf: "configureDuration",
-      value: defaults.legislativeSessionLength,
-      min: 0.5,
-      max: 30,
-      step: 0.5,
+      value: defaults.dayLength,
+      min: 2,
+      max: 5,
+      step: 1,
     },
     {
-      label: "Executive Action Length (minutes)",
-      ref: "executiveActionLength",
+      label: "Guess Word Length (minutes)",
+      ref: "guessWordLength",
       type: "number",
       showIf: "configureDuration",
-      value: defaults.executiveActionLength,
-      min: 0.5,
-      max: 30,
+      value: defaults.guessWordLength,
+      min: 1,
+      max: 3,
       step: 0.5,
     },
-    {
-      label: "Special Nomination Length (minutes)",
-      ref: "specialNominationLength",
-      type: "number",
-      showIf: "configureDuration",
-      value: defaults.specialNominationLength,
-      min: 0.5,
-      max: 30,
-      step: 0.5,
-    },
-  ]);
+  ];
 
-  useEffect(() => {
-    document.title = "Host Secret Dictator | UltiMafia";
-  }, []);
-
-  function onHostGame() {
+  function onHostGame(setupId, getFormFieldValue) {
     var scheduled = getFormFieldValue("scheduled");
 
-    if (selSetup.id) {
-      axios
+    if (setupId) {
+      const hostPromise = axios
         .post("/api/game/host", {
           gameType: gameType,
-          setup: selSetup.id,
+          setup: setupId,
           lobby: getFormFieldValue("lobby"),
           lobbyName: getFormFieldValue("lobbyName"),
           private: getFormFieldValue("private"),
@@ -178,24 +173,20 @@ export default function HostSecretDictator() {
             scheduled && new Date(getFormFieldValue("startDate")).getTime(),
           readyCheck: getFormFieldValue("readyCheck"),
           stateLengths: {
-            Nomination: getFormFieldValue("nominationLength"),
-            Election: getFormFieldValue("electionLength"),
-            "Legislative Session": getFormFieldValue(
-              "legislativeSessionLength"
-            ),
-            "Executive Action": getFormFieldValue("executiveActionLength"),
-            "Special Nomination": getFormFieldValue("specialNominationLength"),
+            Night: getFormFieldValue("nightLength"),
+            "Give Clue": getFormFieldValue("giveClueLength"),
+            Day: getFormFieldValue("dayLength"),
+            "Guess Word": getFormFieldValue("guessWordLength"),
+          },
+          wordOptions: {
+            configureWords: getFormFieldValue("configureWords"),
+            wordLength: getFormFieldValue("wordLength"),
+            townWord: getFormFieldValue("townWord"),
+            foolWord: getFormFieldValue("foolWord"),
           },
           anonymousGame: getFormFieldValue("anonymousGame"),
           anonymousDeckId: getFormFieldValue("anonymousDeckId"),
-        })
-        .then((res) => {
-          if (scheduled) {
-            siteInfo.showAlert(`Game scheduled.`, "success");
-            setRedirect("/");
-          } else setRedirect(`/game/${res.data}`);
-        })
-        .catch(errorAlert);
+        });
 
       Object.keys(defaults).forEach(function (key) {
         const submittedValue = getFormFieldValue(key);
@@ -204,23 +195,12 @@ export default function HostSecretDictator() {
         }
       });
       persistDefaults(gameType, defaults);
-    } else errorAlert("You must choose a setup");
+      return hostPromise;
+    }
+    else {
+      return null;
+    }
   }
 
-  function getFormFieldValue(ref) {
-    for (let field of formFields) if (field.ref === ref) return field.value;
-  }
-
-  if (redirect) return <Redirect to={redirect} />;
-
-  return (
-    <HostBrowser
-      gameType={gameType}
-      selSetup={selSetup}
-      setSelSetup={setSelSetup}
-      formFields={formFields}
-      updateFormFields={updateFormFields}
-      onHostGame={onHostGame}
-    />
-  );
+  return [initialFormFields, onHostGame];
 }

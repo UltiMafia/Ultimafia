@@ -15,10 +15,10 @@ import { UserContext } from "../../Contexts";
 import "css/play.css";
 
 import { LobbyBrowser } from "./LobbyBrowser/LobbyBrowser";
-import Host from "./Host/Host";
 import CreateSetup from "./CreateSetup/CreateSetup";
 import DeckSelector from "./Decks/DeckSelector";
 import CreateDecks from "./Decks/CreateDeck";
+import HostBrowser from "./Host/HostBrowser";
 
 export default function Play(props) {
   const theme = useTheme();
@@ -94,7 +94,7 @@ export default function Play(props) {
       <div className="inner-content play">
         <Switch>
           <Route exact path="/play" render={() => <LobbyBrowser />} />
-          <Route exact path="/play/host" render={() => <Host />} />
+          <Route exact path="/play/host" render={() => <HostBrowser />} />
           <Route exact path="/play/decks" render={() => <DeckSelector />} />
           <Route exact path="/play/create" render={() => <CreateSetup />} />
           <Route exact path="/play/createDeck" render={() => <CreateDecks />} />
