@@ -3,11 +3,12 @@ const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 
 module.exports = class RoleButton extends Item {
-  constructor(role, type) {
+  constructor(count, role, type) {
     super("RoleButton");
+    this.count = count;
     this.roleToUse = role;
     this.type = type || "A";
-    this.baseMeetingName = "Choose Role "+ this.type;
+    this.baseMeetingName = "Choose Role "+ this.type + this.count;
     this.currentMeetingIndex = 0;
     this.lifespan = 1;
     this.cannotBeStolen = true;
