@@ -26,7 +26,7 @@ module.exports = class PlayerRoleRelationInfo extends Information {
     this.role = role;
     this.relation = relation.toUpperCase();
     let info;
-    if (this.relation == "IS") {
+    if (this.relation == "(Player) is (Role)") {
       info = this.game.createInformation(
         "GuessRoleInfo",
         this.creator,
@@ -36,7 +36,7 @@ module.exports = class PlayerRoleRelationInfo extends Information {
         this.noMods
       );
     }
-    if (this.relation == "NEIGHBORS") {
+    if (this.relation == "(Player) neighbors (Role)") {
       info = this.game.createInformation(
         "GuessPlayerNeighborRoleInfo",
         this.creator,
@@ -46,7 +46,7 @@ module.exports = class PlayerRoleRelationInfo extends Information {
         this.noMods
       );
     }
-    if (this.relation == "HAS VISITED") {
+    if (this.relation == "(Player) visited (Role) last night") {
       info = this.game.createInformation(
         "GuessPlayerVisitRoleInfo",
         this.creator,
@@ -56,7 +56,7 @@ module.exports = class PlayerRoleRelationInfo extends Information {
         this.noMods
       );
     }
-    if (this.relation == "WAS VISITED BY") {
+    if (this.relation == "(Player) was visited by (Role) last night") {
       info = this.game.createInformation(
         "GuessPlayerVisitorRoleInfo",
         this.creator,
