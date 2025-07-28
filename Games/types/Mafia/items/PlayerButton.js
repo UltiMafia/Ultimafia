@@ -5,6 +5,7 @@ const Random = require("../../../../lib/Random");
 module.exports = class PlayerButton extends Item {
   constructor(count, role, type) {
     super("PlayerButton");
+    this.count = count;
     this.roleToUse = role;
     this.type = type || "A";
     this.baseMeetingName = "Choose Player "+ this.type +this.count;
