@@ -1,21 +1,20 @@
 import React, { useContext, useState } from "react";
-import axios from "axios";
+
 import "css/shiny.css";
-import { Link, Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { PlayerCount } from "./PlayerCount";
-import { UserContext } from "../../../Contexts";
-import { useErrorAlert } from "../../../components/Alerts";
-import { filterProfanity } from "../../../components/Basic";
-import Setup from "../../../components/Setup";
+import { UserContext } from "Contexts";
+import { filterProfanity } from "components/Basic";
+import Setup from "components/Setup";
+import HostGameDialogue from "components/HostGameDialogue";
 import {
   Box,
   Button,
   IconButton,
-  ListItemButton,
   Stack,
   Typography,
 } from "@mui/material";
-import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { getRowColor, getSetupBackgroundColor } from "./gameRowColors.js";
 
 const GameStatus = (props) => {
@@ -144,9 +143,8 @@ const GameStatus = (props) => {
 
 export const GameRow = (props) => {
   const isPhoneDevice = useIsPhoneDevice();
-  const [redirect, setRedirect] = useState(false);
   const user = useContext(UserContext);
-  const errorAlert = useErrorAlert();
+  const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
 
   const showLobbyName = props.showLobbyName;
   const showGameTypeIcon = props.showGameTypeIcon;
@@ -156,41 +154,6 @@ export const GameRow = (props) => {
   const setupOnNewRow = isPhoneDevice || props.small;
   const maxRolesCount = props.maxRolesCount || undefined;
   const lobbyName = props.game.lobbyName;
-
-  const onRehostClick = () => {
-    var stateLengths = {};
-
-    for (let stateName in props.game.stateLengths)
-      stateLengths[stateName] = props.game.stateLengths[stateName] / 60000;
-
-    let lobby = props.lobby;
-    let gameType = props.game.type;
-
-    if (lobby === "All") lobby = "Main";
-    if (gameType !== "Mafia" && lobby === "Main") {
-      lobby = "Games";
-    }
-
-    axios
-      .post("/api/game/host", {
-        gameType: gameType,
-        setup: props.game.setup.id,
-        lobby: lobby,
-        guests: props.game.guests,
-        private: false,
-        ranked: props.game.ranked,
-        competitive: props.game.competitive,
-        spectating: props.game.spectating,
-        readyCheck: props.game.readyCheck,
-        noVeg: props.game.noVeg,
-        anonymousGame: props.game.anonymousGame,
-        anonymousDeckId: props.game.anonymousDeck.map((anonymousDeck => anonymousDeck.id)).join(","),
-        stateLengths: stateLengths,
-        ...JSON.parse(props.game.gameTypeOptions),
-      })
-      .then((res) => setRedirect(`/game/${res.data}`))
-      .catch(errorAlert);
-  };
 
   const SetupWrapped = (
     <Setup
@@ -202,12 +165,12 @@ export const GameRow = (props) => {
     />
   );
 
-  if (redirect) return <Redirect to={redirect} />;
   if (!props.game.setup) return <></>;
 
   return (
     <div className="shiny-container">
     {props.game.competitive && (<i className="shiny"/>)}
+    <HostGameDialogue open={ishostGameDialogueOpen} setOpen={setIshostGameDialogueOpen} setup={props.game.setup} />
     <Stack
       direction="row"
       sx={{
@@ -282,7 +245,7 @@ export const GameRow = (props) => {
               textAlign: "center"
             }}>
                 {props.game.status === "Finished" && user.loggedIn && (
-                  <IconButton size="small" color="primary" onClick={onRehostClick}>
+                  <IconButton size="small" color="primary" onClick={() => setIshostGameDialogueOpen(true)}>
                     <i className="rehost fas fa-redo" style={{ fontSize: "16px" }} title="Rehost" />
                   </IconButton>
                 )}

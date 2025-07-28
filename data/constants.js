@@ -336,6 +336,8 @@ module.exports = {
   leavePenaltyForgivenessAmount: 2,
   // Penalties reset in level after 3 days
   leavePenaltyDurationMillis: 259200000,
+  
+  minimumGamesForRanked: 5,
 
   // Perms given to all users
   defaultPerms: [

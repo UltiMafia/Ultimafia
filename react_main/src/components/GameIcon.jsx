@@ -1,3 +1,5 @@
+import React from "react";
+
 export const gamesIcons = {
     Mafia: require("images/game_icons/Mafia.png"),
     Resistance: require("images/game_icons/Resistance.png"),

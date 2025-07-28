@@ -122,6 +122,21 @@ router.get("/id", async function (req, res) {
   }
 });
 
+router.get("/featuredSetup", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    // This is different from the featured search because it only returns one setup for the lobby page
+    var featuredCategory = String(req.query.featuredCategory);
+    var setup = await redis.getFeaturedSetup(featuredCategory);
+
+    res.send(setup);
+  } catch (e) {
+    logger.error(e);
+    res.status("Couldn't find featured setup.");
+    res.send(500);
+  }
+});
+
 router.get("/search", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
