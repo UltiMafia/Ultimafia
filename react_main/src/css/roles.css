@@ -333,8 +333,6 @@
   background-image: url("/src/images/roles/village/villager-vivid.png");
 }
 
-
-
 .role-icon-vivid-Mafia-Doctor {
   background-image: url("/src/images/roles/village/doctor-vivid.png");
 }
@@ -437,6 +435,10 @@
 
 .role-icon-vivid-Mafia-Granny {
   background-image: url("/src/images/roles/village/granny-vivid.png");
+}
+
+.role-icon-old-Mafia-Granny {
+  background-image: url("/src/images/roles/village/skins/granny-old.png");
 }
 
 .role-icon-vivid-Mafia-Templar {
@@ -957,6 +959,14 @@
 
 .role-icon-vivid-Mafia-Apothecary {
   background-image: url("/src/images/roles/village/apothecary-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Maestro {
+  background-image: url("/src/images/roles/village/maestro-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Hermit {
+  background-image: url("/src/images/roles/village/hermit-vivid.png");
 }
 
 /* 
@@ -1509,6 +1519,14 @@
 
 .role-icon-vivid-Mafia-Cultist {
   background-image: url("/src/images/roles/cult/cultist-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Skinwalker {
+  background-image: url("/src/images/roles/cult/skinwalker-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Plague-Doctor {
+  background-image: url("/src/images/roles/cult/plague-doctor-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Nyarlathotep {

@@ -126,6 +126,7 @@ const artContributors = {
       "Banshee:vivid",
       "Auditor:vivid",
       "Vampire:vivid",
+      "Blackguard:vivid",
       //Skins
       "Tourist:old",
       "Bloodhound:old",
@@ -225,7 +226,7 @@ const artContributors = {
     ],
   },
   grr: {
-    Mafia: ["Granny:vivid"],
+    Mafia: ["Granny:old"],
   },
   hima: {
     Mafia: [
@@ -452,6 +453,10 @@ const artContributors = {
       "Brain Blast:vivid",
       "Wrangler:vivid",
       "Ogre:vivid",
+      "Granny:vivid",
+      "Imposter:vivid",
+      "Sidekick:vivid",
+      "Skinwalker:vivid",
       //Skins
       "Hellhound:goofy",
     ],
@@ -486,7 +491,10 @@ const artContributors = {
       "Emperor:vivid",
       "Jinx:vivid",
       "Fortune Teller:vivid",
-      "Stand-Up:vivid"],
+      "Stand-Up:vivid",
+      "Detective:vivid",
+      "Maestro:vivid",
+      "Hermit:vivid"],
     Battlesnakes: ["Snake:vivid"],
   },
 };
