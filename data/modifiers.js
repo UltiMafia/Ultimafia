@@ -838,6 +838,13 @@ const modifierData = {
         "Will passively convert to the role of the first aligned power role.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    Wacky: {
+      internal: ["WackyRole"],
+      tags: ["Wacky"],
+      description:
+        "This role can treats every role on the site as an Excess Role.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Wannabe: {
       internal: ["Wannabe"],
       tags: ["Deception"],
