@@ -30,6 +30,7 @@ module.exports = class RoleButton extends Item {
             else if(this.item.type == "B"){
               this.item.roleToUse.data.RoleB = this.target;
             }
+             this.game.events.emit("questionInfo", this.item.roleToUse);
             this.item.drop();
           },
         },
