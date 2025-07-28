@@ -1,5 +1,6 @@
 const Role = require("../../core/Role");
 const MafiaAction = require("./Action");
+const roleData = require("../../../data/roles");
 
 module.exports = class MafiaRole extends Role {
   constructor(name, player, data) {
@@ -21,6 +22,16 @@ module.exports = class MafiaRole extends Role {
       death: "real",
       investigate: "real",
     };
+  }
+
+  getAllRoles(){
+    if(this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Wacky") && !this.player.hasEffect("NoModifiers");){
+      let AllRoles = Object.entries(roleData.Mafia).filter((m) => m[1].alignment != "Event").map((r) => r[0]);
+      return AllRoles;
+    }
+    else{
+      return this.game.PossibleRoles;
+    }
   }
 
   editAppearance(newAppearance, newAppearanceMods) {
