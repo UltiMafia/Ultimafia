@@ -472,14 +472,12 @@ class EmoteUpload extends React.Component {
       let imageFilename = e.target.files[0].name;
       let imageMimeType = e.target.files[0].type;
       reader.onload = function (e) {
-        console.log(e.target);
         this.setState({
           imageURI: e.target.result,
           imageFilename: imageFilename,
           imageMimeType: imageMimeType,
         });
       }.bind(this);
-      console.log(e.target);
       reader.readAsDataURL(e.target.files[0]);
     }
   }
@@ -530,7 +528,7 @@ class EmoteUpload extends React.Component {
 
 export function useForm(initialFormFields) {
   const [fields, updateFields] = useReducer((formFields, actions) => {
-    const newFormFields = [...formFields];
+    let newFormFields = [...formFields];
 
     if (!Array.isArray(actions)) actions = [actions];
 
@@ -539,7 +537,18 @@ export function useForm(initialFormFields) {
       let newField = { ...field };
 
       for (let action of actions) {
-        if (field.ref && field.ref === action.ref) {
+        if (action.type) {
+          switch (action.type) {
+            case 'setFields': {
+              newFormFields = action.fields;
+              break;
+            }
+            default: {
+              throw Error('Unknown action: ' + action.type);
+            }
+          }
+        }
+        else if (field.ref && field.ref === action.ref) {
           if (typeof action.value == "string" && field.type === "boolean")
             action.value = action.value === "true";
 

@@ -387,7 +387,9 @@ export default function HostBrowser(props) {
           alignItems: "stretch",
         }}>
           {!isPhoneDevice && (<Paper sx={{
-              mr: .5,
+              maxHeight: "576px",
+              overflowY: "scroll",
+              mr: 1,
               p: 0.5,
             }}>
               <Stack direction="column" spacing={0.5}>
@@ -429,6 +431,7 @@ export default function HostBrowser(props) {
         </Stack>
       </Box>
       <Paper sx={{
+        p: 1,
         mt: 1,
         mb: 1,
       }}>
