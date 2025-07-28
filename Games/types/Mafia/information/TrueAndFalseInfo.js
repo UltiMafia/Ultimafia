@@ -49,7 +49,7 @@ module.exports = class TrueAndFalseInfo extends Information {
     ) {
       possibleInfo.push("RoleInfo");
     }
-    if (this.game.deadPlayers().length == 0) {
+    if (this.game.deadPlayers().length == 0 && this.game.alivePlayers().length > 3) {
       possibleInfo.push("EvilPairsInfo");
     }
     if (this.game.alivePlayers().length >= 4) {

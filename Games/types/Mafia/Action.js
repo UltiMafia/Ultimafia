@@ -74,7 +74,7 @@ module.exports = class MafiaAction extends Action {
     }
     this.game.events.emit("AbilityToggle", target);
     for (let action of this.game.actions[0]) {
-      if (action.hasLabel("investigate") || action.hasLabel("mafia")) {
+      if (action.hasLabel("investigate")) {
         hasInvestigate = true;
         continue;
       }
