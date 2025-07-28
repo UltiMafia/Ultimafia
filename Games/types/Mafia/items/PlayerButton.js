@@ -29,6 +29,7 @@ module.exports = class PlayerButton extends Item {
             else if(this.item.type == "B"){
               this.item.roleToUse.data.PlayerB = this.target;
             }
+            this.game.events.emit("questionInfo", this.item.roleToUse);
             this.item.drop();
           },
         },
