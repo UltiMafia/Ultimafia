@@ -494,7 +494,8 @@ const artContributors = {
       "Stand-Up:vivid",
       "Detective:vivid",
       "Maestro:vivid",
-      "Hermit:vivid"],
+      "Hermit:vivid",
+      "Plague Doctor:vivid"],
     Battlesnakes: ["Snake:vivid"],
   },
 };
