@@ -8,7 +8,7 @@ module.exports = class BecomeDeliriousRole extends Card {
     //this.startItems = ["IsTheBraggart"];
 
     let banishedRoles = this.game.banishedRoles;
-    let roles = this.game.PossibleRoles.filter((r) => r);
+    let roles = this.role.getAllRoles().filter((r) => r);
     let currentRoles = [];
     let playersAll = this.game.players.filter((p) => p.role);
     for (let x = 0; x < playersAll.length; x++) {
@@ -80,7 +80,7 @@ module.exports = class BecomeDeliriousRole extends Card {
 
 function switchRoleBefore(role){
  
-    let roles = role.game.PossibleRoles.filter((r) => r);
+    let roles = role.getAllRoles().filter((r) => r);
     let currentRoles = [];
     let playersAll = role.game.players.filter((p) => p.role);
     for (let x = 0; x < playersAll.length; x++) {

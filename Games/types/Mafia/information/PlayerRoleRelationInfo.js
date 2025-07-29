@@ -24,7 +24,7 @@ module.exports = class PlayerRoleRelationInfo extends Information {
 
     this.target = player;
     this.role = role;
-    this.relation = relation.toUpperCase();
+    this.relation = relation;
     let info;
     if (this.relation == "(Player) is (Role)") {
       info = this.game.createInformation(
@@ -81,9 +81,9 @@ module.exports = class PlayerRoleRelationInfo extends Information {
 
   getGuessMessages() {
     this.creator.queueAlert(
-      `:poison: You ask if ${this.target.name} ${
-        this.relation
-      } ${this.game.formatRole(this.role)}.`
+      `:poison: You ask if ${
+        this.relation.replace("(Player)",this.target.name).replace("(Role)",this.game.formatRole(this.role))
+      }.`
     );
   }
 

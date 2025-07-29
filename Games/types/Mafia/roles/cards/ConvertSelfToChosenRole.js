@@ -4,7 +4,7 @@ const { addArticle } = require("../../../../core/Utils");
 module.exports = class ConvertSelfToChosenRole extends Card {
   constructor(role) {
     super(role);
-    //const targetOptions = this.game.PossibleRoles.filter((r) => r);
+    
     this.meetings = {
       "Become Role": {
         states: ["Night"],
@@ -64,30 +64,5 @@ module.exports = class ConvertSelfToChosenRole extends Card {
         },
       },
     };
-    /*
-    this.listeners = {
-      roleAssigned: function (player) {
-        if (player !== this.player) {
-          return;
-        }
-
-        this.data.ConvertOptions = this.game.PossibleRoles.filter(
-          (r) =>
-            this.game.getRoleAlignment(r) ==
-            this.game.getRoleAlignment(this.player.role.name)
-        );
-      },
-      // refresh cooldown
-      state: function (stateInfo) {
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-        var ConvertOptions = this.data.ConvertOptions.filter((r) => r);
-        ConvertOptions.push("None");
-
-        this.meetings["Become Role"].targets = ConvertOptions;
-      },
-    };
-    */
   }
 };

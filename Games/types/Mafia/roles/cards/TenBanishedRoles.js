@@ -17,7 +17,7 @@ module.exports = class TenBanishedRoles extends Card {
 
         this.HasGainedAbilites = true;
         this.GainedBanishedRoles = [];
-        let roles = Random.randomizeArray(this.game.PossibleRoles.filter((r) => !roleBlacklist.includes(r.split(":"))[0] && r.split(":").includes("Banished")));
+        let roles = Random.randomizeArray(this.getAllRoles().filter((r) => !roleBlacklist.includes(r.split(":"))[0] && r.split(":").includes("Banished")));
         for(let x = 0; (x < 5 && x < roles.length); x++){
           if(roles[x]){
           let role = this.player.addExtraRole(roles[x]);

@@ -72,10 +72,6 @@ module.exports = class KillorCharge extends Card {
         }
         this.EatenPlayers = [];
         this.revived = false;
-
-        this.data.ConvertOptions = this.game.PossibleRoles.filter(
-          (r) => this.game.getRoleAlignment(r) == "Village"
-        );
       },
     };
   }

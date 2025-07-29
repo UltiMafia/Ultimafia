@@ -4,7 +4,7 @@ const { addArticle } = require("../../../../core/Utils");
 module.exports = class ConvertToChosenRole extends Card {
   constructor(role) {
     super(role);
-    //const targetOptions = this.game.PossibleRoles.filter((r) => r);
+    
     this.meetings = {
       "Select Player": {
         states: ["Night"],
@@ -76,25 +76,5 @@ module.exports = class ConvertToChosenRole extends Card {
         },
       },
     };
-    /*
-    this.listeners = {
-      roleAssigned: function (player) {
-        if (player !== this.player) {
-          return;
-        }
-
-        this.data.ConvertOptions = this.game.PossibleRoles.filter((r) => r);
-      },
-      // refresh cooldown
-      state: function (stateInfo) {
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-        var ConvertOptions = this.data.ConvertOptions;
-
-        this.meetings["Convert To"].targets = ConvertOptions;
-      },
-    };
-    */
   }
 };

@@ -38,23 +38,6 @@ module.exports = class ConvertIfVisitsAllMafia extends Card {
                 "You successfully trained with a member of the Mafia…"
               );
             }
-            /*
-            const aliveVisitedMafiosos = Array.from(
-              this.actor.role.visitedMentors
-            ).filter((p) => p.role.alignment === "Mafia" && p.alive);
-            const aliveMafiosos = this.game
-              .alivePlayers()
-              .filter((p) => p.role.alignment === "Mafia");
-
-            if (aliveVisitedMafiosos.length !== aliveMafiosos.length) {
-              return;
-            }
-
-            const randomMafiaRole = Random.randArrayVal(
-              this.game.PossibleRoles.filter((r) => this.game.getRoleAlignment(r) == "Mafia")
-            );
-            this.actor.setRole(randomMafiaRole);
-            */
           },
         },
       },
@@ -96,7 +79,7 @@ module.exports = class ConvertIfVisitsAllMafia extends Card {
             }
 
             const randomMafiaRole = Random.randArrayVal(
-              this.game.PossibleRoles.filter((r) => this.game.getRoleAlignment(r) == "Mafia")
+              this.role.getAllRoles().filter((r) => this.game.getRoleAlignment(r) == "Mafia")
             );
             this.actor.setRole(randomMafiaRole);
           },

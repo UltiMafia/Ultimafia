@@ -45,48 +45,9 @@ module.exports = class GuessRole extends Card {
           run: function () {
             
             this.role.data.targetRole = this.target;
-            /*
-            let targetPlayer = this.actor.role.data.targetPlayer;
-
-            if (targetPlayer) {
-              let info = this.game.createInformation(
-                "GuessRoleInfo",
-                this.actor,
-                this.game,
-                [targetPlayer],
-                [this.target]
-              );
-              info.processInfo();
-
-              this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
-              delete this.actor.role.data.targetPlayer;
-              */
             }
           },
         },
       };
-    /*
-    this.listeners = {
-      roleAssigned: function (player) {
-        if (player !== this.player) {
-          return;
-        }
-
-        this.player.role.data.ConvertOptions = this.game.PossibleRoles.filter(
-          (r) => r
-        );
-      },
-      // refresh cooldown
-      state: function (stateInfo) {
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-        let guessOptions = this.player.role.data.ConvertOptions;
-        //ConvertOptions.push("None");
-
-        this.meetings["Guess Role"].targets = guessOptions;
-      },
-    };
-    */
   }
 };

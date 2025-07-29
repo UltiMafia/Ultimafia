@@ -30,6 +30,8 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
               this.role.data.Count += 1;
                let temp = this.actor.holdItem("PlayerButton", this.role.data.Count, this.role);
                this.game.instantMeeting(temp.meetings, [this.actor]);
+               let temp2 = this.actor.holdItem("RoleButton", this.role.data.Count, this.role);
+               this.game.instantMeeting(temp2.meetings, [this.actor]);
             }
           },
         },
@@ -163,7 +165,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
           },
         });
 
-        this.game.queueAction(action);
+        action.do();
           }
           }
         },

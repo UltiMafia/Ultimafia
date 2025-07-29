@@ -6,7 +6,7 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
   constructor(role) {
     super(role);
 
-    //const targetOptions = this.game.PossibleRoles.filter((r) => r);
+    
     this.meetings = {
       "Block Role": {
         states: ["Night"],

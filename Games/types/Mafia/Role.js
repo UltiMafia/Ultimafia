@@ -25,9 +25,9 @@ module.exports = class MafiaRole extends Role {
   }
 
   getAllRoles(){
-    if(this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Wacky") && !this.player.hasEffect("NoModifiers");){
+    if(this.game.getRoleTags(this.game.formatRoleInternal(this.name, this.modifier)).includes("Excessive") && !this.player.hasEffect("NoModifiers")){
       let AllRoles = Object.entries(roleData.Mafia).filter((m) => m[1].alignment != "Event").map((r) => r[0]);
-      return AllRoles;
+      return AllRoles.concat(this.game.PossibleRoles);
     }
     else{
       return this.game.PossibleRoles;

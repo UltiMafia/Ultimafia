@@ -27,7 +27,7 @@ module.exports = class GuessTheOgre extends Card {
           priority:  PRIORITY_BECOME_DEAD_ROLE+10,
           labels: ["effect"],
           run: function () {
-            let roles = this.game.PossibleRoles.filter((r) => r);
+            
             let players = this.game
               .alivePlayers()
               .filter((p) => p.isEvil());
