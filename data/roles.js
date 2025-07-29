@@ -1879,25 +1879,25 @@ const roleData = {
         "If Multiple Brokers are in a game, The Winners and Losers can swapped Multiple Times.",
       ],
     },
-    Hero: {
+    Sculptor: {
       alignment: "Village",
       category: "Essential",
       tags: ["Conversion", "Setup Change", "Visiting", "Expert", "Banished Interaction"],
       description: [
-        "Attempts to guess the identity of the Damsal each night.",
+        "Attempts to guess the identity of the Statue each night.",
         "Converts them to a Random non-banished Village Role if Correct.",
-        "Forces a Damsal to Spawn in closed setups.",
+        "Forces a Statue to Spawn in closed setups.",
       ],
-      nightOrder: [["Guess Damsal",(0)]],
-      RolesMadeBy: ["Damsal"],
+      nightOrder: [["Guess Statue",(0)]],
+      RolesMadeBy: ["Statue"],
     },
-    Damsal: {
+    Statue: {
       alignment: "Village",
       category: "Essential",
       tags: ["Win Con", "Expert"],
       description: [
-        'If the first Evil Player to say "I think the Damsel is (Player Name)" during the day is correct, Mafia and Cult win.',
-        "All Mafia and Cult players learn if a Damsel is in the game.",
+        'If the first Evil Player to say "I think the Statue is (Player Name)" during the day is correct, Mafia and Cult win.',
+        "All Mafia and Cult players learn if a Statue is in the game.",
       ],
     },
     President: {

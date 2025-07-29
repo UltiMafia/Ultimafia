@@ -41,7 +41,7 @@ module.exports = class LoseIfGuessed extends Card {
         }
         this.hasSentMessage = true;
           this.game.queueAlert(
-          `There is a Damsal in this Town say "I think the Damsal is (Player Name)" to guess who they are. They may only be guessed Once!`,
+          `There is a Statue in this Town, say "I think the Statue is (Player Name)" to guess who they are. They may only be guessed Once!`,
           0,
           this.game.players.filter(
             (p) => p.role.alignment === "Mafia" || p.role.alignment === "Cult"
@@ -81,9 +81,9 @@ module.exports = class LoseIfGuessed extends Card {
     }
     formatedMessage = formatedMessage.toLowerCase();
     if (this.game.getStateName() != "Day") return;
-    if (formatedMessage.includes("i think the damsal is ")) {
+    if (formatedMessage.includes("i think the Statue is ")) {
       formatedMessage = formatedMessage.replace(
-        "i think the damsal is ",
+        "i think the Statue is ",
         ""
       );
       formatedMessage = formatedMessage.replace(" ", "");

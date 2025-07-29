@@ -5,7 +5,7 @@ module.exports = class GuessAdversaryConvert extends Card {
     super(role);
 
     this.meetings = {
-      "Guess Damsal": {
+      "Guess Statue": {
         states: ["Night"],
         flags: ["voting"],
         action: {
