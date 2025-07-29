@@ -4,7 +4,7 @@ const { addArticle } = require("../../../../core/Utils");
 module.exports = class CreateEvent extends Card {
   constructor(role) {
     super(role);
-    //const targetOptions = this.game.PossibleRoles.filter((r) => r);
+    
     this.meetings = {
       "Select Event": {
         states: ["Night"],

@@ -5,7 +5,7 @@ module.exports = class VampireAppearAsRoles extends Card {
   constructor(role) {
     super(role);
 
-    const evilRoles = role.game.PossibleRoles.filter(
+    const evilRoles = role.getAllRoles().filter(
       (r) =>
         role.game.getRoleAlignment(r) === "Cult" ||
         role.game.getRoleAlignment(r) === "Mafia"

@@ -1736,6 +1736,7 @@ const roleData = {
           label: "Old",
           value: "old",
         },
+      ],
     },
     Jailer: {
       alignment: "Village",

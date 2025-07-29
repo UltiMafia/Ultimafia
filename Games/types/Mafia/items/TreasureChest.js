@@ -18,6 +18,7 @@ module.exports = class TreasureChest extends Item {
           return;
         }
         if (this.holder.role.name != "Admiral") {
+          this.drop();
           return;
         }
         this.game.sendAlert(`${this.holder.name} has The Treasure Chest!`);
@@ -215,10 +216,10 @@ module.exports = class TreasureChest extends Item {
 
             if (this.actor.role.name != "Admiral") {
               if (this.game.AdmiralEvilRoles.length <= 0) {
-                const evilRoles = role.game.PossibleRoles.filter(
+                const evilRoles = this.item.Admiral.role.getAllRoles().filter(
                   (r) =>
-                    role.game.getRoleAlignment(r) === "Cult" ||
-                    role.game.getRoleAlignment(r) === "Mafia"
+                    this.game.getRoleAlignment(r) === "Cult" ||
+                    this.game.getRoleAlignment(r) === "Mafia"
                 );
                 let role;
                 if (evilRoles.length <= 0) {

@@ -5,7 +5,7 @@ module.exports = class AppearAsRandomEvil extends Card {
   constructor(role) {
     super(role);
 
-    let evilRoles = role.game.PossibleRoles.filter(
+    let evilRoles = role.getAllRoles().filter(
       (r) =>
         (role.game.getRoleAlignment(r) === "Cult" ||
         role.game.getRoleAlignment(r) === "Mafia") && !role.game.getRoleTags(r).includes("No Investigate")

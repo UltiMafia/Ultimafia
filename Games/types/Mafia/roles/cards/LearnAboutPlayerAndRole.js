@@ -7,6 +7,38 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
     super(role);
 
     (this.meetings = {
+      "Select Statement": {
+        actionName: "Select Relation",
+        states: ["Day"],
+        flags: ["voting", "instant"],
+        inputType: "custom",
+        targets: ["(Player) is (Role)", "(Player) neighbors (Role)", "(Player) was visited by (Role) last night", "(Player) visited (Role) last night", "None"],
+        action: {
+          labels: ["investigate"],
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
+          role: this.role,
+          run: function () {
+            if(this.target == "None"){
+              return;
+            }
+            this.role.data.targetRelation = this.target;
+            let playerAndRole = ["(Player) is (Role)", "(Player) neighbors (Role)", "(Player) was visited by (Role) last night", "(Player) visited (Role) last night"];
+            if(playerAndRole.includes(this.target)){
+              if(this.role.data.Count == null){
+                this.role.data.Count = 0;
+              }
+              this.role.data.Count += 1;
+               let temp = this.actor.holdItem("PlayerButton", this.role.data.Count, this.role);
+               this.game.instantMeeting(temp.meetings, [this.actor]);
+               let temp2 = this.actor.holdItem("RoleButton", this.role.data.Count, this.role);
+               this.game.instantMeeting(temp2.meetings, [this.actor]);
+            }
+          },
+        },
+      },
+    }),
+/*
+    (this.meetings = {
       "Select Players": {
         actionName: "Select Player",
         states: ["Day"],
@@ -91,7 +123,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
         },
       },
     }),
-     
+     */
 
       (this.listeners = {
         roleAssigned: function (player) {
@@ -100,6 +132,42 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
           }
 
           this.data.ConvertOptions = this.game.PossibleRoles.filter((r) => r);
+        },
+        questionInfo: function (role){
+          if(role != this){
+            return;
+          }
+          if(this.data.targetRelation != null){
+          if(this.data.PlayerA != null && this.data.RoleA != null){
+          var action = new Action({
+          actor: this.player,
+          game: this.player.game,
+          role: this.role,
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          labels: ["investigate"],
+          run: function () {
+            let info = this.game.createInformation(
+              "PlayerRoleRelationInfo",
+              this.actor,
+              this.game,
+              this.role.data.PlayerA,
+              this.role.data.RoleA,
+              this.role.data.targetRelation
+            );
+            info.processInfo();
+            info.getGuessMessages();
+            this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
+
+         
+            delete this.role.data.targetPlayer;
+            delete this.role.data.targetRelation;
+            delete this.role.data.targetRole;
+          },
+        });
+
+        action.do();
+          }
+          }
         },
       });
       

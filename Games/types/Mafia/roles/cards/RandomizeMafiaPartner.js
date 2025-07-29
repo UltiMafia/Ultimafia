@@ -13,6 +13,7 @@ module.exports = class RandomizeMafiaPartner extends Card {
         flags: ["voting"],
         targets: { include: ["Mafia"], exclude: ["self"] },
         action: {
+          role: this.role,
           labels: ["convert"],
           priority: PRIORITY_CONVERT_DEFAULT+3,
           run: function () {
@@ -23,7 +24,7 @@ module.exports = class RandomizeMafiaPartner extends Card {
                 .map((roleData) => roleData[0])
             );
             */
-           const randomMafiaRole = Random.randArrayVal(this.game.PossibleRoles.filter((r) => this.game.getRoleAlignment(r) == "Mafia"));
+           const randomMafiaRole = Random.randArrayVal(this.role.getAllRoles().filter((r) => this.game.getRoleAlignment(r) == "Mafia"));
             this.target.setRole(
               randomMafiaRole,
               null,

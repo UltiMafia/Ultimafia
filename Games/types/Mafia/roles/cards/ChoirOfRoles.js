@@ -77,10 +77,11 @@ module.exports = class ChoirOfRoles extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
+          role: this,
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           labels: ["effect"],
           run: function () {
-            let roles = this.game.PossibleRoles.filter((r) => r);
+            let roles = this.role.getAllRoles().filter((r) => r);
             let players = this.game
               .alivePlayers()
               .filter((p) => p.role.alignment != "Cult");

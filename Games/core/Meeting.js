@@ -5,6 +5,7 @@ const Random = require("../../lib/Random");
 const ArrayHash = require("./ArrayHash");
 const constants = require("../../data/constants");
 const Player = require("./Player");
+const roleData = require("../../data/roles");
 
 module.exports = class Meeting {
   constructor(game, name) {
@@ -454,12 +455,17 @@ module.exports = class Meeting {
     if(targetType == "AllRoles"){
      let temp = this.game.PossibleRoles.filter((r) => r);
 
-        for (let tag of this.AllRolesFilters) {
+        if(this.AllRolesFilters.includes("AllOnSite")){
+          let allRoles = Object.entries(roleData.Mafia).filter((m) => m[1].alignment != "Event").map((r) => r[0]);
+          temp = temp.concat(allRoles);
+        }
+        if(this.AllRolesFilters.includes("addedRoles")){
+          temp = temp.concat(this.game.AddedRoles);
+        }
+
+        for (let tag of this.AllRolesFilters.filter((t) => t != "AllOnSite" && t != "addedRoles")) {
 
           switch (tag) {
-            case "addedRoles":
-           temp = temp.concat(this.game.AddedRoles);
-            break;
             case "self":
               if(self){
               temp = temp.filter((r) => r != self.role.name);

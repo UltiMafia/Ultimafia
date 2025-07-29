@@ -250,6 +250,13 @@ const modifierData = {
       eventDescription: "This Event will only occur on Even nights.",
       incompatible: ["Odd", "Delayed"],
     },
+    Excessive: {
+      internal: ["ExcessiveRole"],
+      tags: ["Excessive"],
+      description:
+        "This role can treats every role on the site as an Excess Role.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Exclusive: {
       internal: ["Remove1Banished"],
       tags: ["Banished", "Setup Changes"],

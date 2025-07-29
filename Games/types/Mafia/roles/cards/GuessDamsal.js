@@ -27,7 +27,7 @@ module.exports = class GuessAdversaryConvert extends Card {
             for (let x = 0; x < this.role.roleToGuess.length; x++) {
               if (this.target.role.name == this.role.roleToGuess[x]) {
                 if (this.dominates()){
-            let randomVillageRole = Random.randArrayVal(this.game.PossibleRoles.filter((r) => this.game.getRoleAlignment(r) == "Village" && !r.split(":")[1]?.includes("Banished") && r.split(":")[0] != "Damsal"));
+            let randomVillageRole = Random.randArrayVal(this.role.getAllRoles().filter((r) => this.game.getRoleAlignment(r) == "Village" && !r.split(":")[1]?.includes("Banished") && r.split(":")[0] != "Damsal"));
             if(!randomVillageRole){
             randomVillageRole = "Villager";
             }
