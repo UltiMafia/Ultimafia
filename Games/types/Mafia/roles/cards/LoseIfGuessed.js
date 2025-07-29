@@ -81,9 +81,9 @@ module.exports = class LoseIfGuessed extends Card {
     }
     formatedMessage = formatedMessage.toLowerCase();
     if (this.game.getStateName() != "Day") return;
-    if (formatedMessage.includes("i think the Statue is ")) {
+    if (formatedMessage.includes("i think the statue is ")) {
       formatedMessage = formatedMessage.replace(
-        "i think the Statue is ",
+        "i think the statue is ",
         ""
       );
       formatedMessage = formatedMessage.replace(" ", "");
