@@ -70,6 +70,7 @@ module.exports = {
     Recluse: "Villager",
     Bully: "Mafioso",
     Blackmailer: "Mafioso",
+    Slayer: "Sheriff",
   },
   Ghost: {
     Town: "Villager",

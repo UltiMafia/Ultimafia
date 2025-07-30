@@ -122,16 +122,6 @@ const roleData = {
       ],
       nightOrder: [["Block Visitors",PRIORITY_BLOCK_VISITORS]],
     },
-    Slayer: {
-      alignment: "Village",
-      category: "Basic",
-      tags: ["Items", "Killing", "Alignments", "Day Actions"],
-      description: [
-        "Starts with a stake.",
-        "Stakes can only kill players who appear as Evil.",
-        "This stake always reveals the Slayer when successfully killing a player.",
-      ],
-    },
     Deputy: {
       alignment: "Village",
       category: "Basic",
