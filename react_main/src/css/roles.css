@@ -1633,6 +1633,10 @@
   background-image: url("/src/images/roles/cult/gremlin-vivid.png");
 }
 
+.role-icon-vivid-Mafia-War-Demon {
+  background-image: url("/src/images/roles/cult/war-demon-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Succubus {
   background-image: url("/src/images/roles/cult/succubus-vivid.png");
 }
@@ -1711,10 +1715,6 @@
 
 .role-icon-vivid-Mafia-Joker {
   background-image: url("/src/images/roles/independent/joker-vivid.png");
-}
-
-.role-icon-vivid-Mafia-War-Demon {
-  background-image: url("/src/images/roles/cult/war-demon-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Grizzly-Bear {
@@ -1972,6 +1972,10 @@
 
 .role-icon-vivid-Mafia-Airdrop {
   background-image: url("/src/images/roles/event/airdrop-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Opera {
+  background-image: url("/src/images/roles/event/opera-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Ominous-Warning {
@@ -2438,8 +2442,16 @@ background-image: url("/src/images/modifiers/naive.png");
 background-image: url("/src/images/modifiers/narcissistic-vain.png");
 }
 
+.modifier-Mafia-Notable {
+background-image: url("/src/images/modifiers/provocative-notable.png");
+}
+
 .modifier-Mafia-Vain {
 background-image: url("/src/images/modifiers/narcissistic-vain.png");
+}
+
+.modifier-Mafia-Vengeful {
+background-image: url("/src/images/modifiers/vengeful.png");
 }
 
 .modifier-Mafia-Neighborly {
@@ -2491,7 +2503,7 @@ background-image: url("/src/images/modifiers/prosaic.png");
 }
 
 .modifier-Mafia-Provocative {
-background-image: url("/src/images/modifiers/provocative.png");
+background-image: url("/src/images/modifiers/provocative-notable.png");
 }
 
 .modifier-Mafia-Random {
