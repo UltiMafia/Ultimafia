@@ -48,8 +48,10 @@ module.exports = class Delirious extends Effect {
   }
 
    remove() {
+    let temp = this.player;
     this.falseModeEffect.remove();
     super.remove();
+    temp.game.events.emit("AbilityToggle", temp);
   }
 
   
