@@ -192,10 +192,10 @@ module.exports = class CheatGame extends Game {
     if (previousState == "Call Lie") {
       this.RoundNumber++;
       this.RankNumber++;
-      this.sendAlert(`${(this.RankNumber != 1 && this.RankNumber != 11 && this.RankNumber != 12 && this.RankNumber != 13) ? (this.RankNumber) : (this.RankNumber == 1 ? "Ace" : (this.RankNumber == 11 ? "Jack" : (this.RankNumber == 12 ? "Queen" : ("King"))))}s must be played!`);
       if(this.RankNumber > 13){
         this.RankNumber = 1;
       }
+      this.sendAlert(`${(this.RankNumber != 1 && this.RankNumber != 11 && this.RankNumber != 12 && this.RankNumber != 13) ? (this.RankNumber) : (this.RankNumber == 1 ? "Ace" : (this.RankNumber == 11 ? "Jack" : (this.RankNumber == 12 ? "Queen" : ("King"))))}s must be played!`);
       for(let player of this.randomizedPlayersCopy){
         player.hasLied = false;
       }
