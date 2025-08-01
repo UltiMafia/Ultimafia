@@ -16,7 +16,7 @@ const DailyChallengeData = {
       extraData: "Game Type",
       reward: 2,
     },
-    "Play 3 Games": {
+    "Play 3 Unranked Games": {
       ID: "Basic2",
       tier: 1,
       internal: ["Play3Games"],
