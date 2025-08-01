@@ -2509,7 +2509,7 @@ const roleData = {
       tags: ["Gifting", "Deception", "Items", "Suits", "Visiting", "Advanced"],
       description: [
         "Gives out a suit each night that disguises the wearer's role identity.",
-        "Suits can be selected from any role within the current game.",
+        "Suits can be selected from any role within the current setup.",
       ],
       nightOrder: [["Give Suit",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
@@ -3248,8 +3248,8 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Chooses a player each night.",
-        "If that player was targeted by a kiling role, that player is saved and converts to Cultist.",
+        "Saves another player from dying each night.",
+        "After successfully saving a player, That player is converted to Cultist.",
         "All Cultists die if the Witch Doctor dies.",
       ],
       nightOrder: [["Convert and Save",(PRIORITY_NIGHT_SAVER)]],
@@ -3831,6 +3831,11 @@ const roleData = {
         "While alive, most information received by Village roles is made false.",
         "If no one is condemned while Nyarlathotep is alive, the Cult wins.",
       ],
+      SpecialInteractions: {
+        Mayor: [
+          "If Village wins due to the Mayor ability, Cult will not win due to Nyarlathotep's ability.",
+        ],
+      },
       nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
     },
     Puca: {

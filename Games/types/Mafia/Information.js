@@ -381,7 +381,9 @@ module.exports = class MafiaInformation {
         return returnRoles;
       }
     }
-    let roles = this.game.PossibleRoles.filter(
+    let roles = this.game.PossibleRoles;
+    if(this.target instanceof Player){
+      roles = this.game.PossibleRoles.filter(
       (r) =>
         r !=
           this.game.formatRoleInternal(
@@ -391,6 +393,14 @@ module.exports = class MafiaInformation {
         !this.game.getRoleTags(r).includes("No Investigate") &&
         !this.game.getRoleTags(r).includes("Exposed")
     );
+    }
+    else{
+      roles = this.game.PossibleRoles.filter(
+      (r) =>
+        !this.game.getRoleTags(r).includes("No Investigate") &&
+        !this.game.getRoleTags(r).includes("Exposed")
+    );
+    }
     if (alignment != null && alignment != "Evil" && alignment != "Good") {
       roles = roles.filter((r) => this.game.getRoleAlignment(r) == alignment);
     }

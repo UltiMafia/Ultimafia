@@ -151,6 +151,7 @@ module.exports = class Meeting {
         targets: { include: ["members"], exclude: ["self"] },
         targetType: "player",
         verb: "to",
+        whileDead: this.talkingDead,
       });
     }
 
@@ -502,6 +503,7 @@ module.exports = class Meeting {
       if((!this.mustAct || temp.length <= 0) && !temp.includes("None")){
         temp.push("None");
       }
+      temp = [...new Set(temp)];
       return temp;
     }
   }
