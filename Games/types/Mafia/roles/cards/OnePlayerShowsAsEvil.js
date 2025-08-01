@@ -8,15 +8,15 @@ module.exports = class OnePlayerShowsAsEvil extends Card {
     //this.startEffects = ["UnfavorableMode"];
     this.listeners = {
       AbilityToggle: function (player) {
-        if (player != this.player) {
-          return;
-        }
         if (this.player.hasAbility(["Modifier", "Information", "WhenDead"])) {
           if(this.BiasedTarget == null){
             this.BiasedTarget = Random.randArrayVal(this.game.players.filter((p)=> p.faction == "Village" && p != this.player));
           }
           else if(this.BiasedTarget.faction != "Village"){
             this.BiasedTarget = Random.randArrayVal(this.game.players.filter((p)=> p.faction == "Village" && p != this.player));
+          }
+          if(this.BiasedTarget == null){
+            return;
           }
           if (
             this.OnePlayerShowsAsEvilEffect == null ||

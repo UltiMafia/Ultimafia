@@ -22,8 +22,6 @@ module.exports = class OneShot extends Card {
         states: ["Night"],
         flags: ["voting", "instant"],
         inputType: "boolean",
-        whileDead: true,
-        whileAlive: true,
         action: {
           role: this.role,
           labels: ["hidden", "absolute"],
@@ -48,8 +46,6 @@ module.exports = class OneShot extends Card {
         states: ["Day"],
         flags: ["voting", "instant"],
         inputType: "boolean",
-        whileDead: true,
-        whileAlive: true,
         action: {
           role: this.role,
           labels: ["hidden", "absolute"],

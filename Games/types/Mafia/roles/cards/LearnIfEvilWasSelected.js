@@ -20,6 +20,10 @@ module.exports = class LearnIfEvilWasSelected extends Card {
             var targetA = this.target[0];
             var targetB = this.target[1];
 
+            if(!this.target){
+              return;
+            }
+
             let info = this.game.createInformation(
               "IsOneOfTargetsDemonInfo",
               this.actor,

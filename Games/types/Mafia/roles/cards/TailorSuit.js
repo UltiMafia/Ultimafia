@@ -27,8 +27,7 @@ module.exports = class TailorSuit extends Card {
       "Choose Suit": {
         states: ["Night"],
         flags: ["voting", "mustAct"],
-        inputType: "role",
-        targets: { include: ["all"] },
+        inputType: "AllRoles",
         action: {
           role: this.role,
           labels: ["giveItem", "suit"],

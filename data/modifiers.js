@@ -26,6 +26,14 @@ const modifierData = {
       description: "All actions done by this player are not visits.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    Austere: {
+      internal: ["OnlyUseInPlayRoles"],
+      tags: ["Austere"],
+      description:
+        "This role can only referance roles currently in the game.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Excessive"],
+    },
     Backup: {
       internal: ["BackUpModifier"],
       tags: ["Conversion"],
@@ -256,6 +264,7 @@ const modifierData = {
       description:
         "This role can treats every role on the site as an Excess Role.",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Austere"],
     },
     Exclusive: {
       internal: ["Remove1Banished"],

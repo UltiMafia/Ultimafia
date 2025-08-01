@@ -1218,7 +1218,7 @@ const countChecks = {
     return true;
   },
   "Cheat": (roles, count, total, closed, unique) => {
-    if (total < 2 || total > 5) return "Must have between 2 and 5 players.";
+    if (total < 2 || total > 10) return "Must have between 2 and 10 players.";
     return true;
   },
 };

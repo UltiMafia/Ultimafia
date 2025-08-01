@@ -151,6 +151,7 @@ module.exports = class Meeting {
         targets: { include: ["members"], exclude: ["self"] },
         targetType: "player",
         verb: "to",
+        whileDead: this.talkingDead,
       });
     }
 
@@ -462,8 +463,14 @@ module.exports = class Meeting {
         if(this.AllRolesFilters.includes("addedRoles")){
           temp = temp.concat(this.game.AddedRoles);
         }
+        if(this.AllRolesFilters.includes("InPlayOnly")){
+          temp = [];
+          for(let player of this.game.players){
+            temp.push(`${player.role.name}:${player.role.modifier}`);
+          }
+        }
 
-        for (let tag of this.AllRolesFilters.filter((t) => t != "AllOnSite" && t != "addedRoles")) {
+        for (let tag of this.AllRolesFilters.filter((t) => t != "AllOnSite" && t != "addedRoles" && t != "InPlayOnly")) {
 
           switch (tag) {
             case "self":
@@ -496,6 +503,7 @@ module.exports = class Meeting {
       if((!this.mustAct || temp.length <= 0) && !temp.includes("None")){
         temp.push("None");
       }
+      temp = [...new Set(temp)];
       return temp;
     }
   }
