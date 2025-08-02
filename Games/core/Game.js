@@ -1633,6 +1633,14 @@ module.exports = class Game {
     // Clear current timers
     this.clearTimers();
 
+    //Unveggable
+    if(this.type == "Mafia" && this.getStateName() == "Day"){
+      for(let player of this.players){
+      if(player.hasVotedInAllCoreMeetings()){
+        player.giveEffect("Unveggable");
+      }
+    }
+  }
     // Finish all meetings and take actions
     this.finishMeetings();
 
@@ -2116,10 +2124,14 @@ module.exports = class Game {
         break;
       }
     }
+    if (allReady){
     for(let player of this.players){
-      player.giveEffect("Unveggable");
+      if(player.hasVotedInAllCoreMeetings()){
+        player.giveEffect("Unveggable");
+      }
     }
-    if (allReady) this.gotoNextState();
+   this.gotoNextState();
+  }
     }
     
     for (let meeting of this.meetings) {

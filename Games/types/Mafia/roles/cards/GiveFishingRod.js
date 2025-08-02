@@ -5,6 +5,8 @@ module.exports = class GiveFishingRod extends Card {
   constructor(role) {
     super(role);
 
+    this.startItems = ["FishingRod"];
+
     this.meetings = {
       "Give Fishing Rod": {
         states: ["Night"],

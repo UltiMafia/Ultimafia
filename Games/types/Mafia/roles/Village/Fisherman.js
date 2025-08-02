@@ -11,10 +11,5 @@ module.exports = class Fisherman extends Role {
       "MeetingFaction",
       "GiveFishingRod",
     ];
-  this.startItems = [
-      {
-        type: "FishingRod"
-      },
-    ];
   }
 };
