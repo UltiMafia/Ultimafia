@@ -378,6 +378,37 @@ module.exports = class Player {
     return true;
   }
 
+  hasVotedInAllCoreMeetings() {
+    let allMeetings = this.getMeetings();
+    let vegKickMeetingId = this.getVegKickMeeting()?.id;
+
+    for (let meeting of allMeetings) {
+      if (meeting.id === vegKickMeetingId) {
+        continue;
+      }
+
+      if(meeting.Important != true){
+        continue;
+      }
+
+      if (meeting.finished) {
+        continue;
+      }
+
+      // player has not voted
+      if (
+        meeting.voting &&
+        meeting.members[this.id].canVote &&
+        meeting.members[this.id].canUpdateVote &&
+        meeting.votes[this.id] === undefined
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   getVegKickMeeting() {
     return this.game.vegKickMeeting;
   }
