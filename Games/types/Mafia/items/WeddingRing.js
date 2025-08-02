@@ -10,7 +10,7 @@ module.exports = class WeddingRing extends Item {
     this.meetings[meetingName] = {
       meetingName: "Accept Proposal",
       states: ["Day"],
-      flags: ["voting", "instant"],
+      flags: ["voting", "instant", "Important"],
       inputType: "boolean",
       action: {
         labels: ["marriage"],

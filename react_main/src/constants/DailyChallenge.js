@@ -16,11 +16,11 @@ export const DailyChallengeData = {
       extraData: "Game Type",
       reward: 2,
     },
-    "Play 3 Games": {
+    "Play 3 Unranked Games": {
       ID: "Basic2",
       tier: 1,
       internal: ["Play3Games"],
-      description: "Complete 3 games.",
+      description: "Complete 3 Unranked games.",
       reward: 2,
     },
     /*

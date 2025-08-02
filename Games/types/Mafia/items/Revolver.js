@@ -18,7 +18,7 @@ module.exports = class Revolver extends Item {
       [this.baseMeetingName]: {
         actionName: "Revolver",
         states: ["Day"],
-        flags: ["voting", "instant", "hideAfterVote", "mustAct"],
+        flags: ["voting", "instant", "hideAfterVote", "mustAct", "Important"],
         inputType: "custom",
         targets: ["Shoot", "Spin and Shoot"],
         action: {

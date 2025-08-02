@@ -22,6 +22,7 @@ module.exports = class Drama extends Item {
         "noUnvote",
         "multiSplit",
         "hideAfterVote",
+        "Important",
       ],
       inputType: "custom",
       targets: ["Reveal the truth", "Argue with drama queen"],

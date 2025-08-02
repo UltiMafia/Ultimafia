@@ -111,8 +111,8 @@ const modifierData = {
     },
     Caffeinated: {
       internal: ["StartWithCoffee"],
-      tags: ["Items", "Convert Saver", "Tract"],
-      description: "Starts with a tract.",
+      tags: ["Items", "Coffee"],
+      description: "Starts with a Coffee.",
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
@@ -462,6 +462,13 @@ const modifierData = {
       description: "Starts with a syringe.",
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
+    },
+    Magnetic: {
+      internal: ["Magnetic"],
+      tags: ["Redirection"],
+      description:
+        "If possible, night kills will be redirected onto this player if someone with the same alignment as them is targeted.",
+      eventDescription: "This modifier does nothing when on an Event.",
     },
     Married: {
       internal: ["LearnAndLifeLinkToPlayer"],

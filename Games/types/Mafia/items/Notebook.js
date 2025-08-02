@@ -25,7 +25,7 @@ module.exports = class Notebook extends Item {
       "Pass On Notebook": {
         actionName: "Pass on the Notebook?",
         states: ["Day"],
-        flags: ["voting", "mustAct"],
+        flags: ["voting", "mustAct", "Important"],
         action: {
           labels: ["giveItem", "notebook", "absolute"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,

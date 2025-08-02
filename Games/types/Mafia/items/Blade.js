@@ -61,6 +61,7 @@ module.exports = class Blade extends Item {
           "votesInvisible",
           "noUnvote",
           "hideAfterVote",
+          "Important",
         ],
         inputType: "custom",
         targets: this.targets,

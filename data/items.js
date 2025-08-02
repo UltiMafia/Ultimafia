@@ -154,6 +154,12 @@ const modifierData = {
       description:
         "Can be used at night to switch two players roles, Their alignments will not change.",
     },
+    "Fishing Rod": {
+      internal: ["FishingRod"],
+      tags: ["Fishing"],
+      description:
+        "Can be used to Fish instead of playing mafia.",
+    },
     Snowball: {
       internal: ["Snowball"],
       tags: ["Conversion"],

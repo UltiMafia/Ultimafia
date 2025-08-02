@@ -1,6 +1,6 @@
 const Item = require("../Item");
 const {
-  PRIORITY_KILL_DEFAULT,
+  PRIORITY_MODIFY_ACTION,
   MEETING_PRIORITY_JAIL,
 } = require("../const/Priority");
 const Random = require("../../../../lib/Random");
@@ -135,12 +135,11 @@ module.exports = class FishingRod extends Item {
     super("Fishing Rod");
 
     this.meetings = {
-        "Go Fishing": {
+      "Go Fishing": {
         actionName: "Go Fishing",
         states: ["Night"],
         flags: ["voting"],
         inputType: "boolean",
-        priority: MEETING_PRIORITY_JAIL,
         item: this,
         action: {
           labels: ["hidden"],
@@ -148,31 +147,33 @@ module.exports = class FishingRod extends Item {
           item: this,
           run: function () {
             if (this.target == "Yes"){
+              this.actor.data.GoneFishin = true;
               this.item.GoneFishin = true;
             }
             else{
+              this.actor.data.GoneFishin = false;
               this.item.GoneFishin = false;
             }
           },
       },
-      Lake: {
+    },
+    "Lake": {
         states: ["Day"],
         flags: ["speech", "group"],
-        priority: MEETING_PRIORITY_JAIL,
         item: this,
         shouldMeet() {
-          return this.GoneFishin == true;
+          return this.player.data.GoneFishin == true;
         },
       },
-    Fish: {
+    "Fish": {
         states: ["Day"],
         flags: ["voting", "instant", "instantButChangeable","repeatable", "noVeg"],
-        priority: MEETING_PRIORITY_JAIL,
         item: this,
         inputType: "custom",
         targets: ["Fish", "Not Fish"],
         shouldMeet() {
-          return this.GoneFishin == true;
+          this.game.sendAlert(`Fish is ${this.player.data.GoneFishin}`);
+          return this.player.data.GoneFishin == true;
         },
         action: {
           run: function () {
@@ -220,7 +221,7 @@ module.exports = class FishingRod extends Item {
             
           },
         },
-      },
+    },
     };
 
   }

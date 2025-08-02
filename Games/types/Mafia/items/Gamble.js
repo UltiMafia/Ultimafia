@@ -29,6 +29,7 @@ module.exports = class Gamble extends Item {
         "noUnvote",
         "multiSplit",
         "hideAfterVote",
+        "Important",
       ],
       inputType: "custom",
       targets: ["Rock", "Paper", "Scissors"],
