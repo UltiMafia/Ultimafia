@@ -2217,6 +2217,7 @@ export function PlayerRows(props) {
         {props.stateViewing != -1 && (
           <RoleCount
             role={roleToShow}
+            key={roleToShow}
             isRolePrediction={rolePrediction !== undefined}
             gameType={props.gameType}
             showPopover
