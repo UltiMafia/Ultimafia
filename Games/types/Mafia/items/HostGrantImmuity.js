@@ -11,7 +11,7 @@ module.exports = class HostGrantImmuity extends Item {
       this.meetings[meetingName] = {
           actionName: "Give Immunity",
           states: ["Day"],
-          flags: ["voting", "mustAct", "instant"],
+          flags: ["voting", "mustAct", "instant", "Important"],
           targets: { include: ["alive"], exclude: ["self"] },
           action: {
             labels: ["hidden", "absolute"],
