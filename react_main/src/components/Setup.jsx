@@ -1,10 +1,11 @@
 import React, { useContext, useRef, useState } from "react";
 
-import { PopoverContext, UserContext } from "../Contexts";
-import { RoleCount } from "./Roles";
-import { Alignments } from "../Constants";
-import { filterProfanity } from "./Basic";
-import { hyphenDelimit } from "../utils";
+import { PopoverContext, UserContext } from "Contexts";
+import { Alignments } from "Constants";
+import { RoleCount } from "components/Roles";
+import { filterProfanity } from "components/Basic";
+import { SearchBar } from "components/Nav";
+import { hyphenDelimit } from "utils";
 
 import { Box, Card, Divider, Grid, Stack, Typography } from "@mui/material";
 
@@ -187,37 +188,42 @@ export default function Setup(props) {
 }
 
 export function SmallRoleList(props) {
-  var roles;
+  const [searchVal, setSearchVal] = useState("");
+  
+  var roles = props.roles
+  if (!Array.isArray(props.roles)) {
+    roles = Object.keys(props.roles);
+  }
 
-  if (Array.isArray(props.roles)) {
-    roles = props.roles.map((role) => (
-      <RoleCount
-        small
-        role={role}
-        makeRolePrediction={props.makeRolePrediction}
-        key={role || "null"}
-        showSecondaryHover
-        gameType={props.gameType}
-        otherRoles={(props.otherRoles) ? props.otherRoles : (props.setup?.roles)}
-      />
-    ));
-  } else
-    roles = Object.keys(props.roles).map((role) => (
-      <RoleCount
-        role={role}
-        count={props.roles[role]}
-        small={true}
-        gameType={props.gameType}
-        showSecondaryHover
-        key={role}
-        otherRoles={(props.otherRoles) ? props.otherRoles : (props.setup?.roles)}
-      />
-    ));
+  const roleList = roles.map((role) => {
+    if (searchVal && role && !role.toLowerCase().includes(searchVal)) return null;
+    return (<RoleCount
+      role={role}
+      makeRolePrediction={props.makeRolePrediction}
+      count={props.roles[role]}
+      small={true}
+      gameType={props.gameType}
+      showSecondaryHover
+      key={role}
+      otherRoles={(props.otherRoles) ? props.otherRoles : (props.setup?.roles)}
+    />);
+  });
+  
+  function onSearchInput(query) {
+    setSearchVal(query.toLowerCase());
+  }
 
   return (
-    <div className="small-role-list">
-      {props.title} {roles}
-    </div>
+    <Stack direction="column" spacing={1}>
+      <SearchBar
+        value={searchVal}
+        placeholder="🔎 Role Name"
+        onInput={onSearchInput}
+      />
+      <div className="small-role-list">
+          {props.title} {roleList}
+      </div>
+    </Stack>
   );
 }
 

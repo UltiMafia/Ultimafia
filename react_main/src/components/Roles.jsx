@@ -48,7 +48,7 @@ export function RoleCount(props) {
     if (props.onClick) return props.onClick();
 
     if (makeRolePrediction) {
-      makeRolePrediction(roleName);
+      makeRolePrediction(props.role);
       popover.close();
       return;
     }
@@ -109,10 +109,6 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
       ),
     });
   }, [siteInfo, roleName]);
-
-  if (isRolePrediction) {
-    modifiers = "Unknown";
-  }
 
   const roleClass = roleName
     ? `${hyphenDelimit(props.gameType)}-${hyphenDelimit(roleName)}`
