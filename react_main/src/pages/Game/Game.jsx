@@ -779,6 +779,7 @@ function GameWrapper(props) {
           {gameType === "Texas Hold Em" && <TexasHoldEmGame />}
           {gameType === "Cheat" && <CheatGame />}
           {gameType === "Battlesnakes" && <BattlesnakesGame />}
+          {gameType === "Connect Four" && <ConnectFourGame />}
         </div>
       </GameContext.Provider>
     );

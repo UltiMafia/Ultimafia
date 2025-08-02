@@ -915,6 +915,7 @@ const modifierData = {
   "Texas Hold Em": {},
   "Cheat": {},
   Battlesnakes: {},
+  "Connect Four": {},
 };
 
 module.exports = modifierData;

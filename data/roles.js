@@ -5459,6 +5459,13 @@ const roleData = {
       description: ["Facilitates the game."],
     },
   },
+  "Connect Four": {
+    Player: {
+      alignment: "Town",
+      tags: ["None"],
+      description: ["Can place counters on the board."],
+    },
+  },
 };
 
 module.exports = roleData;

@@ -144,6 +144,8 @@ export default function CreateSetup(props) {
                   return <CreateCheatSetup />;
                 case "Battlesnakes":
                   return <CreateBattlesnakesSetup />;
+                case "Connect Four":
+                  return <CreateConnectFourSetup />;
                 default:
                   setGameType(defaultGameType);
                   return null;
