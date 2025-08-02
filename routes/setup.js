@@ -1221,6 +1221,15 @@ const countChecks = {
     if (total < 2 || total > 10) return "Must have between 2 and 10 players.";
     return true;
   },
+  "Crazy Eights": (roles, count, total, closed, unique) => {
+    if (total < 2) return "Must have at least 2 players.";
+
+    const crazyEightsMaxPlayers = 20;
+    if (total > crazyEightsMaxPlayers)
+      return `Must have at most ${crazyEightsMaxPlayers} players.`;
+
+    return true;
+  },
 };
 
 const optionsChecks = {

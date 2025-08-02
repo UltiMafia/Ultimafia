@@ -57,6 +57,7 @@ module.exports = {
     "Liars Dice",
     "Texas Hold Em",
     "Cheat",
+    "Crazy Eights",
     "Battlesnakes",
   ],
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
@@ -71,6 +72,7 @@ module.exports = {
     "Liars Dice": ["Liars", "Host"],
     "Texas Hold Em": ["Town", "Host"],
     "Cheat": ["Town", "Host"],
+    "Crazy Eights": ["Town", "Host"],
     Battlesnakes: ["Town", "Host"],
   },
   startStates: {
@@ -84,6 +86,7 @@ module.exports = {
     "Liars Dice": ["Guess Dice"],
     "Texas Hold Em": ["Place Bets", "Showdown"],
     "Cheat": ["Play Cards", "Call Lie"],
+    "Crazy Eights": ["Play Cards"],
     Battlesnakes: ["Day"],
   },
   configurableStates: {
@@ -239,6 +242,13 @@ module.exports = {
         default: 1 * 60 * 1000,
       },
       "Call Lie": {
+        min: 30 * 1000,
+        max: 5 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+    },
+    "Crazy Eights": {
+      "Play Cards": {
         min: 30 * 1000,
         max: 5 * 60 * 1000,
         default: 1 * 60 * 1000,

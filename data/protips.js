@@ -49,6 +49,9 @@ const protips = {
     "Call It",
     "Cheaters sometimes prosper",
   ],
+  "Crazy Eights": [
+    "",
+  ],
 };
 
 module.exports = protips;

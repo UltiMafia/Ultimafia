@@ -137,6 +137,10 @@
   background-image: url("/src/images/game_icons/CardGames.png");
 }
 
+.game-icon.Crazy-Eights {
+  background-image: url("/src/images/game_icons/CardGames.png");
+}
+
 .game-icon.Battlesnakes {
   background-image: url("/src/images/game_icons/Battlesnakes.png");
 }

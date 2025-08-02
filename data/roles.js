@@ -5446,6 +5446,18 @@ const roleData = {
       description: ["Facilitates the game."],
     },
   },
+  "Crazy Eights": {
+    Player: {
+      alignment: "Town",
+      tags: ["None"],
+      description: ["Can play cards."],
+    },
+    Host: {
+      alignment: "Host",
+      tags: ["None"],
+      description: ["Facilitates the game."],
+    },
+  },
   Battlesnakes: {
     Snake: {
       alignment: "Town",

@@ -2927,6 +2927,14 @@ background-image: url("/src/images/modifiers/wise.png");
   background-image: url("/src/images/roles/independent/host-vivid.png");
 }
 
+.role-icon-vivid-Crazy-Eights-Player {
+  background-image: url("/src/images/roles/independent/gambler-vivid.png");
+}
+
+.role-icon-vivid-Crazy-Eights-Host {
+  background-image: url("/src/images/roles/independent/host-vivid.png");
+}
+
 /***********
 *
 * Pride icons; not for game

@@ -9,6 +9,7 @@ export const GameTypes = [
   "Liars Dice",
   "Texas Hold Em",
   "Cheat",
+  "Crazy Eights",
   "Battlesnakes",
 ];
 export const Lobbies = [
@@ -31,6 +32,7 @@ export const Alignments = {
   "Liars Dice": ["Liars", "Host"],
   "Texas Hold Em": ["Town", "Host"],
   "Cheat": ["Town", "Host"],
+  "Crazy Eights": ["Town", "Host"],
   Battlesnakes: ["Town", "Host"],
 };
 
@@ -51,6 +53,7 @@ export const GameStates = {
   "Liars Dice": ["Guess Dice"],
   "Texas Hold Em": ["Place Bets", "Showdown"],
   "Cheat": ["Play Cards", "Call Lie"],
+  "Crazy Eights": ["Play Cards"],
   Battlesnakes: ["Day"],
 };
 

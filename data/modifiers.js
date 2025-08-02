@@ -914,6 +914,7 @@ const modifierData = {
   "Liars Dice": {},
   "Texas Hold Em": {},
   "Cheat": {},
+  "Crazy Eights": {},
   Battlesnakes: {},
 };
 
