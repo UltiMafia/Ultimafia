@@ -17,6 +17,7 @@ const HOST_OPTIONS_VERSIONS = {
   "Secret Dictator": 1,
   "Wacky Words": 1,
   "Cheat": 1,
+  "Crazy Eights": 1,
 };
 
 // Associate all of the existing saved options per game type into a map
@@ -112,6 +113,12 @@ var defaultOptions = {
     showdownLength: 2,
     playCardsLength: 2,
     callLieLength: 2,
+  },
+  "Crazy Eights": existingHostOptions["Crazy Eights"] || {
+    ...commonHostOptions,
+    MaxRounds: 0,
+    playCardsLength: 2,
+    changeSuitLength: 2,
   },
   Resistance: existingHostOptions["Resistance"] || {
     ...commonHostOptions,

@@ -5450,7 +5450,10 @@ const roleData = {
     Player: {
       alignment: "Town",
       tags: ["None"],
-      description: ["Can play cards."],
+      description: [
+        "Can play cards.",
+        "If an 8 was placed, may optionaly change suit.",
+      ],
     },
     Host: {
       alignment: "Host",

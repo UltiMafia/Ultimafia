@@ -22,6 +22,7 @@ import HostWackyWords from "./gameTypeHostForms/HostWackyWords";
 import HostLiarsDice from "./gameTypeHostForms/HostLiarsDice";
 import HostTexasHoldEm from "./gameTypeHostForms/HostTexasHoldEm";
 import HostCheat from "./gameTypeHostForms/HostCheat";
+import HostCrazyEights from "./gameTypeHostForms/HostCrazyEights";
 import HostBattlesnakes from "./gameTypeHostForms/HostBattlesnakes";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { getSetupBackgroundColor } from "pages/Play/LobbyBrowser/gameRowColors";
@@ -47,6 +48,7 @@ export default function HostGameDialogue({open, setOpen, setup}) {
       case "Liars Dice": return HostLiarsDice();
       case "Texas Hold Em": return HostTexasHoldEm();
       case "Cheat": return HostCheat();
+      case "Crazy Eights": return HostCrazyEights();
       case "Battlesnakes": return HostBattlesnakes();
     }
     

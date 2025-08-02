@@ -86,7 +86,7 @@ module.exports = {
     "Liars Dice": ["Guess Dice"],
     "Texas Hold Em": ["Place Bets", "Showdown"],
     "Cheat": ["Play Cards", "Call Lie"],
-    "Crazy Eights": ["Play Cards"],
+    "Crazy Eights": ["Play Cards", "Change Suit"],
     Battlesnakes: ["Day"],
   },
   configurableStates: {
@@ -251,6 +251,11 @@ module.exports = {
       "Play Cards": {
         min: 30 * 1000,
         max: 5 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+      "Change Suit": {
+        min: 30 * 1000,
+        max: 1 * 60 * 1000,
         default: 1 * 60 * 1000,
       },
     },

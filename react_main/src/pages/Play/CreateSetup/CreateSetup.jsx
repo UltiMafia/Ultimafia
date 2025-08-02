@@ -22,6 +22,7 @@ import CreateWackyWordsSetup from "./CreateWackyWordsSetup";
 import CreateLiarsDiceSetup from "./CreateLiarsDiceSetup";
 import CreateTexasHoldEmSetup from "./CreateTexasHoldEmSetup";
 import CreateCheatSetup from "./CreateCheatSetup";
+import CreateCrazyEightsSetup from "./CreateCrazyEightsSetup";
 import CreateBattlesnakesSetup from "./CreateBattlesnakesSetup";
 
 import { GameTypes } from "Constants";
@@ -142,6 +143,8 @@ export default function CreateSetup(props) {
                   return <CreateTexasHoldEmSetup />;
                 case "Cheat":
                   return <CreateCheatSetup />;
+                case "Crazy Eights":
+                  return <CreateCrazyEightsSetup />;
                 case "Battlesnakes":
                   return <CreateBattlesnakesSetup />;
                 default:
