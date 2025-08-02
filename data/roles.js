@@ -483,6 +483,16 @@ const roleData = {
       ],
       nightOrder: [["Give Guns",(PRIORITY_ITEM_GIVER_DEFAULT)]],
     },
+    Fisherman: {
+      alignment: "Village",
+      category: "Gifting",
+      tags: ["Killing", "Items", "Meeting", "Mini-game"],
+      description: [
+        "Gives out a fishing rod each night.",
+        "Fishing Rods can be used to play a fishing mini-game instead of Mafia.",
+      ],
+      nightOrder: [["Give Guns",(PRIORITY_ITEM_GIVER_DEFAULT)]],
+    },
     Gemcutter: {
       alignment: "Village",
       category: "Gifting",

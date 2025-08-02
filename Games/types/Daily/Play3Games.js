@@ -6,7 +6,7 @@ module.exports = class Play3Games extends DailyChallenge {
 
     this.listeners = {
       aboutToFinish: function () {
-        if (!this.game.hasIntegrity || this.game.private) {
+        if (!this.game.hasIntegrity || this.game.private || this.game.ranked) {
           return;
         }
         for(let Challenge of this.player.user.dailyChallenges){

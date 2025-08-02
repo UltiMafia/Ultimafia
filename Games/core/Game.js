@@ -1633,6 +1633,14 @@ module.exports = class Game {
     // Clear current timers
     this.clearTimers();
 
+    //Unveggable
+    if(this.type == "Mafia" && this.getStateName() == "Day"){
+      for(let player of this.players){
+      if(player.hasVotedInAllCoreMeetings()){
+        player.giveEffect("Unveggable");
+      }
+    }
+  }
     // Finish all meetings and take actions
     this.finishMeetings();
 
@@ -2099,6 +2107,33 @@ module.exports = class Game {
   checkAllMeetingsReady() {
     var allReady = true;
 
+    if(this.type == "Mafia" && this.getStateName() == "Day"){
+      for (let meeting of this.meetings) {
+      let extraConditionDuringKicks = true;
+      if (this.vegKickMeeting !== undefined) {
+        extraConditionDuringKicks =
+          meeting.name !== "Vote Kick" && !meeting.noVeg;
+      }
+
+      // during kicks, we need to exclude the votekick and noveg meetings
+      if(meeting.Important != true){
+        continue;
+      }
+      if (!meeting.ready && extraConditionDuringKicks) {
+        allReady = false;
+        break;
+      }
+    }
+    if (allReady){
+    for(let player of this.players){
+      if(player.hasVotedInAllCoreMeetings()){
+        player.giveEffect("Unveggable");
+      }
+    }
+   this.gotoNextState();
+  }
+    }
+    
     for (let meeting of this.meetings) {
       let extraConditionDuringKicks = true;
       if (this.vegKickMeeting !== undefined) {
