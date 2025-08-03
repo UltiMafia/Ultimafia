@@ -234,7 +234,7 @@ module.exports = class CheatGame extends Game {
     } else if (cardValue == "King") {
       cardValue = 13;
     } else if (cardValue == "Ace") {
-      cardValue = 14;
+      cardValue = 2;
     }
     //}
     return [parseInt(cardValue), cardSuit];
