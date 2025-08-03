@@ -48,6 +48,7 @@ export default function HostGameDialogue({open, setOpen, setup}) {
       case "Texas Hold Em": return HostTexasHoldEm();
       case "Cheat": return HostCheat();
       case "Battlesnakes": return HostBattlesnakes();
+      case "Connect Four": return HostConnectFour();
     }
     
     return [null, null];

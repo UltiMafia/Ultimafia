@@ -144,6 +144,8 @@ export default function Games(props) {
                   return <LearnCheat />;
                 case "Battlesnakes":
                   return <LearnBattlesnakes />;
+                case "Connect Four":
+                  return <LearnConnectFour />;
                 default:
                   setGameType(defaultGameType);
                   return <></>;
