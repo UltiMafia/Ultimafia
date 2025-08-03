@@ -2045,7 +2045,6 @@ const roleData = {
       alignment: "Mafia",
       category: "Basic",
       tags: [
-        "Unkillable",
         "Basic",
         "Information",
         "Visits",
