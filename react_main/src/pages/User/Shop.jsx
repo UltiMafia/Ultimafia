@@ -124,7 +124,11 @@ export default function Shop(props) {
   }
 
   const shopItems = shopInfo.shopItems.map((item, i) => (
-    <Grid item xs={12} sm={6} md={4} key={i}>
+    <Grid item xs={12} sm={6} md={4} key={i} sx={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}>
       <Card className="shop-item">
         <CardContent sx={{ textAlign: "left" }}>
           <Typography variant="h6" className="name">

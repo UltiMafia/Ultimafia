@@ -140,6 +140,14 @@ const shopItems = [
       ).exec();
     },
   },
+  {
+    name: "Square",
+    desc: "Unlock the ability to become a square (currently profile only)",
+    key: "avatarShape",
+    price: 20,
+    limit: 1,
+    onBuy: async function (userId) {},
+  },
 ];
 
 router.get("/info", async function (req, res) {

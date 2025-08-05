@@ -1,44 +1,42 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { Redirect, useParams, useHistory } from "react-router-dom";
+import { Link, Redirect, useParams, useHistory } from "react-router-dom";
 import axios from "axios";
 import Markdown from 'react-markdown';
 import update from "immutability-helper";
 
-import { UserContext, SiteInfoContext } from "../../Contexts";
+import { UserContext, SiteInfoContext } from "Contexts";
 import {
   Avatar,
-  Badges,
+  Badge,
   MediaEmbed,
   LoveIcon,
   MarriedIcon,
   LoveType,
   NameWithAvatar,
 } from "./User";
-import { HiddenUpload, TextEditor } from "../../components/Form";
-import Setup from "../../components/Setup";
-import { Time, filterProfanity, basicRenderers } from "../../components/Basic";
-import { useErrorAlert } from "../../components/Alerts";
-import { getPageNavFilterArg, PageNav } from "../../components/Nav";
-import { RatingThresholds, RequiredTotalForStats } from "../../Constants";
-import { AchievementData } from "../../constants/Achievements";
-import { capitalize } from "../../utils";
+import { HiddenUpload, TextEditor } from "components/Form";
+import Setup from "components/Setup";
+import { Time, filterProfanity, basicRenderers } from "components/Basic";
+import { useErrorAlert } from "components/Alerts";
+import { getPageNavFilterArg, PageNav } from "components/Nav";
+import { RatingThresholds, RequiredTotalForStats } from "Constants";
+import { AchievementData } from "constants/Achievements";
+import { capitalize } from "utils";
 import Comments from "../Community/Comments";
 
 import "css/user.css";
-import { Modal } from "../../components/Modal";
+import { Modal } from "components/Modal";
 import { PieChart } from "./PieChart";
 import { NewLoading } from "../Welcome/NewLoading";
-import { GameRow } from "../Play/LobbyBrowser/GameRow";
-import { Box, IconButton, Typography } from "@mui/material";
+import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
+import { Box, Grid, IconButton, Stack, Typography, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/styles";
-import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 export const KUDOS_ICON = require(`images/kudos.png`);
 export const KARMA_ICON = require(`images/karma.png`);
 export const ACHIEVEMENTS_ICON = require(`images/achievements.png`);
 export const DAILY_ICON = require(`images/dailyChallenges.png`);
-
-const DEFAULT_PRONOUNS_TEXT = "Click to edit your pronouns";
 
 export default function Profile() {
   const [profileLoaded, setProfileLoaded] = useState(false);
@@ -77,16 +75,17 @@ export default function Profile() {
   const [saved, setSaved] = useState(false);
   const [currentUserLove, setCurrentUserLove] = useState({});
 
+  const theme = useTheme();
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const history = useHistory();
   const errorAlert = useErrorAlert();
   const { userId } = useParams();
   const isPhoneDevice = useIsPhoneDevice();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md')); // This is for the mui breakpoint
 
   const isSelf = userId === user.id;
   const isBlocked = !isSelf && user.blockedUsers.indexOf(userId) !== -1;
-  const hasDefaultPronouns = pronouns === DEFAULT_PRONOUNS_TEXT;
 
   // userId is the id of the current profile
   // user.id is the id of the current user
@@ -113,14 +112,7 @@ export default function Profile() {
           setAvatar(res.data.avatar);
           setBanner(res.data.banner);
           setBio(filterProfanity(res.data.bio, user.settings, "\\*") || "");
-
-          var pronouns;
-          if (res.data.pronouns !== "") {
-            pronouns = res.data.pronouns;
-          } else {
-            pronouns = DEFAULT_PRONOUNS_TEXT;
-          }
-          setPronouns(filterProfanity(pronouns, user.settings, "\\*") || "");
+          setPronouns(filterProfanity(res.data.pronouns, user.settings, "\\*") || "");
           setIsFriend(res.data.isFriend);
           setIsLove(res.data.isLove);
           setIsMarried(res.data.isMarried);
@@ -458,14 +450,25 @@ export default function Profile() {
   const panelStyle = {};
   const bannerStyle = {};
 
-  if (settings.backgroundColor)
+  if (settings.backgroundColor) {
     panelStyle.backgroundColor = settings.backgroundColor;
+  }
+
+  const bannerWidth = isSmallScreen ? "300px" : "900px";
+  const bannerHeight = isSmallScreen ? "100px" : "300px";
+  bannerStyle.width = bannerWidth;
+  bannerStyle.height = bannerHeight;
 
   if (banner)
     bannerStyle.backgroundImage = `url(/uploads/${userId}_banner.webp?t=${siteInfo.cacheVal})`;
 
-  if (settings.bannerFormat === "stretch")
+  console.log(settings)
+  if (settings.bannerFormat === "stretch") {
     bannerStyle.backgroundSize = "100% 100%";
+  }
+  else {
+    bannerStyle.backgroundSize = "contain";
+  }
 
   var ratings = [];
   var totalGames = 0;
@@ -514,7 +517,19 @@ export default function Profile() {
   const archivedGamesRows = archivedGames.map((game) => {
     return (
       <div className="archived-game" key={game.id}>
-        <Typography variant="body2">
+        <Typography variant="body2" sx={{
+          px: 1,
+          my: .5,
+
+          display: "-webkit-box",
+          lineClamp: "3",
+          "-webkit-line-clamp": "3",
+          "-webkit-box-orient": "vertical",
+          overflow: "hidden",
+          wordBreak: "break-word",
+
+          "line-height": "1em",
+        }}>
           {filterProfanity(game.description, user.settings)}
         </Typography>
         {showDeleteArchivedGame && (
@@ -588,143 +603,225 @@ export default function Profile() {
 
   if (!profileLoaded || !user.loaded) return <NewLoading small />;
 
+  const buttonsBox = (
+    <Grid item xs={12} md={3} sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Stack direction="row" className="options">
+        {!isSelf && user.loggedIn && (<>
+          <IconButton aria-label="friend user">
+            <i
+              className={`fas fa-user-plus ${isFriend ? "sel" : ""}`}
+              onClick={onFriendUserClick}
+            />
+          </IconButton>
+          <LoveIcon
+            isLove={isLove}
+            userId={user.id}
+            isMarried={isMarried}
+            love={love}
+            currentUserLove={currentUserLove}
+            onClick={onLoveUserClick}
+          />
+          <IconButton aria-label="block user">
+            <i
+              className={`fas fa-ban ${isBlocked ? "sel" : ""}`}
+              onClick={onBlockUserClick}
+              title="Block user"
+            />
+          </IconButton>
+        </>)}
+      </Stack>
+    </Grid>
+  );
+
+  const badges = groups
+    .filter((g) => g.badge)
+    .sort((a, b) => a.rank - b.rank)
+    .map((g) => (
+      <Badge
+        icon={g.badge}
+        color={g.badgeColor || "black"}
+        name={g.name}
+        key={g.name}
+      />
+  ));
+
+  const avatarUpliftPx = !banner ? 0 : isSmallScreen ? 38 : 58;
+  const avatarPaddingPx = !banner ? (isSmallScreen ? 60: 100) : (isSmallScreen ? 22 : 50);
+
+  const nameBox = (
+    <Grid item xs={12} md={6} className="avi-name">
+      <Box sx={{
+        display: "flex",
+        position: "relative",
+        alignItems: "center",
+        justifyContent: "center",
+      }}>
+        <Box sx={{
+          position: "absolute",
+          top: `-${avatarUpliftPx}px`,
+        }}>
+          {!bustCache && (
+            <Avatar
+              mediumlarge={isSmallScreen}
+              large={!isSmallScreen}
+              id={userId}
+              hasImage={avatar}
+              bustCache={bustCache}
+              name={name}
+              edit={isSelf}
+              onUpload={onFileUpload}
+              border={`4px var(--scheme-color) solid`}
+              isSquare={settings.avatarShape === "square"}
+            />
+          )}
+        </Box>
+        <Stack direction="row" spacing={1} sx={{
+          alignItems: "center",
+          justifyContent: "center",
+          mt: `${avatarPaddingPx}px`,
+          p: 1,
+          width: "100%",
+        }}>
+          {badges}
+          <Typography variant="h5" sx={{
+            fontWeight: "600",
+          }}>
+            {name}
+          </Typography>
+          {pronouns && (<Typography variant="caption" sx={{
+            filter: "opacity(.75)",
+            minWidth: "40px",
+            maxWidth: "80px",
+            wordBreak: pronouns.includes("/") ? "normal" : "break-word",
+          }}>
+            ({pronouns})
+          </Typography>)}
+        </Stack>
+      </Box>
+    </Grid>
+  );
+
+  const inLoveBox = (
+    <Grid item xs={12} md={3}>
+      {love.id != null && (isLove || isMarried) && (
+        <Link
+          className={`name-with-avatar`}
+          to={`/user/${love.id}`}
+          target={""}
+          style={{ height: "100%" }}
+        >
+          <Stack direction="row" sx={{
+            width: "100%",
+            position: "relative",
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+            <Stack
+              direction={isSmallScreen ? "row" : "column"}
+              spacing={isSmallScreen ? 1 : 0}
+              sx={{
+                mb: 1,
+                height: "100%",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Typography sx={{ fontStyle: "italic" }}>
+                In Love With
+              </Typography>
+              <Avatar
+                hasImage={love.avatar}
+                id={love.id}
+                name={love.name}
+              />
+              <Typography>
+                {name}
+              </Typography>
+            </Stack>
+          </Stack>
+        </Link>
+      )}
+    </Grid>
+  );
+
+  const aviGridItems = isSmallScreen ? (
+    <>
+      {nameBox}
+      {inLoveBox}
+      {buttonsBox}
+    </>
+  ) : (
+    <>
+      {buttonsBox}
+      {nameBox}
+      {inLoveBox}
+    </>
+  );
+
   return (
     <>
-      <div className="profile">
-        {stats && (
-          <StatsModal
-            stats={stats}
-            show={showStatsModal}
-            setShow={setShowStatsModal}
-          />
-        )}
-        <div className="main-panel" style={panelStyle}>
-          <div className="banner" style={bannerStyle}>
-            {isSelf && (
-              <HiddenUpload
-                className="edit"
-                name="banner"
-                onClick={onEditBanner}
-                onFileUpload={onFileUpload}
-              >
-                <i className="far fa-file-image" />
-              </HiddenUpload>
-            )}
-          </div>
-          <div className="user-info">
-            <div className="avi-name-row">
-              <div className="left">
-                <div className="score-info">
-                  <div className="score-info-column">
-                    <KarmaVoteWidget
-                      item={karmaInfo}
-                      setItem={setKarmaInfo}
-                      userId={userId}
-                    />
-                  </div>
-                  <div className="score-info-column">
-                    <div className="score-info-row">
-                      <img
-                        src={KUDOS_ICON}
-                        style={{ marginRight: "12px" }}
-                        title="Kudos"
-                      />
-                      {kudos}
-                    </div>
-                    <div className="score-info-row">
-                      <img
-                        src={KARMA_ICON}
-                        style={{ marginRight: "12px" }}
-                        title="Karma"
-                      />
-                      {karmaInfo.voteCount}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="avi-name">
-                {!bustCache && (
-                  <Avatar
-                    large
-                    id={userId}
-                    hasImage={avatar}
-                    bustCache={bustCache}
-                    name={name}
-                    edit={isSelf}
-                    onUpload={onFileUpload}
-                  />
-                )}
-                <div className="name-badges-container">
-                  <div style={{ marginTop: "10px" }}>
-                    <Badges groups={groups} />
-                  </div>
-                  <div className="name">{name}</div>
-                </div>
-              </div>
-              <div className="right">
-                {love.id != null && (isLove || isMarried) && (
-                  <div className="love">
-                    <LoveType type={love.type}></LoveType>
-                    <NameWithAvatar
-                      id={love.id}
-                      name={love.name}
-                      avatar={love.avatar}
-                    />
-                  </div>
-                )}
-                {!isSelf && user.loggedIn && (
-                  <div className="options">
-                    <i
-                      className={`fas fa-user-plus ${isFriend ? "sel" : ""}`}
-                      onClick={onFriendUserClick}
-                    />
-                    <LoveIcon
-                      isLove={isLove}
-                      userId={user.id}
-                      isMarried={isMarried}
-                      love={love}
-                      currentUserLove={currentUserLove}
-                      onClick={onLoveUserClick}
-                    ></LoveIcon>
-                    <MarriedIcon
-                      isLove={isLove}
-                      saved={saved}
-                      userId={user.id}
-                      love={love}
-                      isMarried={isMarried}
-                      onClick={onMarryUserClick}
-                    ></MarriedIcon>
-                    <i
-                      className={`fas fa-ban ${isBlocked ? "sel" : ""}`}
-                      onClick={onBlockUserClick}
-                      title="Block user"
-                    />
-                  </div>
-                )}
+      {stats && (
+        <StatsModal
+          stats={stats}
+          show={showStatsModal}
+          setShow={setShowStatsModal}
+        />
+      )}
+      <Grid container rowSpacing={1} columnSpacing={1} className="profile">
+        <Grid item xs={12}>
+          <Stack direction="row" sx={{ justifyContent: "center" }}>
+            <div className="box-panel" style={panelStyle}>
+              <div className="content">
+                <Stack direction="column" spacing={1} sx={{
+                  minWidth: bannerWidth,
+                }}>
+                  {banner && (<div className="banner" style={bannerStyle}>
+                    {isSelf && (
+                      <HiddenUpload
+                        className="edit"
+                        name="banner"
+                        onClick={onEditBanner}
+                        onFileUpload={onFileUpload}
+                      >
+                        <i className="far fa-file-image" />
+                      </HiddenUpload>
+                    )}
+                  </div>)}
+                  <Grid container>
+                    {aviGridItems}
+                  </Grid>
+                </Stack>
               </div>
             </div>
-            {(isSelf || !hasDefaultPronouns) && (
+          </Stack>
+        </Grid>
+        <Grid item xs={12} md={8}>
+          <div className="box-panel" style={panelStyle}>
+            <Stack direction="column" spacing={1}>
               <div
-                className={`pronouns${
-                  isSelf && !editingPronouns ? " edit" : ""
-                }`}
-                onClick={onPronounsClick}
+                className={`bio${isSelf && !editingBio ? " edit" : ""}`}
+                onClick={onBioClick}
               >
-                {!editingPronouns && (
+                {!editingBio && (
                   <div className="md-content">
-                    <Markdown>{pronouns}</Markdown>
+                    <Markdown>{bio}</Markdown>
                   </div>
                 )}
-                {editingPronouns && (
+                {editingBio && (
                   <>
-                    <TextEditor value={pronouns} onChange={setPronouns} />
+                    <TextEditor value={bio} onChange={setBio} />
                     <div className="buttons">
-                      <div className="btn btn-theme" onClick={onEditPronouns}>
+                      <div className="btn btn-theme" onClick={onEditBio}>
                         Submit
                       </div>
                       <div
                         className="btn btn-theme-sec"
-                        onClick={onCancelEditPronouns}
+                        onClick={onCancelEditBio}
                       >
                         Cancel
                       </div>
@@ -732,135 +829,154 @@ export default function Profile() {
                   </>
                 )}
               </div>
+            </Stack>
+          </div>
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Stack direction="column" spacing={1}>
+            {mediaUrl && (<div className="box-panel" style={panelStyle}>
+              <MediaEmbed mediaUrl={mediaUrl} autoplay={autoplay}></MediaEmbed>
+            </div>)}
+            <div className="box-panel" style={panelStyle}>
+              <div className="content">
+                <Stack direction="row" spacing={1} sx={{ alignItems: "stretch" }}>
+                  <Stack direction="column" spacing={1}>
+                    <KarmaVoteWidget
+                      item={karmaInfo}
+                      setItem={setKarmaInfo}
+                      userId={userId}
+                    />
+                  </Stack>
+                  <Stack direction="column" spacing={1}>
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                      <img
+                        src={KUDOS_ICON}
+                        style={{ marginRight: "12px" }}
+                        title="Kudos"
+                      />
+                      {kudos}
+                    </Stack>
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                      <img
+                        src={KARMA_ICON}
+                        style={{ marginRight: "12px" }}
+                        title="Karma"
+                      />
+                      {karmaInfo.voteCount}
+                    </Stack>
+                  </Stack>
+                </Stack>
+              </div>
+            </div>
+            {totalGames >= RequiredTotalForStats && !settings.hideStatistics && (
+              <div className="box-panel ratings" style={panelStyle}>
+                <div className="heading">Mafia Ratings</div>
+                <div className="content">
+                  {ratings}
+                  <div
+                    className="expand-icon-wrapper"
+                    onClick={() => setShowStatsModal(true)}
+                  >
+                    <i className="fas fa-expand-arrows-alt" />
+                  </div>
+                </div>
+                <div className="content" style={{ padding: "0", justifyContent: "center" }}>
+                  <PieChart
+                    wins={mafiaStats.wins.count}
+                    losses={mafiaStats.wins.total - mafiaStats.wins.count}
+                    abandons={mafiaStats.abandons.total}
+                  />
+                </div>
+              </div>
             )}
             <div
-              className={`bio${isSelf && !editingBio ? " edit" : ""}`}
-              onClick={onBioClick}
-            >
-              {!editingBio && (
-                <div className="md-content">
-                  <Markdown>{bio}</Markdown>
-                </div>
-              )}
-              {editingBio && (
-                <>
-                  <TextEditor value={bio} onChange={setBio} />
-                  <div className="buttons">
-                    <div className="btn btn-theme" onClick={onEditBio}>
-                      Submit
-                    </div>
-                    <div
-                      className="btn btn-theme-sec"
-                      onClick={onCancelEditBio}
-                    >
-                      Cancel
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="side column">
-          {mediaUrl && (
-            <MediaEmbed mediaUrl={mediaUrl} autoplay={autoplay}></MediaEmbed>
-          )}
-          {totalGames >= RequiredTotalForStats && !settings.hideStatistics && (
-            <div className="box-panel ratings" style={panelStyle}>
-              <div className="heading">Mafia Ratings</div>
-              <div className="content">
-                {ratings}
-                <div
-                  className="expand-icon-wrapper"
-                  onClick={() => setShowStatsModal(true)}
-                >
-                  <i className="fas fa-expand-arrows-alt" />
-                </div>
-              </div>
-              <div
-                className="content"
-                style={{ padding: "0", justifyContent: "center" }}
-              >
-                <PieChart
-                  wins={mafiaStats.wins.count}
-                  losses={mafiaStats.wins.total - mafiaStats.wins.count}
-                  abandons={mafiaStats.abandons.total}
-                />
-              </div>
-            </div>
-          )}
-          <div
-            className="box-panel recent-games"
-            style={panelStyle}
-          >
-            <div className="heading">Recent Games</div>
-            <div className="content">
-              {recentGamesRows}
-              {recentGames.length === 0 && "No games"}
-            </div>
-          </div>
-          {friendRequests.length > 0 && (
-            <div className="box-panel friend-requests" style={panelStyle}>
-              <div className="heading">Friend Requests</div>
-              <div className="content">{friendRequestRows}</div>
-            </div>
-          )}
-          <div className="box-panel friends" style={panelStyle}>
-            <div className="heading">Friends</div>
-            <div className="content">
-              <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
-              {friendRows}
-              {friends.length === 0 && "No friends yet"}
-              <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
-            </div>
-          </div>
-          <div className="box-panel created-setups" style={panelStyle}>
-            <div className="heading">Setups Created</div>
-            <div className="content">
-              {createdSetupRows}
-              {createdSetups.length === 0 && "No setups"}
-            </div>
-          </div>
-          <div className="box-panel achievements" style={panelStyle}>
-            <div style={{ display: "flex" }}>
-              <img
-                src={ACHIEVEMENTS_ICON}
-                style={{
-                  marginRight: "12px",
-                  maxWidth: "30px",
-                  maxHeight: "30px",
-                }}
-                title="achievements"
-              />
-              <div className="heading">Achievements</div>
-            </div>
-            <div className="content">
-              {AchievementRows}
-              {achievements.length === 0 && "No achievements yet"}
-            </div>
-          </div>
-          {archivedGamesRows.length !== 0 && (
-            <div
-              className="box-panel archived-games"
+              className="box-panel recent-games"
               style={panelStyle}
-            >
-              <div className="heading">
-                Archived Games{" "}
-                {showDelete && (
-                  <i
-                    className="fas fa-edit"
-                    onClick={onEditArchivedGamesClick()}
-                  />
-                )}
+            > 
+              <div className="heading">Recent Games</div>
+              <div className="content" style={{ padding: "0px" }}>
+                {recentGamesRows}
+                {recentGames.length === 0 && (<Typography sx={{
+                  p: 1,
+                }}>
+                  No games
+                </Typography>)}
               </div>
-              <div className="content">{archivedGamesRows}</div>
             </div>
-          )}
-        </div>
-      </div>
-      <Box sx={{ mt: 4 }}>
-        <Comments location={userId} />
-      </Box>
+            {friendRequests.length > 0 && (
+              <div className="box-panel" style={panelStyle}>
+                <div className="heading">Friend Requests</div>
+                <div className="content">{friendRequestRows}</div>
+              </div>
+            )}
+            <div className="box-panel" style={panelStyle}>
+              <div className="heading">Friends</div>
+              <div className="content">
+                <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
+                {friendRows}
+                {friends.length === 0 && (<Typography sx={{
+                  p: 1,
+                }}>
+                  No friends yet
+                </Typography>)}
+                <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
+              </div>
+            </div>
+            <div className="box-panel" style={panelStyle}>
+              <div className="heading">Setups Created</div>
+              <div className="content">
+                {createdSetupRows}
+                {createdSetups.length === 0 && "No setups"}
+              </div>
+            </div>
+            <div className="box-panel achievements" style={panelStyle}>
+              <div style={{ display: "flex", alignItems: "center", }}>
+                <img
+                  src={ACHIEVEMENTS_ICON}
+                  style={{
+                    marginRight: "8px",
+                    marginBottom: "8px",
+                    maxWidth: "30px",
+                    maxHeight: "30px",
+                    backgroundColor: "rgba()",
+                    borderRadius: "0px",
+                  }}
+                  title="achievements"
+                />
+                <div className="heading">Achievements</div>
+              </div>
+              <div className="content">
+                {AchievementRows}
+                {achievements.length === 0 && "No achievements yet"}
+              </div>
+            </div>
+            {archivedGamesRows.length !== 0 && (
+              <div
+                className="box-panel archived-games"
+                style={panelStyle}
+              >
+                <div className="heading">
+                  Archived Games{" "}
+                  {showDelete && (
+                    <i
+                      className="fas fa-edit"
+                      onClick={onEditArchivedGamesClick()}
+                    />
+                  )}
+                </div>
+                <div className="content" style={{ padding: "0px" }}>
+                  <Stack direction="column" spacing={0}>
+                    {archivedGamesRows}
+                  </Stack>
+                </div>
+              </div>
+            )}
+          </Stack>
+        </Grid>
+        <Grid item xs={12} md={8} sx={{ mt: 2 }}>
+          <Comments fullWidth location={userId} />
+        </Grid>
+      </Grid>
     </>
   );
 }

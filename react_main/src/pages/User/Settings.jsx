@@ -124,6 +124,14 @@ export default function Settings() {
         confirm: "Are you sure you wish to change your username?",
       },
       {
+        label: "Pronouns",
+        ref: "pronouns",
+        type: "text",
+        saveBtn: "Change",
+        saveBtnDiffer: "pronouns",
+        saveBtnOnClick: onPronounsSave,
+      },
+      {
         label: "Birthday",
         ref: "birthday",
         type: "date",
@@ -171,6 +179,22 @@ export default function Settings() {
           },
         ],
         disabled: (deps) => !deps.user.itemsOwned.customProfile,
+      },
+      {
+        label: "Avatar shape",
+        ref: "avatarShape",
+        type: "select",
+        options: [
+          {
+            label: "Circle",
+            value: "circle",
+          },
+          {
+            label: "Square",
+            value: "square",
+          },
+        ],
+        disabled: (deps) => !deps.user.itemsOwned.avatarShape,
       },
       {
         label: "Hide Statistics",
@@ -343,7 +367,7 @@ export default function Settings() {
           <Box sx={{ width: 1 / 2 }}>
             <Form
               fields={profileFields}
-              deps={{ name: user.name, user, accounts, siteInfo, errorAlert }}
+              deps={{ name: user.name, pronouns: user.pronouns, user, accounts, siteInfo, errorAlert }}
               onChange={(action) =>
                 onSettingChange(action, updateProfileFields)
               }
@@ -474,6 +498,21 @@ export default function Settings() {
                 $set: deps.user.itemsOwned.nameChange - 1,
               },
             },
+          })
+        );
+      })
+      .catch(deps.errorAlert);
+  }
+
+  function onPronounsSave(pronouns, deps) {
+    axios
+      .post("/api/user/pronouns", { pronouns })
+      .then((res) => {
+        deps.siteInfo.showAlert("Pronouns changed", "success");
+
+        deps.user.set(
+          update(deps.user, {
+            pronouns: { $set: pronouns },
           })
         );
       })

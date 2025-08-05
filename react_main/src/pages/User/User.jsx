@@ -14,7 +14,7 @@ import "css/user.css";
 import { youtubeRegex } from "components/Basic";
 import { useTheme } from "@mui/styles";
 import { Link as MuiLink, Popover } from "@mui/material";
-import { Box, Card, AppBar, Toolbar } from "@mui/material";
+import { Box, Card, AppBar, IconButton, Stack, Toolbar } from "@mui/material";
 import { PieChart } from "./PieChart";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
@@ -31,8 +31,9 @@ export function YouTubeEmbed(props) {
   }
   if (embedId !== null && embedId !== "") {
     return (
-      <div id="profile-video" className="video-responsive">
+      <div id="profile-video" className="video-responsive-generic">
         <iframe
+          className="video-responsive-content"
           src={`https://www.youtube.com/embed/${embedId}?autoplay=${autoplay}&mute=0`}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media;"
           allowFullScreen
@@ -153,13 +154,6 @@ export default function User(props) {
   ];
   if (user.loaded && !user.loggedIn) return <Redirect to="/" />;
 
-  const outerStyle = isPhoneDevice
-    ? { padding: theme.spacing(0) }
-    : { padding: theme.spacing(3) };
-  const cardStyle = isPhoneDevice
-      ? { padding: theme.spacing(1), textAlign: "justify" }
-      : { padding: theme.spacing(3), textAlign: "justify" };
-
   return (
     <>
       <AppBar position="static">
@@ -178,19 +172,14 @@ export default function User(props) {
           ))}
         </Toolbar>
       </AppBar>
-      <Box maxWidth="1080px" sx={outerStyle}>
-        <Card
-          variant="outlined"
-          sx={cardStyle}
-        >
-          <Switch>
-            <Route exact path="/user" render={() => <Profile />} />
-            <Route exact path="/user/settings" render={() => <Settings />} />
-            <Route exact path="/user/shop" render={() => <Shop />} />
-            <Route exact path="/user/:userId" render={() => <Profile />} />
-            <Route render={() => <Redirect to="/user" />} />
-          </Switch>
-        </Card>
+      <Box maxWidth="1080px" sx={{ mt: 1 }}>
+        <Switch>
+          <Route exact path="/user" render={() => <Profile />} />
+          <Route exact path="/user/settings" render={() => <Settings />} />
+          <Route exact path="/user/shop" render={() => <Shop />} />
+          <Route exact path="/user/:userId" render={() => <Profile />} />
+          <Route render={() => <Redirect to="/user" />} />
+        </Switch>
       </Box>
     </>
   );
@@ -198,6 +187,7 @@ export default function User(props) {
 
 export function Avatar(props) {
   const small = props.small;
+  const mediumlarge = props.mediumlarge;
   const large = props.large;
   const id = props.id;
   const name = props.name;
@@ -211,6 +201,7 @@ export function Avatar(props) {
   const deckProfile = props.deckProfile;
   const absoluteLeftAvatarPx = props.absoluteLeftAvatarPx;
   const isSquare = props.isSquare || false;
+  const border = props.border || undefined;
 
   const siteInfo = useContext(SiteInfoContext);
   const style = {};
@@ -228,6 +219,7 @@ export function Avatar(props) {
   var size;
 
   if (small) size = "small";
+  else if (mediumlarge) size = "mediumlarge";
   else if (large) size = "large";
   else size = "";
 
@@ -307,7 +299,8 @@ var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/
       style={{
         ...style,
         display: "inline-block",
-        borderRadius: isSquare ? "0px" : undefined,
+        borderRadius: isSquare ? "0px" : "50%",
+        border: border,
       }}
     >
       {edit && (
@@ -374,7 +367,9 @@ export function NameWithAvatar(props) {
   }, []);
 
   var contents = (
-    <>
+    <Stack direction="row" spacing={small? 0.5 : 1} sx ={{
+      alignItems: "center"
+    }}>
       <Avatar
         hasImage={avatar}
         id={id}
@@ -393,7 +388,7 @@ export function NameWithAvatar(props) {
         {name}
       </div>
       {groups && <Badges groups={groups} small={small} />}
-    </>
+    </Stack>
   );
 
   // noLink should take precedence over includeMiniprofile
@@ -586,10 +581,12 @@ export function LoveIcon(props) {
     (isLove && loveType !== "Married" && love.id === userId)
   ) {
     return (
-      <i
-        className={`fas fa-heart  ${isLove ? "sel-love" : ""}`}
-        onClick={onLoveClick}
-      />
+      <IconButton aria-label="love user">
+        <i
+          className={`fas fa-heart  ${isLove ? "sel-love" : ""}`}
+          onClick={onLoveClick}
+        />
+      </IconButton>
     );
   }
   return null;
@@ -606,10 +603,12 @@ export function MarriedIcon(props) {
   if (userId === love.id) {
     if ((saved && isLove && loveType === "Lover") || isMarried) {
       return (
-        <i
-          className={`fas fa-ring ${isMarried ? "sel-married" : ""}`}
-          onClick={onMarryClick}
-        />
+        <IconButton aria-label="marry user">
+          <i
+            className={`fas fa-ring ${isMarried ? "sel-married" : ""}`}
+            onClick={onMarryClick}
+          />
+        </IconButton>
       );
     }
   }

@@ -129,7 +129,7 @@ async function cacheUserInfo(userId, reset) {
 
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "_id id name avatar blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday achievements redHearts goldHearts dailyChallengesCompleted dailyChallenges"
+        "_id id name avatar blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday pronouns achievements redHearts goldHearts dailyChallengesCompleted dailyChallenges"
       )
       .populate({
         path: "customEmotes",
@@ -171,6 +171,8 @@ async function cacheUserInfo(userId, reset) {
     await client.setAsync(`user:${userId}:info:avatar`, user.avatar);
     await client.setAsync(`user:${userId}:info:nameChanged`, user.nameChanged);
     await client.setAsync(`user:${userId}:info:bdayChanged`, user.bdayChanged);
+    await client.setAsync(`user:${userId}:info:birthday`, user.birthday);
+    await client.setAsync(`user:${userId}:info:pronouns`, user.pronouns);
     await client.setAsync(`user:${userId}:info:gamesPlayed`, gamesPlayed);
     await client.setAsync(`user:${userId}:info:redHearts`, user.redHearts);
     await client.setAsync(`user:${userId}:info:goldHearts`, user.goldHearts);
@@ -204,6 +206,7 @@ async function cacheUserInfo(userId, reset) {
   client.expire(`user:${userId}:info:nameChanged`, 3600);
   client.expire(`user:${userId}:info:bdayChanged`, 3600);
   client.expire(`user:${userId}:info:birthday`, 3600);
+  client.expire(`user:${userId}:info:pronouns`, 3600);
   client.expire(`user:${userId}:info:gamesPlayed`, 3600);
   client.expire(`user:${userId}:info:redHearts`, 3600);
   client.expire(`user:${userId}:info:goldHearts`, 3600);
@@ -225,6 +228,7 @@ async function deleteUserInfo(userId) {
   await client.delAsync(`user:${userId}:info:nameChanged`);
   await client.delAsync(`user:${userId}:info:bdayChanged`);
   await client.delAsync(`user:${userId}:info:birthday`);
+  await client.delAsync(`user:${userId}:info:pronouns`);
   await client.delAsync(`user:${userId}:info:gamesPlayed`);
   await client.delAsync(`user:${userId}:info:redHearts`);
   await client.delAsync(`user:${userId}:info:goldHearts`);
@@ -252,12 +256,13 @@ async function getUserInfo(userId) {
   info.bdayChanged =
     (await client.getAsync(`user:${userId}:info:bdayChanged`)) == "true";
   info.birthday = await client.getAsync(`user:${userId}:info:birthday`);
+  info.pronouns = await client.getAsync(`user:${userId}:info:pronouns`);
   info.gamesPlayed = await client.getAsync(`user:${userId}:info:gamesPlayed`);
   info.redHearts = await client.getAsync(`user:${userId}:info:redHearts`);
   info.goldHearts = await client.getAsync(`user:${userId}:info:goldHearts`);
   info.redHeartRefreshTimestamp = await client.getAsync(`user:${userId}:info:redHeartRefreshTimestamp`);
   info.goldHeartRefreshTimestamp = await client.getAsync(`user:${userId}:info:goldHeartRefreshTimestamp`);
- info.dailyChallenges = JSON.parse( await client.getAsync(`user:${userId}:info:dailyChallenges`));
+  info.dailyChallenges = JSON.parse( await client.getAsync(`user:${userId}:info:dailyChallenges`));
   info.status = await client.getAsync(`user:${userId}:info:status`);
   info.blockedUsers = JSON.parse(
     await client.getAsync(`user:${userId}:info:blockedUsers`)
