@@ -585,7 +585,7 @@ router.get("/settings/data", async function (req, res) {
     var user =
       userId &&
       (await models.User.findOne({ id: userId, deleted: false })
-        .select("name birthday settings customEmotes -_id")
+        .select("name birthday pronouns settings customEmotes -_id")
         .populate({
           path: "customEmotes",
           select: "id extension name -_id",
@@ -598,6 +598,7 @@ router.get("/settings/data", async function (req, res) {
       if (!user.settings) user.settings = {};
 
       user.settings.username = user.name;
+      user.settings.pronouns = user.pronouns;
       user.birthday = Date.parse(user.birthday);
       utils.remapCustomEmotes(user, userId);
       res.send(user.settings);
@@ -929,6 +930,12 @@ router.post("/settings/update", async function (req, res) {
       res.send(
         "You must purchase profile customization with coins from the Shop."
       );
+      return;
+    }
+
+    if ((prop == "avatarShape") && !itemsOwned.avatarShape) {
+      res.status(500);
+      res.send("You must purchase Square with coins from the Shop.");
       return;
     }
 

@@ -48,6 +48,7 @@ var schemas = {
       },
       backgroundColor: String,
       bannerFormat: String,
+      avatarShape: { type: String, default: "circle" },
       textColor: String,
       warnTextColor: String,
       ignoreTextColor: { type: Boolean, default: false },
@@ -93,6 +94,7 @@ var schemas = {
     coins: { type: Number, default: 0 },
     itemsOwned: {
       customProfile: { type: Number, default: 0 },
+      avatarShape: { type: Number, default: 0 },
       nameChange: { type: Number, default: 1 },
       emotes: { type: Number, default: 0 },
       threeCharName: { type: Number, default: 0 },
