@@ -529,12 +529,7 @@ export function Miniprofile(props) {
   );
 }
 
-export function LoveType(props) {
-  const type = props.type;
-  return <div className="in-love">{getLoveTitle(type)}</div>;
-}
-
-function getLoveTitle(loveType) {
+export function getLoveTitle(loveType) {
   if (loveType === "Lover") {
     return "In Love With";
   } else if (loveType === "Married") {
