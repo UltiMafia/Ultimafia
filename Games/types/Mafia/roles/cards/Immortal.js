@@ -26,7 +26,7 @@ module.exports = class Immortal extends Card {
         if (player != this.player) {
           return;
         }
-        if (this.player.hasAbility(["Modifier", "OnlyWhenAlive"])) {
+        if (this.hasAbility(["Modifier", "OnlyWhenAlive"])) {
           if (
             this.ImmortalEffect == null ||
             !this.player.effects.includes(this.ImmortalEffect)

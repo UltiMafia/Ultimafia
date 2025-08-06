@@ -13,7 +13,7 @@ module.exports = class TrickedWares extends Card {
           return;
         }
 
-        if (!this.player.hasAbility(["Item"])) {
+        if (!this.hasAbility(["Item"])) {
           return;
         }
 

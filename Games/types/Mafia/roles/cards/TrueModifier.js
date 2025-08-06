@@ -18,7 +18,7 @@ module.exports = class TrueModifier extends Card {
         if (player != this.player) {
           return;
         }
-        if (this.player.hasAbility(["Modifier", "Information", "WhenDead"])) {
+        if (this.hasAbility(["Modifier", "Information", "WhenDead"])) {
           if (
             this.TrueModeEffect == null ||
             !this.player.effects.includes(this.TrueModeEffect)

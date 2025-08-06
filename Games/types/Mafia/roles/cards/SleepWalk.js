@@ -9,7 +9,7 @@ module.exports = class SleepWalk extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Visiting"])) {
+        if (!this.hasAbility(["Visiting"])) {
           return;
         }
 

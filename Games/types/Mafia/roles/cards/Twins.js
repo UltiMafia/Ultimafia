@@ -14,11 +14,11 @@ module.exports = class Twins extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if(!this.player.hasAbility(["Win-Con"])){
+        if(!this.hasAbility(["Win-Con"])){
           return;
         }
         
-        if (this.data.twincondemned && this.player.hasAbility(["Win-Con"])) {
+        if (this.data.twincondemned && this.hasAbility(["Win-Con"])) {
           for(let player of this.game.players){
             if(CULT_FACTIONS.includes(player.faction)){
               winners.addPlayer(player, player.faction);
@@ -69,7 +69,7 @@ module.exports = class Twins extends Card {
           ((player === this.target && this.target.faction == "Village") ||
             (player == this.player && this.player.faction == "Village")) &&
           deathType === "condemn" &&
-          this.player.hasAbility(["Win-Con"])
+          this.hasAbility(["Win-Con"])
         ) {
           this.data.twincondemned = true;
         }

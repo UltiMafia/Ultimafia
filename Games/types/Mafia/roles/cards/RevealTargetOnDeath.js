@@ -28,7 +28,7 @@ module.exports = class RevealTargetOnDeath extends Card {
       },
       death: function (player, killer, deathType) {
         if (player == this.player && this.data.playerToReveal) {
-          if (!this.player.hasAbility(["Reveal", "WhenDead"])) {
+          if (!this.hasAbility(["Reveal", "WhenDead"])) {
             return;
           }
           let info = this.game.createInformation(

@@ -8,7 +8,7 @@ module.exports = class MakeSkittishOnRoleShare extends Card {
 
     this.listeners = {
       ShareRole: function (PlayerA, PlayerB, isAlignmentShare) {
-        if (!this.player.hasAbility(["Effect"])) {
+        if (!this.hasAbility(["Effect"])) {
           return;
         }
         if (

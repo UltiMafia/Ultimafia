@@ -16,7 +16,7 @@ module.exports = class Devotion extends Card {
         this.game.events.emit("AbilityToggle", this.player);
       },
       AbilityToggle: function (player) {
-        if (this.player.hasAbility(["Win-Con"])) {
+        if (this.player.role.hasAbility(["Win-Con"])) {
           //this.game.queueAlert(`${this.game.alivePlayers().length} players are alive`);
           this.player.role.data.DevotionCult = true;
           if (this.name == "Devotee") {

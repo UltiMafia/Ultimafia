@@ -7,7 +7,7 @@ module.exports = class FullMoonInvincible extends Card {
     this.listeners = {
       stateEvents: function (stateEvents) {
         if (stateEvents["Full Moon"] == true) {
-          if (!this.player.hasAbility(["OnlyWhenAlive"])) {
+          if (!this.hasAbility(["OnlyWhenAlive"])) {
             return;
           }
           //this.player.setTempImmunity("kill", 1);
@@ -19,7 +19,7 @@ module.exports = class FullMoonInvincible extends Card {
           return;
         }
         if (
-          this.player.hasAbility(["OnlyWhenAlive"]) &&
+          this.hasAbility(["OnlyWhenAlive"]) &&
           (this.game.getStateName() == "Night" ||
             this.game.getStateName() == "Dawn") &&
           this.game.stateEvents["Full Moon"] == true

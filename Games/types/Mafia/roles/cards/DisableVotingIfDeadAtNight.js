@@ -9,7 +9,7 @@ module.exports = class DisableVotingIfDeadAtNight extends Card {
         if (player != this.player) {
           return;
         }
-        if (!this.player.hasAbility(["WhenDead"])) {
+        if (!this.hasAbility(["WhenDead"])) {
           return;
         }
 

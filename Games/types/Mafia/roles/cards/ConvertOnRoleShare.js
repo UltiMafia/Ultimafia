@@ -8,7 +8,7 @@ module.exports = class ConvertOnRoleShare extends Card {
 
     this.listeners = {
       ShareRole: function (PlayerA, PlayerB, isAlignmentShare) {
-        if (!this.player.hasAbility(["Convert"])) {
+        if (!this.hasAbility(["Convert"])) {
           return;
         }
         if (

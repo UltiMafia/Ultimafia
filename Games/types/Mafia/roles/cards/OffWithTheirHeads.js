@@ -32,14 +32,14 @@ module.exports = class OffWithTheirHeads extends Card {
         }
 
         if (stateInfo.name.match(/Day/)) {
-          if (!this.player.hasAbility(["Kill"])) {
+          if (!this.hasAbility(["Kill"])) {
             return;
           }
           this.methods.checkIfShouldStartBeheading();
         }
       },
       start: function () {
-        if (!this.player.hasAbility(["Kill"])) {
+        if (!this.hasAbility(["Kill"])) {
           return;
         }
         this.methods.checkIfShouldStartBeheading();
@@ -55,7 +55,7 @@ module.exports = class OffWithTheirHeads extends Card {
         }
 
         //this.data.numStatesSinceBeheading += 1;
-        if (!this.player.hasAbility(["Kill"])) {
+        if (!this.hasAbility(["Kill"])) {
           return;
         }
         // kill everyone

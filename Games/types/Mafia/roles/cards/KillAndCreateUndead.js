@@ -13,6 +13,7 @@ module.exports = class KillAndCreateUndead extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
+          role: this.role,
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT + 1,
           run: function () {
@@ -51,7 +52,7 @@ module.exports = class KillAndCreateUndead extends Card {
 
                 let victims = [foundUp, foundDown];
                 var villageTarget = Random.randArrayVal(victims);
-                villageTarget.giveEffect("Delirious", this.actor, Infinity);
+                villageTarget.giveEffect("Delirious", this.actor, Infinity, null, this.role);
 
                 this.target.setRole(
                   `${this.target.role.name}:Transcendent`,

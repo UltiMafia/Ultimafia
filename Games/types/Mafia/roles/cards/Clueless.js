@@ -16,7 +16,7 @@ module.exports = class Clueless extends Card {
         if (player != this.player) {
           return;
         }
-        if (this.player.hasAbility(["Modifier", "Speaking"])) {
+        if (this.hasAbility(["Modifier", "Speaking"])) {
           if (
             this.CluelessEffect == null ||
             !this.players.effects.includes(this.CluelessEffect)

@@ -43,7 +43,7 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
         this.data.gainedGun = false;
       },
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Item"])) {
+        if (!this.hasAbility(["Item"])) {
           return;
         }
         if (!stateInfo.name.match(/Night/)) {

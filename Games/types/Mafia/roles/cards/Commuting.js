@@ -31,7 +31,7 @@ module.exports = class Commuting extends Card {
 */
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Blocking"])) {
+        if (!this.hasAbility(["Blocking"])) {
           return;
         }
         if (!stateInfo.name.match(/Night/)) {

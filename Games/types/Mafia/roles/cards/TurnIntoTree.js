@@ -33,7 +33,7 @@ module.exports = class TurnIntoTree extends Card {
           return;
         }
         if (
-          this.player.hasAbility(["Tree"]) &&
+          this.hasAbility(["Tree"]) &&
           this.player.role.isTree == true
         ) {
           if (

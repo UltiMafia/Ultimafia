@@ -44,7 +44,7 @@ module.exports = class LearnVisitorsAndArm extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Information", "Item"])) {
+        if (!this.hasAbility(["Information", "Item"])) {
           return;
         }
 

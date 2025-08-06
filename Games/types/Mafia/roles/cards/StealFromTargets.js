@@ -24,7 +24,7 @@ module.exports = class StealFromTargets extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Item", "Modifier"])) {
+        if (!this.hasAbility(["Item", "Modifier"])) {
           return;
         }
 

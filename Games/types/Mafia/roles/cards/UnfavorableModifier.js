@@ -17,7 +17,7 @@ module.exports = class UnfavorableModifier extends Card {
         if (player != this.player) {
           return;
         }
-        if (this.player.hasAbility(["Modifier", "Information", "WhenDead"])) {
+        if (this.hasAbility(["Modifier", "Information", "WhenDead"])) {
           if (
             this.UnfavorableModeEffect == null ||
             !this.player.effects.includes(this.UnfavorableModeEffect)

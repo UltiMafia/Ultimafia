@@ -15,11 +15,12 @@ module.exports = class CauseSnowstorm extends Card {
           return !this.causedSnowstorm;
         },
         action: {
+          role: this.role,
           priority: PRIORITY_DAY_EFFECT_DEFAULT,
           run: function () {
             if (this.target === "Yes") {
-              this.actor.role.causedSnowstorm = true;
-              if (!this.actor.hasAbility(["Effect"])) {
+              this.role.causedSnowstorm = true;
+              if (!this.role.hasAbility(["Effect"])) {
                 return;
               }
               this.game.queueAlert(":snowball: A snowstorm is approaching…");

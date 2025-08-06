@@ -24,7 +24,7 @@ module.exports = class StrongModifier extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Strong", "Modifier"])) {
+        if (!this.hasAbility(["Strong", "Modifier"])) {
           return;
         }
 

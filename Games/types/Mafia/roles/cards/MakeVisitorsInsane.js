@@ -31,7 +31,7 @@ module.exports = class MakeVisitorsInsane extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Effect"])) {
+        if (!this.hasAbility(["Effect"])) {
           return;
         }
 

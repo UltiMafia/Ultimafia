@@ -7,7 +7,7 @@ module.exports = class GiveShavingCreamOnDeath extends Card {
     this.listeners = {
       death: function (player, killer, instant) {
         if (player == this.player) {
-          if (!this.player.hasAbility(["Item", "WhenDead"])) {
+          if (!this.hasAbility(["Item", "WhenDead"])) {
             return;
           }
 

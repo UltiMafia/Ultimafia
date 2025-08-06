@@ -28,7 +28,7 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
               `${this.actor.name} the ${this.role.name} has selected ${this.target.name}. If ${this.target.name} is Village Aligned they will die tonight.`
             );
 
-            if (!this.actor.hasAbility(["Kill", "WhenDead"])) {
+            if (!this.hasAbility(["Kill", "WhenDead"])) {
               return;
             }
             //this.hasChoosen = true;
@@ -57,7 +57,7 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
 */
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Kill", "WhenDead"])) {
+        if (!this.hasAbility(["Kill", "WhenDead"])) {
           return;
         }
 

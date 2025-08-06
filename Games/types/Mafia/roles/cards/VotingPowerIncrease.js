@@ -18,7 +18,7 @@ module.exports = class Clueless extends Card {
             votePower++;
           }
         }
-        if (this.player.hasAbility(["Modifier", "Voting"])) {
+        if (this.hasAbility(["Modifier", "Voting"])) {
           if (
             this.VotingIncreaseEffect == null ||
             !this.player.effects.includes(this.VotingIncreaseEffect)

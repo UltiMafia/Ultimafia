@@ -40,6 +40,7 @@ module.exports = class BecomeBackUpRole extends Card {
             this.player.queueAlert(
               `Your Target is ${this.data.RoleTargetBackup}, If a ${this.data.RoleTargetBackup} dies, you will replace them!`
             );
+            this.game.events.emit("AbilityToggle", this.player);
           } else {
             this.player.queueAlert("No possible Targets…");
             let newRole = "Survivor";
@@ -65,7 +66,7 @@ module.exports = class BecomeBackUpRole extends Card {
 
         if (
           this.data.RoleTargetBackup != null &&
-          this.player.hasAbility(["Convert"])
+          this.hasAbility(["Convert"])
         ) {
           let playersWithRole = this.game
             .alivePlayers()

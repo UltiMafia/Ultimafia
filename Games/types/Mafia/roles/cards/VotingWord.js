@@ -41,7 +41,7 @@ module.exports = class VotingWord extends Card {
         }
         let count = this.data.PlayersWhoSaidPhrase.filter((p) => p.faction == "Village").length;
 
-            if(this.player.hasAbility(["Voting"])){
+            if(this.hasAbility(["Voting"])){
             this.player.role.VotePower = count;
             }
       },
@@ -54,7 +54,7 @@ module.exports = class VotingWord extends Card {
           if(this.data.PlayersWhoSaidPhrase == null){
           this.data.PlayersWhoSaidPhrase = [];
         }
-          if(this.player.hasAbility(["Speaking"])){
+          if(this.hasAbility(["Speaking"])){
 
           var action = new Action({
           actor: this.player,

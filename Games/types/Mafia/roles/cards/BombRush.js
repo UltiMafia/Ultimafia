@@ -9,9 +9,10 @@ module.exports = class BombRush extends Card {
         states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
         action: {
+          role: this.role,
           labels: ["kill", "bomb"],
           run: function () {
-            if (!this.actor.hasAbility(["Kill"])) {
+            if (!this.role.hasAbility(["Kill"])) {
               return;
             }
             this.game.queueAlert(

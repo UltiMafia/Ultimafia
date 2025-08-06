@@ -19,7 +19,7 @@ module.exports = class NightMatron extends Card {
         delete this.meetings["CommonRoomPlaceholder"];
       },
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Meeting"])) {
+        if (!this.hasAbility(["Meeting"])) {
           return;
         }
 

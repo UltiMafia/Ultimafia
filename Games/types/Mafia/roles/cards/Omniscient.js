@@ -9,7 +9,7 @@ module.exports = class Omiscient extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Modifier", "Information"])) {
+        if (!this.hasAbility(["Modifier", "Information"])) {
           return;
         }
 

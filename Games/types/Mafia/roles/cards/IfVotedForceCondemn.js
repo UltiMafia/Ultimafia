@@ -13,7 +13,7 @@ module.exports = class IfVotedForceCondemn extends Card {
 
           this.data.hasBeenVoted = true;
           this.data.playerVoter = 0;
-          if (!this.player.hasAbility(["Condemn"])) {
+          if (!this.hasAbility(["Condemn"])) {
             return;
           }
           if (
