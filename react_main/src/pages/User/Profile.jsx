@@ -11,7 +11,7 @@ import {
   MediaEmbed,
   LoveIcon,
   MarriedIcon,
-  LoveType,
+  getLoveTitle,
   NameWithAvatar,
 } from "./User";
 import { HiddenUpload, TextEditor } from "components/Form";
@@ -626,6 +626,14 @@ export default function Profile() {
             currentUserLove={currentUserLove}
             onClick={onLoveUserClick}
           />
+          <MarriedIcon
+            isLove={isLove}
+            saved={saved}
+            userId={user.id}
+            love={love}
+            isMarried={isMarried}
+            onClick={onMarryUserClick}
+          />
           <IconButton aria-label="block user">
             <i
               className={`fas fa-ban ${isBlocked ? "sel" : ""}`}
@@ -732,7 +740,7 @@ export default function Profile() {
               }}
             >
               <Typography sx={{ fontStyle: "italic" }}>
-                In Love With
+                {getLoveTitle(love.type)}
               </Typography>
               <Avatar
                 hasImage={love.avatar}

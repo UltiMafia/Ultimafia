@@ -1059,8 +1059,8 @@ router.post("/banner", async function (req, res) {
     await sharp(files.image.path)
       .webp()
       .resize({
-        width: 980,
-        height: 200,
+        width: 900,
+        height: 300,
         withoutEnlargement: true,
       })
       .toFile(`${process.env.UPLOAD_PATH}/${userId}_banner.webp`);
