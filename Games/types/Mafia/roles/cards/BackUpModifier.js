@@ -41,7 +41,8 @@ module.exports = class BackUpModifier extends Card {
         
            this.BackUpEffect = this.player.giveEffect(
               "BackUp",
-              this.name
+              this.name,
+             this
             );
             this.passiveEffects.push(this.BackUpEffect);
         
@@ -88,7 +89,8 @@ module.exports = class BackUpModifier extends Card {
         
            this.BackUpEffect = this.player.giveEffect(
               "BackUp",
-              this.name
+              this.name,
+             this
             );
             this.passiveEffects.push(this.BackUpEffect);
         
