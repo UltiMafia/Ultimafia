@@ -2756,6 +2756,15 @@ const roleData = {
         "Cannot select a role they already selected.",
       ],
     },
+     Oddfather: {
+      alignment: "Mafia",
+      category: "Manipulative",
+      tags: ["Advanced", "Banished Interaction"],
+      description: [
+        "Has the abilites of up to 5 banished Mafia roles.",
+        "Cannot have the Oddfather ability.",
+      ],
+    },
     Apprentice: {
       alignment: "Mafia",
       tags: ["Conversion", "Dead", "Basic"],
