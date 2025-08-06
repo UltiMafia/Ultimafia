@@ -125,4 +125,71 @@ module.exports = class MafiaRole extends Role {
     }
     return `${roleName}${modifiers ? ` (${modifiers})` : ""}`;
   }
+
+
+
+  hasAbility(types) {
+    if (types == null) {
+      types = [];
+    }
+    let isRestless =this.game.getRoleTags(this.game.formatRoleInternal(this.name, this.modifier)).includes("Restless") && !this.player.hasEffect("NoModifiers");
+    if(!isRestless){
+    isRestless = this.game
+        .getRoleTags(
+          this.game.formatRoleInternal(this.name, this.modifier)
+        )
+        .includes("Vengeful") && !this.player.hasEffect("NoModifiers") && this.HasBeenNightKilled == true;
+    }
+    let isTransendant =
+      this.game
+        .getRoleTags(
+          this.game.formatRoleInternal(this.name, this.modifier)
+        )
+        .includes("Transcendent") && !this.player.hasEffect("NoModifiers");
+    let isRetired =
+      this.game
+        .getRoleTags(
+          this.game.formatRoleInternal(this.name, this.modifier)
+        )
+        .includes("Retired") && !this.player.hasEffect("NoModifiers");
+    if (this.player.exorcised == true) {
+      return false;
+    }
+    if(this.player.hasEffect("BackUp")){
+      return false;
+    }
+    if (isRetired == true && !types.includes("Modifier")) {
+      return false;
+    }
+    if (types.includes("OnlyWhenDead") && this.player.alive == true) {
+      return false;
+    }
+    if (types.includes("OnlyWhenAlive") && this.player.alive == false) {
+      return false;
+    }
+    if (this.player.isDelirious() && types.includes("Information") != true) {
+      return false;
+    }
+    if (
+      this.player.alive == false &&
+      types.includes("OnlyWhenDead") != true &&
+      types.includes("WhenDead") != true &&
+      isRestless != true &&
+      isTransendant != true
+    ) {
+      return false;
+    }
+    if (this.player.alive == true && isRestless == true) {
+      return false;
+    }
+    if (types.includes("Modifier") && this.player.hasEffect("NoModifiers")) {
+      return false;
+    }
+
+    return true;
+  }
+
+
+
+  
 };
