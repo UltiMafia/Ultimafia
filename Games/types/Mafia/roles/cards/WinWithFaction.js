@@ -543,18 +543,8 @@ module.exports = class WinWithFaction extends Card {
       },
       death: function (player, killer, deathType) {
         if (
-          player.role.name == "President" &&
-          player.hasAbility(["Win-Con", "WhenDead"])
+          player.hasEffect("PresidentEffect")
         ) {
-          const vicePresidents = this.game.players.filter(
-            (p) =>
-              p.alive &&
-              (p.role.data.RoleTargetBackup == "President" ||
-                p.role.name == "President")
-          );
-          if (vicePresidents.length > 0) {
-            return;
-          }
           this.killedPresident = true;
         }
         if (player.role.name == "Assassin") {
