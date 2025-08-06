@@ -348,8 +348,8 @@ module.exports = class WinWithFaction extends Card {
         }
         //Competing Evil Factions
           if(EVIL_FACTIONS.includes(this.player.faction) && this.game.isCultVsMafia()){
-          let hostile3rds = this.game.alivePlayers().filter((p) => (p.faction != this.player.faction && p.faction != "Evil"));
-          if(hostile3rds.length > 0){
+          let hostileFactions = this.game.alivePlayers().filter((p) => (p.faction != this.player.faction && p.faction != "Evil" && EVIL_FACTIONS.includes(p.faction)));
+          if(hostileFactions.length > 0){
             return;
           }
         }
