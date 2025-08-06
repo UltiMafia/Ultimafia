@@ -31,7 +31,7 @@ module.exports = class VillageMightSurviveCondemn extends Card {
 */
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Protection", "Modifier"])) {
+        if (!this.hasAbility(["Protection", "Modifier"])) {
           return;
         }
 

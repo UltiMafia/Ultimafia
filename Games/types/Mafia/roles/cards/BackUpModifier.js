@@ -45,7 +45,7 @@ module.exports = class BackUpModifier extends Card {
              this
             );
             this.passiveEffects.push(this.BackUpEffect);
-        
+        this.game.events.emit("AbilityToggle", this.player);
 
 
         
@@ -93,7 +93,7 @@ module.exports = class BackUpModifier extends Card {
              this
             );
             this.passiveEffects.push(this.BackUpEffect);
-        
+        this.game.events.emit("AbilityToggle", this.player);
 
 
         
@@ -106,8 +106,8 @@ module.exports = class BackUpModifier extends Card {
           false,
           "No Change"
         );
-        this.player.role.data.FromBackUpModifier = currRole;
-        this.player.role.data.OldRole = currRole;
+        this.player.data.FromBackUpModifier = currRole;
+        this.player.data.OldRole = currRole;
       }
 
       },

@@ -16,11 +16,13 @@ module.exports = class ChoirOfRoles extends Card {
         targets: { include: ["alive"], exclude: ["self", isPrevTarget] },
         labels: ["hidden", "absolute", "condemn", "overthrow"],
         action: {
+          role: this.role,
           priority: PRIORITY_OVERTHROW_VOTE - 2,
           run: function () {
-            this.actor.role.data.prevTarget = this.target;
+            this.role.data.prevTarget = this.target;
             if (this.target.hasEffect("ChoirSong")) {
               var action = new Action({
+                role: this.role,
                 actor: this.actor,
                 target: this.target,
                 game: this.actor.game,
@@ -28,7 +30,7 @@ module.exports = class ChoirOfRoles extends Card {
                 labels: ["hidden", "absolute", "condemn", "overthrow"],
                 run: function () {
                   //New code
-                  if (!this.actor.hasAbility(["Condemn"])) {
+                  if (!this.role.hasAbility(["Condemn"])) {
                     return;
                   }
                   for (let action of this.game.actions[0]) {
@@ -54,9 +56,9 @@ module.exports = class ChoirOfRoles extends Card {
               this.game.gotoNextState();
             } //End if
             else {
-              if (this.actor.role.data.singer) {
+              if (this.role.data.singer) {
                 this.actor.queueAlert(
-                  `${this.actor.role.data.singer.name} was singing about ${this.actor.role.data.singAbout}, Your guess was Incorrect. You cannot Guess ${this.target.name} tomorrow!`
+                  `${this.role.data.singer.name} was singing about ${this.role.data.singAbout}, Your guess was Incorrect. You cannot Guess ${this.target.name} tomorrow!`
                 );
               }
             }
@@ -67,7 +69,7 @@ module.exports = class ChoirOfRoles extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Effect"])) {
+        if (!this.hasAbility(["Effect"])) {
           return;
         }
         if (!stateInfo.name.match(/Night/)) {

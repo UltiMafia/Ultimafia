@@ -38,22 +38,25 @@ module.exports = class EvilsWinWhenKilled extends Card {
       this.killedPresident = true;
       },
       AbilityToggle: function (player) {
+        if(!this.player.alive){
+        return;
+        }
         let checks = true;
         for(let player of this.game.alivePlayers()){
           for(let effect of player.effects){
             if(effect.name == "BackUp"){
-              if(effect.BackupRole && effect.BackUpRole == this.name && this.player.hasAbility(["Convert", "OnlyWhenAlive"])){
+              if(effect.BackupRole && `${effect.BackupRole}` === `${this.name}` && effect.CurrentRole.hasAbility(["Convert", "OnlyWhenAlive", "Modifier"])){
                 checks = false;
               }
             }
           }
         }
-        if(!this.player.hasAbility(["Win-Con", "WhenDead"])){
+        if(!this.hasAbility(["Win-Con", "WhenDead"])){
           checks = false;
         }
         
         
-        if (checks) {
+        if (checks == true) {
           if (
             this.PresEffect == null ||
             !this.player.effects.includes(this.PresEffect)

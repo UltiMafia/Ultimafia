@@ -11,12 +11,12 @@ module.exports = class MayorWin extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if(!this.player.hasAbility(["Win-Con", "OnlyWhenAlive"])){
+        if(!this.hasAbility(["Win-Con", "OnlyWhenAlive"])){
           return;
         }
             
               
-        if (this.data.MayorWin && this.player.hasAbility(["Win-Con", "OnlyWhenAlive"]) && aliveCount == 3) {
+        if (this.data.MayorWin && this.hasAbility(["Win-Con", "OnlyWhenAlive"]) && aliveCount == 3) {
           for(let player of this.game.players){
             if(player.faction == this.player.faction){
               winners.addPlayer(player, player.faction);
@@ -77,7 +77,7 @@ module.exports = class MayorWin extends Card {
           priority: PRIORITY_DAY_EFFECT_DEFAULT + 1,
           labels: ["hidden", "absolute"],
           run: function () {
-          if (!this.actor.hasAbility(["Win-Con", "OnlyWhenAlive"])) return;
+          if (!this.role.hasAbility(["Win-Con", "OnlyWhenAlive"])) return;
           if (this.game.alivePlayers().length != 3) {
             this.role.data.MayorWin = false;
             return;

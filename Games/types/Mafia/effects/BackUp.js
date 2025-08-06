@@ -11,9 +11,12 @@ module.exports = class BackUp extends Effect {
 
     this.listeners = {
       death: function (player, killer, deathType, instant) {
-        if (player.role.name != this.BackupRole && this.CurrentRole.player.hasAbility(["Convert", "OnlyWhenAlive"])) return;
-        if(player.hasEffect("BackUp")) return;
-        this.player.role.data.RoleTargetBackup = null;
+        if(player == this.player){
+          return;
+        }
+        if (player.role.name != this.BackupRole) return;
+        if(!this.CurrentRole.hasAbility(["Convert", "OnlyWhenAlive", "Modifier"])) return;
+        this.CurrentRole.data.RoleTargetBackup = null;
         this.remove();
       },
     };

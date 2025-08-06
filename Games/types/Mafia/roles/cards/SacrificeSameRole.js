@@ -9,7 +9,7 @@ module.exports = class SacrificeSameRole extends Card {
         if (player != this.player) {
           return;
         }
-        if (!this.player.hasAbility(["Kill", "WhenDead"])) {
+        if (!this.hasAbility(["Kill", "WhenDead"])) {
           return;
         }
 
@@ -17,7 +17,7 @@ module.exports = class SacrificeSameRole extends Card {
           if (
             player.alive &&
             player.role.name === "Sheep" &&
-            player.hasAbility(["Kill", "WhenDead"])
+            hasAbility(["Kill", "WhenDead"])
           ) {
             player.kill("sheep", this.player, instant);
           }

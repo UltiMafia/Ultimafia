@@ -10,7 +10,7 @@ module.exports = class ConvertImmune extends Card {
         if (player != this.player) {
           return;
         }
-        if (this.player.hasAbility(["Modifier"])) {
+        if (this.hasAbility(["Modifier"])) {
           if (
             this.ConvertImmuneEffect == null ||
             !this.player.effects.includes(this.ConvertImmuneEffect)

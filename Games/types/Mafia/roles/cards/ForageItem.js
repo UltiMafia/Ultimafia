@@ -50,7 +50,7 @@ module.exports = class ForageItem extends Card {
         }
       },
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Item", "Modifier"])) {
+        if (!this.hasAbility(["Item", "Modifier"])) {
           return;
         }
 

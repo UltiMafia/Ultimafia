@@ -155,7 +155,7 @@ module.exports = class MafiaRole extends Role {
     if (this.player.exorcised == true) {
       return false;
     }
-    if(this.player.hasEffect("BackUp")){
+    if(this.player.hasEffect("BackUp") && !types.includes("Modifier")){
       return false;
     }
     if (isRetired == true && !types.includes("Modifier")) {

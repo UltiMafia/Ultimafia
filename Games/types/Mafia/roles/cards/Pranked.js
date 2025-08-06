@@ -13,7 +13,7 @@ module.exports = class Pranked extends Card {
 
           this.data.hasBeenVoted = true;
           this.data.playerVoter = 0;
-          if (!this.player.hasAbility(["Convert"])) {
+          if (!this.hasAbility(["Convert"])) {
             return;
           }
           this.data.playerVoter = vote.voter;

@@ -193,7 +193,7 @@ module.exports = class WinWithFaction extends Card {
 
           if (AdmiralsInGame.length > 0) {
             for (let person of this.game.players) {
-              if (person.hasItem("TreasureChest")) {
+              if (person.hasItem("TreasureChest") && p.alive) {
                 return;
               }
             }

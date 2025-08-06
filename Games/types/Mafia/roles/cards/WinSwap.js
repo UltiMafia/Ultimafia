@@ -12,7 +12,7 @@ module.exports = class WinSwap extends Card {
         this.data.ShouldFlipWinCons = true;
       },
       handleWinSwappers: function (winners) {
-        if (!this.player.hasAbility(["Win-Con", "WhenDead"])) {
+        if (!this.hasAbility(["Win-Con", "WhenDead"])) {
           return;
         }
         let losers = [];

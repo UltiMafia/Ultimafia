@@ -21,7 +21,7 @@ module.exports = class HuntEvilPlayers extends Card {
         }
       },
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Information"])) {
+        if (!this.hasAbility(["Information"])) {
           return;
         }
 

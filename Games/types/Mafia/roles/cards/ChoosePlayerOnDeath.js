@@ -14,15 +14,16 @@ module.exports = class ChoosePlayerOnDeath extends Card {
           return !this.revived;
         },
         action: {
+          role: this.role,
           priority: PRIORITY_DAY_DEFAULT - 1,
           run: function () {
             this.game.queueAlert(
-              `${this.actor.name} the ${this.actor.role.name} has selected ${this.target.name}`
+              `${this.actor.name} the ${this.role.name} has selected ${this.target.name}`
             );
             //this.hasChoosen = true;
-            this.actor.role.revived = true;
+            this.role.revived = true;
 
-            if (!this.actor.hasAbility(["Win-Con", "WhenDead"])) {
+            if (!this.role.hasAbility(["Win-Con", "WhenDead"])) {
               return;
             }
 

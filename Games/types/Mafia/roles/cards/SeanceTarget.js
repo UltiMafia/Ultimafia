@@ -29,7 +29,7 @@ module.exports = class SeanceTarget extends Card {
           priority: PRIORITY_DAY_DEFAULT,
           role: this.role,
           run: function () {
-            if (!this.actor.hasAbility(["Meeting"])) {
+            if (!this.role.hasAbility(["Meeting"])) {
               return;
             }
             if (this.dominates()) {

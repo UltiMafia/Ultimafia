@@ -37,7 +37,7 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
 */
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Delirium"])) {
+        if (!this.hasAbility(["Delirium"])) {
           return;
         }
 

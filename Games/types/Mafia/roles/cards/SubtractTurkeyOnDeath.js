@@ -7,7 +7,7 @@ module.exports = class SubtractTurkeyOnDeath extends Card {
     this.listeners = {
       death: function (player, killer, deathType) {
         if (player === this.player) {
-          if (!this.player.hasAbility(["Item", "WhenDead"])) {
+          if (!this.hasAbility(["Item", "WhenDead"])) {
             return;
           }
           this.game.queueAlert(

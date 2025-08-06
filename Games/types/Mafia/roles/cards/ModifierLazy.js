@@ -27,7 +27,7 @@ module.exports = class ModifierLazy extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Delay", "Modifier"])) {
+        if (!this.hasAbility(["Delay", "Modifier"])) {
           return;
         }
 

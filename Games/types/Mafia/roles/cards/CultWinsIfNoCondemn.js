@@ -13,7 +13,7 @@ module.exports = class CultWinsIfNoCondemn extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT+1,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if(!this.player.hasAbility(["Win-Con"])){
+        if(!this.hasAbility(["Win-Con"])){
           return;
         }
         const enemyMayors = this.game
@@ -30,7 +30,7 @@ module.exports = class CultWinsIfNoCondemn extends Card {
         }
             
               
-        if (this.data.NyarlathotepWin && this.player.hasAbility(["Win-Con"])) {
+        if (this.data.NyarlathotepWin && this.hasAbility(["Win-Con"])) {
           for(let player of this.game.players){
             if(CULT_FACTIONS.includes(player.faction)){
               winners.addPlayer(player, player.faction);
@@ -42,7 +42,7 @@ module.exports = class CultWinsIfNoCondemn extends Card {
 
         this.listeners = {
         state: function (stateInfo) {
-        if (!this.player.hasAbility(["Win-Con"])) {
+        if (!this.hasAbility(["Win-Con"])) {
           return;
         }
         if (!stateInfo.name.match(/Day/)) {
@@ -50,12 +50,13 @@ module.exports = class CultWinsIfNoCondemn extends Card {
         }
 
         var action = new Action({
+          role: this,
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_DAY_EFFECT_DEFAULT + 1,
           labels: ["hidden", "absolute"],
           run: function () {
-          if (!this.actor.hasAbility(["Win-Con"])) return;
+          if (!this.role.hasAbility(["Win-Con"])) return;
             let alivePlayers = this.game.players.filter((p) => p.role);
 
             for (let x = 0; x < alivePlayers.length; x++) {

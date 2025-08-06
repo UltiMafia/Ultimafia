@@ -52,7 +52,7 @@ module.exports = class ConvertIfVisitsAllMafia extends Card {
         this.visitedMentors = new Set();
       },
       state: function (stateInfo){
-        if (!this.player.hasAbility(["Convert"])) {
+        if (!this.hasAbility(["Convert"])) {
           return;
         }
 

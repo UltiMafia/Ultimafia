@@ -6,7 +6,7 @@ module.exports = class PureSacrifice extends Card {
 
     this.listeners = {
       death: function (player, killer, deathType) {
-        if (!this.player.hasAbility(["Protection", "WhenDead"])) {
+        if (!this.hasAbility(["Protection", "WhenDead"])) {
           return;
         }
         if (player == this.player && deathType == "condemn") {

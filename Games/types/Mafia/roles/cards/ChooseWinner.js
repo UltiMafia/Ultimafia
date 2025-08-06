@@ -11,13 +11,13 @@ module.exports = class ChooseWinner extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if (this.player.role.ReaperWinningTeam) {
+        if (this.ReaperWinningTeam) {
           for (let player of this.game.players) {
             if (
-              player.role.name == this.player.role.ReaperWinningTeam ||
-              player.faction == this.player.role.ReaperWinningTeam
+              player.role.name == this.ReaperWinningTeam ||
+              player.faction == this.ReaperWinningTeam
             ) {
-              winners.addPlayer(player, this.player.role.ReaperWinningTeam);
+              winners.addPlayer(player, this.ReaperWinningTeam);
             }
           }
         }
@@ -31,20 +31,20 @@ module.exports = class ChooseWinner extends Card {
           this.game.getStateName() == "Dusk"
         ) {
           if (
-            this.player.role.FaithTarget != null &&
-            this.player.role.FaithTarget != "No one" &&
-            this.player.role.FaithTarget.alive &&
-            this.player.hasAbility(["Win-Con", "WhenDead"])
+            this.FaithTarget != null &&
+            this.FaithTarget != "No one" &&
+            this.FaithTarget.alive &&
+            this.hasAbility(["Win-Con", "WhenDead"])
           ) {
             this.ReaperWin = true;
-            if (this.player.role.FaithTarget.faction == "Independent") {
-              this.player.role.ReaperWinningTeam = this.FaithTarget.role.name;
+            if (this.FaithTarget.faction == "Independent") {
+              this.ReaperWinningTeam = this.FaithTarget.role.name;
             } else {
-              this.player.role.ReaperWinningTeam =
-                this.player.role.FaithTarget.faction;
+              this.ReaperWinningTeam =
+                this.FaithTarget.faction;
             }
           } else {
-            this.player.role.FaithTarget = null;
+            this.FaithTarget = null;
           }
         }
       },
@@ -57,6 +57,7 @@ module.exports = class ChooseWinner extends Card {
             }
 
             let action = new Action({
+              role: this,
               target: this.player,
               game: this.player.game,
               labels: ["kill", "bomb"],
@@ -64,13 +65,13 @@ module.exports = class ChooseWinner extends Card {
                 if (this.game.getStateName() != "Day") {
                   return;
                 }
-                if (this.target.role.FaithTarget != null) {
+                if (this.role.FaithTarget != null) {
                   return;
                 }
                 this.target.queueAlert(
                   `The time to use your ability has passed.`
                 );
-                this.target.role.FaithTarget = "No One";
+                this.role.FaithTarget = "No One";
               },
             });
 
@@ -84,35 +85,24 @@ module.exports = class ChooseWinner extends Card {
           return;
         }
         this.timer = null;
-        /*
-        if (
-          this.player.role.FaithTarget != null &&
-          this.player.role.FaithTarget != "No one" &&
-          this.player.role.FaithTarget.alive &&
-          this.player.hasAbility(["Win-Con"])
-        ) {
-          this.ReaperWin = true;
-          if (this.player.role.FaithTarget.faction == "Independent") {
-            this.player.role.ReaperWinningTeam = this.FaithTarget.role.name;
-          } else {
-            this.player.role.ReaperWinningTeam = this.player.role.FaithTarget.faction;
-          }
-        } else {
-          this.player.role.FaithTarget = null;
-        }
-        */
       },
     };
   }
 
   speak(message) {
+    if(!message.sender){
+      return;
+    }
+    if(message.sender != this.role.player){
+      return;
+    }
     if (
       message.abilityName == "Whisper" ||
-      !message.sender.hasAbility(["Win-Con"])
+      !this.role.hasAbility(["Win-Con"])
     ) {
       return;
     }
-    if (message.sender.role.FaithTarget != null) {
+    if (this.role.FaithTarget != null) {
       return;
     }
     let formatedMessage = message.content;
@@ -156,6 +146,7 @@ module.exports = class ChooseWinner extends Card {
       }
 
       var action = new Action({
+        role: this.role,
         actor: message.sender,
         target: playerTarget,
         game: message.sender.game,
@@ -168,7 +159,7 @@ module.exports = class ChooseWinner extends Card {
           this.actor.queueAlert(
             `You choose ${this.target.name}, Their team will win if they survive today.`
           );
-          this.actor.role.FaithTarget = this.target;
+          this.role.FaithTarget = this.target;
         },
       });
       message.sender.game.instantAction(action);

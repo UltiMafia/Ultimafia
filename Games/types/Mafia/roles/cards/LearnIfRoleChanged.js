@@ -23,7 +23,7 @@ module.exports = class LearnIfRoleChanged extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Information"])) {
+        if (!this.hasAbility(["Information"])) {
           return;
         }
 

@@ -28,7 +28,7 @@ module.exports = class MakeKillHidden extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Astral"])) {
+        if (!this.hasAbility(["Astral"])) {
           return;
         }
 

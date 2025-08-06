@@ -10,7 +10,7 @@ module.exports = class InheritFirstDeadAligned extends Card {
         if (
           player !== this.player &&
           player.role.alignment === this.player.role.alignment &&
-          this.player.hasAbility(["Convert", "Modifier"])
+          this.hasAbility(["Convert", "Modifier"])
         ) {
           let inheritAction = new Action({
             labels: ["hidden", "absolute"],

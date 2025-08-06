@@ -22,13 +22,14 @@ module.exports = class KillAndDeliriumSurvivors extends Card {
             }
             if (this.target.alive) {
               let action = new Action({
+                role: this.role,
                 actor: this.actor,
                 target: this.target,
                 game: this.game,
                 labels: ["block", "delirium"],
                 run: function () {
                   if (this.dominates()){
-                     this.target.giveEffect("Delirious", this.actor, Infinity);
+                     this.target.giveEffect("Delirious", this.actor, Infinity, null, this.role);
                     this.blockWithDelirium(this.target);
                   }
                 },

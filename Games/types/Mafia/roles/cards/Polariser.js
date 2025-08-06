@@ -35,7 +35,7 @@ module.exports = class Polariser extends Card {
 
     this.listeners = {
         state: function (stateInfo) {
-        if (!this.player.hasAbility(["Kill", "Effect"])) {
+        if (!this.hasAbility(["Kill", "Effect"])) {
           return;
         }
 

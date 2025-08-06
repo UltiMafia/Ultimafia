@@ -20,7 +20,7 @@ module.exports = class ParalyzeAll extends Card {
           run: function () {
             if (this.target === "Yes") {
               this.role.hasParalyzed = true;
-              if (!this.actor.hasAbility(["Effect"])) {
+              if (!this.role.hasAbility(["Effect"])) {
                 return;
               }
               if (

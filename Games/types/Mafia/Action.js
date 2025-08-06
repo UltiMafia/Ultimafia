@@ -70,7 +70,7 @@ module.exports = class MafiaAction extends Action {
     target = target || this.target;
     let hasInvestigate = false;
     if (fromEffect != true) {
-      target.giveEffect("Delirious", this.actor, 1);
+      target.giveEffect("Delirious", this.actor, 1, null,this.role);
     }
     this.game.events.emit("AbilityToggle", target);
     for (let action of this.game.actions[0]) {

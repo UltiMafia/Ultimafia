@@ -25,7 +25,7 @@ module.exports = class KillVisitors extends Card {
 */
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Kill"])) {
+        if (!this.hasAbility(["Kill"])) {
           return;
         }
 

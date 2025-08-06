@@ -10,7 +10,7 @@ module.exports = class LoseModifiers extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Convert", "Modifier"])) {
+        if (!this.hasAbility(["Convert", "Modifier"])) {
           return;
         }
 

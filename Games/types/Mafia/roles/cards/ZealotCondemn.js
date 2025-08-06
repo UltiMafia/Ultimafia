@@ -22,12 +22,12 @@ module.exports = class ZealotCondemn extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if(!this.player.hasAbility(["Win-Con"])){
+        if(!this.hasAbility(["Win-Con"])){
           return;
         }
             
               
-        if (this.data.ZealotWin && this.player.hasAbility(["Win-Con"])) {
+        if (this.data.ZealotWin && this.hasAbility(["Win-Con"])) {
           for(let player of this.game.players){
             if(CULT_FACTIONS.includes(player.faction)){
               winners.addPlayer(player, player.faction);
@@ -42,7 +42,7 @@ module.exports = class ZealotCondemn extends Card {
         this.data.ZealotCondemn = true;
       },
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Win-Con"])) return;
+        if (!this.hasAbility(["Win-Con"])) return;
         if (stateInfo.name.match(/Day/)) {
           if (this.data.ZealotCondemn == true) {
             this.player.queueAlert(
@@ -73,7 +73,7 @@ module.exports = class ZealotCondemn extends Card {
         if (
           player.faction === "Village" &&
           deathType == "condemn" &&
-          this.player.hasAbility(["Win-Con"]) &&
+          this.hasAbility(["Win-Con"]) &&
           this.data.ZealotDay == true
         ) {
           this.data.ZealotWin = true;

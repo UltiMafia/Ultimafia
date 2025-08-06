@@ -14,7 +14,7 @@ module.exports = class ChangelingWin extends Achievements {
             .flat()
             .find((p) => p === this.player) &&
           this.player.role.data.twincondemned &&
-          this.player.hasAbility(["Win-Con"])
+          this.player.role.hasAbility(["Win-Con"])
         ) {
           this.player.EarnedAchievements.push("Mafia16");
         }

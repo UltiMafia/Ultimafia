@@ -15,7 +15,7 @@ module.exports = class ConvertSave extends Card {
         if (!action.hasLabel("kill")) {
           return;
         }
-        if (!this.player.hasAbility(["Convert"])) {
+        if (!this.hasAbility(["Convert"])) {
           return;
         }
 

@@ -49,7 +49,7 @@ module.exports = class NeighborAlignment extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["OnlyWhenAlive", "Information"])) {
+        if (!this.hasAbility(["OnlyWhenAlive", "Information"])) {
           return;
         }
 

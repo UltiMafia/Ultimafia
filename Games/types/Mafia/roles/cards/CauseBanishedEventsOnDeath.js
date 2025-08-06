@@ -13,7 +13,7 @@ module.exports = class CauseBanishedEventsOnDeath extends Card {
         if (this.player.alive) {
           return;
         }
-        if (!this.player.hasAbility(["Event", "WhenDead"])) {
+        if (!this.hasAbility(["Event", "WhenDead"])) {
           return;
         }
 

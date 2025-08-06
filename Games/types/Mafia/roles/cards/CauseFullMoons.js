@@ -6,7 +6,7 @@ module.exports = class CauseFullMoons extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Full Moon"])) {
+        if (!this.hasAbility(["Full Moon"])) {
           return;
         }
 

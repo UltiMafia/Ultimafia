@@ -9,7 +9,7 @@ module.exports = class Unrefined extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Blocking", "Modifier"])) {
+        if (!this.hasAbility(["Blocking", "Modifier"])) {
           return;
         }
         if (!stateInfo.name.match(/Night/)) {

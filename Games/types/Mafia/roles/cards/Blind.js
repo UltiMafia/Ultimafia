@@ -12,7 +12,7 @@ module.exports = class Blind extends Card {
         if (player != this.player) {
           return;
         }
-        if (this.player.hasAbility(["Modifier", "Speaking"])) {
+        if (this.hasAbility(["Modifier", "Speaking"])) {
           if (
             this.BlindEffect == null ||
             !this.player.effects.includes(this.BlindEffect)

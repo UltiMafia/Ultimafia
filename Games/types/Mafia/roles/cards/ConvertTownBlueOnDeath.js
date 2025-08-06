@@ -5,7 +5,7 @@ module.exports = class ConvertTownBlueOnDeath extends Card {
     super(role);
     this.listeners = {
       death: function (player, killer, instant) {
-        if (!this.player.hasAbility(["Convert", "WhenDead"])) {
+        if (!this.hasAbility(["Convert", "WhenDead"])) {
           return;
         }
         if (player == this.player) {

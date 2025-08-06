@@ -20,7 +20,7 @@ module.exports = class JailTarget extends Card {
         delete this.meetings["JailPlaceholder"];
       },
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Meeting", "Kill"])) {
+        if (!this.hasAbility(["Meeting", "Kill"])) {
           return;
         }
 
@@ -84,7 +84,7 @@ module.exports = class JailTarget extends Card {
         flags: ["voting"],
         shouldMeet: function () {
           if (
-            !this.player.hasAbility(["Meeting", "Kill"]) ||
+            !this.hasAbility(["Meeting", "Kill"]) ||
             this.hasBeenDay != true
           ) {
             return false;
@@ -97,10 +97,11 @@ module.exports = class JailTarget extends Card {
           return true;
         },
         action: {
+          role: this.role,
           labels: ["jail"],
           priority: PRIORITY_DAY_DEFAULT,
           run: function () {
-            if (!this.actor.hasAbility(["Meeting", "Jail"])) {
+            if (!this.role.hasAbility(["Meeting", "Jail"])) {
               return;
             }
             if (this.dominates()) {

@@ -10,7 +10,7 @@ module.exports = class StyleContest extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if (!this.player.hasAbility(["Win-Con", "WhenDead"])) {
+        if (!this.hasAbility(["Win-Con", "WhenDead"])) {
           return;
         }
         let stylePlayers = [];
@@ -38,7 +38,7 @@ module.exports = class StyleContest extends Card {
 
     this.listeners = {
       AbilityToggle: function (player) {
-        if (this.player.hasAbility(["WhenDead"])) {
+        if (this.hasAbility(["WhenDead"])) {
           for (let player of this.game.players) {
             if (player.faction == this.player.faction) {
               if (!player.hasEffect("StylePoints")) {

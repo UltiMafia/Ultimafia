@@ -14,6 +14,7 @@ module.exports = class ConvertSelfToChosenRole extends Card {
         //targets: { include: [], exclude: ["aligned"] },
         //targets: { targetOptions },
         action: {
+          role: this.role,
           labels: ["convert", "role"],
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
           run: function () {
@@ -34,7 +35,7 @@ module.exports = class ConvertSelfToChosenRole extends Card {
                   if (
                     this.game.getRoleAlignment(this.target) != "Independent"
                   ) {
-                    players[y].giveEffect("Delirious", this.actor, Infinity);
+                    players[y].giveEffect("Delirious", this.actor, Infinity, null, this.role);
                     this.blockWithDelirium(players[y], true);
                     break;
                   } else {

@@ -22,7 +22,7 @@ module.exports = class TurnToStone extends Card {
 
             if (this.role.data.visitors) {
               this.role.stoned = true;
-              if (!this.actor.hasAbility(["Kill"])) {
+              if (!this.role.hasAbility(["Kill"])) {
                 return;
               }
               this.game.sendAlert(":ghost2: You feel a horrible presence!");

@@ -26,7 +26,7 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
         }
         if (this.game.getStateName() != "Night") return;
         if (killer.role.alignment != "Mafia" && !killer.isDemonic(true)) return;
-        if (!this.player.hasAbility(["Kill", "OnlyWhenAlive"])) {
+        if (!this.hasAbility(["Kill", "OnlyWhenAlive"])) {
           return;
         }
         if (this.player.alive) {
@@ -45,7 +45,7 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
         }
       },
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Information"])) {
+        if (!this.hasAbility(["Information"])) {
           return;
         }
 

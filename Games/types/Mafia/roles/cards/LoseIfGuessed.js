@@ -61,7 +61,7 @@ module.exports = class LoseIfGuessed extends Card {
     }
     if (
       message.abilityName == "Whisper" ||
-      !this.role.player.hasAbility(["Win-Con"])
+      !this.role.hasAbility(["Win-Con"])
     ) {
       return;
     }

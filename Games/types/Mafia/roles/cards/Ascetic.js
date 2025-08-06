@@ -20,7 +20,7 @@ module.exports = class Ascetic extends Card {
 */
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["OnlyWhenAlive"])) {
+        if (!this.hasAbility(["OnlyWhenAlive"])) {
           return;
         }
         if (!stateInfo.name.match(/Night/)) {

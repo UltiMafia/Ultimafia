@@ -17,7 +17,7 @@ module.exports = class BecomeAlignmentOfVisitors extends Card {
         this.player.faction = "Village";
       },
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Delirium"])) {
+        if (!this.hasAbility(["Delirium"])) {
           return;
         }
         if (!stateInfo.name.match(/Night/)) {
