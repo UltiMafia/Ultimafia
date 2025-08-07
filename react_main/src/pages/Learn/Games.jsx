@@ -22,6 +22,7 @@ import LearnWackyWords from "./LearnWackyWords";
 import LearnLiarsDice from "./LearnLiarsDice";
 import LearnTexasHoldEm from "./LearnTexasHoldEm";
 import LearnCheat from "./LearnCheat";
+import LearnConnectFour from "./LearnConnectFour";
 
 import { GameTypes } from "Constants";
 import LearnBattlesnakes from "./LearnBattlesnakes";

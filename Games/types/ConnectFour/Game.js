@@ -49,6 +49,7 @@ module.exports = class ConnectFourGame extends Game {
 
   getStateInfo(state) {
     var info = super.getStateInfo(state);
+    let board = this.board;
     info.extraInfo = {
       board,
     };

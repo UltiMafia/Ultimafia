@@ -48,7 +48,7 @@ export default function CreateConnectFourSetup() {
         gameType: gameType,
         roles: roleData.roles,
         name: formFields[0].value,
-        startState: "Play Cards",
+        startState: "Turn",
         whispers: formFields[1].value,
         leakPercentage: Number(formFields[2].value),
         noReveal: true,

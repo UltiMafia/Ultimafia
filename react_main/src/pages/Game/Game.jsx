@@ -22,6 +22,7 @@ import WackyWordsGame from "./WackyWordsGame";
 import LiarsDiceGame from "./LiarsDiceGame";
 import TexasHoldEmGame from "./TexasHoldEmGame";
 import CheatGame from "./CheatGame";
+import ConnectFourGame from "./ConnectFourGame";
 import {
   GameContext,
   PopoverContext,

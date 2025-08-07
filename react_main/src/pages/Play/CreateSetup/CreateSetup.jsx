@@ -23,6 +23,7 @@ import CreateLiarsDiceSetup from "./CreateLiarsDiceSetup";
 import CreateTexasHoldEmSetup from "./CreateTexasHoldEmSetup";
 import CreateCheatSetup from "./CreateCheatSetup";
 import CreateBattlesnakesSetup from "./CreateBattlesnakesSetup";
+import CreateConnectFourSetup from "./CreateConnectFourSetup";
 
 import { GameTypes } from "Constants";
 import GameIcon from "components/GameIcon";
