@@ -1221,6 +1221,15 @@ const countChecks = {
     if (total < 2 || total > 10) return "Must have between 2 and 10 players.";
     return true;
   },
+  "Connect Four": (roles, count, total, closed, unique) => {
+    if (total < 3) return "Must have at least 3 players.";
+
+    const connectFourMaxPlayers = 4;
+    if (total > connectFourMaxPlayers)
+      return `Must have at most ${connectFourMaxPlayers} players.`;
+
+    return true;
+  },
 };
 
 const optionsChecks = {
@@ -1279,6 +1288,9 @@ const optionsChecks = {
     return setup;
   },
   "Cheat": (setup) => {
+    return setup;
+  },
+  "Connect Four": (setup) => {
     return setup;
   },
 };

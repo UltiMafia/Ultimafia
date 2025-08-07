@@ -1,0 +1,19 @@
+/* Connect Four */
+
+.game .connectFour-history {
+  display: flex;
+}
+
+.game .connectFour-board {
+  margin: 30px auto;
+}
+
+.game .connectFour-board-row {
+  display: flex;
+}
+
+.game .connectFour-board-box {
+  width: 40px;
+  height: 40px;
+  margin: 8px;
+}

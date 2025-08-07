@@ -1170,6 +1170,16 @@ const settingsChecks = {
       boardSize,
     };
   },
+  "Connect Four": (settings, setup) => {
+    const boardX = settings.boardX;
+    const boardY = settings.boardY;
+
+    return {
+      boardX,
+      boardY,
+    };
+    // return "Connect Four is currently not available.";
+  },
 };
 
 module.exports = router;

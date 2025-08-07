@@ -12,6 +12,7 @@ export const gamesIcons = {
     "Texas Hold Em": require("images/game_icons/CardGames.png"),
     "Cheat": require("images/game_icons/CardGames.png"),
     Battlesnakes: require("images/game_icons/Battlesnakes.png"),
+    "Connect Four": require("images/game_icons/ConnectFour.png"),
 };
 
 export default function GameIcon(props) {

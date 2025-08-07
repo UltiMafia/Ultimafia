@@ -16,12 +16,15 @@ import Newspaper from "../../components/Newspaper";
 import MafiaGame from "./MafiaGame";
 import ResistanceGame from "./ResistanceGame";
 import GhostGame from "./GhostGame";
+import JottoGame from "./JottoGame";
 import AcrotopiaGame from "./AcrotopiaGame";
 import SecretDictatorGame from "./SecretDictatorGame";
 import WackyWordsGame from "./WackyWordsGame";
 import LiarsDiceGame from "./LiarsDiceGame";
 import TexasHoldEmGame from "./TexasHoldEmGame";
 import CheatGame from "./CheatGame";
+import BattlesnakesGame from "./BattlesnakesGame";
+import ConnectFourGame from "./ConnectFourGame";
 import {
   GameContext,
   PopoverContext,
@@ -45,7 +48,6 @@ import { textIncludesSlurs } from "../../lib/profanity";
 
 import "css/game.css";
 import EmotePicker from "../../components/EmotePicker";
-import JottoGame from "./JottoGame";
 import "./Game.css";
 import { NewLoading } from "../Welcome/NewLoading";
 import { ChangeHead } from "../../components/ChangeHead";
@@ -67,7 +69,6 @@ import {
   Stack,
   Divider,
 } from "@mui/material";
-import BattlesnakesGame from "./BattlesnakesGame";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
 
@@ -779,6 +780,7 @@ function GameWrapper(props) {
           {gameType === "Texas Hold Em" && <TexasHoldEmGame />}
           {gameType === "Cheat" && <CheatGame />}
           {gameType === "Battlesnakes" && <BattlesnakesGame />}
+          {gameType === "Connect Four" && <ConnectFourGame />}
         </div>
       </GameContext.Provider>
     );
