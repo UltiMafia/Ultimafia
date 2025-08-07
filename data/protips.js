@@ -21,7 +21,7 @@ const protips = {
     "Click the white icon to the left of a player's name to mark them as a role.",
     "You can see if you have completed an achievement with /achievement.",
     "You can use /extend during the day to increase the timer.",
-    "The day doesn't end until ALL votes have resolved, including those for items, if you have a day action, make sure you've completed it by the time town's decided on their vote!",
+    "The day ends when ALL votes for the condemn are cast, if you have a day action, make sure you've completed it before all votes are in!",
     "Not every mafia member needs to vote for the kill as long as there is a majority vote. Those that vote no one won't visit the target.",
     "The wrench icon in a role description represents a role modifier - these are useful for tweaking interactions in a setup.",
     "Have a clear town member? It can be convenient for everyone else to self vote so that they can choose who to condemn.",
