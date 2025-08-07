@@ -367,7 +367,7 @@ export function NameWithAvatar(props) {
   }, []);
 
   var contents = (
-    <Stack direction="row" spacing={small? 0.5 : 1} sx ={{
+    <Stack direction="row" spacing={absoluteLeftAvatarPx ? 0 : small ? 0.5 : 1} sx ={{
       alignItems: "center"
     }}>
       <Avatar

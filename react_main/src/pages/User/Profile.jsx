@@ -454,15 +454,10 @@ export default function Profile() {
     panelStyle.backgroundColor = settings.backgroundColor;
   }
 
-  const bannerWidth = isSmallScreen ? "300px" : "900px";
-  const bannerHeight = isSmallScreen ? "100px" : "300px";
-  bannerStyle.width = bannerWidth;
-  bannerStyle.height = bannerHeight;
-
-  if (banner)
+  if (banner) {
     bannerStyle.backgroundImage = `url(/uploads/${userId}_banner.webp?t=${siteInfo.cacheVal})`;
+  }
 
-  console.log(settings)
   if (settings.bannerFormat === "stretch") {
     bannerStyle.backgroundSize = "100% 100%";
   }
@@ -697,14 +692,15 @@ export default function Profile() {
         }}>
           {badges}
           <Typography variant="h5" sx={{
+            flexShrink: "2",
             fontWeight: "600",
           }}>
             {name}
           </Typography>
           {pronouns && (<Typography variant="caption" sx={{
+            flexShrink: "1",
             filter: "opacity(.75)",
             minWidth: "40px",
-            maxWidth: "80px",
             wordBreak: pronouns.includes("/") ? "normal" : "break-word",
           }}>
             ({pronouns})
@@ -748,7 +744,7 @@ export default function Profile() {
                 name={love.name}
               />
               <Typography>
-                {name}
+                {love.name}
               </Typography>
             </Stack>
           </Stack>
@@ -782,63 +778,63 @@ export default function Profile() {
       )}
       <Grid container rowSpacing={1} columnSpacing={1} className="profile">
         <Grid item xs={12}>
-          <Stack direction="row" sx={{ justifyContent: "center" }}>
-            <div className="box-panel" style={panelStyle}>
-              <div className="content">
-                <Stack direction="column" spacing={1} sx={{
-                  minWidth: bannerWidth,
-                }}>
-                  {banner && (<div className="banner" style={bannerStyle}>
-                    {isSelf && (
-                      <HiddenUpload
-                        className="edit"
-                        name="banner"
-                        onClick={onEditBanner}
-                        onFileUpload={onFileUpload}
-                      >
-                        <i className="far fa-file-image" />
-                      </HiddenUpload>
-                    )}
-                  </div>)}
-                  <Grid container>
-                    {aviGridItems}
-                  </Grid>
-                </Stack>
-              </div>
+          <div className="box-panel" style={panelStyle}>
+            <div className="content" style={{ gap: "8px" }}>
+              {banner && (<div className="banner" style={bannerStyle}>
+                {isSelf && (
+                  <HiddenUpload
+                    className="edit"
+                    name="banner"
+                    onClick={onEditBanner}
+                    onFileUpload={onFileUpload}
+                  >
+                    <i className="far fa-file-image" />
+                  </HiddenUpload>
+                )}
+              </div>)}
+              <Grid container>
+                {aviGridItems}
+              </Grid>
             </div>
-          </Stack>
+          </div>
         </Grid>
         <Grid item xs={12} md={8}>
-          <div className="box-panel" style={panelStyle}>
-            <Stack direction="column" spacing={1}>
-              <div
-                className={`bio${isSelf && !editingBio ? " edit" : ""}`}
-                onClick={onBioClick}
-              >
-                {!editingBio && (
-                  <div className="md-content">
-                    <Markdown>{bio}</Markdown>
-                  </div>
-                )}
-                {editingBio && (
-                  <>
-                    <TextEditor value={bio} onChange={setBio} />
-                    <div className="buttons">
-                      <div className="btn btn-theme" onClick={onEditBio}>
-                        Submit
-                      </div>
-                      <div
-                        className="btn btn-theme-sec"
-                        onClick={onCancelEditBio}
-                      >
-                        Cancel
-                      </div>
+          <Stack direction="column" spacing={1}>
+            <div className="box-panel" style={panelStyle}>
+                <div
+                  className={`bio${isSelf && !editingBio ? " edit" : ""}`}
+                  onClick={onBioClick}
+                >
+                  {!editingBio && (
+                    <div className="md-content">
+                      <Markdown>{bio}</Markdown>
                     </div>
-                  </>
-                )}
-              </div>
-            </Stack>
-          </div>
+                  )}
+                  {editingBio && (
+                    <>
+                      <TextEditor value={bio} onChange={setBio} />
+                      <div className="buttons">
+                        <div className="btn btn-theme" onClick={onEditBio}>
+                          Submit
+                        </div>
+                        <div
+                          className="btn btn-theme-sec"
+                          onClick={onCancelEditBio}
+                        >
+                          Cancel
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+            </div>
+            {!isSmallScreen && (<Box sx={{
+              mt: "16px !important",
+              px: 2,
+            }}>
+              <Comments fullWidth location={userId} />
+            </Box>)}
+          </Stack>
         </Grid>
         <Grid item xs={12} md={4}>
           <Stack direction="column" spacing={1}>
@@ -981,9 +977,9 @@ export default function Profile() {
             )}
           </Stack>
         </Grid>
-        <Grid item xs={12} md={8} sx={{ mt: 2 }}>
+        {isSmallScreen && (<Grid item xs={12} sx={{ mt: 1 }}>
           <Comments fullWidth location={userId} />
-        </Grid>
+        </Grid>)}
       </Grid>
     </>
   );
