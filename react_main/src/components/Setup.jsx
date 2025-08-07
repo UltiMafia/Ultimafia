@@ -188,6 +188,8 @@ export default function Setup(props) {
 }
 
 export function SmallRoleList(props) {
+  const includeSearchBar = props.includeSearchBar || false;
+
   const [searchVal, setSearchVal] = useState("");
   
   var roles = props.roles
@@ -215,12 +217,14 @@ export function SmallRoleList(props) {
 
   return (
     <Stack direction="column" spacing={1}>
-      <SearchBar
+      {includeSearchBar && (<SearchBar
         value={searchVal}
         placeholder="🔎 Role Name"
         onInput={onSearchInput}
-      />
-      <div className="small-role-list">
+      />)}
+      <div className="small-role-list" style={{
+        borderTop: includeSearchBar ? undefined : "1px solid #d6d6d6",
+      }}>
           {props.title} {roleList}
       </div>
     </Stack>

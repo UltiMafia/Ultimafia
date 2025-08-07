@@ -568,6 +568,7 @@ export function parseRolePredictionPopover(data) {
       gameType={data.gameType}
       setup={data.setup}
       otherRoles={data.otherRoles}
+      includeSearchBar
     />
   );
 }

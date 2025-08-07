@@ -192,8 +192,8 @@ iframe {
 }
 
 .profile .banner {
-  align-self: center;
-
+  aspect-ratio: 3;
+  height: auto;
   background-color: var(--theme-color-sec);
 }
 
