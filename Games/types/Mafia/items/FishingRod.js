@@ -178,7 +178,7 @@ module.exports = class FishingRod extends Item {
         action: {
           run: function () {
               if(this.target == "Fish"){
-              let fishingValue = Random.randInt(1, 100);
+              let fishingValue = Random.randInt(1, 250);
                 if(fishingValue == 1){
                   let fish = Random.randArrayVal(painPool);
                   if(fish == "Volcano"){
@@ -187,7 +187,7 @@ module.exports = class FishingRod extends Item {
                     this.game.events.emit("Volcano");
                   }
                 }
-                else if(fishingValue <= 25){
+                else if(fishingValue <= 50){
                   let fish = Random.randArrayVal(garbagePool);
                   if(fish == "Broken Item"){
                     fish = Random.randArrayVal(itemPool);
@@ -199,12 +199,12 @@ module.exports = class FishingRod extends Item {
                     this.actor.queueGetItemAlert(fish);
                   }
                 }
-                else if(fishingValue <= 75){
+                else if(fishingValue <= 225){
                    let fish = Random.randArrayVal(fishPool);
                     this.actor.holdItem("Food", fish);
                     this.actor.queueGetItemAlert(fish);
                 }
-                else if(fishingValue <= 97){
+                else if(fishingValue <= 247){
                    let fish = Random.randArrayVal(itemPool);
                     this.actor.holdItem(fish);
                     this.actor.queueGetItemAlert(fish);
