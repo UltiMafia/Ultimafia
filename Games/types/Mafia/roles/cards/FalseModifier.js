@@ -42,7 +42,7 @@ module.exports = class FalseModifier extends Card {
         if (player != this.player) {
           return;
         }
-        if (this.player.hasAbility(["Modifier", "Information", "WhenDead"])) {
+        if (this.hasAbility(["Modifier", "Information", "WhenDead"])) {
           if (
             this.FalseModeEffect == null ||
             !this.player.effects.includes(this.FalseModeEffect)

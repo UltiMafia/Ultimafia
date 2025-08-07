@@ -52,11 +52,11 @@ module.exports = class CompareAlignmentInfo extends Information {
     let alignmentA = this.getAlignment(this.targetA);
     let alignmentB = this.getAlignment(this.targetB);
     if (alignmentA == alignmentB) {
-      if (this.mainInfo == "the same") {
+      if (this.mainInfo == "match in alignment") {
         return true;
       }
     } else {
-      if (this.mainInfo == "different") {
+      if (this.mainInfo == "differ in alignment") {
         return true;
       }
     }
@@ -70,14 +70,14 @@ module.exports = class CompareAlignmentInfo extends Information {
     }
   }
   isFavorable() {
-    if (this.mainInfo == "the same") {
+    if (this.mainInfo == "match in alignment") {
       return true;
     } else {
       return false;
     }
   }
   isUnfavorable() {
-    if (this.mainInfo == "different") {
+    if (this.mainInfo == "differ in alignment") {
       return true;
     } else {
       return false;
@@ -88,24 +88,24 @@ module.exports = class CompareAlignmentInfo extends Information {
     let alignmentA = this.getAlignment(this.targetA);
     let alignmentB = this.getAlignment(this.targetB);
     if (alignmentA == alignmentB) {
-      this.mainInfo = "the same";
+      this.mainInfo = "match in alignment";
     } else {
-      this.mainInfo = "different";
+      this.mainInfo = "differ in alignment";
     }
   }
   makeFalse() {
     let alignmentA = this.getAlignment(this.targetA);
     let alignmentB = this.getAlignment(this.targetB);
     if (alignmentA == alignmentB) {
-      this.mainInfo = "different";
+      this.mainInfo = "differ in alignment";
     } else {
-      this.mainInfo = "the same";
+      this.mainInfo = "match in alignment";
     }
   }
   makeFavorable() {
-    this.mainInfo = "the same";
+    this.mainInfo = "match in alignment";
   }
   makeUnfavorable() {
-    this.mainInfo = "different";
+    this.mainInfo = "differ in alignment";
   }
 };

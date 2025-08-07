@@ -170,7 +170,7 @@ module.exports = class FrustratedCondemnation extends Card {
         if (player != this.player) {
           return;
         }
-        if (this.player.hasAbility(["Modifier"])) {
+        if (this.hasAbility(["Modifier"])) {
           if (
             this.FrustratedEffect == null ||
             !this.player.effects.includes(this.FrustratedEffect)

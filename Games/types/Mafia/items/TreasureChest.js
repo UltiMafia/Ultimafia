@@ -11,6 +11,21 @@ module.exports = class TreasureChest extends Item {
 
     this.meetings = {};
     this.listeners = {
+    state: function (stateInfo) {
+        if (this.game.getStateName() != "Treasure Chest") return;
+        if (!this.holder.alive) return;
+        if (this.holder.role.name != "Admiral") {
+      this.holder.game.sendAlert(`${this.holder.name} has The Treasure Chest!`);
+      this.holder.sendAlert(`You have received the Admiral's Treasure Chest!`);
+      this.holder.sendAlert(
+        `Inside are ${this.holder.game.AdmiralGold} Gold Bars and the following roles ${this.holder.game.AdmiralGoodRoles}!`
+      );
+      this.holder.sendAlert(
+        `You may steal Gold and Become Mafia/Cult Or Become a role in the Chest!`
+      );
+    }
+
+      },
       roleAssigned: function (player) {
         //if (this.game.getStateName() != "Night") return;
         if (!this.holder.alive) return;
@@ -46,7 +61,7 @@ module.exports = class TreasureChest extends Item {
             ) {
               let ShareWith = players[admiralIndex + 1 + x].holdItem(
                 "TreasureChest",
-                this.item.Admiral
+                this.Admiral
               );
               this.drop();
               return;
@@ -270,17 +285,6 @@ module.exports = class TreasureChest extends Item {
     let meetingName;
     meetingName = "Choose Role " + this.holder.name;
     this.meetingName = meetingName;
-    if (player.role.name != "Admiral") {
-      player.game.sendAlert(`${player.name} has The Treasure Chest!`);
-      player.sendAlert(`You have received the Admiral's Treasure Chest!`);
-      player.sendAlert(
-        `Inside are ${player.game.AdmiralGold} Gold Bars and the following roles ${player.game.AdmiralGoodRoles}!`
-      );
-      player.sendAlert(
-        `You may steal Gold and Become Mafia/Cult Or Become a role in the Chest!`
-      );
-      //player.game.timers["main"].extend(1000 * 90);
-    }
     this.setupMeetings();
   }
 };

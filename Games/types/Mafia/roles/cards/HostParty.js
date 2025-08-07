@@ -20,7 +20,7 @@ module.exports = class HostParty extends Card {
           run: function () {
             if (this.target == "Yes") {
               this.role.hostedParty = true;
-              if (!this.actor.hasAbility(["Meeting"])) {
+              if (!this.role.hasAbility(["Meeting"])) {
                 return;
               }
               for (let player of this.game.players) {

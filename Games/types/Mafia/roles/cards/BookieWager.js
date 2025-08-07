@@ -56,7 +56,7 @@ module.exports = class RiskyPrediction extends Card {
         if (
           player === this.predictedVote &&
           deathType === "condemn" &&
-          this.player.hasAbility(["Kill"])
+          this.hasAbility(["Kill"])
         ) {
           this.predictedCorrect = true;
           this.player.queueAlert(

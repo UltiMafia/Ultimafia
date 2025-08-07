@@ -75,7 +75,7 @@ module.exports = class OpenTheDoor extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["OnlyWhenAlive", "Kill"])) {
+        if (!this.hasAbility(["OnlyWhenAlive", "Kill"])) {
           return;
         }
 

@@ -17,7 +17,7 @@ module.exports = class SkipNight extends Card {
           run: function () {
             if (this.target === "No") return;
             this.role.data.hasSkipped = true;
-            if (!this.actor.hasAbility(["Voting"])) {
+            if (!this.role.hasAbility(["Voting"])) {
               return;
             }
             this.role.data.skipNight = true;

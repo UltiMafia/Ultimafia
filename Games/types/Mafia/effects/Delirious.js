@@ -3,9 +3,10 @@ const Action = require("../Action");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../const/Priority");
 
 module.exports = class Delirious extends Effect {
-  constructor(effecter, lifespan, types) {
+  constructor(effecter, lifespan, types, role) {
     super("Delirious");
     this.effecter = effecter;
+    this.effecterRole = role;
     this.lifespan = lifespan;
     if (types != null) {
       this.types = types;

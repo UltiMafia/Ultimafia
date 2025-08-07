@@ -10,7 +10,7 @@ module.exports = class CondemnRevenge extends Card {
         states: ["Dusk"],
         flags: ["voting"],
         shouldMeet: function () {
-          if (!this.player.hasAbility(["Kill"])) {
+          if (!this.hasAbility(["Kill"])) {
             return false;
           }
           for (let action of this.game.actions[0]) {

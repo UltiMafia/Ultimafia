@@ -12,9 +12,9 @@ module.exports = class ConvertKillToBleed extends Card {
         if (
           !(
             this.name == "Bleeder" &&
-            this.player.hasAbility(["OnlyWhenAlive"])
+            this.hasAbility(["OnlyWhenAlive"])
           ) &&
-          !this.player.hasAbility(["Modifier", "OnlyWhenAlive"])
+          !this.hasAbility(["Modifier", "OnlyWhenAlive"])
         ) {
           return;
         }
@@ -43,8 +43,8 @@ module.exports = class ConvertKillToBleed extends Card {
         }
         if (
           (this.name == "Bleeder" &&
-            this.player.hasAbility(["OnlyWhenAlive"])) ||
-          this.player.hasAbility(["Modifier", "OnlyWhenAlive"])
+            this.hasAbility(["OnlyWhenAlive"])) ||
+          this.hasAbility(["Modifier", "OnlyWhenAlive"])
         ) {
           this.immunity.kill = 1;
           this.cancelImmunity.bleed = Infinity;

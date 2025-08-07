@@ -34,7 +34,7 @@ module.exports = class PaintPortraits extends Card {
         this.player.data.portraits = [];
       },
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Information"])) {
+        if (!this.hasAbility(["Information"])) {
           return;
         }
 

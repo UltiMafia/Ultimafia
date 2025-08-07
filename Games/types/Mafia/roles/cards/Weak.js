@@ -58,7 +58,7 @@ module.exports = class Weak extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Kill", "Modifier"])) {
+        if (!this.hasAbility(["Kill", "Modifier"])) {
           return;
         }
 

@@ -12,12 +12,13 @@ module.exports = class CleanCondemnation extends Card {
         flags: ["voting"],
         inputType: "boolean",
         action: {
+          role: this.role,
           labels: ["clean"],
           priority: PRIORITY_SUNSET_DEFAULT,
           run: function () {
             if (this.target == "No") return;
-            if (!this.actor.hasAbility(["Clean"])) {
-              this.actor.role.cleanedPlayer = 0;
+            if (!this.role.hasAbility(["Clean"])) {
+              this.role.cleanedPlayer = 0;
               return;
             }
             var condemnedTarget;
@@ -46,12 +47,12 @@ module.exports = class CleanCondemnation extends Card {
             this.actor.queueAlert(alert);
 
             const roleName = condemnedTarget.getRoleAppearance("condemn");
-            this.actor.role.lastCleanedAppearance = roleName;
+            this.role.lastCleanedAppearance = roleName;
             condemnedTarget.role.appearance.condemn = null;
-            this.actor.role.lastCleanedWill = condemnedTarget.lastWill;
+            this.role.lastCleanedWill = condemnedTarget.lastWill;
             condemnedTarget.lastWill = null;
 
-            this.actor.role.cleanedPlayer = condemnedTarget;
+            this.role.cleanedPlayer = condemnedTarget;
           },
         },
         shouldMeet() {

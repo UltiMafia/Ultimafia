@@ -231,7 +231,7 @@ router.get("/:id/connect", async function (req, res) {
     if (userId && game.settings.ranked && !isSpectating) {
       const user = await redis.getUserInfo(userId);
 
-      if (!user || user.gamesPlayed <= constants.minimumGamesForRanked) {
+      if (!user || user.gamesPlayed < constants.minimumGamesForRanked) {
         res.status(400);
         res.send(`You cannot play ranked games until you've played ${constants.minimumGamesForRanked} games.`);
         return;

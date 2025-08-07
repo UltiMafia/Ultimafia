@@ -9,7 +9,7 @@ module.exports = class ResetRolesOnDeath extends Card {
           return;
         }
 
-        if (!this.player.hasAbility(["Convert", "WhenDead"])) {
+        if (!this.hasAbility(["Convert", "WhenDead"])) {
           return;
         }
 

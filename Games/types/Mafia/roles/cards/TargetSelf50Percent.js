@@ -24,7 +24,7 @@ module.exports = class TargetSelf50Percent extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Redirection", "Modifier"])) {
+        if (!this.hasAbility(["Redirection", "Modifier"])) {
           return;
         }
 

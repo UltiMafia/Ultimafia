@@ -98,7 +98,7 @@ module.exports = class BegumsSenses extends Card {
         this.begumTarget = Random.randArrayVal(possibleTargets);
       },
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Information"])) {
+        if (!this.hasAbility(["Information"])) {
           return;
         }
         if (!stateInfo.name.match(/Night/)) {

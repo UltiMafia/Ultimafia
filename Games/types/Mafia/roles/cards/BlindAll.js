@@ -15,11 +15,12 @@ module.exports = class BlindAll extends Card {
           return !this.hasBlinded;
         },
         action: {
+          role: this.role,
           priority: PRIORITY_DAY_EFFECT_DEFAULT,
           run: function () {
             if (this.target === "Yes") {
-              this.actor.role.hasBlinded = true;
-              if (!this.actor.hasAbility(["Effect"])) {
+              this.role.hasBlinded = true;
+              if (!this.role.hasAbility(["Effect"])) {
                 return;
               }
               this.game.queueAlert(

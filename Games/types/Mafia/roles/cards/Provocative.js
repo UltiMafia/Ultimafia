@@ -12,7 +12,7 @@ module.exports = class Provocative extends Card {
           return;
         }
 
-        if (!this.player.hasAbility(["Modifier", "Item"])) return;
+        if (!this.hasAbility(["Modifier", "Item"])) return;
 
         var action = new Action({
           actor: this.player,

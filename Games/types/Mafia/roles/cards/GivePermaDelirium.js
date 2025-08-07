@@ -15,7 +15,7 @@ module.exports = class GivePermaDelirium extends Card {
       death: function (player, killer, instant) {
         if (
           player == this.player &&
-          this.player.hasAbility(["Delirium", "WhenDead", "Modifier"])
+          this.hasAbility(["Delirium", "WhenDead", "Modifier"])
         ) {
           let alive = this.game.alivePlayers();
           var villagePlayers = alive.filter(
@@ -27,9 +27,10 @@ module.exports = class GivePermaDelirium extends Card {
           var villageTarget = Random.randArrayVal(villagePlayers);
           this.DeliriousVictim = villageTarget.giveEffect(
             "Delirious",
-            this.actor,
+            this.player,
             1,
-            ["Delirium", "WhenDead", "Modifier"]
+            ["Delirium", "WhenDead", "Modifier"],
+            this
           );
         }
       },

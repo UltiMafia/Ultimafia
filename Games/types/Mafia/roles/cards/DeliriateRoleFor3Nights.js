@@ -42,7 +42,7 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
             }
             for (let y = 0; y < currentRoles.length; y++) {
               if (this.target == currentRoles[y]) {
-                players[y].giveEffect("Delirious", this.actor, 4);
+                players[y].giveEffect("Delirious", this.actor, 4, null, this.role);
                 this.blockWithDelirium(players[y], true);
                 this.role.playersToBlock.push(players[y]);
                 //this.actor.role.blockCounter = 3;

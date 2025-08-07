@@ -28,7 +28,7 @@ module.exports = class Regretful extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Modifier", "Kill"])) {
+        if (!this.hasAbility(["Modifier", "Kill"])) {
           return;
         }
 

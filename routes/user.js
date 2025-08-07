@@ -585,7 +585,7 @@ router.get("/settings/data", async function (req, res) {
     var user =
       userId &&
       (await models.User.findOne({ id: userId, deleted: false })
-        .select("name birthday settings customEmotes -_id")
+        .select("name birthday pronouns settings customEmotes -_id")
         .populate({
           path: "customEmotes",
           select: "id extension name -_id",
@@ -598,6 +598,7 @@ router.get("/settings/data", async function (req, res) {
       if (!user.settings) user.settings = {};
 
       user.settings.username = user.name;
+      user.settings.pronouns = user.pronouns;
       user.birthday = Date.parse(user.birthday);
       utils.remapCustomEmotes(user, userId);
       res.send(user.settings);
@@ -932,6 +933,12 @@ router.post("/settings/update", async function (req, res) {
       return;
     }
 
+    if ((prop == "avatarShape") && !itemsOwned.avatarShape) {
+      res.status(500);
+      res.send("You must purchase Square with coins from the Shop.");
+      return;
+    }
+
     if (
       (prop == "textColor" || prop == "nameColor") &&
       !itemsOwned.textColors
@@ -1052,8 +1059,8 @@ router.post("/banner", async function (req, res) {
     await sharp(files.image.path)
       .webp()
       .resize({
-        width: 980,
-        height: 200,
+        width: 900,
+        height: 300,
         withoutEnlargement: true,
       })
       .toFile(`${process.env.UPLOAD_PATH}/${userId}_banner.webp`);

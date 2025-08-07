@@ -13,7 +13,7 @@ module.exports = class CookNonCult extends Card {
         if (player.role.alignment == "Cult") {
           return;
         }
-        if (!this.player.hasAbility(["Effect"])) {
+        if (!this.hasAbility(["Effect"])) {
           return;
         }
 

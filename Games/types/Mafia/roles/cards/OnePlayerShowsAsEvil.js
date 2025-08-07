@@ -8,7 +8,7 @@ module.exports = class OnePlayerShowsAsEvil extends Card {
     //this.startEffects = ["UnfavorableMode"];
     this.listeners = {
       AbilityToggle: function (player) {
-        if (this.player.hasAbility(["Modifier", "Information", "WhenDead"])) {
+        if (this.hasAbility(["Modifier", "Information", "WhenDead"])) {
           if(this.BiasedTarget == null){
             this.BiasedTarget = Random.randArrayVal(this.game.players.filter((p)=> p.faction == "Village" && p != this.player));
           }

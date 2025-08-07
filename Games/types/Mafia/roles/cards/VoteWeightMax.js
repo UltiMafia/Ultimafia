@@ -9,7 +9,7 @@ module.exports = class VoteWeightMax extends Card {
         if (player != this.player) {
           return;
         }
-        if (this.player.hasAbility(["Voting"])) {
+        if (this.hasAbility(["Voting"])) {
           this.player.role.VotePower = 10000;
         } else {
           this.player.role.VotePower = 1;

@@ -13,12 +13,13 @@ module.exports = class Choose3toLiveOrDie extends Card {
         multiMin: 3,
         multiMax: 3,
         action: {
+          role: this.role,
           labels: ["giveItem"],
           run: function () {
-            if (!this.actor.hasAbility(["Kill"])) {
+            if (!this.role.hasAbility(["Kill"])) {
               return;
             }
-            this.actor.role.data.PlayersChoosenDie = false;
+            this.role.data.PlayersChoosenDie = false;
             this.target[0].holdItem("LiveOrDie", this.actor, this.target);
           },
         },

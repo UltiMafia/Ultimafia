@@ -19,6 +19,7 @@ module.exports = class BecomeDeadRole extends Card {
               `${this.target.role.name}:${this.target.role.modifier}`,
               this.target.role.data
             );
+            /*
             if (oldRoleName === "Amnesiac") {
               this.game.queueAlert(
                 `:tomb: The Amnesiac remembered that they were ${addArticle(
@@ -26,6 +27,7 @@ module.exports = class BecomeDeadRole extends Card {
                 )}!`
               );
             }
+            */
           },
         },
       },

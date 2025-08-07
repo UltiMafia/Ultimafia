@@ -9,7 +9,7 @@ module.exports = class Learn2Good1Evil extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Information"])) {
+        if (!this.hasAbility(["Information"])) {
           return;
         }
 

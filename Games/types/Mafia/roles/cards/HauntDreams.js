@@ -21,7 +21,7 @@ module.exports = class HauntDreams extends Card {
             this.role.loved = true;
             this.role.data.DreamHost = this.target;
             this.role.passiveEffects.push(
-              this.target.giveEffect("Delirious", this.actor, Infinity)
+              this.target.giveEffect("Delirious", this.actor, Infinity, null, this.role)
             );
             this.blockWithDelirium(this.target);
             this.game.events.emit("AbilityToggle", this.actor);
@@ -36,7 +36,7 @@ module.exports = class HauntDreams extends Card {
     this.listeners = {
       AbilityToggle: function (player) {
         if (
-          this.player.hasAbility(["OnlyWhenAlive"]) &&
+          this.hasAbility(["OnlyWhenAlive"]) &&
           this.data.DreamHost &&
           this.data.DreamHost.alive
         ) {
@@ -65,7 +65,7 @@ module.exports = class HauntDreams extends Card {
         }
 
         if (
-          this.player.hasAbility(["OnlyWhenAlive"]) &&
+          this.hasAbility(["OnlyWhenAlive"]) &&
           this.data.DreamHost &&
           !this.data.DreamHost.alive
         ) {

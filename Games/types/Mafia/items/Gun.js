@@ -54,7 +54,7 @@ module.exports = class Gun extends Item {
               }
               //Modifier that don't change target
               if(!this.item.isTargetValid(this.target)){
-                this.actor.queueAlert(`Your target was not valid!`);
+                this.actor.queueAlert(`Your gun has no effect on your target!`);
                 return;
               }
             }

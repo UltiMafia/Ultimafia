@@ -2045,7 +2045,6 @@ const roleData = {
       alignment: "Mafia",
       category: "Basic",
       tags: [
-        "Unkillable",
         "Basic",
         "Information",
         "Visits",
@@ -2755,6 +2754,15 @@ const roleData = {
       description: [
         "At night chooses a banished Mafia role, gains it's abilities until the next night",
         "Cannot select a role they already selected.",
+      ],
+    },
+     Oddfather: {
+      alignment: "Mafia",
+      category: "Manipulative",
+      tags: ["Advanced", "Banished Interaction"],
+      description: [
+        "Has the abilites of up to 5 banished Mafia roles.",
+        "Cannot have the Oddfather ability.",
       ],
     },
     Apprentice: {

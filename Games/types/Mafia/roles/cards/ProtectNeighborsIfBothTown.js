@@ -47,7 +47,7 @@ module.exports = class ProtectNeighborsIfBothTown extends Card {
           }
         }
         this.ImmortalEffects = [];
-        if (this.player.hasAbility(["Protection", "OnlyWhenAlive"])) {
+        if (this.hasAbility(["Protection", "OnlyWhenAlive"])) {
           let neighbors = this.player.getNeighbors();
           if (neighbors[0].isEvil() == true || neighbors[1].isEvil() == true) {
             return;

@@ -33,7 +33,7 @@ module.exports = class DisguiseAsTarget extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.hasAbility(["Modifier"])) {
+        if (!this.hasAbility(["Modifier"])) {
           return;
         }
 

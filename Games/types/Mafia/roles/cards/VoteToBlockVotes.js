@@ -10,7 +10,7 @@ module.exports = class VoteToBlockVotes extends Card {
         if (this.player.role.data.master == 0) {
           return;
         }
-        if (!this.player.hasAbility(["Voting"])) {
+        if (!this.hasAbility(["Voting"])) {
           return;
         }
         this.player.role.VotePower = 0;

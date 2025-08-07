@@ -17,7 +17,7 @@ module.exports = class StylePoints extends Effect {
         if (!this.player.alive) return;
         this.player.data.StylePoints =
           this.player.data.StylePoints + this.StylePointsToday;
-        if (!this.player.hasAbility(["WhenDead"])) {
+        if (!this.player.role.hasAbility(["WhenDead"])) {
           this.remove();
         }
       },

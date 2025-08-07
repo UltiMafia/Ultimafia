@@ -36,7 +36,7 @@ module.exports = class CourtSession extends Card {
           run: function () {
             if (this.target === "Yes") {
               this.role.bangedGavel++;
-              if (!this.actor.hasAbility(["Meeting"])) {
+              if (!this.role.hasAbility(["Meeting"])) {
                 return;
               }
               this.game.queueAlert(

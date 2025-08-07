@@ -5,7 +5,6 @@
 
   width: 40px;
   height: 40px;
-  border-radius: 50%;
 
   background-image: url("/src/images/avatar.webp");
   background-size: 100%;
@@ -15,6 +14,18 @@
 .avatar.small {
   width: 20px !important;
   height: 20px !important;
+}
+
+/* default avatar to 40px */
+
+.avatar.mediumlarge {
+  width: 60px !important;
+  height: 60px !important;
+}
+
+.avatar.large {
+  width: 100px !important;
+  height: 100px !important;
 }
 
 /*SANTA CHANGES: In December, uncomment the below lines*/
@@ -42,15 +53,15 @@
 
 .video-responsive {
   display: flex;
+  flex-flow: column;
   justify-content: center;
-  padding-bottom: 5px;
+  align-items: stretch;
   min-height: 200px;
 }
 
 .video-responsive-generic {
   display: flex;
   justify-content: center;
-  margin-bottom: 3px;
   position: relative;
   padding-bottom: 56.25%;
   height: 0;
@@ -67,11 +78,6 @@
 
 iframe {
   border-width: 0px;
-}
-
-.avatar.large {
-  width: 100px !important;
-  height: 100px !important;
 }
 
 .avatar .edit {
@@ -91,7 +97,7 @@ iframe {
   position: fixed; */
   /*SANTA CHANGES*/
 
-  border-radius: 50px;
+  border-radius: inherit;
 
   background-color: black;
   opacity: 0.45;
@@ -102,21 +108,12 @@ iframe {
   display: flex;
 }
 
-.love {
-  display: inline-flex;
-  flex-flow: row wrap;
-  align-items: center;
-  justify-content: right;
-  margin: 8px;
-}
-
 .in-love {
   display: flex;
   align-items: center;
 
   color: var(--scheme-color-text);
   text-decoration: none;
-  line-height: 0px;
   white-space: nowrap;
   padding-right: 10px;
 }
@@ -141,10 +138,6 @@ iframe {
 .name-with-avatar.no-link:hover {
   opacity: 1 !important;
   cursor: default !important;
-}
-
-.name-with-avatar .avatar {
-  margin-right: 5px;
 }
 
 .name-with-avatar .avatar.active {
@@ -177,17 +170,11 @@ iframe {
 }
 
 .badge {
-  margin-left: 2px;
   padding: 2px;
 
   border-radius: 50px;
   background-color: white;
   line-height: 0px;
-}
-
-.profile {
-  display: flex;
-  flex-flow: row nowrap;
 }
 
 .profile i {
@@ -205,7 +192,7 @@ iframe {
 }
 
 .profile .banner {
-  height: 200px;
+  align-self: center;
 
   background-color: var(--theme-color-sec);
 }
@@ -251,37 +238,10 @@ iframe {
   filter: brightness(160%);
 }
 
-.profile .user-info {
-  flex-grow: 1;
-
-  display: flex;
-  flex-flow: column;
-  align-items: stretch;
-  justify-content: flex-start;
-
-  padding: 8px;
-}
-
-.profile .avi-name-row {
-  display: flex;
-  flex-flow: row nowrap;
-
-  height: 90px;
-}
-
-.profile .avi-name-row .left,
-.profile .avi-name-row .right {
-  flex: 1;
-}
-
 .profile .score-info {
   display: inline-flex;
   flex-flow: row;
   gap: 8px;
-
-  height: 100%;
-  padding: 8px;
-  margin-right: 8px;
 
   background-color: var(--theme-color-sec);
 }
@@ -303,34 +263,12 @@ iframe {
 }
 
 .profile .avi-name {
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-
-  position: relative;
-  top: -50px;
-
   font-size: 20px;
-}
-
-.profile .avi-name .name-badges-container {
-  display: flex;
-  vertical-align: top;
-  gap: 8px;
-}
-
-.profile .avatar {
-  z-index: 5;
-  box-shadow: 0px 0px 5px black;
-}
-
-.profile .side {
-  margin-left: 10px;
+  word-break: break-all;
 }
 
 .profile .box-panel {
-  margin-bottom: 10px;
-
+  border-radius: 4px;
   background-color: var(--theme-color);
 }
 
@@ -377,21 +315,6 @@ iframe {
   overflow-x: auto;
 }
 
-.profile .archived-games .content {
-  gap: 12px;
-}
-
-.profile .archived-games .setup {
-  overflow-x: auto;
-}
-
-.profile .created-setups .setup {
-  margin-bottom: 5px;
-}
-
-.profile .created-setups .setup:last-child {
-  margin-bottom: 0px;
-}
 
 .profile .friend-request {
   display: flex;
@@ -483,39 +406,6 @@ iframe {
   margin-right: 10px;
 }
 
-.profile .pronouns {
-  display: inline-block;
-  flex-flow: column;
-
-  box-sizing: border-box;
-  padding: 15px;
-  margin-bottom: 8px;
-
-  background-color: var(--scheme-color);
-  color: var(--scheme-color-text);
-}
-
-.profile .pronouns.edit {
-  cursor: text;
-}
-
-.profile .pronouns.edit:hover {
-  box-shadow: 0px 0px 5px #62a0db;
-}
-
-.profile .pronouns .buttons {
-  display: flex;
-  flex-flow: row nowrap;
-
-  margin-top: 10px;
-}
-
-.profile .btn {
-  align-self: flex-start;
-
-  margin-right: 10px;
-}
-
 .MuiPopover-root .miniprofile {
   margin-left: 0px;
   background-color: var(--scheme-color-sec);
@@ -569,25 +459,10 @@ iframe {
   background-color: var(--scheme-color-sec);
 }
 
-.profile .options {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  justify-content: center;
-
-  margin-bottom: 15px;
-
-  font-size: 20px;
-}
-
 .profile .options i {
-  margin-right: 10px;
-
+  max-width: 24px;
+  font-size: 24px;
   cursor: pointer;
-}
-
-.profile .options i:last-child {
-  margin-right: 0px;
 }
 
 .profile .options i:hover {
@@ -604,51 +479,6 @@ iframe {
 
 .profile .options i.sel-married {
   color: gold;
-}
-
-.profile .accounts {
-  display: flex;
-  flex-flow: row;
-  justify-content: center;
-}
-
-.profile .account-badge {
-  align-self: flex-start;
-
-  display: flex;
-  flex-flow: row nowrap;
-
-  box-sizing: border-box;
-  margin-left: 10px;
-  border: 3px solid #1d1d1d;
-  border-left: 0px;
-
-  background-color: #1d1d1d;
-  box-shadow: 0px 0px 1px black;
-}
-
-.profile .account-badge:first-child {
-  margin-left: 00px;
-}
-
-.profile .account-badge .icon {
-  width: 30px;
-
-  background-size: 100%;
-}
-
-.profile .account-badge .username-wrapper {
-  display: flex;
-  flex-flow: row;
-  align-items: center;
-
-  padding: 0px 5px 3px 5px;
-
-  background-color: #262626;
-}
-
-.profile .account-badge .username {
-  opacity: 0.7;
 }
 
 .profile .ratings {
@@ -779,36 +609,4 @@ iframe {
 
 .profile .stats-modal .stats .stats-row .stats-list .stat-data {
   opacity: 0.6;
-}
-
-.profile .badge-list {
-  margin-top: -10px;
-  margin-bottom: 10px;
-}
-
-/*
- * Media Queries
- */
-
-@media (max-width: 800px) {
-  .profile {
-    flex-flow: column;
-  }
-
-  .profile .avi-name-row .left,
-  .profile .avi-name-row .right {
-    display: none;
-  }
-
-  .profile .avi-name-row {
-    display: flex;
-    flex-flow: column;
-    align-items: center;
-    position: relative;
-    font-size: 20px;
-  }
-
-  .profile .side.column {
-    margin: 10px 0px;
-  }
 }

@@ -20,7 +20,7 @@ module.exports = class SetTimer extends Card {
           run: function () {
             if (this.target === "Yes") {
               this.role.hasSpeedUp = true;
-              if (!this.actor.hasAbility(["Effect"])) {
+              if (!this.role.hasAbility(["Effect"])) {
                 return;
               }
               this.game.extensions = 99;

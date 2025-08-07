@@ -28,7 +28,7 @@ module.exports = class MustRoleShareWithVip extends Card {
         }
       },
       handleWinBlockers: function (winners) {
-        if (!this.player.hasAbility(["Win-Con"])) {
+        if (!this.hasAbility(["Win-Con"])) {
           return;
         }
 

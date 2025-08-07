@@ -14,7 +14,7 @@ module.exports = class WinWithSoldierMaj extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT+1,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if(!this.player.hasAbility(["Win-Con", "OnlyWhenAlive"]){
+        if(!this.hasAbility(["Win-Con", "OnlyWhenAlive"]){
           return;
         }
         const seersInGame = this.game.players.filter(

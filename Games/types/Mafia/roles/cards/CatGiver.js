@@ -9,9 +9,10 @@ module.exports = class CatGiver extends Card {
         states: ["Day"],
         flags: ["voting", "noVeg"],
         action: {
+          role: this.role,
           labels: ["giveItem", "cat"],
           run: function () {
-            if (!this.actor.hasAbility(["Effect"])) {
+            if (!this.role.hasAbility(["Effect"])) {
               return;
             }
             this.target.holdItem("Cat", this.actor);
