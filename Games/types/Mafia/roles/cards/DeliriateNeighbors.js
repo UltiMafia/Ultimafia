@@ -59,6 +59,9 @@ module.exports = class DeliriateNeighbors extends Card {
       },
       */
         AbilityToggle: function (player) {
+        if(this.startingNeighbors && this.startingNeighbors.includes(player)){
+          return;
+        }
         if (this.DeliriumNeighborEffects == null) {
           this.DeliriumNeighborEffects = [];
         }
