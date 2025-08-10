@@ -986,8 +986,27 @@ function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+        "Clear Pronouns": {
+      perm: "clearPronouns",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/clearPronouns", argValues)
+          .then(() => {
+            siteInfo.showAlert("Pronouns cleared.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Clear Video": {
-      perm: "clearBio",
+      perm: "clearVideo",
       args: [
         {
           label: "User",
@@ -1006,7 +1025,7 @@ function useModCommands(argValues, commandRan, setResults) {
       },
     },
     "Clear Birthday": {
-      perm: "clearBio",
+      perm: "clearBirthday",
       args: [
         {
           label: "User",

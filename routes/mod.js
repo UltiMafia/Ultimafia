@@ -1212,12 +1212,37 @@ router.post("/clearBio", async (req, res) => {
   }
 });
 
+router.post("/clearPronouns", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdToClear = String(req.body.userId);
+    var perm = "clearPronouns";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    await models.User.updateOne(
+      { id: userIdToClear },
+      { $set: { pronouns: "" } }
+    ).exec();
+
+    await redis.cacheUserInfo(userIdToClear, true);
+
+    routeUtils.createModAction(userId, "Clear Pronouns", [userIdToClear]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error clearing pronouns.");
+  }
+});
+
 router.post("/clearVideo", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var userIdToClear = String(req.body.userId);
-    var perm = "clearBio";
+    var perm = "clearVideo";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1241,7 +1266,7 @@ router.post("/clearBirthday", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var userIdToClear = String(req.body.userId);
-    var perm = "clearBio";
+    var perm = "clearBirthday";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
