@@ -1394,25 +1394,6 @@ function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Break Port Games": {
-      perm: "breakPortGames",
-      args: [
-        {
-          label: "Port",
-          name: "port",
-          type: "text",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/breakPortGames", argValues)
-          .then(() => {
-            siteInfo.showAlert("Games broken.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
     "Make Announcement": {
       perm: "announce",
       args: [

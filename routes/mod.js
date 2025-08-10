@@ -1465,31 +1465,6 @@ router.post("/breakGame", async (req, res) => {
   }
 });
 
-router.post("/breakPortGames", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var port = String(req.body.port);
-    var perm = "breakPortGames";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    var games = await redis.getAllGames();
-
-    for (let game of games) {
-      if (game.port != port) continue;
-
-      if (game.status == "Open") await redis.deleteGame(game.id);
-      else await redis.breakGame(game.id);
-    }
-
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error clearing username.");
-  }
-});
-
 router.post("/kick", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);

@@ -367,7 +367,6 @@ module.exports = {
     "giveCoins",
     "changeUsersName",
     "scheduleRestart",
-    "breakPortGames",
   ],
   // The list of all enabled perms
   allPerms: {
@@ -445,7 +444,6 @@ module.exports = {
     whitelist: true,
     scheduleRestart: true,
     disableAllCensors: true,
-    breakPortGames: true,
     kick: true,
     announce: true,
     approvePending: true,
