@@ -1636,31 +1636,6 @@ router.post("/changeName", async (req, res) => {
   }
 });
 
-router.post("/scheduleRestart", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var when = routeUtils.parseTime(String(req.body.when)) + Date.now();
-    var perm = "scheduleRestart";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    if (when <= Date.now()) {
-      res.status(500);
-      res.send("Restarts must be scheduled for the future.");
-      return;
-    }
-
-    var restart = new models.Restart({ when });
-    await restart.save();
-
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error scheduling restart.");
-  }
-});
-
 router.get("/actions", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {

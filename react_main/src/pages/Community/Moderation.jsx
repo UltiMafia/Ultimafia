@@ -1375,25 +1375,6 @@ function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Schedule Restart": {
-      perm: "scheduleRestart",
-      args: [
-        {
-          label: "When",
-          name: "when",
-          type: "text",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/scheduleRestart", argValues)
-          .then(() => {
-            siteInfo.showAlert("Restart scheduled.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
     "Kick Player": {
       perm: "kick",
       args: [

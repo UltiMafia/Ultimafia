@@ -366,7 +366,6 @@ module.exports = {
     "clearAllIPs",
     "giveCoins",
     "changeUsersName",
-    "scheduleRestart",
   ],
   // The list of all enabled perms
   allPerms: {
@@ -445,7 +444,6 @@ module.exports = {
     refundDailyChallenge: true,
     changeUsersName: true,
     whitelist: true,
-    scheduleRestart: true,
     disableAllCensors: true,
     kick: true,
     announce: true,
