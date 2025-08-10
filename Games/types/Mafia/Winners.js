@@ -130,7 +130,7 @@ module.exports = class MafiaWinners extends Winners {
       case "Ripper":
         return "The streets used to be riddled with evildoers, but now people only remember the name of the Ripper.";
       case "Rival":
-        return "The Rivals wiped themselves out until there was only one left standing!";
+        return "With so many Rivals, there could only be one king of the hill.";
       case "Serial Killer":
         return "The town was powerless against the Serial Killer and the terror they brought in the night. It has been abandoned.";
       case "Shinigami":
