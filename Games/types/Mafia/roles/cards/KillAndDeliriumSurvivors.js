@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const { PRIORITY_SUPPORT_VISIT_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
 module.exports = class KillAndDeliriumSurvivors extends Card {
   constructor(role) {
@@ -14,7 +14,7 @@ module.exports = class KillAndDeliriumSurvivors extends Card {
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
           labels: ["kill"],
-          priority: PRIORITY_SUPPORT_VISIT_DEFAULT,
+          priority: PRIORITY_KILL_DEFAULT,
           run: function () {
 
             if (this.dominates() || this.target.hasEffect("Delirious")){

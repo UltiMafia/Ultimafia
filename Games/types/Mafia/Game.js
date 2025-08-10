@@ -185,7 +185,7 @@ module.exports = class MafiaGame extends Game {
       this.infoLog = [];
     var actionVisitDay = new Action({
         game: this,
-        priority: 100,
+        priority: 1000,
         labels: ["hidden", "absolute"],
         run: function () {
           this.game.hasBeenDay = true;
@@ -200,7 +200,7 @@ module.exports = class MafiaGame extends Game {
     if (this.getStateName() == "Night") {
       var actionVisit = new Action({
         game: this,
-        priority: 100,
+        priority: 1000,
         labels: ["hidden", "absolute"],
         run: function () {
           if (

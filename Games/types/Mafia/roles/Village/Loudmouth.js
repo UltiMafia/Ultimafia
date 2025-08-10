@@ -10,6 +10,8 @@ module.exports = class Loudmouth extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "ModifierLoud",
+      "ModifierLeaky",
+      "ModifierBoastful",
     ];
   }
 };

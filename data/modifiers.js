@@ -81,6 +81,13 @@ const modifierData = {
       description: "When visiting, their target will be killed.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    Boastful: {
+      internal: ["ModifierBoastful"],
+      tags: ["Information", "Reports"],
+      description:
+        "All reports received are announced to everyone, with the player's role revealed.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Bouncy: {
       internal: ["Bouncy"],
       tags: ["Redirection"],
@@ -409,6 +416,13 @@ const modifierData = {
         "Actions taken on night will only execute after a full day/night phase.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    Leaky: {
+      internal: ["ModifierLeaky"],
+      tags: ["Whispers"],
+      description:
+        "All whispers involving a player with this modifier are leaked.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Liminal: {
       internal: ["VisitDeadOrAlive"],
       tags: ["Visits", "Dead", "Liminal"],
@@ -430,9 +444,9 @@ const modifierData = {
     },
     Loud: {
       internal: ["ModifierLoud"],
-      tags: ["Reflexive", "Information", "Whispers"],
+      tags: ["Reflexive", "Information"],
       description:
-        "If visited, cries out the identity of players who visited them during the night. All reports received are announced to everyone, with the player's role revealed. All whispers involving a player with this modifier are leaked.",
+        "If visited, cries out the identity of players who visited them during the night.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Loyal: {

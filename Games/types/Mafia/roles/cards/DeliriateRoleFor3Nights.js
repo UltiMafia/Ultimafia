@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
+const { PRIORITY_BLOCK_EARLY } = require("../../const/Priority");
 const Action = require("../../Action");
 const { addArticle } = require("../../../../core/Utils");
 module.exports = class DeliriateRoleFor3Nights extends Card {
@@ -19,7 +19,7 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
         action: {
           labels: ["block", "role"],
           role: this.role,
-          priority: PRIORITY_NIGHT_ROLE_BLOCKER - 1,
+          priority: PRIORITY_BLOCK_EARLY+1,
           run: function () {
             if (this.target == "None") return;
             this.role.hasBlocked = true;

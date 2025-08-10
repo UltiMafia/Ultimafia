@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_BLOCK_EARLY } = require("../../const/Priority");
 const { PRIORITY_REDIRECT_ACTION } = require("../../const/Priority");
 const Player = require("../../../../core/Player");
 
@@ -13,7 +13,7 @@ module.exports = class SelectHostAndDie extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          priority: PRIORITY_BLOCK_EARLY-1,
           labels: ["absolute"],
           run: function () {
             this.actor.role.loved = true;

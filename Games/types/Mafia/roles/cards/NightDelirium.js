@@ -14,7 +14,7 @@ module.exports = class NightDelirium extends Card {
         targets: { include: ["alive"], exclude: ["self", "dead"] },
         action: {
           labels: ["block", "delirium"],
-          priority: PRIORITY_NIGHT_ROLE_BLOCKER,
+          priority: PRIORITY_NIGHT_ROLE_BLOCKER+1,
           run: function () {
             if (this.dominates()) {
               this.blockWithDelirium(this.target);
