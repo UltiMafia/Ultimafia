@@ -546,7 +546,8 @@ if(this.game.extendLength == 0){
         effect.name == "Delirious" &&
         (effect.effecter == null ||
           effect.effecter == this ||
-          effect.effecterRole.hasAbility(effect.types))
+          (effect.effecterRole &&
+          effect.effecterRole.hasAbility(effect.types)))
       ) {
         return true;
       }

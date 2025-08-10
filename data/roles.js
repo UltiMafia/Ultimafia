@@ -10,6 +10,8 @@ const {
   PRIORITY_IDENTITY_STEALER_BLOCK,
   PRIORITY_FULL_DISABLE,
 
+  PRIORITY_BLOCK_EARLY,
+
   PRIORITY_UNTARGETABLE,
   PRIORITY_MODIFY_ACTION_LABELS,
   PRIORITY_MODIFY_ACTION_DELAY,
@@ -1055,7 +1057,7 @@ const roleData = {
         "Any players with that role are Delirious for 3 Nights.",
         "If the selected role is not in the game nothing happens.",
       ],
-      nightOrder: [["Give Delirium",(PRIORITY_NIGHT_ROLE_BLOCKER - 1)]],
+      nightOrder: [["Give Delirium",(PRIORITY_BLOCK_EARLY+1)]],
     },
     Drunk: {
       alignment: "Village",
@@ -1082,7 +1084,7 @@ const roleData = {
         "Delirious players get False Info and have other abilites disabled.",
         "A Sailor can not die unless roleblocked/made delirious.",
       ],
-      nightOrder: [["Give Delirium",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
+      nightOrder: [["Give Delirium",(PRIORITY_NIGHT_ROLE_BLOCKER+1)]],
     },
     "Snake Charmer": {
       alignment: "Village",
@@ -1429,7 +1431,7 @@ const roleData = {
       description: [
         "If an Evil player is condemned, All players are Delirious that night.",
       ],
-      nightOrder: [["Give Everyone Delirium If Evil Condemned",(PRIORITY_NIGHT_ROLE_BLOCKER - 1)]],
+      nightOrder: [["Give Everyone Delirium If Evil Condemned",(PRIORITY_BLOCK_EARLY)]],
       SpecialInteractions: {
         Assassin: [
           "If an Assassin is Present, All players are Delirious if an Evil Player is Elected as Room Leader.",
@@ -1535,7 +1537,7 @@ const roleData = {
         "At night may choose to convert to a Village aligned role that can spawn in the setup.",
         "If the selected role is already in play, The player with that role will be Delirious until the Philosopher dies.",
       ],
-      nightOrder: [["Become Role and Make Delirious",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
+      nightOrder: [["Become Role and Make Delirious",(PRIORITY_NIGHT_ROLE_BLOCKER+1)]],
     },
     Jack: {
       alignment: "Village",
@@ -2346,7 +2348,7 @@ const roleData = {
         "Visits one player each night and makes them Delirious until the start of the next night.",
         "Delirious players get False Info and have other abilites disabled.",
       ],
-      nightOrder: [["Give Delirium",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
+      nightOrder: [["Give Delirium",(PRIORITY_NIGHT_ROLE_BLOCKER+1)]],
     },
     Don: {
       alignment: "Mafia",
@@ -2567,7 +2569,7 @@ const roleData = {
       description: [
         "Chooses to sacrifice self once per game to convert another player to Mafioso.",
       ],
-      nightOrder: [["Convert",(PRIORITY_CONVERT_DEFAULT+1)],["Self Kill",(PRIORITY_KILL_DEFAULT)]],
+      nightOrder: [["Convert and Die",(PRIORITY_CONVERT_DEFAULT+1)]],
       RolesMadeBy: ["Mafioso"],
     },
     Graverobber: {
@@ -2745,7 +2747,7 @@ const roleData = {
         "If the selected role is already in play, The player with that role will be Delirious until the Associate dies.",
         "Does not attend the mafia meeting.",
       ],
-      nightOrder: [["Become Role and Make Delirious",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
+      nightOrder: [["Become Role and Make Delirious",(PRIORITY_NIGHT_ROLE_BLOCKER+1)]],
     },
     Consigliere: {
       alignment: "Mafia",
@@ -3444,7 +3446,7 @@ const roleData = {
         "Can Control the Infested players actions at night.",
         "If the Infested player dies the Parasite is Exorcised.",
       ],
-      nightOrder: [["Choose Host",(PRIORITY_EFFECT_GIVER_DEFAULT)],["Control Host",(PRIORITY_REDIRECT_ACTION)]],
+      nightOrder: [["Choose Host",(PRIORITY_BLOCK_EARLY-1)],["Control Host",(PRIORITY_REDIRECT_ACTION)]],
       graveyardParticipation: "self",
     },
     Psion: {
@@ -3594,7 +3596,7 @@ const roleData = {
         "Visits one player each night and makes them Delirious until the start of the next night.",
         "Delirious players get False Info and have other abilites disabled.",
       ],
-      nightOrder: [["Give Delirium",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
+      nightOrder: [["Give Delirium",(PRIORITY_NIGHT_ROLE_BLOCKER+1)]],
       skins: [
         {
           label: "Vivid",
@@ -3831,7 +3833,7 @@ const roleData = {
         "If a player survives a Lamia's attack, They will be delirious until the Lamia dies.",
         "If a Lamia attacks a delirious player, That player will die even if protected.",
       ],
-      nightOrder: [["Kill",(PRIORITY_SUPPORT_VISIT_DEFAULT)]],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT)]],
     },
     Nyarlathotep: {
       alignment: "Cult",
@@ -3864,7 +3866,7 @@ const roleData = {
         "Each night, may choose a player to make Delirious and Poison.",
         "Player's Poisoned by a Puca will not be told they were poisoned.",
       ],
-      
+      nightOrder: [["Give Delirium and Poison",(PRIORITY_NIGHT_ROLE_BLOCKER+3)]],
     },
     Satyr: {
       alignment: "Cult",
@@ -3901,7 +3903,7 @@ const roleData = {
         "The Vessel is Delirious.",
         "A Lich can only die if their Vessel dies.",
       ],
-      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)]],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT + 1)],["Choose Vessal",(PRIORITY_BLOCK_EARLY-1)]],
     },
     Shoggoth: {
       alignment: "Cult",
@@ -4587,7 +4589,7 @@ const roleData = {
         "If the selected role is already in play, The player with that role will be converted to Amnesiac.",
         "Cannot win the game as Egg.",
       ],
-      nightOrder: [["Become Role and Convert players to Amnesiac",(PRIORITY_NIGHT_ROLE_BLOCKER)]],
+      nightOrder: [["Become Role and Convert players to Amnesiac",(PRIORITY_NIGHT_ROLE_BLOCKER+1)]],
       RolesMadeBy: ["Amnesiac"],
     },
     Hellhound: {

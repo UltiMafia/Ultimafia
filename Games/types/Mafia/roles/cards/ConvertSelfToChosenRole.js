@@ -16,7 +16,7 @@ module.exports = class ConvertSelfToChosenRole extends Card {
         action: {
           role: this.role,
           labels: ["convert", "role"],
-          priority: PRIORITY_NIGHT_ROLE_BLOCKER,
+          priority: PRIORITY_NIGHT_ROLE_BLOCKER+1,
           run: function () {
             if (this.target == "None") return;
             if (!this.dominates(this.actor)) {

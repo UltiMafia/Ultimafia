@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
-const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
+const { PRIORITY_BLOCK_EARLY } = require("../../const/Priority");
 
 module.exports = class HauntDreams extends Card {
   constructor(role) {
@@ -14,7 +14,7 @@ module.exports = class HauntDreams extends Card {
         flags: ["voting", "mustAct"],
         targets: { include: ["alive", "self"] },
         action: {
-          priority: PRIORITY_NIGHT_ROLE_BLOCKER,
+          priority: PRIORITY_BLOCK_EARLY-1,
           labels: ["absolute"],
           role: this.role,
           run: function () {
