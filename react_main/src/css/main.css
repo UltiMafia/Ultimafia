@@ -724,6 +724,11 @@ input:focus {
   src: url("/src/fonts/RobotoSlab-VariableFont_wght.ttf");
 }
 
+@font-face {
+  font-family: RobotoMono;
+  src: url("/src/fonts/RobotoMono-VariableFont_wght.ttf");
+}
+
 .glow-on-hover {
   border: none;
   outline: none;

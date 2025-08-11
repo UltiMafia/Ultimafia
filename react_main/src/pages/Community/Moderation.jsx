@@ -1,29 +1,53 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import update from "immutability-helper";
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Dialog,
+  DialogContent,
+  Typography,
+  Grid,
+  Stack,
+  TextField,
+  Box,
+  Divider,
+  Button,
+} from "@mui/material";
 
-import { useErrorAlert } from "../../components/Alerts";
-import { SearchSelect, UserSearchSelect } from "../../components/Form";
-import { SiteInfoContext, UserContext } from "../../Contexts";
-import { Badge, NameWithAvatar, StatusIcon } from "../User/User";
+import { useErrorAlert } from "components/Alerts";
+import { UserSearchSelect } from "components/Form";
+import { getPageNavFilterArg, PageNav, SearchBar } from "components/Nav";
+import { Time } from "components/Basic";
+
+import { SiteInfoContext, UserContext } from "Contexts";
 import {
   MaxBoardNameLength,
   MaxCategoryNameLength,
   MaxGroupNameLength,
   MaxBoardDescLength,
-} from "../../Constants";
+} from "Constants";
+
+import { Badge, NameWithAvatar, StatusIcon } from "pages/User/User";
+import { NewLoading } from "pages/Welcome/NewLoading";
 
 import "css/moderation.css";
-import { getPageNavFilterArg, PageNav } from "../../components/Nav";
-import { Time } from "../../components/Basic";
-import { Link } from "react-router-dom";
-import { NewLoading } from "../Welcome/NewLoading";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-} from "@mui/material";
+import { useParams } from "react-router-dom/cjs/react-router-dom";
+
+const COMMAND_GROUP_ORDER = {
+  "User Management": 1, // the lower the number, the higher it appears
+  "Setup Management": 2,
+  "Game Management": 3,
+  "Site Management": 4,
+  "Group Management": 5,
+  "Deck Management": 9,
+  "Forum Management": 99,
+  "Chat Window Management": 999,
+  "Ungrouped": 9999,
+};
+
+export const COMMAND_COLOR = '#8A2BE2';
 
 export default function Moderation() {
   const [groups, setGroups] = useState([]);
@@ -50,19 +74,25 @@ export default function Moderation() {
 
   const groupsPanels = groups.map((group) => {
     const members = group.members.map((member) => (
-      <div className="member user-cell" key={member.id}>
-        <NameWithAvatar
-          id={member.id}
-          name={member.name}
-          avatar={member.avatar}
-        />
-        <StatusIcon status={member.status} />
-      </div>
+      <Grid item xs={12} md={6} key={member.id}>
+        <Stack direction="row" spacing={1} sx={{
+            alignItems: "center",
+            p: 1,
+            backgroundColor: "var(--scheme-color)",
+          }}>
+          <NameWithAvatar
+            id={member.id}
+            name={member.name}
+            avatar={member.avatar}
+          />
+          <StatusIcon status={member.status} />
+        </Stack>
+      </Grid>
     ));
 
     return (
-      <div className="span-panel group-panel" key={group.name}>
-        <div className="title">
+      <div className="box-panel group-panel" key={group.name}>
+        <div className="heading">
           {group.badge && (
             <Badge
               icon={group.badge}
@@ -72,7 +102,9 @@ export default function Moderation() {
           )}
           {group.name + "s"}
         </div>
-        <div className="members">{members}</div>
+        <Grid container rowSpacing={1} columnSpacing={1}>
+          {members}
+        </Grid>
       </div>
     );
   });
@@ -80,88 +112,222 @@ export default function Moderation() {
   if (!loaded) return <NewLoading small />;
 
   return (
-    <>
-      <Accordion>
-        <AccordionSummary>
-          <Typography>Mission Statement</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            UltiMafia seeks to create an inclusive and welcoming space for
-            playing chat-based Mafia and related minigames. Our goal is to
-            provide a fair and respectful environment where all players can
-            enjoy the game free from hostility. We are dedicated to maintaining
-            a community free from prejudice or bias based on sex, age, gender
-            identity, sexual orientation, skin color, ability, religion,
-            nationality, or any other characteristic.{" "}
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-      <div className="moderation">
-        <div className="main-section">
-          {user.perms.viewModActions && (
-            <div className="span-panel action-panel">
-              <div className="title">Do Action</div>
-              <ModCommands results={results} setResults={setResults} />
-            </div>
-          )}
-          {groupsPanels}
-        </div>
-        <div className="side-column">
+    <Grid container rowSpacing={1} columnSpacing={1} className="moderation">
+      <Grid item xs={12} key={"mission-statement"}>
+        <Accordion>
+          <AccordionSummary>
+            <Typography>Mission Statement</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              UltiMafia seeks to create an inclusive and welcoming space for
+              playing chat-based Mafia and related minigames. Our goal is to
+              provide a fair and respectful environment where all players can
+              enjoy the game free from hostility. We are dedicated to maintaining
+              a community free from prejudice or bias based on sex, age, gender
+              identity, sexual orientation, skin color, ability, religion,
+              nationality, or any other characteristic.{" "}
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+      </Grid>
+      <Grid item xs={12} md={8} key={"execute-action"}>
+        <Stack direction="column" spacing={1}>
+          <Stack direction="column" spacing={1}>
+            {user.perms.viewModActions && (
+              <div className="box-panel">
+                <div className="heading">Execute Action</div>
+                <Stack direction="column" spacing={1}>
+                  <ModCommands results={results} setResults={setResults} fixedHeight />
+                  {results && (<Box>{results}</Box>)}
+                </Stack>
+              </div>
+            )}
+            {groupsPanels}
+          </Stack>
+        </Stack>
+      </Grid>
+      <Grid item xs={12} md={4} key={"mod-actions"}>
+        <Stack direction="column" spacing={1}>
           <ModActions setResults={setResults} />
-        </div>
-      </div>
-    </>
+        </Stack>
+      </Grid>
+    </Grid>
   );
 }
 
-function ModCommands(props) {
+export function ModCommands(props) {
+  const fixedHeight = props.fixedHeight || false;
+  const prefilledArgs = props.prefilledArgs || {};
+  const setCommandsAvailable = props.setCommandsAvailable;
+
   const [command, setCommand] = useState();
-  const [argValues, setArgValues] = useState({});
+  const [searchVal, setSearchVal] = useState("");
+  const [isDialogueOpen, setDialogueOpen] = useState(false);
+  const [argValues, setArgValues] = useState(prefilledArgs);
+
+  const { userId } = useParams();
+  const { gameId } = useParams();
+  const { setupId } = useParams();
+
+  const errorAlert = useErrorAlert();
+  const user = useContext(UserContext);
   const modCommands = useModCommands(argValues, commandRan, props.setResults);
 
-  const user = useContext(UserContext);
-  const errorAlert = useErrorAlert();
+  function closeDialogue() {
+    setArgValues(prefilledArgs);
+    setDialogueOpen(false);
+  }
 
-  var options = [];
   var args = [];
 
-  for (let commandName in modCommands)
-    if (
-      user.perms[modCommands[commandName].perm] &&
-      !modCommands[commandName].hidden
+  // First group by category
+  var groupedOptions = {};
+  for (let commandName in modCommands) {
+    const command = modCommands[commandName];
+    const category = command.category || "Ungrouped";
+    const argNames = command.args.map((arg) => arg.name);
+
+    // Skip actions that aren't "contextual" to the page that we're on
+    if (userId && !argNames.includes("userId")) continue;
+    if (gameId && !argNames.includes("gameId")) continue;
+    if (setupId && !argNames.includes("setupId")) continue;
+
+    if (!groupedOptions.hasOwnProperty(category)) groupedOptions[category] = [];
+    groupedOptions[category].push(commandName);
+  }
+
+  // Next sort the individual commands alphabetically by their name
+  for (let category in groupedOptions) {
+    groupedOptions[category].sort();
+  }
+
+  // Sort groups by how userful they are
+  var groupOptionKeys = Object.keys(groupedOptions);
+  groupOptionKeys.sort((a, b) => {
+    const aVal = COMMAND_GROUP_ORDER[a] || 99999;
+    const bVal = COMMAND_GROUP_ORDER[b] || 99999;
+
+    if (!COMMAND_GROUP_ORDER.hasOwnProperty(a)) console.error(`Got unknown category: ${a}`);
+    if (!COMMAND_GROUP_ORDER.hasOwnProperty(b)) console.error(`Got unknown category: ${b}`);
+
+    if (aVal < bVal) {
+      return -1;
+    } else if (aVal > bVal) {
+      return 1;
+    }
+    return 0;
+  });
+
+  // Let the parent know that commands are available if needed
+  if (setCommandsAvailable) setCommandsAvailable(false);
+
+  // Finally, do a nested map of group -> option
+  const options = groupOptionKeys.map((category) => {
+    const groupOptions = groupedOptions[category].map((commandName) => {
+      const userHasPermission = user.perms[modCommands[commandName].perm];
+      const matchesSearch = !searchVal || commandName.toLowerCase().includes(searchVal);
+
+      function openDialogue() {
+        setDialogueOpen(true);
+        setCommand(commandName);
+      }
+
+      if (userHasPermission && matchesSearch && !modCommands[commandName].hidden) {
+        if (setCommandsAvailable) setCommandsAvailable(true);
+        return (
+          <Typography onClick={openDialogue} key={commandName} tabindex="0" sx={{
+            pl: 1,
+            userSelect: "none",
+            fontFamily: "RobotoMono",
+            '&:hover': {
+              backgroundColor: COMMAND_COLOR,
+              cursor: 'pointer',
+            },
+          }}>
+            {commandName}
+          </Typography>
+        );
+      }
+      else {
+        return null;
+      }
+    }).filter((groupOption) => groupOption != null);
+
+    if (groupOptions.length == 0) return <></>;
+
+    return (
+      <Stack direction="column">
+        <Typography sx={{
+          my: 1,
+          fontSize: "18px",
+          fontWeight: "500",
+          userSelect: "none",
+        }}>
+          {category}
+        </Typography>
+        <Box>
+          {groupOptions}
+        </Box>
+      </Stack>
     )
-      options.push(commandName);
+  });
 
   if (command) {
     args = modCommands[command].args.map((arg) => {
       var placeholder = arg.label;
+      const argValue = argValues[arg.name];
+      const isPrefilled = prefilledArgs.hasOwnProperty(arg.name);
 
       if (arg.default != null) placeholder = `${placeholder} (${arg.default})`;
       else if (arg.optional) placeholder = `[${placeholder}]`;
 
       if (arg.type === "user_search") {
-        return (
-          <UserSearchSelect
-            value={argValues[arg.name] || ""}
-            setValue={(value) => updateArgValue(arg.name, value, arg.isArray)}
-            placeholder={placeholder}
-            key={arg.name}
-          />
-        );
+        if (isPrefilled) {
+          return (
+            <TextField
+              defaultValue={argValue}
+              disabled
+              key={arg.name}
+              sx={{ width: "100%" }}
+            />
+          );
+        }
+        else {
+          return (
+            <UserSearchSelect
+              onChange={(value) => { updateArgValue(arg.name, value, arg.isArray); }}
+              placeholder={placeholder}
+              key={arg.name}
+            />
+          );
+        }
       }
 
       return (
-        <input
-          className="arg"
-          type={arg.type}
+        <TextField
+          value={argValue || ""}
           placeholder={placeholder}
-          maxLength={arg.maxlength}
+          disabled={isPrefilled}
           onChange={(e) =>
             updateArgValue(arg.name, e.target.value, arg.isArray)
           }
           key={arg.name}
+          sx={{
+            borderRadius: "4px",
+            backgroundColor: "var(--scheme-color)",
+            color: "var(--scheme-color-text)",
+            width: "100%",
+          }}
         />
+      );
+    });
+
+    args = args.map((arg) => {
+      return (
+        <Grid item xs={12} md={6} key={arg.key}>
+          {arg}
+        </Grid>
       );
     });
   }
@@ -180,46 +346,92 @@ function ModCommands(props) {
 
   function commandRan() {
     setCommand(null);
-    setArgValues({});
+    setArgValues(prefilledArgs);
   }
 
-  function onRunClick() {
+  function onSearchInput(query) {
+    setSearchVal(query.toLowerCase());
+  }
+
+  function onExecute() {
     for (let arg of modCommands[command].args) {
       if (argValues[arg.name] == null) {
         if (arg.default != null) argValues[arg.name] = arg.default;
         else if (!arg.optional) {
-          errorAlert("Missing arguments.");
+          errorAlert(`Missing arguments: ${arg.name}`);
           return;
         }
       }
     }
 
     modCommands[command].run();
+    closeDialogue();
   }
 
   return (
-    <div className="mod-commands">
-      <div className="inputs">
-        <SearchSelect options={options} value={command} setValue={setCommand} />
-        {args}
-      </div>
-      {command && (
-        <div className="btn btn-theme-sec submit" onClick={onRunClick}>
-          Run
-        </div>
-      )}
-      <div className="results-wip">{props.results}</div>
-    </div>
+    <Stack direction="column" spacing={1} key="mod-commands">
+      <Dialog open={isDialogueOpen} onClose={closeDialogue} fullWidth>
+        <DialogContent sx={{ 
+          px: 1,
+          minHeight: "240px",
+        }}>
+          <Stack direction="column" spacing={1}>
+            <Stack direction="row">
+              <Button onClick={onExecute}>
+                Execute
+              </Button>
+              <Button onClick={() => setDialogueOpen(false)} sx={{
+                marginLeft: "auto"
+              }}>
+                Cancel
+              </Button>
+            </Stack>
+            <Typography sx={{
+              fontFamily: "RobotoMono",
+              fontSize: "16px",
+              backgroundColor: COMMAND_COLOR,
+              textAlign: "center",
+            }}>
+              {command}
+            </Typography>
+          </Stack>
+          {args.length > 0 && (
+            <Grid container spacing={1} sx={{ mt: 0 }}>
+              {args}
+            </Grid>
+          )}
+        </DialogContent>
+      </Dialog>
+      <Stack direction="column" spacing={1} sx={{
+        p: 1,
+        width: "100%",
+        height: fixedHeight ? undefined : "100%",
+        backgroundColor: "var(--scheme-color)",
+      }}>
+        <SearchBar
+          value={searchVal}
+          placeholder="🔎 Command Name"
+          onInput={onSearchInput}
+        />
+        <Stack direction="column" sx={{
+          height: fixedHeight ? "360px" : undefined,
+          overflowY: fixedHeight ? "scroll" : undefined,
+        }}>
+          {options}
+        </Stack>
+      </Stack>
+    </Stack>
   );
 }
 
-function useModCommands(argValues, commandRan, setResults) {
+export function useModCommands(argValues, commandRan, setResults) {
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
 
   return {
     "Create Group": {
       perm: "createGroup",
+      category: "Group Management",
       args: [
         {
           label: "Name",
@@ -265,6 +477,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Delete Group": {
       perm: "deleteGroup",
+      category: "Group Management",
       args: [
         {
           label: "Name",
@@ -285,6 +498,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Create Forum Category": {
       perm: "createCategory",
+      category: "Forum Management",
       args: [
         {
           label: "Name",
@@ -317,6 +531,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Create Forum Board": {
       perm: "createBoard",
+      category: "Forum Management",
       args: [
         {
           label: "Name",
@@ -367,6 +582,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Update Group Permissions": {
       perm: "updateGroupPerms",
+      category: "Group Management",
       args: [
         {
           label: "Group Name",
@@ -401,6 +617,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Add User to Group": {
       perm: "giveGroup",
+      category: "Group Management",
       args: [
         {
           label: "User",
@@ -426,6 +643,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Remove User from Group": {
       perm: "removeFromGroup",
+      category: "Group Management",
       args: [
         {
           label: "User",
@@ -451,6 +669,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Get Group Permissions": {
       perm: "viewPerms",
+      category: "Group Management",
       args: [
         {
           label: "Name",
@@ -471,6 +690,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Get User Permissions": {
       perm: "viewPerms",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -490,6 +710,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Delete Forum Board": {
       perm: "deleteBoard",
+      category: "Forum Management",
       hidden: true,
       args: [
         {
@@ -511,6 +732,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Move Forum Thread": {
       perm: "moveThread",
+      category: "Forum Management",
       args: [
         {
           label: "Thread ID",
@@ -535,6 +757,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Create Chat Room": {
       perm: "createRoom",
+      category: "Chat Window Management",
       args: [
         {
           label: "Name",
@@ -567,6 +790,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Delete Chat Room": {
       perm: "deleteRoom",
+      category: "Chat Window Management",
       args: [
         {
           label: "Room Name",
@@ -586,6 +810,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Forum Ban": {
       perm: "forumBan",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -610,6 +835,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Chat Ban": {
       perm: "chatBan",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -634,6 +860,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Game Ban": {
       perm: "gameBan",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -658,6 +885,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Ranked Ban": {
       perm: "rankedBan",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -682,6 +910,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Competitive Ban": {
       perm: "competitiveBan",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -706,6 +935,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Site Ban": {
       perm: "siteBan",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -730,6 +960,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Force Sign Out": {
       perm: "forceSignOut",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -749,6 +980,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Forum Unban": {
       perm: "forumUnban",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -768,6 +1000,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Chat Unban": {
       perm: "chatUnban",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -787,6 +1020,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Game Unban": {
       perm: "gameUnban",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -806,6 +1040,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Ranked Unban": {
       perm: "rankedUnban",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -825,6 +1060,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Competitive Unban": {
       perm: "competitiveUnban",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -844,6 +1080,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Site Unban": {
       perm: "siteUnban",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -863,6 +1100,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Get IP Addresses": {
       perm: "viewIPs",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -874,7 +1112,8 @@ function useModCommands(argValues, commandRan, setResults) {
         axios
           .get(`/api/mod/ips?userId=${argValues.userId}`)
           .then((res) => {
-            setResults(res.data.join(" "));
+            setResults("test");
+            //setResults(res.data.join(" "));
             commandRan();
           })
           .catch(errorAlert);
@@ -882,6 +1121,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Get Alt Accounts": {
       perm: "viewAlts",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -901,6 +1141,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Get Bans": {
       perm: "viewBans",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -929,6 +1170,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Check Flagged": {
       perm: "viewFlagged",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -950,6 +1192,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Clear Setup Name": {
       perm: "clearSetupName",
+      category: "Setup Management",
       args: [
         {
           label: "Setup Id",
@@ -969,6 +1212,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Clear Bio": {
       perm: "clearBio",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -1007,6 +1251,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Clear Video": {
       perm: "clearVideo",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -1026,6 +1271,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Clear Birthday": {
       perm: "clearBirthday",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -1045,6 +1291,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Clear Account Display": {
       perm: "clearAccountDisplay",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -1064,6 +1311,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Clear Name": {
       perm: "clearName",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -1083,6 +1331,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Clear Avatar": {
       perm: "clearAvi",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -1102,6 +1351,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Clear Custom Emotes": {
       perm: "clearCustomEmotes",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -1121,6 +1371,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Clear All User Content": {
       perm: "clearAllUserContent",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -1139,7 +1390,8 @@ function useModCommands(argValues, commandRan, setResults) {
       },
     },
     "Change Name": {
-      perm: "changeName",
+      perm: "changeUsersName",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -1164,6 +1416,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Refund Red Hearts": {
       perm: "refundRedHearts",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -1188,6 +1441,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Refund Gold Hearts": {
       perm: "refundGoldHearts",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -1210,8 +1464,9 @@ function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-  "Refund Daily Challenge": {
+    "Refund Daily Challenge": {
       perm: "refundDailyChallenge",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -1231,6 +1486,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Break Game": {
       perm: "breakGame",
+      category: "Game Management",
       args: [
         {
           label: "Game Id",
@@ -1250,6 +1506,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Toggle Featured Setup": {
       perm: "featureSetup",
+      category: "Setup Management",
       args: [
         {
           label: "Setup Id",
@@ -1269,6 +1526,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Toggle Featured Deck": {
       perm: "featureSetup",
+      category: "Deck Management",
       args: [
         {
           label: "Deck Id",
@@ -1288,6 +1546,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Delete Setup": {
       perm: "deleteSetup",
+      category: "Setup Management",
       args: [
         {
           label: "Setup Id",
@@ -1307,6 +1566,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Toggle Disable Deck": {
       perm: "disableDeck",
+      category: "Deck Management",
       args: [
         {
           label: "Deck Id",
@@ -1326,6 +1586,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Clear All IPs": {
       perm: "clearAllIPs",
+      category: "Site Management",
       args: [],
       run: function () {
         axios
@@ -1339,6 +1600,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     Whitelist: {
       perm: "whitelist",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -1358,6 +1620,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     Blacklist: {
       perm: "whitelist",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -1377,6 +1640,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Kick Player": {
       perm: "kick",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -1396,6 +1660,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Make Announcement": {
       perm: "announce",
+      category: "Site Management",
       args: [
         {
           label: "Content",
@@ -1415,6 +1680,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Toggle Ranked Setup": {
       perm: "approveRanked",
+      category: "Setup Management",
       args: [
         {
           label: "Setup Id",
@@ -1434,6 +1700,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Toggle Competitive Setup": {
       perm: "approveCompetitive",
+      category: "Setup Management",
       args: [
         {
           label: "Setup Id",
@@ -1453,6 +1720,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Ranked Approve": {
       perm: "approveRanked",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -1472,6 +1740,7 @@ function useModCommands(argValues, commandRan, setResults) {
     },
     "Competitive Approve": {
       perm: "approveCompetitive",
+      category: "User Management",
       args: [
         {
           label: "User",
@@ -1567,6 +1836,65 @@ function useModCommands(argValues, commandRan, setResults) {
   };
 }
 
+function ModActionArg({ label, arg }) {
+  var value = null;
+  const [userInfo, setUserInfo] = useState(null);
+
+  useEffect(async function() {
+    if (label === "User") {
+      try {
+        const res = await axios.get(`/api/user/${arg}/info`);
+        setUserInfo(res.data);
+      }
+      catch (e) {
+        setUserInfo({
+          id: arg,
+          name: `[not found: ${arg}]`,
+          avatar: false,
+        })
+      }
+    }
+  }, [label, arg])
+
+  if (userInfo) {
+    value = (
+      <Box sx={{
+        display: "inline-block",
+      }}>
+        <NameWithAvatar
+          id={userInfo.id}
+          name={userInfo.name}
+          avatar={userInfo.avatar}
+          small
+        />
+      </Box>
+    );
+  }
+  else {
+    value = (
+      <Typography sx={{
+        display: "inline",
+        fontFamily: "RobotoMono",
+        color: "#28ab48ff",
+      }}>
+        {arg}
+      </Typography>
+    );
+  }
+
+  return (
+    <Stack direction="row" spacing={1}>
+      <Typography sx={{
+        display: "inline",
+        fontFamily: "RobotoMono",
+      }}>
+        {label}{":"}
+      </Typography>
+      {value}
+    </Stack>
+  );
+}
+
 function ModActions(props) {
   const [page, setPage] = useState(1);
   const [actions, setActions] = useState([]);
@@ -1595,45 +1923,55 @@ function ModActions(props) {
   }
 
   const actionRows = actions.map((action) => {
+    if (!action.name in modCommands) {
+      console.error(`Not displaying action ${action.name} because it isn't listed in modCommands. Please report this error.`);
+      return <></>;
+    }
+
     let command = modCommands[action.name];
-    let actionArgs = action.args.map((arg, i) => {
-      let label = command.args[i].label;
-
-      if (label === "User") arg = <Link to={`/user/${arg}`}>{arg}</Link>;
-
-      return (
-        <div className="action-arg" key={i}>
-          {label}: {arg}
-        </div>
-      );
-    });
+    let actionArgs = action.args.map((arg, i) => <ModActionArg label={command.args[i].label} arg={arg} key={i} />);
 
     return (
-      <div className="action" key={action.id}>
-        <div className="top-row">
+      <Stack direction="column" spacing={0.5} key={action.id} sx={{
+        p: 1,
+        backgroundColor: "var(--scheme-color)",
+      }}>
+        <Stack direction="row" spacing={1} sx={{
+          alignItems: "center",
+        }}>
           <NameWithAvatar
             id={action.mod.id}
             name={action.mod.name}
             avatar={action.mod.avatar}
           />
-          <div className="date">
+          <Typography variant="caption" sx={{ opacity: "0.6", marginLeft: "auto !important", alignSelf: "start" }}>
             <Time minSec millisec={Date.now() - action.date} suffix=" ago" />
-          </div>
-        </div>
-        <div className="action-name">{action.name}</div>
-        <div className="action-args">{actionArgs}</div>
-      </div>
+          </Typography>
+        </Stack>
+        <Typography sx={{
+          display: "inline",
+          fontFamily: "RobotoMono",
+          fontSize: "16px",
+          textAlign: "center",
+          backgroundColor: COMMAND_COLOR,
+        }}>
+          {action.name}
+        </Typography>
+        {actionArgs}
+      </Stack>
     );
   });
+
+  const pageNav = <Box sx={{ alignSelf: "center" }}><PageNav page={page} onNav={onPageNav} /></Box>;
 
   return (
     <div className="box-panel">
       <div className="heading">Mod Actions</div>
-      <div className="actions-wrapper">
-        <PageNav page={page} onNav={onPageNav} />
+      <Stack direction="column" spacing={1}>
+        {pageNav}
         {actionRows}
-        <PageNav page={page} onNav={onPageNav} />
-      </div>
+        {pageNav}
+      </Stack>
     </div>
   );
 }

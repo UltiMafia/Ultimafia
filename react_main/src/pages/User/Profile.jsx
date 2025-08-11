@@ -26,6 +26,7 @@ import Comments from "../Community/Comments";
 
 import "css/user.css";
 import { Modal } from "components/Modal";
+import ModerationSideDrawer from "components/ModerationSideDrawer";
 import { PieChart } from "./PieChart";
 import { NewLoading } from "../Welcome/NewLoading";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
@@ -73,6 +74,7 @@ export default function Profile() {
   const [mediaUrl, setMediaUrl] = useState("");
   const [autoplay, setAutoplay] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [moderationDrawerOpen, setModerationDrawerOpen] = useState(false);
   const [currentUserLove, setCurrentUserLove] = useState({});
 
   const theme = useTheme();
@@ -776,6 +778,7 @@ export default function Profile() {
           setShow={setShowStatsModal}
         />
       )}
+      <ModerationSideDrawer open={moderationDrawerOpen} setOpen={setModerationDrawerOpen} prefilledArgs={{ userId }} />
       <Grid container rowSpacing={1} columnSpacing={1} className="profile">
         <Grid item xs={12}>
           <div className="box-panel" style={panelStyle}>
