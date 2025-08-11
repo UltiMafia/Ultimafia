@@ -90,9 +90,9 @@ module.exports = class MafiaEvent extends Event {
       } else if (this.modifiers.includes("Unrefined") && player.role.data.banished != true) {
         return false;
       }
-      if (this.modifiers.includes("Simple") && !this.isVanilla(p)) {
+      if (this.modifiers.includes("Simple") && !this.isVanilla(player)) {
         return false;
-      } else if (this.modifiers.includes("Complex") && this.isVanilla(p)) {
+      } else if (this.modifiers.includes("Complex") && this.isVanilla(player)) {
         return false;
       }
     }
