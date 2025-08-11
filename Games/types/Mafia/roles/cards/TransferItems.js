@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_ITEM_TAKER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_ITEM_TAKER_DEFAULT, PRIORITY_ITEM_TAKER_EARLY } = require("../../const/Priority");
 
 module.exports = class TransferItems extends Card {
   constructor(role) {
@@ -13,7 +13,7 @@ module.exports = class TransferItems extends Card {
         action: {
           role: this.role,
           labels: ["stealItem"],
-          priority: PRIORITY_ITEM_TAKER_DEFAULT - 1,
+          priority: PRIORITY_ITEM_TAKER_EARLY - 1,
           run: function () {
             this.role.data.victim = this.target;
           },
@@ -26,7 +26,7 @@ module.exports = class TransferItems extends Card {
         action: {
           role: this.role,
           labels: ["stealItem"],
-          priority: PRIORITY_ITEM_TAKER_DEFAULT,
+          priority: PRIORITY_ITEM_TAKER_EARLY,
           run: function () {
             if (
               typeof this.role.data.victim === "undefined" ||
@@ -35,9 +35,41 @@ module.exports = class TransferItems extends Card {
               return;
 
             this.stealAllItems(this.role.data.victim, this.target);
+            this.role.PlayerToStealFrom = this.target;
           },
         },
       },
     };
+
+      this.listeners = {
+      state: function (stateInfo) {
+        if (!this.hasAbility(["Item"])) {
+          return;
+        }
+
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+
+        var action = new Action({
+          actor: this.player,
+          game: this.player.game,
+          role: this,
+          priority: PRIORITY_ITEM_TAKER_DEFAULT,
+          labels: ["stealItem"],
+          run: function () {
+            if(this.role.PlayerToStealFrom != null && this.role.data.victim != null){
+              this.stealRandomItem(this.role.data.victim, this.role.PlayerToStealFrom);
+            }
+            this.role.PlayerToStealFrom = null;
+            this.role.data.victim = null;
+          },
+        });
+
+        this.game.queueAction(action);
+      },
+    };
+
+    
   }
 };
