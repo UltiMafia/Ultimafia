@@ -49,7 +49,7 @@ export default function Community() {
       <Box maxWidth="1080px" sx={{ padding: theme.spacing(3) }}>
         <Card
           variant="outlined"
-          sx={{ padding: theme.spacing(3), textAlign: "justify" }}
+          sx={{ p: 1, textAlign: "justify" }}
         >
           <Switch>
             <Route path="/community/forums" render={() => <Forums />} />

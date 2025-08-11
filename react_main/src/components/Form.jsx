@@ -18,6 +18,7 @@ import "css/markdown.css";
 import { dateToHTMLString } from "../utils";
 import { colorHasGoodBackgroundContrast } from "../shared/colors";
 import {
+  Autocomplete,
   TextField,
   Select,
   MenuItem,
@@ -580,136 +581,15 @@ export function useForm(initialFormFields) {
   return [fields, updateFields, resetFields];
 }
 
-export function SearchSelect(props) {
-  const value = props.value;
-  const setValue = props.setValue;
-
-  const [inputValue, setInputValue] = useState("");
-  const [optionsVisible, setOptionsVisible] = useState(false);
-  const [hoveringOptions, setHoveringOptions] = useState(false);
-  const [matchingOptions, setMatchingOptions] = useState(props.options);
-  const searchSelectRef = useRef();
-  const optionsRef = useRef();
-
-  useEffect(() => {
-    if (!optionsVisible) return;
-
-    const searchSelectRect = searchSelectRef.current.getBoundingClientRect();
-    const optionsRect = optionsRef.current.getBoundingClientRect();
-
-    var optionsTop = searchSelectRect.top + searchSelectRect.height + 1;
-
-    if (optionsTop + optionsRect.height > window.innerHeight)
-      optionsTop = searchSelectRect.top - optionsRect.height - 2;
-
-    optionsRef.current.style.top = optionsTop + "px";
-    optionsRef.current.style.visibility = "visible";
-  });
-
-  useEffect(() => {
-    if (inputValue === "") setMatchingOptions(props.options);
-    else {
-      var options = props.options.filter((option) =>
-        option.toLowerCase().includes(inputValue.toLowerCase())
-      );
-
-      setMatchingOptions(options);
-    }
-  }, [inputValue, props.options]);
-
-  const options = matchingOptions.map((option) => (
-    <div
-      className="option-row"
-      onClick={() => onOptionClick(option)}
-      key={option}
-    >
-      {option}
-    </div>
-  ));
-
-  function onOptionClick(option) {
-    setValue(option);
-    setInputValue("");
-    setOptionsVisible(false);
-    setHoveringOptions(false);
-
-    if (props.onChange) props.onChange(option);
-  }
-
-  function onKeyDown(e) {
-    if (e.key === "Enter") {
-      setValue(matchingOptions[0]);
-      setInputValue("");
-      setOptionsVisible(false);
-      setHoveringOptions(false);
-
-      if (props.onChange) props.onChange(matchingOptions[0]);
-    } else if (!optionsVisible) setOptionsVisible(true);
-  }
-
-  function onMouseEnterOptionsList() {
-    setHoveringOptions(true);
-  }
-
-  function onMouseLeaveOptionsList() {
-    setHoveringOptions(false);
-  }
-
-  function onInputChange(e) {
-    setInputValue(e.target.value);
-
-    if (props.onInputChange) props.onInputChange(e);
-  }
-
-  function onSelectFocus() {
-    setOptionsVisible(true);
-  }
-
-  function onSelectBlur() {
-    if (hoveringOptions) return;
-
-    setOptionsVisible(false);
-    setInputValue("");
-    setMatchingOptions(props.options);
-  }
-
-  return (
-    <div
-      className="search-select"
-      tabIndex="0"
-      onFocus={onSelectFocus}
-      onBlur={onSelectBlur}
-      ref={searchSelectRef}
-    >
-      <input
-        value={inputValue}
-        placeholder={value || props.placeholder}
-        onChange={onInputChange}
-        onKeyDown={onKeyDown}
-      />
-      <div className="icon-wrapper">
-        <i className="fas fa-chevron-down" />
-      </div>
-      {optionsVisible && (
-        <div
-          className="option-list"
-          onMouseEnter={onMouseEnterOptionsList}
-          onMouseLeave={onMouseLeaveOptionsList}
-          ref={optionsRef}
-        >
-          {options.length > 0 && options}
-          {!options.length && <div className="no-options">No Options</div>}
-        </div>
-      )}
-    </div>
-  );
-}
-
 export function UserSearchSelect(props) {
   const [options, setOptions] = useState([]);
   const [idMap, setIdMap] = useState({});
   const [query, setQuery] = useState("");
-  const [valueName, setValueName] = useState("");
+  const [inputValue, setInputValue] = useState("");
+
+  const matchingOptions = options.filter((option) =>
+    option.toLowerCase().includes(inputValue.toLowerCase())
+  );
 
   useEffect(() => {
     if (query.length === 0) return;
@@ -727,22 +607,22 @@ export function UserSearchSelect(props) {
       .catch(useErrorAlert);
   }, [query]);
 
-  function setValue(option) {
-    setValueName(option);
-    props.setValue(idMap[option]);
-  }
-
   function onInputChange(e) {
     setQuery(e.target.value);
+    setInputValue(e.target.value);
+  }
+
+  function onChange(option) {
+    if (props.onChange) props.onChange(idMap[option.target.textContent]);
+    setInputValue("");
   }
 
   return (
-    <SearchSelect
-      {...props}
-      options={options}
-      value={valueName}
-      setValue={setValue}
+    <Autocomplete
+      options={matchingOptions}
       onInputChange={onInputChange}
+      onChange={onChange}
+      renderInput={(params) => <TextField {...params} label={props.placeholder} />}
     />
   );
 }
