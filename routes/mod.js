@@ -1212,12 +1212,37 @@ router.post("/clearBio", async (req, res) => {
   }
 });
 
+router.post("/clearPronouns", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdToClear = String(req.body.userId);
+    var perm = "clearPronouns";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    await models.User.updateOne(
+      { id: userIdToClear },
+      { $set: { pronouns: "" } }
+    ).exec();
+
+    await redis.cacheUserInfo(userIdToClear, true);
+
+    routeUtils.createModAction(userId, "Clear Pronouns", [userIdToClear]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error clearing pronouns.");
+  }
+});
+
 router.post("/clearVideo", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var userIdToClear = String(req.body.userId);
-    var perm = "clearBio";
+    var perm = "clearVideo";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1241,7 +1266,7 @@ router.post("/clearBirthday", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var userIdToClear = String(req.body.userId);
-    var perm = "clearBio";
+    var perm = "clearBirthday";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1465,31 +1490,6 @@ router.post("/breakGame", async (req, res) => {
   }
 });
 
-router.post("/breakPortGames", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var port = String(req.body.port);
-    var perm = "breakPortGames";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    var games = await redis.getAllGames();
-
-    for (let game of games) {
-      if (game.port != port) continue;
-
-      if (game.status == "Open") await redis.deleteGame(game.id);
-      else await redis.breakGame(game.id);
-    }
-
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error clearing username.");
-  }
-});
-
 router.post("/kick", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
@@ -1633,31 +1633,6 @@ router.post("/changeName", async (req, res) => {
     logger.error(e);
     res.status(500);
     res.send("Error changing name.");
-  }
-});
-
-router.post("/scheduleRestart", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var when = routeUtils.parseTime(String(req.body.when)) + Date.now();
-    var perm = "scheduleRestart";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    if (when <= Date.now()) {
-      res.status(500);
-      res.send("Restarts must be scheduled for the future.");
-      return;
-    }
-
-    var restart = new models.Restart({ when });
-    await restart.save();
-
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error scheduling restart.");
   }
 });
 

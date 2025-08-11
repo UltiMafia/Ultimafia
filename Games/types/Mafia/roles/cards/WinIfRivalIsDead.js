@@ -39,16 +39,6 @@ module.exports = class WinIfRivalIsDead extends Card {
           this.player.setRole("Survivor");
           return;
         }
-        for (let rival of eligibleRivals) {
-          this.player.queueAlert(`${rival.name} is your rival!`);
-        }
-        /*
-        const chosenRival = Random.randArrayVal(eligibleRivals);
-        this.data.rival = chosenRival;
-        this.player.queueAlert(`${chosenRival.name} is your rival!`);
-        chosenRival.role.data.rival = this.player;
-        chosenRival.queueAlert(`${this.player.name} is your rival!`);
-        */
       },
       death: function (player, killer, deathType) {
         if (player != this.data.rival) return;
