@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
 const Player = require("../../../../core/Player");
-const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
+const { PRIORITY_SELF_BLOCK_EARLY, PRIORITY_SELF_BLOCK_LATER } = require("../../const/Priority");
 
 module.exports = class Disloyal extends Card {
   constructor(role) {
@@ -19,17 +19,17 @@ module.exports = class Disloyal extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
-          priority: PRIORITY_NIGHT_ROLE_BLOCKER - 1,
+          priority: PRIORITY_SELF_BLOCK_EARLY,
           labels: ["block", "hidden", "absolute"],
           run: function () {
+            if(!this.isSelfBlock()){
+              return;
+            }
             for (let action of this.game.actions[0]) {
               if (action.hasLabel("absolute")) {
                 continue;
               }
               if (action.hasLabel("mafia")) {
-                continue;
-              }
-              if (action.hasLabel("hidden")) {
                 continue;
               }
 
