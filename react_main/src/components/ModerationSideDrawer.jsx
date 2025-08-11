@@ -9,6 +9,8 @@ import { useErrorAlert } from "components/Alerts";
 import { ModCommands, COMMAND_COLOR } from "pages/Community/Moderation"
 
 export default function ModerationSideDrawer({open, setOpen, prefilledArgs}) {
+  const [commandsAvailable, setCommandsAvailable] = useState(false);
+
   const user = useContext(UserContext);
   const theme = useTheme();
   const errorAlert = useErrorAlert();
@@ -21,6 +23,7 @@ export default function ModerationSideDrawer({open, setOpen, prefilledArgs}) {
         aria-label="menu"
         onClick={() => setOpen(true)}
         sx={{
+          display: commandsAvailable ? undefined : "none",
           position: "fixed",
           top: "50%",
           left: 0,
@@ -37,6 +40,7 @@ export default function ModerationSideDrawer({open, setOpen, prefilledArgs}) {
       <Paper
         onClick={() => setOpen(true)}
         sx={{
+          display: commandsAvailable ? undefined : "none",
           position: "fixed",
           top: 0,
           left: 0,
@@ -53,12 +57,13 @@ export default function ModerationSideDrawer({open, setOpen, prefilledArgs}) {
         onClose={() => setOpen(false)}
         onOpen={() => setOpen(true)}
         sx={{
+          display: commandsAvailable ? undefined : "none",
           width: 240,
           flexShrink: 0,
           [`& .MuiDrawer-paper`]: { width: 240, boxSizing: "border-box" },
         }}
       >
-        <ModCommands height={"100%"} prefilledArgs={prefilledArgs} />
+        <ModCommands height={"100%"} prefilledArgs={prefilledArgs} setCommandsAvailable={setCommandsAvailable}/>
       </SwipeableDrawer>
     </>
   );

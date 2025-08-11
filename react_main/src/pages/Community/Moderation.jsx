@@ -159,6 +159,7 @@ export default function Moderation() {
 export function ModCommands(props) {
   const fixedHeight = props.fixedHeight || false;
   const prefilledArgs = props.prefilledArgs || {};
+  const setCommandsAvailable = props.setCommandsAvailable;
 
   const [command, setCommand] = useState();
   const [searchVal, setSearchVal] = useState("");
@@ -216,7 +217,10 @@ export function ModCommands(props) {
       return 1;
     }
     return 0;
-  })
+  });
+
+  // Let the parent know that commands are available if needed
+  if (setCommandsAvailable) setCommandsAvailable(false);
 
   // Finally, do a nested map of group -> option
   const options = groupOptionKeys.map((category) => {
@@ -230,8 +234,9 @@ export function ModCommands(props) {
       }
 
       if (userHasPermission && matchesSearch && !modCommands[commandName].hidden) {
+        if (setCommandsAvailable) setCommandsAvailable(true);
         return (
-          <Typography onClick={openDialogue} key={commandName} sx={{
+          <Typography onClick={openDialogue} key={commandName} tabindex="0" sx={{
             pl: 1,
             userSelect: "none",
             fontFamily: "RobotoMono",
@@ -1364,7 +1369,7 @@ export function useModCommands(argValues, commandRan, setResults) {
       },
     },
     "Change Name": {
-      perm: "changeName",
+      perm: "changeUsersName",
       category: "User Management",
       args: [
         {
