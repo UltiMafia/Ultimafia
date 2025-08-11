@@ -40,7 +40,45 @@ module.exports = class Disloyal extends Card {
 
               if (
                 action.actors.indexOf(this.actor) != -1 &&
-                !action.hasLabel("hidden") &&
+                action.target &&
+                toCheck[0] instanceof Player
+              ) {
+                for (let y = 0; y < toCheck.length; y++) {
+                  if (toCheck[y].role.alignment == this.actor.role.alignment) {
+                    if (
+                      action.priority > this.priority &&
+                      !action.hasLabel("absolute")
+                    ) {
+                      action.cancelActor(this.actor);
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+          },
+        });
+        var action2 = new Action({
+          actor: this.player,
+          game: this.player.game,
+          priority: PRIORITY_SELF_BLOCK_LATER,
+          labels: ["block", "hidden", "absolute"],
+          run: function () {
+            for (let action of this.game.actions[0]) {
+              if (action.hasLabel("absolute")) {
+                continue;
+              }
+              if (action.hasLabel("mafia")) {
+                continue;
+              }
+
+              let toCheck = action.target;
+              if (!Array.isArray(action.target)) {
+                toCheck = [action.target];
+              }
+
+              if (
+                action.actors.indexOf(this.actor) != -1 &&
                 action.target &&
                 toCheck[0] instanceof Player
               ) {
