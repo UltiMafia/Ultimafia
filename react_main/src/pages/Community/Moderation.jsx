@@ -1228,8 +1228,27 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+        "Clear Pronouns": {
+      perm: "clearPronouns",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/clearPronouns", argValues)
+          .then(() => {
+            siteInfo.showAlert("Pronouns cleared.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Clear Video": {
-      perm: "clearBio",
+      perm: "clearVideo",
       category: "User Management",
       args: [
         {
@@ -1249,7 +1268,7 @@ export function useModCommands(argValues, commandRan, setResults) {
       },
     },
     "Clear Birthday": {
-      perm: "clearBio",
+      perm: "clearBirthday",
       category: "User Management",
       args: [
         {
@@ -1617,26 +1636,6 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Schedule Restart": {
-      perm: "scheduleRestart",
-      category: "Site Management",
-      args: [
-        {
-          label: "When",
-          name: "when",
-          type: "text",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/scheduleRestart", argValues)
-          .then(() => {
-            siteInfo.showAlert("Restart scheduled.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
     "Kick Player": {
       perm: "kick",
       category: "User Management",
@@ -1652,26 +1651,6 @@ export function useModCommands(argValues, commandRan, setResults) {
           .post("/api/mod/kick", argValues)
           .then(() => {
             siteInfo.showAlert("Kicked player.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Break Port Games": {
-      perm: "breakPortGames",
-      category: "Game Management",
-      args: [
-        {
-          label: "Port",
-          name: "port",
-          type: "text",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/breakPortGames", argValues)
-          .then(() => {
-            siteInfo.showAlert("Games broken.", "success");
             commandRan();
           })
           .catch(errorAlert);

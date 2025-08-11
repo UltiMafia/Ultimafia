@@ -106,26 +106,6 @@ module.exports = function () {
       },
       interval: 1000 * 60 * 10,
     },
-    findNextRestart: {
-      run: async function () {
-        try {
-          var count = await models.Restart.count({ when: { $lt: Date.now() } });
-          await models.Restart.deleteMany({ when: { $lt: Date.now() } }).exec();
-
-          // if (count > 0)
-          //     child_process.spawn(path.join(__dirname, "update.sh"));
-          // else {
-          var restart = await models.Restart.find().sort("when");
-
-          if (restart[0]) constants.restart = restart[0].when;
-          else constants.restart = null;
-          // }
-        } catch (e) {
-          logger.error(e);
-        }
-      },
-      interval: 1000 * 10,
-    },
     refreshHearts: {
       run: async function () {
         const now = Date.now();
