@@ -26,7 +26,7 @@ module.exports = class StealItem extends Card {
 
       this.listeners = {
       state: function (stateInfo) {
-        if (!this.hasAbility(["Item", "Modifier"])) {
+        if (!this.hasAbility(["Item"])) {
           return;
         }
 
@@ -49,7 +49,6 @@ module.exports = class StealItem extends Card {
         });
 
         this.game.queueAction(action);
-        this.game.queueAction(action2);
       },
     };
     
