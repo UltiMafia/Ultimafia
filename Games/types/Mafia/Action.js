@@ -465,6 +465,39 @@ module.exports = class MafiaAction extends Action {
     return false;
   }
 
+  blockingMods(role){
+      for (let action of this.game.actions[0]) {
+        if (action.hasLabel("absolute")) {
+            continue;
+        }
+        if (action.hasLabel("mafia")) {
+          continue;
+        }
+
+      let toCheck = action.target;
+      if (!Array.isArray(action.target)) {
+        toCheck = [action.target];
+        }
+              if (
+                action.actors.indexOf(this.actor) != -1 &&
+                action.target &&
+                toCheck[0] instanceof Player
+              ) {
+                for (let y = 0; y < toCheck.length; y++) {
+                  if (role.canTargetPlayer(toCheck[y])) {
+                    if (
+                      action.priority > this.priority &&
+                      !action.hasLabel("absolute")
+                    ) {
+                      action.cancelActor(this.actor);
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+  }
+
   isSelfBlock(isTargetBased){
     for (let action of this.game.actions[0]){
       if (action.hasLabel("absolute")) {
