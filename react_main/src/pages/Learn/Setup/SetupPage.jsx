@@ -15,6 +15,7 @@ import { PieChart } from "./PieChart";
 
 import "css/setupPage.css";
 
+import ModerationSideDrawer from "components/ModerationSideDrawer";
 import { useErrorAlert } from "../../../components/Alerts";
 import { NameWithAvatar } from "../../User/User";
 import Setup from "../../../components/Setup";
@@ -88,6 +89,7 @@ export function SetupPage() {
   const [pieData, setPieData] = useState(null);
   const [currentVersionNum, setCurrentVersionNum] = useState(0);
   const [selectedVersionNum, setSelectedVersionNum] = useState(0);
+  const [moderationDrawerOpen, setModerationDrawerOpen] = useState(false);
   const [versionTimestamp, setVersionTimestamp] = useState("");
   const [diff, setDiff] = useState([]); // Changelog diff
 
@@ -354,6 +356,7 @@ export function SetupPage() {
         )}
       </div>
       <Comments location={commentLocation} />
+      <ModerationSideDrawer open={moderationDrawerOpen} setOpen={setModerationDrawerOpen} prefilledArgs={{ setupId }} />
     </Stack>
   );
 }

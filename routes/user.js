@@ -548,30 +548,30 @@ router.get("/:id/friends", async function (req, res) {
 });
 
 router.get("/:id/info", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
   try {
-    var user = await models.User.findOne({
-      id: req.params.id,
-      deleted: false,
-    }).select("name tag wins losses rankPoints -_id");
+    var user = await redis.getUserInfo(req.params.id);
 
     if (!user) {
-      res.status(500);
-      res.send("Unable to find user.");
+      res.status(404);
+      res.send({
+        name: "[not found]",
+        avatar: false,
+      });
       return;
     }
 
-    user = user.toJSON();
-
-    if (global.players[req.params.id])
-      user.inGame = global.players[req.params.id].id;
-    else user.inGame = "No";
+    user.csrf = req.session.user.csrf;
+    user.inGame = await redis.inGame(user.id);
+    user.perms = (await redis.getUserPermissions(req.params.id)) || {};
+    user.rank = String(user.perms.rank || 0);
+    user.perms = user.perms.perms || {};
+    delete user.status;
 
     res.send(user);
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Unable to find user");
+    res.send("Error getting user");
   }
 });
 

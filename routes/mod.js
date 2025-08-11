@@ -1340,7 +1340,7 @@ router.post("/clearAccountDisplay", async (req, res) => {
 
     await redis.cacheUserInfo(userIdToClear, true);
 
-    routeUtils.createModAction(userId, "Clear Accounts Display", [
+      routeUtils.createModAction(userId, "Clear Account Display", [
       userIdToClear,
     ]);
     res.sendStatus(200);
