@@ -277,12 +277,13 @@ export function ModCommands(props) {
     args = modCommands[command].args.map((arg) => {
       var placeholder = arg.label;
       const argValue = argValues[arg.name];
+      const isPrefilled = prefilledArgs.hasOwnProperty(arg.name);
 
       if (arg.default != null) placeholder = `${placeholder} (${arg.default})`;
       else if (arg.optional) placeholder = `[${placeholder}]`;
 
       if (arg.type === "user_search") {
-        if (argValue) {
+        if (isPrefilled) {
           return (
             <TextField
               defaultValue={argValue}
@@ -293,7 +294,7 @@ export function ModCommands(props) {
           );
         }
         else {
-        return (
+          return (
             <UserSearchSelect
               onChange={(value) => { updateArgValue(arg.name, value, arg.isArray); }}
               placeholder={placeholder}
@@ -307,6 +308,7 @@ export function ModCommands(props) {
         <TextField
           value={argValue || ""}
           placeholder={placeholder}
+          disabled={isPrefilled}
           onChange={(e) =>
             updateArgValue(arg.name, e.target.value, arg.isArray)
           }
