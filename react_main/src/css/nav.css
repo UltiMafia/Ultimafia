@@ -13,13 +13,10 @@
 }
 
 .nav a {
-  padding: 0px 0px 3px 0px;
-  border-bottom: 5px solid transparent;
-
   color: white;
   font-family: var(--primaryFont); /* used to be BNoir */
   /* font-weight: 700; */
-  font-size: 26px;
+  font-size: 24px;
   text-decoration: none;
   opacity: 0.5;
   transition: var(--hoverTransition);

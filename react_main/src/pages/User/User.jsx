@@ -490,13 +490,15 @@ export function Miniprofile(props) {
     <div className="miniprofile">
       <div className="popover-title">
         <Link className={`name-with-avatar`} to={`/user/${id}`} target="_blank">
-          <Avatar hasImage={avatar} id={id} avatarId={avatarId} name={name} />
-          <div
-            className={`user-name`}
-            style={{ ...(color ? { color } : {}), display: "inline" }}
-          >
-            {name}
-          </div>
+          <Stack direction="row" spacing={1}>
+            <Avatar hasImage={avatar} id={id} avatarId={avatarId} name={name} />
+            <div
+              className={`user-name`}
+              style={{ ...(color ? { color } : {}), display: "inline", alignSelf: "center" }}
+            >
+              {name}
+            </div>
+          </Stack>
         </Link>
       </div>
       {!hasDefaultPronouns && <div className="pronouns">({pronouns})</div>}
