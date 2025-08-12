@@ -129,7 +129,7 @@ a {
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
 }
 
 .header .logo-wrapper {
@@ -137,12 +137,12 @@ a {
   flex-flow: row nowrap;
   align-items: center;
   justify-content: center;
+  margin-bottom: 8px;
 }
 
 .header .logo {
   width: 179px;
   height: 105px;
-  margin-bottom: 10px;
   background-size: 100% 100%;
 }
 
@@ -520,7 +520,7 @@ input:focus {
   display: inline-flex;
   flex-flow: row nowrap;
 
-  height: 65px;
+  height: 60px;
   align-items: center;
   justify-content: flex-start;
 
@@ -736,6 +736,7 @@ input:focus {
   position: relative;
   z-index: 0;
   border-radius: 10px;
+  height: 60px;
 }
 
 .glow-on-hover:before {

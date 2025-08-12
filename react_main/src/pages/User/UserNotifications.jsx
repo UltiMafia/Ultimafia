@@ -48,8 +48,8 @@ export default function UserNotifications({
   }
 
   return (
-    <Stack direction="row" sx={{
-      pl: .5,
+    <Stack direction="row" spacing={0.5} sx={{
+      px: .5,
       alignItems: "center",
     }}>
       <div
@@ -83,7 +83,7 @@ export default function UserNotifications({
           </Tooltip>
         </Stack>
       </div>
-      <Divider orientation="vertical" flexItem sx={{ mx: .5 }} />
+      <Divider orientation="vertical" flexItem />
       <i
         className="fas fa-bullhorn"
         onClick={() => openAnnouncements()}
@@ -93,7 +93,6 @@ export default function UserNotifications({
       <Box sx={{
         display: "inline-flex",
         alignItems: "center",
-        mx: 1,
       }}>
         <Link to="/user" className="profile-link">
           <Avatar id={user.id} name={user.name} hasImage={user.avatar} />
