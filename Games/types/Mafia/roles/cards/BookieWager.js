@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_KILL_DEFAULT, PRIORITY_SUPPORT_VISIT_DEFAULT } = require("../../const/Priority");
 
 module.exports = class RiskyPrediction extends Card {
   constructor(role) {
@@ -13,8 +13,10 @@ module.exports = class RiskyPrediction extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          role: this.role,
+          priority: PRIORITY_SUPPORT_VISIT_DEFAULT,
           run: function () {
-            this.actor.role.predictedVote = this.target;
+            this.role.predictedVote = this.target;
           },
         },
       },
@@ -28,11 +30,12 @@ module.exports = class RiskyPrediction extends Card {
         action: {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT,
+          role: this.role,
           run: function () {
             if (this.dominates()) {
               this.target.kill("basic", this.actor);
             }
-            this.actor.role.predictedCorrect = false;
+            this.role.predictedCorrect = false;
           },
         },
       },
