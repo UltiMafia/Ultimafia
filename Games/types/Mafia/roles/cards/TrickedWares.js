@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 const Action = require("../../Action");
-const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_ITEM_GIVER_EARLY } = require("../../const/Priority");
 
 module.exports = class TrickedWares extends Card {
   constructor(role) {
@@ -24,7 +24,7 @@ module.exports = class TrickedWares extends Card {
 
         var action = new Action({
           labels: ["giveItem"],
-          priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,
+          priority: PRIORITY_ITEM_GIVER_EARLY - 1,
           actor: this.player,
           target: target,
           game: this.player.game,

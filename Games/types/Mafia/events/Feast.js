@@ -2,7 +2,7 @@ const Event = require("../Event");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 const {
-  PRIORITY_ITEM_GIVER_DEFAULT,
+  PRIORITY_ITEM_GIVER_EARLY,
   PRIORITY_BECOME_DEAD_ROLE,
 } = require("../const/Priority");
 
@@ -23,7 +23,7 @@ module.exports = class Feast extends Event {
       actor: victim,
       target: victim,
       game: this.game,
-      priority: PRIORITY_ITEM_GIVER_DEFAULT,
+      priority: PRIORITY_ITEM_GIVER_EARLY,
       labels: ["hidden", "absolute"],
       event: this,
       run: function () {

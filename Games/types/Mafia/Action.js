@@ -1,7 +1,7 @@
 const Action = require("../../core/Action");
 const Random = require("../../../lib/Random");
 const Player = require("../../core/Player");
-const { PRIORITY_SELF_BLOCK_EARLY, PRIORITY_SELF_BLOCK_LATER } = require("const/Priority");
+const { PRIORITY_SELF_BLOCK_EARLY, PRIORITY_SELF_BLOCK_LATER } = require("./const/Priority");
 
 module.exports = class MafiaAction extends Action {
   constructor(options) {
@@ -484,7 +484,7 @@ module.exports = class MafiaAction extends Action {
                 toCheck[0] instanceof Player
               ) {
                 for (let y = 0; y < toCheck.length; y++) {
-                  if (role.canTargetPlayer(toCheck[y])) {
+                  if (!role.canTargetPlayer(toCheck[y])) {
                     if (
                       action.priority > this.priority &&
                       !action.hasLabel("absolute")

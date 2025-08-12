@@ -1,4 +1,4 @@
-const modifierData = {
+const effectData = {
   Mafia: {
     //Killing
     Bleeding: {
@@ -166,4 +166,4 @@ const modifierData = {
   "Cheat": {},
 };
 
-module.exports = modifierData;
+module.exports = effectData;

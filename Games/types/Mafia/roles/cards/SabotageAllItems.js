@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const { PRIORITY_ITEM_TAKER_DEFAULT, PRIORITY_ITEM_TAKER_EARLY } = require("../../const/Priority");
 
 module.exports = class SabotageAllItems extends Card {

@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const { PRIORITY_ITEM_TAKER_DEFAULT, PRIORITY_ITEM_TAKER_EARLY } = require("../../const/Priority");
 
 module.exports = class FixAllItems extends Card {
@@ -39,7 +40,7 @@ module.exports = class FixAllItems extends Card {
           game: this.player.game,
           role: this,
           priority: PRIORITY_ITEM_TAKER_DEFAULT+2,
-          labels: ["sabotage"],
+          labels: ["fixItems"],
           run: function () {
             if(this.role.PlayerToFixItems != null){
             for (let item of this.role.PlayerToFixItems.items) {

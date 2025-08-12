@@ -191,9 +191,9 @@ module.exports = class MafiaRole extends Role {
 
   canTargetPlayer(player) {
     if (this.modifier != null) {
-      if (this.modifier.split("/").includes("Loyal") && player.isEvil()) {
+      if (this.modifier.split("/").includes("Loyal") && player.role.alignment != this.alignment) {
         return false;
-      } else if (this.modifier.split("/").includes("Disloyal") && !player.isEvil()) {
+      } else if (this.modifier.split("/").includes("Disloyal") && player.role.alignment == this.alignment) {
         return false;
       }
       if (this.modifier.split("/").includes("Holy") && player.isDemonic(true)) {

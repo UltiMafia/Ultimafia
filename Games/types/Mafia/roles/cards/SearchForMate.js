@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
+const {PRIORITY_EFFECT_GIVER_EARLY } = require("../../const/Priority");
 
 module.exports = class SearchForMate extends Card {
   constructor(role) {
@@ -10,7 +10,7 @@ module.exports = class SearchForMate extends Card {
         states: ["Night"],
         flags: ["voting", "mustAct"],
         targets: { include: ["alive"], exclude: ["self"] },
-        priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+        priority: PRIORITY_EFFECT_GIVER_EARLY,
         action: {
           role: this.role,
           run: function () {

@@ -1,6 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_ITEM_TAKER_DEFAULT, PRIORITY_ITEM_TAKER_EARLY } = require("../../const/Priority");
 const Random = require("../../../../../lib/Random");
+const Action = require("../../Action");
 
 module.exports = class StealItem extends Card {
   constructor(role) {

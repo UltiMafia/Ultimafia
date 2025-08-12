@@ -3,7 +3,6 @@ const { addArticle } = require("../../../core/Utils");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 const {
-  PRIORITY_ITEM_GIVER_DEFAULT,
   PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
 } = require("../const/Priority");
 

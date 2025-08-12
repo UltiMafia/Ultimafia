@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_ITEM_TAKER_DEFAULT, PRIORITY_ITEM_TAKER_EARLY } = require("../../const/Priority");
+const Action = require("../../Action");
 
 module.exports = class TransferItems extends Card {
   constructor(role) {

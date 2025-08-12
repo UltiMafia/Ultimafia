@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_ITEM_GIVER_EARLY } = require("../../const/Priority");
 
 module.exports = class GiveArmor extends Card {
   constructor(role) {
@@ -11,7 +11,7 @@ module.exports = class GiveArmor extends Card {
         flags: ["voting"],
         action: {
           labels: ["giveItem", "armor"],
-          priority: PRIORITY_ITEM_GIVER_DEFAULT,
+          priority:  PRIORITY_ITEM_GIVER_EARLY,
           run: function () {
             this.target.holdItem("Armor");
             this.target.queueGetItemAlert("Armor");

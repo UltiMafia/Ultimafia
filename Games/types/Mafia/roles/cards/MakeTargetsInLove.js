@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_EFFECT_GIVER_EARLY } = require("../../const/Priority");
 
 module.exports = class MakeTargetsInLove extends Card {
   constructor(role) {
@@ -15,7 +15,7 @@ module.exports = class MakeTargetsInLove extends Card {
         multiMax: 2,
         action: {
           role: this.role,
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          priority: PRIORITY_EFFECT_GIVER_EARLY,
           run: function () {
             var targetA = this.target[0];
             var targetB = this.target[1];

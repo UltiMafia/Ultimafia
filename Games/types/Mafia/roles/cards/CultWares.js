@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_ITEM_GIVER_EARLY } = require("../../const/Priority");
 
 module.exports = class CultWares extends Card {
   constructor(role) {
@@ -12,7 +12,7 @@ module.exports = class CultWares extends Card {
         action: {
           labels: ["giveItem", "broken"],
           role: this.role,
-          priority: PRIORITY_ITEM_GIVER_DEFAULT - 1,
+          priority: PRIORITY_ITEM_GIVER_EARLY - 1,
           run: function () {
             var itemType = this.role.data.itemType;
             if (!itemType) {
@@ -45,7 +45,7 @@ module.exports = class CultWares extends Card {
         ],
         action: {
           role: this.role,
-          priority: PRIORITY_ITEM_GIVER_DEFAULT - 2,
+          priority: PRIORITY_ITEM_GIVER_EARLY - 2,
           run: function () {
             this.role.data.itemType = this.target;
           },

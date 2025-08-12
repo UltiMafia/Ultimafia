@@ -1,6 +1,7 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
-module.exports = class GuessAdversaryConvert extends Card {
+const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
+module.exports = class GuessStatue extends Card {
   constructor(role) {
     super(role);
 
@@ -11,6 +12,7 @@ module.exports = class GuessAdversaryConvert extends Card {
         action: {
           role: this.role,
           labels: ["Convert"],
+          priority: PRIORITY_CONVERT_DEFAULT+3,
           run: function () {
             /*
             if (this.actor.role.roleToGuess.isArray) {

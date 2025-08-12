@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const { PRIORITY_EFFECT_REMOVER_DEFAULT, PRIORITY_EFFECT_REMOVER_EARLY } = require("../../const/Priority");
 
 module.exports = class NightNurse extends Card {

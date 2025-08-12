@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_EFFECT_GIVER_EARLY } = require("../../const/Priority");
 
 module.exports = class BondedForLife extends Card {
   constructor(role) {
@@ -11,7 +11,7 @@ module.exports = class BondedForLife extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          priority: PRIORITY_EFFECT_GIVER_EARLY,
           run: function () {
             this.target.giveEffect("Lovesick", this.actor);
             this.queueGetEffectAlert("Lovesick", this.target, this.actor.name);

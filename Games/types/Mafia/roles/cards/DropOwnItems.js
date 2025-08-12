@@ -1,11 +1,21 @@
 const Card = require("../../Card");
-const { PRIORITY_ITEM_GIVER_DEFAULT, PRIORITY_EFFECT_GIVER_EARLY } = require("../../const/Priority");
+const Action = require("../../Action");
+const { PRIORITY_ITEM_GIVER_DEFAULT, PRIORITY_ITEM_GIVER_EARLY, PRIORITY_ITEM_TAKER_DEFAULT, PRIORITY_ITEM_TAKER_EARLY } = require("../../const/Priority");
 
 module.exports = class DropOwnItems extends Card {
   constructor(role) {
     super(role);
 
     this.actions = [
+        {
+        labels: ["dropItems", "hidden"],
+        priority: PRIORITY_ITEM_GIVER_EARLY+1,
+        run: function () {
+          for (let item of this.actor.items) {
+            item.drop();
+          }
+        },
+      },
       {
         labels: ["dropItems", "hidden"],
         priority: PRIORITY_ITEM_GIVER_DEFAULT + 1,
@@ -31,7 +41,7 @@ module.exports = class DropOwnItems extends Card {
           actor: this.player,
           game: this.player.game,
           role: this,
-          priority: PRIORITY_ITEM_TAKER_DEFAULT+2,
+          priority: PRIORITY_ITEM_TAKER_DEFAULT+1,
           labels: ["dropItems", "hidden"],
           run: function () {
             for (let item of this.actor.items) {
@@ -46,7 +56,7 @@ module.exports = class DropOwnItems extends Card {
           actor: this.player,
           game: this.player.game,
           role: this,
-          priority:PRIORITY_ITEM_TAKER_EARLY+2,
+          priority:PRIORITY_ITEM_TAKER_EARLY+1,
           labels: ["dropItems", "hidden"],
           run: function () {
             for (let item of this.actor.items) {
