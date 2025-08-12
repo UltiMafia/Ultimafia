@@ -2717,7 +2717,7 @@ const roleData = {
         "Each night, predicts the village vote.",
         "If they successfully predict the village vote, they gain a bonus kill.",
       ],
-      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT)]],
+      nightOrder: [["Kill",(PRIORITY_KILL_DEFAULT)], ["Guess Condemn Target",(PRIORITY_SUPPORT_VISIT_DEFAULT)]],
       SpecialInteractions: {
         Assassin: [
           "If an Assassin is Present, Bookie will gain a bonus kill if they can guess a player who is Elected as Room Leader.",
@@ -4413,7 +4413,7 @@ const roleData = {
         "If that person is condemned the next day, the Warlock has predicted correctly. They gain an extra life.",
         "The Warlock wins if they predict the condemnation correctly twice.",
       ],
-      nightOrder: [["Guess Vote",(0)]],
+      nightOrder: [["Guess Vote",(PRIORITY_SUPPORT_VISIT_DEFAULT)]],
       SpecialInteractions: {
         Assassin: [
           "If an Assassin is Present, The Warlock wins if they can guess a player who is Elected as Room Leader Twice.",
