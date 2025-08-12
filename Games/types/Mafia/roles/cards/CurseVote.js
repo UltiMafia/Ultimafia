@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 
 module.exports = class CurseVote extends Card {
   constructor(role) {
@@ -12,7 +12,7 @@ module.exports = class CurseVote extends Card {
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
           role: this.role,
-          priority: PRIORITY_KILL_DEFAULT - 1,
+          priority: PRIORITY_EFFECT_GIVER_DEFAULT - 1,
           run: function () {
             this.role.data.victim = this.target;
           },
@@ -24,7 +24,7 @@ module.exports = class CurseVote extends Card {
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
           role: this.role,
-          priority: PRIORITY_KILL_DEFAULT,
+          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             if (!this.role.data.victim) {
               return;

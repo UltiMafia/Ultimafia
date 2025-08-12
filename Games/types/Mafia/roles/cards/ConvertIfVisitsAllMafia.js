@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const { PRIORITY_KILL_DEFAULT, PRIORITY_BECOME_DEAD_ROLE } = require("../../const/Priority");
+const { PRIORITY_SUPPORT_VISIT_DEFAULT, PRIORITY_BECOME_DEAD_ROLE } = require("../../const/Priority");
 const roles = require("../../../../../data/roles");
 const Random = require("../../../../../lib/Random");
 
@@ -25,7 +25,7 @@ module.exports = class ConvertIfVisitsAllMafia extends Card {
         },
         action: {
           role: this.role,
-          priority: PRIORITY_KILL_DEFAULT,
+          priority: PRIORITY_SUPPORT_VISIT_DEFAULT,
           run: function () {
             // record already visited
             if (this.role.visitedMentors.has(this.target)) {

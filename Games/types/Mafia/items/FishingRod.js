@@ -172,7 +172,6 @@ module.exports = class FishingRod extends Item {
         inputType: "custom",
         targets: ["Fish", "Not Fish"],
         shouldMeet() {
-          this.game.sendAlert(`Fish is ${this.player.data.GoneFishin}`);
           return this.player.data.GoneFishin == true;
         },
         action: {

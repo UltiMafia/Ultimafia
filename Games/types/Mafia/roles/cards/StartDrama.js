@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-
+const { PRIORITY_SUPPORT_VISIT_DEFAULT } = require("../../const/Priority");
 module.exports = class StartDrama extends Card {
   constructor(role) {
     super(role);
@@ -21,6 +21,7 @@ module.exports = class StartDrama extends Card {
         action: {
           labels: ["drama"],
           role: this.role,
+          priority: PRIORITY_SUPPORT_VISIT_DEFAULT,
           run: function () {
             this.target.holdItem(
               "Drama",

@@ -206,6 +206,12 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Fair", "Nonconsecutive"],
     },
+    Creamed: {
+      internal: ["StartWithIceCream"],
+      tags: ["Items", "Ice Cream"],
+      description: "Starts with a Ice Cream. Ice Cream can be used to become a Vanilla role",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Crystalline: {
       internal: ["StartWithCrystal"],
       tags: ["Revealing", "Items", "Crystal"],
@@ -257,6 +263,14 @@ const modifierData = {
         "While a role with this modifier is in play, Village-aligned players might survive being condemned",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    Sorrowful: {
+      internal: ["BlockedUnlessKilled"],
+      tags: ["Block Self", "Death"],
+      description:
+        "Unless killed at night, their secondary actions will be blocked.",
+      eventDescription: "This Event will not apply to Non-Evil players.",
+      incompatible: ["Fatal"],
+    },
     Even: {
       internal: ["Even"],
       tags: ["Even", "Meetings"],
@@ -301,7 +315,7 @@ const modifierData = {
       description:
         "Player's role will be hidden from the town when condemned or on death.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Shady", "Unassuming", "Suspect"],
+      incompatible: ["Shady", "Unassuming", "Phony", "Suspect"],
     },
     Fair: {
       internal: ["FairModifier"],
@@ -311,12 +325,32 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Nonconsecutive", "Consecutive"],
     },
+    Fatal: {
+      internal: ["BlockedIfKilled"],
+      tags: ["Block Self", "Death"],
+      description:
+        "If killed at night, their secondary actions will be blocked.",
+      eventDescription: "This Event will not apply to Non-Evil players.",
+      incompatible: ["Sorrowful"],
+    },
     Felonious: {
       internal: ["VotingPowerZero"],
       tags: ["Voting"],
       description: "Player's vote is worth 0.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Trustworthy", "Untrustworthy"],
+    },
+    Fearful: {
+      internal: ["BlockedIfScary"],
+      tags: ["Self Block"],
+      description: "Actions will be Blocked if a Scary role is alive.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Fragile: {
+      internal: ["DieIfVisited"],
+      tags: ["Killing", "Visits", "Self Kill"],
+      description: "Will be killed if visited.",
+      eventDescription: "This modifier does nothing when on an Event.",
     },
     Frustrated: {
       internal: ["FrustratedCondemnation"],
@@ -565,6 +599,13 @@ const modifierData = {
       eventDescription: "This Event will only occur once.",
       allowDuplicate: true,
     },
+    Phony: {
+      internal: ["AppearAsVillagePROnDeath"],
+      tags: ["Deception"],
+      description: "Appears as Village Power Role when condemned or on death.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Shady", "Faceless", "Suspect", "Unassuming"],
+    },
     Picky: {
       internal: ["GuessRoleOrGetBlocked"],
       tags: ["Self Block"],
@@ -688,6 +729,12 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Humble", "Respected", "Exposed"],
     },
+    Scary: {
+      internal: ["BlockedFearful"],
+      tags: ["Self Block"],
+      description: "Will Block any Fearful roles when alive.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Seductive: {
       internal: ["BlockTargets"],
       tags: ["Visits", "Role Blocker"],
@@ -712,7 +759,7 @@ const modifierData = {
       description:
         "Appears as a Random Evil Role from the setup when investigated or condemned. Appears as their real role on death.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Faceless", "Unassuming", "Suspect"],
+      incompatible: ["Faceless", "Unassuming", "Suspect", "Phony",],
     },
     Shielded: {
       internal: ["StartWithShield"],
@@ -727,7 +774,7 @@ const modifierData = {
       description:
         "Appears as a Vanilla Evil Role from the setup when investigated or condemned. Appears as their real role on death.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Faceless", "Unassuming", "Shady"],
+      incompatible: ["Faceless", "Unassuming", "Shady", "Phony"],
     },
     Simple: {
       internal: ["Simple"],
@@ -810,7 +857,7 @@ const modifierData = {
       tags: ["Villager", "Deception"],
       description: "Appears as Villager when condemned or on death.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Shady", "Faceless", "Suspect"],
+      incompatible: ["Shady", "Faceless", "Suspect", "Phony"],
     },
     Unholy: {
       internal: ["Unholy"],

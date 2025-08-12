@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_REDIRECT_ACTION } = require("../../const/Priority");
+const { PRIORITY_SUPPORT_VISIT_DEFAULT } = require("../../const/Priority");
 
 module.exports = class Puppeteering extends Card {
   constructor(role) {
@@ -14,6 +14,7 @@ module.exports = class Puppeteering extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["self", isControlled] },
         action: {
+          priority: PRIORITY_SUPPORT_VISIT_DEFAULT,
           labels: ["effect", "puppet"],
           role: this.role,
           run: function () {

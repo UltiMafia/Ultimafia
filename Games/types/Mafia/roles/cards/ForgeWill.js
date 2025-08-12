@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_EFFECT_GIVER_EARLY } = require("../../const/Priority");
 const { maxWillLength } = require("../../../../../data/constants");
 
 module.exports = class ForgeWill extends Card {
@@ -18,7 +18,7 @@ module.exports = class ForgeWill extends Card {
           submit: "Forge",
         },
         action: {
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT - 1,
+          priority: PRIORITY_EFFECT_GIVER_EARLY - 1,
           run: function () {
             this.actor.role.data.forgedWill = this.target;
           },
@@ -30,7 +30,7 @@ module.exports = class ForgeWill extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["Mafia"] },
         action: {
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          priority: PRIORITY_EFFECT_GIVER_EARLY,
           run: function () {
             this.actor.queueAlert(
               `:will: You find ${this.target.name}'s real will: ${this.target.lastWill}`

@@ -1,5 +1,4 @@
 const Card = require("../../Card");
-const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 
 module.exports = class Choose3toLiveOrDie extends Card {
   constructor(role) {

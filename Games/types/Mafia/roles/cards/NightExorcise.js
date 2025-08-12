@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_KILL_EXORCISE } = require("../../const/Priority");
 
 module.exports = class NightExorcise extends Card {
   constructor(role) {
@@ -13,7 +13,7 @@ module.exports = class NightExorcise extends Card {
         targets: { include: ["dead"], exclude: ["alive", "self"] },
         action: {
           labels: ["exorcise"],
-          priority: PRIORITY_KILL_DEFAULT,
+          priority: PRIORITY_KILL_EXORCISE,
           run: function () {
             if (this.target.alive) return;
             if (this.dominates()) {

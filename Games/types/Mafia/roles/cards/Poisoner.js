@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_EFFECT_GIVER_EARLY } = require("../../const/Priority");
 
 module.exports = class Poisoner extends Card {
   constructor(role) {
@@ -12,7 +12,7 @@ module.exports = class Poisoner extends Card {
         targets: { include: ["alive"], exclude: ["Mafia"] },
         action: {
           labels: ["effect", "poison"],
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          priority: PRIORITY_EFFECT_GIVER_EARLY,
           run: function () {
             if (this.dominates()) {
               this.target.giveEffect("Poison", this.actor);

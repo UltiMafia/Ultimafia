@@ -1,5 +1,5 @@
 const Item = require("../Item");
-const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../const/Priority");
+const { PRIORITY_ITEM_GIVER_EARLY } = require("../const/Priority");
 
 module.exports = class Doll extends Item {
   constructor(options) {
@@ -13,7 +13,7 @@ module.exports = class Doll extends Item {
         item: this,
         action: {
           labels: ["giveItem", "doll", "absolute"],
-          priority: PRIORITY_ITEM_GIVER_DEFAULT,
+          priority: PRIORITY_ITEM_GIVER_EARLY,
           item: this,
           run: function () {
             this.item.drop();

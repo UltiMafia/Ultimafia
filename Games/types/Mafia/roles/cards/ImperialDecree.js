@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 const {
-  PRIORITY_EFFECT_GIVER_DEFAULT,
+  PRIORITY_EFFECT_GIVER_EARLY,
   PRIORITY_WIN_CHECK_DEFAULT,
 } = require("../../const/Priority");
 
@@ -25,7 +25,7 @@ module.exports = class ImperialDecree extends Card {
         multiMax: 2,
         action: {
           labels: ["effect", "cannotBeVoted"],
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          priority: PRIORITY_EFFECT_GIVER_EARLY,
           role: this.role,
           run: function () {
             this.duelistWasKilled = false;
@@ -43,7 +43,7 @@ module.exports = class ImperialDecree extends Card {
         //targets: { include: [isSelectedByImperialDecree] },
         action: {
           role: this.role,
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT + 1,
+          priority: PRIORITY_EFFECT_GIVER_EARLY + 1,
           run: function () {
             if (!this.role.duelists.includes(this.target)) {
               this.actor.queueAlert(

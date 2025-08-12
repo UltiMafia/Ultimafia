@@ -189,7 +189,43 @@ module.exports = class MafiaRole extends Role {
     return true;
   }
 
+  canTargetPlayer(player) {
+    if (this.modifier != null) {
+      if (this.modifier.split("/").includes("Loyal") && player.role.alignment != this.alignment) {
+        return false;
+      } else if (this.modifier.split("/").includes("Disloyal") && player.role.alignment == this.alignment) {
+        return false;
+      }
+      if (this.modifier.split("/").includes("Holy") && player.isDemonic(true)) {
+        return false;
+      } else if (this.modifier.split("/").includes("Unholy") && !player.isDemonic(true)) {
+        return false;
+      }
+      if (this.modifier.split("/").includes("Refined") && player.role.data.banished == true) {
+        return false;
+      } else if (this.modifier.split("/").includes("Unrefined") && player.role.data.banished != true) {
+        return false;
+      }
+      if (this.modifier.split("/").includes("Simple") && !this.isVanilla(player)) {
+        return false;
+      } else if (this.modifier.split("/").includes("Complex") && this.isVanilla(player)) {
+        return false;
+      }
+    }
+    return true;
+  }
 
+  isVanilla(player) {
+    if (
+      player.role.name == "Villager" ||
+      player.role.name == "Mafioso" ||
+      player.role.name == "Cultist" ||
+      player.role.name == "Grouch"
+    ) {
+      return true;
+    }
+    return false;
+  }
 
   
 };

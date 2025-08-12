@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_ITEM_GIVER_EARLY } = require("../../const/Priority");
 
 module.exports = class GiveBread extends Card {
   constructor(role) {
@@ -13,7 +13,7 @@ module.exports = class GiveBread extends Card {
         multiMax: 2,
         action: {
           labels: ["giveItem", "bread"],
-          priority: PRIORITY_ITEM_GIVER_DEFAULT,
+          priority: PRIORITY_ITEM_GIVER_EARLY,
           run: function () {
             this.target.forEach((p) => {
               p.holdItem("Bread");

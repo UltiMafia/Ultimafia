@@ -499,7 +499,7 @@ module.exports = {
         "viewAlts",
         "clearSetupName",
         "clearBio",
-        "clearPronouns"
+        "clearPronouns",
         "clearVideo",
         "clearBirthday",
         "clearAvi",
