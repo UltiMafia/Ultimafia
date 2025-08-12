@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const { PRIORITY_SUPPORT_VISIT_DEFAULT } = require("../../const/Priority");
 
 module.exports = class Warlockracy extends Card {
   constructor(role) {
@@ -10,6 +11,7 @@ module.exports = class Warlockracy extends Card {
         flags: ["voting"],
         action: {
           role: this.role,
+          priority: PRIORITY_SUPPORT_VISIT_DEFAULT,
           run: function () {
             this.role.predictedVote = this.target;
           },
