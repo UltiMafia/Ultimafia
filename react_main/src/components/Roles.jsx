@@ -547,6 +547,149 @@ export function RoleSearch(props) {
   );
 }
 
+export function ModifierSearch(props) {
+  const theme = useTheme();
+  /*
+  const [roleListType, setRoleListType] = useState(
+    Alignments[props.gameType][0]
+  );
+  */
+  const [searchVal, setSearchVal] = useState("");
+  const roleCellRefs = useRef([]);
+  const user = useContext(UserContext);
+  const siteInfo = useContext(SiteInfoContext);
+  const popover = useContext(PopoverContext);
+
+  function onAlignNavClick(alignment) {
+    setSearchVal("");
+    setRoleListType(alignment);
+  }
+/*
+  const roleAbbreviations = {
+    blue: ["Villager"],
+    nilla: ["Villager", "Mafioso"],
+    gs: ["Gunsmith"],
+    gf: ["Godfather"],
+    bs: ["Blacksmith"],
+    orc: ["Oracle"],
+    ww: ["Werewolf", "Hellhound"],
+    hh: ["Hellhound"],
+    bg: ["Bodyguard"],
+    cl: ["Cult Leader"],
+    gr: ["Graverobber"],
+    hb: ["Heartbreaker"],
+    lk: ["Lightkeeper"],
+    lm: ["Loudmouth"],
+    mm: ["Mastermind"],
+    ph: ["Party Host"],
+    sk: ["Serial Killer"],
+    sw: ["Sleepwalker"],
+    tc: ["Town Crier"],
+    tl: ["Tea Lady"],
+    rh: ["Robin Hood"],
+    hk: ["Housekeeper"],
+  };
+*/
+  function onSearchInput(query) {
+    setSearchVal(query.toLowerCase());
+
+    if (query !== "" && roleListType.length > 0) setRoleListType("");
+    else if (query === "" && roleListType.length === 0)
+      setRoleListType(Alignments[props.gameType][0]);
+  }
+
+  function onRoleCellClick(roleCellEl, role) {
+    popover.onClick(
+      Promise.resolve({
+        data: {
+          roleName: siteInfo.modifiers[props.gameType][role.name],
+        },
+      }),
+      "role",
+      roleCellEl,
+      role.name
+    );
+  }
+
+  if (!siteInfo.modifiers) return <NewLoading small />;
+
+  const roleCells = siteInfo.modifiers[props.gameType].map((role, i) => {
+    const searchTerms = searchVal
+      .split(",")
+      .filter((term) => term.trim() !== "")
+      .map((term) => term.trim().toLowerCase());
+
+    const matchesSearch =
+      searchTerms.length === 0 ||
+      searchTerms.some(
+        (term) =>
+          role.name.toLowerCase().includes(term) ||
+          role.tags.join("").toLowerCase().includes(term) ||
+          Object.entries(roleAbbreviations).some(
+            ([shortcut, roleNames]) =>
+              shortcut === term && roleNames.includes(role.name)
+          )
+      );
+
+    if (
+      !role.disabled &&
+      ((searchVal.length > 0 && (role.name.toLowerCase().indexOf(searchVal) !== -1 || matchesSearch)))
+    ) {
+      return (
+        <Card
+          className="role-cell"
+          key={role.name}
+          sx={{ padding: "4px", margin: "4px" }}
+        >
+          {user.loggedIn && props.onAddClick && (
+            <IconButton
+              className="add-role fa-plus-circle fas"
+              onClick={(e) => {
+                e.stopPropagation();
+                props.onAddClick(role);
+              }}
+              sx={{ padding: "4px", fontSize: "16px" }}
+            ></IconButton>
+          )}
+          <CardContent
+            className="role-cell-content"
+            onMouseOver={() =>
+              null && onRoleCellClick(roleCellRefs.current[i], role)
+            }
+            ref={(el) => (roleCellRefs.current[i] = el)}
+            sx={{ padding: "4px" }}
+          >
+                <div
+                  className={`modifier modifier-${props.gameType}-${role.name}`}
+                  />
+            
+            <Typography variant="body2">{role.name}</Typography>
+          </CardContent>
+        </Card>
+      );
+    }
+  });
+
+  return (
+    <Box className="role-list-container">
+      <Box className="bot-bar">
+        <Tabs
+          value={roleListType}
+          onChange={(_, value) => setRoleListType(value)}
+          centered
+        >
+        </Tabs>
+        <SearchBar
+          value={searchVal}
+          placeholder="🔎 Modifier Name"
+          onInput={onSearchInput}
+        />
+      </Box>
+      <Box className="role-list">{roleCells}</Box>
+    </Box>
+  );
+}
+
 function RoleBanners(props) {
   const newlyAdded = props.newlyAdded;
   const recentlyUpdated = props.recentlyUpdated;
