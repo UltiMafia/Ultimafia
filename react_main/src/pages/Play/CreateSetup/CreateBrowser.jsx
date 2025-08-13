@@ -3,7 +3,7 @@ import { Redirect, useLocation } from "react-router-dom";
 import axios from "axios";
 
 import { UserContext, SiteInfoContext } from "../../../Contexts";
-import { RoleCount, RoleSearch } from "../../../components/Roles";
+import { RoleCount, RoleSearch, ModifierSearch } from "../../../components/Roles";
 import Form from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 
@@ -312,6 +312,7 @@ export default function CreateSetup(props) {
   return (
     <div className="span-panel main create-setup">
       <RoleSearch onAddClick={onAddRole} gameType={gameType} />
+      <ModifierSearch onAddClick={onAddRole} gameType={gameType} />
       {user.loggedIn && (
         <div className="creation-options">
           <Form
