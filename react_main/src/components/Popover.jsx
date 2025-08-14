@@ -169,6 +169,9 @@ export function usePopover(siteInfo) {
       case "role":
         content = parseRolePopover(content.roleName, content.modifiers);
         break;
+      case "modifier":
+        content = parseModifierPopover(content.roleName);
+        break;
       case "roleGroup":
         content = parseRoleGroupPopover(content);
         break;
@@ -996,6 +999,25 @@ export function parseRolePopover(role, modifiers) {
       );
     }
   }
+
+  return result;
+}
+
+export function parseModifierPopover(mod) {
+  const result = [];
+
+  if (!mod) {
+    return [];
+  }
+
+
+
+  //Description
+  const descLines = [mod.description];
+
+  result.push(
+    <InfoRow title="Description" content={<ul>{descLines}</ul>} key="desc" />
+  );
 
   return result;
 }

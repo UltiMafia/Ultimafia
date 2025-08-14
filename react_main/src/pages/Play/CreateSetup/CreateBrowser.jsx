@@ -2,8 +2,12 @@ import React, { useState, useEffect, useReducer, useContext } from "react";
 import { Redirect, useLocation } from "react-router-dom";
 import axios from "axios";
 
+import {  Accordion,
+  AccordionSummary,
+  AccordionDetails, Typography, Stack, } from "@mui/material";
+
 import { UserContext, SiteInfoContext } from "../../../Contexts";
-import { RoleCount, RoleSearch, ModifierSearch } from "../../../components/Roles";
+import { RoleCount, RoleSearch, ModifierSearch, ModifierCount } from "../../../components/Roles";
 import Form from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 
@@ -194,6 +198,42 @@ export default function CreateSetup(props) {
     });
   }
 
+  function onAddModifier(mod) {
+    let index = modifiers.length;
+    if(index>2){
+      return;
+    }
+    let tmpModifiers = modifiers.filter((m)=>m);
+    tmpModifiers.push(mod);
+    setModifiers(tmpModifiers);
+    /*
+    const tmpModifiers = [...modifiers];
+    const modifier = mod;
+    if (modifier) {
+      tmpModifiers[index] = modifier;
+    } else {
+      delete tmpModifiers[index];
+    }
+    setModifiers(tmpModifiers);
+    */
+  }
+
+    function onRemoveModifier(mod) {
+    let index = modifiers.indexOf(mod);
+    if(index == -1){
+      return;
+    }
+    let tmpModifiers = modifiers.filter((m)=>m);
+    tmpModifiers.splice(index,1);
+    setModifiers(tmpModifiers);
+    /*
+    const tmpModifiers = [...modifiers];
+    delete tmpModifiers[index];
+    
+    setModifiers(tmpModifiers);
+    */
+  }
+
   function onModifierChange(e, index) {
     const tmpModifiers = [...modifiers];
     const modifier = e.target.value;
@@ -288,7 +328,14 @@ export default function CreateSetup(props) {
     const mappedMods = selectedModifiers.map((e) =>
       gameModifiers.find((x) => x.name === e)
     );
-    const incompatibles = mappedMods.map((e) => e.incompatible).flat();
+    let temp;
+    if(mappedMods && mappedMods.length <= 0){
+      temp = [];
+    }
+    else{
+      temp = mappedMods.filter((k) => k).map((e) => e.incompatible).flat();
+    }
+    const incompatibles = temp;
     const modifierOptions = gameModifiers
       .filter((e) => !e.hidden)
       .filter((e) => e.allowDuplicate || !selectedModifiers.includes(e.name))
@@ -312,7 +359,29 @@ export default function CreateSetup(props) {
   return (
     <div className="span-panel main create-setup">
       <RoleSearch onAddClick={onAddRole} gameType={gameType} />
-      <ModifierSearch onAddClick={onAddRole} gameType={gameType} />
+      <Accordion>
+              <AccordionSummary>
+                <Typography variant="h6">Modifiers</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <ModifierSearch onAddClick={onAddModifier} gameType={gameType} curMods={modifiers} />
+              </AccordionDetails>
+            </Accordion>
+      <mod>Selected Modifiers 
+        <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
+        {modifiers.map((m)=> 
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+          <ModifierCount
+                    role={m}
+                    gameType={gameType}
+                    sx={{ fontSize: "14px" }}
+                    onClick={() => {onRemoveModifier(m);
+          }}
+          />
+          {m} 
+                  </Stack>)}
+                  </Stack>
+      </mod>
       {user.loggedIn && (
         <div className="creation-options">
           <Form
@@ -322,38 +391,6 @@ export default function CreateSetup(props) {
             onSubmit={() => onCreateSetup(roleData, editing, setRedirect)}
           />
           <div className="rolesets-wrapper">
-            <div className="form">
-              <div className="modifiers-select">
-                <div className="field-wrapper">
-                  <div className="label">Modifier 1</div>
-                  <select
-                    disabled={modifiers[1]}
-                    onChange={(e) => onModifierChange(e, 0)}
-                  >
-                    {getCompatibleModifiers()}
-                  </select>
-                </div>
-                {modifiers[0] && (
-                  <div className="field-wrapper">
-                    <div className="label">Modifier 2</div>
-                    <select
-                      disabled={modifiers[2]}
-                      onChange={(e) => onModifierChange(e, 1)}
-                    >
-                      {getCompatibleModifiers(modifiers[0])}
-                    </select>
-                  </div>
-                )}
-                {modifiers[1] && (
-                  <div className="field-wrapper">
-                    <div className="label">Modifier 3</div>
-                    <select onChange={(e) => onModifierChange(e, 2)}>
-                      {getCompatibleModifiers(modifiers[0], modifiers[1])}
-                    </select>
-                  </div>
-                )}
-              </div>
-            </div>
             <div className="rolesets">
               {roleSets}
               {showAddRoleSet && (
