@@ -1,6 +1,7 @@
 const modifierData = {
   Mafia: {
     Armed: {
+      category: "Items",
       internal: ["StartWithGun"],
       tags: ["Items", "Killing", "Gun", "Day Killer"],
       description: "Starts with a gun.",
@@ -8,6 +9,7 @@ const modifierData = {
       allowDuplicate: true,
     },
     Apprehensive: {
+      category: "Items",
       internal: ["LearnVisitorsAndArm"],
       tags: ["Items", "Gun", "Killing", "Reflexive", "Information"],
       description:
@@ -15,18 +17,21 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Ascetic: {
+      category: "Visits",
       internal: ["Ascetic"],
       tags: ["Role Blocker", "Kill Interaction", "Reflexive"],
       description: "Is untargetable from all non-killing actions.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Astral: {
+      category: "Visits",
       internal: ["Astral"],
       tags: ["Visits", "Astral"],
       description: "All actions done by this player are not visits.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Austere: {
+      category: "Other",
       internal: ["OnlyUseInPlayRoles"],
       tags: ["Austere"],
       description:
@@ -35,6 +40,7 @@ const modifierData = {
       incompatible: ["Excessive"],
     },
     Backup: {
+      category: "Other",
       internal: ["BackUpModifier"],
       tags: ["Conversion"],
       description:
@@ -43,6 +49,7 @@ const modifierData = {
       incompatible: ["Retired"],
     },
     Banished: {
+      category: "Other",
       internal: ["BanishedRole"],
       tags: ["Banished"],
       description:
@@ -51,6 +58,7 @@ const modifierData = {
       incompatible: ["Inclusive", "Exclusive"],
     },
     Birdbrained: {
+      category: "Items",
       internal: ["StartWithFalcon"],
       tags: ["Information", "Items", "Falcon", "Visits"],
       description: "Starts with a falcon.",
@@ -58,30 +66,35 @@ const modifierData = {
       allowDuplicate: true,
     },
     Biased: {
+      category: "Appearance",
       internal: ["OnePlayerShowsAsEvil"],
       tags: ["Information"],
       description: "One Village-aligned player will have unfavorable results to this role's information abilities.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Blessed: {
+      category: "Other",
       internal: ["StartWithExtraLife"],
       tags: ["Extra Lives"],
       description: "Starts with an Extra Life",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Blind: {
+      category: "Appearance",
       internal: ["Blind"],
       tags: ["Speech", "Blind"],
       description: "Sees all speech as anonymous.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Bloodthirsty: {
+      category: "Other",
       internal: ["ModifierBloodthirsty"],
       tags: ["Visits", "Killing"],
       description: "When visiting, their target will be killed.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Boastful: {
+      category: "Other",
       internal: ["ModifierBoastful"],
       tags: ["Information", "Reports"],
       description:
@@ -89,6 +102,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Bouncy: {
+      category: "Visits",
       internal: ["Bouncy"],
       tags: ["Redirection"],
       description:
@@ -96,6 +110,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Braggadocious: {
+      category: "Other",
       internal: ["PreventFactionJoints"],
       tags: [],
       description:
@@ -103,13 +118,15 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Brutish: {
+      category: "Other",
       internal: ["MakeSkittishOnRoleShare"],
-      tags: [],
+      tags: ["Role Share"],
       description:
         "Players who role-share with a Brutish player become skittish. Skittish players must accept all incoming role-shares.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Bulletproof: {
+      category: "Items",
       internal: ["StartWithArmor"],
       tags: ["Items", "Armor"],
       description: "Starts with armor.",
@@ -117,6 +134,7 @@ const modifierData = {
       allowDuplicate: true,
     },
     Caffeinated: {
+      category: "Items",
       internal: ["StartWithCoffee"],
       tags: ["Items", "Coffee"],
       description: "Starts with a Coffee.",
@@ -124,6 +142,7 @@ const modifierData = {
       allowDuplicate: true,
     },
     Camouflaged: {
+      category: "Appearance",
       internal: ["AppearAsRandomRole"],
       tags: ["Roles", "Deception"],
       description:
@@ -131,6 +150,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Chaotic: {
+      category: "Other",
       internal: ["BecomeExcessRole"],
       tags: ["Conversion", "Excess Roles"],
       description:
@@ -138,12 +158,14 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Checking: {
+      category: "Visits",
       internal: ["CheckSuccessfulVisit"],
       tags: ["Information", "Visits"],
       description: "Learns if their visit was successful or if it was blocked.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Churchgoing: {
+      category: "Items",
       internal: ["StartWithTract"],
       tags: ["Items", "Convert Saver", "Tract"],
       description: "Starts with a tract.",
@@ -151,6 +173,7 @@ const modifierData = {
       allowDuplicate: true,
     },
     Clannish: {
+      category: "Other",
       internal: ["AddRottenCopy"],
       tags: ["Delirium", "Setup Changes"],
       description:
@@ -158,12 +181,14 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Clueless: {
+      category: "Appearance",
       internal: ["Clueless"],
       tags: ["Speech", "Clueless", "Random Messages"],
       description: "Sees all speech as coming from random people.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Clumsy: {
+      category: "Visits",
       internal: ["RevealRoleToTarget"],
       tags: ["Information", "Visits", "Roles"],
       description:
@@ -171,12 +196,14 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Choosy: {
+      category: "Visits",
       internal: ["GuessRoleToGetBlocked"],
       tags: ["Self Block"],
       description: "Each night chooses a role. Actions will be blocked if visiting a player with that role.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Complex: {
+      category: "Visits",
       internal: ["Complex"],
       tags: ["Visits", "Block Self", "Vanilla", "Complex"],
       description:
@@ -186,12 +213,14 @@ const modifierData = {
       incompatible: ["Simple"],
     },
     Commuting: {
+      category: "Visits",
       internal: ["Commuting"],
       tags: ["Role Blocker", "Reflexive"],
       description: "Is untargetable from all actions.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Confused: {
+      category: "Appearance",
       internal: ["ModifierConfused"],
       tags: ["Manipulative", "Delirium", "Block Self"],
       description: "Investigative reports appear incorrect 50% of the time.",
@@ -199,20 +228,23 @@ const modifierData = {
       incompatible: ["Sane", "Insane", "Naive", "Paranoid"],
     },
     Consecutive: {
+      category: "Visits",
       internal: ["Consecutive"],
-      tags: ["Visits", "Block Self", "Consecutive"],
+      tags: ["Visits", "Consecutive"],
       description:
       "Can only target players they targeted previously.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Fair", "Nonconsecutive"],
     },
     Creamed: {
+      category: "Items",
       internal: ["StartWithIceCream"],
       tags: ["Items", "Ice Cream"],
       description: "Starts with a Ice Cream. Ice Cream can be used to become a Vanilla role",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Crystalline: {
+      category: "Items",
       internal: ["StartWithCrystal"],
       tags: ["Revealing", "Items", "Crystal"],
       description: "Starts with a crystal ball.",
@@ -220,12 +252,14 @@ const modifierData = {
       allowDuplicate: true,
     },
     Dead: {
+      category: "Other",
       internal: ["Dead"],
       tags: ["Dead"],
       description: "Starts game dead",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Demonic: {
+      category: "Other",
       internal: ["Demonic"],
       tags: ["Demonic", "Essential"],
       description:
@@ -233,6 +267,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Delayed: {
+      category: "Visits",
       internal: ["Delayed"],
       tags: ["Delayed", "Meetings"],
       description:
@@ -242,6 +277,7 @@ const modifierData = {
       allowDuplicate: true,
     },
     Diplomatic: {
+      category: "Other",
       internal: ["CondemnImmune"],
       tags: ["Condemn", "Condemn Immune"],
       description: "Cannot be condemned.",
@@ -249,6 +285,7 @@ const modifierData = {
       incompatible: ["Frustrated"],
     },
     Disloyal: {
+      category: "Visits",
       internal: ["Disloyal"],
       tags: ["Visits", "Block Self", "Alignments", "Disloyal"],
       description:
@@ -257,6 +294,7 @@ const modifierData = {
       incompatible: ["Loyal"],
     },
     Dovish: {
+      category: "Other",
       internal: ["VillageMightSurviveCondemn"],
       tags: ["Condemn", "Condemn Immune", "Alignments", "Protective"],
       description:
@@ -264,6 +302,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Sorrowful: {
+      category: "Visits",
       internal: ["BlockedUnlessKilled"],
       tags: ["Block Self", "Death"],
       description:
@@ -272,6 +311,7 @@ const modifierData = {
       incompatible: ["Fatal"],
     },
     Even: {
+      category: "Visits",
       internal: ["Even"],
       tags: ["Even", "Meetings"],
       description:
@@ -280,6 +320,7 @@ const modifierData = {
       incompatible: ["Odd", "Delayed"],
     },
     Excessive: {
+      category: "Other",
       internal: ["ExcessiveRole"],
       tags: ["Excessive"],
       description:
@@ -288,6 +329,7 @@ const modifierData = {
       incompatible: ["Austere"],
     },
     Exclusive: {
+      category: "Other",
       internal: ["Remove1Banished"],
       tags: ["Banished", "Setup Changes"],
       description: "Removes 1 Banished Role in Closed Setups.",
@@ -296,6 +338,7 @@ const modifierData = {
       incompatible: ["Banished", "Inclusive"],
     },
     Exposed: {
+      category: "Other",
       internal: ["PublicReveal"],
       tags: ["Reveal Self"],
       description: "Starts revealed to everyone.",
@@ -303,6 +346,7 @@ const modifierData = {
       incompatible: ["Humble", "Scatterbrained", "Respected", "Modest"],
     },
     Explosive: {
+      category: "Items",
       internal: ["StartWithBomb"],
       tags: ["Items", "Killing"],
       description: "Starts with a bomb.",
@@ -310,6 +354,7 @@ const modifierData = {
       allowDuplicate: true,
     },
     Faceless: {
+      category: "Appearance",
       internal: ["AppearAsFliplessOnDeath"],
       tags: ["Clean Night Kill"],
       description:
@@ -318,6 +363,7 @@ const modifierData = {
       incompatible: ["Shady", "Unassuming", "Phony", "Suspect"],
     },
     Fair: {
+      category: "Visits",
       internal: ["FairModifier"],
       tags: ["Fair"],
       description:
@@ -326,6 +372,7 @@ const modifierData = {
       incompatible: ["Nonconsecutive", "Consecutive"],
     },
     Fatal: {
+      category: "Visits",
       internal: ["BlockedIfKilled"],
       tags: ["Block Self", "Death"],
       description:
@@ -334,6 +381,7 @@ const modifierData = {
       incompatible: ["Sorrowful"],
     },
     Felonious: {
+      category: "Other",
       internal: ["VotingPowerZero"],
       tags: ["Voting"],
       description: "Player's vote is worth 0.",
@@ -341,18 +389,21 @@ const modifierData = {
       incompatible: ["Trustworthy", "Untrustworthy"],
     },
     Fearful: {
+      category: "Visits",
       internal: ["BlockedIfScary"],
       tags: ["Self Block"],
       description: "Actions will be Blocked if a Scary role is alive.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Fragile: {
+      category: "Visits",
       internal: ["DieIfVisited"],
       tags: ["Killing", "Visits", "Self Kill"],
       description: "Will be killed if visited.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Frustrated: {
+      category: "Other",
       internal: ["FrustratedCondemnation"],
       tags: ["Voting", "Condemn"],
       description:
@@ -361,18 +412,21 @@ const modifierData = {
       incompatible: ["Diplomatic"],
     },
     Global: {
+      category: "Visits",
       internal: ["GlobalModifier"],
       tags: ["Visits", "Dawn"],
       description: "Will target All players at Night",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Gunslinging: {
+      category: "Items",
       internal: ["DefendAndSnatchGun"],
       tags: ["Items", "Gun"],
       description: "80% chance of snatching a gun when shot at.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Hemophilic: {
+      category: "Other",
       internal: ["ConvertKillToBleed"],
       tags: ["Bleeding"],
       description:
@@ -380,6 +434,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Holy: {
+      category: "Visits",
       internal: ["Holy"],
       tags: ["Visits", "Block Self", "Modifiers", "Holy"],
       description:
@@ -388,6 +443,7 @@ const modifierData = {
       incompatible: ["Unholy"],
     },
     Humble: {
+      category: "Appearance",
       internal: ["Humble"],
       tags: ["Vanilla"],
       description:
@@ -396,6 +452,7 @@ const modifierData = {
       incompatible: ["Respected", "Scatterbrained", "Exposed"],
     },
     Inclusive: {
+      category: "Other",
       internal: ["Add1Banished"],
       tags: ["Banished", "Setup Changes"],
       description: "Adds 1 Banished Role in Closed Setups.",
@@ -404,6 +461,7 @@ const modifierData = {
       incompatible: ["Banished", "Exclusive"],
     },
     Infamous: {
+      category: "Other",
       internal: ["RevealToEvils"],
       tags: ["Reveal Self"],
       description: "Starts revealed to all Evil players.",
@@ -411,12 +469,14 @@ const modifierData = {
       incompatible: ["Exposed"],
     },
     Insane: {
+      category: "Appearance",
       internal: ["FalseModifier"],
       tags: ["FalseMode"],
       description: "All Information received by this role is false.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Insightful: {
+      category: "Other",
       internal: ["Learn3ExcessRoles"],
       tags: ["Investigative", "Roles", "Excess Roles"],
       description:
@@ -424,6 +484,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Inverse: {
+      category: "Other",
       internal: ["VotingNegative"],
       tags: ["Voting"],
       description: "Player's vote is Negative.",
@@ -431,6 +492,7 @@ const modifierData = {
       incompatible: ["Felonious"],
     },
     Kleptomaniac: {
+      category: "Items",
       internal: ["StealFromTargets"],
       tags: ["Items", "Visits"],
       description:
@@ -438,12 +500,14 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Klutzy: {
+      category: "Items",
       internal: ["DropOwnItems"],
       tags: ["Items"],
       description: "Will passively drop any items held or received.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Lazy: {
+      category: "Visits",
       internal: ["ModifierLazy"],
       tags: ["Manipulative", "Delayed"],
       description:
@@ -451,6 +515,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Leaky: {
+      category: "Other",
       internal: ["ModifierLeaky"],
       tags: ["Whispers"],
       description:
@@ -458,18 +523,21 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Liminal: {
+      category: "Visits",
       internal: ["VisitDeadOrAlive"],
       tags: ["Visits", "Dead", "Liminal"],
       description: "Secondary actions can be used on dead or living players.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Linchpin: {
+      category: "Other",
       internal: ["KillAlignedOnDeath"],
       tags: ["Essential", "Selective Revealing", "Linchpin"],
       description: "If dead, all aligned players will die too.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Lone: {
+      category: "Other",
       internal: ["ModifierLone"],
       tags: ["Lone"],
       description:
@@ -477,6 +545,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Loud: {
+      category: "Visits",
       internal: ["ModifierLoud"],
       tags: ["Reflexive", "Information"],
       description:
@@ -484,6 +553,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Loyal: {
+      category: "Visits",
       internal: ["Loyal"],
       tags: ["Visits", "Block Self", "Alignments", "Loyal"],
       description:
@@ -492,6 +562,7 @@ const modifierData = {
       incompatible: ["Disloyal"],
     },
     Luminous: {
+      category: "Items",
       internal: ["StartWithCandle"],
       tags: ["Information", "Items", "Candle", "Visits"],
       description: "Starts with a candle.",
@@ -499,12 +570,14 @@ const modifierData = {
       allowDuplicate: true,
     },
     Macho: {
+      category: "Visits",
       internal: ["SaveImmune"],
       tags: ["Macho", "Save Immune"],
       description: "Can not be saved or protected from kills by any means.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Macabre: {
+      category: "Items",
       internal: ["StartWithSyringe"],
       tags: ["Revive", "Items", "Syringe", "Graveyard"],
       description: "Starts with a syringe.",
@@ -512,6 +585,7 @@ const modifierData = {
       allowDuplicate: true,
     },
     Magnetic: {
+      category: "Visits",
       internal: ["Magnetic"],
       tags: ["Redirection"],
       description:
@@ -519,6 +593,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Married: {
+      category: "Other",
       internal: ["LearnAndLifeLinkToPlayer"],
       tags: ["Information", "Linked"],
       description:
@@ -526,12 +601,14 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Masked: {
+      category: "Appearance",
       internal: ["DisguiseAsTarget"],
       tags: ["Roles", "Deception", "Suits"],
       description: "Gains a suit of each target's role.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Modest: {
+      category: "Appearance",
       internal: ["Modest"],
       tags: ["Modifiers"],
       description: "Appears to self with no modifiers.",
@@ -539,12 +616,14 @@ const modifierData = {
       incompatible: ["Exposed"],
     },
     Morbid: {
+      category: "Visits",
       internal: ["VisitOnlyDead"],
       tags: ["Visits", "Dead", "Morbid"],
       description: "Secondary actions can only be used on dead players.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Narcissistic: {
+      category: "Visits",
       internal: ["TargetSelf50Percent"],
       tags: ["Redirection"],
       description:
@@ -552,12 +631,14 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Neighborly: {
+      category: "Other",
       internal: ["MeetWithNeighbors"],
       tags: ["Meeting"],
       description: "Attends a Night Meeting with their Neighbors.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Noisy: {
+      category: "Visits",
       internal: ["RevealNameToTarget"],
       tags: ["Information", "Visits"],
       description:
@@ -565,6 +646,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Notable: {
+      category: "Other",
       internal: ["RevealToVillage"],
       tags: ["Reveal Self"],
       description: "Starts revealed to all Village-aligned players.",
@@ -572,6 +654,7 @@ const modifierData = {
       incompatible: ["Exposed"],
     },
     Nonconsecutive: {
+      category: "Visits",
       internal: ["Nonconsecutive"],
       tags: ["Visits", "Block Self", "Nonconsecutive"],
       description:
@@ -580,6 +663,7 @@ const modifierData = {
       incompatible: ["Fair", "Consecutive"],
     },
     Odd: {
+      category: "Visits",
       internal: ["Odd"],
       tags: ["Odd", "Meetings"],
       description: "Can only attend secondary meetings on odd days and nights.",
@@ -587,12 +671,14 @@ const modifierData = {
       incompatible: ["Even"],
     },
     Omniscient: {
+      category: "Other",
       internal: ["Omniscient"],
       tags: ["Roles", "Visits", "Information"],
       description: "Each night see all visits and learn all players roles.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     "X-Shot": {
+      category: "Visits",
       internal: ["OneShot"],
       tags: ["X-Shot"],
       description: "Can only perform actions X times. X is equal the number of times this modifier is added.",
@@ -600,6 +686,7 @@ const modifierData = {
       allowDuplicate: true,
     },
     Phony: {
+      category: "Appearance",
       internal: ["AppearAsVillagePROnDeath"],
       tags: ["Deception"],
       description: "Appears as Village Power Role when condemned or on death.",
@@ -607,18 +694,21 @@ const modifierData = {
       incompatible: ["Shady", "Faceless", "Suspect", "Unassuming"],
     },
     Picky: {
+      category: "Visits",
       internal: ["GuessRoleOrGetBlocked"],
       tags: ["Self Block"],
       description: "Each night chooses a role. Actions will be blocked unless visiting a player with that role.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Pious: {
+      category: "Other",
       internal: ["ConvertKillersOnDeath"],
       tags: ["Sacrificial", "Conversion"],
       description: "On death, has a chance to redeem their killer.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Preoccupied: {
+      category: "Visits",
       internal: ["BlockIfVisited"],
       tags: ["Visits", "Block Self"],
       description:
@@ -626,12 +716,14 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Proactive: {
+      category: "Visits",
       internal: ["MustAct"],
       tags: ["Action"],
       description: "Must take actions.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Prosaic: {
+      category: "Items",
       internal: ["StartWithEnvelope"],
       tags: ["Messages", "Items", "Envelope"],
       description: "Starts with an envelope.",
@@ -639,18 +731,21 @@ const modifierData = {
       allowDuplicate: true,
     },
     Provocative: {
+      category: "Items",
       internal: ["Provocative"],
       tags: ["Messages", "Items", "Sockpuppet"],
       description: "Each day, receives a sockpuppet.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Random: {
+      category: "Visits",
       internal: ["TargetRandom"],
       tags: ["Redirection"],
       description: "Each night is redirected onto a random player.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Reactionary: {
+      category: "Other",
       internal: ["KillConverters"],
       tags: ["Convert Saver", "Killing", "Reflexive"],
       description:
@@ -658,19 +753,22 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Reclusive: {
+      category: "Other",
       internal: ["MakeShyOnRoleShare"],
-      tags: ["Killing", "Visits", "Self Kill"],
+      tags: ["Role Share"],
       description:
         "Players who role-share with a Reclusive player become shy. Shy players cannot accept incoming role-shares and cannot Private/Public Reveal.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Regretful: {
+      category: "Visits",
       internal: ["Regretful"],
       tags: ["Killing", "Visits", "Self Kill"],
       description: "Will be killed if their target was killed.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Refined: {
+      category: "Visits",
       internal: ["Refined"],
       tags: ["Visits", "Block Self", "Modifiers", "Refined"],
       description:
@@ -679,6 +777,7 @@ const modifierData = {
       incompatible: ["Unrefined"],
     },
     Resolute: {
+      category: "Visits",
       internal: ["Resolute"],
       tags: ["Unblockable"],
       description:
@@ -686,6 +785,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Respected: {
+      category: "Appearance",
       internal: ["VillagerToInvestigative"],
       tags: ["Villager", "Deception"],
       description: "Appears as a Villager to investigative roles.",
@@ -693,6 +793,7 @@ const modifierData = {
       incompatible: ["Humble", "Scatterbrained", "Exposed"],
     },
     Restless: {
+      category: "Visits",
       internal: ["ActWhileDead"],
       tags: ["Dead", "Graveyard", "Restless", "Graveyard Participation"],
       description: "Can only perform secondary actions while dead.",
@@ -700,6 +801,7 @@ const modifierData = {
       incompatible: ["Transcendent", "Vengeful"],
     },
     Retired: {
+      category: "Other",
       internal: ["Retired"],
       tags: ["Information", "Retired"],
       description:
@@ -708,6 +810,7 @@ const modifierData = {
       incompatible: ["Backup"],
     },
     Rifled: {
+      category: "Items",
       internal: ["StartWithRifle"],
       tags: ["Items", "Killing", "Gun", "Alignments", "Day Killer"],
       description: "Starts with a rifle.",
@@ -715,6 +818,7 @@ const modifierData = {
       allowDuplicate: true,
     },
     Sacrificial: {
+      category: "Visits",
       internal: ["Sacrificial"],
       tags: ["Sacrificial", "Killing", "Self Kill"],
       description:
@@ -722,6 +826,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Scatterbrained: {
+      category: "Appearance",
       internal: ["Scatterbrained"],
       tags: ["Visitor"],
       description:
@@ -730,30 +835,35 @@ const modifierData = {
       incompatible: ["Humble", "Respected", "Exposed"],
     },
     Scary: {
+      category: "Visits",
       internal: ["BlockedFearful"],
       tags: ["Self Block"],
       description: "Will Block any Fearful roles when alive.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Seductive: {
+      category: "Visits",
       internal: ["BlockTargets"],
       tags: ["Visits", "Role Blocker"],
       description: "While visiting a player, that player will be roleblocked.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Selfish: {
+      category: "Visits",
       internal: ["CanVisitSelf"],
       tags: ["Visits", "Role Blocker", "Selfish"],
       description: "Can target themselves.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Sensible: {
+      category: "Other",
       internal: ["LearnIfRoleChanged"],
       tags: ["Information"],
       description: "Each night learn what their role is.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Shady: {
+      category: "Appearance",
       internal: ["AppearAsRandomEvil"],
       tags: ["Deception"],
       description:
@@ -762,6 +872,7 @@ const modifierData = {
       incompatible: ["Faceless", "Unassuming", "Suspect", "Phony",],
     },
     Shielded: {
+      category: "Items",
       internal: ["StartWithShield"],
       tags: ["Items"],
       description: "Starts with a Shield.",
@@ -769,6 +880,7 @@ const modifierData = {
       allowDuplicate: true,
     },
     Suspect: {
+      category: "Appearance",
       internal: ["AppearAsVanillaEvil"],
       tags: ["Deception"],
       description:
@@ -777,6 +889,7 @@ const modifierData = {
       incompatible: ["Faceless", "Unassuming", "Shady", "Phony"],
     },
     Simple: {
+      category: "Visits",
       internal: ["Simple"],
       tags: ["Visits", "Block Self", "Vanilla", "Simple"],
       description:
@@ -785,12 +898,14 @@ const modifierData = {
       incompatible: ["Complex"],
     },
     Social: {
+      category: "Other",
       internal: ["MeetWithSocial"],
       tags: ["Meeting"],
       description: "Attends a meeting with all other Social players.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Steeled: {
+      category: "Items",
       internal: ["StartWithKnife"],
       tags: ["Bleeding", "Items", "Knife", "Killing", "Day Killer"],
       description: "Starts with a knife.",
@@ -798,12 +913,14 @@ const modifierData = {
       allowDuplicate: true,
     },
     Strong: {
+      category: "Other",
       internal: ["StrongModifier"],
       tags: ["Unblockable", "Strong"],
       description: "All kills performed by this player cannot be saved.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Suspended: {
+      category: "Visits",
       internal: ["Suspended"],
       tags: ["Suspended", "Meetings"],
       description:
@@ -813,18 +930,21 @@ const modifierData = {
       incompatible: ["Delayed"],
     },
     Telepathic: {
+      category: "Other",
       internal: ["ModifierTelepathic"],
       tags: ["Speaking"],
       description: "May anonymously contact any player.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Temporary: {
+      category: "Other",
       internal: ["LoseModifiers"],
       tags: ["Temporary", "Modifiers"],
       description: "Loses their Modifiers at the end of the Night.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Tinkering: {
+      category: "Items",
       internal: ["ForageItem"],
       tags: ["Items"],
       description:
@@ -832,12 +952,14 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Traitorous: {
+      category: "Other",
       internal: ["TurnIntoTraitorOnMafiaKill"],
       tags: ["Sacrificial", "Conversion", "Traitor"],
       description: "If killed by the Mafia, will turn into a Traitor instead.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Transcendent: {
+      category: "Visits",
       internal: ["ActAliveOrDead"],
       tags: ["Dead", "Graveyard", "Transcendent", "Graveyard Participation"],
       description: "Can perform secondary actions while either alive or dead.",
@@ -845,6 +967,7 @@ const modifierData = {
       incompatible: ["Restless", "Vengeful"],
     },
     Trustworthy: {
+      category: "Other",
       internal: ["VotingPowerIncrease"],
       tags: ["Voting"],
       description: "Player's vote is worth 1 more.",
@@ -853,6 +976,7 @@ const modifierData = {
       allowDuplicate: true,
     },
     Unassuming: {
+      category: "Appearance",
       internal: ["AppearAsVillagerOnDeath"],
       tags: ["Villager", "Deception"],
       description: "Appears as Villager when condemned or on death.",
@@ -860,6 +984,7 @@ const modifierData = {
       incompatible: ["Shady", "Faceless", "Suspect", "Phony"],
     },
     Unholy: {
+      category: "Visits",
       internal: ["Unholy"],
       tags: ["Visits", "Block Self", "Modifiers", "Unholy"],
       description:
@@ -868,18 +993,21 @@ const modifierData = {
       incompatible: ["Holy"],
     },
     Unkillable: {
+      category: "Other",
       internal: ["KillImmune"],
       tags: ["Unkillable"],
       description: "Can only be killed by condemn.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Unlucky: {
+      category: "Other",
       internal: ["UnluckyDeath"],
       tags: ["Killing"],
       description: "After Night 1, You can die at any time.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Unrefined: {
+      category: "Visits",
       internal: ["Unrefined"],
       tags: ["Visits", "Block Self", "Modifiers", "Unrefined"],
       description:
@@ -888,12 +1016,14 @@ const modifierData = {
       incompatible: ["Refined"],
     },
     Unwavering: {
+      category: "Other",
       internal: ["ConvertImmune"],
       tags: ["Convert Saver"],
       description: "Cannot be converted to another role.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Vain: {
+      category: "Visits",
       internal: ["Vain"],
       tags: ["Visits", "Killing", "Alignments", "Self Kill"],
       description:
@@ -902,6 +1032,7 @@ const modifierData = {
       incompatible: ["Weak"],
     },
     Vengeful: {
+      category: "Visits",
       internal: ["ActAfterNightKilled"],
       tags: ["Graveyard", "Vengeful", "Graveyard Participation"],
       description: "Can perform secondary actions after being killed at night",
@@ -909,6 +1040,7 @@ const modifierData = {
       incompatible: ["Transcendent", "Restless"],
     },
     Verrucose: {
+      category: "Other",
       internal: ["GivePermaDelirium"],
       tags: ["Sacrificial", "Manipulative", "Delirium"],
       description:
@@ -916,6 +1048,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Versatile: {
+      category: "Other",
       internal: ["InheritFirstDeadAligned"],
       tags: ["Dead", "Conversion"],
       description:
@@ -923,6 +1056,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Wannabe: {
+      category: "Appearance",
       internal: ["Wannabe"],
       tags: ["Deception"],
       description:
@@ -930,6 +1064,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Weak: {
+      category: "Visits",
       internal: ["Weak"],
       tags: ["Visits", "Killing", "Alignments", "Self Kill"],
       description:
@@ -938,6 +1073,7 @@ const modifierData = {
       incompatible: ["Vain"],
     },
     Wise: {
+      category: "Other",
       internal: ["MakePlayerLearnOneOfTwoPlayersOnDeath"],
       tags: ["Sacrificial", "Information", "Graveyard Participation"],
       description:
@@ -945,12 +1081,14 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Sane: {
+      category: "Appearance",
       internal: ["TrueModifier"],
       tags: ["FalseMode"],
       description: "All Information received by this role is true.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Paranoid: {
+      category: "Appearance",
       internal: ["UnfavorableModifier"],
       tags: ["FalseMode"],
       description:
@@ -958,6 +1096,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Naive: {
+      category: "Appearance",
       internal: ["FavorableModifier"],
       tags: ["FalseMode"],
       description:
