@@ -728,12 +728,12 @@ export function ModifierSearch(props) {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const popover = useContext(PopoverContext);
-/*
+
   function onAlignNavClick(alignment) {
     setSearchVal("");
     setRoleListType(alignment);
   }
-
+/*
   const roleAbbreviations = {
     blue: ["Villager"],
     nilla: ["Villager", "Mafioso"],
@@ -764,7 +764,7 @@ export function ModifierSearch(props) {
 
     if (query !== "" && roleListType.length > 0) setRoleListType("");
     else if (query === "" && roleListType.length === 0)
-      setRoleListType(Alignments[props.gameType][0]);
+      setRoleListType("Items");
   }
 
   function onRoleCellClick(roleCellEl, role) {
@@ -800,6 +800,15 @@ export function ModifierSearch(props) {
 
   if (!siteInfo.modifiers) return <NewLoading small />;
 
+  const alignButtons = ["Items", "Visits", "Appearance", "Other"].map((type) => (
+    <Tab
+      label={type}
+      value={type}
+      onClick={() => onAlignNavClick(type)}
+      key={type}
+    />
+  ));
+
   const roleCells = siteInfo.modifiers[props.gameType].map((role, i) => {
     const searchTerms = searchVal
       .split(",")
@@ -823,7 +832,7 @@ export function ModifierSearch(props) {
 
     if (
       !role.disabled && getCompatibleModifiersOther(props.curMods).includes(role.name) &&
-      ((searchVal.length > 0 && (role.name.toLowerCase().indexOf(searchVal) !== -1 || matchesSearch)) || searchVal.length <= 0)
+      ((role.category === roleListType || (searchVal.length > 0 && (role.name.toLowerCase().indexOf(searchVal) !== -1 || matchesSearch)))
     ) {
       return (
         <Card
