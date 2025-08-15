@@ -39,7 +39,7 @@ module.exports = class ModifierConfused extends Card {
           labels: ["block", "hidden", "absolute"],
           run: function () {
             if (Random.randInt(0, 1) == 0) {
-              this.blockWithDelirium(this.actor);
+              this.player.giveEffect("FalseMode", 1);
             }
           },
         });
