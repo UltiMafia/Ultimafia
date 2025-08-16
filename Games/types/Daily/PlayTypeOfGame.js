@@ -20,9 +20,6 @@ module.exports = class PlayTypeOfGame extends DailyChallenge {
           this.player.DailyCompleted += 1;
           for(let Challenge of this.player.user.dailyChallenges){
           if(Challenge[0] == this.ID){
-            this.player.sendAlert(
-            `:system: Index Of Challenge ${this.player.user.dailyChallenges.indexOf(Challenge)}`
-          );
           this.player.user.dailyChallenges.splice(
           this.player.user.dailyChallenges.indexOf(Challenge),1);
           }

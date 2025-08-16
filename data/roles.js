@@ -4341,7 +4341,7 @@ const roleData = {
       nightOrder: [["Kill Beckoned",(PRIORITY_KILL_SIREN)]],
     },
     Fisherman: {
-      alignment: "Village",
+      alignment: "Independent",
       category: "Gifting",
       tags: ["Killing", "Items", "Meeting", "Mini-game"],
       description: [
