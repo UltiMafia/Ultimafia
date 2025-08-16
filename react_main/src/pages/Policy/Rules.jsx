@@ -45,16 +45,34 @@ const rows = [
     "Permaban"
   ),
   createData(
-    "Spam",
-    "Warning",
+    "Intolerance",
     "1 day",
     "3 days",
-    "7 days",
-    "1 month",
-    "3 months"
+    "3 weeks",
+    "6 months",
+    "Permaban",
+    "Permaban"
   ),
-  createData(
-    "Inappropriate Behavior",
+    createData(
+    "Adult Content",
+    "1 day",
+    "3 days",
+    "3 weeks",
+    "6 months",
+    "Permaban",
+    "Permaban"
+  ),
+      createData(
+    "Instigation",
+    "1 day",
+    "3 days",
+    "3 weeks",
+    "6 months",
+    "Permaban",
+    "Permaban"
+  ),
+    createData(
+    "Hazing",
     "1 day",
     "3 days",
     "3 weeks",
@@ -68,6 +86,15 @@ const rows = [
     "Permaban",
     "Permaban",
     "Permaban",
+    "Permaban",
+    "Permaban"
+  ),
+    createData(
+    "Coercion",
+    "1 day",
+    "3 days",
+    "3 weeks",
+    "6 months",
     "Permaban",
     "Permaban"
   ),
@@ -91,57 +118,55 @@ const rows = [
   ),
   createData(
     "Gamethrowing",
-    "1 hour",
-    "12 hours",
-    "24 hours",
-    "3 days",
+    "1 day",
     "1 week",
-    "1 month"
+    "3 weeks",
+    "Loss of privilege",
+    "-",
+    "-"
   ),
   createData(
     "Abandonment",
-    "1 hour",
-    "12 hours",
-    "24 hours",
-    "3 days",
+    "1 day",
     "1 week",
-    "1 month"
+    "3 weeks",
+    "Loss of privilege",
+    "-",
+    "-"
   ),
   createData(
     "Insufficient Participation",
-    "1 hour",
-    "12 hours",
-    "24 hours",
-    "3 days",
+    "1 day",
     "1 week",
-    "1 month"
+    "3 weeks",
+    "Loss of privilege",
+    "-",
+    "-"
   ),
   createData(
     "Out-of-Game Information",
-    "1 hour",
-    "12 hours",
-    "24 hours",
-    "3 days",
+    "1 day",
     "1 week",
-    "1 month"
+    "3 weeks",
+    "Loss of privilege",
+    "-",
+    "-"
   ),
   createData(
-    "Exploits",
-    "1 hour",
-    "12 hours",
-    "24 hours",
-    "3 days",
+    "1 day",
     "1 week",
-    "1 month"
+    "3 weeks",
+    "Loss of privilege",
+    "-",
+    "-"
   ),
   createData(
-    "Cheating",
+    "1 day",
     "1 week",
-    "1 month",
-    "3 months",
-    "Permaban",
-    "Permaban",
-    "Permaban"
+    "3 weeks",
+    "Loss of privilege",
+    "-",
+    "-"
   ),
 ];
 
@@ -171,9 +196,9 @@ export default function Rules() {
         </AccordionSummary>
         <AccordionDetails>
           <Typography variant="body1" paragraph>
-            These are non-game related violations. Receiving any of these
-            violations will lead to bans from the entirety of the site
-            (including games, forums, chat, and the Discord server).
+            These are violations relating to personal and community conduct.
+            Receiving any of these violations will lead to bans from the entirety
+            of the site (including games, forums, chat, and the Discord server).
           </Typography>
           <Typography
             variant="h6"
@@ -193,25 +218,52 @@ export default function Rules() {
             gutterBottom
             sx={{ textDecoration: "underline" }}
           >
-            Spam
+            Intolerance
           </Typography>
           <Typography variant="body1" paragraph>
-            Excessive and repeated posting of forum topics, comments, or chat
-            messages. This applies to messages in games as well.
+            Any disrespectful behavior on the basis of group identity.
+            This includes bigotry of any kind (including but not limited to: racism,
+            homophobia, transphobia, misogyny, etc.), bypassing slur filters,
+            and genocide denial.
           </Typography>
           <Typography
             variant="h6"
             gutterBottom
             sx={{ textDecoration: "underline" }}
           >
-            Inappropriate Behavior (IB)
+            Adult Content
           </Typography>
           <Typography variant="body1" paragraph>
-            Any disagreeable or otherwise disrespectful behavior. This includes
-            bigotry of any kind (including but not limited to: racism,
-            homophobia, transphobia, misogyny, etc.), bypassing slur filters,
-            and posting sexually explicit or obscene content. Admins may
-            differentiate between IB and PA at their discretion.
+            Graphic descriptions of adult behavior, including
+            explicit discussion of sex acts, consumption of
+            illicit substances, or descriptions of real violence.
+            Restrict oneself to a "13 and up" mindset.
+          </Typography>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{ textDecoration: "underline" }}
+          >
+            Instigation
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Intentionally baiting conflict between users, including
+            concern trolling, causing a mass argument in public spaces,
+            and disingenuously encouraging drama. The report function
+            exists for a reason.
+          </Typography>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{ textDecoration: "underline" }}
+          >
+            Hazing
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Discriminating against or otherwise mistreating users on
+            new accounts. This includes policy-voting, accusing a new account
+            of existing to break game rules, and otherwise promoting an
+            anti-growth mindset.
           </Typography>
           <Typography
             variant="h6"
@@ -223,6 +275,17 @@ export default function Rules() {
           <Typography variant="body1" paragraph>
             Revealing the personal or identifying information of other users
             without their consent (including their names, locations, age, etc.).
+          </Typography>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{ textDecoration: "underline" }}
+          >
+            Coercion
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Threatening or blackmailing users with social consequences,
+            especially those with off-site ramifications.
           </Typography>
           <Typography
             variant="h6"
