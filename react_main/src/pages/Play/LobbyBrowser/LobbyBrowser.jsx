@@ -66,7 +66,9 @@ export const LobbyBrowser = () => {
     params.get("lobby") || localStorage.getItem("lobby") || defaultLobbyName
   );
 
-  const glowingHostButton = user.canPlayRanked ? !hasOneOpenGame : !hasOneOpenUrankedGame;
+  const glowingHostButton = user.canPlayRanked
+    ? !hasOneOpenGame
+    : !hasOneOpenUrankedGame;
 
   useEffect(() => {
     localStorage.setItem("lobby", lobbyName);
@@ -97,7 +99,8 @@ export const LobbyBrowser = () => {
         result[lobby]++;
 
         if (!hasOneOpenGame) setHasOneOpenGame(true);
-        if (!hasOneOpenUrankedGame && !game.ranked) setHasOneOpenUrankedGame(true);
+        if (!hasOneOpenUrankedGame && !game.ranked)
+          setHasOneOpenUrankedGame(true);
       });
       setOpenGamesCounts(result);
     });
@@ -209,13 +212,16 @@ export const LobbyBrowser = () => {
       {games.map((game) => {
         return (
           <ListItem disablePadding key={game.id}>
-            <Box className={game.competitive ? "metallic-gold" : undefined} sx={{
-              backgroundColor: getRowStubColor(game),
-              borderTopLeftRadius: "5px",
-              borderBottomLeftRadius: "5px",
-              alignSelf: "stretch",
-              minWidth: "15px",
-            }}/>
+            <Box
+              className={game.competitive ? "metallic-gold" : undefined}
+              sx={{
+                backgroundColor: getRowStubColor(game),
+                borderTopLeftRadius: "5px",
+                borderBottomLeftRadius: "5px",
+                alignSelf: "stretch",
+                minWidth: "15px",
+              }}
+            />
             <GameRow
               game={game}
               lobby={lobbyName}
@@ -227,7 +233,8 @@ export const LobbyBrowser = () => {
               maxRolesCount={maxRolesCount}
             />
           </ListItem>
-      )})}
+        );
+      })}
     </Stack>
   ) : (
     <Typography style={{ textAlign: "center" }}>
@@ -237,16 +244,17 @@ export const LobbyBrowser = () => {
 
   const buttons = (
     <Paper>
-      <Stack direction="row" sx={{
-        width: "100%",
-        alignItems: "center",
-        justifyContent: "space-between",
-        mb: 1,
-      }}>
+      <Stack
+        direction="row"
+        sx={{
+          width: "100%",
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 1,
+        }}
+      >
         <PageNav page={page} onNav={(page) => getGameList(listType, page)} />
-        <Typography color="primary">
-          Games
-        </Typography>
+        <Typography color="primary">Games</Typography>
         <div onClick={refreshGames}>
           <RefreshButton isSpinning={refreshButtonIsSpinning} />
         </div>
@@ -254,33 +262,40 @@ export const LobbyBrowser = () => {
     </Paper>
   );
 
-  return (<Box sx={{
-    mt: 1,
-  }}>
-    {lobbyTabs}
-    <Divider sx={{ mb: 1 }}/>
-    <Grid container rowSpacing={2} columnSpacing={2}>
-      <Grid item xs={12} md={8}>
-        {buttons}
-        {gameList}
+  return (
+    <Box
+      sx={{
+        mt: 1,
+      }}
+    >
+      {lobbyTabs}
+      <Divider sx={{ mb: 1 }} />
+      <Grid container rowSpacing={2} columnSpacing={2}>
+        <Grid item xs={12} md={8}>
+          {buttons}
+          {gameList}
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Stack spacing={1}>
+            <FeaturedSetup
+              lobby={lobbyName}
+              glowingHostButton={glowingHostButton}
+            />
+            <DailyChallenges />
+            <RecentlyPlayedSetups lobby={lobbyName} />
+          </Stack>
+        </Grid>
+        <Grid item xs={12} md={8}>
+          <Comments
+            fullWidth
+            location={
+              lobbyName === "Main" || lobbyName === "All"
+                ? "lobby"
+                : `lobby-${lobbyName}`
+            }
+          />
+        </Grid>
       </Grid>
-      <Grid item xs={12} md={4}>
-        <Stack spacing={1}>
-          <FeaturedSetup lobby={lobbyName} glowingHostButton={glowingHostButton} />
-          <DailyChallenges />
-          <RecentlyPlayedSetups lobby={lobbyName} />
-        </Stack>
-      </Grid>
-      <Grid item xs={12} md={8}>
-        <Comments
-          fullWidth
-          location={
-            lobbyName === "Main" || lobbyName === "All"
-              ? "lobby"
-              : `lobby-${lobbyName}`
-          }
-        />
-      </Grid>
-    </Grid>
-  </Box>);
+    </Box>
+  );
 };

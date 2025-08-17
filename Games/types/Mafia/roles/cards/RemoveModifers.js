@@ -11,7 +11,7 @@ module.exports = class RemoveModifers extends Card {
         flags: ["voting"],
         action: {
           labels: ["convert"],
-          priority: PRIORITY_CONVERT_DEFAULT+7,
+          priority: PRIORITY_CONVERT_DEFAULT + 7,
           run: function () {
             if (!this.dominates()) {
               return;
@@ -21,11 +21,15 @@ module.exports = class RemoveModifers extends Card {
             let currRoleModifier = this.target.role.modifier;
             let currRoleData = this.target.role.data;
 
-            this.target.setRole(`${currRoleName}`, currRoleData,
+            this.target.setRole(
+              `${currRoleName}`,
+              currRoleData,
               false,
               false,
               false,
-              "No Change", "NoStartingItems");
+              "No Change",
+              "NoStartingItems"
+            );
           },
         },
       },

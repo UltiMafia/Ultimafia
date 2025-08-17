@@ -26,12 +26,8 @@ export const PlayerCount = (props) => {
   const gameNotFinished = ["Open", "In Progress"].includes(status);
 
   return (
-    <Box
-      className="player-count"
-      onMouseOver={onInfoClick}
-      ref={infoRef}
-    >
-      <progress value={numSlotsTaken} max={numSlotsTotal}/>
+    <Box className="player-count" onMouseOver={onInfoClick} ref={infoRef}>
+      <progress value={numSlotsTaken} max={numSlotsTotal} />
       <Stack
         direction="row"
         spacing={0.5}
@@ -54,9 +50,7 @@ export const PlayerCount = (props) => {
         {gameNotFinished && spectatingAllowed && (
           <>
             <i className="fas fa-eye" />
-            <Typography>
-              {spectatorCount}
-            </Typography>
+            <Typography>{spectatorCount}</Typography>
           </>
         )}
       </Stack>

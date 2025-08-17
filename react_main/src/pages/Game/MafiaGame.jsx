@@ -49,46 +49,171 @@ export default function MafiaGame() {
   const audioVolumes = [];
 
   const customAudios = [
-    { fileName: "gunshot", loops: false, overrides: false, volumes: 1, },
-    { fileName: "condemn", loops: false, overrides: false, volumes: 1, },
-    { fileName: "explosion", loops: false, overrides: false, volumes: 0.5, },
-    { fileName: "music/NightCrafter", loops: true, overrides: false, volumes: 1 },
-    { fileName: "music/NightEssential", loops: true, overrides: false, volumes: 1 },
-    { fileName: "music/NightFiddler", loops: true, overrides: false, volumes: 1 },
-    { fileName: "music/NightInvestigator", loops: true, overrides: false, volumes: 1 },
+    { fileName: "gunshot", loops: false, overrides: false, volumes: 1 },
+    { fileName: "condemn", loops: false, overrides: false, volumes: 1 },
+    { fileName: "explosion", loops: false, overrides: false, volumes: 0.5 },
+    {
+      fileName: "music/NightCrafter",
+      loops: true,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/NightEssential",
+      loops: true,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/NightFiddler",
+      loops: true,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/NightInvestigator",
+      loops: true,
+      overrides: false,
+      volumes: 1,
+    },
     { fileName: "music/NightLove", loops: true, overrides: false, volumes: 1 },
     { fileName: "music/NightMafia", loops: true, overrides: false, volumes: 1 },
-    { fileName: "music/NightProtector", loops: true, overrides: false, volumes: 1 },
-    { fileName: "music/NightWestern", loops: true, overrides: false, volumes: 1 },
-    { fileName: "music/NightWinter", loops: true, overrides: false, volumes: 1 },
-    { fileName: "music/NightFool", loops: true, overrides: false, volumes: 0.6 },
-    { fileName: "music/NightClockmaker", loops: true, overrides: false, volumes: 1 },
-    { fileName: "music/NightCult", loops: true, overrides: false, volumes: 0.6 },
-    { fileName: "music/Draw", loops: false, overrides: false, volumes: 1, },
+    {
+      fileName: "music/NightProtector",
+      loops: true,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/NightWestern",
+      loops: true,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/NightWinter",
+      loops: true,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/NightFool",
+      loops: true,
+      overrides: false,
+      volumes: 0.6,
+    },
+    {
+      fileName: "music/NightClockmaker",
+      loops: true,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/NightCult",
+      loops: true,
+      overrides: false,
+      volumes: 0.6,
+    },
+    { fileName: "music/Draw", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinAlien", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/WinAnarchist", loops: false, overrides: false, volumes: 1, },
+    {
+      fileName: "music/WinAnarchist",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
     { fileName: "music/WinFool", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinMafia", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/WinCult", loops: false, overrides: false, volumes: 1, },
-    { fileName: "music/WinMatchmaker", loops: false, overrides: false, volumes: 1, },
+    { fileName: "music/WinCult", loops: false, overrides: false, volumes: 1 },
+    {
+      fileName: "music/WinMatchmaker",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
     { fileName: "music/WinKiller", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/WinVillage", loops: false, overrides: false, volumes: 1 },
+    {
+      fileName: "music/WinVillage",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
     { fileName: "music/WinAngel", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinMonk", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinSiren", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinLover", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/WinAstrologer", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/WinExecutioner", loops: false, overrides: false, volumes: 1, },
-    { fileName: "music/WinAutocrat", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/WinGambler", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/WinCreepyGirl", loops: false, overrides: false, volumes: 1, },
-    { fileName: "music/WinSidekick", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/WinWarlock", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/WinSurvivor", loops: false, overrides: false, volumes: 1, },
-    { fileName: "music/WinHellhound", loops: false, overrides: false, volumes: 1, },
-    { fileName: "music/WinMastermind", loops: false, overrides: false, volumes: 1, },
-    { fileName: "music/WinClockmaker", loops: false, overrides: false, volumes: 1, },
-    { fileName: "music/WinProphet", loops: false, overrides: false, volumes: 1, },
+    {
+      fileName: "music/WinAstrologer",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/WinExecutioner",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/WinAutocrat",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/WinGambler",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/WinCreepyGirl",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/WinSidekick",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/WinWarlock",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/WinSurvivor",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/WinHellhound",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/WinMastermind",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/WinClockmaker",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/WinProphet",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
   ];
 
   customAudios.forEach((e) => {
@@ -124,7 +249,10 @@ export default function MafiaGame() {
       const currentRole = currentState.roles[self];
       if (currentRole) {
         const currentRoleName = currentRole.split(":")[0];
-        const currentAlignment = currentRoleName in siteInfo.rolesRaw[gameType] ? siteInfo.rolesRaw[gameType][currentRoleName].alignment : "";
+        const currentAlignment =
+          currentRoleName in siteInfo.rolesRaw[gameType]
+            ? siteInfo.rolesRaw[gameType][currentRoleName].alignment
+            : "";
 
         switch (currentRoleName) {
           case "Cop":
@@ -146,7 +274,7 @@ export default function MafiaGame() {
           case "Keymaker":
           case "Knight":
           case "Mailman":
-          case "Missionary": 
+          case "Missionary":
           case "Pharmacist":
           case "Reanimator":
           case "Capybara":
@@ -202,21 +330,18 @@ export default function MafiaGame() {
             if (currentAlignment === "Mafia") {
               // If mafia role isn't listed above the mafia track plays
               game.playAudio("music/NightMafia");
-            }
-            else if (currentAlignment === "Cult") {
+            } else if (currentAlignment === "Cult") {
               // If cult role isn't listed above then the cult track plays
               game.playAudio("music/NightCult");
-            }
-            else {
+            } else {
               console.log(`${currentRoleName} has no night music`);
             }
             break;
         }
       }
+    } else {
+      game.stopAudio();
     }
-    else{
-        game.stopAudio();
-      }
   }, [history.currentState]);
 
   useSocketListeners((socket) => {
@@ -396,8 +521,10 @@ export default function MafiaGame() {
                   socket={game.socket}
                 />
               )}
-            {!game.review && !isSpectator && (<PinnedMessages/>)}
-            {!game.review && !isSpectator && (<Notes stateViewing={stateViewing} />)}
+            {!game.review && !isSpectator && <PinnedMessages />}
+            {!game.review && !isSpectator && (
+              <Notes stateViewing={stateViewing} />
+            )}
           </>
         }
       />

@@ -73,8 +73,7 @@ module.exports = class KillVillagePlayerOnDeath extends Card {
           labels: ["hidden", "kill"],
           run: function () {
             if (!this.role.SelectedPlayer) return;
-            if (this.role.SelectedPlayer.role.alignment != "Village")
-              return;
+            if (this.role.SelectedPlayer.role.alignment != "Village") return;
             if (this.dominates(this.target)) {
               this.role.SelectedPlayer.kill("basic", this.actor);
             }

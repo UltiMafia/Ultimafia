@@ -21,7 +21,7 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
         this.targetPlayer = Random.randArrayVal(nonMafia);
       },
       death: function (player, killer, deathType, instant) {
-        if(this.targetPlayer && player != this.targetPlayer){
+        if (this.targetPlayer && player != this.targetPlayer) {
           return;
         }
         if (this.game.getStateName() != "Night") return;

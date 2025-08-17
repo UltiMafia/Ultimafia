@@ -18,10 +18,10 @@ module.exports = class User {
     this.achievements = props.achievements || [];
     this.availableStamps = props.availableStamps || [];
     this.ownedStamps = props.ownedStamps || [];
-    if(props.dailyChallenges){
-      this.dailyChallenges = props.dailyChallenges.map((m) => m.split(":")) || [];
-    }
-    else{
+    if (props.dailyChallenges) {
+      this.dailyChallenges =
+        props.dailyChallenges.map((m) => m.split(":")) || [];
+    } else {
       this.dailyChallenges = [];
     }
     this.playedGame = props.playedGame;

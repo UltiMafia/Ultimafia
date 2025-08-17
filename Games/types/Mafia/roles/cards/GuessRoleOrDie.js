@@ -53,7 +53,7 @@ module.exports = class GuessRoleOrDie extends Card {
         },
       },
     };
-/*
+    /*
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {

@@ -197,7 +197,8 @@ router.get("/:id/profile", async function (req, res) {
       })
       .populate({
         path: "games",
-        select: "id setup lobby endTime private broken ranked competitive spectating anonymousGame -_id",
+        select:
+          "id setup lobby endTime private broken ranked competitive spectating anonymousGame -_id",
         populate: {
           path: "setup",
           select:
@@ -242,7 +243,8 @@ router.get("/:id/profile", async function (req, res) {
       .select("game description")
       .populate({
         path: "game",
-        select: "id setup lobby endTime private broken ranked competitive spectating anonymousGame -_id",
+        select:
+          "id setup lobby endTime private broken ranked competitive spectating anonymousGame -_id",
         populate: {
           path: "setup",
           select:
@@ -332,14 +334,12 @@ router.get("/:id/profile", async function (req, res) {
       user.love = user.love.love;
 
       if (!isSelf && user.love.type === "Lover") {
-        var docSave = await models.DocSave.find(
-          {
-            $or: [
-              { $and: [{ userId: userId }, { saverId: reqUserId }] },
-              { $and: [{ userId: reqUserId }, { saverId: userId }] },
-            ],
-          }
-        );
+        var docSave = await models.DocSave.find({
+          $or: [
+            { $and: [{ userId: userId }, { saverId: reqUserId }] },
+            { $and: [{ userId: reqUserId }, { saverId: userId }] },
+          ],
+        });
         if (docSave.length > 0) {
           user.saved = true;
         }
@@ -933,7 +933,7 @@ router.post("/settings/update", async function (req, res) {
       return;
     }
 
-    if ((prop == "avatarShape") && !itemsOwned.avatarShape) {
+    if (prop == "avatarShape" && !itemsOwned.avatarShape) {
       res.status(500);
       res.send("You must purchase Square with coins from the Shop.");
       return;
@@ -993,7 +993,9 @@ router.post("/bio", async function (req, res) {
       res.sendStatus(200);
     } else if (bio.length >= constants.maxBioContentLength) {
       res.status(500);
-      res.send(`Bio must be less than ${constants.maxBioContentLength} characters`);
+      res.send(
+        `Bio must be less than ${constants.maxBioContentLength} characters`
+      );
     } else {
       res.status(500);
       res.send("Error editing bio");
@@ -1022,7 +1024,9 @@ router.post("/pronouns", async function (req, res) {
       res.sendStatus(200);
     } else if (pronouns.length >= constants.maxPronounsContentLength) {
       res.status(500);
-      res.send(`Pronouns must be less than ${constants.maxPronounsContentLength} characters`);
+      res.send(
+        `Pronouns must be less than ${constants.maxPronounsContentLength} characters`
+      );
     } else {
       res.status(500);
       res.send("Error editing pronouns");

@@ -7,8 +7,8 @@ module.exports = class DeliriateNeighbors extends Card {
     super(role);
 
     this.listeners = {
-        AbilityToggle: function (player) {
-        if(this.startingNeighbors && this.startingNeighbors.includes(player)){
+      AbilityToggle: function (player) {
+        if (this.startingNeighbors && this.startingNeighbors.includes(player)) {
           return;
         }
         if (this.DeliriumNeighborEffects == null) {
@@ -27,7 +27,7 @@ module.exports = class DeliriateNeighbors extends Card {
         }
         this.DeliriumNeighborEffects = [];
         if (this.hasAbility(["Deception"])) {
-          if(this.startingNeighbors == null){
+          if (this.startingNeighbors == null) {
             let players = this.game.alivePlayers();
             var indexOfActor = players.indexOf(this.player);
             var rightIdx;
@@ -70,7 +70,13 @@ module.exports = class DeliriateNeighbors extends Card {
             this.startingNeighbors = victims;
           }
           for (let player of this.startingNeighbors) {
-            let effect = player.giveEffect("Delirious", this.player, Infinity, null, this);
+            let effect = player.giveEffect(
+              "Delirious",
+              this.player,
+              Infinity,
+              null,
+              this
+            );
             this.passiveEffects.push(effect);
             this.DeliriumNeighborEffects.push(effect);
           }

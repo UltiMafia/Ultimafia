@@ -41,7 +41,7 @@ module.exports = class ImitateRole extends Card {
           return;
         }
 
-         this.data.roleBlacklist = roleBlacklist.filter((r) => r);
+        this.data.roleBlacklist = roleBlacklist.filter((r) => r);
         this.data.roleBlacklist2 = [];
       },
     };

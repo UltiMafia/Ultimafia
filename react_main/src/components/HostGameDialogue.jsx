@@ -1,11 +1,21 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Redirect } from "react-router-dom";
 
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
 
 import axios from "axios";
-import { Alert, Box, Button, Divider, IconButton, Paper, Stack, TextField, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { UserContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 import Form from "components/Form";
@@ -26,39 +36,53 @@ import HostBattlesnakes from "./gameTypeHostForms/HostBattlesnakes";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { getSetupBackgroundColor } from "pages/Play/LobbyBrowser/gameRowColors";
 
-export default function HostGameDialogue({open, setOpen, setup}) {
+export default function HostGameDialogue({ open, setOpen, setup }) {
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
 
   const [initialFormFields, onHostGame] = GameTypeHostForm(setup.gameType);
-  
+
   const [redirect, setRedirect] = useState(null);
 
   function GameTypeHostForm(gameType) {
     switch (gameType) {
-      case "Mafia": return HostMafia();
-      case "Resistance": return HostResistance();
-      case "Ghost": return HostGhost();
-      case "Jotto": return HostJotto();
-      case "Acrotopia": return HostAcrotopia();
-      case "Secret Dictator": return HostSecretDictator();
-      case "Wacky Words": return HostWackyWords();
-      case "Liars Dice": return HostLiarsDice();
-      case "Texas Hold Em": return HostTexasHoldEm();
-      case "Cheat": return HostCheat();
-      case "Battlesnakes": return HostBattlesnakes();
+      case "Mafia":
+        return HostMafia();
+      case "Resistance":
+        return HostResistance();
+      case "Ghost":
+        return HostGhost();
+      case "Jotto":
+        return HostJotto();
+      case "Acrotopia":
+        return HostAcrotopia();
+      case "Secret Dictator":
+        return HostSecretDictator();
+      case "Wacky Words":
+        return HostWackyWords();
+      case "Liars Dice":
+        return HostLiarsDice();
+      case "Texas Hold Em":
+        return HostTexasHoldEm();
+      case "Cheat":
+        return HostCheat();
+      case "Battlesnakes":
+        return HostBattlesnakes();
     }
-    
+
     return [null, null];
   }
 
   const [formFields, updateFormFields] = useForm(initialFormFields);
 
-  useEffect(function() {
-    const [newFormFields, newOnHostGame] = GameTypeHostForm(setup.gameType);
-    updateFormFields({ type: "setFields", fields: newFormFields});
-  }, [setup.gameType]);
+  useEffect(
+    function () {
+      const [newFormFields, newOnHostGame] = GameTypeHostForm(setup.gameType);
+      updateFormFields({ type: "setFields", fields: newFormFields });
+    },
+    [setup.gameType]
+  );
 
   function getFormFieldValue(ref) {
     for (let field of formFields) if (field.ref === ref) return field.value;
@@ -70,7 +94,7 @@ export default function HostGameDialogue({open, setOpen, setup}) {
         setRedirect(`/game/${res.data}`);
       })
       .catch(errorAlert);
-  }
+  };
 
   if (redirect) return <Redirect to={redirect} />;
 
@@ -88,18 +112,23 @@ export default function HostGameDialogue({open, setOpen, setup}) {
   return (
     <>
       <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogContent  sx={{ 
+        <DialogContent
+          sx={{
             px: 1,
             paddingBottom: 0,
-        }}>
+          }}
+        >
           <Stack direction="column" spacing={1}>
             <Stack direction="row">
               <Button className="glow-slightly" onClick={onHostGameWrapper}>
                 Host Game
               </Button>
-              <Button onClick={() => setOpen(false)} sx={{
-                marginLeft: "auto"
-              }}>
+              <Button
+                onClick={() => setOpen(false)}
+                sx={{
+                  marginLeft: "auto",
+                }}
+              >
                 Cancel
               </Button>
             </Stack>
@@ -107,17 +136,17 @@ export default function HostGameDialogue({open, setOpen, setup}) {
               setup={setup}
               maxRolesCount={6}
               fixedWidth
-              backgroundColor={getSetupBackgroundColor({
-                lobby: lobby,
-                competitive: isCompetitive,
-                ranked: isRanked,
-              }, true)}
+              backgroundColor={getSetupBackgroundColor(
+                {
+                  lobby: lobby,
+                  competitive: isCompetitive,
+                  ranked: isRanked,
+                },
+                true
+              )}
             />
-            {alertText && (<Alert severity="warning">{alertText}</Alert>)}
-            <Form
-              fields={formFields}
-              onChange={updateFormFields}
-            />
+            {alertText && <Alert severity="warning">{alertText}</Alert>}
+            <Form fields={formFields} onChange={updateFormFields} />
           </Stack>
         </DialogContent>
       </Dialog>

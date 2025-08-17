@@ -29,9 +29,7 @@ module.exports = class UnfavorableModifier extends Card {
             this.passiveEffects.push(this.UnfavorableModeEffect);
           }
         } else {
-          var index = this.passiveEffects.indexOf(
-            this.UnfavorableModeEffect
-          );
+          var index = this.passiveEffects.indexOf(this.UnfavorableModeEffect);
           if (index != -1) {
             this.passiveEffects.splice(index, 1);
           }

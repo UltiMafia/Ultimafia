@@ -15,7 +15,7 @@ module.exports = class FalseModifier extends Card {
 
     //this.startEffects = ["FalseMode"];
     this.listeners = {
-        state: function (stateInfo) {
+      state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
@@ -26,13 +26,11 @@ module.exports = class FalseModifier extends Card {
           priority: PRIORITY_EFFECT_REMOVER_DEFAULT,
           labels: ["abolute", "hidden"],
           run: function () {
-
-            for (let effect of this.actor.effects){
-              if(effect.name == "Insanity"){
+            for (let effect of this.actor.effects) {
+              if (effect.name == "Insanity") {
                 effect.remove();
               }
             }
-              
           },
         });
 

@@ -47,7 +47,6 @@ module.exports = class Bouncy extends Card {
           labels: ["redirect"],
           priority: PRIORITY_MODIFY_ACTION,
           run: function () {
-
             var alive = this.game.players.filter(
               (p) =>
                 p.alive &&

@@ -4,7 +4,12 @@ module.exports = class President extends Role {
   constructor(player, data) {
     super("President", player, data);
     this.alignment = "Village";
-    this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "EvilsWinWhenKilled"];
+    this.cards = [
+      "VillageCore",
+      "WinWithFaction",
+      "MeetingFaction",
+      "EvilsWinWhenKilled",
+    ];
     this.listeners = {
       roleAssigned: [
         function (player) {

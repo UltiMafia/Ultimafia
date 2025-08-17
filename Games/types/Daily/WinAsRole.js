@@ -10,30 +10,31 @@ module.exports = class WinAsRole extends DailyChallenge {
           return;
         }
         let roleName;
-        for(let Challenge of this.player.user.dailyChallenges){
-          if(Challenge[0] == this.ID){
+        for (let Challenge of this.player.user.dailyChallenges) {
+          if (Challenge[0] == this.ID) {
             roleName = Challenge[2];
           }
         }
-        if(this.player.role.name == roleName){
-           if (
-          Object.values(this.game.winners.groups)
-            .flat()
-            .find((p) => p === this.player)
-        ) {
-          this.player.DailyPayout += this.reward;
-          this.player.DailyCompleted += 1;
-          for(let Challenge of this.player.user.dailyChallenges){
-          if(Challenge[0] == this.ID){
-          this.player.user.dailyChallenges.splice(this.player.user.dailyChallenges.indexOf(Challenge),1);
+        if (this.player.role.name == roleName) {
+          if (
+            Object.values(this.game.winners.groups)
+              .flat()
+              .find((p) => p === this.player)
+          ) {
+            this.player.DailyPayout += this.reward;
+            this.player.DailyCompleted += 1;
+            for (let Challenge of this.player.user.dailyChallenges) {
+              if (Challenge[0] == this.ID) {
+                this.player.user.dailyChallenges.splice(
+                  this.player.user.dailyChallenges.indexOf(Challenge),
+                  1
+                );
+              }
+            }
+            this.player.CompletedDailyChallenges.push([this.ID, roleName]);
+            return;
           }
         }
-        this.player.CompletedDailyChallenges.push([this.ID, roleName]);
-        return;
-        }
-        }
-     
-        
       },
     };
   }

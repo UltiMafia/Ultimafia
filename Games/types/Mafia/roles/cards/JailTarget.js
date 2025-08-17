@@ -32,13 +32,8 @@ module.exports = class JailTarget extends Card {
       meetingsMade: function () {
         if (this.game.getStateName() == "Night") {
           this.data.jailSuccess = false;
-          let jailMeeting = this.game.getMeetingByName(
-            this.data.meetingName
-          );
-          if (
-            jailMeeting &&
-            jailMeeting.hasJoined(this.data.prisoner)
-          ) {
+          let jailMeeting = this.game.getMeetingByName(this.data.meetingName);
+          if (jailMeeting && jailMeeting.hasJoined(this.data.prisoner)) {
             this.data.jailSuccess = true;
           }
         }

@@ -32,7 +32,10 @@ module.exports = class AddRottenCopy extends Card {
             `${this.player.role.name}:${this.player.role.modifier}`,
             this.player.role.data,
             false,
-            true, null, null, "RemoveStartingItems"
+            true,
+            null,
+            null,
+            "RemoveStartingItems"
           );
           if (x == 0) {
             shuffledPlayers[x].holdItem("PermaDelirium");

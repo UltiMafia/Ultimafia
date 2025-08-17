@@ -56,7 +56,7 @@
   display: inline-block;
   position: relative;
   width: 100px;
-  
+
   border-radius: 4px;
   cursor: pointer;
 
@@ -70,7 +70,7 @@
   width: 100%;
   transform: translateX(-50%);
 
-  color: #0064B4;
+  color: #0064b4;
   border: 1px solid rgba(12, 12, 12, 0.15);
   border-radius: 4px;
 
@@ -78,11 +78,11 @@
 }
 
 .player-count progress::-moz-progress-bar {
-  background: #0064B4;
+  background: #0064b4;
 }
 
-progress::-webkit-progress-value  {
-  background: #0064B4;
+progress::-webkit-progress-value {
+  background: #0064b4;
 }
 
 .join .row .player-circle {

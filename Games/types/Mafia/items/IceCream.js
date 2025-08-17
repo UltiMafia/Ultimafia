@@ -2,9 +2,7 @@ const Item = require("../Item");
 const Random = require("../../../../lib/Random");
 const Player = require("../Player");
 const Action = require("../Action");
-const {
-  PRIORITY_BECOME_DEAD_ROLE
-} = require("../const/Priority");
+const { PRIORITY_BECOME_DEAD_ROLE } = require("../const/Priority");
 
 module.exports = class IceCream extends Item {
   constructor(options) {
@@ -19,7 +17,7 @@ module.exports = class IceCream extends Item {
         action: {
           labels: ["hidden", "convert"],
           item: this,
-         priority: PRIORITY_BECOME_DEAD_ROLE,
+          priority: PRIORITY_BECOME_DEAD_ROLE,
           run: function () {
             if (this.target != "Yes") return;
             this.item.drop();

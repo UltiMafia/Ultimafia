@@ -5,7 +5,7 @@ module.exports = class GoldenCarp extends Item {
     super("Golden Carp");
   }
 
-    hold(player) {
+  hold(player) {
     super.hold(player);
     player.game.sendAlert(`${player.name} has caught a Golden Carp!`);
     player.sendAlert(`If you collect 3 Golden Carps you win!`);

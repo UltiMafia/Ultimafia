@@ -36,9 +36,7 @@ module.exports = class FullMoonInvincible extends Card {
             this.passiveEffects.push(this.FullMoonImmortalEffect);
           }
         } else {
-          var index = this.passiveEffects.indexOf(
-            this.FullMoonImmortalEffect
-          );
+          var index = this.passiveEffects.indexOf(this.FullMoonImmortalEffect);
           if (index != -1) {
             this.passiveEffects.splice(index, 1);
           }

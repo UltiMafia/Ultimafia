@@ -33,9 +33,7 @@ module.exports = class CreateFakeVisits extends Card {
               return;
             }
 
-            this.role.data.victim.giveEffect("FakeVisit", 1, [
-              this.target,
-            ]);
+            this.role.data.victim.giveEffect("FakeVisit", 1, [this.target]);
             delete this.role.data.victim;
           },
         },

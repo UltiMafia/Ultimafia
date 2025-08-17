@@ -19,7 +19,7 @@ module.exports = class ReturnToRole extends Item {
           this.drop();
           return;
         }
-          this.holder.setRole(
+        this.holder.setRole(
           `${currRole}:${currModifier}`,
           this.currData,
           true,
@@ -30,9 +30,9 @@ module.exports = class ReturnToRole extends Item {
         this.drop();
       },
       state: function (stateInfo) {
-        if (this.game.getStateName() == "Day"){
+        if (this.game.getStateName() == "Day") {
           this.hasBeenDay = true;
-        };
+        }
         if (this.holder.role.name != this.currRole) {
           this.drop();
           return;

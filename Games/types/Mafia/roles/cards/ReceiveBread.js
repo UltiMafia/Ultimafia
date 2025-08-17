@@ -6,7 +6,6 @@ module.exports = class ReceiveBread extends Card {
   constructor(role) {
     super(role);
 
-
     this.listeners = {
       state: function (stateInfo) {
         if (!this.player.alive) {

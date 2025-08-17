@@ -15,7 +15,7 @@ module.exports = class MeetingFaction extends Card {
   constructor(role) {
     super(role);
 
-    if(role.isExtraRole == true){
+    if (role.isExtraRole == true) {
       return;
     }
 
@@ -415,11 +415,13 @@ module.exports = class MeetingFaction extends Card {
 
 function excludeMafiaOnlyIfNotAnonymous(player) {
   let mafiaMeeting = player.game.getMeetingByName("Faction Kill");
-  
-  for(let person of player.game.alivePlayers()){
-     if(player.game.getRoleTags(person.role.name).includes("AnonymizeMeeting")){
-       return false;
-     }
+
+  for (let person of player.game.alivePlayers()) {
+    if (
+      player.game.getRoleTags(person.role.name).includes("AnonymizeMeeting")
+    ) {
+      return false;
+    }
   }
   if (
     mafiaMeeting &&

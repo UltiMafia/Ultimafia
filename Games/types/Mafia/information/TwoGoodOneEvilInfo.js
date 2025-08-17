@@ -25,20 +25,19 @@ module.exports = class TwoGoodOneEvilInfo extends Information {
     var evilPlayers = alive.filter((p) => this.isAppearanceEvil(p));
     var goodPlayers = alive.filter((p) => !this.isAppearanceEvil(p));
 
-    if (evilPlayers.length <= 0 || goodPlayers.length <= 1 ) {
+    if (evilPlayers.length <= 0 || goodPlayers.length <= 1) {
       alive = this.game.players.filter((p) => p != this.target);
       evilPlayers = alive.filter((p) => this.isAppearanceEvil(p));
       goodPlayers = alive.filter((p) => !this.isAppearanceEvil(p));
-      if (evilPlayers.length <= 0){
-      this.mainInfo = "No Evil Players Exist";
-      return;
+      if (evilPlayers.length <= 0) {
+        this.mainInfo = "No Evil Players Exist";
+        return;
       }
-      if(goodPlayers.length <= 0){
-      this.mainInfo = "Not Enough Good Players Exist";
-      return;
+      if (goodPlayers.length <= 0) {
+        this.mainInfo = "Not Enough Good Players Exist";
+        return;
       }
     }
-    
 
     var evilTarget = Random.randArrayVal(evilPlayers);
     goodPlayers = goodPlayers.filter((p) => p != evilTarget);
@@ -61,8 +60,7 @@ module.exports = class TwoGoodOneEvilInfo extends Information {
     super.getInfoRaw();
     if (this.mainInfo == "No Evil Players Exist") {
       return `You Learn that ${this.mainInfo}`;
-    }
-    else if(this.mainInfo == "Not Enough Good Players Exist"){
+    } else if (this.mainInfo == "Not Enough Good Players Exist") {
       return `You Learn that ${this.mainInfo}`;
     }
     return `While conducting your symphony, you hear a sour note... exactly one of ${this.mainInfo[0].name}, ${this.mainInfo[1].name}, or ${this.mainInfo[2].name} is Evil.`;
@@ -86,7 +84,10 @@ module.exports = class TwoGoodOneEvilInfo extends Information {
     ) {
       return false;
     }
-    if (goodPlayers.length <= 1 && this.mainInfo == "Not Enough Good Players Exist") {
+    if (
+      goodPlayers.length <= 1 &&
+      this.mainInfo == "Not Enough Good Players Exist"
+    ) {
       return true;
     } else if (
       goodPlayers.length <= 1 &&
@@ -94,14 +95,13 @@ module.exports = class TwoGoodOneEvilInfo extends Information {
     ) {
       return false;
     }
-    
+
     let containsEvil = false;
     let goodCount = 0;
     for (let player of this.mainInfo) {
       if (this.isEvil(player)) {
         containsEvil = true;
-      }
-      else{
+      } else {
         goodCount++;
       }
     }
@@ -135,32 +135,30 @@ module.exports = class TwoGoodOneEvilInfo extends Information {
     var evilPlayers = alive.filter((p) => this.isEvil(p));
     var goodPlayers = alive.filter((p) => !this.isEvil(p));
 
-      if (evilPlayers.length <= 0 || goodPlayers.length <= 1 ) {
+    if (evilPlayers.length <= 0 || goodPlayers.length <= 1) {
       alive = this.game.players.filter((p) => p != this.target);
       evilPlayers = alive.filter((p) => this.isEvil(p));
       goodPlayers = alive.filter((p) => !this.isEvil(p));
-      if (evilPlayers.length <= 0){
-      this.mainInfo = "No Evil Players Exist";
-      return;
+      if (evilPlayers.length <= 0) {
+        this.mainInfo = "No Evil Players Exist";
+        return;
       }
-      if(goodPlayers.length <= 0){
-      this.mainInfo = "Not Enough Good Players Exist";
-      return;
+      if (goodPlayers.length <= 0) {
+        this.mainInfo = "Not Enough Good Players Exist";
+        return;
       }
 
-    var evilTarget = Random.randArrayVal(evilPlayers);
-    goodPlayers = goodPlayers.filter((p) => p != evilTarget);
-    goodPlayers = Random.randomizeArray(goodPlayers);
-    let targets = [];
-    targets.push(goodPlayers[0]);
-    targets.push(goodPlayers[1]);
-    targets.push(evilTarget);
-    targets = Random.randomizeArray(targets);
+      var evilTarget = Random.randArrayVal(evilPlayers);
+      goodPlayers = goodPlayers.filter((p) => p != evilTarget);
+      goodPlayers = Random.randomizeArray(goodPlayers);
+      let targets = [];
+      targets.push(goodPlayers[0]);
+      targets.push(goodPlayers[1]);
+      targets.push(evilTarget);
+      targets = Random.randomizeArray(targets);
 
-    this.mainInfo = targets;
-      
+      this.mainInfo = targets;
     }
-    
 
     var evilTarget = Random.randArrayVal(evilPlayers);
     goodPlayers = goodPlayers.filter((p) => p != evilTarget);

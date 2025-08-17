@@ -19,11 +19,10 @@ module.exports = class Action {
     this.item = options.item;
     this.event = options.event;
     this.achievement = options.achievement;
-    if(options.role){
+    if (options.role) {
       this.role = options.role;
-    }
-    else{
-    this.role = this.actor?.role;
+    } else {
+      this.role = this.actor?.role;
     }
     this.priority += this.actor?.role?.priorityOffset ?? 0;
   }
@@ -71,14 +70,12 @@ module.exports = class Action {
   }
 
   async docSave(userId, saverId) {
-    var existingDocSave = await models.DocSave.findOne(
-      {
-        $or: [
-          { $and: [{ userId: userId }, { saverId: saverId }] },
-          { $and: [{ userId: saverId }, { saverId: userId }] },
-        ],
-      }
-    );
+    var existingDocSave = await models.DocSave.findOne({
+      $or: [
+        { $and: [{ userId: userId }, { saverId: saverId }] },
+        { $and: [{ userId: saverId }, { saverId: userId }] },
+      ],
+    });
     if (!existingDocSave) {
       var docSave = new models.DocSave({
         userId: userId,

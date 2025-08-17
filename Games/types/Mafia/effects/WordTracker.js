@@ -8,11 +8,11 @@ module.exports = class WordTracker extends Effect {
     this.player = player;
     this.phrase = phrase;
     this.lifespan = lifespan;
-
   }
 
   speak(message) {
-    if (message.content
+    if (
+      message.content
         .replace(" ", "")
         .toLowerCase()
         .includes(this.phrase.toLowerCase()) &&

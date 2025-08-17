@@ -56,8 +56,7 @@ module.exports = class EnqueueVisitors extends Card {
 
               for (let target of toCheck) {
                 if (target == this.actor && !action.hasLabel("hidden")) {
-                  if (!this.role.data.visitors)
-                    this.role.data.visitors = [];
+                  if (!this.role.data.visitors) this.role.data.visitors = [];
 
                   this.role.data.visitors.push(action.actor);
                 }

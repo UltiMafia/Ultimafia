@@ -1,6 +1,9 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const { PRIORITY_EFFECT_GIVER_EARLY, PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_EFFECT_GIVER_EARLY,
+  PRIORITY_KILL_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class PlagueStarter extends Card {
   constructor(role) {
@@ -28,9 +31,9 @@ module.exports = class PlagueStarter extends Card {
       },
     };
 
-     this.listeners = {
-        state: function (stateInfo) {
-          /*
+    this.listeners = {
+      state: function (stateInfo) {
+        /*
         if (!this.hasAbility(["Kill", "Effect", ""])) {
           return;
         }
@@ -40,8 +43,8 @@ module.exports = class PlagueStarter extends Card {
           this.game.HasDonePlagueVirusAction = false;
           return;
         }
-        if(this.game.HasDonePlagueVirusAction == true){
-    return;
+        if (this.game.HasDonePlagueVirusAction == true) {
+          return;
         }
         this.game.HasDonePlagueVirusAction = true;
         var action = new Action({
@@ -50,37 +53,34 @@ module.exports = class PlagueStarter extends Card {
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill", "hidden", "absolute"],
           run: function () {
+            let infectedPlayers = this.game.players.filter((p) =>
+              p.hasEffect("Virus")
+            );
 
-            let infectedPlayers = this.game.players.filter((p) => p.hasEffect("Virus"));
-
-          for(let player of infectedPlayers){
-             for(let effect of player.effects){
-               if(effect.name == "Virus"){
-                 effect.InfectionTime++
-                 if(effect.InfectionTime >= 2){
-                   if (this.dominates(player)) {
-                   player.kill("basic", null);
-                   }
-                 }
-               }
-             }
-            for (let neighbor of player.getNeighbors()) {
-              if (neighbor.hasEffect("Virus")) {
-                continue;
+            for (let player of infectedPlayers) {
+              for (let effect of player.effects) {
+                if (effect.name == "Virus") {
+                  effect.InfectionTime++;
+                  if (effect.InfectionTime >= 2) {
+                    if (this.dominates(player)) {
+                      player.kill("basic", null);
+                    }
+                  }
+                }
               }
+              for (let neighbor of player.getNeighbors()) {
+                if (neighbor.hasEffect("Virus")) {
+                  continue;
+                }
 
-            neighbor.giveEffect("Virus");
+                neighbor.giveEffect("Virus");
+              }
             }
-          
-          }
           },
         });
 
         this.game.queueAction(action);
       },
     };
-
-
-    
   }
 };

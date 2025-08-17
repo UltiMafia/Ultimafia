@@ -11,20 +11,23 @@ module.exports = class TreasureChest extends Item {
 
     this.meetings = {};
     this.listeners = {
-    state: function (stateInfo) {
+      state: function (stateInfo) {
         if (this.game.getStateName() != "Treasure Chest") return;
         if (!this.holder.alive) return;
         if (this.holder.role.name != "Admiral") {
-      this.holder.game.sendAlert(`${this.holder.name} has The Treasure Chest!`);
-      this.holder.sendAlert(`You have received the Admiral's Treasure Chest!`);
-      this.holder.sendAlert(
-        `Inside are ${this.holder.game.AdmiralGold} Gold Bars and the following roles ${this.holder.game.AdmiralGoodRoles}!`
-      );
-      this.holder.sendAlert(
-        `You may steal Gold and Become Mafia/Cult Or Become a role in the Chest!`
-      );
-    }
-
+          this.holder.game.sendAlert(
+            `${this.holder.name} has The Treasure Chest!`
+          );
+          this.holder.sendAlert(
+            `You have received the Admiral's Treasure Chest!`
+          );
+          this.holder.sendAlert(
+            `Inside are ${this.holder.game.AdmiralGold} Gold Bars and the following roles ${this.holder.game.AdmiralGoodRoles}!`
+          );
+          this.holder.sendAlert(
+            `You may steal Gold and Become Mafia/Cult Or Become a role in the Chest!`
+          );
+        }
       },
       roleAssigned: function (player) {
         //if (this.game.getStateName() != "Night") return;
@@ -231,11 +234,13 @@ module.exports = class TreasureChest extends Item {
 
             if (this.actor.role.name != "Admiral") {
               if (this.game.AdmiralEvilRoles.length <= 0) {
-                const evilRoles = this.item.Admiral.role.getAllRoles().filter(
-                  (r) =>
-                    this.game.getRoleAlignment(r) === "Cult" ||
-                    this.game.getRoleAlignment(r) === "Mafia"
-                );
+                const evilRoles = this.item.Admiral.role
+                  .getAllRoles()
+                  .filter(
+                    (r) =>
+                      this.game.getRoleAlignment(r) === "Cult" ||
+                      this.game.getRoleAlignment(r) === "Mafia"
+                  );
                 let role;
                 if (evilRoles.length <= 0) {
                   role = `Mafioso:Lone`;

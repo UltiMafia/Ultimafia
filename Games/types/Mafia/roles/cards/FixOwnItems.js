@@ -1,6 +1,9 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const { PRIORITY_ITEM_TAKER_DEFAULT, PRIORITY_ITEM_TAKER_EARLY } = require("../../const/Priority");
+const {
+  PRIORITY_ITEM_TAKER_DEFAULT,
+  PRIORITY_ITEM_TAKER_EARLY,
+} = require("../../const/Priority");
 
 module.exports = class FixOwnItems extends Card {
   constructor(role) {
@@ -33,15 +36,14 @@ module.exports = class FixOwnItems extends Card {
           actor: this.player,
           game: this.player.game,
           role: this,
-          priority: PRIORITY_ITEM_TAKER_DEFAULT+2,
+          priority: PRIORITY_ITEM_TAKER_DEFAULT + 2,
           labels: ["fixItems", "hidden"],
           run: function () {
             for (let item of this.actor.items) {
-            item.broken = false;
-            item.magicCult = false;
-            item.mafiaImmune = false;
+              item.broken = false;
+              item.magicCult = false;
+              item.mafiaImmune = false;
             }
-            
           },
         });
 
@@ -50,15 +52,14 @@ module.exports = class FixOwnItems extends Card {
           actor: this.player,
           game: this.player.game,
           role: this,
-          priority:PRIORITY_ITEM_TAKER_EARLY+2,
+          priority: PRIORITY_ITEM_TAKER_EARLY + 2,
           labels: ["fixItems", "hidden"],
           run: function () {
             for (let item of this.actor.items) {
-            item.broken = false;
-            item.magicCult = false;
-            item.mafiaImmune = false;
+              item.broken = false;
+              item.magicCult = false;
+              item.mafiaImmune = false;
             }
-            
           },
         });
 

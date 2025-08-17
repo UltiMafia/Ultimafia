@@ -30,7 +30,7 @@ export const Alignments = {
   "Wacky Words": ["Town", "Host"],
   "Liars Dice": ["Liars", "Host"],
   "Texas Hold Em": ["Town", "Host"],
-  "Cheat": ["Town", "Host"],
+  Cheat: ["Town", "Host"],
   Battlesnakes: ["Town", "Host"],
 };
 
@@ -50,7 +50,7 @@ export const GameStates = {
   "Wacky Words": ["Day", "Night"],
   "Liars Dice": ["Guess Dice"],
   "Texas Hold Em": ["Place Bets", "Showdown"],
-  "Cheat": ["Play Cards", "Call Lie"],
+  Cheat: ["Play Cards", "Call Lie"],
   Battlesnakes: ["Day"],
 };
 

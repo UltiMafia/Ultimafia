@@ -37,7 +37,10 @@ module.exports = class Sacrificial extends Card {
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill", "hidden"],
           run: function () {
-            if (this.hasVisits(this.actor) === true && this.dominates(this.actor)) {
+            if (
+              this.hasVisits(this.actor) === true &&
+              this.dominates(this.actor)
+            ) {
               this.actor.kill("basic", this.actor);
             }
           },

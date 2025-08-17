@@ -9,8 +9,6 @@ module.exports = class SpyCore extends Card {
       this.appearance.merlin = null;
     }
 
-    
-
     this.meetingMods = {
       "Mission Success": {
         flags: ["voting", "mustAct", "includeNo"],

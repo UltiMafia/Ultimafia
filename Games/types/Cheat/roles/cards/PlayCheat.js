@@ -1,5 +1,8 @@
 const Card = require("../../Card");
-const { IMPORTANT_MEETINGS, ROLE_MEETINGS} = require("../../const/ImportantMeetings");
+const {
+  IMPORTANT_MEETINGS,
+  ROLE_MEETINGS,
+} = require("../../const/ImportantMeetings");
 
 module.exports = class PlayCheat extends Card {
   constructor(role) {
@@ -17,35 +20,41 @@ module.exports = class PlayCheat extends Card {
         action: {
           item: this,
           run: function () {
-          this.game.sendAlert(`${this.actor.name} plays ${this.target.length} Cards!`);
-          for(let card of this.target){
-            let readCard = this.game.readCard(card);
-            if(readCard[0] != this.game.RankNumber){
-              this.actor.hasLied = true;
+            this.game.sendAlert(
+              `${this.actor.name} plays ${this.target.length} Cards!`
+            );
+            for (let card of this.target) {
+              let readCard = this.game.readCard(card);
+              if (readCard[0] != this.game.RankNumber) {
+                this.actor.hasLied = true;
+              }
+              this.actor.CardsInHand.splice(
+                this.actor.CardsInHand.indexOf(card),
+                1
+              );
             }
-            this.actor.CardsInHand.splice(this.actor.CardsInHand.indexOf(card),1);
-          }
-          this.game.TheStack.push(...this.target);
+            this.game.TheStack.push(...this.target);
           },
         },
         shouldMeet: function () {
           return (
-            this.player.name == this.game.randomizedPlayersCopy[this.game.currentIndex].name
+            this.player.name ==
+            this.game.randomizedPlayersCopy[this.game.currentIndex].name
           );
         },
       },
-      "Submit": {
+      Submit: {
         actionName: "Submit",
         states: ["Play Cards"],
         flags: ["voting", "instant", "mustAct"],
         inputType: "boolean",
         action: {
-          run: function () {
-          },
+          run: function () {},
         },
         shouldMeet: function () {
           return (
-            this.player.name == this.game.randomizedPlayersCopy[this.game.currentIndex].name
+            this.player.name ==
+            this.game.randomizedPlayersCopy[this.game.currentIndex].name
           );
         },
       },
@@ -57,38 +66,50 @@ module.exports = class PlayCheat extends Card {
         targets: ["Call Lie", "Don't Call Lie"],
         action: {
           run: function () {
-            if(this.target == "Don't Call Lie"){
+            if (this.target == "Don't Call Lie") {
               return;
             }
-          this.game.sendAlert(`${this.actor.name} calls ${this.game.randomizedPlayersCopy[this.game.currentIndex].name} a Liar!`);
-            if(this.game.randomizedPlayersCopy[this.game.currentIndex].hasLied == true){
-              this.game.randomizedPlayersCopy[this.game.currentIndex].CardsInHand.push(...this.game.TheStack);
+            this.game.sendAlert(
+              `${this.actor.name} calls ${
+                this.game.randomizedPlayersCopy[this.game.currentIndex].name
+              } a Liar!`
+            );
+            if (
+              this.game.randomizedPlayersCopy[this.game.currentIndex].hasLied ==
+              true
+            ) {
+              this.game.randomizedPlayersCopy[
+                this.game.currentIndex
+              ].CardsInHand.push(...this.game.TheStack);
               this.game.TheStack = [];
-              this.game.sendAlert(`${this.actor.name} was correct! ${this.game.randomizedPlayersCopy[this.game.currentIndex].name} gains the Stack!`);
-            }
-            else{
+              this.game.sendAlert(
+                `${this.actor.name} was correct! ${
+                  this.game.randomizedPlayersCopy[this.game.currentIndex].name
+                } gains the Stack!`
+              );
+            } else {
               this.actor.CardsInHand.push(...this.game.TheStack);
               this.game.TheStack = [];
-              this.game.sendAlert(`${this.actor.name} was incorrect! They gain the Stack!`);
+              this.game.sendAlert(
+                `${this.actor.name} was incorrect! They gain the Stack!`
+              );
             }
 
-  
-              for (let player of this.game.players) {
-                player.getMeetings().forEach((meeting) => {
-                  if (IMPORTANT_MEETINGS.includes(meeting.name)) {
+            for (let player of this.game.players) {
+              player.getMeetings().forEach((meeting) => {
+                if (IMPORTANT_MEETINGS.includes(meeting.name)) {
                   meeting.leave(player, true);
-                  }
-                  else if (ROLE_MEETINGS.includes(meeting.name)) {
-                    meeting.leave(player, true);
-                  }
-                });
-              }
-            
+                } else if (ROLE_MEETINGS.includes(meeting.name)) {
+                  meeting.leave(player, true);
+                }
+              });
+            }
           },
         },
         shouldMeet: function () {
           return (
-            this.player.name != this.game.randomizedPlayersCopy[this.game.currentIndex].name
+            this.player.name !=
+            this.game.randomizedPlayersCopy[this.game.currentIndex].name
           );
         },
       },

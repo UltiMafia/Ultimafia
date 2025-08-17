@@ -1,7 +1,9 @@
 const Effect = require("../Effect");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
-const { PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT } = require("../const/Priority");
+const {
+  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
+} = require("../const/Priority");
 
 module.exports = class MovieNight extends Effect {
   constructor(lifespan) {
@@ -16,7 +18,7 @@ module.exports = class MovieNight extends Effect {
           actor: null,
           target: null,
           game: this.player.game,
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-10,
+          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
           run: function () {
             let info = this.game.createInformation(
               "CountEvilsInGroupInfo",
@@ -25,17 +27,19 @@ module.exports = class MovieNight extends Effect {
               this.game.MovieWatchers
             );
             info.makeTrue();
-            this.game.MovieWatchers = Random.randomizeArray(this.game.MovieWatchers);
+            this.game.MovieWatchers = Random.randomizeArray(
+              this.game.MovieWatchers
+            );
             this.game.MovieWatchers[0].queueAlert(
-                `${info.mainInfo} Evil players attended the opera!`
-              );
+              `${info.mainInfo} Evil players attended the opera!`
+            );
             this.game.MovieWatchers[1].queueAlert(
-                `${info.mainInfo} Evil players attended the opera!`
-              );
+              `${info.mainInfo} Evil players attended the opera!`
+            );
             info.makeFalse();
             this.game.MovieWatchers[2].queueAlert(
-                `${info.mainInfo} Evil players attended the opera!`
-              );
+              `${info.mainInfo} Evil players attended the opera!`
+            );
             this.game.MovieWatchers = null;
           },
         });

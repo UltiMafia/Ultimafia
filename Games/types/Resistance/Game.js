@@ -157,7 +157,7 @@ module.exports = class ResistanceGame extends Game {
     return info;
   }
 
-  checkGameEnd(){
+  checkGameEnd() {
     var finished = super.checkGameEnd();
     if (finished) return finished;
   }
@@ -188,7 +188,7 @@ module.exports = class ResistanceGame extends Game {
       (this.mission - 1 - this.missionFails >= thresholdToWin &&
         !this.hasMerlin);
     */
-    
+
     winners.determinePlayers();
     return [finished, winners];
   }
@@ -208,7 +208,7 @@ module.exports = class ResistanceGame extends Game {
     return winners;
   }
 
-    async endGame(winners) {
+  async endGame(winners) {
     for (let player of this.players) {
       if (player.won) player.recordStat("wins", true);
       else player.recordStat("wins", false);

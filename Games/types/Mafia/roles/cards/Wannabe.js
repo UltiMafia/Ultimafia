@@ -14,8 +14,7 @@ module.exports = class Wannabe extends Card {
         if (
           !this.hasAbility(["Modifier", "Deception"]) &&
           !(
-            this.player.role.name == "Wannabe" &&
-            this.hasAbility(["Deception"])
+            this.player.role.name == "Wannabe" && this.hasAbility(["Deception"])
           )
         ) {
           return;

@@ -10,13 +10,13 @@ module.exports = class RevealToEvils extends Card {
           return;
         }
         for (let player of this.game.players) {
-        if(player == this.player){
-        continue;
+          if (player == this.player) {
+            continue;
+          }
+          if (player.isEvil()) {
+            this.player.role.revealToPlayer(player);
+          }
         }
-        if (player.isEvil()) {
-          this.player.role.revealToPlayer(player);
-        }
-      }
       },
     };
   }

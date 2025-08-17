@@ -42,7 +42,15 @@ module.exports = class Remove1Banished extends Card {
           item.drop();
         }
         shuffledPlayers[0].role.data.banished = false;
-        shuffledPlayers[0].setRole(newRole, undefined, false, true, null, null, "RemoveStartingItems");
+        shuffledPlayers[0].setRole(
+          newRole,
+          undefined,
+          false,
+          true,
+          null,
+          null,
+          "RemoveStartingItems"
+        );
       },
     };
   }

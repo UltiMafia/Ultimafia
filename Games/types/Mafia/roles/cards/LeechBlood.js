@@ -12,7 +12,7 @@ module.exports = class LeechBlood extends Card {
         flags: ["voting"],
         action: {
           labels: ["blood"],
-          priority:  PRIORITY_KILL_SPECIAL-4,
+          priority: PRIORITY_KILL_SPECIAL - 4,
           run: function () {
             this.target.data.blood -= 50;
             bloodCount += 50;

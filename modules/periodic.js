@@ -189,28 +189,41 @@ module.exports = function () {
         // Query all heart refreshes that have elapsed
         let refreshedHearts = await models.DailyChallengeRefresh.find({
           when: { $lt: now },
-        })
+        });
         for (let refreshedHeart of refreshedHearts) {
-
           //let  Object.entries(DailyChallengeData);
-          
-           let tierOne = Random.randArrayVal(Object.entries(DailyChallengeData).filter((c) => c[1].tier == 1).map((c) => [c[1].ID, 0, (c[1].extraData || null)]));
-            let tierTwo = Random.randArrayVal(Object.entries(DailyChallengeData).filter((c) => c[1].tier == 2).map((c) => [c[1].ID, 0, (c[1].extraData || null)]));
-            let tierThree = Random.randArrayVal(Object.entries(DailyChallengeData).filter((c) => c[1].tier == 3).map((c) => [c[1].ID, 0, (c[1].extraData || null)]));
+
+          let tierOne = Random.randArrayVal(
+            Object.entries(DailyChallengeData)
+              .filter((c) => c[1].tier == 1)
+              .map((c) => [c[1].ID, 0, c[1].extraData || null])
+          );
+          let tierTwo = Random.randArrayVal(
+            Object.entries(DailyChallengeData)
+              .filter((c) => c[1].tier == 2)
+              .map((c) => [c[1].ID, 0, c[1].extraData || null])
+          );
+          let tierThree = Random.randArrayVal(
+            Object.entries(DailyChallengeData)
+              .filter((c) => c[1].tier == 3)
+              .map((c) => [c[1].ID, 0, c[1].extraData || null])
+          );
           //let tierFour = Random.randArrayVal(Object.entries(DailyChallengeData).filter((c) => c[1].tier == 4));
           //Format is [ID, progress, extraData]
           let Challenges = [tierOne, tierTwo, tierThree];
-          for(let c of Challenges){
-            if(c[2] != null){
-              if(c[2] == "Game Type"){
+          for (let c of Challenges) {
+            if (c[2] != null) {
+              if (c[2] == "Game Type") {
                 c[2] = Random.randArrayVal(constants.gameTypes);
-              }
-              else if(c[2] == "Role Name"){
+              } else if (c[2] == "Role Name") {
                 c[2] = Random.randArrayVal(
-              Object.entries(roleData.Mafia)
-                .filter((role) => role[1].alignment != "Event" && role[0] != "Host")
-                .map((role) => role[0])
-            );
+                  Object.entries(roleData.Mafia)
+                    .filter(
+                      (role) =>
+                        role[1].alignment != "Event" && role[0] != "Host"
+                    )
+                    .map((role) => role[0])
+                );
               }
             }
           }
@@ -218,25 +231,27 @@ module.exports = function () {
 
           // Refresh the user's heart type to capacity
 
-        let users = await models.User.find({ deleted: false }).select("id -_id");
-          
-        for(let userId of users){
-        let result1 = await models.User.updateOne(
-          { id: userId.id },
-          {
-            $set: {
-              dailyChallenges: Challenges,
-            },
+          let users = await models.User.find({ deleted: false }).select(
+            "id -_id"
+          );
+
+          for (let userId of users) {
+            let result1 = await models.User.updateOne(
+              { id: userId.id },
+              {
+                $set: {
+                  dailyChallenges: Challenges,
+                },
+              }
+            ).exec();
+
+            if (result1.modifiedCount === 0) {
+              console.warn(
+                `Failed to refresh daily challenges for userId[${userId.id}]`
+              );
+            }
+            await redis.cacheUserInfo(userId.id, true);
           }
-        ).exec();
-          
-          if (result1.modifiedCount === 0) {
-            console.warn(
-              `Failed to refresh daily challenges for userId[${userId.id}]`
-            );
-          }
-          await redis.cacheUserInfo(userId.id, true);
-        }
           // Remove the heart refresh so that it won't trigger again
           const result2 = await models.DailyChallengeRefresh.deleteOne({
             when: { $lt: now },

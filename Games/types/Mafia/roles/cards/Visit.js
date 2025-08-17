@@ -1,7 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_SUPPORT_VISIT_DEFAULT } = require("../../const/Priority");
 
-
 module.exports = class Visit extends Card {
   constructor(role) {
     super(role);

@@ -14,20 +14,22 @@ const {
 module.exports = class IsOneOfTargetsDemonInfo extends Information {
   constructor(creator, game, targets) {
     super("Is One Of Targets Demon Info", creator, game);
-    if(targets == null || targets.length <= 0){
+    if (targets == null || targets.length <= 0) {
       this.randomTarget = true;
       let targetA = Random.randArrayVal(this.game.alivePlayers());
-      let targetB = Random.randArrayVal(this.game.alivePlayers().filter((p) => p != targetA));
+      let targetB = Random.randArrayVal(
+        this.game.alivePlayers().filter((p) => p != targetA)
+      );
       targets = [targetA, targetB];
     }
-    this.target = targets
-  this.mainInfo = "No";
-    for(let player of this.target){
-      if(MAFIA_FACTIONS.includes(this.getAppearanceAlignment(player))){
+    this.target = targets;
+    this.mainInfo = "No";
+    for (let player of this.target) {
+      if (MAFIA_FACTIONS.includes(this.getAppearanceAlignment(player))) {
         this.mainInfo = "Yes";
         break;
       }
-      if(this.isAppearanceDemonic(player)){
+      if (this.isAppearanceDemonic(player)) {
         this.mainInfo = "Yes";
         break;
       }
@@ -41,24 +43,23 @@ module.exports = class IsOneOfTargetsDemonInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    if(this.mainInfo == "Yes"){
-    return `You learn that at least one of ${this.target[0].name} and ${this.target[1].name} is Mafia or Demonic.`;
-    }
-    else{
-      return `You learn that neither of ${this.target[0].name} and ${this.target[1].name} is Mafia or Demonic.`
+    if (this.mainInfo == "Yes") {
+      return `You learn that at least one of ${this.target[0].name} and ${this.target[1].name} is Mafia or Demonic.`;
+    } else {
+      return `You learn that neither of ${this.target[0].name} and ${this.target[1].name} is Mafia or Demonic.`;
     }
   }
 
   isTrue() {
-      for(let player of this.target){
-      if(MAFIA_FACTIONS.includes(player.faction) && this.mainInfo == "Yes"){
-       return true; 
+    for (let player of this.target) {
+      if (MAFIA_FACTIONS.includes(player.faction) && this.mainInfo == "Yes") {
+        return true;
       }
-      if(player.isDemonic(true) && this.mainInfo == "Yes"){
-       return true;
+      if (player.isDemonic(true) && this.mainInfo == "Yes") {
+        return true;
       }
     }
-    if(this.mainInfo == "No"){
+    if (this.mainInfo == "No") {
       return true;
     }
     return false;
@@ -87,12 +88,12 @@ module.exports = class IsOneOfTargetsDemonInfo extends Information {
 
   makeTrue() {
     this.mainInfo = "No";
-      for(let player of this.target){
-      if(MAFIA_FACTIONS.includes(player.faction)){
-       this.mainInfo = "Yes";
+    for (let player of this.target) {
+      if (MAFIA_FACTIONS.includes(player.faction)) {
+        this.mainInfo = "Yes";
       }
-      if(player.isDemonic(true) && this.mainInfo == "Yes"){
-       this.mainInfo = "Yes";
+      if (player.isDemonic(true) && this.mainInfo == "Yes") {
+        this.mainInfo = "Yes";
       }
     }
   }

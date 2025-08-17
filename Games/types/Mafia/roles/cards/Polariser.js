@@ -1,6 +1,9 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const { PRIORITY_EFFECT_GIVER_EARLY, PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_EFFECT_GIVER_EARLY,
+  PRIORITY_KILL_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class Polariser extends Card {
   constructor(role) {
@@ -34,7 +37,7 @@ module.exports = class Polariser extends Card {
     };
 
     this.listeners = {
-        state: function (stateInfo) {
+      state: function (stateInfo) {
         if (!this.hasAbility(["Kill", "Effect"])) {
           return;
         }
@@ -49,32 +52,29 @@ module.exports = class Polariser extends Card {
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill", "hidden", "absolute"],
           run: function () {
-          for(let player of this.game.players){
-           let visitors = this.getVisitors(player);
-           if(player.hasEffect("Polarised")){
-            for (let v of visitors) {
-              if (!v.hasEffect("Polarised")) {
-                continue;
-              }
+            for (let player of this.game.players) {
+              let visitors = this.getVisitors(player);
+              if (player.hasEffect("Polarised")) {
+                for (let v of visitors) {
+                  if (!v.hasEffect("Polarised")) {
+                    continue;
+                  }
 
-              if (this.dominates(player)) {
-                player.kill("polarised", this.actor);
-              }
+                  if (this.dominates(player)) {
+                    player.kill("polarised", this.actor);
+                  }
 
-              if (this.dominates(v)) {
-                v.kill("polarised", this.actor);
+                  if (this.dominates(v)) {
+                    v.kill("polarised", this.actor);
+                  }
+                }
               }
             }
-          }
-          
-          }
           },
         });
 
         this.game.queueAction(action);
       },
     };
-
-    
   }
 };

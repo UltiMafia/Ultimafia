@@ -15,20 +15,17 @@ const effectData = {
     Doused: {
       internal: ["Knife"],
       tags: ["Day Killer", "Bleeding"],
-      description:
-        "Doused players will die if a Match is thrown.",
+      description: "Doused players will die if a Match is thrown.",
     },
     Jinxed: {
       internal: ["Stake"],
       tags: ["Day Killer", "alignment"],
-      description:
-        "Jinxed players will die if they say a Jinxed word.",
+      description: "Jinxed players will die if they say a Jinxed word.",
     },
     Poisoned: {
       internal: ["Poison"],
       tags: ["Day Killer", "alignment"],
-      description:
-        "Poisoned players will die during the night.",
+      description: "Poisoned players will die during the night.",
     },
     Lovesick: {
       internal: ["Poison"],
@@ -45,8 +42,7 @@ const effectData = {
     Deafened: {
       internal: ["Poison"],
       tags: ["Day Killer", "alignment"],
-      description:
-        "Deafened players cannot read messages from other players.",
+      description: "Deafened players cannot read messages from other players.",
     },
     Fiddled: {
       internal: ["Poison"],
@@ -57,8 +53,7 @@ const effectData = {
     Silenced: {
       internal: ["Poison"],
       tags: ["Speaking"],
-      description:
-        "Silenced players cannot speak.",
+      description: "Silenced players cannot speak.",
     },
     Scrambled: {
       internal: ["Scrambled"],
@@ -76,20 +71,17 @@ const effectData = {
     Sealed: {
       internal: ["Sealed"],
       tags: ["Speaking"],
-      description:
-        "Sealed players can not send or receive whispers.",
+      description: "Sealed players can not send or receive whispers.",
     },
     Leaky: {
       internal: ["Sealed"],
       tags: ["Speaking"],
-      description:
-        "Leaky players will their whispers always leak.",
+      description: "Leaky players will their whispers always leak.",
     },
     Paralyzed: {
       internal: ["Sealed"],
       tags: ["Voting"],
-      description:
-        "Paralyzed players cannot change their votes.",
+      description: "Paralyzed players cannot change their votes.",
     },
     Alcoholic: {
       internal: ["Alcoholic"],
@@ -106,7 +98,8 @@ const effectData = {
     Hexed: {
       internal: ["Tract"],
       tags: ["Tract"],
-      description: "Hexed players will convert to Cultist if they say the Hexed word.",
+      description:
+        "Hexed players will convert to Cultist if they say the Hexed word.",
     },
     Mad: {
       internal: ["Bomb"],
@@ -135,24 +128,27 @@ const effectData = {
     Hosted: {
       internal: ["Insanity"],
       tags: ["Condemn"],
-      description: "Hosted players will be converted to a Transendant role when condemned.",
+      description:
+        "Hosted players will be converted to a Transendant role when condemned.",
     },
     Gassed: {
       internal: ["Insanity"],
       tags: ["Speaking", "Voting"],
-      description: "Gassed players will die if they visit another player at night.",
+      description:
+        "Gassed players will die if they visit another player at night.",
     },
-    "Polarised": {
+    Polarised: {
       internal: ["Insanity"],
       tags: ["Visiting"],
-      description: "Polarised players will die if they visit another player at night.",
+      description:
+        "Polarised players will die if they visit another player at night.",
     },
-    "Frozen": {
+    Frozen: {
       internal: ["Insanity"],
       tags: ["Visiting"],
-      description: "Polarised players will die if they visit another player at night.",
+      description:
+        "Polarised players will die if they visit another player at night.",
     },
-    
   },
   Resistance: {},
   Ghost: {},
@@ -160,10 +156,9 @@ const effectData = {
   Acrotopia: {},
   "Secret Dictator": {},
   "Wacky Words": {},
-  "Liars Dice": {
-  },
+  "Liars Dice": {},
   "Texas Hold Em": {},
-  "Cheat": {},
+  Cheat: {},
 };
 
 module.exports = effectData;

@@ -357,19 +357,28 @@ export function NameWithAvatar(props) {
 
   useEffect(() => {
     if (includeMiniprofile && id) {
-      axios.get(`/api/user/${id}/profile`).then((res) => {
-        res.data.props = props;
-        setUserProfile(res.data);
-      }).catch(error => {
-        console.warn(`Couldn't retrieve profile for ${id} (this error is harmless if they're a bot)`)
-      });
+      axios
+        .get(`/api/user/${id}/profile`)
+        .then((res) => {
+          res.data.props = props;
+          setUserProfile(res.data);
+        })
+        .catch((error) => {
+          console.warn(
+            `Couldn't retrieve profile for ${id} (this error is harmless if they're a bot)`
+          );
+        });
     }
   }, []);
 
   var contents = (
-    <Stack direction="row" spacing={absoluteLeftAvatarPx ? 0 : small ? 0.5 : 1} sx ={{
-      alignItems: "center"
-    }}>
+    <Stack
+      direction="row"
+      spacing={absoluteLeftAvatarPx ? 0 : small ? 0.5 : 1}
+      sx={{
+        alignItems: "center",
+      }}
+    >
       <Avatar
         hasImage={avatar}
         id={id}
@@ -494,7 +503,11 @@ export function Miniprofile(props) {
             <Avatar hasImage={avatar} id={id} avatarId={avatarId} name={name} />
             <div
               className={`user-name`}
-              style={{ ...(color ? { color } : {}), display: "inline", alignSelf: "center" }}
+              style={{
+                ...(color ? { color } : {}),
+                display: "inline",
+                alignSelf: "center",
+              }}
             >
               {name}
             </div>

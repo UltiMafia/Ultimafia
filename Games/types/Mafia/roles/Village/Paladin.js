@@ -5,6 +5,11 @@ module.exports = class Paladin extends Role {
     super("Paladin", player, data);
 
     this.alignment = "Village";
-    this.cards = ["VillageCore", "GainAbilitesIfTargetDies", "WinWithFaction", "MeetingFaction"];
+    this.cards = [
+      "VillageCore",
+      "GainAbilitesIfTargetDies",
+      "WinWithFaction",
+      "MeetingFaction",
+    ];
   }
 };

@@ -8,7 +8,7 @@ module.exports = class RoleButton extends Item {
     this.count = count;
     this.roleToUse = role;
     this.type = type || "A";
-    this.baseMeetingName = "Choose Role "+ this.type + this.count;
+    this.baseMeetingName = "Choose Role " + this.type + this.count;
     this.currentMeetingIndex = 0;
     this.lifespan = 1;
     this.cannotBeStolen = true;
@@ -24,13 +24,12 @@ module.exports = class RoleButton extends Item {
         action: {
           item: this,
           run: function () {
-            if(this.item.type == "A"){
+            if (this.item.type == "A") {
               this.item.roleToUse.data.RoleA = this.target;
-            }
-            else if(this.item.type == "B"){
+            } else if (this.item.type == "B") {
               this.item.roleToUse.data.RoleB = this.target;
             }
-             this.game.events.emit("questionInfo", this.item.roleToUse);
+            this.game.events.emit("questionInfo", this.item.roleToUse);
             this.item.drop();
           },
         },

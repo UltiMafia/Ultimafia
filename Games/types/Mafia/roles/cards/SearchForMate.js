@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const {PRIORITY_EFFECT_GIVER_EARLY } = require("../../const/Priority");
+const { PRIORITY_EFFECT_GIVER_EARLY } = require("../../const/Priority");
 
 module.exports = class SearchForMate extends Card {
   constructor(role) {

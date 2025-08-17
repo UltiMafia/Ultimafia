@@ -11,7 +11,7 @@ module.exports = class Vanillaise extends Card {
         flags: ["voting"],
         action: {
           labels: ["convert"],
-          priority: PRIORITY_CONVERT_DEFAULT+8,
+          priority: PRIORITY_CONVERT_DEFAULT + 8,
           run: function () {
             if (this.dominates()) {
               const vanillaRole = this.getVanillaRole(this.target);

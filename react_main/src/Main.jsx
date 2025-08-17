@@ -47,7 +47,15 @@ import "css/main.css";
 import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
 import { NewLoading } from "./pages/Welcome/NewLoading";
-import { Box, Stack, ThemeProvider, CssBaseline, Paper, Typography, Button } from "@mui/material";
+import {
+  Box,
+  Stack,
+  ThemeProvider,
+  CssBaseline,
+  Paper,
+  Typography,
+  Button,
+} from "@mui/material";
 import {
   darkTheme,
   lightTheme,
@@ -64,17 +72,24 @@ import fadelogohat from "images/fadelogohat.png";
 function ErrorFallback({ error }) {
   const { resetBoundary } = useErrorBoundary();
 
-  console.log(error)
+  console.log(error);
 
   return (
-    <Paper sx={{
-      position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
-      p: 1,
-      width: "360px",
-    }}>
+    <Paper
+      sx={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        p: 1,
+        width: "360px",
+      }}
+    >
       <Stack direction="column" spacing={1}>
         <Typography variant="h5">Error:</Typography>
-        <Typography color="red" sx={{ wordBreak: "break-word" }}>{error.message}</Typography>
+        <Typography color="red" sx={{ wordBreak: "break-word" }}>
+          {error.message}
+        </Typography>
         <Button onClick={resetBoundary}>Refresh</Button>
       </Stack>
     </Paper>
@@ -124,7 +139,7 @@ function Main() {
 
     setTheme(colorScheme === "dark" ? darkTheme : lightTheme);
   }, [user?.settings?.siteColorScheme]);
-/*
+  /*
   var roleIconScheme = user.settings?.roleIconScheme
     ? user.settings.roleIconScheme
     : "vivid";
@@ -153,7 +168,6 @@ function Main() {
  document.documentElement.classList.add(`role-icon-scheme-${roleIconScheme}`);
   }
   */
-  
 
   useEffect(() => {
     async function getInfo() {
@@ -242,9 +256,7 @@ function Main() {
     return <NewLoading />;
   }
 
-  const style = isPhoneDevice
-    ? { padding: "8px" }
-    : { padding: "24px" };
+  const style = isPhoneDevice ? { padding: "8px" } : { padding: "24px" };
 
   return (
     <ErrorBoundary
@@ -252,63 +264,69 @@ function Main() {
       onReset={() =>
         (window.location.href =
           window.location.origin + window.location.pathname)
-    }>
-    <UserContext.Provider value={user}>
-      <SiteInfoContext.Provider value={siteInfo}>
-        <PopoverContext.Provider value={popover}>
-          <ThemeProvider theme={theme}>
-            <CookieBanner />
-            <CssBaseline />
-            <Switch>
-              <Route path="/game">
-                <Game />
-                <AlertList />
-              </Route>
-              <Route path="/">
-                <div className="site-wrapper">
-                  <div className="main-container" style={style}>
-                    <Header
-                      setShowAnnouncementTemporarily={
-                        setShowAnnouncementTemporarily
-                      }
-                    />
-                    <Announcement
-                      showAnnouncementTemporarily={showAnnouncementTemporarily}
-                      setShowAnnouncementTemporarily={
-                        setShowAnnouncementTemporarily
-                      }
-                    />
-                    <BadTextContrast
-                      colorType="username"
-                      color={user?.settings?.warnNameColor}
-                    />
-                    <BadTextContrast
-                      colorType="text"
-                      color={user?.settings?.warnTextColor}
-                    />
+      }
+    >
+      <UserContext.Provider value={user}>
+        <SiteInfoContext.Provider value={siteInfo}>
+          <PopoverContext.Provider value={popover}>
+            <ThemeProvider theme={theme}>
+              <CookieBanner />
+              <CssBaseline />
+              <Switch>
+                <Route path="/game">
+                  <Game />
+                  <AlertList />
+                </Route>
+                <Route path="/">
+                  <div className="site-wrapper">
+                    <div className="main-container" style={style}>
+                      <Header
+                        setShowAnnouncementTemporarily={
+                          setShowAnnouncementTemporarily
+                        }
+                      />
+                      <Announcement
+                        showAnnouncementTemporarily={
+                          showAnnouncementTemporarily
+                        }
+                        setShowAnnouncementTemporarily={
+                          setShowAnnouncementTemporarily
+                        }
+                      />
+                      <BadTextContrast
+                        colorType="username"
+                        color={user?.settings?.warnNameColor}
+                      />
+                      <BadTextContrast
+                        colorType="text"
+                        color={user?.settings?.warnTextColor}
+                      />
 
-                    <div className="inner-container">
-                      <Switch>
-                        <Route path="/play" render={() => <Play />} />
-                        <Route path="/community" render={() => <Community />} />
-                        <Route path="/fame" render={() => <Fame />} />
-                        <Route path="/learn" render={() => <Learn />} />
-                        <Route path="/policy" render={() => <Policy />} />
-                        <Route path="/user" render={() => <User />} />
-                      </Switch>
+                      <div className="inner-container">
+                        <Switch>
+                          <Route path="/play" render={() => <Play />} />
+                          <Route
+                            path="/community"
+                            render={() => <Community />}
+                          />
+                          <Route path="/fame" render={() => <Fame />} />
+                          <Route path="/learn" render={() => <Learn />} />
+                          <Route path="/policy" render={() => <Policy />} />
+                          <Route path="/user" render={() => <User />} />
+                        </Switch>
+                      </div>
+                      <Footer />
+                      <AlertList />
+                      {<Chat SiteNotifs={SiteNotifs} />}
                     </div>
-                    <Footer />
-                    <AlertList />
-                    {<Chat SiteNotifs={SiteNotifs} />}
                   </div>
-                </div>
-              </Route>
-            </Switch>
-            <Popover />
-          </ThemeProvider>
-        </PopoverContext.Provider>
-      </SiteInfoContext.Provider>
-    </UserContext.Provider>
+                </Route>
+              </Switch>
+              <Popover />
+            </ThemeProvider>
+          </PopoverContext.Provider>
+        </SiteInfoContext.Provider>
+      </UserContext.Provider>
     </ErrorBoundary>
   );
 }
@@ -388,9 +406,12 @@ function Header({ setShowAnnouncementTemporarily }) {
           }}
         />
       )}
-      <Stack direction="row" sx={{
-        justifyContent: "space-between",
-      }}>
+      <Stack
+        direction="row"
+        sx={{
+          justifyContent: "space-between",
+        }}
+      >
         <Link to="/" className="logo-wrapper">
           <Box
             component="img"
@@ -423,7 +444,9 @@ function Header({ setShowAnnouncementTemporarily }) {
               flexDirection: "row",
             }}
           >
-            <Stack direction="row" spacing={.5}
+            <Stack
+              direction="row"
+              spacing={0.5}
               sx={{
                 alignItems: "center",
                 fontWeight: "bold",
@@ -725,10 +748,7 @@ function Footer() {
             </a>
           </span>
           <span>
-            <a
-              target="_blank"
-              href="https://ultimafia.com/user/2oDrE3Ueq"
-            >
+            <a target="_blank" href="https://ultimafia.com/user/2oDrE3Ueq">
               Additional music by Jumpy
             </a>
           </span>

@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const {  PRIORITY_PREKILL_ACTION } = require("../../const/Priority");
+const { PRIORITY_PREKILL_ACTION } = require("../../const/Priority");
 
 module.exports = class GainAbilitesIfTargetDies extends Card {
   constructor(role) {
@@ -35,10 +35,15 @@ module.exports = class GainAbilitesIfTargetDies extends Card {
             target: this.avengeTarget,
             game: this.game,
             run: function () {
-            //let effect = this.actor.giveEffect("ExtraRoleEffect", this.game.formatRoleInternal(this.target.role.name, this.target.role.modifier) , Infinity, this.target.role.data);
-            let role = this.actor.addExtraRole(this.game.formatRoleInternal(this.target.role.name, this.target.role.modifier));
-          //this.GainedRoles.push(role);
-          this.actor.passiveExtraRoles.push(role);
+              //let effect = this.actor.giveEffect("ExtraRoleEffect", this.game.formatRoleInternal(this.target.role.name, this.target.role.modifier) , Infinity, this.target.role.data);
+              let role = this.actor.addExtraRole(
+                this.game.formatRoleInternal(
+                  this.target.role.name,
+                  this.target.role.modifier
+                )
+              );
+              //this.GainedRoles.push(role);
+              this.actor.passiveExtraRoles.push(role);
             },
           });
 

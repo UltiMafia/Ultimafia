@@ -4,7 +4,7 @@ const { addArticle } = require("../../../../core/Utils");
 module.exports = class CreateEvent extends Card {
   constructor(role) {
     super(role);
-    
+
     this.meetings = {
       "Select Event": {
         states: ["Night"],
@@ -42,9 +42,9 @@ module.exports = class CreateEvent extends Card {
           this.data.ConvertOptions.push(this.game.GameEndEvent);
         }
         var ConvertOptions = this.data.ConvertOptions;
-        if(this.meetings["Select Event"]){
-         this.meetings["Select Event"].targets = ConvertOptions; 
-        }   
+        if (this.meetings["Select Event"]) {
+          this.meetings["Select Event"].targets = ConvertOptions;
+        }
       },
       // refresh cooldown
       state: function (stateInfo) {

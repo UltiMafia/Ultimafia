@@ -5,6 +5,11 @@ module.exports = class Yith extends Role {
     super("Yith", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "GainAbilitesIfTargetDies", "WinWithFaction", "MeetingFaction"];
+    this.cards = [
+      "VillageCore",
+      "GainAbilitesIfTargetDies",
+      "WinWithFaction",
+      "MeetingFaction",
+    ];
   }
 };

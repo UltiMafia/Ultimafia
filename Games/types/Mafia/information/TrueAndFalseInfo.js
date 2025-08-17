@@ -25,10 +25,7 @@ module.exports = class TrueAndFalseInfo extends Information {
     if (this.game.alivePlayers().length > 3) {
       possibleInfo.push("GuessPlayerNeighborRoleInfo");
     }
-    if (
-      this.game.alivePlayers().length <= 3 ||
-      this.game.IsBloodMoon == true
-    ) {
+    if (this.game.alivePlayers().length <= 3 || this.game.IsBloodMoon == true) {
       possibleInfo.push("BinaryAlignmentInfo");
     }
     if (
@@ -43,13 +40,13 @@ module.exports = class TrueAndFalseInfo extends Information {
     ) {
       possibleInfo.push("DeadRoleInfo");
     }
-    if (
-      this.game.alivePlayers().length <= 3 ||
-      this.game.IsBloodMoon == true
-    ) {
+    if (this.game.alivePlayers().length <= 3 || this.game.IsBloodMoon == true) {
       possibleInfo.push("RoleInfo");
     }
-    if (this.game.deadPlayers().length == 0 && this.game.alivePlayers().length > 3) {
+    if (
+      this.game.deadPlayers().length == 0 &&
+      this.game.alivePlayers().length > 3
+    ) {
       possibleInfo.push("EvilPairsInfo");
     }
     if (this.game.alivePlayers().length >= 4) {

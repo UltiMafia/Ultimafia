@@ -29,7 +29,7 @@ module.exports = class Lock extends Item {
           actor: this.holder,
           target: this.holder,
           game: this.game,
-          priority: PRIORITY_UNTARGETABLE-5,
+          priority: PRIORITY_UNTARGETABLE - 5,
           item: this,
           run: function () {
             if (this.item.magicCult) {

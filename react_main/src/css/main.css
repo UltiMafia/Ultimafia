@@ -524,7 +524,7 @@ input:focus {
   align-items: center;
   justify-content: flex-start;
 
-  background: rgba(16, 16, 16, .5);
+  background: rgba(16, 16, 16, 0.5);
   border-radius: 10px;
 }
 

@@ -110,7 +110,8 @@ const modifierData = {
     Coffee: {
       internal: ["Coffee"],
       tags: ["actions"],
-      description: "Can be used at night to use role abilites an additional time.",
+      description:
+        "Can be used at night to use role abilites an additional time.",
     },
     //Non Town Items
     Suit: {
@@ -157,8 +158,7 @@ const modifierData = {
     "Fishing Rod": {
       internal: ["FishingRod"],
       tags: ["Fishing"],
-      description:
-        "Can be used to Fish instead of playing mafia.",
+      description: "Can be used to Fish instead of playing mafia.",
     },
     Snowball: {
       internal: ["Snowball"],
@@ -195,7 +195,7 @@ const modifierData = {
     },
   },
   "Texas Hold Em": {},
-  "Cheat": {},
+  Cheat: {},
 };
 
 module.exports = modifierData;

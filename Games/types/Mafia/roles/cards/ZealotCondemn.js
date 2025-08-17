@@ -17,19 +17,17 @@ module.exports = class ZealotCondemn extends Card {
     super(role);
     this.target = "";
 
-
     this.winCheckSpecial = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if(!this.hasAbility(["Win-Con"])){
+        if (!this.hasAbility(["Win-Con"])) {
           return;
         }
-            
-              
+
         if (this.data.ZealotWin && this.hasAbility(["Win-Con"])) {
-          for(let player of this.game.players){
-            if(CULT_FACTIONS.includes(player.faction)){
+          for (let player of this.game.players) {
+            if (CULT_FACTIONS.includes(player.faction)) {
               winners.addPlayer(player, player.faction);
             }
           }

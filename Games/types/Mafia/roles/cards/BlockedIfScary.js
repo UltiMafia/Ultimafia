@@ -17,7 +17,9 @@ module.exports = class BlockedIfScary extends Card {
           priority: PRIORITY_BLOCK_EARLY,
           labels: ["block", "hidden"],
           run: function () {
-            let ScaryPlayers = this.game.alivePlayers().filter((p)=> p.hasEffect("Scary"));
+            let ScaryPlayers = this.game
+              .alivePlayers()
+              .filter((p) => p.hasEffect("Scary"));
 
             if (ScaryPlayers.length > 0) {
               this.blockActions(this.actor);

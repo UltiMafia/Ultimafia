@@ -16,8 +16,7 @@ module.exports = class KillAndDeliriumSurvivors extends Card {
           labels: ["kill"],
           priority: PRIORITY_KILL_DEFAULT,
           run: function () {
-
-            if (this.dominates() || this.target.hasEffect("Delirious")){
+            if (this.dominates() || this.target.hasEffect("Delirious")) {
               this.target.kill("basic", this.actor);
             }
             if (this.target.alive) {
@@ -28,8 +27,14 @@ module.exports = class KillAndDeliriumSurvivors extends Card {
                 game: this.game,
                 labels: ["block", "delirium"],
                 run: function () {
-                  if (this.dominates()){
-                     this.target.giveEffect("Delirious", this.actor, Infinity, null, this.role);
+                  if (this.dominates()) {
+                    this.target.giveEffect(
+                      "Delirious",
+                      this.actor,
+                      Infinity,
+                      null,
+                      this.role
+                    );
                     this.blockWithDelirium(this.target);
                   }
                 },

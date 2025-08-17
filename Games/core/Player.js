@@ -93,7 +93,12 @@ module.exports = class Player {
   makeNotAnonymous() {
     let p = this.originalProfile;
 
-    this.game.sendAlert(`${p.name}'s anonymous name was ${this.name}.`, undefined, undefined, ["info"]);
+    this.game.sendAlert(
+      `${p.name}'s anonymous name was ${this.name}.`,
+      undefined,
+      undefined,
+      ["info"]
+    );
 
     this.user.id = p.userId;
     this.name = p.name;
@@ -387,7 +392,7 @@ module.exports = class Player {
         continue;
       }
 
-      if(meeting.Important != true){
+      if (meeting.Important != true) {
         continue;
       }
 
@@ -472,10 +477,12 @@ module.exports = class Player {
         );
         return;
       case "help":
-        for(let x = 0; x < Object.entries(commandData).length; x++){
-        this.sendAlert(
-          `:system: ${Object.entries(commandData)[x][0]}| ${Object.entries(commandData)[x][1].description}`
-        );
+        for (let x = 0; x < Object.entries(commandData).length; x++) {
+          this.sendAlert(
+            `:system: ${Object.entries(commandData)[x][0]}| ${
+              Object.entries(commandData)[x][1].description
+            }`
+          );
         }
         return;
       case "achievement":
@@ -500,39 +507,42 @@ module.exports = class Player {
           `:system: Achievement Info for ${achievementNameToQuery}- ${achievement.description}| ${hasComplete}`
         );
         return;
-        case "daily":
+      case "daily":
         let dailyInfo = [];
         let tempDailyChallenge = this.user.dailyChallenges.map((d) => d[0]);
-        for (let Challenge of Object.entries(DailyChallengeData).filter((DailyChallenge) => tempDailyChallenge.includes(DailyChallenge[1].ID))) {
-        let extraData;
-        for(let day of this.user.dailyChallenges){
-          if(day[0] == Challenge[1].ID){
-            /*
+        for (let Challenge of Object.entries(DailyChallengeData).filter(
+          (DailyChallenge) => tempDailyChallenge.includes(DailyChallenge[1].ID)
+        )) {
+          let extraData;
+          for (let day of this.user.dailyChallenges) {
+            if (day[0] == Challenge[1].ID) {
+              /*
           this.sendAlert(
             `:system: day 0 ${day[0]} day 1 ${day[1]} day 2 ${day[2]}`
           );
           */
-            extraData = day[2];
-            dailyInfo.push(`${Challenge[0].replace(`ExtraData`,extraData)}: ${Challenge[1].description.replace(`ExtraData`,extraData)}`);
+              extraData = day[2];
+              dailyInfo.push(
+                `${Challenge[0].replace(
+                  `ExtraData`,
+                  extraData
+                )}: ${Challenge[1].description.replace(`ExtraData`, extraData)}`
+              );
+            }
           }
-        }
-      } //End For Loop
-      /*
+        } //End For Loop
+        /*
        this.sendAlert(
             `:system: ${this.user.dailyChallenges.join(", ")}`
           );
           */
-        
+
         if (dailyInfo.length <= 0) {
-          this.sendAlert(
-            `:system: No daily challenges.`
-          );
+          this.sendAlert(`:system: No daily challenges.`);
           return;
         }
-        for(let info of dailyInfo){
-          this.sendAlert(
-          `:system: ${info}`
-        );
+        for (let info of dailyInfo) {
+          this.sendAlert(`:system: ${info}`);
         }
         return;
       case "ban":
@@ -565,28 +575,28 @@ module.exports = class Player {
           if (player.name.toLowerCase() === cmd.args[0].toLowerCase()) {
             this.game.kickPlayer(player, kickPermanently);
             this.game.sendAlert(
-              `${player.name} was kicked ${andBanned}from the game.`, undefined, undefined, ["info"]
+              `${player.name} was kicked ${andBanned}from the game.`,
+              undefined,
+              undefined,
+              ["info"]
             );
             return;
           }
         }
         return;
-        case "changeSetup":
-  
+      case "changeSetup":
         const setupToQuery = cmd.args;
         if (
           this.game.started ||
           this.user.id != this.game.hostId ||
           cmd.args.length == 0
-        ){
+        ) {
           return;
         }
-        if(this.game.canChangeSetup() != true){
-              this.game.sendAlert(
-              `The setup cannot be changed.`
-            );
-                return;
-              }
+        if (this.game.canChangeSetup() != true) {
+          this.game.sendAlert(`The setup cannot be changed.`);
+          return;
+        }
         this.game.changeSetup(setupToQuery);
         return;
       case "diceroll":
@@ -717,12 +727,11 @@ module.exports = class Player {
     const modifiers = roleName.split(":")[1];
     roleName = roleName.split(":")[0];
 
-    
-    for(let extraRole of this.passiveExtraRoles){
+    for (let extraRole of this.passiveExtraRoles) {
       var index = this.ExtraRoles.indexOf(extraRole);
-          if (index != -1) {
-            this.ExtraRoles.splice(index, 1);
-          }
+      if (index != -1) {
+        this.ExtraRoles.splice(index, 1);
+      }
       extraRole.remove();
     }
     this.passiveExtraRoles = [];
@@ -763,12 +772,12 @@ module.exports = class Player {
         effect.remove();
       }
     }
-    if(items == "RemoveStartingItems"){
-    for (let item of this.startingItems) {
-      item.drop();
+    if (items == "RemoveStartingItems") {
+      for (let item of this.startingItems) {
+        item.drop();
+      }
+      this.startingItems = [];
     }
-    this.startingItems = [];
-  }
     if (!faction) {
       this.faction = this.game.getRoleAlignment(roleName);
 
@@ -786,7 +795,7 @@ module.exports = class Player {
     let oldAppearanceSelf = this.role?.appearance.self;
     this.removeRole();
     this.role = new role(this, roleData);
-    if(items == "NoStartingItems"){
+    if (items == "NoStartingItems") {
       this.role.startItems = [];
     }
     this.role.init(modifiers);
@@ -837,22 +846,14 @@ module.exports = class Player {
     }
     if (this.game.hasIntegrity && this.DailyTracker.length <= 0) {
       let tempDailyChallenge = this.user.dailyChallenges.map((d) => d[0]);
-      for (let Challenge of Object.entries(
-        DailyChallengeData
-      ).filter(
-        (DailyChallenge) =>
-          tempDailyChallenge.includes(DailyChallenge[1].ID)
+      for (let Challenge of Object.entries(DailyChallengeData).filter(
+        (DailyChallenge) => tempDailyChallenge.includes(DailyChallenge[1].ID)
       )) {
-        let atemp = this.DailyTracker.filter(
-          (a) => a.name == Challenge[0]
-        );
+        let atemp = this.DailyTracker.filter((a) => a.name == Challenge[0]);
         if (atemp.length <= 0) {
           let internal = Challenge[1].internal;
 
-          let aClass = Utils.importGameClass(
-            "Daily",
-            `${internal}`
-          );
+          let aClass = Utils.importGameClass("Daily", `${internal}`);
           let temp = new aClass(Challenge[0], this);
           this.DailyTracker.push(temp);
           temp.start();
@@ -874,24 +875,23 @@ module.exports = class Player {
 
     let oldAppearanceSelf = this.role?.appearance.self;
 
-
     //this.removeRole();
-   let newRole = new role(this, roleData);
-    if(items == "NoStartingItems"){
+    let newRole = new role(this, roleData);
+    if (items == "NoStartingItems") {
       newRole.startItems = [];
     }
     newRole.init(modifiers);
-  if(items == "NoStartingItems"){
-    for (let item of newRole.startItems) {
-      for(let item2 of this.items){
-        if(item2.name == item){
-          item2.drop();
-          break;
+    if (items == "NoStartingItems") {
+      for (let item of newRole.startItems) {
+        for (let item2 of this.items) {
+          if (item2.name == item) {
+            item2.drop();
+            break;
+          }
         }
       }
+      this.startingItems = [];
     }
-    this.startingItems = [];
-  }
 
     newRole.isExtraRole = true;
     if (this.game.started && !noEmit) {
@@ -936,8 +936,8 @@ module.exports = class Player {
 
     if (this.role) this.role.speak(message);
 
-    if(this.ExtraRoles){
-      for(let extraRole of this.ExtraRoles){
+    if (this.ExtraRoles) {
+      for (let extraRole of this.ExtraRoles) {
         extraRole.speak(message);
       }
     }
@@ -965,8 +965,8 @@ module.exports = class Player {
 
     if (this.role) this.role.speakQuote(quote);
 
-    if(this.ExtraRoles){
-      for(let extraRole of this.ExtraRoles){
+    if (this.ExtraRoles) {
+      for (let extraRole of this.ExtraRoles) {
         extraRole.speakQuote(quote);
       }
     }
@@ -990,8 +990,8 @@ module.exports = class Player {
     message = new Message(message);
     if (this.role) this.role.hear(message);
 
-    if(this.ExtraRoles){
-      for(let extraRole of this.ExtraRoles){
+    if (this.ExtraRoles) {
+      for (let extraRole of this.ExtraRoles) {
         extraRole.hear(message);
       }
     }
@@ -1030,8 +1030,8 @@ module.exports = class Player {
 
     if (this.role) this.role.hearQuote(quote);
 
-    if(this.ExtraRoles){
-      for(let extraRole of this.ExtraRoles){
+    if (this.ExtraRoles) {
+      for (let extraRole of this.ExtraRoles) {
         extraRole.hearQuote(quote);
       }
     }
@@ -1057,8 +1057,8 @@ module.exports = class Player {
 
     if (this.role) this.role.seeVote(vote);
 
-    if(this.ExtraRoles){
-      for(let extraRole of this.ExtraRoles){
+    if (this.ExtraRoles) {
+      for (let extraRole of this.ExtraRoles) {
         extraRole.seeVote(vote);
       }
     }
@@ -1093,8 +1093,8 @@ module.exports = class Player {
 
     if (this.role) this.role.seeUnvote(info);
 
-    if(this.ExtraRoles){
-      for(let extraRole of this.ExtraRoles){
+    if (this.ExtraRoles) {
+      for (let extraRole of this.ExtraRoles) {
         extraRole.seeUnvote(info);
       }
     }
@@ -1125,8 +1125,8 @@ module.exports = class Player {
   seeTyping(info) {
     if (this.role) this.role.seeTyping(info);
 
-    if(this.ExtraRoles){
-      for(let extraRole of this.ExtraRoles){
+    if (this.ExtraRoles) {
+      for (let extraRole of this.ExtraRoles) {
         extraRole.seeTyping(info);
       }
     }
@@ -1153,8 +1153,8 @@ module.exports = class Player {
   meet() {
     if (this.role) this.joinMeetings(this.role.meetings);
 
-    if(this.ExtraRoles){
-      for(let extraRole of this.ExtraRoles){
+    if (this.ExtraRoles) {
+      for (let extraRole of this.ExtraRoles) {
         this.joinMeetings(extraRole.meetings);
       }
     }
@@ -1291,17 +1291,16 @@ module.exports = class Player {
 
   act(target, meeting, actors) {
     if (this.role) this.role.act(target, meeting, actors);
-    
-    if(this.ExtraRoles){
+
+    if (this.ExtraRoles) {
       let tempNames = [this.role.name];
-      for(let extraRole of this.ExtraRoles){
-        if(!tempNames.includes(extraRole.name)){
-        extraRole.act(target, meeting, actors);
-        tempNames.push(extraRole.name);
-      }
+      for (let extraRole of this.ExtraRoles) {
+        if (!tempNames.includes(extraRole.name)) {
+          extraRole.act(target, meeting, actors);
+          tempNames.push(extraRole.name);
+        }
       }
     }
-    
   }
 
   getImmunity(type) {
@@ -1311,20 +1310,19 @@ module.exports = class Player {
 
     if (this.role) immunity = this.role.getImmunity(type);
 
-    if(immunity == null){
+    if (immunity == null) {
       immunity = 0;
     }
 
-      
-    if(this.ExtraRoles){
-      for(let extraRole of this.ExtraRoles){
-        let extraImmunity = extraRole.getImmunity(type)
-        if(immunity < extraImmunity){
+    if (this.ExtraRoles) {
+      for (let extraRole of this.ExtraRoles) {
+        let extraImmunity = extraRole.getImmunity(type);
+        if (immunity < extraImmunity) {
           immunity = extraImmunity;
         }
       }
     }
-    if(immunity == null){
+    if (immunity == null) {
       immunity = 0;
     }
     for (let effect of this.effects) {
@@ -1341,8 +1339,8 @@ module.exports = class Player {
 
     maxImmunity = Math.max(maxImmunity, this.role.cancelImmunity[type] || 0);
 
-    if(this.ExtraRoles){
-      for(let extraRole of this.ExtraRoles){
+    if (this.ExtraRoles) {
+      for (let extraRole of this.ExtraRoles) {
         Math.max(maxImmunity, extraRole.cancelImmunity[type] || 0);
       }
     }
@@ -1372,16 +1370,16 @@ module.exports = class Player {
           : ":" + this.tempAppearanceMods[type]
       }`;
     }
-    if(this.ExtraRoles){
-      for(let extraRole of this.ExtraRoles){
-        if(extraRole.appearance[type] != extraRole.name){
+    if (this.ExtraRoles) {
+      for (let extraRole of this.ExtraRoles) {
+        if (extraRole.appearance[type] != extraRole.name) {
           return `${extraRole.appearance[type]}${
-      noModifier ? "" : ":" + extraRole.appearanceMods[type]
-    }`;
+            noModifier ? "" : ":" + extraRole.appearanceMods[type]
+          }`;
         }
       }
     }
-    
+
     return `${this.role.appearance[type]}${
       noModifier ? "" : ":" + this.role.appearanceMods[type]
     }`;
@@ -1446,9 +1444,9 @@ module.exports = class Player {
   queueNonmeetActions() {
     if (this.role) this.role.queueActions();
 
-    if(this.ExtraRoles){
-      for(let extraRole of this.ExtraRoles){
-        extraRole.queueActions()
+    if (this.ExtraRoles) {
+      for (let extraRole of this.ExtraRoles) {
+        extraRole.queueActions();
       }
     }
 
@@ -1630,11 +1628,10 @@ module.exports = class Player {
       !this.game.anonymousGame
         ? customDeathMessage.replace("${name}", this.name)
         : this.deathMessages(type || "basic", this.name);
-    
+
     if (this.game.useObituaries) {
       this.game.addToObituary(this.id, "deathMessage", deathMessage);
-    }
-    else {
+    } else {
       this.game.queueAlert(deathMessage);
     }
   }
@@ -1655,8 +1652,7 @@ module.exports = class Player {
 
     if (this.game.useObituaries) {
       this.game.addToObituary(this.id, "lastWill", will);
-    }
-    else {
+    } else {
       this.game.queueAlert(will);
     }
   }
@@ -1751,23 +1747,22 @@ module.exports = class Player {
     player.role.player = player;
     player.role.revealToSelf(true);
 
-  //Swap Extra Roles
+    //Swap Extra Roles
     var tempExtraRoles = this.ExtraRoles;
     this.ExtraRoles = player.ExtraRoles;
     player.ExtraRoles = tempExtraRoles;
-     
-      for(let extraRole of this.ExtraRoles){
-        extraRole.player = this;
-      }
-      for(let extraRole of player.ExtraRoles){
-        extraRole.player = player;
-      }
-      /*
+
+    for (let extraRole of this.ExtraRoles) {
+      extraRole.player = this;
+    }
+    for (let extraRole of player.ExtraRoles) {
+      extraRole.player = player;
+    }
+    /*
     let temp = this.user.customEmotes;
     this.user.customEmotes = player.user.customEmotes;
     player.user.customEmotes = temp;
     */
-    
 
     // Swap items and effects
     var tempItems = this.items;

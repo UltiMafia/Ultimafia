@@ -1,7 +1,5 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
-import {
-  Link,
-} from "react-router-dom";
+import { Link } from "react-router-dom";
 import { UserContext, SiteInfoContext, PopoverContext } from "../Contexts";
 import { SearchBar } from "./Nav";
 import { hyphenDelimit } from "../utils";
@@ -64,13 +62,12 @@ export function RoleCount(props) {
   const makeRolePrediction = props.makeRolePrediction;
 
   var roleName, modifiers, roleSkin, otherRoles;
-  if(props.otherRoles){
-  if(typeof props.otherRoles == "string"){
-  otherRoles = JSON.parse(props.otherRoles);
-  }
-  else{
-  otherRoles = props.otherRoles;
-  }
+  if (props.otherRoles) {
+    if (typeof props.otherRoles == "string") {
+      otherRoles = JSON.parse(props.otherRoles);
+    } else {
+      otherRoles = props.otherRoles;
+    }
   }
 
   if (typeof props.role == "string") {
@@ -80,9 +77,9 @@ export function RoleCount(props) {
     roleName = props.role.name;
     modifiers = props.role.modifier;
   }
-let userRoleSkins1;
-  if(user.settings && typeof user.settings.roleSkins == "string"){
-userRoleSkins1 = user.settings.roleSkins.split(",");
+  let userRoleSkins1;
+  if (user.settings && typeof user.settings.roleSkins == "string") {
+    userRoleSkins1 = user.settings.roleSkins.split(",");
   }
 
   let userRoleSkins = null;
@@ -90,17 +87,16 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
     userRoleSkins = userRoleSkins1.filter((s) => s.split(":")[0] == roleName);
   }
 
-  if(userRoleSkins && userRoleSkins.length == 1){
+  if (userRoleSkins && userRoleSkins.length == 1) {
     roleSkin = userRoleSkins[0].split(":")[1];
-  }
-  else{
+  } else {
     roleSkin = "vivid";
   }
-  
-  if(props.skin){
+
+  if (props.skin) {
     roleSkin = props.skin;
   }
-  
+
   useEffect(() => {
     setRoleData({
       ...siteInfo.rolesRaw[props.gameType][roleName],
@@ -155,7 +151,7 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
     Liars: "Liars 🤥",
   };
   const roleAlignment = mapAlignmentToText[roleData?.alignment];
-  const roleTags =  (roleData?.tags) ?  roleData.tags.sort().join(", ") : "";
+  const roleTags = roleData?.tags ? roleData.tags.sort().join(", ") : "";
   const hasModifiers = roleData?.modifiers?.length;
   const DescriptionLines = (
     <List dense sx={{ ...(hasModifiers ? { paddingBottom: 0 } : {}) }}>
@@ -201,7 +197,9 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
               marginRight: "8px",
             }}
           >
-            <i className={`modifier modifier-${props.gameType}-${modifier.name}`} />
+            <i
+              className={`modifier modifier-${props.gameType}-${modifier.name}`}
+            />
           </ListItemIcon>
           <ListItemText
             disableTypography
@@ -209,10 +207,13 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
             primary={
               <div>
                 <span style={{ fontWeight: "bold" }}>{modifier.name}</span>:{" "}
-                {(roleData?.SpecialInteractionsModifiers && roleData?.SpecialInteractionsModifiers[modifier.name]) ? roleData?.SpecialInteractionsModifiers[modifier.name] : (roleData?.alignment == "Event" &&
-                modifier.eventDescription != null
+                {roleData?.SpecialInteractionsModifiers &&
+                roleData?.SpecialInteractionsModifiers[modifier.name]
+                  ? roleData?.SpecialInteractionsModifiers[modifier.name]
+                  : roleData?.alignment == "Event" &&
+                    modifier.eventDescription != null
                   ? modifier.eventDescription
-                  : modifier.description)}
+                  : modifier.description}
               </div>
             }
           />
@@ -224,25 +225,32 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
   );
   let specials = [];
   let specialRoles = [];
-    if(otherRoles && otherRoles.length > 0){
-      if(roleData?.SpecialInteractions){
-      for(let i in otherRoles){
+  if (otherRoles && otherRoles.length > 0) {
+    if (roleData?.SpecialInteractions) {
+      for (let i in otherRoles) {
         let roleSet = otherRoles[i];
-        for(let thing in roleSet){ //!specials.includes([thing.split(":")[0],roleData.SpecialInteractions[thing.split(":")[0]]])
-      if(roleData.SpecialInteractions[thing.split(":")[0]] && !specialRoles.includes(thing.split(":")[0])){
-        specialRoles.push(thing.split(":")[0]);
-        specials.push([thing.split(":")[0], roleData.SpecialInteractions[thing.split(":")[0]]]);
+        for (let thing in roleSet) {
+          //!specials.includes([thing.split(":")[0],roleData.SpecialInteractions[thing.split(":")[0]]])
+          if (
+            roleData.SpecialInteractions[thing.split(":")[0]] &&
+            !specialRoles.includes(thing.split(":")[0])
+          ) {
+            specialRoles.push(thing.split(":")[0]);
+            specials.push([
+              thing.split(":")[0],
+              roleData.SpecialInteractions[thing.split(":")[0]],
+            ]);
+          }
+        }
       }
     }
-      }
-      }
   }
-  let hasSpecials = (specials.length > 0);
+  let hasSpecials = specials.length > 0;
   const SpecialInteractions = hasSpecials ? (
     <List dense sx={{ paddingTop: "0" }}>
-          <div>
-          <span style={{ fontWeight: "bold" }}>Special Interactions</span>
-          </div>
+      <div>
+        <span style={{ fontWeight: "bold" }}>Special Interactions</span>
+      </div>
       {specials.map((special, i) => (
         <ListItem
           key={special[0] + i}
@@ -257,7 +265,11 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
               marginRight: "8px",
             }}
           >
-            <i className={`role role-icon-vivid-${hyphenDelimit(props.gameType)}-${hyphenDelimit(special[0])} "small"`} />
+            <i
+              className={`role role-icon-vivid-${hyphenDelimit(
+                props.gameType
+              )}-${hyphenDelimit(special[0])} "small"`}
+            />
           </ListItemIcon>
           <ListItemText
             disableTypography
@@ -291,7 +303,9 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
       <div className="role-count-wrap">
         <div className="role-group-placeholder">
           <div
-            className={`role role-icon-${roleSkin}-${roleClass} ${props.small ? "small" : props.large ? "large" : ""} ${props.bg ? "bg" : ""}`}
+            className={`role role-icon-${roleSkin}-${roleClass} ${
+              props.small ? "small" : props.large ? "large" : ""
+            } ${props.bg ? "bg" : ""}`}
             ref={roleRef}
             onClick={onRoleGroupClick}
           >
@@ -312,9 +326,9 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
           onMouseLeave={handleMouseLeave}
         >
           <div
-            className={`role role-icon-${roleSkin}-${roleClass} ${props.small ? "small" : props.large ? "large" : ""} ${
-              props.bg ? "bg" : ""
-            }`}
+            className={`role role-icon-${roleSkin}-${roleClass} ${
+              props.small ? "small" : props.large ? "large" : ""
+            } ${props.bg ? "bg" : ""}`}
             ref={roleRef}
           >
             {props.count > 1 && <DigitsCount digits={digits} />}
@@ -349,7 +363,8 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
             <div className={"mui-popover"}>
               <div className={"mui-popover-title"}>
                 <div className={`role role-icon-${roleSkin}-${roleClass}`} />
-                &nbsp;{<Link to= {`/learn/role/${roleName}`}>{roleName}</Link>}&nbsp;
+                &nbsp;{<Link to={`/learn/role/${roleName}`}>{roleName}</Link>}
+                &nbsp;
               </div>
               <div style={{ margin: "6px" }}>
                 <div>
@@ -357,8 +372,7 @@ userRoleSkins1 = user.settings.roleSkins.split(",");
                   {roleAlignment}
                 </div>
                 <div>
-                  <span style={{ fontWeight: "bold" }}>Tags</span>:{" "}
-                  {roleTags}
+                  <span style={{ fontWeight: "bold" }}>Tags</span>: {roleTags}
                 </div>
                 {DescriptionLines}
                 {Modifiers}
@@ -425,14 +439,15 @@ export function ModifierCount(props) {
     });
   }, [siteInfo, roleName]);
 */
-let tempData = null;
-if(siteInfo.modifiers[props.gameType].filter((t) => t.name == roleName)){
-tempData = siteInfo.modifiers[props.gameType].filter((t) => t.name == roleName)[0];
-}
-else{
-  tempData = siteInfo.modifiers[props.gameType]["Disloyal"];
-}
-const roleData = tempData;
+  let tempData = null;
+  if (siteInfo.modifiers[props.gameType].filter((t) => t.name == roleName)) {
+    tempData = siteInfo.modifiers[props.gameType].filter(
+      (t) => t.name == roleName
+    )[0];
+  } else {
+    tempData = siteInfo.modifiers[props.gameType]["Disloyal"];
+  }
+  const roleData = tempData;
 
   const roleClass = roleName
     ? `${hyphenDelimit(props.gameType)}-${hyphenDelimit(roleName)}`
@@ -449,7 +464,7 @@ const roleData = tempData;
             otherRoles: props.otherRoles,
           },
         }),
-        "modifier",
+        "modifier"
       );
     }
   }
@@ -457,13 +472,11 @@ const roleData = tempData;
   const digits =
     props.count && !props.hideCount ? props.count.toString().split("") : "";
 
-  const popoverDisabled = Boolean(
-    props.showPopover === false
-  );
+  const popoverDisabled = Boolean(props.showPopover === false);
   const popoverOpen = !popoverDisabled && canOpenPopover;
-  const roleTags = (roleData?.tags) ? roleData.tags.sort().join(", ") : "";
+  const roleTags = roleData?.tags ? roleData.tags.sort().join(", ") : "";
   const DescriptionLines = (
-    <List dense sx={{ ...({ paddingTop: "0" }) }}>
+    <List dense sx={{ ...{ paddingTop: "0" } }}>
       {[roleData?.description].map((text, i) => (
         <ListItem
           key={text + i}
@@ -491,56 +504,52 @@ const roleData = tempData;
     </List>
   );
 
-    return (
-      <>
-        <div
-          className="role-count-wrap"
-          aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
-          aria-haspopup="true"
-          onClick={handleRoleCountClick}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+  return (
+    <>
+      <div
+        className="role-count-wrap"
+        aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
+        aria-haspopup="true"
+        onClick={handleRoleCountClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div className={`modifier modifier-${roleClass}`} ref={roleRef}>
+          {props.count > 1 && <DigitsCount digits={digits} />}
+        </div>
+      </div>
+      <div>
+        <Popover
+          open={props.showPopover !== false && popoverOpen}
+          sx={popoverClasses}
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "center",
+          }}
+          onClose={closePopover}
+          disableScrollLock
         >
-          <div
-            className={ `modifier modifier-${roleClass}`}
-            ref={roleRef}
-          >
-            {props.count > 1 && <DigitsCount digits={digits} />}
-          </div>
-        </div>
-        <div>
-          <Popover
-            open={props.showPopover !== false && popoverOpen}
-            sx={popoverClasses}
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "center",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "center",
-            }}
-            onClose={closePopover}
-            disableScrollLock
-          >
-            <div className={"mui-popover"}>
-              <div className={"mui-popover-title"}>
-                <div className={`modifier modifier-${roleClass}`} />
-                &nbsp;{roleName}&nbsp;
-              </div>
-              <div style={{ margin: "3px" }}>
-                <div>
-                  <span style={{ fontWeight: "bold" }}>Tags</span>:{" "}
-                  {roleTags}
-                </div>
-                {DescriptionLines}
-              </div>
+          <div className={"mui-popover"}>
+            <div className={"mui-popover-title"}>
+              <div className={`modifier modifier-${roleClass}`} />
+              &nbsp;{roleName}&nbsp;
             </div>
-          </Popover>
-        </div>
-      </>
-    );
+            <div style={{ margin: "3px" }}>
+              <div>
+                <span style={{ fontWeight: "bold" }}>Tags</span>: {roleTags}
+              </div>
+              {DescriptionLines}
+            </div>
+          </div>
+        </Popover>
+      </div>
+    </>
+  );
 }
 
 function DigitsCount(props) {
@@ -718,11 +727,9 @@ export function RoleSearch(props) {
 
 export function ModifierSearch(props) {
   const theme = useTheme();
-  
-  const [roleListType, setRoleListType] = useState(
-    "Items"
-  );
-  
+
+  const [roleListType, setRoleListType] = useState("Items");
+
   const [searchVal, setSearchVal] = useState("");
   const roleCellRefs = useRef([]);
   const user = useContext(UserContext);
@@ -733,7 +740,7 @@ export function ModifierSearch(props) {
     setSearchVal("");
     setRoleListType(alignment);
   }
-/*
+  /*
   const roleAbbreviations = {
     blue: ["Villager"],
     nilla: ["Villager", "Mafioso"],
@@ -780,34 +787,37 @@ export function ModifierSearch(props) {
     );
   }
 
-    function getCompatibleModifiersOther(mods) {
-
-    const mappedMods = siteInfo.modifiers[props.gameType].filter((t) => mods.includes(t.name));
+  function getCompatibleModifiersOther(mods) {
+    const mappedMods = siteInfo.modifiers[props.gameType].filter((t) =>
+      mods.includes(t.name)
+    );
     let temp = [];
-    for(let mod of mappedMods){
-        if(mod && mod.incompatible){
-          temp.push(...mod.incompatible);
-        }
+    for (let mod of mappedMods) {
+      if (mod && mod.incompatible) {
+        temp.push(...mod.incompatible);
+      }
     }
     const incompatibles = temp;
     const modifierOptions = siteInfo.modifiers[props.gameType]
       .filter((e) => !e.hidden)
       .filter((e) => e.allowDuplicate || !mods.includes(e.name))
       .filter((e) => !incompatibles.includes(e.name))
-      .map((modifier) => (modifier.name));
+      .map((modifier) => modifier.name);
     return modifierOptions;
   }
 
   if (!siteInfo.modifiers) return <NewLoading small />;
 
-  const alignButtons = ["Items", "Visits", "Appearance", "Other"].map((type) => (
-    <Tab
-      label={type}
-      value={type}
-      onClick={() => onAlignNavClick(type)}
-      key={type}
-    />
-  ));
+  const alignButtons = ["Items", "Visits", "Appearance", "Other"].map(
+    (type) => (
+      <Tab
+        label={type}
+        value={type}
+        onClick={() => onAlignNavClick(type)}
+        key={type}
+      />
+    )
+  );
 
   const roleCells = siteInfo.modifiers[props.gameType].map((role, i) => {
     const searchTerms = searchVal
@@ -821,7 +831,7 @@ export function ModifierSearch(props) {
         (term) =>
           role.name.toLowerCase().includes(term) ||
           role.tags.join("").toLowerCase().includes(term)
-          /*
+        /*
           ||
           Object.entries(roleAbbreviations).some(
             ([shortcut, roleNames]) =>
@@ -831,14 +841,17 @@ export function ModifierSearch(props) {
       );
 
     if (
-      !role.disabled && getCompatibleModifiersOther(props.curMods).includes(role.name) &&
-      ((role.category === roleListType || (searchVal.length > 0 && (role.name.toLowerCase().indexOf(searchVal) !== -1 || matchesSearch))))
+      !role.disabled &&
+      getCompatibleModifiersOther(props.curMods).includes(role.name) &&
+      (role.category === roleListType ||
+        (searchVal.length > 0 &&
+          (role.name.toLowerCase().indexOf(searchVal) !== -1 || matchesSearch)))
     ) {
       return (
         <Card
           className="role-cell"
           key={role.name}
-          sx={{ padding: "0px", margin: "4px"}}
+          sx={{ padding: "0px", margin: "4px" }}
         >
           {user.loggedIn && props.onAddClick && (
             <IconButton
@@ -858,13 +871,12 @@ export function ModifierSearch(props) {
             ref={(el) => (roleCellRefs.current[i] = el)}
             sx={{ padding: "2px" }}
           >
-          
-              <ModifierCount
+            <ModifierCount
               role={role.name}
               gameType={props.gameType}
               sx={{ fontSize: "10px" }}
             />
-            
+
             <Typography variant="body2">{role.name}</Typography>
           </CardContent>
         </Card>
@@ -886,8 +898,7 @@ export function ModifierSearch(props) {
           value={roleListType}
           onChange={(_, value) => setRoleListType(value)}
           centered
-        >
-        </Tabs>
+        ></Tabs>
         <SearchBar
           value={searchVal}
           placeholder="🔎 Modifier Name"

@@ -251,7 +251,7 @@ var schemas = {
     kudosReceiver: { type: String, default: "" },
     anonymousGame: Boolean,
     // This is a mongoose subdocument. It won't change if the anonyonous deck that the game was started with changes.
-    anonymousDeck: [ anonymousDeck ],
+    anonymousDeck: [anonymousDeck],
   }),
   ArchivedGame: new mongoose.Schema({
     user: {

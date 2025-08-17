@@ -16,8 +16,10 @@ export const randomizeMeetingTargetsWithSeed = ({
     {}
   );
   const sortedTargets = targets.sort((a, b) => {
-    const aOrder = a === "*" ? BIG_NUMBER : a === "*magus" ? BIG_NUMBER + 1 : idToOrder[a];
-    const bOrder = b === "*" ? BIG_NUMBER : b === "*magus" ? BIG_NUMBER + 1 : idToOrder[b];
+    const aOrder =
+      a === "*" ? BIG_NUMBER : a === "*magus" ? BIG_NUMBER + 1 : idToOrder[a];
+    const bOrder =
+      b === "*" ? BIG_NUMBER : b === "*magus" ? BIG_NUMBER + 1 : idToOrder[b];
     return aOrder < bOrder ? -1 : aOrder === bOrder ? 0 : 1;
   });
 

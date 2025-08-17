@@ -5,11 +5,9 @@ module.exports = class VillageCore extends Card {
   constructor(role) {
     super(role);
 
-    if(role.isExtraRole == true){
+    if (role.isExtraRole == true) {
       return;
     }
-
-    
 
     this.meetings = {
       Village: {
@@ -25,31 +23,35 @@ module.exports = class VillageCore extends Card {
           priority: PRIORITY_VILLAGE,
           power: 3,
           run: function () {
-
-            if(this.target == "*magus"){
-            this.game.MagusGameDeclared = true;
-            let players = this.game.players.filter(
-              (p) => p.role.name == "Magus"
-            );
-            if (players.length <= 0) {
-              for (let p of this.game.alivePlayers()) {
-                if (p.role.alignment === "Village" || p.role.name === "Magus") {
-                  p.kill("basic", this.actor, true);
+            if (this.target == "*magus") {
+              this.game.MagusGameDeclared = true;
+              let players = this.game.players.filter(
+                (p) => p.role.name == "Magus"
+              );
+              if (players.length <= 0) {
+                for (let p of this.game.alivePlayers()) {
+                  if (
+                    p.role.alignment === "Village" ||
+                    p.role.name === "Magus"
+                  ) {
+                    p.kill("basic", this.actor, true);
+                  }
+                }
+              } else {
+                for (let p of this.game.players) {
+                  if (p.role.alignment == "Village" || p.role.name == "Magus") {
+                    p.role.data.MagusWin = true;
+                  }
                 }
               }
-            } else {
-              for (let p of this.game.players) {
-                if (p.role.alignment == "Village" || p.role.name == "Magus") {
-                  p.role.data.MagusWin = true;
-                }
-              }
-            }
-            return;
+              return;
             }
 
-            
             if (this.dominates()) {
-              if (!this.target.alive && this.target.role.name == "Poltergeist") {
+              if (
+                !this.target.alive &&
+                this.target.role.name == "Poltergeist"
+              ) {
                 this.game.exorcisePlayer(this.target);
               }
               this.target.kill("condemn", this.actor);

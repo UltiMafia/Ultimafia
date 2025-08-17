@@ -1,6 +1,8 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const { PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
+} = require("../../const/Priority");
 const { addArticle } = require("../../../../core/Utils");
 
 module.exports = class DisguiseAsTarget extends Card {

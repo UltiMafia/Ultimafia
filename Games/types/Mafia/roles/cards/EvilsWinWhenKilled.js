@@ -6,15 +6,13 @@ module.exports = class EvilsWinWhenKilled extends Card {
   constructor(role) {
     super(role);
 
-
-
-      this.winCheckSpecial = {
-      priority: PRIORITY_WIN_CHECK_DEFAULT+1,
+    this.winCheckSpecial = {
+      priority: PRIORITY_WIN_CHECK_DEFAULT + 1,
       againOnFinished: true,
-      check: function (counts, winners, aliveCount, confirmedFinished) { 
+      check: function (counts, winners, aliveCount, confirmedFinished) {
         if (this.killedPresident) {
-          for(let player of this.game.players){
-            if(EVIL_FACTIONS.includes(player.faction)){
+          for (let player of this.game.players) {
+            if (EVIL_FACTIONS.includes(player.faction)) {
               winners.addPlayer(player, player.faction);
             }
           }
@@ -22,46 +20,56 @@ module.exports = class EvilsWinWhenKilled extends Card {
       },
     };
 
-      this.listeners = {
-        death: function (player, killer, deathType) {
+    this.listeners = {
+      death: function (player, killer, deathType) {
+        if (player != this.player) {
+          return;
+        }
 
-          if(player != this.player){
-            return;
-          }
+        if (!this.player.hasEffect("PresidentEffect")) {
+          return;
+        }
 
-          if(!this.player.hasEffect("PresidentEffect")){
-            return;
-          }
-
-          
-       
-      this.killedPresident = true;
+        this.killedPresident = true;
       },
       AbilityToggle: function (player) {
-        if(!this.player.alive){
-        return;
+        if (!this.player.alive) {
+          return;
         }
         let checks = true;
-        for(let player of this.game.alivePlayers()){
-          for(let effect of player.effects){
-            if(effect.name == "BackUp"){
-              if(effect.BackupRole && `${effect.BackupRole}` === `${this.name}` && effect.CurrentRole.hasAbility(["Convert", "OnlyWhenAlive", "Modifier"])){
+        for (let player of this.game.alivePlayers()) {
+          for (let effect of player.effects) {
+            if (effect.name == "BackUp") {
+              if (
+                effect.BackupRole &&
+                `${effect.BackupRole}` === `${this.name}` &&
+                effect.CurrentRole.hasAbility([
+                  "Convert",
+                  "OnlyWhenAlive",
+                  "Modifier",
+                ])
+              ) {
                 checks = false;
               }
             }
           }
         }
-        if(!this.hasAbility(["Win-Con", "WhenDead"])){
+        if (this.game.FinalRound < this.game.CurrentRound) {
+          checks = true;
+        }
+        if (!this.hasAbility(["Win-Con", "WhenDead"])) {
           checks = false;
         }
-        
-        
+
         if (checks == true) {
           if (
             this.PresEffect == null ||
             !this.player.effects.includes(this.PresEffect)
           ) {
-            this.PresEffect = this.player.giveEffect("PresidentEffect", Infinity);
+            this.PresEffect = this.player.giveEffect(
+              "PresidentEffect",
+              Infinity
+            );
             this.passiveEffects.push(this.PresEffect);
           }
         } else {
@@ -76,6 +84,5 @@ module.exports = class EvilsWinWhenKilled extends Card {
         }
       },
     };
-
   }
 };

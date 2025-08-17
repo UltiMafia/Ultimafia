@@ -23,9 +23,7 @@ module.exports = class ConvertImmune extends Card {
             this.passiveEffects.push(this.ConvertImmuneEffect);
           }
         } else {
-          var index = this.passiveEffects.indexOf(
-            this.ConvertImmuneEffect
-          );
+          var index = this.passiveEffects.indexOf(this.ConvertImmuneEffect);
           if (index != -1) {
             this.passiveEffects.splice(index, 1);
           }

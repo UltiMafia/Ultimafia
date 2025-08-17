@@ -12,35 +12,35 @@ module.exports = class LoseIfGuessed extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if(this.HasBeenGuessed == true){
-        for(let faction of EVIL_FACTIONS){
-            for(let player of this.game.players){
-            if(faction == player.faction){
-              winners.addPlayer(player, player.faction);
+        if (this.HasBeenGuessed == true) {
+          for (let faction of EVIL_FACTIONS) {
+            for (let player of this.game.players) {
+              if (faction == player.faction) {
+                winners.addPlayer(player, player.faction);
+              }
             }
           }
-      }
         }
       },
     };
 
     this.listeners = {
-       roleAssigned: function (player) {
+      roleAssigned: function (player) {
         if (player !== this.player) {
           return;
         }
-        if(this.GuessUsed != null){
+        if (this.GuessUsed != null) {
           return;
         }
         this.HasBeenGuessed = false;
         this.GuessUsed = false;
       },
-      state: function (){
-        if(this.hasSentMessage == true){
+      state: function () {
+        if (this.hasSentMessage == true) {
           return;
         }
         this.hasSentMessage = true;
-          this.game.queueAlert(
+        this.game.queueAlert(
           `There is a Statue in this Town, say "I think the Statue is (Player Name)" to guess who they are. They may only be guessed Once!`,
           0,
           this.game.players.filter(
@@ -49,14 +49,13 @@ module.exports = class LoseIfGuessed extends Card {
         );
       },
     };
-
   }
 
   hear(message) {
-    if(!message.sender){
+    if (!message.sender) {
       return;
     }
-    if(!message.sender.isEvil()){
+    if (!message.sender.isEvil()) {
       return;
     }
     if (
@@ -82,10 +81,7 @@ module.exports = class LoseIfGuessed extends Card {
     formatedMessage = formatedMessage.toLowerCase();
     if (this.game.getStateName() != "Day") return;
     if (formatedMessage.includes("i think the statue is ")) {
-      formatedMessage = formatedMessage.replace(
-        "i think the statue is ",
-        ""
-      );
+      formatedMessage = formatedMessage.replace("i think the statue is ", "");
       formatedMessage = formatedMessage.replace(" ", "");
       let playerName = formatedMessage;
       let playerTarget = false;
@@ -97,7 +93,6 @@ module.exports = class LoseIfGuessed extends Card {
       if (playerTarget == false) {
         return;
       }
-
 
       this.role.GuessUsed = true;
 
