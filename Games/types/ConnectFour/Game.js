@@ -32,10 +32,41 @@ module.exports = class ConnectFourGame extends Game {
   }
 
   start() {
-    this.currentPlayerIndex = Random.randInt(0, this.players.length - 1);
+    //this.currentPlayerIndex = Random.randInt(0, this.players.length - 1);
+
+  this.hasHost = this.setup.roles[0]["Host:"];
+    if (this.hasHost) {
+      let hostPlayer = this.players.array()[0];
+      this.randomizedPlayers = Random.randomizeArray(
+        this.players.array()
+      ).filter((p) => p != hostPlayer);
+    } else {
+      this.randomizedPlayers = Random.randomizeArray(this.players.array());
+    }
+    this.randomizedPlayersCopy = this.randomizedPlayers;
+
+    
     this.setupBoard(this.boardX, this.boardY);
     super.start();
   }
+
+  incrementCurrentIndex() {
+    this.currentIndex =
+      (this.currentIndex + 1) % this.randomizedPlayersCopy.length;
+  }
+
+  incrementState() {
+    let previousState = this.getStateName();
+    console.log(this.spectatorMeetFilter);
+    if (previousState == "Turn") {
+      this.incrementCurrentIndex();
+      this.sendAlert(
+        `${this.randomizedPlayersCopy[this.currentIndex].name}'s Turn!`
+      );
+    }
+    super.incrementState();
+  }
+
 
   setupBoard(boardX, boardY) {
     for (let i = 0; i < boardX; i++) {
