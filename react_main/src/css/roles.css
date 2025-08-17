@@ -2194,6 +2194,10 @@ background-image: url("/src/images/modifiers/ascetic.png");
 background-image: url("/src/images/modifiers/astral.png");
 }
 
+.modifier-Mafia-Austere {
+background-image: url("/src/images/modifiers/austere.png");
+}
+
 .modifier-Mafia-Backup {
 background-image: url("/src/images/modifiers/backup.png");
 }
@@ -2298,6 +2302,10 @@ background-image: url("/src/images/modifiers/confused.png");
 background-image: url("/src/images/modifiers/consecutive.png");
 }
 
+.modifier-Mafia-Creamed {
+background-image: url("/src/images/modifiers/creamed.png");
+}
+
 .modifier-Mafia-Complex {
 background-image: url("/src/images/modifiers/complex.png");
 }
@@ -2354,8 +2362,20 @@ background-image: url("/src/images/modifiers/faceless.png");
 background-image: url("/src/images/modifiers/fair.png");
 }
 
+.modifier-Mafia-Fatal {
+background-image: url("/src/images/modifiers/morbid-fatal.png");
+}
+
+.modifier-Mafia-Fearful {
+background-image: url("/src/images/modifiers/fearful.png");
+}
+
 .modifier-Mafia-Felonious {
 background-image: url("/src/images/modifiers/felonious.png");
+}
+
+.modifier-Mafia-Fragile {
+background-image: url("/src/images/modifiers/weak-fragile.png");
 }
 
 .modifier-Mafia-Frustrated {
@@ -2427,7 +2447,7 @@ background-image: url("/src/images/modifiers/loyal.png");
 }
 
 .modifier-Mafia-Luminous {
-background-image: url("/src/images/modifiers/luminous.png");
+background-image: url("/src/images/modifiers/luminous-sorrowful.png");
 }
 
 .modifier-Mafia-Macabre {
@@ -2451,7 +2471,7 @@ background-image: url("/src/images/modifiers/modest.png");
 }
 
 .modifier-Mafia-Morbid {
-background-image: url("/src/images/modifiers/morbid.png");
+background-image: url("/src/images/modifiers/morbid-fatal.png");
 }
 
 .modifier-Mafia-Naive {
@@ -2542,6 +2562,10 @@ background-image: url("/src/images/modifiers/reclusive.png");
 background-image: url("/src/images/modifiers/refined.png");
 }
 
+.modifier-Mafia-Regretful {
+background-image: url("/src/images/modifiers/regretful.png");
+}
+
 .modifier-Mafia-Resolute {
 background-image: url("/src/images/modifiers/resolute.png");
 }
@@ -2551,11 +2575,15 @@ background-image: url("/src/images/modifiers/respected.png");
 }
 
 .modifier-Mafia-Restless {
-background-image: url("/src/images/modifiers/restless.png");
+background-image: url("/src/images/modifiers/restless-scary.png");
 }
 
 .modifier-Mafia-Retired {
 background-image: url("/src/images/modifiers/retired.png");
+}
+
+.modifier-Mafia-Rifled {
+background-image: url("/src/images/modifiers/rifled.png");
 }
 
 .modifier-Mafia-Sacrificial {
@@ -2568,6 +2596,10 @@ background-image: url("/src/images/modifiers/sacrificial-steeled.png");
 
 .modifier-Mafia-Sane {
 background-image: url("/src/images/modifiers/sane.png");
+}
+
+.modifier-Mafia-Scary {
+background-image: url("/src/images/modifiers/restless-scary.png");
 }
 
 .modifier-Mafia-Scatterbrained {
@@ -2604,6 +2636,10 @@ background-image: url("/src/images/modifiers/simple.png");
 
 .modifier-Mafia-Social {
 background-image: url("/src/images/modifiers/social.png");
+}
+
+.modifier-Mafia-Sorrowful {
+background-image: url("/src/images/modifiers/luminous-sorrowful.png");
 }
 
 .modifier-Mafia-Strong {
@@ -2675,7 +2711,7 @@ background-image: url("/src/images/modifiers/wannabe.png");
 }
 
 .modifier-Mafia-Weak {
-background-image: url("/src/images/modifiers/weak.png");
+background-image: url("/src/images/modifiers/weak-fragile.png");
 }
 
 .modifier-Mafia-Wise {
