@@ -51,6 +51,9 @@ module.exports = class EvilsWinWhenKilled extends Card {
             }
           }
         }
+        if(this.game.FinalRound < this.game.CurrentRound){
+          checks = true
+        }
         if(!this.hasAbility(["Win-Con", "WhenDead"])){
           checks = false;
         }
