@@ -10,7 +10,7 @@ module.exports = class WatchPlayer extends Card {
 
     this.meetings = {
       Watch: {
-        actionName: "Watch (no visit)",
+        actionName: "Watch",
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["alive"], exclude: [] },

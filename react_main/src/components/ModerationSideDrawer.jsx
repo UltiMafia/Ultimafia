@@ -36,7 +36,7 @@ export default function ModerationSideDrawer({open, setOpen, prefilledArgs}) {
           boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
         }}
       >
-        <i width={30} height={30} className="fas fa-hammer"/>
+        <img src={hammer} />
       </IconButton>
       <Paper
         onClick={() => setOpen(true)}
