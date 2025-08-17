@@ -34,7 +34,7 @@ module.exports = class ConnectFourGame extends Game {
   start() {
     //this.currentPlayerIndex = Random.randInt(0, this.players.length - 1);
 
-  this.hasHost = this.setup.roles[0]["Host:"];
+    this.hasHost = this.setup.roles[0]["Host:"];
     if (this.hasHost) {
       let hostPlayer = this.players.array()[0];
       this.randomizedPlayers = Random.randomizeArray(
@@ -45,7 +45,6 @@ module.exports = class ConnectFourGame extends Game {
     }
     this.randomizedPlayersCopy = this.randomizedPlayers;
 
-    
     this.setupBoard(this.boardX, this.boardY);
     super.start();
   }
@@ -66,7 +65,6 @@ module.exports = class ConnectFourGame extends Game {
     }
     super.incrementState();
   }
-
 
   setupBoard(boardX, boardY) {
     for (let i = 0; i < boardX; i++) {
