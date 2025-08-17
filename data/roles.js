@@ -957,7 +957,6 @@ const roleData = {
       tags: ["Information", "Visit Interaction", "Roles", "Basic"],
       description: [
         "Watches a player each night and learns what roles visited them.",
-        "Doesn't visit its target.",
       ],
       nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-5)]],
     },
@@ -967,7 +966,6 @@ const roleData = {
       tags: ["Information", "Visit Interaction", "Basic"],
       description: [
         "Watches a player each night and learns who visited them.",
-        "Doesn't visit its target.",
       ],
       nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-5)]],
     },
@@ -977,7 +975,6 @@ const roleData = {
       tags: ["Information", "Visit Interaction", "Basic"],
       description: [
         "Watches a player each night and learns if they were visited by anybody.",
-        "Doesn't visit its target.",
       ],
       nightOrder: [["Watch Binary",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT-5)]],
     },
@@ -2246,7 +2243,6 @@ const roleData = {
       tags: ["Information", "Visit Interaction", "Basic"],
       description: [
         "Watches a player each night and learns if they were visited by anybody.",
-        "Doesn't visit its target.",
       ],
       nightOrder: [["Watch Binary",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5)]],
     },
@@ -2256,7 +2252,6 @@ const roleData = {
       tags: ["Information", "Visit Interaction", "Roles", "Basic"],
       description: [
         "Watches a player each night and learns what roles visited them.",
-        "Doesn't visit its target.",
       ],
       nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5)]],
     },
@@ -2275,7 +2270,6 @@ const roleData = {
       tags: ["Information", "Visit Interaction", "Basic"],
       description: [
         "Watches a player each night and learns who visited them.",
-        "Doesn't visit its target.",
       ],
       nightOrder: [["Watch",(PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5)]],
     },
