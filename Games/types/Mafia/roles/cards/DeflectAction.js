@@ -26,7 +26,7 @@ module.exports = class DeflectAction extends Card {
         targets: { include: ["alive"], exclude: [] },
         action: {
           role: this.role,
-          priority: PRIORITY_REDIRECT_ACTION+3,
+          priority: PRIORITY_REDIRECT_ACTION + 3,
           run: function () {
             let deflectFrom = this.role.data.deflectedFrom;
             if (!deflectFrom) {

@@ -23,8 +23,8 @@ module.exports = class WinWith3GoldenCarps extends Effect {
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
         let carps = 0;
-        for(let item of this.player.items){
-          if(item.name == "Golden Carp"){
+        for (let item of this.player.items) {
+          if (item.name == "Golden Carp") {
             carps += 1;
           }
         }

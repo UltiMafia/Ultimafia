@@ -1,5 +1,8 @@
 const Card = require("../../Card");
-const { PRIORITY_ITEM_TAKER_DEFAULT, PRIORITY_ITEM_TAKER_EARLY } = require("../../const/Priority");
+const {
+  PRIORITY_ITEM_TAKER_DEFAULT,
+  PRIORITY_ITEM_TAKER_EARLY,
+} = require("../../const/Priority");
 const Random = require("../../../../../lib/Random");
 const Action = require("../../Action");
 
@@ -17,15 +20,15 @@ module.exports = class StealItem extends Card {
           labels: ["stealItem"],
           priority: PRIORITY_ITEM_TAKER_EARLY,
           run: function () {
-            if(this.stealRandomItem() == null){
-            this.role.PlayerToStealFrom = this.target;
+            if (this.stealRandomItem() == null) {
+              this.role.PlayerToStealFrom = this.target;
             }
           },
         },
       },
     };
 
-      this.listeners = {
+    this.listeners = {
       state: function (stateInfo) {
         if (!this.hasAbility(["Item"])) {
           return;
@@ -42,7 +45,7 @@ module.exports = class StealItem extends Card {
           priority: PRIORITY_ITEM_TAKER_DEFAULT,
           labels: ["stealItem"],
           run: function () {
-            if(this.role.PlayerToStealFrom != null){
+            if (this.role.PlayerToStealFrom != null) {
               this.stealRandomItem(this.role.PlayerToStealFrom, this.actor);
             }
             this.role.PlayerToStealFrom = null;
@@ -52,6 +55,5 @@ module.exports = class StealItem extends Card {
         this.game.queueAction(action);
       },
     };
-    
   }
 };

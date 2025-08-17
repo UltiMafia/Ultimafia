@@ -10,10 +10,7 @@ module.exports = class ConvertKillToBleed extends Card {
     this.listeners = {
       immune: function (action) {
         if (
-          !(
-            this.name == "Bleeder" &&
-            this.hasAbility(["OnlyWhenAlive"])
-          ) &&
+          !(this.name == "Bleeder" && this.hasAbility(["OnlyWhenAlive"])) &&
           !this.hasAbility(["Modifier", "OnlyWhenAlive"])
         ) {
           return;
@@ -42,8 +39,7 @@ module.exports = class ConvertKillToBleed extends Card {
           return;
         }
         if (
-          (this.name == "Bleeder" &&
-            this.hasAbility(["OnlyWhenAlive"])) ||
+          (this.name == "Bleeder" && this.hasAbility(["OnlyWhenAlive"])) ||
           this.hasAbility(["Modifier", "OnlyWhenAlive"])
         ) {
           this.immunity.kill = 1;

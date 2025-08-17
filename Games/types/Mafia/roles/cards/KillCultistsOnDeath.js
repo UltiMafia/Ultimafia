@@ -31,11 +31,13 @@ module.exports = class KillCultistsOnDeath extends Card {
           return;
         }
         */
-        var devotion = this.game.players.filter(
-          (p) => p.hasEffect("DevotionEffect")
+        var devotion = this.game.players.filter((p) =>
+          p.hasEffect("DevotionEffect")
         );
         if (devotion.length > 0) {
-          var backUpTarget = devotion.filter((p) => p.hasEffect("DevoteeEffect"));
+          var backUpTarget = devotion.filter((p) =>
+            p.hasEffect("DevoteeEffect")
+          );
           if (backUpTarget.length > 0) {
             backUpTarget.setRole(
               `${this.player.role.name}:${this.player.role.modifier}`,

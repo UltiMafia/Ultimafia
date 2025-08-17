@@ -15,11 +15,7 @@ module.exports = class LearnRoleIfTargetIsFirstToVote extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             if (this.dominates())
-              this.target.giveEffect(
-                "Wrangled",
-                this.actor,
-                1
-              );
+              this.target.giveEffect("Wrangled", this.actor, 1);
           },
         },
       },

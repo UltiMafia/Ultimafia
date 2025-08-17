@@ -122,7 +122,7 @@ module.exports = class WinWithIndependentLead extends Card {
             );
             this.player.setRole(this.data.OldRole || "Survivor");
           }
-        } 
+        }
         /*
         else if (this.data.sidekickLead && player == this.data.sidekickLead) {
           if (this.data.sidekickLead.role.name != this.data.OldRole) {

@@ -183,13 +183,13 @@ module.exports = class MafiaGame extends Game {
     }
     if (this.getStateName() == "Day") {
       this.infoLog = [];
-    var actionVisitDay = new Action({
+      var actionVisitDay = new Action({
         game: this,
         priority: 1000,
         labels: ["hidden", "absolute"],
         run: function () {
           this.game.hasBeenDay = true;
-          if(this.game.IsBloodMoon == true){
+          if (this.game.IsBloodMoon == true) {
             this.game.hasBeenBloodMoonDay = true;
           }
         },
@@ -217,7 +217,7 @@ module.exports = class MafiaGame extends Game {
             }
           }
 
-          if(this.game.MovieWatchers && this.game.MovieWatchers.length <= 2){
+          if (this.game.MovieWatchers && this.game.MovieWatchers.length <= 2) {
             this.game.MovieWatchers = null;
           }
 
@@ -345,9 +345,9 @@ module.exports = class MafiaGame extends Game {
             !member.player.votedForExtension
           )
             this.extensionVotes++;
-            if(this.extendLength == 0){
-               this.extensions = 99;
-            }
+        if (this.extendLength == 0) {
+          this.extensions = 99;
+        }
         var aliveCount = this.alivePlayers().length;
         var votesNeeded = Math.ceil(aliveCount / 2) + this.extensions;
 
@@ -356,11 +356,11 @@ module.exports = class MafiaGame extends Game {
         this.extensions++;
         this.extensionVotes = 0;
 
-        for (let player of this.players){
+        for (let player of this.players) {
           player.votedForExtension = false;
-      }
+        }
         this.sendAlert("Day extended due to a lack of votes.");
-      
+
         return;
       }
     }
@@ -388,11 +388,11 @@ module.exports = class MafiaGame extends Game {
     );
   }
 
-   isHostileVsMafia(){
-   return this.setup.HostileVsMafia;
+  isHostileVsMafia() {
+    return this.setup.HostileVsMafia;
   }
 
-  isCultVsMafia(){
+  isCultVsMafia() {
     return this.setup.CultVsMafia;
   }
 
@@ -430,7 +430,7 @@ module.exports = class MafiaGame extends Game {
         winQueue.enqueue(effect.winCheck);
       }
 
-    for (let extraRole of player.ExtraRoles) {
+      for (let extraRole of player.ExtraRoles) {
         winQueue.enqueue(extraRole.winCheckSpecial);
       }
 

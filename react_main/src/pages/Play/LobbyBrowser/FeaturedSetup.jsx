@@ -20,8 +20,7 @@ export const FeaturedSetup = ({ lobby, glowingHostButton }) => {
 
     if (lobby === "Games") {
       featuredCategory = "minigames";
-    }
-    else if (user.gamesPlayed && !user.canPlayRanked) {
+    } else if (user.gamesPlayed && !user.canPlayRanked) {
       featuredCategory = "classic";
     }
 
@@ -38,13 +37,22 @@ export const FeaturedSetup = ({ lobby, glowingHostButton }) => {
 
   return (
     <>
-      <HostGameDialogue open={ishostGameDialogueOpen} setOpen={setIshostGameDialogueOpen} setup={featuredSetup} />
+      <HostGameDialogue
+        open={ishostGameDialogueOpen}
+        setOpen={setIshostGameDialogueOpen}
+        setup={featuredSetup}
+      />
       <Paper>
         <Stack direction="row" spacing={0.5} sx={{ p: 0.5 }}>
-          <Button color="primary" sx={{ maxWidth: "30px" }} className={isButtonGlowing ? "glow-slightly" : ""} onClick={() => setIshostGameDialogueOpen(true)}>
+          <Button
+            color="primary"
+            sx={{ maxWidth: "30px" }}
+            className={isButtonGlowing ? "glow-slightly" : ""}
+            onClick={() => setIshostGameDialogueOpen(true)}
+          >
             Play Setup
           </Button>
-          <Setup setup={featuredSetup} maxRolesCount={6} fixedWidth/>
+          <Setup setup={featuredSetup} maxRolesCount={6} fixedWidth />
         </Stack>
       </Paper>
     </>

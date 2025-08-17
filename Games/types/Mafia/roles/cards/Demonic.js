@@ -81,7 +81,9 @@ module.exports = class Demonic extends Card {
           (p) => p.hasEffect("DevotionEffect") == true
         );
         if (devotion.length > 0) {
-          var backUpTarget = devotion.filter((p) => p.hasEffect("DevoteeEffect"));
+          var backUpTarget = devotion.filter((p) =>
+            p.hasEffect("DevoteeEffect")
+          );
           if (backUpTarget.length > 0) {
             backUpTarget[0].setRole(
               `${this.player.role.name}:${this.player.role.modifier}`,

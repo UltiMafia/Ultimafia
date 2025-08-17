@@ -5,6 +5,11 @@ module.exports = class Blackguard extends Role {
     super("Blackguard", player, data);
 
     this.alignment = "Mafia";
-    this.cards = ["VillageCore", "GainAbilitesIfTargetDies", "WinWithFaction", "MeetingFaction"];
+    this.cards = [
+      "VillageCore",
+      "GainAbilitesIfTargetDies",
+      "WinWithFaction",
+      "MeetingFaction",
+    ];
   }
 };

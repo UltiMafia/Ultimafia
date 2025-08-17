@@ -20,8 +20,8 @@ module.exports = class BecomeRoleInstantly extends Card {
             );
 
             this.actor.joinMeetings(this.actor.role.meetings);
-            for (let meeting of this.game.meetings){
-               meeting.generateTargets();
+            for (let meeting of this.game.meetings) {
+              meeting.generateTargets();
             }
             this.actor.sendMeetings();
           },

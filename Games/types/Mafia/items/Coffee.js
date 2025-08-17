@@ -26,10 +26,17 @@ module.exports = class Coffee extends Item {
           run: function () {
             if (this.target != "Yes") return;
             this.item.drop();
-            let effect = this.actor.giveEffect("ExtraRoleEffect", this.game.formatRoleInternal(this.actor.role.name, this.actor.role.modifier) , 1);
+            let effect = this.actor.giveEffect(
+              "ExtraRoleEffect",
+              this.game.formatRoleInternal(
+                this.actor.role.name,
+                this.actor.role.modifier
+              ),
+              1
+            );
             this.actor.joinMeetings(effect.ExtraRole.meetings);
-            for (let meeting of this.game.meetings){
-               meeting.generateTargets();
+            for (let meeting of this.game.meetings) {
+              meeting.generateTargets();
             }
             this.actor.sendMeetings();
 

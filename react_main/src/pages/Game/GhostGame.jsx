@@ -151,8 +151,10 @@ export default function GhostGame(props) {
               history={history}
               stateViewing={stateViewing}
             />
-            {!game.review && !isSpectator && (<PinnedMessages/>)}
-            {!game.review && !isSpectator && <Notes stateViewing={stateViewing} />}
+            {!game.review && !isSpectator && <PinnedMessages />}
+            {!game.review && !isSpectator && (
+              <Notes stateViewing={stateViewing} />
+            )}
           </>
         }
       />

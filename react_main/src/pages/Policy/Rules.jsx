@@ -53,7 +53,7 @@ const rows = [
     "Permaban",
     "Permaban"
   ),
-    createData(
+  createData(
     "Adult Content",
     "1 day",
     "3 days",
@@ -62,7 +62,7 @@ const rows = [
     "Permaban",
     "Permaban"
   ),
-      createData(
+  createData(
     "Instigation",
     "1 day",
     "3 days",
@@ -71,7 +71,7 @@ const rows = [
     "Permaban",
     "Permaban"
   ),
-    createData(
+  createData(
     "Hazing",
     "1 day",
     "3 days",
@@ -89,7 +89,7 @@ const rows = [
     "Permaban",
     "Permaban"
   ),
-    createData(
+  createData(
     "Coercion",
     "1 day",
     "3 days",
@@ -199,8 +199,9 @@ export default function Rules() {
         <AccordionDetails>
           <Typography variant="body1" paragraph>
             These are violations relating to personal and community conduct.
-            Receiving any of these violations will lead to bans from the entirety
-            of the site (including games, forums, chat, and the Discord server).
+            Receiving any of these violations will lead to bans from the
+            entirety of the site (including games, forums, chat, and the Discord
+            server).
           </Typography>
           <Typography
             variant="h6"
@@ -223,8 +224,8 @@ export default function Rules() {
             Intolerance
           </Typography>
           <Typography variant="body1" paragraph>
-            Any disrespectful behavior on the basis of group identity.
-            This includes bigotry of any kind (including but not limited to: racism,
+            Any disrespectful behavior on the basis of group identity. This
+            includes bigotry of any kind (including but not limited to: racism,
             homophobia, transphobia, misogyny, etc.), bypassing slur filters,
             and genocide denial.
           </Typography>
@@ -236,10 +237,10 @@ export default function Rules() {
             Adult Content
           </Typography>
           <Typography variant="body1" paragraph>
-            Graphic descriptions of adult behavior, including
-            explicit discussion of sex acts, consumption of
-            illicit substances, or descriptions of real violence.
-            Restrict oneself to a "13 and up" mindset.
+            Graphic descriptions of adult behavior, including explicit
+            discussion of sex acts, consumption of illicit substances, or
+            descriptions of real violence. Restrict oneself to a "13 and up"
+            mindset.
           </Typography>
           <Typography
             variant="h6"
@@ -249,10 +250,10 @@ export default function Rules() {
             Instigation
           </Typography>
           <Typography variant="body1" paragraph>
-            Intentionally baiting conflict between users, including
-            concern trolling, causing a mass argument in public spaces,
-            and disingenuously encouraging drama. The report function
-            exists for a reason.
+            Intentionally baiting conflict between users, including concern
+            trolling, causing a mass argument in public spaces, and
+            disingenuously encouraging drama. The report function exists for a
+            reason.
           </Typography>
           <Typography
             variant="h6"
@@ -262,10 +263,10 @@ export default function Rules() {
             Hazing
           </Typography>
           <Typography variant="body1" paragraph>
-            Discriminating against or otherwise mistreating users on
-            new accounts. This includes policy-voting, accusing a new account
-            of existing to break game rules, and otherwise promoting an
-            anti-growth mindset.
+            Discriminating against or otherwise mistreating users on new
+            accounts. This includes policy-voting, accusing a new account of
+            existing to break game rules, and otherwise promoting an anti-growth
+            mindset.
           </Typography>
           <Typography
             variant="h6"

@@ -9,9 +9,10 @@ const {
 module.exports = class Suspended extends Card {
   constructor(role) {
     super(role);
-    
-      this.role.SuspendedDate = this.role.modifier.split("/").filter((m) => m == "Suspended").length;;
-    
+
+    this.role.SuspendedDate = this.role.modifier
+      .split("/")
+      .filter((m) => m == "Suspended").length;
 
     this.meetingMods = {
       "*": {
@@ -28,7 +29,9 @@ module.exports = class Suspended extends Card {
           }
           if (meetingName == "Graveyard") return true;
 
-          return this.game.getStateInfo().dayCount <= this.player.role.SuspendedDate;
+          return (
+            this.game.getStateInfo().dayCount <= this.player.role.SuspendedDate
+          );
         },
       },
     };

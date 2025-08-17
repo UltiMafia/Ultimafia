@@ -9,10 +9,11 @@ WIP
 ## Setup
 
 It is recommended to set some kind of alias to shorten your docker compose commands, like so:
+
 ```
 alias d="docker compose -f docker-compose-core.yml -f docker-compose-dev.yml"
 
-# From here 
+# From here
 ```
 
 The [EZ setup guide](/docs/setup-EZ-guide.md) is the best guide if you are a new contributor. If you have any questions or concerns please feel free to ask in our [Discord server](https://discord.gg/C5WMFpYRHQ).
@@ -35,12 +36,14 @@ $ bash totalsetup.sh
 If you want to perform your setup manually, follow these setups:
 
 0. Load the default development environment ENV files
+
    ```bash
    $ cp ./docs/client_env ./react_main/.env
    $ cp ./docs/server_env ./.env
    ```
 
 1. Install NVM, node, npm, and backend dependencies
+
    ```bash
    $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
    $ source ~/nvm/nvm.sh

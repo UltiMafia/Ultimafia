@@ -81,7 +81,7 @@
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
-  
+
   gap: 8px;
 }
 
@@ -162,7 +162,7 @@
 }
 
 .game .message:hover {
-  background-color: rgba(12, 12, 12, .15);
+  background-color: rgba(12, 12, 12, 0.15);
 }
 
 .game .message {
@@ -233,7 +233,7 @@
   border-right: 1px solid #bd4c4c;
 }
 
-@media (max-width:700px) {
+@media (max-width: 700px) {
   .game .message .nameplate-aligned {
     min-width: 108px !important;
     max-width: 108px !important;
@@ -382,7 +382,7 @@
 }
 
 .game .message .content.server.info {
-  color: #F1F1F1;
+  color: #f1f1f1;
 }
 
 .game .message .content.vote-record {

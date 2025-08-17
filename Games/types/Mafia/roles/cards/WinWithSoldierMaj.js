@@ -1,15 +1,12 @@
 const Card = require("../../Card");
 const { PRIORITY_DAY_EFFECT_DEFAULT } = require("../../const/Priority");
-const { CULT_FACTIONS,
-      EVIL_FACTIONS,
-      } = require("../../const/FactionList");
+const { CULT_FACTIONS, EVIL_FACTIONS } = require("../../const/FactionList");
 
 module.exports = class WinWithSoldierMaj extends Card {
   constructor(role) {
     super(role);
 
-
-/*
+    /*
       this.winCheckSpecial = {
       priority: PRIORITY_WIN_CHECK_DEFAULT+1,
       againOnFinished: true,
@@ -63,21 +60,23 @@ module.exports = class WinWithSoldierMaj extends Card {
 
     this.listeners = {
       AbilityToggle: function (player) {
-        if(!this.player.alive){
-        return;
+        if (!this.player.alive) {
+          return;
         }
         let checks = true;
-        if(!this.hasAbility(["Win-Con", "OnlyWhenAlive"])){
+        if (!this.hasAbility(["Win-Con", "OnlyWhenAlive"])) {
           checks = false;
         }
-        
-        
+
         if (checks == true) {
           if (
             this.SoldierEffect == null ||
             !this.player.effects.includes(this.SoldierEffect)
           ) {
-            this.SoldierEffect = this.player.giveEffect("SoldierEffect", Infinity);
+            this.SoldierEffect = this.player.giveEffect(
+              "SoldierEffect",
+              Infinity
+            );
             this.passiveEffects.push(this.SoldierEffect);
           }
         } else {
@@ -92,9 +91,5 @@ module.exports = class WinWithSoldierMaj extends Card {
         }
       },
     };
-
-
-
-    };
-
-  };
+  }
+};

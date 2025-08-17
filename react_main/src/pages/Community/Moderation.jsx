@@ -44,10 +44,10 @@ const COMMAND_GROUP_ORDER = {
   "Deck Management": 9,
   "Forum Management": 99,
   "Chat Window Management": 999,
-  "Ungrouped": 9999,
+  Ungrouped: 9999,
 };
 
-export const COMMAND_COLOR = '#8A2BE2';
+export const COMMAND_COLOR = "#8A2BE2";
 
 export default function Moderation() {
   const [groups, setGroups] = useState([]);
@@ -75,11 +75,15 @@ export default function Moderation() {
   const groupsPanels = groups.map((group) => {
     const members = group.members.map((member) => (
       <Grid item xs={12} md={6} key={member.id}>
-        <Stack direction="row" spacing={1} sx={{
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
             alignItems: "center",
             p: 1,
             backgroundColor: "var(--scheme-color)",
-          }}>
+          }}
+        >
           <NameWithAvatar
             id={member.id}
             name={member.name}
@@ -123,10 +127,10 @@ export default function Moderation() {
               UltiMafia seeks to create an inclusive and welcoming space for
               playing chat-based Mafia and related minigames. Our goal is to
               provide a fair and respectful environment where all players can
-              enjoy the game free from hostility. We are dedicated to maintaining
-              a community free from prejudice or bias based on sex, age, gender
-              identity, sexual orientation, skin color, ability, religion,
-              nationality, or any other characteristic.{" "}
+              enjoy the game free from hostility. We are dedicated to
+              maintaining a community free from prejudice or bias based on sex,
+              age, gender identity, sexual orientation, skin color, ability,
+              religion, nationality, or any other characteristic.{" "}
             </Typography>
           </AccordionDetails>
         </Accordion>
@@ -138,8 +142,12 @@ export default function Moderation() {
               <div className="box-panel">
                 <div className="heading">Execute Action</div>
                 <Stack direction="column" spacing={1}>
-                  <ModCommands results={results} setResults={setResults} fixedHeight />
-                  {results && (<Box>{results}</Box>)}
+                  <ModCommands
+                    results={results}
+                    setResults={setResults}
+                    fixedHeight
+                  />
+                  {results && <Box>{results}</Box>}
                 </Stack>
               </div>
             )}
@@ -208,8 +216,10 @@ export function ModCommands(props) {
     const aVal = COMMAND_GROUP_ORDER[a] || 99999;
     const bVal = COMMAND_GROUP_ORDER[b] || 99999;
 
-    if (!COMMAND_GROUP_ORDER.hasOwnProperty(a)) console.error(`Got unknown category: ${a}`);
-    if (!COMMAND_GROUP_ORDER.hasOwnProperty(b)) console.error(`Got unknown category: ${b}`);
+    if (!COMMAND_GROUP_ORDER.hasOwnProperty(a))
+      console.error(`Got unknown category: ${a}`);
+    if (!COMMAND_GROUP_ORDER.hasOwnProperty(b))
+      console.error(`Got unknown category: ${b}`);
 
     if (aVal < bVal) {
       return -1;
@@ -224,53 +234,64 @@ export function ModCommands(props) {
 
   // Finally, do a nested map of group -> option
   const options = groupOptionKeys.map((category) => {
-    const groupOptions = groupedOptions[category].map((commandName) => {
-      const userHasPermission = user.perms[modCommands[commandName].perm];
-      const matchesSearch = !searchVal || commandName.toLowerCase().includes(searchVal);
+    const groupOptions = groupedOptions[category]
+      .map((commandName) => {
+        const userHasPermission = user.perms[modCommands[commandName].perm];
+        const matchesSearch =
+          !searchVal || commandName.toLowerCase().includes(searchVal);
 
-      function openDialogue() {
-        setDialogueOpen(true);
-        setCommand(commandName);
-      }
+        function openDialogue() {
+          setDialogueOpen(true);
+          setCommand(commandName);
+        }
 
-      if (userHasPermission && matchesSearch && !modCommands[commandName].hidden) {
-        if (setCommandsAvailable) setCommandsAvailable(true);
-        return (
-          <Typography onClick={openDialogue} key={commandName} tabindex="0" sx={{
-            pl: 1,
-            userSelect: "none",
-            fontFamily: "RobotoMono",
-            '&:hover': {
-              backgroundColor: COMMAND_COLOR,
-              cursor: 'pointer',
-            },
-          }}>
-            {commandName}
-          </Typography>
-        );
-      }
-      else {
-        return null;
-      }
-    }).filter((groupOption) => groupOption != null);
+        if (
+          userHasPermission &&
+          matchesSearch &&
+          !modCommands[commandName].hidden
+        ) {
+          if (setCommandsAvailable) setCommandsAvailable(true);
+          return (
+            <Typography
+              onClick={openDialogue}
+              key={commandName}
+              tabindex="0"
+              sx={{
+                pl: 1,
+                userSelect: "none",
+                fontFamily: "RobotoMono",
+                "&:hover": {
+                  backgroundColor: COMMAND_COLOR,
+                  cursor: "pointer",
+                },
+              }}
+            >
+              {commandName}
+            </Typography>
+          );
+        } else {
+          return null;
+        }
+      })
+      .filter((groupOption) => groupOption != null);
 
     if (groupOptions.length == 0) return <></>;
 
     return (
       <Stack direction="column">
-        <Typography sx={{
-          my: 1,
-          fontSize: "18px",
-          fontWeight: "500",
-          userSelect: "none",
-        }}>
+        <Typography
+          sx={{
+            my: 1,
+            fontSize: "18px",
+            fontWeight: "500",
+            userSelect: "none",
+          }}
+        >
           {category}
         </Typography>
-        <Box>
-          {groupOptions}
-        </Box>
+        <Box>{groupOptions}</Box>
       </Stack>
-    )
+    );
   });
 
   if (command) {
@@ -292,11 +313,12 @@ export function ModCommands(props) {
               sx={{ width: "100%" }}
             />
           );
-        }
-        else {
+        } else {
           return (
             <UserSearchSelect
-              onChange={(value) => { updateArgValue(arg.name, value, arg.isArray); }}
+              onChange={(value) => {
+                updateArgValue(arg.name, value, arg.isArray);
+              }}
               placeholder={placeholder}
               key={arg.name}
             />
@@ -371,27 +393,32 @@ export function ModCommands(props) {
   return (
     <Stack direction="column" spacing={1} key="mod-commands">
       <Dialog open={isDialogueOpen} onClose={closeDialogue} fullWidth>
-        <DialogContent sx={{ 
-          px: 1,
-          minHeight: "240px",
-        }}>
+        <DialogContent
+          sx={{
+            px: 1,
+            minHeight: "240px",
+          }}
+        >
           <Stack direction="column" spacing={1}>
             <Stack direction="row">
-              <Button onClick={onExecute}>
-                Execute
-              </Button>
-              <Button onClick={() => setDialogueOpen(false)} sx={{
-                marginLeft: "auto"
-              }}>
+              <Button onClick={onExecute}>Execute</Button>
+              <Button
+                onClick={() => setDialogueOpen(false)}
+                sx={{
+                  marginLeft: "auto",
+                }}
+              >
                 Cancel
               </Button>
             </Stack>
-            <Typography sx={{
-              fontFamily: "RobotoMono",
-              fontSize: "16px",
-              backgroundColor: COMMAND_COLOR,
-              textAlign: "center",
-            }}>
+            <Typography
+              sx={{
+                fontFamily: "RobotoMono",
+                fontSize: "16px",
+                backgroundColor: COMMAND_COLOR,
+                textAlign: "center",
+              }}
+            >
               {command}
             </Typography>
           </Stack>
@@ -402,21 +429,28 @@ export function ModCommands(props) {
           )}
         </DialogContent>
       </Dialog>
-      <Stack direction="column" spacing={1} sx={{
-        p: 1,
-        width: "100%",
-        height: fixedHeight ? undefined : "100%",
-        backgroundColor: "var(--scheme-color)",
-      }}>
+      <Stack
+        direction="column"
+        spacing={1}
+        sx={{
+          p: 1,
+          width: "100%",
+          height: fixedHeight ? undefined : "100%",
+          backgroundColor: "var(--scheme-color)",
+        }}
+      >
         <SearchBar
           value={searchVal}
           placeholder="🔎 Command Name"
           onInput={onSearchInput}
         />
-        <Stack direction="column" sx={{
-          height: fixedHeight ? "360px" : undefined,
-          overflowY: fixedHeight ? "scroll" : undefined,
-        }}>
+        <Stack
+          direction="column"
+          sx={{
+            height: fixedHeight ? "360px" : undefined,
+            overflowY: fixedHeight ? "scroll" : undefined,
+          }}
+        >
           {options}
         </Stack>
       </Stack>
@@ -1230,7 +1264,7 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-        "Clear Pronouns": {
+    "Clear Pronouns": {
       perm: "clearPronouns",
       args: [
         {
@@ -1820,27 +1854,31 @@ function ModActionArg({ label, arg }) {
   var value = null;
   const [userInfo, setUserInfo] = useState(null);
 
-  useEffect(async function() {
-    if (label === "User") {
-      try {
-        const res = await axios.get(`/api/user/${arg}/info`);
-        setUserInfo(res.data);
+  useEffect(
+    async function () {
+      if (label === "User") {
+        try {
+          const res = await axios.get(`/api/user/${arg}/info`);
+          setUserInfo(res.data);
+        } catch (e) {
+          setUserInfo({
+            id: arg,
+            name: `[not found: ${arg}]`,
+            avatar: false,
+          });
+        }
       }
-      catch (e) {
-        setUserInfo({
-          id: arg,
-          name: `[not found: ${arg}]`,
-          avatar: false,
-        })
-      }
-    }
-  }, [label, arg])
+    },
+    [label, arg]
+  );
 
   if (userInfo) {
     value = (
-      <Box sx={{
-        display: "inline-block",
-      }}>
+      <Box
+        sx={{
+          display: "inline-block",
+        }}
+      >
         <NameWithAvatar
           id={userInfo.id}
           name={userInfo.name}
@@ -1849,14 +1887,15 @@ function ModActionArg({ label, arg }) {
         />
       </Box>
     );
-  }
-  else {
+  } else {
     value = (
-      <Typography sx={{
-        display: "inline",
-        fontFamily: "RobotoMono",
-        color: "#28ab48ff",
-      }}>
+      <Typography
+        sx={{
+          display: "inline",
+          fontFamily: "RobotoMono",
+          color: "#28ab48ff",
+        }}
+      >
         {arg}
       </Typography>
     );
@@ -1864,11 +1903,14 @@ function ModActionArg({ label, arg }) {
 
   return (
     <Stack direction="row" spacing={1}>
-      <Typography sx={{
-        display: "inline",
-        fontFamily: "RobotoMono",
-      }}>
-        {label}{":"}
+      <Typography
+        sx={{
+          display: "inline",
+          fontFamily: "RobotoMono",
+        }}
+      >
+        {label}
+        {":"}
       </Typography>
       {value}
     </Stack>
@@ -1904,37 +1946,59 @@ function ModActions(props) {
 
   const actionRows = actions.map((action) => {
     if (!action.name in modCommands) {
-      console.error(`Not displaying action ${action.name} because it isn't listed in modCommands. Please report this error.`);
+      console.error(
+        `Not displaying action ${action.name} because it isn't listed in modCommands. Please report this error.`
+      );
       return <></>;
     }
 
     let command = modCommands[action.name];
-    let actionArgs = action.args.map((arg, i) => <ModActionArg label={command.args[i].label} arg={arg} key={i} />);
+    let actionArgs = action.args.map((arg, i) => (
+      <ModActionArg label={command.args[i].label} arg={arg} key={i} />
+    ));
 
     return (
-      <Stack direction="column" spacing={0.5} key={action.id} sx={{
-        p: 1,
-        backgroundColor: "var(--scheme-color)",
-      }}>
-        <Stack direction="row" spacing={1} sx={{
-          alignItems: "center",
-        }}>
+      <Stack
+        direction="column"
+        spacing={0.5}
+        key={action.id}
+        sx={{
+          p: 1,
+          backgroundColor: "var(--scheme-color)",
+        }}
+      >
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            alignItems: "center",
+          }}
+        >
           <NameWithAvatar
             id={action.mod.id}
             name={action.mod.name}
             avatar={action.mod.avatar}
           />
-          <Typography variant="caption" sx={{ opacity: "0.6", marginLeft: "auto !important", alignSelf: "start" }}>
+          <Typography
+            variant="caption"
+            sx={{
+              opacity: "0.6",
+              marginLeft: "auto !important",
+              alignSelf: "start",
+            }}
+          >
             <Time minSec millisec={Date.now() - action.date} suffix=" ago" />
           </Typography>
         </Stack>
-        <Typography sx={{
-          display: "inline",
-          fontFamily: "RobotoMono",
-          fontSize: "16px",
-          textAlign: "center",
-          backgroundColor: COMMAND_COLOR,
-        }}>
+        <Typography
+          sx={{
+            display: "inline",
+            fontFamily: "RobotoMono",
+            fontSize: "16px",
+            textAlign: "center",
+            backgroundColor: COMMAND_COLOR,
+          }}
+        >
           {action.name}
         </Typography>
         {actionArgs}
@@ -1942,7 +2006,11 @@ function ModActions(props) {
     );
   });
 
-  const pageNav = <Box sx={{ alignSelf: "center" }}><PageNav page={page} onNav={onPageNav} /></Box>;
+  const pageNav = (
+    <Box sx={{ alignSelf: "center" }}>
+      <PageNav page={page} onNav={onPageNav} />
+    </Box>
+  );
 
   return (
     <div className="box-panel">

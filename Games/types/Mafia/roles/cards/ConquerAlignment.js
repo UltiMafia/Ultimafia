@@ -61,12 +61,12 @@ module.exports = class ConquerAlignment extends Card {
           this.player.role.alignment == "Cult" ||
           this.player.faction == "Cult"
         ) {
-          var devotion = this.game.players.filter(
-            (p) => p.hasEffect("DevotionEffect")
+          var devotion = this.game.players.filter((p) =>
+            p.hasEffect("DevotionEffect")
           );
           if (devotion.length > 0) {
-            var backUpTarget = devotion.filter(
-              (p) => p.hasEffect("DevoteeEffect")
+            var backUpTarget = devotion.filter((p) =>
+              p.hasEffect("DevoteeEffect")
             );
             if (backUpTarget.length > 0) {
               backUpTarget.setRole(

@@ -13,7 +13,6 @@ module.exports = class Meeting {
     this.id = shortid.generate();
     this.game = game;
     this.events = game.events;
-    
 
     /* Flags */
     this.group = false;
@@ -32,7 +31,7 @@ module.exports = class Meeting {
     this.noRecord = false;
     this.liveJoin = false;
     this.randomizeTieResults = false;
-    this.requireMajority = (game.isMajorityVoting() && this.name == "Village");
+    this.requireMajority = game.isMajorityVoting() && this.name == "Village";
     this.votesInvisible = game.setup.votesInvisible;
     this.mustAct = game.isMustAct() && this.name != "Village";
     this.mustCondemn = game.isMustCondemn() && this.name == "Village";
@@ -387,16 +386,18 @@ module.exports = class Meeting {
         ) {
           this.targets.push("*");
         }
-        if(this.game.MagusPossible == true && !this.repeatable){
+        if (this.game.MagusPossible == true && !this.repeatable) {
           this.targets.push("*magus");
         }
       }
     } else if (this.inputType == "boolean") {
       if (!this.mustAct || this.includeNo) this.targets = ["Yes", "No"];
       else this.targets = ["Yes"];
-    }
-     else if (this.inputType == "AllRoles") {
-      this.targets = this.getAllRolesTargets( this.inputType, this.members.length == 1 ? this.members.at(0).player : null);
+    } else if (this.inputType == "AllRoles") {
+      this.targets = this.getAllRolesTargets(
+        this.inputType,
+        this.members.length == 1 ? this.members.at(0).player : null
+      );
     }
 
     for (let member of this.members) {
@@ -452,55 +453,75 @@ module.exports = class Meeting {
     }
   }
 
-    getAllRolesTargets(targetType, self){
-    if(targetType == "AllRoles"){
-     let temp = this.game.PossibleRoles.filter((r) => r);
+  getAllRolesTargets(targetType, self) {
+    if (targetType == "AllRoles") {
+      let temp = this.game.PossibleRoles.filter((r) => r);
 
-        if(this.AllRolesFilters.includes("AllOnSite")){
-          let allRoles = Object.entries(roleData.Mafia).filter((m) => m[1].alignment != "Event").map((r) => r[0]);
-          temp = temp.concat(allRoles);
+      if (this.AllRolesFilters.includes("AllOnSite")) {
+        let allRoles = Object.entries(roleData.Mafia)
+          .filter((m) => m[1].alignment != "Event")
+          .map((r) => r[0]);
+        temp = temp.concat(allRoles);
+      }
+      if (this.AllRolesFilters.includes("addedRoles")) {
+        temp = temp.concat(this.game.AddedRoles);
+      }
+      if (this.AllRolesFilters.includes("InPlayOnly")) {
+        temp = [];
+        for (let player of this.game.players) {
+          temp.push(`${player.role.name}:${player.role.modifier}`);
         }
-        if(this.AllRolesFilters.includes("addedRoles")){
-          temp = temp.concat(this.game.AddedRoles);
-        }
-        if(this.AllRolesFilters.includes("InPlayOnly")){
-          temp = [];
-          for(let player of this.game.players){
-            temp.push(`${player.role.name}:${player.role.modifier}`);
-          }
-        }
+      }
 
-        for (let tag of this.AllRolesFilters.filter((t) => t != "AllOnSite" && t != "addedRoles" && t != "InPlayOnly")) {
-
-          switch (tag) {
-            case "self":
-              if(self){
+      for (let tag of this.AllRolesFilters.filter(
+        (t) => t != "AllOnSite" && t != "addedRoles" && t != "InPlayOnly"
+      )) {
+        switch (tag) {
+          case "self":
+            if (self) {
               temp = temp.filter((r) => r != self.role.name);
-              }
-              break;
-            case "aligned":
-              if(self){
-              temp = temp.filter((r) => this.game.getRoleAlignment(r) == this.game.getRoleAlignment(self.role.name));
-              }
-              break;
-            case "banished":
-              temp = temp.filter((r) => (r.split(":")[1] && r.split(":")[1].toLowerCase().includes("banished")));
-              break;
-            case "NoDemonic":
-              temp = temp.filter((r) => !(r.split(":")[1] && r.split(":")[1].toLowerCase().includes("demonic")));
-              break;
-            case "blacklist":
-                if(self && self.role.data.roleBlacklist){
-                temp = temp.filter((r) => !self.role.data.roleBlacklist.includes(r.split(":")[0]));
-                temp = temp.filter((r) => !self.role.data.roleBlacklist2.includes(r));
-                }
-              break;
-            default:
-              
-          }
+            }
+            break;
+          case "aligned":
+            if (self) {
+              temp = temp.filter(
+                (r) =>
+                  this.game.getRoleAlignment(r) ==
+                  this.game.getRoleAlignment(self.role.name)
+              );
+            }
+            break;
+          case "banished":
+            temp = temp.filter(
+              (r) =>
+                r.split(":")[1] &&
+                r.split(":")[1].toLowerCase().includes("banished")
+            );
+            break;
+          case "NoDemonic":
+            temp = temp.filter(
+              (r) =>
+                !(
+                  r.split(":")[1] &&
+                  r.split(":")[1].toLowerCase().includes("demonic")
+                )
+            );
+            break;
+          case "blacklist":
+            if (self && self.role.data.roleBlacklist) {
+              temp = temp.filter(
+                (r) => !self.role.data.roleBlacklist.includes(r.split(":")[0])
+              );
+              temp = temp.filter(
+                (r) => !self.role.data.roleBlacklist2.includes(r)
+              );
+            }
+            break;
+          default:
         }
-      
-      if((!this.mustAct || temp.length <= 0) && !temp.includes("None")){
+      }
+
+      if ((!this.mustAct || temp.length <= 0) && !temp.includes("None")) {
         temp.push("None");
       }
       temp = [...new Set(temp)];
@@ -578,12 +599,20 @@ module.exports = class Meeting {
               if (!player.alive) includePlayer[player.id] = include;
               break;
             case "previous":
-              if(self && self.role.data.LimitedLastNightVisits && self.role.data.LimitedLastNightVisits.includes(player)){
+              if (
+                self &&
+                self.role.data.LimitedLastNightVisits &&
+                self.role.data.LimitedLastNightVisits.includes(player)
+              ) {
                 includePlayer[player.id] = include;
               }
               break;
             case "previousAll":
-              if(self && self.role.data.LimitedAllVisits && self.role.data.LimitedAllVisits.includes(player)){
+              if (
+                self &&
+                self.role.data.LimitedAllVisits &&
+                self.role.data.LimitedAllVisits.includes(player)
+              ) {
                 includePlayer[player.id] = include;
               }
               break;
@@ -859,9 +888,12 @@ module.exports = class Meeting {
           else finalTarget = "No";
         } else finalTarget = highest.targets[0];
 
-      if(this.requireMajority == true && (highest.votes < Math.ceil(totalVoteCount/2))){
-        finalTarget = "*";
-      }
+        if (
+          this.requireMajority == true &&
+          highest.votes < Math.ceil(totalVoteCount / 2)
+        ) {
+          finalTarget = "*";
+        }
       } else {
         //Tie vote
         if (this.inputType == "boolean") finalTarget = "No";
@@ -921,17 +953,17 @@ module.exports = class Meeting {
       return;
     }
 
-    if(finalTarget != "*magus"){
-    
-    // Get player targeted
-    if (this.inputType == "player") {
-      if (!this.multi && !this.multiSplit)
-        finalTarget = this.game.players[finalTarget];
-      else finalTarget = finalTarget.map((target) => this.game.players[target]);
+    if (finalTarget != "*magus") {
+      // Get player targeted
+      if (this.inputType == "player") {
+        if (!this.multi && !this.multiSplit)
+          finalTarget = this.game.players[finalTarget];
+        else
+          finalTarget = finalTarget.map((target) => this.game.players[target]);
 
-      this.finalTarget = finalTarget;
+        this.finalTarget = finalTarget;
+      }
     }
-  }
     // Do the action
     var actor, actors;
 

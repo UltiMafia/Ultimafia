@@ -14,18 +14,22 @@ module.exports = class ExtraRoleEffect extends Effect {
   apply(player) {
     super.apply(player);
 
-    this.ExtraRole = player.addExtraRole(this.CopyingRole, this.ExtraRoleData, false, false, false, "NoStartingItems");
-
+    this.ExtraRole = player.addExtraRole(
+      this.CopyingRole,
+      this.ExtraRoleData,
+      false,
+      false,
+      false,
+      "NoStartingItems"
+    );
   }
 
-   remove() {
-          var index = this.player.ExtraRoles.indexOf(this.ExtraRole);
-          if (index != -1) {
-            this.player.ExtraRoles.splice(index, 1);
-          }
+  remove() {
+    var index = this.player.ExtraRoles.indexOf(this.ExtraRole);
+    if (index != -1) {
+      this.player.ExtraRoles.splice(index, 1);
+    }
     this.ExtraRole.remove();
     super.remove();
   }
-
-  
 };

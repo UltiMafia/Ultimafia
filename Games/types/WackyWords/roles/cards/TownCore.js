@@ -30,11 +30,14 @@ module.exports = class TownCore extends Card {
               ].push(this.actor.name);
               return;
             }
-            if(!this.game.isRankedChoice || this.game.hasGambler || this.game.hasNeighbor){
-            this.game.recordVote(this.actor, this.target);
-            }
-            else{
-            this.game.recordVote(this.actor, this.target, 3);
+            if (
+              !this.game.isRankedChoice ||
+              this.game.hasGambler ||
+              this.game.hasNeighbor
+            ) {
+              this.game.recordVote(this.actor, this.target);
+            } else {
+              this.game.recordVote(this.actor, this.target, 3);
             }
           },
         },
@@ -64,17 +67,14 @@ module.exports = class TownCore extends Card {
         action: {
           priority: -2,
           run: function () {
-           
-
             this.game.recordVote(this.actor, this.target, 2);
           },
         },
         shouldMeet: function () {
-          if (
-            this.game.hasNeighbor || this.game.hasGambler) {
+          if (this.game.hasNeighbor || this.game.hasGambler) {
             return false;
           }
-          if(!this.game.isRankedChoice){
+          if (!this.game.isRankedChoice) {
             return false;
           }
 
@@ -92,16 +92,14 @@ module.exports = class TownCore extends Card {
         action: {
           priority: -1,
           run: function () {
-            
             this.game.recordVote(this.actor, this.target, 1);
           },
         },
         shouldMeet: function () {
-          if (
-            this.game.hasNeighbor || this.game.hasGambler) {
+          if (this.game.hasNeighbor || this.game.hasGambler) {
             return false;
           }
-          if(!this.game.isRankedChoice){
+          if (!this.game.isRankedChoice) {
             return false;
           }
 

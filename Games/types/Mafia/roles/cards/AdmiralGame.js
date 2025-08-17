@@ -5,7 +5,7 @@ module.exports = class AdmiralGame extends Card {
   constructor(role) {
     super(role);
 
-    if(role.isExtraRole == true){
+    if (role.isExtraRole == true) {
       return;
     }
 
@@ -37,7 +37,15 @@ module.exports = class AdmiralGame extends Card {
               `${players[x].role.name}:${players[x].role.modifier}`
             );
           }
-          players[x].setRole(`Grouch`, undefined, false, true, null, null, "RemoveStartingItems");
+          players[x].setRole(
+            `Grouch`,
+            undefined,
+            false,
+            true,
+            null,
+            null,
+            "RemoveStartingItems"
+          );
         }
         this.player.holdItem("TreasureChest", this.player);
       },
@@ -74,13 +82,13 @@ module.exports = class AdmiralGame extends Card {
           return;
         }
         let isChest = false;
-        for(let player of this.game.alivePlayers()){
-        if(player.hasItem("TreasureChest")){
-          isChest = true;
+        for (let player of this.game.alivePlayers()) {
+          if (player.hasItem("TreasureChest")) {
+            isChest = true;
+          }
         }
-        }
-        if(isChest != true){
-        this.game.HaveTreasureChestState = false
+        if (isChest != true) {
+          this.game.HaveTreasureChestState = false;
         }
         if (stateInfo.name.match(/Treasure Chest/)) {
           if (this.game.AdmiralStateBlock == null) {

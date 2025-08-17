@@ -12,8 +12,7 @@ const modifierData = {
       category: "Other",
       internal: ["OnlyUseInPlayRoles"],
       tags: ["Austere"],
-      description:
-        "This role can only referance roles currently in the game.",
+      description: "This role can only referance roles currently in the game.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Excessive"],
     },
@@ -100,7 +99,8 @@ const modifierData = {
       category: "Items",
       internal: ["StartWithIceCream"],
       tags: ["Items", "Ice Cream"],
-      description: "Starts with a Ice Cream. Ice Cream can be used to become a Vanilla role",
+      description:
+        "Starts with a Ice Cream. Ice Cream can be used to become a Vanilla role",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Crystalline: {
@@ -439,7 +439,7 @@ const modifierData = {
       eventDescription: "This Event will not occur normally.",
       incompatible: ["Inclusive", "Exclusive"],
     },
-      Inclusive: {
+    Inclusive: {
       category: "Other",
       internal: ["Add1Banished"],
       tags: ["Setup Changes", "Banished Interaction"],
@@ -451,7 +451,7 @@ const modifierData = {
     Exclusive: {
       category: "Other",
       internal: ["Remove1Banished"],
-      tags: ["Setup Changes","Banished Interaction"],
+      tags: ["Setup Changes", "Banished Interaction"],
       description: "Removes 1 Banished Role in Closed Setups.",
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
@@ -499,8 +499,6 @@ const modifierData = {
         "Players who role-share with a Reclusive player become shy. Shy players cannot accept incoming role-shares and cannot Private/Public Reveal.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
-
-
 
     //Non-Starting Item
     Apprehensive: {
@@ -574,7 +572,6 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
-
     //Proactive+Global+Lazy+Sudective
     Proactive: {
       category: "Visits",
@@ -639,8 +636,6 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
-
-
     //Redirection
     Bouncy: {
       category: "Visits",
@@ -678,7 +673,8 @@ const modifierData = {
       category: "Visits",
       internal: ["OneShot"],
       tags: ["X-Shot"],
-      description: "Can only perform actions X times. X is equal the number of times this modifier is added.",
+      description:
+        "Can only perform actions X times. X is equal the number of times this modifier is added.",
       eventDescription: "This Event will only occur once.",
       allowDuplicate: true,
     },
@@ -720,14 +716,12 @@ const modifierData = {
       incompatible: ["Delayed"],
     },
 
-
     //Targeting Mods
     Fair: {
       category: "Visits",
       internal: ["FairModifier"],
       tags: ["Fair", "Visits"],
-      description:
-        "Cannot target a previously targeted player.",
+      description: "Cannot target a previously targeted player.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Nonconsecutive", "Consecutive"],
     },
@@ -735,8 +729,7 @@ const modifierData = {
       category: "Visits",
       internal: ["Consecutive"],
       tags: ["Visits", "Consecutive"],
-      description:
-      "Can only target players they targeted previously.",
+      description: "Can only target players they targeted previously.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Fair", "Nonconsecutive"],
     },
@@ -744,8 +737,7 @@ const modifierData = {
       category: "Visits",
       internal: ["Nonconsecutive"],
       tags: ["Visits", "Nonconsecutive"],
-      description:
-        "Cannot target a player they targeted the previous night",
+      description: "Cannot target a player they targeted the previous night",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Fair", "Consecutive"],
     },
@@ -918,7 +910,13 @@ const modifierData = {
     Refined: {
       category: "Visits",
       internal: ["Refined"],
-      tags: ["Visits", "Block Self", "Modifiers", "Refined","Banished Interaction"],
+      tags: [
+        "Visits",
+        "Block Self",
+        "Modifiers",
+        "Refined",
+        "Banished Interaction",
+      ],
       description:
         "If this player visits a player with a Banished role, their secondary actions will be blocked.",
       eventDescription: "This Event will not apply to Banished players.",
@@ -927,19 +925,26 @@ const modifierData = {
     Unrefined: {
       category: "Visits",
       internal: ["Unrefined"],
-      tags: ["Visits", "Block Self", "Modifiers", "Unrefined", "Banished Interaction"],
+      tags: [
+        "Visits",
+        "Block Self",
+        "Modifiers",
+        "Unrefined",
+        "Banished Interaction",
+      ],
       description:
         "If this player visits a player with a non-Banished role, their secondary actions will be blocked.",
       eventDescription: "This Event will not apply to non-Banished players.",
       incompatible: ["Refined"],
     },
 
-          //Sub Role Guessing
+    //Sub Role Guessing
     Picky: {
       category: "Visits",
       internal: ["GuessRoleOrGetBlocked"],
       tags: ["Self Block"],
-      description: "Each night chooses a role. Actions will be blocked unless visiting a player with that role.",
+      description:
+        "Each night chooses a role. Actions will be blocked unless visiting a player with that role.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Choosy"],
     },
@@ -947,7 +952,8 @@ const modifierData = {
       category: "Visits",
       internal: ["GuessRoleToGetBlocked"],
       tags: ["Self Block"],
-      description: "Each night chooses a role. Actions will be blocked if visiting a player with that role.",
+      description:
+        "Each night chooses a role. Actions will be blocked if visiting a player with that role.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Picky"],
     },
@@ -974,8 +980,6 @@ const modifierData = {
       description: "Will Block any Fearful roles when alive.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
-
-
 
     //Reveal Mods
     Exposed: {
@@ -1062,7 +1066,14 @@ const modifierData = {
       description:
         "Appears as a Vanilla Evil Role from the setup when investigated or condemned. Appears as their real role on death.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Faceless", "Unassuming", "Shady", "Phony", "Respected", "Camouflaged"],
+      incompatible: [
+        "Faceless",
+        "Unassuming",
+        "Shady",
+        "Phony",
+        "Respected",
+        "Camouflaged",
+      ],
     },
     Shady: {
       category: "Appearance",
@@ -1071,7 +1082,14 @@ const modifierData = {
       description:
         "Appears as a Random Evil Role from the setup when investigated or condemned. Appears as their real role on death.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Faceless", "Unassuming", "Suspect", "Phony", "Respected", "Camouflaged"],
+      incompatible: [
+        "Faceless",
+        "Unassuming",
+        "Suspect",
+        "Phony",
+        "Respected",
+        "Camouflaged",
+      ],
     },
     Unassuming: {
       category: "Appearance",
@@ -1087,7 +1105,13 @@ const modifierData = {
       tags: ["Deception"],
       description: "Appears as Village Power Role when condemned or on death.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Shady", "Faceless", "Suspect", "Unassuming", "Camouflaged"],
+      incompatible: [
+        "Shady",
+        "Faceless",
+        "Suspect",
+        "Unassuming",
+        "Camouflaged",
+      ],
     },
     Camouflaged: {
       category: "Appearance",
@@ -1154,7 +1178,8 @@ const modifierData = {
       category: "Appearance",
       internal: ["OnePlayerShowsAsEvil"],
       tags: ["Information"],
-      description: "One Village-aligned player will have unfavorable results to this role's information abilities.",
+      description:
+        "One Village-aligned player will have unfavorable results to this role's information abilities.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     /*
@@ -1174,7 +1199,7 @@ const modifierData = {
   "Wacky Words": {},
   "Liars Dice": {},
   "Texas Hold Em": {},
-  "Cheat": {},
+  Cheat: {},
   Battlesnakes: {},
 };
 

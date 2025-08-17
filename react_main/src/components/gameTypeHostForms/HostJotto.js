@@ -147,30 +147,29 @@ export default function HostJotto() {
     var scheduled = getFormFieldValue("scheduled");
 
     if (setupId) {
-      const hostPromise = axios
-        .post("/api/game/host", {
-          gameType: gameType,
-          setup: setupId,
-          lobby: getFormFieldValue("lobby"),
-          lobbyName: getFormFieldValue("lobbyName"),
-          private: getFormFieldValue("private"),
-          guests: getFormFieldValue("guests"),
-          spectating: getFormFieldValue("spectating"),
-          scheduled:
-            scheduled && new Date(getFormFieldValue("startDate")).getTime(),
-          readyCheck: getFormFieldValue("readyCheck"),
-          stateLengths: {
-            "Select Word": getFormFieldValue("selectWordLength"),
-            "Guess Word": getFormFieldValue("guessWordLength"),
-          },
-          wordLength: getFormFieldValue("wordLength"),
-          duplicateLetters: getFormFieldValue("duplicateLetters"),
-          competitiveMode: getFormFieldValue("competitiveMode"),
-          winOnAnagrams: getFormFieldValue("winOnAnagrams"),
-          numAnagramsRequired: getFormFieldValue("numAnagramsRequired"),
-          anonymousGame: getFormFieldValue("anonymousGame"),
-          anonymousDeckId: getFormFieldValue("anonymousDeckId"),
-        });
+      const hostPromise = axios.post("/api/game/host", {
+        gameType: gameType,
+        setup: setupId,
+        lobby: getFormFieldValue("lobby"),
+        lobbyName: getFormFieldValue("lobbyName"),
+        private: getFormFieldValue("private"),
+        guests: getFormFieldValue("guests"),
+        spectating: getFormFieldValue("spectating"),
+        scheduled:
+          scheduled && new Date(getFormFieldValue("startDate")).getTime(),
+        readyCheck: getFormFieldValue("readyCheck"),
+        stateLengths: {
+          "Select Word": getFormFieldValue("selectWordLength"),
+          "Guess Word": getFormFieldValue("guessWordLength"),
+        },
+        wordLength: getFormFieldValue("wordLength"),
+        duplicateLetters: getFormFieldValue("duplicateLetters"),
+        competitiveMode: getFormFieldValue("competitiveMode"),
+        winOnAnagrams: getFormFieldValue("winOnAnagrams"),
+        numAnagramsRequired: getFormFieldValue("numAnagramsRequired"),
+        anonymousGame: getFormFieldValue("anonymousGame"),
+        anonymousDeckId: getFormFieldValue("anonymousDeckId"),
+      });
 
       Object.keys(defaults).forEach(function (key) {
         const submittedValue = getFormFieldValue(key);
@@ -180,8 +179,7 @@ export default function HostJotto() {
       });
       persistDefaults(gameType, defaults);
       return hostPromise;
-    }
-    else {
+    } else {
       return null;
     }
   }

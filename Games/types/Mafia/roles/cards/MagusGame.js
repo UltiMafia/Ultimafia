@@ -179,10 +179,7 @@ module.exports = class MagusGame extends Card {
             if (roleTags[v] == "Delirium" && Random.randInt(0, 100) <= chance) {
               this.player.role.data.FakeDelirium = true;
             }
-            if (
-              roleTags[v] == "Clean" &&
-              Random.randInt(0, 100) <= chance
-            ) {
+            if (roleTags[v] == "Clean" && Random.randInt(0, 100) <= chance) {
               this.player.role.data.FakeClean = true;
             }
             if (

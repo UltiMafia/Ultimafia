@@ -123,28 +123,27 @@ export default function HostCheat() {
     var scheduled = getFormFieldValue("scheduled");
 
     if (setupId) {
-      const hostPromise = axios
-        .post("/api/game/host", {
-          gameType: gameType,
-          setup: setupId,
-          lobby: getFormFieldValue("lobby"),
-          lobbyName: getFormFieldValue("lobbyName"),
-          private: getFormFieldValue("private"),
-          guests: getFormFieldValue("guests"),
-          spectating: getFormFieldValue("spectating"),
-          scheduled:
-            scheduled && new Date(getFormFieldValue("startDate")).getTime(),
-          readyCheck: getFormFieldValue("readyCheck"),
-          stateLengths: {
-            "Play Cards": getFormFieldValue("playCardsLength"),
-            "Call Lie": getFormFieldValue("callLieLength"),
-          },
-          startingChips: getFormFieldValue("startingChips"),
-          minimumBet: getFormFieldValue("minimumBet"),
-          MaxRounds: getFormFieldValue("MaxRounds"),
-          anonymousGame: getFormFieldValue("anonymousGame"),
-          anonymousDeckId: getFormFieldValue("anonymousDeckId"),
-        });
+      const hostPromise = axios.post("/api/game/host", {
+        gameType: gameType,
+        setup: setupId,
+        lobby: getFormFieldValue("lobby"),
+        lobbyName: getFormFieldValue("lobbyName"),
+        private: getFormFieldValue("private"),
+        guests: getFormFieldValue("guests"),
+        spectating: getFormFieldValue("spectating"),
+        scheduled:
+          scheduled && new Date(getFormFieldValue("startDate")).getTime(),
+        readyCheck: getFormFieldValue("readyCheck"),
+        stateLengths: {
+          "Play Cards": getFormFieldValue("playCardsLength"),
+          "Call Lie": getFormFieldValue("callLieLength"),
+        },
+        startingChips: getFormFieldValue("startingChips"),
+        minimumBet: getFormFieldValue("minimumBet"),
+        MaxRounds: getFormFieldValue("MaxRounds"),
+        anonymousGame: getFormFieldValue("anonymousGame"),
+        anonymousDeckId: getFormFieldValue("anonymousDeckId"),
+      });
 
       defaults.private = getFormFieldValue("private");
       defaults.guests = getFormFieldValue("guests");
@@ -154,8 +153,7 @@ export default function HostCheat() {
       defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
       persistDefaults(gameType, defaults);
       return hostPromise;
-    }
-    else {
+    } else {
       return null;
     }
   }

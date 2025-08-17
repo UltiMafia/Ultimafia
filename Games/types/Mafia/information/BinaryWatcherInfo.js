@@ -20,10 +20,10 @@ module.exports = class BinaryTrackerInfo extends Information {
     }
     this.target = target;
     let visitors = this.getVisitorsAppearance(this.target);
-    if(visitors.includes(this.creator)){
-    while(visitors.includes(this.creator)){
-    visitors.splice(visitors.indexOf(this.creator), 1);
-    }
+    if (visitors.includes(this.creator)) {
+      while (visitors.includes(this.creator)) {
+        visitors.splice(visitors.indexOf(this.creator), 1);
+      }
     }
     if (visitors.length > 0) {
       this.mainInfo = "visited by somebody";
@@ -45,11 +45,11 @@ module.exports = class BinaryTrackerInfo extends Information {
 
   isTrue() {
     let visitors = this.getVisitors(this.target);
-    if(visitors.includes(this.creator)){
-    while(visitors.includes(this.creator)){
-    visitors.splice(visitors.indexOf(this.creator), 1);
+    if (visitors.includes(this.creator)) {
+      while (visitors.includes(this.creator)) {
+        visitors.splice(visitors.indexOf(this.creator), 1);
+      }
     }
-  }
     let temp;
     if (visitors.length > 0) {
       temp = "visited by somebody";
@@ -86,11 +86,11 @@ module.exports = class BinaryTrackerInfo extends Information {
 
   makeTrue() {
     let visitors = this.getVisitors(this.target);
-    if(visitors.includes(this.creator)){
-    while(visitors.includes(this.creator)){
-    visitors.splice(visitors.indexOf(this.creator), 1);
+    if (visitors.includes(this.creator)) {
+      while (visitors.includes(this.creator)) {
+        visitors.splice(visitors.indexOf(this.creator), 1);
+      }
     }
-  }
     if (visitors.length > 0) {
       this.mainInfo = "visited by somebody";
     } else {
@@ -99,11 +99,11 @@ module.exports = class BinaryTrackerInfo extends Information {
   }
   makeFalse() {
     let visitors = this.getVisitors(this.target);
-    if(visitors.includes(this.creator)){
-    while(visitors.includes(this.creator)){
-    visitors.splice(visitors.indexOf(this.creator), 1);
+    if (visitors.includes(this.creator)) {
+      while (visitors.includes(this.creator)) {
+        visitors.splice(visitors.indexOf(this.creator), 1);
+      }
     }
-  }
     if (visitors.length > 0) {
       this.mainInfo = "not visited by anybody";
     } else {

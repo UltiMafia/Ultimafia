@@ -277,7 +277,7 @@ const artContributors = {
       "Painter:noir",
       "Succubus:noir",
       "Vampire:noir",
-      "Heartbreaker:noir"
+      "Heartbreaker:noir",
     ],
   },
   kirigiri: {
@@ -319,13 +319,25 @@ const artContributors = {
     Mafia: ["Virgin:vivid", "Leech:vivid", "Executioner:vivid", "Yith:vivid"],
   },
   keji: {
-    Mafia: ["Penguin:vivid", "Butterfly:vivid", "Psion:vivid", "Anarchist:vivid", "Polar Bear:vivid"],
+    Mafia: [
+      "Penguin:vivid",
+      "Butterfly:vivid",
+      "Psion:vivid",
+      "Anarchist:vivid",
+      "Polar Bear:vivid",
+    ],
   },
   sensitive: {
     Mafia: ["Keymaker:vivid"],
   },
   sw33t: {
-    Mafia: ["Celebrity:vivid", "Waitress:vivid", "Hooker:vivid", "Actress:vivid", "Housekeeper:vivid"],
+    Mafia: [
+      "Celebrity:vivid",
+      "Waitress:vivid",
+      "Hooker:vivid",
+      "Actress:vivid",
+      "Housekeeper:vivid",
+    ],
   },
   trout: {
     Mafia: [
@@ -471,7 +483,7 @@ const artContributors = {
       "Rebel:vivid",
       "Spy:vivid",
       "Tristan:vivid",
-      "Isolde:vivid"
+      "Isolde:vivid",
     ],
   },
   aleph: {
@@ -497,7 +509,8 @@ const artContributors = {
       "Maestro:vivid",
       "Hermit:vivid",
       "Plague Doctor:vivid",
-      "Fisherman:vivid",],
+      "Fisherman:vivid",
+    ],
     Battlesnakes: ["Snake:vivid"],
   },
 };

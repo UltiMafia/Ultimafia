@@ -141,11 +141,11 @@ async function cacheUserInfo(userId, reset) {
 
     // Count the total games played - games are retained in this array even if they expire
     const aggregation = await models.User.aggregate([
-      { '$match': { _id: user._id }},
-      { '$project': { 'count': { '$size': '$games' } } }
+      { $match: { _id: user._id } },
+      { $project: { count: { $size: "$games" } } },
     ]);
     var gamesPlayed = 0;
-    aggregation.forEach(match => gamesPlayed = match.count);
+    aggregation.forEach((match) => (gamesPlayed = match.count));
 
     // Get all of the user's heart refreshes
     let heartRefreshes = await models.HeartRefresh.find({
@@ -156,8 +156,10 @@ async function cacheUserInfo(userId, reset) {
     var goldHeartRefreshTimestamp = 0;
 
     for (let heartRefresh of heartRefreshes) {
-      if (heartRefresh.type === "red") redHeartRefreshTimestamp = heartRefresh.when;
-      else if (heartRefresh.type === "gold") goldHeartRefreshTimestamp = heartRefresh.when;
+      if (heartRefresh.type === "red")
+        redHeartRefreshTimestamp = heartRefresh.when;
+      else if (heartRefresh.type === "gold")
+        goldHeartRefreshTimestamp = heartRefresh.when;
     }
 
     user = user.toJSON();
@@ -176,9 +178,18 @@ async function cacheUserInfo(userId, reset) {
     await client.setAsync(`user:${userId}:info:gamesPlayed`, gamesPlayed);
     await client.setAsync(`user:${userId}:info:redHearts`, user.redHearts);
     await client.setAsync(`user:${userId}:info:goldHearts`, user.goldHearts);
-    await client.setAsync(`user:${userId}:info:redHeartRefreshTimestamp`, redHeartRefreshTimestamp);
-    await client.setAsync(`user:${userId}:info:goldHeartRefreshTimestamp`, goldHeartRefreshTimestamp);
-    await client.setAsync(`user:${userId}:info:dailyChallenges`, JSON.stringify(user.dailyChallenges || []));
+    await client.setAsync(
+      `user:${userId}:info:redHeartRefreshTimestamp`,
+      redHeartRefreshTimestamp
+    );
+    await client.setAsync(
+      `user:${userId}:info:goldHeartRefreshTimestamp`,
+      goldHeartRefreshTimestamp
+    );
+    await client.setAsync(
+      `user:${userId}:info:dailyChallenges`,
+      JSON.stringify(user.dailyChallenges || [])
+    );
     await client.setAsync(
       `user:${userId}:info:blockedUsers`,
       JSON.stringify(user.blockedUsers || [])
@@ -260,9 +271,15 @@ async function getUserInfo(userId) {
   info.gamesPlayed = await client.getAsync(`user:${userId}:info:gamesPlayed`);
   info.redHearts = await client.getAsync(`user:${userId}:info:redHearts`);
   info.goldHearts = await client.getAsync(`user:${userId}:info:goldHearts`);
-  info.redHeartRefreshTimestamp = await client.getAsync(`user:${userId}:info:redHeartRefreshTimestamp`);
-  info.goldHeartRefreshTimestamp = await client.getAsync(`user:${userId}:info:goldHeartRefreshTimestamp`);
-  info.dailyChallenges = JSON.parse( await client.getAsync(`user:${userId}:info:dailyChallenges`));
+  info.redHeartRefreshTimestamp = await client.getAsync(
+    `user:${userId}:info:redHeartRefreshTimestamp`
+  );
+  info.goldHeartRefreshTimestamp = await client.getAsync(
+    `user:${userId}:info:goldHeartRefreshTimestamp`
+  );
+  info.dailyChallenges = JSON.parse(
+    await client.getAsync(`user:${userId}:info:dailyChallenges`)
+  );
   info.status = await client.getAsync(`user:${userId}:info:status`);
   info.blockedUsers = JSON.parse(
     await client.getAsync(`user:${userId}:info:blockedUsers`)
@@ -385,7 +402,9 @@ async function getLeaderBoardStat(field) {
 
     // Query the top 100 users for a given field
     const leadingUsers = await models.User.find({ deleted: false })
-      .select("id name avatar kudos karma achievementCount winRate dailyChallengesCompleted _id")
+      .select(
+        "id name avatar kudos karma achievementCount winRate dailyChallengesCompleted _id"
+      )
       .sort(sortBy)
       .limit(100);
 
@@ -405,7 +424,7 @@ async function getLeaderBoardStat(field) {
  * - Everyone one else gets an hourly rotating setup from the featured setups
  *
  * @param featuredCategory either "classic", "main", or "minigames"
-*/
+ */
 async function getFeaturedSetup(featuredCategory) {
   const key = `game:featuredSetup:${featuredCategory}`;
 
@@ -417,32 +436,28 @@ async function getFeaturedSetup(featuredCategory) {
     if (featuredCategory === "classic") {
       // If the featuredCategory is classic, then we need to find *the* classic setup in the database
       setup = await models.Setup.findOne({
-
         // case sensitive, name is included in search for performance since it's indexed
-        name:	"Classic",
+        name: "Classic",
 
         // A bit hacky but the roles are alphabetically sorted so hey it works
         roles: '[{"Cop:":1,"Doctor:":1,"Villager:":3,"Mafioso:":2}]',
 
         // ranked: true should prevent stale classic setups from being searched
         ranked: true,
-
       }).select(
         "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
       );
-      console.warn(setup)
-    }
-    else {
+      console.warn(setup);
+    } else {
       let filter = {
-        featured: true
+        featured: true,
       };
 
       // I would ideally like to incorporate setup tags into this one day so that tags can help separate featured setups for different lobbies
       // For now, only minigames is separated
       if (featuredCategory === "minigames") {
         filter.gameType = { $ne: "Mafia" };
-      }
-      else {
+      } else {
         filter.gameType = "Mafia";
       }
 
@@ -453,7 +468,7 @@ async function getFeaturedSetup(featuredCategory) {
           "id gameType name roles closed useRoleGroups roleGroupSizes count total featured -_id"
         )
         .populate("creator", "id name avatar tag -_id");
-      
+
       const hoursSinceEpoch = Math.floor(Date.now() / (1000 * 60 * 60));
       const index = hoursSinceEpoch % setups.length;
 
@@ -599,7 +614,6 @@ async function setGameSetup(gameId, setupID) {
   info.setup = setupID;
   //JSON.stringify(info);
   await client.setAsync(`game:${gameId}:settings`, JSON.stringify(info));
-
 }
 
 async function getOpenGames(gameType) {

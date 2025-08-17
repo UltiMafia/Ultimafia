@@ -7,17 +7,13 @@ module.exports = class VillageWinsWhenKilled extends Card {
   constructor(role) {
     super(role);
 
-
-
-      this.winCheckSpecial = {
-      priority: PRIORITY_WIN_CHECK_DEFAULT+1,
+    this.winCheckSpecial = {
+      priority: PRIORITY_WIN_CHECK_DEFAULT + 1,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-  
-              
         if (this.killedAssassin) {
-          for(let player of this.game.players){
-            if(player.faction == "Village"){
+          for (let player of this.game.players) {
+            if (player.faction == "Village") {
               winners.addPlayer(player, player.faction);
             }
           }
@@ -25,64 +21,78 @@ module.exports = class VillageWinsWhenKilled extends Card {
       },
     };
 
-        this.listeners = {
-        death: function (player, killer, deathType) {
+    this.listeners = {
+      death: function (player, killer, deathType) {
+        if (player.hasEffect("PresidentEffect")) {
+          this.killedPresident = true;
+        }
 
-          if(player.hasEffect("PresidentEffect")){
-            this.killedPresident = true;
-          }
-
-          if(player != this.player){
-            return;
-          }
-          
-          if(this.killedPresident == true){
-            return;
-          }
-
-          if(this.game.FinalRound < this.game.CurrentRound){
-            this.killedAssassin = true;
-            return;
-          }
-
-
-        let otherAssassins = this.game.alivePlayers().filter((p) => p != this.player && ((p.hasEffect("PresidentEffect") && p.hasAbility(["Win-Con", "WhenDead"])) || p.role.data.RoleTargetBackup == "Assassin"));
-        if(otherAssassins.length > 0){
+        if (player != this.player) {
           return;
         }
 
-          
-       
-      this.killedAssassin = true;
+        if (this.killedPresident == true) {
+          return;
+        }
+
+        if (this.game.FinalRound < this.game.CurrentRound) {
+          this.killedAssassin = true;
+          return;
+        }
+
+        let otherAssassins = this.game
+          .alivePlayers()
+          .filter(
+            (p) =>
+              p != this.player &&
+              ((p.hasEffect("PresidentEffect") &&
+                p.hasAbility(["Win-Con", "WhenDead"])) ||
+                p.role.data.RoleTargetBackup == "Assassin")
+          );
+        if (otherAssassins.length > 0) {
+          return;
+        }
+
+        this.killedAssassin = true;
       },
       AbilityToggle: function (player) {
-        if(!this.player.alive){
-        return;
+        if (!this.player.alive) {
+          return;
         }
         let checks = true;
-        for(let player of this.game.alivePlayers()){
-          for(let effect of player.effects){
-            if(effect.name == "BackUp"){
-              if(effect.BackupRole && `${effect.BackupRole}` === `${this.name}` && effect.CurrentRole.hasAbility(["Convert", "OnlyWhenAlive", "Modifier"])){
+        for (let player of this.game.alivePlayers()) {
+          for (let effect of player.effects) {
+            if (effect.name == "BackUp") {
+              if (
+                effect.BackupRole &&
+                `${effect.BackupRole}` === `${this.name}` &&
+                effect.CurrentRole.hasAbility([
+                  "Convert",
+                  "OnlyWhenAlive",
+                  "Modifier",
+                ])
+              ) {
                 checks = false;
               }
             }
           }
         }
-        if(this.game.FinalRound < this.game.CurrentRound){
-          checks = true
+        if (this.game.FinalRound < this.game.CurrentRound) {
+          checks = true;
         }
-        if(!this.hasAbility(["Win-Con", "WhenDead"])){
+        if (!this.hasAbility(["Win-Con", "WhenDead"])) {
           checks = false;
         }
-        
-        
+
         if (checks == true) {
           if (
             this.AssassinEffect == null ||
             !this.player.effects.includes(this.AssassinEffect)
           ) {
-            this.AssassinEffect = this.player.giveEffect("AssassinEffect", Infinity);
+            this.AssassinEffect = this.player.giveEffect(
+              "AssassinEffect",
+              Infinity
+            );
             this.passiveEffects.push(this.AssassinEffect);
           }
         } else {
@@ -97,6 +107,5 @@ module.exports = class VillageWinsWhenKilled extends Card {
         }
       },
     };
-
   }
 };

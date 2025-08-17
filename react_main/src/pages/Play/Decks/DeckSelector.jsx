@@ -47,7 +47,9 @@ export default function DeckSelector() {
 
   function getDeckList(listType, page, query) {
     axios
-      .get(`/api/deck/${camelCase(listType)}?&page=${page}&query=${query || ""}`)
+      .get(
+        `/api/deck/${camelCase(listType)}?&page=${page}&query=${query || ""}`
+      )
       .then((res) => {
         setListType(listType);
         setPage(page);

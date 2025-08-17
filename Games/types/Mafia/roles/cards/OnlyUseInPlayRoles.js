@@ -35,7 +35,7 @@ module.exports = class OnlyUseInPlayRoles extends Card {
               return;
             }
           }
-          if (meeting.inputType == "AllRoles"){
+          if (meeting.inputType == "AllRoles") {
             meeting.AllRolesFilters.push("InPlayOnly");
             meeting.generateTargets();
             for (let member of meeting.members) {
@@ -45,6 +45,5 @@ module.exports = class OnlyUseInPlayRoles extends Card {
         });
       },
     };
-
   }
 };

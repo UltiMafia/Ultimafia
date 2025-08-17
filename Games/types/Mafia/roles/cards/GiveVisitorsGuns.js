@@ -5,7 +5,7 @@ const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 module.exports = class GiveVisitorsGuns extends Card {
   constructor(role) {
     super(role);
-  
+
     this.listeners = {
       state: function (stateInfo) {
         if (!this.hasAbility(["Item"])) {

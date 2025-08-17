@@ -1,6 +1,9 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const { PRIORITY_SUPPORT_VISIT_DEFAULT, PRIORITY_BECOME_DEAD_ROLE } = require("../../const/Priority");
+const {
+  PRIORITY_SUPPORT_VISIT_DEFAULT,
+  PRIORITY_BECOME_DEAD_ROLE,
+} = require("../../const/Priority");
 const roles = require("../../../../../data/roles");
 const Random = require("../../../../../lib/Random");
 
@@ -51,7 +54,7 @@ module.exports = class ConvertIfVisitsAllMafia extends Card {
 
         this.visitedMentors = new Set();
       },
-      state: function (stateInfo){
+      state: function (stateInfo) {
         if (!this.hasAbility(["Convert"])) {
           return;
         }
@@ -79,7 +82,9 @@ module.exports = class ConvertIfVisitsAllMafia extends Card {
             }
 
             const randomMafiaRole = Random.randArrayVal(
-              this.role.getAllRoles().filter((r) => this.game.getRoleAlignment(r) == "Mafia")
+              this.role
+                .getAllRoles()
+                .filter((r) => this.game.getRoleAlignment(r) == "Mafia")
             );
             this.actor.setRole(randomMafiaRole);
           },

@@ -27,7 +27,7 @@ module.exports = class Delirious extends Effect {
           priority: -999,
           labels: ["block", "hidden"],
           run: function () {
-            if(!this.target.isDelirious()){
+            if (!this.target.isDelirious()) {
               return;
             }
             if (this.actor.hasAbility(this.effect.types)) {
@@ -44,16 +44,13 @@ module.exports = class Delirious extends Effect {
   apply(player) {
     super.apply(player);
 
-
     this.falseModeEffect = player.giveEffect("FalseMode", Infinity);
   }
 
-   remove() {
+  remove() {
     let temp = this.player;
     this.falseModeEffect.remove();
     super.remove();
     temp.game.events.emit("AbilityToggle", temp);
   }
-
-  
 };

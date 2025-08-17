@@ -32,7 +32,8 @@ module.exports = class LoseModifiers extends Card {
               false,
               false,
               false,
-              "No Change","NoStartingItems"
+              "No Change",
+              "NoStartingItems"
             );
           },
         });

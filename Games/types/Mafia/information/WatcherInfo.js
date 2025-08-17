@@ -49,12 +49,12 @@ module.exports = class WatcherInfo extends Information {
       }
     }
 
-  if(visitors.includes(this.creator)){
-    while(visitors.includes(this.creator)){
-    visitors.splice(visitors.indexOf(this.creator), 1);
+    if (visitors.includes(this.creator)) {
+      while (visitors.includes(this.creator)) {
+        visitors.splice(visitors.indexOf(this.creator), 1);
+      }
     }
-  }
-    
+
     this.mainInfo = visitors;
   }
 
@@ -85,11 +85,11 @@ module.exports = class WatcherInfo extends Information {
 
   isTrue() {
     let visitors = this.getVisitors(this.target);
-    if(visitors.includes(this.creator)){
-    while(visitors.includes(this.creator)){
-    visitors.splice(visitors.indexOf(this.creator), 1);
+    if (visitors.includes(this.creator)) {
+      while (visitors.includes(this.creator)) {
+        visitors.splice(visitors.indexOf(this.creator), 1);
+      }
     }
-  }
     if (this.mainInfo.length != visitors.length) {
       return false;
     }
@@ -134,20 +134,20 @@ module.exports = class WatcherInfo extends Information {
 
   makeTrue() {
     let visitors = this.getVisitors(this.target);
-    if(visitors.includes(this.creator)){
-    while(visitors.includes(this.creator)){
-    visitors.splice(visitors.indexOf(this.creator), 1);
+    if (visitors.includes(this.creator)) {
+      while (visitors.includes(this.creator)) {
+        visitors.splice(visitors.indexOf(this.creator), 1);
+      }
     }
-  }
     this.mainInfo = visitors;
   }
   makeFalse() {
     let visitors = this.getVisitors(this.target);
-    if(visitors.includes(this.creator)){
-    while(visitors.includes(this.creator)){
-    visitors.splice(visitors.indexOf(this.creator), 1);
+    if (visitors.includes(this.creator)) {
+      while (visitors.includes(this.creator)) {
+        visitors.splice(visitors.indexOf(this.creator), 1);
+      }
     }
-  }
     if (visitors.length > 0 && this.forceCount == false) {
       this.mainInfo = [];
     } else {
@@ -178,11 +178,11 @@ module.exports = class WatcherInfo extends Information {
   }
   makeFavorable() {
     let visitors = this.getVisitors(this.target);
-    if(visitors.includes(this.creator)){
-    while(visitors.includes(this.creator)){
-    visitors.splice(visitors.indexOf(this.creator), 1);
+    if (visitors.includes(this.creator)) {
+      while (visitors.includes(this.creator)) {
+        visitors.splice(visitors.indexOf(this.creator), 1);
+      }
     }
-  }
     let badVisits = this.getKillVictims();
     let possibleExtraVisitors = this.game
       .alivePlayers()
@@ -203,11 +203,11 @@ module.exports = class WatcherInfo extends Information {
   }
   makeUnfavorable() {
     let visitors = this.getVisitors(this.target);
-    if(visitors.includes(this.creator)){
-    while(visitors.includes(this.creator)){
-    visitors.splice(visitors.indexOf(this.creator), 1);
+    if (visitors.includes(this.creator)) {
+      while (visitors.includes(this.creator)) {
+        visitors.splice(visitors.indexOf(this.creator), 1);
+      }
     }
-  }
     let badVisits = this.getKillVictims();
     let possibleVisitors = this.game
       .alivePlayers()

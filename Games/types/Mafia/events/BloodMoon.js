@@ -39,36 +39,35 @@ module.exports = class BloodMoon extends Event {
         }
         this.game.IsBloodMoon = true;
 
-        if(this.game.BloodMoonKills == null){
+        if (this.game.BloodMoonKills == null) {
           this.game.BloodMoonKills = [];
         }
 
-            const CULT_IN_GAME =
-            this.game.players.filter((p) => CULT_FACTIONS.includes(p.faction))
-              .length > 0;
-          const MAFIA_IN_GAME =
-            this.game.players.filter((p) => MAFIA_FACTIONS.includes(p.faction))
-              .length > 0;
-          const SUPERHERO_IN_GAME =
-            this.game.players.filter((p) => p.role.name == "Superhero").length >
-            0;
+        const CULT_IN_GAME =
+          this.game.players.filter((p) => CULT_FACTIONS.includes(p.faction))
+            .length > 0;
+        const MAFIA_IN_GAME =
+          this.game.players.filter((p) => MAFIA_FACTIONS.includes(p.faction))
+            .length > 0;
+        const SUPERHERO_IN_GAME =
+          this.game.players.filter((p) => p.role.name == "Superhero").length >
+          0;
 
-            if (MAFIA_IN_GAME && CULT_IN_GAME) {
-              for (let player of this.game.players) {
-                player.holdItem("ExtraCondemn", "Extra Condemn");
-              }
-            }
-          
-            if (
-              this.game.IsBloodMoon &&
-              (MAFIA_IN_GAME || CULT_IN_GAME) &&
-              SUPERHERO_IN_GAME
-            ) {
-              for (let player of this.game.players) {
-                player.holdItem("ExtraCondemn", "Bonus Condemn");
-              }
-            }
-        
+        if (MAFIA_IN_GAME && CULT_IN_GAME) {
+          for (let player of this.game.players) {
+            player.holdItem("ExtraCondemn", "Extra Condemn");
+          }
+        }
+
+        if (
+          this.game.IsBloodMoon &&
+          (MAFIA_IN_GAME || CULT_IN_GAME) &&
+          SUPERHERO_IN_GAME
+        ) {
+          for (let player of this.game.players) {
+            player.holdItem("ExtraCondemn", "Bonus Condemn");
+          }
+        }
       },
     });
     this.action.do();

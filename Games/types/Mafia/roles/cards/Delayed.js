@@ -9,7 +9,9 @@ const {
 module.exports = class Delayed extends Card {
   constructor(role) {
     super(role);
-    this.role.DelayedMax = this.role.modifier.split("/").filter((m) => m == "Delayed").length;
+    this.role.DelayedMax = this.role.modifier
+      .split("/")
+      .filter((m) => m == "Delayed").length;
 
     this.meetingMods = {
       "*": {

@@ -83,9 +83,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
             } else if (this.role.data.targetRealation == "Neighbors") {
               question = `You ask if ${this.role.data.targetPlayer.name} Neighbors ${this.role.data.targetRole}?`;
               let alivePlayers = this.game.alivePlayers();
-              let index = alivePlayers.indexOf(
-                this.role.data.targetPlayer
-              );
+              let index = alivePlayers.indexOf(this.role.data.targetPlayer);
               let rightIdx = (index + 1) % alivePlayers.length;
               let leftIdx =
                 (index - 1 + alivePlayers.length) % alivePlayers.length;
@@ -101,9 +99,7 @@ module.exports = class LearnAboutPlayerAndRole extends Card {
               } else {
                 isCorrect = false;
               }
-            } else if (
-              this.role.data.targetRealation == "Was Visited By"
-            ) {
+            } else if (this.role.data.targetRealation == "Was Visited By") {
               question = `You ask if ${this.role.data.targetPlayer.name} Was Visited By ${this.role.data.targetRole}?`;
 
               let lastVisitorsAll = this.role.data.LastNightVisitors;

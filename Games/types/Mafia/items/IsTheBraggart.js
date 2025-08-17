@@ -34,7 +34,7 @@ module.exports = class IsTheBraggart extends Item {
             this.target.role.appearanceMods.investigate = this.item.modifier;
             this.target.role.appearanceMods.condemn = this.item.modifier;
             //this.target.role.modifier = this.item.modifier;
-              /*
+            /*
             this.target.role.hideModifier = {
               death: true,
               reveal: true,

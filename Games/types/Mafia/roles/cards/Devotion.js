@@ -37,31 +37,36 @@ module.exports = class Devotion extends Card {
       },
       */
       AbilityToggle: function (player) {
-        if(!this.player.alive){
-        return;
+        if (!this.player.alive) {
+          return;
         }
         let checks = true;
-        if(!this.hasAbility(["Win-Con"])){
+        if (!this.hasAbility(["Win-Con"])) {
           checks = false;
         }
-        
-        
+
         if (checks == true) {
           if (
             this.DevotionEffect == null ||
             !this.player.effects.includes(this.DevotionEffect)
           ) {
-            this.DevotionEffect = this.player.giveEffect("DevotionEffect", Infinity);
+            this.DevotionEffect = this.player.giveEffect(
+              "DevotionEffect",
+              Infinity
+            );
             this.passiveEffects.push(this.DevotionEffect);
           }
-          if(this.name == "Devotee"){
+          if (this.name == "Devotee") {
             if (
-            this.DevoteeEffect == null ||
-            !this.player.effects.includes(this.DevoteeEffect)
-          ) {
-            this.DevoteeEffect = this.player.giveEffect("DevoteeEffect", Infinity);
-            this.passiveEffects.push(this.DevoteeEffect);
-          }
+              this.DevoteeEffect == null ||
+              !this.player.effects.includes(this.DevoteeEffect)
+            ) {
+              this.DevoteeEffect = this.player.giveEffect(
+                "DevoteeEffect",
+                Infinity
+              );
+              this.passiveEffects.push(this.DevoteeEffect);
+            }
           }
         } else {
           var index = this.passiveEffects.indexOf(this.DevotionEffect);
@@ -84,8 +89,5 @@ module.exports = class Devotion extends Card {
         }
       },
     };
-
-
-    
   }
 };

@@ -14,24 +14,20 @@ module.exports = class SacrificeSameRole extends Card {
         }
 
         for (const player of this.game.players) {
-          if (
-            player.alive &&
-            player.hasEffect("SheepEffect")
-          ) {
+          if (player.alive && player.hasEffect("SheepEffect")) {
             player.kill("sheep", this.player, instant);
           }
         }
       },
       AbilityToggle: function (player) {
-        if(!this.player.alive){
-        return;
+        if (!this.player.alive) {
+          return;
         }
         let checks = true;
-        if(!this.hasAbility(["Win-Con", "WhenDead"])){
+        if (!this.hasAbility(["Win-Con", "WhenDead"])) {
           checks = false;
         }
-        
-        
+
         if (checks == true) {
           if (
             this.SheepEffect == null ||

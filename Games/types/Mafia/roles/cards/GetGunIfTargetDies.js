@@ -12,7 +12,7 @@ module.exports = class GetGunIfTargetDies extends Card {
         flags: ["voting"],
         action: {
           role: this.role,
-          priority:  PRIORITY_ITEM_GIVER_EARLY,
+          priority: PRIORITY_ITEM_GIVER_EARLY,
           run: function () {
             this.role.avengeTarget = this.target;
           },

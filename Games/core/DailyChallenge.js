@@ -11,7 +11,6 @@ module.exports = class DailyChallenge {
     this.ID = DailyChallengeData[this.name].ID;
     this.reward = DailyChallengeData[this.name].reward;
 
-    
     this.listeners = {};
   }
 

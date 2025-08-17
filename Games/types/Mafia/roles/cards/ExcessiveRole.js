@@ -35,7 +35,7 @@ module.exports = class ExcessiveRole extends Card {
               return;
             }
           }
-          if (meeting.inputType == "AllRoles"){
+          if (meeting.inputType == "AllRoles") {
             meeting.AllRolesFilters.push("AllOnSite");
             meeting.generateTargets();
             for (let member of meeting.members) {
@@ -45,6 +45,5 @@ module.exports = class ExcessiveRole extends Card {
         });
       },
     };
-
   }
 };

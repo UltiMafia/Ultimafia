@@ -2,12 +2,21 @@ import React, { useState, useEffect, useReducer, useContext } from "react";
 import { Redirect, useLocation } from "react-router-dom";
 import axios from "axios";
 
-import {  Accordion,
+import {
+  Accordion,
   AccordionSummary,
-  AccordionDetails, Typography, Stack, } from "@mui/material";
+  AccordionDetails,
+  Typography,
+  Stack,
+} from "@mui/material";
 
 import { UserContext, SiteInfoContext } from "../../../Contexts";
-import { RoleCount, RoleSearch, ModifierSearch, ModifierCount } from "../../../components/Roles";
+import {
+  RoleCount,
+  RoleSearch,
+  ModifierSearch,
+  ModifierCount,
+} from "../../../components/Roles";
 import Form from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 
@@ -200,10 +209,10 @@ export default function CreateSetup(props) {
 
   function onAddModifier(mod) {
     let index = modifiers.length;
-    if(index>2){
+    if (index > 2) {
       return;
     }
-    let tmpModifiers = modifiers.filter((m)=>m);
+    let tmpModifiers = modifiers.filter((m) => m);
     tmpModifiers.push(mod);
     setModifiers(tmpModifiers);
     /*
@@ -218,13 +227,13 @@ export default function CreateSetup(props) {
     */
   }
 
-    function onRemoveModifier(mod) {
+  function onRemoveModifier(mod) {
     let index = modifiers.indexOf(mod);
-    if(index == -1){
+    if (index == -1) {
       return;
     }
-    let tmpModifiers = modifiers.filter((m)=>m);
-    tmpModifiers.splice(index,1);
+    let tmpModifiers = modifiers.filter((m) => m);
+    tmpModifiers.splice(index, 1);
     setModifiers(tmpModifiers);
     /*
     const tmpModifiers = [...modifiers];
@@ -329,11 +338,13 @@ export default function CreateSetup(props) {
       gameModifiers.find((x) => x.name === e)
     );
     let temp;
-    if(mappedMods && mappedMods.length <= 0){
+    if (mappedMods && mappedMods.length <= 0) {
       temp = [];
-    }
-    else{
-      temp = mappedMods.filter((k) => k).map((e) => e.incompatible).flat();
+    } else {
+      temp = mappedMods
+        .filter((k) => k)
+        .map((e) => e.incompatible)
+        .flat();
     }
     const incompatibles = temp;
     const modifierOptions = gameModifiers
@@ -360,27 +371,34 @@ export default function CreateSetup(props) {
     <div className="span-panel main create-setup">
       <RoleSearch onAddClick={onAddRole} gameType={gameType} />
       <Accordion>
-              <AccordionSummary>
-                <Typography variant="h6">Modifiers</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <ModifierSearch onAddClick={onAddModifier} gameType={gameType} curMods={modifiers} />
-              </AccordionDetails>
-            </Accordion>
-      <mod>Selected Modifiers 
-        <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
-        {modifiers.map((m)=> 
-        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
-          <ModifierCount
-                    role={m}
-                    gameType={gameType}
-                    sx={{ fontSize: "14px" }}
-                    onClick={() => {onRemoveModifier(m);
-          }}
+        <AccordionSummary>
+          <Typography variant="h6">Modifiers</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <ModifierSearch
+            onAddClick={onAddModifier}
+            gameType={gameType}
+            curMods={modifiers}
           />
-          {m} 
-                  </Stack>)}
-                  </Stack>
+        </AccordionDetails>
+      </Accordion>
+      <mod>
+        Selected Modifiers
+        <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
+          {modifiers.map((m) => (
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+              <ModifierCount
+                role={m}
+                gameType={gameType}
+                sx={{ fontSize: "14px" }}
+                onClick={() => {
+                  onRemoveModifier(m);
+                }}
+              />
+              {m}
+            </Stack>
+          ))}
+        </Stack>
       </mod>
       {user.loggedIn && (
         <div className="creation-options">

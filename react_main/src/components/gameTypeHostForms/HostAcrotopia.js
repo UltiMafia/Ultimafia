@@ -139,32 +139,31 @@ export default function HostAcrotopia() {
     var scheduled = getFormFieldValue("scheduled");
 
     if (setupId) {
-      const hostPromise = axios
-        .post("/api/game/host", {
-          gameType: gameType,
-          setup: setupId,
-          lobby: getFormFieldValue("lobby"),
-          lobbyName: getFormFieldValue("lobbyName"),
-          private: getFormFieldValue("private"),
-          guests: getFormFieldValue("guests"),
-          spectating: getFormFieldValue("spectating"),
-          scheduled:
-            scheduled && new Date(getFormFieldValue("startDate")).getTime(),
-          readyCheck: getFormFieldValue("readyCheck"),
-          stateLengths: {
-            Night: getFormFieldValue("nightLength"),
-            Day: getFormFieldValue("dayLength"),
-          },
-          roundAmt: getFormFieldValue("roundAmt"),
-          acronymSize: getFormFieldValue("acronymSize"),
-          enablePunctuation: getFormFieldValue("enablePunctuation"),
-          standardiseCapitalisation: getFormFieldValue(
-            "standardiseCapitalisation"
-          ),
-          turnOnCaps: getFormFieldValue("turnOnCaps"),
-          anonymousGame: getFormFieldValue("anonymousGame"),
-          anonymousDeckId: getFormFieldValue("anonymousDeckId"),
-        });
+      const hostPromise = axios.post("/api/game/host", {
+        gameType: gameType,
+        setup: setupId,
+        lobby: getFormFieldValue("lobby"),
+        lobbyName: getFormFieldValue("lobbyName"),
+        private: getFormFieldValue("private"),
+        guests: getFormFieldValue("guests"),
+        spectating: getFormFieldValue("spectating"),
+        scheduled:
+          scheduled && new Date(getFormFieldValue("startDate")).getTime(),
+        readyCheck: getFormFieldValue("readyCheck"),
+        stateLengths: {
+          Night: getFormFieldValue("nightLength"),
+          Day: getFormFieldValue("dayLength"),
+        },
+        roundAmt: getFormFieldValue("roundAmt"),
+        acronymSize: getFormFieldValue("acronymSize"),
+        enablePunctuation: getFormFieldValue("enablePunctuation"),
+        standardiseCapitalisation: getFormFieldValue(
+          "standardiseCapitalisation"
+        ),
+        turnOnCaps: getFormFieldValue("turnOnCaps"),
+        anonymousGame: getFormFieldValue("anonymousGame"),
+        anonymousDeckId: getFormFieldValue("anonymousDeckId"),
+      });
 
       defaults.private = getFormFieldValue("private");
       defaults.guests = getFormFieldValue("guests");
@@ -181,8 +180,7 @@ export default function HostAcrotopia() {
       defaults.turnOnCaps = getFormFieldValue("turnOnCaps");
       persistDefaults(gameType, defaults);
       return hostPromise;
-    }
-    else {
+    } else {
       return null;
     }
   }

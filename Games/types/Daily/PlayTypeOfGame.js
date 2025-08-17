@@ -10,25 +10,25 @@ module.exports = class PlayTypeOfGame extends DailyChallenge {
           return;
         }
         let gameType;
-        for(let Challenge of this.player.user.dailyChallenges){
-          if(Challenge[0] == this.ID){
+        for (let Challenge of this.player.user.dailyChallenges) {
+          if (Challenge[0] == this.ID) {
             gameType = Challenge[2];
           }
         }
-        if(this.game.type == gameType){
+        if (this.game.type == gameType) {
           this.player.DailyPayout += this.reward;
           this.player.DailyCompleted += 1;
-          for(let Challenge of this.player.user.dailyChallenges){
-          if(Challenge[0] == this.ID){
-          this.player.user.dailyChallenges.splice(
-          this.player.user.dailyChallenges.indexOf(Challenge),1);
+          for (let Challenge of this.player.user.dailyChallenges) {
+            if (Challenge[0] == this.ID) {
+              this.player.user.dailyChallenges.splice(
+                this.player.user.dailyChallenges.indexOf(Challenge),
+                1
+              );
+            }
           }
+          this.player.CompletedDailyChallenges.push([this.ID, gameType]);
+          return;
         }
-        this.player.CompletedDailyChallenges.push([this.ID, gameType]);
-        return;
-        }
-     
-        
       },
     };
   }

@@ -1,7 +1,10 @@
 const Card = require("../../Card");
 const Player = require("../../../../core/Player");
 const Action = require("../../Action");
-const { PRIORITY_SELF_BLOCK_EARLY, PRIORITY_SELF_BLOCK_LATER } = require("../../const/Priority");
+const {
+  PRIORITY_SELF_BLOCK_EARLY,
+  PRIORITY_SELF_BLOCK_LATER,
+} = require("../../const/Priority");
 
 module.exports = class Simple extends Card {
   constructor(role) {
@@ -17,17 +20,17 @@ module.exports = class Simple extends Card {
           return;
         }
 
-          var action = new Action({
+        var action = new Action({
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_SELF_BLOCK_EARLY,
           labels: ["block", "hidden", "absolute"],
           role: this,
           run: function () {
-            if(!this.isSelfBlock()){
+            if (!this.isSelfBlock()) {
               return;
             }
-             this.blockingMods(this.role);
+            this.blockingMods(this.role);
           },
         });
         var action2 = new Action({

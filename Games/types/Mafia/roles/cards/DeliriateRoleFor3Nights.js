@@ -6,7 +6,6 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
   constructor(role) {
     super(role);
 
-    
     this.meetings = {
       "Block Role": {
         states: ["Night"],
@@ -19,7 +18,7 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
         action: {
           labels: ["block", "role"],
           role: this.role,
-          priority: PRIORITY_BLOCK_EARLY+1,
+          priority: PRIORITY_BLOCK_EARLY + 1,
           run: function () {
             if (this.target == "None") return;
             this.role.hasBlocked = true;
@@ -42,7 +41,13 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
             }
             for (let y = 0; y < currentRoles.length; y++) {
               if (this.target == currentRoles[y]) {
-                players[y].giveEffect("Delirious", this.actor, 4, null, this.role);
+                players[y].giveEffect(
+                  "Delirious",
+                  this.actor,
+                  4,
+                  null,
+                  this.role
+                );
                 this.blockWithDelirium(players[y], true);
                 this.role.playersToBlock.push(players[y]);
                 //this.actor.role.blockCounter = 3;
@@ -85,9 +90,7 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
           return;
         }
         this.playersToBlock = [];
-        this.data.blockOptions = this.game.PossibleRoles.filter(
-          (r) => r
-        );
+        this.data.blockOptions = this.game.PossibleRoles.filter((r) => r);
       },
       // refresh cooldown
       state: function (stateInfo) {
@@ -102,6 +105,5 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
         */
       },
     };
-    
   }
 };

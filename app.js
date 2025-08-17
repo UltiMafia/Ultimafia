@@ -74,7 +74,7 @@ apiRouter.use("/shop", shopRouter);
 apiRouter.use("/report", reportRouter);
 apiRouter.use("/site", siteRouter);
 
-app.use("/api", apiRouter)
+app.use("/api", apiRouter);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "react_main/build_public/index.html"));

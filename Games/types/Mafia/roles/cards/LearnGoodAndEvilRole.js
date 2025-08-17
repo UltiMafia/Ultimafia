@@ -27,7 +27,6 @@ module.exports = class LearnGoodAndEvilRole extends Card {
             info.processInfo();
             var alert = `:invest: ${info.getInfoFormated()}.`;
             this.actor.queueAlert(alert);
-
           },
         },
       },

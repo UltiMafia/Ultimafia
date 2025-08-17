@@ -98,9 +98,7 @@ module.exports = class GuessFiveRoles extends Card {
           return;
         }
 
-        this.data.ConvertOptions = this.game.PossibleRoles.filter(
-          (r) => r
-        );
+        this.data.ConvertOptions = this.game.PossibleRoles.filter((r) => r);
         this.data.GuessingPlayers = [];
         this.data.GuessingRoles = [];
         this.data.GuessingCount = 0;

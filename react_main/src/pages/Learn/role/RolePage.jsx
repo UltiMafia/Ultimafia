@@ -71,9 +71,10 @@ export function RoleThings() {
     },
   ]);
 
-  const role = RoleName && siteInfo.rolesRaw?.["Mafia"]?.[RoleName]
-    ? [RoleName, siteInfo.rolesRaw["Mafia"][RoleName]]
-    : null;
+  const role =
+    RoleName && siteInfo.rolesRaw?.["Mafia"]?.[RoleName]
+      ? [RoleName, siteInfo.rolesRaw["Mafia"][RoleName]]
+      : null;
 
   useEffect(() => {
     if (!user?.id) return;
@@ -95,7 +96,8 @@ export function RoleThings() {
       if (skin.value === "vivid") return false;
       if (!skin.achCount && !skin.achReq) return true;
       if (skin.achReq && achievements.includes(skin.achReq)) return true;
-      if (skin.achCount && parseInt(skin.achCount) <= achievements.length) return true;
+      if (skin.achCount && parseInt(skin.achCount) <= achievements.length)
+        return true;
       return false;
     });
 
@@ -116,7 +118,7 @@ export function RoleThings() {
       },
     ]);
   }, [achievements, role]);
-/*
+  /*
   const updateFieldsFromData = (data) => {
     let changes = Object.keys(data).map((ref) => ({
       ref,
@@ -133,43 +135,39 @@ export function RoleThings() {
 
   let commentLocation = `role/${RoleName}`;
   let temproleSkins;
-  if(user.settings.roleSkins){
+  if (user.settings.roleSkins) {
     temproleSkins = user.settings.roleSkins.split(",");
-}
-else{
-   temproleSkins = null;
-}
+  } else {
+    temproleSkins = null;
+  }
 
   const roleSkins = temproleSkins;
 
   // favourites <SetupRowInfo title="Current Skins" content={roleSkins} />
 
   // TODO add button to host it
-  
+
   return (
     <Stack direction="column" spacing={1}>
-    <RoleCount
-      key={0}
-      scheme="vivid"
-      role={role[0]}
-      gameType={"Mafia"}
-                />
+      <RoleCount key={0} scheme="vivid" role={role[0]} gameType={"Mafia"} />
       <div className="setup-page">
         <div className="span-panel main">
           <div className="heading">Role Info</div>
           <div className="meta">
             <SetupRowInfo title="Name" content={RoleName} />
-            <SetupRowInfo title="Tags" content={role[1].tags.sort().join(", ")} />
-              <Form
+            <SetupRowInfo
+              title="Tags"
+              content={role[1].tags.sort().join(", ")}
+            />
+            <Form
               fields={siteFields}
               deps={{ user }}
-              onChange={(action) => onRoleSkinChange(action, RoleName, null, user, roleSkins)}
+              onChange={(action) =>
+                onRoleSkinChange(action, RoleName, null, user, roleSkins)
+              }
             />
           </div>
         </div>
-
-        
-       
       </div>
       <Comments location={commentLocation} />
     </Stack>
@@ -185,34 +183,31 @@ function SetupRowInfo(props) {
   );
 }
 
- function onRoleSkinChange(action, role, update, user, roleSkins) {
-      if (action.prop === "value" && !action.localOnly) {
-
+function onRoleSkinChange(action, role, update, user, roleSkins) {
+  if (action.prop === "value" && !action.localOnly) {
     let roleformated = `${role}:${action.value}`;
-    if(roleSkins == null){
+    if (roleSkins == null) {
       roleSkins = [];
     }
-   let array = roleSkins.filter((s) => s);
-  let temp = roleSkins.filter((s) => s.split(":")[0] == role);
-   if(temp.length > 0){
-     let index = roleSkins.indexOf(temp[0]);
-     array[index] = roleformated;
-   }
-   else{
-     array = array.concat([roleformated]);
-   }
-   let strArray = array.join(",");
-      axios
-        .post("/api/user/settings/update", {
-          prop: action.ref,
-          value: strArray,
-        })
-        .then(() => user.updateSetting(action.ref, strArray));
+    let array = roleSkins.filter((s) => s);
+    let temp = roleSkins.filter((s) => s.split(":")[0] == role);
+    if (temp.length > 0) {
+      let index = roleSkins.indexOf(temp[0]);
+      array[index] = roleformated;
+    } else {
+      array = array.concat([roleformated]);
     }
-    //update(action);
+    let strArray = array.join(",");
+    axios
+      .post("/api/user/settings/update", {
+        prop: action.ref,
+        value: strArray,
+      })
+      .then(() => user.updateSetting(action.ref, strArray));
+  }
+  //update(action);
 
-   
-   /*
+  /*
    role.skin = selection;
         await models.User.updateOne(
            { id: user.id },
@@ -223,4 +218,4 @@ function SetupRowInfo(props) {
           }
         ).exec();
 */
-  }
+}

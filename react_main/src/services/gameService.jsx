@@ -3,9 +3,7 @@ import axios from "axios";
 export const getRecentlyPlayedSetups = async ({ lobby }) => {
   // by default, returns the 1st announcement (no DATE provided in URLfilter)
   try {
-    const res = await axios.get(
-      `/api/game/mostPlayedRecently?lobby=${lobby}`
-    );
+    const res = await axios.get(`/api/game/mostPlayedRecently?lobby=${lobby}`);
     return res?.data;
   } catch (err) {
     console.log(

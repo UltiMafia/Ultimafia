@@ -33,7 +33,7 @@ module.exports = class BlockedFearful extends Card {
           }
         }
       },
-    state: function (stateInfo) {
+      state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
@@ -43,14 +43,14 @@ module.exports = class BlockedFearful extends Card {
           priority: PRIORITY_BLOCK_EARLY,
           labels: ["block", "hidden"],
           run: function () {
-            this.actor.hasEffect("Scary")
+            this.actor.hasEffect("Scary");
 
             if (this.actor.hasEffect("Scary")) {
-                for(let player of this.game.players){
-                    if(player.role.modifier.split("/").includes("Fearful")){
-                     this.blockActions(player);
-                    }
+              for (let player of this.game.players) {
+                if (player.role.modifier.split("/").includes("Fearful")) {
+                  this.blockActions(player);
                 }
+              }
               this.blockActions(this.actor);
             }
           },

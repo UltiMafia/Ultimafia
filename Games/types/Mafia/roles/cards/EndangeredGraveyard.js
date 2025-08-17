@@ -44,8 +44,8 @@ module.exports = class EndangeredGraveyard extends Card {
         }
 
         if (this.player.role.alignment == "Cult") {
-          var devotion = this.game.players.filter(
-            (p) => p.hasEffect("DevotionEffect")
+          var devotion = this.game.players.filter((p) =>
+            p.hasEffect("DevotionEffect")
           );
           if (devotion.length > 0) {
             var backUpTarget = devotion[0];

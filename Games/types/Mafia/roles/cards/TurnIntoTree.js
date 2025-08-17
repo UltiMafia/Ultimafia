@@ -32,10 +32,7 @@ module.exports = class TurnIntoTree extends Card {
         if (player != this.player) {
           return;
         }
-        if (
-          this.hasAbility(["Tree"]) &&
-          this.player.role.isTree == true
-        ) {
+        if (this.hasAbility(["Tree"]) && this.player.role.isTree == true) {
           if (
             this.TreeEffect == null ||
             !this.player.effects.includes(this.TreeEffect)

@@ -98,7 +98,7 @@ export default function HostBrowser(props) {
   const [gameType, setGameType] = useState(
     params.get("game") || localStorage.getItem("gameType") || defaultGameType
   );
-  
+
   const handleListItemClick = (newValue) => {
     setGameType(newValue);
     localStorage.setItem("gameType", newValue);
@@ -141,7 +141,12 @@ export default function HostBrowser(props) {
 
   function getSetupList(filters) {
     axios
-      .get(`/api/setup/search?${new URLSearchParams({ gameType: gameType, ...filters }).toString()}`)
+      .get(
+        `/api/setup/search?${new URLSearchParams({
+          gameType: gameType,
+          ...filters,
+        }).toString()}`
+      )
       .then((res) => {
         setSetups(res.data.setups);
         setPageCount(res.data.pages);
@@ -233,175 +238,66 @@ export default function HostBrowser(props) {
       scrollButtons="auto"
       allowScrollButtonsMobile
     >
-      {hostButtonLabels
-        .map((label) => (
-          <Tab
-            key={label}
-            label={
-              <div>
-                {label}
-              </div>
-            }
-            value={label}
-          />
-        ))}
+      {hostButtonLabels.map((label) => (
+        <Tab key={label} label={<div>{label}</div>} value={label} />
+      ))}
     </Tabs>
   );
 
-  return (<>
-    {isPhoneDevice && (<>
-      <IconButton
-        edge="start"
-        color="inherit"
-        aria-label="menu"
-        onClick={toggleDrawer(true)}
-        sx={{
-          position: "fixed",
-          top: "50%",
-          left: 0,
-          zIndex: 1201,
-          visibility: drawerOpen ? "hidden" : "visible",
-          backgroundColor: theme.palette.secondary.main,
-          padding: "8px",
-          borderRadius: "50%",
-          boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
-        }}
-      >
-        <GameIcon gameType={gameType} size={30} />
-      </IconButton>
-      <Paper
-        onClick={toggleDrawer(true)}
-        sx={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          height: "100%",
-          width: "10px",
-          backgroundColor: "transparent",
-          zIndex: 1200,
-          cursor: "pointer",
-        }}
-      />
-      <SwipeableDrawer
-        anchor="left"
-        open={drawerOpen}
-        onClose={toggleDrawer(false)}
-        onOpen={toggleDrawer(true)}
-        sx={{
-          width: 240,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: { width: 240, boxSizing: "border-box" },
-        }}
-      >
-        <List>
-          {GameTypes.map((game) => (
-            <ListItem
-              button
-              key={game}
-              selected={gameType === game}
-              onClick={() => handleListItemClick(game)}
-            >
-              <ListItemIcon>
-                <GameIcon gameType={game} size={24} />
-              </ListItemIcon>
-              <ListItemText primary={game} />
-            </ListItem>
-          ))}
-        </List>
-      </SwipeableDrawer>
-    </>)}
-    <Stack direction="column" className="host" sx={{
-      alignItems: "center",
-    }}>
-      <Stack direction="row" spacing={1} sx={{
-        justifyContent: "space-around",
-        mt: 1,
-        fontFamily: "var(--primaryFont)",
-        fontWeight: "bold",
-      }}>
-        <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1}>
-          <Stack direction="row" spacing={1}>
-            <Paper>
-              <div className="range-wrapper-slots">
-                <i className="fas fa-filter"/>
-                Min slots
-                <input
-                  type="number"
-                  min={minSlots}
-                  max={Math.min(filters.maxSlots, maxSlots)}
-                  step={1}
-                  value={filters.minSlots}
-                  onChange={onMinSlotsChange}
-                />
-                {!isPhoneDevice && (<input
-                  type="range"
-                  min={minSlots}
-                  max={Math.min(filters.maxSlots, maxSlots)}
-                  step={1}
-                  value={filters.minSlots}
-                  onChange={onMinSlotsChange}
-                />)}
-              </div>
-            </Paper>
-            <Paper>
-              <div className="range-wrapper-slots">
-                Max slots
-                <input
-                  type="number"
-                  min={Math.max(filters.minSlots, minSlots)}
-                  max={maxSlots}
-                  step={1}
-                  value={filters.maxSlots}
-                  onChange={onMaxSlotsChange}
-                />
-                {!isPhoneDevice && (<input
-                  type="range"
-                  min={Math.max(filters.minSlots, minSlots)}
-                  max={maxSlots}
-                  step={1}
-                  value={filters.maxSlots}
-                  onChange={onMaxSlotsChange}
-                />)}
-              </div>
-            </Paper>
-          </Stack>
-          <Paper>
-            <SearchBar
-              value={filters.query}
-              placeholder="🔎 Setup Name or Role"
-              onInput={onSearchInput}
-            />
-          </Paper>
-        </Stack>
-      </Stack>
-      <Box sx={{
-        alignSelf: "normal",
-      }}>
-        {hostNavTabs}
-      </Box>
-      <Box sx={{
-        alignSelf: "stretch",
-      }}>
-        <Divider sx={{ mb: 1 }}/>
-        <Stack direction="row" sx={{
-          alignItems: "stretch",
-        }}>
-          {!isPhoneDevice && (<Paper sx={{
-              maxHeight: "576px",
-              overflowY: "scroll",
-              mr: 1,
-              p: 0.5,
-            }}>
-              <Stack direction="column" spacing={0.5}>
+  return (
+    <>
+      {isPhoneDevice && (
+        <>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={toggleDrawer(true)}
+            sx={{
+              position: "fixed",
+              top: "50%",
+              left: 0,
+              zIndex: 1201,
+              visibility: drawerOpen ? "hidden" : "visible",
+              backgroundColor: theme.palette.secondary.main,
+              padding: "8px",
+              borderRadius: "50%",
+              boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
+            }}
+          >
+            <GameIcon gameType={gameType} size={30} />
+          </IconButton>
+          <Paper
+            onClick={toggleDrawer(true)}
+            sx={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              height: "100%",
+              width: "10px",
+              backgroundColor: "transparent",
+              zIndex: 1200,
+              cursor: "pointer",
+            }}
+          />
+          <SwipeableDrawer
+            anchor="left"
+            open={drawerOpen}
+            onClose={toggleDrawer(false)}
+            onOpen={toggleDrawer(true)}
+            sx={{
+              width: 240,
+              flexShrink: 0,
+              [`& .MuiDrawer-paper`]: { width: 240, boxSizing: "border-box" },
+            }}
+          >
+            <List>
               {GameTypes.map((game) => (
                 <ListItem
                   button
                   key={game}
                   selected={gameType === game}
                   onClick={() => handleListItemClick(game)}
-                  sx={{
-                    borderRadius: "8px",
-                  }}
                 >
                   <ListItemIcon>
                     <GameIcon gameType={game} size={24} />
@@ -409,37 +305,172 @@ export default function HostBrowser(props) {
                   <ListItemText primary={game} />
                 </ListItem>
               ))}
+            </List>
+          </SwipeableDrawer>
+        </>
+      )}
+      <Stack
+        direction="column"
+        className="host"
+        sx={{
+          alignItems: "center",
+        }}
+      >
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            justifyContent: "space-around",
+            mt: 1,
+            fontFamily: "var(--primaryFont)",
+            fontWeight: "bold",
+          }}
+        >
+          <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1}>
+            <Stack direction="row" spacing={1}>
+              <Paper>
+                <div className="range-wrapper-slots">
+                  <i className="fas fa-filter" />
+                  Min slots
+                  <input
+                    type="number"
+                    min={minSlots}
+                    max={Math.min(filters.maxSlots, maxSlots)}
+                    step={1}
+                    value={filters.minSlots}
+                    onChange={onMinSlotsChange}
+                  />
+                  {!isPhoneDevice && (
+                    <input
+                      type="range"
+                      min={minSlots}
+                      max={Math.min(filters.maxSlots, maxSlots)}
+                      step={1}
+                      value={filters.minSlots}
+                      onChange={onMinSlotsChange}
+                    />
+                  )}
+                </div>
+              </Paper>
+              <Paper>
+                <div className="range-wrapper-slots">
+                  Max slots
+                  <input
+                    type="number"
+                    min={Math.max(filters.minSlots, minSlots)}
+                    max={maxSlots}
+                    step={1}
+                    value={filters.maxSlots}
+                    onChange={onMaxSlotsChange}
+                  />
+                  {!isPhoneDevice && (
+                    <input
+                      type="range"
+                      min={Math.max(filters.minSlots, minSlots)}
+                      max={maxSlots}
+                      step={1}
+                      value={filters.maxSlots}
+                      onChange={onMaxSlotsChange}
+                    />
+                  )}
+                </div>
+              </Paper>
             </Stack>
-          </Paper>)}
-          <ItemList
-            items={setups}
-            map={(setup) => (
-              <SetupRow
-                setup={setup}
-                listType={filters.option}
-                onSelect={onSelectSetup}
-                onFav={onFavSetup}
-                onEdit={onEditSetup}
-                onCopy={onCopySetup}
-                onDel={onDelSetup}
-                odd={setups.indexOf(setup) % 2 === 1}
-                key={setup.id}
+            <Paper>
+              <SearchBar
+                value={filters.query}
+                placeholder="🔎 Setup Name or Role"
+                onInput={onSearchInput}
               />
-            )}
-            empty="No setups"
-          />
+            </Paper>
+          </Stack>
         </Stack>
-      </Box>
-      <Paper sx={{
-        p: 1,
-        mt: 1,
-        mb: 1,
-      }}>
-        <PageNav page={filters.page} maxPage={pageCount} onNav={onPageNav} />
-      </Paper>
-      {selSetup && (<HostGameDialogue open={ishostGameDialogueOpen} setOpen={setIshostGameDialogueOpen} setup={selSetup} />)}
-    </Stack>
-  </>);
+        <Box
+          sx={{
+            alignSelf: "normal",
+          }}
+        >
+          {hostNavTabs}
+        </Box>
+        <Box
+          sx={{
+            alignSelf: "stretch",
+          }}
+        >
+          <Divider sx={{ mb: 1 }} />
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "stretch",
+            }}
+          >
+            {!isPhoneDevice && (
+              <Paper
+                sx={{
+                  maxHeight: "576px",
+                  overflowY: "scroll",
+                  mr: 1,
+                  p: 0.5,
+                }}
+              >
+                <Stack direction="column" spacing={0.5}>
+                  {GameTypes.map((game) => (
+                    <ListItem
+                      button
+                      key={game}
+                      selected={gameType === game}
+                      onClick={() => handleListItemClick(game)}
+                      sx={{
+                        borderRadius: "8px",
+                      }}
+                    >
+                      <ListItemIcon>
+                        <GameIcon gameType={game} size={24} />
+                      </ListItemIcon>
+                      <ListItemText primary={game} />
+                    </ListItem>
+                  ))}
+                </Stack>
+              </Paper>
+            )}
+            <ItemList
+              items={setups}
+              map={(setup) => (
+                <SetupRow
+                  setup={setup}
+                  listType={filters.option}
+                  onSelect={onSelectSetup}
+                  onFav={onFavSetup}
+                  onEdit={onEditSetup}
+                  onCopy={onCopySetup}
+                  onDel={onDelSetup}
+                  odd={setups.indexOf(setup) % 2 === 1}
+                  key={setup.id}
+                />
+              )}
+              empty="No setups"
+            />
+          </Stack>
+        </Box>
+        <Paper
+          sx={{
+            p: 1,
+            mt: 1,
+            mb: 1,
+          }}
+        >
+          <PageNav page={filters.page} maxPage={pageCount} onNav={onPageNav} />
+        </Paper>
+        {selSetup && (
+          <HostGameDialogue
+            open={ishostGameDialogueOpen}
+            setOpen={setIshostGameDialogueOpen}
+            setup={selSetup}
+          />
+        )}
+      </Stack>
+    </>
+  );
 }
 
 function SetupRow(props) {
@@ -450,64 +481,74 @@ function SetupRow(props) {
   const maxRolesCount = isPhoneDevice ? 8 : 12;
 
   return (
-    <Stack direction={isPhoneDevice ? "column-reverse" : "row"} spacing={1} className={`row ${props.odd ? "odd" : ""}`} sx={{
-      justifyContent: "start",
-      width: "100%",
-    }}>
+    <Stack
+      direction={isPhoneDevice ? "column-reverse" : "row"}
+      spacing={1}
+      className={`row ${props.odd ? "odd" : ""}`}
+      sx={{
+        justifyContent: "start",
+        width: "100%",
+      }}
+    >
       {!isPhoneDevice && user.loggedIn && (
-        <Button
-          onClick={() => props.onSelect(props.setup)}
-        >
-          Host
-        </Button>
+        <Button onClick={() => props.onSelect(props.setup)}>Host</Button>
       )}
-      <Box sx={{
-        alignSelf: "stretch",
-      }}>
+      <Box
+        sx={{
+          alignSelf: "stretch",
+        }}
+      >
         <Setup setup={props.setup} maxRolesCount={maxRolesCount} fixedWidth />
       </Box>
-      <Stack direction="row" sx={{
-        alignSelf: "stretch",
-        ml: isPhoneDevice ? undefined : "auto !important",
-      }}>
+      <Stack
+        direction="row"
+        sx={{
+          alignSelf: "stretch",
+          ml: isPhoneDevice ? undefined : "auto !important",
+        }}
+      >
         {isPhoneDevice && user.loggedIn && (
-          <Button onClick={() => props.onSelect(props.setup)}>
-            Host
-          </Button>
+          <Button onClick={() => props.onSelect(props.setup)}>Host</Button>
         )}
-        {user.loggedIn && (<Stack direction="row" sx={{ // Setup manipulation buttons
-          alignItems: "center",
-          ml: "auto !important",
-        }}>
-          <IconButton aria-label="favorite">
-            <i
-              className={`setup-btn fav-setup fa-star ${favIconFormat}`}
-              onClick={() => props.onFav(props.setup)}
-            />
-          </IconButton>
-          {props.setup.creator?.id === user.id && (
-            <IconButton aria-label="edit">
+        {user.loggedIn && (
+          <Stack
+            direction="row"
+            sx={{
+              // Setup manipulation buttons
+              alignItems: "center",
+              ml: "auto !important",
+            }}
+          >
+            <IconButton aria-label="favorite">
               <i
-                className={`setup-btn edit-setup fa-pen-square fas`}
-                onClick={() => props.onEdit(props.setup)}
+                className={`setup-btn fav-setup fa-star ${favIconFormat}`}
+                onClick={() => props.onFav(props.setup)}
               />
             </IconButton>
-          )}
-          <IconButton aria-label="copy">
-            <i
-              className={`setup-btn copy-setup fa-copy fas`}
-              onClick={() => props.onCopy(props.setup)}
-            />
-          </IconButton>
-          {props.setup.creator?.id === user.id && (
-            <IconButton aria-label="delete">
+            {props.setup.creator?.id === user.id && (
+              <IconButton aria-label="edit">
+                <i
+                  className={`setup-btn edit-setup fa-pen-square fas`}
+                  onClick={() => props.onEdit(props.setup)}
+                />
+              </IconButton>
+            )}
+            <IconButton aria-label="copy">
               <i
-                className={`setup-btn del-setup fa-times-circle fas`}
-                onClick={() => props.onDel(props.setup)}
+                className={`setup-btn copy-setup fa-copy fas`}
+                onClick={() => props.onCopy(props.setup)}
               />
             </IconButton>
-          )}
-        </Stack>)}
+            {props.setup.creator?.id === user.id && (
+              <IconButton aria-label="delete">
+                <i
+                  className={`setup-btn del-setup fa-times-circle fas`}
+                  onClick={() => props.onDel(props.setup)}
+                />
+              </IconButton>
+            )}
+          </Stack>
+        )}
       </Stack>
     </Stack>
   );

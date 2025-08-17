@@ -29,9 +29,7 @@ module.exports = class FavorableModifier extends Card {
             this.passiveEffects.push(this.FavorableModeEffect);
           }
         } else {
-          var index = this.passiveEffects.indexOf(
-            this.FavorableModeEffect
-          );
+          var index = this.passiveEffects.indexOf(this.FavorableModeEffect);
           if (index != -1) {
             this.passiveEffects.splice(index, 1);
           }

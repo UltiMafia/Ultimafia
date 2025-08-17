@@ -579,7 +579,14 @@ export function parseRolePredictionPopover(data) {
 export function parseRoleGroupPopover(data) {
   let roleset = Object.keys(data.roles);
 
-  return <SmallRoleList roles={roleset} gameType={data.gameType} setup={data.setup} otherRoles={data.otherRoles} />;
+  return (
+    <SmallRoleList
+      roles={roleset}
+      gameType={data.gameType}
+      setup={data.setup}
+      otherRoles={data.otherRoles}
+    />
+  );
 }
 
 export function parseGamePopover(game) {
@@ -692,7 +699,11 @@ export function parseGamePopover(game) {
     result.push(
       <InfoRow
         title="Anonymous Deck"
-        content={`${game.settings.anonymousDeck.map((d) => d.name).join(", ")} (${game.settings.anonymousDeck.map((d) => d.id).join(", ")})`}
+        content={`${game.settings.anonymousDeck
+          .map((d) => d.name)
+          .join(", ")} (${game.settings.anonymousDeck
+          .map((d) => d.id)
+          .join(", ")})`}
         key="anonymousDeck"
       />
     );
@@ -911,8 +922,7 @@ export function parseGamePopover(game) {
         />
       );
       break;
-      case "Cheat":
-      
+    case "Cheat":
       result.push(
         <InfoRow
           title="Max Rounds"
@@ -968,8 +978,6 @@ export function parseRolePopover(role, modifiers) {
     <InfoRow title="Alignment" content={role.alignment} key="alignment" />
   );
 
-
-
   //Description
   const descLines = [];
 
@@ -1009,8 +1017,6 @@ export function parseModifierPopover(mod) {
   if (!mod) {
     return [];
   }
-
-
 
   //Description
   const descLines = [mod.description];

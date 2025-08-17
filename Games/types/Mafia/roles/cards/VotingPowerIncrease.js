@@ -31,9 +31,7 @@ module.exports = class Clueless extends Card {
             this.passiveEffects.push(this.VotingIncreaseEffect);
           }
         } else {
-          var index = this.passiveEffects.indexOf(
-            this.VotingIncreaseEffect
-          );
+          var index = this.passiveEffects.indexOf(this.VotingIncreaseEffect);
           if (index != -1) {
             this.passiveEffects.splice(index, 1);
           }

@@ -254,7 +254,7 @@ module.exports = class Game {
   addToObituary(playerId, snippetKey, text) {
     if (!this.obituaryQueue[playerId]) {
       this.obituaryQueue[playerId] = {
-        snippets: {}
+        snippets: {},
       };
     }
     this.obituaryQueue[playerId].snippets[snippetKey] = text;
@@ -285,7 +285,7 @@ module.exports = class Game {
       dayCount: "dayCount" in this ? this.dayCount - 1 : 0,
     };
 
-    if ((obituaries.length > 0) || (source === "Night")) {
+    if (obituaries.length > 0 || source === "Night") {
       this.history.addObituaries(obituariesMessage);
       this.addObituaries(obituariesMessage);
       this.broadcast("obituaries", obituariesMessage);
@@ -546,7 +546,10 @@ module.exports = class Game {
 
     this.playerLeave(player);
 
-    if (player.alive) this.sendAlert(`${player.name} has left.`, undefined, undefined, ["info"]);
+    if (player.alive)
+      this.sendAlert(`${player.name} has left.`, undefined, undefined, [
+        "info",
+      ]);
   }
 
   async playerLeave(player) {
@@ -779,7 +782,9 @@ module.exports = class Game {
       if (player != newPlayer)
         player.send("playerJoin", newPlayer.getPlayerInfo(player));
     }
-    this.sendAlert(`${newPlayer.name} has joined.`, undefined, undefined, ["info"]);
+    this.sendAlert(`${newPlayer.name} has joined.`, undefined, undefined, [
+      "info",
+    ]);
     if (newPlayer.user && newPlayer.user.Protips == false) {
       let allTips = protips[this.type].filter((p) => p);
       for (let tip of protips["Any"]) {
@@ -836,7 +841,12 @@ module.exports = class Game {
     for (let member of this.readyMeeting.members) {
       if (!member.ready) {
         this.kickPlayer(member.player);
-        this.sendAlert(`${member.player.name} was kicked for inactivity.`, undefined, undefined, ["info"]);
+        this.sendAlert(
+          `${member.player.name} was kicked for inactivity.`,
+          undefined,
+          undefined,
+          ["info"]
+        );
       }
     }
 
@@ -1063,22 +1073,23 @@ module.exports = class Game {
   }
 
   makeGameAnonymous() {
-    if(this.anonymousDeck.length == 1){
-    this.queueAlert(`Randomising names with deck: ${this.anonymousDeck[0].name}`);
-    }
-    else{
+    if (this.anonymousDeck.length == 1) {
+      this.queueAlert(
+        `Randomising names with deck: ${this.anonymousDeck[0].name}`
+      );
+    } else {
       let Decknames = this.anonymousDeck.map((d) => d.name);
       this.queueAlert(`Randomising names with decks: ${Decknames.join(", ")}`);
     }
     //this.queueAlert(`Randomising names with decks: ${this.anonymousDeck.length}`);
     let deckProfiles = [];
-    for(let deck of this.anonymousDeck){
+    for (let deck of this.anonymousDeck) {
       deckProfiles = deckProfiles.concat(deck.profiles);
     }
-    for(let profile of deckProfiles){
-      for(let profile2 of deckProfiles){
+    for (let profile of deckProfiles) {
+      for (let profile2 of deckProfiles) {
         profile.id = deckProfiles.indexOf(profile);
-        if(profile != profile2 && profile.name == profile2.name){
+        if (profile != profile2 && profile.name == profile2.name) {
           deckProfiles = deckProfiles.filter((p) => p != profile2);
         }
       }
@@ -1099,7 +1110,6 @@ module.exports = class Game {
       this.anonPlayerMapping[p.originalProfile.userId] = p;
     }
 
-
     // shuffle player order
     let randomPlayers = Random.randomizeArray(this.players.array());
     this.players = new ArrayHash();
@@ -1119,10 +1129,15 @@ module.exports = class Game {
     var roleset = this.generateRoleset();
     let players = this.players.array();
 
-
-    if(this.setup.AllExcessRoles && this.PossibleRoles && this.type == "Mafia"){
-            let AllRoles = Object.entries(roleData.Mafia).filter((m) => m[1].alignment != "Event").map((r) => r[0]);
-            this.PossibleRoles = this.PossibleRoles.concat(AllRoles);
+    if (
+      this.setup.AllExcessRoles &&
+      this.PossibleRoles &&
+      this.type == "Mafia"
+    ) {
+      let AllRoles = Object.entries(roleData.Mafia)
+        .filter((m) => m[1].alignment != "Event")
+        .map((r) => r[0]);
+      this.PossibleRoles = this.PossibleRoles.concat(AllRoles);
     }
 
     // force assign "Host"
@@ -1136,8 +1151,7 @@ module.exports = class Game {
         if (!this.BanishedEvents.includes(roleName)) {
           this.CurrentEvents.push(roleName);
         }
-      }
-      else if (modifiers && modifiers.toLowerCase().includes("banished")) {
+      } else if (modifiers && modifiers.toLowerCase().includes("banished")) {
         toDelete.push(roleName);
       }
       if (role != "Host") {
@@ -1324,7 +1338,15 @@ module.exports = class Game {
         for (let i = 0; i < banishedCount; i++) {
           let newRole = Random.randArrayVal(banishedRoles);
           //let targetPlayer = Random.randArrayVal(validReplace);
-          validReplace[i].setRole(newRole, undefined, false, true, null, null, "RemoveStartingItems");
+          validReplace[i].setRole(
+            newRole,
+            undefined,
+            false,
+            true,
+            null,
+            null,
+            "RemoveStartingItems"
+          );
           if (this.setup.unique) {
             let currentBanishedPlayers = this.players.filter(
               (p) => p.role.data.banished
@@ -1584,11 +1606,16 @@ module.exports = class Game {
     }
   }
 
-   getDailyChallenge(ID, extraData) {
+  getDailyChallenge(ID, extraData) {
     for (let daily of Object.entries(dailyChallengesData).filter(
       (day) => ID == day[1].ID
     )) {
-      return `${daily[0].replace(`ExtraData`,extraData)}- ${daily[1].description.replace(`ExtraData`,extraData)} (${daily[1].reward} Coins)`;
+      return `${daily[0].replace(
+        `ExtraData`,
+        extraData
+      )}- ${daily[1].description.replace(`ExtraData`, extraData)} (${
+        daily[1].reward
+      } Coins)`;
     }
   }
 
@@ -1601,8 +1628,7 @@ module.exports = class Game {
   }
 
   addObituaries(obituaries) {
-    for (let _player of this.players)
-      _player.history.addObituaries(obituaries);
+    for (let _player of this.players) _player.history.addObituaries(obituaries);
 
     this.spectatorHistory.addObituaries(obituaries);
   }
@@ -1634,13 +1660,13 @@ module.exports = class Game {
     this.clearTimers();
 
     //Unveggable
-    if(this.type == "Mafia" && this.getStateName() == "Day"){
-      for(let player of this.players){
-      if(player.hasVotedInAllCoreMeetings()){
-        player.giveEffect("Unveggable");
+    if (this.type == "Mafia" && this.getStateName() == "Day") {
+      for (let player of this.players) {
+        if (player.hasVotedInAllCoreMeetings()) {
+          player.giveEffect("Unveggable");
+        }
       }
     }
-  }
     // Finish all meetings and take actions
     this.finishMeetings();
 
@@ -2107,33 +2133,33 @@ module.exports = class Game {
   checkAllMeetingsReady() {
     var allReady = true;
 
-    if(this.type == "Mafia" && this.getStateName() == "Day"){
+    if (this.type == "Mafia" && this.getStateName() == "Day") {
       for (let meeting of this.meetings) {
-      let extraConditionDuringKicks = true;
-      if (this.vegKickMeeting !== undefined) {
-        extraConditionDuringKicks =
-          meeting.name !== "Vote Kick" && !meeting.noVeg;
-      }
+        let extraConditionDuringKicks = true;
+        if (this.vegKickMeeting !== undefined) {
+          extraConditionDuringKicks =
+            meeting.name !== "Vote Kick" && !meeting.noVeg;
+        }
 
-      // during kicks, we need to exclude the votekick and noveg meetings
-      if(meeting.Important != true){
-        continue;
+        // during kicks, we need to exclude the votekick and noveg meetings
+        if (meeting.Important != true) {
+          continue;
+        }
+        if (!meeting.ready && extraConditionDuringKicks) {
+          allReady = false;
+          break;
+        }
       }
-      if (!meeting.ready && extraConditionDuringKicks) {
-        allReady = false;
-        break;
+      if (allReady) {
+        for (let player of this.players) {
+          if (player.hasVotedInAllCoreMeetings()) {
+            player.giveEffect("Unveggable");
+          }
+        }
+        this.gotoNextState();
       }
     }
-    if (allReady){
-    for(let player of this.players){
-      if(player.hasVotedInAllCoreMeetings()){
-        player.giveEffect("Unveggable");
-      }
-    }
-   this.gotoNextState();
-  }
-    }
-    
+
     for (let meeting of this.meetings) {
       let extraConditionDuringKicks = true;
       if (this.vegKickMeeting !== undefined) {
@@ -2294,100 +2320,99 @@ module.exports = class Game {
     //return true;
   }
 
-  canChangeSetup(){
-    if(this.ranked == true || this.competitive == true){
-              this.sendAlert(
-              `The setup cannot be changed in ranked games.`, this.players.filter((p) => p.user.id == this.hostId)
-            );
+  canChangeSetup() {
+    if (this.ranked == true || this.competitive == true) {
+      this.sendAlert(
+        `The setup cannot be changed in ranked games.`,
+        this.players.filter((p) => p.user.id == this.hostId)
+      );
       return false;
     }
-    if(this.started == true){
-                this.sendAlert(
-              `The setup cannot be changed midgame.`, this.players.filter((p) => p.user.id == this.hostId)
-            );
+    if (this.started == true) {
+      this.sendAlert(
+        `The setup cannot be changed midgame.`,
+        this.players.filter((p) => p.user.id == this.hostId)
+      );
       return false;
     }
-    if(this.finished == true){
+    if (this.finished == true) {
       return false;
-    } 
+    }
     return true;
   }
 
-  async changeSetup(setupID){
-    if(!setupID){
-          this.sendAlert(
-              `The setup not found, enter a valid Setup ID.`, this.players.filter((p) => p.user.id == this.hostId)
-            );
+  async changeSetup(setupID) {
+    if (!setupID) {
+      this.sendAlert(
+        `The setup not found, enter a valid Setup ID.`,
+        this.players.filter((p) => p.user.id == this.hostId)
+      );
       return;
     }
-    
-    if(this.canChangeSetup() != true){
+
+    if (this.canChangeSetup() != true) {
       return;
     }
-         let setup = await models.Setup.findOne({
-        id: setupID,
-      })
-      /*.select(
+    let setup = await models.Setup.findOne({
+      id: setupID,
+    });
+    /*.select(
         "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
       );*/
-    if(setup && setup.total){
+    if (setup && setup.total) {
       //setup = setup.toJSON();
-      if(setup.total < this.players.length){
-            this.sendAlert(
-              `The setup must have at least ${this.players.length} players.`, this.players.filter((p) => p.user.id == this.hostId)
-            );
+      if (setup.total < this.players.length) {
+        this.sendAlert(
+          `The setup must have at least ${this.players.length} players.`,
+          this.players.filter((p) => p.user.id == this.hostId)
+        );
         return;
       }
-      if(setup.gameType != this.type){
-               this.sendAlert(
-              `The setup must be a ${this.type} setup.`, this.players.filter((p) => p.user.id == this.hostId)
-            );
+      if (setup.gameType != this.type) {
+        this.sendAlert(
+          `The setup must be a ${this.type} setup.`,
+          this.players.filter((p) => p.user.id == this.hostId)
+        );
         return;
       }
       this.setup = setup.toJSON();
       this.setup.roles = JSON.parse(this.setup.roles);
-      if(this.type == "Mafia"){
+      if (this.type == "Mafia") {
         this.noDeathLimit = this.setup.noDeathLimit;
-         this.ForceMustAct = this.setup.ForceMustAct;
+        this.ForceMustAct = this.setup.ForceMustAct;
         this.EventsPerNight = this.setup.EventsPerNight;
         this.GameEndEvent = this.setup.GameEndEvent;
-      }
-      else if(this.type == "Texas Hold Em"){
+      } else if (this.type == "Texas Hold Em") {
         this.hasHost = this.setup.roles[0]["Host:"];
-      }
-      else if(this.type == "Cheat"){
+      } else if (this.type == "Cheat") {
         this.hasHost = this.setup.roles[0]["Host:"];
-      }
-      else if(this.type == "Ghost"){
+      } else if (this.type == "Ghost") {
         this.hasFool = this.setup.roles[0]["Fool:"];
-      }
-      else if(this.type == "Liars Dice"){
-         this.hasHost = this.setup.roles[0]["Host:"];
-      }
-      else if(this.type == "Resistance"){
+      } else if (this.type == "Liars Dice") {
+        this.hasHost = this.setup.roles[0]["Host:"];
+      } else if (this.type == "Resistance") {
         this.numMissions = this.setup.numMissions;
-         this.teamFailLimit = this.setup.teamFailLimit;
-        this.teamSizeSlope = (this.setup.lastTeamSize - this.setup.firstTeamSize) / this.numMissions;
-      }
-      else if(this.type == "Wacky Words"){
-    this.hasAlien = this.setup.roles[0]["Alien:"];
-    this.hasNeighbor = this.setup.roles[0]["Neighbor:"];
-    this.hasGovernor = this.setup.roles[0]["Governor:"];
-    this.hasGambler = this.setup.roles[0]["Gambler:"];
-    this.hasHost = this.setup.roles[0]["Host:"];
+        this.teamFailLimit = this.setup.teamFailLimit;
+        this.teamSizeSlope =
+          (this.setup.lastTeamSize - this.setup.firstTeamSize) /
+          this.numMissions;
+      } else if (this.type == "Wacky Words") {
+        this.hasAlien = this.setup.roles[0]["Alien:"];
+        this.hasNeighbor = this.setup.roles[0]["Neighbor:"];
+        this.hasGovernor = this.setup.roles[0]["Governor:"];
+        this.hasGambler = this.setup.roles[0]["Gambler:"];
+        this.hasHost = this.setup.roles[0]["Host:"];
       }
 
-       this.sendAlert(
-              `The setup has been changed to ${this.setup.name}.`
-            );
-    // Set game in progress in redis db
-    redis.setGameSetup(this.id, setupID);
+      this.sendAlert(`The setup has been changed to ${this.setup.name}.`);
+      // Set game in progress in redis db
+      redis.setGameSetup(this.id, setupID);
       this.checkGameStart();
-    }
-    else{
-          this.sendAlert(
-              `Setup not found.`, this.players.filter((p) => p.user.id == this.hostId)
-            );
+    } else {
+      this.sendAlert(
+        `Setup not found.`,
+        this.players.filter((p) => p.user.id == this.hostId)
+      );
     }
   }
 
@@ -2490,22 +2515,22 @@ module.exports = class Game {
         }
       }
 
-      for(let player of this.players){
-          if (player.CompletedDailyChallenges.length > 0) {
-            for (let x = 0; x < player.CompletedDailyChallenges.length; x++) {
-                //this.getDailyChallenge(player.CompletedDailyChallenges[x]);
-                this.sendAlert(
-                  `:star: ${
-                    player.name
-                  } has completed the Daily Challenge: ${this.getDailyChallenge(
-                    player.CompletedDailyChallenges[x][0],player.CompletedDailyChallenges[x][1]
-                  )}`,
-                  undefined,
-                  { color: "#d1cdab" }
-                );
-              
-            }
+      for (let player of this.players) {
+        if (player.CompletedDailyChallenges.length > 0) {
+          for (let x = 0; x < player.CompletedDailyChallenges.length; x++) {
+            //this.getDailyChallenge(player.CompletedDailyChallenges[x]);
+            this.sendAlert(
+              `:star: ${
+                player.name
+              } has completed the Daily Challenge: ${this.getDailyChallenge(
+                player.CompletedDailyChallenges[x][0],
+                player.CompletedDailyChallenges[x][1]
+              )}`,
+              undefined,
+              { color: "#d1cdab" }
+            );
           }
+        }
       }
 
       if (this.isTest) {
@@ -2535,15 +2560,21 @@ module.exports = class Game {
   }
 
   async penalizePlayerForLeaving(userId) {
-    let leavePenalty = await models.LeavePenalty.findOne({ userId: userId }).select("level");
+    let leavePenalty = await models.LeavePenalty.findOne({
+      userId: userId,
+    }).select("level");
 
     const now = Date.now();
 
     // Determine the penalty level based on number of violations associated with record (if any) and amount of grace
-    const penaltyLevel = (leavePenalty ? leavePenalty.level : 0) - constants.leavePenaltyForgivenessAmount;
+    const penaltyLevel =
+      (leavePenalty ? leavePenalty.level : 0) -
+      constants.leavePenaltyForgivenessAmount;
     const isForgiven = penaltyLevel < 0;
 
-    var penaltyMillis = constants.leavePenaltyMinimumMillis + (penaltyLevel * constants.leavePenaltyPerLevelMillis);
+    var penaltyMillis =
+      constants.leavePenaltyMinimumMillis +
+      penaltyLevel * constants.leavePenaltyPerLevelMillis;
     if (penaltyMillis > constants.leavePenaltyMaximumMillis) {
       penaltyMillis = constants.leavePenaltyMaximumMillis;
     }
@@ -2563,8 +2594,7 @@ module.exports = class Game {
         level: 0,
       });
       await leavePenalty.save();
-    }
-    else {
+    } else {
       // Penalty already recorded - update the existing one
       await models.LeavePenalty.updateOne(
         { userId: userId },
@@ -2575,7 +2605,7 @@ module.exports = class Game {
           $set: {
             expiresOn: expiresOn,
             canPlayAfter: canPlayAfter,
-          }
+          },
         }
       ).exec();
     }
@@ -2684,7 +2714,12 @@ module.exports = class Game {
         this.postgame.finish(true);
         if (this.postgame.finalTarget && this.postgame.finalTarget !== "*") {
           kudosTarget = this.postgame.finalTarget;
-          this.sendAlert(`${kudosTarget.name} has received kudos!`, undefined, undefined, ["info"]);
+          this.sendAlert(
+            `${kudosTarget.name} has received kudos!`,
+            undefined,
+            undefined,
+            ["info"]
+          );
         }
       }
 
@@ -2785,17 +2820,24 @@ module.exports = class Game {
           player.EarnedAchievements = [];
         }
 
-        if(this.hasIntegrity && !this.private && player.DailyTracker && player.DailyTracker.length >= 1){
-         coinsEarned += player.DailyPayout;
-        if(player.user.dailyChallenges && player.user.dailyChallenges.length <= 0){
-          coinsEarned += 20;
-          player.DailyCompleted = 1;
+        if (
+          this.hasIntegrity &&
+          !this.private &&
+          player.DailyTracker &&
+          player.DailyTracker.length >= 1
+        ) {
+          coinsEarned += player.DailyPayout;
+          if (
+            player.user.dailyChallenges &&
+            player.user.dailyChallenges.length <= 0
+          ) {
+            coinsEarned += 20;
+            player.DailyCompleted = 1;
+          } else {
+            player.DailyCompleted = 0;
+          }
         }
-        else{
-          player.DailyCompleted = 0;
-        }
-        }
-        
+
         await models.User.updateOne(
           { id: player.user.id },
           {
@@ -2821,18 +2863,20 @@ module.exports = class Game {
           }
         ).exec();
 
-        if(player.DailyTracker && player.DailyTracker.length >= 1){
-        await models.User.updateOne(
-          { id: player.user.id },
-          {
-            $set: {
-              dailyChallenges: player.user.dailyChallenges.map((day) => `${day[0]}:${day[1]}:${day[2]}`),
-            },
-            $inc: {
-              dailyChallengesCompleted: player.DailyCompleted,
-            },
-          }
-        ).exec(); 
+        if (player.DailyTracker && player.DailyTracker.length >= 1) {
+          await models.User.updateOne(
+            { id: player.user.id },
+            {
+              $set: {
+                dailyChallenges: player.user.dailyChallenges.map(
+                  (day) => `${day[0]}:${day[1]}:${day[2]}`
+                ),
+              },
+              $inc: {
+                dailyChallengesCompleted: player.DailyCompleted,
+              },
+            }
+          ).exec();
         }
 
         if (heartType && !player.isBot) {
@@ -2849,16 +2893,16 @@ module.exports = class Game {
             await heartRefresh.save();
           }
         }
-        
-          let dailyRefresh = await models.DailyChallengeRefresh.findOne().select("_id");
-          if (!dailyRefresh) {
-            dailyRefresh = new models.DailyChallengeRefresh({
-              when: Date.now() + constants.dailyChallengesRefreshIntervalMillis,
-            });
-            await dailyRefresh.save();
-          }
-        
-        
+
+        let dailyRefresh = await models.DailyChallengeRefresh.findOne().select(
+          "_id"
+        );
+        if (!dailyRefresh) {
+          dailyRefresh = new models.DailyChallengeRefresh({
+            when: Date.now() + constants.dailyChallengesRefreshIntervalMillis,
+          });
+          await dailyRefresh.save();
+        }
 
         if (!player.isBot) {
           await redis.cacheUserInfo(player.user.id, true);
@@ -2879,8 +2923,6 @@ module.exports = class Game {
       // this.handleError(e);
     }
   }
-
-  
 
   async queueScheduleNotifications() {
     var usersWhoReserved = await redis.getGameReservations(this.id);

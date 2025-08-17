@@ -107,7 +107,7 @@ export const LoginDialog = ({ open, setOpen }) => {
       }
       const userCred = await signInWithPopup(getAuth(), googleProvider);
       const idToken = await userCred.user.getIdToken(true);
-      
+
       try {
         await axios.post("/api/auth", { idToken });
         window.location.reload();

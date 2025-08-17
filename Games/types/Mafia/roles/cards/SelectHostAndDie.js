@@ -13,7 +13,7 @@ module.exports = class SelectHostAndDie extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          priority: PRIORITY_BLOCK_EARLY-1,
+          priority: PRIORITY_BLOCK_EARLY - 1,
           labels: ["absolute"],
           run: function () {
             this.actor.role.loved = true;

@@ -1,5 +1,8 @@
 const Card = require("../../Card");
-const { PRIORITY_KILL_DEFAULT, PRIORITY_SUPPORT_VISIT_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_KILL_DEFAULT,
+  PRIORITY_SUPPORT_VISIT_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class RiskyPrediction extends Card {
   constructor(role) {

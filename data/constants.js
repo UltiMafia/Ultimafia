@@ -70,7 +70,7 @@ module.exports = {
     "Wacky Words": ["Town", "Host"],
     "Liars Dice": ["Liars", "Host"],
     "Texas Hold Em": ["Town", "Host"],
-    "Cheat": ["Town", "Host"],
+    Cheat: ["Town", "Host"],
     Battlesnakes: ["Town", "Host"],
   },
   startStates: {
@@ -83,7 +83,7 @@ module.exports = {
     "Wacky Words": ["Night"],
     "Liars Dice": ["Guess Dice"],
     "Texas Hold Em": ["Place Bets", "Showdown"],
-    "Cheat": ["Play Cards", "Call Lie"],
+    Cheat: ["Play Cards", "Call Lie"],
     Battlesnakes: ["Day"],
   },
   configurableStates: {
@@ -232,7 +232,7 @@ module.exports = {
         default: 1 * 60 * 1000,
       },
     },
-  "Cheat": {
+    Cheat: {
       "Play Cards": {
         min: 30 * 1000,
         max: 5 * 60 * 1000,
@@ -336,7 +336,7 @@ module.exports = {
   leavePenaltyForgivenessAmount: 1,
   // Penalties reset in level after 3 days
   leavePenaltyDurationMillis: 259200000,
-  
+
   minimumGamesForRanked: 5,
 
   // Perms given to all users

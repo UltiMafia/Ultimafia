@@ -31,7 +31,10 @@ export default function Setup(props) {
   const small = props.small ?? true;
   const fixedWidth = props.fixedWidth || false; // Should the component always be the same size for the same maxRolesCount?
   const useRoleGroups = props.setup.useRoleGroups;
-  const multi = (!props.setup.closed || useRoleGroups) && !useRoleGroups && (props.setup.roles.length > 1);
+  const multi =
+    (!props.setup.closed || useRoleGroups) &&
+    !useRoleGroups &&
+    props.setup.roles.length > 1;
 
   // Calculate the width if fixedWidth is set. This must be adjusted every time that the layout is adjusted.
   var width = null;
@@ -39,7 +42,7 @@ export default function Setup(props) {
     // Two instances of padding
     // maxRolesCount instances of role icons
     // one instance of ellipses icon plus 5px of its margin
-    width = (ICON_LIST_PADDING * 2) + (ICON_WIDTH * maxRolesCount) + 5;
+    width = ICON_LIST_PADDING * 2 + ICON_WIDTH * maxRolesCount + 5;
   }
 
   var roleCounts = [];
@@ -120,11 +123,7 @@ export default function Setup(props) {
 
   if (multi) {
     roleCounts.unshift(
-      <i
-        onClick={cycleSetups}
-        className="fas fa-list-alt"
-        key="multi"
-      />
+      <i onClick={cycleSetups} className="fas fa-list-alt" key="multi" />
     );
   }
 
@@ -134,7 +133,7 @@ export default function Setup(props) {
   }
 
   if (overSize) {
-    roleCounts[maxRolesCount-1] = (
+    roleCounts[maxRolesCount - 1] = (
       <i
         onClick={onClick}
         gameType={props.setup.gameType}
@@ -162,25 +161,33 @@ export default function Setup(props) {
       >
         {item}
       </Grid>
-    )
+    );
   });
 
   return (
-    <Card variant="outlined" className={"setup " + classList} ref={setupRef} style={{ backgroundColor: backgroundColor }}>
+    <Card
+      variant="outlined"
+      className={"setup " + classList}
+      ref={setupRef}
+      style={{ backgroundColor: backgroundColor }}
+    >
       <GameIcon revealPopover={onClick} gameType={props.setup.gameType} />
       <Divider orientation="vertical" flexItem />
-      <Box sx={{
-        width: width ? `${width}px` : undefined,
-      }}>
-        <Stack direction="column" sx={{
-          padding: "8px",
-        }}>
+      <Box
+        sx={{
+          width: width ? `${width}px` : undefined,
+        }}
+      >
+        <Stack
+          direction="column"
+          sx={{
+            padding: "8px",
+          }}
+        >
           <Typography variant="body2" className="setup-name">
             {filterProfanity(props.setup.name, user.settings)}
           </Typography>
-          <Grid container>
-            {displayedIcons}
-          </Grid>
+          <Grid container>{displayedIcons}</Grid>
         </Stack>
       </Box>
     </Card>
@@ -191,41 +198,49 @@ export function SmallRoleList(props) {
   const includeSearchBar = props.includeSearchBar || false;
 
   const [searchVal, setSearchVal] = useState("");
-  
-  var roles = props.roles
+
+  var roles = props.roles;
   if (!Array.isArray(props.roles)) {
     roles = Object.keys(props.roles);
   }
 
   const roleList = roles.map((role) => {
-    if (searchVal && role && !role.toLowerCase().includes(searchVal)) return null;
-    return (<RoleCount
-      role={role}
-      makeRolePrediction={props.makeRolePrediction}
-      count={props.roles[role]}
-      small={true}
-      gameType={props.gameType}
-      showSecondaryHover
-      key={role}
-      otherRoles={(props.otherRoles) ? props.otherRoles : (props.setup?.roles)}
-    />);
+    if (searchVal && role && !role.toLowerCase().includes(searchVal))
+      return null;
+    return (
+      <RoleCount
+        role={role}
+        makeRolePrediction={props.makeRolePrediction}
+        count={props.roles[role]}
+        small={true}
+        gameType={props.gameType}
+        showSecondaryHover
+        key={role}
+        otherRoles={props.otherRoles ? props.otherRoles : props.setup?.roles}
+      />
+    );
   });
-  
+
   function onSearchInput(query) {
     setSearchVal(query.toLowerCase());
   }
 
   return (
     <Stack direction="column" spacing={1}>
-      {includeSearchBar && (<SearchBar
-        value={searchVal}
-        placeholder="🔎 Role Name"
-        onInput={onSearchInput}
-      />)}
-      <div className="small-role-list" style={{
-        borderTop: includeSearchBar ? undefined : "1px solid #d6d6d6",
-      }}>
-          {props.title} {roleList}
+      {includeSearchBar && (
+        <SearchBar
+          value={searchVal}
+          placeholder="🔎 Role Name"
+          onInput={onSearchInput}
+        />
+      )}
+      <div
+        className="small-role-list"
+        style={{
+          borderTop: includeSearchBar ? undefined : "1px solid #d6d6d6",
+        }}
+      >
+        {props.title} {roleList}
       </div>
     </Stack>
   );

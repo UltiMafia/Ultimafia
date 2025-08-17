@@ -2,14 +2,26 @@ import React, { useEffect, useState, useContext } from "react";
 import { Redirect } from "react-router-dom";
 
 import axios from "axios";
-import { Alert, Box, Button, Divider, IconButton, Paper, Stack, SwipeableDrawer, TextField, Typography, useTheme } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  Paper,
+  Stack,
+  SwipeableDrawer,
+  TextField,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { UserContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 
-import { ModCommands, COMMAND_COLOR } from "pages/Community/Moderation"
+import { ModCommands, COMMAND_COLOR } from "pages/Community/Moderation";
 import hammer from "images/emotes/hammer.webp";
 
-export default function ModerationSideDrawer({open, setOpen, prefilledArgs}) {
+export default function ModerationSideDrawer({ open, setOpen, prefilledArgs }) {
   const [commandsAvailable, setCommandsAvailable] = useState(false);
 
   const user = useContext(UserContext);
@@ -64,7 +76,11 @@ export default function ModerationSideDrawer({open, setOpen, prefilledArgs}) {
           [`& .MuiDrawer-paper`]: { width: 240, boxSizing: "border-box" },
         }}
       >
-        <ModCommands height={"100%"} prefilledArgs={prefilledArgs} setCommandsAvailable={setCommandsAvailable}/>
+        <ModCommands
+          height={"100%"}
+          prefilledArgs={prefilledArgs}
+          setCommandsAvailable={setCommandsAvailable}
+        />
       </SwipeableDrawer>
     </>
   );

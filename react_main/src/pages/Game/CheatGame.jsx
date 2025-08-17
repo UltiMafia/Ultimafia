@@ -36,7 +36,14 @@ export default function CheatGame(props) {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
-  const audioFileNames = ["cardShuffle", "gunshot", "chips_large1", "chips_large2", "chips_small1", "chips_small2"];
+  const audioFileNames = [
+    "cardShuffle",
+    "gunshot",
+    "chips_large1",
+    "chips_large2",
+    "chips_small1",
+    "chips_small2",
+  ];
   const audioLoops = [];
   const audioOverrides = [];
   const audioVolumes = [];
@@ -82,7 +89,7 @@ export default function CheatGame(props) {
     socket.on("chips_large1", () => {
       game.playAudio("chips_large1");
     });
-  socket.on("chips_large2", () => {
+    socket.on("chips_large2", () => {
       game.playAudio("chips_large");
     });
     socket.on("chips_small1", () => {
@@ -225,8 +232,19 @@ export function ThePot(props) {
             {extraInfo.RoundNumber}
           </tbody>
           <tbody>
-           Current Card Rank:
-            {(extraInfo.RankNumber != 1 && extraInfo.RankNumber != 11 && extraInfo.RankNumber != 12 && extraInfo.RankNumber != 13) ? (extraInfo.RankNumber) : (extraInfo.RankNumber == 1 ? "Ace" : (extraInfo.RankNumber == 11 ? "Jack" : (extraInfo.RankNumber == 12 ? "Queen" : ("King"))))}
+            Current Card Rank:
+            {extraInfo.RankNumber != 1 &&
+            extraInfo.RankNumber != 11 &&
+            extraInfo.RankNumber != 12 &&
+            extraInfo.RankNumber != 13
+              ? extraInfo.RankNumber
+              : extraInfo.RankNumber == 1
+              ? "Ace"
+              : extraInfo.RankNumber == 11
+              ? "Jack"
+              : extraInfo.RankNumber == 12
+              ? "Queen"
+              : "King"}
           </tbody>
           <tbody>
             The Stack:

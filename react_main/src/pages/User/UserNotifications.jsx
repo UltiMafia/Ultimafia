@@ -16,19 +16,19 @@ export default function UserNotifications({
   function timeToGo(timestamp) {
     // Utility to add leading zero
     function z(n) {
-      return (n < 10? '0' : '') + n;
+      return (n < 10 ? "0" : "") + n;
     }
 
     var diff = timestamp - now;
     if (diff < 0) diff = 0;
 
     // Get time components
-    var hours = diff/3.6e6 | 0;
-    var mins  = diff%3.6e6 / 6e4 | 0;
-    var secs  = Math.round(diff%6e4 / 1e3);
+    var hours = (diff / 3.6e6) | 0;
+    var mins = ((diff % 3.6e6) / 6e4) | 0;
+    var secs = Math.round((diff % 6e4) / 1e3);
 
     // Return formatted string
-    return z(hours) + ':' + z(mins) + ':' + z(secs);   
+    return z(hours) + ":" + z(mins) + ":" + z(secs);
   }
 
   function getHeartRefreshMessage(user, type) {
@@ -41,17 +41,20 @@ export default function UserNotifications({
       const timeToGoString = timeToGo(timestamp);
       //console.log(type, timestamp, timeToGoString, user)
       return `Your ${type} hearts will replenish in: ${timeToGoString}`;
-    }
-    else {
+    } else {
       return `Your ${type} hearts are at full capacity. Go play some games!`;
     }
   }
 
   return (
-    <Stack direction="row" spacing={0.5} sx={{
-      px: .5,
-      alignItems: "center",
-    }}>
+    <Stack
+      direction="row"
+      spacing={0.5}
+      sx={{
+        px: 0.5,
+        alignItems: "center",
+      }}
+    >
       <div
         style={{
           display: "flex",
@@ -61,7 +64,7 @@ export default function UserNotifications({
         }}
       >
         <Stack direction="row">
-          <Typography sx={{ width: "24px", pr: .5, textAlign: "right" }}>
+          <Typography sx={{ width: "24px", pr: 0.5, textAlign: "right" }}>
             {user.redHearts ?? 0}
           </Typography>
           <Tooltip title={getHeartRefreshMessage(user, "red")}>
@@ -72,7 +75,7 @@ export default function UserNotifications({
           </Tooltip>
         </Stack>
         <Stack direction="row">
-          <Typography sx={{ width: "24px", pr: .5, textAlign: "right" }}>
+          <Typography sx={{ width: "24px", pr: 0.5, textAlign: "right" }}>
             {user.goldHearts ?? 0}
           </Typography>
           <Tooltip title="Not implemented yet.">
@@ -90,10 +93,12 @@ export default function UserNotifications({
         style={{ fontSize: "14px" }}
       />
       <SiteNotifs />
-      <Box sx={{
-        display: "inline-flex",
-        alignItems: "center",
-      }}>
+      <Box
+        sx={{
+          display: "inline-flex",
+          alignItems: "center",
+        }}
+      >
         <Link to="/user" className="profile-link">
           <Avatar id={user.id} name={user.name} hasImage={user.avatar} />
         </Link>

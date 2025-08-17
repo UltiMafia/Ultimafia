@@ -5,11 +5,13 @@ module.exports = class AppearAsVanillaEvil extends Card {
   constructor(role) {
     super(role);
 
-    const evilRoles = role.getAllRoles().filter(
-      (r) =>
-        role.game.getRoleAlignment(r) === "Cult" ||
-        role.game.getRoleAlignment(r) === "Mafia"
-    );
+    const evilRoles = role
+      .getAllRoles()
+      .filter(
+        (r) =>
+          role.game.getRoleAlignment(r) === "Cult" ||
+          role.game.getRoleAlignment(r) === "Mafia"
+      );
 
     let randomEvilRole = Random.randArrayVal(evilRoles);
 

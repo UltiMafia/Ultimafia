@@ -214,7 +214,7 @@ router.get("/:id/connect", async function (req, res) {
     var game = await redis.getGameInfo(gameId, true);
 
     const now = Date.now();
-    const isSpectating = req.query.spectate === 'true';
+    const isSpectating = req.query.spectate === "true";
 
     if (!game) {
       res.status(500);
@@ -233,26 +233,34 @@ router.get("/:id/connect", async function (req, res) {
 
       if (!user || user.gamesPlayed < constants.minimumGamesForRanked) {
         res.status(400);
-        res.send(`You cannot play ranked games until you've played ${constants.minimumGamesForRanked} games.`);
+        res.send(
+          `You cannot play ranked games until you've played ${constants.minimumGamesForRanked} games.`
+        );
         return;
       }
 
       if (!user || user.redHearts <= 0) {
         res.status(400);
-        res.send("You cannot play ranked games because your Red Hearts are depleted.");
+        res.send(
+          "You cannot play ranked games because your Red Hearts are depleted."
+        );
         return;
       }
     }
 
     if (userId && !isSpectating) {
-      const leavePentalty = await models.LeavePenalty.findOne({ userId: userId }).select(
-        "canPlayAfter"
-      );
+      const leavePentalty = await models.LeavePenalty.findOne({
+        userId: userId,
+      }).select("canPlayAfter");
 
       if (leavePentalty && now < leavePentalty.canPlayAfter) {
-        const minutesUntilCanPlayAgain = Math.trunc((leavePentalty.canPlayAfter - now) / 60000);
+        const minutesUntilCanPlayAgain = Math.trunc(
+          (leavePentalty.canPlayAfter - now) / 60000
+        );
         res.status(400);
-        res.send(`You are unable to play games for another ${minutesUntilCanPlayAgain} minutes due to leaving game(s).`);
+        res.send(
+          `You are unable to play games for another ${minutesUntilCanPlayAgain} minutes due to leaving game(s).`
+        );
         return;
       }
     }
@@ -381,7 +389,7 @@ router.get("/:id/info", async function (req, res) {
         .select(
           "type users players left stateLengths lobbyName ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions -_id"
         )
-        .populate("users", "id name avatar -_id")
+        .populate("users", "id name avatar -_id");
 
       if (!game) {
         res.status(500);
@@ -587,25 +595,33 @@ router.post("/host", async function (req, res) {
     if (req.body.ranked) {
       if (user && user.gamesPlayed <= constants.minimumGamesForRanked) {
         res.status(400);
-        res.send(`You cannot play ranked games until you've played ${constants.minimumGamesForRanked} games.`);
+        res.send(
+          `You cannot play ranked games until you've played ${constants.minimumGamesForRanked} games.`
+        );
         return;
       }
 
       if (user && user.redHearts <= 0) {
         res.status(400);
-        res.send("You cannot play ranked games because your Red Hearts are depleted.");
+        res.send(
+          "You cannot play ranked games because your Red Hearts are depleted."
+        );
         return;
       }
     }
 
-    const leavePentalty = await models.LeavePenalty.findOne({ userId: userId }).select(
-      "canPlayAfter"
-    );
+    const leavePentalty = await models.LeavePenalty.findOne({
+      userId: userId,
+    }).select("canPlayAfter");
     if (leavePentalty) {
       if (now < leavePentalty.canPlayAfter) {
-        const minutesUntilCanPlayAgain = Math.trunc((leavePentalty.canPlayAfter - now) / 60000);
+        const minutesUntilCanPlayAgain = Math.trunc(
+          (leavePentalty.canPlayAfter - now) / 60000
+        );
         res.status(400);
-        res.send(`You are unable to play games for another ${minutesUntilCanPlayAgain} minutes due to leaving game(s).`);
+        res.send(
+          `You are unable to play games for another ${minutesUntilCanPlayAgain} minutes due to leaving game(s).`
+        );
         return;
       }
     }
@@ -622,47 +638,46 @@ router.post("/host", async function (req, res) {
 
     if (settings.anonymousGame) {
       let decks = [];
-      for(let item of settings.anonymousDeckId.split(",")){
-      let deck = await models.AnonymousDeck.findOne({
-        id: item.trim(),
-      }).select("id name disabled profiles");
-      if (!deck) {
-        res.status(500);
-        res.send("Unable to find anonymous deck.");
-        return;
-      }
+      for (let item of settings.anonymousDeckId.split(",")) {
+        let deck = await models.AnonymousDeck.findOne({
+          id: item.trim(),
+        }).select("id name disabled profiles");
+        if (!deck) {
+          res.status(500);
+          res.send("Unable to find anonymous deck.");
+          return;
+        }
 
-      deck = deck.toJSON();
+        deck = deck.toJSON();
 
-      if (deck.disabled) {
-        res.status(500);
-        res.send("This deck has been disabled by a moderator.");
-        return;
-      }
-      let deckProfiles = await models.DeckProfile.find({ _id: { $in: deck.profiles } }).select(
-        "name avatar id deathMessage color"
-      );
+        if (deck.disabled) {
+          res.status(500);
+          res.send("This deck has been disabled by a moderator.");
+          return;
+        }
+        let deckProfiles = await models.DeckProfile.find({
+          _id: { $in: deck.profiles },
+        }).select("name avatar id deathMessage color");
 
-      if (!deckProfiles) {
-        res.status(500);
-        res.send("Unable to find profiles.");
-        return;
-      }
+        if (!deckProfiles) {
+          res.status(500);
+          res.send("Unable to find profiles.");
+          return;
+        }
 
-      if (deckProfiles.length < setup.total) {
-        res.status(500);
-        res.send("This deck is too small for the chosen setup.");
-        return;
+        if (deckProfiles.length < setup.total) {
+          res.status(500);
+          res.send("This deck is too small for the chosen setup.");
+          return;
+        }
+        let jsonProfiles = [];
+        for (let profile of deckProfiles) {
+          profile = profile.toJSON();
+          jsonProfiles.push(profile);
+        }
+        deck.profiles = jsonProfiles;
+        decks.push(deck);
       }
-      let jsonProfiles = [];
-      for (let profile of deckProfiles) {
-        profile = profile.toJSON();
-        jsonProfiles.push(profile);
-      }
-      deck.profiles = jsonProfiles;
-      decks.push(deck);
-      }
-
 
       settings.anonymousDeck = decks;
     }
@@ -1156,7 +1171,7 @@ const settingsChecks = {
       MaxRounds,
     };
   },
-  "Cheat": (settings, setup) => {
+  Cheat: (settings, setup) => {
     let MaxRounds = settings.MaxRounds;
 
     return {

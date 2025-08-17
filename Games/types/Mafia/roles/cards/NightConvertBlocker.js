@@ -11,7 +11,7 @@ module.exports = class NightConvertBlocker extends Card {
         flags: ["voting"],
         action: {
           labels: ["convert blocker"],
-          priority: PRIORITY_NIGHT_SAVER-1,
+          priority: PRIORITY_NIGHT_SAVER - 1,
           role: this.role,
           run: function () {
             // cure insanity

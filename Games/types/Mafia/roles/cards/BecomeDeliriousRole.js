@@ -54,7 +54,8 @@ module.exports = class BecomeDeliriousRole extends Card {
           false,
           true,
           false,
-          "No Change", "RemoveStartingItems"
+          "No Change",
+          "RemoveStartingItems"
         );
       },
       roleAssigned: function (player) {
@@ -73,43 +74,39 @@ module.exports = class BecomeDeliriousRole extends Card {
       },
     };
   }
-
-
-
 };
 
-function switchRoleBefore(role){
- 
-    let roles = role.getAllRoles().filter((r) => r);
-    let currentRoles = [];
-    let playersAll = role.game.players.filter((p) => p.role);
-    for (let x = 0; x < playersAll.length; x++) {
-      //currentRoles.push(playersAll[x].role);
-      let tempName = playersAll[x].role.name;
-      let tempModifier = playersAll[x].role.modifier;
-      currentRoles.push(`${tempName}:${tempModifier}`);
-    }
-    for (let y = 0; y < currentRoles.length; y++) {
-      roles = roles.filter(
-        (r) => r != currentRoles[y] && !currentRoles[y].includes(r)
-      );
-    }
-    roles = roles.filter((r) => !r.toLowerCase().includes("banished"));
+function switchRoleBefore(role) {
+  let roles = role.getAllRoles().filter((r) => r);
+  let currentRoles = [];
+  let playersAll = role.game.players.filter((p) => p.role);
+  for (let x = 0; x < playersAll.length; x++) {
+    //currentRoles.push(playersAll[x].role);
+    let tempName = playersAll[x].role.name;
+    let tempModifier = playersAll[x].role.modifier;
+    currentRoles.push(`${tempName}:${tempModifier}`);
+  }
+  for (let y = 0; y < currentRoles.length; y++) {
+    roles = roles.filter(
+      (r) => r != currentRoles[y] && !currentRoles[y].includes(r)
+    );
+  }
+  roles = roles.filter((r) => !r.toLowerCase().includes("banished"));
+  roles = roles.filter((r) => role.game.getRoleAlignment(r) == "Village");
+  roles = roles.filter((r) => !r.toLowerCase().includes("humble"));
+  if (roles.length <= 0) {
+    roles = currentRoles;
     roles = roles.filter((r) => role.game.getRoleAlignment(r) == "Village");
-    roles = roles.filter((r) => !r.toLowerCase().includes("humble"));
-    if (roles.length <= 0) {
-      roles = currentRoles;
-      roles = roles.filter((r) => role.game.getRoleAlignment(r) == "Village");
-      roles = roles.filter((r) => r.split(":")[0] != "Braggart");
-    }
-    if (roles.length <= 0) {
-      roles = ["Cop"];
-    }
-    role.newRole = Random.randArrayVal(roles);
+    roles = roles.filter((r) => r.split(":")[0] != "Braggart");
+  }
+  if (roles.length <= 0) {
+    roles = ["Cop"];
+  }
+  role.newRole = Random.randArrayVal(roles);
 
-    let tempApp = {
-      self: role.newRole,
-      reveal: role.newRole,
-    };
-    role.editAppearance(tempApp);
+  let tempApp = {
+    self: role.newRole,
+    reveal: role.newRole,
+  };
+  role.editAppearance(tempApp);
 }

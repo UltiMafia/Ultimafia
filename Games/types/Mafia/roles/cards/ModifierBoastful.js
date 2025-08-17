@@ -10,7 +10,6 @@ module.exports = class ModifierBoastful extends Card {
   constructor(role) {
     super(role);
 
-    
     this.listeners = {
       state: function (stateInfo) {
         if (!this.hasAbility(["Information"])) {
@@ -34,7 +33,7 @@ module.exports = class ModifierBoastful extends Card {
           ],
           role: this.role,
           run: function () {
-          let info2 = this.game.createInformation(
+            let info2 = this.game.createInformation(
               "ReportsInfo",
               this.actor,
               this.game,

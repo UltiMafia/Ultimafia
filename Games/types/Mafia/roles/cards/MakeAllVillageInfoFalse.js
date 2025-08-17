@@ -27,7 +27,7 @@ module.exports = class MakeAllVillageInfoFalse extends Card {
 */
 
     this.listeners = {
-        AbilityToggle: function (player) {
+      AbilityToggle: function (player) {
         if (this.FalseModeVillageEffects == null) {
           this.FalseModeVillageEffects = [];
         }
@@ -44,7 +44,9 @@ module.exports = class MakeAllVillageInfoFalse extends Card {
         }
         this.FalseModeVillageEffects = [];
         if (this.hasAbility(["Deception"])) {
-          for (let player of this.game.players.filter((p) => p.role && p.role.alignment == "Village")) {
+          for (let player of this.game.players.filter(
+            (p) => p.role && p.role.alignment == "Village"
+          )) {
             let effect = player.giveEffect("FalseMode", Infinity);
             this.passiveEffects.push(effect);
             this.FalseModeVillageEffects.push(effect);

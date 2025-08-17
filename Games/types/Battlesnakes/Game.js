@@ -89,13 +89,13 @@ module.exports = class BattlesnakesGame extends Game {
 
     // Initialize snake positions for each player
     for (const player of this.players) {
-      if(player.role.name != "Host"){
-      this.positions[player.id] = {
-        playerId: player.id,
-        direction: "up",
-        segments: [this.getRandomStartSegment()],
-        alive: true,
-      };
+      if (player.role.name != "Host") {
+        this.positions[player.id] = {
+          playerId: player.id,
+          direction: "up",
+          segments: [this.getRandomStartSegment()],
+          alive: true,
+        };
       }
     }
 
@@ -245,7 +245,11 @@ module.exports = class BattlesnakesGame extends Game {
       right: "left",
     };
 
-    if (direction !== opposite[snake.direction] && direction !== snake.direction && snake.directionChanged === false) {
+    if (
+      direction !== opposite[snake.direction] &&
+      direction !== snake.direction &&
+      snake.directionChanged === false
+    ) {
       snake.direction = direction;
       snake.directionChanged = true;
     }

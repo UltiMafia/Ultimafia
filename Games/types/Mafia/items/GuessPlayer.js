@@ -7,7 +7,7 @@ module.exports = class GuessPlayer extends Item {
   constructor(player) {
     super("GuessPlayer");
     this.playerToGuess = player;
-    this.baseMeetingName = "Guess "+player.name;
+    this.baseMeetingName = "Guess " + player.name;
     this.currentMeetingIndex = 0;
     this.lifespan = 1;
     this.cannotBeStolen = true;
@@ -59,9 +59,10 @@ module.exports = class GuessPlayer extends Item {
               this.game.gotoNextState();
             } //End if
             else {
-                this.actor.queueAlert(`Your guess was Incorrect. No Evil Player will get to Guess the Orge tomorrow!`);
-                this.item.playerToGuess.role.OrgeGuessUsedYesterday = true;
-              
+              this.actor.queueAlert(
+                `Your guess was Incorrect. No Evil Player will get to Guess the Orge tomorrow!`
+              );
+              this.item.playerToGuess.role.OrgeGuessUsedYesterday = true;
             }
           },
         },

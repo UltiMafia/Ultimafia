@@ -297,11 +297,15 @@ export function SetupPage() {
               title="Competitive Allowed"
               content={setup.competitive ? "Yes" : "No"}
             />
-            
+
             {closedRoleInfo}
             <SetupRowInfo
               title="Night Order"
-              content ={ <Link to= {`/learn/setup/${setupId}/nightorder`}>Click to Show</Link>}
+              content={
+                <Link to={`/learn/setup/${setupId}/nightorder`}>
+                  Click to Show
+                </Link>
+              }
             />
           </div>
         </div>
@@ -356,7 +360,11 @@ export function SetupPage() {
         )}
       </div>
       <Comments location={commentLocation} />
-      <ModerationSideDrawer open={moderationDrawerOpen} setOpen={setModerationDrawerOpen} prefilledArgs={{ setupId }} />
+      <ModerationSideDrawer
+        open={moderationDrawerOpen}
+        setOpen={setModerationDrawerOpen}
+        prefilledArgs={{ setupId }}
+      />
     </Stack>
   );
 }

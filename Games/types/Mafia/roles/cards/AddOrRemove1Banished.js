@@ -55,7 +55,15 @@ module.exports = class AddOrRemove1Banished extends Card {
           for (let item of shuffledPlayers[0].items) {
             item.drop();
           }
-          shuffledPlayers[0].setRole(newRole, undefined, false, true, null, null, "RemoveStartingItems");
+          shuffledPlayers[0].setRole(
+            newRole,
+            undefined,
+            false,
+            true,
+            null,
+            null,
+            "RemoveStartingItems"
+          );
           //this.game.originalRoles[suffledPlayers[0].id] = newRole;
           roles.slice(roles.indexOf(newRole), 1);
         } else {
@@ -94,7 +102,15 @@ module.exports = class AddOrRemove1Banished extends Card {
             item.drop();
           }
           shuffledPlayers[0].role.data.banished = false;
-          shuffledPlayers[0].setRole(newRole, undefined, false, true, null, null, "RemoveStartingItems");
+          shuffledPlayers[0].setRole(
+            newRole,
+            undefined,
+            false,
+            true,
+            null,
+            null,
+            "RemoveStartingItems"
+          );
         }
       },
     };

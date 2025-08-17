@@ -4,9 +4,7 @@ const {
   MEETING_PRIORITY_JAIL,
 } = require("../const/Priority");
 const Random = require("../../../../lib/Random");
-const painPool = [
-  "Volcano",
-];
+const painPool = ["Volcano"];
 const garbagePool = [
   "Boot",
   "Boot",
@@ -126,9 +124,7 @@ const fishPool = [
   "Hog Sucker",
   "Red Herring",
 ];
-const winPool = [
-  "GoldenCarp",
-];
+const winPool = ["GoldenCarp"];
 
 module.exports = class FishingRod extends Item {
   constructor() {
@@ -146,18 +142,17 @@ module.exports = class FishingRod extends Item {
           priority: PRIORITY_MODIFY_ACTION,
           item: this,
           run: function () {
-            if (this.target == "Yes"){
+            if (this.target == "Yes") {
               this.actor.data.GoneFishin = true;
               this.item.GoneFishin = true;
-            }
-            else{
+            } else {
               this.actor.data.GoneFishin = false;
               this.item.GoneFishin = false;
             }
           },
+        },
       },
-    },
-    "Lake": {
+      Lake: {
         states: ["Day"],
         flags: ["speech", "group"],
         item: this,
@@ -165,9 +160,15 @@ module.exports = class FishingRod extends Item {
           return this.player.data.GoneFishin == true;
         },
       },
-    "Fish": {
+      Fish: {
         states: ["Day"],
-        flags: ["voting", "instant", "instantButChangeable","repeatable", "noVeg"],
+        flags: [
+          "voting",
+          "instant",
+          "instantButChangeable",
+          "repeatable",
+          "noVeg",
+        ],
         item: this,
         inputType: "custom",
         targets: ["Fish", "Not Fish"],
@@ -176,53 +177,45 @@ module.exports = class FishingRod extends Item {
         },
         action: {
           run: function () {
-              if(this.target == "Fish"){
+            if (this.target == "Fish") {
               let fishingValue = Random.randInt(1, 250);
-                if(fishingValue == 1){
-                  let fish = Random.randArrayVal(painPool);
-                  if(fish == "Volcano"){
-          this.game.queueAlert(`${this.actor.name} disturbed an underwater volcano when fishing. VOLCANO IS ERUPTING! SOMEONE WILL BE HIT WITH MOLTEN ROCK EVERY 30 SECONDS UNTIL THE DAY ENDS!`);
-                    this.actor.giveEffect("Volcanic", -1);
-                    this.game.events.emit("Volcano");
-                  }
+              if (fishingValue == 1) {
+                let fish = Random.randArrayVal(painPool);
+                if (fish == "Volcano") {
+                  this.game.queueAlert(
+                    `${this.actor.name} disturbed an underwater volcano when fishing. VOLCANO IS ERUPTING! SOMEONE WILL BE HIT WITH MOLTEN ROCK EVERY 30 SECONDS UNTIL THE DAY ENDS!`
+                  );
+                  this.actor.giveEffect("Volcanic", -1);
+                  this.game.events.emit("Volcano");
                 }
-                else if(fishingValue <= 50){
-                  let fish = Random.randArrayVal(garbagePool);
-                  if(fish == "Broken Item"){
-                    fish = Random.randArrayVal(itemPool);
-                    this.actor.holdItem(fish, { broken: true });
-                    this.actor.queueGetItemAlert(fish);
-                  }
-                  else{
-                    this.actor.holdItem("Garbage", fish);
-                    this.actor.queueGetItemAlert(fish);
-                  }
+              } else if (fishingValue <= 50) {
+                let fish = Random.randArrayVal(garbagePool);
+                if (fish == "Broken Item") {
+                  fish = Random.randArrayVal(itemPool);
+                  this.actor.holdItem(fish, { broken: true });
+                  this.actor.queueGetItemAlert(fish);
+                } else {
+                  this.actor.holdItem("Garbage", fish);
+                  this.actor.queueGetItemAlert(fish);
                 }
-                else if(fishingValue <= 225){
-                   let fish = Random.randArrayVal(fishPool);
-                    this.actor.holdItem("Food", fish);
-                    this.actor.queueGetItemAlert(fish);
-                }
-                else if(fishingValue <= 247){
-                   let fish = Random.randArrayVal(itemPool);
-                    this.actor.holdItem(fish);
-                    this.actor.queueGetItemAlert(fish);
-                }
-                else{
-                   let fish = Random.randArrayVal(winPool);
-                    this.actor.holdItem(fish);
-                    this.actor.queueGetItemAlert(fish);
-                }
-                
+              } else if (fishingValue <= 225) {
+                let fish = Random.randArrayVal(fishPool);
+                this.actor.holdItem("Food", fish);
+                this.actor.queueGetItemAlert(fish);
+              } else if (fishingValue <= 247) {
+                let fish = Random.randArrayVal(itemPool);
+                this.actor.holdItem(fish);
+                this.actor.queueGetItemAlert(fish);
+              } else {
+                let fish = Random.randArrayVal(winPool);
+                this.actor.holdItem(fish);
+                this.actor.queueGetItemAlert(fish);
               }
-
-            
-            
+            }
           },
         },
-    },
+      },
     };
-
   }
 
   shouldDisableMeeting(name) {
@@ -230,15 +223,15 @@ module.exports = class FishingRod extends Item {
     if (this.game.getStateName() != "Day") {
       return false;
     }
-   if(this.GoneFishin != true){
-     return false;
-   }
-  if(name == "Lake"){
-    return false;
-  }
-  if(name == "Fish"){
-    return false;
-  }
+    if (this.GoneFishin != true) {
+      return false;
+    }
+    if (name == "Lake") {
+      return false;
+    }
+    if (name == "Fish") {
+      return false;
+    }
 
     return true;
   }
