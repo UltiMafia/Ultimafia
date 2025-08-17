@@ -20,8 +20,7 @@ module.exports = class CultWinsIfNoCondemn extends Card {
           .alivePlayers()
           .filter(
             (p) =>
-              p.role.name === "Mayor" &&
-              p.role.data.MayorWin &&
+              p.hasEffect("MayorEffect") &&
               p.faction != this.player.faction &&
               p.hasAbility(["Win-Con", "OnlyWhenAlive"])
           );

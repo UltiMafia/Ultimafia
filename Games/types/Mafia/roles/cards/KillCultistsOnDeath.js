@@ -32,10 +32,10 @@ module.exports = class KillCultistsOnDeath extends Card {
         }
         */
         var devotion = this.game.players.filter(
-          (p) => p.alive && p.role.data.DevotionCult == true
+          (p) => p.hasEffect("DevotionEffect")
         );
         if (devotion.length > 0) {
-          var backUpTarget = devotion.filter((p) => p.role.data.BackUpConvert);
+          var backUpTarget = devotion.filter((p) => p.hasEffect("DevoteeEffect"));
           if (backUpTarget.length > 0) {
             backUpTarget.setRole(
               `${this.player.role.name}:${this.player.role.modifier}`,

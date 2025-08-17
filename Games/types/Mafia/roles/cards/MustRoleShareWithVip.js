@@ -36,13 +36,13 @@ module.exports = class MustRoleShareWithVip extends Card {
         if (this.player.role.name == "Vice President") {
           for (let player of this.game.players) {
             if (
-              player.role.name == "President" &&
+              player.hasEffect("PresidentEffect") &&
               !this.data.playersSharedWith.includes(player)
             ) {
               hasFailed = true;
             }
             if (
-              player.role.name == "Senator" &&
+              player.hasEffect("SenatorEffect") &&
               !this.data.playersSharedWith.includes(player)
             ) {
               hasFailed = true;
@@ -65,7 +65,7 @@ module.exports = class MustRoleShareWithVip extends Card {
         if (this.player.role.name == "Advisor") {
           for (let player of this.game.players) {
             if (
-              player.role.name == "Assassin" &&
+              player.hasEffect("AssassinEffect") &&
               !this.data.playersSharedWith.includes(player)
             ) {
               hasFailed = true;

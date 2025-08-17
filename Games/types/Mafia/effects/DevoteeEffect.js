@@ -1,8 +1,8 @@
 const Effect = require("../Effect");
 
-module.exports = class SoilderEffect extends Effect {
+module.exports = class DevoteeEffect extends Effect {
   constructor(lifespan) {
-    super("SoilderEffect");
+    super("DevoteeEffect");
     this.lifespan = lifespan || Infinity;
   }
 };

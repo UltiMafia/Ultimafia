@@ -78,10 +78,10 @@ module.exports = class Demonic extends Card {
         }
 
         var devotion = this.game.players.filter(
-          (p) => p.hasAbility(["Win-Con"]) && p.role.data.DevotionCult == true
+          (p) => p.hasEffect("DevotionEffect") == true
         );
         if (devotion.length > 0) {
-          var backUpTarget = devotion.filter((p) => p.role.data.BackUpConvert == true);
+          var backUpTarget = devotion.filter((p) => p.hasEffect("DevoteeEffect"));
           if (backUpTarget.length > 0) {
             backUpTarget[0].setRole(
               `${this.player.role.name}:${this.player.role.modifier}`,

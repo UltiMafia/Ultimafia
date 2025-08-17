@@ -97,7 +97,7 @@ module.exports = class ForceSplitDecision extends Card {
         }
         const Presidents = this.game.players.filter(
           (p) =>
-            p.alive && (p.role.name == "President" || p.role.name == "Senator")
+            p.alive && (p.hasEffect("PresidentEffect") || p.hasEffect("SenatorEffect"))
         );
         if (Presidents <= 0) {
           let players = this.game

@@ -53,10 +53,10 @@ module.exports = class Necronomicon extends Item {
         }
 
         var devotion = this.game.players.filter(
-          (p) => p.alive && p.role.data.DevotionCult
+          (p) => p.hasEffect("DevotionEffect")
         );
         if (devotion.length > 0) {
-          var backUpTarget = devotion.filter((p) => p.role.data.BackUpConvert);
+          var backUpTarget = devotion.filter((p) => p.hasEffect("DevoteeEffect"));
           if (backUpTarget.length > 0) {
             backUpTarget;
             this.drop();

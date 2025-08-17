@@ -16,7 +16,7 @@ module.exports = class MayorWin extends Card {
         }
             
               
-        if (this.data.MayorWin && this.hasAbility(["Win-Con", "OnlyWhenAlive"]) && aliveCount == 3) {
+        if (this.player.hasEffect("MayorEffect")) {
           for(let player of this.game.players){
             if(player.faction == this.player.faction){
               winners.addPlayer(player, player.faction);
@@ -101,6 +101,9 @@ module.exports = class MayorWin extends Card {
             );
             */
             this.role.data.MayorWin = true;
+            this.actor.giveEffect("MayorEffect", Infinity);
+            let MayorEffect = this.actor.giveEffect("MayorEffect", Infinity);
+            this.role.passiveEffects.push(MayorEffect);
             return;
         },
         });

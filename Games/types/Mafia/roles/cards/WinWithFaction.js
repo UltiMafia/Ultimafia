@@ -71,7 +71,7 @@ module.exports = class WinWithFaction extends Card {
 
         const hasMajority = factionCount >= aliveCount / 2 && aliveCount > 0;
         const assassinInGame = this.game.players.filter(
-          (p) => p.role.name === "Assassin"
+          (p) => p.hasEffect("AssassinEffect")
         );
 
         //Special Win Cons
@@ -162,10 +162,7 @@ module.exports = class WinWithFaction extends Card {
         if (this.player.faction != "Village" && !ONE_NIGHT) {
           const soldiersInGame = this.game.players.filter(
             (p) =>
-              p.role.name == "Soldier" &&
-              p.faction == "Village" &&
-              p.alive &&
-              p.hasAbility(["Win-Con", "OnlyWhenAlive"])
+              p.hasEffect("SoldierEffect")
           );
 
           if (soldiersInGame.length > 0) {
@@ -431,9 +428,7 @@ module.exports = class WinWithFaction extends Card {
               .alivePlayers()
               .filter(
                 (p) =>
-                  p.role.name === "Soldier" &&
-                  p.faction == "Village" &&
-                  p.hasAbility(["Win-Con", "OnlyWhenAlive"])
+                  p.hasEffect("SoldierEffect")
               ).length >=
               aliveCount / 2 &&
             aliveCount > 0
@@ -481,7 +476,7 @@ module.exports = class WinWithFaction extends Card {
         if (this.oblivious["Faction"]) return;
 
         const assassinInGame = this.game.players.filter(
-          (p) => p.role.name === "Assassin"
+          (p) => p.hasEffect("AssassinEffect")
         );
         if (assassinInGame.length > 0) return;
 
@@ -547,15 +542,7 @@ module.exports = class WinWithFaction extends Card {
         ) {
           this.killedPresident = true;
         }
-        if (player.role.name == "Assassin") {
-          const otherAssassins = this.game.players.filter(
-            (p) =>
-              (p.alive && p.role.name == "Assassin") ||
-              p.role.data.RoleTargetBackup == "Assassin"
-          );
-          if (otherAssassins.length > 0 || this.killedPresident == true) {
-            return;
-          }
+        if (player.hasEffect("AssassinEffect")) {
           this.killedAssassin = true;
         }
 
