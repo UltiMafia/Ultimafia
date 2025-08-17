@@ -2937,12 +2937,28 @@
   background-image: url("/src/images/roles/independent/host-vivid.png");
 }
 
+/***********
+*
+* Cheat
+*
+************/
+
 .role-icon-vivid-Cheat-Player {
   background-image: url("/src/images/roles/independent/gambler-vivid.png");
 }
 
 .role-icon-vivid-Cheat-Host {
   background-image: url("/src/images/roles/independent/host-vivid.png");
+}
+
+/***********
+*
+* Connect Four
+*
+***********/
+
+.role-icon-vivid-Connect-Four-Player {
+  background-image: url("/src/images/roles/village/villager-vivid.png");
 }
 
 /***********

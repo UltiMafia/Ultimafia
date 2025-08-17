@@ -195,7 +195,8 @@ const modifierData = {
     },
   },
   "Texas Hold Em": {},
-  Cheat: {},
+  "Cheat": {},
+  "Connect Four": {},
 };
 
 module.exports = modifierData;

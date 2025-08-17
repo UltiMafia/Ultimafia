@@ -45,6 +45,9 @@ const protips = {
     "All In",
   ],
   Cheat: ["Count the cards", "Call It", "Cheaters sometimes prosper"],
+  "Connect Four": [
+    "Pay attention to the other players",
+  ],
 };
 
 module.exports = protips;

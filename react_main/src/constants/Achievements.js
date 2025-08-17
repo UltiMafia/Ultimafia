@@ -306,4 +306,6 @@ export const AchievementData = {
   "Liars Dice": {},
   "Texas Hold Em": {},
   Cheat: {},
+  "Connect Four": {},
+
 };

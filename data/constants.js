@@ -58,6 +58,7 @@ module.exports = {
     "Texas Hold Em",
     "Cheat",
     "Battlesnakes",
+    "Connect Four",
   ],
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
   alignments: {
@@ -72,6 +73,7 @@ module.exports = {
     "Texas Hold Em": ["Town", "Host"],
     Cheat: ["Town", "Host"],
     Battlesnakes: ["Town", "Host"],
+    "Connect Four": ["Town"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -85,6 +87,7 @@ module.exports = {
     "Texas Hold Em": ["Place Bets", "Showdown"],
     Cheat: ["Play Cards", "Call Lie"],
     Battlesnakes: ["Day"],
+    "Connect Four": ["Turn"],
   },
   configurableStates: {
     Mafia: {
@@ -239,6 +242,13 @@ module.exports = {
         default: 1 * 60 * 1000,
       },
       "Call Lie": {
+        min: 30 * 1000,
+        max: 5 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+    },
+    "Connect Four": {
+      "Turn": {
         min: 30 * 1000,
         max: 5 * 60 * 1000,
         default: 1 * 60 * 1000,
