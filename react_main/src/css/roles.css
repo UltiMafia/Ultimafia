@@ -277,6 +277,10 @@
 /* 
 /*------------------Village Roles----------------------*/
 
+.role-icon-vivid-Mafia-Statue {
+  background-image: url("/src/images/roles/village/statue-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Bawd {
   background-image: url("/src/images/roles/village/bawd-vivid.png");
 }
@@ -1399,7 +1403,11 @@
   background-image: url("/src/images/roles/mafia/associate-vivid.png");
 }
 
-/*------------------Cult----------------------*/
+/*------------------Cult Roles----------------------*/
+
+.role-icon-vivid-Mafia-Yith {
+  background-image: url("/src/images/roles/cult/yith-vivid.png");
+}
 
 .role-icon-vivid-Mafia-Reaper {
   background-image: url("/src/images/roles/cult/reaper-vivid.png");
@@ -1668,6 +1676,10 @@
 /* 
 * Independent
 */
+
+.role-icon-vivid-Mafia-Fisherman {
+  background-image: url("/src/images/roles/independent/fisherman-vivid.png");
+}
 
 .role-icon-vivid-Mafia-Puppeteer {
   background-image: url("/src/images/roles/independent/puppeteer-vivid.png");
@@ -2234,6 +2246,10 @@ background-image: url("/src/images/modifiers/brutish.png");
 background-image: url("/src/images/modifiers/bulletproof.png");
 }
 
+.modifier-Mafia-Caffeinated {
+background-image: url("/src/images/modifiers/caffeinated.png");
+}
+
 .modifier-Mafia-Camouflaged {
 background-image: url("/src/images/modifiers/camouflaged.png");
 }
@@ -2360,6 +2376,10 @@ background-image: url("/src/images/modifiers/humble.png");
 
 .modifier-Mafia-Inclusive {
 background-image: url("/src/images/modifiers/inclusive.png");
+}
+
+.modifier-Mafia-Infamous {
+background-image: url("/src/images/modifiers/infamous.png");
 }
 
 .modifier-Mafia-Insane {

@@ -441,7 +441,6 @@ module.exports = {
     giveCoins: true,
     refundRedHearts: true,
     refundGoldHearts: true,
-    refundDailyChallenge: true,
     changeUsersName: true,
     whitelist: true,
     disableAllCensors: true,

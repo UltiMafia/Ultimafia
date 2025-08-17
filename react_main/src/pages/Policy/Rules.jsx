@@ -153,6 +153,7 @@ const rows = [
     "-"
   ),
   createData(
+    "Exploits",
     "1 day",
     "1 week",
     "3 weeks",
@@ -161,6 +162,7 @@ const rows = [
     "-"
   ),
   createData(
+    "Cheating",
     "1 day",
     "1 week",
     "3 weeks",
