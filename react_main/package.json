@@ -19,6 +19,7 @@
     "react-date-picker": "^9.2.0",
     "react-dom": "^17.0.1",
     "react-dropdown": "^1.7.0",
+    "react-error-boundary": "^6.0.0",
     "react-helmet": "6.1.0",
     "react-hook-form": "^7.45.2",
     "react-loading": "^2.0.3",
@@ -56,8 +57,8 @@
     ]
   },
   "devDependencies": {
-    "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-config-react-app": "^7.0.1",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "react-error-overlay": "^6.0.9"
   },
   "resolutions": {
