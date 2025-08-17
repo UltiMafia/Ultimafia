@@ -14,7 +14,7 @@ module.exports = class PlayConnectFour extends Card {
         states: ["Turn"],
         flags: ["voting", "multi"],
         inputType: "custom",
-        targets: ["1","2","3","4","5","6","7","8"],
+        targets: ["1", "2", "3", "4", "5", "6", "7", "8"],
         action: {
           item: this,
           run: function () {

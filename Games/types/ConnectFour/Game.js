@@ -66,10 +66,13 @@ module.exports = class ConnectFourGame extends Game {
     super.incrementState();
   }
 
-  placeChip(player, column){
+  placeChip(player, column) {
     let colNum = parseInt(column);
-    for(let i = 0; i< this.board[column].length; i++){
-      if(this.board[column][(i)+1] != " " || this.board[column][(i)+1] == null){
+    for (let i = 0; i < this.board[column].length; i++) {
+      if (
+        this.board[column][i + 1] != " " ||
+        this.board[column][i + 1] == null
+      ) {
         this.board[column][i] = player;
       }
     }
