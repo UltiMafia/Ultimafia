@@ -316,7 +316,7 @@ const artContributors = {
     Mafia: ["Monk:vivid"],
   },
   maxie: {
-    Mafia: ["Virgin:vivid", "Leech:vivid", "Executioner:vivid"],
+    Mafia: ["Virgin:vivid", "Leech:vivid", "Executioner:vivid", "Yith:vivid"],
   },
   keji: {
     Mafia: ["Penguin:vivid", "Butterfly:vivid", "Psion:vivid", "Anarchist:vivid", "Polar Bear:vivid"],
@@ -457,6 +457,7 @@ const artContributors = {
       "Imposter:vivid",
       "Sidekick:vivid",
       "Skinwalker:vivid",
+      "Statue:vivid",
       //Skins
       "Hellhound:goofy",
     ],
@@ -496,6 +497,7 @@ const artContributors = {
       "Maestro:vivid",
       "Hermit:vivid",
       "Plague Doctor:vivid"],
+      "Fisherman:vivid",
     Battlesnakes: ["Snake:vivid"],
   },
 };
