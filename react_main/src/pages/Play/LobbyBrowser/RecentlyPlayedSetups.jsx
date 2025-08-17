@@ -14,6 +14,7 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
   const theme = useTheme();
   const svgRef = useRef();
   const [setups, setSetups] = useState([]);
+  const [selSetup, setSelSetup] = useState(null);
   const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
 
   const user = useContext(UserContext);
@@ -40,6 +41,11 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
     return "";
   }
 
+  function onSelectSetup(setup) {
+    setSelSetup(setup);
+    setIshostGameDialogueOpen(true);
+  }
+
   const setupRows = setups.map((setup) => {
     const showRedoButton = isPhoneDevice ? user.loggedIn : true;
 
@@ -52,12 +58,11 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
           alignItems: "center",
         }}
       >
-        <HostGameDialogue open={ishostGameDialogueOpen} setOpen={setIshostGameDialogueOpen} setup={setup.setupDetails} />
         <Setup setup={setup.setupDetails} maxRolesCount={6} fixedWidth/>
         {showRedoButton && (
           <Box style={{ mx: 1, width: "32px", textAlign: "center" }}>
             {user.loggedIn && (
-              <IconButton color="primary" onClick={() => setIshostGameDialogueOpen(true)}>
+              <IconButton color="primary" onClick={() => onSelectSetup(setup.setupDetails)}>
                 <i className="rehost fas fa-redo" title="Rehost" />
               </IconButton>
             )}
@@ -69,6 +74,7 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
 
   return (
     <Paper>
+      {selSetup && (<HostGameDialogue open={ishostGameDialogueOpen} setOpen={setIshostGameDialogueOpen} setup={selSetup} />)}
       <Box sx={{ p: 2 }}>
         <Typography color="primary" gutterBottom>
           Most popular setups
