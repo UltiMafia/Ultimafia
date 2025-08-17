@@ -13,6 +13,7 @@ import {
   useHistory,
   useLocation,
 } from "react-router-dom";
+import { ErrorBoundary, useErrorBoundary } from "react-error-boundary";
 import axios from "axios";
 import update from "immutability-helper";
 import { Icon } from "@iconify/react";
@@ -46,7 +47,7 @@ import "css/main.css";
 import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
 import { NewLoading } from "./pages/Welcome/NewLoading";
-import { Box, Stack, ThemeProvider, CssBaseline } from "@mui/material";
+import { Box, Stack, ThemeProvider, CssBaseline, Paper, Typography, Button } from "@mui/material";
 import {
   darkTheme,
   lightTheme,
@@ -59,6 +60,26 @@ import { useIsPhoneDevice } from "./hooks/useIsPhoneDevice";
 import umpride2 from "images/holiday/umpride2.png";
 import logobloody from "images/holiday/logobloody.png";
 import fadelogohat from "images/fadelogohat.png";
+
+function ErrorFallback({ error }) {
+  const { resetBoundary } = useErrorBoundary();
+
+  console.log(error)
+
+  return (
+    <Paper sx={{
+      position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+      p: 1,
+      width: "360px",
+    }}>
+      <Stack direction="column" spacing={1}>
+        <Typography variant="h5">Error:</Typography>
+        <Typography color="red" sx={{ wordBreak: "break-word" }}>{error.message}</Typography>
+        <Button onClick={resetBoundary}>Refresh</Button>
+      </Stack>
+    </Paper>
+  );
+}
 
 function Main() {
   var cacheVal = window.localStorage.getItem("cacheVal");
@@ -226,6 +247,12 @@ function Main() {
     : { padding: "24px" };
 
   return (
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onReset={() =>
+        (window.location.href =
+          window.location.origin + window.location.pathname)
+    }>
     <UserContext.Provider value={user}>
       <SiteInfoContext.Provider value={siteInfo}>
         <PopoverContext.Provider value={popover}>
@@ -282,6 +309,7 @@ function Main() {
         </PopoverContext.Provider>
       </SiteInfoContext.Provider>
     </UserContext.Provider>
+    </ErrorBoundary>
   );
 }
 
