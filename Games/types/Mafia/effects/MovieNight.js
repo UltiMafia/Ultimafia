@@ -27,14 +27,14 @@ module.exports = class MovieNight extends Effect {
             info.makeTrue();
             this.game.MovieWatchers = Random.randomizeArray(this.game.MovieWatchers);
             this.game.MovieWatchers[0].queueAlert(
-                `${info.mainInfo} Evil players attended the Movie!`
+                `${info.mainInfo} Evil players attended the opera!`
               );
             this.game.MovieWatchers[1].queueAlert(
-                `${info.mainInfo} Evil players attended the Movie!`
+                `${info.mainInfo} Evil players attended the opera!`
               );
             info.makeFalse();
             this.game.MovieWatchers[2].queueAlert(
-                `${info.mainInfo} Evil players attended the Movie!`
+                `${info.mainInfo} Evil players attended the opera!`
               );
             this.game.MovieWatchers = null;
           },
