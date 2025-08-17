@@ -70,8 +70,8 @@ export default function HostGameDialogue({ open, setOpen, setup }) {
         return HostCheat();
       case "Battlesnakes":
         return HostBattlesnakes();
-       case "Connect Four": return HostConnectFour();
-
+      case "Connect Four":
+        return HostConnectFour();
     }
 
     return [null, null];

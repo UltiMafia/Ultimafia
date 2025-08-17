@@ -119,26 +119,25 @@ export default function HostConnectFour() {
     var scheduled = getFormFieldValue("scheduled");
 
     if (setupId) {
-      const hostPromise = axios
-        .post("/api/game/host", {
-          gameType: gameType,
-          setup: setupId,
-          lobby: getFormFieldValue("lobby"),
-          lobbyName: getFormFieldValue("lobbyName"),
-          private: getFormFieldValue("private"),
-          guests: getFormFieldValue("guests"),
-          spectating: getFormFieldValue("spectating"),
-          scheduled:
-            scheduled && new Date(getFormFieldValue("startDate")).getTime(),
-          readyCheck: getFormFieldValue("readyCheck"),
-          stateLengths: {
-            Day: getFormFieldValue("turnLength"),
-          },
-          boardX: getFormFieldValue("boardX"),
-          boardY: getFormFieldValue("boardY"),
-          anonymousGame: getFormFieldValue("anonymousGame"),
-          anonymousDeckId: getFormFieldValue("anonymousDeckId"),
-        });
+      const hostPromise = axios.post("/api/game/host", {
+        gameType: gameType,
+        setup: setupId,
+        lobby: getFormFieldValue("lobby"),
+        lobbyName: getFormFieldValue("lobbyName"),
+        private: getFormFieldValue("private"),
+        guests: getFormFieldValue("guests"),
+        spectating: getFormFieldValue("spectating"),
+        scheduled:
+          scheduled && new Date(getFormFieldValue("startDate")).getTime(),
+        readyCheck: getFormFieldValue("readyCheck"),
+        stateLengths: {
+          Day: getFormFieldValue("turnLength"),
+        },
+        boardX: getFormFieldValue("boardX"),
+        boardY: getFormFieldValue("boardY"),
+        anonymousGame: getFormFieldValue("anonymousGame"),
+        anonymousDeckId: getFormFieldValue("anonymousDeckId"),
+      });
 
       Object.keys(defaults).forEach(function (key) {
         const submittedValue = getFormFieldValue(key);
@@ -148,8 +147,7 @@ export default function HostConnectFour() {
       });
       persistDefaults(gameType, defaults);
       return hostPromise;
-    }
-    else {
+    } else {
       return null;
     }
   }

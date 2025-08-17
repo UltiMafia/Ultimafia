@@ -307,7 +307,7 @@ const AchievementData = {
   "Wacky Words": {},
   "Liars Dice": {},
   "Texas Hold Em": {},
-  "Cheat": {},
+  Cheat: {},
   "Connect Four": {},
 };
 

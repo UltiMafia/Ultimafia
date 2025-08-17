@@ -248,7 +248,7 @@ module.exports = {
       },
     },
     "Connect Four": {
-      "Turn": {
+      Turn: {
         min: 30 * 1000,
         max: 5 * 60 * 1000,
         default: 1 * 60 * 1000,

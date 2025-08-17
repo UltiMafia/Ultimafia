@@ -35,7 +35,8 @@ export default function LearnConnectFour(props) {
         originally published by Milton Bradley.
       </Typography>
       <Typography variant="body1" paragraph>
-        In Connect Four, players are competing to the be the first to reach four in a row.
+        In Connect Four, players are competing to the be the first to reach four
+        in a row.
       </Typography>
       <Accordion>
         <AccordionSummary>

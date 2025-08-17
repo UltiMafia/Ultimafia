@@ -18,7 +18,6 @@ const HOST_OPTIONS_VERSIONS = {
   "Wacky Words": 1,
   Cheat: 1,
   "Connect Four": 1,
-
 };
 
 // Associate all of the existing saved options per game type into a map

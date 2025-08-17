@@ -137,7 +137,10 @@ export default function ConnectFourGame(props) {
         }
         rightPanelContent={
           <>
-            <ConnectFourBoardWrapper stateViewing={stateViewing} history={history} />
+            <ConnectFourBoardWrapper
+              stateViewing={stateViewing}
+              history={history}
+            />
             {!isSpectator && <Notes stateViewing={stateViewing} />}
           </>
         }
@@ -157,7 +160,10 @@ function ConnectFourBoardWrapper(props) {
       scrollable
       content={
         <>
-          <ConnectFourBoard history={props.history} stateViewing={stateViewing} />
+          <ConnectFourBoard
+            history={props.history}
+            stateViewing={stateViewing}
+          />
         </>
       }
     />

@@ -41,7 +41,7 @@ module.exports = class ConnectFourGame extends Game {
     for (let i = 0; i < boardX; i++) {
       let tempArr = [];
       for (let i = 0; i < boardY; i++) {
-        tempArr.push(" ")
+        tempArr.push(" ");
       }
       this.board.push(tempArr);
     }
