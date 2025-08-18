@@ -23,7 +23,7 @@ import LearnLiarsDice from "./LearnLiarsDice";
 import LearnTexasHoldEm from "./LearnTexasHoldEm";
 import LearnCheat from "./LearnCheat";
 import LearnBattlesnakes from "./LearnBattlesnakes";
-import LearnTexasHoldEm from "./LearnConnectFour";
+import LearnConnectFour from "./LearnConnectFour";
 
 import { GameTypes } from "Constants";
 import GameIcon from "components/GameIcon";

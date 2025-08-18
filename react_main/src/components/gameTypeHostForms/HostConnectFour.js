@@ -104,7 +104,7 @@ export default function HostConnectFour() {
       value: defaults.configureDuration,
     },
     {
-      label: "Day Length (minutes)",
+      label: "Turn Length (minutes)",
       ref: "turnLength",
       type: "number",
       showIf: "configureDuration",

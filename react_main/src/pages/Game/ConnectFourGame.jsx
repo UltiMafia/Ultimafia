@@ -173,12 +173,16 @@ function ConnectFourBoardWrapper(props) {
 function ConnectFourBoard(props) {
   const extraInfo = props.history.states[props.stateViewing].extraInfo;
   const rows = extraInfo.board;
+  let rowsAfter = [];
+  for(let x = 0; x < rows.length; x++){
+    rowsAfter.push([x, rows[x]]);
+  }
 
   return (
     <>
       <div className="connectFour-board">
-        {rows.map((row) => {
-          return <BoardRow columns={row} />;
+        {rowsAfter.map((row) => {
+          return <BoardRow key={row[0]} columns={row} />;
         })}
       </div>
     </>
@@ -186,16 +190,20 @@ function ConnectFourBoard(props) {
 }
 
 function BoardRow(props) {
-  const columns = props.values;
+  const columns = props.columns;
 
   let rowData = [];
-  for (let column of columns) {
-    rowData.push(<BoardBox column={column} />);
+  let key = 0;
+  for (let column of columns[1]) {
+    rowData.push([key+" "+columns[0], column]);
+    key++;
   }
 
   return (
     <>
-      <div className="connectFour-board-row">{rowData}</div>
+      <div className="connectFour-board-row">{rowData.map((row) => {
+          return < BoardBox key={row[0]} column={row} />;
+        })}</div>
     </>
   );
 }
@@ -203,11 +211,20 @@ function BoardRow(props) {
 function BoardBox(props) {
   const column = props.column;
 
-  return (
+  if(column[1] == " "){
+    return (
     <>
-      <div className="connectFour-board-box">{column}</div>
+      <div className="connectFour-board-box" key={column[0]}>{column[1]}</div>
     </>
   );
+  }
+  else{
+    return (
+    <>
+      <div className="connectFour-board-box" key={column[0]}>{<PlayerAvatar player={column[1]} /> }</div>
+    </>
+  );
+  }
 }
 
 function PlayerAvatar(props) {

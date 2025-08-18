@@ -1230,7 +1230,7 @@ const countChecks = {
     return true;
   },
   "Connect Four": (roles, count, total, closed, unique) => {
-    if (total < 3) return "Must have at least 3 players.";
+    if (total < 2) return "Must have at least 2 players.";
 
     const connectFourMaxPlayers = 4;
     if (total > connectFourMaxPlayers)

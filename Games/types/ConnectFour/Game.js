@@ -23,9 +23,11 @@ module.exports = class ConnectFourGame extends Game {
         length: options.settings.stateLengths["Turn"],
       },
     ];
-    this.currentPlayerIndex = -1;
+    this.currentIndex = 0;
     this.currentPlayer = undefined;
     this.board = [];
+    this.randomizedPlayers = []; 
+    this.randomizedPlayersCopy = [];
 
     this.boardX = options.settings.boardX;
     this.boardY = options.settings.boardY;

@@ -1,8 +1,4 @@
 const Card = require("../../Card");
-const {
-  IMPORTANT_MEETINGS,
-  ROLE_MEETINGS,
-} = require("../../const/ImportantMeetings");
 
 module.exports = class PlayConnectFour extends Card {
   constructor(role) {
@@ -12,13 +8,13 @@ module.exports = class PlayConnectFour extends Card {
       "Place Chip": {
         actionName: "Place Chip",
         states: ["Turn"],
-        flags: ["voting", "multi"],
+        flags: ["voting"],
         inputType: "custom",
         targets: ["1", "2", "3", "4", "5", "6", "7", "8"],
         action: {
           item: this,
           run: function () {
-            this.game.placeChip(this.actor, this.target);
+            this.game.placeChip(this.actor.name, this.target);
           },
         },
         shouldMeet: function () {

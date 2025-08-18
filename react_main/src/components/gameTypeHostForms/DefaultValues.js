@@ -114,6 +114,12 @@ var defaultOptions = {
     playCardsLength: 2,
     callLieLength: 2,
   },
+  "Connect Four": existingHostOptions["Connect Four"] || {
+    ...commonHostOptions,
+    boardX: 5,
+    boardY: 5,
+    turnLength: 1,
+  },
   Resistance: existingHostOptions["Resistance"] || {
     ...commonHostOptions,
     teamSelLength: 2,
