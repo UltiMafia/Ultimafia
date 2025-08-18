@@ -17,6 +17,7 @@ const HOST_OPTIONS_VERSIONS = {
   "Secret Dictator": 1,
   "Wacky Words": 1,
   Cheat: 1,
+  "Connect Four": 1,
 };
 
 // Associate all of the existing saved options per game type into a map
@@ -113,6 +114,12 @@ var defaultOptions = {
     playCardsLength: 2,
     callLieLength: 2,
   },
+  "Connect Four": existingHostOptions["Connect Four"] || {
+    ...commonHostOptions,
+    boardX: 5,
+    boardY: 5,
+    turnLength: 1,
+  },
   Resistance: existingHostOptions["Resistance"] || {
     ...commonHostOptions,
     teamSelLength: 2,
@@ -144,6 +151,12 @@ var defaultOptions = {
     boardSize: 20,
     dayLength: 60,
     nightLength: 0.5,
+  },
+  Battlesnakes: existingHostOptions["Battlesnakes"] || {
+    ...commonHostOptions,
+    boardX: 4,
+    boardY: 4,
+    turnLength: 1,
   },
 };
 

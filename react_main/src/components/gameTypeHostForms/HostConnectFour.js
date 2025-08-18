@@ -3,10 +3,8 @@ import axios from "axios";
 import { getDefaults, persistDefaults } from "./DefaultValues";
 import { Lobbies } from "Constants";
 
-import "css/host.css";
-
-export default function HostCheat() {
-  const gameType = "Cheat";
+export default function HostConnectFour() {
+  const gameType = "Connect Four";
   const defaults = getDefaults(gameType);
 
   let defaultLobby = localStorage.getItem("lobby");
@@ -20,12 +18,20 @@ export default function HostCheat() {
 
   const initialFormFields = [
     {
-      label: "Max Rounds",
-      ref: "MaxRounds",
+      label: "Board Horizontal Size",
+      ref: "boardX",
       type: "number",
-      value: defaults.MaxRounds,
-      min: 0,
-      max: 200,
+      min: 5,
+      max: 100,
+      value: defaults.boardX,
+    },
+    {
+      label: "Board Vertical Size",
+      ref: "boardY",
+      type: "number",
+      min: 5,
+      max: 100,
+      value: defaults.boardY,
     },
     {
       label: "Lobby",
@@ -98,23 +104,13 @@ export default function HostCheat() {
       value: defaults.configureDuration,
     },
     {
-      label: "Play Cards (minutes)",
-      ref: "playCardsLength",
+      label: "Turn Length (minutes)",
+      ref: "turnLength",
       type: "number",
       showIf: "configureDuration",
-      value: defaults.placeBetsLength,
+      value: defaults.turnLength,
       min: 0.5,
-      max: 3,
-      step: 0.5,
-    },
-    {
-      label: "Call Lie (minutes)",
-      ref: "callLieLength",
-      type: "number",
-      showIf: "configureDuration",
-      value: defaults.showdownLength,
-      min: 0.5,
-      max: 3,
+      max: 5,
       step: 0.5,
     },
   ];
@@ -135,22 +131,20 @@ export default function HostCheat() {
           scheduled && new Date(getFormFieldValue("startDate")).getTime(),
         readyCheck: getFormFieldValue("readyCheck"),
         stateLengths: {
-          "Play Cards": getFormFieldValue("playCardsLength"),
-          "Call Lie": getFormFieldValue("callLieLength"),
+          Day: getFormFieldValue("turnLength"),
         },
-        startingChips: getFormFieldValue("startingChips"),
-        minimumBet: getFormFieldValue("minimumBet"),
-        MaxRounds: getFormFieldValue("MaxRounds"),
+        boardX: getFormFieldValue("boardX"),
+        boardY: getFormFieldValue("boardY"),
         anonymousGame: getFormFieldValue("anonymousGame"),
         anonymousDeckId: getFormFieldValue("anonymousDeckId"),
       });
 
-      defaults.private = getFormFieldValue("private");
-      defaults.guests = getFormFieldValue("guests");
-      defaults.spectating = getFormFieldValue("spectating");
-      defaults.readyCheck = getFormFieldValue("readyCheck");
-      defaults.anonymousGame = getFormFieldValue("anonymousGame");
-      defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
+      Object.keys(defaults).forEach(function (key) {
+        const submittedValue = getFormFieldValue(key);
+        if (submittedValue) {
+          defaults[key] = submittedValue;
+        }
+      });
       persistDefaults(gameType, defaults);
       return hostPromise;
     } else {

@@ -10,6 +10,7 @@ export const GameTypes = [
   "Texas Hold Em",
   "Cheat",
   "Battlesnakes",
+  "Connect Four",
 ];
 export const Lobbies = [
   "Main",
@@ -32,6 +33,7 @@ export const Alignments = {
   "Texas Hold Em": ["Town", "Host"],
   Cheat: ["Town", "Host"],
   Battlesnakes: ["Town", "Host"],
+  "Connect Four": ["Town"],
 };
 
 export const GameStates = {
@@ -52,6 +54,7 @@ export const GameStates = {
   "Texas Hold Em": ["Place Bets", "Showdown"],
   Cheat: ["Play Cards", "Call Lie"],
   Battlesnakes: ["Day"],
+  "Connect Four": ["Turn"],
 };
 
 export const RatingThresholds = {
