@@ -2338,6 +2338,10 @@ background-image: url("/src/images/modifiers/disloyal.png");
 background-image: url("/src/images/modifiers/dovish.png");
 }
 
+.modifier-Mafia-Excessive {
+background-image: url("/src/images/modifiers/excessive.png");
+}
+
 .modifier-Mafia-Even {
 background-image: url("/src/images/modifiers/even.png");
 }
@@ -2520,6 +2524,10 @@ background-image: url("/src/images/modifiers/x-shot.png");
 
 .modifier-Mafia-Paranoid {
 background-image: url("/src/images/modifiers/paranoid.png");
+}
+
+.modifier-Mafia-Phony {
+background-image: url("/src/images/modifiers/phony.png");
 }
 
 .modifier-Mafia-Picky {
