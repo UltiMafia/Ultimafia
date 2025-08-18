@@ -26,7 +26,7 @@ module.exports = class ConnectFourGame extends Game {
     this.currentIndex = 0;
     this.currentPlayer = undefined;
     this.board = [];
-    this.randomizedPlayers = []; 
+    this.randomizedPlayers = [];
     this.randomizedPlayersCopy = [];
 
     this.boardX = options.settings.boardX;
@@ -64,78 +64,80 @@ module.exports = class ConnectFourGame extends Game {
       this.sendAlert(
         `${this.randomizedPlayersCopy[this.currentIndex].name}'s Turn!`
       );
-      for(let i = 0; i< this.board.length; i++){
-          for(let y = 0; y < this.board[i].length; y++){
-            /*
+      for (let i = 0; i < this.board.length; i++) {
+        for (let y = 0; y < this.board[i].length; y++) {
+          /*
           this.sendAlert(
         ` Row ${i} Col ${y} Value ${this.board[i][y]}`
       );
       */
-          }
         }
+      }
     }
     super.incrementState();
   }
 
   placeChip(player, column) {
-    let colNum = parseInt(column)-1;
-    for(let i = 0; i<this.boardX;i++){
-      if(this.board[this.boardX-1-i][colNum] == " "){
-        this.board[this.boardX-1-i][colNum] = player;
-        return [this.boardX-1-i, colNum];
+    let colNum = parseInt(column) - 1;
+    for (let i = 0; i < this.boardX; i++) {
+      if (this.board[this.boardX - 1 - i][colNum] == " ") {
+        this.board[this.boardX - 1 - i][colNum] = player;
+        return [this.boardX - 1 - i, colNum];
       }
     }
-
   }
 
-  CheckForConnections(player, row, col){
+  CheckForConnections(player, row, col) {
     const rowNew = row;
     const colNew = col;
-    if(
-    this.checkRecursive(player, rowNew, colNew, 0, "Up") == true ||
-    this.checkRecursive(player, rowNew, colNew, 0, "Down") == true ||
-    this.checkRecursive(player, rowNew, colNew, 0, null, "Left") == true ||
-    this.checkRecursive(player, rowNew, colNew,0, null, "Right") == true ||
-    this.checkRecursive(player, rowNew, colNew,0, "Up", "Left") == true ||
-    this.checkRecursive(player, rowNew, colNew,0, "Up", "Right") == true ||
-    this.checkRecursive(player, rowNew, colNew,0,"Down","Left") == true ||
-    this.checkRecursive(player, rowNew, colNew,0,"Down","Right") == true
-    ){
+    if (
+      this.checkRecursive(player, rowNew, colNew, 0, "Up") == true ||
+      this.checkRecursive(player, rowNew, colNew, 0, "Down") == true ||
+      this.checkRecursive(player, rowNew, colNew, 0, null, "Left") == true ||
+      this.checkRecursive(player, rowNew, colNew, 0, null, "Right") == true ||
+      this.checkRecursive(player, rowNew, colNew, 0, "Up", "Left") == true ||
+      this.checkRecursive(player, rowNew, colNew, 0, "Up", "Right") == true ||
+      this.checkRecursive(player, rowNew, colNew, 0, "Down", "Left") == true ||
+      this.checkRecursive(player, rowNew, colNew, 0, "Down", "Right") == true
+    ) {
       return true;
     }
     return false;
   }
 
-  checkRecursive(player, row, col, distance, Direction1, Direction2){ 
-    if(this.board[row] && this.board[row][col] == player.name){
-      if(distance == 3){
+  checkRecursive(player, row, col, distance, Direction1, Direction2) {
+    if (this.board[row] && this.board[row][col] == player.name) {
+      if (distance == 3) {
         return true;
+      } else {
+        if (Direction1 == "Up") {
+          row = row - 1;
+        } else if (Direction1 == "Down") {
+          row = row + 1;
+        }
+        if (Direction2 == "Left") {
+          col = col - 1;
+        } else if (Direction2 == "Right") {
+          col = col + 1;
+        }
+        return this.checkRecursive(
+          player,
+          row,
+          col,
+          distance + 1,
+          Direction1,
+          Direction2
+        );
       }
-      else{
-        if(Direction1 == "Up"){
-          row = row-1;
-        }
-        else if(Direction1 == "Down"){
-          row = row+1;
-        }
-        if(Direction2 == "Left"){
-          col = col-1;
-        }
-        else if(Direction2 == "Right"){
-          col = col+1;
-        }
-        return this.checkRecursive(player, row, col, distance+1, Direction1, Direction2);
-      }
-    }
-    else{
+    } else {
       return false;
     }
   }
 
-  isBoardFull(){
-    for(let k = 0; k < this.board.length; k++){
-      for(let h = 0; h < this.board[k].length; h++){
-        if(this.board[k][h] == " "){
+  isBoardFull() {
+    for (let k = 0; k < this.board.length; k++) {
+      for (let h = 0; h < this.board[k].length; h++) {
+        if (this.board[k][h] == " ") {
           return false;
         }
       }
@@ -189,8 +191,7 @@ module.exports = class ConnectFourGame extends Game {
     else if (aliveCount == 0) {
       winners.addGroup("No one");
       finished = true;
-    }
-    else if(this.isBoardFull()){
+    } else if (this.isBoardFull()) {
       winners.addGroup("No one");
       finished = true;
     }
