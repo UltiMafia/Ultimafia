@@ -120,7 +120,12 @@ export default function ConnectFourGame(props) {
         }
         centerPanelContent={
           <>
-            <TextMeetingLayout
+          <ConnectFourBoardWrapper stateViewing={stateViewing} history={history} players={players} />
+          </>
+        }
+        rightPanelContent={
+          <>
+          <TextMeetingLayout
               combineMessagesFromAllMeetings
               socket={game.socket}
               history={history}
@@ -132,14 +137,6 @@ export default function ConnectFourGame(props) {
               options={game.options}
               setup={game.setup}
               localAudioTrack={game.localAudioTrack}
-            />
-          </>
-        }
-        rightPanelContent={
-          <>
-            <ConnectFourBoardWrapper
-              stateViewing={stateViewing}
-              history={history}
             />
             {!isSpectator && <Notes stateViewing={stateViewing} />}
           </>
@@ -160,10 +157,7 @@ function ConnectFourBoardWrapper(props) {
       scrollable
       content={
         <>
-          <ConnectFourBoard
-            history={props.history}
-            stateViewing={stateViewing}
-          />
+          <ConnectFourBoard history={props.history} stateViewing={stateViewing} players={props.players} />
         </>
       }
     />
@@ -173,17 +167,13 @@ function ConnectFourBoardWrapper(props) {
 function ConnectFourBoard(props) {
   const extraInfo = props.history.states[props.stateViewing].extraInfo;
   const rows = extraInfo.board;
-  let rowsAfter = [];
-  for(let x = 0; x < rows.length; x++){
-    rowsAfter.push([x, rows[x]]);
-  }
 
   return (
     <>
       <div className="connectFour-board">
-        {rowsAfter.map((row) => {
-          return <BoardRow key={row[0]} columns={row} />;
-        })}
+        {rows.map((row) => 
+          <BoardRow columns={row} players={props.players} />
+        )}
       </div>
     </>
   );
@@ -193,17 +183,13 @@ function BoardRow(props) {
   const columns = props.columns;
 
   let rowData = [];
-  let key = 0;
-  for (let column of columns[1]) {
-    rowData.push([key+" "+columns[0], column]);
-    key++;
+  for (let column of columns) {
+    rowData.push(<BoardBox column={column} players={props.players} />);
   }
 
   return (
     <>
-      <div className="connectFour-board-row">{rowData.map((row) => {
-          return < BoardBox key={row[0]} column={row} />;
-        })}</div>
+      <div className="connectFour-board-row">{rowData}</div>
     </>
   );
 }
@@ -211,32 +197,43 @@ function BoardRow(props) {
 function BoardBox(props) {
   const column = props.column;
 
-  if(column[1] == " "){
+  if(column == " " || !props.players){
     return (
     <>
-      <div className="connectFour-board-box" key={column[0]}>{column[1]}</div>
+      <div className="connectFour-board-box">{column}</div>
     </>
   );
   }
   else{
+    let temp;
+    let playersInGame = Object.values(props.players);
+    for(let i = 0; i<  playersInGame.length; i++){
+      if(playersInGame[i].name == column){
+        temp = playersInGame[i];
+      }
+    }
     return (
     <>
-      <div className="connectFour-board-box" key={column[0]}>{<PlayerAvatar player={column[1]} /> }</div>
+      <div className="connectFour-board-box">{<PlayerAvatar player={temp}/>}</div>
     </>
   );
   }
+
 }
 
 function PlayerAvatar(props) {
-  const player = props.player;
-
-  let avatarId = player.anonId === undefined ? player.userId : player.anonId;
+  const player =  props.player;
+  let avatarId = player.userId;
+if( player.anonId != null && player.anonId != undefined){
+avatarId = player.anonId
+}
 
   return (
     <>
       <Avatar
         id={player.userId}
         avatarId={avatarId}
+        hasImage={player.avatar}
         name={player.name}
         mediumlarge
       />

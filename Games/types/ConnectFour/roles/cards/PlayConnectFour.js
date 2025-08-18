@@ -4,17 +4,29 @@ module.exports = class PlayConnectFour extends Card {
   constructor(role) {
     super(role);
 
+
+    let rows = [];
+    for(let x = 1; x < parseInt(this.game.boardY)+1; x++){
+      rows.push(`${x}`);
+    }
+
     this.meetings = {
       "Place Chip": {
-        actionName: "Place Chip",
+        actionName: "Choose Column",
         states: ["Turn"],
         flags: ["voting"],
         inputType: "custom",
-        targets: ["1", "2", "3", "4", "5", "6", "7", "8"],
+        targets: rows,
         action: {
           item: this,
           run: function () {
-            this.game.placeChip(this.actor.name, this.target);
+            let values = this.game.placeChip(this.actor.name, this.target);
+            if(!values){
+              return;
+            }
+            if(this.game.CheckForConnections(this.actor, values[0], values[1])){
+              this.actor.Has4InaRow = true;
+            }
           },
         },
         shouldMeet: function () {

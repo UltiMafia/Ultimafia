@@ -25,7 +25,7 @@ export default function HostCheat() {
       type: "number",
       value: defaults.MaxRounds,
       min: 0,
-      max: 25,
+      max: 200,
     },
     {
       label: "Lobby",

@@ -7,8 +7,13 @@ module.exports = class WinIfFourInARow extends Card {
     this.winCheck = {
       priority: 0,
       check: function (counts, winners, aliveCount) {
-        const lastAlive = aliveCount == 1 && this.player.alive;
-        if (lastAlive) {
+
+        if(this.player.Has4InaRow == true){
+          winners.addPlayer(this.player, this.player.name);
+          return;
+        }
+        const lastAlive = this.game.alivePlayers().filter((p) => p.role.name != "Host");
+        if (lastAlive.length == 1 && this.player.alive) {
           winners.addPlayer(this.player, this.player.name);
           return;
         }
