@@ -4,9 +4,8 @@ module.exports = class PlayConnectFour extends Card {
   constructor(role) {
     super(role);
 
-
     let rows = [];
-    for(let x = 1; x < parseInt(this.game.boardY)+1; x++){
+    for (let x = 1; x < parseInt(this.game.boardY) + 1; x++) {
       rows.push(`${x}`);
     }
 
@@ -21,10 +20,12 @@ module.exports = class PlayConnectFour extends Card {
           item: this,
           run: function () {
             let values = this.game.placeChip(this.actor.name, this.target);
-            if(!values){
+            if (!values) {
               return;
             }
-            if(this.game.CheckForConnections(this.actor, values[0], values[1])){
+            if (
+              this.game.CheckForConnections(this.actor, values[0], values[1])
+            ) {
               this.actor.Has4InaRow = true;
             }
           },

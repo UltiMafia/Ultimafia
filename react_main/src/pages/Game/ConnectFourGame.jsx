@@ -120,12 +120,16 @@ export default function ConnectFourGame(props) {
         }
         centerPanelContent={
           <>
-          <ConnectFourBoardWrapper stateViewing={stateViewing} history={history} players={players} />
+            <ConnectFourBoardWrapper
+              stateViewing={stateViewing}
+              history={history}
+              players={players}
+            />
           </>
         }
         rightPanelContent={
           <>
-          <TextMeetingLayout
+            <TextMeetingLayout
               combineMessagesFromAllMeetings
               socket={game.socket}
               history={history}
@@ -157,7 +161,11 @@ function ConnectFourBoardWrapper(props) {
       scrollable
       content={
         <>
-          <ConnectFourBoard history={props.history} stateViewing={stateViewing} players={props.players} />
+          <ConnectFourBoard
+            history={props.history}
+            stateViewing={stateViewing}
+            players={props.players}
+          />
         </>
       }
     />
@@ -171,9 +179,9 @@ function ConnectFourBoard(props) {
   return (
     <>
       <div className="connectFour-board">
-        {rows.map((row) => 
+        {rows.map((row) => (
           <BoardRow columns={row} players={props.players} />
-        )}
+        ))}
       </div>
     </>
   );
@@ -197,36 +205,36 @@ function BoardRow(props) {
 function BoardBox(props) {
   const column = props.column;
 
-  if(column == " " || !props.players){
+  if (column == " " || !props.players) {
     return (
-    <>
-      <div className="connectFour-board-box">{column}</div>
-    </>
-  );
-  }
-  else{
+      <>
+        <div className="connectFour-board-box">{column}</div>
+      </>
+    );
+  } else {
     let temp;
     let playersInGame = Object.values(props.players);
-    for(let i = 0; i<  playersInGame.length; i++){
-      if(playersInGame[i].name == column){
+    for (let i = 0; i < playersInGame.length; i++) {
+      if (playersInGame[i].name == column) {
         temp = playersInGame[i];
       }
     }
     return (
-    <>
-      <div className="connectFour-board-box">{<PlayerAvatar player={temp}/>}</div>
-    </>
-  );
+      <>
+        <div className="connectFour-board-box">
+          {<PlayerAvatar player={temp} />}
+        </div>
+      </>
+    );
   }
-
 }
 
 function PlayerAvatar(props) {
-  const player =  props.player;
+  const player = props.player;
   let avatarId = player.userId;
-if( player.anonId != null && player.anonId != undefined){
-avatarId = player.anonId
-}
+  if (player.anonId != null && player.anonId != undefined) {
+    avatarId = player.anonId;
+  }
 
   return (
     <>
