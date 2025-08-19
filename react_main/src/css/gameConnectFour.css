@@ -19,9 +19,9 @@
 }
 
 .game .connectFour-board-box {
-  width: 60px;
-  height: 60px;
-  margin: 8px;
+  width: 70px;
+  height: 70px;
+  margin: 0px;
   background-image: url("/src/images/ConnectFourBackground.png");
-  background-size: 60px 60px;
+  background-size: 70px 70px;
 }
