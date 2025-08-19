@@ -3902,7 +3902,7 @@ const roleData = {
       tags: ["Conversion", "Demonic Interaction", "Basic"],
       description: [
         "If a Demonic or Linchpin Cult role dies, the Devotee will convert to that role.",
-        "If their is less then 5 players alive, the Devotee has no ability.",
+        "If there are less then 5 players alive, the Devotee has no ability.",
       ],
     },
     Zealot: {
@@ -5798,7 +5798,7 @@ const roleData = {
     },
   },
   "Connect Four": {
-    Player: {
+    Starman: {
       alignment: "Town",
       tags: ["None"],
       description: ["Can place counters on the board."],

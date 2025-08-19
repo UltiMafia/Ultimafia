@@ -32,7 +32,7 @@ export default function LearnConnectFour(props) {
         >
           Connect Four
         </Link>{" "}
-        originally published by Milton Bradley.
+        invented by David Bowie.
       </Typography>
       <Typography variant="body1" paragraph>
         In Connect Four, players are competing to the be the first to reach four
