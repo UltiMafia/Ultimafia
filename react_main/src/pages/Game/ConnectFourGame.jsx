@@ -222,7 +222,7 @@ function BoardBox(props) {
     return (
       <>
         <div className="connectFour-board-box">
-          {<PlayerAvatar player={temp} />}
+          {<PlayerAvatar player={temp}/>}
         </div>
       </>
     );
@@ -244,6 +244,7 @@ function PlayerAvatar(props) {
         hasImage={player.avatar}
         name={player.name}
         mediumlarge
+        ConnectFour
       />
     </>
   );

@@ -200,6 +200,7 @@ export function Avatar(props) {
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
   const absoluteLeftAvatarPx = props.absoluteLeftAvatarPx;
+  const ConnectFour = props.ConnectFour;
   const isSquare = props.isSquare || false;
   const border = props.border || undefined;
 
@@ -227,10 +228,14 @@ export function Avatar(props) {
     style.position = "absolute";
     style.left = absoluteLeftAvatarPx;
 
-    if (!small) {
+    if (!small && !ConnectFour) {
       style.transform = "translateY(12px)";
     }
   }
+
+  if(ConnectFour){
+      style.transform = "translateX(5px) translateY(5px)";
+    }
 
   if (hasImage && !imageUrl && id && avatarId) {
     if (id === avatarId) {
