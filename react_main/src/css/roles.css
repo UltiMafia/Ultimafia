@@ -2234,6 +2234,10 @@ background-image: url("/src/images/modifiers/bloodthirsty-hemophilic.png");
 background-image: url("/src/images/modifiers/bloodthirsty-hemophilic.png");
 }
 
+.modifier-Mafia-Boastful {
+background-image: url("/src/images/modifiers/respected-boastful.png");
+
+
 .modifier-Mafia-Bouncy {
 background-image: url("/src/images/modifiers/bouncy.png");
 }
@@ -2430,6 +2434,10 @@ background-image: url("/src/images/modifiers/klutzy.png");
 background-image: url("/src/images/modifiers/lazy.png");
 }
 
+.modifier-Mafia-Leaky {
+background-image: url("/src/images/modifiers/leaky.png");
+}
+
 .modifier-Mafia-Liminal {
 background-image: url("/src/images/modifiers/liminal.png");
 }
@@ -2579,7 +2587,7 @@ background-image: url("/src/images/modifiers/resolute.png");
 }
 
 .modifier-Mafia-Respected {
-background-image: url("/src/images/modifiers/respected.png");
+background-image: url("/src/images/modifiers/respected-boastful.png");
 }
 
 .modifier-Mafia-Restless {
