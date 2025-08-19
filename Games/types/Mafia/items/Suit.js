@@ -13,8 +13,6 @@ module.exports = class Suit extends Item {
   }
 
   hold(player) {
-
-
     let tempApp = {
       death: this.type,
       reveal: this.type,

@@ -6,6 +6,5 @@ module.exports = class Host extends Role {
 
     this.alignment = "Town";
     this.cards = ["TownCore"];
-
   }
 };

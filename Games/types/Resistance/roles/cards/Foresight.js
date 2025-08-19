@@ -3,7 +3,7 @@ const Card = require("../../Card");
 module.exports = class Foresight extends Card {
   constructor(role) {
     super(role);
-  role.game.hasEpilogue = true;
+    role.game.hasEpilogue = true;
     this.stateMods = {
       Epilogue: {
         type: "add",

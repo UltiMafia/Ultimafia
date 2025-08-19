@@ -14,9 +14,9 @@ const {
 module.exports = class FairModifier extends Card {
   constructor(role) {
     super(role);
-  
+
     this.listeners = {
-            state: function (stateInfo) {
+      state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
@@ -25,7 +25,7 @@ module.exports = class FairModifier extends Card {
           actor: null,
           target: this.player,
           game: this.player.game,
-          priority:  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT -20,
+          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 20,
           labels: ["block", "hidden", "absolute"],
           run: function () {
             if (!this.target.hasAbility(["Modifier", "WhenDead", "Blocking"])) {
@@ -48,13 +48,13 @@ module.exports = class FairModifier extends Card {
                 visits.push(...toCheck1);
               }
             }
-            
+
             this.target.role.data.LimitedLastNightVisits = visits;
-            if(this.target.role.data.LimitedAllVisits == null){
+            if (this.target.role.data.LimitedAllVisits == null) {
               this.target.role.data.LimitedAllVisits = visits;
-            }
-            else{
-              this.target.role.data.LimitedAllVisits = this.target.role.data.LimitedAllVisits.concat(visits);
+            } else {
+              this.target.role.data.LimitedAllVisits =
+                this.target.role.data.LimitedAllVisits.concat(visits);
             }
           },
         });
@@ -75,7 +75,7 @@ module.exports = class FairModifier extends Card {
           if (INVITED_MEETINGS.includes(meeting.name)) {
             return;
           }
-          if(meeting.item != null){
+          if (meeting.item != null) {
             return;
           }
           for (let w = 0; w < STARTS_WITH_MEETINGS.length; w++) {
@@ -91,10 +91,6 @@ module.exports = class FairModifier extends Card {
           }
         });
       },
-      
     };
-
-    
   }
 };
-

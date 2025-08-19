@@ -7,7 +7,7 @@ module.exports = class WinWithResistance extends Card {
     this.winCheck = {
       priority: 0,
       check: function (winners, Epilogue) {
-        if(Epilogue == true){
+        if (Epilogue == true) {
           return;
         }
         if (

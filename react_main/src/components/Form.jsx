@@ -540,16 +540,15 @@ export function useForm(initialFormFields) {
       for (let action of actions) {
         if (action.type) {
           switch (action.type) {
-            case 'setFields': {
+            case "setFields": {
               newFormFields = action.fields;
               break;
             }
             default: {
-              throw Error('Unknown action: ' + action.type);
+              throw Error("Unknown action: " + action.type);
             }
           }
-        }
-        else if (field.ref && field.ref === action.ref) {
+        } else if (field.ref && field.ref === action.ref) {
           if (typeof action.value == "string" && field.type === "boolean")
             action.value = action.value === "true";
 
@@ -622,7 +621,9 @@ export function UserSearchSelect(props) {
       options={matchingOptions}
       onInputChange={onInputChange}
       onChange={onChange}
-      renderInput={(params) => <TextField {...params} label={props.placeholder} />}
+      renderInput={(params) => (
+        <TextField {...params} label={props.placeholder} />
+      )}
     />
   );
 }

@@ -10,8 +10,7 @@ module.exports = class ActAfterNightKilled extends Card {
   constructor(role) {
     super(role);
 
-
-      this.listeners = {
+    this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {
           return;
@@ -19,23 +18,22 @@ module.exports = class ActAfterNightKilled extends Card {
         this.HasBeenNightKilled = false;
       },
       death: function (player, killer, deathType, instant) {
-        if(player != this.player){
+        if (player != this.player) {
           return;
         }
         if (this.game.getStateName() != "Night") return;
         this.HasBeenNightKilled = true;
       },
       revival: function (player, killer, deathType, instant) {
-        if(player != this.player){
+        if (player != this.player) {
           return;
         }
-        if(!this.player.alive){
+        if (!this.player.alive) {
           return;
         }
         this.HasBeenNightKilled = false;
       },
     };
-    
 
     this.meetingMods = {
       "*": {
@@ -68,12 +66,11 @@ module.exports = class ActAfterNightKilled extends Card {
               }
             }
 
-          if(this.player.role.HasBeenNightKilled == true){
-          return true;
-          }
-          else{
-          return false;
-          }
+            if (this.player.role.HasBeenNightKilled == true) {
+              return true;
+            } else {
+              return false;
+            }
           } else {
             if (meetingName == "Graveyard") {
               return false;
@@ -107,7 +104,7 @@ module.exports = class ActAfterNightKilled extends Card {
                   return true;
                 }
               }
-          return false;
+              return false;
             }
           }
         },
@@ -142,11 +139,10 @@ module.exports = class ActAfterNightKilled extends Card {
           }
 
           // meetings invited by others
-          if(this.player.role.HasBeenNightKilled == true){
-          return true;
-          }
-          else{
-          return false;
+          if (this.player.role.HasBeenNightKilled == true) {
+            return true;
+          } else {
+            return false;
           }
         },
         WhileAliveMod: function (meetingName) {

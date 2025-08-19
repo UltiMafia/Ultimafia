@@ -62,12 +62,11 @@ module.exports = class MafiaPlayer extends Player {
         )
           return;
 
+        if (this.game.extendLength == 0) {
+          this.sendAlert("Extends are disabled.");
+          return;
+        }
 
-if(this.game.extendLength == 0){
-    this.sendAlert("Extends are disabled.");
-  return;
-}
-        
         this.votedForExtension = true;
         this.game.extensionVotes++;
 
@@ -323,11 +322,17 @@ if(this.game.extendLength == 0){
       this.requiresGraveyardParticipation()
     ) {
       this.queueAlert(
-        ":system: :star: ATTENTION: :rip: Graveyard participation is required! Please stay in the game.", undefined, undefined, ["important"]
+        ":system: :star: ATTENTION: :rip: Graveyard participation is required! Please stay in the game.",
+        undefined,
+        undefined,
+        ["important"]
       );
     } else {
       this.queueAlert(
-        ":system: Graveyard participation is not required. You can leave the game.", undefined, undefined, ["info"]
+        ":system: Graveyard participation is not required. You can leave the game.",
+        undefined,
+        undefined,
+        ["info"]
       );
     }
 
@@ -546,8 +551,7 @@ if(this.game.extendLength == 0){
         effect.name == "Delirious" &&
         (effect.effecter == null ||
           effect.effecter == this ||
-          (effect.effecterRole &&
-          effect.effecterRole.hasAbility(effect.types)))
+          (effect.effecterRole && effect.effecterRole.hasAbility(effect.types)))
       ) {
         return true;
       }
@@ -565,12 +569,15 @@ if(this.game.extendLength == 0){
           this.game.formatRoleInternal(this.role.name, this.role.modifier)
         )
         .includes("Restless") && !this.hasEffect("NoModifiers");
-    if(!isRestless){
-    isRestless = this.game
-        .getRoleTags(
-          this.game.formatRoleInternal(this.role.name, this.role.modifier)
-        )
-        .includes("Vengeful") && !this.hasEffect("NoModifiers") && this.role.HasBeenNightKilled == true;
+    if (!isRestless) {
+      isRestless =
+        this.game
+          .getRoleTags(
+            this.game.formatRoleInternal(this.role.name, this.role.modifier)
+          )
+          .includes("Vengeful") &&
+        !this.hasEffect("NoModifiers") &&
+        this.role.HasBeenNightKilled == true;
     }
     let isTransendant =
       this.game
@@ -587,7 +594,7 @@ if(this.game.extendLength == 0){
     if (this.exorcised == true) {
       return false;
     }
-    if(this.hasEffect("BackUp")){
+    if (this.hasEffect("BackUp")) {
       return false;
     }
     if (isRetired == true && !types.includes("Modifier")) {
@@ -643,48 +650,66 @@ if(this.game.extendLength == 0){
     return votePower;
   }
 
-customizeMeetingTargets(meeting){
-let isMorbid = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Morbid");
-let isLiminal = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Liminal");
-let isSelfish = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Selfish");
-let isFair = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Fair");
-let isNonconsecutive = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Nonconsecutive");
-let isConsecutive = this.game.getRoleTags(this.game.formatRoleInternal(this.role.name, this.role.modifier)).includes("Consecutive");
-let standard = ["alive"];
-let standard2 = ["members"];
-if(isLiminal == true){
-  standard = ["alive", "dead"];
-}
-if(isMorbid == true){
-  standard = ["dead"];
-}
-if(isSelfish == true){
-  standard2 = [];
-}
-if(isConsecutive){
-if(this.role.data.LimitedAllVisits == null || this.role.data.LimitedAllVisits.length <= 0){
-  
-}
-else{
-  standard = ["previousAll"];
-}
-  
-}
-else if(isFair){
-  standard2.push("previousAll");
-}
-else if(isNonconsecutive){
-  standard2.push("previous");
-}
+  customizeMeetingTargets(meeting) {
+    let isMorbid = this.game
+      .getRoleTags(
+        this.game.formatRoleInternal(this.role.name, this.role.modifier)
+      )
+      .includes("Morbid");
+    let isLiminal = this.game
+      .getRoleTags(
+        this.game.formatRoleInternal(this.role.name, this.role.modifier)
+      )
+      .includes("Liminal");
+    let isSelfish = this.game
+      .getRoleTags(
+        this.game.formatRoleInternal(this.role.name, this.role.modifier)
+      )
+      .includes("Selfish");
+    let isFair = this.game
+      .getRoleTags(
+        this.game.formatRoleInternal(this.role.name, this.role.modifier)
+      )
+      .includes("Fair");
+    let isNonconsecutive = this.game
+      .getRoleTags(
+        this.game.formatRoleInternal(this.role.name, this.role.modifier)
+      )
+      .includes("Nonconsecutive");
+    let isConsecutive = this.game
+      .getRoleTags(
+        this.game.formatRoleInternal(this.role.name, this.role.modifier)
+      )
+      .includes("Consecutive");
+    let standard = ["alive"];
+    let standard2 = ["members"];
+    if (isLiminal == true) {
+      standard = ["alive", "dead"];
+    }
+    if (isMorbid == true) {
+      standard = ["dead"];
+    }
+    if (isSelfish == true) {
+      standard2 = [];
+    }
+    if (isConsecutive) {
+      if (
+        this.role.data.LimitedAllVisits == null ||
+        this.role.data.LimitedAllVisits.length <= 0
+      ) {
+      } else {
+        standard = ["previousAll"];
+      }
+    } else if (isFair) {
+      standard2.push("previousAll");
+    } else if (isNonconsecutive) {
+      standard2.push("previous");
+    }
     meeting.targets = { include: standard, exclude: standard2 };
     meeting.targetsDescription = null;
     meeting.generateTargets();
-    for(let member of meeting.members) {
-    member.player.sendMeeting(meeting);
+    for (let member of meeting.members) {
+      member.player.sendMeeting(meeting);
     }
-  
-}
-
-
-  
+  }
 };

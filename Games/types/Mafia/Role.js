@@ -24,22 +24,32 @@ module.exports = class MafiaRole extends Role {
     };
   }
 
-  getAllRoles(){
-    if(this.game.getRoleTags(this.game.formatRoleInternal(this.name, this.modifier)).includes("Excessive") && !this.player.hasEffect("NoModifiers")){
-      let AllRoles = Object.entries(roleData.Mafia).filter((m) => m[1].alignment != "Event").map((r) => r[0]);
+  getAllRoles() {
+    if (
+      this.game
+        .getRoleTags(this.game.formatRoleInternal(this.name, this.modifier))
+        .includes("Excessive") &&
+      !this.player.hasEffect("NoModifiers")
+    ) {
+      let AllRoles = Object.entries(roleData.Mafia)
+        .filter((m) => m[1].alignment != "Event")
+        .map((r) => r[0]);
       return AllRoles.concat(this.game.PossibleRoles);
-    }
-    else if(this.game.getRoleTags(this.game.formatRoleInternal(this.name, this.modifier)).includes("Austere") && !this.player.hasEffect("NoModifiers")){
-          let AllRoles = [];
-          for(let player of this.game.players){
-            AllRoles.push(`${player.role.name}:${player.role.modifier}`);
-          }
-      if(AllRoles.length <= 0){
+    } else if (
+      this.game
+        .getRoleTags(this.game.formatRoleInternal(this.name, this.modifier))
+        .includes("Austere") &&
+      !this.player.hasEffect("NoModifiers")
+    ) {
+      let AllRoles = [];
+      for (let player of this.game.players) {
+        AllRoles.push(`${player.role.name}:${player.role.modifier}`);
+      }
+      if (AllRoles.length <= 0) {
         return this.game.PossibleRoles;
       }
       return AllRoles;
-    }
-    else{
+    } else {
       return this.game.PossibleRoles;
     }
   }
@@ -126,36 +136,34 @@ module.exports = class MafiaRole extends Role {
     return `${roleName}${modifiers ? ` (${modifiers})` : ""}`;
   }
 
-
-
   hasAbility(types) {
     if (types == null) {
       types = [];
     }
-    let isRestless =this.game.getRoleTags(this.game.formatRoleInternal(this.name, this.modifier)).includes("Restless") && !this.player.hasEffect("NoModifiers");
-    if(!isRestless){
-    isRestless = this.game
-        .getRoleTags(
-          this.game.formatRoleInternal(this.name, this.modifier)
-        )
-        .includes("Vengeful") && !this.player.hasEffect("NoModifiers") && this.HasBeenNightKilled == true;
+    let isRestless =
+      this.game
+        .getRoleTags(this.game.formatRoleInternal(this.name, this.modifier))
+        .includes("Restless") && !this.player.hasEffect("NoModifiers");
+    if (!isRestless) {
+      isRestless =
+        this.game
+          .getRoleTags(this.game.formatRoleInternal(this.name, this.modifier))
+          .includes("Vengeful") &&
+        !this.player.hasEffect("NoModifiers") &&
+        this.HasBeenNightKilled == true;
     }
     let isTransendant =
       this.game
-        .getRoleTags(
-          this.game.formatRoleInternal(this.name, this.modifier)
-        )
+        .getRoleTags(this.game.formatRoleInternal(this.name, this.modifier))
         .includes("Transcendent") && !this.player.hasEffect("NoModifiers");
     let isRetired =
       this.game
-        .getRoleTags(
-          this.game.formatRoleInternal(this.name, this.modifier)
-        )
+        .getRoleTags(this.game.formatRoleInternal(this.name, this.modifier))
         .includes("Retired") && !this.player.hasEffect("NoModifiers");
     if (this.player.exorcised == true) {
       return false;
     }
-    if(this.player.hasEffect("BackUp") && !types.includes("Modifier")){
+    if (this.player.hasEffect("BackUp") && !types.includes("Modifier")) {
       return false;
     }
     if (isRetired == true && !types.includes("Modifier")) {
@@ -191,24 +199,45 @@ module.exports = class MafiaRole extends Role {
 
   canTargetPlayer(player) {
     if (this.modifier != null) {
-      if (this.modifier.split("/").includes("Loyal") && player.role.alignment != this.alignment) {
+      if (
+        this.modifier.split("/").includes("Loyal") &&
+        player.role.alignment != this.alignment
+      ) {
         return false;
-      } else if (this.modifier.split("/").includes("Disloyal") && player.role.alignment == this.alignment) {
+      } else if (
+        this.modifier.split("/").includes("Disloyal") &&
+        player.role.alignment == this.alignment
+      ) {
         return false;
       }
       if (this.modifier.split("/").includes("Holy") && player.isDemonic(true)) {
         return false;
-      } else if (this.modifier.split("/").includes("Unholy") && !player.isDemonic(true)) {
+      } else if (
+        this.modifier.split("/").includes("Unholy") &&
+        !player.isDemonic(true)
+      ) {
         return false;
       }
-      if (this.modifier.split("/").includes("Refined") && player.role.data.banished == true) {
+      if (
+        this.modifier.split("/").includes("Refined") &&
+        player.role.data.banished == true
+      ) {
         return false;
-      } else if (this.modifier.split("/").includes("Unrefined") && player.role.data.banished != true) {
+      } else if (
+        this.modifier.split("/").includes("Unrefined") &&
+        player.role.data.banished != true
+      ) {
         return false;
       }
-      if (this.modifier.split("/").includes("Simple") && !this.isVanilla(player)) {
+      if (
+        this.modifier.split("/").includes("Simple") &&
+        !this.isVanilla(player)
+      ) {
         return false;
-      } else if (this.modifier.split("/").includes("Complex") && this.isVanilla(player)) {
+      } else if (
+        this.modifier.split("/").includes("Complex") &&
+        this.isVanilla(player)
+      ) {
         return false;
       }
     }
@@ -226,6 +255,4 @@ module.exports = class MafiaRole extends Role {
     }
     return false;
   }
-
-  
 };

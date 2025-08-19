@@ -20,27 +20,27 @@ module.exports = class MovieTicket extends Item {
           labels: ["kill"],
           item: this,
           run: function () {
-             this.item.drop();
+            this.item.drop();
             if (this.target != "Yes") return;
             //this.game.broadcast("gunshot");
 
-            if(this.game.MovieWatchers == null){
+            if (this.game.MovieWatchers == null) {
               this.game.MovieWatchers = [];
             }
-            if(this.game.MovieWatchers.length <= 2){
+            if (this.game.MovieWatchers.length <= 2) {
               this.game.MovieWatchers.push(this.actor);
               this.game.queueAlert(
                 `${this.actor.name} is attending the movie release!`
               );
             }
-            if(this.game.MovieWatchers.length >= 3){
-                  this.game.queueAlert(
+            if (this.game.MovieWatchers.length >= 3) {
+              this.game.queueAlert(
                 `All seats are full ${this.game.MovieWatchers[0].name}, ${this.game.MovieWatchers[1].name}, and ${this.game.MovieWatchers[2].name} will be attending the movie release tonight!`
               );
               this.game.MovieWatchers[0].giveEffect("MovieNight");
-              for(let player of this.game.players){
-                for(let item of player.items){
-                  if(item.name == "MovieTicket"){
+              for (let player of this.game.players) {
+                for (let item of player.items) {
+                  if (item.name == "MovieTicket") {
                     item.drop();
                   }
                 }
@@ -51,7 +51,6 @@ module.exports = class MovieTicket extends Item {
       },
     };
   }
-
 
   getMeetingName(idx) {
     return `${this.id} ${idx}`;

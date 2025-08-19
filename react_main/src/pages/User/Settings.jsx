@@ -367,7 +367,14 @@ export default function Settings() {
           <Box sx={{ width: 1 / 2 }}>
             <Form
               fields={profileFields}
-              deps={{ name: user.name, pronouns: user.pronouns, user, accounts, siteInfo, errorAlert }}
+              deps={{
+                name: user.name,
+                pronouns: user.pronouns,
+                user,
+                accounts,
+                siteInfo,
+                errorAlert,
+              }}
               onChange={(action) =>
                 onSettingChange(action, updateProfileFields)
               }

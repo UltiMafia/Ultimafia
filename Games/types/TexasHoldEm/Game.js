@@ -111,8 +111,10 @@ module.exports = class TexasHoldEmGame extends Game {
     if (this.startingChips) {
       this.sendAlert(`Everyone starts with ${this.startingChips} chips.`);
     }
-    if(this.MaxRounds >= 1){
-      this.sendAlert(`The player with the most Chips wins after Round ${this.MaxRounds}.`);
+    if (this.MaxRounds >= 1) {
+      this.sendAlert(
+        `The player with the most Chips wins after Round ${this.MaxRounds}.`
+      );
     }
     this.sendAlert(`Good luck... You'll probably need it.`);
 
@@ -634,19 +636,16 @@ module.exports = class TexasHoldEmGame extends Game {
 
   addToPot(player, type, amount) {
     let soundNum = Random.randInt(0, 4);
-    if(soundNum == 0){
+    if (soundNum == 0) {
       this.broadcast("chips_large1");
-    }
-    else if(soundNum == 1){
+    } else if (soundNum == 1) {
       this.broadcast("chips_large2");
-    }
-    else if(soundNum == 2){
+    } else if (soundNum == 2) {
       this.broadcast("chips_small1");
-    }
-    else{
+    } else {
       this.broadcast("chips_small2");
     }
-    
+
     if (type == "Bet") {
       this.sendAlert(`${player.name} bets ${amount} into the Pot!`);
       player.Chips = parseInt(player.Chips) - parseInt(amount);

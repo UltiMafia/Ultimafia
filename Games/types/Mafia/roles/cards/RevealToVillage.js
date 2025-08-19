@@ -10,13 +10,13 @@ module.exports = class RevealToVillage extends Card {
           return;
         }
         for (let player of this.game.players) {
-        if(player == this.player){
-        continue;
+          if (player == this.player) {
+            continue;
+          }
+          if (player.faction == "Village") {
+            this.player.role.revealToPlayer(player);
+          }
         }
-        if (player.faction == "Village") {
-          this.player.role.revealToPlayer(player);
-        }
-      }
       },
     };
   }

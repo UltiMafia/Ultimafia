@@ -160,33 +160,32 @@ export default function HostGhost() {
     var scheduled = getFormFieldValue("scheduled");
 
     if (setupId) {
-      const hostPromise = axios
-        .post("/api/game/host", {
-          gameType: gameType,
-          setup: setupId,
-          lobby: getFormFieldValue("lobby"),
-          lobbyName: getFormFieldValue("lobbyName"),
-          private: getFormFieldValue("private"),
-          guests: getFormFieldValue("guests"),
-          spectating: getFormFieldValue("spectating"),
-          scheduled:
-            scheduled && new Date(getFormFieldValue("startDate")).getTime(),
-          readyCheck: getFormFieldValue("readyCheck"),
-          stateLengths: {
-            Night: getFormFieldValue("nightLength"),
-            "Give Clue": getFormFieldValue("giveClueLength"),
-            Day: getFormFieldValue("dayLength"),
-            "Guess Word": getFormFieldValue("guessWordLength"),
-          },
-          wordOptions: {
-            configureWords: getFormFieldValue("configureWords"),
-            wordLength: getFormFieldValue("wordLength"),
-            townWord: getFormFieldValue("townWord"),
-            foolWord: getFormFieldValue("foolWord"),
-          },
-          anonymousGame: getFormFieldValue("anonymousGame"),
-          anonymousDeckId: getFormFieldValue("anonymousDeckId"),
-        });
+      const hostPromise = axios.post("/api/game/host", {
+        gameType: gameType,
+        setup: setupId,
+        lobby: getFormFieldValue("lobby"),
+        lobbyName: getFormFieldValue("lobbyName"),
+        private: getFormFieldValue("private"),
+        guests: getFormFieldValue("guests"),
+        spectating: getFormFieldValue("spectating"),
+        scheduled:
+          scheduled && new Date(getFormFieldValue("startDate")).getTime(),
+        readyCheck: getFormFieldValue("readyCheck"),
+        stateLengths: {
+          Night: getFormFieldValue("nightLength"),
+          "Give Clue": getFormFieldValue("giveClueLength"),
+          Day: getFormFieldValue("dayLength"),
+          "Guess Word": getFormFieldValue("guessWordLength"),
+        },
+        wordOptions: {
+          configureWords: getFormFieldValue("configureWords"),
+          wordLength: getFormFieldValue("wordLength"),
+          townWord: getFormFieldValue("townWord"),
+          foolWord: getFormFieldValue("foolWord"),
+        },
+        anonymousGame: getFormFieldValue("anonymousGame"),
+        anonymousDeckId: getFormFieldValue("anonymousDeckId"),
+      });
 
       Object.keys(defaults).forEach(function (key) {
         const submittedValue = getFormFieldValue(key);
@@ -196,8 +195,7 @@ export default function HostGhost() {
       });
       persistDefaults(gameType, defaults);
       return hostPromise;
-    }
-    else {
+    } else {
       return null;
     }
   }

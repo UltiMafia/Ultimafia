@@ -10,6 +10,7 @@ export const GameTypes = [
   "Texas Hold Em",
   "Cheat",
   "Battlesnakes",
+  "Connect Four",
 ];
 export const Lobbies = [
   "Main",
@@ -30,8 +31,9 @@ export const Alignments = {
   "Wacky Words": ["Town", "Host"],
   "Liars Dice": ["Liars", "Host"],
   "Texas Hold Em": ["Town", "Host"],
-  "Cheat": ["Town", "Host"],
+  Cheat: ["Town", "Host"],
   Battlesnakes: ["Town", "Host"],
+  "Connect Four": ["Town"],
 };
 
 export const GameStates = {
@@ -50,8 +52,9 @@ export const GameStates = {
   "Wacky Words": ["Day", "Night"],
   "Liars Dice": ["Guess Dice"],
   "Texas Hold Em": ["Place Bets", "Showdown"],
-  "Cheat": ["Play Cards", "Call Lie"],
+  Cheat: ["Play Cards", "Call Lie"],
   Battlesnakes: ["Day"],
+  "Connect Four": ["Turn"],
 };
 
 export const RatingThresholds = {

@@ -6,7 +6,7 @@ import { Lobbies } from "Constants";
 export default function HostMafia() {
   const gameType = "Mafia";
   const defaults = getDefaults(gameType);
-  
+
   const initialFormFields = [
     {
       label: "Lobby",
@@ -152,30 +152,29 @@ export default function HostMafia() {
     if (lobby === "All") lobby = "Main";
 
     if (setupId) {
-      const hostPromise = axios
-        .post("/api/game/host", {
-          gameType,
-          lobby,
-          setup: setupId,
-          lobbyName: getFormFieldValue("lobbyName"),
-          private: getFormFieldValue("private"),
-          guests: getFormFieldValue("guests"),
-          ranked: getFormFieldValue("ranked"),
-          competitive: getFormFieldValue("competitive"),
-          spectating: getFormFieldValue("spectating"),
-          // scheduled: scheduled && (new Date(getFormFieldValue("startDate"))).getTime(),
-          readyCheck: getFormFieldValue("readyCheck"),
-          noVeg: getFormFieldValue("noVeg"),
-          stateLengths: {
-            Day: getFormFieldValue("dayLength"),
-            Night: getFormFieldValue("nightLength"),
-          },
-          pregameWaitLength: getFormFieldValue("pregameWaitLength"),
-          extendLength: getFormFieldValue("extendLength"),
-          anonymousGame: getFormFieldValue("anonymousGame"),
-          anonymousDeckId: getFormFieldValue("anonymousDeckId"),
-          broadcastClosedRoles: getFormFieldValue("broadcastClosedRoles"),
-        });
+      const hostPromise = axios.post("/api/game/host", {
+        gameType,
+        lobby,
+        setup: setupId,
+        lobbyName: getFormFieldValue("lobbyName"),
+        private: getFormFieldValue("private"),
+        guests: getFormFieldValue("guests"),
+        ranked: getFormFieldValue("ranked"),
+        competitive: getFormFieldValue("competitive"),
+        spectating: getFormFieldValue("spectating"),
+        // scheduled: scheduled && (new Date(getFormFieldValue("startDate"))).getTime(),
+        readyCheck: getFormFieldValue("readyCheck"),
+        noVeg: getFormFieldValue("noVeg"),
+        stateLengths: {
+          Day: getFormFieldValue("dayLength"),
+          Night: getFormFieldValue("nightLength"),
+        },
+        pregameWaitLength: getFormFieldValue("pregameWaitLength"),
+        extendLength: getFormFieldValue("extendLength"),
+        anonymousGame: getFormFieldValue("anonymousGame"),
+        anonymousDeckId: getFormFieldValue("anonymousDeckId"),
+        broadcastClosedRoles: getFormFieldValue("broadcastClosedRoles"),
+      });
 
       defaults.private = getFormFieldValue("private");
       defaults.guests = getFormFieldValue("guests");
@@ -193,8 +192,7 @@ export default function HostMafia() {
       defaults.broadcastClosedRoles = getFormFieldValue("broadcastClosedRoles");
       persistDefaults(gameType, defaults);
       return hostPromise;
-    }
-    else {
+    } else {
       return null;
     }
   }

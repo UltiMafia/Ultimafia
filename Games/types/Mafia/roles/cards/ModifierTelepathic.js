@@ -27,8 +27,8 @@ module.exports = class ModifierTelepathic extends Card {
     message.parseForReview = this.parseForReview;
 
     for (let player of message.game.players)
-      if (player.id == message.abilityTarget){
-         message.recipients.push(player);
+      if (player.id == message.abilityTarget) {
+        message.recipients.push(player);
         message.prefix = `says to ${player.name}`;
       }
     if (message.recipients.length == 1) {

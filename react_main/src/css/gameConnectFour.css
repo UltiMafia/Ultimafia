@@ -1,0 +1,27 @@
+/* Connect Four */
+
+.game .connectFour-history {
+  display: flex;
+}
+
+.game .connectFour-board {
+  margin: 30px auto;
+}
+
+.game .connectFour-board-row {
+  display: flex;
+}
+
+
+
+.game .connectFour-board-row {
+  display: flex;
+}
+
+.game .connectFour-board-box {
+  width: 70px;
+  height: 70px;
+  margin: 0px;
+  background-image: url("/src/images/ConnectFourBackground.png");
+  background-size: 70px 70px;
+}

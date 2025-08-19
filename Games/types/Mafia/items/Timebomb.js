@@ -84,7 +84,14 @@ module.exports = class Timebomb extends Item {
       [this.baseMeetingName]: {
         actionName: "Pass Timebomb to",
         states: ["Day"],
-        flags: ["voting", "instant", "noVeg", "hideAfterVote", "mustAct", "Important"],
+        flags: [
+          "voting",
+          "instant",
+          "noVeg",
+          "hideAfterVote",
+          "mustAct",
+          "Important",
+        ],
         item: this,
         targets: { include: ["alive"], exclude: ["self"] },
         action: {

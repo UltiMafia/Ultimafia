@@ -11,7 +11,7 @@ module.exports = class GiveArmor extends Card {
         flags: ["voting"],
         action: {
           labels: ["giveItem", "armor"],
-          priority:  PRIORITY_ITEM_GIVER_EARLY,
+          priority: PRIORITY_ITEM_GIVER_EARLY,
           run: function () {
             this.target.holdItem("Armor");
             this.target.queueGetItemAlert("Armor");

@@ -8,7 +8,7 @@ module.exports = class PlayerButton extends Item {
     this.count = count;
     this.roleToUse = role;
     this.type = type || "A";
-    this.baseMeetingName = "Choose Player "+ this.type +this.count;
+    this.baseMeetingName = "Choose Player " + this.type + this.count;
     this.currentMeetingIndex = 0;
     this.lifespan = 1;
     this.cannotBeStolen = true;
@@ -19,14 +19,13 @@ module.exports = class PlayerButton extends Item {
         actionName: "Select Player",
         states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
-        targets: { include: ["alive", "dead"]},
+        targets: { include: ["alive", "dead"] },
         action: {
           item: this,
           run: function () {
-            if(this.item.type == "A"){
+            if (this.item.type == "A") {
               this.item.roleToUse.data.PlayerA = this.target;
-            }
-            else if(this.item.type == "B"){
+            } else if (this.item.type == "B") {
               this.item.roleToUse.data.PlayerB = this.target;
             }
             this.game.events.emit("questionInfo", this.item.roleToUse);

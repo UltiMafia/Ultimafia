@@ -7,7 +7,7 @@ module.exports = class AlignmentButton extends Item {
     super("AlignmentButton");
     this.roleToUse = role;
     this.type = type || "A";
-    this.baseMeetingName = "Choose Alignment "+ this.type;
+    this.baseMeetingName = "Choose Alignment " + this.type;
     this.currentMeetingIndex = 0;
     this.lifespan = 1;
     this.cannotBeStolen = true;
@@ -23,7 +23,7 @@ module.exports = class AlignmentButton extends Item {
         action: {
           item: this,
           run: function () {
-              this.item.roleToUse.data.Alignment = this.target;
+            this.item.roleToUse.data.Alignment = this.target;
             this.item.drop();
           },
         },

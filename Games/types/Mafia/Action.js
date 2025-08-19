@@ -1,7 +1,10 @@
 const Action = require("../../core/Action");
 const Random = require("../../../lib/Random");
 const Player = require("../../core/Player");
-const { PRIORITY_SELF_BLOCK_EARLY, PRIORITY_SELF_BLOCK_LATER } = require("./const/Priority");
+const {
+  PRIORITY_SELF_BLOCK_EARLY,
+  PRIORITY_SELF_BLOCK_LATER,
+} = require("./const/Priority");
 
 module.exports = class MafiaAction extends Action {
   constructor(options) {
@@ -40,7 +43,6 @@ module.exports = class MafiaAction extends Action {
     target.removeEffect("Virus", true);
     target.removeEffect("Alcoholic", true);
     target.removeEffect("Lycan", true);
-    
   }
 
   preventConvert(power, target) {
@@ -71,7 +73,7 @@ module.exports = class MafiaAction extends Action {
     target = target || this.target;
     let hasInvestigate = false;
     if (fromEffect != true) {
-      target.giveEffect("Delirious", this.actor, 1, null,this.role);
+      target.giveEffect("Delirious", this.actor, 1, null, this.role);
     }
     this.game.events.emit("AbilityToggle", target);
     for (let action of this.game.actions[0]) {
@@ -101,7 +103,7 @@ module.exports = class MafiaAction extends Action {
         action.cancelActor(target);
       }
     }
-   // target.giveEffect("FalseMode", 1);
+    // target.giveEffect("FalseMode", 1);
   }
 
   makeUntargetable(player, excludeLabel, excludeAlignment) {
@@ -167,7 +169,11 @@ module.exports = class MafiaAction extends Action {
       }
 
       for (let target of toCheck) {
-        if (target === player && !action.hasLabel("hidden") && action.actors.length > 0) {
+        if (
+          target === player &&
+          !action.hasLabel("hidden") &&
+          action.actors.length > 0
+        ) {
           visitors.push(...action.actors);
         }
       }
@@ -191,7 +197,11 @@ module.exports = class MafiaAction extends Action {
       }
 
       for (let target of toCheck) {
-        if (target === player && !action.hasLabel("hidden") && action.actors.length > 0) {
+        if (
+          target === player &&
+          !action.hasLabel("hidden") &&
+          action.actors.length > 0
+        ) {
           return true;
         }
       }
@@ -465,58 +475,59 @@ module.exports = class MafiaAction extends Action {
     return false;
   }
 
-  blockingMods(role){
-      for (let action of this.game.actions[0]) {
-        if (action.hasLabel("absolute")) {
-            continue;
-        }
-        if (action.hasLabel("mafia")) {
-          continue;
-        }
-
-      let toCheck = action.target;
-      if (!Array.isArray(action.target)) {
-        toCheck = [action.target];
-        }
-              if (
-                action.actors.indexOf(this.actor) != -1 &&
-                action.target &&
-                toCheck[0] instanceof Player
-              ) {
-                for (let y = 0; y < toCheck.length; y++) {
-                  if (!role.canTargetPlayer(toCheck[y])) {
-                    if (
-                      action.priority > this.priority &&
-                      !action.hasLabel("absolute")
-                    ) {
-                      action.cancelActor(this.actor);
-                      break;
-                    }
-                  }
-                }
-              }
-            }
-  }
-
-  isSelfBlock(isTargetBased){
-    for (let action of this.game.actions[0]){
+  blockingMods(role) {
+    for (let action of this.game.actions[0]) {
       if (action.hasLabel("absolute")) {
         continue;
       }
       if (action.hasLabel("mafia")) {
         continue;
-        }
-          let toCheck = action.target;
-              if (!Array.isArray(action.target)) {
-                toCheck = [action.target];
-              }
-      if (action.actors.indexOf(this.actor) != -1 &&
-                action.target &&
-                toCheck[0] instanceof Player
-              ) {
-      if(action.priority && action.priority <= PRIORITY_SELF_BLOCK_LATER){
-        return true;
       }
+
+      let toCheck = action.target;
+      if (!Array.isArray(action.target)) {
+        toCheck = [action.target];
+      }
+      if (
+        action.actors.indexOf(this.actor) != -1 &&
+        action.target &&
+        toCheck[0] instanceof Player
+      ) {
+        for (let y = 0; y < toCheck.length; y++) {
+          if (!role.canTargetPlayer(toCheck[y])) {
+            if (
+              action.priority > this.priority &&
+              !action.hasLabel("absolute")
+            ) {
+              action.cancelActor(this.actor);
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  isSelfBlock(isTargetBased) {
+    for (let action of this.game.actions[0]) {
+      if (action.hasLabel("absolute")) {
+        continue;
+      }
+      if (action.hasLabel("mafia")) {
+        continue;
+      }
+      let toCheck = action.target;
+      if (!Array.isArray(action.target)) {
+        toCheck = [action.target];
+      }
+      if (
+        action.actors.indexOf(this.actor) != -1 &&
+        action.target &&
+        toCheck[0] instanceof Player
+      ) {
+        if (action.priority && action.priority <= PRIORITY_SELF_BLOCK_LATER) {
+          return true;
+        }
       }
     }
     return false;

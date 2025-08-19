@@ -19,7 +19,7 @@ module.exports = class WinWithFaction extends Card {
   constructor(role) {
     super(role);
 
-    if(role.isExtraRole == true){
+    if (role.isExtraRole == true) {
       return;
     }
 
@@ -31,7 +31,7 @@ module.exports = class WinWithFaction extends Card {
         }
 
         //Const
-        const ONE_NIGHT = (this.game.IsBloodMoon == true);
+        const ONE_NIGHT = this.game.IsBloodMoon == true;
         const CULT_IN_GAME =
           this.game.players.filter((p) => CULT_FACTIONS.includes(p.faction))
             .length > 0;
@@ -70,8 +70,8 @@ module.exports = class WinWithFaction extends Card {
         );
 
         const hasMajority = factionCount >= aliveCount / 2 && aliveCount > 0;
-        const assassinInGame = this.game.players.filter(
-          (p) => p.role.name === "Assassin"
+        const assassinInGame = this.game.players.filter((p) =>
+          p.hasEffect("AssassinEffect")
         );
 
         //Special Win Cons
@@ -80,7 +80,10 @@ module.exports = class WinWithFaction extends Card {
           const magusInGameWin = this.game.players.filter(
             (p) => p.role.name == "Magus"
           );
-          if (magusInGameWin.length > 0 && this.game.MagusGameDeclared == true) {
+          if (
+            magusInGameWin.length > 0 &&
+            this.game.MagusGameDeclared == true
+          ) {
             factionWin(this);
             return;
           }
@@ -88,9 +91,7 @@ module.exports = class WinWithFaction extends Card {
 
         // win by guessing Mole
         if (EVIL_FACTIONS.includes(this.player.faction)) {
-          if (
-            this.game.hasGuessedMole == true 
-          ) {
+          if (this.game.hasGuessedMole == true) {
             factionWin(this);
             return;
           }
@@ -120,10 +121,8 @@ module.exports = class WinWithFaction extends Card {
         //Guessed Mole Conditional
         if (this.player.faction == "Village") {
           if (MolesInGame.length > 0 && this.game.hasGuessedMole) {
-                //Moles have been guessed, village cannot win
-                return;
-              
-            
+            //Moles have been guessed, village cannot win
+            return;
           }
         }
         //Magus conditional
@@ -160,12 +159,8 @@ module.exports = class WinWithFaction extends Card {
 
         //soldier conditional
         if (this.player.faction != "Village" && !ONE_NIGHT) {
-          const soldiersInGame = this.game.players.filter(
-            (p) =>
-              p.role.name == "Soldier" &&
-              p.faction == "Village" &&
-              p.alive &&
-              p.hasAbility(["Win-Con", "OnlyWhenAlive"])
+          const soldiersInGame = this.game.players.filter((p) =>
+            p.hasEffect("SoldierEffect")
           );
 
           if (soldiersInGame.length > 0) {
@@ -193,7 +188,7 @@ module.exports = class WinWithFaction extends Card {
 
           if (AdmiralsInGame.length > 0) {
             for (let person of this.game.players) {
-              if (person.hasItem("TreasureChest") && p.alive) {
+              if (person.hasItem("TreasureChest") && person.alive) {
                 return;
               }
             }
@@ -289,7 +284,9 @@ module.exports = class WinWithFaction extends Card {
         if (this.game.hasBeenBloodMoonDay == true) {
           //Cult
           if (CULT_FACTIONS.includes(this.player.faction) && ONE_NIGHT) {
-            var deadCult = this.game.BloodMoonKills.filter((p) => p.faction == this.player.faction);
+            var deadCult = this.game.BloodMoonKills.filter(
+              (p) => p.faction == this.player.faction
+            );
             if (deadCult.length <= 0 || this.game.deadPlayers().length <= 0) {
               factionWin(this);
               return;
@@ -298,7 +295,9 @@ module.exports = class WinWithFaction extends Card {
 
           //Mafia
           if (MAFIA_FACTIONS.includes(this.player.faction) && ONE_NIGHT) {
-            var deadMafia = this.game.BloodMoonKills.filter((p) => p.faction == this.player.faction);
+            var deadMafia = this.game.BloodMoonKills.filter(
+              (p) => p.faction == this.player.faction
+            );
             if (deadMafia.length <= 0 || this.game.deadPlayers().length <= 0) {
               factionWin(this);
               return;
@@ -307,12 +306,18 @@ module.exports = class WinWithFaction extends Card {
 
           //Village
           if (this.player.faction == "Village" && ONE_NIGHT) {
-            var deadMafia = this.game.BloodMoonKills.filter((p) => MAFIA_FACTIONS.includes(p.faction));
-            var deadCult = this.game.BloodMoonKills.filter((p) => CULT_FACTIONS.includes(p.faction));
+            var deadMafia = this.game.BloodMoonKills.filter((p) =>
+              MAFIA_FACTIONS.includes(p.faction)
+            );
+            var deadCult = this.game.BloodMoonKills.filter((p) =>
+              CULT_FACTIONS.includes(p.faction)
+            );
             var deadThird = this.game.BloodMoonKills.filter(
-                (p) => this.game.getRoleAlignment(p.role.name) == "Independent"
-              );
-            var deadVillage = this.game.BloodMoonKills.filter((p) => p.faction == "Village");
+              (p) => this.game.getRoleAlignment(p.role.name) == "Independent"
+            );
+            var deadVillage = this.game.BloodMoonKills.filter(
+              (p) => p.faction == "Village"
+            );
             if (
               CULT_IN_GAME == true &&
               (deadCult.length <= 0 || this.game.deadPlayers().length <= 0)
@@ -340,16 +345,36 @@ module.exports = class WinWithFaction extends Card {
           }
         }
         //Hostile blocker
-        if(EVIL_FACTIONS.includes(this.player.faction) && this.game.isHostileVsMafia()){
-          let hostile3rds = this.game.alivePlayers().filter((p) => (p.faction == "Independent" && this.game.getRoleTags(p.role.name).includes("Hostile") && p.role.name != "Mastermind"));
-          if(hostile3rds.length > 0){
+        if (
+          EVIL_FACTIONS.includes(this.player.faction) &&
+          this.game.isHostileVsMafia()
+        ) {
+          let hostile3rds = this.game
+            .alivePlayers()
+            .filter(
+              (p) =>
+                p.faction == "Independent" &&
+                this.game.getRoleTags(p.role.name).includes("Hostile") &&
+                p.role.name != "Mastermind"
+            );
+          if (hostile3rds.length > 0) {
             return;
           }
         }
         //Competing Evil Factions
-          if(EVIL_FACTIONS.includes(this.player.faction) && this.game.isCultVsMafia()){
-          let hostileFactions = this.game.alivePlayers().filter((p) => (p.faction != this.player.faction && p.faction != "Evil" && EVIL_FACTIONS.includes(p.faction)));
-          if(hostileFactions.length > 0){
+        if (
+          EVIL_FACTIONS.includes(this.player.faction) &&
+          this.game.isCultVsMafia()
+        ) {
+          let hostileFactions = this.game
+            .alivePlayers()
+            .filter(
+              (p) =>
+                p.faction != this.player.faction &&
+                p.faction != "Evil" &&
+                EVIL_FACTIONS.includes(p.faction)
+            );
+          if (hostileFactions.length > 0) {
             return;
           }
         }
@@ -427,14 +452,8 @@ module.exports = class WinWithFaction extends Card {
         //Village Soldier Win
         if (this.player.faction == "Village") {
           if (
-            this.game
-              .alivePlayers()
-              .filter(
-                (p) =>
-                  p.role.name === "Soldier" &&
-                  p.faction == "Village" &&
-                  p.hasAbility(["Win-Con", "OnlyWhenAlive"])
-              ).length >=
+            this.game.alivePlayers().filter((p) => p.hasEffect("SoldierEffect"))
+              .length >=
               aliveCount / 2 &&
             aliveCount > 0
           ) {
@@ -480,8 +499,8 @@ module.exports = class WinWithFaction extends Card {
 
         if (this.oblivious["Faction"]) return;
 
-        const assassinInGame = this.game.players.filter(
-          (p) => p.role.name === "Assassin"
+        const assassinInGame = this.game.players.filter((p) =>
+          p.hasEffect("AssassinEffect")
         );
         if (assassinInGame.length > 0) return;
 
@@ -542,30 +561,19 @@ module.exports = class WinWithFaction extends Card {
         }
       },
       death: function (player, killer, deathType) {
-        if (
-          player.hasEffect("PresidentEffect")
-        ) {
+        if (player.hasEffect("PresidentEffect")) {
           this.killedPresident = true;
         }
-        if (player.role.name == "Assassin") {
-          const otherAssassins = this.game.players.filter(
-            (p) =>
-              (p.alive && p.role.name == "Assassin") ||
-              p.role.data.RoleTargetBackup == "Assassin"
-          );
-          if (otherAssassins.length > 0 || this.killedPresident == true) {
-            return;
-          }
+        if (player.hasEffect("AssassinEffect")) {
           this.killedAssassin = true;
         }
 
-      if(this.game.IsBloodMoon == true){
-        if(this.game.BloodMoonKills == null){
-          this.game.BloodMoonKills = [];
+        if (this.game.IsBloodMoon == true) {
+          if (this.game.BloodMoonKills == null) {
+            this.game.BloodMoonKills = [];
+          }
+          this.game.BloodMoonKills.push(player);
         }
-        this.game.BloodMoonKills.push(player);
-      }
-        
       },
       state: function (stateInfo) {
         if (stateInfo.name.match(/Dawn/) || stateInfo.name.match(/Dusk/)) {

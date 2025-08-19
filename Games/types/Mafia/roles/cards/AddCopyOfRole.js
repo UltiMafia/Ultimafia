@@ -69,7 +69,10 @@ module.exports = class AddCopyOfRole extends Card {
             `${this.player.role.name}:${this.player.role.modifier}`,
             this.player.role.data,
             false,
-            true, null, null, "RemoveStartingItems"
+            true,
+            null,
+            null,
+            "RemoveStartingItems"
           );
           shuffledPlayers[0].role.data.reroll = true;
           shuffledPlayers[0].role.data.hasCopied = true;

@@ -19,7 +19,6 @@ module.exports = class ConvertSave extends Card {
           return;
         }
 
-
         let convertAction = new Action({
           labels: ["convert", "cult"],
           actor: this.player,
@@ -37,8 +36,7 @@ module.exports = class ConvertSave extends Card {
         if (!stateInfo.name.match(/Day/)) {
           return;
         }
-      this.SavedPlayer = null;
-      
+        this.SavedPlayer = null;
       },
     };
 

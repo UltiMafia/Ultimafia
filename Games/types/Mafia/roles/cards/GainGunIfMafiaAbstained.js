@@ -5,7 +5,7 @@ const { PRIORITY_ITEM_GIVER_EARLY } = require("../../const/Priority");
 module.exports = class GainGunIfMafiaAbstained extends Card {
   constructor(role) {
     super(role);
-  
+
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {

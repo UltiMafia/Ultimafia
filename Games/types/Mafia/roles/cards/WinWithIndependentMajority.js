@@ -27,13 +27,16 @@ module.exports = class WinWithIndependentMajority extends Card {
 
         if (this.game.hasBeenDay == true) {
           if (ONE_NIGHT) {
-            var deadTeam = this.game
-              .deadPlayers()
-              filter((p) => this.game.getRoleAlignment(p.getRoleAppearance().split(" (")[0]) ==
-        "Independent" &&
-        !this.game
-          .getRoleTags(p.getRoleAppearance().split(" (")[0])
-          .includes("Lone"));
+            var deadTeam = this.game.deadPlayers();
+            filter(
+              (p) =>
+                this.game.getRoleAlignment(
+                  p.getRoleAppearance().split(" (")[0]
+                ) == "Independent" &&
+                !this.game
+                  .getRoleTags(p.getRoleAppearance().split(" (")[0])
+                  .includes("Lone")
+            );
             if (deadTeam.length <= 0 || this.game.deadPlayers().length <= 0) {
               winners.addPlayer(this.player, this.name);
               return;
@@ -41,11 +44,16 @@ module.exports = class WinWithIndependentMajority extends Card {
           }
         }
         // win with majority
-        const numIndependentAlive = this.game.players.filter((p) => this.game.getRoleAlignment(p.role.name) ==
-        "Independent" &&
-        !this.game
-          .getRoleTags(this.game.formatRoleInternal(p.role.name, p.role.modifier))
-          .includes("Lone") && p.alive).length;
+        const numIndependentAlive = this.game.players.filter(
+          (p) =>
+            this.game.getRoleAlignment(p.role.name) == "Independent" &&
+            !this.game
+              .getRoleTags(
+                this.game.formatRoleInternal(p.role.name, p.role.modifier)
+              )
+              .includes("Lone") &&
+            p.alive
+        ).length;
         if (
           aliveCount > 0 &&
           numIndependentAlive >= aliveCount / 2 &&

@@ -1,26 +1,24 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
-const {
-  CULT_FACTIONS,
-} = require("../../const/FactionList");
+const { CULT_FACTIONS } = require("../../const/FactionList");
 
 module.exports = class Twins extends Card {
   constructor(role) {
     super(role);
     this.target = "";
 
-      this.winCheckSpecial = {
+    this.winCheckSpecial = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if(!this.hasAbility(["Win-Con"])){
+        if (!this.hasAbility(["Win-Con"])) {
           return;
         }
-        
+
         if (this.data.twincondemned && this.hasAbility(["Win-Con"])) {
-          for(let player of this.game.players){
-            if(CULT_FACTIONS.includes(player.faction)){
+          for (let player of this.game.players) {
+            if (CULT_FACTIONS.includes(player.faction)) {
               winners.addPlayer(player, player.faction);
             }
           }
@@ -28,8 +26,6 @@ module.exports = class Twins extends Card {
       },
     };
 
-
-    
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {

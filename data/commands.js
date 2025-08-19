@@ -1,5 +1,5 @@
 const commandData = {
-    "/kick": {
+  "/kick": {
     input: "Username",
     description:
       "Used during pregame to temporarily remove someone from a game lobby.",
@@ -39,7 +39,7 @@ const commandData = {
     input: "Amount, Dice Type",
     description: "Rolls dice, results are shown to everyone.",
   },
-"/changeSetup": {
+  "/changeSetup": {
     input: "Setup ID",
     description: "Can be used by host to change the setup.",
   },

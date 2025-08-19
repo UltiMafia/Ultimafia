@@ -33,11 +33,11 @@ module.exports = class MustAct extends Card {
               return;
             }
           }
-            meeting.mustAct = true;
-            meeting.generateTargets();
-            for (let member of meeting.members) {
-              member.player.sendMeeting(meeting);
-            }
+          meeting.mustAct = true;
+          meeting.generateTargets();
+          for (let member of meeting.members) {
+            member.player.sendMeeting(meeting);
+          }
         });
         /*
         for(let meeting of this.player.getMeetings()){
@@ -75,7 +75,5 @@ module.exports = class MustAct extends Card {
           */
       },
     };
-
   }
 };
-

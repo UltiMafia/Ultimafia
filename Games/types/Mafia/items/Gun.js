@@ -27,7 +27,6 @@ module.exports = class Gun extends Item {
           item: this,
           run: function () {
             this.item.drop();
-            
 
             var shooterMask = this.item.shooterMask;
             var reveal = shooterMask ? true : this.item.reveal;
@@ -42,18 +41,19 @@ module.exports = class Gun extends Item {
             var magicBullet = this.item.magicCult;
             var broken = this.item.broken;
 
-
-            if(this.item.useModifiers && this.item.modifiers){
-              if(this.item.modifiers.includes("Random")){
-                this.target = Random.randArrayVal(this.game.alivePlayers().filter((p) => p != this.actor));
+            if (this.item.useModifiers && this.item.modifiers) {
+              if (this.item.modifiers.includes("Random")) {
+                this.target = Random.randArrayVal(
+                  this.game.alivePlayers().filter((p) => p != this.actor)
+                );
               }
-              if(this.item.modifiers.includes("Narcissistic")){
-                if(Random.randArrayVal([true, false])){
+              if (this.item.modifiers.includes("Narcissistic")) {
+                if (Random.randArrayVal([true, false])) {
                   this.target = this.actor;
                 }
               }
               //Modifier that don't change target
-              if(!this.item.isTargetValid(this.target)){
+              if (!this.item.isTargetValid(this.target)) {
                 this.actor.queueAlert(`Your gun has no effect on your target!`);
                 return;
               }
@@ -81,28 +81,34 @@ module.exports = class Gun extends Item {
                 `:gun: Someone fires a gun at ${this.target.name}!`
               );
 
-             if(this.item.useModifiers && this.item.modifiers){
-                let selfKill = new Action({
+            if (this.item.useModifiers && this.item.modifiers) {
+              let selfKill = new Action({
                 actor: this.actor,
                 target: this.actor,
                 game: this.game,
                 labels: ["kill", "hidden"],
                 run: function () {
-                  if (this.dominates()){
-                  this.target.kill("basic", this.actor, true);
+                  if (this.dominates()) {
+                    this.target.kill("basic", this.actor, true);
                   }
                 },
               });
-                  if(this.item.modifiers.includes("Sacrificial")){
-                    selfKill.do();
-                  }
-                  if(this.item.modifiers.includes("Vain") && this.target.faction == this.actor.faction){
-                    selfKill.do();
-                  }
-                  if(this.item.modifiers.includes("Weak") && this.target.faction != this.actor.faction){
-                    selfKill.do();
-                  }
-             }
+              if (this.item.modifiers.includes("Sacrificial")) {
+                selfKill.do();
+              }
+              if (
+                this.item.modifiers.includes("Vain") &&
+                this.target.faction == this.actor.faction
+              ) {
+                selfKill.do();
+              }
+              if (
+                this.item.modifiers.includes("Weak") &&
+                this.target.faction != this.actor.faction
+              ) {
+                selfKill.do();
+              }
+            }
 
             // convert or kill
             if (magicBullet && this.target.role.alignment !== "Cult") {
@@ -126,21 +132,24 @@ module.exports = class Gun extends Item {
             if (this.dominates()) {
               this.target.kill("gun", this.actor, true);
 
-              if(this.item.useModifiers && this.item.modifiers && this.item.modifiers.includes("Regretful")){
+              if (
+                this.item.useModifiers &&
+                this.item.modifiers &&
+                this.item.modifiers.includes("Regretful")
+              ) {
                 let selfKill2 = new Action({
-                actor: this.actor,
-                target: this.actor,
-                game: this.game,
-                labels: ["kill", "hidden"],
-                run: function () {
-                  if (this.dominates()){
-                  this.target.kill("basic", this.actor, true);
-                  }
-                },
-              });
-              selfKill2.do();
+                  actor: this.actor,
+                  target: this.actor,
+                  game: this.game,
+                  labels: ["kill", "hidden"],
+                  run: function () {
+                    if (this.dominates()) {
+                      this.target.kill("basic", this.actor, true);
+                    }
+                  },
+                });
+                selfKill2.do();
               }
-              
             }
           },
         },
@@ -164,9 +173,9 @@ module.exports = class Gun extends Item {
     return `${this.id} ${idx}`;
   }
 
-  hold(player){
+  hold(player) {
     super.hold(player);
-    if(this.useModifiers == true){
+    if (this.useModifiers == true) {
       this.modifiers = this.holder.role.modifier;
     }
   }
@@ -179,45 +188,47 @@ module.exports = class Gun extends Item {
     return this.getMeetingName(this.currentMeetingIndex);
   }
 
-  isTargetValid(player){
-     if(this.modifiers.includes("Loyal")){
-        if(player.faction != this.holder.faction){
-          return false;
-        }
-      }
-    if(this.modifiers.includes("Disloyal")){
-      if(player.faction == this.holder.faction){
-          return false;
+  isTargetValid(player) {
+    if (this.modifiers.includes("Loyal")) {
+      if (player.faction != this.holder.faction) {
+        return false;
       }
     }
-    if(player.role.name == "Villager" || player.role.name == "Mafioso" || player.role.name == "Cultist" || player.role.name == "Grouch"){
-       if(this.modifiers.includes("Complex")){
-          return false;
+    if (this.modifiers.includes("Disloyal")) {
+      if (player.faction == this.holder.faction) {
+        return false;
       }
     }
-    else{
-      if(this.modifiers.includes("Simple")){
-          return false;
+    if (
+      player.role.name == "Villager" ||
+      player.role.name == "Mafioso" ||
+      player.role.name == "Cultist" ||
+      player.role.name == "Grouch"
+    ) {
+      if (this.modifiers.includes("Complex")) {
+        return false;
+      }
+    } else {
+      if (this.modifiers.includes("Simple")) {
+        return false;
       }
     }
-    if(player.isDemonic()){
-      if(this.modifiers.includes("Holy")){
-          return false;
+    if (player.isDemonic()) {
+      if (this.modifiers.includes("Holy")) {
+        return false;
+      }
+    } else {
+      if (this.modifiers.includes("Unholy")) {
+        return false;
       }
     }
-    else{
-      if(this.modifiers.includes("Unholy")){
-          return false;
+    if (player.role.data.banished) {
+      if (this.modifiers.includes("Refined")) {
+        return false;
       }
-    }
-    if(player.role.data.banished){
-      if(this.modifiers.includes("Refined")){
-          return false;
-      }
-    }
-    else{
-      if(this.modifiers.includes("Unrefined")){
-          return false;
+    } else {
+      if (this.modifiers.includes("Unrefined")) {
+        return false;
       }
     }
     return true;

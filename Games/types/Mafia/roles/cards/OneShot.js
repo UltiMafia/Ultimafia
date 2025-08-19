@@ -14,7 +14,9 @@ module.exports = class OneShot extends Card {
     this.role.OneShotDay = 0;
     this.isUsingOneShotNight = false;
     this.isUsingOneShotDay = false;
-    this.role.OneShotMax = this.role.modifier.split("/").filter((m) => m == "X-Shot").length;
+    this.role.OneShotMax = this.role.modifier
+      .split("/")
+      .filter((m) => m == "X-Shot").length;
 
     this.meetings = {
       "X-Shot Night": {
@@ -31,14 +33,18 @@ module.exports = class OneShot extends Card {
             this.role.OneShotNight += 1;
             this.role.isUsingOneShotNight = true;
             this.actor.joinMeetings(this.role.meetings);
-            for (let meeting of this.game.meetings){
-               meeting.generateTargets();
+            for (let meeting of this.game.meetings) {
+              meeting.generateTargets();
             }
             this.actor.sendMeetings();
           },
         },
         shouldMeet() {
-          return this.OneShotNight <= this.OneShotMax && !this.player.exorcised && !this.isUsingOneShotNight;
+          return (
+            this.OneShotNight <= this.OneShotMax &&
+            !this.player.exorcised &&
+            !this.isUsingOneShotNight
+          );
         },
       },
       "X-Shot Day": {
@@ -56,14 +62,18 @@ module.exports = class OneShot extends Card {
             this.role.OneShotDay += 1;
             this.role.isUsingOneShotDay = true;
             this.actor.joinMeetings(this.role.meetings);
-            for (let meeting of this.game.meetings){
-               meeting.generateTargets();
+            for (let meeting of this.game.meetings) {
+              meeting.generateTargets();
             }
             this.actor.sendMeetings();
           },
         },
         shouldMeet() {
-          return this.OneShotDay <= this.OneShotMax && !this.player.exorcised && !this.isUsingOneShotDay;
+          return (
+            this.OneShotDay <= this.OneShotMax &&
+            !this.player.exorcised &&
+            !this.isUsingOneShotDay
+          );
         },
       },
     };
@@ -83,10 +93,7 @@ module.exports = class OneShot extends Card {
               return true;
             }
           }
-          if (
-            meetingName == "X-Shot Night" ||
-            meetingName == "X-Shot Day"
-          ) {
+          if (meetingName == "X-Shot Night" || meetingName == "X-Shot Day") {
             return true;
           }
           if (meetingName == "Graveyard") return true;
@@ -107,10 +114,7 @@ module.exports = class OneShot extends Card {
             }
           }
 
-          if (
-            this.game.getStateName() == "Day" &&
-            this.isUsingOneShotDay
-          ) {
+          if (this.game.getStateName() == "Day" && this.isUsingOneShotDay) {
             return true;
           } else if (
             this.game.getStateName() == "Night" &&
@@ -132,24 +136,28 @@ module.exports = class OneShot extends Card {
         else this.metCount[`meets:${meeting.name}`]++;
       },
       state: function (stateInfo) {
-        this.OneShotMax = this.modifier.split("/").filter((m) => m == "X-Shot").length;
+        this.OneShotMax = this.modifier
+          .split("/")
+          .filter((m) => m == "X-Shot").length;
         //this.game.queueAlert(`Night ${this.player.role.OneShotNight} Day ${this.player.role.OneShotDay} Max ${this.player.role.OneShotMax}`);
         if (stateInfo.name.match(/Day/)) {
-          if (this.OneShotNight == this.OneShotMax && this.isUsingOneShotNight) {
-            this.OneShotNight = this.OneShotMax+1;
+          if (
+            this.OneShotNight == this.OneShotMax &&
+            this.isUsingOneShotNight
+          ) {
+            this.OneShotNight = this.OneShotMax + 1;
             this.isUsingOneShotNight = false;
           }
-          if(this.isUsingOneShotNight){
+          if (this.isUsingOneShotNight) {
             this.isUsingOneShotNight = false;
           }
         }
         if (stateInfo.name.match(/Night/)) {
-          
           if (this.OneShotDay == this.OneShotMax && this.isUsingOneShotDay) {
-            this.OneShotDay = this.OneShotMax+1;
+            this.OneShotDay = this.OneShotMax + 1;
             this.isUsingOneShotDay = false;
           }
-          if(this.isUsingOneShotDay){
+          if (this.isUsingOneShotDay) {
             this.isUsingOneShotDay = false;
           }
         }

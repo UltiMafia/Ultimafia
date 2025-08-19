@@ -12,7 +12,7 @@ module.exports = class PucaPoison extends Card {
         targets: { include: ["alive"], exclude: ["Cult"] },
         action: {
           labels: ["effect", "poison", "block"],
-          priority: PRIORITY_NIGHT_ROLE_BLOCKER+3,
+          priority: PRIORITY_NIGHT_ROLE_BLOCKER + 3,
           run: function () {
             if (this.dominates()) {
               this.target.giveEffect("Poison", this.actor);

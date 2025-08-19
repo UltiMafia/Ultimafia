@@ -12,7 +12,7 @@ module.exports = class Host extends Role {
       "EndGameAtAnyTime",
       "UnReplaceable",
       "HostChosenRoles",
-      "HostActions"
+      "HostActions",
     ];
   }
 };

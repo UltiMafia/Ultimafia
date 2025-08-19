@@ -66,20 +66,15 @@ module.exports = class ImperialDecree extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners) {
-        if (
-          this.player.alive &&
-          this.predictedCorrect >= 2
-        ) {
+        if (this.player.alive && this.predictedCorrect >= 2) {
           winners.addPlayer(this.player, this.name);
         }
       },
     };
     this.listeners = {
       death: function (player, killer, deathType) {
-        if (
-          player != this.predictedVote && this.duelists.includes(player)
-        ){
-        this.duelistWasKilled = true;
+        if (player != this.predictedVote && this.duelists.includes(player)) {
+          this.duelistWasKilled = true;
         }
       },
       state: function (stateInfo) {
@@ -95,16 +90,22 @@ module.exports = class ImperialDecree extends Card {
         } else if (stateInfo.name.match(/Dawn/)) {
           delete this.predictedVote;
         }
-        
       },
-      afterActions: function (){
-        if(this.game.getStateName() == "Day" || this.game.getStateName() == "Dusk"){
-          if(this.predictedVote && this.predictedVote.alive && this.duelistWasKilled == true){
-          this.predictedCorrect += 1;
-          this.player.queueAlert(
-            `${this.predictedVote?.name} has survived the duel! They will make an excellent legatus for your Empire.`
-          );
-          this.calledDuel = false;
+      afterActions: function () {
+        if (
+          this.game.getStateName() == "Day" ||
+          this.game.getStateName() == "Dusk"
+        ) {
+          if (
+            this.predictedVote &&
+            this.predictedVote.alive &&
+            this.duelistWasKilled == true
+          ) {
+            this.predictedCorrect += 1;
+            this.player.queueAlert(
+              `${this.predictedVote?.name} has survived the duel! They will make an excellent legatus for your Empire.`
+            );
+            this.calledDuel = false;
           }
           this.duelistWasKilled = false;
         }

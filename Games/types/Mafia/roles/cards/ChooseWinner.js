@@ -40,8 +40,7 @@ module.exports = class ChooseWinner extends Card {
             if (this.FaithTarget.faction == "Independent") {
               this.ReaperWinningTeam = this.FaithTarget.role.name;
             } else {
-              this.ReaperWinningTeam =
-                this.FaithTarget.faction;
+              this.ReaperWinningTeam = this.FaithTarget.faction;
             }
           } else {
             this.FaithTarget = null;
@@ -90,10 +89,10 @@ module.exports = class ChooseWinner extends Card {
   }
 
   speak(message) {
-    if(!message.sender){
+    if (!message.sender) {
       return;
     }
-    if(message.sender != this.role.player){
+    if (message.sender != this.role.player) {
       return;
     }
     if (

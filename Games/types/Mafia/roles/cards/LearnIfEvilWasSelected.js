@@ -20,7 +20,7 @@ module.exports = class LearnIfEvilWasSelected extends Card {
             var targetA = this.target[0];
             var targetB = this.target[1];
 
-            if(!this.target){
+            if (!this.target) {
               return;
             }
 
@@ -28,7 +28,7 @@ module.exports = class LearnIfEvilWasSelected extends Card {
               "IsOneOfTargetsDemonInfo",
               this.actor,
               this.game,
-              this.target,
+              this.target
             );
             info.processInfo();
             var alert = `:law: ${info.getInfoFormated()}.`;

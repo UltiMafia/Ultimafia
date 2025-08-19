@@ -14,7 +14,7 @@ module.exports = class MakeTargetsMeet extends Card {
         multiMax: 2,
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
-          priority: PRIORITY_REDIRECT_ACTION+1,
+          priority: PRIORITY_REDIRECT_ACTION + 1,
           run: function () {
             let t1 = this.target[0];
             let t2 = this.target[1];

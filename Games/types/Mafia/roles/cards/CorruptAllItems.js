@@ -1,6 +1,9 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const { PRIORITY_ITEM_TAKER_DEFAULT, PRIORITY_ITEM_TAKER_EARLY } = require("../../const/Priority");
+const {
+  PRIORITY_ITEM_TAKER_DEFAULT,
+  PRIORITY_ITEM_TAKER_EARLY,
+} = require("../../const/Priority");
 
 module.exports = class CorruptAllItems extends Card {
   constructor(role) {
@@ -38,13 +41,13 @@ module.exports = class CorruptAllItems extends Card {
           actor: this.player,
           game: this.player.game,
           role: this,
-          priority: PRIORITY_ITEM_TAKER_DEFAULT+1,
+          priority: PRIORITY_ITEM_TAKER_DEFAULT + 1,
           labels: ["sabotage"],
           run: function () {
-            if(this.role.PlayerToBreakItems != null){
-            for (let item of this.role.PlayerToBreakItems.items) {
-               item.magicCult = true;
-            }
+            if (this.role.PlayerToBreakItems != null) {
+              for (let item of this.role.PlayerToBreakItems.items) {
+                item.magicCult = true;
+              }
             }
             this.role.PlayerToBreakItems = null;
           },
@@ -53,6 +56,5 @@ module.exports = class CorruptAllItems extends Card {
         this.game.queueAction(action);
       },
     };
-    
   }
 };

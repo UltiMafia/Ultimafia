@@ -17,7 +17,7 @@ module.exports = class GuessRole extends Card {
           run: function () {
             //this.actor.role.data.targetPlayer = this.target;
             let targetRole = this.role.data.targetRole;
-              if (targetRole) {
+            if (targetRole) {
               let info = this.game.createInformation(
                 "GuessRoleInfo",
                 this.actor,
@@ -41,13 +41,12 @@ module.exports = class GuessRole extends Card {
         action: {
           role: this.role,
           labels: ["investigate", "role"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT-1,
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
           run: function () {
-            
             this.role.data.targetRole = this.target;
-            }
           },
         },
-      };
+      },
+    };
   }
 };

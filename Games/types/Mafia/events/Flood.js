@@ -1,9 +1,7 @@
 const Event = require("../Event");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
-const {
-  PRIORITY_FULL_DISABLE,
-} = require("../const/Priority");
+const { PRIORITY_FULL_DISABLE } = require("../const/Priority");
 
 module.exports = class Flood extends Event {
   constructor(modifiers, game) {
@@ -21,7 +19,7 @@ module.exports = class Flood extends Event {
       actor: victim,
       target: victim,
       game: this.game,
-      priority: PRIORITY_FULL_DISABLE+3,
+      priority: PRIORITY_FULL_DISABLE + 3,
       labels: ["hidden", "absolute", "block"],
       event: this,
       run: function () {
@@ -31,9 +29,9 @@ module.exports = class Flood extends Event {
           );
         }
         for (const player of this.event.generatePossibleVictims()) {
-              if (this.dominates(player)) {
-              this.blockActions(player);
-            }
+          if (this.dominates(player)) {
+            this.blockActions(player);
+          }
         }
       },
     });

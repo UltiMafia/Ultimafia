@@ -58,6 +58,7 @@ module.exports = {
     "Texas Hold Em",
     "Cheat",
     "Battlesnakes",
+    "Connect Four",
   ],
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
   alignments: {
@@ -70,8 +71,9 @@ module.exports = {
     "Wacky Words": ["Town", "Host"],
     "Liars Dice": ["Liars", "Host"],
     "Texas Hold Em": ["Town", "Host"],
-    "Cheat": ["Town", "Host"],
+    Cheat: ["Town", "Host"],
     Battlesnakes: ["Town", "Host"],
+    "Connect Four": ["Town", "Host"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -83,8 +85,9 @@ module.exports = {
     "Wacky Words": ["Night"],
     "Liars Dice": ["Guess Dice"],
     "Texas Hold Em": ["Place Bets", "Showdown"],
-    "Cheat": ["Play Cards", "Call Lie"],
+    Cheat: ["Play Cards", "Call Lie"],
     Battlesnakes: ["Day"],
+    "Connect Four": ["Turn"],
   },
   configurableStates: {
     Mafia: {
@@ -232,13 +235,20 @@ module.exports = {
         default: 1 * 60 * 1000,
       },
     },
-  "Cheat": {
+    Cheat: {
       "Play Cards": {
         min: 30 * 1000,
         max: 5 * 60 * 1000,
         default: 1 * 60 * 1000,
       },
       "Call Lie": {
+        min: 30 * 1000,
+        max: 5 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+    },
+    "Connect Four": {
+      Turn: {
         min: 30 * 1000,
         max: 5 * 60 * 1000,
         default: 1 * 60 * 1000,
@@ -336,7 +346,7 @@ module.exports = {
   leavePenaltyForgivenessAmount: 1,
   // Penalties reset in level after 3 days
   leavePenaltyDurationMillis: 259200000,
-  
+
   minimumGamesForRanked: 5,
 
   // Perms given to all users

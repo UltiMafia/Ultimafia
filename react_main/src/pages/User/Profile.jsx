@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { Link, Redirect, useParams, useHistory } from "react-router-dom";
 import axios from "axios";
-import Markdown from 'react-markdown';
+import Markdown from "react-markdown";
 import update from "immutability-helper";
 
 import { UserContext, SiteInfoContext } from "Contexts";
@@ -30,7 +30,14 @@ import ModerationSideDrawer from "components/ModerationSideDrawer";
 import { PieChart } from "./PieChart";
 import { NewLoading } from "../Welcome/NewLoading";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
-import { Box, Grid, IconButton, Stack, Typography, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Grid,
+  IconButton,
+  Stack,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { useTheme } from "@mui/styles";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
@@ -84,7 +91,7 @@ export default function Profile() {
   const errorAlert = useErrorAlert();
   const { userId } = useParams();
   const isPhoneDevice = useIsPhoneDevice();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('md')); // This is for the mui breakpoint
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md")); // This is for the mui breakpoint
 
   const isSelf = userId === user.id;
   const isBlocked = !isSelf && user.blockedUsers.indexOf(userId) !== -1;
@@ -114,7 +121,9 @@ export default function Profile() {
           setAvatar(res.data.avatar);
           setBanner(res.data.banner);
           setBio(filterProfanity(res.data.bio, user.settings, "\\*") || "");
-          setPronouns(filterProfanity(res.data.pronouns, user.settings, "\\*") || "");
+          setPronouns(
+            filterProfanity(res.data.pronouns, user.settings, "\\*") || ""
+          );
           setIsFriend(res.data.isFriend);
           setIsLove(res.data.isLove);
           setIsMarried(res.data.isMarried);
@@ -255,15 +264,14 @@ export default function Profile() {
 
   function onLoveUserClick() {
     if (isLove) {
-      if ((love === null || love === undefined)) {
+      if (love === null || love === undefined) {
         var shouldCancel = window.confirm(
           "Are you sure you want to cancel your love?"
         );
         if (!shouldCancel) {
           return;
         }
-      }
-      else if (love.type === "Lover") {
+      } else if (love.type === "Lover") {
         var shouldBreakup = window.confirm(
           "Are you sure you want to break up?"
         );
@@ -271,15 +279,18 @@ export default function Profile() {
           return;
         }
       }
-    }
-    else {
+    } else {
       if (!window.confirm("Are you sure you wish to send a love request?")) {
         return;
       }
     }
 
     axios
-      .post("/api/user/love", { user: userId, type: love.type, reqType: "Love" })
+      .post("/api/user/love", {
+        user: userId,
+        type: love.type,
+        reqType: "Love",
+      })
       .then((res) => {
         setIsLove(!isLove);
         siteInfo.showAlert(res.data.message, "success");
@@ -310,16 +321,18 @@ export default function Profile() {
       }
     }
     if (isMarried && love.type === "Married") {
-      var shouldDivorce = window.confirm(
-        "Are you sure you want to divorce?"
-      );
+      var shouldDivorce = window.confirm("Are you sure you want to divorce?");
       if (!shouldDivorce) {
         return;
       }
     }
 
     axios
-      .post("/api/user/love", { user: userId, type: love.type, reqType: "Marry" })
+      .post("/api/user/love", {
+        user: userId,
+        type: love.type,
+        reqType: "Marry",
+      })
       .then((res) => {
         setIsMarried(!isMarried);
         setIsLove(!isLove);
@@ -462,8 +475,7 @@ export default function Profile() {
 
   if (settings.bannerFormat === "stretch") {
     bannerStyle.backgroundSize = "100% 100%";
-  }
-  else {
+  } else {
     bannerStyle.backgroundSize = "contain";
   }
 
@@ -514,19 +526,22 @@ export default function Profile() {
   const archivedGamesRows = archivedGames.map((game) => {
     return (
       <div className="archived-game" key={game.id}>
-        <Typography variant="body2" sx={{
-          px: 1,
-          my: .5,
+        <Typography
+          variant="body2"
+          sx={{
+            px: 1,
+            my: 0.5,
 
-          display: "-webkit-box",
-          lineClamp: "3",
-          "-webkit-line-clamp": "3",
-          "-webkit-box-orient": "vertical",
-          overflow: "hidden",
-          wordBreak: "break-word",
+            display: "-webkit-box",
+            lineClamp: "3",
+            "-webkit-line-clamp": "3",
+            "-webkit-box-orient": "vertical",
+            overflow: "hidden",
+            wordBreak: "break-word",
 
-          "line-height": "1em",
-        }}>
+            "line-height": "1em",
+          }}
+        >
           {filterProfanity(game.description, user.settings)}
         </Typography>
         {showDeleteArchivedGame && (
@@ -560,7 +575,12 @@ export default function Profile() {
 
   const maxRolesCount = isPhoneDevice ? 6 : 8;
   const createdSetupRows = createdSetups.map((setup) => (
-    <Setup setup={setup} key={setup.id} maxRolesCount={maxRolesCount} fixedWidth  />
+    <Setup
+      setup={setup}
+      key={setup.id}
+      maxRolesCount={maxRolesCount}
+      fixedWidth
+    />
   ));
 
   const friendRequestRows = friendRequests.map((user) => (
@@ -601,44 +621,50 @@ export default function Profile() {
   if (!profileLoaded || !user.loaded) return <NewLoading small />;
 
   const buttonsBox = (
-    <Grid item xs={12} md={3} sx={{
+    <Grid
+      item
+      xs={12}
+      md={3}
+      sx={{
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
       <Stack direction="row" className="options">
-        {!isSelf && user.loggedIn && (<>
-          <IconButton aria-label="friend user">
-            <i
-              className={`fas fa-user-plus ${isFriend ? "sel" : ""}`}
-              onClick={onFriendUserClick}
+        {!isSelf && user.loggedIn && (
+          <>
+            <IconButton aria-label="friend user">
+              <i
+                className={`fas fa-user-plus ${isFriend ? "sel" : ""}`}
+                onClick={onFriendUserClick}
+              />
+            </IconButton>
+            <LoveIcon
+              isLove={isLove}
+              userId={user.id}
+              isMarried={isMarried}
+              love={love}
+              currentUserLove={currentUserLove}
+              onClick={onLoveUserClick}
             />
-          </IconButton>
-          <LoveIcon
-            isLove={isLove}
-            userId={user.id}
-            isMarried={isMarried}
-            love={love}
-            currentUserLove={currentUserLove}
-            onClick={onLoveUserClick}
-          />
-          <MarriedIcon
-            isLove={isLove}
-            saved={saved}
-            userId={user.id}
-            love={love}
-            isMarried={isMarried}
-            onClick={onMarryUserClick}
-          />
-          <IconButton aria-label="block user">
-            <i
-              className={`fas fa-ban ${isBlocked ? "sel" : ""}`}
-              onClick={onBlockUserClick}
-              title="Block user"
+            <MarriedIcon
+              isLove={isLove}
+              saved={saved}
+              userId={user.id}
+              love={love}
+              isMarried={isMarried}
+              onClick={onMarryUserClick}
             />
-          </IconButton>
-        </>)}
+            <IconButton aria-label="block user">
+              <i
+                className={`fas fa-ban ${isBlocked ? "sel" : ""}`}
+                onClick={onBlockUserClick}
+                title="Block user"
+              />
+            </IconButton>
+          </>
+        )}
       </Stack>
     </Grid>
   );
@@ -653,23 +679,33 @@ export default function Profile() {
         name={g.name}
         key={g.name}
       />
-  ));
+    ));
 
   const avatarUpliftPx = !banner ? 0 : isSmallScreen ? 38 : 58;
-  const avatarPaddingPx = !banner ? (isSmallScreen ? 60: 100) : (isSmallScreen ? 22 : 50);
+  const avatarPaddingPx = !banner
+    ? isSmallScreen
+      ? 60
+      : 100
+    : isSmallScreen
+    ? 22
+    : 50;
 
   const nameBox = (
     <Grid item xs={12} md={6} className="avi-name">
-      <Box sx={{
-        display: "flex",
-        position: "relative",
-        alignItems: "center",
-        justifyContent: "center",
-      }}>
-        <Box sx={{
-          position: "absolute",
-          top: `-${avatarUpliftPx}px`,
-        }}>
+      <Box
+        sx={{
+          display: "flex",
+          position: "relative",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: `-${avatarUpliftPx}px`,
+          }}
+        >
           {!bustCache && (
             <Avatar
               mediumlarge={isSmallScreen}
@@ -685,28 +721,40 @@ export default function Profile() {
             />
           )}
         </Box>
-        <Stack direction="row" spacing={1} sx={{
-          alignItems: "center",
-          justifyContent: "center",
-          mt: `${avatarPaddingPx}px`,
-          p: 1,
-          width: "100%",
-        }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            alignItems: "center",
+            justifyContent: "center",
+            mt: `${avatarPaddingPx}px`,
+            p: 1,
+            width: "100%",
+          }}
+        >
           {badges}
-          <Typography variant="h5" sx={{
-            flexShrink: "2",
-            fontWeight: "600",
-          }}>
+          <Typography
+            variant="h5"
+            sx={{
+              flexShrink: "2",
+              fontWeight: "600",
+            }}
+          >
             {name}
           </Typography>
-          {pronouns && (<Typography variant="caption" sx={{
-            flexShrink: "1",
-            filter: "opacity(.75)",
-            minWidth: "40px",
-            wordBreak: pronouns.includes("/") ? "normal" : "break-word",
-          }}>
-            ({pronouns})
-          </Typography>)}
+          {pronouns && (
+            <Typography
+              variant="caption"
+              sx={{
+                flexShrink: "1",
+                filter: "opacity(.75)",
+                minWidth: "40px",
+                wordBreak: pronouns.includes("/") ? "normal" : "break-word",
+              }}
+            >
+              ({pronouns})
+            </Typography>
+          )}
         </Stack>
       </Box>
     </Grid>
@@ -721,12 +769,15 @@ export default function Profile() {
           target={""}
           style={{ height: "100%" }}
         >
-          <Stack direction="row" sx={{
-            width: "100%",
-            position: "relative",
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
+          <Stack
+            direction="row"
+            sx={{
+              width: "100%",
+              position: "relative",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <Stack
               direction={isSmallScreen ? "row" : "column"}
               spacing={isSmallScreen ? 1 : 0}
@@ -740,14 +791,8 @@ export default function Profile() {
               <Typography sx={{ fontStyle: "italic" }}>
                 {getLoveTitle(love.type)}
               </Typography>
-              <Avatar
-                hasImage={love.avatar}
-                id={love.id}
-                name={love.name}
-              />
-              <Typography>
-                {love.name}
-              </Typography>
+              <Avatar hasImage={love.avatar} id={love.id} name={love.name} />
+              <Typography>{love.name}</Typography>
             </Stack>
           </Stack>
         </Link>
@@ -778,75 +823,92 @@ export default function Profile() {
           setShow={setShowStatsModal}
         />
       )}
-      <ModerationSideDrawer open={moderationDrawerOpen} setOpen={setModerationDrawerOpen} prefilledArgs={{ userId }} />
+      <ModerationSideDrawer
+        open={moderationDrawerOpen}
+        setOpen={setModerationDrawerOpen}
+        prefilledArgs={{ userId }}
+      />
       <Grid container rowSpacing={1} columnSpacing={1} className="profile">
         <Grid item xs={12}>
           <div className="box-panel" style={panelStyle}>
             <div className="content" style={{ gap: "8px" }}>
-              {banner && (<div className="banner" style={bannerStyle}>
-                {isSelf && (
-                  <HiddenUpload
-                    className="edit"
-                    name="banner"
-                    onClick={onEditBanner}
-                    onFileUpload={onFileUpload}
-                  >
-                    <i className="far fa-file-image" />
-                  </HiddenUpload>
-                )}
-              </div>)}
-              <Grid container>
-                {aviGridItems}
-              </Grid>
+              {banner && (
+                <div className="banner" style={bannerStyle}>
+                  {isSelf && (
+                    <HiddenUpload
+                      className="edit"
+                      name="banner"
+                      onClick={onEditBanner}
+                      onFileUpload={onFileUpload}
+                    >
+                      <i className="far fa-file-image" />
+                    </HiddenUpload>
+                  )}
+                </div>
+              )}
+              <Grid container>{aviGridItems}</Grid>
             </div>
           </div>
         </Grid>
         <Grid item xs={12} md={8}>
           <Stack direction="column" spacing={1}>
             <div className="box-panel" style={panelStyle}>
-                <div
-                  className={`bio${isSelf && !editingBio ? " edit" : ""}`}
-                  onClick={onBioClick}
-                >
-                  {!editingBio && (
-                    <div className="md-content">
-                      <Markdown>{bio}</Markdown>
-                    </div>
-                  )}
-                  {editingBio && (
-                    <>
-                      <TextEditor value={bio} onChange={setBio} />
-                      <div className="buttons">
-                        <div className="btn btn-theme" onClick={onEditBio}>
-                          Submit
-                        </div>
-                        <div
-                          className="btn btn-theme-sec"
-                          onClick={onCancelEditBio}
-                        >
-                          Cancel
-                        </div>
+              <div
+                className={`bio${isSelf && !editingBio ? " edit" : ""}`}
+                onClick={onBioClick}
+              >
+                {!editingBio && (
+                  <div className="md-content">
+                    <Markdown>{bio}</Markdown>
+                  </div>
+                )}
+                {editingBio && (
+                  <>
+                    <TextEditor value={bio} onChange={setBio} />
+                    <div className="buttons">
+                      <div className="btn btn-theme" onClick={onEditBio}>
+                        Submit
                       </div>
-                    </>
-                  )}
-                </div>
+                      <div
+                        className="btn btn-theme-sec"
+                        onClick={onCancelEditBio}
+                      >
+                        Cancel
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
-            {!isSmallScreen && (<Box sx={{
-              mt: "16px !important",
-              px: 2,
-            }}>
-              <Comments fullWidth location={userId} />
-            </Box>)}
+            {!isSmallScreen && (
+              <Box
+                sx={{
+                  mt: "16px !important",
+                  px: 2,
+                }}
+              >
+                <Comments fullWidth location={userId} />
+              </Box>
+            )}
           </Stack>
         </Grid>
         <Grid item xs={12} md={4}>
           <Stack direction="column" spacing={1}>
-            {mediaUrl && (<div className="box-panel" style={panelStyle}>
-              <MediaEmbed mediaUrl={mediaUrl} autoplay={autoplay}></MediaEmbed>
-            </div>)}
+            {mediaUrl && (
+              <div className="box-panel" style={panelStyle}>
+                <MediaEmbed
+                  mediaUrl={mediaUrl}
+                  autoplay={autoplay}
+                ></MediaEmbed>
+              </div>
+            )}
             <div className="box-panel" style={panelStyle}>
               <div className="content">
-                <Stack direction="row" spacing={1} sx={{ alignItems: "stretch" }}>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  sx={{ alignItems: "stretch" }}
+                >
                   <Stack direction="column" spacing={1}>
                     <KarmaVoteWidget
                       item={karmaInfo}
@@ -855,7 +917,11 @@ export default function Profile() {
                     />
                   </Stack>
                   <Stack direction="column" spacing={1}>
-                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      sx={{ alignItems: "center" }}
+                    >
                       <img
                         src={KUDOS_ICON}
                         style={{ marginRight: "12px" }}
@@ -863,7 +929,11 @@ export default function Profile() {
                       />
                       {kudos}
                     </Stack>
-                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      sx={{ alignItems: "center" }}
+                    >
                       <img
                         src={KARMA_ICON}
                         style={{ marginRight: "12px" }}
@@ -875,39 +945,44 @@ export default function Profile() {
                 </Stack>
               </div>
             </div>
-            {totalGames >= RequiredTotalForStats && !settings.hideStatistics && (
-              <div className="box-panel ratings" style={panelStyle}>
-                <div className="heading">Mafia Ratings</div>
-                <div className="content">
-                  {ratings}
+            {totalGames >= RequiredTotalForStats &&
+              !settings.hideStatistics && (
+                <div className="box-panel ratings" style={panelStyle}>
+                  <div className="heading">Mafia Ratings</div>
+                  <div className="content">
+                    {ratings}
+                    <div
+                      className="expand-icon-wrapper"
+                      onClick={() => setShowStatsModal(true)}
+                    >
+                      <i className="fas fa-expand-arrows-alt" />
+                    </div>
+                  </div>
                   <div
-                    className="expand-icon-wrapper"
-                    onClick={() => setShowStatsModal(true)}
+                    className="content"
+                    style={{ padding: "0", justifyContent: "center" }}
                   >
-                    <i className="fas fa-expand-arrows-alt" />
+                    <PieChart
+                      wins={mafiaStats.wins.count}
+                      losses={mafiaStats.wins.total - mafiaStats.wins.count}
+                      abandons={mafiaStats.abandons.total}
+                    />
                   </div>
                 </div>
-                <div className="content" style={{ padding: "0", justifyContent: "center" }}>
-                  <PieChart
-                    wins={mafiaStats.wins.count}
-                    losses={mafiaStats.wins.total - mafiaStats.wins.count}
-                    abandons={mafiaStats.abandons.total}
-                  />
-                </div>
-              </div>
-            )}
-            <div
-              className="box-panel recent-games"
-              style={panelStyle}
-            > 
+              )}
+            <div className="box-panel recent-games" style={panelStyle}>
               <div className="heading">Recent Games</div>
               <div className="content" style={{ padding: "0px" }}>
                 {recentGamesRows}
-                {recentGames.length === 0 && (<Typography sx={{
-                  p: 1,
-                }}>
-                  No games
-                </Typography>)}
+                {recentGames.length === 0 && (
+                  <Typography
+                    sx={{
+                      p: 1,
+                    }}
+                  >
+                    No games
+                  </Typography>
+                )}
               </div>
             </div>
             {friendRequests.length > 0 && (
@@ -921,11 +996,15 @@ export default function Profile() {
               <div className="content">
                 <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
                 {friendRows}
-                {friends.length === 0 && (<Typography sx={{
-                  p: 1,
-                }}>
-                  No friends yet
-                </Typography>)}
+                {friends.length === 0 && (
+                  <Typography
+                    sx={{
+                      p: 1,
+                    }}
+                  >
+                    No friends yet
+                  </Typography>
+                )}
                 <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
               </div>
             </div>
@@ -937,7 +1016,7 @@ export default function Profile() {
               </div>
             </div>
             <div className="box-panel achievements" style={panelStyle}>
-              <div style={{ display: "flex", alignItems: "center", }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
                 <img
                   src={ACHIEVEMENTS_ICON}
                   style={{
@@ -958,10 +1037,7 @@ export default function Profile() {
               </div>
             </div>
             {archivedGamesRows.length !== 0 && (
-              <div
-                className="box-panel archived-games"
-                style={panelStyle}
-              >
+              <div className="box-panel archived-games" style={panelStyle}>
                 <div className="heading">
                   Archived Games{" "}
                   {showDelete && (
@@ -980,9 +1056,11 @@ export default function Profile() {
             )}
           </Stack>
         </Grid>
-        {isSmallScreen && (<Grid item xs={12} sx={{ mt: 1 }}>
-          <Comments fullWidth location={userId} />
-        </Grid>)}
+        {isSmallScreen && (
+          <Grid item xs={12} sx={{ mt: 1 }}>
+            <Comments fullWidth location={userId} />
+          </Grid>
+        )}
       </Grid>
     </>
   );

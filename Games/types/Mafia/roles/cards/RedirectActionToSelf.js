@@ -11,7 +11,7 @@ module.exports = class RedirectActionToSelf extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["mafia"] },
         action: {
-          priority: PRIORITY_REDIRECT_ACTION+2,
+          priority: PRIORITY_REDIRECT_ACTION + 2,
           run: function () {
             this.redirectAllActions(this.target, this.actor);
           },

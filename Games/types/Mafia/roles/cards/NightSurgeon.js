@@ -36,10 +36,7 @@ module.exports = class NightSurgeon extends Card {
           if (!this.role.surgeonSave) {
             return;
           }
-          const attackers = this.getVisitors(
-            this.role.surgeonSave,
-            "kill"
-          );
+          const attackers = this.getVisitors(this.role.surgeonSave, "kill");
 
           if (attackers.length <= 0) {
             return;

@@ -1,5 +1,7 @@
 const Card = require("../../Card");
-const { PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class TailorSuit extends Card {
   constructor(role) {

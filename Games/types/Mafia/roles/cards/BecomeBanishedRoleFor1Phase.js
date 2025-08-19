@@ -5,8 +5,6 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
   constructor(role) {
     super(role);
 
-
-
     this.meetings = {
       "Use Power": {
         states: ["Night"],
@@ -16,20 +14,25 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
         action: {
           role: this.role,
           run: function () {
-            if(this.target == "None"){
-            return;
+            if (this.target == "None") {
+              return;
             }
 
             //this.actor.role.data.ConvertOptions.splice(this.actor.role.data.ConvertOptions.indexOf(this.target),1);
             this.actor.role.data.roleBlacklist2.push(this.target);
 
-            let effect = this.actor.giveEffect("ExtraRoleEffect", this.target , 1, null, "Yes");
+            let effect = this.actor.giveEffect(
+              "ExtraRoleEffect",
+              this.target,
+              1,
+              null,
+              "Yes"
+            );
             this.actor.joinMeetings(effect.ExtraRole.meetings);
-            for (let meeting of this.game.meetings){
-               meeting.generateTargets();
+            for (let meeting of this.game.meetings) {
+              meeting.generateTargets();
             }
             this.actor.sendMeetings();
-
 
             /*
             let currRole = this.actor.role.name;
@@ -73,7 +76,6 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
         },
       },
     };
-    
 
     this.listeners = {
       roleAssigned: function (player) {
@@ -81,9 +83,9 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
           return;
         }
 
-        if(this.data.roleBlacklist == null){
-        this.data.roleBlacklist = roleBlacklist.filter((r) => r);
-        this.data.roleBlacklist2 = [];
+        if (this.data.roleBlacklist == null) {
+          this.data.roleBlacklist = roleBlacklist.filter((r) => r);
+          this.data.roleBlacklist2 = [];
         }
         /*
         this.data.ConvertOptions = this.game.PossibleRoles.filter(
@@ -110,6 +112,5 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
       },
       */
     };
-
   }
 };

@@ -3,6 +3,7 @@
 ## Initial setup
 
 Amazon Linux 2023 instructions:
+
 ```
 sudo yum update -y
 sudo yum -y install git dockerd
@@ -19,11 +20,13 @@ sudo systemctl start docker
 ```
 
 Add this alias to your `~/.bashrc`:
+
 ```
 alias d="docker compose -f docker-compose-core.yml -f docker-compose-prod.yml"
 ```
 
 Clone:
+
 ```
 git clone https://github.com/UltiMafia/Ultimafia.git
 cd UltiMafia
@@ -42,6 +45,7 @@ cp ./docs/server_env ./.env
 Make the following modifications to the two ENV files:
 
 1. `./.env:`
+
 ```
 NODE_ENV=production
 BASE_URL=https://<your domain name>
@@ -66,6 +70,7 @@ DISCORD_CLIENT_SECRET=<your discord client secret>
 ```
 
 2. `./react_main/.env:`
+
 ```
 REACT_APP_URL=https://<your domain name>
 REACT_APP_SOCKET_URI=<your domain name>
@@ -89,12 +94,14 @@ Edit lines 5 & 8 of this file:
 `./certbot/init-letsencrypt.sh`
 
 Modified lines should look like this:
+
 ```
 domains=("my-domain.com")
 email="myemail@gmail.com"
 ```
 
 Now, run the init-letsencrypt.sh script from the top level directory:
+
 ```bash
 ./certbot/init-letsencrypt.sh
 ```
@@ -102,6 +109,7 @@ Now, run the init-letsencrypt.sh script from the top level directory:
 ### Building and composing containers
 
 1. Install NVM, node, npm, and backend dependencies
+
    ```bash
    $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
    $ source ~/nvm/nvm.sh

@@ -1,6 +1,13 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
 
-import { Box, Divider, IconButton, Paper, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Divider,
+  IconButton,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
 
 import { UserContext } from "Contexts";
 import { getRecentlyPlayedSetups } from "services/gameService";
@@ -58,11 +65,14 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
           alignItems: "center",
         }}
       >
-        <Setup setup={setup.setupDetails} maxRolesCount={6} fixedWidth/>
+        <Setup setup={setup.setupDetails} maxRolesCount={6} fixedWidth />
         {showRedoButton && (
           <Box style={{ mx: 1, width: "32px", textAlign: "center" }}>
             {user.loggedIn && (
-              <IconButton color="primary" onClick={() => onSelectSetup(setup.setupDetails)}>
+              <IconButton
+                color="primary"
+                onClick={() => onSelectSetup(setup.setupDetails)}
+              >
                 <i className="rehost fas fa-redo" title="Rehost" />
               </IconButton>
             )}
@@ -74,15 +84,19 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
 
   return (
     <Paper>
-      {selSetup && (<HostGameDialogue open={ishostGameDialogueOpen} setOpen={setIshostGameDialogueOpen} setup={selSetup} />)}
+      {selSetup && (
+        <HostGameDialogue
+          open={ishostGameDialogueOpen}
+          setOpen={setIshostGameDialogueOpen}
+          setup={selSetup}
+        />
+      )}
       <Box sx={{ p: 2 }}>
         <Typography color="primary" gutterBottom>
           Most popular setups
         </Typography>
         <Divider orientation="horizontal" flexItem sx={{ mb: 1 }} />
-        <Stack spacing={1}>
-          {setupRows}
-        </Stack>
+        <Stack spacing={1}>{setupRows}</Stack>
         <Box sx={{ mt: 2 }}>
           <svg ref={svgRef} />
         </Box>

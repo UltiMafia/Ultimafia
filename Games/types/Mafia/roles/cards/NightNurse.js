@@ -1,6 +1,9 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const { PRIORITY_EFFECT_REMOVER_DEFAULT, PRIORITY_EFFECT_REMOVER_EARLY } = require("../../const/Priority");
+const {
+  PRIORITY_EFFECT_REMOVER_DEFAULT,
+  PRIORITY_EFFECT_REMOVER_EARLY,
+} = require("../../const/Priority");
 
 module.exports = class NightNurse extends Card {
   constructor(role) {
@@ -22,7 +25,7 @@ module.exports = class NightNurse extends Card {
       },
     };
 
-      this.listeners = {
+    this.listeners = {
       state: function (stateInfo) {
         if (!this.hasAbility(["Effect"])) {
           return;
@@ -39,7 +42,7 @@ module.exports = class NightNurse extends Card {
           priority: PRIORITY_EFFECT_REMOVER_DEFAULT,
           labels: ["cleanse"],
           run: function () {
-            if(this.role.PlayerToCleanse != null){
+            if (this.role.PlayerToCleanse != null) {
               this.cleanse(1, this.role.PlayerToCleanse);
             }
             this.role.PlayerToCleanse = null;
@@ -49,6 +52,5 @@ module.exports = class NightNurse extends Card {
         this.game.queueAction(action);
       },
     };
-    
   }
 };

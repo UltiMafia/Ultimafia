@@ -9,13 +9,20 @@ module.exports = class OnePlayerShowsAsEvil extends Card {
     this.listeners = {
       AbilityToggle: function (player) {
         if (this.hasAbility(["Modifier", "Information", "WhenDead"])) {
-          if(this.BiasedTarget == null){
-            this.BiasedTarget = Random.randArrayVal(this.game.players.filter((p)=> p.faction == "Village" && p != this.player));
+          if (this.BiasedTarget == null) {
+            this.BiasedTarget = Random.randArrayVal(
+              this.game.players.filter(
+                (p) => p.faction == "Village" && p != this.player
+              )
+            );
+          } else if (this.BiasedTarget.faction != "Village") {
+            this.BiasedTarget = Random.randArrayVal(
+              this.game.players.filter(
+                (p) => p.faction == "Village" && p != this.player
+              )
+            );
           }
-          else if(this.BiasedTarget.faction != "Village"){
-            this.BiasedTarget = Random.randArrayVal(this.game.players.filter((p)=> p.faction == "Village" && p != this.player));
-          }
-          if(this.BiasedTarget == null){
+          if (this.BiasedTarget == null) {
             return;
           }
           if (

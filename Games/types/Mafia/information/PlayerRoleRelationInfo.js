@@ -81,9 +81,9 @@ module.exports = class PlayerRoleRelationInfo extends Information {
 
   getGuessMessages() {
     this.creator.queueAlert(
-      `:poison: You ask if ${
-        this.relation.replace("(Player)",this.target.name).replace("(Role)",this.game.formatRole(this.role))
-      }.`
+      `:poison: You ask if ${this.relation
+        .replace("(Player)", this.target.name)
+        .replace("(Role)", this.game.formatRole(this.role))}.`
     );
   }
 

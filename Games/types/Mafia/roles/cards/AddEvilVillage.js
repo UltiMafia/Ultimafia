@@ -19,7 +19,15 @@ module.exports = class AddEvilVillage extends Card {
           item.drop();
         }
         let role = `${villageTarget.role.name}:${villageTarget.role.modifier}`;
-        villageTarget.setRole(role, undefined, false, true, false, "Evil", "RemoveStartingItems");
+        villageTarget.setRole(
+          role,
+          undefined,
+          false,
+          true,
+          false,
+          "Evil",
+          "RemoveStartingItems"
+        );
         villageTarget.giveEffect("Evil");
       },
     };

@@ -16,10 +16,9 @@ module.exports = class CommitSeppuku extends Card {
         targets: { include: ["alive"], exclude: ["Mafia"] },
         action: {
           labels: ["convert", "seppuku"],
-          priority: PRIORITY_CONVERT_DEFAULT+1,
+          priority: PRIORITY_CONVERT_DEFAULT + 1,
           run: function () {
-
-             let temp = new Action({
+            let temp = new Action({
               actor: this.actor,
               target: this.actor,
               game: this.game,

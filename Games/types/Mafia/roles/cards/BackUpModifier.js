@@ -32,41 +32,35 @@ module.exports = class BackUpModifier extends Card {
         } else if (this.player.role.alignment == "Cult") {
           newRole = "Devotee";
         }
-        
+
         this.player.queueAlert(
           `Backup: You are the Backup for ${currRole}. If a ${currRole} is killed you will gain your abilities.`
         );
 
         this.data.RoleTargetBackup = this.name;
-        
-           this.BackUpEffect = this.player.giveEffect(
-              "BackUp",
-              this.name,
-             this
-            );
-            this.passiveEffects.push(this.BackUpEffect);
+
+        this.BackUpEffect = this.player.giveEffect("BackUp", this.name, this);
+        this.passiveEffects.push(this.BackUpEffect);
         this.game.events.emit("AbilityToggle", this.player);
 
-
-        
-      if(newRole == "Sidekick"){
-        this.player.setRole(
-          newRole,
-          undefined,
-          false,
-          true,
-          false,
-          "No Change"
-        );
-        this.player.role.data.FromBackUpModifier = currRole;
-        this.player.role.data.OldRole = currRole;
-      }
+        if (newRole == "Sidekick") {
+          this.player.setRole(
+            newRole,
+            undefined,
+            false,
+            true,
+            false,
+            "No Change"
+          );
+          this.player.role.data.FromBackUpModifier = currRole;
+          this.player.role.data.OldRole = currRole;
+        }
       },
       roleAssigned: function (player) {
-        if(player != this.player){
+        if (player != this.player) {
           return;
         }
-        if(this.data.RoleTargetBackup != null){
+        if (this.data.RoleTargetBackup != null) {
           return;
         }
 
@@ -80,39 +74,31 @@ module.exports = class BackUpModifier extends Card {
         } else if (this.player.role.alignment == "Cult") {
           newRole = "Devotee";
         }
-        
+
         this.player.queueAlert(
           `Backup: You are the Backup for ${currRole}. If a ${currRole} is killed you will gain your abilities.`
         );
 
         this.data.RoleTargetBackup = this.name;
-        
-           this.BackUpEffect = this.player.giveEffect(
-              "BackUp",
-              this.name,
-             this
-            );
-            this.passiveEffects.push(this.BackUpEffect);
+
+        this.BackUpEffect = this.player.giveEffect("BackUp", this.name, this);
+        this.passiveEffects.push(this.BackUpEffect);
         this.game.events.emit("AbilityToggle", this.player);
 
-
-        
-      if(newRole == "Sidekick"){
-        this.player.setRole(
-          newRole,
-          undefined,
-          false,
-          true,
-          false,
-          "No Change"
-        );
-        this.player.data.FromBackUpModifier = currRole;
-        this.player.data.OldRole = currRole;
-      }
-
+        if (newRole == "Sidekick") {
+          this.player.setRole(
+            newRole,
+            undefined,
+            false,
+            true,
+            false,
+            "No Change"
+          );
+          this.player.data.FromBackUpModifier = currRole;
+          this.player.data.OldRole = currRole;
+        }
       },
     };
-
 
     this.meetingMods = {
       "*": {
@@ -133,9 +119,5 @@ module.exports = class BackUpModifier extends Card {
         },
       },
     };
-
-
-
-    
   }
 };

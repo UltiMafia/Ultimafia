@@ -4,7 +4,7 @@ const { addArticle } = require("../../../../core/Utils");
 module.exports = class ConvertSelfToChosenRole extends Card {
   constructor(role) {
     super(role);
-    
+
     this.meetings = {
       "Become Role": {
         states: ["Night"],
@@ -16,7 +16,7 @@ module.exports = class ConvertSelfToChosenRole extends Card {
         action: {
           role: this.role,
           labels: ["convert", "role"],
-          priority: PRIORITY_NIGHT_ROLE_BLOCKER+1,
+          priority: PRIORITY_NIGHT_ROLE_BLOCKER + 1,
           run: function () {
             if (this.target == "None") return;
             if (!this.dominates(this.actor)) {
@@ -35,7 +35,13 @@ module.exports = class ConvertSelfToChosenRole extends Card {
                   if (
                     this.game.getRoleAlignment(this.target) != "Independent"
                   ) {
-                    players[y].giveEffect("Delirious", this.actor, Infinity, null, this.role);
+                    players[y].giveEffect(
+                      "Delirious",
+                      this.actor,
+                      Infinity,
+                      null,
+                      this.role
+                    );
                     this.blockWithDelirium(players[y], true);
                     break;
                   } else {

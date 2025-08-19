@@ -52,7 +52,11 @@ module.exports = class TwoNotRolesInfo extends Information {
   getInfoFormated() {
     super.getInfoRaw();
     let info = Random.randomizeArray(this.mainInfo);
-    return `You Learn that ${this.target.name}'s Role is not ${this.game.formatRole(info[0])}, or ${this.game.formatRole(info[1])}.`;
+    return `You Learn that ${
+      this.target.name
+    }'s Role is not ${this.game.formatRole(info[0])}, or ${this.game.formatRole(
+      info[1]
+    )}.`;
     //return `You Learn that your Target's Role is ${this.mainInfo}`
   }
 
@@ -88,12 +92,7 @@ module.exports = class TwoNotRolesInfo extends Information {
   }
 
   makeTrue() {
-    let roles = this.getNotRoles(
-      this.target,
-      2,
-      this.investType,
-      true,
-    );
+    let roles = this.getNotRoles(this.target, 2, this.investType, true);
 
     this.mainInfo = roles;
     this.targetRole = roles[0].split(":")[0];
@@ -105,25 +104,13 @@ module.exports = class TwoNotRolesInfo extends Information {
     this.targetRole = this.target.role.name;
   }
   makeFavorable() {
-    let roles = this.getNotRoles(
-      this.target,
-      2,
-      this.investType,
-      null,
-      "Evil"
-    );
+    let roles = this.getNotRoles(this.target, 2, this.investType, null, "Evil");
 
     this.mainInfo = roles;
     this.targetRole = roles[0].split(":")[0];
   }
   makeUnfavorable() {
-    let roles = this.getNotRoles(
-      this.target,
-      2,
-      this.investType,
-      null,
-      "Good"
-    );
+    let roles = this.getNotRoles(this.target, 2, this.investType, null, "Good");
 
     this.mainInfo = roles;
     this.targetRole = roles[0].split(":")[0];

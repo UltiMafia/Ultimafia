@@ -6,7 +6,7 @@ const { PRIORITY_ITEM_GIVER_EARLY } = require("../../const/Priority");
 module.exports = class ForageItem extends Card {
   constructor(role) {
     super(role);
- 
+
     this.listeners = {
       death: function (player, killer, deathType) {
         if (player === this.player && killer && deathType != "condemn") {

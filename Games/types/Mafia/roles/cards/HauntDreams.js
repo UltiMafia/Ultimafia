@@ -14,14 +14,20 @@ module.exports = class HauntDreams extends Card {
         flags: ["voting", "mustAct"],
         targets: { include: ["alive", "self"] },
         action: {
-          priority: PRIORITY_BLOCK_EARLY-1,
+          priority: PRIORITY_BLOCK_EARLY - 1,
           labels: ["absolute"],
           role: this.role,
           run: function () {
             this.role.loved = true;
             this.role.data.DreamHost = this.target;
             this.role.passiveEffects.push(
-              this.target.giveEffect("Delirious", this.actor, Infinity, null, this.role)
+              this.target.giveEffect(
+                "Delirious",
+                this.actor,
+                Infinity,
+                null,
+                this.role
+              )
             );
             this.blockWithDelirium(this.target);
             this.game.events.emit("AbilityToggle", this.actor);
@@ -52,9 +58,7 @@ module.exports = class HauntDreams extends Card {
             this.passiveEffects.push(this.DreamImmortalEffect);
           }
         } else {
-          var index = this.passiveEffects.indexOf(
-            this.DreamImmortalEffect
-          );
+          var index = this.passiveEffects.indexOf(this.DreamImmortalEffect);
           if (index != -1) {
             this.passiveEffects.splice(index, 1);
           }

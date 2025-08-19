@@ -10,12 +10,18 @@ module.exports = class BecomeRoleForNight extends Card {
         flags: ["voting", "instant", "mustAct"],
         action: {
           run: function () {
-
-
-            let effect = this.actor.giveEffect("ExtraRoleEffect", this.game.formatRoleInternal(this.target.role.name, this.target.role.modifier) , 1,this.target.role.data);
+            let effect = this.actor.giveEffect(
+              "ExtraRoleEffect",
+              this.game.formatRoleInternal(
+                this.target.role.name,
+                this.target.role.modifier
+              ),
+              1,
+              this.target.role.data
+            );
             this.actor.joinMeetings(effect.ExtraRole.meetings);
-            for (let meeting of this.game.meetings){
-               meeting.generateTargets();
+            for (let meeting of this.game.meetings) {
+              meeting.generateTargets();
             }
             this.actor.sendMeetings();
 

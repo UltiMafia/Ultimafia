@@ -907,7 +907,11 @@ function verifyRolesAndCount(setup) {
       for (let role in roles[i]) {
         let roleName = role.split(":")[0];
         let modifiers = role.split(":")[1];
-        if (roleData[gameType][roleName].alignment == "Event" || (modifiers && modifiers.toLowerCase().includes("banished"))) eventCount++;
+        if (
+          roleData[gameType][roleName].alignment == "Event" ||
+          (modifiers && modifiers.toLowerCase().includes("banished"))
+        )
+          eventCount++;
       }
 
       let roleSetSize = Object.keys(roleset).length - eventCount;
@@ -983,7 +987,11 @@ function verifyRolesAndCount(setup) {
       for (let role in roles[i]) {
         let roleName = role.split(":")[0];
         let modifiers = role.split(":")[1];
-        if (roleData[gameType][roleName].alignment == "Event" || (modifiers && modifiers.toLowerCase().includes("banished"))) eventCount++;
+        if (
+          roleData[gameType][roleName].alignment == "Event" ||
+          (modifiers && modifiers.toLowerCase().includes("banished"))
+        )
+          eventCount++;
       }
       //Check that all roles are valid roles
       for (let role in roleset)
@@ -1217,8 +1225,17 @@ const countChecks = {
     if (total < 2 || total > 20) return "Must have between 2 and 20 players.";
     return true;
   },
-  "Cheat": (roles, count, total, closed, unique) => {
+  Cheat: (roles, count, total, closed, unique) => {
     if (total < 2 || total > 10) return "Must have between 2 and 10 players.";
+    return true;
+  },
+  "Connect Four": (roles, count, total, closed, unique) => {
+    if (total < 2) return "Must have at least 2 players.";
+
+    const connectFourMaxPlayers = 4;
+    if (total > connectFourMaxPlayers)
+      return `Must have at most ${connectFourMaxPlayers} players.`;
+
     return true;
   },
 };
@@ -1278,7 +1295,10 @@ const optionsChecks = {
   "Texas Hold Em": (setup) => {
     return setup;
   },
-  "Cheat": (setup) => {
+  Cheat: (setup) => {
+    return setup;
+  },
+  "Connect Four": (setup) => {
     return setup;
   },
 };

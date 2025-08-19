@@ -16,12 +16,15 @@ import Newspaper from "../../components/Newspaper";
 import MafiaGame from "./MafiaGame";
 import ResistanceGame from "./ResistanceGame";
 import GhostGame from "./GhostGame";
+import JottoGame from "./JottoGame";
 import AcrotopiaGame from "./AcrotopiaGame";
 import SecretDictatorGame from "./SecretDictatorGame";
 import WackyWordsGame from "./WackyWordsGame";
 import LiarsDiceGame from "./LiarsDiceGame";
 import TexasHoldEmGame from "./TexasHoldEmGame";
 import CheatGame from "./CheatGame";
+import BattlesnakesGame from "./BattlesnakesGame";
+import ConnectFourGame from "./ConnectFourGame";
 import {
   GameContext,
   PopoverContext,
@@ -45,7 +48,6 @@ import { textIncludesSlurs } from "../../lib/profanity";
 
 import "css/game.css";
 import EmotePicker from "../../components/EmotePicker";
-import JottoGame from "./JottoGame";
 import "./Game.css";
 import { NewLoading } from "../Welcome/NewLoading";
 import { ChangeHead } from "../../components/ChangeHead";
@@ -67,7 +69,6 @@ import {
   Stack,
   Divider,
 } from "@mui/material";
-import BattlesnakesGame from "./BattlesnakesGame";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
 
@@ -145,24 +146,26 @@ function GameWrapper(props) {
     var newState = state;
 
     switch (action.type) {
-      case 'addMessage': {
+      case "addMessage": {
         if (action.message && action.message.id) {
-          newState = update(state, {[action.message.id]: {$set: action.message}});
+          newState = update(state, {
+            [action.message.id]: { $set: action.message },
+          });
         }
         break;
       }
-      case 'removeMessage': {
+      case "removeMessage": {
         if (action.messageId) {
-          newState = update(state, {$unset: [action.messageId]});
+          newState = update(state, { $unset: [action.messageId] });
         }
         break;
       }
-      case 'setMessages': {
+      case "setMessages": {
         newState = action.messages;
         break;
       }
       default: {
-        throw Error('Unknown action: ' + action.type);
+        throw Error("Unknown action: " + action.type);
       }
     }
 
@@ -175,8 +178,11 @@ function GameWrapper(props) {
     window.localStorage.setItem("pinnedMessageData", pinnedMessageData);
     return newState;
   }
-  
-  const [pinnedMessages, updatePinnedMessages] = useReducer(PinnedMessagesReducer, {});
+
+  const [pinnedMessages, updatePinnedMessages] = useReducer(
+    PinnedMessagesReducer,
+    {}
+  );
 
   function isMessagePinned(message) {
     return message && message.id in pinnedMessages;
@@ -188,8 +194,7 @@ function GameWrapper(props) {
         type: "removeMessage",
         messageId: message.id,
       });
-    }
-    else {
+    } else {
       updatePinnedMessages({
         type: "addMessage",
         message: message,
@@ -204,31 +209,35 @@ function GameWrapper(props) {
     if (pinnedMessageData) {
       pinnedMessageData = JSON.parse(pinnedMessageData);
 
-      if (pinnedMessageData.gameId !== gameId){
+      if (pinnedMessageData.gameId !== gameId) {
         window.localStorage.removeItem("pinnedMessageData");
-      }
-      else {
+      } else {
         updatePinnedMessages({
           type: "setMessages",
           messages: pinnedMessageData.state,
         });
-      };
+      }
     }
   }, []);
-  
+
   const [obituariesWatchedCookie, updateObituariesWatchedCookie] = useState({});
 
   function wasObituaryWatched(state, source) {
-    return source && obituariesWatchedCookie[state] && obituariesWatchedCookie[state][source];
+    return (
+      source &&
+      obituariesWatchedCookie[state] &&
+      obituariesWatchedCookie[state][source]
+    );
   }
 
   function toggleObituaryWatched(state, source) {
-    var obituariesWatchedData = window.localStorage.getItem("obituariesWatchedData");
+    var obituariesWatchedData = window.localStorage.getItem(
+      "obituariesWatchedData"
+    );
 
     if (!obituariesWatchedData) {
       obituariesWatchedData = { gameId: gameId, state: {} };
-    }
-    else {
+    } else {
       obituariesWatchedData = JSON.parse(obituariesWatchedData);
     }
 
@@ -237,7 +246,7 @@ function GameWrapper(props) {
       obituariesWatchedData = { gameId: gameId, state: {} };
     }
 
-    if (obituariesWatchedData.gameId !== gameId){
+    if (obituariesWatchedData.gameId !== gameId) {
       window.localStorage.removeItem("obituariesWatchedData");
       obituariesWatchedData = {};
     }
@@ -248,22 +257,26 @@ function GameWrapper(props) {
       }
       obituariesWatchedData.state[state][source] = true;
     }
-    window.localStorage.setItem("obituariesWatchedData", JSON.stringify(obituariesWatchedData));
+    window.localStorage.setItem(
+      "obituariesWatchedData",
+      JSON.stringify(obituariesWatchedData)
+    );
   }
 
   // If a user refreshes or views a different state, don't make them watch obituaries again
   function refreshObituariesWatched() {
-    var obituariesWatchedData = window.localStorage.getItem("obituariesWatchedData");
+    var obituariesWatchedData = window.localStorage.getItem(
+      "obituariesWatchedData"
+    );
 
     if (obituariesWatchedData) {
       obituariesWatchedData = JSON.parse(obituariesWatchedData);
 
-      if (obituariesWatchedData.gameId !== gameId){
+      if (obituariesWatchedData.gameId !== gameId) {
         window.localStorage.removeItem("obituariesWatchedData");
-      }
-      else {
+      } else {
         updateObituariesWatchedCookie(obituariesWatchedData.state);
-      };
+      }
     }
   }
 
@@ -600,8 +613,7 @@ function GameWrapper(props) {
       if (
         selfRef.current &&
         playersRef.current[selfRef.current] &&
-        (iWasPinged ||
-          pings.some((p) => p.startsWith("@every")))
+        (iWasPinged || pings.some((p) => p.startsWith("@every")))
       ) {
         playAudio("ping");
         if (iWasPinged) {
@@ -666,11 +678,14 @@ function GameWrapper(props) {
 
   function getConnectionInfo() {
     const urlParams = new URLSearchParams(window.location.search);
-    const isSpectating = urlParams.get('spectate') === 'true';
-    
-    const url = `/api/game/${gameId}/connect${isSpectating ? '?spectate=true' : ''}`;
-    
-    axios.get(url)
+    const isSpectating = urlParams.get("spectate") === "true";
+
+    const url = `/api/game/${gameId}/connect${
+      isSpectating ? "?spectate=true" : ""
+    }`;
+
+    axios
+      .get(url)
       .then((res) => {
         setGameType(res.data.type);
         setPort(res.data.port);
@@ -685,7 +700,7 @@ function GameWrapper(props) {
         }
       });
   }
-  
+
   function onMessageQuote(message) {
     if (
       !props.review &&
@@ -779,6 +794,7 @@ function GameWrapper(props) {
           {gameType === "Texas Hold Em" && <TexasHoldEmGame />}
           {gameType === "Cheat" && <CheatGame />}
           {gameType === "Battlesnakes" && <BattlesnakesGame />}
+          {gameType === "Connect Four" && <ConnectFourGame />}
         </div>
       </GameContext.Provider>
     );
@@ -871,10 +887,13 @@ export function BotBar(props) {
   }
 
   return (
-    <div className="top" style={{
-      marginTop: "8px",
-      marginBottom: isPhoneDevice ? undefined : "8px",
-    }}>
+    <div
+      className="top"
+      style={{
+        marginTop: "8px",
+        marginBottom: isPhoneDevice ? undefined : "8px",
+      }}
+    >
       {!isPhoneDevice && (
         <div className="game-name-wrapper" onClick={onLogoClick}>
           {props.gameName}
@@ -889,7 +908,7 @@ export function BotBar(props) {
             onStateNavigation={game.onStateNavigation}
           />
         )}
-        <Timer/>
+        <Timer />
       </div>
       <div
         className="misc-wrapper"
@@ -901,22 +920,28 @@ export function BotBar(props) {
           justifyContent: isPhoneDevice ? "space-between" : "center",
         }}
       >
-        {game.setup && (<Setup
-          setup={game.setup}
-          maxRolesCount={isPhoneDevice ? 5 : 10}
-          fixedWidth
-          backgroundColor={getSetupBackgroundColor(game.options, false)}
-        />)}
+        {game.setup && (
+          <Setup
+            setup={game.setup}
+            maxRolesCount={isPhoneDevice ? 5 : 10}
+            fixedWidth
+            backgroundColor={getSetupBackgroundColor(game.options, false)}
+          />
+        )}
         <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1}>
-          {!game.review && (<PlayerCount
-            game={game}
-            gameId={game.gameId}
-            anonymousGame={game.options.anonymousGame}
-            status={"In Progress"}
-            numSlotsTaken={Object.values(props.players).filter((p) => !p.left).length}
-            spectatingAllowed={game.options.spectating}
-            spectatorCount={game.spectatorCount}
-          />)}
+          {!game.review && (
+            <PlayerCount
+              game={game}
+              gameId={game.gameId}
+              anonymousGame={game.options.anonymousGame}
+              status={"In Progress"}
+              numSlotsTaken={
+                Object.values(props.players).filter((p) => !p.left).length
+              }
+              spectatingAllowed={game.options.spectating}
+              spectatorCount={game.spectatorCount}
+            />
+          )}
           {game.review && (
             <Button
               className="btn btn-theme-sec archive-game"
@@ -933,7 +958,7 @@ export function BotBar(props) {
               startIcon={<img src={poison} />}
             >
               Fill
-            </Button>  
+            </Button>
           )}
           <Button
             className="btn btn-theme leave-game"
@@ -1077,17 +1102,16 @@ export function TextMeetingLayout(props) {
     }
 
     if (message.senderId === "server" || message.senderId === "anonymous") {
-        return false;
+      return false;
     }
 
     if (Math.abs(message.time - previousMessage.time) > 30000) {
       return false;
     }
-  
+
     if (message.senderId === previousMessage.senderId) {
       return true;
-    }
-    else {
+    } else {
       return false;
     }
   }
@@ -1104,10 +1128,10 @@ export function TextMeetingLayout(props) {
         selTab,
         players,
         props.settings,
-        props.filters,
+        props.filters
       );
     }
-  
+
     var previousMessage = null;
     return messageData.map((message, i) => {
       const isNotServerMessage = message.senderId !== "server";
@@ -1116,10 +1140,13 @@ export function TextMeetingLayout(props) {
         isNotServerMessage &&
         isolatedPlayers.size &&
         !isolatedPlayers.has(message.senderId);
-  
-      const chainToPrevious = shouldChainToPreviousMessage(message, previousMessage);
+
+      const chainToPrevious = shouldChainToPreviousMessage(
+        message,
+        previousMessage
+      );
       previousMessage = message;
-  
+
       return (
         <Message
           message={message}
@@ -1172,7 +1199,9 @@ export function TextMeetingLayout(props) {
           onScroll={onSpeechScroll}
           ref={speechDisplayRef}
           style={{
-            flexDirection: game.isObituaryPlaying ? "column-reverse" : undefined,
+            flexDirection: game.isObituaryPlaying
+              ? "column-reverse"
+              : undefined,
           }}
         >
           {messages}
@@ -1241,7 +1270,7 @@ function getMessagesToDisplay(
   selTab,
   players,
   settings,
-  filters,
+  filters
 ) {
   var messages;
 
@@ -1353,7 +1382,8 @@ function getContentClasses(message) {
   const isVoteMessage = message.senderId === "vote";
   const isServerMessage = message.senderId === "server";
   const isAnonymousMessage = message.senderId === "anonymous";
-  const isPlayerMessage = !isVoteMessage && !isServerMessage && !isAnonymousMessage;
+  const isPlayerMessage =
+    !isVoteMessage && !isServerMessage && !isAnonymousMessage;
 
   // First: get class for importance of message
   if (tags.includes("important")) contentClasses.push("important");
@@ -1364,7 +1394,7 @@ function getContentClasses(message) {
   if (message.isQuote) contentClasses.push("quote");
   else if (isServerMessage) contentClasses.push("server");
   else if (isVoteMessage) contentClasses.push("vote-record");
-  
+
   // Make content clickable if it's quotable
   if ((isPlayerMessage || isAnonymousMessage) && !message.isQuote) {
     contentClasses.push("clickable");
@@ -1382,7 +1412,10 @@ function Message(props) {
   const [isHovering, setIsHovering] = useState(false);
 
   // Mobile only - users pin message by long pressing them
-  const messageLongPress = useLongPress(() => props.onPinMessage(props.message), 300);
+  const messageLongPress = useLongPress(
+    () => props.onPinMessage(props.message),
+    300
+  );
 
   const history = props.history;
   const players = props.players;
@@ -1393,16 +1426,20 @@ function Message(props) {
   const isVoteMessage = message.senderId === "vote";
   const isServerMessage = message.senderId === "server";
   const isAnonymousMessage = message.senderId === "anonymous";
-  const isPlayerMessage = !isVoteMessage && !isServerMessage && !isAnonymousMessage;
+  const isPlayerMessage =
+    !isVoteMessage && !isServerMessage && !isAnonymousMessage;
 
   const hasNameplate = isPlayerMessage || isAnonymousMessage;
   const isRightAligned = isVoteMessage;
-  
+
   // layout flags
-  const messageLayout = props.forceDefaultStyling ? "default" : props?.settings?.messageLayout || "default";
-  const denseMessages = (messageLayout === "compactInline" || messageLayout === "compactAligned");
+  const messageLayout = props.forceDefaultStyling
+    ? "default"
+    : props?.settings?.messageLayout || "default";
+  const denseMessages =
+    messageLayout === "compactInline" || messageLayout === "compactAligned";
   const alignedNameplate = hasNameplate && messageLayout === "compactAligned";
-  
+
   // nameplate styling
   const absoluteLeftAvatarPx = denseMessages ? undefined : "8px";
   const smallAvatar = messageLayout === "defaultLarge" ? false : true;
@@ -1411,18 +1448,24 @@ function Message(props) {
   var player, quotedMessage;
   var contentClass = getContentClasses(message).join(" ") + " ";
 
-  const useAbsoluteTimestamp = (chainToPrevious || isServerMessage) && !isRightAligned && !denseMessages;
-  const showThumbtack = !props.review && !message.isQuote && isHovering && (props.stateViewing >= 0);
-  const thumbtackFaClass = props.isMessagePinned(message) ? "fas fa-thumbtack" : "fas fa-thumbtack fa-rotate-270";
+  const useAbsoluteTimestamp =
+    (chainToPrevious || isServerMessage) && !isRightAligned && !denseMessages;
+  const showThumbtack =
+    !props.review && !message.isQuote && isHovering && props.stateViewing >= 0;
+  const thumbtackFaClass = props.isMessagePinned(message)
+    ? "fas fa-thumbtack"
+    : "fas fa-thumbtack fa-rotate-270";
 
   // If message is obituary, then short circuit and render that instead
   if (message.obituaries) {
-    return <ObituariesMessage
-      message={message}
-      stateViewing={props.stateViewing}
-      settings={props.settings}
-      history={history}
-    />;
+    return (
+      <ObituariesMessage
+        message={message}
+        stateViewing={props.stateViewing}
+        settings={props.settings}
+        history={history}
+      />
+    );
   }
 
   if (isPlayerMessage) {
@@ -1471,8 +1514,7 @@ function Message(props) {
   if (!denseMessages) {
     if (smallAvatar || !hasNameplate) {
       messageStyle.paddingLeft = "32px"; // 24px avatar + 8px margin
-    }
-    else {
+    } else {
       messageStyle.paddingLeft = "56px"; // 40px avatar + 8px margin + 8px margin
     }
   }
@@ -1559,13 +1601,17 @@ function Message(props) {
   // otherwise if in compact mode AKA denseMessages, use inline display to keep everyone on one line if possible
   // otherwise, use flex direction column when in non-compact mode so that nameplate can appear above content
   // otherwise if there is no nameplate, use row to always keep everything on the same line
-  const innerClassName =
-    isRightAligned ? "message-inner-rightaligned" :
-    hasNameplate && denseMessages ? "message-inner-inline" :
-    hasNameplate ? "message-inner-nameplated" :
-    "message-inner-onelined";
-  
-  const nameplateClassName = alignedNameplate ? "nameplate-aligned" : "nameplate";
+  const innerClassName = isRightAligned
+    ? "message-inner-rightaligned"
+    : hasNameplate && denseMessages
+    ? "message-inner-inline"
+    : hasNameplate
+    ? "message-inner-nameplated"
+    : "message-inner-onelined";
+
+  const nameplateClassName = alignedNameplate
+    ? "nameplate-aligned"
+    : "nameplate";
 
   return (
     <div
@@ -1578,45 +1624,51 @@ function Message(props) {
       onTouchEnd={messageLongPress.onTouchEnd}
     >
       <div className={innerClassName}>
-        {(!chainToPrevious || denseMessages || isRightAligned) && (<div
-          className={nameplateClassName}
-          style={{
-            flexDirection: denseMessages ? "row" : undefined,
-          }}
-        >
-          &#8203;
-          {props.settings.timestamps && (<div style={{
-              position: useAbsoluteTimestamp ? "absolute" : undefined,
-              left: useAbsoluteTimestamp ? "4px" : undefined,
-            }}>
-            <Timestamp time={message.time}/>
-          </div>)}
-          {player && (
-            <NameWithAvatar
-              dead={playerDead && props.stateViewing > 0}
-              id={player.userId}
-              avatarId={avatarId}
-              name={player.name}
-              avatar={player.avatar}
-              color={
-                !user.settings?.ignoreTextColor && message.nameColor !== ""
-                  ? message.nameColor
-                  : ""
-              }
-              noLink
-              small={smallAvatar}
-              absoluteLeftAvatarPx={absoluteLeftAvatarPx}
-            />
-          )}
-          {isAnonymousMessage && (
-            <NameWithAvatar
-              name="Anonymous"
-              noLink
-              small={smallAvatar}
-              absoluteLeftAvatarPx={absoluteLeftAvatarPx}
-            />
-          )}
-        </div>)}
+        {(!chainToPrevious || denseMessages || isRightAligned) && (
+          <div
+            className={nameplateClassName}
+            style={{
+              flexDirection: denseMessages ? "row" : undefined,
+            }}
+          >
+            &#8203;
+            {props.settings.timestamps && (
+              <div
+                style={{
+                  position: useAbsoluteTimestamp ? "absolute" : undefined,
+                  left: useAbsoluteTimestamp ? "4px" : undefined,
+                }}
+              >
+                <Timestamp time={message.time} />
+              </div>
+            )}
+            {player && (
+              <NameWithAvatar
+                dead={playerDead && props.stateViewing > 0}
+                id={player.userId}
+                avatarId={avatarId}
+                name={player.name}
+                avatar={player.avatar}
+                color={
+                  !user.settings?.ignoreTextColor && message.nameColor !== ""
+                    ? message.nameColor
+                    : ""
+                }
+                noLink
+                small={smallAvatar}
+                absoluteLeftAvatarPx={absoluteLeftAvatarPx}
+              />
+            )}
+            {isAnonymousMessage && (
+              <NameWithAvatar
+                name="Anonymous"
+                noLink
+                small={smallAvatar}
+                absoluteLeftAvatarPx={absoluteLeftAvatarPx}
+              />
+            )}
+          </div>
+        )}
         <div
           className={contentClass}
           style={{
@@ -1653,7 +1705,7 @@ function Message(props) {
           {message.isQuote && (
             <>
               <i className="fas fa-quote-left" />
-              <Timestamp time={quotedMessage.time}/>
+              <Timestamp time={quotedMessage.time} />
               <span className="quote-info">
                 {`${quotedMessage.senderName} on ${quotedMessage.fromStateName}: `}
               </span>
@@ -1675,13 +1727,19 @@ function Message(props) {
           )}
         </div>
       </div>
-      {!isPhoneDevice && !isRightAligned && (<div className="pin-button-wrapper" onClick={() => props.onPinMessage(message)}>
-        {showThumbtack && (<i
-          className={thumbtackFaClass}
-          style={{ cursor: "pointer", textAlign: "center" }}
-          />
-        )}
-      </div>)}
+      {!isPhoneDevice && !isRightAligned && (
+        <div
+          className="pin-button-wrapper"
+          onClick={() => props.onPinMessage(message)}
+        >
+          {showThumbtack && (
+            <i
+              className={thumbtackFaClass}
+              style={{ cursor: "pointer", textAlign: "center" }}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -1692,31 +1750,29 @@ function ObituariesMessage(props) {
   const message = props.message;
   const history = props.history;
 
-  const alreadyWatched = game.wasObituaryWatched(props.stateViewing, message.source) || props.stateViewing !== history.currentState;
+  const alreadyWatched =
+    game.wasObituaryWatched(props.stateViewing, message.source) ||
+    props.stateViewing !== history.currentState;
 
   var shouldAnimateSource = false;
   var title = null;
   if (message.source === "Day") {
     title = "Evening News";
-  }
-  else if (message.source === "Night") {
+  } else if (message.source === "Night") {
     title = "Obituaries";
     shouldAnimateSource = true;
-  }
-  else if (message.source === "Postgame") {
+  } else if (message.source === "Postgame") {
     title = "The Miller Times";
-  }
-  else {
+  } else {
     title = "Breaking News";
   }
 
-  const noAnimation = true;// props?.settings?.noAnimation || !shouldAnimateSource || alreadyWatched || game.review;
+  const noAnimation = true; // props?.settings?.noAnimation || !shouldAnimateSource || alreadyWatched || game.review;
 
   useEffect(() => {
     try {
       game.toggleObituaryWatched(props.stateViewing, message.source);
-    }
-    catch (e) {
+    } catch (e) {
       console.error("Failed to toggle obituary watched", e);
     }
 
@@ -1725,15 +1781,17 @@ function ObituariesMessage(props) {
     }
   }, []);
 
-  const deaths = message.obituaries.map((obituary) => { return {
-    id: obituary.playerInfo.userId,
-    name: obituary.playerInfo.name,
-    avatar: obituary.playerInfo.avatar,
-    customEmotes: obituary.playerInfo.customEmotes,
-    deathMessage: obituary.snippets.deathMessage,
-    revealMessage: obituary.snippets.revealMessage,
-    lastWill: obituary.snippets.lastWill,
-  }});
+  const deaths = message.obituaries.map((obituary) => {
+    return {
+      id: obituary.playerInfo.userId,
+      name: obituary.playerInfo.name,
+      avatar: obituary.playerInfo.avatar,
+      customEmotes: obituary.playerInfo.customEmotes,
+      deathMessage: obituary.snippets.deathMessage,
+      revealMessage: obituary.snippets.revealMessage,
+      lastWill: obituary.snippets.lastWill,
+    };
+  });
 
   return (
     <>
@@ -2002,7 +2060,10 @@ export function StateSwitcher(props) {
         className={`hist-arrow fas fa-caret-left ${
           leftArrowVisible ? "" : "invisible"
         }`}
-        onClick={() => { props.updateStateViewing({ type: "backward" }); props.onStateNavigation() }}
+        onClick={() => {
+          props.updateStateViewing({ type: "backward" });
+          props.onStateNavigation();
+        }}
       />
       <div className="state-name" onClick={onStateNameClick}>
         {stateName.toUpperCase()}
@@ -2011,7 +2072,10 @@ export function StateSwitcher(props) {
         className={`hist-arrow fas fa-caret-right ${
           rigthArrowVisible ? "" : "invisible"
         }`}
-        onClick={() => { props.updateStateViewing({ type: "forward" }); props.onStateNavigation(); }}
+        onClick={() => {
+          props.updateStateViewing({ type: "forward" });
+          props.onStateNavigation();
+        }}
       />
     </div>
   );
@@ -2556,9 +2620,17 @@ function ActionSelect(props) {
 
   // Client side vote counting logic
   const shouldDisplayCounters = meeting.displayVoteCounter;
-  const noOneDisplayName = meeting.noOneDisplayName ? meeting.noOneDisplayName : NO_ONE_NAME;
-  const canVoteNoOne = meeting.targets && Array.isArray(meeting.targets) && meeting.targets.includes("*");
-  const canVoteMagus = meeting.targets && Array.isArray(meeting.targets) && meeting.targets.includes("*magus");
+  const noOneDisplayName = meeting.noOneDisplayName
+    ? meeting.noOneDisplayName
+    : NO_ONE_NAME;
+  const canVoteNoOne =
+    meeting.targets &&
+    Array.isArray(meeting.targets) &&
+    meeting.targets.includes("*");
+  const canVoteMagus =
+    meeting.targets &&
+    Array.isArray(meeting.targets) &&
+    meeting.targets.includes("*magus");
   const voteCounts = new Map();
   var highestVoteCount = 0;
   var noOneHasMostVotes = false;
@@ -2586,14 +2658,21 @@ function ActionSelect(props) {
       }
     }
 
-    if (voteCounts.has(noOneDisplayName) && voteCounts.get(noOneDisplayName) === highestVoteCount) {
+    if (
+      voteCounts.has(noOneDisplayName) &&
+      voteCounts.get(noOneDisplayName) === highestVoteCount
+    ) {
       noOneHasMostVotes = true;
     }
   }
 
-  const rowItems = Object.values(meeting.members).map((member) => { 
+  const rowItems = Object.values(meeting.members).map((member) => {
     const player = props.players[member.id];
-    const selection = getTargetDisplay(meeting.votes[member.id], meeting, props.players);
+    const selection = getTargetDisplay(
+      meeting.votes[member.id],
+      meeting,
+      props.players
+    );
     const name = player ? player.name : null;
 
     return {
@@ -2601,7 +2680,7 @@ function ActionSelect(props) {
       name: name || "Anonymous",
       canVote: member.canVote,
       selection: selection,
-    }
+    };
   });
 
   // In a meeting where players are targets, a "special" target is anything that's not a player
@@ -2683,10 +2762,13 @@ function ActionSelect(props) {
           if (rowItem === "divider") {
             // if the row item is just the string "divider" then short circuit and render a divider
             return (
-              <Divider direction="horizontal" sx={{
-                marginBottom: 1,
-              }}/>
-            )
+              <Divider
+                direction="horizontal"
+                sx={{
+                  marginBottom: 1,
+                }}
+              />
+            );
           }
 
           const rowIsNoOne = rowItem.name === noOneDisplayName;
@@ -2697,7 +2779,9 @@ function ActionSelect(props) {
             voteCount = voteCounts.get(rowItem.name);
           }
           const hasHighestVoteCount =
-            voteCount != 0 && voteCount == highestVoteCount && (!noOneHasMostVotes || rowIsNoOne);
+            voteCount != 0 &&
+            voteCount == highestVoteCount &&
+            (!noOneHasMostVotes || rowIsNoOne);
 
           if (
             !rowItem.canVote &&
@@ -2710,12 +2794,10 @@ function ActionSelect(props) {
           if (hasHighestVoteCount) {
             if (rowIsSpecial) {
               voteCountStyle = { backgroundColor: "#487a28" };
+            } else {
+              voteCountStyle = { backgroundColor: "#bd4c4c" };
             }
-            else {
-              voteCountStyle = { backgroundColor: "#bd4c4c" }
-            }
-          }
-          else {
+          } else {
             voteCountStyle = { backgroundColor: "#4c7dbd" };
           }
 
@@ -2731,8 +2813,7 @@ function ActionSelect(props) {
               sx={{ display: "flex", flexDirection: "column", gap: 1 }}
             >
               {shouldDisplayCounters && (
-                <div className="vote-count" style={voteCountStyle}
-                >
+                <div className="vote-count" style={voteCountStyle}>
                   {voteCount}
                 </div>
               )}
@@ -2741,7 +2822,7 @@ function ActionSelect(props) {
                 sx={{
                   cursor: "pointer",
                   fontWeight: "bold",
-                  color: nameColorOverride ? nameColorOverride : undefined
+                  color: nameColorOverride ? nameColorOverride : undefined,
                 }}
                 onClick={() => onSelectVote(rowItem.id)}
               >
@@ -3105,7 +3186,9 @@ function getTargetDisplay(targets, meeting, players) {
   else if (!targets) targets = [];
   else targets = [...targets];
 
-  const noOneDisplayName = meeting.noOneDisplayName ? meeting.noOneDisplayName : NO_ONE_NAME;
+  const noOneDisplayName = meeting.noOneDisplayName
+    ? meeting.noOneDisplayName
+    : NO_ONE_NAME;
 
   for (let i in targets) {
     let target = targets[i];
@@ -3201,12 +3284,10 @@ export function Timer(props) {
     // cleanup
     return () => {
       clearInterval(timerInterval);
-    }
+    };
   }, []);
 
-  const numPlayers = Object.values(game.players).filter(
-    (p) => !p?.left
-  ).length;
+  const numPlayers = Object.values(game.players).filter((p) => !p?.left).length;
 
   const isFilled = numPlayers === game.setup?.total;
   const filledEmoji = isFilled ? " 🔔🔔" : "";
@@ -3216,9 +3297,7 @@ export function Timer(props) {
   const currentState = game.history?.states[game.history?.currentState]?.name;
   const isFinished = currentState === "Postgame";
 
-  const mainTimer = formatTimerTime(
-    timers?.main?.delay - timers?.main?.time
-  );
+  const mainTimer = formatTimerTime(timers?.main?.delay - timers?.main?.time);
   const ChangeHeadInProgress = (
     <ChangeHead title={`🔪 ${mainTimer} - ${currentState}`} />
   );
@@ -3263,10 +3342,12 @@ export function Timer(props) {
   if (timerName === "vegKick") {
     return <div className="state-timer">Kicking in {time}</div>;
   }
-  return (<>
-        {HeadChanges}
-        <div className="state-timer">{time}</div>
-  </>);
+  return (
+    <>
+      {HeadChanges}
+      <div className="state-timer">{time}</div>
+    </>
+  );
 }
 
 export function LastWillEntry(props) {
@@ -3621,36 +3702,42 @@ export function PinnedMessages() {
     }
     if (a.time > b.time) {
       return 1;
-    }
-    else {
-      return 0
+    } else {
+      return 0;
     }
   }
 
-  const sortedPinnedMessages = Object.values(game.pinnedMessages).sort(sortMessagesByTimestamp);
+  const sortedPinnedMessages = Object.values(game.pinnedMessages).sort(
+    sortMessagesByTimestamp
+  );
 
   const pinnedMessages = sortedPinnedMessages.map((message, i) => {
-    return (<Message
-      message={message}
-      review={game.review}
-      history={game.history}
-      players={game.players}
-      stateViewing={game.stateViewing}
-      key={message.id || message.messageId + message.time || i}
-      onMessageQuote={game.onMessageQuote}
-      onPinMessage={game.onPinMessage}
-      isMessagePinned={game.isMessagePinned}
-      settings={game.settings}
-      forceDefaultStyling
-    />
-  )});
+    return (
+      <Message
+        message={message}
+        review={game.review}
+        history={game.history}
+        players={game.players}
+        stateViewing={game.stateViewing}
+        key={message.id || message.messageId + message.time || i}
+        onMessageQuote={game.onMessageQuote}
+        onPinMessage={game.onPinMessage}
+        isMessagePinned={game.isMessagePinned}
+        settings={game.settings}
+        forceDefaultStyling
+      />
+    );
+  });
 
   return (
     <SideMenuNew
       title="Pinned messages"
       contentPadding="0px 0px"
       content={
-        <div className="speech-display" style={{ minHeight: "40px", maxHeight: "240px" }}>
+        <div
+          className="speech-display"
+          style={{ minHeight: "40px", maxHeight: "240px" }}
+        >
           {pinnedMessages}
         </div>
       }
@@ -4195,7 +4282,7 @@ export function useSettingsReducer() {
     volume: 1,
     terminologyEmoticons: true,
     messageLayout: "default",
-    noAnimation : false,
+    noAnimation: false,
   };
 
   return useReducer((settings, action) => {

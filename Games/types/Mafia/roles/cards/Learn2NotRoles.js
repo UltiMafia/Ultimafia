@@ -15,8 +15,6 @@ module.exports = class Learn2NotRoles extends Card {
           labels: ["investigate", "role"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
           run: function () {
-            
-
             let info = this.game.createInformation(
               "TwoNotRolesInfo",
               this.actor,
@@ -26,7 +24,6 @@ module.exports = class Learn2NotRoles extends Card {
             info.processInfo();
             var alert = `:invest: ${info.getInfoFormated()}.`;
             this.actor.queueAlert(alert);
-
           },
         },
       },

@@ -1,5 +1,8 @@
 const Card = require("../../Card");
-const { PRIORITY_ITEM_TAKER_DEFAULT, PRIORITY_ITEM_TAKER_EARLY } = require("../../const/Priority");
+const {
+  PRIORITY_ITEM_TAKER_DEFAULT,
+  PRIORITY_ITEM_TAKER_EARLY,
+} = require("../../const/Priority");
 const Action = require("../../Action");
 
 module.exports = class TransferItems extends Card {
@@ -42,7 +45,7 @@ module.exports = class TransferItems extends Card {
       },
     };
 
-      this.listeners = {
+    this.listeners = {
       state: function (stateInfo) {
         if (!this.hasAbility(["Item"])) {
           return;
@@ -59,8 +62,14 @@ module.exports = class TransferItems extends Card {
           priority: PRIORITY_ITEM_TAKER_DEFAULT,
           labels: ["stealItem"],
           run: function () {
-            if(this.role.PlayerToStealFrom != null && this.role.data.victim != null){
-              this.stealRandomItem(this.role.data.victim, this.role.PlayerToStealFrom);
+            if (
+              this.role.PlayerToStealFrom != null &&
+              this.role.data.victim != null
+            ) {
+              this.stealRandomItem(
+                this.role.data.victim,
+                this.role.PlayerToStealFrom
+              );
             }
             this.role.PlayerToStealFrom = null;
             this.role.data.victim = null;
@@ -70,7 +79,5 @@ module.exports = class TransferItems extends Card {
         this.game.queueAction(action);
       },
     };
-
-    
   }
 };

@@ -124,7 +124,7 @@ module.exports = class CleanseVisitors extends Card {
           },
         });
 
-          var action6 = new Action({
+        var action6 = new Action({
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_EFFECT_REMOVER_EARLY,

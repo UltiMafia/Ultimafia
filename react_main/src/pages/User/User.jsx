@@ -200,6 +200,7 @@ export function Avatar(props) {
   const avatarId = props.avatarId;
   const deckProfile = props.deckProfile;
   const absoluteLeftAvatarPx = props.absoluteLeftAvatarPx;
+  const ConnectFour = props.ConnectFour;
   const isSquare = props.isSquare || false;
   const border = props.border || undefined;
 
@@ -227,10 +228,14 @@ export function Avatar(props) {
     style.position = "absolute";
     style.left = absoluteLeftAvatarPx;
 
-    if (!small) {
+    if (!small && !ConnectFour) {
       style.transform = "translateY(12px)";
     }
   }
+
+  if(ConnectFour){
+      style.transform = "translateX(5px) translateY(5px)";
+    }
 
   if (hasImage && !imageUrl && id && avatarId) {
     if (id === avatarId) {
@@ -357,19 +362,28 @@ export function NameWithAvatar(props) {
 
   useEffect(() => {
     if (includeMiniprofile && id) {
-      axios.get(`/api/user/${id}/profile`).then((res) => {
-        res.data.props = props;
-        setUserProfile(res.data);
-      }).catch(error => {
-        console.warn(`Couldn't retrieve profile for ${id} (this error is harmless if they're a bot)`)
-      });
+      axios
+        .get(`/api/user/${id}/profile`)
+        .then((res) => {
+          res.data.props = props;
+          setUserProfile(res.data);
+        })
+        .catch((error) => {
+          console.warn(
+            `Couldn't retrieve profile for ${id} (this error is harmless if they're a bot)`
+          );
+        });
     }
   }, []);
 
   var contents = (
-    <Stack direction="row" spacing={absoluteLeftAvatarPx ? 0 : small ? 0.5 : 1} sx ={{
-      alignItems: "center"
-    }}>
+    <Stack
+      direction="row"
+      spacing={absoluteLeftAvatarPx ? 0 : small ? 0.5 : 1}
+      sx={{
+        alignItems: "center",
+      }}
+    >
       <Avatar
         hasImage={avatar}
         id={id}
@@ -494,7 +508,11 @@ export function Miniprofile(props) {
             <Avatar hasImage={avatar} id={id} avatarId={avatarId} name={name} />
             <div
               className={`user-name`}
-              style={{ ...(color ? { color } : {}), display: "inline", alignSelf: "center" }}
+              style={{
+                ...(color ? { color } : {}),
+                display: "inline",
+                alignSelf: "center",
+              }}
             >
               {name}
             </div>

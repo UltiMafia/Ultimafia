@@ -23,9 +23,7 @@ module.exports = class CondemnImmune extends Card {
             this.passiveEffects.push(this.CondemnImmuneEffect);
           }
         } else {
-          var index = this.passiveEffects.indexOf(
-            this.CondemnImmuneEffect
-          );
+          var index = this.passiveEffects.indexOf(this.CondemnImmuneEffect);
           if (index != -1) {
             this.passiveEffects.splice(index, 1);
           }

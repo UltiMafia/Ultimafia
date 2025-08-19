@@ -8,13 +8,13 @@ module.exports = class Virus extends Effect {
 
     this.InfectionTime = 0;
 
-        this.listeners = {
-        state: function (stateInfo) {
+    this.listeners = {
+      state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
           this.game.HasDonePlagueVirusAction = false;
           return;
         }
-        if(this.game.HasDonePlagueVirusAction == true){
+        if (this.game.HasDonePlagueVirusAction == true) {
           return;
         }
         this.game.HasDonePlagueVirusAction = true;
@@ -24,35 +24,34 @@ module.exports = class Virus extends Effect {
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill", "hidden", "absolute"],
           run: function () {
+            let infectedPlayers = this.game.players.filter((p) =>
+              p.hasEffect("Virus")
+            );
 
-             let infectedPlayers = this.game.players.filter((p) => p.hasEffect("Virus"));
-
-          for(let player of infectedPlayers){
-             for(let effect of player.effects){
-               if(effect.name == "Virus"){
-                 effect.InfectionTime++
-                 if(effect.InfectionTime >= 2){
-                   if (this.dominates(player)) {
-                   player.kill("basic", null);
-                   }
-                 }
-               }
-             }
-            for (let neighbor of player.getNeighbors()) {
-              if (neighbor.hasEffect("Virus")) {
-                continue;
+            for (let player of infectedPlayers) {
+              for (let effect of player.effects) {
+                if (effect.name == "Virus") {
+                  effect.InfectionTime++;
+                  if (effect.InfectionTime >= 2) {
+                    if (this.dominates(player)) {
+                      player.kill("basic", null);
+                    }
+                  }
+                }
               }
+              for (let neighbor of player.getNeighbors()) {
+                if (neighbor.hasEffect("Virus")) {
+                  continue;
+                }
 
-            neighbor.giveEffect("Virus");
+                neighbor.giveEffect("Virus");
+              }
             }
-          
-          }
           },
         });
 
         this.game.queueAction(action);
       },
     };
-    
   }
 };

@@ -5,31 +5,34 @@ module.exports = class AppearAsRandomEvil extends Card {
   constructor(role) {
     super(role);
 
-    let evilRoles = role.getAllRoles().filter(
-      (r) =>
-        (role.game.getRoleAlignment(r) === "Cult" ||
-        role.game.getRoleAlignment(r) === "Mafia") && !role.game.getRoleTags(r).includes("No Investigate")
-    );
+    let evilRoles = role
+      .getAllRoles()
+      .filter(
+        (r) =>
+          (role.game.getRoleAlignment(r) === "Cult" ||
+            role.game.getRoleAlignment(r) === "Mafia") &&
+          !role.game.getRoleTags(r).includes("No Investigate")
+      );
 
     let millers = [];
-    
+
     let temp = evilRoles.filter((p) => p);
-    if(role.name == "Miller"){
-    for(let player of this.game.players){
-      if(player.role && player.role.name == "Miller"){
-        temp = evilRoles.filter((p) => p != player.role.appearance["condemn"]);
+    if (role.name == "Miller") {
+      for (let player of this.game.players) {
+        if (player.role && player.role.name == "Miller") {
+          temp = evilRoles.filter(
+            (p) => p != player.role.appearance["condemn"]
+          );
+        }
       }
     }
-    }
-    if(temp.length > 0){
+    if (temp.length > 0) {
       evilRoles = temp;
     }
-    
 
     const randomEvilRole = Random.randArrayVal(evilRoles);
 
     // const roleAppearance = randomEvilRole.split(":")[0];
-
 
     const roleAppearance = randomEvilRole;
 

@@ -11,13 +11,13 @@ module.exports = class PublicReveal extends Card {
         }
 
         this.data.revealed = true;
-      for (let player of this.game.players) {
-        if(player == this.player){
-        continue;
+        for (let player of this.game.players) {
+          if (player == this.player) {
+            continue;
+          }
+          this.player.role.revealToPlayer(player);
         }
-          this.player.role.revealToPlayer(player);  
-      }
-      //this.revealToAll();
+        //this.revealToAll();
       },
     };
   }

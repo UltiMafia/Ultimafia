@@ -7,7 +7,7 @@ module.exports = class GuessRoleOrGetBlocked extends Card {
   constructor(role) {
     super(role);
 
-      this.meetings = {
+    this.meetings = {
       "Guess Role": {
         states: ["Night"],
         flags: ["voting", "mustAct"],
@@ -23,9 +23,9 @@ module.exports = class GuessRoleOrGetBlocked extends Card {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER - 1,
           run: function () {
             if (this.target == "None") return;
-        if (!this.role.hasAbility(["Blocking", "Modifier"])) {
-          return;
-        }
+            if (!this.role.hasAbility(["Blocking", "Modifier"])) {
+              return;
+            }
             for (let action of this.game.actions[0]) {
               if (action.hasLabel("absolute")) {
                 continue;
@@ -49,7 +49,10 @@ module.exports = class GuessRoleOrGetBlocked extends Card {
                 toCheck[0] instanceof Player
               ) {
                 for (let y = 0; y < toCheck.length; y++) {
-                  if (`${toCheck[y].role.name}:${toCheck[y].role.modifier}` != this.target) {
+                  if (
+                    `${toCheck[y].role.name}:${toCheck[y].role.modifier}` !=
+                    this.target
+                  ) {
                     if (
                       action.priority > this.priority &&
                       !action.hasLabel("absolute")
@@ -61,11 +64,9 @@ module.exports = class GuessRoleOrGetBlocked extends Card {
                 }
               }
             }
-            
           },
         },
       },
     };
-
   }
 };

@@ -22,7 +22,9 @@ module.exports = class Opera extends Event {
       event: this,
       run: function () {
         if (this.game.SilentEvents != false) {
-          this.game.queueAlert(`Event: Opera, 3 players may attend a night at the Opera!`);
+          this.game.queueAlert(
+            `Event: Opera, 3 players may attend a night at the Opera!`
+          );
         }
         for (const player of this.event.generatePossibleVictims()) {
           player.holdItem("MovieTicket");

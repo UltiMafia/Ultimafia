@@ -105,8 +105,10 @@ module.exports = class CheatGame extends Game {
       );
     }
     */
-    if(this.MaxRounds >= 1){
-      this.sendAlert(`The player with the least Cards wins after Round ${this.MaxRounds}.`);
+    if (this.MaxRounds >= 1) {
+      this.sendAlert(
+        `The player with the least Cards wins after Round ${this.MaxRounds}.`
+      );
     }
     this.sendAlert(`Good luck... You'll probably need it.`);
 
@@ -157,12 +159,12 @@ module.exports = class CheatGame extends Game {
       this.SmallBlind = this.randomizedPlayersCopy[1];
       this.BigBlind =
         this.randomizedPlayersCopy[(1 + 1) % this.randomizedPlayersCopy.length];
-    } 
+    }
 
     this.ThePot += this.minimumBet;
     this.lastAmountBid = this.minimumBet;
-    let cardAmount = Math.floor(52/this.randomizedPlayersCopy.length);
-    
+    let cardAmount = Math.floor(52 / this.randomizedPlayersCopy.length);
+
     this.dealCards(cardAmount);
   }
 
@@ -192,15 +194,32 @@ module.exports = class CheatGame extends Game {
     if (previousState == "Call Lie") {
       this.RoundNumber++;
       this.RankNumber++;
-      if(this.RankNumber > 13){
+      if (this.RankNumber > 13) {
         this.RankNumber = 1;
       }
-      this.sendAlert(`${(this.RankNumber != 1 && this.RankNumber != 11 && this.RankNumber != 12 && this.RankNumber != 13) ? (this.RankNumber) : (this.RankNumber == 1 ? "Ace" : (this.RankNumber == 11 ? "Jack" : (this.RankNumber == 12 ? "Queen" : ("King"))))}s must be played!`);
-      for(let player of this.randomizedPlayersCopy){
+      this.sendAlert(
+        `${
+          this.RankNumber != 1 &&
+          this.RankNumber != 11 &&
+          this.RankNumber != 12 &&
+          this.RankNumber != 13
+            ? this.RankNumber
+            : this.RankNumber == 1
+            ? "Ace"
+            : this.RankNumber == 11
+            ? "Jack"
+            : this.RankNumber == 12
+            ? "Queen"
+            : "King"
+        }s must be played!`
+      );
+      for (let player of this.randomizedPlayersCopy) {
         player.hasLied = false;
       }
       this.incrementCurrentIndex();
-      this.sendAlert(`${this.randomizedPlayersCopy[this.currentIndex].name}'s Turn!`);
+      this.sendAlert(
+        `${this.randomizedPlayersCopy[this.currentIndex].name}'s Turn!`
+      );
     }
 
     super.incrementState();
@@ -280,19 +299,16 @@ module.exports = class CheatGame extends Game {
 
   addToPot(player, type, amount) {
     let soundNum = Random.randInt(0, 4);
-    if(soundNum == 0){
+    if (soundNum == 0) {
       this.broadcast("chips_large1");
-    }
-    else if(soundNum == 1){
+    } else if (soundNum == 1) {
       this.broadcast("chips_large2");
-    }
-    else if(soundNum == 2){
+    } else if (soundNum == 2) {
       this.broadcast("chips_small1");
-    }
-    else{
+    } else {
       this.broadcast("chips_small2");
     }
-    
+
     if (type == "Bet") {
       this.sendAlert(`${player.name} bets ${amount} into the Pot!`);
       player.Chips = parseInt(player.Chips) - parseInt(amount);

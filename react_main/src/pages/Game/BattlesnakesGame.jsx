@@ -50,11 +50,11 @@ function SnakeGame(props) {
     if (game.review) updateStateViewing({ type: "first" });
   }, []);
 
-    useSocketListeners((socket) => {
-      socket.on("start", () => {
-        game.playAudio("music/14_Minigame");
-      });
-    }, game.socket);
+  useSocketListeners((socket) => {
+    socket.on("start", () => {
+      game.playAudio("music/14_Minigame");
+    });
+  }, game.socket);
 
   return (
     <>

@@ -9,21 +9,21 @@ module.exports = class Wrangled extends Effect {
 
     this.listeners = {
       vote: function (vote) {
-        if(this.NotFirstVoter && this.NotFirstSpeaker){
+        if (this.NotFirstVoter && this.NotFirstSpeaker) {
           this.remove();
         }
-        if(this.NotFirstVoter == true){
+        if (this.NotFirstVoter == true) {
           return;
         }
         if (
-          (vote.meeting.name === "Village" ||
-            vote.meeting.name === "Room 1" ||
-            vote.meeting.name === "Room 2")
+          vote.meeting.name === "Village" ||
+          vote.meeting.name === "Room 1" ||
+          vote.meeting.name === "Room 2"
         ) {
-            if(vote.voter != this.player){
-              this.NotFirstVoter = true;
-              return;
-            }
+          if (vote.voter != this.player) {
+            this.NotFirstVoter = true;
+            return;
+          }
           let action = new Action({
             actor: this.curser,
             target: this.player,
@@ -31,16 +31,16 @@ module.exports = class Wrangled extends Effect {
             labels: ["hidden", "investigate", "role"],
             effect: this,
             run: function () {
-          let info = this.game.createInformation(
-              "RevealInfo",
-              this.actor,
-              this.game,
-              this.target,
-              null,
-              "Faction"
-            );
-            info.processInfo();
-            info.getInfoRaw();
+              let info = this.game.createInformation(
+                "RevealInfo",
+                this.actor,
+                this.game,
+                this.target,
+                null,
+                "Faction"
+              );
+              info.processInfo();
+              info.getInfoRaw();
 
               this.effect.remove();
             },
@@ -52,51 +52,49 @@ module.exports = class Wrangled extends Effect {
     };
   }
 
-  hear(message){
-        if(this.NotFirstVoter && this.NotFirstSpeaker){
-          this.remove();
-        }
-        if(this.NotFirstSpeaker == true){
-          return;
-        }
-    if(!message.isServer && message.sender != this.player){
+  hear(message) {
+    if (this.NotFirstVoter && this.NotFirstSpeaker) {
+      this.remove();
+    }
+    if (this.NotFirstSpeaker == true) {
+      return;
+    }
+    if (!message.isServer && message.sender != this.player) {
       this.NotFirstSpeaker = true;
     }
   }
 
   speak(message) {
-        if(this.NotFirstVoter && this.NotFirstSpeaker){
-          this.remove();
-        }
-        if(this.NotFirstSpeaker == true){
-          return;
-        }
+    if (this.NotFirstVoter && this.NotFirstSpeaker) {
+      this.remove();
+    }
+    if (this.NotFirstSpeaker == true) {
+      return;
+    }
     if (this.NotFirstSpeaker != true) {
-          let action = new Action({
-            actor: this.curser,
-            target: this.player,
-            game: this.game,
-            labels: ["hidden", "investigate", "role"],
-            effect: this,
-            run: function () {
+      let action = new Action({
+        actor: this.curser,
+        target: this.player,
+        game: this.game,
+        labels: ["hidden", "investigate", "role"],
+        effect: this,
+        run: function () {
           let info = this.game.createInformation(
-              "RevealInfo",
-              this.actor,
-              this.game,
-              this.target,
-              null,
-              "Faction"
-            );
-            info.processInfo();
-            info.getInfoRaw();
+            "RevealInfo",
+            this.actor,
+            this.game,
+            this.target,
+            null,
+            "Faction"
+          );
+          info.processInfo();
+          info.getInfoRaw();
 
-              this.effect.remove();
-            },
-          });
+          this.effect.remove();
+        },
+      });
 
-    this.game.instantAction(action);
+      this.game.instantAction(action);
     }
   }
-
-  
 };

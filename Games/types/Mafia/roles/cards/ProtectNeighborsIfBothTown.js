@@ -37,9 +37,7 @@ module.exports = class ProtectNeighborsIfBothTown extends Card {
         }
         for (let x = 0; x < this.ImmortalEffects.length; x++) {
           if (this.ImmortalEffects[x].player) {
-            var index = this.passiveEffects.indexOf(
-              this.ImmortalEffects[x]
-            );
+            var index = this.passiveEffects.indexOf(this.ImmortalEffects[x]);
             if (index != -1) {
               this.passiveEffects.splice(index, 1);
             }

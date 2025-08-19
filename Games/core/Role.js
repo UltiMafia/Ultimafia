@@ -87,7 +87,6 @@ module.exports = class Role {
 
     // Initialize role cards
     for (let i in this.cards) {
-
       var card = Utils.importGameClass(
         this.game.type,
         "roles/cards",
@@ -121,11 +120,10 @@ module.exports = class Role {
 
         for (let key in this.meetingMods[meetingName]) {
           //this.game.queueAlert(`Meeting Player: ${this.player.name} Meeting: ${meetingName} Key: ${key}`);
-          
-          if (key != "shouldMeet" || meeting.shouldMeet == null){
+
+          if (key != "shouldMeet" || meeting.shouldMeet == null) {
             meeting[key] = this.meetingMods[meetingName][key];
-          }
-          else {
+          } else {
             let existingShouldMeet = meeting.shouldMeet.bind(this);
             let cardShouldMeet =
               this.meetingMods[meetingName].shouldMeet.bind(this);
@@ -137,7 +135,6 @@ module.exports = class Role {
               );
             };
           }
-        
         }
       }
     }
@@ -154,11 +151,10 @@ module.exports = class Role {
     // Hold starting items
     for (let item of this.startItems) {
       let StartingItem;
-      if (typeof item == "string"){
+      if (typeof item == "string") {
         StartingItem = this.player.holdItem(item);
-      }
-      else {
-       StartingItem = this.player.holdItem(item.type, ...item.args);
+      } else {
+        StartingItem = this.player.holdItem(item.type, ...item.args);
       }
       this.player.startingItems.push(StartingItem);
     }
@@ -294,13 +290,12 @@ module.exports = class Role {
     //this.game.queueReveal(this.player, appearance);
     this.game.queueReveal(this.player, this.game.getRoleAlignment(appearance));
     if (!noAlert) {
-      const revealMessage = `${this.player.name}'s alignment is ${this.game.getRoleAlignment(
-        appearance
-      )}.`;
+      const revealMessage = `${
+        this.player.name
+      }'s alignment is ${this.game.getRoleAlignment(appearance)}.`;
       if (this.game.useObituaries) {
-        this.game.addToObituary(this.player.id, "revealMessage",revealMessage );
-      }
-      else {
+        this.game.addToObituary(this.player.id, "revealMessage", revealMessage);
+      } else {
         this.game.queueAlert(revealMessage);
       }
     }
@@ -319,14 +314,13 @@ module.exports = class Role {
 
     if (!noAlert) {
       const revealMessage = `${this.player.name}'s role is ${this.getRevealText(
-          roleName,
-          modifiers,
-          revealType
-        )}.`;
+        roleName,
+        modifiers,
+        revealType
+      )}.`;
       if (dueToDeath && this.game.useObituaries) {
         this.game.addToObituary(this.player.id, "revealMessage", revealMessage);
-      }
-      else {
+      } else {
         this.game.queueAlert(revealMessage);
       }
     }
@@ -389,10 +383,10 @@ module.exports = class Role {
   }
 
   remove() {
-    if(this.isExtraRole != true){
+    if (this.isExtraRole != true) {
       this.player.role = null;
     }
-    for(let effect of this.passiveEffects){
+    for (let effect of this.passiveEffects) {
       effect.remove();
     }
     this.passiveEffects = [];
