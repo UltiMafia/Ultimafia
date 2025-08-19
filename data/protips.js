@@ -58,7 +58,7 @@ const protips = {
   "Connect Four": [
     "Pay attention to the other players.",
     "Beware of diagonals.",
-    "There's a Starman waiting in the sky. He'd like to come and meet us but he thinks he'd blow our minds."
+    "There's a Starman waiting in the sky. He'd like to come and meet us but he thinks he'd blow our minds.",
     "David Bowie invented Connect 4 when he lived on Pratt Street."
     ],
 };
