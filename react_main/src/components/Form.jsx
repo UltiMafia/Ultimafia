@@ -639,9 +639,7 @@ export function TextEditor(props) {
       onTabChange={setTab}
       classes={{ preview: "md-content" }}
       generateMarkdownPreview={(markdown) =>
-        Promise.resolve(
-          <CustomMarkdown>{markdown}</CustomMarkdown>
-        )
+        Promise.resolve(<CustomMarkdown>{markdown}</CustomMarkdown>)
       }
     />
   );

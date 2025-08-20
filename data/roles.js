@@ -2044,7 +2044,7 @@ const roleData = {
         ],
       },
     },
-      Saint: {
+    Saint: {
       alignment: "Village",
       category: "Essential",
       tags: ["Essential", "Condemn", "Sacrificial", "Basic"],
