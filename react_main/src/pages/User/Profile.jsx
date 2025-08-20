@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { Link, Redirect, useParams, useHistory } from "react-router-dom";
 import axios from "axios";
-import Markdown from "react-markdown";
 import update from "immutability-helper";
 
 import { UserContext, SiteInfoContext } from "Contexts";
@@ -16,7 +15,7 @@ import {
 } from "./User";
 import { HiddenUpload, TextEditor } from "components/Form";
 import Setup from "components/Setup";
-import { Time, filterProfanity, basicRenderers } from "components/Basic";
+import { Time, filterProfanity } from "components/Basic";
 import { useErrorAlert } from "components/Alerts";
 import { getPageNavFilterArg, PageNav } from "components/Nav";
 import { RatingThresholds, RequiredTotalForStats } from "Constants";
@@ -26,6 +25,7 @@ import Comments from "../Community/Comments";
 
 import "css/user.css";
 import { Modal } from "components/Modal";
+import CustomMarkdown from 'components/CustomMarkdown';
 import ModerationSideDrawer from "components/ModerationSideDrawer";
 import { PieChart } from "./PieChart";
 import { NewLoading } from "../Welcome/NewLoading";
@@ -853,32 +853,32 @@ export default function Profile() {
         <Grid item xs={12} md={8}>
           <Stack direction="column" spacing={1}>
             <div className="box-panel" style={panelStyle}>
-              <div
-                className={`bio${isSelf && !editingBio ? " edit" : ""}`}
-                onClick={onBioClick}
-              >
-                {!editingBio && (
-                  <div className="md-content">
-                    <Markdown>{bio}</Markdown>
-                  </div>
-                )}
-                {editingBio && (
-                  <>
-                    <TextEditor value={bio} onChange={setBio} />
-                    <div className="buttons">
-                      <div className="btn btn-theme" onClick={onEditBio}>
-                        Submit
-                      </div>
-                      <div
-                        className="btn btn-theme-sec"
-                        onClick={onCancelEditBio}
-                      >
-                        Cancel
-                      </div>
+                <div
+                  className={`bio${isSelf && !editingBio ? " edit" : ""}`}
+                  onClick={onBioClick}
+                >
+                  {!editingBio && (
+                    <div className="md-content">
+                      <CustomMarkdown>{bio}</CustomMarkdown>
                     </div>
-                  </>
-                )}
-              </div>
+                  )}
+                  {editingBio && (
+                    <>
+                      <TextEditor value={bio} onChange={setBio} />
+                      <div className="buttons">
+                        <div className="btn btn-theme" onClick={onEditBio}>
+                          Submit
+                        </div>
+                        <div
+                          className="btn btn-theme-sec"
+                          onClick={onCancelEditBio}
+                        >
+                          Cancel
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
             </div>
             {!isSmallScreen && (
               <Box

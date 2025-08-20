@@ -75,7 +75,7 @@ export function MediaEmbed(props) {
       case "ogg":
         return "audio";
       default:
-        return null;
+        return "image";
     }
   };
   const mediaType = props.mediaType || getMediaType(mediaUrl);
@@ -100,6 +100,13 @@ export function MediaEmbed(props) {
   }, [mediaRef]);
 
   switch (mediaType) {
+    case "image":
+      return (
+        <img
+          ref={mediaRef}
+          src={mediaUrl}
+        ></img>
+      );
     case "audio":
       return (
         <audio

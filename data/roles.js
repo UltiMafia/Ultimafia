@@ -1030,9 +1030,9 @@ const roleData = {
       tags: ["Kill Interaction", "Killing", "Visiting", "Basic"],
       description: [
         "Each night, chooses a player.",
-        "Gains that player's abilites if that player dies.",
+        "Gains that player's abilities if that player dies.",
       ],
-      nightOrder: [["Gain abilites if Target dies", PRIORITY_PREKILL_ACTION]],
+      nightOrder: [["Gain abilities if Target dies", PRIORITY_PREKILL_ACTION]],
     },
     Avenger: {
       alignment: "Village",
@@ -1096,7 +1096,7 @@ const roleData = {
       tags: ["Dead", "Graveyard", "Exorcise", "Visiting", "Advanced"],
       description: [
         "Each Night, the Exorcist can Exorcise a dead Player.",
-        "Exorcised players can't be revived or use Graveyard abilites.",
+        "Exorcised players can't be revived or use Graveyard abilities.",
       ],
       nightOrder: [["Exorcise", PRIORITY_KILL_EXORCISE]],
     },
@@ -1133,7 +1133,7 @@ const roleData = {
       ],
       description: [
         "Visits one player each night and makes them Delirious until the start of the next night.",
-        "Delirious players get False Info and have other abilites disabled.",
+        "Delirious players get False Info and have other abilities disabled.",
         "A Sailor can not die unless roleblocked/made delirious.",
       ],
       nightOrder: [["Give Delirium", PRIORITY_NIGHT_ROLE_BLOCKER + 1]],
@@ -1651,7 +1651,7 @@ const roleData = {
       category: "Manipulative",
       tags: ["Advanced", "Banished Interaction"],
       description: [
-        "Has the abilites of up to 5 banished Village roles.",
+        "Has the abilities of up to 5 banished Village roles.",
         "Cannot have the Hermit ability.",
       ],
     },
@@ -2077,7 +2077,7 @@ const roleData = {
       tags: ["Expert", "Meeting", "Win Con"],
       description: [
         "The Mole is assigned a Mafia or Cult role in addition to the Mole role",
-        "The Mole will appear as that role and have that role's abilites but will still win with Village.",
+        "The Mole will appear as that role and have that role's abilities but will still win with Village.",
         "The Mole will count torwards Mafia/Cult majority and attend their meetings.",
         "Once per game, at night Mafia/Cult can guess who the Mole is even if dead.",
         "On a correct guess, Mafia/Cult wins.",
@@ -2471,7 +2471,7 @@ const roleData = {
       tags: ["Manipulative", "Delirium", "Visiting", "Advanced"],
       description: [
         "Visits one player each night and makes them Delirious until the start of the next night.",
-        "Delirious players get False Info and have other abilites disabled.",
+        "Delirious players get False Info and have other abilities disabled.",
       ],
       nightOrder: [["Give Delirium", PRIORITY_NIGHT_ROLE_BLOCKER + 1]],
     },
@@ -2523,7 +2523,7 @@ const roleData = {
       tags: ["Deception", "Astral", "Basic"],
       description: [
         "Does not get detected by watchers and trackers.",
-        "Does not trigger any when visited abilites on the target.",
+        "Does not trigger any when visited abilities on the target.",
         "Kills bomb without setting off the explosion.",
       ],
       nightOrder: [["Make Mafia kill astral", PRIORITY_NIGHT_ROLE_BLOCKER + 5]],
@@ -2615,7 +2615,7 @@ const roleData = {
       tags: ["Dead", "Graveyard", "Exorcise", "Visiting", "Advanced"],
       description: [
         "Each Night, the Ghostbuster can Exorcise a dead Player.",
-        "Exorcised players can't be revived or use Graveyard abilites.",
+        "Exorcised players can't be revived or use Graveyard abilities.",
       ],
       nightOrder: [["Exorcise", PRIORITY_KILL_EXORCISE]],
     },
@@ -2904,9 +2904,9 @@ const roleData = {
       tags: ["Kill Interaction", "Killing", "Visiting", "Basic"],
       description: [
         "Each night, chooses a player.",
-        "Gains that player's abilites if that player dies.",
+        "Gains that player's abilities if that player dies.",
       ],
-      nightOrder: [["Gain abilites if Target dies", PRIORITY_PREKILL_ACTION]],
+      nightOrder: [["Gain abilities if Target dies", PRIORITY_PREKILL_ACTION]],
     },
     Associate: {
       alignment: "Mafia",
@@ -2935,7 +2935,7 @@ const roleData = {
       category: "Manipulative",
       tags: ["Advanced", "Banished Interaction"],
       description: [
-        "Has the abilites of up to 5 banished Mafia roles.",
+        "Has the abilities of up to 5 banished Mafia roles.",
         "Cannot have the Oddfather ability.",
       ],
     },
@@ -3757,9 +3757,9 @@ const roleData = {
       tags: ["Kill Interaction", "Killing", "Visiting", "Basic"],
       description: [
         "Each night, chooses a player.",
-        "Gains that player's abilites if that player dies.",
+        "Gains that player's abilities if that player dies.",
       ],
-      nightOrder: [["Gain abilites if Target dies", PRIORITY_PREKILL_ACTION]],
+      nightOrder: [["Gain abilities if Target dies", PRIORITY_PREKILL_ACTION]],
     },
     "Queen Bee": {
       alignment: "Cult",
@@ -3796,7 +3796,7 @@ const roleData = {
       tags: ["Manipulative", "Delirium", "Visiting", "Advanced"],
       description: [
         "Visits one player each night and makes them Delirious until the start of the next night.",
-        "Delirious players get False Info and have other abilites disabled.",
+        "Delirious players get False Info and have other abilities disabled.",
       ],
       nightOrder: [["Give Delirium", PRIORITY_NIGHT_ROLE_BLOCKER + 1]],
       skins: [
@@ -4036,7 +4036,7 @@ const roleData = {
       ],
       description: [
         "Each night, may choose a player to kill.",
-        "Cult players killed by a Necromancer can use their abilites when dead, and will make one of their non-banished Village-Aligned neighbors Delirious until the Necromancer dies.",
+        "Cult players killed by a Necromancer can use their abilities when dead, and will make one of their non-banished Village-Aligned neighbors Delirious until the Necromancer dies.",
         "Necromancer removes 1 Banished role in closed setups.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
@@ -5461,7 +5461,7 @@ const roleData = {
       tags: ["Event", "Game Ender"],
       description: [
         "If this Event occurs, The game will end and No One wins if nobody dies during the day.",
-        "This is uneffected by Win-con altering abilites.",
+        "This is uneffected by Win-con altering abilities.",
       ],
     },
     "Black Hole": {
@@ -5469,7 +5469,7 @@ const roleData = {
       tags: ["Event", "Game Ender"],
       description: [
         "If this Event occurs, The game will end in 5 Minutes and No One wins if the game doesn't end before the 5 Minutes are up.",
-        "This is uneffected by Win-con altering abilites.",
+        "This is uneffected by Win-con altering abilities.",
       ],
     },
     "Blood Moon": {

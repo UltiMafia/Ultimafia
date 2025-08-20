@@ -2,10 +2,10 @@ import React, { useState, useReducer, useRef, useEffect } from "react";
 import { ChromePicker } from "react-color";
 import DatePicker from "react-date-picker";
 import ReactMde from "react-mde";
-import ReactMarkdown from "react-markdown";
 import axios from "axios";
 
-import { basicRenderers, useOnOutsideClick } from "./Basic";
+import CustomMarkdown from "components/CustomMarkdown";
+import { useOnOutsideClick } from "./Basic";
 import { useErrorAlert } from "./Alerts";
 
 import "react-mde/lib/styles/css/react-mde.css";
@@ -640,7 +640,7 @@ export function TextEditor(props) {
       classes={{ preview: "md-content" }}
       generateMarkdownPreview={(markdown) =>
         Promise.resolve(
-          <ReactMarkdown renderers={basicRenderers()} source={markdown} />
+          <CustomMarkdown>{markdown}</CustomMarkdown>
         )
       }
     />

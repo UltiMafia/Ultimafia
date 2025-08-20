@@ -72,7 +72,7 @@ module.exports = class BecomeUndercoverEvil extends Card {
             }
             this.actor.holdItem("MoleVoting");
             this.actor.queueAlert(
-              `You are the Mole, You have the abilites of a ${this.actor.role.newRole}`
+              `You are the Mole, You have the abilities of a ${this.actor.role.newRole}`
             );
           },
         });

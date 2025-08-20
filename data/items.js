@@ -111,7 +111,7 @@ const modifierData = {
       internal: ["Coffee"],
       tags: ["actions"],
       description:
-        "Can be used at night to use role abilites an additional time.",
+        "Can be used at night to use role abilities an additional time.",
     },
     //Non Town Items
     Suit: {

@@ -10,7 +10,7 @@ const effectData = {
       internal: ["Delirious"],
       tags: ["Information"],
       description:
-        "Delirious players will get false information and have non-information abilites disabled.",
+        "Delirious players will get false information and have non-information abilities disabled.",
     },
     Doused: {
       internal: ["Knife"],
