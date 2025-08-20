@@ -21,7 +21,7 @@ const modifierData = {
       internal: ["BackUpModifier"],
       tags: ["Conversion"],
       description:
-        "Independents will become a Sidekick with this role as the Target. Other roles will have no abilites until a player with their role dies.",
+        "Independents will become a Sidekick with this role as the Target. Other roles will have no abilities until a player with their role dies.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Retired"],
     },
@@ -224,7 +224,7 @@ const modifierData = {
       internal: ["Retired"],
       tags: ["Information", "Retired"],
       description:
-        "Starts knowing anyone who has the same role. Has all other abilites disabled",
+        "Starts knowing anyone who has the same role. Has all other abilities disabled",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Backup"],
     },
