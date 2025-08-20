@@ -280,6 +280,10 @@
   background-image: url("/src/images/roles/village/statue-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Sculptor {
+  background-image: url("/src/images/roles/village/sculptor-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Bawd {
   background-image: url("/src/images/roles/village/bawd-vivid.png");
 }
@@ -932,8 +936,8 @@
   background-image: url("/src/images/roles/village/photographer-vivid.png");
 }
 
-.role-icon-vivid-Mafia-Saint {
-  background-image: url("/src/images/roles/village/saint-vivid.png");
+.role-icon-vivid-Mafia-Paladin {
+  background-image: url("/src/images/roles/village/paladin-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Snake-Charmer {
@@ -1021,6 +1025,10 @@
 
 .role-icon-vivid-Mafia-Godfather {
   background-image: url("/src/images/roles/mafia/godfather-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Oddfather {
+  background-image: url("/src/images/roles/mafia/oddfather-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Revisionist {
@@ -2441,8 +2449,8 @@
   background-image: url("/src/images/modifiers/liminal.png");
 }
 
-.modifier-Mafia-Linchpin {
-  background-image: url("/src/images/modifiers/linchpin.png");
+.modifier-Mafia-Vital {
+  background-image: url("/src/images/modifiers/selfish-vital.png");
 }
 
 .modifier-Mafia-Lone {
@@ -2626,7 +2634,7 @@
 }
 
 .modifier-Mafia-Selfish {
-  background-image: url("/src/images/modifiers/selfish.png");
+  background-image: url("/src/images/modifiers/selfish-vital.png");
 }
 
 .modifier-Mafia-Sensible {

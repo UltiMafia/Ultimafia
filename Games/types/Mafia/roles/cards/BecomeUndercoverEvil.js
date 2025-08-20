@@ -19,7 +19,7 @@ module.exports = class BecomeUndercoverEvil extends Card {
     roles = roles.filter((r) => !currentRoles.includes(r));
 
     roles = roles.filter((r) => !r.toLowerCase().includes("demonic"));
-    roles = roles.filter((r) => !r.toLowerCase().includes("linchpin"));
+    roles = roles.filter((r) => !r.toLowerCase().includes("vital"));
     roles = roles.filter(
       (r) =>
         this.game.getRoleAlignment(r) == "Mafia" ||
@@ -28,7 +28,7 @@ module.exports = class BecomeUndercoverEvil extends Card {
     if (roles.length <= 0) {
       roles = currentRoles;
       roles = roles.filter((r) => !r.toLowerCase().includes("demonic"));
-      roles = roles.filter((r) => !r.toLowerCase().includes("linchpin"));
+      roles = roles.filter((r) => !r.toLowerCase().includes("vital"));
       roles = roles.filter(
         (r) =>
           this.game.getRoleAlignment(r) != "Village" &&
@@ -134,7 +134,7 @@ function switchRoleBefore(role) {
     );
   }
   roles = roles.filter((r) => !r.toLowerCase().includes("demonic"));
-  roles = roles.filter((r) => !r.toLowerCase().includes("linchpin"));
+  roles = roles.filter((r) => !r.toLowerCase().includes("vital"));
   roles = roles.filter(
     (r) =>
       role.game.getRoleAlignment(r) == "Mafia" ||
@@ -143,7 +143,7 @@ function switchRoleBefore(role) {
   if (roles.length <= 0) {
     roles = currentRoles;
     roles = roles.filter((r) => !r.toLowerCase().includes("demonic"));
-    roles = roles.filter((r) => !r.toLowerCase().includes("linchpin"));
+    roles = roles.filter((r) => !r.toLowerCase().includes("vital"));
     roles = roles.filter(
       (r) =>
         role.game.getRoleAlignment(r) != "Village" &&

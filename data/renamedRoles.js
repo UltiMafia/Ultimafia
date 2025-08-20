@@ -71,6 +71,7 @@ module.exports = {
     Bully: "Mafioso",
     Blackmailer: "Mafioso",
     Slayer: "Sheriff",
+    Saint: "Villager:Vital",
   },
   Ghost: {
     Town: "Villager",

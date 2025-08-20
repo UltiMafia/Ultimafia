@@ -12,5 +12,6 @@ module.exports = {
     Rotten: "Insane",
     Infected: "Confused",
     "One Shot": "X-Shot",
+    Linchpin: "Vital",
   },
 };

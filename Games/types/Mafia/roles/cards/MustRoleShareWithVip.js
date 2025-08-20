@@ -55,7 +55,7 @@ module.exports = class MustRoleShareWithVip extends Card {
                     player.role.modifier
                   )
                 )
-                .includes("Linchpin") &&
+                .includes("Vital") &&
               !this.data.playersSharedWith.includes(player)
             ) {
               hasFailed = true;
@@ -84,7 +84,7 @@ module.exports = class MustRoleShareWithVip extends Card {
                     this.player.role.modifiers
                   )
                 )
-                .includes("Linchpin") &&
+                .includes("Essential") &&
               !this.data.playersSharedWith.includes(player)
             ) {
               hasFailed = true;

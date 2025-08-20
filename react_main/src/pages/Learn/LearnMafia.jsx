@@ -40,6 +40,11 @@ export default function LearnMafia(props) {
       icon: <div className="icon item item-Mafia-Armor" />,
     },
     {
+      name: "Shield",
+      text: "Can be used at night to redirect kills targeting the holder on to a random player of the same alignment, if possible.",
+      icon: <div className="icon item item-Mafia-Armor" />,
+    },
+    {
       name: "Bomb",
       text: "When a player is killed while holding a bomb, the player who killed them will also die.",
       icon: <div className="icon item item-Mafia-Bomb" />,

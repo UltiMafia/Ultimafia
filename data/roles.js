@@ -2044,14 +2044,6 @@ const roleData = {
         ],
       },
     },
-    Saint: {
-      alignment: "Village",
-      category: "Essential",
-      tags: ["Essential", "Condemn", "Sacrificial", "Basic"],
-      description: [
-        "When a Saint is condemned, all Village-aligned players die.",
-      ],
-    },
     Seer: {
       alignment: "Village",
       category: "Essential",
@@ -2106,7 +2098,7 @@ const roleData = {
       alignment: "Village",
       tags: ["Win Con", "Setup Changes", "Role Sharing", "Advanced"],
       description: [
-        "Must role share with any Presidents, Senators, and Linchpin Village roles in the game.",
+        "Must role share with any Presidents, Senators, and Vital Village roles in the game.",
         "The Vice President's team cannot win if they fail to role share with required roles.",
         "Adds a President in Closed Setups",
       ],
@@ -3901,7 +3893,7 @@ const roleData = {
       category: "Chaos",
       tags: ["Conversion", "Demonic Interaction", "Basic"],
       description: [
-        "If a Demonic or Linchpin Cult role dies, the Devotee will convert to that role.",
+        "If a Demonic or Vital Cult role dies, the Devotee will convert to that role.",
         "If there are less then 5 players alive, the Devotee has no ability.",
       ],
     },
@@ -3915,7 +3907,7 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "If a Demonic or Linchpin Cult role is condemned and the game would have ended, the game will continue for 1 more day.",
+        "If a Demonic or Vital Cult role is condemned and the game would have ended, the game will continue for 1 more day.",
         "On the extra Day, If a Village Aligned player is condemned, Cult Wins.",
         "If no one is condemned or a Non-Village player is condemned on the extra day, All Cult-aligned players die.",
       ],

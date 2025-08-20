@@ -12,7 +12,7 @@ const modifierData = {
       category: "Other",
       internal: ["OnlyUseInPlayRoles"],
       tags: ["Austere"],
-      description: "This role can only referance roles currently in the game.",
+      description: "This role can only reference roles currently in the game.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Excessive"],
     },
@@ -475,10 +475,10 @@ const modifierData = {
         "Cult will win if a Demonic player is alive in final 2 or only Demonic and Cult players are alive. If all Demonic players are dead, all Cult-aligned players will die.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
-    Linchpin: {
+    Vital: {
       category: "Other",
       internal: ["KillAlignedOnDeath"],
-      tags: ["Essential", "Selective Revealing", "Linchpin"],
+      tags: ["Essential", "Selective Revealing"],
       description: "If dead, all aligned players will die too.",
       eventDescription: "This modifier does nothing when on an Event.",
     },

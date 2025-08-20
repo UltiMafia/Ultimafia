@@ -127,6 +127,7 @@ const artContributors = {
       "Auditor:vivid",
       "Vampire:vivid",
       "Blackguard:vivid",
+      "Paladin:vivid",
       //Skins
       "Tourist:old",
       "Bloodhound:old",
@@ -510,6 +511,8 @@ const artContributors = {
       "Hermit:vivid",
       "Plague Doctor:vivid",
       "Fisherman:vivid",
+      "Oddfather:vivid",
+      "Sculptor:vivid",
     ],
     Battlesnakes: ["Snake:vivid"],
   },

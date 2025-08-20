@@ -562,7 +562,7 @@ module.exports = class MafiaInformation {
           .getRoleTags(
             this.game.formatRoleInternal(player.role.name, player.role.modifier)
           )
-          .includes("Linchpin")
+          .includes("Vital")
       ) {
         score = score + 30;
       }
