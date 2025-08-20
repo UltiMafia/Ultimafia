@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
 import { Redirect, Link, useParams, useLocation } from "react-router-dom";
-import Markdown from "react-markdown";
 import update from "immutability-helper";
 
-import { useErrorAlert } from "../../../components/Alerts";
+import CustomMarkdown from "components/CustomMarkdown";
+import { useErrorAlert } from "components/Alerts";
+import { Time, filterProfanity } from "components/Basic";
+import { PageNav } from "components/Nav";
+import { TextEditor } from "components/Form";
+import { UserContext } from "Contexts";
+import { NewLoading } from "../../Welcome/NewLoading";
+
 import { VoteWidget } from "./Forums";
 import { NameWithAvatar } from "../../User/User";
-import { Time, filterProfanity } from "../../../components/Basic";
-import { PageNav } from "../../../components/Nav";
-import { TextEditor } from "../../../components/Form";
-import { UserContext } from "../../../Contexts";
-import { NewLoading } from "../../Welcome/NewLoading";
 
 export default function Thread(props) {
   const [threadInfo, setThreadInfo] = useState({});
@@ -446,7 +447,7 @@ function Post(props) {
         </div>
         {!editing && (
           <div className="md-content">
-            <Markdown>{content}</Markdown>
+            <CustomMarkdown>{content}</CustomMarkdown>
           </div>
         )}
         {editing && (

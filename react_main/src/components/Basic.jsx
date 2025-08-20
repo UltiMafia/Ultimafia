@@ -333,28 +333,6 @@ export function useOnOutsideClick(refs, action) {
     };
   }, refs);
 }
-export function basicRenderers() {
-  return {
-    link: (props) => (
-      <a href={props.href} rel="noopener noreferrer nofollow">
-        {props.children}
-      </a>
-    ),
-    text: (props) => {
-      return emotify(props.value);
-    },
-    image: (props) => {
-      if (
-        /\.(webm|mp4|mp3|ogg)$/.test(props.src) ||
-        youtubeRegex.test(props.src)
-      ) {
-        return <MediaEmbed mediaUrl={props.src} />;
-      } else {
-        return <img alt={props.value} src={props.src} />;
-      }
-    },
-  };
-}
 
 export const youtubeRegex =
   /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;

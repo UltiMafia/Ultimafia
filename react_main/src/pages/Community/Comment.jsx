@@ -1,9 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
-import { UserContext } from "../../Contexts";
-import { useErrorAlert } from "../../components/Alerts";
-import Markdown from "react-markdown";
-import { basicRenderers, Time } from "../../components/Basic";
 import axios from "axios";
+
+import { UserContext } from "Contexts";
+import { useErrorAlert } from "components/Alerts";
+import { Time } from "components/Basic";
+import CustomMarkdown from "components/CustomMarkdown";
+
+import { VoteWidget } from "./Forums/Forums";
+import { NameWithAvatar } from "../User/User";
+
 import {
   Box,
   Card,
@@ -13,8 +18,6 @@ import {
   IconButton,
 } from "@mui/material";
 import { useTheme } from "@mui/styles";
-import { VoteWidget } from "./Forums/Forums";
-import { NameWithAvatar } from "../User/User";
 
 export const Comment = (props) => {
   const theme = useTheme();
@@ -122,7 +125,9 @@ export const Comment = (props) => {
                   color: `${theme.palette.text.primary} !important`,
                 }}
               >
-                <Markdown>{content}</Markdown>
+                <CustomMarkdown>
+                  {content}
+                </CustomMarkdown>
               </Box>
             </div>
           </CardContent>
