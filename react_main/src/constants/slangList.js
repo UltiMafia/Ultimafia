@@ -44,6 +44,11 @@ export const slangList = {
       "A Counter-Claim (or CC): a claim that contradicts other claims that were made, such as two players claiming the same role.",
     emoji: ["❗", "⚠", "😈", "🙈", "❌"],
   },
+  cross: {
+    definition:
+      "Two players voting eachother so a clear can hammer.",
+    emoji: "❌",
+  },
   fos: {
     definition:
       "Finger of Suspicion: when a villager notices another player acting suspicious. Generally, this is used in place of a vote, to give the clear an idea on who to vote.",
