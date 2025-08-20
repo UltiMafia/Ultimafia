@@ -128,12 +128,12 @@
   background-image: url("/src/images/game_icons/LiarsDice.png");
 }
 
-.game-icon.Card-Games {
-  background-image: url("/src/images/game_icons/CardGames.png");
+.game-icon.Texas-Hold-Em {
+  background-image: url("/src/images/game_icons/TexasHoldEm.png");
 }
 
 .game-icon.Cheat {
-  background-image: url("/src/images/game_icons/CardGames.png");
+  background-image: url("/src/images/game_icons/Cheat.png");
 }
 
 .game-icon.Battlesnakes {
