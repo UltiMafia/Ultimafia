@@ -59,12 +59,9 @@ module.exports = class BecomeDeliriousRole extends Card {
           "RemoveStartingItems"
         );
 
-            let role = this.player.addExtraRole(`${"Villager"}:${tempModifier}`);
-            this.GainedBanishedRoles.push(role);
-            this.player.passiveExtraRoles.push(role);
-          
-        
-        
+        let role = this.player.addExtraRole(`${"Villager"}:${tempModifier}`);
+        this.GainedBanishedRoles.push(role);
+        this.player.passiveExtraRoles.push(role);
       },
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -82,9 +79,9 @@ module.exports = class BecomeDeliriousRole extends Card {
           "No Change"
         );
 
-          let role = this.player.addExtraRole(`${"Villager"}:${tempModifier}`);
-          this.GainedBanishedRoles.push(role);
-          this.player.passiveExtraRoles.push(role);
+        let role = this.player.addExtraRole(`${"Villager"}:${tempModifier}`);
+        this.GainedBanishedRoles.push(role);
+        this.player.passiveExtraRoles.push(role);
       },
     };
   }
