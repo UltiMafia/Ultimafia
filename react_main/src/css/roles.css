@@ -2235,7 +2235,7 @@ background-image: url("/src/images/modifiers/austere.png");
 
 .modifier-Mafia-Boastful {
 background-image: url("/src/images/modifiers/respected-boastful.png");
-
+}
 
 .modifier-Mafia-Bouncy {
   background-image: url("/src/images/modifiers/bouncy.png");
@@ -3009,8 +3009,8 @@ background-image: url("/src/images/modifiers/weak-fragile.png");
 *
 ***********/
 
-.role-icon-vivid-Connect-Four-Player {
-  background-image: url("/src/images/roles/village/villager-vivid.png");
+.role-icon-vivid-Connect-Four-Starman {
+  background-image: url("/src/images/roles/minigame/connectfour/starman-vivid.png");
 }
 
 /***********

@@ -60,6 +60,8 @@ const protips = {
     "Beware of diagonals.",
     "There's a Starman waiting in the sky. He'd like to come and meet us but he thinks he'd blow our minds.",
     "David Bowie invented Connect 4 when he lived on Pratt Street."
+    "We've got five years.",
+    "Planet Earth is blue and there's nothing I can do."
     ],
 };
 
