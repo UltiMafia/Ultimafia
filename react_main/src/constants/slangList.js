@@ -45,8 +45,7 @@ export const slangList = {
     emoji: ["❗", "⚠", "😈", "🙈", "❌"],
   },
   cross: {
-    definition:
-      "Two players voting eachother so a clear can hammer.",
+    definition: "Two players voting eachother so a clear can hammer.",
     emoji: "❌",
   },
   fos: {
