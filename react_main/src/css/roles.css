@@ -276,6 +276,10 @@
 /* 
 /*------------------Village Roles----------------------*/
 
+.role-icon-vivid-Mafia-Saint {
+  background-image: url("/src/images/roles/village/saint-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Statue {
   background-image: url("/src/images/roles/village/statue-vivid.png");
 }

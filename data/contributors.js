@@ -513,6 +513,7 @@ const artContributors = {
       "Fisherman:vivid",
       "Oddfather:vivid",
       "Sculptor:vivid",
+      "Saint:vivid",
     ],
     Battlesnakes: ["Snake:vivid"],
   },

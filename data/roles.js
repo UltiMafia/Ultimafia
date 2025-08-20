@@ -2044,6 +2044,14 @@ const roleData = {
         ],
       },
     },
+      Saint: {
+      alignment: "Village",
+      category: "Essential",
+      tags: ["Essential", "Condemn", "Sacrificial", "Basic"],
+      description: [
+        "When a Saint is condemned, all Village-aligned players die.",
+      ],
+    },
     Seer: {
       alignment: "Village",
       category: "Essential",

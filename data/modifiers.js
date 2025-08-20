@@ -477,9 +477,9 @@ const modifierData = {
     },
     Vital: {
       category: "Other",
-      internal: ["KillAlignedOnCondemn"],
-      tags: ["Essential", "Selective Revealing"],
-      description: "If condemned, all aligned players will die too.",
+      internal: ["KillAlignedOnDeath"],
+      tags: ["Essential", "Selective Revealing", "Vital"],
+      description: "If killed, all aligned players will die too.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     //Role Share
