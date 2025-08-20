@@ -1136,7 +1136,8 @@ const modifierData = {
       category: "Appearance",
       internal: ["TrueModifier"],
       tags: ["Information", "Sanity"],
-      description: "All Information received by this role is true. Hides other modifiers.",
+      description:
+        "All Information received by this role is true. Hides other modifiers.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Confused", "Insane", "Naive", "Paranoid"],
     },
@@ -1144,7 +1145,8 @@ const modifierData = {
       category: "Appearance",
       internal: ["FalseModifier"],
       tags: ["Information", "Sanity"],
-      description: "All Information received by this role is false. Hides other modifiers.",
+      description:
+        "All Information received by this role is false. Hides other modifiers.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Sane", "Confused", "Naive", "Paranoid"],
     },
@@ -1170,7 +1172,8 @@ const modifierData = {
       category: "Appearance",
       internal: ["ModifierConfused"],
       tags: ["Information", "Sanity", "RNG"],
-      description: "Investigative reports appear incorrect 50% of the time. Hides other modifiers.",
+      description:
+        "Investigative reports appear incorrect 50% of the time. Hides other modifiers.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Sane", "Insane", "Naive", "Paranoid"],
     },

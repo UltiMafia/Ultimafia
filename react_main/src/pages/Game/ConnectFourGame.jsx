@@ -222,7 +222,7 @@ function BoardBox(props) {
     return (
       <>
         <div className="connectFour-board-box">
-          {<PlayerAvatar player={temp}/>}
+          {<PlayerAvatar player={temp} />}
         </div>
       </>
     );

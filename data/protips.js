@@ -28,18 +28,13 @@ const protips = {
     "Have a clear town member? It can be convenient for everyone else to self vote so that they can choose who to condemn.",
     "Finding players that you can trust (a townread) is often just as important as finding those that you can't.",
   ],
-  Resistance: [
-  ],
+  Resistance: [],
   Ghost: [],
   Jotto: [],
   Battlesnakes: ["Sometimes, size does matter."],
   Acrotopia: [],
   "Secret Dictator": ["Count the cards!"],
-  "Wacky Words": [
-    "Be wacky.", 
-    "Be bold.", 
-    "Be brave.", 
-    "Be funny."],
+  "Wacky Words": ["Be wacky.", "Be bold.", "Be brave.", "Be funny."],
   "Liars Dice": [
     "Call it!!!!",
     "99% of gamblers quit before they win big!",
@@ -50,11 +45,7 @@ const protips = {
     "99% of gamblers quit before they win big!",
     "All In!!!!",
   ],
-  Cheat: [
-    "Count the cards!", 
-    "Call It", 
-    "Cheaters sometimes prosper!"
-  ],
+  Cheat: ["Count the cards!", "Call It", "Cheaters sometimes prosper!"],
   "Connect Four": [
     "Pay attention to the other players.",
     "Beware of diagonals.",
@@ -62,7 +53,7 @@ const protips = {
     "David Bowie invented Connect 4 when he lived on Pratt Street.",
     "We've got five years.",
     "Planet Earth is blue and there's nothing I can do.",
-    ],
+  ],
 };
 
 module.exports = protips;

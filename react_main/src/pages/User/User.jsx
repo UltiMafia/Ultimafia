@@ -233,9 +233,9 @@ export function Avatar(props) {
     }
   }
 
-  if(ConnectFour){
-      style.transform = "translateX(5px) translateY(5px)";
-    }
+  if (ConnectFour) {
+    style.transform = "translateX(5px) translateY(5px)";
+  }
 
   if (hasImage && !imageUrl && id && avatarId) {
     if (id === avatarId) {
