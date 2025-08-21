@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/styles";
 
-import { RoleSearch } from "../../components/Roles";
+import { RoleSearch, ModifierSearch } from "../../components/Roles";
 import { SiteInfoContext } from "../../Contexts";
 import { hyphenDelimit } from "../../utils";
 
@@ -245,6 +245,12 @@ export default function LearnMafia(props) {
       </Accordion>
       <Accordion>
         <AccordionSummary>
+          <Typography>Modifiers</Typography>
+        </AccordionSummary>
+        <AccordionDetails><ModifierSearch gameType={gameType} /></AccordionDetails>
+      </Accordion>
+      <Accordion>
+        <AccordionSummary>
           <Typography>Items</Typography>
         </AccordionSummary>
         <AccordionDetails>{renderTable(items)}</AccordionDetails>
@@ -254,12 +260,6 @@ export default function LearnMafia(props) {
           <Typography>Mechanics</Typography>
         </AccordionSummary>
         <AccordionDetails>{renderTable(mechanics)}</AccordionDetails>
-      </Accordion>
-      <Accordion>
-        <AccordionSummary>
-          <Typography>Modifiers</Typography>
-        </AccordionSummary>
-        <AccordionDetails>{renderTable(modifiers)}</AccordionDetails>
       </Accordion>
     </div>
   );
