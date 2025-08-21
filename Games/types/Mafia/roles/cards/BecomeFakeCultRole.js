@@ -73,6 +73,7 @@ module.exports = class BecomeFakeCultRole extends Card {
         this.player.role.data.reroll = true;
         this.player.holdItem("IsTheTelevangelist", this.player.role.modifier);
 
+        let tempModifier = this.player.role.modifier;
         this.player.setRole(
           this.player.role.newRole,
           undefined,
@@ -86,12 +87,18 @@ module.exports = class BecomeFakeCultRole extends Card {
           self: role.newRole,
         };
         this.player.role.editAppearance(tempApp);
+
+
+        let role = this.player.addExtraRole(`${"Villager"}:${tempModifier}`);
+        this.player.passiveExtraRoles.push(role);
+
       },
       roleAssigned: function (player) {
         if (player !== this.player) {
           return;
         }
         this.player.holdItem("IsTheTelevangelist", this.player.role.modifier);
+        let tempModifier = this.player.role.modifier;
         this.player.setRole(
           this.player.role.newRole,
           undefined,
@@ -106,6 +113,11 @@ module.exports = class BecomeFakeCultRole extends Card {
           self: role.newRole,
         };
         this.player.role.editAppearance(tempApp);
+
+        let role = this.player.addExtraRole(`${"Villager"}:${tempModifier}`);
+        this.player.passiveExtraRoles.push(role);
+
+
       },
     };
   }

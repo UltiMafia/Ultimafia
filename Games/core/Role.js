@@ -107,7 +107,7 @@ module.exports = class Role {
       var meetings = [];
       var meetingNames = [];
 
-      if (meetingName != "*" && this.meetings[meetingName]) {
+      if (meetingName != "*" && !meetingName.includes("*") && this.meetings[meetingName]) {
         meetings = [this.meetings[meetingName]];
         meetingNames = [meetingName];
       } else if (meetingName == "*" || meetingName.includes("*")) {

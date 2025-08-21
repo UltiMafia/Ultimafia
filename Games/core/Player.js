@@ -1155,14 +1155,18 @@ module.exports = class Player {
 
     if (this.ExtraRoles) {
       for (let extraRole of this.ExtraRoles) {
-        this.joinMeetings(extraRole.meetings);
+        this.joinMeetings(extraRole.meetings, extraRole);
       }
     }
 
     for (let item of this.items) this.joinMeetings(item.meetings);
   }
 
-  joinMeetings(meetings) {
+  joinMeetings(meetings, extraRole) {
+    if(extraRole == null){
+      extraRole = this.role;
+    }
+
     var currentStateName = this.game.getStateName();
     var [inExclusive, maxPriority] = this.getMeetingsExclusivity();
 
@@ -1185,16 +1189,16 @@ module.exports = class Player {
           options.states.indexOf("*") == -1) ||
         options.disabled ||
         (options.shouldMeet != null &&
-          !options.shouldMeet.bind(this.role)(meetingName, options)) ||
+          !options.shouldMeet.bind(extraRole)(meetingName, options)) ||
         //
         (options.shouldMeetMod != null &&
-          !options.shouldMeetMod.bind(this.role)(meetingName, options)) ||
+          !options.shouldMeetMod.bind(extraRole)(meetingName, options)) ||
         (options.ModDisable != null &&
-          !options.ModDisable.bind(this.role)(meetingName, options)) ||
+          !options.ModDisable.bind(extraRole)(meetingName, options)) ||
         (options.shouldMeetOneShot != null &&
-          !options.shouldMeetOneShot.bind(this.role)(meetingName, options)) ||
+          !options.shouldMeetOneShot.bind(extraRole)(meetingName, options)) ||
         (options.shouldMeetDeadMod != null &&
-          !options.shouldMeetDeadMod.bind(this.role)(meetingName, options)) ||
+          !options.shouldMeetDeadMod.bind(extraRole)(meetingName, options)) ||
         //
         (this.alive && options.whileAlive == false) ||
         (!this.alive &&
@@ -1357,6 +1361,7 @@ module.exports = class Player {
   }
 
   getAppearance(type, noModifier) {
+    let startnomod = noModifier;
     noModifier = noModifier || this.role.hideModifier[type];
 
     if (this.tempAppearance[type] != null) {
@@ -1373,6 +1378,7 @@ module.exports = class Player {
     if (this.ExtraRoles) {
       for (let extraRole of this.ExtraRoles) {
         if (extraRole.appearance[type] != extraRole.name) {
+          noModifier = startnomod ||  extraRole.hideModifier[type];
           return `${extraRole.appearance[type]}${
             noModifier ? "" : ":" + extraRole.appearanceMods[type]
           }`;

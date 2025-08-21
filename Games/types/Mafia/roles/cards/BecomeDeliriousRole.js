@@ -60,7 +60,6 @@ module.exports = class BecomeDeliriousRole extends Card {
         );
 
         let role = this.player.addExtraRole(`${"Villager"}:${tempModifier}`);
-        this.GainedBanishedRoles.push(role);
         this.player.passiveExtraRoles.push(role);
       },
       roleAssigned: function (player) {
@@ -80,7 +79,6 @@ module.exports = class BecomeDeliriousRole extends Card {
         );
 
         let role = this.player.addExtraRole(`${"Villager"}:${tempModifier}`);
-        this.GainedBanishedRoles.push(role);
         this.player.passiveExtraRoles.push(role);
       },
     };

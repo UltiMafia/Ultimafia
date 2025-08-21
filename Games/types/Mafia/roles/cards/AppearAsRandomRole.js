@@ -9,21 +9,15 @@ module.exports = class AppearAsRandomRole extends Card {
     let evilRoles = role
       .getAllRoles()
       .filter(
-        (r) =>  if (
-            role.split(":")[0] != "Villager" &&
-            role.split(":")[0] != "Imposter" &&
-            role.split(":")[0] != "Impersonator" &&
-            role.split(":")[0] != "Skinwalker"
-          ) {
-            roles.push(roleName);
-          }
-           &&
-          !role.game.getRoleTags(r).includes("No Investigate")
+        (r) =>  (
+            r.split(":")[0] != "Villager" &&
+            r.split(":")[0] != "Imposter" &&
+            r.split(":")[0] != "Impersonator" &&
+            r.split(":")[0] != "Skinwalker"
+          &&
+          !role.game.getRoleTags(r).includes("No Investigate"))
       );
 
-    let millers = [];
-
-    let temp = evilRoles.filter((p) => p);
     if(evilRoles.length <= 0){
     evilRoles = ["Cop:"];
     }
@@ -40,12 +34,14 @@ module.exports = class AppearAsRandomRole extends Card {
       reveal: roleAppearance,
       condemn: roleAppearance,
       investigate: roleAppearance,
+      death: roleAppearance,
     };
     this.editAppearance(tempApp);
     this.hideModifier = {
       condemn: true,
       investigate: true,
       reveal: true,
+      death: true,
     };
   }
 /*
@@ -75,5 +71,4 @@ module.exports = class AppearAsRandomRole extends Card {
       },
     };
 */
-  }
 };

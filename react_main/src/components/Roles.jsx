@@ -788,6 +788,9 @@ export function ModifierSearch(props) {
   }
 
   function getCompatibleModifiersOther(mods) {
+    if(!mods){
+      mods = [];
+    }
     const mappedMods = siteInfo.modifiers[props.gameType].filter((t) =>
       mods.includes(t.name)
     );

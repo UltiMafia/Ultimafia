@@ -1128,8 +1128,22 @@ module.exports = class Game {
 
     var roleset = this.generateRoleset();
     let players = this.players.array();
-
-    this.StartingRoleset = roleset.filter((r) => r);
+    this.StartingRoleset = [];
+    for (let r in roleset) {
+      if(r.split(":")[1] && r.split(":")[1].toLowerCase().includes("banished")){
+        continue;
+      }
+       if (this.getRoleAlignment(r) == "Event"){
+        continue;
+       }
+      if(r.split(":")[1]){
+        this.StartingRoleset.push(`${r.split(":")[0]}:${r.split(":")[1]}`);
+      }
+      else{
+      this.StartingRoleset.push(`${r.split(":")[0]}:`);
+      }
+    }
+    //this.sendAlert(`${this.StartingRoleset.join(", ")}`);
 
     if (
       this.setup.AllExcessRoles &&
