@@ -43,7 +43,12 @@ module.exports = class MafiaRole extends Role {
     ) {
       let AllRoles = [];
       for (let player of this.game.players) {
+        if(player.role && player.role.name){
         AllRoles.push(`${player.role.name}:${player.role.modifier}`);
+        }
+      }
+      if(AllRoles.length <= this.game.players.length){
+        AllRoles.push(...this.game.StartingRoleset);
       }
       if (AllRoles.length <= 0) {
         return this.game.PossibleRoles;
