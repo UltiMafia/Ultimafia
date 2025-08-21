@@ -29,7 +29,7 @@ module.exports = class ImitateRole extends Card {
               this.target
             )}.`;
             this.actor.holdItem("Suit", { type: this.target, concealed: true });
-            this.actor.queueAlert(alert);
+            //this.actor.queueAlert(alert);
           },
         },
       },

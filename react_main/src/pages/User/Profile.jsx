@@ -25,7 +25,7 @@ import Comments from "../Community/Comments";
 
 import "css/user.css";
 import { Modal } from "components/Modal";
-import CustomMarkdown from 'components/CustomMarkdown';
+import CustomMarkdown from "components/CustomMarkdown";
 import ModerationSideDrawer from "components/ModerationSideDrawer";
 import { PieChart } from "./PieChart";
 import { NewLoading } from "../Welcome/NewLoading";
@@ -853,32 +853,32 @@ export default function Profile() {
         <Grid item xs={12} md={8}>
           <Stack direction="column" spacing={1}>
             <div className="box-panel" style={panelStyle}>
-                <div
-                  className={`bio${isSelf && !editingBio ? " edit" : ""}`}
-                  onClick={onBioClick}
-                >
-                  {!editingBio && (
-                    <div className="md-content">
-                      <CustomMarkdown>{bio}</CustomMarkdown>
-                    </div>
-                  )}
-                  {editingBio && (
-                    <>
-                      <TextEditor value={bio} onChange={setBio} />
-                      <div className="buttons">
-                        <div className="btn btn-theme" onClick={onEditBio}>
-                          Submit
-                        </div>
-                        <div
-                          className="btn btn-theme-sec"
-                          onClick={onCancelEditBio}
-                        >
-                          Cancel
-                        </div>
+              <div
+                className={`bio${isSelf && !editingBio ? " edit" : ""}`}
+                onClick={onBioClick}
+              >
+                {!editingBio && (
+                  <div className="md-content">
+                    <CustomMarkdown>{bio}</CustomMarkdown>
+                  </div>
+                )}
+                {editingBio && (
+                  <>
+                    <TextEditor value={bio} onChange={setBio} />
+                    <div className="buttons">
+                      <div className="btn btn-theme" onClick={onEditBio}>
+                        Submit
                       </div>
-                    </>
-                  )}
-                </div>
+                      <div
+                        className="btn btn-theme-sec"
+                        onClick={onCancelEditBio}
+                      >
+                        Cancel
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
             {!isSmallScreen && (
               <Box

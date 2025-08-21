@@ -101,12 +101,7 @@ export function MediaEmbed(props) {
 
   switch (mediaType) {
     case "image":
-      return (
-        <img
-          ref={mediaRef}
-          src={mediaUrl}
-        ></img>
-      );
+      return <img ref={mediaRef} src={mediaUrl}></img>;
     case "audio":
       return (
         <audio

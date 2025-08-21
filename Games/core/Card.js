@@ -75,7 +75,7 @@ module.exports = class Card {
           } else if (!this.role[key]["*"]) {
             this.role[key][prop] = this[key][prop];
           } else {
-            let thing = "*";
+            let thing = "*" + this.role.name + "*";
             for (let x = 0; x < 25; x++) {
               if (!this.role[key][thing]) {
                 this.role[key][thing] = this[key][prop];

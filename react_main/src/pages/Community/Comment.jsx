@@ -125,9 +125,7 @@ export const Comment = (props) => {
                   color: `${theme.palette.text.primary} !important`,
                 }}
               >
-                <CustomMarkdown>
-                  {content}
-                </CustomMarkdown>
+                <CustomMarkdown>{content}</CustomMarkdown>
               </Box>
             </div>
           </CardContent>

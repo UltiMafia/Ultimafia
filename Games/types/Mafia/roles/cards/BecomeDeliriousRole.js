@@ -47,6 +47,7 @@ module.exports = class BecomeDeliriousRole extends Card {
         switchRoleBefore(this.player.role);
         this.player.role.data.reroll = true;
         this.player.holdItem("IsTheBraggart", this.player.role.modifier);
+        let tempModifier = this.player.role.modifier;
 
         this.player.setRole(
           this.player.role.newRole,
@@ -57,12 +58,17 @@ module.exports = class BecomeDeliriousRole extends Card {
           "No Change",
           "RemoveStartingItems"
         );
+
+        let role = this.player.addExtraRole(`${"Villager"}:${tempModifier}`);
+        this.player.passiveExtraRoles.push(role);
       },
       roleAssigned: function (player) {
         if (player !== this.player) {
           return;
         }
         this.player.holdItem("IsTheBraggart", this.player.role.modifier);
+
+        let tempModifier = this.player.role.modifier;
         this.player.setRole(
           this.player.role.newRole,
           undefined,
@@ -71,6 +77,9 @@ module.exports = class BecomeDeliriousRole extends Card {
           false,
           "No Change"
         );
+
+        let role = this.player.addExtraRole(`${"Villager"}:${tempModifier}`);
+        this.player.passiveExtraRoles.push(role);
       },
     };
   }

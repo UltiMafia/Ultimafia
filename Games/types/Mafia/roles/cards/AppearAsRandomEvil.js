@@ -5,6 +5,8 @@ module.exports = class AppearAsRandomEvil extends Card {
   constructor(role) {
     super(role);
 
+    //role.game.sendAlert(`${role.getAllRoles().join(", ")}`);
+
     let evilRoles = role
       .getAllRoles()
       .filter(

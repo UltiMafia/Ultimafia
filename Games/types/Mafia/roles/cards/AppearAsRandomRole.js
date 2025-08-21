@@ -5,6 +5,44 @@ module.exports = class AppearAsRandomRole extends Card {
   constructor(role) {
     super(role);
 
+    let evilRoles = role
+      .getAllRoles()
+      .filter(
+        (r) =>
+          r.split(":")[0] != "Villager" &&
+          r.split(":")[0] != "Imposter" &&
+          r.split(":")[0] != "Impersonator" &&
+          r.split(":")[0] != "Skinwalker" &&
+          !role.game.getRoleTags(r).includes("No Investigate")
+      );
+
+    if (evilRoles.length <= 0) {
+      evilRoles = ["Cop:"];
+    }
+
+    const randomEvilRole = Random.randArrayVal(evilRoles);
+
+    // const roleAppearance = randomEvilRole.split(":")[0];
+
+    const roleAppearance = randomEvilRole;
+
+    const selfAppearance = role.name == "Miller" ? "Villager" : "real";
+
+    let tempApp = {
+      reveal: roleAppearance,
+      condemn: roleAppearance,
+      investigate: roleAppearance,
+      death: roleAppearance,
+    };
+    this.editAppearance(tempApp);
+    this.hideModifier = {
+      condemn: true,
+      investigate: true,
+      reveal: true,
+      death: true,
+    };
+  }
+  /*
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -30,5 +68,5 @@ module.exports = class AppearAsRandomRole extends Card {
         this.player.queueAlert(roleAppearance);
       },
     };
-  }
+*/
 };

@@ -12,6 +12,7 @@ module.exports = class RandomizeMafiaPartner extends Card {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["Mafia"], exclude: ["self"] },
+        role: this.role,
         action: {
           role: this.role,
           labels: ["convert"],

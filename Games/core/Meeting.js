@@ -46,7 +46,7 @@ module.exports = class Meeting {
     this.displayVoteCounter = false;
     this.noOneDisplayName = null;
     /***/
-
+    this.role;
     this.inputType = "player";
     this.targets = { include: ["alive"], exclude: ["members"] };
     this.AllRolesFilters = [];
