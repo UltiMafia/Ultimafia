@@ -91,6 +91,19 @@ module.exports = class AnonymizeFactionMeeting extends Card {
     role.toRevertAnonymousFaction = [];
 
     this.listeners = {
+      SwitchRoleBefore: function (player) {
+        if (player !== this.player) {
+          return;
+        }
+
+          for (let player of this.game.players) {
+          if (!player.role.oblivious["Faction"]) {
+            player.role.oblivious["Faction"] = true;
+            this.toRevertAnonymousFaction.push(player.role);
+          }
+        }
+        
+      },
       roleAssigned: function (player) {
         if (player !== this.player) {
           return;
