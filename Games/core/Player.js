@@ -1163,7 +1163,7 @@ module.exports = class Player {
   }
 
   joinMeetings(meetings, extraRole) {
-    if(extraRole == null){
+    if (extraRole == null) {
       extraRole = this.role;
     }
 
@@ -1378,7 +1378,7 @@ module.exports = class Player {
     if (this.ExtraRoles) {
       for (let extraRole of this.ExtraRoles) {
         if (extraRole.appearance[type] != extraRole.name) {
-          noModifier = startnomod ||  extraRole.hideModifier[type];
+          noModifier = startnomod || extraRole.hideModifier[type];
           return `${extraRole.appearance[type]}${
             noModifier ? "" : ":" + extraRole.appearanceMods[type]
           }`;

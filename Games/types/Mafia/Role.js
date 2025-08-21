@@ -25,33 +25,32 @@ module.exports = class MafiaRole extends Role {
   }
 
   getAllRoles() {
-    if (this.modifier &&
-      this.modifier.split("/")
-        .includes("Excessive") &&
+    if (
+      this.modifier &&
+      this.modifier.split("/").includes("Excessive") &&
       !this.player.hasEffect("NoModifiers")
     ) {
       let AllRoles = Object.entries(roleData.Mafia)
         .filter((m) => m[1].alignment != "Event")
         .map((r) => r[0]);
       return AllRoles.concat(this.game.PossibleRoles);
-    } else if (this.modifier &&
-      this.modifier.split("/")
-        .includes("Austere") &&
+    } else if (
+      this.modifier &&
+      this.modifier.split("/").includes("Austere") &&
       !this.player.hasEffect("NoModifiers")
     ) {
       let AllRoles = [];
       for (let player of this.game.players) {
-        if(player.role != null && player.role.name != null){
-        if(player.role.modifier){
-          AllRoles.push(`${player.role.name}:${player.role.modifier}`);
-        }
-        else{
-          AllRoles.push(`${player.role.name}:`);
-        }
+        if (player.role != null && player.role.name != null) {
+          if (player.role.modifier) {
+            AllRoles.push(`${player.role.name}:${player.role.modifier}`);
+          } else {
+            AllRoles.push(`${player.role.name}:`);
+          }
         }
       }
-      if(AllRoles.length < this.game.players.length){
-        for(let r of this.game.StartingRoleset){
+      if (AllRoles.length < this.game.players.length) {
+        for (let r of this.game.StartingRoleset) {
           AllRoles.push(r);
         }
       }

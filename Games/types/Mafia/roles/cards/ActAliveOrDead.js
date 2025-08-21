@@ -85,7 +85,6 @@ module.exports = class ActAliveOrDead extends Card {
 
           return true;
         },
-
       },
     };
   }

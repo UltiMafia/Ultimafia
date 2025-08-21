@@ -247,7 +247,9 @@ export default function LearnMafia(props) {
         <AccordionSummary>
           <Typography>Modifiers</Typography>
         </AccordionSummary>
-        <AccordionDetails><ModifierSearch gameType={gameType} /></AccordionDetails>
+        <AccordionDetails>
+          <ModifierSearch gameType={gameType} />
+        </AccordionDetails>
       </Accordion>
       <Accordion>
         <AccordionSummary>

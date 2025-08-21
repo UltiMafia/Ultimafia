@@ -21,8 +21,9 @@ module.exports = class TenBanishedRoles extends Card {
           this.getAllRoles().filter(
             (r) =>
               !roleBlacklist.includes(r.split(":"))[0] &&
-              r.split(":")[1] && r.split(":")[1].split("/").includes("Banished")
-              && this.game.getRoleAlignment(r) == this.alignment
+              r.split(":")[1] &&
+              r.split(":")[1].split("/").includes("Banished") &&
+              this.game.getRoleAlignment(r) == this.alignment
           )
         );
         for (let x = 0; x < 5 && x < roles.length; x++) {

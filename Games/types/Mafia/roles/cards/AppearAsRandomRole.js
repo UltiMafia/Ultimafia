@@ -5,21 +5,19 @@ module.exports = class AppearAsRandomRole extends Card {
   constructor(role) {
     super(role);
 
-
     let evilRoles = role
       .getAllRoles()
       .filter(
-        (r) =>  (
-            r.split(":")[0] != "Villager" &&
-            r.split(":")[0] != "Imposter" &&
-            r.split(":")[0] != "Impersonator" &&
-            r.split(":")[0] != "Skinwalker"
-          &&
-          !role.game.getRoleTags(r).includes("No Investigate"))
+        (r) =>
+          r.split(":")[0] != "Villager" &&
+          r.split(":")[0] != "Imposter" &&
+          r.split(":")[0] != "Impersonator" &&
+          r.split(":")[0] != "Skinwalker" &&
+          !role.game.getRoleTags(r).includes("No Investigate")
       );
 
-    if(evilRoles.length <= 0){
-    evilRoles = ["Cop:"];
+    if (evilRoles.length <= 0) {
+      evilRoles = ["Cop:"];
     }
 
     const randomEvilRole = Random.randArrayVal(evilRoles);
@@ -44,7 +42,7 @@ module.exports = class AppearAsRandomRole extends Card {
       death: true,
     };
   }
-/*
+  /*
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {

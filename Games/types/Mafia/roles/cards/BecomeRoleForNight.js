@@ -29,12 +29,11 @@ module.exports = class BecomeRoleForNight extends Card {
       },
     };
 
-
     this.meetingMods = {
       "*": {
         actionName: "Monkey Do",
       },
-      "Copy Actions":{
+      "Copy Actions": {
         actionName: "Monkey See",
       },
       "Mafia Kill": {
@@ -44,6 +43,5 @@ module.exports = class BecomeRoleForNight extends Card {
         actionName: "Vote to Condemn",
       },
     };
-
   }
 };

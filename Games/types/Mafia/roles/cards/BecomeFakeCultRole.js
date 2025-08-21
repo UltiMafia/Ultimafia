@@ -88,10 +88,8 @@ module.exports = class BecomeFakeCultRole extends Card {
         };
         this.player.role.editAppearance(tempApp);
 
-
         let role = this.player.addExtraRole(`${"Villager"}:${tempModifier}`);
         this.player.passiveExtraRoles.push(role);
-
       },
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -116,8 +114,6 @@ module.exports = class BecomeFakeCultRole extends Card {
 
         let role = this.player.addExtraRole(`${"Villager"}:${tempModifier}`);
         this.player.passiveExtraRoles.push(role);
-
-
       },
     };
   }
