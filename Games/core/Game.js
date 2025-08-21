@@ -1129,6 +1129,8 @@ module.exports = class Game {
     var roleset = this.generateRoleset();
     let players = this.players.array();
 
+    this.StartingRoleset = roleset.filter((r) => r);
+
     if (
       this.setup.AllExcessRoles &&
       this.PossibleRoles &&
