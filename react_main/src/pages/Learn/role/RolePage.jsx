@@ -330,6 +330,13 @@ export function RoleThings() {
           <div className="heading">Role Info</div>
           <div className="meta">
             <SetupRowInfo title="Name" content={RoleName} />
+            <Form
+              fields={siteFields}
+              deps={{ user }}
+              onChange={(action) =>
+                onRoleSkinChange(action, RoleName, null, user, roleSkins)
+              }
+            />
             <SetupRowInfo
               title="Tags"
               content={role[1].tags.sort().join(", ")}
@@ -338,13 +345,6 @@ export function RoleThings() {
             {examples}
             {specialBox}
             {overrideBox}
-            <Form
-              fields={siteFields}
-              deps={{ user }}
-              onChange={(action) =>
-                onRoleSkinChange(action, RoleName, null, user, roleSkins)
-              }
-            />
             <SetupRowInfo title="Icon Artists" content={artists} />
           </div>
         </div>
