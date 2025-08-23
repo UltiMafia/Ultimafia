@@ -165,15 +165,12 @@ async function cacheUserInfo(userId, reset) {
     user = user.toJSON();
     utils.remapCustomEmotes(user, userId);
 
-    // TODO [fix]:  node_redis: Deprecated: The SET command contains a "undefined" argument.
-    //              This is converted to a "undefined" string now and will return an error from v.3.0 on.
-    //              Please handle this in your code to make sure everything works as you intended it to.
     await client.setAsync(`user:${userId}:info:id`, userId);
     await client.setAsync(`user:${userId}:info:name`, user.name);
     await client.setAsync(`user:${userId}:info:avatar`, user.avatar);
     await client.setAsync(`user:${userId}:info:nameChanged`, user.nameChanged);
     await client.setAsync(`user:${userId}:info:bdayChanged`, user.bdayChanged);
-    await client.setAsync(`user:${userId}:info:birthday`, user.birthday);
+    await client.setAsync(`user:${userId}:info:birthday`, user.birthday || 0);
     await client.setAsync(`user:${userId}:info:pronouns`, user.pronouns);
     await client.setAsync(`user:${userId}:info:gamesPlayed`, gamesPlayed);
     await client.setAsync(`user:${userId}:info:redHearts`, user.redHearts);
@@ -447,7 +444,6 @@ async function getFeaturedSetup(featuredCategory) {
       }).select(
         "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
       );
-      console.warn(setup);
     } else {
       let filter = {
         featured: true,

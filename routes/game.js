@@ -769,17 +769,19 @@ router.post("/host", async function (req, res) {
         ping = "<@&1118006284462063666>\n";
       }
       if (!req.body.private) {
-        try {
-          await axios({
-            method: "POST",
-            url: process.env.DISCORD_GAME_HOOK,
-            data: {
-              content: `New game! https://ultimafia.com/game/${gameId}\n${ping}${setup.name}`,
-              username: "GameBot",
-            },
-          });
-        } catch (e) {
-          console.log("error: " + e);
+        if (process.env.DISCORD_GAME_HOOK) {
+          try {
+            await axios({
+              method: "POST",
+              url: process.env.DISCORD_GAME_HOOK,
+              data: {
+                content: `New game! https://ultimafia.com/game/${gameId}\n${ping}${setup.name}`,
+                username: "GameBot",
+              },
+            });
+          } catch (e) {
+            console.log("error: ", e);
+          }
         }
       }
     } catch (e) {
