@@ -172,7 +172,7 @@ async function cacheUserInfo(userId, reset) {
     await client.setAsync(`user:${userId}:info:bdayChanged`, user.bdayChanged);
     await client.setAsync(
       `user:${userId}:info:birthday`,
-      user.birthday || Date.now()
+      user.birthday || 0
     );
     await client.setAsync(`user:${userId}:info:pronouns`, user.pronouns);
     await client.setAsync(`user:${userId}:info:gamesPlayed`, gamesPlayed);
