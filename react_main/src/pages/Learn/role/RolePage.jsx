@@ -7,6 +7,7 @@ import {
   useHistory,
   Link,
 } from "react-router-dom";
+import { NameWithAvatar } from "../../User/User";
 import {
   Accordion,
   AccordionSummary,
@@ -57,6 +58,8 @@ export function RoleThings() {
   const siteInfo = useContext(SiteInfoContext);
   const history = useHistory();
   const errorAlert = useErrorAlert();
+  const [contributors, setContributors] = useState([]);
+  const [loaded, setLoaded] = useState(false);
 
   const [achievements, setAchievements] = useState(null);
   const [tempSkins, setTempSkins] = useState([
@@ -76,6 +79,21 @@ export function RoleThings() {
       ? [RoleName, siteInfo.rolesRaw["Mafia"][RoleName]]
       : null;
 
+  useEffect(() => {
+    document.title = "Contributors | UltiMafia";
+
+    axios
+      .get("/api/site/contributors")
+      .then((res) => {
+        setContributors(res.data);
+        setLoaded(true);
+      })
+      .catch((e) => {
+        setLoaded(true);
+        errorAlert(e);
+      });
+  }, []);
+  
   useEffect(() => {
     if (!user?.id) return;
 
@@ -143,6 +161,16 @@ export function RoleThings() {
 
   const roleSkins = temproleSkins;
 
+  let tempArtists = contributors["art"]?.filter((item, index) => item.roles.filter(r => r.split(":") == RoleName).length > 0);
+  const artists = tempArtists.map((item, index) => {
+    return(<div>{<NameWithAvatar
+              small
+              id={item.user.id}
+              name={item.user.name}
+              avatar={item.user.avatar}
+            /> {item.roles.filter(r => r.split(":") == RoleName).map((roleToUse) => <RoleCount key={0} scheme={roleToUse.split(":")[1]} role={roleToUse.split(":")[0]} gameType={"Mafia"} />)}}</div>)
+  })
+
   // favourites <SetupRowInfo title="Current Skins" content={roleSkins} />
 
   // TODO add button to host it
@@ -166,6 +194,7 @@ export function RoleThings() {
                 onRoleSkinChange(action, RoleName, null, user, roleSkins)
               }
             />
+            {artists}
           </div>
         </div>
       </div>
