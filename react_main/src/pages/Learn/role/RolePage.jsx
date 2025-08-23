@@ -151,7 +151,6 @@ export function RoleThings() {
       });
   }, []);
 
-
   if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
   // TODO if setupId not set, redirect to a setup page
 
@@ -166,7 +165,10 @@ export function RoleThings() {
   }
 
   const roleSkins = temproleSkins;
-  let artArrays = contributors["art"]?.map((artist) => [artist.user, artist.roles]);
+  let artArrays = contributors["art"]?.map((artist) => [
+    artist.user,
+    artist.roles,
+  ]);
   let tempArtists = artArrays?.filter(
     (item) =>
       item[1]["Mafia"].filter((r) => r.split(":")[0] == RoleName).length > 0
@@ -182,141 +184,143 @@ export function RoleThings() {
             avatar={item[0].avatar}
           />
         }{" "}
-        { <Box display="flex" flexWrap="wrap" justifyContent="left" mt={1}>
-        {item[1]["Mafia"]
-          .filter((r) => r.split(":")[0] == RoleName)
-          .map((roleToUse) => (
-            <RoleCount
-              key={0}
-              scheme={roleToUse.split(":")[1]}
-              role={roleToUse.split(":")[0]}
-              gameType={"Mafia"}
-              skin={roleToUse.split(":")[1] || "vivid"}
-            />
-          ))}
+        {
+          <Box display="flex" flexWrap="wrap" justifyContent="left" mt={1}>
+            {item[1]["Mafia"]
+              .filter((r) => r.split(":")[0] == RoleName)
+              .map((roleToUse) => (
+                <RoleCount
+                  key={0}
+                  scheme={roleToUse.split(":")[1]}
+                  role={roleToUse.split(":")[0]}
+                  gameType={"Mafia"}
+                  skin={roleToUse.split(":")[1] || "vivid"}
+                />
+              ))}
           </Box>
-          }
+        }
       </div>
     );
   });
 
   // favourites <SetupRowInfo title="Current Skins" content={roleSkins} />
 
-  let description = <List>
-   {role[1].description.map((line) => {
-    return(
-      <ListItem>
-        {line}
-      </ListItem>
-    );
+  let description = (
+    <List>
+      {role[1].description.map((line) => {
+        return <ListItem>{line}</ListItem>;
+      })}
+    </List>
+  );
 
-  })}
-</List>;
-
-let specialBox;
-if(role[1].SpecialInteractions){
-specialBox =  <List dense sx={{ paddingTop: "0" }}>
-      <div>
-        <span style={{ fontWeight: "bold" }}>Special Interactions</span>
-      </div>
-      {Object.entries(role[1].SpecialInteractions).map((special, i) => (
-        <ListItem
-          key={special[0] + i}
-          sx={{
-            paddingBottom: "0",
-            paddingTop: "0",
-          }}
-        >
-          <ListItemIcon
+  let specialBox;
+  if (role[1].SpecialInteractions) {
+    specialBox = (
+      <List dense sx={{ paddingTop: "0" }}>
+        <div>
+          <span style={{ fontWeight: "bold" }}>Special Interactions</span>
+        </div>
+        {Object.entries(role[1].SpecialInteractions).map((special, i) => (
+          <ListItem
+            key={special[0] + i}
             sx={{
-              minWidth: "0",
-              marginRight: "8px",
+              paddingBottom: "0",
+              paddingTop: "0",
             }}
           >
-          {<RoleCount key={0} scheme="vivid" role={special[0]} gameType={"Mafia"} />}
-          </ListItemIcon>
-          <ListItemText
-            disableTypography
-            className={"mui-popover-text"}
-            primary={
-              <div>
-                <span style={{ fontWeight: "bold" }}>{special[0]}</span>:{" "}
-                {special[1][0]}
-              </div>
-            }
-          />
-        </ListItem>
-      ))}
-    </List>
-}
-else{
-  specialBox = "";
-}
-
-let overrideBox;
-if(role[1].SpecialInteractionsModifiers){
-specialBox =  <List dense sx={{ paddingTop: "0" }}>
-      <div>
-        <span style={{ fontWeight: "bold" }}>Modifier Overrides</span>
-      </div>
-      {Object.entries(role[1].SpecialInteractionsModifiers).map((special, i) => (
-        <ListItem
-          key={special[0] + i}
-          sx={{
-            paddingBottom: "0",
-            paddingTop: "0",
-          }}
-        >
-          <ListItemIcon
-            sx={{
-              minWidth: "0",
-              marginRight: "8px",
-            }}
-          >
-          <i
-              className={`modifier modifier-${"Mafia"}-${special[0]}`}
-            />
-          </ListItemIcon>
-          <ListItemText
-            disableTypography
-            className={"mui-popover-text"}
-            primary={
-              <div>
-                <span style={{ fontWeight: "bold" }}>{special[0]}</span>:{" "}
-                {special[1][0]}
-              </div>
-            }
-          />
-        </ListItem>
-      ))}
-    </List>
-}
-else{
-  overrideBox = "";
-}
-
-let examples;
-if(role[1].examples){
-examples = <SetupRowInfo
-              title="Examples"
-              content={
-                <List>
-   {role[1].examples.map((line) => {
-    return(
-      <ListItem>
-        {line}
-      </ListItem>
-    );
-
-  })}
-</List>
+            <ListItemIcon
+              sx={{
+                minWidth: "0",
+                marginRight: "8px",
+              }}
+            >
+              {
+                <RoleCount
+                  key={0}
+                  scheme="vivid"
+                  role={special[0]}
+                  gameType={"Mafia"}
+                />
               }
-            />;
+            </ListItemIcon>
+            <ListItemText
+              disableTypography
+              className={"mui-popover-text"}
+              primary={
+                <div>
+                  <span style={{ fontWeight: "bold" }}>{special[0]}</span>:{" "}
+                  {special[1][0]}
+                </div>
+              }
+            />
+          </ListItem>
+        ))}
+      </List>
+    );
+  } else {
+    specialBox = "";
+  }
 
-}
-else{
-  examples = "";
-}
+  let overrideBox;
+  if (role[1].SpecialInteractionsModifiers) {
+    specialBox = (
+      <List dense sx={{ paddingTop: "0" }}>
+        <div>
+          <span style={{ fontWeight: "bold" }}>Modifier Overrides</span>
+        </div>
+        {Object.entries(role[1].SpecialInteractionsModifiers).map(
+          (special, i) => (
+            <ListItem
+              key={special[0] + i}
+              sx={{
+                paddingBottom: "0",
+                paddingTop: "0",
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: "0",
+                  marginRight: "8px",
+                }}
+              >
+                <i className={`modifier modifier-${"Mafia"}-${special[0]}`} />
+              </ListItemIcon>
+              <ListItemText
+                disableTypography
+                className={"mui-popover-text"}
+                primary={
+                  <div>
+                    <span style={{ fontWeight: "bold" }}>{special[0]}</span>:{" "}
+                    {special[1][0]}
+                  </div>
+                }
+              />
+            </ListItem>
+          )
+        )}
+      </List>
+    );
+  } else {
+    overrideBox = "";
+  }
+
+  let examples;
+  if (role[1].examples) {
+    examples = (
+      <SetupRowInfo
+        title="Examples"
+        content={
+          <List>
+            {role[1].examples.map((line) => {
+              return <ListItem>{line}</ListItem>;
+            })}
+          </List>
+        }
+      />
+    );
+  } else {
+    examples = "";
+  }
 
   return (
     <Stack direction="column" spacing={1}>
@@ -330,10 +334,7 @@ else{
               title="Tags"
               content={role[1].tags.sort().join(", ")}
             />
-            <SetupRowInfo
-              title="Description"
-              content={description}
-            />
+            <SetupRowInfo title="Description" content={description} />
             {examples}
             {specialBox}
             {overrideBox}
