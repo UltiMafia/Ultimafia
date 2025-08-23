@@ -168,7 +168,7 @@ export function RoleThings() {
               id={item.user.id}
               name={item.user.name}
               avatar={item.user.avatar}
-            /> {item.roles.filter(r => r.split(":") == RoleName).map((roleToUse) => <RoleCount key={0} scheme={roleToUse.split(":")[1]} role={roleToUse.split(":")[0]} gameType={"Mafia"} />)}}</div>)
+            />} {item.roles.filter(r => r.split(":") == RoleName).map((roleToUse) => <RoleCount key={0} scheme={roleToUse.split(":")[1]} role={roleToUse.split(":")[0]} gameType={"Mafia"} />)}</div>)
   })
 
   // favourites <SetupRowInfo title="Current Skins" content={roleSkins} />
