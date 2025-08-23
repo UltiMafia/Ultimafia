@@ -7,6 +7,7 @@ import {
   useHistory,
   Link,
 } from "react-router-dom";
+import { NameWithAvatar } from "../../User/User";
 import {
   Accordion,
   AccordionSummary,
@@ -21,6 +22,10 @@ import {
   TextField,
   LinearProgress,
   Stack,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 
 import Form, { useForm } from "../../../components/Form";
@@ -57,6 +62,8 @@ export function RoleThings() {
   const siteInfo = useContext(SiteInfoContext);
   const history = useHistory();
   const errorAlert = useErrorAlert();
+  const [contributors, setContributors] = useState([]);
+  const [loaded, setLoaded] = useState(false);
 
   const [achievements, setAchievements] = useState(null);
   const [tempSkins, setTempSkins] = useState([
@@ -128,6 +135,22 @@ export function RoleThings() {
     updateSiteFields(changes);
   };
   */
+
+  useEffect(() => {
+    document.title = "Contributors | UltiMafia";
+
+    axios
+      .get("/api/site/contributors")
+      .then((res) => {
+        setContributors(res.data);
+        setLoaded(true);
+      })
+      .catch((e) => {
+        setLoaded(true);
+        errorAlert(e);
+      });
+  }, []);
+
   if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
   // TODO if setupId not set, redirect to a setup page
 
@@ -142,10 +165,162 @@ export function RoleThings() {
   }
 
   const roleSkins = temproleSkins;
+  let artArrays = contributors["art"]?.map((artist) => [
+    artist.user,
+    artist.roles,
+  ]);
+  let tempArtists = artArrays?.filter(
+    (item) =>
+      item[1]["Mafia"].filter((r) => r.split(":")[0] == RoleName).length > 0
+  );
+  const artists = tempArtists?.map((item, index) => {
+    return (
+      <div>
+        {
+          <NameWithAvatar
+            small
+            id={item[0].id}
+            name={item[0].name}
+            avatar={item[0].avatar}
+          />
+        }{" "}
+        {
+          <Box display="flex" flexWrap="wrap" justifyContent="left" mt={1}>
+            {item[1]["Mafia"]
+              .filter((r) => r.split(":")[0] == RoleName)
+              .map((roleToUse) => (
+                <RoleCount
+                  key={0}
+                  scheme={roleToUse.split(":")[1]}
+                  role={roleToUse.split(":")[0]}
+                  gameType={"Mafia"}
+                  skin={roleToUse.split(":")[1] || "vivid"}
+                />
+              ))}
+          </Box>
+        }
+      </div>
+    );
+  });
 
   // favourites <SetupRowInfo title="Current Skins" content={roleSkins} />
 
-  // TODO add button to host it
+  let description = (
+    <List>
+      {role[1].description.map((line) => {
+        return <ListItem>{line}</ListItem>;
+      })}
+    </List>
+  );
+
+  let specialBox;
+  if (role[1].SpecialInteractions) {
+    specialBox = (
+      <List dense sx={{ paddingTop: "0" }}>
+        <div>
+          <span style={{ fontWeight: "bold" }}>Special Interactions</span>
+        </div>
+        {Object.entries(role[1].SpecialInteractions).map((special, i) => (
+          <ListItem
+            key={special[0] + i}
+            sx={{
+              paddingBottom: "0",
+              paddingTop: "0",
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: "0",
+                marginRight: "8px",
+              }}
+            >
+              {
+                <RoleCount
+                  key={0}
+                  scheme="vivid"
+                  role={special[0]}
+                  gameType={"Mafia"}
+                />
+              }
+            </ListItemIcon>
+            <ListItemText
+              disableTypography
+              className={"mui-popover-text"}
+              primary={
+                <div>
+                  <span style={{ fontWeight: "bold" }}>{special[0]}</span>:{" "}
+                  {special[1][0]}
+                </div>
+              }
+            />
+          </ListItem>
+        ))}
+      </List>
+    );
+  } else {
+    specialBox = "";
+  }
+
+  let overrideBox;
+  if (role[1].SpecialInteractionsModifiers) {
+    specialBox = (
+      <List dense sx={{ paddingTop: "0" }}>
+        <div>
+          <span style={{ fontWeight: "bold" }}>Modifier Overrides</span>
+        </div>
+        {Object.entries(role[1].SpecialInteractionsModifiers).map(
+          (special, i) => (
+            <ListItem
+              key={special[0] + i}
+              sx={{
+                paddingBottom: "0",
+                paddingTop: "0",
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: "0",
+                  marginRight: "8px",
+                }}
+              >
+                <i className={`modifier modifier-${"Mafia"}-${special[0]}`} />
+              </ListItemIcon>
+              <ListItemText
+                disableTypography
+                className={"mui-popover-text"}
+                primary={
+                  <div>
+                    <span style={{ fontWeight: "bold" }}>{special[0]}</span>:{" "}
+                    {special[1][0]}
+                  </div>
+                }
+              />
+            </ListItem>
+          )
+        )}
+      </List>
+    );
+  } else {
+    overrideBox = "";
+  }
+
+  let examples;
+  if (role[1].examples) {
+    examples = (
+      <SetupRowInfo
+        title="Examples"
+        content={
+          <List>
+            {role[1].examples.map((line) => {
+              return <ListItem>{line}</ListItem>;
+            })}
+          </List>
+        }
+      />
+    );
+  } else {
+    examples = "";
+  }
 
   return (
     <Stack direction="column" spacing={1}>
@@ -155,10 +330,6 @@ export function RoleThings() {
           <div className="heading">Role Info</div>
           <div className="meta">
             <SetupRowInfo title="Name" content={RoleName} />
-            <SetupRowInfo
-              title="Tags"
-              content={role[1].tags.sort().join(", ")}
-            />
             <Form
               fields={siteFields}
               deps={{ user }}
@@ -166,6 +337,15 @@ export function RoleThings() {
                 onRoleSkinChange(action, RoleName, null, user, roleSkins)
               }
             />
+            <SetupRowInfo
+              title="Tags"
+              content={role[1].tags.sort().join(", ")}
+            />
+            <SetupRowInfo title="Description" content={description} />
+            {examples}
+            {specialBox}
+            {overrideBox}
+            <SetupRowInfo title="Icon Artists" content={artists} />
           </div>
         </div>
       </div>
