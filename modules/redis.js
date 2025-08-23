@@ -170,7 +170,10 @@ async function cacheUserInfo(userId, reset) {
     await client.setAsync(`user:${userId}:info:avatar`, user.avatar || false);
     await client.setAsync(`user:${userId}:info:nameChanged`, user.nameChanged);
     await client.setAsync(`user:${userId}:info:bdayChanged`, user.bdayChanged);
-    await client.setAsync(`user:${userId}:info:birthday`, user.birthday || Date.now());
+    await client.setAsync(
+      `user:${userId}:info:birthday`,
+      user.birthday || Date.now()
+    );
     await client.setAsync(`user:${userId}:info:pronouns`, user.pronouns);
     await client.setAsync(`user:${userId}:info:gamesPlayed`, gamesPlayed);
     await client.setAsync(`user:${userId}:info:redHearts`, user.redHearts);
