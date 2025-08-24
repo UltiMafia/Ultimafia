@@ -223,7 +223,6 @@ const artContributors = {
       "Dragoon:vivid",
       "Barista:vivid",
       //Skins
-      "Psion:noir",
     ],
   },
   grr: {
@@ -317,13 +316,12 @@ const artContributors = {
     Mafia: ["Monk:vivid"],
   },
   maxie: {
-    Mafia: ["Virgin:vivid", "Leech:vivid", "Executioner:vivid", "Yith:vivid"],
+    Mafia: ["Virgin:vivid", "Leech:vivid", "Executioner:vivid", "Yith:vivid", "Psion:vivid",],
   },
   keji: {
     Mafia: [
       "Penguin:vivid",
       "Butterfly:vivid",
-      "Psion:vivid",
       "Anarchist:vivid",
       "Polar Bear:vivid",
     ],
@@ -513,9 +511,9 @@ const artContributors = {
       "Fisherman:vivid",
       "Oddfather:vivid",
       "Sculptor:vivid",
-      "Saint:vivid",
     ],
     Battlesnakes: ["Snake:vivid"],
+    "Connect Four": ["Starman:vivid"],
   },
 };
 

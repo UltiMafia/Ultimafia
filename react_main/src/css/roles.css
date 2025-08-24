@@ -2517,6 +2517,10 @@
   background-image: url("/src/images/modifiers/vengeful.png");
 }
 
+.modifier-Mafia-Magnetic {
+  background-image: url("/src/images/modifiers/magnetic.png");
+}
+
 .modifier-Mafia-Neighborly {
   background-image: url("/src/images/modifiers/neighborly.png");
 }
