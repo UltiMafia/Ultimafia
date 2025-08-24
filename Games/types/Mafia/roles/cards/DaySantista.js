@@ -1,11 +1,6 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const {
-  PRIORITY_ITEM_GIVER_DEFAULT,
-  PRIORITY_ITEM_GIVER_EARLY,
-  PRIORITY_ITEM_TAKER_DEFAULT,
-  PRIORITY_ITEM_TAKER_EARLY,
-} = require("../../const/Priority");
+const { PRIORITY_DAY_DEFAULT } = require("../../const/Priority");
 const { MEETING_PRIORITY_DAY } = require("../../const/MeetingPriority");
 
 module.exports = class DaySantista extends Card {
@@ -18,7 +13,7 @@ module.exports = class DaySantista extends Card {
           return;
         }
 
-        this.data.meetingName = "Day Meeting with " + this.player.faction;
+        this.data.meetingName = this.alignment + "Day Meeting";
         this.meetings[this.data.meetingName] =
           this.meetings["DayMeetingPlaceholder"];
         delete this.meetings["DayMeetingPlaceholder"];
@@ -30,12 +25,16 @@ module.exports = class DaySantista extends Card {
         var action1 = new Action({
           actor: this.player,
           game: this.player.game,
-          priority: PRIORITY_ITEM_GIVER_DEFAULT,
+          priority: PRIORITY_DAY_DEFAULT,
           labels: ["giveItem", "hidden"],
           role: this.role,
           run: function () {
-            let alignedPlayers = this.game.alivePlayers().filter((p) => p.role.alignment == this.actor.alignment);
-            alignedPlayers.map((p) => p.holdItem("DayMeeting", this.role.data.meetingName));
+            for (let p of this.game.alivePlayers()) {
+              if (p.role.alignment == this.role.alignment) {
+                p.holdItem("DayMeeting", this.role.data.meetingName)
+                // p.queueAlert(`The ${this.role.data.meetingName} day meeting has begun.`);
+              }
+            }
           },
         });
 
@@ -47,7 +46,7 @@ module.exports = class DaySantista extends Card {
         }
 
         for (let p of this.game.alivePlayers()) {
-          if (p.alignment == this.player.alignment && p.role == "Santista") {
+          if (p.role.alignment == this.player.role.alignment && p.role == "Santista") {
             return;
           }
         }
@@ -55,12 +54,16 @@ module.exports = class DaySantista extends Card {
         var action2 = new Action({
           actor: this.player,
           game: this.player.game,
-          priority: PRIORITY_ITEM_GIVER_DEFAULT + 1,
-          labels: ["giveItem", "hidden"],
+          priority: PRIORITY_DAY_DEFAULT,
+          labels: ["dropItem", "hidden"],
           role: this.role,
           run: function () {
-            let alignedPlayers = this.game.alivePlayers().filter((p) => p.role.alignment == this.actor.alignment);
-            alignedPlayers.map((p) => p.dropItem("DayMeeting", this.role.data.meetingName));
+            for (let p of this.game.alivePlayers()) {
+              if (p.role.alignment == this.role.alignment) {
+                p.dropItem("DayMeeting", this.role.data.meetingName)
+                // p.queueAlert(`The ${this.role.data.meetingName} day meeting has ended.`);
+              }
+            }
           },
         });
 
