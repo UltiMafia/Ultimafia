@@ -1,4 +1,11 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
+const {
+  PRIORITY_ITEM_GIVER_DEFAULT,
+  PRIORITY_ITEM_GIVER_EARLY,
+  PRIORITY_ITEM_TAKER_DEFAULT,
+  PRIORITY_ITEM_TAKER_EARLY,
+} = require("../../const/Priority");
 const { MEETING_PRIORITY_DAY } = require("../../const/MeetingPriority");
 
 module.exports = class DaySantista extends Card {
@@ -16,11 +23,23 @@ module.exports = class DaySantista extends Card {
           this.meetings["DayMeetingPlaceholder"];
         delete this.meetings["DayMeetingPlaceholder"];
 
-        for (let p of this.game.alivePlayers()) {
-          if (p.faction == this.player.faction) {
-            p.holdItem("DayMeeting", this.role.data.meetingName);
-          }
+        if (!this.hasAbility(["Meeting"])) {
+          return;
         }
+
+        var action1 = new Action({
+          actor: this.player,
+          game: this.player.game,
+          priority: PRIORITY_ITEM_GIVER_DEFAULT,
+          labels: ["giveItem", "hidden"],
+          role: this.role,
+          run: function () {
+            let alignedPlayers = this.game.alivePlayers().filter((p) => p.role.alignment == this.actor.alignment);
+            alignedPlayers.map((p) => p.holdItem("DayMeeting", this.role.data.meetingName));
+          },
+        });
+
+        this.game.queueAction(action1);
       },
       death: function (player) {
         if (player !== this.player) {
@@ -28,25 +47,34 @@ module.exports = class DaySantista extends Card {
         }
 
         for (let p of this.game.alivePlayers()) {
-          if (p.faction == this.player.faction && p.role == "Santista") {
+          if (p.alignment == this.player.alignment && p.role == "Santista") {
             return;
           }
         }
 
-        for (let p of this.game.alivePlayers()) {
-          if (p.faction == this.player.faction) {
-            p.dropItem("DayMeeting", this.role.data.meetingName);
-          }
-        }
+        var action2 = new Action({
+          actor: this.player,
+          game: this.player.game,
+          priority: PRIORITY_ITEM_GIVER_DEFAULT + 1,
+          labels: ["giveItem", "hidden"],
+          role: this.role,
+          run: function () {
+            let alignedPlayers = this.game.alivePlayers().filter((p) => p.role.alignment == this.actor.alignment);
+            alignedPlayers.map((p) => p.dropItem("DayMeeting", this.role.data.meetingName));
+          },
+        });
+
+        this.game.queueAction(action2);
       },
     };
 
     this.meetings = {
       DayMeetingPlaceholder: {
         meetingName: "Day Meeting",
-        actionName: "End Day Meeting?",
+        // actionName: "End Day Meeting?",
         states: ["Day"],
-        flags: ["group", "speech", "voting"],
+        // flags: ["group", "speech", "voting"],
+        flags: ["group", "speech"],
         inputType: "boolean",
         priority: MEETING_PRIORITY_DAY,
         shouldMeet: function () {

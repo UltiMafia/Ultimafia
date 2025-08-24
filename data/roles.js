@@ -2542,7 +2542,7 @@ const roleData = {
     Santista: {
       alignment: "Mafia",
       tags: ["Meeting", "Advanced"],
-      description: ["While at lwast one Santista is alive, Mafia gain a day meeting."],
+      description: ["While at least one Santista is alive, the Mafia gain a day meeting."],
     },
     Lawyer: {
       alignment: "Mafia",

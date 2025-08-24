@@ -12,9 +12,10 @@ module.exports = class DayMeeting extends Item {
 
     this.meetings[meetingName] = {
       meetingName: "Day Meeting",
-      actionName: "End Day Meeting?",
+      // actionName: "End Day Meeting?",
       states: ["Day"],
-      flags: ["group", "speech", "voting"],
+      // flags: ["group", "speech", "voting"],
+      flags: ["group", "speech"],
       inputType: "boolean",
       priority: MEETING_PRIORITY_DAY,
     };
