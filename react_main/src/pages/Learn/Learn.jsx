@@ -56,43 +56,41 @@ export default function Learn(props) {
           <Box sx={{ flexGrow: 1 }} />
         </Toolbar>
       </AppBar>
-      <Box display="flex">
-        <Box maxWidth="1080px" sx={{ padding: theme.spacing(3), flexGrow: 1 }}>
-          <Card
-            variant="outlined"
-            sx={{ padding: theme.spacing(3), textAlign: "justify" }}
-          >
-            <Switch>
-              <Route
-                exact
-                path="/learn/setup/:setupId"
-                render={() => <Setups />}
-              />
-              <Route
-                exact
-                path="/learn/setup/:setupId/nightorder"
-                render={() => <SetupsNightOrder />}
-              />
-              <Route
-                exact
-                path="/learn/role/:RoleName"
-                render={() => <RolePage />}
-              />
-              <Route
-                exact
-                path="/learn/terminology"
-                render={() => <Terminology />}
-              />
-              <Route
-                exact
-                path="/learn/achievements"
-                render={() => <Achievements />}
-              />
-              <Route exact path="/learn/games" render={() => <Games />} />
-              <Route render={() => <Redirect to="/learn/games" />} />
-            </Switch>
-          </Card>
-        </Box>
+      <Box maxWidth="1080px" sx={{ mt: 1, flexGrow: 1 }}>
+        <Card
+          variant="outlined"
+          sx={{ padding: theme.spacing(3), textAlign: "justify" }}
+        >
+          <Switch>
+            <Route
+              exact
+              path="/learn/setup/:setupId"
+              render={() => <Setups />}
+            />
+            <Route
+              exact
+              path="/learn/setup/:setupId/nightorder"
+              render={() => <SetupsNightOrder />}
+            />
+            <Route
+              exact
+              path="/learn/role/:RoleName"
+              render={() => <RolePage />}
+            />
+            <Route
+              exact
+              path="/learn/terminology"
+              render={() => <Terminology />}
+            />
+            <Route
+              exact
+              path="/learn/achievements"
+              render={() => <Achievements />}
+            />
+            <Route exact path="/learn/games" render={() => <Games />} />
+            <Route render={() => <Redirect to="/learn/games" />} />
+          </Switch>
+        </Card>
       </Box>
     </>
   );

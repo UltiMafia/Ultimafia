@@ -1,77 +1,21 @@
-.setup-page {
-  display: flex;
-  flex-flow: row;
-
-  gap: 8px;
-
-  margin-bottom: 12px;
+.setup-page .box-panel {
+  border-radius: 4px;
 }
 
 .setup-page .heading {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  justify-content: flex-start;
-
-  top: 0px;
-  left: 0px;
-  margin: 10px;
-
   font-weight: bold;
   font-size: 20px;
-}
-
-.setup-page .setup-row-info a {
-  color: var(--theme-color-dark);
-}
-
-.setup-page .setup-row-info a:hover {
-  opacity: 0.8;
-}
-
-.setup-page .setup-row-info {
-  margin-top: 10px;
-  margin-left: 10px;
-}
-
-.setup-page .setup-row-info .title {
-  margin: 0px;
-}
-
-.setup-page .setup-row-info .value {
-  margin-bottom: 10px;
 }
 
 .setup-page .super {
   color: var(--theme-color-light);
 }
 
-@media (max-width: 800px) {
-  .play .setup-page .role-list-container .top-link {
-    font-size: 13px !important;
-  }
-}
-
-.setup-page .main-panel {
-  flex-grow: 1;
-
-  display: flex;
-  flex-flow: column;
-
-  background-color: var(--theme-color);
-  box-shadow: 0px 0px 1px black;
-}
-
-.setup-page .side {
-  gap: 8px;
-}
-
 .setup-page .changelog {
   white-space: pre-wrap;
 
   padding: 8px;
-  min-width: 360px;
-  max-height: 400px;
+  max-height: 540px;
 
   overflow-y: auto;
   background-color: #121212;
