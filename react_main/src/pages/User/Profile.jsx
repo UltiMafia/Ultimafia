@@ -915,13 +915,15 @@ export default function Profile() {
                   spacing={2}
                   sx={{ alignItems: "stretch" }}
                 >
-                  {karmaInfo && (<Stack direction="column" spacing={1}>
-                    <KarmaVoteWidget
-                      item={karmaInfo}
-                      setItem={setKarmaInfo}
-                      userId={userId}
-                    />
-                  </Stack>)}
+                  {karmaInfo && (
+                    <Stack direction="column" spacing={1}>
+                      <KarmaVoteWidget
+                        item={karmaInfo}
+                        setItem={setKarmaInfo}
+                        userId={userId}
+                      />
+                    </Stack>
+                  )}
                   <Stack direction="column" spacing={1}>
                     <Stack
                       direction="row"
@@ -935,18 +937,20 @@ export default function Profile() {
                       />
                       {kudos}
                     </Stack>
-                    {karmaInfo && (<Stack
-                      direction="row"
-                      spacing={1}
-                      sx={{ alignItems: "center" }}
-                    >
-                      <img
-                        src={KARMA_ICON}
-                        style={{ marginRight: "12px" }}
-                        title="Karma"
-                      />
-                      {karmaInfo.voteCount}
-                    </Stack>)}
+                    {karmaInfo && (
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{ alignItems: "center" }}
+                      >
+                        <img
+                          src={KARMA_ICON}
+                          style={{ marginRight: "12px" }}
+                          title="Karma"
+                        />
+                        {karmaInfo.voteCount}
+                      </Stack>
+                    )}
                   </Stack>
                   <Stack direction="column" spacing={1}>
                     <Stack
@@ -961,18 +965,20 @@ export default function Profile() {
                       />
                       {points}
                     </Stack>
-                    {pointsNegative && (<Stack
-                      direction="row"
-                      spacing={1}
-                      sx={{ alignItems: "center" }}
-                    >
-                      <img
-                        src={POINTS_NEGATIVE_ICON}
-                        style={{ marginRight: "12px" }}
-                        title="Misfortune"
-                      />
-                      {pointsNegative}
-                    </Stack>)}
+                    {pointsNegative && (
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{ alignItems: "center" }}
+                      >
+                        <img
+                          src={POINTS_NEGATIVE_ICON}
+                          style={{ marginRight: "12px" }}
+                          title="Misfortune"
+                        />
+                        {pointsNegative}
+                      </Stack>
+                    )}
                   </Stack>
                 </Stack>
               </div>

@@ -11,8 +11,8 @@ module.exports = class MovieTicket extends Item {
     this.cannotBeSnooped = true;
 
     this.meetings = {
-      "Attend Movie": {
-        actionName: "Attend Movie",
+      "Attend Opera": {
+        actionName: "Attend Opera",
         states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
         inputType: "boolean",
@@ -30,12 +30,12 @@ module.exports = class MovieTicket extends Item {
             if (this.game.MovieWatchers.length <= 2) {
               this.game.MovieWatchers.push(this.actor);
               this.game.queueAlert(
-                `${this.actor.name} is attending the movie release!`
+                `${this.actor.name} is attending the Opera!`
               );
             }
             if (this.game.MovieWatchers.length >= 3) {
               this.game.queueAlert(
-                `All seats are full ${this.game.MovieWatchers[0].name}, ${this.game.MovieWatchers[1].name}, and ${this.game.MovieWatchers[2].name} will be attending the movie release tonight!`
+                `All seats are full ${this.game.MovieWatchers[0].name}, ${this.game.MovieWatchers[1].name}, and ${this.game.MovieWatchers[2].name} will be attending the Opera tonight!`
               );
               this.game.MovieWatchers[0].giveEffect("MovieNight");
               for (let player of this.game.players) {

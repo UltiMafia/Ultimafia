@@ -31,7 +31,7 @@ const VegKickMeeting = require("./VegKickMeeting");
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const axios = require("axios");
-const { ordinal, rating, rate, predictWin } = require('openskill')
+const { ordinal, rating, rate, predictWin } = require("openskill");
 
 module.exports = class Game {
   constructor(options) {
@@ -2637,7 +2637,9 @@ module.exports = class Game {
 
   async adjustSkillRatings() {
     try {
-      const setup = await models.Setup.findOne({ id: this.setup.id }).select("id factionRatings");
+      const setup = await models.Setup.findOne({ id: this.setup.id }).select(
+        "id factionRatings"
+      );
       const winners = this.winners.getPlayers();
 
       if (!setup) {
@@ -2647,7 +2649,12 @@ module.exports = class Game {
 
       // default the group ratings to an empty array if not yet exists
       const factionRatingsRaw = setup.factionRatings || [];
-      const factionRatings = new Map(factionRatingsRaw.map(factionRating => [factionRating.factionName, factionRating.skillRating]));
+      const factionRatings = new Map(
+        factionRatingsRaw.map((factionRating) => [
+          factionRating.factionName,
+          factionRating.skillRating,
+        ])
+      );
 
       const factionWinnerFractions = {};
       const memberFactions = {};
@@ -2656,7 +2663,10 @@ module.exports = class Game {
         const alignment = this.getRoleAlignment(roleName);
 
         // Use the alignment name for factions, otherwise use role name for independents
-        const alignmentIsFaction = alignment === "Village" || alignment === "Mafia" || alignment === "Cult";
+        const alignmentIsFaction =
+          alignment === "Village" ||
+          alignment === "Mafia" ||
+          alignment === "Cult";
         const factionName = alignmentIsFaction ? alignment : roleName;
         memberFactions[playerId] = factionName;
 
@@ -2676,21 +2686,28 @@ module.exports = class Game {
       const factionNames = Object.keys(factionWinnerFractions);
 
       // Default initialize the faction rating for the setup if it doesn't yet exist
-      const factionsToBeRated = factionNames.map(factionName => {
+      const factionsToBeRated = factionNames.map((factionName) => {
         if (factionRatings.has(factionName)) {
           const factionRating = factionRatings.get(factionName);
           return [rating({ mu: factionRating.mu, sigma: factionRating.sigma })];
-        }
-        else {
-          return [rating({ mu: constants.defaultSkillRatingMu, sigma: constants.defaultSkillRatingSigma })];
+        } else {
+          return [
+            rating({
+              mu: constants.defaultSkillRatingMu,
+              sigma: constants.defaultSkillRatingSigma,
+            }),
+          ];
         }
       });
 
       // In most cases the faction winner fraction will be either 0 or 1
       // In edge cases, such as members of a faction being converted then losing to their starting faction, this number will be somewhere in between
-      const factionScores = factionNames.map(factionName => {
+      const factionScores = factionNames.map((factionName) => {
         const factionWinnerFraction = factionWinnerFractions[factionName];
-        return factionWinnerFraction.winnerCount / factionWinnerFraction.originalCount;
+        return (
+          factionWinnerFraction.winnerCount /
+          factionWinnerFraction.originalCount
+        );
       });
 
       // library code time
@@ -2712,14 +2729,20 @@ module.exports = class Game {
       // Transform the results from the rate and predictWin functions back into their usable forms
       const pointsWonByFactions = {};
       const pointsLostByFactions = {};
-      const newFactionSkillRatings = factionRatingsRaw.filter(factionRating => !factionNames.includes(factionRating.factionName));
+      const newFactionSkillRatings = factionRatingsRaw.filter(
+        (factionRating) => !factionNames.includes(factionRating.factionName)
+      );
       for (var i = 0; i < factionNames.length; i++) {
         const factionName = factionNames[i];
         const winPredictionPercent = predictions[i]; // this adds up to 1 across all factions
         const newSkillRating = ratedFactions[i];
 
-        pointsWonByFactions[factionName] = Math.round(constants.pointsNominalAmount / 2 / winPredictionPercent);
-        pointsLostByFactions[factionName] = Math.round(constants.pointsNominalAmount / 2 / (1 - winPredictionPercent));
+        pointsWonByFactions[factionName] = Math.round(
+          constants.pointsNominalAmount / 2 / winPredictionPercent
+        );
+        pointsLostByFactions[factionName] = Math.round(
+          constants.pointsNominalAmount / 2 / (1 - winPredictionPercent)
+        );
 
         newFactionSkillRatings.push({
           factionName: factionName,
@@ -2734,23 +2757,26 @@ module.exports = class Game {
         const player = this.getPlayer(playerId);
         const playerWon = winners.includes(playerId);
 
-        var pointsEarnedByPlayer = playerWon ? pointsWonByFactions[memberFactions[playerId]] : pointsLostByFactions[memberFactions[playerId]];
+        var pointsEarnedByPlayer = playerWon
+          ? pointsWonByFactions[memberFactions[playerId]]
+          : pointsLostByFactions[memberFactions[playerId]];
         if (pointsEarnedByPlayer > maxEarnedPoints) {
           pointsEarnedByPlayer = maxEarnedPoints;
 
           if (playerWon) {
             // Rare occurrence - notify everyone of the player's winnings
-            this.sendAlert(`${player.name} just earned ${pointsEarnedByPlayer} fortune!!`,
+            this.sendAlert(
+              `${player.name} just earned ${pointsEarnedByPlayer} fortune!!`,
               undefined,
               undefined,
               ["info"]
             );
           }
-        }
-        else {
+        } else {
           if (playerWon) {
             // Notify the player of their winnings
-            player.sendAlert(`You have earned ${pointsEarnedByPlayer} fortune!`,
+            player.sendAlert(
+              `You have earned ${pointsEarnedByPlayer} fortune!`,
               undefined,
               undefined,
               ["info"]
@@ -2760,17 +2786,19 @@ module.exports = class Game {
 
         if (playerWon) {
           this.pointsEarnedByPlayers[playerId] = pointsEarnedByPlayer;
-        }
-        else {
+        } else {
           this.pointsEarnedByPlayers[playerId] = -pointsEarnedByPlayer;
         }
       }
 
-      await models.Setup.updateOne({ id: setup.id }, {
-        $set: {
-          factionRatings: newFactionSkillRatings,
+      await models.Setup.updateOne(
+        { id: setup.id },
+        {
+          $set: {
+            factionRatings: newFactionSkillRatings,
+          },
         }
-      });
+      );
     } catch (e) {
       logger.error("Error adjusting skill ratings: ", e);
       return {};

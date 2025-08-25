@@ -14,7 +14,7 @@ import {
   Grid,
   Stack,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/styles";
 
@@ -208,37 +208,30 @@ export function determineSetupType(setup) {
   if (setup.closed) {
     if (setup.useRoleGroups) {
       return "Closed (groups)";
-    }
-    else {
+    } else {
       return "Closed (whole)";
     }
-  }
-  else {
+  } else {
     if (isMulti) {
       return "Closed (multi-set)";
-    }
-    else {
+    } else {
       return "Open";
     }
   }
 }
 
 export function getAlignmentColor(alignment) {
-    if (alignment === "Village") {
-      return "#66adff";
-    }
-    else if (alignment === "Mafia") {
-      return "#505d66";
-    }
-    else if (alignment === "Cult") {
-      return "#b161d3";
-    }
-    else if (alignment === "Independent") {
-      return "#c7ce48";
-    }
-    else {
-      return "#808080";
-    }
+  if (alignment === "Village") {
+    return "#66adff";
+  } else if (alignment === "Mafia") {
+    return "#505d66";
+  } else if (alignment === "Cult") {
+    return "#b161d3";
+  } else if (alignment === "Independent") {
+    return "#c7ce48";
+  } else {
+    return "#808080";
+  }
 }
 
 export function SmallRoleList(props) {
@@ -293,16 +286,59 @@ export function SmallRoleList(props) {
   );
 }
 
-const ALIGNMENT_ORDER = [
-  "Village", "Independent", "Mafia", "Cult"
-];
+const ALIGNMENT_ORDER = ["Village", "Independent", "Mafia", "Cult"];
 
 const INDEXED_ROLE_GROUP_LABELS = [
-  "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
-  "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
-  "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD",
-  "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN",
-  "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX",
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+  "K",
+  "L",
+  "M",
+  "N",
+  "O",
+  "P",
+  "Q",
+  "R",
+  "S",
+  "T",
+  "U",
+  "V",
+  "W",
+  "X",
+  "Y",
+  "Z",
+  "AA",
+  "AB",
+  "AC",
+  "AD",
+  "AE",
+  "AF",
+  "AG",
+  "AH",
+  "AI",
+  "AJ",
+  "AK",
+  "AL",
+  "AM",
+  "AN",
+  "AO",
+  "AP",
+  "AQ",
+  "AR",
+  "AS",
+  "AT",
+  "AU",
+  "AV",
+  "AW",
+  "AX",
 ];
 
 export function FullRoleList({ setup }) {
@@ -312,7 +348,7 @@ export function FullRoleList({ setup }) {
   const siteInfo = useContext(SiteInfoContext);
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
- 
+
   var rolesDividedByAlignment = {};
   const events = [];
   for (let i in roles) {
@@ -329,7 +365,8 @@ export function FullRoleList({ setup }) {
           }
 
           if (!rolesDividedByAlignment[i]) rolesDividedByAlignment[i] = {};
-          if (!rolesDividedByAlignment[i][alignment]) rolesDividedByAlignment[i][alignment] = {};
+          if (!rolesDividedByAlignment[i][alignment])
+            rolesDividedByAlignment[i][alignment] = {};
 
           rolesDividedByAlignment[i][alignment][role] = roles[i][role];
         }
@@ -338,88 +375,116 @@ export function FullRoleList({ setup }) {
   }
 
   // holy fricken FREAK this is a 3-dimensional effort
-  const rolesetAlignments = Object.keys(rolesDividedByAlignment).map(i => {
+  const rolesetAlignments = Object.keys(rolesDividedByAlignment).map((i) => {
     const alignmentKeys = Object.keys(rolesDividedByAlignment[i]);
-    const gridItemSize = isSmallScreen ? 12 : (12 / alignmentKeys.length);
-    var sectionName = setup.roles.length > 1 ? INDEXED_ROLE_GROUP_LABELS[i] : null;
+    const gridItemSize = isSmallScreen ? 12 : 12 / alignmentKeys.length;
+    var sectionName =
+      setup.roles.length > 1 ? INDEXED_ROLE_GROUP_LABELS[i] : null;
     if (sectionName && setup.useRoleGroups) {
       sectionName += `:${setup.roleGroupSizes[i]}`;
     }
 
-    const alignmentRoles = ALIGNMENT_ORDER.map(alignment => {
+    const alignmentRoles = ALIGNMENT_ORDER.map((alignment) => {
       if (rolesDividedByAlignment[i][alignment] === undefined) {
         return <></>;
       }
 
       const alignmentColor = getAlignmentColor(alignment);
-      const roles = Object.keys(rolesDividedByAlignment[i][alignment]).map(role => (<RoleCount
-        role={role}
-        count={rolesDividedByAlignment[i][alignment][role]}
-        small={true}
-        gameType={gameType}
-        showSecondaryHover
-        key={role}
-      />));
+      const roles = Object.keys(rolesDividedByAlignment[i][alignment]).map(
+        (role) => (
+          <RoleCount
+            role={role}
+            count={rolesDividedByAlignment[i][alignment][role]}
+            small={true}
+            gameType={gameType}
+            showSecondaryHover
+            key={role}
+          />
+        )
+      );
 
-      return (<Grid item xs={12} md={gridItemSize}>
-        <Stack direction="row" spacing={0} sx={{
-          p: 1,
-          height: "100%",
-          flexWrap: "wrap",
-          border: `4px solid ${alignmentColor}`,
-          borderRadius: "4px",
-          boxSizing: "border-box",
-        }}>
-          {roles}
-        </Stack>
-      </Grid>);
+      return (
+        <Grid item xs={12} md={gridItemSize}>
+          <Stack
+            direction="row"
+            spacing={0}
+            sx={{
+              p: 1,
+              height: "100%",
+              flexWrap: "wrap",
+              border: `4px solid ${alignmentColor}`,
+              borderRadius: "4px",
+              boxSizing: "border-box",
+            }}
+          >
+            {roles}
+          </Stack>
+        </Grid>
+      );
     });
 
     return (
-    <Stack direction={isSmallScreen ? "column" : "row"} sx={{
-      alignItems: "center",
-    }}>
-      {sectionName && (<Typography sx={{
-        width: "54px",
-        fontSize: "24px",
-        fontWeight: "600",
-        textAlign: "center",
-      }}>
-        {sectionName}
-      </Typography>)}
-      <Grid container columns={12} spacing={1}>
-        {alignmentRoles}
-      </Grid>
-    </Stack>
+      <Stack
+        direction={isSmallScreen ? "column" : "row"}
+        sx={{
+          alignItems: "center",
+        }}
+      >
+        {sectionName && (
+          <Typography
+            sx={{
+              width: "54px",
+              fontSize: "24px",
+              fontWeight: "600",
+              textAlign: "center",
+            }}
+          >
+            {sectionName}
+          </Typography>
+        )}
+        <Grid container columns={12} spacing={1}>
+          {alignmentRoles}
+        </Grid>
+      </Stack>
     );
   });
 
-  const eventRoles = Object.keys(events).map(role => (<RoleCount
-    role={role}
-    count={events[role]}
-    small={true}
-    gameType={gameType}
-    showSecondaryHover
-    key={role}
-  />));
+  const eventRoles = Object.keys(events).map((role) => (
+    <RoleCount
+      role={role}
+      count={events[role]}
+      small={true}
+      gameType={gameType}
+      showSecondaryHover
+      key={role}
+    />
+  ));
 
-  return (<Stack
-    direction="column"
-    spacing={1}
-    divider={<Divider orientation="horizontal" flexItem />}
-  >
-    {rolesetAlignments}
-    {eventRoles.length > 0 && (<Stack direction="row" spacing={0} sx={{
-      p: 1,
-      height: "100%",
-      flexWrap: "wrap",
-      border: `4px solid #ff481aff`,
-      borderRadius: "4px",
-      boxSizing: "border-box",
-    }}>
-      {eventRoles}
-    </Stack>)}
-  </Stack>);
+  return (
+    <Stack
+      direction="column"
+      spacing={1}
+      divider={<Divider orientation="horizontal" flexItem />}
+    >
+      {rolesetAlignments}
+      {eventRoles.length > 0 && (
+        <Stack
+          direction="row"
+          spacing={0}
+          sx={{
+            p: 1,
+            height: "100%",
+            flexWrap: "wrap",
+            border: `4px solid #ff481aff`,
+            borderRadius: "4px",
+            boxSizing: "border-box",
+          }}
+        >
+          {eventRoles}
+        </Stack>
+      )}
+    </Stack>
+  );
 }
 
 export function GameIcon(props) {

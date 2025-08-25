@@ -18,13 +18,17 @@ import {
   IconButton,
   Stack,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/styles";
 
 import ModerationSideDrawer from "components/ModerationSideDrawer";
 import { useErrorAlert } from "components/Alerts";
-import { determineSetupType, getAlignmentColor, FullRoleList } from "components/Setup";
+import {
+  determineSetupType,
+  getAlignmentColor,
+  FullRoleList,
+} from "components/Setup";
 import GameIcon from "components/GameIcon";
 import HostGameDialogue from "components/HostGameDialogue";
 import { UserContext, SiteInfoContext } from "Contexts";
@@ -32,7 +36,10 @@ import { UserContext, SiteInfoContext } from "Contexts";
 import Comments from "pages/Community/Comments";
 import { NameWithAvatar } from "pages/User/User";
 import { NewLoading } from "pages/Welcome/NewLoading";
-import { getRowStubColor, getSetupBackgroundColor } from "pages/Play/LobbyBrowser/gameRowColors";
+import {
+  getRowStubColor,
+  getSetupBackgroundColor,
+} from "pages/Play/LobbyBrowser/gameRowColors";
 
 import { PieChart } from "./PieChart";
 
@@ -148,7 +155,7 @@ export function SetupPage() {
 
   const colorInfo = {
     ranked: setup ? setup.ranked : false,
-    lobby: (gameType === "Mafia") ? setup.closed ? "Sandbox" : "Main" : "Games"
+    lobby: gameType === "Mafia" ? (setup.closed ? "Sandbox" : "Main") : "Games",
   };
   const setupHeadingIconColor = getRowStubColor(colorInfo);
   const setupHeadingBackgroundColor = getSetupBackgroundColor(colorInfo, true);
@@ -208,7 +215,8 @@ export function SetupPage() {
   if (setup.closed) {
     closedRoleInfo.push(
       <Typography key="uniqueRoles">
-        {"Unique roles/modifiers: "}{setup.unique ? "✅" : "❌"}
+        {"Unique roles/modifiers: "}
+        {setup.unique ? "✅" : "❌"}
       </Typography>
     );
 
@@ -216,7 +224,8 @@ export function SetupPage() {
     if (setup.unique && setup.gameType === "Mafia") {
       closedRoleInfo.push(
         <Typography key="uniqueRolesWithoutModifier">
-          {"Unique roles: "}{setup.uniqueWithoutModifier ? "✅" : "❌"}
+          {"Unique roles: "}
+          {setup.uniqueWithoutModifier ? "✅" : "❌"}
         </Typography>
       );
     }
@@ -260,19 +269,28 @@ export function SetupPage() {
   const iconSize = isSmallScreen ? 30 : 60;
 
   return (
-    <Stack spacing={1} className="setup-page" sx={{
-      maxWidth: "100%",
-    }}>
-      <Card variant="outlined" sx={{
-        backgroundColor: setupHeadingBackgroundColor,
-        mb: 1,
-        p: 1,
-      }}>
-        {setup && (<HostGameDialogue
-          open={ishostGameDialogueOpen}
-          setOpen={setIshostGameDialogueOpen}
-          setup={setup}
-        />)}
+    <Stack
+      spacing={1}
+      className="setup-page"
+      sx={{
+        maxWidth: "100%",
+      }}
+    >
+      <Card
+        variant="outlined"
+        sx={{
+          backgroundColor: setupHeadingBackgroundColor,
+          mb: 1,
+          p: 1,
+        }}
+      >
+        {setup && (
+          <HostGameDialogue
+            open={ishostGameDialogueOpen}
+            setOpen={setIshostGameDialogueOpen}
+            setup={setup}
+          />
+        )}
         <ModerationSideDrawer
           open={moderationDrawerOpen}
           setOpen={setModerationDrawerOpen}
@@ -284,7 +302,11 @@ export function SetupPage() {
           divider={<Divider orientation="vertical" flexItem />}
         >
           <Grid item xs={12} md={8}>
-            <Stack direction="row" spacing={1} sx={{ height: "100%", alignItems: "center" }}>
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{ height: "100%", alignItems: "center" }}
+            >
               <IconButton
                 onClick={() => setIshostGameDialogueOpen(true)}
                 sx={{
@@ -295,9 +317,12 @@ export function SetupPage() {
               >
                 <GameIcon gameType={setup.gameType} size={iconSize} />
               </IconButton>
-              <Typography variant="h4" sx={{
-                ml: isSmallScreen ? "auto !important" : undefined,
-              }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  ml: isSmallScreen ? "auto !important" : undefined,
+                }}
+              >
                 {setup.name}
               </Typography>
             </Stack>
@@ -308,33 +333,47 @@ export function SetupPage() {
                 {determineSetupType(setup)}
               </Typography>
               <Typography>
-                {"Players: "}{setup.total}
+                {"Players: "}
+                {setup.total}
               </Typography>
               <Typography>
-                {"Ranked: "}{setup.ranked ? "✅" : "❌"}
+                {"Ranked: "}
+                {setup.ranked ? "✅" : "❌"}
               </Typography>
               <Typography>
-                {"Comp: "}{setup.competitive ? "✅" : "❌"}
+                {"Comp: "}
+                {setup.competitive ? "✅" : "❌"}
               </Typography>
             </Stack>
           </Grid>
-          {setup.creator && (<Grid item xs={12} md={2}>
-            <Stack direction={isSmallScreen ? "row" : "column"} sx={{
-              alignItems: "center",
-            }}>
-              <Typography sx={{ ml: isSmallScreen ? "auto" : 1, fontSize: "18px", fontStyle: "italic" }}>
-                {"Created by"}
-              </Typography>
-              <Box sx={{ ml: 1 }}>
-                <NameWithAvatar
-                  small
-                  id={setup.creator.id}
-                  name={setup.creator.name}
-                  avatar={setup.creator.avatar}
-                />
-              </Box>
-            </Stack>
-          </Grid>)}
+          {setup.creator && (
+            <Grid item xs={12} md={2}>
+              <Stack
+                direction={isSmallScreen ? "row" : "column"}
+                sx={{
+                  alignItems: "center",
+                }}
+              >
+                <Typography
+                  sx={{
+                    ml: isSmallScreen ? "auto" : 1,
+                    fontSize: "18px",
+                    fontStyle: "italic",
+                  }}
+                >
+                  {"Created by"}
+                </Typography>
+                <Box sx={{ ml: 1 }}>
+                  <NameWithAvatar
+                    small
+                    id={setup.creator.id}
+                    name={setup.creator.name}
+                    avatar={setup.creator.avatar}
+                  />
+                </Box>
+              </Stack>
+            </Grid>
+          )}
         </Grid>
       </Card>
       <Box>
@@ -344,18 +383,21 @@ export function SetupPage() {
         <Grid container spacing={1}>
           <Grid item xs={12} md={3}>
             <Stack direction="column" spacing={1}>
-              {closedRoleInfo.length > 0 && (<div className="box-panel">
-                <div className="heading">Closed Setup Info</div>
-                <div className="content">
-                  {closedRoleInfo}
+              {closedRoleInfo.length > 0 && (
+                <div className="box-panel">
+                  <div className="heading">Closed Setup Info</div>
+                  <div className="content">{closedRoleInfo}</div>
                 </div>
-              </div>)}
+              )}
               <div className="box-panel">
                 <div className="heading">Night Order</div>
                 <div className="content">
-                  <Link to={`/learn/setup/${setupId}/nightorder`} style={{
-                    color: "#99c3ff",
-                  }}>
+                  <Link
+                    to={`/learn/setup/${setupId}/nightorder`}
+                    style={{
+                      color: "#99c3ff",
+                    }}
+                  >
                     Click to Show
                   </Link>
                 </div>
@@ -373,26 +415,38 @@ export function SetupPage() {
                     ))}
                   </select>
                 </div>
-                {pieData && Object.keys(pieData.data).length > 0 && (<div className="box-panel">
-                  <div className="heading">v{selectedVersionNum} Winrate (n = {versionGamesPlayed})</div>
-                  <div className="content" style={{ padding: "0", justifyContent: "center" }}>
-                    <PieChart
-                      data={pieData.data}
-                      colors={pieData.colors}
-                      displayPieChart={true}
-                    />
+                {pieData && Object.keys(pieData.data).length > 0 && (
+                  <div className="box-panel">
+                    <div className="heading">
+                      v{selectedVersionNum} Winrate (n = {versionGamesPlayed})
+                    </div>
+                    <div
+                      className="content"
+                      style={{ padding: "0", justifyContent: "center" }}
+                    >
+                      <PieChart
+                        data={pieData.data}
+                        colors={pieData.colors}
+                        displayPieChart={true}
+                      />
+                    </div>
                   </div>
-                </div>)}
-                {eloPieData && Object.keys(eloPieData.data).length > 0 && (<div className="box-panel">
-                  <div className="heading">Faction Elo</div>
-                  <div className="content" style={{ padding: "0", justifyContent: "center" }}>
-                    <PieChart
-                      data={eloPieData.data}
-                      colors={eloPieData.colors}
-                      displayPieChart={true}
-                    />
+                )}
+                {eloPieData && Object.keys(eloPieData.data).length > 0 && (
+                  <div className="box-panel">
+                    <div className="heading">Faction Elo</div>
+                    <div
+                      className="content"
+                      style={{ padding: "0", justifyContent: "center" }}
+                    >
+                      <PieChart
+                        data={eloPieData.data}
+                        colors={eloPieData.colors}
+                        displayPieChart={true}
+                      />
+                    </div>
                   </div>
-                </div>)}
+                )}
               </Stack>
             )}
           </Grid>
