@@ -1,13 +1,22 @@
 import React, { useContext, useRef, useState } from "react";
 
-import { PopoverContext, UserContext } from "Contexts";
+import { PopoverContext, UserContext, SiteInfoContext } from "Contexts";
 import { Alignments } from "Constants";
 import { RoleCount } from "components/Roles";
 import { filterProfanity } from "components/Basic";
 import { SearchBar } from "components/Nav";
 import { hyphenDelimit } from "utils";
 
-import { Box, Card, Divider, Grid, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  Divider,
+  Grid,
+  Stack,
+  Typography,
+  useMediaQuery
+} from "@mui/material";
+import { useTheme } from "@mui/styles";
 
 import "css/setup.css";
 import "css/roles.css";
@@ -194,6 +203,44 @@ export default function Setup(props) {
   );
 }
 
+export function determineSetupType(setup) {
+  const isMulti = setup.roles.length > 1;
+  if (setup.closed) {
+    if (setup.useRoleGroups) {
+      return "Closed (groups)";
+    }
+    else {
+      return "Closed (whole)";
+    }
+  }
+  else {
+    if (isMulti) {
+      return "Closed (multi-set)";
+    }
+    else {
+      return "Open";
+    }
+  }
+}
+
+export function getAlignmentColor(alignment) {
+    if (alignment === "Village") {
+      return "#66adff";
+    }
+    else if (alignment === "Mafia") {
+      return "#505d66";
+    }
+    else if (alignment === "Cult") {
+      return "#b161d3";
+    }
+    else if (alignment === "Independent") {
+      return "#c7ce48";
+    }
+    else {
+      return "#808080";
+    }
+}
+
 export function SmallRoleList(props) {
   const includeSearchBar = props.includeSearchBar || false;
 
@@ -244,6 +291,217 @@ export function SmallRoleList(props) {
       </div>
     </Stack>
   );
+}
+
+const ALIGNMENT_ORDER = [
+  "Village", "Independent", "Mafia", "Cult"
+];
+
+export function AlignmentGroupedRoles(props) {
+  const siteInfo = useContext(SiteInfoContext);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
+  const roles = props.roles;
+  const gameType = props.gameType;
+
+  var rolesByAlignment = {};
+  for (let i in roles) {
+    for (let role in roles[i]) {
+      let roleName = role.split(":")[0];
+
+      for (let roleObj of siteInfo.roles[gameType]) {
+        if (roleObj.name === roleName) {
+          const alignment = roleObj.alignment;
+
+          if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = {};
+          if (!rolesByAlignment[alignment][i]) rolesByAlignment[alignment][i] = {};
+
+          rolesByAlignment[alignment][i][role] = roles[i][role];
+        }
+      }
+    }
+  }
+
+  /* const columnKeys = Object.keys(rolesByAlignment).filter(alignment => alignment !== "Event");
+  const gridItemSize = isSmallScreen ? 12 : (12 / columnKeys.length); */
+  const rowNumbers = Array.from({ length: roles.length }, (_, i) => i);
+
+  // holy fricken FREAK this is a 3-dimensional effort
+  /* const alignmentRolesets = ALIGNMENT_ORDER.map(alignment => {
+    if (rolesByAlignment[alignment] === undefined) {
+      return <></>;
+    }
+
+    const alignmentColor = getAlignmentColor(alignment);
+    const rolesetRoles = rowNumbers.map(i=> {
+      if (rolesByAlignment[alignment][i] === undefined) {
+        return <div style={{ minHeight: "56px" }}/>;
+      }
+
+      const roles = Object.keys(rolesByAlignment[alignment][i]).map(role => {
+        return (<RoleCount
+          role={role}
+          count={rolesByAlignment[alignment][i][role]}
+          small={true}
+          gameType={gameType}
+          showSecondaryHover
+          key={role}
+        />)
+      });
+
+      return (<Stack direction="row" spacing={0} sx={{
+        p: 1,
+        minHeight: "56px", 
+        flexWrap: "wrap",
+        border: `4px solid ${alignmentColor}`,
+        borderRadius: "4px",
+        boxSizing: "border-box",
+      }}>
+        {roles}
+      </Stack>);
+    });
+
+
+    return (<Grid item xs={alignment === "Event" ? 12 : gridItemSize}>
+      <Stack spacing={1} sx={{
+        height: "100%",
+      }}>
+        {rolesetRoles}
+      </Stack>
+    </Grid>);
+  });
+
+  return (<Grid container columns={12} spacing={1}>
+    {alignmentRolesets}
+  </Grid>); */
+}
+
+const INDEXED_ROLE_GROUP_LABELS = [
+  "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
+  "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+  "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD",
+  "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN",
+  "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX",
+];
+
+export function FullRoleList({ setup }) {
+  const roles = setup.roles;
+  const gameType = setup.gameType;
+
+  const siteInfo = useContext(SiteInfoContext);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+ 
+  var rolesDividedByAlignment = {};
+  const events = [];
+  for (let i in roles) {
+    for (let role in roles[i]) {
+      let roleName = role.split(":")[0];
+
+      for (let roleObj of siteInfo.roles[gameType]) {
+        if (roleObj.name === roleName) {
+          const alignment = roleObj.alignment;
+
+          if (alignment === "Event") {
+            events[role] = roles[i][role];
+            continue;
+          }
+
+          if (!rolesDividedByAlignment[i]) rolesDividedByAlignment[i] = {};
+          if (!rolesDividedByAlignment[i][alignment]) rolesDividedByAlignment[i][alignment] = {};
+
+          rolesDividedByAlignment[i][alignment][role] = roles[i][role];
+        }
+      }
+    }
+  }
+
+  // holy fricken FREAK this is a 3-dimensional effort
+  const rolesetAlignments = Object.keys(rolesDividedByAlignment).map(i => {
+    const alignmentKeys = Object.keys(rolesDividedByAlignment[i]);
+    const gridItemSize = isSmallScreen ? 12 : (12 / alignmentKeys.length);
+    /* const multiName = setup.useRoleGroups ? "Role Group " : "Role Set ";
+    const sectionName = setup.roles.length > 1 ? (multiName + INDEXED_ROLE_GROUP_LABELS[i]) : "Roles"; */
+    var sectionName = setup.roles.length > 1 ? INDEXED_ROLE_GROUP_LABELS[i] : null;
+    if (sectionName && setup.useRoleGroups) {
+      sectionName += `:${setup.roleGroupSizes[i]}`;
+    }
+
+    const alignmentRoles = ALIGNMENT_ORDER.map(alignment => {
+      if (rolesDividedByAlignment[i][alignment] === undefined) {
+        return <></>;
+      }
+
+      const alignmentColor = getAlignmentColor(alignment);
+      const roles = Object.keys(rolesDividedByAlignment[i][alignment]).map(role => (<RoleCount
+        role={role}
+        count={rolesDividedByAlignment[i][alignment][role]}
+        small={true}
+        gameType={gameType}
+        showSecondaryHover
+        key={role}
+      />));
+
+      return (<Grid item xs={12} md={gridItemSize}>
+        <Stack direction="row" spacing={0} sx={{
+          p: 1,
+          height: "100%",
+          flexWrap: "wrap",
+          border: `4px solid ${alignmentColor}`,
+          borderRadius: "4px",
+          boxSizing: "border-box",
+        }}>
+          {roles}
+        </Stack>
+      </Grid>);
+    });
+
+    return (
+    <Stack direction={isSmallScreen ? "column" : "row"} sx={{
+      alignItems: "center",
+    }}>
+      {sectionName && (<Typography sx={{
+        width: "54px",
+        fontSize: "24px",
+        fontWeight: "600",
+        textAlign: "center",
+      }}>
+        {sectionName}
+      </Typography>)}
+      <Grid container columns={12} spacing={1}>
+        {alignmentRoles}
+      </Grid>
+    </Stack>
+    );
+  });
+
+  const eventRoles = Object.keys(events).map(role => (<RoleCount
+    role={role}
+    count={events[role]}
+    small={true}
+    gameType={gameType}
+    showSecondaryHover
+    key={role}
+  />));
+
+  return (<Stack
+    direction="column"
+    spacing={1}
+    divider={<Divider orientation="horizontal" flexItem />}
+  >
+    {rolesetAlignments}
+    {eventRoles.length > 0 && (<Stack direction="row" spacing={0} sx={{
+      p: 1,
+      height: "100%",
+      flexWrap: "wrap",
+      border: `4px solid #ff481aff`,
+      borderRadius: "4px",
+      boxSizing: "border-box",
+    }}>
+      {eventRoles}
+    </Stack>)}
+  </Stack>);
 }
 
 export function GameIcon(props) {

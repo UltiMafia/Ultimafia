@@ -201,6 +201,16 @@ export default function Settings() {
         ref: "hideStatistics",
         type: "boolean",
       },
+      {
+        label: "Hide Karma",
+        ref: "hideKarma",
+        type: "boolean",
+      },
+      {
+        label: "Hide Misfortune",
+        ref: "hidePointsNegative",
+        type: "boolean",
+      },
     ],
     [accounts]
   );

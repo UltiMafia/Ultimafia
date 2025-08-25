@@ -185,7 +185,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar settings accounts wins losses kudos karma achievements bio pronouns banner setups games numFriends stats _id"
+        "id name avatar settings accounts wins losses kudos karma points pointsNegative achievements bio pronouns banner setups games numFriends stats _id"
       )
       .populate({
         path: "setups",
@@ -353,6 +353,13 @@ router.get("/:id/profile", async function (req, res) {
     );
 
     if (!user.settings) user.settings = {};
+  
+    if (user.settings.hideKarma) {
+      delete user.karmaInfo;
+    }
+    if (user.settings.hidePointsNegative) {
+      delete user.pointsNegative;
+    }
 
     if (userId) {
       user.isFriend =
