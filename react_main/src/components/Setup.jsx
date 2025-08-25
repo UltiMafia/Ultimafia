@@ -297,86 +297,6 @@ const ALIGNMENT_ORDER = [
   "Village", "Independent", "Mafia", "Cult"
 ];
 
-export function AlignmentGroupedRoles(props) {
-  const siteInfo = useContext(SiteInfoContext);
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-
-  const roles = props.roles;
-  const gameType = props.gameType;
-
-  var rolesByAlignment = {};
-  for (let i in roles) {
-    for (let role in roles[i]) {
-      let roleName = role.split(":")[0];
-
-      for (let roleObj of siteInfo.roles[gameType]) {
-        if (roleObj.name === roleName) {
-          const alignment = roleObj.alignment;
-
-          if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = {};
-          if (!rolesByAlignment[alignment][i]) rolesByAlignment[alignment][i] = {};
-
-          rolesByAlignment[alignment][i][role] = roles[i][role];
-        }
-      }
-    }
-  }
-
-  /* const columnKeys = Object.keys(rolesByAlignment).filter(alignment => alignment !== "Event");
-  const gridItemSize = isSmallScreen ? 12 : (12 / columnKeys.length); */
-  const rowNumbers = Array.from({ length: roles.length }, (_, i) => i);
-
-  // holy fricken FREAK this is a 3-dimensional effort
-  /* const alignmentRolesets = ALIGNMENT_ORDER.map(alignment => {
-    if (rolesByAlignment[alignment] === undefined) {
-      return <></>;
-    }
-
-    const alignmentColor = getAlignmentColor(alignment);
-    const rolesetRoles = rowNumbers.map(i=> {
-      if (rolesByAlignment[alignment][i] === undefined) {
-        return <div style={{ minHeight: "56px" }}/>;
-      }
-
-      const roles = Object.keys(rolesByAlignment[alignment][i]).map(role => {
-        return (<RoleCount
-          role={role}
-          count={rolesByAlignment[alignment][i][role]}
-          small={true}
-          gameType={gameType}
-          showSecondaryHover
-          key={role}
-        />)
-      });
-
-      return (<Stack direction="row" spacing={0} sx={{
-        p: 1,
-        minHeight: "56px", 
-        flexWrap: "wrap",
-        border: `4px solid ${alignmentColor}`,
-        borderRadius: "4px",
-        boxSizing: "border-box",
-      }}>
-        {roles}
-      </Stack>);
-    });
-
-
-    return (<Grid item xs={alignment === "Event" ? 12 : gridItemSize}>
-      <Stack spacing={1} sx={{
-        height: "100%",
-      }}>
-        {rolesetRoles}
-      </Stack>
-    </Grid>);
-  });
-
-  return (<Grid container columns={12} spacing={1}>
-    {alignmentRolesets}
-  </Grid>); */
-}
-
 const INDEXED_ROLE_GROUP_LABELS = [
   "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
   "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
@@ -421,8 +341,6 @@ export function FullRoleList({ setup }) {
   const rolesetAlignments = Object.keys(rolesDividedByAlignment).map(i => {
     const alignmentKeys = Object.keys(rolesDividedByAlignment[i]);
     const gridItemSize = isSmallScreen ? 12 : (12 / alignmentKeys.length);
-    /* const multiName = setup.useRoleGroups ? "Role Group " : "Role Set ";
-    const sectionName = setup.roles.length > 1 ? (multiName + INDEXED_ROLE_GROUP_LABELS[i]) : "Roles"; */
     var sectionName = setup.roles.length > 1 ? INDEXED_ROLE_GROUP_LABELS[i] : null;
     if (sectionName && setup.useRoleGroups) {
       sectionName += `:${setup.roleGroupSizes[i]}`;
