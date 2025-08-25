@@ -84,7 +84,7 @@ module.exports = class BecomeFakeCultRole extends Card {
         );
         this.player.role.name = "Televangelist";
         let tempApp = {
-          self: role.newRole,
+          self: this.newRole,
         };
         this.player.role.editAppearance(tempApp);
 
@@ -98,7 +98,7 @@ module.exports = class BecomeFakeCultRole extends Card {
         this.player.holdItem("IsTheTelevangelist", this.player.role.modifier);
         let tempModifier = this.player.role.modifier;
         this.player.setRole(
-          this.player.role.newRole,
+          this.newRole,
           undefined,
           false,
           true,
@@ -108,7 +108,7 @@ module.exports = class BecomeFakeCultRole extends Card {
         );
         this.player.role.name = "Televangelist";
         let tempApp = {
-          self: role.newRole,
+          self: this.newRole,
         };
         this.player.role.editAppearance(tempApp);
 
