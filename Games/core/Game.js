@@ -31,6 +31,7 @@ const VegKickMeeting = require("./VegKickMeeting");
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const axios = require("axios");
+const { ordinal, rating, rate, predictWin } = require('openskill')
 
 module.exports = class Game {
   constructor(options) {
@@ -129,6 +130,7 @@ module.exports = class Game {
     this.anonymousDeck = options.settings.anonymousDeck;
     this.beforeAnonPlayerInfo = [];
     this.anonPlayerMapping = {};
+    this.pointsEarnedByPlayers = {};
 
     this.numHostInGame = 0;
   }
@@ -2551,6 +2553,10 @@ module.exports = class Game {
         }
       }
 
+      if (this.ranked || this.competitive) {
+        await this.adjustSkillRatings();
+      }
+
       if (this.isTest) {
         this.broadcast("finished");
         await redis.deleteGame(this.id);
@@ -2626,6 +2632,148 @@ module.exports = class Game {
           },
         }
       ).exec();
+    }
+  }
+
+  async adjustSkillRatings() {
+    try {
+      const setup = await models.Setup.findOne({ id: this.setup.id }).select("id factionRatings");
+      const winners = this.winners.getPlayers();
+
+      if (!setup) {
+        logger.error("Failed to record stats because setup was null.");
+        return;
+      }
+
+      // default the group ratings to an empty array if not yet exists
+      const factionRatingsRaw = setup.factionRatings || [];
+      const factionRatings = new Map(factionRatingsRaw.map(factionRating => [factionRating.factionName, factionRating.skillRating]));
+
+      const factionWinnerFractions = {};
+      const memberFactions = {};
+      for (let playerId in this.originalRoles) {
+        const roleName = this.originalRoles[playerId].split(":")[0];
+        const alignment = this.getRoleAlignment(roleName);
+
+        // Use the alignment name for factions, otherwise use role name for independents
+        const alignmentIsFaction = alignment === "Village" || alignment === "Mafia" || alignment === "Cult";
+        const factionName = alignmentIsFaction ? alignment : roleName;
+        memberFactions[playerId] = factionName;
+
+        if (factionWinnerFractions[factionName] === undefined) {
+          factionWinnerFractions[factionName] = {
+            originalCount: 0,
+            winnerCount: 0,
+          };
+        }
+
+        factionWinnerFractions[factionName].originalCount++;
+        if (winners.includes(playerId)) {
+          factionWinnerFractions[factionName].winnerCount++;
+        }
+      }
+
+      const factionNames = Object.keys(factionWinnerFractions);
+
+      // Default initialize the faction rating for the setup if it doesn't yet exist
+      const factionsToBeRated = factionNames.map(factionName => {
+        if (factionRatings.has(factionName)) {
+          const factionRating = factionRatings.get(factionName);
+          return [rating({ mu: factionRating.mu, sigma: factionRating.sigma })];
+        }
+        else {
+          return [rating({ mu: constants.defaultSkillRatingMu, sigma: constants.defaultSkillRatingSigma })];
+        }
+      });
+
+      // In most cases the faction winner fraction will be either 0 or 1
+      // In edge cases, such as members of a faction being converted then losing to their starting faction, this number will be somewhere in between
+      const factionScores = factionNames.map(factionName => {
+        const factionWinnerFraction = factionWinnerFractions[factionName];
+        return factionWinnerFraction.winnerCount / factionWinnerFraction.originalCount;
+      });
+
+      // library code time
+      const predictions = predictWin(factionsToBeRated);
+      const ratedFactions = rate(factionsToBeRated, { score: factionScores });
+
+      /* Notes:
+       * - Read the library documentation before tweaking anything: https://www.npmjs.com/package/openskill
+       * - A player's "mean" rating is their mu, and their "standard deviation" rating is their sigma
+       * - Elo is a combination of mu and sigma: elo = mu - 3 * sigma
+       * - Because a player's sigma starts off unnecessarily high, a loss can artificially allow a player to gain elo
+       * - This implementation is not actually elo but everyone knows what that word is so we're calling it that
+       * - In the event that everyone wins, no one's mu rating will change and points will be evenly distributed
+       * - In the event that no one wins, no one's mu rating will change and no points will be distributed
+       * - A player's points won (if they win) is decided by their starting faction
+       *   - This could be exploited with a heavily cult sided setup where cult converts many towns, not sure how to address this
+       */
+
+      // Transform the results from the rate and predictWin functions back into their usable forms
+      const pointsWonByFactions = {};
+      const pointsLostByFactions = {};
+      const newFactionSkillRatings = factionRatingsRaw.filter(factionRating => !factionNames.includes(factionRating.factionName));
+      for (var i = 0; i < factionNames.length; i++) {
+        const factionName = factionNames[i];
+        const winPredictionPercent = predictions[i]; // this adds up to 1 across all factions
+        const newSkillRating = ratedFactions[i];
+
+        pointsWonByFactions[factionName] = Math.round(constants.pointsNominalAmount / 2 / winPredictionPercent);
+        pointsLostByFactions[factionName] = Math.round(constants.pointsNominalAmount / 2 / (1 - winPredictionPercent));
+
+        newFactionSkillRatings.push({
+          factionName: factionName,
+          skillRating: newSkillRating[0],
+          elo: ordinal(newSkillRating[0]),
+        });
+      }
+
+      // If a player wins, they earn the amount of points allocated to the faction that they started with
+      const maxEarnedPoints = constants.pointsNominalAmount * 20;
+      for (let playerId in this.originalRoles) {
+        const player = this.getPlayer(playerId);
+        const playerWon = winners.includes(playerId);
+
+        var pointsEarnedByPlayer = playerWon ? pointsWonByFactions[memberFactions[playerId]] : pointsLostByFactions[memberFactions[playerId]];
+        if (pointsEarnedByPlayer > maxEarnedPoints) {
+          pointsEarnedByPlayer = maxEarnedPoints;
+
+          if (playerWon) {
+            // Rare occurrence - notify everyone of the player's winnings
+            this.sendAlert(`${player.name} just earned ${pointsEarnedByPlayer} fortune!!`,
+              undefined,
+              undefined,
+              ["info"]
+            );
+          }
+        }
+        else {
+          if (playerWon) {
+            // Notify the player of their winnings
+            player.sendAlert(`You have earned ${pointsEarnedByPlayer} fortune!`,
+              undefined,
+              undefined,
+              ["info"]
+            );
+          }
+        }
+
+        if (playerWon) {
+          this.pointsEarnedByPlayers[playerId] = pointsEarnedByPlayer;
+        }
+        else {
+          this.pointsEarnedByPlayers[playerId] = -pointsEarnedByPlayer;
+        }
+      }
+
+      await models.Setup.updateOne({ id: setup.id }, {
+        $set: {
+          factionRatings: newFactionSkillRatings,
+        }
+      });
+    } catch (e) {
+      logger.error("Error adjusting skill ratings: ", e);
+      return {};
     }
   }
 
@@ -2750,7 +2898,7 @@ module.exports = class Game {
         if (!player.left) player.user.disconnect();
 
       var setup = await models.Setup.findOne({ id: this.setup.id }).select(
-        "id version rolePlays roleWins played"
+        "id version rolePlays roleWins played factionRatings"
       );
 
       this.recordSetupStats(setup);
@@ -2803,24 +2951,16 @@ module.exports = class Game {
       const heartType = this.competitive ? "gold" : this.ranked ? "red" : null;
 
       for (let player of this.players) {
-        let rankedPoints = 0;
-        let competitivePoints = 0;
-
-        /* if (player.won) {
-          let roleName = this.originalRoles[player.id].split(":")[0];
-
-          if (rolePlays[roleName] > constants.minRolePlaysForPoints) {
-            let wins = roleWins[roleName];
-            let plays = rolePlays[roleName];
-            let perc = wins / plays;
-            rankedPoints = Math.round((1 - perc) * 100);
-            competitivePoints = Math.round((1 - perc) * 100);
-          }
-        } */
         let coinsEarned = 0;
         if (this.ranked && player.won) {
           coinsEarned++;
         }
+
+        let pointsWon = 0;
+        if (this.pointsEarnedByPlayers[player.id] !== undefined) {
+          pointsWon = this.pointsEarnedByPlayers[player.id];
+        }
+
         if (this.achievementsAllowed()) {
           if (player.EarnedAchievements.length > 0) {
             for (let x = 0; x < player.EarnedAchievements.length; x++) {
@@ -2870,13 +3010,13 @@ module.exports = class Game {
                 (player.user.stats["Mafia"].all.wins.total || 1),
             },
             $inc: {
-              rankedPoints: rankedPoints,
-              competitivePoints: competitivePoints,
               coins: coinsEarned,
               redHearts: this.ranked ? -1 : 0,
               goldHearts: this.competitive ? -1 : 0,
               kudos:
                 kudosTarget && kudosTarget.user.id == player.user.id ? 1 : 0,
+              points: pointsWon > 0 ? pointsWon : 0,
+              pointsNegative: pointsWon < 0 ? -pointsWon : 0,
             },
           }
         ).exec();

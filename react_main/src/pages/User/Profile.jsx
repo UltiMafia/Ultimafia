@@ -43,6 +43,8 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 export const KUDOS_ICON = require(`images/kudos.png`);
 export const KARMA_ICON = require(`images/karma.png`);
+export const POINTS_ICON = require(`images/points.png`);
+export const POINTS_NEGATIVE_ICON = require(`images/pointsNegative.png`);
 export const ACHIEVEMENTS_ICON = require(`images/achievements.png`);
 export const DAILY_ICON = require(`images/dailyChallenges.png`);
 
@@ -61,6 +63,8 @@ export default function Profile() {
   const [isLove, setIsLove] = useState(false);
   const [isMarried, setIsMarried] = useState(false);
   const [kudos, setKudos] = useState(0);
+  const [points, setPoints] = useState(0);
+  const [pointsNegative, setPointsNegative] = useState(0);
   const [achievements, setAchievements] = useState([]);
   const [karmaInfo, setKarmaInfo] = useState({});
   const [settings, setSettings] = useState({});
@@ -136,6 +140,8 @@ export default function Profile() {
           setFriendsPage(1);
           setStats(res.data.stats);
           setKudos(res.data.kudos);
+          setPoints(res.data.points);
+          setPointsNegative(res.data.pointsNegative);
           setKarmaInfo(res.data.karmaInfo);
           setGroups(res.data.groups);
           setMediaUrl("");
@@ -906,16 +912,16 @@ export default function Profile() {
               <div className="content">
                 <Stack
                   direction="row"
-                  spacing={1}
+                  spacing={2}
                   sx={{ alignItems: "stretch" }}
                 >
-                  <Stack direction="column" spacing={1}>
+                  {karmaInfo && (<Stack direction="column" spacing={1}>
                     <KarmaVoteWidget
                       item={karmaInfo}
                       setItem={setKarmaInfo}
                       userId={userId}
                     />
-                  </Stack>
+                  </Stack>)}
                   <Stack direction="column" spacing={1}>
                     <Stack
                       direction="row"
@@ -929,7 +935,7 @@ export default function Profile() {
                       />
                       {kudos}
                     </Stack>
-                    <Stack
+                    {karmaInfo && (<Stack
                       direction="row"
                       spacing={1}
                       sx={{ alignItems: "center" }}
@@ -940,7 +946,33 @@ export default function Profile() {
                         title="Karma"
                       />
                       {karmaInfo.voteCount}
+                    </Stack>)}
+                  </Stack>
+                  <Stack direction="column" spacing={1}>
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      sx={{ alignItems: "center" }}
+                    >
+                      <img
+                        src={POINTS_ICON}
+                        style={{ marginRight: "12px" }}
+                        title="Fortune"
+                      />
+                      {points}
                     </Stack>
+                    {pointsNegative && (<Stack
+                      direction="row"
+                      spacing={1}
+                      sx={{ alignItems: "center" }}
+                    >
+                      <img
+                        src={POINTS_NEGATIVE_ICON}
+                        style={{ marginRight: "12px" }}
+                        title="Misfortune"
+                      />
+                      {pointsNegative}
+                    </Stack>)}
                   </Stack>
                 </Stack>
               </div>

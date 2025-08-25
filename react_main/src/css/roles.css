@@ -1608,10 +1608,6 @@
   background-image: url("/src/images/roles/cult/psion-vivid.png");
 }
 
-.role-icon-noir-Mafia-Psion {
-  background-image: url("/src/images/roles/cult/skins/psion-noir.png");
-}
-
 .role-icon-vivid-Mafia-Selkie {
   background-image: url("/src/images/roles/cult/selkie-vivid.png");
 }
@@ -2515,6 +2511,10 @@
 
 .modifier-Mafia-Vengeful {
   background-image: url("/src/images/modifiers/vengeful.png");
+}
+
+.modifier-Mafia-Magnetic {
+  background-image: url("/src/images/modifiers/magnetic.png");
 }
 
 .modifier-Mafia-Neighborly {

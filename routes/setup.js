@@ -572,6 +572,7 @@ router.post("/delete", async function (req, res) {
 });
 
 router.post("/create", async function (req, res) {
+  var responseId = null;
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
 
@@ -597,11 +598,6 @@ router.post("/create", async function (req, res) {
         res.status(500);
         res.send("You can only edit setups you have created.");
         return;
-      }
-
-      if (setup.ranked) {
-        res.status(500);
-        res.send("You cannot edit ranked setups.");
       }
     }
 
@@ -766,7 +762,7 @@ router.post("/create", async function (req, res) {
         { id: setup.id },
         { $inc: { version: 1 } }
       ).exec();
-      res.send(req.body.id);
+      responseId = req.body.id;
       setupId = setup.id;
     } else {
       obj.id = shortid.generate();
@@ -778,10 +774,17 @@ router.post("/create", async function (req, res) {
         { id: userId },
         { $push: { setups: setup._id } }
       ).exec();
-      res.send(setup.id);
+      responseId = setup.id;
       setupId = obj.id;
     }
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Unable to make setup.");
+    return;
+  }
 
+  try {
     const setupAfterChanges = await models.Setup.findOne({
       id: setupId,
     }).select("_id id version");
@@ -816,8 +819,11 @@ router.post("/create", async function (req, res) {
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Unable to make setup.");
+    res.send("Unable to make setup version.");
+    return;
   }
+
+  res.send(responseId);
 });
 
 function verifyRolesAndCount(setup) {

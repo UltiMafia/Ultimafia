@@ -9,18 +9,34 @@ import {
 } from "react-router-dom";
 import axios from "axios";
 
-import { UserContext, SiteInfoContext } from "../../../Contexts";
-import Comments from "../../Community/Comments";
+import {
+  Box,
+  Button,
+  Card,
+  Divider,
+  Grid,
+  IconButton,
+  Stack,
+  Typography,
+  useMediaQuery
+} from "@mui/material";
+import { useTheme } from "@mui/styles";
+
+import ModerationSideDrawer from "components/ModerationSideDrawer";
+import { useErrorAlert } from "components/Alerts";
+import { determineSetupType, getAlignmentColor, FullRoleList } from "components/Setup";
+import GameIcon from "components/GameIcon";
+import HostGameDialogue from "components/HostGameDialogue";
+import { UserContext, SiteInfoContext } from "Contexts";
+
+import Comments from "pages/Community/Comments";
+import { NameWithAvatar } from "pages/User/User";
+import { NewLoading } from "pages/Welcome/NewLoading";
+import { getRowStubColor, getSetupBackgroundColor } from "pages/Play/LobbyBrowser/gameRowColors";
+
 import { PieChart } from "./PieChart";
 
 import "css/setupPage.css";
-
-import ModerationSideDrawer from "components/ModerationSideDrawer";
-import { useErrorAlert } from "../../../components/Alerts";
-import { NameWithAvatar } from "../../User/User";
-import Setup from "../../../components/Setup";
-import { NewLoading } from "../../Welcome/NewLoading";
-import { Stack, Typography } from "@mui/material";
 
 export default function Setups() {
   return (
@@ -52,13 +68,13 @@ function getBasicPieStats(alignmentWinrate, roleWinrate, rolesRaw) {
     }
 
     if (alignment === "Village") {
-      colors[alignment] = "#66adff";
+      colors[alignment] = getAlignmentColor(alignment);
       data[alignment] = `${alignmentWinrate[alignment]}`;
     } else if (alignment === "Mafia") {
-      colors[alignment] = "#505d66";
+      colors[alignment] = getAlignmentColor(alignment);
       data[alignment] = `${alignmentWinrate[alignment]}`;
     } else if (alignment === "Cult") {
-      colors[alignment] = "#b161d3";
+      colors[alignment] = getAlignmentColor(alignment);
       data[alignment] = `${alignmentWinrate[alignment]}`;
     }
   });
@@ -70,7 +86,7 @@ function getBasicPieStats(alignmentWinrate, roleWinrate, rolesRaw) {
 
     const alignment = rolesRaw[roleName].alignment;
     if (alignment === "Independent") {
-      colors[roleName] = "#c7ce48";
+      colors[roleName] = getAlignmentColor(alignment);
       data[roleName] = `${roleWinrate[roleName]}`;
     }
   });
@@ -78,20 +94,50 @@ function getBasicPieStats(alignmentWinrate, roleWinrate, rolesRaw) {
   return { data: data, colors: colors };
 }
 
+function getEloPieStats(factionRatings) {
+  const data = {};
+  const colors = {};
+
+  if (!factionRatings) {
+    return null;
+  }
+
+  factionRatings.forEach(function (factionRating) {
+    const name = factionRating.factionName;
+    const elo = factionRating.elo;
+
+    if (name === "Village" || name === "Mafia" || name === "Cult") {
+      colors[name] = getAlignmentColor(name);
+      data[name] = elo;
+    } else {
+      colors[name] = getAlignmentColor("Independent");
+      data[name] = elo;
+    }
+  });
+
+  return { data: data, colors: colors };
+}
+
 export function SetupPage() {
-  const [setup, setSetup] = useState();
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const history = useHistory();
   const errorAlert = useErrorAlert();
   const { setupId } = useParams();
+
+  const [setup, setSetup] = useState();
   const [gameType, setGameType] = useState("");
   const [pieData, setPieData] = useState(null);
+  const [eloPieData, setEloPieData] = useState(null);
   const [currentVersionNum, setCurrentVersionNum] = useState(0);
   const [selectedVersionNum, setSelectedVersionNum] = useState(0);
   const [moderationDrawerOpen, setModerationDrawerOpen] = useState(false);
   const [versionTimestamp, setVersionTimestamp] = useState("");
+  const [versionGamesPlayed, setVersionGamesPlayed] = useState(0);
   const [diff, setDiff] = useState([]); // Changelog diff
+  const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
 
   const allVersions = Array.from(Array(currentVersionNum + 1).keys()).reverse();
   const localDateString = new Date(
@@ -99,6 +145,13 @@ export function SetupPage() {
   ).toLocaleString();
   const shouldDisplayStats = gameType === "Mafia";
   const shouldDisplayChangelog = gameType === "Mafia";
+
+  const colorInfo = {
+    ranked: setup ? setup.ranked : false,
+    lobby: (gameType === "Mafia") ? setup.closed ? "Sandbox" : "Main" : "Games"
+  };
+  const setupHeadingIconColor = getRowStubColor(colorInfo);
+  const setupHeadingBackgroundColor = getSetupBackgroundColor(colorInfo, true);
 
   useEffect(() => {
     if (setupId) {
@@ -112,10 +165,12 @@ export function SetupPage() {
           setCurrentVersionNum(setup.version);
           setSelectedVersionNum(setup.version);
           setVersionTimestamp(setup.setupVersion.timestamp);
+          setVersionGamesPlayed(setup.setupVersion.played);
 
           document.title = `Setup | ${res.data.name} | UltiMafia`;
 
           if (setup.gameType === "Mafia") {
+            setEloPieData(getEloPieStats(setup.factionRatings));
             setPieData(
               getBasicPieStats(
                 setup.stats.alignmentWinrate,
@@ -152,43 +207,32 @@ export function SetupPage() {
   // Roles
   if (setup.closed) {
     closedRoleInfo.push(
-      <SetupRowInfo
-        title="Unique Roles"
-        content={setup.unique ? "Yes" : "No"}
-        key="uniqueRoles"
-      />
+      <Typography key="uniqueRoles">
+        {"Unique roles/modifiers: "}{setup.unique ? "✅" : "❌"}
+      </Typography>
     );
 
     // Currently, only Mafia supports unique without modifier
     if (setup.unique && setup.gameType === "Mafia") {
       closedRoleInfo.push(
-        <SetupRowInfo
-          title="Unique Without Modifier"
-          content={setup.uniqueWithoutModifier ? "Yes" : "No"}
-          key="uniqueRolesWithoutModifier"
-        />
+        <Typography key="uniqueRolesWithoutModifier">
+          {"Unique roles: "}{setup.uniqueWithoutModifier ? "✅" : "❌"}
+        </Typography>
       );
     }
-
-    closedRoleInfo.push(
-      <SetupRowInfo
-        title="Role Groups"
-        content={setup.useRoleGroups ? "Yes" : "No"}
-        key="useRoleGroups"
-      />
-    );
   }
 
   let handleVersionChange = (e) => {
     const newVersionNum = e.target.value;
-    setSelectedVersionNum(newVersionNum);
 
     if (setupId) {
       axios
         .get(`/api/setup/${setupId}/version/${newVersionNum}`)
         .then((res) => {
           let setupVersion = res.data;
+          setSelectedVersionNum(newVersionNum);
           setVersionTimestamp(setupVersion.timestamp);
+          setVersionGamesPlayed(setupVersion.played);
 
           if (gameType === "Mafia") {
             setPieData(
@@ -209,162 +253,166 @@ export function SetupPage() {
         })
         .catch((e) => {
           errorAlert(e);
-          history.push("/play");
         });
     }
   };
 
-  /*
-  const rolesets = [];
-  if (setup.closed && !setup.useRoleGroups) {
-    const roleset = setup.roles[0];
-    var rolesByAlignment = {};
+  const iconSize = isSmallScreen ? 30 : 60;
 
-    for (let role in roleset) {
-      let roleName = role.split(":")[0];
-
-      for (let roleObj of roleData[setup.gameType]) {
-        if (roleObj.name == roleName) {
-          let alignment = roleObj.alignment;
-
-          if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = {};
-
-          rolesByAlignment[alignment][role] = roleset[role];
-        }
-      }
-    }
-
-    for (let alignment in rolesByAlignment) {
-      rolesets.push(
-        <SmallRoleList
-          title={`${alignment} roles`}
-          roles={rolesByAlignment[alignment]}
-          gameType={setup.gameType}
-          key={alignment}
-        />
-      );
-    }
-  } else {
-    let multiName = setup.useRoleGroups ? "Role Groups" : "Role Sets";
-    const sectionName = setup.roles.length > 1 ? multiName : "Roles";
-
-    for (let i in setup.roles) {
-      let roleset = setup.roles[i];
-      let title = setup.useRoleGroups ? `(${setup.roleGroupSizes[i]})` : "";
-
-      rolesets.push(
-        <SmallRoleList
-          title={title}
-          roles={roleset}
-          gameType={setup.gameType}
-          key={i}
-        />
-      );
-    }
-  }
-  */
   return (
-    <Stack direction="column" spacing={1}>
-      <Setup setup={setup} disablePopover />
-      <div className="setup-page">
-        <div className="span-panel main">
-          <div className="heading">Setup Info</div>
-
-          <div className="meta">
-            <SetupRowInfo title="Name" content={setup.name} />
-            <SetupRowInfo title="Id" content={setup.id} />
-
-            {setup.creator && (
-              <SetupRowInfo
-                title="Created by"
-                content={
-                  <NameWithAvatar
-                    small
-                    id={setup.creator.id}
-                    name={setup.creator.name}
-                    avatar={setup.creator.avatar}
-                  />
-                }
-              />
+    <Stack spacing={1} className="setup-page" sx={{
+      maxWidth: "100%",
+    }}>
+      <Card variant="outlined" sx={{
+        backgroundColor: setupHeadingBackgroundColor,
+        mb: 1,
+        p: 1,
+      }}>
+        {setup && (<HostGameDialogue
+          open={ishostGameDialogueOpen}
+          setOpen={setIshostGameDialogueOpen}
+          setup={setup}
+        />)}
+        <ModerationSideDrawer
+          open={moderationDrawerOpen}
+          setOpen={setModerationDrawerOpen}
+          prefilledArgs={{ setupId }}
+        />
+        <Grid
+          container
+          spacing={1}
+          divider={<Divider orientation="vertical" flexItem />}
+        >
+          <Grid item xs={12} md={8}>
+            <Stack direction="row" spacing={1} sx={{ height: "100%", alignItems: "center" }}>
+              <IconButton
+                onClick={() => setIshostGameDialogueOpen(true)}
+                sx={{
+                  p: isSmallScreen ? 1 : 2,
+                  borderRadius: "50%",
+                  backgroundColor: setupHeadingIconColor,
+                }}
+              >
+                <GameIcon gameType={setup.gameType} size={iconSize} />
+              </IconButton>
+              <Typography variant="h4" sx={{
+                ml: isSmallScreen ? "auto !important" : undefined,
+              }}>
+                {setup.name}
+              </Typography>
+            </Stack>
+          </Grid>
+          <Grid item xs={12} md={2}>
+            <Stack direction="column" spacing={0.5} sx={{ textAlign: "right" }}>
+              <Typography sx={{ fontWeight: "600" }}>
+                {determineSetupType(setup)}
+              </Typography>
+              <Typography>
+                {"Players: "}{setup.total}
+              </Typography>
+              <Typography>
+                {"Ranked: "}{setup.ranked ? "✅" : "❌"}
+              </Typography>
+              <Typography>
+                {"Comp: "}{setup.competitive ? "✅" : "❌"}
+              </Typography>
+            </Stack>
+          </Grid>
+          {setup.creator && (<Grid item xs={12} md={2}>
+            <Stack direction={isSmallScreen ? "row" : "column"} sx={{
+              alignItems: "center",
+            }}>
+              <Typography sx={{ ml: isSmallScreen ? "auto" : 1, fontSize: "18px", fontStyle: "italic" }}>
+                {"Created by"}
+              </Typography>
+              <Box sx={{ ml: 1 }}>
+                <NameWithAvatar
+                  small
+                  id={setup.creator.id}
+                  name={setup.creator.name}
+                  avatar={setup.creator.avatar}
+                />
+              </Box>
+            </Stack>
+          </Grid>)}
+        </Grid>
+      </Card>
+      <Box>
+        <FullRoleList setup={setup} />
+      </Box>
+      <Box>
+        <Grid container spacing={1}>
+          <Grid item xs={12} md={3}>
+            <Stack direction="column" spacing={1}>
+              {closedRoleInfo.length > 0 && (<div className="box-panel">
+                <div className="heading">Closed Setup Info</div>
+                <div className="content">
+                  {closedRoleInfo}
+                </div>
+              </div>)}
+              <div className="box-panel">
+                <div className="heading">Night Order</div>
+                <div className="content">
+                  <Link to={`/learn/setup/${setupId}/nightorder`} style={{
+                    color: "#99c3ff",
+                  }}>
+                    Click to Show
+                  </Link>
+                </div>
+              </div>
+            </Stack>
+          </Grid>
+          <Grid item xs={12} md={3}>
+            {shouldDisplayStats && (
+              <Stack direction="column" spacing={1}>
+                <div className="box-panel">
+                  <div className="heading">Select Version</div>
+                  <select onChange={handleVersionChange}>
+                    {allVersions.map((oldVersionNum) => (
+                      <option value={oldVersionNum}>{oldVersionNum}</option>
+                    ))}
+                  </select>
+                </div>
+                {pieData && Object.keys(pieData.data).length > 0 && (<div className="box-panel">
+                  <div className="heading">v{selectedVersionNum} Winrate (n = {versionGamesPlayed})</div>
+                  <div className="content" style={{ padding: "0", justifyContent: "center" }}>
+                    <PieChart
+                      data={pieData.data}
+                      colors={pieData.colors}
+                      displayPieChart={true}
+                    />
+                  </div>
+                </div>)}
+                {eloPieData && Object.keys(eloPieData.data).length > 0 && (<div className="box-panel">
+                  <div className="heading">Faction Elo</div>
+                  <div className="content" style={{ padding: "0", justifyContent: "center" }}>
+                    <PieChart
+                      data={eloPieData.data}
+                      colors={eloPieData.colors}
+                      displayPieChart={true}
+                    />
+                  </div>
+                </div>)}
+              </Stack>
             )}
-            <SetupRowInfo title="No. players" content={setup.total} />
-            <SetupRowInfo
-              title="Ranked Allowed"
-              content={setup.ranked ? "Yes" : "No"}
-            />
-
-            <SetupRowInfo
-              title="Competitive Allowed"
-              content={setup.competitive ? "Yes" : "No"}
-            />
-
-            {closedRoleInfo}
-            <SetupRowInfo
-              title="Night Order"
-              content={
-                <Link to={`/learn/setup/${setupId}/nightorder`}>
-                  Click to Show
-                </Link>
-              }
-            />
-          </div>
-        </div>
-        {shouldDisplayStats && (
-          <div className="side column">
-            <div className="box-panel version-selector">
-              <div className="heading">Select Version</div>
-              <select onChange={handleVersionChange}>
-                {allVersions.map((oldVersionNum) => (
-                  <option value={oldVersionNum}>{oldVersionNum}</option>
-                ))}
-              </select>
-            </div>
-            <div className="box-panel winrate-stats">
-              <div className="heading">Win Statistics</div>
-              <div className="content">
-                {/* {ratings}
-              <div
-                className="expand-icon-wrapper"
-                onClick={() => setShowStatsModal(true)}
-              >
-                <i className="fas fa-expand-arrows-alt" />
-              </div> */}
+          </Grid>
+          <Grid item xs={12} md={6}>
+            {shouldDisplayChangelog && (
+              <div className="side column">
+                <div className="box-panel">
+                  <div className="heading">
+                    Changelog for v{selectedVersionNum} ({localDateString})
+                  </div>
+                  <div>
+                    <Changelog diff={diff} />
+                  </div>
+                </div>
               </div>
-              <div
-                className="content"
-                style={{ padding: "0", justifyContent: "center" }}
-              >
-                {pieData && (
-                  <PieChart
-                    data={pieData.data}
-                    colors={pieData.colors}
-                    displayPieChart={true}
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-        {shouldDisplayChangelog && (
-          <div className="side column">
-            <div className="box-panel changelog-panel">
-              <div className="heading">
-                Changelog for version {selectedVersionNum}
-              </div>
-              <div className="heading">Changed on: {localDateString}</div>
-              <div>
-                <Changelog diff={diff} />
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+            )}
+          </Grid>
+        </Grid>
+      </Box>
       <Comments location={commentLocation} />
-      <ModerationSideDrawer
-        open={moderationDrawerOpen}
-        setOpen={setModerationDrawerOpen}
-        prefilledArgs={{ setupId }}
-      />
     </Stack>
   );
 }
@@ -459,13 +507,4 @@ function Changelog({ diff }) {
   });
 
   return <div className="changelog">{lines}</div>;
-}
-
-function SetupRowInfo(props) {
-  return (
-    <div className="setup-row-info">
-      <div className="title">{props.title}</div>
-      <div className="content">{props.content}</div>
-    </div>
-  );
 }

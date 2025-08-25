@@ -12,6 +12,12 @@ const anonymousDeck = new mongoose.Schema({
   featured: { type: Boolean, index: true },
 });
 
+const skillRating = new mongoose.Schema({
+  // See: https://www.npmjs.com/package/openskill
+  mu: { type: Number }, // mean
+  sigma: { type: Number }, // deviation
+});
+
 var schemas = {
   User: new mongoose.Schema({
     id: { type: String, index: true },
@@ -65,6 +71,8 @@ var schemas = {
       autoplay: { type: Boolean, default: false },
       youtube: String,
       hideStatistics: { type: Boolean, default: false },
+      hideKarma: { type: Boolean, default: false },
+      hidePointsNegative: { type: Boolean, default: false },
       deathMessage: String,
     },
     accounts: {
@@ -118,10 +126,10 @@ var schemas = {
     availableStamps: [],
     redHearts: { type: Number, default: 0 },
     goldHearts: { type: Number, default: 0 },
-    rankedPoints: { type: Number, default: 0 },
-    competitivePoints: { type: Number, default: 0 },
     kudos: { type: Number, default: 0 },
     karma: { type: Number, default: 0 },
+    points: { type: Number, default: 0 },
+    pointsNegative: { type: Number, default: 0 },
     dailyChallenges: [String],
     dailyChallengesCompleted: { type: Number, default: 0 },
     nameChanged: { type: Boolean, default: false },
@@ -194,6 +202,11 @@ var schemas = {
     played: { type: Number, index: true },
     rolePlays: {},
     roleWins: {},
+    factionRatings: [{
+      factionName: { type: String },
+      skillRating: skillRating,
+      elo: { type: Number },
+    }],
   }),
   SetupVersion: new mongoose.Schema({
     version: { type: Number, index: true },

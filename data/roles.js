@@ -3665,16 +3665,6 @@ const roleData = {
         "If that player is not visited by a non-Cult player during the next night, they will go insane.",
       ],
       nightOrder: [["Mind Warp", PRIORITY_EFFECT_GIVER_DEFAULT]],
-      skins: [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-        {
-          label: "Noir",
-          value: "noir",
-        },
-      ],
     },
     //Manipulative
     "Cat Lady": {

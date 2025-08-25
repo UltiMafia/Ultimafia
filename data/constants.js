@@ -261,8 +261,8 @@ module.exports = {
 
   maxPlayers: 50,
   maxSpectators: 100,
-  maxOwnedSetups: 100,
-  maxFavSetups: 100,
+  maxOwnedSetups: 500,
+  maxFavSetups: 500,
   maxOwnedAnonymousDecks: 10,
   maxOwnedCustomEmotes: 10,
   maxOwnedCustomEmotesExtra: 10,
@@ -348,6 +348,12 @@ module.exports = {
   leavePenaltyDurationMillis: 259200000,
 
   minimumGamesForRanked: 5,
+
+  // See: https://www.npmjs.com/package/openskill
+  defaultSkillRatingMu: 750,
+  defaultSkillRatingSigma: 150,
+
+  pointsNominalAmount: 60,
 
   // Perms given to all users
   defaultPerms: [
