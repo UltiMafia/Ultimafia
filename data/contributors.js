@@ -316,7 +316,13 @@ const artContributors = {
     Mafia: ["Monk:vivid"],
   },
   maxie: {
-    Mafia: ["Virgin:vivid", "Leech:vivid", "Executioner:vivid", "Yith:vivid", "Psion:vivid",],
+    Mafia: [
+      "Virgin:vivid",
+      "Leech:vivid",
+      "Executioner:vivid",
+      "Yith:vivid",
+      "Psion:vivid",
+    ],
   },
   keji: {
     Mafia: [

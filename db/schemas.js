@@ -202,11 +202,13 @@ var schemas = {
     played: { type: Number, index: true },
     rolePlays: {},
     roleWins: {},
-    factionRatings: [{
-      factionName: { type: String },
-      skillRating: skillRating,
-      elo: { type: Number },
-    }],
+    factionRatings: [
+      {
+        factionName: { type: String },
+        skillRating: skillRating,
+        elo: { type: Number },
+      },
+    ],
   }),
   SetupVersion: new mongoose.Schema({
     version: { type: Number, index: true },
