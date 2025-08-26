@@ -3213,7 +3213,7 @@ const roleData = {
       tags: ["Manipulative", "Redirection", "Reflexive", "Visiting", "Basic"],
       description: [
         "Each night, chooses a player.",
-        "Anyone who visits the Rat will be redirect to the choosen player.",
+        "Anyone who visits the Rat will be redirected to the chosen player.",
       ],
       nightOrder: [["Redirect Visitors", PRIORITY_MODIFY_ACTION]],
     },
