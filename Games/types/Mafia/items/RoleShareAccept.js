@@ -40,8 +40,8 @@ module.exports = class RoleShareAccept extends Item {
         run: function () {
           if (this.target == "Yes") {
             if (this.item.type == "Role Share") {
-              this.actor.role.revealToPlayer(this.item.proposer);
-              this.item.proposer.role.revealToPlayer(this.actor);
+              this.actor.role.revealToPlayer(this.item.proposer, null, "investigate");
+              this.item.proposer.role.revealToPlayer(this.actor, null, "investigate");
               this.game.events.emit(
                 "ShareRole",
                 this.actor,
@@ -49,10 +49,10 @@ module.exports = class RoleShareAccept extends Item {
                 false
               );
             } else if (this.item.type == "Alignment Share") {
-              var roleActor = this.actor.getAppearance("reveal", true);
+              var roleActor = this.actor.getAppearance("investigate", true);
               var alignmentActor = this.game.getRoleAlignment(roleActor);
               var roleProposer = this.item.proposer.getAppearance(
-                "reveal",
+                "investigate",
                 true
               );
               var alignmentProposer = this.game.getRoleAlignment(roleProposer);
