@@ -304,7 +304,7 @@ const roleData = {
       description: [
         "Saves another player from dying each night.",
         "If the Soprano dies, the player they most recently saved will die.",
-        ],
+      ],
       nightOrder: [["Protect", PRIORITY_NIGHT_SAVER]],
     },
     Martyr: {
@@ -1563,14 +1563,30 @@ const roleData = {
         //"If the first player to vote for a Princess does not appear as Village-aligned, nothing happens.",
       ],
       SpecialInteractionsModifiers: {
-        Loyal: ["If the first player to vote for the Princess is a different alignment to the Princess, nothing happens."],
-        Disloyal: ["If the first player to vote for the Princess is the same alignment of the Princess, nothing happens."],
-        Holy: ["If the first player to vote for the Princess is Demonic, nothing happens."],
-        Unholy: ["If the first player to vote for the Princess is non-Demonic, nothing happens."],
-        Simple: ["If the first player to vote for the Princess is a Power Role, nothing happens."],
-        Complex: ["If the first player to vote for the Princess is a Vanilla Role, nothing happens."],
-        Refined: ["If the first player to vote for the Princess is a Banished Role, nothing happens."],
-        Unrefined: ["If the first player to vote for the Princess is a non-Banished Role, nothing happens."],
+        Loyal: [
+          "If the first player to vote for the Princess is a different alignment to the Princess, nothing happens.",
+        ],
+        Disloyal: [
+          "If the first player to vote for the Princess is the same alignment of the Princess, nothing happens.",
+        ],
+        Holy: [
+          "If the first player to vote for the Princess is Demonic, nothing happens.",
+        ],
+        Unholy: [
+          "If the first player to vote for the Princess is non-Demonic, nothing happens.",
+        ],
+        Simple: [
+          "If the first player to vote for the Princess is a Power Role, nothing happens.",
+        ],
+        Complex: [
+          "If the first player to vote for the Princess is a Vanilla Role, nothing happens.",
+        ],
+        Refined: [
+          "If the first player to vote for the Princess is a Banished Role, nothing happens.",
+        ],
+        Unrefined: [
+          "If the first player to vote for the Princess is a non-Banished Role, nothing happens.",
+        ],
       },
     },
     Troublemaker: {
@@ -3334,14 +3350,30 @@ const roleData = {
       tags: ["Voting", "Conversion", "Expert"],
       description: ["The first player to vote the Prankster becomes Fool."],
       SpecialInteractionsModifiers: {
-        Loyal: ["If the first player to vote for the Prankster is a different alignment to the Prankster, nothing happens."],
-        Disloyal: ["If the first player to vote for the Prankster is the same alignment of the Prankster, nothing happens."],
-        Holy: ["If the first player to vote for the Prankster is Demonic, nothing happens."],
-        Unholy: ["If the first player to vote for the Prankster is non-Demonic, nothing happens."],
-        Simple: ["If the first player to vote for the Prankster is a Power Role, nothing happens."],
-        Complex: ["If the first player to vote for the Prankster is a Vanilla Role, nothing happens."],
-        Refined: ["If the first player to vote for the Prankster is a Banished Role, nothing happens."],
-        Unrefined: ["If the first player to vote for the Prankster is a non-Banished Role, nothing happens."],
+        Loyal: [
+          "If the first player to vote for the Prankster is a different alignment to the Prankster, nothing happens.",
+        ],
+        Disloyal: [
+          "If the first player to vote for the Prankster is the same alignment of the Prankster, nothing happens.",
+        ],
+        Holy: [
+          "If the first player to vote for the Prankster is Demonic, nothing happens.",
+        ],
+        Unholy: [
+          "If the first player to vote for the Prankster is non-Demonic, nothing happens.",
+        ],
+        Simple: [
+          "If the first player to vote for the Prankster is a Power Role, nothing happens.",
+        ],
+        Complex: [
+          "If the first player to vote for the Prankster is a Vanilla Role, nothing happens.",
+        ],
+        Refined: [
+          "If the first player to vote for the Prankster is a Banished Role, nothing happens.",
+        ],
+        Unrefined: [
+          "If the first player to vote for the Prankster is a non-Banished Role, nothing happens.",
+        ],
       },
       RolesMadeBy: ["Fool"],
     },
