@@ -34,7 +34,7 @@ module.exports = class NightSaveAndLifeLink extends Card {
             return;
           }
 
-            var action = new Action({
+          var action = new Action({
             actor: this.player,
             target: this.data.playerToKill,
             game: this.game,
@@ -51,7 +51,5 @@ module.exports = class NightSaveAndLifeLink extends Card {
         }
       },
     };
-
-    
   }
 };
