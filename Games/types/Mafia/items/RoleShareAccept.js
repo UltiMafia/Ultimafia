@@ -40,8 +40,16 @@ module.exports = class RoleShareAccept extends Item {
         run: function () {
           if (this.target == "Yes") {
             if (this.item.type == "Role Share") {
-              this.actor.role.revealToPlayer(this.item.proposer, null, "investigate");
-              this.item.proposer.role.revealToPlayer(this.actor, null, "investigate");
+              this.actor.role.revealToPlayer(
+                this.item.proposer,
+                null,
+                "investigate"
+              );
+              this.item.proposer.role.revealToPlayer(
+                this.actor,
+                null,
+                "investigate"
+              );
               this.game.events.emit(
                 "ShareRole",
                 this.actor,
