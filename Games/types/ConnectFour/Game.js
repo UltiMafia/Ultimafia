@@ -91,12 +91,18 @@ module.exports = class ConnectFourGame extends Game {
     const rowNew = row;
     const colNew = col;
     if (
-      (this.checkRecursive(player, rowNew, colNew, 0, "Up") + this.checkRecursive(player, rowNew, colNew, 0, "Down")) >= 3 ||
-      (this.checkRecursive(player, rowNew, colNew, 0, null, "Left")+
-      this.checkRecursive(player, rowNew, colNew, 0, null, "Right")) >= 3 ||
-      (this.checkRecursive(player, rowNew, colNew, 0, "Up", "Left") + this.checkRecursive(player, rowNew, colNew, 0, "Down", "Right")) >= 3 ||
-      (this.checkRecursive(player, rowNew, colNew, 0, "Up", "Right") +
-      this.checkRecursive(player, rowNew, colNew, 0, "Down", "Left")) >= 3
+      this.checkRecursive(player, rowNew, colNew, 0, "Up") +
+        this.checkRecursive(player, rowNew, colNew, 0, "Down") >=
+        3 ||
+      this.checkRecursive(player, rowNew, colNew, 0, null, "Left") +
+        this.checkRecursive(player, rowNew, colNew, 0, null, "Right") >=
+        3 ||
+      this.checkRecursive(player, rowNew, colNew, 0, "Up", "Left") +
+        this.checkRecursive(player, rowNew, colNew, 0, "Down", "Right") >=
+        3 ||
+      this.checkRecursive(player, rowNew, colNew, 0, "Up", "Right") +
+        this.checkRecursive(player, rowNew, colNew, 0, "Down", "Left") >=
+        3
     ) {
       return true;
     }
@@ -138,7 +144,7 @@ module.exports = class ConnectFourGame extends Game {
         `${Direction1} ${Direction2} Distance ${distance-1}`
       );
       */
-      return distance-1;
+      return distance - 1;
     }
   }
 
