@@ -16,11 +16,16 @@ module.exports = class IfVotedForceCondemn extends Card {
           if (!this.hasAbility(["Condemn"])) {
             return;
           }
+          /*
           if (
             this.game.getRoleAlignment(
               vote.voter.getRoleAppearance().split(" (")[0]
             ) != "Village"
           ) {
+            return;
+          }
+          */
+          if (!this.canTargetPlayer(vote.voter)) {
             return;
           }
           this.data.playerVoter = vote.voter;

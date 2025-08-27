@@ -206,7 +206,11 @@ module.exports = class MafiaPlayer extends Player {
                 this.actor.queueAlert(
                   `You Privatly Reveal to ${this.target.name}.`
                 );
-                this.actor.role.revealToPlayer(targetPlayer);
+                this.actor.role.revealToPlayer(
+                  targetPlayer,
+                  null,
+                  "investigate"
+                );
               },
             });
             this.game.instantAction(action);
@@ -233,7 +237,7 @@ module.exports = class MafiaPlayer extends Player {
             this.game.queueAlert(
               `${this.actor.name} Public Reveals to Everyone.`
             );
-            this.actor.role.revealToAll();
+            this.actor.role.revealToAll(null, "investigate");
           },
         });
         this.game.instantAction(action);
