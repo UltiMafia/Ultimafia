@@ -16,6 +16,9 @@ module.exports = class Pranked extends Card {
           if (!this.hasAbility(["Convert"])) {
             return;
           }
+          if (!this.canTargetPlayer(vote.voter)) {
+            return;
+          }
           this.data.playerVoter = vote.voter;
 
           var action = new Action({
