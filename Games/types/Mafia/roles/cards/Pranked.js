@@ -8,7 +8,10 @@ module.exports = class Pranked extends Card {
 
     this.listeners = {
       vote: function (vote) {
-        if (vote.meeting.useVotingPower == true && vote.target === this.player.id) {
+        if (
+          vote.meeting.useVotingPower == true &&
+          vote.target === this.player.id
+        ) {
           if (this.data.hasBeenVoted == true) return;
 
           this.data.hasBeenVoted = true;
