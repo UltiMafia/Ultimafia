@@ -206,7 +206,11 @@ module.exports = class MafiaPlayer extends Player {
                 this.actor.queueAlert(
                   `You Privatly Reveal to ${this.target.name}.`
                 );
-                this.actor.role.revealToPlayer(targetPlayer, null, "investigate");
+                this.actor.role.revealToPlayer(
+                  targetPlayer,
+                  null,
+                  "investigate"
+                );
               },
             });
             this.game.instantAction(action);
