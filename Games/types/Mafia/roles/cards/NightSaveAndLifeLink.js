@@ -39,6 +39,7 @@ module.exports = class NightSaveAndLifeLink extends Card {
             target: this.data.playerToKill,
             game: this.game,
             labels: ["kill"],
+            power: 2,
             run: function () {
               if (this.dominates())
                 this.target.kill("basic", this.actor, instant);
