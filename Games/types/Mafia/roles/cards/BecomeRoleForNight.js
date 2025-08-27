@@ -11,11 +11,10 @@ module.exports = class BecomeRoleForNight extends Card {
         action: {
           role: this.role,
           run: function () {
-
-            if(!this.role.canTargetPlayer(this.target)){
+            if (!this.role.canTargetPlayer(this.target)) {
               return;
             }
-            
+
             let effect = this.actor.giveEffect(
               "ExtraRoleEffect",
               this.game.formatRoleInternal(
