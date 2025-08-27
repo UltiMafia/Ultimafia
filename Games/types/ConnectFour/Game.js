@@ -91,14 +91,12 @@ module.exports = class ConnectFourGame extends Game {
     const rowNew = row;
     const colNew = col;
     if (
-      this.checkRecursive(player, rowNew, colNew, 0, "Up") == true ||
-      this.checkRecursive(player, rowNew, colNew, 0, "Down") == true ||
-      this.checkRecursive(player, rowNew, colNew, 0, null, "Left") == true ||
-      this.checkRecursive(player, rowNew, colNew, 0, null, "Right") == true ||
-      this.checkRecursive(player, rowNew, colNew, 0, "Up", "Left") == true ||
-      this.checkRecursive(player, rowNew, colNew, 0, "Up", "Right") == true ||
-      this.checkRecursive(player, rowNew, colNew, 0, "Down", "Left") == true ||
-      this.checkRecursive(player, rowNew, colNew, 0, "Down", "Right") == true
+      (this.checkRecursive(player, rowNew, colNew, 0, "Up") + this.checkRecursive(player, rowNew, colNew, 0, "Down")) >= 3 ||
+      (this.checkRecursive(player, rowNew, colNew, 0, null, "Left")+
+      this.checkRecursive(player, rowNew, colNew, 0, null, "Right")) >= 3 ||
+      (this.checkRecursive(player, rowNew, colNew, 0, "Up", "Left") + this.checkRecursive(player, rowNew, colNew, 0, "Down", "Right")) >= 3 ||
+      (this.checkRecursive(player, rowNew, colNew, 0, "Up", "Right") +
+      this.checkRecursive(player, rowNew, colNew, 0, "Down", "Left")) >= 3
     ) {
       return true;
     }
@@ -108,7 +106,12 @@ module.exports = class ConnectFourGame extends Game {
   checkRecursive(player, row, col, distance, Direction1, Direction2) {
     if (this.board[row] && this.board[row][col] == player.name) {
       if (distance == 3) {
-        return true;
+        /*
+        this.sendAlert(
+        `${Direction1} ${Direction2} Distance ${distance+1}`
+      );
+      */
+        return distance;
       } else {
         if (Direction1 == "Up") {
           row = row - 1;
@@ -130,7 +133,12 @@ module.exports = class ConnectFourGame extends Game {
         );
       }
     } else {
-      return false;
+      /*
+      this.sendAlert(
+        `${Direction1} ${Direction2} Distance ${distance-1}`
+      );
+      */
+      return distance-1;
     }
   }
 
