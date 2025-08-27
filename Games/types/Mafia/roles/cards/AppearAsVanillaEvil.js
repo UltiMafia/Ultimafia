@@ -37,7 +37,6 @@ module.exports = class AppearAsVanillaEvil extends Card {
     this.hideModifier = {
       condemn: true,
       investigate: true,
-      reveal: true,
     };
   }
 };
