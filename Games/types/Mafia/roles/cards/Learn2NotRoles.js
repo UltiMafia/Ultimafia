@@ -7,7 +7,7 @@ module.exports = class Learn2NotRoles extends Card {
     super(role);
 
     this.meetings = {
-      Sry: {
+      Scry: {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["self"] },
