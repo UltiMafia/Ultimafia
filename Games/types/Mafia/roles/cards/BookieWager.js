@@ -71,7 +71,7 @@ module.exports = class RiskyPrediction extends Card {
         }
       },
       ElectedRoomLeader: function (leader, room, HasChanged) {
-        if(!this.canDoSpecialInteractions()){
+        if (!this.canDoSpecialInteractions()) {
           return;
         }
         if (leader === this.predictedVote && this.player.alive) {
