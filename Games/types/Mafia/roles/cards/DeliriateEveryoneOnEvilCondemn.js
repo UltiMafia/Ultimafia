@@ -57,7 +57,7 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
         }
       },
       ElectedRoomLeader: function (leader, room, HasChanged) {
-        if(!this.canDoSpecialInteractions()){
+        if (!this.canDoSpecialInteractions()) {
           return;
         }
         if (
