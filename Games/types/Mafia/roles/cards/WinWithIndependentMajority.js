@@ -26,7 +26,7 @@ module.exports = class WinWithIndependentMajority extends Card {
         const ONE_NIGHT = this.game.IsBloodMoon;
 
         if (this.game.hasBeenDay == true) {
-          if (ONE_NIGHT) {
+          if (ONE_NIGHT && this.canDoSpecialInteractions()) {
             var deadTeam = this.game.deadPlayers();
             filter(
               (p) =>
