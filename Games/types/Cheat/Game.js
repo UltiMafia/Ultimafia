@@ -483,7 +483,6 @@ module.exports = class CheatGame extends Game {
       this.randomizedPlayers = this.randomizedPlayers.filter(
         (rPlayer) => rPlayer.id !== player.id
       );
-
     }
   }
 
