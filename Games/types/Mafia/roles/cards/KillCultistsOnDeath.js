@@ -72,7 +72,7 @@ module.exports = class KillCultistsOnDeath extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
-          priority: PRIORITY_CONVERT_DEFAULT+1,
+          priority: PRIORITY_CONVERT_DEFAULT + 1,
           labels: ["kill", "hidden"],
           run: function () {
             let visitors = this.getVisitors();
