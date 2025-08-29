@@ -264,4 +264,13 @@ module.exports = class MafiaRole extends Role {
     }
     return false;
   }
+
+  canDoSpecialInteractions(){
+    if(this.modifier.split("/").includes("Bland")){
+      return false;
+    }
+    return true;
+  }
+
+  
 };
