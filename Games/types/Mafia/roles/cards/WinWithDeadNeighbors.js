@@ -21,7 +21,7 @@ module.exports = class WinWithDeadNeighbors extends Card {
           winners.addPlayer(this.player, this.name);
         }
 
-        if(!this.canDoSpecialInteractions()){
+        if (!this.canDoSpecialInteractions()) {
           return;
         }
         if (
@@ -29,7 +29,7 @@ module.exports = class WinWithDeadNeighbors extends Card {
           this.game.IsBloodMoon &&
           !winners.groups[this.name] &&
           this.startingNeigbors &&
-          (this.HasKilledANeighborDuringBloodMoon)
+          this.HasKilledANeighborDuringBloodMoon
         ) {
           winners.addPlayer(this.player, this.name);
         }
@@ -52,8 +52,12 @@ module.exports = class WinWithDeadNeighbors extends Card {
           `You want these annoying neighbors gone to bring up your property value.`
         );
       },
-      death: function (player){
-         if (this.game.IsBloodMoon && this.player.alive && this.startingNeigbors.includes(player)) {
+      death: function (player) {
+        if (
+          this.game.IsBloodMoon &&
+          this.player.alive &&
+          this.startingNeigbors.includes(player)
+        ) {
           this.HasKilledANeighborDuringBloodMoon = true;
         }
       },
