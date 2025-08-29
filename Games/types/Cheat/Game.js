@@ -194,7 +194,7 @@ module.exports = class CheatGame extends Game {
     if (previousState == "Call Lie") {
       this.RoundNumber++;
       this.RankNumber++;
-      if (this.RankNumber > 13) {
+      if (this.RankNumber >= 13) {
         this.RankNumber = 1;
       }
       this.sendAlert(
@@ -484,9 +484,6 @@ module.exports = class CheatGame extends Game {
         (rPlayer) => rPlayer.id !== player.id
       );
 
-      this.sendAlert(
-        `${player.name} vegged, but their ${player.rolledDice.length} dice will still count towards this round's total.`
-      );
     }
   }
 
