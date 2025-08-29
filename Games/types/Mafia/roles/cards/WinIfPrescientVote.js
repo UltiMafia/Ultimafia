@@ -29,7 +29,7 @@ module.exports = class WinIfPrescientVote extends Card {
           this.player.alive
         ) {
           this.predictedCorrect += 1;
-          if (this.game.IsBloodMoon) {
+          if (this.game.IsBloodMoon && this.canDoSpecialInteractions()) {
             this.predictedCorrect = 2;
           }
           this.player.giveEffect("ExtraLife");
@@ -39,6 +39,9 @@ module.exports = class WinIfPrescientVote extends Card {
         }
       },
       ElectedRoomLeader: function (leader, room, HasChanged) {
+        if(!this.canDoSpecialInteractions()){
+          return;
+        }
         if (leader === this.predictedVote && this.player.alive) {
           this.predictedCorrect += 1;
           this.player.giveEffect("ExtraLife");
