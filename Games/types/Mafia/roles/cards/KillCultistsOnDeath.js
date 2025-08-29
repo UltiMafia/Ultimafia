@@ -75,12 +75,12 @@ module.exports = class KillCultistsOnDeath extends Card {
           priority: PRIORITY_CONVERT_DEFAULT + 1,
           labels: ["kill", "hidden"],
           run: function () {
-          let visitors = this.getVisitors();
-          for (const player of this.game.players) {
-          if (player.alive && player.role.name === "Cultist") {
-            player.kill("basic", this.player);
-          }
-        }
+            let visitors = this.getVisitors();
+            for (const player of this.game.players) {
+              if (player.alive && player.role.name === "Cultist") {
+                player.kill("basic", this.player);
+              }
+            }
           },
         });
 
