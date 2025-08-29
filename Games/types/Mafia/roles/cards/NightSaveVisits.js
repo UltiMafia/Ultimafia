@@ -35,7 +35,7 @@ module.exports = class NightSaveVisits extends Card {
             let visits = this.getVisits(this.actor);
             for (let v of visits) {
               if (this.dominates(v)) {
-                 this.heal(1, v);
+                this.heal(1, v);
               }
             }
           },
