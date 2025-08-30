@@ -965,7 +965,7 @@ export default function Profile() {
                       />
                       {points}
                     </Stack>
-                    {pointsNegative && (
+                    {pointsNegative !== undefined && (
                       <Stack
                         direction="row"
                         spacing={1}
