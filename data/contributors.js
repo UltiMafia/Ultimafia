@@ -475,6 +475,7 @@ const artContributors = {
       "Sidekick:vivid",
       "Skinwalker:vivid",
       "Statue:vivid",
+      "Soprano:vivid",
       //Skins
       "Hellhound:goofy",
     ],

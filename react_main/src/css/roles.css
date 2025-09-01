@@ -402,6 +402,10 @@
   background-image: url("/src/images/roles/village/witness-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Soprano {
+  background-image: url("/src/images/roles/village/soprano-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Analyst {
   background-image: url("/src/images/roles/village/analyst-vivid.png");
 }
