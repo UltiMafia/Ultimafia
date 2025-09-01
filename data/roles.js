@@ -4532,7 +4532,7 @@ const roleData = {
       description: ["Wins if both of their starting neighbors are dead."],
       SpecialInteractions: {
         "Blood Moon": [
-          "During the Blood Moon Event, Fumigator Wins if one of their neighbors is killed.",
+          "During the Blood Moon Event, Fumigator Wins if one of their starting neighbors is killed during the Blood Moon.",
         ],
       },
     },

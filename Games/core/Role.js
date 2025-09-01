@@ -14,6 +14,7 @@ module.exports = class Role {
     this.cards = [];
     this.alignment = "";
     this.passiveEffects = [];
+    this.isExtraRole;
 
     /* Card overwritable properties */
     this.winCount = null;

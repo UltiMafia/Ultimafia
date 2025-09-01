@@ -5,7 +5,7 @@ const { addArticle } = require("../../../../core/Utils");
 module.exports = class GuessRole extends Card {
   constructor(role) {
     super(role);
-
+ 
     this.meetings = {
       "Pursue Player": {
         states: ["Night"],

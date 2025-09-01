@@ -27,8 +27,8 @@ module.exports = class Opera extends Event {
           );
         }
 
-        if (this.event.modifiers.includes("Random")) {
-          this.game.players[0].giveEffect("MovieNight", true);
+        if (this.event.modifiers && this.event.modifiers.includes("Random")) {
+          Random.randArrayVal(this.game.alivePlayers()).giveEffect("MovieNight", true);
           return;
         }
 

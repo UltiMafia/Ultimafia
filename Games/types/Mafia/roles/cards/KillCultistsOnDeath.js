@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
 
 module.exports = class KillCultistsOnDeath extends Card {
