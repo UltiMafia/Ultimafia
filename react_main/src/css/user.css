@@ -181,20 +181,9 @@ iframe {
   cursor: pointer;
 }
 
-.profile .main-panel {
-  flex-grow: 1;
-
-  display: flex;
-  flex-flow: column;
-
-  background-color: var(--theme-color);
-  box-shadow: 0px 0px 1px black;
-}
-
 .profile .banner {
   aspect-ratio: 3;
   height: auto;
-  background-color: var(--theme-color-sec);
 }
 
 .profile .banner .edit {
@@ -269,15 +258,11 @@ iframe {
 
 .profile .box-panel {
   border-radius: 4px;
-  background-color: var(--theme-color);
+  background-color: var(--scheme-color-sec);
 }
 
 .profile .box-panel:last-child {
   margin-bottom: 0px;
-}
-
-.profile .box-panel .heading {
-  color: white;
 }
 
 .profile .box-panel .content {

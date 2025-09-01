@@ -46,9 +46,8 @@ export default function Fame(props) {
           ))}
         </Toolbar>
       </AppBar>
-      <Box maxWidth="1080px" sx={{ padding: theme.spacing(3) }}>
+      <Box maxWidth="1080px" sx={{ mt: 1, flexGrow: 1 }}>
         <Card
-          variant="outlined"
           sx={{ padding: theme.spacing(3), textAlign: "justify" }}
         >
           <Switch>

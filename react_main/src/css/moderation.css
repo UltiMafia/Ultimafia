@@ -1,8 +1,4 @@
 .moderation .box-panel {
   border-radius: 4px;
-  background-color: var(--theme-color);
-}
-
-.moderation .box-panel .heading {
-  color: white;
+  background-color: var(--scheme-color-background);
 }

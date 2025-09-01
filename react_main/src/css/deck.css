@@ -61,7 +61,7 @@
 }
 
 .deck .span-panel {
-  background-color: var(--theme-color);
+  background-color: var(--scheme-color-background);
 }
 .deck section {
   display: flex;

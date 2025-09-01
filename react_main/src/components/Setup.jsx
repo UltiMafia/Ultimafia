@@ -178,27 +178,35 @@ export default function Setup(props) {
       variant="outlined"
       className={"setup " + classList}
       ref={setupRef}
-      style={{ backgroundColor: backgroundColor }}
+      sx={{
+        backgroundColor: backgroundColor !== undefined ? "background.paper" : "var(--scheme-color-sec",
+      }}
     >
-      <GameIcon revealPopover={onClick} gameType={props.setup.gameType} />
-      <Divider orientation="vertical" flexItem />
-      <Box
-        sx={{
-          width: width ? `${width}px` : undefined,
-        }}
-      >
-        <Stack
-          direction="column"
+      <Stack direction="row" sx={{
+        width: "100%",
+        alignItems: "center",
+        backgroundColor: backgroundColor
+      }}>
+        <GameIcon revealPopover={onClick} gameType={props.setup.gameType} />
+        <Divider orientation="vertical" flexItem />
+        <Box
           sx={{
-            padding: "8px",
+            width: width ? `${width}px` : undefined,
           }}
         >
-          <Typography variant="body2" className="setup-name">
-            {filterProfanity(props.setup.name, user.settings)}
-          </Typography>
-          <Grid container>{displayedIcons}</Grid>
-        </Stack>
-      </Box>
+          <Stack
+            direction="column"
+            sx={{
+              padding: "8px",
+            }}
+          >
+            <Typography variant="body2" className="setup-name">
+              {filterProfanity(props.setup.name, user.settings)}
+            </Typography>
+            <Grid container>{displayedIcons}</Grid>
+          </Stack>
+        </Box>
+      </Stack>
     </Card>
   );
 }

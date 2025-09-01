@@ -4,6 +4,8 @@
 
   height: 100%;
   width: 100%;
+
+  background-image: url("/src/images/white-diamond-dark.png");
 }
 
 .game a {
@@ -142,21 +144,19 @@
 .game .meeting-tabs {
   display: flex;
   flex-flow: row nowrap;
-  background-color: var(--theme-color);
+  background-color: var(--scheme-color-background);
 }
 
 .game .tab {
   padding: 10px;
 
   z-index: 0;
-  background-color: var(--theme-color);
-  color: white;
+  background-color: var(--scheme-color-background);
   cursor: pointer;
 }
 
 .game .tab.sel {
-  /* background-color: var(--theme-color); */
-  background-color: #262626;
+  background-color: var(--scheme-color-sec);
   box-shadow: none;
   z-index: 1;
 }
@@ -432,7 +432,7 @@
   display: flex;
   flex-flow: column;
 
-  background-color: var(--theme-color);
+  background-color: var(--scheme-color-background);
 }
 
 .game .speech-display {
@@ -476,9 +476,7 @@
 }
 
 .game .speech-dropdown {
-  border-right: 1px solid #262626;
-
-  background-color: var(--theme-color-sec);
+  background-color: var(--scheme-color-sec);
   color: white;
 }
 
@@ -501,7 +499,7 @@
   padding: 5px;
   border-radius: 5px;
 
-  background-color: var(--theme-color);
+  background-color: var(--scheme-color);
   font-size: 20px;
   text-align: center;
   cursor: pointer;
@@ -536,7 +534,7 @@
   min-width: 100px;
   padding: 5px 0px;
 
-  background-color: var(--theme-color);
+  background-color: var(--scheme-color);
   color: white;
   box-shadow: 0px 0px 1px black;
 
@@ -586,14 +584,13 @@
 .game .side-menu-title {
   padding: 10px;
 
-  background-color: var(--theme-color);
-  color: white;
+  background-color: var(--scheme-color-sec);
 }
 
 .game .side-menu:first-child .side-menu-title {
   padding: 10px;
 
-  background-color: var(--theme-color);
+  background-color: var(--scheme-color-background);
 }
 
 .game .side-menu-title i {
@@ -970,28 +967,6 @@
 
   background-color: var(--scheme-color-sec);
   color: black;
-}
-
-/* Scrollbar */
-
-.game ::-webkit-scrollbar {
-  width: 10px;
-  z-index: -1;
-}
-
-.game ::-webkit-scrollbar-track {
-  background: transparent;
-  z-index: -1;
-}
-
-.game ::-webkit-scrollbar-thumb {
-  background: var(--theme-color-sec);
-  z-index: -1;
-}
-
-.game ::-webkit-scrollbar-thumb:hover {
-  background: var(--theme-color-sec);
-  z-index: -1;
 }
 
 /*

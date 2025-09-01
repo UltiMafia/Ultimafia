@@ -4,11 +4,13 @@ import React, {
   useRef,
   useEffect,
   useLayoutEffect,
+  Suspense,
 } from "react";
 import {
   Route,
   Link,
   NavLink,
+  Redirect,
   Switch,
   useHistory,
   useLocation,
@@ -31,6 +33,7 @@ import {
   Time,
 } from "./components/Basic";
 import { Nav } from "./components/Nav";
+import { Welcome } from "./pages/Welcome/Welcome";
 import Game from "./pages/Game/Game";
 import Play from "./pages/Play/Play";
 import Community from "./pages/Community/Community";
@@ -55,6 +58,7 @@ import {
   Paper,
   Typography,
   Button,
+  useMediaQuery,
 } from "@mui/material";
 import {
   darkTheme,
@@ -127,6 +131,8 @@ function Main(props) {
   });
   const popover = usePopover(siteInfo);
   const errorAlert = useErrorAlert(siteInfo);
+  const location = useLocation();
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   function onGameLeave(index) {
     axios
@@ -137,10 +143,11 @@ function Main(props) {
       .catch(errorAlert);
   }
 
-  const [theme, setTheme] = useState(darkTheme);
+  const preferredTheme = prefersDarkMode ? "dark" : "light";
+  const [theme, setTheme] = useState(prefersDarkMode ? darkTheme : lightTheme);
 
   useEffect(() => {
-    const colorScheme = user?.settings?.siteColorScheme || "dark";
+    const colorScheme = user?.settings?.siteColorScheme || preferredTheme;
     document.documentElement.classList.remove("dark-mode", "light-mode");
     document.documentElement.classList.add(`${colorScheme}-mode`);
 
@@ -259,14 +266,25 @@ function Main(props) {
     };
   }, []);
 
+  const isWelcomePage = location.pathname === "/";
+  if (user.loggedIn && isWelcomePage) {
+    return <Redirect to="/play" />;
+  }
+
   if (isLoading) {
-    return <NewLoading />;
+    return (
+      <ThemeProvider theme={theme}>
+        <NewLoading />
+      </ThemeProvider>
+    );
   }
 
   const style = isPhoneDevice ? { padding: "8px" } : { padding: "24px" };
 
   const siteContent = (
-    <div className="site-wrapper">
+    <Box className="site-wrapper" sx={{
+      backgroundColor: "background.paper"
+    }}>
       <div className="main-container" style={style}>
         <Header
           setShowAnnouncementTemporarily={
@@ -305,48 +323,58 @@ function Main(props) {
         <AlertList />
         {<Chat SiteNotifs={SiteNotifs} />}
       </div>
-    </div>
+    </Box>
   );
 
   const mainContent = (
     <UserContext.Provider value={user}>
       <SiteInfoContext.Provider value={siteInfo}>
         <PopoverContext.Provider value={popover}>
-          <ThemeProvider theme={theme}>
-            <CookieBanner />
-            <CssBaseline />
-            <Switch>
-              <Route path="/game">
-                {/* Site content will display instead of game if content is being overriden by the error boundary*/}
-                {errorContent ? siteContent : (
-                  <>
-                    <Game />
-                    <AlertList />
-                  </>
-                )}
-              </Route>
-              <Route path="/">
-                {siteContent}
-              </Route>
-            </Switch>
-            <Popover />
-          </ThemeProvider>
+          <CookieBanner />
+          <CssBaseline />
+          <Switch>
+            <Route path="/game">
+              {/* Site content will display instead of game if content is being overriden by the error boundary*/}
+              {errorContent ? siteContent : (
+                <>
+                  <Game />
+                  <AlertList />
+                </>
+              )}
+            </Route>
+            <Route path="/">
+              {siteContent}
+            </Route>
+          </Switch>
+          <Popover />
         </PopoverContext.Provider>
       </SiteInfoContext.Provider>
     </UserContext.Provider>
   );
 
   return (
-    <ErrorBoundary
-      FallbackComponent={errorContent !== undefined ? ErrorFallbackNoMain : ErrorFallback}
-      onReset={() =>
-        (window.location.href =
-          window.location.origin + window.location.pathname)
-      }
-    >
-      {mainContent}
-    </ErrorBoundary>
-  )
+    <ThemeProvider theme={theme}>
+      <CssBaseline enableColorScheme />
+      <ErrorBoundary
+        FallbackComponent={errorContent !== undefined ? ErrorFallbackNoMain : ErrorFallback}
+        onReset={() =>
+          (window.location.href =
+            window.location.origin + window.location.pathname)
+        }
+      >
+        <Switch>
+          <Route exact path="/">
+            <Welcome />
+          </Route>
+          <Route>
+            <Suspense fallback={<NewLoading />}>
+              {mainContent}
+            </Suspense>
+          </Route>
+        </Switch>
+      </ErrorBoundary>
+    </ThemeProvider>
+  );
 }
 
 function Header({ setShowAnnouncementTemporarily }) {
@@ -749,7 +777,6 @@ function Footer() {
           <span>
             Built on code provided by
             <a
-              style={{ color: "var(--theme-color-text)" }}
               href="https://github.com/r3ndd/BeyondMafia-Integration"
               rel="noopener noreferrer nofollow"
             >

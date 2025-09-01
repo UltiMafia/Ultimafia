@@ -21,7 +21,7 @@
 
   /* min-width: 190px; */
 
-  background-color: var(--theme-color);
+  background-color: var(--scheme-color);
   cursor: pointer;
 }
 
@@ -43,7 +43,7 @@
 
   width: 200px;
   border-right: 1px solid var(--scheme-color-border);
-  background-color: var(--scheme-color-sec);
+  background-color: var(--scheme-color-background);
 }
 
 .chat-wrapper .channel-type-nav {
@@ -55,13 +55,13 @@
   justify-content: center;
 
   margin-top: 10px;
-  border: 1px solid var(--theme-color-sec);
+  border: 1px solid var(--scheme-color-sec);
 }
 
 .chat-wrapper .channel-type-nav .channel-type {
   padding: 5px;
 
-  background-color: var(--theme-color);
+  background-color: var(--scheme-color);
   cursor: pointer;
 }
 
@@ -70,7 +70,7 @@
 }
 
 .chat-wrapper .channel-type-nav .channel-type.sel {
-  background-color: var(--theme-color-sec);
+  background-color: var(--scheme-color-sec);
 }
 
 .chat-wrapper .user-search {
@@ -104,10 +104,10 @@
 
   margin-bottom: 5px;
   padding: 5px 8px;
-  border: 1px solid var(--theme-color);
+  border: 1px solid var(--scheme-color);
   line-height: 18px;
 
-  background-color: var(--theme-color);
+  background-color: var(--scheme-color);
   cursor: pointer;
 }
 
@@ -116,8 +116,8 @@
 }
 
 .chat-wrapper .channel.sel {
-  background-color: var(--theme-color-sec);
-  border-color: var(--theme-color-sec);
+  background-color: var(--scheme-color-sec);
+  border-color: var(--scheme-color-sec);
 }
 
 .chat-wrapper .channel .name-with-avatar {
@@ -129,8 +129,6 @@
 
 .chat-wrapper .channel .name-with-avatar .user-name {
   max-width: 110px;
-
-  color: white !important;
 }
 
 .create-dm-btn {
@@ -156,7 +154,6 @@
   width: 0px;
 
   background-color: var(--scheme-color);
-  color: black;
 }
 
 .chat-wrapper .channel-top {
@@ -288,8 +285,7 @@
   position: absolute;
   padding: 5px 0px;
 
-  background-color: var(--theme-color);
-  color: white;
+  background-color: var(--scheme-color-background);
   visibility: hidden;
   z-index: 20;
 }
@@ -408,9 +404,9 @@
   width: 40px;
   text-align: center;
   transition: var(--hoverTransition);
-  border-left: 2px solid var(--theme-color-sec);
+  border-left: 2px solid var(--scheme-color-sec);
 }
 
 .chat-close-btn:hover {
-  background: var(--theme-color-sec);
+  background: var(--scheme-color-sec);
 }

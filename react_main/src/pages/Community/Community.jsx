@@ -46,8 +46,8 @@ export default function Community() {
           ))}
         </Toolbar>
       </AppBar>
-      <Box maxWidth="1080px" sx={{ padding: theme.spacing(3) }}>
-        <Card variant="outlined" sx={{ p: 1, textAlign: "justify" }}>
+      <Box maxWidth="1080px" sx={{ mt: 1, flexGrow: 1 }}>
+        <Card sx={{ p: 1, textAlign: "justify" }}>
           <Switch>
             <Route path="/community/forums" render={() => <Forums />} />
             <Route path="/community/users" render={() => <UserSearch />} />

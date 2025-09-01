@@ -664,6 +664,7 @@ export function RoleSearch(props) {
     ) {
       return (
         <Card
+          variant="outlined"
           className="role-cell"
           key={role.name}
           sx={{ padding: "4px", margin: "4px" }}
