@@ -778,9 +778,12 @@ function GameWrapper(props) {
     return (
       <GameContext.Provider value={gameContext}>
         <ChangeHeadPing title={pingInfo?.msg} timestamp={pingInfo?.timestamp} />
-        <Box className="game no-highlight" sx={{
-          backgroundColor: "background.paper"
-        }}>
+        <Box
+          className="game no-highlight"
+          sx={{
+            backgroundColor: "background.paper",
+          }}
+        >
           <FirstGameModal
             showModal={showFirstGameModal}
             setShowModal={setShowFirstGameModal}
@@ -971,10 +974,7 @@ export function BotBar(props) {
               Rehost
             </Button>
           )}
-          <Button
-            onClick={onLeaveGameClick}
-            startIcon={<img src={exit} />}
-          >
+          <Button onClick={onLeaveGameClick} startIcon={<img src={exit} />}>
             Leave
           </Button>
         </Stack>

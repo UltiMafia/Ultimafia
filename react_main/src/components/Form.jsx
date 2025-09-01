@@ -332,9 +332,7 @@ export default function Form(props) {
     <div className="form">
       {formFields}
       {props.submitText && (
-        <Button onClick={props.onSubmit}>
-          {props.submitText}
-        </Button>
+        <Button onClick={props.onSubmit}>{props.submitText}</Button>
       )}
     </div>
   );

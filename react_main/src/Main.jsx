@@ -97,12 +97,14 @@ function ErrorBox({ error, resetErrorBoundary }) {
 }
 
 function ErrorFallback({ error, resetErrorBoundary }) {
-  const errorBox = <ErrorBox error={error} resetErrorBoundary={resetErrorBoundary}/>;
-  return <Main errorContent={errorBox}/>;
+  const errorBox = (
+    <ErrorBox error={error} resetErrorBoundary={resetErrorBoundary} />
+  );
+  return <Main errorContent={errorBox} />;
 }
 
 function ErrorFallbackNoMain({ error, resetErrorBoundary }) {
-  return <ErrorBox error={error} resetErrorBoundary={resetErrorBoundary}/>;
+  return <ErrorBox error={error} resetErrorBoundary={resetErrorBoundary} />;
 }
 
 function Main(props) {
@@ -132,7 +134,7 @@ function Main(props) {
   const popover = usePopover(siteInfo);
   const errorAlert = useErrorAlert(siteInfo);
   const location = useLocation();
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
   function onGameLeave(index) {
     axios
@@ -282,22 +284,19 @@ function Main(props) {
   const style = isPhoneDevice ? { padding: "8px" } : { padding: "24px" };
 
   const siteContent = (
-    <Box className="site-wrapper" sx={{
-      backgroundColor: "background.paper"
-    }}>
+    <Box
+      className="site-wrapper"
+      sx={{
+        backgroundColor: "background.paper",
+      }}
+    >
       <div className="main-container" style={style}>
         <Header
-          setShowAnnouncementTemporarily={
-            setShowAnnouncementTemporarily
-          }
+          setShowAnnouncementTemporarily={setShowAnnouncementTemporarily}
         />
         <Announcement
-          showAnnouncementTemporarily={
-            showAnnouncementTemporarily
-          }
-          setShowAnnouncementTemporarily={
-            setShowAnnouncementTemporarily
-          }
+          showAnnouncementTemporarily={showAnnouncementTemporarily}
+          setShowAnnouncementTemporarily={setShowAnnouncementTemporarily}
         />
         <BadTextContrast
           colorType="username"
@@ -308,10 +307,12 @@ function Main(props) {
           color={user?.settings?.warnTextColor}
         />
         <div className="inner-container">
-          {errorContent ? errorContent : (
+          {errorContent ? (
+            errorContent
+          ) : (
             <Switch>
               <Route path="/play" render={() => <Play />} />
-              <Route path="/community" render={() => <Community />}/>
+              <Route path="/community" render={() => <Community />} />
               <Route path="/fame" render={() => <Fame />} />
               <Route path="/learn" render={() => <Learn />} />
               <Route path="/policy" render={() => <Policy />} />
@@ -335,16 +336,16 @@ function Main(props) {
           <Switch>
             <Route path="/game">
               {/* Site content will display instead of game if content is being overriden by the error boundary*/}
-              {errorContent ? siteContent : (
+              {errorContent ? (
+                siteContent
+              ) : (
                 <>
                   <Game />
                   <AlertList />
                 </>
               )}
             </Route>
-            <Route path="/">
-              {siteContent}
-            </Route>
+            <Route path="/">{siteContent}</Route>
           </Switch>
           <Popover />
         </PopoverContext.Provider>
@@ -356,7 +357,9 @@ function Main(props) {
     <ThemeProvider theme={theme}>
       <CssBaseline enableColorScheme />
       <ErrorBoundary
-        FallbackComponent={errorContent !== undefined ? ErrorFallbackNoMain : ErrorFallback}
+        FallbackComponent={
+          errorContent !== undefined ? ErrorFallbackNoMain : ErrorFallback
+        }
         onReset={() =>
           (window.location.href =
             window.location.origin + window.location.pathname)
@@ -367,9 +370,7 @@ function Main(props) {
             <Welcome />
           </Route>
           <Route>
-            <Suspense fallback={<NewLoading />}>
-              {mainContent}
-            </Suspense>
+            <Suspense fallback={<NewLoading />}>{mainContent}</Suspense>
           </Route>
         </Switch>
       </ErrorBoundary>

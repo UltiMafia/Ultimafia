@@ -115,7 +115,7 @@ const commonComponents = {
     align: "center",
     fontWeight: "bold",
   },
-}
+};
 
 export const darkTheme = createTheme({
   ...commonTheme,
@@ -125,7 +125,7 @@ export const darkTheme = createTheme({
   },
   components: {
     ...commonComponents,
-  }
+  },
 });
 
 export const lightTheme = createTheme({
@@ -137,7 +137,7 @@ export const lightTheme = createTheme({
         root: {
           variants: [
             {
-              props: { variant: 'outlined' },
+              props: { variant: "outlined" },
               style: {
                 backgroundColor: "var(--scheme-color-sec)",
               },
