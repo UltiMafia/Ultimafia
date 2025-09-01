@@ -27,11 +27,11 @@ module.exports = class Opera extends Event {
           );
         }
 
-      if(this.event.modifiers.includes("Random")){
-       this.game.players[0].giveEffect("MovieNight", true); 
-      return;
-      }
-        
+        if (this.event.modifiers.includes("Random")) {
+          this.game.players[0].giveEffect("MovieNight", true);
+          return;
+        }
+
         for (const player of this.event.generatePossibleVictims()) {
           player.holdItem("MovieTicket");
         }
