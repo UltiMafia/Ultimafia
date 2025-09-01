@@ -5487,8 +5487,13 @@ const roleData = {
         "1 player in attendance will learn the wrong number.",
       ],
       nightOrder: [
-        ["Movie Info", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10],
+        ["Opera Info", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10],
       ],
+      SpecialInteractionsModifiers: {
+        Random: [
+          "Instead of choosing to attend, 3 random players will choosen to attend at the end of the day.",
+        ],
+      },
     },
     "Cultural Exchange": {
       alignment: "Event",
