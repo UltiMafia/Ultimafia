@@ -853,6 +853,7 @@ export function ModifierSearch(props) {
     ) {
       return (
         <Card
+          variant="outlined"
           className="role-cell"
           key={role.name}
           sx={{ padding: "0px", margin: "4px" }}
