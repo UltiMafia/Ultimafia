@@ -12,27 +12,27 @@ module.exports = class MovieNight extends Effect {
     this.isRandom = isRandom;
     this.listeners = {
       state: function () {
-        if(this.isRandom){
+        if (this.isRandom) {
           if (this.game.getStateName() == "Day") {
-          var actionDay = new Action({
-          labels: ["hidden"],
-          actor: null,
-          target: null,
-          game: this.player.game,
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
-          run: function () {
-            let alive = this.game.alivePlayers();
-            if(alive.length >= 3){
-              alive = Random.randomizeArray(alive);
-              this.game.MovieWatchers = [alive[0], alive[1], alive[2]];
-              this.game.queueAlert(
-                `${this.game.MovieWatchers[0].name}, ${this.game.MovieWatchers[1].name}, and ${this.game.MovieWatchers[2].name} will be attending the Opera tonight!`
-              );
-            }
-          },
-        });
+            var actionDay = new Action({
+              labels: ["hidden"],
+              actor: null,
+              target: null,
+              game: this.player.game,
+              priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
+              run: function () {
+                let alive = this.game.alivePlayers();
+                if (alive.length >= 3) {
+                  alive = Random.randomizeArray(alive);
+                  this.game.MovieWatchers = [alive[0], alive[1], alive[2]];
+                  this.game.queueAlert(
+                    `${this.game.MovieWatchers[0].name}, ${this.game.MovieWatchers[1].name}, and ${this.game.MovieWatchers[2].name} will be attending the Opera tonight!`
+                  );
+                }
+              },
+            });
 
-          this.game.queueAction(actionDay);
+            this.game.queueAction(actionDay);
           }
         }
         if (this.game.getStateName() != "Night") return;
