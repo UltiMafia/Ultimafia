@@ -12,50 +12,18 @@
   gap: 8px;
 }
 
-.host .page-nav {
-  align-self: center;
-}
-
-.host .search-bar {
-  display: flex;
-  flex-flow: row nowrap;
-
-  border: 1px solid var(--theme-color-sec);
-}
-
-.host .search-bar input {
-  box-sizing: border-box;
-
-  width: 150px;
-  padding: 4px;
-  border: none;
-
-  background-color: var(--scheme-color);
-  color: var(--scheme-color-text);
-}
-
-.host .search-bar input::placeholder {
-  color: #b9b9b9;
-}
-
-.host .search-icon {
-  padding: 3px 5px;
-
-  background-color: var(--theme-color-sec);
-}
-
-.host .row .setup-btn {
+.host .setup-row .setup-btn {
   font-size: 24px;
 }
 
-.host .row .fav-setup {
+.host .setup-row .fav-setup {
   color: #ebd722;
 }
 
-.host .row .edit-setup {
+.host .setup-row .edit-setup {
   color: #2baf48;
 }
 
-.host .row .del-setup {
+.host .setup-row .del-setup {
   color: #e45050;
 }

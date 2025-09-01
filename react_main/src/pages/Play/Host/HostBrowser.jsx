@@ -6,11 +6,9 @@ import { UserContext } from "Contexts";
 import { PageNav, SearchBar } from "components/Nav";
 import Setup from "components/Setup";
 import HostGameDialogue from "components/HostGameDialogue";
-import { ItemList, filterProfanity } from "components/Basic";
 import { useErrorAlert } from "components/Alerts";
 
 import "css/host.css";
-import { BotBarLink } from "../Play";
 import { clamp } from "../../../lib/MathExt";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import {
@@ -244,6 +242,18 @@ export default function HostBrowser(props) {
     </Tabs>
   );
 
+  const setupRows = setups.map(setup => <SetupRow
+    setup={setup}
+    listType={filters.option}
+    onSelect={onSelectSetup}
+    onFav={onFavSetup}
+    onEdit={onEditSetup}
+    onCopy={onCopySetup}
+    onDel={onDelSetup}
+    odd={setups.indexOf(setup) % 2 === 1}
+    key={setup.id}
+  />);
+
   return (
     <>
       {isPhoneDevice && (
@@ -407,7 +417,7 @@ export default function HostBrowser(props) {
             {!isPhoneDevice && (
               <Paper
                 sx={{
-                  maxHeight: "576px",
+                  maxHeight: "580px",
                   overflowY: "scroll",
                   mr: 1,
                   p: 0.5,
@@ -433,23 +443,13 @@ export default function HostBrowser(props) {
                 </Stack>
               </Paper>
             )}
-            <ItemList
-              items={setups}
-              map={(setup) => (
-                <SetupRow
-                  setup={setup}
-                  listType={filters.option}
-                  onSelect={onSelectSetup}
-                  onFav={onFavSetup}
-                  onEdit={onEditSetup}
-                  onCopy={onCopySetup}
-                  onDel={onDelSetup}
-                  odd={setups.indexOf(setup) % 2 === 1}
-                  key={setup.id}
-                />
-              )}
-              empty="No setups"
-            />
+            <Paper sx={{
+              flexGrow: 1
+            }}>
+              <Stack direction="column" divider={<Divider orientation="horizontal" flexItem />}>
+                {setupRows}
+              </Stack>
+            </Paper>
           </Stack>
         </Box>
         <Paper
@@ -484,8 +484,10 @@ function SetupRow(props) {
     <Stack
       direction={isPhoneDevice ? "column-reverse" : "row"}
       spacing={1}
-      className={`row ${props.odd ? "odd" : ""}`}
+      className="setup-row"
       sx={{
+        p: 1,
+        alignItems: "center",
         justifyContent: "start",
         width: "100%",
       }}

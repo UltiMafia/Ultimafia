@@ -4,11 +4,13 @@ import React, {
   useRef,
   useEffect,
   useLayoutEffect,
+  Suspense,
 } from "react";
 import {
   Route,
   Link,
   NavLink,
+  Redirect,
   Switch,
   useHistory,
   useLocation,
@@ -31,6 +33,7 @@ import {
   Time,
 } from "./components/Basic";
 import { Nav } from "./components/Nav";
+import { Welcome } from "./pages/Welcome/Welcome";
 import Game from "./pages/Game/Game";
 import Play from "./pages/Play/Play";
 import Community from "./pages/Community/Community";
@@ -55,6 +58,7 @@ import {
   Paper,
   Typography,
   Button,
+  useMediaQuery,
 } from "@mui/material";
 import {
   darkTheme,
@@ -69,20 +73,16 @@ import umpride2 from "images/holiday/umpride2.png";
 import logobloody from "images/holiday/logobloody.png";
 import fadelogohat from "images/fadelogohat.png";
 
-function ErrorFallback({ error }) {
-  const { resetBoundary } = useErrorBoundary();
-
+function ErrorBox({ error, resetErrorBoundary }) {
   console.log(error);
 
   return (
     <Paper
       sx={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
+        mx: "auto",
+        my: "10%",
         p: 1,
-        width: "360px",
+        width: "320px",
       }}
     >
       <Stack direction="column" spacing={1}>
@@ -90,13 +90,24 @@ function ErrorFallback({ error }) {
         <Typography color="red" sx={{ wordBreak: "break-word" }}>
           {error.message}
         </Typography>
-        <Button onClick={resetBoundary}>Refresh</Button>
+        <Button onClick={resetErrorBoundary}>Refresh</Button>
       </Stack>
     </Paper>
   );
 }
 
-function Main() {
+function ErrorFallback({ error, resetErrorBoundary }) {
+  const errorBox = <ErrorBox error={error} resetErrorBoundary={resetErrorBoundary}/>;
+  return <Main errorContent={errorBox}/>;
+}
+
+function ErrorFallbackNoMain({ error, resetErrorBoundary }) {
+  return <ErrorBox error={error} resetErrorBoundary={resetErrorBoundary}/>;
+}
+
+function Main(props) {
+  const errorContent = props.errorContent;
+
   var cacheVal = window.localStorage.getItem("cacheVal");
   const [isLoading, setLoading] = useState(true);
   const [showAnnouncementTemporarily, setShowAnnouncementTemporarily] =
@@ -120,6 +131,8 @@ function Main() {
   });
   const popover = usePopover(siteInfo);
   const errorAlert = useErrorAlert(siteInfo);
+  const location = useLocation();
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   function onGameLeave(index) {
     axios
@@ -130,10 +143,11 @@ function Main() {
       .catch(errorAlert);
   }
 
-  const [theme, setTheme] = useState(darkTheme);
+  const preferredTheme = prefersDarkMode ? "dark" : "light";
+  const [theme, setTheme] = useState(prefersDarkMode ? darkTheme : lightTheme);
 
   useEffect(() => {
-    const colorScheme = user?.settings?.siteColorScheme || "dark";
+    const colorScheme = user?.settings?.siteColorScheme || preferredTheme;
     document.documentElement.classList.remove("dark-mode", "light-mode");
     document.documentElement.classList.add(`${colorScheme}-mode`);
 
@@ -252,82 +266,114 @@ function Main() {
     };
   }, []);
 
+  const isWelcomePage = location.pathname === "/";
+  if (user.loggedIn && isWelcomePage) {
+    return <Redirect to="/play" />;
+  }
+
   if (isLoading) {
-    return <NewLoading />;
+    return (
+      <ThemeProvider theme={theme}>
+        <NewLoading />
+      </ThemeProvider>
+    );
   }
 
   const style = isPhoneDevice ? { padding: "8px" } : { padding: "24px" };
 
-  return (
-    <ErrorBoundary
-      FallbackComponent={ErrorFallback}
-      onReset={() =>
-        (window.location.href =
-          window.location.origin + window.location.pathname)
-      }
-    >
-      <UserContext.Provider value={user}>
-        <SiteInfoContext.Provider value={siteInfo}>
-          <PopoverContext.Provider value={popover}>
-            <ThemeProvider theme={theme}>
-              <CookieBanner />
-              <CssBaseline />
-              <Switch>
-                <Route path="/game">
+  const siteContent = (
+    <Box className="site-wrapper" sx={{
+      backgroundColor: "background.paper"
+    }}>
+      <div className="main-container" style={style}>
+        <Header
+          setShowAnnouncementTemporarily={
+            setShowAnnouncementTemporarily
+          }
+        />
+        <Announcement
+          showAnnouncementTemporarily={
+            showAnnouncementTemporarily
+          }
+          setShowAnnouncementTemporarily={
+            setShowAnnouncementTemporarily
+          }
+        />
+        <BadTextContrast
+          colorType="username"
+          color={user?.settings?.warnNameColor}
+        />
+        <BadTextContrast
+          colorType="text"
+          color={user?.settings?.warnTextColor}
+        />
+        <div className="inner-container">
+          {errorContent ? errorContent : (
+            <Switch>
+              <Route path="/play" render={() => <Play />} />
+              <Route path="/community" render={() => <Community />}/>
+              <Route path="/fame" render={() => <Fame />} />
+              <Route path="/learn" render={() => <Learn />} />
+              <Route path="/policy" render={() => <Policy />} />
+              <Route path="/user" render={() => <User />} />
+            </Switch>
+          )}
+        </div>
+        <Footer />
+        <AlertList />
+        {<Chat SiteNotifs={SiteNotifs} />}
+      </div>
+    </Box>
+  );
+
+  const mainContent = (
+    <UserContext.Provider value={user}>
+      <SiteInfoContext.Provider value={siteInfo}>
+        <PopoverContext.Provider value={popover}>
+          <CookieBanner />
+          <CssBaseline />
+          <Switch>
+            <Route path="/game">
+              {/* Site content will display instead of game if content is being overriden by the error boundary*/}
+              {errorContent ? siteContent : (
+                <>
                   <Game />
                   <AlertList />
-                </Route>
-                <Route path="/">
-                  <div className="site-wrapper">
-                    <div className="main-container" style={style}>
-                      <Header
-                        setShowAnnouncementTemporarily={
-                          setShowAnnouncementTemporarily
-                        }
-                      />
-                      <Announcement
-                        showAnnouncementTemporarily={
-                          showAnnouncementTemporarily
-                        }
-                        setShowAnnouncementTemporarily={
-                          setShowAnnouncementTemporarily
-                        }
-                      />
-                      <BadTextContrast
-                        colorType="username"
-                        color={user?.settings?.warnNameColor}
-                      />
-                      <BadTextContrast
-                        colorType="text"
-                        color={user?.settings?.warnTextColor}
-                      />
+                </>
+              )}
+            </Route>
+            <Route path="/">
+              {siteContent}
+            </Route>
+          </Switch>
+          <Popover />
+        </PopoverContext.Provider>
+      </SiteInfoContext.Provider>
+    </UserContext.Provider>
+  );
 
-                      <div className="inner-container">
-                        <Switch>
-                          <Route path="/play" render={() => <Play />} />
-                          <Route
-                            path="/community"
-                            render={() => <Community />}
-                          />
-                          <Route path="/fame" render={() => <Fame />} />
-                          <Route path="/learn" render={() => <Learn />} />
-                          <Route path="/policy" render={() => <Policy />} />
-                          <Route path="/user" render={() => <User />} />
-                        </Switch>
-                      </div>
-                      <Footer />
-                      <AlertList />
-                      {<Chat SiteNotifs={SiteNotifs} />}
-                    </div>
-                  </div>
-                </Route>
-              </Switch>
-              <Popover />
-            </ThemeProvider>
-          </PopoverContext.Provider>
-        </SiteInfoContext.Provider>
-      </UserContext.Provider>
-    </ErrorBoundary>
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline enableColorScheme />
+      <ErrorBoundary
+        FallbackComponent={errorContent !== undefined ? ErrorFallbackNoMain : ErrorFallback}
+        onReset={() =>
+          (window.location.href =
+            window.location.origin + window.location.pathname)
+        }
+      >
+        <Switch>
+          <Route exact path="/">
+            <Welcome />
+          </Route>
+          <Route>
+            <Suspense fallback={<NewLoading />}>
+              {mainContent}
+            </Suspense>
+          </Route>
+        </Switch>
+      </ErrorBoundary>
+    </ThemeProvider>
   );
 }
 
@@ -731,7 +777,6 @@ function Footer() {
           <span>
             Built on code provided by
             <a
-              style={{ color: "var(--theme-color-text)" }}
               href="https://github.com/r3ndd/BeyondMafia-Integration"
               rel="noopener noreferrer nofollow"
             >

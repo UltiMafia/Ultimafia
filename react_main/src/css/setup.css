@@ -3,10 +3,7 @@
   flex-flow: row nowrap;
   align-items: center;
 
-  border-radius: 3px;
   overflow: visible;
-
-  background-color: #121212;
 }
 
 .setup .setup-name {

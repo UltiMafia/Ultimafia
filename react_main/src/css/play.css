@@ -41,11 +41,11 @@
 }
 
 .top-link:hover {
-  background: var(--theme-color-sec);
+  background: var(--scheme-color);
 }
 
 .play .top-link.active {
-  background-color: var(--theme-color-sec);
+  background-color: var(--scheme-color-sec);
 }
 
 .row {

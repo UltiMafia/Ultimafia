@@ -12,6 +12,10 @@
   user-select: none;
 }
 
+.nav .user-wrapper {
+  color: white;
+}
+
 .nav a {
   color: white;
   font-family: var(--primaryFont); /* used to be BNoir */

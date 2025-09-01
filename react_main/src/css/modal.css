@@ -38,7 +38,7 @@
 
 .modal-header,
 .modal-footer {
-  background-color: var(--theme-color-sec);
+  background-color: var(--scheme-color-sec);
 }
 
 .modal-header {
@@ -52,7 +52,7 @@
 }
 
 .modal-content {
-  background-color: var(--theme-color);
+  background-color: var(--scheme-color-background);
 }
 
 .modal a {

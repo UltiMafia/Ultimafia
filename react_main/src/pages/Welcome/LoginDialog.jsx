@@ -284,13 +284,12 @@ export const LoginDialog = ({ open, setOpen }) => {
   );
 
   return (
-    <ThemeProvider theme={dialogTheme}>
-      <CssBaseline />
+    <>
       <Dialog open={open} onClose={handleClose} maxWidth="sm">
         {!forgotPasswordOn && LoginJSX}
         {forgotPasswordOn && ForgotPasswordJSX}
       </Dialog>
       {snackbarHook.SnackbarWrapped}
-    </ThemeProvider>
+    </>
   );
 };

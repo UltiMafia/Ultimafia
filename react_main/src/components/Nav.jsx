@@ -104,7 +104,7 @@ export function PageNav(props) {
   const pageNums = pages.map((page) => {
     let extraSx = null;
     if (props.page === page) {
-      extraSx = { background: "#2B2B2B" };
+      extraSx = { background: "var(--scheme-color-sec)" };
     }
 
     return (

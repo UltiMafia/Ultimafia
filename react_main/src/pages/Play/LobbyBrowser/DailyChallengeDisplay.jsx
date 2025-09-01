@@ -60,7 +60,6 @@ export const DailyChallenges = () => {
           )}
           <Typography
             sx={{
-              color: "#FFF066",
               ml: "auto",
             }}
           >

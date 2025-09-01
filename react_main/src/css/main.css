@@ -1,7 +1,6 @@
 :root {
   --theme-color: #3b3b3b;
   --theme-color-sec: #535353;
-  --theme-color-third: #2a2640;
   --theme-color-light: #68a9dc;
   --theme-color-text: #97bde1;
   --scroll-color: #8b8b8b;
@@ -16,17 +15,10 @@
   --game-row-h: #4f525e;
 }
 
-* {
-  /*-webkit-transform: translateZ(0)*/
-  /*-webkit-transform-style: preserve-3d;*/
-  /*transform-style: preserve-3d;*/
-  /*-webkit-backface-visibility: hidden;*/
-  /*backface-visibility: hidden;*/
-}
-
 .light-mode {
   --scheme-color: #fff;
-  --scheme-color-sec: #f3f3f3;
+  --scheme-color-sec: #bddadb;
+  --scheme-color-background: #e0e0e0;
   --scheme-color-text: black;
   --scheme-color-border: #c7c7c7;
   --scheme-color-code: #e0e0e0;
@@ -36,6 +28,7 @@
 .dark-mode {
   --scheme-color: #181a1b;
   --scheme-color-sec: #1f2123;
+  --scheme-color-background: #3b3b3b;
   --scheme-color-text: #ffffff;
   --scheme-color-border: #404548;
   --scheme-color-code: #3d3d3d;
@@ -45,7 +38,8 @@
 @media (prefers-color-scheme: light) {
   html:not(.dark-mode) {
     --scheme-color: #ffffff;
-    --scheme-color-sec: #f3f3f3;
+    --scheme-color-sec: #bddadb;
+    --scheme-color-background: #f3f3f3;
     --scheme-color-text: #000000;
     --scheme-color-border: #c7c7c7;
     --scheme-color-code: #e0e0e0;
@@ -56,6 +50,7 @@
   html:not(.light-mode) {
     --scheme-color: rgb(36, 36, 36);
     --scheme-color-sec: rgb(46, 46, 50);
+    --scheme-color-background: #3b3b3b;
     --scheme-color-text: #ffffff;
     --scheme-color-border: #404548;
     --scheme-color-code: #3d3d3d;
@@ -71,8 +66,6 @@ body {
   padding: 0px;
 
   overflow-x: initial;
-  background-color: #151514;
-  background-image: url("/src/images/white-diamond-dark.png");
   /* background-size: cover;
   background-repeat: no-repeat; */
   color: white;
@@ -95,7 +88,6 @@ body {
 }
 
 a {
-  color: white;
   text-decoration: none;
   cursor: pointer;
 }
@@ -108,7 +100,8 @@ a {
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
-  /* min-height: 100%; */
+  background-image: url("/src/images/white-diamond-dark.png");
+  min-height: 100vh;
 }
 
 .main-container {
@@ -190,7 +183,7 @@ a {
 }
 
 .span-panel.main {
-  background-color: var(--theme-color);
+  background-color: var(--scheme-color-background);
 }
 
 .box-panel {
@@ -346,8 +339,7 @@ input:focus {
   padding: 5px;
   border: none;
 
-  background-color: #6c757d;
-  color: white;
+  background-color: var(--scheme-color-sec);
   outline: none;
   text-decoration: none;
   cursor: pointer;
@@ -365,15 +357,12 @@ input:focus {
 }
 
 .btn-theme {
-  background-color: var(--theme-color);
+  background-color: #AC2222;
+  color: white;
 }
 
 .btn-theme-sec {
-  background-color: var(--theme-color-sec);
-}
-
-.btn-theme-third {
-  background-color: var(--theme-color-third);
+  background-color: var(--scheme-color-sec);
 }
 
 .popover hr {
@@ -400,6 +389,7 @@ input:focus {
 
 .footer {
   text-align: center;
+  margin-top: 16px;
 }
 
 .footer-inner {
@@ -680,10 +670,6 @@ input:focus {
 
   a.glow-on-hover {
     margin: 0px;
-  }
-
-  .search-bar {
-    margin-top: 10px;
   }
 
   .setup {

@@ -5,7 +5,6 @@ import {
   Redirect,
   useParams,
   useHistory,
-  Link,
 } from "react-router-dom";
 import axios from "axios";
 
@@ -16,6 +15,7 @@ import {
   Divider,
   Grid,
   IconButton,
+  Link,
   Stack,
   Typography,
   useMediaQuery,
@@ -392,12 +392,7 @@ export function SetupPage() {
               <div className="box-panel">
                 <div className="heading">Night Order</div>
                 <div className="content">
-                  <Link
-                    to={`/learn/setup/${setupId}/nightorder`}
-                    style={{
-                      color: "#99c3ff",
-                    }}
-                  >
+                  <Link href={`/learn/setup/${setupId}/nightorder`}>
                     Click to Show
                   </Link>
                 </div>

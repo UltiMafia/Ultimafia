@@ -16,6 +16,7 @@ import {
   Select,
   TextField,
   LinearProgress,
+  Paper,
 } from "@mui/material";
 
 import { UserContext, SiteInfoContext } from "../../Contexts";
@@ -331,7 +332,9 @@ export default function Settings() {
     return <NewLoading small />;
 
   return (
-    <div className="span-panel main settings">
+    <Paper className="settings" sx={{
+      p: 1,
+    }}>
       <Accordion>
         <AccordionSummary>
           <Typography variant="h6">Accessibility</Typography>
@@ -467,7 +470,7 @@ export default function Settings() {
           </AccordionDetails>
         </Box>
       </Accordion>
-    </div>
+    </Paper>
   );
 
   function onSettingChange(action, update) {

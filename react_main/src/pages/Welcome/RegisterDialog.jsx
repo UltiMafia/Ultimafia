@@ -23,7 +23,6 @@ import {
 import { verifyRecaptcha } from "../../utils";
 import { useSnackbar } from "../../hooks/useSnackbar";
 import { YouAgree } from "./YouAgree";
-import { dialogTheme } from "../../constants/themes";
 
 export const RegisterDialog = ({ open, setOpen }) => {
   const snackbarHook = useSnackbar();
@@ -257,12 +256,11 @@ export const RegisterDialog = ({ open, setOpen }) => {
   );
 
   return (
-    <ThemeProvider theme={dialogTheme}>
-      <CssBaseline />
+    <>
       <Dialog open={open} onClose={handleClose} maxWidth="sm">
         {RegisterJSX}
       </Dialog>
       {snackbarHook.SnackbarWrapped}
-    </ThemeProvider>
+    </>
   );
 };
