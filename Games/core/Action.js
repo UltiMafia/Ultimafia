@@ -11,12 +11,11 @@ module.exports = class Action {
     this.meeting = options.meeting;
     if (options.role) {
       this.role = options.role;
-   }
-    else if(this.role != null){
+    } else if (this.role != null) {
     } else {
       this.role = this.actor?.role;
     }
-    
+
     this.run = options.run.bind(this);
     this.unboundRun = options.run;
     this.labels = options.labels || [];

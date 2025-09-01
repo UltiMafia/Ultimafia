@@ -866,8 +866,8 @@ module.exports = class Player {
     const modifiers = roleName.split(":")[1];
     roleName = roleName.split(":")[0];
 
-    if(roleData){
-     roleData = JSON.parse(JSON.stringify(roleData))
+    if (roleData) {
+      roleData = JSON.parse(JSON.stringify(roleData));
     }
 
     for (let effect of this.passiveEffects) {
