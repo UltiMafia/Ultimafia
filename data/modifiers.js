@@ -51,7 +51,8 @@ const modifierData = {
       category: "Other",
       internal: ["NightSaveVisits"],
       tags: ["Visits", "Killing"],
-      description: "When visiting, their target will be protected from night kills.",
+      description:
+        "When visiting, their target will be protected from night kills.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Bloodthirsty: {
