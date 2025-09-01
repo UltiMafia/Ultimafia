@@ -16,6 +16,13 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Excessive"],
     },
+    Bland: {
+      category: "Other",
+      internal: ["NoSpecialInteractions"],
+      tags: ["Bland"],
+      description: "Any Special Interactions this role has are disabled.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Backup: {
       category: "Other",
       internal: ["BackUpModifier"],
@@ -38,6 +45,14 @@ const modifierData = {
       internal: ["StartWithExtraLife"],
       tags: ["Extra Lives"],
       description: "Starts with an Extra Life",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Medical: {
+      category: "Other",
+      internal: ["NightSaveVisits"],
+      tags: ["Visits", "Killing"],
+      description:
+        "When visiting, their target will be protected from night kills.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Bloodthirsty: {

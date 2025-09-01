@@ -4532,7 +4532,7 @@ const roleData = {
       description: ["Wins if both of their starting neighbors are dead."],
       SpecialInteractions: {
         "Blood Moon": [
-          "During the Blood Moon Event, Fumigator Wins if one of their neighbors is killed.",
+          "During the Blood Moon Event, Fumigator Wins if one of their starting neighbors is killed during the Blood Moon.",
         ],
       },
     },
@@ -5487,8 +5487,13 @@ const roleData = {
         "1 player in attendance will learn the wrong number.",
       ],
       nightOrder: [
-        ["Movie Info", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10],
+        ["Opera Info", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10],
       ],
+      SpecialInteractionsModifiers: {
+        Random: [
+          "Instead of choosing to attend, 3 random players will choosen to attend at the end of the day.",
+        ],
+      },
     },
     "Cultural Exchange": {
       alignment: "Event",

@@ -25,7 +25,7 @@ module.exports = class CultWinsIfNoCondemn extends Card {
               p.faction != this.player.faction &&
               p.hasAbility(["Win-Con", "OnlyWhenAlive"])
           );
-        if (enemyMayors.length > 0) {
+        if (enemyMayors.length > 0 && this.canDoSpecialInteractions()) {
           return;
         }
 

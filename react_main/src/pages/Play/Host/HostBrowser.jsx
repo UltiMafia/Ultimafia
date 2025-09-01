@@ -242,17 +242,19 @@ export default function HostBrowser(props) {
     </Tabs>
   );
 
-  const setupRows = setups.map(setup => <SetupRow
-    setup={setup}
-    listType={filters.option}
-    onSelect={onSelectSetup}
-    onFav={onFavSetup}
-    onEdit={onEditSetup}
-    onCopy={onCopySetup}
-    onDel={onDelSetup}
-    odd={setups.indexOf(setup) % 2 === 1}
-    key={setup.id}
-  />);
+  const setupRows = setups.map((setup) => (
+    <SetupRow
+      setup={setup}
+      listType={filters.option}
+      onSelect={onSelectSetup}
+      onFav={onFavSetup}
+      onEdit={onEditSetup}
+      onCopy={onCopySetup}
+      onDel={onDelSetup}
+      odd={setups.indexOf(setup) % 2 === 1}
+      key={setup.id}
+    />
+  ));
 
   return (
     <>
@@ -443,10 +445,15 @@ export default function HostBrowser(props) {
                 </Stack>
               </Paper>
             )}
-            <Paper sx={{
-              flexGrow: 1
-            }}>
-              <Stack direction="column" divider={<Divider orientation="horizontal" flexItem />}>
+            <Paper
+              sx={{
+                flexGrow: 1,
+              }}
+            >
+              <Stack
+                direction="column"
+                divider={<Divider orientation="horizontal" flexItem />}
+              >
                 {setupRows}
               </Stack>
             </Paper>

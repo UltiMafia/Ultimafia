@@ -179,14 +179,20 @@ export default function Setup(props) {
       className={"setup " + classList}
       ref={setupRef}
       sx={{
-        backgroundColor: backgroundColor !== undefined ? "background.paper" : "var(--scheme-color-sec",
+        backgroundColor:
+          backgroundColor !== undefined
+            ? "background.paper"
+            : "var(--scheme-color-sec",
       }}
     >
-      <Stack direction="row" sx={{
-        width: "100%",
-        alignItems: "center",
-        backgroundColor: backgroundColor
-      }}>
+      <Stack
+        direction="row"
+        sx={{
+          width: "100%",
+          alignItems: "center",
+          backgroundColor: backgroundColor,
+        }}
+      >
         <GameIcon revealPopover={onClick} gameType={props.setup.gameType} />
         <Divider orientation="vertical" flexItem />
         <Box

@@ -9,6 +9,13 @@ module.exports = class Action {
     this.target = options.target;
     this.game = options.game;
     this.meeting = options.meeting;
+    if (options.role) {
+      this.role = options.role;
+    } else if (this.role != null) {
+    } else {
+      this.role = this.actor?.role;
+    }
+
     this.run = options.run.bind(this);
     this.unboundRun = options.run;
     this.labels = options.labels || [];
@@ -19,11 +26,6 @@ module.exports = class Action {
     this.item = options.item;
     this.event = options.event;
     this.achievement = options.achievement;
-    if (options.role) {
-      this.role = options.role;
-    } else {
-      this.role = this.actor?.role;
-    }
     this.priority += this.actor?.role?.priorityOffset ?? 0;
   }
 

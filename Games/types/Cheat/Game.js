@@ -253,7 +253,7 @@ module.exports = class CheatGame extends Game {
     } else if (cardValue == "King") {
       cardValue = 13;
     } else if (cardValue == "Ace") {
-      cardValue = 2;
+      cardValue = 1;
     }
     //}
     return [parseInt(cardValue), cardSuit];
@@ -482,10 +482,6 @@ module.exports = class CheatGame extends Game {
       );
       this.randomizedPlayers = this.randomizedPlayers.filter(
         (rPlayer) => rPlayer.id !== player.id
-      );
-
-      this.sendAlert(
-        `${player.name} vegged, but their ${player.rolledDice.length} dice will still count towards this round's total.`
       );
     }
   }

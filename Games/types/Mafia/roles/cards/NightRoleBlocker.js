@@ -20,14 +20,22 @@ module.exports = class NightRoleBlocker extends Card {
 
             if (
               this.role.name === "Hooker" &&
-              this.target.role.name === "Virgin"
+              this.target.role.name === "Virgin" &&
+              (this.role.canDoSpecialInteractions() ||
+                this.target.role.canDoSpecialInteractions())
             ) {
-              this.target.setRole("Villager");
+              this.labels = ["convert"];
+              if (this.dominates()) {
+                this.target.setRole("Villager");
+              }
+              this.labels = ["block"];
             }
 
             if (
               this.role.name === "Drunk" &&
-              this.target.role.name === "Driver"
+              this.target.role.name === "Driver" &&
+              (this.role.canDoSpecialInteractions() ||
+                this.target.role.canDoSpecialInteractions())
             ) {
               this.labels = ["kill"];
               if (this.dominates()) {

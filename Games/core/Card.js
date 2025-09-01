@@ -57,6 +57,21 @@ module.exports = class Card {
       "meetingMods",
     ];
 
+    if (this.role.isExtraRole) {
+      if (this.role.game.DumbMeetingNumber == null) {
+        this.role.game.DumbMeetingNumber = 0;
+      } else {
+        this.role.game.DumbMeetingNumber += 1;
+      }
+      let tempMeetings = Object.entries(this.meetings);
+      this.meetings = {};
+      for (let tempMeet of tempMeetings) {
+        tempMeet[1].actionName = tempMeet[0];
+        this.meetings[tempMeet[0] + " " + this.role.game.DumbMeetingNumber] =
+          tempMeet[1];
+      }
+    }
+
     for (let key of attributes) {
       if (Array.isArray(this[key])) {
         if (this.overwrites[key]) this.role[key] = this[key];

@@ -332,9 +332,12 @@ export default function Settings() {
     return <NewLoading small />;
 
   return (
-    <Paper className="settings" sx={{
-      p: 1,
-    }}>
+    <Paper
+      className="settings"
+      sx={{
+        p: 1,
+      }}
+    >
       <Accordion>
         <AccordionSummary>
           <Typography variant="h6">Accessibility</Typography>

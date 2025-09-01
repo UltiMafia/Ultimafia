@@ -1,4 +1,6 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
+const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
 
 module.exports = class KillCultistsOnDeath extends Card {
   constructor(role) {
@@ -58,6 +60,34 @@ module.exports = class KillCultistsOnDeath extends Card {
             player.kill("basic", this.player, instant);
           }
         }
+      },
+      state: function (stateInfo) {
+        if (!this.player.alive) {
+          return;
+        }
+
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+
+        var action = new Action({
+          actor: this.player,
+          game: this.player.game,
+          priority: PRIORITY_CONVERT_DEFAULT + 1,
+          labels: ["kill", "hidden"],
+          run: function () {
+            if (this.actor.alive) {
+              return;
+            }
+            for (const player of this.game.players) {
+              if (player.alive && player.role.name === "Cultist") {
+                player.kill("basic", this.actor);
+              }
+            }
+          },
+        });
+
+        this.game.queueAction(action);
       },
     };
   }

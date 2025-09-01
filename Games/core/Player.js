@@ -866,6 +866,10 @@ module.exports = class Player {
     const modifiers = roleName.split(":")[1];
     roleName = roleName.split(":")[0];
 
+    if (roleData) {
+      roleData = JSON.parse(JSON.stringify(roleData));
+    }
+
     for (let effect of this.passiveEffects) {
       effect.remove();
     }
@@ -880,6 +884,7 @@ module.exports = class Player {
     if (items == "NoStartingItems") {
       newRole.startItems = [];
     }
+    newRole.isExtraRole = true;
     newRole.init(modifiers);
     if (items == "NoStartingItems") {
       for (let item of newRole.startItems) {
@@ -893,7 +898,6 @@ module.exports = class Player {
       this.startingItems = [];
     }
 
-    newRole.isExtraRole = true;
     if (this.game.started && !noEmit) {
       this.game.events.emit("roleAssigned", this, newRole);
     }
@@ -1297,11 +1301,11 @@ module.exports = class Player {
     if (this.role) this.role.act(target, meeting, actors);
 
     if (this.ExtraRoles) {
-      let tempNames = [this.role.name];
+      let tempNames = [this.role];
       for (let extraRole of this.ExtraRoles) {
-        if (!tempNames.includes(extraRole.name)) {
+        if (!tempNames.includes(extraRole)) {
           extraRole.act(target, meeting, actors);
-          tempNames.push(extraRole.name);
+          tempNames.push(extraRole);
         }
       }
     }

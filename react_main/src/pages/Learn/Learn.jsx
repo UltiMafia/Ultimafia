@@ -57,9 +57,7 @@ export default function Learn(props) {
         </Toolbar>
       </AppBar>
       <Box maxWidth="1080px" sx={{ mt: 1, flexGrow: 1 }}>
-        <Card
-          sx={{ padding: theme.spacing(3), textAlign: "justify" }}
-        >
+        <Card sx={{ padding: theme.spacing(3), textAlign: "justify" }}>
           <Switch>
             <Route
               exact

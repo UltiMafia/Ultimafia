@@ -57,6 +57,9 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
         }
       },
       ElectedRoomLeader: function (leader, room, HasChanged) {
+        if (!this.canDoSpecialInteractions()) {
+          return;
+        }
         if (
           this.game.getRoleAlignment(
             leader.getRoleAppearance().split(" (")[0]

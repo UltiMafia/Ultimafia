@@ -97,7 +97,10 @@ module.exports = class NightBodyguard extends Card {
 
             // checks how many to kill
             let killsAllAttackers = false;
-            if (this.role.savedRole === "Celebrity") {
+            if (
+              this.role.savedRole === "Celebrity" &&
+              this.role.canDoSpecialInteractions()
+            ) {
               killsAllAttackers = true;
             }
 
