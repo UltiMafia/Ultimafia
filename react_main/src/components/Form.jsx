@@ -27,6 +27,7 @@ import {
   Box,
   Grid,
   IconButton,
+  Typography,
 } from "@mui/material";
 
 export default function Form(props) {
@@ -88,7 +89,9 @@ export default function Form(props) {
       typeof field.value == "function" ? field.value(props.deps) : field.value;
 
     const ExtraInfo = !field?.extraInfo ? null : (
-      <Box sx={{ p: 0.5, color: "#BBB" }}>{field?.extraInfo}</Box>
+      <Typography variant="caption" sx={{ p: 0.5 }}>
+        {field?.extraInfo}
+      </Typography>
     );
     switch (field.type) {
       case "text":
@@ -329,9 +332,9 @@ export default function Form(props) {
     <div className="form">
       {formFields}
       {props.submitText && (
-        <div className="btn btn-theme-sec" onClick={props.onSubmit}>
+        <Button onClick={props.onSubmit}>
           {props.submitText}
-        </div>
+        </Button>
       )}
     </div>
   );

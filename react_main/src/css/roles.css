@@ -23,8 +23,6 @@
   min-width: 150px;
   padding: 6px;
 
-  background-color: var(--scheme-color-sec);
-  color: var(--scheme-color-text);
   box-shadow: 0px 0px 1px black;
 }
 

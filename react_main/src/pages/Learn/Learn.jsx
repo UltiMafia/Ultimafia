@@ -58,7 +58,6 @@ export default function Learn(props) {
       </AppBar>
       <Box maxWidth="1080px" sx={{ mt: 1, flexGrow: 1 }}>
         <Card
-          variant="outlined"
           sx={{ padding: theme.spacing(3), textAlign: "justify" }}
         >
           <Switch>

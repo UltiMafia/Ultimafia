@@ -33,86 +33,123 @@ const CustomExpandIcon = () => {
   );
 };
 
-export const darkTheme = createTheme({
-  components: {
-    MuiAccordion: {
-      defaultProps: {
-        defaultExpanded: true,
-      },
-    },
-    MuiAccordionSummary: {
-      defaultProps: {
-        expandIcon: <CustomExpandIcon />,
-      },
-      styleOverrides: {
-        expandIconWrapper: {
-          transition: "none",
-          "&.Mui-expanded": {
-            transform: "none",
-          },
-        },
-      },
-    },
-    MuiButton: {
-      defaultProps: {
-        variant: "contained",
-        color: "primary",
-        sx: { textTransform: "none" },
-        disableRipple: true,
-      },
-    },
-    MuiLink: {
-      styleOverrides: {
-        root: {
-          color: "#D4A017",
-          opacity: 0.8,
-          "&:hover": {
-            opacity: 1,
-          },
-        },
-      },
-    },
-    MuiTextField: {
-      defaultProps: {
-        variant: "outlined",
-        size: "small",
-      },
-    },
-    MuiTable: {
-      minWidth: 650,
-      size: "small",
-    },
-    MuiTableCell: {
-      align: "center",
-      fontWeight: "bold",
-    },
-  },
+const primaryColor = isHalloween ? "#FF8C00" : "#AC2222";
+const secondaryColor = isHalloween ? "#FF8C00" : "#D42A2A";
+
+const commonTheme = {
+  cssVariables: true,
   typography: {
     fontFamily: ["RobotoSlab"].join(","),
     color: "#F1F1F1",
   },
-  palette: {
-    mode: "dark",
-    primary: {
-      main: isHalloween ? "#FF8C00" : "#AC2222",
+};
+
+const commonPalette = {
+  primary: {
+    main: primaryColor,
+  },
+  secondary: {
+    main: secondaryColor,
+  },
+  info: {
+    main: "#DAA520",
+  },
+  text: {
+    main: "#F1F1F1", // Text color remains the same
+  },
+};
+
+const commonComponents = {
+  MuiAccordion: {
+    defaultProps: {
+      defaultExpanded: true,
     },
-    secondary: {
-      main: isHalloween ? "#FF8C00" : "#D42A2A",
-    },
-    info: {
-      main: "#DAA520",
-    },
-    text: {
-      main: "#F1F1F1", // Text color remains the same
+    styleOverrides: {
+      root: {
+        backgroundColor: "var(--scheme-color-background)",
+      },
     },
   },
+  MuiAccordionSummary: {
+    defaultProps: {
+      expandIcon: <CustomExpandIcon />,
+    },
+    styleOverrides: {
+      expandIconWrapper: {
+        transition: "none",
+        "&.Mui-expanded": {
+          transform: "none",
+        },
+      },
+    },
+  },
+  MuiButton: {
+    defaultProps: {
+      variant: "contained",
+      color: "primary",
+      sx: { textTransform: "none" },
+      disableRipple: true,
+    },
+  },
+  MuiLink: {
+    styleOverrides: {
+      root: {
+        opacity: 0.8,
+        "&:hover": {
+          opacity: 1,
+        },
+      },
+    },
+  },
+  MuiTextField: {
+    defaultProps: {
+      variant: "outlined",
+      size: "small",
+    },
+  },
+  MuiTable: {
+    minWidth: 650,
+    size: "small",
+  },
+  MuiTableCell: {
+    align: "center",
+    fontWeight: "bold",
+  },
+}
+
+export const darkTheme = createTheme({
+  ...commonTheme,
+  palette: {
+    ...commonPalette,
+    mode: "dark",
+  },
+  components: {
+    ...commonComponents,
+  }
 });
 
 export const lightTheme = createTheme({
-  ...darkTheme,
+  ...commonTheme,
+  components: {
+    ...commonComponents,
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          variants: [
+            {
+              props: { variant: 'outlined' },
+              style: {
+                backgroundColor: "var(--scheme-color-sec)",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
   palette: {
-    ...darkTheme?.palette,
-    mode: "dark",
+    ...commonPalette,
+    mode: "light",
   },
 });
 

@@ -778,7 +778,9 @@ function GameWrapper(props) {
     return (
       <GameContext.Provider value={gameContext}>
         <ChangeHeadPing title={pingInfo?.msg} timestamp={pingInfo?.timestamp} />
-        <div className="game no-highlight">
+        <Box className="game no-highlight" sx={{
+          backgroundColor: "background.paper"
+        }}>
           <FirstGameModal
             showModal={showFirstGameModal}
             setShowModal={setShowFirstGameModal}
@@ -795,7 +797,7 @@ function GameWrapper(props) {
           {gameType === "Cheat" && <CheatGame />}
           {gameType === "Battlesnakes" && <BattlesnakesGame />}
           {gameType === "Connect Four" && <ConnectFourGame />}
-        </div>
+        </Box>
       </GameContext.Provider>
     );
   }
@@ -944,7 +946,7 @@ export function BotBar(props) {
           )}
           {game.review && (
             <Button
-              className="btn btn-theme-sec archive-game"
+              variant="outlined"
               onClick={onArchiveGameClick}
               startIcon={<img src={lore} />}
             >
@@ -953,29 +955,28 @@ export function BotBar(props) {
           )}
           {!isPhoneDevice && game.dev && (
             <Button
-              className="btn btn-theme-sec fill-game"
+              variant="outlined"
               onClick={onTestClick}
               startIcon={<img src={poison} />}
             >
               Fill
             </Button>
           )}
-          <Button
-            className="btn btn-theme leave-game"
-            onClick={onLeaveGameClick}
-            startIcon={<img src={exit} />}
-          >
-            Leave
-          </Button>
           {!game.review && props.history.currentState == -2 && (
             <Button
-              className="btn btn-theme-sec rehost-game"
+              variant="outlined"
               onClick={onRehostGameClick}
               startIcon={<img src={veg} />}
             >
               Rehost
             </Button>
           )}
+          <Button
+            onClick={onLeaveGameClick}
+            startIcon={<img src={exit} />}
+          >
+            Leave
+          </Button>
         </Stack>
       </div>
     </div>

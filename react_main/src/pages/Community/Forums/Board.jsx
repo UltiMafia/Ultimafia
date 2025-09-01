@@ -235,7 +235,7 @@ function CreateThreadModal(props) {
       <div className="post btn btn-theme" onClick={onPostThread}>
         Post
       </div>
-      <div className="cancel btn btn-theme-third" onClick={onCancel}>
+      <div className="cancel btn btn-theme-sec" onClick={onCancel}>
         Cancel
       </div>
     </div>

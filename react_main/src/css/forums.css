@@ -10,12 +10,7 @@
 }
 
 .forums .span-panel {
-  background-color: var(--theme-color);
-}
-
-.forums .user-name {
-  color: white;
-  filter: brightness(1) !important;
+  background-color: var(--scheme-color-background);
 }
 
 .forums .forum-nav {
@@ -44,7 +39,6 @@
 .forums .forum-nav .path a {
   font-family: var(--primaryFont);
   text-decoration: none;
-  color: white;
 }
 
 .forums .forum-category {
