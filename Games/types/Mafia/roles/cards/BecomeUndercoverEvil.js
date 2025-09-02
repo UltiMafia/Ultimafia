@@ -102,13 +102,7 @@ module.exports = class BecomeUndercoverEvil extends Card {
           return;
         }
         this.player.holdItem("IsTheMole", this.player.faction);
-        this.player.setRole(
-          this.newRole,
-          undefined,
-          false,
-          true,
-          false
-        );
+        this.player.setRole(this.newRole, undefined, false, true, false);
         let tempApp = {
           self: "Mole",
         };
