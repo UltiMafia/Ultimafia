@@ -1,11 +1,10 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { UserContext, SiteInfoContext, PopoverContext } from "../Contexts";
 import { SearchBar } from "./Nav";
 import { hyphenDelimit } from "../utils";
 import { Alignments } from "../Constants";
-import { BotBarLink } from "../pages/Play/Play";
 import {
+  Link,
   List,
   ListItem,
   ListItemIcon,
@@ -343,8 +342,6 @@ export function RoleCount(props) {
                   />
                 ))}
           </div>
-        </div>
-        <div>
           <Popover
             open={props.showPopover !== false && popoverOpen}
             sx={popoverClasses}
@@ -363,7 +360,7 @@ export function RoleCount(props) {
             <div className={"mui-popover"}>
               <div className={"mui-popover-title"}>
                 <div className={`role role-icon-${roleSkin}-${roleClass}`} />
-                &nbsp;{<Link to={`/learn/role/${roleName}`}>{roleName}</Link>}
+                &nbsp;{<Link href={`/learn/role/${roleName}`}>{roleName}</Link>}
                 &nbsp;
               </div>
               <div style={{ margin: "6px" }}>
@@ -676,7 +673,7 @@ export function RoleSearch(props) {
                 e.stopPropagation();
                 props.onAddClick(role);
               }}
-              sx={{ padding: "4px", fontSize: "16px" }}
+              sx={{ padding: "4px" }}
             ></IconButton>
           )}
           <CardContent
@@ -865,7 +862,7 @@ export function ModifierSearch(props) {
                 e.stopPropagation();
                 props.onAddClick(role.name);
               }}
-              sx={{ padding: "2px", fontSize: "16px" }}
+              sx={{ padding: "2px" }}
             ></IconButton>
           )}
           <CardContent

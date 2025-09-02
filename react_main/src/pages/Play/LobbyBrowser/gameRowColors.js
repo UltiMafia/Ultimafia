@@ -58,7 +58,7 @@ export function getSetupBackgroundColor(game, hasTransparency) {
   } else if (game.lobby === "Roleplay") {
     return `rgba(115, 92, 183, ${alpha})`;
   } else if (game.lobby === "Main") {
-    return `rgba(102, 102, 102, ${alpha})`;
+    return `rgba(211, 211, 211, ${alpha})`;
   } else {
     return undefined; // allow MUI theme to select color
   }

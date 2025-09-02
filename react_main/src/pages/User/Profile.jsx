@@ -579,13 +579,10 @@ export default function Profile() {
       </div>
     ));
 
-  const maxRolesCount = isPhoneDevice ? 6 : 8;
   const createdSetupRows = createdSetups.map((setup) => (
     <Setup
       setup={setup}
       key={setup.id}
-      maxRolesCount={maxRolesCount}
-      fixedWidth
     />
   ));
 
@@ -794,7 +791,7 @@ export default function Profile() {
                 justifyContent: "center",
               }}
             >
-              <Typography sx={{ fontStyle: "italic" }}>
+              <Typography variant="italicRelation">
                 {getLoveTitle(love.type)}
               </Typography>
               <Avatar hasImage={love.avatar} id={love.id} name={love.name} />

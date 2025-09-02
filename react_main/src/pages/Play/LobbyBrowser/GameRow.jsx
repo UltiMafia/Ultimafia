@@ -152,19 +152,7 @@ export const GameRow = (props) => {
   const showRedoButton = isPhoneDevice
     ? !props.small && props.game.status === "Finished" && user.loggedIn
     : !props.small;
-  const setupOnNewRow = isPhoneDevice || props.small;
-  const maxRolesCount = props.maxRolesCount || undefined;
   const lobbyName = props.game.lobbyName;
-
-  const SetupWrapped = (
-    <Setup
-      setup={props.game.setup}
-      maxRolesCount={props.small ? 4 : maxRolesCount}
-      fixedWidth
-      key={props.game.setup.id}
-      backgroundColor={getSetupBackgroundColor(props.game, true)}
-    />
-  );
 
   if (!props.game.setup) return <></>;
 
@@ -178,10 +166,11 @@ export const GameRow = (props) => {
       />
       <Stack
         direction="row"
+        spacing={1}
         sx={{
-          p: 0,
-          py: 0.75,
+          p: 1,
           width: "100%",
+          alignItems: "center",
           background: getRowColor(props.game, false),
           ":hover": {
             background: getRowColor(props.game, true),
@@ -189,122 +178,96 @@ export const GameRow = (props) => {
         }}
         key={props.game.id}
       >
-        <Box
-          sx={{
-            display: "flex",
-            flexWrap: "nowrap",
-            alignItems: "center",
-            width: "100%",
-            zIndex: 1,
-          }}
-        >
-          <GameStatus
-            small={props?.small}
-            game={props.game}
-            status={props.status}
-            showGameTypeIcon={showGameTypeIcon}
-          />
-          <Stack
-            direction="column"
-            sx={{
-              marginLeft: "auto",
-            }}
-          >
-            {showLobbyName && (
+        <GameStatus
+          small={props?.small}
+          game={props.game}
+          status={props.status}
+          showGameTypeIcon={showGameTypeIcon}
+        />
+        <Stack direction="column" sx={{
+          minWidth: 0,
+          flex: "1 1",
+        }}>
+          {showLobbyName && (
+            <Stack direction="row" sx={{
+              alignItems: "center",
+            }}>
+              {/* game option indicators go HERE */}
               <Stack
+                direction="row"
+                spacing={0.5}
                 sx={{
-                  flexFlow: "row nowrap",
                   alignItems: "center",
-                  /* sorry for manually sizing things. it will happen again. */
-                  maxWidth: isPhoneDevice ? "204px" : "354px",
-                  zIndex: 1,
                 }}
               >
-                {/* game option indicators go HERE */}
-                <Stack
-                  direction="row"
-                  spacing={0.5}
-                  sx={{
-                    alignItems: "center",
-                  }}
-                >
-                  {props.game.ranked && (
-                    <i
-                      className="fas fa-heart"
-                      fontSize="16px"
-                      title="ranked"
-                      style={{
-                        color: "rgb(226, 59, 59)",
-                      }}
-                    />
-                  )}
-                  {props.game.anonymousGame && (
-                    <i
-                      className="fas fa-theater-masks"
-                      fontSize="16px"
-                      title="Anonymous game"
-                    />
-                  )}
-                </Stack>
-                <Box
-                  sx={{
-                    ml: 0.5,
-                    flexShrink: "1",
-                    overflowX: "hidden",
-                  }}
-                >
-                  <Typography
-                    noWrap
-                    variant="caption"
+                {props.game.ranked && (
+                  <i
+                    className="fas fa-heart"
+                    title="ranked"
                     style={{
-                      wordBreak: "break-word",
+                      fontSize: "1rem",
+                      color: "rgb(226, 59, 59)",
                     }}
-                  >
-                    {filterProfanity(lobbyName, user.settings)}
-                  </Typography>
-                </Box>
-                {showRedoButton && (
-                  <Box
+                  />
+                )}
+                {props.game.anonymousGame && (
+                  <i
+                    className="fas fa-theater-masks"
+                    title="Anonymous game"
                     style={{
-                      marginLeft: "auto",
-                      width: "32px",
-                      textAlign: "center",
+                      fontSize: "1rem",
                     }}
-                  >
-                    {props.game.status === "Finished" && user.loggedIn && (
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => setIshostGameDialogueOpen(true)}
-                      >
-                        <i
-                          className="rehost fas fa-redo"
-                          style={{ fontSize: "16px" }}
-                          title="Rehost"
-                        />
-                      </IconButton>
-                    )}
-                  </Box>
+                  />
                 )}
               </Stack>
-            )}
-            <Box
-              sx={{
-                display: "flex",
-                marginLeft: "auto",
-                alignItems: "center",
-                //...(!isPhoneDevice ? { whiteSpace: "nowrap" } : {}),
-                mr: 0.5,
-                zIndex: 1,
-              }}
-            >
-              {!setupOnNewRow && SetupWrapped}
-              <Box sx={{ marginX: "auto" }}>
-                {setupOnNewRow && SetupWrapped}
+              <Box
+                sx={{
+                  ml: 0.5,
+                  flexShrink: "1",
+                  overflowX: "hidden",
+                }}
+              >
+                <Typography
+                  noWrap
+                  variant="caption"
+                  style={{
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {filterProfanity(lobbyName, user.settings)}
+                </Typography>
               </Box>
-            </Box>
-          </Stack>
-        </Box>
+              {showRedoButton && (
+                <Box
+                  style={{
+                    marginLeft: "auto",
+                    width: "2rem",
+                    textAlign: "center",
+                  }}
+                >
+                  {props.game.status === "Finished" && user.loggedIn && (
+                    <IconButton
+                      size="small"
+                      color="primary"
+                      onClick={() => setIshostGameDialogueOpen(true)}
+                    >
+                      <i
+                        className="rehost fas fa-redo"
+                        style={{ fontSize: "1rem" }}
+                        title="Rehost"
+                      />
+                    </IconButton>
+                  )}
+                </Box>
+              )}
+            </Stack>
+          )}
+          <Setup
+            setup={props.game.setup}
+            key={props.game.setup.id}
+            backgroundColor={getSetupBackgroundColor(props.game, true)}
+          />
+        </Stack>
       </Stack>
     </div>
   );

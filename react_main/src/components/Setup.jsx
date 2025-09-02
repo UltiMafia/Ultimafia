@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useLayoutEffect, useRef, useState } from "react";
 
 import { PopoverContext, UserContext, SiteInfoContext } from "Contexts";
 import { Alignments } from "Constants";
@@ -12,6 +12,7 @@ import {
   Card,
   Divider,
   Grid,
+  IconButton,
   Stack,
   Typography,
   useMediaQuery,
@@ -21,38 +22,57 @@ import { useTheme } from "@mui/styles";
 import "css/setup.css";
 import "css/roles.css";
 
-const ICON_WIDTH = 30;
-const ICON_LIST_PADDING = 8;
-
 export default function Setup(props) {
   const user = useContext(UserContext);
   const popover = useContext(PopoverContext);
   const setupRef = useRef();
+  const iconContainerRef = useRef();
+  const [maxIconsPerRow, setMaxIconsPerRow] = useState(null);
   const [setupIndex, setSetupIndex] = useState(0);
+
+  // Allow overflow to vertically stack if the row width is only 2 or less
+  const wrapIcons = maxIconsPerRow && maxIconsPerRow <= 2;
+  // If wrapIcons is true, limit the icons to three rows
+  const maxIconsTotal = maxIconsPerRow === null ? null : wrapIcons ? maxIconsPerRow * 3 : maxIconsPerRow;
 
   if (typeof props.setup.roles == "string")
     props.setup.roles = JSON.parse(props.setup.roles);
 
   const backgroundColor = props.backgroundColor || undefined;
-  const maxRolesCount = props.maxRolesCount || 50;
   const classList = props.classList || "";
   const disablePopover = props.disablePopover;
   const small = props.small ?? true;
-  const fixedWidth = props.fixedWidth || false; // Should the component always be the same size for the same maxRolesCount?
   const useRoleGroups = props.setup.useRoleGroups;
   const multi =
     (!props.setup.closed || useRoleGroups) &&
     !useRoleGroups &&
     props.setup.roles.length > 1;
 
-  // Calculate the width if fixedWidth is set. This must be adjusted every time that the layout is adjusted.
-  var width = null;
-  if (fixedWidth) {
-    // Two instances of padding
-    // maxRolesCount instances of role icons
-    // one instance of ellipses icon plus 5px of its margin
-    width = ICON_LIST_PADDING * 2 + ICON_WIDTH * maxRolesCount + 5;
-  }
+  // Prevent overflow
+  useLayoutEffect(() => {
+    if (!iconContainerRef.current.lastChild) {
+      return;
+    }
+
+    const rContainer = iconContainerRef.current.getBoundingClientRect();
+    const rLastChild = iconContainerRef.current.lastChild.getBoundingClientRect();
+
+    const containerRightOffset = rContainer.x + rContainer.width;
+    const lastChildRightOffset = rLastChild.x + rLastChild.width;
+
+    if (lastChildRightOffset > containerRightOffset) {
+      // If true, then component is overflowing. Determine the last child that fits and prune the rest.
+      var numFittingIcons = 0;
+      for (let child of iconContainerRef.current.children) {
+        const rChild = child.getBoundingClientRect();
+        const childRightOffset = rChild.x + rChild.width;
+        if (childRightOffset <= containerRightOffset) {
+          numFittingIcons++;
+        }
+      }
+      setMaxIconsPerRow(numFittingIcons);
+    }
+  }, [iconContainerRef]);
 
   var roleCounts = [];
   var overSize = false;
@@ -72,7 +92,7 @@ export default function Setup(props) {
     }
   } else if (useRoleGroups) {
     for (let roleGroup in props.setup.roles) {
-      if (roleCounts.length >= maxRolesCount) {
+      if (maxIconsTotal !== null && (roleCounts.length >= maxIconsTotal)) {
         overSize = true;
         break;
       }
@@ -132,24 +152,27 @@ export default function Setup(props) {
 
   if (multi) {
     roleCounts.unshift(
-      <i onClick={cycleSetups} className="fas fa-list-alt" key="multi" />
+      <i onClick={cycleSetups} className="fas fa-list-alt" key="multi" style={{
+        fontSize: "1.5rem",
+        cursor: "pointer",
+      }}/>
     );
   }
 
-  if (roleCounts.length > maxRolesCount) {
-    roleCounts = roleCounts.slice(0, maxRolesCount);
+  if (maxIconsTotal !== null && (roleCounts.length > maxIconsTotal)) {
     overSize = true;
+    roleCounts = roleCounts.slice(0, maxIconsTotal);
   }
 
   if (overSize) {
-    roleCounts[maxRolesCount - 1] = (
+    roleCounts[maxIconsTotal - 1] = (
       <i
         onClick={onClick}
         gameType={props.setup.gameType}
         className="fas fa-ellipsis-h"
         style={{
-          alignSelf: "flex-end",
-          marginLeft: "5px",
+          fontSize: "1.5rem",
+          marginLeft: "4px",
           cursor: "pointer",
         }}
         key="ellipses"
@@ -157,32 +180,17 @@ export default function Setup(props) {
     );
   }
 
-  const displayedIcons = roleCounts.map((item) => {
-    return (
-      <Grid
-        size={1}
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="30px"
-        width="30px"
-        key={`grid-${item.key}`}
-      >
-        {item}
-      </Grid>
-    );
-  });
-
   return (
     <Card
       variant="outlined"
       className={"setup " + classList}
       ref={setupRef}
       sx={{
+        width: "100%",
         backgroundColor:
           backgroundColor !== undefined
             ? "background.paper"
-            : "var(--scheme-color-sec",
+            : "var(--scheme-color-sec)",
       }}
     >
       <Stack
@@ -195,23 +203,23 @@ export default function Setup(props) {
       >
         <GameIcon revealPopover={onClick} gameType={props.setup.gameType} />
         <Divider orientation="vertical" flexItem />
-        <Box
-          sx={{
-            width: width ? `${width}px` : undefined,
-          }}
-        >
-          <Stack
-            direction="column"
-            sx={{
-              padding: "8px",
-            }}
-          >
-            <Typography variant="body2" className="setup-name">
-              {filterProfanity(props.setup.name, user.settings)}
-            </Typography>
-            <Grid container>{displayedIcons}</Grid>
+        <Stack direction="column" sx={{
+          p: 1,
+          flex: "1 1",
+          alignItems: "stretch",
+          overflowX: "hidden"
+        }}>
+          <Typography variant="body2" className="setup-name">
+            {filterProfanity(props.setup.name, user.settings)}
+          </Typography>
+          <Stack direction="row" ref={iconContainerRef} sx={{
+            minWidth: "0",
+            alignItems: "center",
+            flexWrap: wrapIcons ? "wrap" : "nowrap",
+          }}>
+            {roleCounts}
           </Stack>
-        </Box>
+        </Stack>
       </Stack>
     </Card>
   );
@@ -447,8 +455,8 @@ export function FullRoleList({ setup }) {
         {sectionName && (
           <Typography
             sx={{
-              width: "54px",
-              fontSize: "24px",
+              width: "3.5rem",
+              fontSize: "1.5rem",
               fontWeight: "600",
               textAlign: "center",
             }}
@@ -523,4 +531,53 @@ export function GameStateIcon(props) {
   else if (props.state === "Night") iconName = "moon";
 
   return <i className={`fa-${iconName} fas state-icon`} />;
+}
+
+export function SetupManipulationButtons(props) {
+  const user = useContext(UserContext);
+
+  const isOwner = props.setup.creator?.id === user.id;
+  const favIconFormat = props.setup.favorite ? "fas" : "far";
+
+  const missingOwnershipStyle = {
+    opacity: !isOwner ? "20%" : undefined,
+    cursor: !isOwner ? "not-allowed" : undefined,
+  };
+
+  return (
+    <Grid container sx={{ width: "8rem" }}>
+      <Grid item xs={3}>
+        <IconButton aria-label="favorite">
+          <i
+            className={`setup-btn fav-setup fa-star ${favIconFormat}`}
+            onClick={() => props.onFav(props.setup)}
+          />
+        </IconButton>
+      </Grid>
+      <Grid item xs={3}>
+        <IconButton aria-label="edit" disabled={!isOwner} sx={missingOwnershipStyle}>
+          <i
+            className={`setup-btn edit-setup fa-pen-square fas`}
+            onClick={() => props.onEdit(props.setup)}
+          />
+        </IconButton>
+      </Grid>
+      <Grid item xs={3}>
+        <IconButton aria-label="copy">
+          <i
+            className={`setup-btn copy-setup fa-copy fas`}
+            onClick={() => props.onCopy(props.setup)}
+          />
+        </IconButton>
+      </Grid>
+      <Grid item xs={3}>
+        <IconButton aria-label="delete" disabled={!isOwner} sx={missingOwnershipStyle}>
+          <i
+            className={`setup-btn del-setup fa-times-circle fas`}
+            onClick={() => props.onDel(props.setup)}
+          />
+        </IconButton>
+      </Grid>
+    </Grid>
+  );
 }

@@ -67,7 +67,7 @@
 }
 
 .game .state-name {
-  width: 100px;
+  min-width: 100px;
 
   text-align: center;
   font-weight: 600;
