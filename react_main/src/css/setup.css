@@ -24,7 +24,8 @@
 }
 
 .setup .fa-question {
-  font-size: 30px !important;
+  max-height: 1.9375rem;
+  font-size: 1.9375rem !important;
   margin-right: 5px;
   text-shadow: 0 0.04rem 0rem black;
 }
@@ -89,8 +90,10 @@
 .game-icon {
   flex-shrink: 0;
 
-  width: 30px;
-  height: 30px;
+  width: 1.875rem;
+  height: 1.875rem;
+
+  background-size: 100%;
 }
 
 .game-icon.Mafia {

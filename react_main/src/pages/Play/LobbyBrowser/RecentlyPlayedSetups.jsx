@@ -65,7 +65,7 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
           alignItems: "center",
         }}
       >
-        <Setup setup={setup.setupDetails} maxRolesCount={6} fixedWidth />
+        <Setup setup={setup.setupDetails}/>
         {showRedoButton && (
           <Box style={{ mx: 1, width: "32px", textAlign: "center" }}>
             {user.loggedIn && (

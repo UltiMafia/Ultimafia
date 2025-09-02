@@ -137,8 +137,6 @@ export default function HostGameDialogue({ open, setOpen, setup }) {
             </Stack>
             <Setup
               setup={setup}
-              maxRolesCount={6}
-              fixedWidth
               backgroundColor={getSetupBackgroundColor(
                 {
                   lobby: lobby,

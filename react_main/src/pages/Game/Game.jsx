@@ -928,8 +928,6 @@ export function BotBar(props) {
         {game.setup && (
           <Setup
             setup={game.setup}
-            maxRolesCount={isPhoneDevice ? 5 : 10}
-            fixedWidth
             backgroundColor={getSetupBackgroundColor(game.options, false)}
           />
         )}
@@ -956,7 +954,7 @@ export function BotBar(props) {
               Archive
             </Button>
           )}
-          {!isPhoneDevice && game.dev && (
+          {!isPhoneDevice && game.dev && props.history.currentState == -1 && (
             <Button
               variant="outlined"
               onClick={onTestClick}

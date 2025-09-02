@@ -498,8 +498,7 @@ export default function Rules() {
                   >
                     <TableCell
                       style={{
-                        backgroundColor: theme.palette.primary.background,
-                        color: theme.palette.text.main,
+                        backgroundColor: "var(--scheme-color-sec)",
                       }}
                       component="th"
                       scope="row"

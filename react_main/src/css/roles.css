@@ -20,7 +20,7 @@
   align-items: center;
 
   margin: 10px 10px 0px 0px;
-  min-width: 150px;
+  min-width: 10rem;
   padding: 6px;
 
   box-shadow: 0px 0px 1px black;
@@ -42,7 +42,7 @@
 
 .role-cell .role-banner {
   align-self: flex-end;
-  font-size: 12px;
+  font-size: 1rem;
   border-radius: 5px;
   padding: 0px 3px;
 }
@@ -74,16 +74,18 @@
 }
 
 .item {
-  width: 16px;
-  height: 16px;
+  width: 1rem;
+  height: 1rem;
 
+  background-size: 100% 100%;
   background-image: url("/src/images/items.png");
 }
 
 .modifier {
-  width: 16px;
-  height: 16px;
+  width: 1rem;
+  height: 1rem;
 
+  background-size: 100% 100%;
   background-image: url("/src/images/modifiers/unknown-modifier.png");
 }
 
@@ -92,7 +94,7 @@
   flex-flow: row nowrap;
 
   color: var(--scheme-color-text);
-  height: 32px;
+  height: 2rem;
 }
 
 .role-group-placeholder {
@@ -110,9 +112,10 @@
 .role {
   position: relative;
 
-  width: 30px;
-  height: 30px;
+  width: 1.875rem;
+  height: 1.875rem;
   border-radius: 3px;
+  background-size: 100% 100%;
   background-image: url("/src/images/roles/01-default-tall.png");
 }
 
@@ -121,8 +124,8 @@
 }
 
 .role.small {
-  width: 30px;
-  height: 30px;
+  width: 1.875rem;
+  height: 1.875rem;
 }
 
 .role.large {
@@ -189,7 +192,7 @@
 
 .digits-wrapper {
   position: absolute;
-  top: 18px;
+  top: 1.125rem;
   width: auto;
   z-index: 1;
 }
@@ -203,8 +206,9 @@
 
 .digit {
   float: left;
-  width: 9px;
-  height: 12px;
+  width: .50625rem;
+  height: .75rem;
+  background-size: 100% 100%;
 }
 
 .digit.digit-0 {

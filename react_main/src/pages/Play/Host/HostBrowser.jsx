@@ -4,7 +4,7 @@ import axios from "axios";
 
 import { UserContext } from "Contexts";
 import { PageNav, SearchBar } from "components/Nav";
-import Setup from "components/Setup";
+import Setup, { SetupManipulationButtons } from "components/Setup";
 import HostGameDialogue from "components/HostGameDialogue";
 import { useErrorAlert } from "components/Alerts";
 
@@ -26,6 +26,7 @@ import {
   Tabs,
   SwipeableDrawer,
   useTheme,
+  Grid,
 } from "@mui/material";
 
 import GameIcon from "components/GameIcon";
@@ -328,66 +329,39 @@ export default function HostBrowser(props) {
           alignItems: "center",
         }}
       >
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{
-            justifyContent: "space-around",
-            mt: 1,
-            fontFamily: "var(--primaryFont)",
-            fontWeight: "bold",
-          }}
-        >
-          <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1}>
-            <Stack direction="row" spacing={1}>
-              <Paper>
-                <div className="range-wrapper-slots">
-                  <i className="fas fa-filter" />
-                  Min slots
-                  <input
-                    type="number"
-                    min={minSlots}
-                    max={Math.min(filters.maxSlots, maxSlots)}
-                    step={1}
-                    value={filters.minSlots}
-                    onChange={onMinSlotsChange}
-                  />
-                  {!isPhoneDevice && (
-                    <input
-                      type="range"
-                      min={minSlots}
-                      max={Math.min(filters.maxSlots, maxSlots)}
-                      step={1}
-                      value={filters.minSlots}
-                      onChange={onMinSlotsChange}
-                    />
-                  )}
-                </div>
-              </Paper>
-              <Paper>
-                <div className="range-wrapper-slots">
-                  Max slots
-                  <input
-                    type="number"
-                    min={Math.max(filters.minSlots, minSlots)}
-                    max={maxSlots}
-                    step={1}
-                    value={filters.maxSlots}
-                    onChange={onMaxSlotsChange}
-                  />
-                  {!isPhoneDevice && (
-                    <input
-                      type="range"
-                      min={Math.max(filters.minSlots, minSlots)}
-                      max={maxSlots}
-                      step={1}
-                      value={filters.maxSlots}
-                      onChange={onMaxSlotsChange}
-                    />
-                  )}
-                </div>
-              </Paper>
-            </Stack>
+        <Grid container spacing={1} sx={{ my: 1 }}>
+          <Grid item xs={6} md={4}>
+            <Paper sx={{ height: "100%" }}>
+              <div className="range-wrapper-slots">
+                <i className="fas fa-filter" />
+                Min slots
+                <input
+                  type="number"
+                  min={minSlots}
+                  max={Math.min(filters.maxSlots, maxSlots)}
+                  step={1}
+                  value={filters.minSlots}
+                  onChange={onMinSlotsChange}
+                />
+              </div>
+            </Paper>
+          </Grid>
+          <Grid item xs={6} md={4}>
+            <Paper sx={{ height: "100%" }}>
+              <div className="range-wrapper-slots">
+                Max slots
+                <input
+                  type="number"
+                  min={Math.max(filters.minSlots, minSlots)}
+                  max={maxSlots}
+                  step={1}
+                  value={filters.maxSlots}
+                  onChange={onMaxSlotsChange}
+                />
+              </div>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={4}>
             <Paper>
               <SearchBar
                 value={filters.query}
@@ -395,8 +369,8 @@ export default function HostBrowser(props) {
                 onInput={onSearchInput}
               />
             </Paper>
-          </Stack>
-        </Stack>
+          </Grid>
+        </Grid>
         <Box
           sx={{
             alignSelf: "normal",
@@ -419,7 +393,8 @@ export default function HostBrowser(props) {
             {!isPhoneDevice && (
               <Paper
                 sx={{
-                  maxHeight: "580px",
+                  flex: "0 0 20%",
+                  maxHeight: "28rem",
                   overflowY: "scroll",
                   mr: 1,
                   p: 0.5,
@@ -447,7 +422,8 @@ export default function HostBrowser(props) {
             )}
             <Paper
               sx={{
-                flexGrow: 1,
+                minWidth: 0,
+                flex: "1 1",
               }}
             >
               <Stack
@@ -485,7 +461,6 @@ function SetupRow(props) {
   const isPhoneDevice = useIsPhoneDevice();
 
   const favIconFormat = props.setup.favorite ? "fas" : "far";
-  const maxRolesCount = isPhoneDevice ? 8 : 12;
 
   return (
     <Stack
@@ -502,16 +477,17 @@ function SetupRow(props) {
       {!isPhoneDevice && user.loggedIn && (
         <Button onClick={() => props.onSelect(props.setup)}>Host</Button>
       )}
-      <Box
-        sx={{
-          alignSelf: "stretch",
-        }}
-      >
-        <Setup setup={props.setup} maxRolesCount={maxRolesCount} fixedWidth />
+      <Box sx={{
+        minWidth: 0,
+        width: "100%",
+        flex: "1 1",
+      }}>
+        <Setup setup={props.setup}/>
       </Box>
       <Stack
         direction="row"
         sx={{
+          alignItems: "center",
           alignSelf: "stretch",
           ml: isPhoneDevice ? undefined : "auto !important",
         }}
@@ -520,43 +496,15 @@ function SetupRow(props) {
           <Button onClick={() => props.onSelect(props.setup)}>Host</Button>
         )}
         {user.loggedIn && (
-          <Stack
-            direction="row"
-            sx={{
-              // Setup manipulation buttons
-              alignItems: "center",
-              ml: "auto !important",
-            }}
-          >
-            <IconButton aria-label="favorite">
-              <i
-                className={`setup-btn fav-setup fa-star ${favIconFormat}`}
-                onClick={() => props.onFav(props.setup)}
-              />
-            </IconButton>
-            {props.setup.creator?.id === user.id && (
-              <IconButton aria-label="edit">
-                <i
-                  className={`setup-btn edit-setup fa-pen-square fas`}
-                  onClick={() => props.onEdit(props.setup)}
-                />
-              </IconButton>
-            )}
-            <IconButton aria-label="copy">
-              <i
-                className={`setup-btn copy-setup fa-copy fas`}
-                onClick={() => props.onCopy(props.setup)}
-              />
-            </IconButton>
-            {props.setup.creator?.id === user.id && (
-              <IconButton aria-label="delete">
-                <i
-                  className={`setup-btn del-setup fa-times-circle fas`}
-                  onClick={() => props.onDel(props.setup)}
-                />
-              </IconButton>
-            )}
-          </Stack>
+          <Box sx={{ ml: "auto" }}>
+            <SetupManipulationButtons
+              setup={props.setup}
+              onFav={props.onFav}
+              onEdit={props.onEdit}
+              onCopy={props.onCopy}
+              onDel={props.onDel}
+            />
+          </Box>
         )}
       </Stack>
     </Stack>
