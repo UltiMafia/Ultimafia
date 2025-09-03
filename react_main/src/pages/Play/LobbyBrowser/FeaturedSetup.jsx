@@ -52,7 +52,7 @@ export const FeaturedSetup = ({ lobby, glowingHostButton }) => {
           >
             Play Setup
           </Button>
-          <Setup setup={featuredSetup}/>
+          <Setup setup={featuredSetup} />
         </Stack>
       </Paper>
     </>
