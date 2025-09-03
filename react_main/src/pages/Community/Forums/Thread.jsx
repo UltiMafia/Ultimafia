@@ -460,7 +460,7 @@ function Post(props) {
               >
                 Save
               </div>
-              <div className="btn btn-theme-third" onClick={onEditCancel}>
+              <div className="btn btn-theme-sec" onClick={onEditCancel}>
                 Cancel
               </div>
             </div>

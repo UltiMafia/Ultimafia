@@ -355,10 +355,9 @@ export function SetupPage() {
                 }}
               >
                 <Typography
+                  variant="italicRelation"
                   sx={{
                     ml: isSmallScreen ? "auto" : 1,
-                    fontSize: "18px",
-                    fontStyle: "italic",
                   }}
                 >
                   {"Created by"}

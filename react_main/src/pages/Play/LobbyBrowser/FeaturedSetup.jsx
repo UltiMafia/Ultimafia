@@ -46,13 +46,13 @@ export const FeaturedSetup = ({ lobby, glowingHostButton }) => {
         <Stack direction="row" spacing={0.5} sx={{ p: 0.5 }}>
           <Button
             color="primary"
-            sx={{ maxWidth: "30px" }}
+            sx={{ maxWidth: "4em" }}
             className={isButtonGlowing ? "glow-slightly" : ""}
             onClick={() => setIshostGameDialogueOpen(true)}
           >
             Play Setup
           </Button>
-          <Setup setup={featuredSetup} maxRolesCount={6} fixedWidth />
+          <Setup setup={featuredSetup}/>
         </Stack>
       </Paper>
     </>
