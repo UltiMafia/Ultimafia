@@ -14,17 +14,19 @@ module.exports = class EvilsWinIfHalfSenators extends Card {
         //let aliveSenators = this.game.alivePlayers().filter((p) => p.role.name == "Senator");
         var hasSenators = false;
         var senatorCount = 0;
+        var senAliveCount = 0;
         if (!this.player.hasEffect("SenatorEffect")) {
           return;
         }
         for (let p of this.game.players) {
           if (p.hasEffect("SenatorEffect")) {
             hasSenators = true;
-            senatorCount += p.alive ? 1 : -1;
+            senatorCount++;
+            senAliveCount += p.alive ? 1 : 0;
           }
         }
 
-        if (hasSenators && senatorCount <= 0) {
+        if (hasSenators && senAliveCount < Math.ceil((senatorCount*0.5)+0.01)) {
           for (let player of this.game.players) {
             if (EVIL_FACTIONS.includes(player.faction)) {
               winners.addPlayer(player, player.faction);
