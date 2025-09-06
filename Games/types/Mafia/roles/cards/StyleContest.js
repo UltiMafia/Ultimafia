@@ -1,59 +1,47 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 
 module.exports = class StyleContest extends Card {
   constructor(role) {
     super(role);
 
-    this.winCheckSpecial = {
-      priority: PRIORITY_WIN_CHECK_DEFAULT,
-      againOnFinished: true,
-      check: function (counts, winners, aliveCount, confirmedFinished) {
-        if (!this.hasAbility(["Win-Con", "WhenDead"])) {
-          return;
-        }
-        let stylePlayers = [];
-        let highScore = 1;
-        for (let player of this.game.players) {
-          if (player.data.StylePoints == highScore) {
-            stylePlayers.push(player);
-          } else if (player.data.StylePoints > highScore) {
-            stylePlayers = [];
-            stylePlayers.push(player);
-            highScore = player.data.StylePoints;
-          }
-        }
-        if (
-          confirmedFinished &&
-          stylePlayers.length == 1 &&
-          !Object.values(winners.groups)
-            .flat()
-            .find((p) => p === stylePlayers[0])
-        ) {
-          winners.addPlayer(stylePlayers[0], "Style Points");
-        }
-      },
-    };
-
     this.listeners = {
-      AbilityToggle: function (player) {
-        if (this.hasAbility(["WhenDead"])) {
-          for (let player of this.game.players) {
-            if (player.faction == this.player.faction) {
-              if (!player.hasEffect("StylePoints")) {
-                let effect = player.giveEffect(
-                  "StylePoints",
-                  this.player,
-                  player
-                );
-                this.passiveEffects.push(effect);
-              }
+      state: function () {
+         if (this.game.getStateName() == "Night"){
+           var action = new Action({
+          actor: this.player,
+          game: this.player.game,
+          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+          labels: ["role", "hidden"],
+          role: this,
+          run: function () {
+
+          let subaction = new Action({
+          actor: this.actor,
+          game: this.actor.game,
+          labels: ["role", "hidden"],
+          role: this.role,
+          run: function () {
+            if(!this.role.TaskComp){
+              this.role.TaskComp = [];
+            }
+            if(this.target){
+              this.role.TaskComp.push(this.target);
+            }
+          },
+        });
+          let teammates = this.game.players.filter((p) => p.faction == this.actor.faction);
+          for(let player of teammates){
+            if(player.alive){
+              player.giveEffect("DayTask", this.role, player, subaction, null, teammates.length-teammates.filter((p)=> p.alive));
             }
           }
-        }
-      },
-      state: function () {
+          },
+        });
+
+        this.game.queueAction(action);
+         }
         if (this.game.getStateName() == "Day") {
           let contest = [];
           for (let player of this.game.players) {
