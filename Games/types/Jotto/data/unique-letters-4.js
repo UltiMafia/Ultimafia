@@ -1102,7 +1102,6 @@ module.exports = [
   "fado",
   "fads",
   "fady",
-  "fags",
   "fahs",
   "faik",
   "fail",

@@ -3086,7 +3086,6 @@ module.exports = [
   "fadier",
   "fading",
   "fagins",
-  "fagots",
   "faible",
   "faiked",
   "faikes",

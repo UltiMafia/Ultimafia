@@ -3557,7 +3557,6 @@ module.exports = [
   "faffs",
   "faffy",
   "fagin",
-  "fagot",
   "faiks",
   "fails",
   "faine",
