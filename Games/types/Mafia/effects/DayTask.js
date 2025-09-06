@@ -96,11 +96,13 @@ module.exports = class DayTask extends Effect {
           run: function () {
             if(this.effect.HasBeenCompleted == true){
               if(this.effect.reward){
+                this.effect.reward.target = this.effect.player;
                 this.effect.reward.do();
               }
             }
             else{
               if(this.effect.punishment){
+              this.effect.punishment.target = this.effect.player;
               this.effect.punishment.do();
               }
             }
@@ -122,6 +124,7 @@ module.exports = class DayTask extends Effect {
              this.HasBeenFailed = true;
             
             if(this.punishment){
+              this.punishment.target = this.player;
               this.game.instantAction(this.punishment);
             }
 
@@ -150,6 +153,7 @@ module.exports = class DayTask extends Effect {
           }
           if(this.task == "NeverSwitchVotes" && this.VoteSwitchCount > 0){
               if(this.punishment){
+                this.punishment.target = this.player;
               this.game.instantAction(this.punishment);
             }
           }
@@ -162,6 +166,7 @@ module.exports = class DayTask extends Effect {
           else if(this.task == "SwitchVotesExactly5Times" && this.VoteSwitchCount > this.ExtraNum){
             this.HasBeenCompleted = false;
             if(this.punishment){
+              this.punishment.target = this.player;
               this.game.instantAction(this.punishment);
             }
           }
@@ -187,6 +192,7 @@ module.exports = class DayTask extends Effect {
         this.HasBeenCompleted = true;
       }
       if(this.HasBeenFailed == true && this.punishment){
+        this.punishment.target = this.player;
         this.game.instantAction(this.punishment);
         //this.punishment.do();
       }
