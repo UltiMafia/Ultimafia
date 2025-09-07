@@ -14,7 +14,7 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from "@mui/material";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 
 //import { AchievementList } from "../../../../data/Achievements";
 import { AchievementData } from "../../constants/Achievements";

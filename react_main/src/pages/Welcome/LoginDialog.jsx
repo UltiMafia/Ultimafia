@@ -6,8 +6,6 @@ import {
   DialogTitle,
   LinearProgress,
   TextField,
-  ThemeProvider,
-  CssBaseline,
 } from "@mui/material";
 import GoogleIcon from "./GoogleIcon.png";
 import DiscordIcon from "./DiscordIcon.png";
@@ -19,11 +17,11 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
-import { verifyRecaptcha } from "../../utils";
 import axios from "axios";
-import { useSnackbar } from "../../hooks/useSnackbar";
+
+import { verifyRecaptcha } from "utils";
+import { useSnackbar } from "hooks/useSnackbar";
 import { YouAgree } from "./YouAgree";
-import { dialogTheme } from "../../constants/themes";
 
 export const LoginDialog = ({ open, setOpen }) => {
   const snackbarHook = useSnackbar();

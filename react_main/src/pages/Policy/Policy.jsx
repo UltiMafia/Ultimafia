@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
 
 import PrivacyPolicy from "./PrivacyPolicy";

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from "react";
 import { Link, Redirect, useParams, useHistory } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
+import colorContrast from 'color-contrast'
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import {
@@ -38,7 +39,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 export const KUDOS_ICON = require(`images/kudos.png`);
@@ -469,10 +470,19 @@ export default function Profile() {
   }
 
   const panelStyle = {};
+  const headingStyle = {};
   const bannerStyle = {};
 
   if (settings.backgroundColor) {
     panelStyle.backgroundColor = settings.backgroundColor;
+
+    // ensure good color contrast for headings
+    if (colorContrast(settings.backgroundColor, "#000") > 7) {
+      headingStyle.color = "#000";
+    }
+    else {
+      headingStyle.color = "#fff";
+    }
   }
 
   if (banner) {
@@ -983,7 +993,7 @@ export default function Profile() {
             {totalGames >= RequiredTotalForStats &&
               !settings.hideStatistics && (
                 <div className="box-panel ratings" style={panelStyle}>
-                  <div className="heading">Mafia Ratings</div>
+                  <div className="heading" style={headingStyle}>Mafia Ratings</div>
                   <div className="content">
                     {ratings}
                     <div
@@ -1006,7 +1016,7 @@ export default function Profile() {
                 </div>
               )}
             <div className="box-panel recent-games" style={panelStyle}>
-              <div className="heading">Recent Games</div>
+              <div className="heading" style={headingStyle}>Recent Games</div>
               <div className="content" style={{ padding: "0px" }}>
                 {recentGamesRows}
                 {recentGames.length === 0 && (
@@ -1022,12 +1032,12 @@ export default function Profile() {
             </div>
             {friendRequests.length > 0 && (
               <div className="box-panel" style={panelStyle}>
-                <div className="heading">Friend Requests</div>
+                <div className="heading" style={headingStyle}>Friend Requests</div>
                 <div className="content">{friendRequestRows}</div>
               </div>
             )}
             <div className="box-panel" style={panelStyle}>
-              <div className="heading">Friends</div>
+              <div className="heading" style={headingStyle}>Friends</div>
               <div className="content">
                 <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
                 {friendRows}
@@ -1044,7 +1054,7 @@ export default function Profile() {
               </div>
             </div>
             <div className="box-panel" style={panelStyle}>
-              <div className="heading">Setups Created</div>
+              <div className="heading" style={headingStyle}>Setups Created</div>
               <div className="content">
                 {createdSetupRows}
                 {createdSetups.length === 0 && "No setups"}
@@ -1064,7 +1074,7 @@ export default function Profile() {
                   }}
                   title="achievements"
                 />
-                <div className="heading">Achievements</div>
+                <div className="heading" style={headingStyle}>Achievements</div>
               </div>
               <div className="content">
                 {AchievementRows}
@@ -1073,7 +1083,7 @@ export default function Profile() {
             </div>
             {archivedGamesRows.length !== 0 && (
               <div className="box-panel archived-games" style={panelStyle}>
-                <div className="heading">
+                <div className="heading" style={headingStyle}>
                   Archived Games{" "}
                   {showDelete && (
                     <i

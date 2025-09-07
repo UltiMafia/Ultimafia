@@ -11,7 +11,7 @@ import Achievements from "./Achievements";
 import "css/play.css";
 
 import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 
 export default function Learn(props) {
   const theme = useTheme();

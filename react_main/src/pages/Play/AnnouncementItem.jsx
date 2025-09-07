@@ -2,7 +2,7 @@
 // import { Time, UserText } from "../../components/Basic";
 // import React from "react";
 // import { Card, ThemeProvider } from "@mui/material";
-// import { useTheme } from "@mui/styles";
+// import { useTheme } from "@mui/material/styles";
 //
 // export const AnnouncementItem = ({
 //   announcement: { id, date, content, mod },

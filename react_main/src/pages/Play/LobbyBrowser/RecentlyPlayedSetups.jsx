@@ -14,7 +14,7 @@ import { getRecentlyPlayedSetups } from "services/gameService";
 import HostGameDialogue from "components/HostGameDialogue";
 import Setup from "components/Setup";
 import { getRecentlyPlayedSetupsChart } from "./getRecentlyPlayedSetupsChart";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 export const RecentlyPlayedSetups = ({ lobby }) => {

@@ -18,7 +18,7 @@ import { Avatar } from "../../User/User";
 
 import "css/forums.css";
 import { IconButton } from "@mui/material";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 
 export default function Forums() {
   const [forumNavInfo, updateForumNavInfo] = useForumNavInfo();
