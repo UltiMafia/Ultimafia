@@ -17,7 +17,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 
 import "css/setup.css";
 import "css/roles.css";
@@ -198,6 +198,7 @@ export default function Setup(props) {
         sx={{
           width: "100%",
           alignItems: "center",
+          borderRadius: "var(--mui-shape-borderRadius)",
           backgroundColor: backgroundColor,
         }}
       >

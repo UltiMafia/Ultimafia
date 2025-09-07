@@ -17,7 +17,7 @@ import {
   Grid,
   IconButton,
 } from "@mui/material";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 
 export const Comment = (props) => {
   const theme = useTheme();

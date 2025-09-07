@@ -6,7 +6,7 @@ import {
   Typography,
   Link,
 } from "@mui/material";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 import { RoleSearch } from "../../components/Roles";
 
 export default function LearnResistance(props) {

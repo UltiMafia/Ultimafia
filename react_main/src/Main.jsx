@@ -53,18 +53,13 @@ import { NewLoading } from "./pages/Welcome/NewLoading";
 import {
   Box,
   Stack,
-  ThemeProvider,
-  CssBaseline,
   Paper,
   Typography,
   Button,
-  useMediaQuery,
 } from "@mui/material";
-import {
-  darkTheme,
-  lightTheme,
-  darkThemeHigherContrast,
-} from "./constants/themes";
+import MuiLink from '@mui/material/Link';
+import { useColorScheme } from '@mui/material/styles';
+
 import { Announcement } from "./components/alerts/Announcement";
 import { BadTextContrast } from "./components/alerts/BadTextContrast";
 import { useIsPhoneDevice } from "./hooks/useIsPhoneDevice";
@@ -134,7 +129,6 @@ function Main(props) {
   const popover = usePopover(siteInfo);
   const errorAlert = useErrorAlert(siteInfo);
   const location = useLocation();
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
   function onGameLeave(index) {
     axios
@@ -145,15 +139,11 @@ function Main(props) {
       .catch(errorAlert);
   }
 
-  const preferredTheme = prefersDarkMode ? "dark" : "light";
-  const [theme, setTheme] = useState(prefersDarkMode ? darkTheme : lightTheme);
-
+  const { mode, setMode } = useColorScheme();
   useEffect(() => {
-    const colorScheme = user?.settings?.siteColorScheme || preferredTheme;
+    const colorScheme = user?.settings?.siteColorScheme || mode;
     document.documentElement.classList.remove("dark-mode", "light-mode");
     document.documentElement.classList.add(`${colorScheme}-mode`);
-
-    setTheme(colorScheme === "dark" ? darkTheme : lightTheme);
   }, [user?.settings?.siteColorScheme]);
   /*
   var roleIconScheme = user.settings?.roleIconScheme
@@ -217,7 +207,7 @@ function Main(props) {
             () => (
               <div>
                 New account created, you can change your username once in your{" "}
-                <Link to={`/user/settings`}>settings</Link>.
+                <MuiLink href={`/user/settings`}>settings</MuiLink>.
               </div>
             ),
             "basic",
@@ -232,9 +222,9 @@ function Main(props) {
           siteInfo.showAlert(
             (index) => (
               <div>
-                Return to game{" "}
-                <Link to={`/game/${res.data.inGame}`}>{res.data.inGame}</Link>{" "}
-                or <a onClick={() => onGameLeave(index)}>leave</a>.
+                {"You are in a game in progress. "}
+                <MuiLink href={`/game/${res.data.inGame}`}>{"Return to game "}</MuiLink>
+                or <MuiLink onClick={() => onGameLeave(index)}>Leave</MuiLink>
               </div>
             ),
             "basic",
@@ -274,11 +264,7 @@ function Main(props) {
   }
 
   if (isLoading) {
-    return (
-      <ThemeProvider theme={theme}>
-        <NewLoading />
-      </ThemeProvider>
-    );
+    return <NewLoading />;
   }
 
   const style = isPhoneDevice ? { padding: "8px" } : { padding: "24px" };
@@ -287,7 +273,7 @@ function Main(props) {
     <Box
       className="site-wrapper"
       sx={{
-        backgroundColor: "background.paper",
+        backgroundColor: (theme) => theme.palette.background.paper,
       }}
     >
       <div className="main-container" style={style}>
@@ -332,7 +318,6 @@ function Main(props) {
       <SiteInfoContext.Provider value={siteInfo}>
         <PopoverContext.Provider value={popover}>
           <CookieBanner />
-          <CssBaseline />
           <Switch>
             <Route path="/game">
               {/* Site content will display instead of game if content is being overriden by the error boundary*/}
@@ -354,27 +339,24 @@ function Main(props) {
   );
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline enableColorScheme />
-      <ErrorBoundary
-        FallbackComponent={
-          errorContent !== undefined ? ErrorFallbackNoMain : ErrorFallback
-        }
-        onReset={() =>
-          (window.location.href =
-            window.location.origin + window.location.pathname)
-        }
-      >
-        <Switch>
-          <Route exact path="/">
-            <Welcome />
-          </Route>
-          <Route>
-            <Suspense fallback={<NewLoading />}>{mainContent}</Suspense>
-          </Route>
-        </Switch>
-      </ErrorBoundary>
-    </ThemeProvider>
+    <ErrorBoundary
+      FallbackComponent={
+        errorContent !== undefined ? ErrorFallbackNoMain : ErrorFallback
+      }
+      onReset={() =>
+        (window.location.href =
+          window.location.origin + window.location.pathname)
+      }
+    >
+      <Switch>
+        <Route exact path="/">
+          <Welcome />
+        </Route>
+        <Route>
+          {mainContent}
+        </Route>
+      </Switch>
+    </ErrorBoundary>
   );
 }
 

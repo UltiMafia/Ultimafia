@@ -2126,28 +2126,20 @@ export function SideMenuNew({
       disableGutters
       onChange={handleToggle}
       disabled={disabled}
-      sx={{
-        transition: "background-color 0.3s ease-in-out",
-        "&:hover": {
-          backgroundColor: disabled ? "inherit" : "rgba(0, 0, 0, 0.08)",
-        },
-      }}
     >
       <AccordionSummary
-        className="side-menu-title"
         sx={{
           minHeight: "30px",
-          padding: "4px 8px",
+          padding: 1,
+          backgroundColor: "var(--scheme-color-sec)",
           "& .MuiAccordionSummary-content": {
             margin: "4px 0",
           },
-          transition: "background-color 0.3s ease-in-out",
-          "&:hover": {
-            backgroundColor: disabled ? "inherit" : "rgba(0, 0, 0, 0.12)",
-          },
         }}
       >
-        {lockIcon}&nbsp;{title}
+        <Typography>
+          {lockIcon}&nbsp;{title}
+        </Typography>
       </AccordionSummary>
       <AccordionDetails
         className="side-menu-content"

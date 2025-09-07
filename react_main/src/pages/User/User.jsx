@@ -12,7 +12,7 @@ import { HiddenUpload } from "components/Form";
 
 import "css/user.css";
 import { youtubeRegex } from "components/Basic";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 import { Link as MuiLink, Popover } from "@mui/material";
 import { Box, Card, AppBar, IconButton, Stack, Toolbar } from "@mui/material";
 import { PieChart } from "./PieChart";

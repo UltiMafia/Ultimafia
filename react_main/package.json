@@ -6,8 +6,7 @@
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@iconify/react": "^4.1.1",
-    "@mui/material": "5.15.7",
-    "@mui/styles": "5.15.7",
+    "@mui/material": "^6.5.0",
     "axios": ">=0.21.2",
     "color": "3.2.1",
     "color-contrast": "^1.0.0",
@@ -31,6 +30,9 @@
   },
   "overrides": {
     "react-sound": {
+      "react": "$react"
+    },
+    "react-is": {
       "react": "$react"
     }
   },
