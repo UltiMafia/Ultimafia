@@ -1,10 +1,11 @@
 const Effect = require("../Effect");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
+const { PRIORITY_DAY_EFFECT_DEFAULT } = require("../const/Priority");
 
 module.exports = class DayTask extends Effect {
   constructor(taskCreator, player, reward, punishment, difficulty) {
-    super("StylePoints");
+    super("DayTask");
     this.taskCreator = taskCreator;
     this.reward = reward;
     this.punishment = punishment;
@@ -17,8 +18,8 @@ module.exports = class DayTask extends Effect {
     this.VoteSwitchCount = 0;
 
     let possibleTasks = [];
-    let canDoTalkingTasks = this.alive || this.game.isTalkingDead();
-    let canDoVotingTasks = this.alive || this.game.isVotingDead();
+    let canDoTalkingTasks = this.player.alive || player.game.isTalkingDead();
+    let canDoVotingTasks = this.player.alive || player.game.isVotingDead();
     let Roles = this.taskCreator.getAllRoles().map((r) => r.split(":")[0]);
     /*
     //Whispers
@@ -31,16 +32,16 @@ module.exports = class DayTask extends Effect {
     }
     */
     //Talking
-    if (this.game.setup.whispers && canDoTalkingTasks) {
+    if (canDoTalkingTasks) {
       possibleTasks.push("ClaimRole");
     }
-    if (this.game.setup.whispers && canDoTalkingTasks) {
+    if (canDoTalkingTasks) {
       possibleTasks.push("SendNoMoreThen10Messages");
     }
-    if (this.game.setup.whispers && canDoTalkingTasks && this.DiffNum >= 1) {
+    if (canDoTalkingTasks && this.DiffNum >= 1) {
       possibleTasks.push("SendExactly10Messages");
     }
-    if (this.game.setup.whispers && canDoTalkingTasks && this.DiffNum >= 2) {
+    if (canDoTalkingTasks && this.DiffNum >= 2) {
       possibleTasks.push("SendNoMoreThen1Message");
     }
     //Voting
@@ -69,24 +70,35 @@ module.exports = class DayTask extends Effect {
     this.task = Random.randArrayVal(possibleTasks);
 
     if(this.task == "VoteForAPlayer"){
-      this.ExtraPlayer = Random.randArrayVal(this.game.player);
+      this.ExtraPlayer = Random.randArrayVal(this.player.game.alivePlayers());
     }
     if(this.task == "ClaimRole"){
       this.ExtraRole = Random.randArrayVal(Roles);
     }
     if(this.task == "SendNoMoreThen10Messages" || this.task == "SendExactly10Messages"){
+      if(this.task == "SendNoMoreThen10Messages"){
+        this.HasBeenCompleted = true;
+      }
       this.ExtraNum = Random.randArrayVal([5,6,7,8,9,10,11,12]);
     }
     if(this.task == "SendNoMoreThen1Message"){
+      this.HasBeenCompleted = true;
       this.ExtraNum = 1;
+    }
+    if(this.task == "NeverSwitchVotes"){
+      this.HasBeenCompleted = true;
     }
     if(this.task == "SwitchVotes3Times" || this.task == "SwitchVotesExactly5Times"){
       this.ExtraNum = Random.randArrayVal([3,4,5,6,7]);
+    }
+    if(!this.ExtraPlayer){
+      this.ExtraPlayer = Random.randArrayVal(this.player.game.alivePlayers());
     }
 
     this.listeners = {
       state: function () {
         if (this.game.getStateName() == "Day") {
+          this.VotingLog = [];
           var action = new Action({
           role: this.taskCreator,
           game: this.player.game,
@@ -112,7 +124,7 @@ module.exports = class DayTask extends Effect {
 
         this.game.queueAction(action);
         }
-        if (stateInfo.name.match(/Day/) && this.task == "VoteForAPlayer") {
+        if (this.game.getStateName() == "Day" && this.task == "VoteForAPlayer") {
           let toDetonate = 60000;
           this.timer = setTimeout(() => {
             if (this.game.finished) {
@@ -139,10 +151,9 @@ module.exports = class DayTask extends Effect {
           (vote.meeting.name === "Village" ||
             vote.meeting.name === "Room 1" ||
             vote.meeting.name === "Room 2") &&
-          vote.voter === this.player &&
-          vote.target === this.ExtraPlayer.id
+          vote.voter === this.player
         ) {
-        if(this.task == "VoteForAPlayer" && this.HasBeenFailed != true){
+        if(vote.target === this.ExtraPlayer.id && this.task == "VoteForAPlayer" && this.HasBeenFailed != true){
           this.HasBeenCompleted = true;
         }
           if(this.VotingLog.length <= 0){
@@ -152,6 +163,7 @@ module.exports = class DayTask extends Effect {
             this.VoteSwitchCount++;
           }
           if(this.task == "NeverSwitchVotes" && this.VoteSwitchCount > 0){
+            this.HasBeenCompleted = false;
               if(this.punishment){
                 this.punishment.target = this.player;
               this.game.instantAction(this.punishment);
@@ -216,18 +228,17 @@ module.exports = class DayTask extends Effect {
       this.game.instantAction(action);
       */
     }
-  }
 
 getTaskMessage(){
   switch(this.task){
     case "ClaimRole":
     return `Say "I am ${this.ExtraRole}" or "I'm ${this.ExtraRole}" in chat.`;
     case "SendNoMoreThen10Messages":
-    return `Don't send more then ${this.ExtraNum} Messages in chat.`;
+    return `Not send more then ${this.ExtraNum} Messages in chat.`;
     case "SendExactly10Messages":
     return `Send Exactly ${this.ExtraNum} Messages in chat.`;
     case "SendNoMoreThen1Message":
-    return `Don't send more then ${this.ExtraNum} Message in chat.`;
+    return `Not send more then ${this.ExtraNum} Message in chat.`;
     case "VoteForAPlayer":
     return `Vote for ${this.ExtraPlayer.name} within the first minute of the day.`;
     case "SwitchVotes3Times":
@@ -235,7 +246,7 @@ getTaskMessage(){
     case "SwitchVotesExactly5Times":
     return `Switch votes Exactly ${this.ExtraNum} times today.`;
     case "NeverSwitchVotes":
-    return `Don't switch votes today.`;
+    return `Not switch votes today.`;
     case "BeThe3rdPlayerToVoteToday":
     return `Be the 3rd player to cast a vote today.`
   }

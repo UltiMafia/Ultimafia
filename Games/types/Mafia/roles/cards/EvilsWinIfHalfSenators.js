@@ -28,7 +28,7 @@ module.exports = class EvilsWinIfHalfSenators extends Card {
 
         if (
           hasSenators &&
-          senAliveCount < Math.ceil(senatorCount * 0.5 + 0.01)
+          senAliveCount < Math.ceil(senatorCount * 0.5 - 0.01)
         ) {
           for (let player of this.game.players) {
             if (EVIL_FACTIONS.includes(player.faction)) {

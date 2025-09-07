@@ -41,23 +41,30 @@ module.exports = class StyleContest extends Card {
                 .getAllRoles()
                 .filter((r) => this.game.getRoleAlignment(r) == "Mafia")
             );
-                let role = this.actor.addExtraRole(randomMafiaRole);
+              for(let player of this.game.players){
+                if(player.faction == this.actor.faction){
+                let role = player.addExtraRole(randomMafiaRole);
+                player.passiveExtraRoles.push(role);
+                player.queueAlert(
+            `${this.role.name} has granted you ${this.game.formatRole(randomMafiaRole)}'s abilites!`
+          );
+                }
+              }
+                //let role = this.actor.addExtraRole(randomMafiaRole);
               //this.GainedRoles.push(role);
-              this.actor.passiveExtraRoles.push(role);
             }
             else if(this.target == "Revive all dead players as random independent roles"){
           let convert = new Action({
           actor: this.actor,
           game: this.actor.game,
-          labels: ["convert", "hidden"],
+          labels: ["convert", "revive", "hidden"],
           role: this.role,
           run: function () {
             }
-          },
         });
-              for(let player of this.game.players){
-                if(!player.alive && convert.dominates(player)){
-                  let indieRoles = this.role.getAllRoles().filter((r) => this.game.getRoleAlignment(r) == "Independent");
+            for(let player of this.game.players){
+            if(!player.alive && convert.dominates(player)){
+              let indieRoles = this.role.getAllRoles().filter((r) => this.game.getRoleAlignment(r) == "Independent");
             if(indieRoles.length <= 0){
               indieRoles = ["Survivor", "Fool", "Hitchhiker", "Nomad"]
             }
@@ -70,6 +77,7 @@ module.exports = class StyleContest extends Card {
               false,
               false,
             );
+            player.revive("basic", this.actor);
                 }
               }
             }
@@ -116,7 +124,10 @@ module.exports = class StyleContest extends Card {
           let teammates = this.game.players.filter((p) => p.faction == this.actor.faction);
           for(let player of teammates){
             if(player.alive){
-              player.giveEffect("DayTask", this.role, player, subaction, null, teammates.length-teammates.filter((p)=> p.alive));
+              let effect = player.giveEffect("DayTask", this.role, player, subaction, null, 5);
+              player.queueAlert(
+            `${this.role.name} has ordered you to ${effect.getTaskMessage()} Complete this task to benefit the Mafia!`
+          );
             }
           }
           },
