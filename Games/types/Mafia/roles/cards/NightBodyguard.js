@@ -21,7 +21,8 @@ module.exports = class NightBodyguard extends Card {
           role: this.role,
           run: function () {
             this.heal(1);
-
+            this.role.killers = null;
+            this.role.savedRole = null;
             let killers = this.getVisitors(this.target, "kill");
             if (killers.length == 0) {
               return;
