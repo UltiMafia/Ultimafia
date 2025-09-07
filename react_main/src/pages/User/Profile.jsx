@@ -827,6 +827,19 @@ export default function Profile() {
     </>
   );
 
+  const bannerUpload = (<>
+    {isSelf && (
+      <HiddenUpload
+        className="edit"
+        name="banner"
+        onClick={onEditBanner}
+        onFileUpload={onFileUpload}
+      >
+        <i className="far fa-file-image" />
+      </HiddenUpload>
+    )}
+  </>);
+
   return (
     <>
       {stats && (
@@ -847,18 +860,12 @@ export default function Profile() {
             <div className="content" style={{ gap: "8px" }}>
               {banner && (
                 <div className="banner" style={bannerStyle}>
-                  {isSelf && (
-                    <HiddenUpload
-                      className="edit"
-                      name="banner"
-                      onClick={onEditBanner}
-                      onFileUpload={onFileUpload}
-                    >
-                      <i className="far fa-file-image" />
-                    </HiddenUpload>
-                  )}
+                  {bannerUpload}
                 </div>
               )}
+              {!banner && (<Box className="banner" sx={{ width: "100%", height: "24px !important" }}>
+                {bannerUpload}
+              </Box>)}
               <Grid container>{aviGridItems}</Grid>
             </div>
           </div>
