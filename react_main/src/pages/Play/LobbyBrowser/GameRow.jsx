@@ -184,14 +184,20 @@ export const GameRow = (props) => {
           status={props.status}
           showGameTypeIcon={showGameTypeIcon}
         />
-        <Stack direction="column" sx={{
-          minWidth: 0,
-          flex: "1 1",
-        }}>
+        <Stack
+          direction="column"
+          sx={{
+            minWidth: 0,
+            flex: "1 1",
+          }}
+        >
           {showLobbyName && (
-            <Stack direction="row" sx={{
-              alignItems: "center",
-            }}>
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: "center",
+              }}
+            >
               {/* game option indicators go HERE */}
               <Stack
                 direction="row"

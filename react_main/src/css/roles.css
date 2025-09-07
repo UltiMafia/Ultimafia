@@ -206,8 +206,8 @@
 
 .digit {
   float: left;
-  width: .50625rem;
-  height: .75rem;
+  width: 0.50625rem;
+  height: 0.75rem;
   background-size: 100% 100%;
 }
 

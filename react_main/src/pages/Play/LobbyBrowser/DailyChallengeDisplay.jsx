@@ -37,9 +37,7 @@ export const DailyChallenges = () => {
             alignItems: "center",
           }}
         >
-          <Typography fontWeight="bold">
-            {name}
-          </Typography>
+          <Typography fontWeight="bold">{name}</Typography>
           {isRole && (
             <Box
               sx={{

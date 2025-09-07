@@ -19,7 +19,7 @@ module.exports = class Clueless extends Card {
         if (this.hasAbility(["Modifier", "Speaking"])) {
           if (
             this.CluelessEffect == null ||
-            !this.players.effects.includes(this.CluelessEffect)
+            !this.player.effects.includes(this.CluelessEffect)
           ) {
             this.CluelessEffect = this.player.giveEffect("Scrambled", Infinity);
             this.passiveEffects.push(this.CluelessEffect);

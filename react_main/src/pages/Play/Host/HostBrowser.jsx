@@ -477,12 +477,14 @@ function SetupRow(props) {
       {!isPhoneDevice && user.loggedIn && (
         <Button onClick={() => props.onSelect(props.setup)}>Host</Button>
       )}
-      <Box sx={{
-        minWidth: 0,
-        width: "100%",
-        flex: "1 1",
-      }}>
-        <Setup setup={props.setup}/>
+      <Box
+        sx={{
+          minWidth: 0,
+          width: "100%",
+          flex: "1 1",
+        }}
+      >
+        <Setup setup={props.setup} />
       </Box>
       <Stack
         direction="row"

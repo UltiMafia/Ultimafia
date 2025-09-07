@@ -30,7 +30,7 @@ module.exports = class ConvertSave extends Card {
             }
           },
         });
-        this.game.instantAction(convertAction);
+        convertAction.do();
       },
       state: function (stateInfo) {
         if (!stateInfo.name.match(/Day/)) {

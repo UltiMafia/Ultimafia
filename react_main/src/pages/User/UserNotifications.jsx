@@ -64,7 +64,14 @@ export default function UserNotifications({
         }}
       >
         <Stack direction="row">
-          <Typography sx={{ width: "24px", pr: 0.5, textAlign: "right", fontSize: "16px", }}>
+          <Typography
+            sx={{
+              width: "24px",
+              pr: 0.5,
+              textAlign: "right",
+              fontSize: "16px",
+            }}
+          >
             {user.redHearts ?? 0}
           </Typography>
           <Tooltip title={getHeartRefreshMessage(user, "red")}>
@@ -75,7 +82,14 @@ export default function UserNotifications({
           </Tooltip>
         </Stack>
         <Stack direction="row">
-          <Typography sx={{ width: "24px", pr: 0.5, textAlign: "right", fontSize: "16px", }}>
+          <Typography
+            sx={{
+              width: "24px",
+              pr: 0.5,
+              textAlign: "right",
+              fontSize: "16px",
+            }}
+          >
             {user.goldHearts ?? 0}
           </Typography>
           <Tooltip title="Not implemented yet.">

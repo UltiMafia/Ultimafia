@@ -140,15 +140,16 @@ export const SITE_THEME = createTheme({
     },
   },
   cssVariables: {
-    colorSchemeSelector: 'data'
+    colorSchemeSelector: "data",
   },
   typography: {
     fontFamily: ["RobotoSlab"].join(","),
     color: "#F1F1F1",
-    italicRelation: { // "Created by", "Authored by", "In love with", etc.
+    italicRelation: {
+      // "Created by", "Authored by", "In love with", etc.
       fontSize: "1rem",
       fontStyle: "italic",
-    }
+    },
   },
 });
 

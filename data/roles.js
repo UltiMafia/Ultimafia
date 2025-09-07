@@ -2126,7 +2126,7 @@ const roleData = {
       category: "Essential",
       tags: ["Setup Changes", "Advanced", "Win Con"],
       description: [
-        "If half or more the number of Senators in play die, Mafia/Cult wins.",
+        "If more then half the number of Senators in play die, Mafia/Cult wins.",
         "Adds 2 to 4 Senators in closed setups.",
       ],
     },
@@ -3337,12 +3337,20 @@ const roleData = {
     },
     Stylist: {
       alignment: "Mafia",
-      tags: ["Mini-game", "Style Points", "Win-Con", "Expert"],
+      tags: ["Mini-game", "FalseMode", "Voting", "Speaking", "Expert"],
       description: [
-        "At the end of each day, Any Living Mafia players will gain 1 Style Point for everytime they said their role in chat.",
-        "Style Points cannot be earned if only 1 Mafia player is alive.",
-        "At the end of the game reguardless of who Won, The player with the most Style Points will also Win.",
+        "Each day assigns every Mafia member a task.",
+        "Tasks will be related to voting and sending messages.",
+        "If All Living Mafia members complete their task, The Stylist may choose to Make all information false for the night or grant each mafia member an extra role ability.",
       ],
+      SpecialInteractions: {
+        Butterfly: [
+          "If Butterfly is in the setup, The Stylist can choose to revive all dead players as random Independent roles.",
+        ],
+        nightOrder: [
+          ["Make Info False or Grant Ability", PRIORITY_EFFECT_GIVER_EARLY],
+        ],
+      },
     },
     Prankster: {
       alignment: "Mafia",

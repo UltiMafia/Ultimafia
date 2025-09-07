@@ -33,7 +33,12 @@ export default function Setup(props) {
   // Allow overflow to vertically stack if the row width is only 2 or less
   const wrapIcons = maxIconsPerRow && maxIconsPerRow <= 2;
   // If wrapIcons is true, limit the icons to three rows
-  const maxIconsTotal = maxIconsPerRow === null ? null : wrapIcons ? maxIconsPerRow * 3 : maxIconsPerRow;
+  const maxIconsTotal =
+    maxIconsPerRow === null
+      ? null
+      : wrapIcons
+      ? maxIconsPerRow * 3
+      : maxIconsPerRow;
 
   if (typeof props.setup.roles == "string")
     props.setup.roles = JSON.parse(props.setup.roles);
@@ -55,7 +60,8 @@ export default function Setup(props) {
     }
 
     const rContainer = iconContainerRef.current.getBoundingClientRect();
-    const rLastChild = iconContainerRef.current.lastChild.getBoundingClientRect();
+    const rLastChild =
+      iconContainerRef.current.lastChild.getBoundingClientRect();
 
     const containerRightOffset = rContainer.x + rContainer.width;
     const lastChildRightOffset = rLastChild.x + rLastChild.width;
@@ -92,7 +98,7 @@ export default function Setup(props) {
     }
   } else if (useRoleGroups) {
     for (let roleGroup in props.setup.roles) {
-      if (maxIconsTotal !== null && (roleCounts.length >= maxIconsTotal)) {
+      if (maxIconsTotal !== null && roleCounts.length >= maxIconsTotal) {
         overSize = true;
         break;
       }
@@ -152,14 +158,19 @@ export default function Setup(props) {
 
   if (multi) {
     roleCounts.unshift(
-      <i onClick={cycleSetups} className="fas fa-list-alt" key="multi" style={{
-        fontSize: "1.5rem",
-        cursor: "pointer",
-      }}/>
+      <i
+        onClick={cycleSetups}
+        className="fas fa-list-alt"
+        key="multi"
+        style={{
+          fontSize: "1.5rem",
+          cursor: "pointer",
+        }}
+      />
     );
   }
 
-  if (maxIconsTotal !== null && (roleCounts.length > maxIconsTotal)) {
+  if (maxIconsTotal !== null && roleCounts.length > maxIconsTotal) {
     overSize = true;
     roleCounts = roleCounts.slice(0, maxIconsTotal);
   }
@@ -204,20 +215,27 @@ export default function Setup(props) {
       >
         <GameIcon revealPopover={onClick} gameType={props.setup.gameType} />
         <Divider orientation="vertical" flexItem />
-        <Stack direction="column" sx={{
-          p: 1,
-          flex: "1 1",
-          alignItems: "stretch",
-          overflowX: "hidden"
-        }}>
+        <Stack
+          direction="column"
+          sx={{
+            p: 1,
+            flex: "1 1",
+            alignItems: "stretch",
+            overflowX: "hidden",
+          }}
+        >
           <Typography variant="body2" className="setup-name">
             {filterProfanity(props.setup.name, user.settings)}
           </Typography>
-          <Stack direction="row" ref={iconContainerRef} sx={{
-            minWidth: "0",
-            alignItems: "center",
-            flexWrap: wrapIcons ? "wrap" : "nowrap",
-          }}>
+          <Stack
+            direction="row"
+            ref={iconContainerRef}
+            sx={{
+              minWidth: "0",
+              alignItems: "center",
+              flexWrap: wrapIcons ? "wrap" : "nowrap",
+            }}
+          >
             {roleCounts}
           </Stack>
         </Stack>
@@ -556,7 +574,11 @@ export function SetupManipulationButtons(props) {
         </IconButton>
       </Grid>
       <Grid item xs={3}>
-        <IconButton aria-label="edit" disabled={!isOwner} sx={missingOwnershipStyle}>
+        <IconButton
+          aria-label="edit"
+          disabled={!isOwner}
+          sx={missingOwnershipStyle}
+        >
           <i
             className={`setup-btn edit-setup fa-pen-square fas`}
             onClick={() => props.onEdit(props.setup)}
@@ -572,7 +594,11 @@ export function SetupManipulationButtons(props) {
         </IconButton>
       </Grid>
       <Grid item xs={3}>
-        <IconButton aria-label="delete" disabled={!isOwner} sx={missingOwnershipStyle}>
+        <IconButton
+          aria-label="delete"
+          disabled={!isOwner}
+          sx={missingOwnershipStyle}
+        >
           <i
             className={`setup-btn del-setup fa-times-circle fas`}
             onClick={() => props.onDel(props.setup)}

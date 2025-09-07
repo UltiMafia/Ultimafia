@@ -43,13 +43,13 @@ module.exports = class BecomeUndercoverEvil extends Card {
     this.listeners = {
       SwitchRoleBefore: function (player) {
         if (player != this.player) return;
-        switchRoleBefore(this.player.role);
+        switchRoleBefore(this);
 
         if (this.player.faction == null) {
           this.player.faction = "Village";
         }
 
-        this.player.role.data.reroll = true;
+        this.data.reroll = true;
         this.player.holdItem("IsTheMole", this.player.faction);
 
         this.action = new Action({
@@ -57,6 +57,7 @@ module.exports = class BecomeUndercoverEvil extends Card {
           target: this.player,
           game: this.game,
           labels: ["hidden", "block"],
+          role: this,
           run: function () {
             let evilPlayers = this.game.players.filter(
               (p) =>
@@ -72,7 +73,7 @@ module.exports = class BecomeUndercoverEvil extends Card {
             }
             this.actor.holdItem("MoleVoting");
             this.actor.queueAlert(
-              `You are the Mole, You have the abilities of a ${this.actor.role.newRole}`
+              `You are the Mole, You have the abilities of a ${this.role.newRole}`
             );
           },
         });
@@ -80,7 +81,7 @@ module.exports = class BecomeUndercoverEvil extends Card {
         this.action.do();
 
         this.player.setRole(
-          this.player.role.newRole,
+          this.newRole,
           undefined,
           false,
           true,
@@ -101,13 +102,7 @@ module.exports = class BecomeUndercoverEvil extends Card {
           return;
         }
         this.player.holdItem("IsTheMole", this.player.faction);
-        this.player.setRole(
-          this.player.role.newRole,
-          undefined,
-          false,
-          true,
-          false
-        );
+        this.player.setRole(this.newRole, undefined, false, true, false);
         let tempApp = {
           self: "Mole",
         };
