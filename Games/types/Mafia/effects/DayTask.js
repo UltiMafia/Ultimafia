@@ -63,35 +63,41 @@ module.exports = class DayTask extends Effect {
       possibleTasks.push("NeverSwitchVotes");
     }
 
-    if(possibleTasks.length <= 0){
+    if (possibleTasks.length <= 0) {
       return;
     }
 
     this.task = Random.randArrayVal(possibleTasks);
 
-    if(this.task == "VoteForAPlayer"){
+    if (this.task == "VoteForAPlayer") {
       this.ExtraPlayer = Random.randArrayVal(this.player.game.alivePlayers());
     }
-    if(this.task == "ClaimRole"){
+    if (this.task == "ClaimRole") {
       this.ExtraRole = Random.randArrayVal(Roles);
     }
-    if(this.task == "SendNoMoreThen10Messages" || this.task == "SendExactly10Messages"){
-      if(this.task == "SendNoMoreThen10Messages"){
+    if (
+      this.task == "SendNoMoreThen10Messages" ||
+      this.task == "SendExactly10Messages"
+    ) {
+      if (this.task == "SendNoMoreThen10Messages") {
         this.HasBeenCompleted = true;
       }
-      this.ExtraNum = Random.randArrayVal([5,6,7,8,9,10,11,12]);
+      this.ExtraNum = Random.randArrayVal([5, 6, 7, 8, 9, 10, 11, 12]);
     }
-    if(this.task == "SendNoMoreThen1Message"){
+    if (this.task == "SendNoMoreThen1Message") {
       this.HasBeenCompleted = true;
       this.ExtraNum = 1;
     }
-    if(this.task == "NeverSwitchVotes"){
+    if (this.task == "NeverSwitchVotes") {
       this.HasBeenCompleted = true;
     }
-    if(this.task == "SwitchVotes3Times" || this.task == "SwitchVotesExactly5Times"){
-      this.ExtraNum = Random.randArrayVal([3,4,5,6,7]);
+    if (
+      this.task == "SwitchVotes3Times" ||
+      this.task == "SwitchVotesExactly5Times"
+    ) {
+      this.ExtraNum = Random.randArrayVal([3, 4, 5, 6, 7]);
     }
-    if(!this.ExtraPlayer){
+    if (!this.ExtraPlayer) {
       this.ExtraPlayer = Random.randArrayVal(this.player.game.alivePlayers());
     }
 
@@ -100,42 +106,43 @@ module.exports = class DayTask extends Effect {
         if (this.game.getStateName() == "Day") {
           this.VotingLog = [];
           var action = new Action({
-          role: this.taskCreator,
-          game: this.player.game,
-          effect: this,
-          priority: PRIORITY_DAY_EFFECT_DEFAULT + 1,
-          labels: ["hidden", "absolute"],
-          run: function () {
-            if(this.effect.HasBeenCompleted == true){
-              if(this.effect.reward){
-                this.effect.reward.target = this.effect.player;
-                this.effect.reward.do();
+            role: this.taskCreator,
+            game: this.player.game,
+            effect: this,
+            priority: PRIORITY_DAY_EFFECT_DEFAULT + 1,
+            labels: ["hidden", "absolute"],
+            run: function () {
+              if (this.effect.HasBeenCompleted == true) {
+                if (this.effect.reward) {
+                  this.effect.reward.target = this.effect.player;
+                  this.effect.reward.do();
+                }
+              } else {
+                if (this.effect.punishment) {
+                  this.effect.punishment.target = this.effect.player;
+                  this.effect.punishment.do();
+                }
               }
-            }
-            else{
-              if(this.effect.punishment){
-              this.effect.punishment.target = this.effect.player;
-              this.effect.punishment.do();
-              }
-            }
-            
-          },
-        });
+            },
+          });
 
-        this.game.queueAction(action);
+          this.game.queueAction(action);
         }
-        if (this.game.getStateName() == "Day" && this.task == "VoteForAPlayer") {
+        if (
+          this.game.getStateName() == "Day" &&
+          this.task == "VoteForAPlayer"
+        ) {
           let toDetonate = 60000;
           this.timer = setTimeout(() => {
             if (this.game.finished) {
               return;
             }
-            if(this.HasBeenCompleted){
+            if (this.HasBeenCompleted) {
               return;
             }
-             this.HasBeenFailed = true;
-            
-            if(this.punishment){
+            this.HasBeenFailed = true;
+
+            if (this.punishment) {
               this.punishment.target = this.player;
               this.game.instantAction(this.punishment);
             }
@@ -144,7 +151,7 @@ module.exports = class DayTask extends Effect {
           }, toDetonate);
         }
         if (this.game.getStateName() != "Night") return;
-          this.remove();
+        this.remove();
       },
       vote: function (vote) {
         if (
@@ -153,31 +160,42 @@ module.exports = class DayTask extends Effect {
             vote.meeting.name === "Room 2") &&
           vote.voter === this.player
         ) {
-        if(vote.target === this.ExtraPlayer.id && this.task == "VoteForAPlayer" && this.HasBeenFailed != true){
-          this.HasBeenCompleted = true;
-        }
-          if(this.VotingLog.length <= 0){
-            this.VotingLog.push(vote.target);
+          if (
+            vote.target === this.ExtraPlayer.id &&
+            this.task == "VoteForAPlayer" &&
+            this.HasBeenFailed != true
+          ) {
+            this.HasBeenCompleted = true;
           }
-          else if(!this.VotingLog.includes(vote.target)){
+          if (this.VotingLog.length <= 0) {
+            this.VotingLog.push(vote.target);
+          } else if (!this.VotingLog.includes(vote.target)) {
             this.VoteSwitchCount++;
           }
-          if(this.task == "NeverSwitchVotes" && this.VoteSwitchCount > 0){
+          if (this.task == "NeverSwitchVotes" && this.VoteSwitchCount > 0) {
             this.HasBeenCompleted = false;
-              if(this.punishment){
-                this.punishment.target = this.player;
+            if (this.punishment) {
+              this.punishment.target = this.player;
               this.game.instantAction(this.punishment);
             }
           }
-          if(this.task == "SwitchVotes3Times" && this.VoteSwitchCount >= this.ExtraNum){
-              this.HasBeenCompleted = true;
+          if (
+            this.task == "SwitchVotes3Times" &&
+            this.VoteSwitchCount >= this.ExtraNum
+          ) {
+            this.HasBeenCompleted = true;
           }
-          if(this.task == "SwitchVotesExactly5Times" && this.VoteSwitchCount == this.ExtraNum){
-              this.HasBeenCompleted = true;
-          }
-          else if(this.task == "SwitchVotesExactly5Times" && this.VoteSwitchCount > this.ExtraNum){
+          if (
+            this.task == "SwitchVotesExactly5Times" &&
+            this.VoteSwitchCount == this.ExtraNum
+          ) {
+            this.HasBeenCompleted = true;
+          } else if (
+            this.task == "SwitchVotesExactly5Times" &&
+            this.VoteSwitchCount > this.ExtraNum
+          ) {
             this.HasBeenCompleted = false;
-            if(this.punishment){
+            if (this.punishment) {
               this.punishment.target = this.player;
               this.game.instantAction(this.punishment);
             }
@@ -188,27 +206,32 @@ module.exports = class DayTask extends Effect {
   }
 
   speak(message) {
-    if(!this.task){
+    if (!this.task) {
       return;
     }
-    if(this.HasBeenFailed){
+    if (this.HasBeenFailed) {
       return;
     }
     this.MessagesSent++;
-    if(this.task == "SendNoMoreThen10Messages" || this.task == "SendExactly10Messages" || this.task == "SendNoMoreThen1Message"){
-      if(this.ExtraNum < this.MessagesSent){
+    if (
+      this.task == "SendNoMoreThen10Messages" ||
+      this.task == "SendExactly10Messages" ||
+      this.task == "SendNoMoreThen1Message"
+    ) {
+      if (this.ExtraNum < this.MessagesSent) {
         this.HasBeenFailed = true;
         this.HasBeenCompleted = false;
-      }
-      else if(this.task == "SendExactly10Messages" && this.ExtraNum == this.MessagesSent){
+      } else if (
+        this.task == "SendExactly10Messages" &&
+        this.ExtraNum == this.MessagesSent
+      ) {
         this.HasBeenCompleted = true;
       }
-      if(this.HasBeenFailed == true && this.punishment){
+      if (this.HasBeenFailed == true && this.punishment) {
         this.punishment.target = this.player;
         this.game.instantAction(this.punishment);
         //this.punishment.do();
       }
-      
     }
     /*
     if (
@@ -227,30 +250,28 @@ module.exports = class DayTask extends Effect {
 
       this.game.instantAction(action);
       */
-    }
-
-getTaskMessage(){
-  switch(this.task){
-    case "ClaimRole":
-    return `Say "I am ${this.ExtraRole}" or "I'm ${this.ExtraRole}" in chat.`;
-    case "SendNoMoreThen10Messages":
-    return `Not send more then ${this.ExtraNum} Messages in chat.`;
-    case "SendExactly10Messages":
-    return `Send Exactly ${this.ExtraNum} Messages in chat.`;
-    case "SendNoMoreThen1Message":
-    return `Not send more then ${this.ExtraNum} Message in chat.`;
-    case "VoteForAPlayer":
-    return `Vote for ${this.ExtraPlayer.name} within the first minute of the day.`;
-    case "SwitchVotes3Times":
-    return `Switch votes at least ${this.ExtraNum} times today.`;
-    case "SwitchVotesExactly5Times":
-    return `Switch votes Exactly ${this.ExtraNum} times today.`;
-    case "NeverSwitchVotes":
-    return `Not switch votes today.`;
-    case "BeThe3rdPlayerToVoteToday":
-    return `Be the 3rd player to cast a vote today.`
   }
-}
 
-  
+  getTaskMessage() {
+    switch (this.task) {
+      case "ClaimRole":
+        return `Say "I am ${this.ExtraRole}" or "I'm ${this.ExtraRole}" in chat.`;
+      case "SendNoMoreThen10Messages":
+        return `Not send more then ${this.ExtraNum} Messages in chat.`;
+      case "SendExactly10Messages":
+        return `Send Exactly ${this.ExtraNum} Messages in chat.`;
+      case "SendNoMoreThen1Message":
+        return `Not send more then ${this.ExtraNum} Message in chat.`;
+      case "VoteForAPlayer":
+        return `Vote for ${this.ExtraPlayer.name} within the first minute of the day.`;
+      case "SwitchVotes3Times":
+        return `Switch votes at least ${this.ExtraNum} times today.`;
+      case "SwitchVotesExactly5Times":
+        return `Switch votes Exactly ${this.ExtraNum} times today.`;
+      case "NeverSwitchVotes":
+        return `Not switch votes today.`;
+      case "BeThe3rdPlayerToVoteToday":
+        return `Be the 3rd player to cast a vote today.`;
+    }
+  }
 };

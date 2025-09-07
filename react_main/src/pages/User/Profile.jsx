@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from "react";
 import { Link, Redirect, useParams, useHistory } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
-import colorContrast from 'color-contrast'
+import colorContrast from "color-contrast";
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import {
@@ -479,8 +479,7 @@ export default function Profile() {
     // ensure good color contrast for headings
     if (colorContrast(settings.backgroundColor, "#000") > 7) {
       headingStyle.color = "#000";
-    }
-    else {
+    } else {
       headingStyle.color = "#fff";
     }
   }
@@ -824,18 +823,20 @@ export default function Profile() {
     </>
   );
 
-  const bannerUpload = (<>
-    {isSelf && (
-      <HiddenUpload
-        className="edit"
-        name="banner"
-        onClick={onEditBanner}
-        onFileUpload={onFileUpload}
-      >
-        <i className="far fa-file-image" />
-      </HiddenUpload>
-    )}
-  </>);
+  const bannerUpload = (
+    <>
+      {isSelf && (
+        <HiddenUpload
+          className="edit"
+          name="banner"
+          onClick={onEditBanner}
+          onFileUpload={onFileUpload}
+        >
+          <i className="far fa-file-image" />
+        </HiddenUpload>
+      )}
+    </>
+  );
 
   return (
     <>
@@ -860,9 +861,14 @@ export default function Profile() {
                   {bannerUpload}
                 </div>
               )}
-              {!banner && (<Box className="banner" sx={{ width: "100%", height: "24px !important" }}>
-                {bannerUpload}
-              </Box>)}
+              {!banner && (
+                <Box
+                  className="banner"
+                  sx={{ width: "100%", height: "24px !important" }}
+                >
+                  {bannerUpload}
+                </Box>
+              )}
               <Grid container>{aviGridItems}</Grid>
             </div>
           </div>
@@ -997,7 +1003,9 @@ export default function Profile() {
             {totalGames >= RequiredTotalForStats &&
               !settings.hideStatistics && (
                 <div className="box-panel ratings" style={panelStyle}>
-                  <div className="heading" style={headingStyle}>Mafia Ratings</div>
+                  <div className="heading" style={headingStyle}>
+                    Mafia Ratings
+                  </div>
                   <div className="content">
                     {ratings}
                     <div
@@ -1020,7 +1028,9 @@ export default function Profile() {
                 </div>
               )}
             <div className="box-panel recent-games" style={panelStyle}>
-              <div className="heading" style={headingStyle}>Recent Games</div>
+              <div className="heading" style={headingStyle}>
+                Recent Games
+              </div>
               <div className="content" style={{ padding: "0px" }}>
                 {recentGamesRows}
                 {recentGames.length === 0 && (
@@ -1036,12 +1046,16 @@ export default function Profile() {
             </div>
             {friendRequests.length > 0 && (
               <div className="box-panel" style={panelStyle}>
-                <div className="heading" style={headingStyle}>Friend Requests</div>
+                <div className="heading" style={headingStyle}>
+                  Friend Requests
+                </div>
                 <div className="content">{friendRequestRows}</div>
               </div>
             )}
             <div className="box-panel" style={panelStyle}>
-              <div className="heading" style={headingStyle}>Friends</div>
+              <div className="heading" style={headingStyle}>
+                Friends
+              </div>
               <div className="content">
                 <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
                 {friendRows}
@@ -1058,7 +1072,9 @@ export default function Profile() {
               </div>
             </div>
             <div className="box-panel" style={panelStyle}>
-              <div className="heading" style={headingStyle}>Setups Created</div>
+              <div className="heading" style={headingStyle}>
+                Setups Created
+              </div>
               <div className="content">
                 {createdSetupRows}
                 {createdSetups.length === 0 && "No setups"}
@@ -1078,7 +1094,9 @@ export default function Profile() {
                   }}
                   title="achievements"
                 />
-                <div className="heading" style={headingStyle}>Achievements</div>
+                <div className="heading" style={headingStyle}>
+                  Achievements
+                </div>
               </div>
               <div className="content">
                 {AchievementRows}

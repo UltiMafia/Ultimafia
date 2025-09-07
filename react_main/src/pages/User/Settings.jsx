@@ -18,7 +18,7 @@ import {
   LinearProgress,
   Paper,
 } from "@mui/material";
-import { useColorScheme } from '@mui/material/styles';
+import { useColorScheme } from "@mui/material/styles";
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import Form, { useForm } from "components/Form";

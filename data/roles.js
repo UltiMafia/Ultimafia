@@ -3347,7 +3347,9 @@ const roleData = {
         Butterfly: [
           "If Butterfly is in the setup, The Stylist can choose to revive all dead players as random Independent roles.",
         ],
-        nightOrder: [["Make Info False or Grant Ability", PRIORITY_EFFECT_GIVER_EARLY]],
+        nightOrder: [
+          ["Make Info False or Grant Ability", PRIORITY_EFFECT_GIVER_EARLY],
+        ],
       },
     },
     Prankster: {

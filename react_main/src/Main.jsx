@@ -50,15 +50,9 @@ import "css/main.css";
 import { useReducer } from "react";
 import { setCaptchaVisible } from "./utils";
 import { NewLoading } from "./pages/Welcome/NewLoading";
-import {
-  Box,
-  Stack,
-  Paper,
-  Typography,
-  Button,
-} from "@mui/material";
-import MuiLink from '@mui/material/Link';
-import { useColorScheme } from '@mui/material/styles';
+import { Box, Stack, Paper, Typography, Button } from "@mui/material";
+import MuiLink from "@mui/material/Link";
+import { useColorScheme } from "@mui/material/styles";
 
 import { Announcement } from "./components/alerts/Announcement";
 import { BadTextContrast } from "./components/alerts/BadTextContrast";
@@ -223,7 +217,9 @@ function Main(props) {
             (index) => (
               <div>
                 {"You are in a game in progress. "}
-                <MuiLink href={`/game/${res.data.inGame}`}>{"Return to game "}</MuiLink>
+                <MuiLink href={`/game/${res.data.inGame}`}>
+                  {"Return to game "}
+                </MuiLink>
                 or <MuiLink onClick={() => onGameLeave(index)}>Leave</MuiLink>
               </div>
             ),
@@ -352,9 +348,7 @@ function Main(props) {
         <Route exact path="/">
           <Welcome />
         </Route>
-        <Route>
-          {mainContent}
-        </Route>
+        <Route>{mainContent}</Route>
       </Switch>
     </ErrorBoundary>
   );
