@@ -204,7 +204,6 @@ export const LobbyBrowser = () => {
     </Box>
   );
 
-  const maxRolesCount = isPhoneDevice ? 5 : 10;
   const gameList = loading ? (
     <NewLoading small />
   ) : games.length ? (
@@ -230,7 +229,6 @@ export const LobbyBrowser = () => {
               key={game.id}
               showLobbyName
               showGameTypeIcon
-              maxRolesCount={maxRolesCount}
             />
           </ListItem>
         );

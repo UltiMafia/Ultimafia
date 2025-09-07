@@ -37,6 +37,10 @@ export default function Form(props) {
     if (field.min != null && Number(value) < field.min) value = field.min;
     else if (field.max != null && Number(value) > field.max) value = field.max;
 
+    if (field.onChange) {
+      field.onChange(event);
+    }
+
     props.onChange({
       ref: field.ref,
       prop: "value",

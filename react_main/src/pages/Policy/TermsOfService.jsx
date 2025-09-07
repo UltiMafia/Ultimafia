@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 import { Typography, Link, List, ListItem, ListItemText } from "@mui/material";
 
 export default function TermsOfService() {

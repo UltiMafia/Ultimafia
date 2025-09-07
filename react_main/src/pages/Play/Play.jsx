@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 
 import { Link, AppBar, Toolbar } from "@mui/material";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 
 import { UserContext } from "../../Contexts";
 

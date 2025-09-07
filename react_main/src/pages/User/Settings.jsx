@@ -18,16 +18,16 @@ import {
   LinearProgress,
   Paper,
 } from "@mui/material";
+import { useColorScheme } from '@mui/material/styles';
 
-import { UserContext, SiteInfoContext } from "../../Contexts";
-import Form, { useForm } from "../../components/Form";
-import { useErrorAlert } from "../../components/Alerts";
+import { UserContext, SiteInfoContext } from "Contexts";
+import Form, { useForm } from "components/Form";
+import { useErrorAlert } from "components/Alerts";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 
 import "css/settings.css";
-import { setCaptchaVisible } from "../../utils";
+import { setCaptchaVisible } from "utils";
 import { NewLoading } from "../Welcome/NewLoading";
-import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 
 export default function Settings() {
   const [settingsLoaded, setSettingsLoaded] = useState(false);
@@ -36,7 +36,7 @@ export default function Settings() {
   const [accessibilityTheme, setAccessibilityTheme] = useState("");
   const [emailForPasswordReset, setEmailForPasswordReset] = useState("");
   const [loading, setLoading] = useState(false);
-  const isPhoneDevice = useIsPhoneDevice();
+  const { mode, setMode } = useColorScheme();
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -95,7 +95,14 @@ export default function Settings() {
       label: "Site Color Scheme",
       ref: "siteColorScheme",
       type: "select",
+      onChange: (event) => {
+        setMode(event.target.value);
+      },
       options: [
+        {
+          label: "System",
+          value: "system",
+        },
         {
           label: "Light",
           value: "light",
@@ -105,6 +112,7 @@ export default function Settings() {
           value: "dark",
         },
       ],
+      value: mode,
     },
     {
       label: "Disable Protips",

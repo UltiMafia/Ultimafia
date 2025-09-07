@@ -12,7 +12,7 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 
 import { RoleSearch, ModifierSearch } from "../../components/Roles";
 import { SiteInfoContext } from "../../Contexts";

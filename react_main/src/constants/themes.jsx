@@ -33,28 +33,12 @@ const CustomExpandIcon = () => {
   );
 };
 
-const primaryColor = isHalloween ? "#FF8C00" : "#AC2222";
-const secondaryColor = isHalloween ? "#FF8C00" : "#D42A2A";
-
-const commonTheme = {
-  cssVariables: true,
-  typography: {
-    fontFamily: ["RobotoSlab"].join(","),
-    color: "#F1F1F1",
-    italicRelation: {
-      // "Created by", "Authored by", "In love with", etc.
-      fontSize: "1rem",
-      fontStyle: "italic",
-    },
-  },
-};
-
 const commonPalette = {
   primary: {
-    main: primaryColor,
+    main: isHalloween ? "#FF8C00" : "#AC2222",
   },
   secondary: {
-    main: secondaryColor,
+    main: isHalloween ? "#FF8C00" : "#D42A2A",
   },
   info: {
     main: "#DAA520",
@@ -122,43 +106,53 @@ const commonComponents = {
   },
 };
 
-export const darkTheme = createTheme({
-  ...commonTheme,
-  palette: {
-    ...commonPalette,
-    mode: "dark",
-  },
-  components: {
-    ...commonComponents,
-  },
-});
-
-export const lightTheme = createTheme({
-  ...commonTheme,
-  components: {
-    ...commonComponents,
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          variants: [
-            {
-              props: { variant: "outlined" },
-              style: {
-                backgroundColor: "var(--scheme-color-sec)",
-              },
+export const SITE_THEME = createTheme({
+  colorSchemes: {
+    light: {
+      components: {
+        ...commonComponents,
+        MuiPaper: {
+          styleOverrides: {
+            root: {
+              variants: [
+                {
+                  props: { variant: "outlined" },
+                  style: {
+                    backgroundColor: "var(--scheme-color-sec)",
+                  },
+                },
+              ],
             },
-          ],
+          },
         },
+      },
+      palette: {
+        ...commonPalette,
+      },
+    },
+    dark: {
+      components: {
+        ...commonComponents,
+      },
+      palette: {
+        ...commonPalette,
       },
     },
   },
-  palette: {
-    ...commonPalette,
-    mode: "light",
+  cssVariables: {
+    colorSchemeSelector: 'data'
+  },
+  typography: {
+    fontFamily: ["RobotoSlab"].join(","),
+    color: "#F1F1F1",
+    italicRelation: { // "Created by", "Authored by", "In love with", etc.
+      fontSize: "1rem",
+      fontStyle: "italic",
+    }
   },
 });
 
-export const darkThemeHigherContrast = createTheme({
+/* export const darkThemeHigherContrast = createTheme({
   ...darkTheme,
   palette: {
     ...darkTheme?.palette,
@@ -167,17 +161,4 @@ export const darkThemeHigherContrast = createTheme({
       main: "#EA0F0B", // EA0F0B, F63F3C, F97876
     },
   },
-});
-
-export const dialogTheme = createTheme({
-  palette: {
-    mode: "dark",
-    primary: {
-      main: "#F41410",
-      // main: "#F98280", /* lighter version */
-    },
-  },
-  typography: {
-    fontFamily: ["RobotoSlab"].join(","),
-  },
-});
+}); */

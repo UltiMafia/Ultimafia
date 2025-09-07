@@ -13,7 +13,7 @@ import {
   CardContent,
   Typography,
 } from "@mui/material";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 
 export default function UserSearch(props) {
   const theme = useTheme();

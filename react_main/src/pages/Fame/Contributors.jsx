@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Typography, Grid, Box, Link } from "@mui/material";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 import { useErrorAlert } from "../../components/Alerts";
 import { NameWithAvatar } from "../User/User";
 import { RoleCount } from "../../components/Roles";

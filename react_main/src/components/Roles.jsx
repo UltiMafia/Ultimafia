@@ -18,7 +18,7 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
 import { NewLoading } from "../pages/Welcome/NewLoading";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";

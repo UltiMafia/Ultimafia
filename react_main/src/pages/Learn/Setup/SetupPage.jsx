@@ -20,7 +20,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { useTheme } from "@mui/styles";
+import { useTheme } from "@mui/material/styles";
 
 import ModerationSideDrawer from "components/ModerationSideDrawer";
 import { useErrorAlert } from "components/Alerts";
