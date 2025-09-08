@@ -76,7 +76,9 @@ export default function HostGameDialogue({ open, setOpen, setup }) {
     }
 
     // Fail fast
-    throw new Error(`Failed to get form fields for game type: ${setup.gameType}`);
+    throw new Error(
+      `Failed to get form fields for game type: ${setup.gameType}`
+    );
   }
 
   const [formFields, updateFormFields] = useForm(initialFormFields);

@@ -854,11 +854,17 @@ export default function Profile() {
       />
       <Grid container rowSpacing={1} columnSpacing={1} className="profile">
         <Grid item xs={12}>
-          <Stack direction="row" sx={{
-            justifyContent: "center"
-          }}>
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: "center",
+            }}
+          >
             {/* 900px max banner size + 16px padding on box-panel + 8px padding on content = 924px */}
-            <div className="box-panel" style={{ ...panelStyle, width: "100%", maxWidth: "924px" }}>
+            <div
+              className="box-panel"
+              style={{ ...panelStyle, width: "100%", maxWidth: "924px" }}
+            >
               <div className="content" style={{ gap: "8px" }}>
                 {banner && (
                   <div className="banner" style={bannerStyle}>
