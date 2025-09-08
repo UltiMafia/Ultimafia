@@ -66,7 +66,10 @@ module.exports = class Card {
       let tempMeetings = Object.entries(this.meetings);
       this.meetings = {};
       for (let tempMeet of tempMeetings) {
-        if(tempMeet[1].flags.includes("group") || tempMeet[1].flags.includes("speech")){
+        if (
+          tempMeet[1].flags.includes("group") ||
+          tempMeet[1].flags.includes("speech")
+        ) {
           continue;
         }
         tempMeet[1].actionName = tempMeet[0];
