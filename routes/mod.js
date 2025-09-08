@@ -23,7 +23,7 @@ router.get("/groups", async function (req, res) {
       group.members = await models.InGroup.find({ group: group._id })
         .select("user")
         .populate("user", "id name avatar -_id");
-      group.members = group.members.map((member) => member.toJSON().user);
+      group.members = group.members.map((member) => member.toJSON().user).filter(member => member !== null);
 
       for (let member of group.members)
         member.status = await redis.getUserStatus(member.id);
