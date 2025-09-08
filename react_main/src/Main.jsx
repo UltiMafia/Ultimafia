@@ -133,12 +133,12 @@ function Main(props) {
       .catch(errorAlert);
   }
 
-  const { mode, setMode } = useColorScheme();
+  const { mode, systemMode } = useColorScheme();
   useEffect(() => {
-    const colorScheme = user?.settings?.siteColorScheme || mode;
+    const colorScheme = mode === "system" ? systemMode : mode;
     document.documentElement.classList.remove("dark-mode", "light-mode");
     document.documentElement.classList.add(`${colorScheme}-mode`);
-  }, [user?.settings?.siteColorScheme]);
+  }, [mode]);
   /*
   var roleIconScheme = user.settings?.roleIconScheme
     ? user.settings.roleIconScheme
