@@ -854,24 +854,29 @@ export default function Profile() {
       />
       <Grid container rowSpacing={1} columnSpacing={1} className="profile">
         <Grid item xs={12}>
-          <div className="box-panel" style={panelStyle}>
-            <div className="content" style={{ gap: "8px" }}>
-              {banner && (
-                <div className="banner" style={bannerStyle}>
-                  {bannerUpload}
-                </div>
-              )}
-              {!banner && (
-                <Box
-                  className="banner"
-                  sx={{ width: "100%", height: "24px !important" }}
-                >
-                  {bannerUpload}
-                </Box>
-              )}
-              <Grid container>{aviGridItems}</Grid>
+          <Stack direction="row" sx={{
+            justifyContent: "center"
+          }}>
+            {/* 900px max banner size + 16px padding on box-panel + 8px padding on content = 924px */}
+            <div className="box-panel" style={{ ...panelStyle, width: "100%", maxWidth: "924px" }}>
+              <div className="content" style={{ gap: "8px" }}>
+                {banner && (
+                  <div className="banner" style={bannerStyle}>
+                    {bannerUpload}
+                  </div>
+                )}
+                {!banner && (
+                  <Box
+                    className="banner"
+                    sx={{ width: "100%", height: "24px !important" }}
+                  >
+                    {bannerUpload}
+                  </Box>
+                )}
+                <Grid container>{aviGridItems}</Grid>
+              </div>
             </div>
-          </div>
+          </Stack>
         </Grid>
         <Grid item xs={12} md={8}>
           <Stack direction="column" spacing={1}>

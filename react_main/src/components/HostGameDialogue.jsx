@@ -58,6 +58,7 @@ export default function HostGameDialogue({ open, setOpen, setup }) {
         return HostJotto();
       case "Acrotopia":
         return HostAcrotopia();
+      case "Secret Hitler":
       case "Secret Dictator":
         return HostSecretDictator();
       case "Wacky Words":
@@ -74,7 +75,8 @@ export default function HostGameDialogue({ open, setOpen, setup }) {
         return HostConnectFour();
     }
 
-    return [null, null];
+    // Fail fast
+    throw new Error(`Failed to get form fields for game type: ${setup.gameType}`);
   }
 
   const [formFields, updateFormFields] = useForm(initialFormFields);
