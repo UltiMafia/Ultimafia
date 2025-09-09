@@ -165,15 +165,7 @@ module.exports = class VillageCore extends Card {
         type: "shouldSkip",
         shouldSkip: function () {
           for (let player of this.game.players) {
-            if (
-              this.game
-                .getRoleTags(
-                  this.game.formatRoleInternal(
-                    player.role.name,
-                    player.role.modifier
-                  )
-                )
-                .includes("Ouija Board")
+            if (player.hasItem("Ouija Board")
             ) {
               return false;
             }
