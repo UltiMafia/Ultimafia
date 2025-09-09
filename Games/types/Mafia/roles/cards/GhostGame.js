@@ -10,7 +10,7 @@ module.exports = class GhostGame extends Card {
     // Select a real word and a fake word
     let wordPack = Random.randArrayVal(wordList);
     let shuffledWordPack = Random.randomizeArray(wordPack);
-    if (!role.game.realWord) {
+    if (!role.game.realWord && role.game.players.filter((p) => p.role.name == "Host").length <= 0) {
       role.game.realWord = shuffledWordPack[0];
       role.game.fakeWord = shuffledWordPack[1];
       role.game.wordLength = role.game.realWord.length;
@@ -54,6 +54,9 @@ module.exports = class GhostGame extends Card {
           }
         }
         if (this.game.HasSentGhostStartingMessage == true) {
+          return;
+        }
+        if(!this.game.realWord){
           return;
         }
         this.game.HasSentGhostStartingMessage == true;
