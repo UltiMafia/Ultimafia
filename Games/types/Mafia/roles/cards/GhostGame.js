@@ -7,31 +7,64 @@ module.exports = class GhostGame extends Card {
   constructor(role) {
     super(role);
 
-    this.immunity["condemn"] = 1;
-
     // Select a real word and a fake word
     let wordPack = Random.randArrayVal(wordList);
     let shuffledWordPack = Random.randomizeArray(wordPack);
-    this.realWord = shuffledWordPack[0];
-    this.fakeWord = shuffledWordPack[1];
-    this.wordLength = this.realWord.length;
+    if(!role.game.realWord){
+      role.game.realWord = shuffledWordPack[0];
+      role.game.fakeWord = shuffledWordPack[1];
+      role.game.wordLength = role.game.realWord.length;
+    }
 
     this.listeners = {
-      start: function () {
+      roleAssigned: function (player) {
+         if (player !== this.player) return;
         for (let player of this.game.players) {
-          if (player.role.alignment == "Ghost" && player != this.player) {
+          if (player.role.name == "Ghost" && player != this.player) {
             this.revealToPlayer(player);
           }
         }
-
-        this.player.queueAlert(
+        if(this.game.HasSentGhostStartingMessage == true){
+          return;
+        }
+        this.game.HasSentGhostStartingMessage == true;
+        for(let player of this.game.players){
+          if(player.role.name == "Ghost"){
+            player.queueAlert(
           `Guess the hidden word of length: ${this.game.wordLength}`
         );
-      },
-      immune: function (action) {
-        if (action.target == this.player) {
-          this.guessOnNext = true;
+          }
         }
+      let fakeWordGetters = [
+        "Miller",
+        "Sleepwalker",
+        "Braggart",
+      ];
+      let noWordGetters = [
+        "Saint",
+        "Seer",
+        "Templar",
+      ];
+
+      let villagePlayers = this.game.players.filter(
+      (p) => p.role.alignment === "Village" && !(((fakeWordGetters.includes(p.role.name) || noWordGetters.includes(p.role.name)) && p.role.canDoSpecialInteractions())
+      || (p.role.modifier && p.role.modifier.split("/").includes("Insane"))) 
+    );
+    let fakeWordPlayers = this.game.players.filter(
+      (p) => ((fakeWordGetters.includes(p.role.name)) && p.role.canDoSpecialInteractions()) || (p.role.modifier && p.role.modifier.split("/").includes("Insane"))
+    );
+
+    for (let villagePlayer of villagePlayers) {
+      villagePlayer.role.data.assignedWord = this.game.realWord;
+      villagePlayer.queueAlert(`The secret word is: ${this.game.realWord}.`);
+    }
+
+    for (let fakePlayer of fakeWordPlayers) {
+      mafiaOrCultPlayer.role.data.assignedWord = this.game.fakeWord;
+      mafiaOrCultPlayer.queueAlert(`The secret word is: ${this.game.fakeWord}.`);
+    }
+
+        
       },
     };
 
@@ -43,6 +76,7 @@ module.exports = class GhostGame extends Card {
         targets: { include: ["alive"], exclude: ["dead"] },
         action: {
           run: function () {
+            this.game.PlayersWhoGaveClue = [];
             this.target.holdItem("Ouija Board");
           },
         },
@@ -72,7 +106,12 @@ module.exports = class GhostGame extends Card {
           },
         },
         shouldMeet: function () {
-          return this.guessOnNext;
+          for (let action of this.game.actions[0]) {
+            if (action.target == this.player && action.hasLabel("condemn")) {
+              return true;
+            }
+          }
+          return false;
         },
       },
     };
@@ -92,7 +131,7 @@ module.exports = class GhostGame extends Card {
       },
     };
   }
-
+/*
   assignWordsToPlayers() {
     let villagePlayers = this.game.players.filter(
       (p) => p.role.alignment === "Village"
@@ -111,4 +150,5 @@ module.exports = class GhostGame extends Card {
       mafiaOrCultPlayer.queueAlert(`The secret word is: ${this.fakeWord}.`);
     }
   }
+    */
 };
