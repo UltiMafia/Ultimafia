@@ -10,7 +10,7 @@ module.exports = class GhostGame extends Card {
     // Select a real word and a fake word
     let wordPack = Random.randArrayVal(wordList);
     let shuffledWordPack = Random.randomizeArray(wordPack);
-    if(!role.game.realWord){
+    if (!role.game.realWord) {
       role.game.realWord = shuffledWordPack[0];
       role.game.fakeWord = shuffledWordPack[1];
       role.game.wordLength = role.game.realWord.length;
@@ -18,53 +18,56 @@ module.exports = class GhostGame extends Card {
 
     this.listeners = {
       roleAssigned: function (player) {
-         if (player !== this.player) return;
+        if (player !== this.player) return;
         for (let player of this.game.players) {
           if (player.role.name == "Ghost" && player != this.player) {
             this.revealToPlayer(player);
           }
         }
-        if(this.game.HasSentGhostStartingMessage == true){
+        if (this.game.HasSentGhostStartingMessage == true) {
           return;
         }
         this.game.HasSentGhostStartingMessage == true;
-        for(let player of this.game.players){
-          if(player.role.name == "Ghost"){
+        for (let player of this.game.players) {
+          if (player.role.name == "Ghost") {
             player.queueAlert(
-          `Guess the hidden word of length: ${this.game.wordLength}`
-        );
+              `Guess the hidden word of length: ${this.game.wordLength}`
+            );
           }
         }
-      let fakeWordGetters = [
-        "Miller",
-        "Sleepwalker",
-        "Braggart",
-      ];
-      let noWordGetters = [
-        "Saint",
-        "Seer",
-        "Templar",
-      ];
+        let fakeWordGetters = ["Miller", "Sleepwalker", "Braggart"];
+        let noWordGetters = ["Saint", "Seer", "Templar"];
 
-      let villagePlayers = this.game.players.filter(
-      (p) => p.role.alignment === "Village" && !(((fakeWordGetters.includes(p.role.name) || noWordGetters.includes(p.role.name)) && p.role.canDoSpecialInteractions())
-      || (p.role.modifier && p.role.modifier.split("/").includes("Insane"))) 
-    );
-    let fakeWordPlayers = this.game.players.filter(
-      (p) => ((fakeWordGetters.includes(p.role.name)) && p.role.canDoSpecialInteractions()) || (p.role.modifier && p.role.modifier.split("/").includes("Insane"))
-    );
+        let villagePlayers = this.game.players.filter(
+          (p) =>
+            p.role.alignment === "Village" &&
+            !(
+              ((fakeWordGetters.includes(p.role.name) ||
+                noWordGetters.includes(p.role.name)) &&
+                p.role.canDoSpecialInteractions()) ||
+              (p.role.modifier && p.role.modifier.split("/").includes("Insane"))
+            )
+        );
+        let fakeWordPlayers = this.game.players.filter(
+          (p) =>
+            (fakeWordGetters.includes(p.role.name) &&
+              p.role.canDoSpecialInteractions()) ||
+            (p.role.modifier && p.role.modifier.split("/").includes("Insane"))
+        );
 
-    for (let villagePlayer of villagePlayers) {
-      villagePlayer.role.data.assignedWord = this.game.realWord;
-      villagePlayer.queueAlert(`The secret word is: ${this.game.realWord}.`);
-    }
+        for (let villagePlayer of villagePlayers) {
+          villagePlayer.role.data.assignedWord = this.game.realWord;
+          villagePlayer.queueAlert(
+            `The secret word is: ${this.game.realWord}.`
+          );
+        }
 
-    for (let fakePlayer of fakeWordPlayers) {
-      mafiaOrCultPlayer.role.data.assignedWord = this.game.fakeWord;
-      mafiaOrCultPlayer.queueAlert(`The secret word is: ${this.game.fakeWord}.`);
-    }
-
-        
+        for (let fakePlayer of fakeWordPlayers) {
+          mafiaOrCultPlayer.role.data.assignedWord = this.game.fakeWord;
+          mafiaOrCultPlayer.queueAlert(
+            `The secret word is: ${this.game.fakeWord}.`
+          );
+        }
       },
     };
 
@@ -131,7 +134,7 @@ module.exports = class GhostGame extends Card {
       },
     };
   }
-/*
+  /*
   assignWordsToPlayers() {
     let villagePlayers = this.game.players.filter(
       (p) => p.role.alignment === "Village"

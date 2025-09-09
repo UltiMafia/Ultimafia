@@ -20,19 +20,25 @@ module.exports = class OuijaBoard extends Item {
           run: function () {
             //this.game.recordClue(this.actor, this.target);
             this.game.sendAlert(`${this.actor.name}: ${this.target}`);
-            if(!this.game.PlayersWhoGaveClue){
-            this.game.PlayersWhoGaveClue = [];
+            if (!this.game.PlayersWhoGaveClue) {
+              this.game.PlayersWhoGaveClue = [];
             }
             this.game.PlayersWhoGaveClue.push();
             let players = this.game
-            .alivePlayers()
-            .filter((p) => p.role.name != "Host");
+              .alivePlayers()
+              .filter((p) => p.role.name != "Host");
             let index = players.indexOf(this.actor);
-             for (let x = 1; x < players.length; x++){
-              if(!this.game.PlayersWhoGaveClue.includes(players[(index + x + 1) % players.length])){
-                players[(index + x + 1) % players.length].holdItem("Ouija Board");
+            for (let x = 1; x < players.length; x++) {
+              if (
+                !this.game.PlayersWhoGaveClue.includes(
+                  players[(index + x + 1) % players.length]
+                )
+              ) {
+                players[(index + x + 1) % players.length].holdItem(
+                  "Ouija Board"
+                );
               }
-             }
+            }
             this.item.drop();
           },
         },
@@ -41,23 +47,23 @@ module.exports = class OuijaBoard extends Item {
 
     this.listeners = {
       death: function (player, killer, deathType, instant) {
-       if (player == this.holder) {
+        if (player == this.holder) {
           let players = this.game
             .alivePlayers()
-            .filter((p) => p.role.name != "Host" && this.game.PlayersWhoGaveClue.includes(p));
-          if(players.length <= 0){
+            .filter(
+              (p) =>
+                p.role.name != "Host" &&
+                this.game.PlayersWhoGaveClue.includes(p)
+            );
+          if (players.length <= 0) {
             return;
           }
 
-         players[0].holdItem("Ouija Board");
+          players[0].holdItem("Ouija Board");
         }
       },
     };
-
-    
   }
-
-  
 
   hold(player) {
     super.hold(player);
