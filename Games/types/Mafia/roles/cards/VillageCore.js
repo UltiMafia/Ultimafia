@@ -161,6 +161,26 @@ module.exports = class VillageCore extends Card {
           */
         },
       },
+      "Give Clue": {
+        type: "shouldSkip",
+        shouldSkip: function () {
+            for (let player of this.game.players) {
+              if (
+                this.game
+                  .getRoleTags(
+                    this.game.formatRoleInternal(
+                      player.role.name,
+                      player.role.modifier
+                    )
+                  )
+                  .includes("Ouija Board")
+              ) {
+                return false;
+              }
+            }
+          return true;
+        },
+      },
     };
   }
 };
