@@ -19,7 +19,7 @@ module.exports = class OuijaBoard extends Item {
           item: this,
           run: function () {
             this.game.GhostCluesLisited = false;
-            if(!this.game.GhostClues){
+            if (!this.game.GhostClues) {
               this.game.GhostClues = [];
             }
             this.game.GhostClues.push(`${this.actor.name}: ${this.target}`);

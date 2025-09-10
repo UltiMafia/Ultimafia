@@ -165,8 +165,7 @@ module.exports = class VillageCore extends Card {
         type: "shouldSkip",
         shouldSkip: function () {
           for (let player of this.game.players) {
-            if (player.hasItem("Ouija Board")
-            ) {
+            if (player.hasItem("Ouija Board")) {
               return false;
             }
           }

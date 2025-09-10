@@ -18,7 +18,10 @@ module.exports = class HostChooseWordsForGhost extends Card {
           submit: "Confirm",
         },
         shouldMeet: function () {
-          return (this.hasBeenDusk != true && this.game.players.filter((p) => p.role.name == "Ghost").length > 0);
+          return (
+            this.hasBeenDusk != true &&
+            this.game.players.filter((p) => p.role.name == "Ghost").length > 0
+          );
         },
         action: {
           priority: PRIORITY_CONVERT_DEFAULT - 1,
@@ -27,50 +30,49 @@ module.exports = class HostChooseWordsForGhost extends Card {
             role.game.wordLength = role.game.realWord.length;
             role.game.GhostHaveClueMeeting = true;
 
-          this.game.HasSentGhostStartingMessage == true;
-        for (let player of this.game.players) {
-          if (player.role.name == "Ghost") {
-            player.queueAlert(
-              `Guess the hidden word of length: ${this.game.wordLength}`
+            this.game.HasSentGhostStartingMessage == true;
+            for (let player of this.game.players) {
+              if (player.role.name == "Ghost") {
+                player.queueAlert(
+                  `Guess the hidden word of length: ${this.game.wordLength}`
+                );
+              }
+            }
+            let fakeWordGetters = ["Miller", "Sleepwalker", "Braggart"];
+            let noWordGetters = ["Saint", "Seer", "Templar"];
+
+            let villagePlayers = this.game.players.filter(
+              (p) =>
+                p.role.alignment === "Village" &&
+                !(
+                  ((fakeWordGetters.includes(p.role.name) ||
+                    noWordGetters.includes(p.role.name)) &&
+                    p.role.canDoSpecialInteractions()) ||
+                  (p.role.modifier &&
+                    p.role.modifier.split("/").includes("Insane"))
+                )
             );
-          }
-        }
-        let fakeWordGetters = ["Miller", "Sleepwalker", "Braggart"];
-        let noWordGetters = ["Saint", "Seer", "Templar"];
+            let fakeWordPlayers = this.game.players.filter(
+              (p) =>
+                (fakeWordGetters.includes(p.role.name) &&
+                  p.role.canDoSpecialInteractions()) ||
+                (p.role.modifier &&
+                  p.role.modifier.split("/").includes("Insane"))
+            );
 
-        let villagePlayers = this.game.players.filter(
-          (p) =>
-            p.role.alignment === "Village" &&
-            !(
-              ((fakeWordGetters.includes(p.role.name) ||
-                noWordGetters.includes(p.role.name)) &&
-                p.role.canDoSpecialInteractions()) ||
-              (p.role.modifier && p.role.modifier.split("/").includes("Insane"))
-            )
-        );
-        let fakeWordPlayers = this.game.players.filter(
-          (p) =>
-            (fakeWordGetters.includes(p.role.name) &&
-              p.role.canDoSpecialInteractions()) ||
-            (p.role.modifier && p.role.modifier.split("/").includes("Insane"))
-        );
+            for (let villagePlayer of villagePlayers) {
+              villagePlayer.role.data.assignedWord = this.game.realWord;
+              villagePlayer.queueAlert(
+                `The secret word is: ${this.game.realWord}.`
+              );
+            }
 
-        for (let villagePlayer of villagePlayers) {
-          villagePlayer.role.data.assignedWord = this.game.realWord;
-          villagePlayer.queueAlert(
-            `The secret word is: ${this.game.realWord}.`
-          );
-        }
-
-        for (let fakePlayer of fakeWordPlayers) {
-          mafiaOrCultPlayer.role.data.assignedWord = this.game.fakeWord;
-          mafiaOrCultPlayer.queueAlert(
-            `The secret word is: ${this.game.fakeWord}.`
-          );
-        }
-
-
-            
+            for (let fakePlayer of fakeWordPlayers) {
+              mafiaOrCultPlayer.role.data.assignedWord = this.game.fakeWord;
+              mafiaOrCultPlayer.queueAlert(
+                `The secret word is: ${this.game.fakeWord}.`
+              );
+            }
           },
         },
       },
@@ -84,10 +86,13 @@ module.exports = class HostChooseWordsForGhost extends Card {
           submit: "Confirm",
         },
         shouldMeet: function () {
-          return (this.hasBeenDusk != true && this.game.players.filter((p) => p.role.name == "Ghost").length > 0);
+          return (
+            this.hasBeenDusk != true &&
+            this.game.players.filter((p) => p.role.name == "Ghost").length > 0
+          );
         },
         action: {
-          priority: PRIORITY_CONVERT_DEFAULT -5,
+          priority: PRIORITY_CONVERT_DEFAULT - 5,
           run: function () {
             this.game.fakeWord = this.target;
           },

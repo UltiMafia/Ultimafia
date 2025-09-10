@@ -2,7 +2,10 @@ const Card = require("../../Card");
 const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
 const wordList = require("../../../../../data/words");
-const { PRIORITY_WIN_CHECK_DEFAULT, PRIORITY_DAY_EFFECT_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_WIN_CHECK_DEFAULT,
+  PRIORITY_DAY_EFFECT_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class GhostGame extends Card {
   constructor(role) {
@@ -11,7 +14,10 @@ module.exports = class GhostGame extends Card {
     // Select a real word and a fake word
     let wordPack = Random.randArrayVal(wordList);
     let shuffledWordPack = Random.randomizeArray(wordPack);
-    if (!role.game.realWord && role.game.players.filter((p) => p.role.name == "Host").length <= 0) {
+    if (
+      !role.game.realWord &&
+      role.game.players.filter((p) => p.role.name == "Host").length <= 0
+    ) {
       role.game.realWord = shuffledWordPack[0];
       role.game.fakeWord = shuffledWordPack[1];
       role.game.wordLength = role.game.realWord.length;
@@ -23,10 +29,14 @@ module.exports = class GhostGame extends Card {
         if (!stateInfo.name.match(/Day/)) {
           return;
         }
-        if(!this.game.GhostCluesLisited && this.game.GhostClues && this.game.GhostClues.length > 0){
+        if (
+          !this.game.GhostCluesLisited &&
+          this.game.GhostClues &&
+          this.game.GhostClues.length > 0
+        ) {
           this.game.GhostCluesLisited = true;
           this.game.sendAlert("Clues");
-          for(let clue of this.game.GhostClues){
+          for (let clue of this.game.GhostClues) {
             this.game.sendAlert(clue);
           }
         }
@@ -53,10 +63,10 @@ module.exports = class GhostGame extends Card {
             }
             this.game.GhostHaveClueMeeting = true;
             return;
-          }
+          },
         });
         this.game.queueAction(action);
-        },
+      },
       roleAssigned: function (player) {
         if (player !== this.player) return;
         for (let player of this.game.players) {
@@ -67,7 +77,7 @@ module.exports = class GhostGame extends Card {
         if (this.game.HasSentGhostStartingMessage == true) {
           return;
         }
-        if(!this.game.realWord){
+        if (!this.game.realWord) {
           return;
         }
         this.game.HasSentGhostStartingMessage == true;
@@ -107,9 +117,7 @@ module.exports = class GhostGame extends Card {
 
         for (let fakePlayer of fakeWordPlayers) {
           fakePlayer.role.data.assignedWord = this.game.fakeWord;
-          fakePlayer.queueAlert(
-            `The secret word is: ${this.game.fakeWord}.`
-          );
+          fakePlayer.queueAlert(`The secret word is: ${this.game.fakeWord}.`);
         }
       },
     };
@@ -171,7 +179,7 @@ module.exports = class GhostGame extends Card {
         const numGhostAlive = this.game.players.filter(
           (p) => p.alive && p.role.name == "Ghost"
         ).length;
-        if(!this.game.realWord){
+        if (!this.game.realWord) {
           return;
         }
         if (
@@ -209,7 +217,7 @@ module.exports = class GhostGame extends Card {
       Night: {
         type: "shouldSkip",
         shouldSkip: function () {
-            for (let player of this.game.alivePlayers()) {
+          for (let player of this.game.alivePlayers()) {
             if (player.hasItem("Ouija Board")) {
               return true;
             }
@@ -220,7 +228,7 @@ module.exports = class GhostGame extends Card {
       Dawn: {
         type: "shouldSkip",
         shouldSkip: function () {
-            for (let player of this.game.alivePlayers()) {
+          for (let player of this.game.alivePlayers()) {
             if (player.hasItem("Ouija Board")) {
               return true;
             }
@@ -229,8 +237,6 @@ module.exports = class GhostGame extends Card {
         },
       },
     };
-
-        
   }
   /*
   assignWordsToPlayers() {

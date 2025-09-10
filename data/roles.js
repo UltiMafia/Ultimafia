@@ -85,7 +85,6 @@ const {
 const MalEffects =
   "Malicious effects include poison, bleeding, insanity, polarization, gasoline, anesthetic gas, lovesick, zombification, alcoholism, lycanthropy, and viruses.";
 
-
 const roleData = {
   Mafia: {
     //Village
@@ -195,9 +194,7 @@ const roleData = {
         "Appears as Miller upon being killed.",
       ],
       SpecialInteractions: {
-        Ghost: [
-          "If a Ghost is Present, a Miller will learn a fake word.",
-        ],
+        Ghost: ["If a Ghost is Present, a Miller will learn a fake word."],
       },
     },
     "Party Host": {
@@ -264,9 +261,7 @@ const roleData = {
       description: ["Visits a random player each night."],
       nightOrder: [["Visit", PRIORITY_SUPPORT_VISIT_DEFAULT]],
       SpecialInteractions: {
-        Ghost: [
-          "If a Ghost is Present, a Sleepwalker will learn a fake word.",
-        ],
+        Ghost: ["If a Ghost is Present, a Sleepwalker will learn a fake word."],
       },
     },
     //protective roles
@@ -1629,9 +1624,7 @@ const roleData = {
       ],
       nightOrder: [["Self Deliriate", PRIORITY_FULL_DISABLE + 1]],
       SpecialInteractions: {
-        Ghost: [
-          "If a Ghost is Present, a Braggart will learn a fake word.",
-        ],
+        Ghost: ["If a Ghost is Present, a Braggart will learn a fake word."],
       },
     },
     Coward: {
@@ -1793,9 +1786,7 @@ const roleData = {
         "Adds 1 Templar in closed setups.",
       ],
       SpecialInteractions: {
-        Ghost: [
-          "If a Ghost is Present, a Templar will not learn any words.",
-        ],
+        Ghost: ["If a Ghost is Present, a Templar will not learn any words."],
       },
     },
     //reflexive roles
@@ -2110,9 +2101,7 @@ const roleData = {
         "When a Saint is condemned, all Village-aligned players die.",
       ],
       SpecialInteractions: {
-        Ghost: [
-          "If a Ghost is Present, a Saint will not learn any words.",
-        ],
+        Ghost: ["If a Ghost is Present, a Saint will not learn any words."],
       },
     },
     Seer: {
@@ -2134,9 +2123,7 @@ const roleData = {
         "Appears as villager on death.",
       ],
       SpecialInteractions: {
-        Ghost: [
-          "If a Ghost is Present, a Seer will not learn any words.",
-        ],
+        Ghost: ["If a Ghost is Present, a Seer will not learn any words."],
       },
     },
     Mole: {
