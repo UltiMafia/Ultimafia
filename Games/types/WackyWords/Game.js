@@ -205,8 +205,8 @@ module.exports = class WackyWordsGame extends Game {
     let question = this.shuffledQuestions[0];
     let playerIndex = Random.randInt(0, this.players.length - 1);
     let playerName = this.players.at(playerIndex).name;
-    question = question.replace("$player", playerName);
-    question = question.replace("$blank", "____");
+    question = question.replaceAll("$player", playerName);
+    question = question.replaceAll("$blank", "____");
     this.shuffledQuestions.shift();
 
     this.currentQuestion = question;
