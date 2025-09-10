@@ -66,6 +66,13 @@ module.exports = class Card {
       let tempMeetings = Object.entries(this.meetings);
       this.meetings = {};
       for (let tempMeet of tempMeetings) {
+        if (
+          tempMeet[1].flags.includes("group") ||
+          tempMeet[1].flags.includes("speech")
+        ) {
+          this.meetings[tempMeet[0]] = tempMeet[1];
+          continue;
+        }
         tempMeet[1].actionName = tempMeet[0];
         this.meetings[tempMeet[0] + " " + this.role.game.DumbMeetingNumber] =
           tempMeet[1];

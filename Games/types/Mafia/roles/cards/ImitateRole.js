@@ -25,6 +25,9 @@ module.exports = class ImitateRole extends Card {
             //   this.actor.queueAlert(alert);
             //   return;
             // }
+            if (this.target == "None") {
+              return;
+            }
             let alert = `:mask: After much studying, you learn to act like ${addArticle(
               this.target
             )}.`;

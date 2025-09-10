@@ -193,6 +193,9 @@ const roleData = {
         "Appears as a random Evil role upon being condemned.",
         "Appears as Miller upon being killed.",
       ],
+      SpecialInteractions: {
+        Ghost: ["If a Ghost is Present, a Miller will learn a fake word."],
+      },
     },
     "Party Host": {
       alignment: "Village",
@@ -257,6 +260,9 @@ const roleData = {
       category: "Basic",
       description: ["Visits a random player each night."],
       nightOrder: [["Visit", PRIORITY_SUPPORT_VISIT_DEFAULT]],
+      SpecialInteractions: {
+        Ghost: ["If a Ghost is Present, a Sleepwalker will learn a fake word."],
+      },
     },
     //protective roles
     Bawd: {
@@ -1617,6 +1623,9 @@ const roleData = {
         "Items used by a Braggart will be broken.",
       ],
       nightOrder: [["Self Deliriate", PRIORITY_FULL_DISABLE + 1]],
+      SpecialInteractions: {
+        Ghost: ["If a Ghost is Present, a Braggart will learn a fake word."],
+      },
     },
     Coward: {
       alignment: "Village",
@@ -1753,7 +1762,7 @@ const roleData = {
     "Invisible Man": {
       alignment: "Village",
       category: "Meeting",
-      tags: ["Meetings", "Basic"],
+      tags: ["Meetings", "Basic", "Day Actions"],
       description: [
         "Chooses one player during the day to follow at night.",
         "Views all messages from that player's meetings that night.",
@@ -1776,6 +1785,9 @@ const roleData = {
         "Shares a night meeting with other Templars.",
         "Adds 1 Templar in closed setups.",
       ],
+      SpecialInteractions: {
+        Ghost: ["If a Ghost is Present, a Templar will not learn any words."],
+      },
     },
     //reflexive roles
     Apothecary: {
@@ -1837,6 +1849,7 @@ const roleData = {
           value: "noir",
         },
       ],
+      nightOrder: [["Paint Visitors", PRIORITY_PREKILL_ACTION]],
     },
     Priest: {
       alignment: "Village",
@@ -2087,6 +2100,9 @@ const roleData = {
       description: [
         "When a Saint is condemned, all Village-aligned players die.",
       ],
+      SpecialInteractions: {
+        Ghost: ["If a Ghost is Present, a Saint will not learn any words."],
+      },
     },
     Seer: {
       alignment: "Village",
@@ -2106,6 +2122,9 @@ const roleData = {
         "On a correct guess, the Seer dies and the Mafia or Cult wins.",
         "Appears as villager on death.",
       ],
+      SpecialInteractions: {
+        Ghost: ["If a Ghost is Present, a Seer will not learn any words."],
+      },
     },
     Mole: {
       alignment: "Village",
@@ -4634,7 +4653,8 @@ const roleData = {
       ],
       description: [
         "Always assigned to the first player(s) in the list.",
-        "Cannot die.",
+        "Village cannot not win until a Host stops hosting.",
+        "Can only die if they choose to stop hosting.",
         // TODO
         "If in the game, whispers will not leak.",
         "Cannot be added to ranked or competitive games",
@@ -4826,12 +4846,13 @@ const roleData = {
     },
     Ghost: {
       alignment: "Independent",
-      disabled: true,
-      tags: ["Ghost", "Dawn"],
+      tags: ["Ghost", "Mini-game", "Hostile", "Dusk"],
       description: [
-        "When present in the game, all players except for the Ghost will know one of two randomly-selected words: the real word and the fake word.",
-        "Each night, gives players a Ouija Board. During the Dawn, players give clues about their word.",
-        "Wins if the Ghost guesses the real word when condemned.",
+        "When present in the game, all village players except for the Ghost will know one of two randomly-selected words: the real word and the fake word.",
+        "All Village roles will learn the real word",
+        "Miller, Sleepwalker, Braggart, and roles with the Insane modifier will learn the fake word instead.",
+        "Each night, gives players a Ouija Board. Players give clues about their word before the day starts.",
+        "Wins if a Ghost guesses the real word when condemned or if Ghosts have majority.",
       ],
     },
     Playwright: {
@@ -4893,7 +4914,7 @@ const roleData = {
         "Clock goes up by 1 hour for village, 2 hours for Mafia or Cult, and down by 3 hours for Independent.",
         "Dies instantly at 3 o'clock.",
         "Gains an extra life at 9 o'clock.",
-        "Wins when clock strikes 12 o'clock.",
+        "Wins when clock strikes 12 o'clock or if among last two alive.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
     },

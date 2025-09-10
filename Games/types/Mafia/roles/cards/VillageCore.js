@@ -161,6 +161,17 @@ module.exports = class VillageCore extends Card {
           */
         },
       },
+      "Give Clue": {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          for (let player of this.game.players) {
+            if (player.hasItem("Ouija Board")) {
+              return false;
+            }
+          }
+          return true;
+        },
+      },
     };
   }
 };
