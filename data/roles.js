@@ -4846,6 +4846,7 @@ const roleData = {
     },
     Ghost: {
       alignment: "Independent",
+      disabled: true,
       tags: ["Ghost", "Mini-game", "Hostile", "Dusk"],
       description: [
         "When present in the game, all village players except for the Ghost will know one of two randomly-selected words: the real word and the fake word.",
