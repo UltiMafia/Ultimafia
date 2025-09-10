@@ -8,7 +8,7 @@ module.exports = class OuijaBoard extends Item {
       "Give Clue": {
         actionName: "Give Clue (1-50)",
         states: ["Give Clue"],
-        flags: ["voting"],
+        flags: ["voting", "instant"],
         inputType: "text",
         textOptions: {
           minLength: 1,
@@ -18,17 +18,21 @@ module.exports = class OuijaBoard extends Item {
         action: {
           item: this,
           run: function () {
-            //this.game.recordClue(this.actor, this.target);
+            this.game.GhostCluesLisited = false;
+            if(!this.game.GhostClues){
+              this.game.GhostClues = [];
+            }
+            this.game.GhostClues.push(`${this.actor.name}: ${this.target}`);
             this.game.sendAlert(`${this.actor.name}: ${this.target}`);
             if (!this.game.PlayersWhoGaveClue) {
               this.game.PlayersWhoGaveClue = [];
             }
-            this.game.PlayersWhoGaveClue.push();
+            this.game.PlayersWhoGaveClue.push(this.actor);
             let players = this.game
               .alivePlayers()
               .filter((p) => p.role.name != "Host");
             let index = players.indexOf(this.actor);
-            for (let x = 1; x < players.length; x++) {
+            for (let x = 0; x < players.length; x++) {
               if (
                 !this.game.PlayersWhoGaveClue.includes(
                   players[(index + x + 1) % players.length]
@@ -37,6 +41,8 @@ module.exports = class OuijaBoard extends Item {
                 players[(index + x + 1) % players.length].holdItem(
                   "Ouija Board"
                 );
+                this.item.drop();
+                return;
               }
             }
             this.item.drop();

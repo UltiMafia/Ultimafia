@@ -160,7 +160,7 @@ export default function LearnMafia(props) {
     },
     {
       name: "Delirium",
-      text: "An effect that roleblocks most roles and gives false reports to investigative roles.",
+      text: "An effect that makes players get false information and have non-information abilities disabled.",
     },
   ];
 

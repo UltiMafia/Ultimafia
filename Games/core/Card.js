@@ -70,6 +70,7 @@ module.exports = class Card {
           tempMeet[1].flags.includes("group") ||
           tempMeet[1].flags.includes("speech")
         ) {
+          this.meetings[tempMeet[0]] = tempMeet[1];
           continue;
         }
         tempMeet[1].actionName = tempMeet[0];

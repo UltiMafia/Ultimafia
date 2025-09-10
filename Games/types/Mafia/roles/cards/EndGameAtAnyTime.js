@@ -5,14 +5,15 @@ module.exports = class EndGameAtAnyTime extends Card {
     super(role);
 
     this.meetings = {
-      "End Game?": {
-        states: ["*"],
+      "Stop Hosting?": {
+        states: ["Day", "Night"],
         flags: ["voting", "instant", "noVeg"],
         inputType: "boolean",
         action: {
           run: function () {
             if (this.target == "Yes") {
-              this.game.immediateEnd();
+              this.actor.kill("Basic");
+              //this.game.immediateEnd();
             }
           },
         },

@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
-const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_PREKILL_ACTION } = require("../../const/Priority");
 
 module.exports = class PaintPortraits extends Card {
   constructor(role) {
@@ -45,7 +45,7 @@ module.exports = class PaintPortraits extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          priority: PRIORITY_PREKILL_ACTION,
           labels: ["investigate", "role", "hidden", "absolute"],
           run: function () {
             if (!this.actor.alive) return;

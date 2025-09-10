@@ -533,12 +533,12 @@ export const slangList = {
   },
   Delirious: {
     definition:
-      "A Special version of Blocking/Hooking. If the Action performed is Investigative, Instead of being blocked the player will get False Info.",
+      "Delirious players will get false information and have non-information abilities disabled.",
     emoji: "🧠",
   },
   Delirium: {
     definition:
-      "A Special version of Blocking/Hooking. If the Action performed is Investigative, Instead of being blocked the player will get False Info.",
+      "An effect that makes players get false information and have non-information abilities disabled.",
     emoji: "🧠",
   },
   Reveal: {

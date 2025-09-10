@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
 const wordList = require("../../../../../data/words");
 const { PRIORITY_WIN_CHECK_DEFAULT, PRIORITY_DAY_EFFECT_DEFAULT } = require("../../const/Priority");
@@ -21,6 +22,13 @@ module.exports = class GhostGame extends Card {
       state: function (stateInfo) {
         if (!stateInfo.name.match(/Day/)) {
           return;
+        }
+        if(!this.game.GhostCluesLisited && this.game.GhostClues && this.game.GhostClues.length > 0){
+          this.game.GhostCluesLisited = true;
+          this.game.sendAlert("Clues");
+          for(let clue of this.game.GhostClues){
+            this.game.sendAlert(clue);
+          }
         }
 
         var action = new Action({
@@ -45,7 +53,10 @@ module.exports = class GhostGame extends Card {
             }
             this.game.GhostHaveClueMeeting = true;
             return;
-          },
+          }
+        });
+        this.game.queueAction(action);
+        },
       roleAssigned: function (player) {
         if (player !== this.player) return;
         for (let player of this.game.players) {
@@ -95,8 +106,8 @@ module.exports = class GhostGame extends Card {
         }
 
         for (let fakePlayer of fakeWordPlayers) {
-          mafiaOrCultPlayer.role.data.assignedWord = this.game.fakeWord;
-          mafiaOrCultPlayer.queueAlert(
+          fakePlayer.role.data.assignedWord = this.game.fakeWord;
+          fakePlayer.queueAlert(
             `The secret word is: ${this.game.fakeWord}.`
           );
         }
@@ -107,7 +118,7 @@ module.exports = class GhostGame extends Card {
       Ghost: {
         actionName: "Select Leader",
         states: ["Night"],
-        flags: ["group", "speech", "voting", "mustAct"],
+        flags: ["group", "speech", "voting", "mustAct", "instant"],
         targets: { include: ["alive"], exclude: ["dead"] },
         shouldMeet: function () {
           return this.game.GhostHaveClueMeeting;
@@ -160,6 +171,9 @@ module.exports = class GhostGame extends Card {
         const numGhostAlive = this.game.players.filter(
           (p) => p.alive && p.role.name == "Ghost"
         ).length;
+        if(!this.game.realWord){
+          return;
+        }
         if (
           (aliveCount > 0 && numGhostAlive >= aliveCount / 2) ||
           this.guessedWord === this.game.realWord
@@ -173,7 +187,7 @@ module.exports = class GhostGame extends Card {
       Day: {
         type: "shouldSkip",
         shouldSkip: function () {
-          for (let player of this.game.players) {
+          for (let player of this.game.alivePlayers()) {
             if (player.hasItem("Ouija Board")) {
               return true;
             }
@@ -184,7 +198,7 @@ module.exports = class GhostGame extends Card {
       Dusk: {
         type: "shouldSkip",
         shouldSkip: function () {
-          for (let player of this.game.players) {
+          for (let player of this.game.alivePlayers()) {
             if (player.hasItem("Ouija Board")) {
               return true;
             }
@@ -195,7 +209,7 @@ module.exports = class GhostGame extends Card {
       Night: {
         type: "shouldSkip",
         shouldSkip: function () {
-            for (let player of this.game.players) {
+            for (let player of this.game.alivePlayers()) {
             if (player.hasItem("Ouija Board")) {
               return true;
             }
@@ -206,7 +220,7 @@ module.exports = class GhostGame extends Card {
       Dawn: {
         type: "shouldSkip",
         shouldSkip: function () {
-            for (let player of this.game.players) {
+            for (let player of this.game.alivePlayers()) {
             if (player.hasItem("Ouija Board")) {
               return true;
             }
