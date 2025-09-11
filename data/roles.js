@@ -1031,13 +1031,12 @@ const roleData = {
     Witness: {
       alignment: "Village",
       category: "Investigative",
-      tags: ["Information", "Visit Interaction", "Basic"],
+      tags: ["Information", "Visiting", "Basic"],
       description: [
-        "Watches a player each night and learns if they were visited by anybody.",
+        "Visits a player each night.",
+        "If that player dies the Witness will learn that their killer is 1 of 2 players.",
       ],
-      nightOrder: [
-        ["Watch Binary", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5],
-      ],
+      nightOrder: [["Bare Witness", PRIORITY_PREKILL_ACTION]],
     },
     //night-acting roles
     Paladin: {
@@ -2420,17 +2419,6 @@ const roleData = {
       ],
       nightOrder: [["Guess Role", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
-    Busybody: {
-      alignment: "Mafia",
-      category: "Investigative",
-      tags: ["Information", "Visit Interaction", "Basic"],
-      description: [
-        "Watches a player each night and learns if they were visited by anybody.",
-      ],
-      nightOrder: [
-        ["Watch Binary", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5],
-      ],
-    },
     Caser: {
       alignment: "Mafia",
       category: "Investigative",
@@ -2597,7 +2585,9 @@ const roleData = {
     Santista: {
       alignment: "Mafia",
       tags: ["Meeting", "Advanced"],
-      description: ["While at least one Santista is alive, the Mafia gain a day meeting."],
+      description: [
+        "While at least one Santista is alive, the Mafia gain a day meeting.",
+      ],
     },
     Lawyer: {
       alignment: "Mafia",
@@ -3348,15 +3338,26 @@ const roleData = {
     },
     Stylist: {
       alignment: "Mafia",
+      category: "Night-acting",
+      tags: ["Conversion", "Role Swapping", "Visiting", "Advanced"],
+      description: [
+        "Each night chooses 2 players.",
+        "The selected players will swap roles but not alignments.",
+        "Cannot swap Independent roles",
+      ],
+      nightOrder: [["Swap Roles", PRIORITY_SWAP_ROLES + 1]],
+    },
+    Busybody: {
+      alignment: "Mafia",
       tags: ["Mini-game", "FalseMode", "Voting", "Speaking", "Expert"],
       description: [
         "Each day assigns every Mafia member a task.",
         "Tasks will be related to voting and sending messages.",
-        "If All Living Mafia members complete their task, The Stylist may choose to Make all information false for the night or grant each mafia member an extra role ability.",
+        "If All Living Mafia members complete their task, The Busybody may choose to Make all information false for the night or grant each mafia member an extra role ability.",
       ],
       SpecialInteractions: {
         Butterfly: [
-          "If Butterfly is in the setup, The Stylist can choose to revive all dead players as random Independent roles.",
+          "If Butterfly is in the setup, The Busybody can choose to revive all dead players as random Independent roles.",
         ],
         nightOrder: [
           ["Make Info False or Grant Ability", PRIORITY_EFFECT_GIVER_EARLY],

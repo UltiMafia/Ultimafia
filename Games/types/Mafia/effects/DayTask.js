@@ -233,6 +233,15 @@ module.exports = class DayTask extends Effect {
         //this.punishment.do();
       }
     }
+    if (
+      this.task == "ClaimRole" &&
+      message.content
+        .replace(" ", "")
+        .toLowerCase()
+        .includes(this.ExtraRole.toLowerCase())
+    ) {
+      this.HasBeenCompleted = true;
+    }
     /*
     if (
     ) {
@@ -255,7 +264,7 @@ module.exports = class DayTask extends Effect {
   getTaskMessage() {
     switch (this.task) {
       case "ClaimRole":
-        return `Say "I am ${this.ExtraRole}" or "I'm ${this.ExtraRole}" in chat.`;
+        return `Say "${this.ExtraRole}" in chat.`;
       case "SendNoMoreThen10Messages":
         return `Not send more then ${this.ExtraNum} Messages in chat.`;
       case "SendExactly10Messages":

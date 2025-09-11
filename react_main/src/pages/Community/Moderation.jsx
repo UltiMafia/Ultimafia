@@ -118,47 +118,48 @@ export default function Moderation() {
 
   return (
     <>
-    <Box sx={{ p: 1 }}>
-      <Typography variant="h2" sx={{ mb: 1 }}>Mission Statement</Typography>
-      <Typography>
-        UltiMafia seeks to create an inclusive and welcoming space for
-        playing chat-based Mafia and related minigames. Our goal is to
-        provide a fair and respectful environment where all players can
-        enjoy the game free from hostility. We are dedicated to
-        maintaining a community free from prejudice or bias based on sex,
-        age, gender identity, sexual orientation, skin color, ability,
-        religion, nationality, or any other characteristic.{" "}
-      </Typography>
-    </Box>
-    <Grid container rowSpacing={1} columnSpacing={1} className="moderation">
-      <Grid item xs={12} key={"mission-statement"}>
-      </Grid>
-      <Grid item xs={12} md={8} key={"execute-action"}>
-        <Stack direction="column" spacing={1}>
+      <Box sx={{ p: 1 }}>
+        <Typography variant="h2" sx={{ mb: 1 }}>
+          Mission Statement
+        </Typography>
+        <Typography>
+          UltiMafia seeks to create an inclusive and welcoming space for playing
+          chat-based Mafia and related minigames. Our goal is to provide a fair
+          and respectful environment where all players can enjoy the game free
+          from hostility. We are dedicated to maintaining a community free from
+          prejudice or bias based on sex, age, gender identity, sexual
+          orientation, skin color, ability, religion, nationality, or any other
+          characteristic.{" "}
+        </Typography>
+      </Box>
+      <Grid container rowSpacing={1} columnSpacing={1} className="moderation">
+        <Grid item xs={12} key={"mission-statement"}></Grid>
+        <Grid item xs={12} md={8} key={"execute-action"}>
           <Stack direction="column" spacing={1}>
-            {user.perms.viewModActions && (
-              <div className="box-panel">
-                <Typography variant="h3">Execute Action</Typography>
-                <Stack direction="column" spacing={1}>
-                  <ModCommands
-                    results={results}
-                    setResults={setResults}
-                    fixedHeight
-                  />
-                  {results && <Box>{results}</Box>}
-                </Stack>
-              </div>
-            )}
-            {groupsPanels}
+            <Stack direction="column" spacing={1}>
+              {user.perms.viewModActions && (
+                <div className="box-panel">
+                  <Typography variant="h3">Execute Action</Typography>
+                  <Stack direction="column" spacing={1}>
+                    <ModCommands
+                      results={results}
+                      setResults={setResults}
+                      fixedHeight
+                    />
+                    {results && <Box>{results}</Box>}
+                  </Stack>
+                </div>
+              )}
+              {groupsPanels}
+            </Stack>
           </Stack>
-        </Stack>
+        </Grid>
+        <Grid item xs={12} md={4} key={"mod-actions"}>
+          <Stack direction="column" spacing={1}>
+            <ModActions setResults={setResults} />
+          </Stack>
+        </Grid>
       </Grid>
-      <Grid item xs={12} md={4} key={"mod-actions"}>
-        <Stack direction="column" spacing={1}>
-          <ModActions setResults={setResults} />
-        </Stack>
-      </Grid>
-    </Grid>
     </>
   );
 }

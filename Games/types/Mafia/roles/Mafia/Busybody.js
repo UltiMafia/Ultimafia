@@ -8,13 +8,8 @@ module.exports = class Busybody extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-
-      "WatchPlayerBoolean",
+      "StyleContest",
+      //"WatchPlayerBoolean",
     ];
-    this.meetingMods = {
-      "Watch (Boolean)": {
-        actionName: "Observe for Visitors",
-      },
-    };
   }
 };

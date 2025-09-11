@@ -9,7 +9,7 @@ module.exports = class Stylist extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "StyleContest",
+      "SwapTwoOtherRolesNoAlignment",
     ];
   }
 };

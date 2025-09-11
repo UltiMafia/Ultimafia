@@ -633,6 +633,16 @@ const modifierData = {
       tags: ["Information", "Visits"],
       description: "Learns if their visit was successful or if it was blocked.",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Peeking"],
+    },
+    Peeking: {
+      category: "Visits",
+      internal: ["WatchPlayerBoolean"],
+      tags: ["Information", "Visits"],
+      description:
+        "Learns IF their visit target was visited by another player.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Checking"],
     },
     Clumsy: {
       category: "Visits",

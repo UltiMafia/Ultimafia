@@ -35,12 +35,12 @@ module.exports = class RevealInfo extends Information {
     this.trueRole = this.game.formatRole(trueRole);
     this.truthValue = "Normal";
     //this.mainInfo = role;
-
-    //this.game.queueAlert(`:invest: Main ${this.mainInfo} Invest ${target.getRoleAppearance("investigate")} Real ${this.trueRole}.`);
   }
 
   getInfoRaw() {
     super.getInfoRaw();
+    //this.game.queueAlert(`:invest: Main ${this.mainInfo} Truth Value ${this.truthValue} Invest ${this.target.getRoleAppearance("investigate")} Real ${this.trueRole}.`);
+    //this.game.queueAlert(`:invest: Internal ${this.game.formatRoleInternal(this.target.role.name, this.target.role.modifier)}`);
     let tempTempAppearanceMods =
       this.target.tempAppearanceMods[this.investType];
     let tempTempAppearance = this.target.tempAppearance[this.investType];
@@ -110,17 +110,17 @@ module.exports = class RevealInfo extends Information {
 
   revealTarget() {
     if (this.revealTo == "All") {
-      this.target.role.revealToAll();
+      this.target.role.revealToAll(null, this.investType);
     }
     if (this.revealTo == "Faction") {
       for (let player of this.game.players) {
         if (player.faction == this.creator.faction) {
-          this.target.role.revealToPlayer(player);
+          this.target.role.revealToPlayer(player, null, this.investType);
         }
       }
     }
     if (this.revealTo == "Self") {
-      this.target.role.revealToPlayer(this.creator);
+      this.target.role.revealToPlayer(this.creator, null, this.investType);
     }
   }
 
