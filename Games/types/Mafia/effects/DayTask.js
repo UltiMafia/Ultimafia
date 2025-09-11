@@ -233,7 +233,13 @@ module.exports = class DayTask extends Effect {
         //this.punishment.do();
       }
     }
-    if(this.task == "ClaimRole" && message.content.replace(" ", "").toLowerCase().includes(this.ExtraRole.toLowerCase())){
+    if (
+      this.task == "ClaimRole" &&
+      message.content
+        .replace(" ", "")
+        .toLowerCase()
+        .includes(this.ExtraRole.toLowerCase())
+    ) {
       this.HasBeenCompleted = true;
     }
     /*
