@@ -1,4 +1,4 @@
 .moderation .box-panel {
-  border-radius: 4px;
+  border-radius: var(--mui-shape-borderRadius);
   background-color: var(--scheme-color-background);
 }

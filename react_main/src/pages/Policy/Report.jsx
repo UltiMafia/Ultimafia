@@ -34,7 +34,7 @@ export default function Report(props) {
 
   return (
     <>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h2" gutterBottom>
         File a Report
       </Typography>
       {user.loggedIn && (

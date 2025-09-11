@@ -19,7 +19,7 @@ export default function LearnTexasHoldEm(props) {
 
   return (
     <div className="learn">
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h2" gutterBottom>
         Learn Texas Hold Em
       </Typography>
       <Typography variant="body1" paragraph>
@@ -31,7 +31,7 @@ export default function LearnTexasHoldEm(props) {
       </Typography>
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h4">Roles</Typography>
+          <Typography variant="h3">Roles</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <RoleSearch gameType={gameType} />

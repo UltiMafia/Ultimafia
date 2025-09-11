@@ -75,7 +75,7 @@ function ErrorBox({ error, resetErrorBoundary }) {
       }}
     >
       <Stack direction="column" spacing={1}>
-        <Typography variant="h5">Error:</Typography>
+        <Typography variant="h3">Error:</Typography>
         <Typography color="red" sx={{ wordBreak: "break-word" }}>
           {error.message}
         </Typography>

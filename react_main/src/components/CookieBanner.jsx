@@ -31,7 +31,7 @@ export default function CookieBanner() {
   return (
     <Dialog open={open} maxWidth="sm" fullWidth>
       <DialogContent>
-        <Typography variant="h6">We use cookies</Typography>
+        <Typography variant="h4">We use cookies</Typography>
         <Typography variant="body2">
           UltiMafia uses cookies to improve user experience. By clicking
           "Accept," you agree to the use of cookies.

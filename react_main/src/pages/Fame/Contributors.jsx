@@ -94,7 +94,7 @@ export default function Contributors(props) {
   return (
     <>
       <Box mb={4}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h2" gutterBottom>
           Contributors
         </Typography>
         <Typography variant="body1" paragraph>
@@ -117,7 +117,7 @@ export default function Contributors(props) {
         </Typography>
       </Box>
       <Box mb={4}>
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h3" gutterBottom>
           Code & Design
         </Typography>
         <Grid container spacing={2}>
@@ -125,7 +125,7 @@ export default function Contributors(props) {
         </Grid>
       </Box>
       <Box mb={4}>
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h3" gutterBottom>
           Art & Graphics
         </Typography>
         <Grid container spacing={2}>
@@ -133,7 +133,7 @@ export default function Contributors(props) {
         </Grid>
       </Box>
       <Box mb={4}>
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h3" gutterBottom>
           Music & Sound
         </Typography>
         <Typography variant="body1" paragraph>

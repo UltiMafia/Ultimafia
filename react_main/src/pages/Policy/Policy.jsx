@@ -7,6 +7,7 @@ import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
 import Rules from "./Rules";
 import Report from "./Report";
+import CustomAppBar from "components/CustomAppBar";
 
 export default function Policy(props) {
   const theme = useTheme();
@@ -36,22 +37,7 @@ export default function Policy(props) {
 
   return (
     <>
-      <AppBar position="static">
-        <Toolbar>
-          {links.map((link, index) => (
-            <Link
-              key={index}
-              href={link.path}
-              underline="none"
-              color="inherit"
-              variant="button"
-              sx={{ margin: theme.spacing(1) }}
-            >
-              {link.text}
-            </Link>
-          ))}
-        </Toolbar>
-      </AppBar>
+      <CustomAppBar links={links} />
       <Box maxWidth="1080px" sx={{ mt: 1, flexGrow: 1 }}>
         <Card sx={{ padding: theme.spacing(3), textAlign: "justify" }}>
           <Switch>

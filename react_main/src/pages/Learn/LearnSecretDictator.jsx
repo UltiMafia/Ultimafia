@@ -20,7 +20,7 @@ export default function LearnSecretDictator(props) {
 
   return (
     <div className="learn">
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h2" gutterBottom>
         Learn Secret Dictator
       </Typography>
       <Typography variant="body1" paragraph>
@@ -64,7 +64,7 @@ export default function LearnSecretDictator(props) {
       </Typography>
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h4">Roles</Typography>
+          <Typography variant="h3">Roles</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <RoleSearch gameType={gameType} />

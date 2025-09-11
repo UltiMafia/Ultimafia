@@ -14,6 +14,7 @@ import { camelCase } from "../../../utils";
 import AnonymousDeck from "../../../components/Deck";
 import { SiteInfoContext } from "../../../Contexts";
 import { Redirect } from "react-router-dom";
+import { Button } from "@mui/material";
 
 export default function DeckSelector() {
   const [listType, setListType] = useState("featured");
@@ -115,6 +116,9 @@ export default function DeckSelector() {
           placeholder="🔎 Deck Name"
           onInput={onSearchInput}
         />
+        <Button href="/play/createDeck" sx={{ ml: "auto" }}>
+          Create New Deck
+        </Button>
       </div>
       <ItemList
         items={decks}

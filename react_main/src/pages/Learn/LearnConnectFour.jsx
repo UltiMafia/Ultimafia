@@ -20,7 +20,7 @@ export default function LearnConnectFour(props) {
 
   return (
     <div className="learn">
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h2" gutterBottom>
         Learn Connect Four
       </Typography>
       <Typography variant="body1" paragraph>
@@ -40,7 +40,7 @@ export default function LearnConnectFour(props) {
       </Typography>
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h4">Roles</Typography>
+          <Typography variant="h3">Roles</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <RoleSearch gameType={gameType} />

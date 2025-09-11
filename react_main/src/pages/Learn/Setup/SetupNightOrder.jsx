@@ -150,7 +150,7 @@ export function NightOrder() {
   });
 
   const commandTable = (
-    <TableContainer component={Paper}>
+    <TableContainer>
       <Table aria-label="a dense table">
         <TableHead>
           <TableRow>
@@ -180,21 +180,14 @@ export function NightOrder() {
 
   return (
     <>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h2" gutterBottom>
         Setup Night Order
       </Typography>
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h6"> Below is the Night Order.</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography paragraph>
-            The night order resolves from the lowest priority to the highest.
-            Ties in priority are resolved by the player list
-          </Typography>
-          <Box className="paragraph">{commandTable}</Box>
-        </AccordionDetails>
-      </Accordion>
+      <Typography paragraph>
+        The night order resolves from the lowest priority to the highest.
+        Ties in priority are resolved by the player list
+      </Typography>
+      <Box className="paragraph">{commandTable}</Box>
     </>
   );
 }
