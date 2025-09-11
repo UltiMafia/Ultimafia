@@ -62,12 +62,12 @@ export default function Achievements(props) {
 
   return (
     <>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h2" gutterBottom>
         Achievements
       </Typography>
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h6"> List of Achievements</Typography>
+          <Typography variant="h3"> List of Achievements</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography paragraph>

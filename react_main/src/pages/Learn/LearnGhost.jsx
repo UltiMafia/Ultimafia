@@ -19,7 +19,7 @@ export default function LearnGhost(props) {
 
   return (
     <div className="learn">
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h2" gutterBottom>
         Learn Ghost
       </Typography>
       <Typography variant="body1" paragraph>
@@ -41,7 +41,7 @@ export default function LearnGhost(props) {
       </Typography>
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h4">Roles</Typography>
+          <Typography variant="h3">Roles</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <RoleSearch gameType={gameType} />

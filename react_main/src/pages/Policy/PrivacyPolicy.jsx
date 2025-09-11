@@ -11,7 +11,7 @@ export default function PrivacyPolicy() {
 
   return (
     <>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h2" gutterBottom>
         Privacy Policy of UltiMafia
       </Typography>
       <Typography variant="body1" paragraph>
@@ -50,7 +50,7 @@ export default function PrivacyPolicy() {
         </Link>
         .
       </Typography>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         Information Collection and Use
       </Typography>
       <Typography variant="body1" paragraph>
@@ -61,7 +61,7 @@ export default function PrivacyPolicy() {
         wish for your profile, including but not limited to photos and textual
         data.
       </Typography>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         Log Data
       </Typography>
       <Typography variant="body1" paragraph>
@@ -72,7 +72,7 @@ export default function PrivacyPolicy() {
         visit, the time and date of your visit, the time spent on those pages,
         and other statistics.
       </Typography>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         Cookies
       </Typography>
       <Typography variant="body1" paragraph>
@@ -88,7 +88,7 @@ export default function PrivacyPolicy() {
         Service, which includes any features that require a user to be signed
         in.
       </Typography>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         Service Providers
       </Typography>
       <Typography variant="body1" paragraph>
@@ -115,7 +115,7 @@ export default function PrivacyPolicy() {
         assigned to them on our behalf. However, they are obligated not to
         disclose or use the information for any other purpose.
       </Typography>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         Security
       </Typography>
       <Typography variant="body1" paragraph>
@@ -125,7 +125,7 @@ export default function PrivacyPolicy() {
         electronic storage is 100% secure and reliable, and we cannot guarantee
         its absolute security.
       </Typography>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         Links to Other Sites
       </Typography>
       <Typography variant="body1" paragraph>
@@ -148,7 +148,7 @@ export default function PrivacyPolicy() {
         provided us with personal information, please contact us so that we will
         be able to take necessary actions.
       </Typography>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         Changes to This Privacy Policy
       </Typography>
       <Typography variant="body1" paragraph>
@@ -157,7 +157,7 @@ export default function PrivacyPolicy() {
         any changes by posting the new Privacy Policy on this page. These
         changes are effective immediately, after they are posted on this page.
       </Typography>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         Contact Us
       </Typography>
       <Typography variant="body1" paragraph>

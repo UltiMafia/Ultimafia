@@ -152,7 +152,7 @@ function NewestUsers(props) {
 
   return (
     <Box className="newest-users box-panel">
-      <Typography variant="h6" className="heading">
+      <Typography variant="h4" className="heading">
         Newest Users
       </Typography>
       <Box className="users-list">
@@ -208,7 +208,7 @@ function FlaggedUsers(props) {
 
   return (
     <Box className="flagged-users box-panel">
-      <Typography variant="h6" className="heading">
+      <Typography variant="h4" className="heading">
         Flagged Users
       </Typography>
       <Box className="users-list">

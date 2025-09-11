@@ -372,7 +372,7 @@ export default function CreateSetup(props) {
       <RoleSearch onAddClick={onAddRole} gameType={gameType} />
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h6">Modifiers</Typography>
+          <Typography variant="h3">Modifiers</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <ModifierSearch

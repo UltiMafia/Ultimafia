@@ -183,14 +183,22 @@ a {
   display: flex;
   flex-flow: column;
 
-  padding: 8px;
+  padding: var(--mui-spacing);
 
   background-color: var(--scheme-color);
   color: var(--scheme-color-text);
 }
 
 .box-panel .heading {
-  margin-bottom: 8px;
+  margin-bottom: var(--mui-spacing);
+}
+
+.box-panel .MuiTypography-h3 {
+  margin-bottom: var(--mui-spacing);
+}
+
+.box-panel .MuiTypography-h4 {
+  margin-bottom: var(--mui-spacing);
 }
 
 .box-panel .content {
@@ -696,6 +704,11 @@ input:focus {
 @font-face {
   font-family: Nabla;
   src: url("/src/fonts/Nabla-Regular-VariableFont_EDPT,EHLT.ttf");
+}
+
+@font-face {
+  font-family: Roboto;
+  src: url("/src/fonts/Roboto-VariableFont_wdth,wght.ttf");
 }
 
 @font-face {

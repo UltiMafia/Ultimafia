@@ -7,6 +7,7 @@ import RolePage from "./role/RolePage";
 import Games from "./Games";
 import Terminology from "./Terminology";
 import Achievements from "./Achievements";
+import CustomAppBar from "components/CustomAppBar";
 
 import "css/play.css";
 
@@ -39,23 +40,7 @@ export default function Learn(props) {
 
   return (
     <>
-      <AppBar position="static">
-        <Toolbar>
-          {links.map((link, index) => (
-            <Link
-              key={index}
-              href={link.path}
-              underline="none"
-              color="inherit"
-              variant="button"
-              sx={{ margin: theme.spacing(1) }}
-            >
-              {link.text}
-            </Link>
-          ))}
-          <Box sx={{ flexGrow: 1 }} />
-        </Toolbar>
-      </AppBar>
+      <CustomAppBar links={links} />
       <Box maxWidth="1080px" sx={{ mt: 1, flexGrow: 1 }}>
         <Card sx={{ padding: theme.spacing(3), textAlign: "justify" }}>
           <Switch>

@@ -11,10 +11,10 @@ export default function TermsOfService() {
 
   return (
     <>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h2" gutterBottom>
         UltiMafia Terms and Conditions of Use
       </Typography>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         1. Terms
       </Typography>
       <Typography variant="body1" paragraph>
@@ -40,7 +40,7 @@ export default function TermsOfService() {
         </Link>
         .
       </Typography>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         2. Use License
       </Typography>
       <Typography variant="body1" paragraph>
@@ -72,7 +72,7 @@ export default function TermsOfService() {
         terminated and you should destroy any downloaded materials in your
         possession whether it is printed or electronic format.
       </Typography>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         3. Disclaimer
       </Typography>
       <Typography variant="body1" paragraph>
@@ -83,7 +83,7 @@ export default function TermsOfService() {
         materials on its Website or otherwise relating to such materials or any
         sites linked to this Website.
       </Typography>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         4. Limitations
       </Typography>
       <Typography variant="body1" paragraph>
@@ -95,7 +95,7 @@ export default function TermsOfService() {
         warranties or limitations of liability for incidental damages, these
         limitations may not apply to you.
       </Typography>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         5. Revisions and Errata
       </Typography>
       <Typography variant="body1" paragraph>
@@ -106,7 +106,7 @@ export default function TermsOfService() {
         without notice. UltiMafia does not make any commitment to update the
         materials.
       </Typography>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         6. Links
       </Typography>
       <Typography variant="body1" paragraph>
@@ -115,7 +115,7 @@ export default function TermsOfService() {
         of any link does not imply endorsement by UltiMafia of the site. The use
         of any linked website is at the user’s own risk.
       </Typography>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         7. Site Terms of Use Modifications
       </Typography>
       <Typography variant="body1" paragraph>
@@ -123,13 +123,13 @@ export default function TermsOfService() {
         without prior notice. By using this Website, you are agreeing to be
         bound by the current version of these Terms and Conditions of Use.
       </Typography>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         8. Your Privacy
       </Typography>
       <Typography variant="body1" paragraph>
         Please read <Link href="/policy/privacy">our Privacy Policy</Link>.
       </Typography>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h3" gutterBottom>
         9. Governing Law
       </Typography>
       <Typography variant="body1" paragraph>

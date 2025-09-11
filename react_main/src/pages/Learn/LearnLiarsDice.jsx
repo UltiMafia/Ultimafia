@@ -36,7 +36,7 @@ export default function LearnLiarsDice(props) {
 
   return (
     <div className="learn">
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h2" gutterBottom>
         Learn Liars Dice
       </Typography>
       <Typography variant="body1" paragraph>
@@ -56,7 +56,7 @@ export default function LearnLiarsDice(props) {
       </Typography>
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h4">Roles</Typography>
+          <Typography variant="h3">Roles</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <RoleSearch gameType={gameType} />
@@ -71,7 +71,7 @@ export default function LearnLiarsDice(props) {
             {mechanics.map((mechanic, index) => (
               <Grid item xs={12} md={4} key={index}>
                 <Paper style={{ padding: theme.spacing(2), height: "100%" }}>
-                  <Typography variant="h6">{mechanic.name}</Typography>
+                  <Typography variant="h4">{mechanic.name}</Typography>
                   <Typography>{mechanic.text}</Typography>
                 </Paper>
               </Grid>

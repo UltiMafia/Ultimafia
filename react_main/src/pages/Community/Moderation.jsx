@@ -32,6 +32,7 @@ import {
 import { Badge, NameWithAvatar, StatusIcon } from "pages/User/User";
 import { NewLoading } from "pages/Welcome/NewLoading";
 
+import "css/main.css";
 import "css/moderation.css";
 import { useParams } from "react-router-dom/cjs/react-router-dom";
 
@@ -96,7 +97,7 @@ export default function Moderation() {
 
     return (
       <div className="box-panel group-panel" key={group.name}>
-        <div className="heading">
+        <Typography variant="h4">
           {group.badge && (
             <Badge
               icon={group.badge}
@@ -105,7 +106,7 @@ export default function Moderation() {
             />
           )}
           {group.name + "s"}
-        </div>
+        </Typography>
         <Grid container rowSpacing={1} columnSpacing={1}>
           {members}
         </Grid>
@@ -116,31 +117,28 @@ export default function Moderation() {
   if (!loaded) return <NewLoading small />;
 
   return (
+    <>
+    <Box sx={{ p: 1 }}>
+      <Typography variant="h2" sx={{ mb: 1 }}>Mission Statement</Typography>
+      <Typography>
+        UltiMafia seeks to create an inclusive and welcoming space for
+        playing chat-based Mafia and related minigames. Our goal is to
+        provide a fair and respectful environment where all players can
+        enjoy the game free from hostility. We are dedicated to
+        maintaining a community free from prejudice or bias based on sex,
+        age, gender identity, sexual orientation, skin color, ability,
+        religion, nationality, or any other characteristic.{" "}
+      </Typography>
+    </Box>
     <Grid container rowSpacing={1} columnSpacing={1} className="moderation">
       <Grid item xs={12} key={"mission-statement"}>
-        <Accordion>
-          <AccordionSummary>
-            <Typography>Mission Statement</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography>
-              UltiMafia seeks to create an inclusive and welcoming space for
-              playing chat-based Mafia and related minigames. Our goal is to
-              provide a fair and respectful environment where all players can
-              enjoy the game free from hostility. We are dedicated to
-              maintaining a community free from prejudice or bias based on sex,
-              age, gender identity, sexual orientation, skin color, ability,
-              religion, nationality, or any other characteristic.{" "}
-            </Typography>
-          </AccordionDetails>
-        </Accordion>
       </Grid>
       <Grid item xs={12} md={8} key={"execute-action"}>
         <Stack direction="column" spacing={1}>
           <Stack direction="column" spacing={1}>
             {user.perms.viewModActions && (
               <div className="box-panel">
-                <div className="heading">Execute Action</div>
+                <Typography variant="h3">Execute Action</Typography>
                 <Stack direction="column" spacing={1}>
                   <ModCommands
                     results={results}
@@ -161,6 +159,7 @@ export default function Moderation() {
         </Stack>
       </Grid>
     </Grid>
+    </>
   );
 }
 
@@ -2014,7 +2013,7 @@ function ModActions(props) {
 
   return (
     <div className="box-panel">
-      <div className="heading">Mod Actions</div>
+      <Typography variant="h3">Mod Actions</Typography>
       <Stack direction="column" spacing={1}>
         {pageNav}
         {actionRows}
