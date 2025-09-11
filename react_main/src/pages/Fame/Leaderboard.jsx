@@ -145,88 +145,91 @@ export default function Leaderboard() {
 
   return (
     <>
-    <Typography variant="h2" gutterBottom>
-      Leaderboard
-    </Typography>
-    <TableContainer component={Paper} sx={{ bgcolor: "var(--scheme-color-background)" }}>
-      {loading ? (
-        <CircularProgress />
-      ) : (
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>User</TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={orderBy === "winLossRatio"}
-                  direction={orderBy === "winLossRatio" ? order : "asc"}
-                  onClick={() => handleSort("winLossRatio")}
-                >
-                  Win:Loss Ratio
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={orderBy === "kudos"}
-                  direction={orderBy === "kudos" ? order : "asc"}
-                  onClick={() => handleSort("kudos")}
-                >
-                  <img src={KUDOS_ICON} alt="Kudos" /> Kudos
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={orderBy === "karma"}
-                  direction={orderBy === "karma" ? order : "asc"}
-                  onClick={() => handleSort("karma")}
-                >
-                  <img src={KARMA_ICON} alt="Karma" /> Karma
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={orderBy === "achievements"}
-                  direction={orderBy === "achievements" ? order : "asc"}
-                  onClick={() => handleSort("achievements")}
-                >
-                  <img src={ACHIEVEMENTS_ICON} alt="Achievements" />
-                  Achievements
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={orderBy === "dailyChallengesCompleted"}
-                  direction={
-                    orderBy === "dailyChallengesCompleted" ? order : "asc"
-                  }
-                  onClick={() => handleSort("dailyChallengesCompleted")}
-                >
-                  <img src={DAILY_ICON} alt="Karma" /> Daily Challenges
-                </TableSortLabel>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {sortedUsers.map((user) => (
-              <TableRow key={user.id}>
+      <Typography variant="h2" gutterBottom>
+        Leaderboard
+      </Typography>
+      <TableContainer
+        component={Paper}
+        sx={{ bgcolor: "var(--scheme-color-background)" }}
+      >
+        {loading ? (
+          <CircularProgress />
+        ) : (
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>User</TableCell>
                 <TableCell>
-                  <NameWithAvatar
-                    id={user.id}
-                    name={user.name}
-                    avatar={user.avatar}
-                  />
+                  <TableSortLabel
+                    active={orderBy === "winLossRatio"}
+                    direction={orderBy === "winLossRatio" ? order : "asc"}
+                    onClick={() => handleSort("winLossRatio")}
+                  >
+                    Win:Loss Ratio
+                  </TableSortLabel>
                 </TableCell>
-                <TableCell>{user.winLossRatio.toFixed(2)}</TableCell>
-                <TableCell>{user.kudos}</TableCell>
-                <TableCell>{user.karma}</TableCell>
-                <TableCell>{user.achievements}/40</TableCell>
-                <TableCell>{user.dailyChallengesCompleted}</TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={orderBy === "kudos"}
+                    direction={orderBy === "kudos" ? order : "asc"}
+                    onClick={() => handleSort("kudos")}
+                  >
+                    <img src={KUDOS_ICON} alt="Kudos" /> Kudos
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={orderBy === "karma"}
+                    direction={orderBy === "karma" ? order : "asc"}
+                    onClick={() => handleSort("karma")}
+                  >
+                    <img src={KARMA_ICON} alt="Karma" /> Karma
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={orderBy === "achievements"}
+                    direction={orderBy === "achievements" ? order : "asc"}
+                    onClick={() => handleSort("achievements")}
+                  >
+                    <img src={ACHIEVEMENTS_ICON} alt="Achievements" />
+                    Achievements
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell>
+                  <TableSortLabel
+                    active={orderBy === "dailyChallengesCompleted"}
+                    direction={
+                      orderBy === "dailyChallengesCompleted" ? order : "asc"
+                    }
+                    onClick={() => handleSort("dailyChallengesCompleted")}
+                  >
+                    <img src={DAILY_ICON} alt="Karma" /> Daily Challenges
+                  </TableSortLabel>
+                </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
-    </TableContainer>
+            </TableHead>
+            <TableBody>
+              {sortedUsers.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell>
+                    <NameWithAvatar
+                      id={user.id}
+                      name={user.name}
+                      avatar={user.avatar}
+                    />
+                  </TableCell>
+                  <TableCell>{user.winLossRatio.toFixed(2)}</TableCell>
+                  <TableCell>{user.kudos}</TableCell>
+                  <TableCell>{user.karma}</TableCell>
+                  <TableCell>{user.achievements}/40</TableCell>
+                  <TableCell>{user.dailyChallengesCompleted}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </TableContainer>
     </>
   );
 }

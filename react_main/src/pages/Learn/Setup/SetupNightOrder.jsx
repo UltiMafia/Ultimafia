@@ -184,8 +184,8 @@ export function NightOrder() {
         Setup Night Order
       </Typography>
       <Typography paragraph>
-        The night order resolves from the lowest priority to the highest.
-        Ties in priority are resolved by the player list
+        The night order resolves from the lowest priority to the highest. Ties
+        in priority are resolved by the player list
       </Typography>
       <Box className="paragraph">{commandTable}</Box>
     </>
