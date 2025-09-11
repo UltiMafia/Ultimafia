@@ -2596,16 +2596,8 @@ const roleData = {
     },
     Santista: {
       alignment: "Mafia",
-      tags: ["Meeting", "Conversion", "Alignment", "Visiting", "Advanced"],
-      description: [
-        "Shares a night meeting with the Freemasons.",
-        "Can convert players to Freemasons.",
-      ],
-      nightOrder: [
-        ["Convert to Mason", PRIORITY_CONVERT_DEFAULT + 2],
-        ["Kill Cultist", PRIORITY_KILL_DEFAULT + 1],
-      ],
-      RolesMadeBy: ["Freemason"],
+      tags: ["Meeting", "Advanced"],
+      description: ["While at least one Santista is alive, the Mafia gain a day meeting."],
     },
     Lawyer: {
       alignment: "Mafia",
