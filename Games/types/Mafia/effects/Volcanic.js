@@ -46,7 +46,7 @@ module.exports = class Volcanic extends Effect {
                   `The Volcano erupts, hitting ${this.target.name} with molten rock!`
                 );
                 if (this.dominates())
-                  this.target.kill("bomb", this.target, true);
+                  this.target.kill("bomb", null, true);
               },
             });
 

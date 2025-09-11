@@ -640,7 +640,7 @@ const modifierData = {
       internal: ["WatchPlayerBoolean"],
       tags: ["Information", "Visits"],
       description:
-        "Learns if their visit target was visited by another player.",
+        "Learns IF their visit target was visited by another player.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Checking"],
     },

@@ -8,12 +8,7 @@ module.exports = class Witness extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "WatchPlayerBoolean",
+      "LearnKillerIfTargetDies",
     ];
-    this.meetingMods = {
-      "Watch (Boolean)": {
-        actionName: "Observe for Visitors",
-      },
-    };
   }
 };

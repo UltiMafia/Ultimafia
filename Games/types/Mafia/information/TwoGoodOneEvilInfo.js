@@ -18,9 +18,9 @@ module.exports = class TwoGoodOneEvilInfo extends Information {
     this.target = target;
     let alive;
     if (this.target == null) {
-      alive = this.game.alivePlayers().filter((p) => p != this.target);
-    } else {
       alive = this.game.alivePlayers().filter((p) => p);
+    } else {
+      alive = this.game.alivePlayers().filter((p) => p != this.target);
     }
     var evilPlayers = alive.filter((p) => this.isAppearanceEvil(p));
     var goodPlayers = alive.filter((p) => !this.isAppearanceEvil(p));

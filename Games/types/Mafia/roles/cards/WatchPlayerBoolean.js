@@ -49,7 +49,7 @@ module.exports = class WatchPlayerBoolean extends Card {
                   "BinaryWatcherInfo",
                   this.actor,
                   this.game,
-                  this.target
+                  v
                 );
                 info.processInfo();
                 this.actor.queueAlert(`:watch: ${info.getInfoFormated()}`);
