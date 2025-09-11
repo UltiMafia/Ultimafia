@@ -7,7 +7,7 @@ const {
 module.exports = class WatchPlayerBoolean extends Card {
   constructor(role) {
     super(role);
-/*
+    /*
     this.meetings = {
       "Watch (Boolean)": {
         states: ["Night"],
@@ -30,7 +30,7 @@ module.exports = class WatchPlayerBoolean extends Card {
       },
     };
 */
-      this.listeners = {
+    this.listeners = {
       state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
           return;
@@ -45,14 +45,14 @@ module.exports = class WatchPlayerBoolean extends Card {
             let visits = this.getVisits(this.actor);
             for (let v of visits) {
               if (this.dominates(v)) {
-              let info = this.game.createInformation(
-              "BinaryWatcherInfo",
-              this.actor,
-              this.game,
-              this.target
-            );
-            info.processInfo();
-            this.actor.queueAlert(`:watch: ${info.getInfoFormated()}`);
+                let info = this.game.createInformation(
+                  "BinaryWatcherInfo",
+                  this.actor,
+                  this.game,
+                  this.target
+                );
+                info.processInfo();
+                this.actor.queueAlert(`:watch: ${info.getInfoFormated()}`);
               }
             }
           },
@@ -61,6 +61,5 @@ module.exports = class WatchPlayerBoolean extends Card {
         this.game.queueAction(action);
       },
     };
-    
   }
 };
