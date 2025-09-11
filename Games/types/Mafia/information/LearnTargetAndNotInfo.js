@@ -18,9 +18,13 @@ module.exports = class LearnTargetAndNotInfo extends Information {
       this.randomTarget = true;
       target = Random.randArrayVal(this.game.alivePlayers());
     }
-    let otherPlayers = this.game.alivePlayers().filter((p) => p != creator && p != target);
-    if(otherPlayers.length <= 0){
-        otherPlayers = this.game.players.filter((p) => p != creator && p != target);
+    let otherPlayers = this.game
+      .alivePlayers()
+      .filter((p) => p != creator && p != target);
+    if (otherPlayers.length <= 0) {
+      otherPlayers = this.game.players.filter(
+        (p) => p != creator && p != target
+      );
     }
     this.target = target;
     this.mainInfo = this.target;
@@ -29,7 +33,7 @@ module.exports = class LearnTargetAndNotInfo extends Information {
 
   getInfoRaw() {
     super.getInfoRaw();
-     let array = [this.mainInfo, this.otherPlayer];
+    let array = [this.mainInfo, this.otherPlayer];
     array = Random.randomizeArray(array);
     return array[0].name + " or " + array[1].name;
   }
@@ -70,14 +74,16 @@ module.exports = class LearnTargetAndNotInfo extends Information {
   makeFalse() {
     let players = this.game
       .alivePlayers()
-      .filter((p) => p != this.target && p != this.creator && p != this.otherPlayer);
-      if(players.length <= 0){
-        players = this.game.players.filter((p) => p != this.target && p != this.creator && p != this.otherPlayer);
-      }
+      .filter(
+        (p) => p != this.target && p != this.creator && p != this.otherPlayer
+      );
+    if (players.length <= 0) {
+      players = this.game.players.filter(
+        (p) => p != this.target && p != this.creator && p != this.otherPlayer
+      );
+    }
     this.mainInfo = Random.randArrayVal(players);
   }
-  makeFavorable() {
-  }
-  makeUnfavorable() {
-  }
+  makeFavorable() {}
+  makeUnfavorable() {}
 };

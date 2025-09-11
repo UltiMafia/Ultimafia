@@ -32,8 +32,11 @@ module.exports = class SwapTwoOtherRolesNoAlignment extends Card {
             var oldARole = `${targetA.role.name}:${targetA.role.modifier}`;
             let oldFaction = targetA.faction;
 
-            if(targetA.faction == "Independent" || targetB.faction == "Independent"){
-            return;
+            if (
+              targetA.faction == "Independent" ||
+              targetB.faction == "Independent"
+            ) {
+              return;
             }
 
             targetA.setRole(

@@ -41,23 +41,26 @@ module.exports = class LearnKillerIfTargetDies extends Card {
             labels: ["investigate"],
             role: this,
             run: function () {
-                if(this.target == null){
-            this.actor.queueAlert(`You learn that ${this.role.data.playerToWitness.name} died of natural causes!`);
-            return;
-                }
-              if (this.dominates()){
-                let info = this.game.createInformation(
-              "LearnTargetAndNotInfo",
-              this.actor,
-              this.game,
-              this.target
-            );
-            info.processInfo();
-            this.actor.queueAlert(
-              `You learn that ${this.role.data.playerToWitness.name} was killed by ${info.getInfoRaw()}!`
-            );
+              if (this.target == null) {
+                this.actor.queueAlert(
+                  `You learn that ${this.role.data.playerToWitness.name} died of natural causes!`
+                );
+                return;
               }
-                
+              if (this.dominates()) {
+                let info = this.game.createInformation(
+                  "LearnTargetAndNotInfo",
+                  this.actor,
+                  this.game,
+                  this.target
+                );
+                info.processInfo();
+                this.actor.queueAlert(
+                  `You learn that ${
+                    this.role.data.playerToWitness.name
+                  } was killed by ${info.getInfoRaw()}!`
+                );
+              }
             },
           });
 

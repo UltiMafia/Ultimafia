@@ -35,7 +35,6 @@ module.exports = class RevealInfo extends Information {
     this.trueRole = this.game.formatRole(trueRole);
     this.truthValue = "Normal";
     //this.mainInfo = role;
-
   }
 
   getInfoRaw() {
@@ -48,7 +47,10 @@ module.exports = class RevealInfo extends Information {
     let OtherRoles = this.game.PossibleRoles.filter(
       (r) =>
         r !=
-          this.game.formatRoleInternal(this.target.role.name, this.target.role.modifier) &&
+          this.game.formatRoleInternal(
+            this.target.role.name,
+            this.target.role.modifier
+          ) &&
         !this.game.getRoleTags(r).includes("No Investigate") &&
         !this.game.getRoleTags(r).includes("Exposed")
     );

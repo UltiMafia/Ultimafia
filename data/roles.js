@@ -1036,9 +1036,7 @@ const roleData = {
         "Visits a player each night.",
         "If that player dies the Witness will learn that their killer is 1 of 2 players.",
       ],
-      nightOrder: [
-        ["Bare Witness", PRIORITY_PREKILL_ACTION],
-      ],
+      nightOrder: [["Bare Witness", PRIORITY_PREKILL_ACTION]],
     },
     //night-acting roles
     Paladin: {
@@ -3344,7 +3342,7 @@ const roleData = {
         },
       ],
     },
-     Stylist: {
+    Stylist: {
       alignment: "Mafia",
       category: "Night-acting",
       tags: ["Conversion", "Role Swapping", "Visiting", "Advanced"],
