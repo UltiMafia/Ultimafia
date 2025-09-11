@@ -10,7 +10,7 @@ module.exports = class Santista extends Role {
       "WinWithFaction",
       "MeetingFaction",
 
-      "MeetWithMasons",
+      "DaySantista",
     ];
   }
 };
