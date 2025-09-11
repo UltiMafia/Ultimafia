@@ -181,7 +181,7 @@ export default function Rules() {
 
   return (
     <>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h2" gutterBottom>
         UltiMafia Rules of Conduct
       </Typography>
       <Typography variant="body1" paragraph>
@@ -194,7 +194,7 @@ export default function Rules() {
       </Typography>
       <Accordion>
         <AccordionSummary id="community-violations-header">
-          <Typography variant="h5">Community Violations</Typography>
+          <Typography variant="h3">Community Violations</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography variant="body1" paragraph>
@@ -204,7 +204,7 @@ export default function Rules() {
             server).
           </Typography>
           <Typography
-            variant="h6"
+            variant="h4"
             gutterBottom
             sx={{ textDecoration: "underline" }}
           >
@@ -217,7 +217,7 @@ export default function Rules() {
             harassment.
           </Typography>
           <Typography
-            variant="h6"
+            variant="h4"
             gutterBottom
             sx={{ textDecoration: "underline" }}
           >
@@ -230,7 +230,7 @@ export default function Rules() {
             and genocide denial.
           </Typography>
           <Typography
-            variant="h6"
+            variant="h4"
             gutterBottom
             sx={{ textDecoration: "underline" }}
           >
@@ -243,7 +243,7 @@ export default function Rules() {
             mindset.
           </Typography>
           <Typography
-            variant="h6"
+            variant="h4"
             gutterBottom
             sx={{ textDecoration: "underline" }}
           >
@@ -256,7 +256,7 @@ export default function Rules() {
             reason.
           </Typography>
           <Typography
-            variant="h6"
+            variant="h4"
             gutterBottom
             sx={{ textDecoration: "underline" }}
           >
@@ -269,7 +269,7 @@ export default function Rules() {
             mindset.
           </Typography>
           <Typography
-            variant="h6"
+            variant="h4"
             gutterBottom
             sx={{ textDecoration: "underline" }}
           >
@@ -280,7 +280,7 @@ export default function Rules() {
             without their consent (including their names, locations, age, etc.).
           </Typography>
           <Typography
-            variant="h6"
+            variant="h4"
             gutterBottom
             sx={{ textDecoration: "underline" }}
           >
@@ -291,7 +291,7 @@ export default function Rules() {
             especially those with off-site ramifications.
           </Typography>
           <Typography
-            variant="h6"
+            variant="h4"
             gutterBottom
             sx={{ textDecoration: "underline" }}
           >
@@ -304,7 +304,7 @@ export default function Rules() {
             intent.
           </Typography>
           <Typography
-            variant="h6"
+            variant="h4"
             gutterBottom
             sx={{ textDecoration: "underline" }}
           >
@@ -319,7 +319,7 @@ export default function Rules() {
       </Accordion>
       <Accordion>
         <AccordionSummary id="game-violations-header">
-          <Typography variant="h5">Game-Related Violations</Typography>
+          <Typography variant="h3">Game-Related Violations</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography variant="body1" paragraph>
@@ -328,7 +328,7 @@ export default function Rules() {
             site.
           </Typography>
           <Typography
-            variant="h6"
+            variant="h4"
             gutterBottom
             sx={{ textDecoration: "underline" }}
           >
@@ -341,7 +341,7 @@ export default function Rules() {
             throwing.
           </Typography>
           <Typography
-            variant="h6"
+            variant="h4"
             gutterBottom
             sx={{ textDecoration: "underline" }}
           >
@@ -353,7 +353,7 @@ export default function Rules() {
             unranked also qualifies as GRA.
           </Typography>
           <Typography
-            variant="h6"
+            variant="h4"
             gutterBottom
             sx={{ textDecoration: "underline" }}
           >
@@ -363,7 +363,7 @@ export default function Rules() {
             Not participating actively or consistently in a game.
           </Typography>
           <Typography
-            variant="h6"
+            variant="h4"
             gutterBottom
             sx={{ textDecoration: "underline" }}
           >
@@ -377,7 +377,7 @@ export default function Rules() {
             system messages.
           </Typography>
           <Typography
-            variant="h6"
+            variant="h4"
             gutterBottom
             sx={{ textDecoration: "underline" }}
           >
@@ -389,7 +389,7 @@ export default function Rules() {
             or developers for the same purpose also applies.
           </Typography>
           <Typography
-            variant="h6"
+            variant="h4"
             gutterBottom
             sx={{ textDecoration: "underline" }}
           >
@@ -406,7 +406,7 @@ export default function Rules() {
       </Accordion>
       <Accordion>
         <AccordionSummary id="violation-lengths-header">
-          <Typography variant="h5">Violation Lengths</Typography>
+          <Typography variant="h3">Violation Lengths</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography variant="body1" paragraph>
@@ -569,7 +569,7 @@ export default function Rules() {
       </Accordion>
       <Accordion>
         <AccordionSummary id="violation-lengths-header">
-          <Typography variant="h5">Filing an Appeal</Typography>
+          <Typography variant="h3">Filing an Appeal</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography variant="body1" paragraph>

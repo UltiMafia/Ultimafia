@@ -348,7 +348,7 @@ export default function Settings() {
     >
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h6">Accessibility</Typography>
+          <Typography variant="h3">Accessibility</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Box sx={{ width: 1 / 2 }}>
@@ -370,7 +370,7 @@ export default function Settings() {
 
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h6">Site</Typography>
+          <Typography variant="h3">Site</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Box sx={{ width: 1 / 2 }}>
@@ -385,7 +385,7 @@ export default function Settings() {
 
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h6">Profile</Typography>
+          <Typography variant="h3">Profile</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Box sx={{ width: 1 / 2 }}>
@@ -409,7 +409,7 @@ export default function Settings() {
 
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h6">Game</Typography>
+          <Typography variant="h3">Game</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Box sx={{ width: 1 / 2 }}>
@@ -424,7 +424,7 @@ export default function Settings() {
 
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h6">Account</Typography>
+          <Typography variant="h3">Account</Typography>
         </AccordionSummary>
         <Box sx={{ width: "50%", mx: "auto" }}>
           <AccordionDetails>

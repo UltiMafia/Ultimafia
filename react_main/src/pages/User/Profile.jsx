@@ -743,7 +743,7 @@ export default function Profile() {
         >
           {badges}
           <Typography
-            variant="h5"
+            variant="h2"
             sx={{
               flexShrink: "2",
               fontWeight: "600",
@@ -1014,9 +1014,9 @@ export default function Profile() {
             {totalGames >= RequiredTotalForStats &&
               !settings.hideStatistics && (
                 <div className="box-panel ratings" style={panelStyle}>
-                  <div className="heading" style={headingStyle}>
+                  <Typography variant="h3" sx={headingStyle}>
                     Mafia Ratings
-                  </div>
+                  </Typography>
                   <div className="content">
                     {ratings}
                     <div
@@ -1039,9 +1039,9 @@ export default function Profile() {
                 </div>
               )}
             <div className="box-panel recent-games" style={panelStyle}>
-              <div className="heading" style={headingStyle}>
+              <Typography variant="h3" style={headingStyle}>
                 Recent Games
-              </div>
+              </Typography>
               <div className="content" style={{ padding: "0px" }}>
                 {recentGamesRows}
                 {recentGames.length === 0 && (
@@ -1057,16 +1057,16 @@ export default function Profile() {
             </div>
             {friendRequests.length > 0 && (
               <div className="box-panel" style={panelStyle}>
-                <div className="heading" style={headingStyle}>
+                <Typography variant="h3" style={headingStyle}>
                   Friend Requests
-                </div>
+                </Typography>
                 <div className="content">{friendRequestRows}</div>
               </div>
             )}
             <div className="box-panel" style={panelStyle}>
-              <div className="heading" style={headingStyle}>
+              <Typography variant="h3" style={headingStyle}>
                 Friends
-              </div>
+              </Typography>
               <div className="content">
                 <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
                 {friendRows}
@@ -1083,9 +1083,9 @@ export default function Profile() {
               </div>
             </div>
             <div className="box-panel" style={panelStyle}>
-              <div className="heading" style={headingStyle}>
+              <Typography variant="h3" style={headingStyle}>
                 Setups Created
-              </div>
+              </Typography>
               <div className="content">
                 {createdSetupRows}
                 {createdSetups.length === 0 && "No setups"}
@@ -1105,9 +1105,9 @@ export default function Profile() {
                   }}
                   title="achievements"
                 />
-                <div className="heading" style={headingStyle}>
+                <Typography variant="h3" sx={headingStyle}>
                   Achievements
-                </div>
+                </Typography>
               </div>
               <div className="content">
                 {AchievementRows}
@@ -1116,7 +1116,7 @@ export default function Profile() {
             </div>
             {archivedGamesRows.length !== 0 && (
               <div className="box-panel archived-games" style={panelStyle}>
-                <div className="heading" style={headingStyle}>
+                <Typography variant="h3" sx={headingStyle}>
                   Archived Games{" "}
                   {showDelete && (
                     <i
@@ -1124,7 +1124,7 @@ export default function Profile() {
                       onClick={onEditArchivedGamesClick()}
                     />
                   )}
-                </div>
+                </Typography>
                 <div className="content" style={{ padding: "0px" }}>
                   <Stack direction="column" spacing={0}>
                     {archivedGamesRows}

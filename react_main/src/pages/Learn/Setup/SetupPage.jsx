@@ -318,7 +318,7 @@ export function SetupPage() {
                 <GameIcon gameType={setup.gameType} size={iconSize} />
               </IconButton>
               <Typography
-                variant="h4"
+                variant="h2"
                 sx={{
                   ml: isSmallScreen ? "auto !important" : undefined,
                 }}

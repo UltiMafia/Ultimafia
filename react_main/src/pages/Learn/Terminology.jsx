@@ -104,7 +104,7 @@ export default function Terminology(props) {
 
   return (
     <>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h2" gutterBottom>
         Terminology
       </Typography>
       <Typography variant="body1" paragraph>
@@ -116,7 +116,7 @@ export default function Terminology(props) {
       </Typography>
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h6">Commands</Typography>
+          <Typography variant="h3">Commands</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography paragraph>
@@ -127,7 +127,7 @@ export default function Terminology(props) {
       </Accordion>
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h6">Slang</Typography>
+          <Typography variant="h3">Slang</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography paragraph>

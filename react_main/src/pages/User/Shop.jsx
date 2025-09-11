@@ -138,7 +138,7 @@ export default function Shop(props) {
     >
       <Card className="shop-item">
         <CardContent sx={{ textAlign: "left" }}>
-          <Typography variant="h6" className="name">
+          <Typography variant="h4" className="name">
             {item.name}
           </Typography>
           <Typography variant="body2" className="desc">
@@ -188,7 +188,7 @@ export default function Shop(props) {
       >
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Typography
-            variant="h6"
+            variant="h3"
             className="balance"
             sx={{ display: "flex", alignItems: "center" }}
           >

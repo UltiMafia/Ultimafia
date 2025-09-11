@@ -7,6 +7,7 @@ import Forums from "./Forums/Forums";
 import UserSearch from "./UserSearch";
 import Moderation from "./Moderation";
 import { UserContext } from "../../Contexts";
+import CustomAppBar from "components/CustomAppBar";
 
 export default function Community() {
   const theme = useTheme();
@@ -30,22 +31,7 @@ export default function Community() {
 
   return (
     <>
-      <AppBar position="static">
-        <Toolbar>
-          {links.map((link, index) => (
-            <Link
-              key={index}
-              href={link.path}
-              underline="none"
-              color="inherit"
-              variant="button"
-              sx={{ margin: theme.spacing(1) }}
-            >
-              {link.text}
-            </Link>
-          ))}
-        </Toolbar>
-      </AppBar>
+      <CustomAppBar links={links} />
       <Box maxWidth="1080px" sx={{ mt: 1, flexGrow: 1 }}>
         <Card sx={{ p: 1, textAlign: "justify" }}>
           <Switch>

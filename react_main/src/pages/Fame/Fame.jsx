@@ -6,6 +6,7 @@ import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
 import Donors from "./Donors";
 import Contributors from "./Contributors";
 import Leaderboard from "./Leaderboard";
+import CustomAppBar from "components/CustomAppBar";
 
 export default function Fame(props) {
   const theme = useTheme();
@@ -13,7 +14,7 @@ export default function Fame(props) {
   const links = [
     {
       text: "Leaderboard",
-      path: "/fame/Leaderboard",
+      path: "/fame/leaderboard",
       exact: true,
     },
     {
@@ -30,22 +31,7 @@ export default function Fame(props) {
 
   return (
     <>
-      <AppBar position="static">
-        <Toolbar>
-          {links.map((link, index) => (
-            <Link
-              key={index}
-              href={link.path}
-              underline="none"
-              color="inherit"
-              variant="button"
-              sx={{ margin: theme.spacing(1) }}
-            >
-              {link.text}
-            </Link>
-          ))}
-        </Toolbar>
-      </AppBar>
+      <CustomAppBar links={links} />
       <Box maxWidth="1080px" sx={{ mt: 1, flexGrow: 1 }}>
         <Card sx={{ padding: theme.spacing(3), textAlign: "justify" }}>
           <Switch>

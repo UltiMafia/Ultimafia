@@ -144,10 +144,11 @@ export default function Leaderboard() {
   };
 
   return (
-    <TableContainer component={Paper}>
-      <Typography variant="h4" gutterBottom>
-        Leaderboard
-      </Typography>
+    <>
+    <Typography variant="h2" gutterBottom>
+      Leaderboard
+    </Typography>
+    <TableContainer component={Paper} sx={{ bgcolor: "var(--scheme-color-background)" }}>
       {loading ? (
         <CircularProgress />
       ) : (
@@ -226,5 +227,6 @@ export default function Leaderboard() {
         </Table>
       )}
     </TableContainer>
+    </>
   );
 }

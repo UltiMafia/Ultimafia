@@ -54,7 +54,7 @@ export default function Donors(props) {
   return (
     <>
       <Box mb={4}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h2" gutterBottom>
           Donors
         </Typography>
         <Typography variant="body1" paragraph>

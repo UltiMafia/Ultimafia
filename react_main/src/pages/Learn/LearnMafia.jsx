@@ -205,7 +205,7 @@ export default function LearnMafia(props) {
 
   return (
     <div className="learn">
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h2" gutterBottom>
         Learn Mafia
       </Typography>
       <Typography variant="body1" paragraph>
@@ -237,7 +237,7 @@ export default function LearnMafia(props) {
       </Typography>
       <Accordion>
         <AccordionSummary>
-          <Typography variant="h4">Roles</Typography>
+          <Typography variant="h3">Roles</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <RoleSearch gameType={gameType} />
@@ -245,7 +245,7 @@ export default function LearnMafia(props) {
       </Accordion>
       <Accordion>
         <AccordionSummary>
-          <Typography>Modifiers</Typography>
+          <Typography variant="h3">Modifiers</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <ModifierSearch gameType={gameType} />
@@ -253,13 +253,13 @@ export default function LearnMafia(props) {
       </Accordion>
       <Accordion>
         <AccordionSummary>
-          <Typography>Items</Typography>
+          <Typography variant="h3">Items</Typography>
         </AccordionSummary>
         <AccordionDetails>{renderTable(items)}</AccordionDetails>
       </Accordion>
       <Accordion>
         <AccordionSummary>
-          <Typography>Mechanics</Typography>
+          <Typography variant="h3">Mechanics</Typography>
         </AccordionSummary>
         <AccordionDetails>{renderTable(mechanics)}</AccordionDetails>
       </Accordion>
