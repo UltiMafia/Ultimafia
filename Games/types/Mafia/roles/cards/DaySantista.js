@@ -31,7 +31,7 @@ module.exports = class DaySantista extends Card {
           run: function () {
             for (let p of this.game.alivePlayers()) {
               if (p.role.alignment == this.role.alignment) {
-                p.holdItem("DayMeeting", this.role.data.meetingName)
+                p.holdItem("DayMeeting", this.role.data.meetingName);
                 // p.queueAlert(`The ${this.role.data.meetingName} day meeting has begun.`);
               }
             }
@@ -46,7 +46,10 @@ module.exports = class DaySantista extends Card {
         }
 
         for (let p of this.game.alivePlayers()) {
-          if (p.role.alignment == this.player.role.alignment && p.role == "Santista") {
+          if (
+            p.role.alignment == this.player.role.alignment &&
+            p.role == "Santista"
+          ) {
             return;
           }
         }
@@ -60,7 +63,7 @@ module.exports = class DaySantista extends Card {
           run: function () {
             for (let p of this.game.alivePlayers()) {
               if (p.role.alignment == this.role.alignment) {
-                p.dropItem("DayMeeting", this.role.data.meetingName)
+                p.dropItem("DayMeeting", this.role.data.meetingName);
                 // p.queueAlert(`The ${this.role.data.meetingName} day meeting has ended.`);
               }
             }
