@@ -3594,8 +3594,8 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Adds or Removes 1 Banished Role in Closed Setups.",
-        "If a player with a Banished Role dies during the Day, May kill a player at night.",
+        "In closed setups, replaces 1 non-Banished Village role with a Banished role or replaces 1 Banished Role with a non-Banished Village role.",
+        "If a player with a Banished Role dies during the Day, The Tormentor may kill a player at night.",
         "Learns what Banished Roles are in the Current Game.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT]],
