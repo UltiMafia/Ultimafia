@@ -4097,7 +4097,7 @@ const roleData = {
       description: [
         "Each night, may choose a player to kill.",
         "The first time a Jiangshi chooses a player with a Banished Role, the Jiangshi dies and the Banished Player becomes a Jiangshi.",
-        "Jiangshi adds 1 Banished role in closed setups.",
+        "In closed setups, replaces 1 non-Banished Village role with a Banished role.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_SPECIAL]],
     },
@@ -4115,7 +4115,7 @@ const roleData = {
       description: [
         "Each night, may choose a player to kill.",
         "Cult players killed by a Necromancer can use their abilities when dead, and will make one of their non-banished Village-Aligned neighbors Delirious until the Necromancer dies.",
-        "Necromancer removes 1 Banished role in closed setups.",
+        "In closed setups, replaces 1 Banished role with a non-Banished Village role.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
       graveyardParticipation: "all",
@@ -4318,8 +4318,8 @@ const roleData = {
       alignment: "Cult",
       tags: ["Banished Interaction", "Setup Changes", "Basic"],
       description: [
-        "Adds 2 Banished roles in Closed Setups.",
-        "If a Count is created mid-game, 2 Village/Independant players will be converted to Banished Roles.",
+        "In closed setups, replaces 2 non-Banished Village role with a Banished roles.",
+        //"If a Count is created mid-game, 2 Village/Independant players will be converted to Banished Roles.",
       ],
     },
     Shadow: {
