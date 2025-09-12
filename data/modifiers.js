@@ -458,7 +458,8 @@ const modifierData = {
       category: "Other",
       internal: ["Add1Banished"],
       tags: ["Setup Changes", "Banished Interaction"],
-      description: "Adds 1 Banished Role in Closed Setups.",
+      description:
+        "In closed setups, replaces 1 non-Banished Village role with a Banished role.",
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
       incompatible: ["Banished", "Exclusive"],
@@ -467,7 +468,8 @@ const modifierData = {
       category: "Other",
       internal: ["Remove1Banished"],
       tags: ["Setup Changes", "Banished Interaction"],
-      description: "Removes 1 Banished Role in Closed Setups.",
+      description:
+        "In closed setups, replaces 1 Banished role with a non-Banished Village role.",
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
       incompatible: ["Banished", "Inclusive"],
