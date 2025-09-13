@@ -31,7 +31,7 @@ module.exports = class MafiaRole extends Role {
       !this.player.hasEffect("NoModifiers")
     ) {
       let AllRoles = Object.entries(roleData.Mafia)
-        .filter((m) => m[1].alignment != "Event" && !m[0].includes("Banished")) 
+        .filter((m) => m[1].alignment != "Event" && !m[0].includes("Banished"))
         .map((r) => r[0]);
       return AllRoles.concat(this.game.PossibleRoles);
     } else if (
