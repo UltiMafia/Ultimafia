@@ -896,7 +896,9 @@ module.exports = class Game {
 
     for (let role in this.setup.roles[0]) {
       let roleName = role.split(":")[0];
-      let isBanished = role.split(":")[1] && role.split(":")[1].toLowerCase().includes("banished");
+      let isBanished =
+        role.split(":")[1] &&
+        role.split(":")[1].toLowerCase().includes("banished");
       let isEvent = this.getRoleAlignment(roleName) == "Event";
       const roleFromRoleData = roleData[this.type][roleName];
       if (!roleFromRoleData) {
@@ -964,7 +966,9 @@ module.exports = class Game {
       // has common logic with generatedClosedRoleset, can be refactored in future
       let rolesetArray = [];
       for (let role in roleset) {
-        let isBanished = role.split(":")[1] && role.split(":")[1].toLowerCase().includes("banished");
+        let isBanished =
+          role.split(":")[1] &&
+          role.split(":")[1].toLowerCase().includes("banished");
         let isEvent = this.getRoleAlignment(role.split(":")[0]) == "Event";
         if (!isEvent) {
           this.PossibleRoles.push(role);
@@ -1055,7 +1059,9 @@ module.exports = class Game {
       for (let role in roleset) {
         for (let i = 0; i < roleset[role]; i++) {
           let roleName = role.split(":")[0];
-          let isBanished = role.split(":")[1] && role.split(":")[1].toLowerCase().includes("banished");
+          let isBanished =
+            role.split(":")[1] &&
+            role.split(":")[1].toLowerCase().includes("banished");
           let isEvent = this.getRoleAlignment(roleName) == "Event";
           if (isEvent) {
             if (isBanished) this.BanishedEvents.push(role);
@@ -1404,18 +1410,21 @@ module.exports = class Game {
       }
     }
     */
-    this.PossibleRoles = this.PossibleRoles.filter((r) => !r.split(":")[0].includes("Banished"));
-    this.banishedRoles = this.banishedRoles.filter((r) => !r.split(":")[0].includes("Banished"));
-     this.players.map((p) => this.events.emit("replaceWithBanished", p));
+    this.PossibleRoles = this.PossibleRoles.filter(
+      (r) => !r.split(":")[0].includes("Banished")
+    );
+    this.banishedRoles = this.banishedRoles.filter(
+      (r) => !r.split(":")[0].includes("Banished")
+    );
+    this.players.map((p) => this.events.emit("replaceWithBanished", p));
 
-      this.rollQueue = [];
+    this.rollQueue = [];
 
-      while (this.rollQueue.length < 0) {
-        this.events.emit("replaceWithBanished", rollQueue[0]);
-        this.rollQueue.shift();
-      }
-    
-    
+    while (this.rollQueue.length < 0) {
+      this.events.emit("replaceWithBanished", rollQueue[0]);
+      this.rollQueue.shift();
+    }
+
     if (this.setup.closed && this.banishedRoles.length > 0) {
       this.players.map((p) => this.events.emit("addBanished", p));
 
