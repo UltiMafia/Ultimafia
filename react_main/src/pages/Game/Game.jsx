@@ -964,13 +964,15 @@ export function BotBar(props) {
               </Tooltip>
             )}
 
-            {!isPhoneDevice && game.dev && props.history.currentState === -1 && (
-              <Tooltip title="Fill">
-                <IconButton onClick={onTestClick}>
-                  <img src={poison} alt="Fill" />
-                </IconButton>
-              </Tooltip>
-            )}
+            {!isPhoneDevice &&
+              game.dev &&
+              props.history.currentState === -1 && (
+                <Tooltip title="Fill">
+                  <IconButton onClick={onTestClick}>
+                    <img src={poison} alt="Fill" />
+                  </IconButton>
+                </Tooltip>
+              )}
 
             {!game.review && props.history.currentState === -2 && (
               <Tooltip title="Rehost">
@@ -985,7 +987,8 @@ export function BotBar(props) {
                 <img src={exit} alt="Leave" />
               </IconButton>
             </Tooltip>
-          </ButtonGroup>`
+          </ButtonGroup>
+          `
         </Stack>
       </div>
     </div>
@@ -2365,7 +2368,6 @@ export function PlayerList(props) {
         });
     }, 500);
   }
-
 
   // function PlayerListTitle(props) {
   //   const theme = useTheme();
