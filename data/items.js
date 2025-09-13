@@ -181,7 +181,6 @@ const modifierData = {
     },
   },
   Resistance: {},
-  Ghost: {},
   Jotto: {},
   Acrotopia: {},
   "Secret Dictator": {},

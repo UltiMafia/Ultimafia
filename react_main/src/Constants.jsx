@@ -1,7 +1,6 @@
 export const GameTypes = [
   "Mafia",
   "Resistance",
-  "Ghost",
   "Jotto",
   "Acrotopia",
   "Secret Dictator",

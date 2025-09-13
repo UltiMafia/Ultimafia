@@ -29,7 +29,6 @@ const protips = {
     "Finding players that you can trust (a townread) is often just as important as finding those that you can't.",
   ],
   Resistance: [],
-  Ghost: [],
   Jotto: [],
   Battlesnakes: ["Sometimes, size does matter."],
   Acrotopia: [],

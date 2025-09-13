@@ -49,7 +49,6 @@ module.exports = {
   gameTypes: [
     "Mafia",
     "Resistance",
-    "Ghost",
     "Jotto",
     "Acrotopia",
     "Secret Dictator",
@@ -64,7 +63,6 @@ module.exports = {
   alignments: {
     Mafia: ["Village", "Mafia", "Cult", "Independent", "Event"],
     Resistance: ["Resistance", "Spies"],
-    Ghost: ["Town", "Ghost", "Host"],
     Jotto: ["Town"],
     Acrotopia: ["Town"],
     "Secret Dictator": ["Liberals", "Fascists"],
@@ -78,7 +76,6 @@ module.exports = {
   startStates: {
     Mafia: ["Night", "Day"],
     Resistance: ["Team Selection"],
-    Ghost: ["Night"],
     Jotto: ["Select Word"],
     Acrotopia: ["Night"],
     "Secret Dictator": ["Nomination"],
@@ -129,28 +126,6 @@ module.exports = {
         min: 1 * 60 * 1000,
         max: 60 * 60 * 1000,
         default: 60 * 60 * 1000,
-      },
-    },
-    Ghost: {
-      Night: {
-        min: 1 * 60 * 1000,
-        max: 1 * 60 * 1000,
-        default: 1 * 60 * 1000,
-      },
-      "Give Clue": {
-        min: 1 * 60 * 1000,
-        max: 3 * 60 * 1000,
-        default: 2 * 60 * 1000,
-      },
-      Day: {
-        min: 1 * 60 * 1000,
-        max: 30 * 60 * 1000,
-        default: 10 * 60 * 1000,
-      },
-      "Guess Word": {
-        min: 1 * 60 * 1000,
-        max: 3 * 60 * 1000,
-        default: 2 * 60 * 1000,
       },
     },
     Jotto: {
