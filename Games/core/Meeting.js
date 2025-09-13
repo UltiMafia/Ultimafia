@@ -458,9 +458,10 @@ module.exports = class Meeting {
       let temp = this.game.PossibleRoles.filter((r) => r);
 
       if (this.AllRolesFilters.includes("AllOnSite")) {
-        let allRoles = Object.entries(roleData.Mafia)
-          .filter((m) => m[1].alignment != "Event") && !m[0].includes("Banished")
-          .map((r) => r[0]);
+        let allRoles =
+          Object.entries(roleData.Mafia).filter(
+            (m) => m[1].alignment != "Event"
+          ) && !m[0].includes("Banished").map((r) => r[0]);
         temp = temp.concat(allRoles);
       }
       if (this.AllRolesFilters.includes("addedRoles")) {
