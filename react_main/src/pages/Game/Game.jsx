@@ -2919,7 +2919,11 @@ function ActionButton(props) {
 
       <Stack direction="row" spacing={1} flexWrap="wrap">
         {(meeting.targets || []).map((target) => {
-          const targetDisplay = getTargetDisplay(target, meeting, props.players);
+          const targetDisplay = getTargetDisplay(
+            target,
+            meeting,
+            props.players
+          );
 
           const isSelected = myVoteDisplay === targetDisplay;
           const disabled = !!myVoteDisplay && !meeting.canUnvote;
@@ -2942,7 +2946,6 @@ function ActionButton(props) {
     </Box>
   );
 }
-
 
 function ActionImageButtons(props) {
   const [meeting, history, stateViewing, isCurrentState, notClickable, onVote] =
@@ -3181,7 +3184,7 @@ function ActionText(props) {
     }
   }
 
-return (
+  return (
     <Box className="action">
       <Typography variant="subtitle1" gutterBottom>
         {meeting.actionName}
@@ -3196,7 +3199,6 @@ return (
             size="small"
             fullWidth
             placeholder={textOptions.placeholder || "Type here"}
-
           />
           <Button
             variant="contained"
