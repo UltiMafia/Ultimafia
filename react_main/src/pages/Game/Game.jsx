@@ -842,7 +842,7 @@ export function BotBar(props) {
       window.open(window.location + "?bot");
   }
 
-function onLeaveGameClick() {
+  function onLeaveGameClick() {
     if (game.finished || game.review) {
       leaveGame();
     } else {
@@ -860,17 +860,17 @@ function onLeaveGameClick() {
   }
 
   useEffect(() => {
-  function handleKeyDown(e) {
-    if (e.key === "Escape") {
-      onLeaveGameClick();
+    function handleKeyDown(e) {
+      if (e.key === "Escape") {
+        onLeaveGameClick();
+      }
     }
-  }
 
-  window.addEventListener("keydown", handleKeyDown);
-  return () => {
-    window.removeEventListener("keydown", handleKeyDown);
-  };
-}, [game]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [game]);
 
   function onRehostGameClick() {
     game.noLeaveRef.current = true;

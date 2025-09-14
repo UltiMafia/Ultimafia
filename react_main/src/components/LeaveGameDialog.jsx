@@ -13,12 +13,7 @@ import godfather from "images/roles/mafia/godfather-vivid.png";
 
 export default function LeaveGameDialog({ open, onClose, onConfirm }) {
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="xs"
-      fullWidth
-    >
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <Box
         sx={{
           display: "flex",
