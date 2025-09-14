@@ -2,6 +2,9 @@
   display: flex;
   flex-flow: column;
 
+  gap: var(--mui-spacing);
+  padding-top: var(--mui-spacing);
+
   height: 100%;
   width: 100%;
 
@@ -26,7 +29,7 @@
   display: flex;
   justify-content: flex-start;
   cursor: pointer;
-  margin: 0px 0px 0px 10px;
+  margin: 0px 0px 0px var(--mui-spacing);
 }
 
 .game .game-name {
@@ -76,7 +79,7 @@
 }
 
 .game .state-timer {
-  height: 21px;
+  height: 1.5rem;
 }
 
 .game .misc-wrapper {
@@ -84,7 +87,7 @@
   flex-flow: row nowrap;
   align-items: center;
 
-  gap: 8px;
+  gap: var(--mui-spacing);
 }
 
 .game .fas {
@@ -94,13 +97,11 @@
 .game .main {
   flex-grow: 1;
 
-  display: flex;
-  flex-flow: row nowrap;
   align-items: stretch;
   justify-content: flex-start;
 
-  margin-left: 10px;
-  margin-right: 10px;
+  padding-left: var(--mui-spacing);
+  padding-right: var(--mui-spacing);
 }
 
 .game .panel {
@@ -111,6 +112,7 @@
   box-sizing: border-box;
   margin: 0px;
   padding: 0px;
+  scroll-margin: var(--mui-spacing);
 
   background-color: var(--scheme-color);
   color: var(--scheme-color-text);
@@ -119,13 +121,11 @@
 .game .left-panel {
   width: 22vw;
   max-width: 350px;
-  margin: 0px 20px 0px 0px;
 }
 
 .game .right-panel {
   width: 22vw;
   max-width: 350px;
-  margin: 0px 0px 0px 20px;
 }
 
 .game .center-panel {
@@ -135,23 +135,34 @@
   flex-flow: column;
 
   width: 0px;
-  margin: 0px 10px;
 
   background-color: transparent;
   box-shadow: none;
 }
 
+.game .title-box {
+  height: calc(1em + 4 * var(--mui-spacing));
+  padding: var(--mui-spacing);
+  line-height: normal;
+}
+
 .game .meeting-tabs {
   display: flex;
   flex-flow: row nowrap;
+
+  gap: var(--mui-spacing);
+
   background-color: var(--scheme-color-background);
+  border-top-left-radius: var(--mui-shape-borderRadius);
+  border-top-right-radius: var(--mui-shape-borderRadius);
 }
 
 .game .tab {
-  padding: 10px;
+  padding: 4px var(--mui-spacing);
 
   z-index: 0;
   background-color: var(--scheme-color-background);
+  border-radius: var(--mui-shape-borderRadius);
   cursor: pointer;
 }
 
@@ -477,7 +488,7 @@
     )
     1;
 
-  border-radius: 6px;
+  border-radius: var(--mui-shape-borderRadius);
 }
 
 .game .speech-input-wrapper {
@@ -592,16 +603,6 @@
   overflow-y: auto;
 }
 
-.game .side-menu-title {
-  padding: 8px;
-
-  background-color: var(--scheme-color-background);
-}
-
-.game .side-menu-title i {
-  margin-left: 5px;
-}
-
 .game .side-menu-content {
   overflow: hidden;
 }
@@ -609,7 +610,7 @@
 .game .player-list {
   flex-grow: 1;
 
-  padding: 7px 7px;
+  padding: var(--mui-spacing);
 }
 
 .game .player-list .player:hover {
@@ -997,7 +998,7 @@
   }
 
   .game .left-panel {
-    width: 90vw !important;
+    width: calc(100vw - 3 * var(--mui-spacing)) !important;
 
     scroll-snap-align: start;
     scroll-snap-stop: always;
@@ -1007,15 +1008,15 @@
     flex-basis: initial !important;
     flex-grow: 0 !important;
 
-    width: 95vw !important;
+    width: calc(100vw - 3 * var(--mui-spacing)) !important;
 
     scroll-snap-align: center;
     scroll-snap-stop: always;
   }
 
   .game .right-panel {
-    width: 90vw !important;
-
+    width: calc(100vw - 3 * var(--mui-spacing)) !important;
+  
     scroll-snap-align: end;
     scroll-snap-stop: always;
   }
@@ -1026,7 +1027,7 @@
 
   .game .state-wrapper {
     order: 3;
-    margin-top: 8px;
+    margin-top: var(--mui-spacing);
     justify-self: center;
   }
 
