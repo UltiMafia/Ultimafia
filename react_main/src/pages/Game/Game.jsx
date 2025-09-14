@@ -38,6 +38,7 @@ import { ClientSocket as Socket } from "../../Socket";
 import { RoleCount } from "../../components/Roles";
 import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
+import LeaveGameDialog from "../../components/LeaveGameDialog";
 import { useErrorAlert } from "../../components/Alerts";
 import {
   MaxGameMessageLength,
@@ -830,6 +831,7 @@ export function BotBar(props) {
   const popover = useContext(PopoverContext);
   const hideStateSwitcher = props.hideStateSwitcher;
   const game = props.game;
+  const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
 
   function onLogoClick() {
     window.open(process.env.REACT_APP_URL, "_blank");
@@ -841,18 +843,34 @@ export function BotBar(props) {
   }
 
   function onLeaveGameClick() {
-    const shouldLeave =
-      game.finished ||
-      game.review ||
-      window.confirm("Are you sure you wish to leave?");
+    if (game.finished || game.review) {
+      leaveGame();
+    } else {
+      setLeaveDialogOpen(true);
+    }
+  }
 
-    if (!shouldLeave) return;
-
+  function leaveGame() {
     if (game.finished) siteInfo.hideAllAlerts();
 
     if (game.socket.on) game.socket.send("leave");
     else game.setLeave(true);
+
+    setLeaveDialogOpen(false);
   }
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape") {
+        onLeaveGameClick();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [game]);
 
   function onRehostGameClick() {
     game.noLeaveRef.current = true;
@@ -947,15 +965,13 @@ export function BotBar(props) {
                 </IconButton>
               </Tooltip>
             )}
-            {!isPhoneDevice &&
-              game.dev &&
-              (props.history.currentState == -1) && (
-                <Tooltip title="Fill">
-                  <IconButton size="large" onClick={onTestClick}>
-                    <img src={poison} alt="Fill" />
-                  </IconButton>
-                </Tooltip>
-              )}
+            {!isPhoneDevice && game.dev && props.history.currentState == -1 && (
+              <Tooltip title="Fill">
+                <IconButton size="large" onClick={onTestClick}>
+                  <img src={poison} alt="Fill" />
+                </IconButton>
+              </Tooltip>
+            )}
 
             {!game.review && props.history.currentState === -2 && (
               <Tooltip title="Rehost">
@@ -970,6 +986,11 @@ export function BotBar(props) {
                 <img src={exit} alt="Leave" />
               </IconButton>
             </Tooltip>
+            <LeaveGameDialog
+              open={leaveDialogOpen}
+              onClose={() => setLeaveDialogOpen(false)}
+              onConfirm={leaveGame}
+            />
           </ButtonGroup>
         </Stack>
       </div>
@@ -981,7 +1002,7 @@ export function ThreePanelLayout(props) {
   const isPhoneDevice = useIsPhoneDevice();
 
   return (
-    <Stack className="main" direction="row" sx={{ gap: isPhoneDevice ? 1 : 2}}>
+    <Stack className="main" direction="row" sx={{ gap: isPhoneDevice ? 1 : 2 }}>
       <div className="left-panel panel with-radial-gradient">
         {props.leftPanelContent}
       </div>
@@ -2110,13 +2131,22 @@ export function SideMenu({
   if (!isAccordionMenu) {
     return (
       <div className={`side-menu ${scrollable ? "scrollable" : ""}`}>
-        <Stack direction="row" spacing={1} className="title-box" sx={{
-          alignItems: "center",
-          p: 1,
-          borderTopLeftRadius: isTopMostMenu ? "var(--mui-shape-borderRadius)" : undefined,
-          borderTopRightRadius: isTopMostMenu ? "var(--mui-shape-borderRadius)" : undefined,
-          bgcolor: "var(--scheme-color-background)",
-        }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          className="title-box"
+          sx={{
+            alignItems: "center",
+            p: 1,
+            borderTopLeftRadius: isTopMostMenu
+              ? "var(--mui-shape-borderRadius)"
+              : undefined,
+            borderTopRightRadius: isTopMostMenu
+              ? "var(--mui-shape-borderRadius)"
+              : undefined,
+            bgcolor: "var(--scheme-color-background)",
+          }}
+        >
           {lockIcon}
           {title}
         </Stack>
@@ -2329,13 +2359,15 @@ export function PlayerList(props) {
   const game = useContext(GameContext);
 
   const title = (
-    <Stack direction="row" spacing={1} sx={{
-      width: "100%",
-      alignItems: "center",
-    }}>
-      <Typography>
-        Players
-      </Typography>
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{
+        width: "100%",
+        alignItems: "center",
+      }}
+    >
+      <Typography>Players</Typography>
       <Box sx={{ marginLeft: "auto !important" }}>
         <PlayerCount
           game={game}
@@ -2601,7 +2633,7 @@ export function ActionList(props) {
         <Badge
           badgeContent={unresolvedActionCount}
           color="primary"
-          invisible={!isParticipant || (unresolvedActionCount === 0)}
+          invisible={!isParticipant || unresolvedActionCount === 0}
         >
           {props.title || "Actions"}
         </Badge>
