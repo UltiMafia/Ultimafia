@@ -145,6 +145,8 @@ function GameWrapper(props) {
   const errorAlert = useErrorAlert();
   const { gameId } = useParams();
 
+  const isParticipant = !isSpectator && !props.review;
+
   function PinnedMessagesReducer(state, action) {
     var newState = state;
 
@@ -743,6 +745,7 @@ function GameWrapper(props) {
       onStateNavigation: onStateNavigation,
       self: self,
       isSpectator: isSpectator,
+      isParticipant: isParticipant,
       players: players,
       updatePlayers: updatePlayers,
       options: options,
@@ -896,13 +899,7 @@ export function BotBar(props) {
   }
 
   return (
-    <div
-      className="top"
-      style={{
-        marginTop: "8px",
-        marginBottom: isPhoneDevice ? undefined : "8px",
-      }}
-    >
+    <div className="top">
       {!isPhoneDevice && (
         <div className="game-name-wrapper" onClick={onLogoClick}>
           {props.gameName}
@@ -936,19 +933,6 @@ export function BotBar(props) {
           />
         )}
         <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1}>
-          {!game.review && (
-            <PlayerCount
-              game={game}
-              gameId={game.gameId}
-              anonymousGame={game.options.anonymousGame}
-              status={"In Progress"}
-              numSlotsTaken={
-                Object.values(props.players).filter((p) => !p.left).length
-              }
-              spectatingAllowed={game.options.spectating}
-              spectatorCount={game.spectatorCount}
-            />
-          )}
           <ButtonGroup
             variant="contained"
             sx={{
@@ -958,17 +942,16 @@ export function BotBar(props) {
           >
             {game.review && (
               <Tooltip title="Archive">
-                <IconButton onClick={onArchiveGameClick}>
+                <IconButton size="large" onClick={onArchiveGameClick}>
                   <img src={lore} alt="Archive" />
                 </IconButton>
               </Tooltip>
             )}
-
             {!isPhoneDevice &&
               game.dev &&
-              props.history.currentState === -1 && (
+              (props.history.currentState == -1) && (
                 <Tooltip title="Fill">
-                  <IconButton onClick={onTestClick}>
+                  <IconButton size="large" onClick={onTestClick}>
                     <img src={poison} alt="Fill" />
                   </IconButton>
                 </Tooltip>
@@ -976,19 +959,18 @@ export function BotBar(props) {
 
             {!game.review && props.history.currentState === -2 && (
               <Tooltip title="Rehost">
-                <IconButton onClick={onRehostGameClick}>
+                <IconButton size="large" onClick={onRehostGameClick}>
                   <img src={veg} alt="Rehost" />
                 </IconButton>
               </Tooltip>
             )}
 
             <Tooltip title="Leave">
-              <IconButton onClick={onLeaveGameClick}>
+              <IconButton size="large" onClick={onLeaveGameClick}>
                 <img src={exit} alt="Leave" />
               </IconButton>
             </Tooltip>
           </ButtonGroup>
-          `
         </Stack>
       </div>
     </div>
@@ -996,8 +978,10 @@ export function BotBar(props) {
 }
 
 export function ThreePanelLayout(props) {
+  const isPhoneDevice = useIsPhoneDevice();
+
   return (
-    <div className="main">
+    <Stack className="main" direction="row" sx={{ gap: isPhoneDevice ? 1 : 2}}>
       <div className="left-panel panel with-radial-gradient">
         {props.leftPanelContent}
       </div>
@@ -1007,7 +991,7 @@ export function ThreePanelLayout(props) {
       <div className="right-panel panel with-radial-gradient">
         {props.rightPanelContent}
       </div>
-    </div>
+    </Stack>
   );
 }
 
@@ -1200,7 +1184,7 @@ export function TextMeetingLayout(props) {
     meetings[selTab].canTalk;
   return (
     <>
-      <div className="meeting-tabs">
+      <div className="meeting-tabs title-box">
         {tabs.length > 0 && tabs}
         {tabs.length === 0 && (
           <div className="tab sel">{stateInfo && stateInfo.name}</div>
@@ -2104,24 +2088,15 @@ export function formatTimerTime(time) {
   return `${minutes}:${seconds}`;
 }
 
-export function SideMenu(props) {
-  return (
-    <div className={`side-menu ${props.scrollable ? "scrollable" : ""}`}>
-      <div className="side-menu-title">
-        {props.lockIcon}&nbsp;{props.title}
-      </div>
-      <div className="side-menu-content">{props.content}</div>
-    </div>
-  );
-}
-
-export function SideMenuNew({
+export function SideMenu({
   title,
   lockIcon,
   content,
   scrollable,
   expanded,
   onChange,
+  isAccordionMenu = false,
+  isTopMostMenu = false,
   defaultExpanded = false,
   disabled = false,
   contentPadding = "8px 16px",
@@ -2131,6 +2106,24 @@ export function SideMenuNew({
       onChange();
     }
   };
+
+  if (!isAccordionMenu) {
+    return (
+      <div className={`side-menu ${scrollable ? "scrollable" : ""}`}>
+        <Stack direction="row" spacing={1} className="title-box" sx={{
+          alignItems: "center",
+          p: 1,
+          borderTopLeftRadius: isTopMostMenu ? "var(--mui-shape-borderRadius)" : undefined,
+          borderTopRightRadius: isTopMostMenu ? "var(--mui-shape-borderRadius)" : undefined,
+          bgcolor: "var(--scheme-color-background)",
+        }}>
+          {lockIcon}
+          {title}
+        </Stack>
+        <div className="side-menu-content">{content}</div>
+      </div>
+    );
+  }
 
   return (
     <Accordion
@@ -2143,12 +2136,7 @@ export function SideMenuNew({
     >
       <AccordionSummary
         sx={{
-          minHeight: "30px",
-          padding: 1,
           backgroundColor: "var(--scheme-color-sec)",
-          "& .MuiAccordionSummary-content": {
-            margin: "4px 0",
-          },
         }}
       >
         <Typography>
@@ -2338,6 +2326,32 @@ export function PlayerList(props) {
     (p) => stateViewingInfo.exorcised[p.id] && !p.left
   );
 
+  const game = useContext(GameContext);
+
+  const title = (
+    <Stack direction="row" spacing={1} sx={{
+      width: "100%",
+      alignItems: "center",
+    }}>
+      <Typography>
+        Players
+      </Typography>
+      <Box sx={{ marginLeft: "auto !important" }}>
+        <PlayerCount
+          game={game}
+          gameId={game.gameId}
+          anonymousGame={game.options.anonymousGame}
+          status={"In Progress"}
+          numSlotsTaken={
+            Object.values(game.players).filter((p) => !p.left).length
+          }
+          spectatingAllowed={game.options.spectating}
+          spectatorCount={game.spectatorCount}
+        />
+      </Box>
+    </Stack>
+  );
+
   function GameProps() {
     props.noLeaveRef.current = true;
 
@@ -2369,60 +2383,10 @@ export function PlayerList(props) {
     }, 500);
   }
 
-  // function PlayerListTitle(props) {
-  //   const theme = useTheme();
-  //   const isPhoneDevice = useIsPhoneDevice();
-  //   const { gameId } = useParams();
-  //   const infoRef = useRef();
-  //   const errorAlert = useErrorAlert();
-  //   const siteInfo = useContext(SiteInfoContext);
-  //   const popover = useContext(PopoverContext);
-  //   const hideStateSwitcher = props.hideStateSwitcher;
-  //   const game = props.game;
-
-  //   return (
-  //     <div
-  //       className="top"
-  //       style={{
-  //         marginTop: "8px",
-  //         marginBottom: isPhoneDevice ? undefined : "8px",
-  //       }}
-  //     >
-  //       <div
-  //         className="misc-wrapper"
-  //         style={{
-  //           width: isPhoneDevice ? "100%" : undefined,
-  //           paddingLeft: isPhoneDevice ? "8px" : undefined,
-  //           paddingRight: isPhoneDevice ? "8px" : "10px",
-  //           justifyContent: isPhoneDevice ? "space-between" : "center",
-  //         }}
-  //       >
-  //         <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1}>
-  //           <Typography>
-  //             Players
-  //           </Typography>
-  //           {!game.review && (
-  //             <PlayerCount
-  //               game={game}
-  //               gameId={game.gameId}
-  //               anonymousGame={game.options.anonymousGame}
-  //               status={"In Progress"}
-  //               numSlotsTaken={
-  //                 Object.values(props.players).filter((p) => !p.left).length
-  //               }
-  //               spectatingAllowed={game.options.spectating}
-  //               spectatorCount={game.spectatorCount}
-  //             />
-  //           )}
-  //         </Stack>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   return (
     <SideMenu
-      title="Players"
+      title={title}
+      isTopMostMenu
       scrollable
       content={
         <div className="player-list">
@@ -2524,6 +2488,8 @@ export function getUnresolvedActionCount(meetings) {
 
 export function ActionList(props) {
   const unresolvedActionCount = getUnresolvedActionCount(props.meetings);
+  const isParticipant = props.isParticipant;
+
   const actions = Object.values(props.meetings).reduce((actions, meeting) => {
     if (meeting.voting) {
       var action;
@@ -2628,23 +2594,20 @@ export function ActionList(props) {
   }, []);
 
   return (
-    <>
-      {actions.length > 0 && (
-        <SideMenu
-          scrollable
-          title={
-            <Badge
-              badgeContent={unresolvedActionCount}
-              color="primary"
-              invisible={unresolvedActionCount === 0}
-            >
-              {props.title || "Actions"}
-            </Badge>
-          }
-          content={<div className="action-list">{actions}</div>}
-        />
-      )}
-    </>
+    <SideMenu
+      isTopMostMenu
+      scrollable
+      title={
+        <Badge
+          badgeContent={unresolvedActionCount}
+          color="primary"
+          invisible={!isParticipant || (unresolvedActionCount === 0)}
+        >
+          {props.title || "Actions"}
+        </Badge>
+      }
+      content={<div className="action-list">{actions}</div>}
+    />
   );
 }
 
@@ -3380,7 +3343,7 @@ export function Timer(props) {
 
   const timer = timers[timerName];
 
-  if (!timer) return <div className="state-timer"></div>;
+  if (!timer) return <></>;
 
   var time = timer.delay - timer.time;
 
@@ -3417,8 +3380,9 @@ export function LastWillEntry(props) {
   }
 
   return (
-    <SideMenuNew
+    <SideMenu
       title="Last Will"
+      isAccordionMenu
       lockIcon={
         <i
           className={`fas ${
@@ -3567,8 +3531,9 @@ export function SettingsMenu(props) {
   );
 
   return (
-    <SideMenuNew
+    <SideMenu
       title="Settings"
+      isAccordionMenu
       content={
         <>
           {menuContent}
@@ -3715,8 +3680,9 @@ export function SpeechFilter(props) {
   if (stateViewing < 0) return <></>;
 
   return (
-    <SideMenuNew
+    <SideMenu
       title="Speech Filters"
+      isAccordionMenu
       content={
         <div className="speech-filters">
           <div style={{ marginBottom: "10px" }}>
@@ -3786,8 +3752,9 @@ export function PinnedMessages() {
   });
 
   return (
-    <SideMenuNew
+    <SideMenu
       title="Pinned messages"
+      isAccordionMenu
       contentPadding="0px 0px"
       content={
         <div
@@ -3829,8 +3796,9 @@ export function Notes(props) {
   if (stateViewing < 0) return <></>;
 
   return (
-    <SideMenuNew
+    <SideMenu
       title="Notes"
+      isAccordionMenu
       content={
         <div className="notes-wrapper">
           <textarea

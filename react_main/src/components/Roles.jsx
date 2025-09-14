@@ -342,42 +342,42 @@ export function RoleCount(props) {
                   />
                 ))}
           </div>
-          <Popover
-            open={props.showPopover !== false && popoverOpen}
-            sx={popoverClasses}
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "center",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "center",
-            }}
-            onClose={closePopover}
-            disableScrollLock
-          >
-            <div className={"mui-popover"}>
-              <div className={"mui-popover-title"}>
-                <div className={`role role-icon-${roleSkin}-${roleClass}`} />
-                &nbsp;{<Link href={`/learn/role/${roleName}`}>{roleName}</Link>}
-                &nbsp;
-              </div>
-              <div style={{ margin: "6px" }}>
-                <div>
-                  <span style={{ fontWeight: "bold" }}>Alignment</span>:{" "}
-                  {roleAlignment}
-                </div>
-                <div>
-                  <span style={{ fontWeight: "bold" }}>Tags</span>: {roleTags}
-                </div>
-                {DescriptionLines}
-                {Modifiers}
-                {SpecialInteractions}
-              </div>
-            </div>
-          </Popover>
         </div>
+        <Popover
+          open={props.showPopover !== false && popoverOpen}
+          sx={popoverClasses}
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "center",
+          }}
+          onClose={closePopover}
+          disableScrollLock
+        >
+          <div className={"mui-popover"}>
+            <div className={"mui-popover-title"}>
+              <div className={`role role-icon-${roleSkin}-${roleClass}`} />
+              &nbsp;{<Link href={`/learn/role/${roleName}`}>{roleName}</Link>}
+              &nbsp;
+            </div>
+            <div style={{ margin: "6px" }}>
+              <div>
+                <span style={{ fontWeight: "bold" }}>Alignment</span>:{" "}
+                {roleAlignment}
+              </div>
+              <div>
+                <span style={{ fontWeight: "bold" }}>Tags</span>: {roleTags}
+              </div>
+              {DescriptionLines}
+              {Modifiers}
+              {SpecialInteractions}
+            </div>
+          </div>
+        </Popover>
       </>
     );
   } else {

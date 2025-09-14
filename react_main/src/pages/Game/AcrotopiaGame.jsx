@@ -144,6 +144,7 @@ export default function AcrotopiaGame(props) {
             <HistoryKeeper history={history} stateViewing={stateViewing} />
             <ActionList
               socket={game.socket}
+              isParticipant={game.isParticipant}
               meetings={meetings}
               players={players}
               self={self}
