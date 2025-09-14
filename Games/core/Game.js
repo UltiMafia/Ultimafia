@@ -1049,6 +1049,7 @@ module.exports = class Game {
     this.patchRenamedRoles();
     var roleset;
     this.PossibleRoles = [];
+    this.banishedRoles = [];
     this.PossibleEvents = [];
     this.CurrentEvents = [];
     this.BanishedEvents = [];
@@ -1067,6 +1068,9 @@ module.exports = class Game {
             if (isBanished) this.BanishedEvents.push(role);
             else this.PossibleEvents.push(role);
           } else {
+            if(isBanished){
+              this.banishedRoles.push(role);
+            }
             this.PossibleRoles.push(role);
           }
         }
@@ -1413,9 +1417,11 @@ module.exports = class Game {
     this.PossibleRoles = this.PossibleRoles.filter(
       (r) => !r.split(":")[0].includes("Banished")
     );
-    this.banishedRoles = this.banishedRoles.filter(
+    if(this.banishedRoles){
+      this.banishedRoles = this.banishedRoles.filter(
       (r) => !r.split(":")[0].includes("Banished")
     );
+    }
     this.players.map((p) => this.events.emit("replaceWithBanished", p));
 
     this.rollQueue = [];
