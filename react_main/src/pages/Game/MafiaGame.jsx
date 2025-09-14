@@ -503,6 +503,7 @@ export default function MafiaGame() {
           <>
             <ActionList
               socket={game.socket}
+              isParticipant={game.isParticipant}
               meetings={meetings}
               players={players}
               self={self}
