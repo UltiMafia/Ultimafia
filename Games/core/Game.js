@@ -896,7 +896,9 @@ module.exports = class Game {
 
     for (let role in this.setup.roles[0]) {
       let roleName = role.split(":")[0];
-      let isBanished = role.toLowerCase().includes("banished");
+      let isBanished =
+        role.split(":")[1] &&
+        role.split(":")[1].toLowerCase().includes("banished");
       let isEvent = this.getRoleAlignment(roleName) == "Event";
       const roleFromRoleData = roleData[this.type][roleName];
       if (!roleFromRoleData) {
@@ -964,7 +966,9 @@ module.exports = class Game {
       // has common logic with generatedClosedRoleset, can be refactored in future
       let rolesetArray = [];
       for (let role in roleset) {
-        let isBanished = role.toLowerCase().includes("banished");
+        let isBanished =
+          role.split(":")[1] &&
+          role.split(":")[1].toLowerCase().includes("banished");
         let isEvent = this.getRoleAlignment(role.split(":")[0]) == "Event";
         if (!isEvent) {
           this.PossibleRoles.push(role);
@@ -1045,6 +1049,7 @@ module.exports = class Game {
     this.patchRenamedRoles();
     var roleset;
     this.PossibleRoles = [];
+    this.banishedRoles = [];
     this.PossibleEvents = [];
     this.CurrentEvents = [];
     this.BanishedEvents = [];
@@ -1055,12 +1060,17 @@ module.exports = class Game {
       for (let role in roleset) {
         for (let i = 0; i < roleset[role]; i++) {
           let roleName = role.split(":")[0];
-          let isBanished = role.toLowerCase().includes("banished");
+          let isBanished =
+            role.split(":")[1] &&
+            role.split(":")[1].toLowerCase().includes("banished");
           let isEvent = this.getRoleAlignment(roleName) == "Event";
           if (isEvent) {
             if (isBanished) this.BanishedEvents.push(role);
             else this.PossibleEvents.push(role);
           } else {
+            if (isBanished) {
+              this.banishedRoles.push(role);
+            }
             this.PossibleRoles.push(role);
           }
         }
@@ -1338,6 +1348,7 @@ module.exports = class Game {
         this.SpecialInteractionRoles.push(`${this.AddedRoles[w]}`);
       }
     }
+    /*
     if (this.setup.closed && this.setup.banished > 0) {
       var banishedRoles = this.banishedRoles;
       var banishedCount = this.setup.banished;
@@ -1402,6 +1413,24 @@ module.exports = class Game {
         }
       }
     }
+    */
+    this.PossibleRoles = this.PossibleRoles.filter(
+      (r) => !r.split(":")[0].includes("Banished")
+    );
+    if (this.banishedRoles) {
+      this.banishedRoles = this.banishedRoles.filter(
+        (r) => !r.split(":")[0].includes("Banished")
+      );
+    }
+    this.players.map((p) => this.events.emit("replaceWithBanished", p));
+
+    this.rollQueue = [];
+
+    while (this.rollQueue.length < 0) {
+      this.events.emit("replaceWithBanished", rollQueue[0]);
+      this.rollQueue.shift();
+    }
+
     if (this.setup.closed && this.banishedRoles.length > 0) {
       this.players.map((p) => this.events.emit("addBanished", p));
 
@@ -1747,14 +1776,6 @@ module.exports = class Game {
           `:rip: ${this.setup.name}: This setup is using the Voting Dead game setting so Dead Players can Vote during the Village meeting!`,
           undefined,
           { color: "#cc322d" }
-        ),
-      ];
-    if (this.setup.banished > 0 && this.currentState == 0)
-      [
-        this.sendAlert(
-          `:visited: ${this.setup.name}: The standard banished count is ${this.setup.banished}`,
-          undefined,
-          { color: "#ba9b9b" }
         ),
       ];
     if (this.MagusPossible && this.currentState == 0) {

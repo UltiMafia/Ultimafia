@@ -2208,6 +2208,13 @@ const roleData = {
         "Once a proposal is accepted, the Suitress cannot make another proposal.",
       ],
     },
+    "Banished Village": {
+      alignment: "Village",
+      tags: ["Banished Interaction", "Basic"],
+      description: [
+        "Before the game starts, is replaced with a random Banished Village role.",
+      ],
+    },
     //Mafia
     Mafioso: {
       alignment: "Mafia",
@@ -3397,6 +3404,13 @@ const roleData = {
       },
       RolesMadeBy: ["Fool"],
     },
+    "Banished Mafia": {
+      alignment: "Mafia",
+      tags: ["Banished Interaction", "Basic"],
+      description: [
+        "Before the game starts, is replaced with a random Banished Mafia role.",
+      ],
+    },
 
     //Cult
     //Basic
@@ -4373,6 +4387,13 @@ const roleData = {
       description: ["Very Very Good Role."],
       nightOrder: [["Very Very Good Action", 69420]],
     },
+    "Banished Cult": {
+      alignment: "Cult",
+      tags: ["Banished Interaction", "Basic"],
+      description: [
+        "Before the game starts, is replaced with a random Banished Cult role.",
+      ],
+    },
 
     //Independent
     Fool: {
@@ -5319,6 +5340,20 @@ const roleData = {
       nightOrder: [
         ["Control Players", PRIORITY_REDIRECT_ACTION],
         ["Attach Strings", PRIORITY_SUPPORT_VISIT_DEFAULT],
+      ],
+    },
+    "Banished Independent": {
+      alignment: "Independent",
+      tags: ["Banished Interaction", "Basic"],
+      description: [
+        "Before the game starts, is replaced with a random Banished Independent role.",
+      ],
+    },
+    "Banished Any": {
+      alignment: "Independent",
+      tags: ["Banished Interaction", "Basic"],
+      description: [
+        "Before the game starts, is replaced with a random Banished role.",
       ],
     },
 

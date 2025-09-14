@@ -275,6 +275,26 @@
   background-image: url("/src/images/roles/independent-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Banished-Village {
+  background-image: url("/src/images/roles/village-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Banished-Mafia {
+  background-image: url("/src/images/roles/mafia-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Banished-Cult {
+  background-image: url("/src/images/roles/cult-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Banished-Independent {
+  background-image: url("/src/images/roles/independent-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Banished-Any {
+  background-image: url("/src/images/roles/any-vivid.gif");
+}
+
 /* 
 /*------------------Village Roles----------------------*/
 
