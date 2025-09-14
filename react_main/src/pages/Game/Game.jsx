@@ -78,7 +78,7 @@ import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
 
 import lore from "images/emotes/lore.webp";
 import poison from "images/emotes/poison.webp";
-import exit from "images/emotes/exit.webp";
+import exit from "images/emotes/exit.png";
 import veg from "images/emotes/veg.webp";
 
 export default function Game() {
@@ -2901,38 +2901,48 @@ function ActionSelect(props) {
 function ActionButton(props) {
   const [meeting, history, stateViewing, isCurrentState, notClickable, onVote] =
     useAction(props);
-  if (notClickable) {
-    return null;
-  }
-  const votes = { ...meeting.votes };
 
-  for (let playerId in votes)
+  if (notClickable) return null;
+
+  const votes = { ...(meeting.votes || {}) };
+  for (let playerId in votes) {
     votes[playerId] = getTargetDisplay(votes[playerId], meeting, props.players);
+  }
 
-  const buttons = meeting.targets.map((target) => {
-    var targetDisplay = getTargetDisplay(target, meeting, props.players);
-
-    return (
-      <div
-        className={`btn btn-theme ${
-          votes[props.self] === targetDisplay ? "sel" : ""
-        }`}
-        key={target}
-        disabled={votes[props.self] && !meeting.canUnvote}
-        onClick={() => onVote(target)}
-      >
-        {targetDisplay}
-      </div>
-    );
-  });
+  const myVoteDisplay = votes[props.self];
 
   return (
-    <div className="action" style={{ ...props.style }}>
-      <div className="action-name">{meeting.actionName}</div>
-      {buttons}
-    </div>
+    <Box className="action" sx={{ ...props.style }}>
+      <Typography variant="subtitle1" sx={{ mb: 1 }}>
+        {meeting.actionName}
+      </Typography>
+
+      <Stack direction="row" spacing={1} flexWrap="wrap">
+        {(meeting.targets || []).map((target) => {
+          const targetDisplay = getTargetDisplay(target, meeting, props.players);
+
+          const isSelected = myVoteDisplay === targetDisplay;
+          const disabled = !!myVoteDisplay && !meeting.canUnvote;
+
+          return (
+            <Button
+              key={target}
+              color="primary"
+              disabled={disabled}
+              onClick={() => onVote(target)}
+              size="small"
+              sx={{ textTransform: "none" }}
+              aria-pressed={isSelected}
+            >
+              {targetDisplay}
+            </Button>
+          );
+        })}
+      </Stack>
+    </Box>
   );
 }
+
 
 function ActionImageButtons(props) {
   const [meeting, history, stateViewing, isCurrentState, notClickable, onVote] =
@@ -3171,7 +3181,7 @@ function ActionText(props) {
     }
   }
 
-  return (
+return (
     <Box className="action">
       <Typography variant="subtitle1" gutterBottom>
         {meeting.actionName}
@@ -3186,6 +3196,7 @@ function ActionText(props) {
             size="small"
             fullWidth
             placeholder={textOptions.placeholder || "Type here"}
+
           />
           <Button
             variant="contained"

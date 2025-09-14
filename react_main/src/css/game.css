@@ -119,13 +119,13 @@
 }
 
 .game .left-panel {
-  width: 22vw;
-  max-width: 350px;
+  /* Desktop sizing */
+  width: 22vw; 
 }
 
 .game .right-panel {
+  /* Desktop sizing */
   width: 22vw;
-  max-width: 350px;
 }
 
 .game .center-panel {
