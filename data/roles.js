@@ -5342,14 +5342,14 @@ const roleData = {
         ["Attach Strings", PRIORITY_SUPPORT_VISIT_DEFAULT],
       ],
     },
-  "Banished Independent": {
+    "Banished Independent": {
       alignment: "Independent",
       tags: ["Banished Interaction", "Basic"],
       description: [
         "Before the game starts, is replaced with a random Banished Independent role.",
       ],
     },
-  "Banished Any": {
+    "Banished Any": {
       alignment: "Independent",
       tags: ["Banished Interaction", "Basic"],
       description: [
