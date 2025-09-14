@@ -843,7 +843,7 @@ export function BotBar(props) {
   }
 
   function onLeaveGameClick() {
-    if (game.finished || game.review) {
+    if (props.history.currentState == -1 || game.finished || game.review) {
       leaveGame();
     } else {
       setLeaveDialogOpen(true);
@@ -3157,12 +3157,6 @@ function ActionText(props) {
       return;
     }
 
-    // validate if it's a real english word
-    // if (textOptions.validEnglishWord &&  )
-
-    // validate if it's unique only
-    // if (textOptions.uniqueOnly)
-
     meeting.votes[self] = textData;
     props.socket.send("vote", {
       meetingId: meeting.id,
@@ -3170,19 +3164,48 @@ function ActionText(props) {
     });
   }
 
+  function handleKeyDown(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleOnSubmit();
+    }
+  }
+
   return (
-    <div className="action" style={{ ...props.style }}>
-      <div className="action-name">{meeting.actionName}</div>
-      {!disabled && <textarea value={textData} onChange={handleOnChange} />}
+    <Box className="action">
+      <Typography variant="subtitle1" gutterBottom>
+        {meeting.actionName}
+      </Typography>
+
       {!disabled && (
-        <div className="btn btn-theme" onClick={handleOnSubmit}>
-          {textOptions.submit || "Submit"}
-        </div>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <TextField
+            value={textData}
+            onChange={handleOnChange}
+            onKeyDown={handleKeyDown}
+            size="small"
+            fullWidth
+            placeholder={textOptions.placeholder || "Type here"}
+          />
+          <Button
+            variant="contained"
+            onClick={handleOnSubmit}
+            disabled={textData.length < minLength}
+          >
+            {textOptions.submit || "Submit"}
+          </Button>
+        </Stack>
       )}
-      {meeting.votes[self]}
-    </div>
+
+      {meeting.votes[self] && (
+        <Typography variant="body2" sx={{ mt: 1 }}>
+          Your vote: {meeting.votes[self]}
+        </Typography>
+      )}
+    </Box>
   );
 }
+
 function ActionSeparatingText(props) {
   const meeting = props.meeting;
   const text = meeting.actionName;
