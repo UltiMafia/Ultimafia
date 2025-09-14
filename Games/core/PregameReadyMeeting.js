@@ -2,7 +2,7 @@ const Meeting = require("./Meeting");
 
 module.exports = class PregameReadyMeeting extends Meeting {
   constructor(game) {
-    super(game, "Pregame Ready");
+    super(game, "Are you ready?");
 
     this.group = true;
     this.voting = true;
