@@ -947,15 +947,13 @@ export function BotBar(props) {
                 </IconButton>
               </Tooltip>
             )}
-            {!isPhoneDevice &&
-              game.dev &&
-              (props.history.currentState == -1) && (
-                <Tooltip title="Fill">
-                  <IconButton size="large" onClick={onTestClick}>
-                    <img src={poison} alt="Fill" />
-                  </IconButton>
-                </Tooltip>
-              )}
+            {!isPhoneDevice && game.dev && props.history.currentState == -1 && (
+              <Tooltip title="Fill">
+                <IconButton size="large" onClick={onTestClick}>
+                  <img src={poison} alt="Fill" />
+                </IconButton>
+              </Tooltip>
+            )}
 
             {!game.review && props.history.currentState === -2 && (
               <Tooltip title="Rehost">
@@ -981,7 +979,7 @@ export function ThreePanelLayout(props) {
   const isPhoneDevice = useIsPhoneDevice();
 
   return (
-    <Stack className="main" direction="row" sx={{ gap: isPhoneDevice ? 1 : 2}}>
+    <Stack className="main" direction="row" sx={{ gap: isPhoneDevice ? 1 : 2 }}>
       <div className="left-panel panel with-radial-gradient">
         {props.leftPanelContent}
       </div>
@@ -2110,13 +2108,22 @@ export function SideMenu({
   if (!isAccordionMenu) {
     return (
       <div className={`side-menu ${scrollable ? "scrollable" : ""}`}>
-        <Stack direction="row" spacing={1} className="title-box" sx={{
-          alignItems: "center",
-          p: 1,
-          borderTopLeftRadius: isTopMostMenu ? "var(--mui-shape-borderRadius)" : undefined,
-          borderTopRightRadius: isTopMostMenu ? "var(--mui-shape-borderRadius)" : undefined,
-          bgcolor: "var(--scheme-color-background)",
-        }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          className="title-box"
+          sx={{
+            alignItems: "center",
+            p: 1,
+            borderTopLeftRadius: isTopMostMenu
+              ? "var(--mui-shape-borderRadius)"
+              : undefined,
+            borderTopRightRadius: isTopMostMenu
+              ? "var(--mui-shape-borderRadius)"
+              : undefined,
+            bgcolor: "var(--scheme-color-background)",
+          }}
+        >
           {lockIcon}
           {title}
         </Stack>
@@ -2329,13 +2336,15 @@ export function PlayerList(props) {
   const game = useContext(GameContext);
 
   const title = (
-    <Stack direction="row" spacing={1} sx={{
-      width: "100%",
-      alignItems: "center",
-    }}>
-      <Typography>
-        Players
-      </Typography>
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{
+        width: "100%",
+        alignItems: "center",
+      }}
+    >
+      <Typography>Players</Typography>
       <Box sx={{ marginLeft: "auto !important" }}>
         <PlayerCount
           game={game}
@@ -2601,7 +2610,7 @@ export function ActionList(props) {
         <Badge
           badgeContent={unresolvedActionCount}
           color="primary"
-          invisible={!isParticipant || (unresolvedActionCount === 0)}
+          invisible={!isParticipant || unresolvedActionCount === 0}
         >
           {props.title || "Actions"}
         </Badge>

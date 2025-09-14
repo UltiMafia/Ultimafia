@@ -1016,7 +1016,7 @@
 
   .game .right-panel {
     width: calc(100vw - 3 * var(--mui-spacing)) !important;
-  
+
     scroll-snap-align: end;
     scroll-snap-stop: always;
   }
