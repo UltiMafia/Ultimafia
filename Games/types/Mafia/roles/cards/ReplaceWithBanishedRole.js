@@ -30,8 +30,8 @@ module.exports = class ReplaceWithBanishedRole extends Card {
           tempBanished = banishedRoles;
         }
         if (this.name != "Banished Any") {
-          tempBanished = tempBanished.filter((r) =>
-            this.game.getRoleAlignment(r.split(":")[0]) == this.alignment
+          tempBanished = tempBanished.filter(
+            (r) => this.game.getRoleAlignment(r.split(":")[0]) == this.alignment
           );
           if (tempBanished.length <= 0) {
             tempBanished = [
@@ -39,8 +39,9 @@ module.exports = class ReplaceWithBanishedRole extends Card {
               "Mafioso:Banished",
               "Cultist:Banished",
               "Grouch:Banished",
-            ].filter((r) =>
-              this.game.getRoleAlignment(r.split(":")[0]) == this.alignment
+            ].filter(
+              (r) =>
+                this.game.getRoleAlignment(r.split(":")[0]) == this.alignment
             );
           }
         }

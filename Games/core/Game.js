@@ -1068,7 +1068,7 @@ module.exports = class Game {
             if (isBanished) this.BanishedEvents.push(role);
             else this.PossibleEvents.push(role);
           } else {
-            if(isBanished){
+            if (isBanished) {
               this.banishedRoles.push(role);
             }
             this.PossibleRoles.push(role);
@@ -1417,10 +1417,10 @@ module.exports = class Game {
     this.PossibleRoles = this.PossibleRoles.filter(
       (r) => !r.split(":")[0].includes("Banished")
     );
-    if(this.banishedRoles){
+    if (this.banishedRoles) {
       this.banishedRoles = this.banishedRoles.filter(
-      (r) => !r.split(":")[0].includes("Banished")
-    );
+        (r) => !r.split(":")[0].includes("Banished")
+      );
     }
     this.players.map((p) => this.events.emit("replaceWithBanished", p));
 
