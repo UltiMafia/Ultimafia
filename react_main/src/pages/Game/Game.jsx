@@ -38,6 +38,7 @@ import { ClientSocket as Socket } from "../../Socket";
 import { RoleCount } from "../../components/Roles";
 import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
+import LeaveGameDialog from "../../components/LeaveGameDialog";
 import { useErrorAlert } from "../../components/Alerts";
 import {
   MaxGameMessageLength,
@@ -830,6 +831,7 @@ export function BotBar(props) {
   const popover = useContext(PopoverContext);
   const hideStateSwitcher = props.hideStateSwitcher;
   const game = props.game;
+  const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
 
   function onLogoClick() {
     window.open(process.env.REACT_APP_URL, "_blank");
@@ -841,18 +843,34 @@ export function BotBar(props) {
   }
 
   function onLeaveGameClick() {
-    const shouldLeave =
-      game.finished ||
-      game.review ||
-      window.confirm("Are you sure you wish to leave?");
+    if (game.finished || game.review) {
+      leaveGame();
+    } else {
+      setLeaveDialogOpen(true);
+    }
+  }
 
-    if (!shouldLeave) return;
-
+  function leaveGame() {
     if (game.finished) siteInfo.hideAllAlerts();
 
     if (game.socket.on) game.socket.send("leave");
     else game.setLeave(true);
+
+    setLeaveDialogOpen(false);
   }
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape") {
+        onLeaveGameClick();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [game]);
 
   function onRehostGameClick() {
     game.noLeaveRef.current = true;
@@ -968,6 +986,11 @@ export function BotBar(props) {
                 <img src={exit} alt="Leave" />
               </IconButton>
             </Tooltip>
+            <LeaveGameDialog
+              open={leaveDialogOpen}
+              onClose={() => setLeaveDialogOpen(false)}
+              onConfirm={leaveGame}
+            />
           </ButtonGroup>
         </Stack>
       </div>
