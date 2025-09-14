@@ -3171,7 +3171,7 @@ function ActionText(props) {
     }
   }
 
-return (
+  return (
     <Box className="action">
       <Typography variant="subtitle1" gutterBottom>
         {meeting.actionName}
@@ -3186,7 +3186,6 @@ return (
             size="small"
             fullWidth
             placeholder={textOptions.placeholder || "Type here"}
-
           />
           <Button
             variant="contained"
