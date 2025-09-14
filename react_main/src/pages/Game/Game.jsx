@@ -64,10 +64,13 @@ import {
   Box,
   Button,
   ButtonGroup,
+  Divider,
+  IconButton,
+  Stack,
+  Tooltip,
   TextField,
   Typography,
-  Stack,
-  Divider,
+  useTheme,
 } from "@mui/material";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
@@ -815,6 +818,7 @@ export function useSocketListeners(listeners, socket) {
 }
 
 export function BotBar(props) {
+  const theme = useTheme();
   const isPhoneDevice = useIsPhoneDevice();
   const { gameId } = useParams();
   const infoRef = useRef();
@@ -945,36 +949,46 @@ export function BotBar(props) {
               spectatorCount={game.spectatorCount}
             />
           )}
-          {game.review && (
-            <Button
-              variant="outlined"
-              onClick={onArchiveGameClick}
-              startIcon={<img src={lore} />}
-            >
-              Archive
-            </Button>
-          )}
-          {!isPhoneDevice && game.dev && props.history.currentState == -1 && (
-            <Button
-              variant="outlined"
-              onClick={onTestClick}
-              startIcon={<img src={poison} />}
-            >
-              Fill
-            </Button>
-          )}
-          {!game.review && props.history.currentState == -2 && (
-            <Button
-              variant="outlined"
-              onClick={onRehostGameClick}
-              startIcon={<img src={veg} />}
-            >
-              Rehost
-            </Button>
-          )}
-          <Button onClick={onLeaveGameClick} startIcon={<img src={exit} />}>
-            Leave
-          </Button>
+          <ButtonGroup
+            variant="contained"
+            sx={{
+              backgroundColor: theme.palette.secondary.main,
+              borderRadius: 1,
+            }}
+          >
+            {game.review && (
+              <Tooltip title="Archive">
+                <IconButton onClick={onArchiveGameClick}>
+                  <img src={lore} alt="Archive" />
+                </IconButton>
+              </Tooltip>
+            )}
+
+            {!isPhoneDevice &&
+              game.dev &&
+              props.history.currentState === -1 && (
+                <Tooltip title="Fill">
+                  <IconButton onClick={onTestClick}>
+                    <img src={poison} alt="Fill" />
+                  </IconButton>
+                </Tooltip>
+              )}
+
+            {!game.review && props.history.currentState === -2 && (
+              <Tooltip title="Rehost">
+                <IconButton onClick={onRehostGameClick}>
+                  <img src={veg} alt="Rehost" />
+                </IconButton>
+              </Tooltip>
+            )}
+
+            <Tooltip title="Leave">
+              <IconButton onClick={onLeaveGameClick}>
+                <img src={exit} alt="Leave" />
+              </IconButton>
+            </Tooltip>
+          </ButtonGroup>
+          `
         </Stack>
       </div>
     </div>
@@ -2354,6 +2368,57 @@ export function PlayerList(props) {
         });
     }, 500);
   }
+
+  // function PlayerListTitle(props) {
+  //   const theme = useTheme();
+  //   const isPhoneDevice = useIsPhoneDevice();
+  //   const { gameId } = useParams();
+  //   const infoRef = useRef();
+  //   const errorAlert = useErrorAlert();
+  //   const siteInfo = useContext(SiteInfoContext);
+  //   const popover = useContext(PopoverContext);
+  //   const hideStateSwitcher = props.hideStateSwitcher;
+  //   const game = props.game;
+
+  //   return (
+  //     <div
+  //       className="top"
+  //       style={{
+  //         marginTop: "8px",
+  //         marginBottom: isPhoneDevice ? undefined : "8px",
+  //       }}
+  //     >
+  //       <div
+  //         className="misc-wrapper"
+  //         style={{
+  //           width: isPhoneDevice ? "100%" : undefined,
+  //           paddingLeft: isPhoneDevice ? "8px" : undefined,
+  //           paddingRight: isPhoneDevice ? "8px" : "10px",
+  //           justifyContent: isPhoneDevice ? "space-between" : "center",
+  //         }}
+  //       >
+  //         <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1}>
+  //           <Typography>
+  //             Players
+  //           </Typography>
+  //           {!game.review && (
+  //             <PlayerCount
+  //               game={game}
+  //               gameId={game.gameId}
+  //               anonymousGame={game.options.anonymousGame}
+  //               status={"In Progress"}
+  //               numSlotsTaken={
+  //                 Object.values(props.players).filter((p) => !p.left).length
+  //               }
+  //               spectatingAllowed={game.options.spectating}
+  //               spectatorCount={game.spectatorCount}
+  //             />
+  //           )}
+  //         </Stack>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <SideMenu
