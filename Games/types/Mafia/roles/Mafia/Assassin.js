@@ -11,8 +11,8 @@ module.exports = class Assassin extends Role {
       "MeetingFaction",
       "ForceSplitDecision",
       "KillAllInRoom",
-      "AddCopyOfRole",
-      "VillageWinsWhenKilled",
+      //"AddCopyOfRole",
+      //"VillageWinsWhenKilled",
     ];
   }
 };
