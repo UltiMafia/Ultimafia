@@ -66,14 +66,16 @@ module.exports = class MafiaGame extends Game {
     this.extensionVotes = 0;
     this.hasBeenDay = false;
     this.ForceMustAct = this.setup.ForceMustAct;
+    //Assassin Things
     this.currentSwapAmt = 1;
-    this.RoomOne = [];
-    this.RoomTwo = [];
+    this.Rooms = [];
     this.FinalRound = 3;
     this.CurrentRound = 0;
+    //Admiral
     this.AdmiralGoodRoles = [];
     this.AdmiralEvilRoles = [];
     this.AdmiralGold = 15;
+    //Other
     this.EventsPerNight = this.setup.EventsPerNight;
     this.GameEndEvent = this.setup.GameEndEvent || "Meteor";
     this.lastNightVisits = [];
