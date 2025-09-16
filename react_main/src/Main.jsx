@@ -42,7 +42,7 @@ import Learn from "./pages/Learn/Learn";
 import Policy from "./pages/Policy/Policy";
 import User, { Avatar, useUser } from "./pages/User/User";
 import UserNotifications from "./pages/User/UserNotifications";
-import Popover, { usePopover } from "./components/Popover";
+import Popover, { usePopover } from "./components/PopoverOld";
 import CookieBanner from "./components/CookieBanner";
 import Chat from "./pages/Chat/Chat";
 

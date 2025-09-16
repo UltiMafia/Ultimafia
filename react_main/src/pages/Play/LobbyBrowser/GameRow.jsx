@@ -172,9 +172,6 @@ export const GameRow = (props) => {
           width: "100%",
           alignItems: "center",
           background: getRowColor(props.game, false),
-          ":hover": {
-            background: getRowColor(props.game, true),
-          },
         }}
         key={props.game.id}
       >

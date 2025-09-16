@@ -392,11 +392,6 @@ iframe {
 
 .MuiPopover-root .miniprofile {
   margin-left: 0px;
-  background-color: var(--scheme-color-sec);
-  border: 1px solid var(--scheme-color-border);
-}
-
-.miniprofile .popover-title {
   background-color: var(--scheme-color);
 }
 
