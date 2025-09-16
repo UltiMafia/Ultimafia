@@ -30,24 +30,6 @@
   text-shadow: 0 0.04rem 0rem black;
 }
 
-.setup::-webkit-scrollbar {
-  height: 5px;
-}
-
-.setup::-webkit-scrollbar-track {
-  background: #1d1d1d;
-  border-radius: 3px;
-}
-
-.setup::-webkit-scrollbar-thumb {
-  background: #121212;
-  border-radius: 5px;
-}
-
-.setup::-webkit-scrollbar-thumb:hover {
-  background: black;
-}
-
 .i-Village,
 .i-Blue,
 .i-Resistance {

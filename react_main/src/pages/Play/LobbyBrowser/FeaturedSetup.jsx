@@ -43,7 +43,7 @@ export const FeaturedSetup = ({ lobby, glowingHostButton }) => {
         setup={featuredSetup}
       />
       <Paper>
-        <Stack direction="row" spacing={0.5} sx={{ p: 0.5 }}>
+        <Stack direction="row" spacing={0.5} padding={1}>
           <Button
             color="primary"
             sx={{ maxWidth: "4em" }}

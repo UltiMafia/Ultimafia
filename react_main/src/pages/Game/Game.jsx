@@ -2217,6 +2217,9 @@ function RoleMarkerToggle(props) {
       className="role-marker"
       onClick={onRoleMarkerClick}
       ref={roleMarkerRef}
+      style={{
+        cursor: "pointer",
+      }}
     >
       <i className="fas fa-user-edit"></i>
     </div>

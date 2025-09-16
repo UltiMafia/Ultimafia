@@ -21,11 +21,24 @@ import { useTheme } from "@mui/material/styles";
 
 import "css/setup.css";
 import "css/roles.css";
+import { usePopover } from "./Popover";
 
 export default function Setup(props) {
   const user = useContext(UserContext);
-  const popover = useContext(PopoverContext);
   const setupRef = useRef();
+  const {
+    InfoPopover,
+    popoverOpen,
+    handleClick,
+  } = usePopover({
+    path: `/api/setup/${props.setup.id}`,
+    page: `/learn/setup/${props.setup.id}`,
+    type: "setup",
+    boundingEl: setupRef.current,
+    title: filterProfanity(props.setup.name, user.settings),
+    postprocessData: (data) => (data.roles = JSON.parse(data.roles))
+  });
+
   const iconContainerRef = useRef();
   const [maxIconsPerRow, setMaxIconsPerRow] = useState(null);
   const [setupIndex, setSetupIndex] = useState(0);
@@ -134,20 +147,6 @@ export default function Setup(props) {
     ));
   }
 
-  function onClick({ ref = null }) {
-    if (disablePopover) {
-      return;
-    }
-
-    popover.onClick(
-      `/api/setup/${props.setup.id}`,
-      "setup",
-      ref ? ref.current : setupRef.current,
-      filterProfanity(props.setup.name, user.settings),
-      (data) => (data.roles = JSON.parse(data.roles))
-    );
-  }
-
   function cycleSetups() {
     if (setupIndex < props.setup.roles.length - 1) {
       setSetupIndex(setupIndex + 1);
@@ -178,7 +177,7 @@ export default function Setup(props) {
   if (overSize) {
     roleCounts[maxIconsTotal - 1] = (
       <i
-        onClick={onClick}
+        onClick={handleClick}
         gameType={props.setup.gameType}
         className="fas fa-ellipsis-h"
         style={{
@@ -191,12 +190,14 @@ export default function Setup(props) {
     );
   }
 
-  return (
+  return (<>
+    {popoverOpen && <InfoPopover/>}
     <Card
       variant="outlined"
       className={"setup " + classList}
       ref={setupRef}
       sx={{
+        minWidth: 0,
         width: "100%",
         backgroundColor:
           backgroundColor !== undefined
@@ -208,12 +209,27 @@ export default function Setup(props) {
         direction="row"
         sx={{
           width: "100%",
-          alignItems: "center",
+          alignItems: "stretch",
           borderRadius: "var(--mui-shape-borderRadius)",
           backgroundColor: backgroundColor,
         }}
       >
-        <GameIcon revealPopover={onClick} gameType={props.setup.gameType} />
+        <Stack 
+          direction="column"
+          aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
+          aria-haspopup="true"
+          onClick={handleClick}
+          sx={{
+            justifyContent: "center",
+            cursor: "pointer",
+            borderTopLeftRadius: "var(--mui-shape-borderRadius)",
+            borderBottomLeftRadius: "var(--mui-shape-borderRadius)",
+            bgcolor: popoverOpen ? "rgba(12, 12, 12, 0.15)" : undefined,
+            '&:hover': { bgcolor: "rgba(12, 12, 12, 0.15)" },
+          }}
+        >
+          <GameIcon className="role-count-wrap" gameType={props.setup.gameType}/>
+        </Stack>
         <Divider orientation="vertical" flexItem />
         <Stack
           direction="column"
@@ -241,7 +257,7 @@ export default function Setup(props) {
         </Stack>
       </Stack>
     </Card>
-  );
+  </>);
 }
 
 export function determineSetupType(setup) {
@@ -296,7 +312,7 @@ export function SmallRoleList(props) {
         small={true}
         gameType={props.gameType}
         showSecondaryHover
-        key={role}
+        key={role ? role : "null"}
         otherRoles={props.otherRoles ? props.otherRoles : props.setup?.roles}
       />
     );
@@ -313,6 +329,7 @@ export function SmallRoleList(props) {
           value={searchVal}
           placeholder="🔎 Role Name"
           onInput={onSearchInput}
+          key="searchbar"
         />
       )}
       <div
@@ -474,7 +491,7 @@ export function FullRoleList({ setup }) {
         {sectionName && (
           <Typography
             sx={{
-              width: "3.5rem",
+              pr: 1,
               fontSize: "1.5rem",
               fontWeight: "600",
               textAlign: "center",
@@ -529,27 +546,24 @@ export function FullRoleList({ setup }) {
 }
 
 export function GameIcon(props) {
-  const gameIconRef = useRef();
   const gameType = hyphenDelimit(props.gameType);
 
-  const revealPopover = () => props.revealPopover({ ref: gameIconRef });
   return (
-    <div
-      ref={gameIconRef}
-      onClick={revealPopover}
-      onMouseOver={revealPopover}
-      className={`game-icon ${gameType}`}
-    />
+    <div className={`game-icon ${gameType}`}/>
   );
 }
 
 export function GameStateIcon(props) {
+  const state = props.state;
+  const size = props.size;
+
   var iconName;
+  if (state === "Day") iconName = "sun";
+  else if (state === "Night") iconName = "moon";
 
-  if (props.state === "Day") iconName = "sun";
-  else if (props.state === "Night") iconName = "moon";
-
-  return <i className={`fa-${iconName} fas state-icon`} />;
+  return <i className={`fa-${iconName} fas state-icon`} style={{
+    fontSize: size ? size : undefined,
+  }} />;
 }
 
 export function SetupManipulationButtons(props) {

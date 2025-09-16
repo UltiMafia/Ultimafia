@@ -673,10 +673,6 @@ input:focus {
     margin: 0px;
   }
 
-  .setup {
-    max-width: 300px;
-  }
-
   .panel-grid {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -801,14 +797,17 @@ input:focus {
 }
 
 .mui-popover {
-  font-family: RobotoSlab;
+  background-color: var(--scheme-color);
 }
 
 .mui-popover-title {
   display: flex;
-  font-size: 24px;
-  border-bottom: 2px solid var(--theme-color);
-  padding: 4px 4px;
+  flex-flow: row wrap;
+
+  font-size: 1.5rem;
+  background-color: var(--scheme-color-sec);
+  border-bottom: 2px solid var(--mui-palette-divider);
+  padding: var(--mui-spacing);
 }
 
 .mui-popover-text {

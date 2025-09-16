@@ -42,7 +42,7 @@ import Learn from "./pages/Learn/Learn";
 import Policy from "./pages/Policy/Policy";
 import User, { Avatar, useUser } from "./pages/User/User";
 import UserNotifications from "./pages/User/UserNotifications";
-import Popover, { usePopover } from "./components/Popover";
+import Popover, { usePopover } from "./components/PopoverOld";
 import CookieBanner from "./components/CookieBanner";
 import Chat from "./pages/Chat/Chat";
 
@@ -313,21 +313,21 @@ function Main(props) {
     <UserContext.Provider value={user}>
       <SiteInfoContext.Provider value={siteInfo}>
         <PopoverContext.Provider value={popover}>
-          <CookieBanner />
-          <Switch>
-            <Route path="/game">
-              {/* Site content will display instead of game if content is being overriden by the error boundary*/}
-              {errorContent ? (
-                siteContent
-              ) : (
-                <>
-                  <Game />
-                  <AlertList />
-                </>
-              )}
-            </Route>
-            <Route path="/">{siteContent}</Route>
-          </Switch>
+        <CookieBanner />
+        <Switch>
+          <Route path="/game">
+            {/* Site content will display instead of game if content is being overriden by the error boundary*/}
+            {errorContent ? (
+              siteContent
+            ) : (
+              <>
+                <Game />
+                <AlertList />
+              </>
+            )}
+          </Route>
+          <Route path="/">{siteContent}</Route>
+        </Switch>
           <Popover />
         </PopoverContext.Provider>
       </SiteInfoContext.Provider>

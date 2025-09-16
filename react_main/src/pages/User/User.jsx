@@ -456,7 +456,7 @@ export function NameWithAvatar(props) {
             }}
             transformOrigin={{
               vertical: "center",
-              horizontal: -24,
+              horizontal: "left",
             }}
             onClose={handleMiniprofileClose}
             disableScrollLock
@@ -504,7 +504,7 @@ export function Miniprofile(props) {
 
   return (
     <div className="miniprofile">
-      <div className="popover-title">
+      <div className="mui-popover-title">
         <Link className={`name-with-avatar`} to={`/user/${id}`} target="_blank">
           <Stack direction="row" spacing={1}>
             <Avatar hasImage={avatar} id={id} avatarId={avatarId} name={name} />

@@ -357,6 +357,7 @@ export function RoleCount(props) {
           }}
           onClose={closePopover}
           disableScrollLock
+          disableRestoreFocus
         >
           <div className={"mui-popover"}>
             <div className={"mui-popover-title"}>
