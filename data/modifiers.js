@@ -138,7 +138,7 @@ const modifierData = {
       internal: ["ExcessiveRole"],
       tags: ["Excessive"],
       description:
-        "This role can treats every role on the site as an Excess Role.",
+        "This role treats every role on the site as an Excess Role.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Austere"],
     },
