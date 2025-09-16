@@ -22,8 +22,13 @@ export default function AnonymousDeck(props) {
 
   let displayName = `${props.deck.name} (${props.deck.id})`;
   return (
-    <div className="deck" ref={deckRef} onClick={handleClick} style={{ cursor: "pointer" }}>
-      <InfoPopover/>
+    <div
+      className="deck"
+      ref={deckRef}
+      onClick={handleClick}
+      style={{ cursor: "pointer" }}
+    >
+      <InfoPopover />
       <div className="deck-name">{displayName}</div>
     </div>
   );

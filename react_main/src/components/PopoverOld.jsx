@@ -8,7 +8,8 @@ import { useOnOutsideClick } from "./Basic";
 
 import "css/popover.css";
 
-export default function PopoverOld() { // TODO remove this thing
+export default function PopoverOld() {
+  // TODO remove this thing
   const popover = useContext(PopoverContext);
   const popoverRef = useRef();
   const triangleRef = useRef();
