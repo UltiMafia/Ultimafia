@@ -95,6 +95,38 @@ module.exports = class ForceSplitDecision extends Card {
         if (this.player !== player) {
           return;
         }
+        if(this.game.Rooms.length > 0){
+          return;
+        }
+        if(!this.hasAbility(["OnlyWhenAlive"])){
+          return;
+        }
+        let RoomCount;
+        if(this.modifier){
+          RoomCount = this.role.modifier.split("/").filter((m) => m == "X-Shot").length
+        }
+        else{
+          RoomCount = 2;
+        }
+        let playerCount = this.game.players.filter((p) => p.role.name == "Host").length;
+        let playersPerRoom = playerCount/RoomCount;
+        let extraPlayers = playerCount%RoomCount;
+        let rooms = [];
+        let playersRandom = Random.randomizeArray(this.game.players.filter((p) => p.role.name == "Host"));
+        for(let x < 0; x < RoomCount; x++){
+          let room = {
+          name: "Room "+(x+1),
+          members: [],
+          leader: null,
+          }
+          for(let y < 0; y < playersPerRoom; y++){
+            room.members.push(playersRandom.pop());
+          }
+          this.game.Rooms.push(room);
+        }
+        
+        
+        /*
         const Presidents = this.game.players.filter(
           (p) =>
             p.alive &&
@@ -111,7 +143,7 @@ module.exports = class ForceSplitDecision extends Card {
             );
           let shuffledPlayers = Random.randomizeArray(players);
           shuffledPlayers[0].setRole("President");
-        }
+        }*/
         if (this.game.HasGiven != 1 && this.game.HasGiven != 2) {
           this.game.HasGiven = 2;
         }
