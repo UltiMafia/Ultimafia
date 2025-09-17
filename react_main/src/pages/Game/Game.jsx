@@ -39,6 +39,7 @@ import { RoleCount } from "../../components/Roles";
 import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
 import LeaveGameDialog from "../../components/LeaveGameDialog";
+import ReportDialog from "../../components/ReportDialog";
 import { useErrorAlert } from "../../components/Alerts";
 import {
   MaxGameMessageLength,
@@ -80,6 +81,7 @@ import lore from "images/emotes/lore.webp";
 import poison from "images/emotes/poison.webp";
 import exit from "images/emotes/exit.png";
 import veg from "images/emotes/veg.webp";
+import system from "images/emotes/system.webp";
 
 export default function Game() {
   return (
@@ -832,6 +834,7 @@ export function BotBar(props) {
   const hideStateSwitcher = props.hideStateSwitcher;
   const game = props.game;
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   function onLogoClick() {
     window.open(process.env.REACT_APP_URL, "_blank");
@@ -840,6 +843,10 @@ export function BotBar(props) {
   function onTestClick() {
     for (let i = 0; i < game.setup.total - 1; i++)
       window.open(window.location + "?bot");
+  }
+
+  function onReportClick() {
+    setReportDialogOpen(true);
   }
 
   function onLeaveGameClick() {
@@ -980,7 +987,16 @@ export function BotBar(props) {
                 </IconButton>
               </Tooltip>
             )}
-
+            {/* <Tooltip title="File Report">
+              <IconButton size="large" onClick={onReportClick}>
+                <img src={system} alt="Report" />
+              </IconButton>
+            </Tooltip>
+            <ReportDialog
+              open={reportDialogOpen}
+              onClose={() => setReportDialogOpen(false)}
+              onConfirm={leaveGame}
+            /> */}
             <Tooltip title="Leave">
               <IconButton size="large" onClick={onLeaveGameClick}>
                 <img src={exit} alt="Leave" />
