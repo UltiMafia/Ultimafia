@@ -225,7 +225,7 @@ const artContributors = {
       "Isolde:vivid",
     ],
   },
-    Golbolco: {
+  Golbolco: {
     Mafia: [
       "Drunk:vivid",
       "Jailer:vivid",
@@ -281,7 +281,7 @@ const artContributors = {
       //Skins
     ],
   },
-   hima: {
+  hima: {
     Mafia: [
       "Reanimator:vivid",
       "Oracle:vivid",
@@ -363,7 +363,7 @@ const artContributors = {
     Battlesnakes: ["Snake:vivid"],
     "Connect Four": ["Starman:vivid"],
   },
-    Jumpy: {
+  Jumpy: {
     Mafia: [
       "Puppeteer:vivid",
       "Pyromaniac:vivid",
@@ -403,7 +403,7 @@ const artContributors = {
       "Alien:vivid",
     ],
   },
-    kirigiri: {
+  kirigiri: {
     Mafia: [
       "Ghost:vivid",
       "Gunsmith:vivid",
@@ -421,7 +421,7 @@ const artContributors = {
       "Traitor:vivid",
     ],
   },
-    SawJester: {
+  SawJester: {
     Mafia: [
       "Tormentor:vivid",
       "Shoggoth:vivid",
@@ -437,7 +437,7 @@ const artContributors = {
       "Eclipse:noir",
     ],
   },
-    trout: {
+  trout: {
     Mafia: [
       "Villager:vivid",
       "King:vivid",
@@ -460,7 +460,7 @@ const artContributors = {
       "Nomad:vivid",
     ],
   },
-    Kobeni: {
+  Kobeni: {
     Mafia: [
       "Chef:old",
       "Baker:vivid",
@@ -471,7 +471,7 @@ const artContributors = {
       "Mi-Go:vivid",
     ],
   },
-    maxie: {
+  maxie: {
     Mafia: [
       "Virgin:vivid",
       "Leech:vivid",
@@ -480,7 +480,7 @@ const artContributors = {
       "Psion:vivid",
     ],
   },
-    sw33t: {
+  sw33t: {
     Mafia: [
       "Celebrity:vivid",
       "Waitress:vivid",
@@ -489,7 +489,7 @@ const artContributors = {
       "Housekeeper:vivid",
     ],
   },
-    keji: {
+  keji: {
     Mafia: [
       "Penguin:vivid",
       "Butterfly:vivid",
@@ -497,41 +497,26 @@ const artContributors = {
       "Polar Bear:vivid",
     ],
   },
-    drewsworth: {
-    Mafia: [
-      "Puca:vivid",
-      "Sicario:vivid"
-    ],
+  drewsworth: {
+    Mafia: ["Puca:vivid", "Sicario:vivid"],
   },
   grr: {
-    Mafia: [
-      "Granny:old"
-    ],
+    Mafia: ["Granny:old"],
   },
   Lucaskart: {
-    Mafia: [
-      "Secretary:vivid"
-    ],
+    Mafia: ["Secretary:vivid"],
   },
   luka: {
-    Mafia: [
-      "Monk:vivid"
-    ],
+    Mafia: ["Monk:vivid"],
   },
   sensitive: {
-    Mafia: [
-      "Keymaker:vivid"
-    ],
+    Mafia: ["Keymaker:vivid"],
   },
   Roskva: {
-    Mafia: [
-      "Admiral:vivid"
-    ],
+    Mafia: ["Admiral:vivid"],
   },
   kimbo: {
-    Mafia: [
-      "Groundskeeper:vivid"
-    ],
+    Mafia: ["Groundskeeper:vivid"],
   },
 };
 

@@ -11,10 +11,17 @@ import { NameWithAvatar } from "pages/User/User";
 import { Divider, Popover, Stack, Typography } from "@mui/material";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 
-export function usePopover({ path, page, type, boundingEl, title, postprocessData }) {
+export function usePopover({
+  path,
+  page,
+  type,
+  boundingEl,
+  title,
+  postprocessData,
+}) {
   const siteInfo = useContext(SiteInfoContext);
   const [content, setContent] = useState(null);
-  
+
   const {
     popoverOpen,
     popoverClasses,
@@ -53,29 +60,32 @@ export function usePopover({ path, page, type, boundingEl, title, postprocessDat
     }
   }
 
-  useEffect(function() {
-    if (popoverOpen && (content === null)) {
-      let promise;
+  useEffect(
+    function () {
+      if (popoverOpen && content === null) {
+        let promise;
 
-      if (path instanceof Promise) {
-        promise = path;
-      } else {
-        promise = axios.get(path);
+        if (path instanceof Promise) {
+          promise = path;
+        } else {
+          promise = axios.get(path);
+        }
+        promise
+          .then((res) => {
+            if (postprocessData) postprocessData(res.data);
+            ready(res.data, type);
+          })
+          .catch((e) => {
+            console.error(e);
+            errorAlert(e);
+            setContent("Error fetching data");
+          });
       }
-      promise
-        .then((res) => {
-          if (postprocessData) postprocessData(res.data);
-          ready(res.data, type);
-        })
-        .catch((e) => {
-          console.error(e);
-          errorAlert(e);
-          setContent("Error fetching data");
-        });
-    }
-  }, [popoverOpen]);
+    },
+    [popoverOpen]
+  );
 
-  const InfoPopover = function({ showPopover }) {
+  const InfoPopover = function ({ showPopover }) {
     if (content === null) {
       return <></>;
     }
@@ -100,32 +110,37 @@ export function usePopover({ path, page, type, boundingEl, title, postprocessDat
           paper: {
             sx: {
               width: "320px",
-            }
-          }
+            },
+          },
         }}
       >
         <Stack direction="column" bgcolor="var(--scheme-color)">
           <a href={page} target="_blank" rel="noopener noreferrer">
-            <Typography className="mui-popover-title" sx={{
-              p: 1,
-              textAlign: "center",
-              cursor: page !== undefined ? "pointer" : "default",
-              color: page !== undefined ? "var(--mui-palette-primary-main)" : undefined,
-              '&:hover': page !== undefined ? { bgcolor: "rgba(12, 12, 12, 0.15)" } : undefined,
-            }}>
+            <Typography
+              className="mui-popover-title"
+              sx={{
+                p: 1,
+                textAlign: "center",
+                cursor: page !== undefined ? "pointer" : "default",
+                color:
+                  page !== undefined
+                    ? "var(--mui-palette-primary-main)"
+                    : undefined,
+                "&:hover":
+                  page !== undefined
+                    ? { bgcolor: "rgba(12, 12, 12, 0.15)" }
+                    : undefined,
+              }}
+            >
               {title}
             </Typography>
           </a>
-          <Stack
-            direction="column"
-            spacing={1}
-            padding={1}
-          >
+          <Stack direction="column" spacing={1} padding={1}>
             {content}
           </Stack>
         </Stack>
       </Popover>
-    )
+    );
   };
 
   return {
@@ -153,31 +168,35 @@ export function InfoSection({ title, children }) {
 }
 
 export function InfoRow({ title, content, multiRow = false }) {
-  if (typeof content === 'boolean') {
-    content = content ? "☑️" : "❌"
+  if (typeof content === "boolean") {
+    content = content ? "☑️" : "❌";
   }
 
   if (multiRow) {
     return (
       <Stack direction="column">
         <Typography>
-          {title}{":"}
+          {title}
+          {":"}
         </Typography>
         {content}
       </Stack>
     );
-  }
-  else {
+  } else {
     return (
       <Stack direction="row" alignItems="center" spacing={1}>
         <Typography>
-          {title}{":"}
+          {title}
+          {":"}
         </Typography>
-        <Stack direction="row" sx={{
-          marginLeft: "auto !important",
-          minWidth: "1.5rem",
-          justifyContent: "center",
-        }}>
+        <Stack
+          direction="row"
+          sx={{
+            marginLeft: "auto !important",
+            minWidth: "1.5rem",
+            justifyContent: "center",
+          }}
+        >
           {content}
         </Stack>
       </Stack>
@@ -198,36 +217,20 @@ export function parseSetupPopover(setup, roleData) {
         avatar={setup.creator.avatar}
       />
     );
-    result.push(<InfoRow
-      title="Created By"
-      content={name}
-      key="createdBy"
-    />);
+    result.push(<InfoRow title="Created By" content={name} key="createdBy" />);
   }
 
   // Common settings
   result.push(
     <InfoSection title="Common settings">
-      <InfoRow
-        title="Players"
-        content={setup.total}
-        key="players"
-      />
-      <InfoRow
-        title="Ranked Allowed"
-        content={setup.ranked}
-        key="ranked"
-      />
+      <InfoRow title="Players" content={setup.total} key="players" />
+      <InfoRow title="Ranked Allowed" content={setup.ranked} key="ranked" />
       <InfoRow
         title="Competitive Allowed"
         content={setup.competitive}
         key="competitive"
       />
-      <InfoRow
-        title="Must Act"
-        content={setup.mustAct}
-        key="mustAct"
-      />
+      <InfoRow title="Must Act" content={setup.mustAct} key="mustAct" />
       <InfoRow
         title="Must Condemn"
         content={setup.mustCondemn}
@@ -254,24 +257,12 @@ export function parseSetupPopover(setup, roleData) {
         <InfoSection title="Mafia specific settings">
           <InfoRow
             title="Starting State"
-            content={<GameStateIcon state={setup.startState} size="1rem"/>}
+            content={<GameStateIcon state={setup.startState} size="1rem" />}
             key="startState"
           />
-          <InfoRow
-            title="Dawn"
-            content={setup.dawn}
-            key="dawn"
-          />
-          <InfoRow
-            title="Last Will"
-            content={setup.lastWill}
-            key="lastWill"
-          />
-          <InfoRow
-            title="No Reveal"
-            content={setup.noReveal}
-            key="noReveal"
-          />
+          <InfoRow title="Dawn" content={setup.dawn} key="dawn" />
+          <InfoRow title="Last Will" content={setup.lastWill} key="lastWill" />
+          <InfoRow title="No Reveal" content={setup.noReveal} key="noReveal" />
           <InfoRow
             title="Votes Invisible"
             content={setup.votesInvisible}
@@ -311,11 +302,7 @@ export function parseSetupPopover(setup, roleData) {
   //Roles
   if (setup.closed) {
     result.push(
-      <InfoRow
-        title="Unique Roles"
-        content={setup.unique}
-        key="uniqueRoles"
-      />
+      <InfoRow title="Unique Roles" content={setup.unique} key="uniqueRoles" />
     );
 
     // Currently, only Mafia supports unique without modifier
@@ -339,10 +326,11 @@ export function parseSetupPopover(setup, roleData) {
   }
 
   let multiName = setup.useRoleGroups ? "Role Groups" : "Role Sets";
-  const sectionName = !setup.closed && setup.roles.length > 1 ? multiName : "Roles";
+  const sectionName =
+    !setup.closed && setup.roles.length > 1 ? multiName : "Roles";
   result.push(
     <InfoSection title={sectionName} key="roles">
-      <FullRoleList setup={setup}/>
+      <FullRoleList setup={setup} />
     </InfoSection>
   );
 
@@ -380,19 +368,23 @@ export function parseDeckPopover(deck) {
   }
 
   // Words
-  result.push(<InfoSection title="Profiles" key="profiles">
-    {deck.profiles.map((profile) => {
-      return <NameWithAvatar
-        noLink={true}
-        deckProfile={true}
-        small
-        id={profile.id}
-        name={profile.name}
-        avatar={profile.avatar !== undefined}
-        avatarId={profile.id}
-      />;
-    })}
-  </InfoSection>);
+  result.push(
+    <InfoSection title="Profiles" key="profiles">
+      {deck.profiles.map((profile) => {
+        return (
+          <NameWithAvatar
+            noLink={true}
+            deckProfile={true}
+            small
+            id={profile.id}
+            name={profile.name}
+            avatar={profile.avatar !== undefined}
+            avatarId={profile.id}
+          />
+        );
+      })}
+    </InfoSection>
+  );
 
   return result;
 }
@@ -462,36 +454,34 @@ export function parseGamePopover(game) {
 
   result.push(
     <InfoSection title="Players" key="players">
-      <div>
-        {playerList}
-      </div>
+      <div>{playerList}</div>
     </InfoSection>
   );
 
   result.push(
-  <InfoSection title="Time" key="timestamps">
-    {game.createTime && (
-      <InfoRow
-        title="Created"
-        content={new Date(game.createTime).toLocaleString()}
-        key="createdAt"
-      />
-    )}
-    {game.startTime && (
-      <InfoRow
-        title="Started"
-        content={new Date(game.startTime).toLocaleString()}
-        key="startedAt"
-      />
-    )}
-    {game.endTime && (
-      <InfoRow
-        title="Ended"
-        content={new Date(game.endTime).toLocaleString()}
-        key="endedAt"
-      />
-    )}
-  </InfoSection>
+    <InfoSection title="Time" key="timestamps">
+      {game.createTime && (
+        <InfoRow
+          title="Created"
+          content={new Date(game.createTime).toLocaleString()}
+          key="createdAt"
+        />
+      )}
+      {game.startTime && (
+        <InfoRow
+          title="Started"
+          content={new Date(game.startTime).toLocaleString()}
+          key="startedAt"
+        />
+      )}
+      {game.endTime && (
+        <InfoRow
+          title="Ended"
+          content={new Date(game.endTime).toLocaleString()}
+          key="endedAt"
+        />
+      )}
+    </InfoSection>
   );
 
   //State lengths
@@ -516,11 +506,7 @@ export function parseGamePopover(game) {
   // Common settings
   result.push(
     <InfoSection title="Common settings">
-      <InfoRow
-        title="Ranked"
-        content={game.settings.ranked}
-        key="ranked"
-      />
+      <InfoRow title="Ranked" content={game.settings.ranked} key="ranked" />
       <InfoRow
         title="Spectating"
         content={game.settings.spectating}
@@ -536,11 +522,7 @@ export function parseGamePopover(game) {
         content={game.settings.readyCheck}
         key="readyCheck"
       />
-      <InfoRow
-        title="No Vegging"
-        content={game.settings.noVeg}
-        key="noVeg"
-      />
+      <InfoRow title="No Vegging" content={game.settings.noVeg} key="noVeg" />
       <InfoRow
         title="Anonymous"
         content={game.settings.anonymousGame}
@@ -563,8 +545,10 @@ export function parseGamePopover(game) {
   switch (game.type) {
     case "Mafia":
       var extendLength = game.settings.gameTypeOptions.extendLength || 3;
-      var pregameWaitLength = game.settings.gameTypeOptions.pregameWaitLength || 1;
-      var broadcastClosedRoles = game.settings.gameTypeOptions.broadcastClosedRoles;
+      var pregameWaitLength =
+        game.settings.gameTypeOptions.pregameWaitLength || 1;
+      var broadcastClosedRoles =
+        game.settings.gameTypeOptions.broadcastClosedRoles;
       result.push(
         <InfoSection title="Mafia specific settings">
           <InfoRow
@@ -622,14 +606,11 @@ export function parseGamePopover(game) {
       const roundAmt = game.settings.gameTypeOptions.roundAmt;
       const acronymSize = game.settings.gameTypeOptions.acronymSize;
       const enablePunctuation = game.settings.gameTypeOptions.enablePunctuation;
-      const standardiseCapitalisation = game.settings.gameTypeOptions.standardiseCapitalisation;
+      const standardiseCapitalisation =
+        game.settings.gameTypeOptions.standardiseCapitalisation;
       result.push(
         <InfoSection title="Acrotopia specific settings">
-          <InfoRow
-            title="No. Rounds"
-            content={roundAmt}
-            key="roundAmt"
-          />
+          <InfoRow title="No. Rounds" content={roundAmt} key="roundAmt" />
           <InfoRow
             title="Acronym Size"
             content={acronymSize}
@@ -646,26 +627,25 @@ export function parseGamePopover(game) {
             key="standardiseCapitalisation"
           />
           {standardiseCapitalisation && (
-          <InfoRow
-            title="Turn on Caps"
-            content={game.settings.gameTypeOptions.turnOnCaps}
-            key="turnOnCaps"
-          />)}
+            <InfoRow
+              title="Turn on Caps"
+              content={game.settings.gameTypeOptions.turnOnCaps}
+              key="turnOnCaps"
+            />
+          )}
         </InfoSection>
       );
       break;
     case "Wacky Words":
       const roundAmtWW = game.settings.gameTypeOptions.roundAmt;
       const acronymSizeWW = game.settings.gameTypeOptions.acronymSize;
-      const enablePunctuationWW = game.settings.gameTypeOptions.enablePunctuation;
-      const standardiseCapitalisationWW = game.settings.gameTypeOptions.standardiseCapitalisation;
+      const enablePunctuationWW =
+        game.settings.gameTypeOptions.enablePunctuation;
+      const standardiseCapitalisationWW =
+        game.settings.gameTypeOptions.standardiseCapitalisation;
       result.push(
         <InfoSection title="Wacky Words specific settings">
-          <InfoRow
-            title="No. Rounds"
-            content={roundAmtWW}
-            key="roundAmt"
-          />
+          <InfoRow title="No. Rounds" content={roundAmtWW} key="roundAmt" />
           <InfoRow
             title="Acronym Size"
             content={acronymSizeWW}
@@ -682,11 +662,12 @@ export function parseGamePopover(game) {
             key="standardiseCapitalisation"
           />
           {standardiseCapitalisationWW && (
-          <InfoRow
-            title="Turn on Caps"
-            content={game.settings.gameTypeOptions.turnOnCaps}
-            key="turnOnCaps"
-          />)}
+            <InfoRow
+              title="Turn on Caps"
+              content={game.settings.gameTypeOptions.turnOnCaps}
+              key="turnOnCaps"
+            />
+          )}
         </InfoSection>
       );
       break;
