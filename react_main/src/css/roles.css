@@ -2138,11 +2138,11 @@
 }
 
 .item-Mafia-Rifle {
-  background-image: url("/src/images/modifier/unknown-modifier.png");
+  background-image: url("/src/images/modifiers/unknown-modifier.png");
 }
 
 .item-Mafia-Armor {
-  background-image: url("/src/images/modifier/shielded.png");
+  background-image: url("/src/images/modifiers/shielded.png");
 }
 
 .item-Mafia-Bomb {
