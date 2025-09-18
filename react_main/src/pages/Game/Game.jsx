@@ -850,7 +850,12 @@ export function BotBar(props) {
   }
 
   function onLeaveGameClick() {
-    if (props.history.currentState == -1 || game.finished || game.review) {
+    if (
+      props.history.currentState == -1 ||
+      props.history.currentState == -2 ||
+      game.finished ||
+      game.review
+    ) {
       leaveGame();
     } else {
       setLeaveDialogOpen(true);
@@ -972,6 +977,7 @@ export function BotBar(props) {
                 </IconButton>
               </Tooltip>
             )}
+
             {!isPhoneDevice && game.dev && props.history.currentState == -1 && (
               <Tooltip title="Fill">
                 <IconButton size="large" onClick={onTestClick}>
@@ -987,6 +993,7 @@ export function BotBar(props) {
                 </IconButton>
               </Tooltip>
             )}
+
             {/* <Tooltip title="File Report">
               <IconButton size="large" onClick={onReportClick}>
                 <img src={system} alt="Report" />
@@ -997,11 +1004,22 @@ export function BotBar(props) {
               onClose={() => setReportDialogOpen(false)}
               onConfirm={leaveGame}
             /> */}
-            <Tooltip title="Leave">
-              <IconButton size="large" onClick={onLeaveGameClick}>
-                <img src={exit} alt="Leave" />
-              </IconButton>
-            </Tooltip>
+
+            {isPhoneDevice ? (
+              <Tooltip title="Leave">
+                <IconButton size="large" onClick={onLeaveGameClick}>
+                  <img src={exit} alt="Leave" />
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <Button
+                onClick={onLeaveGameClick}
+                startIcon={<img src={exit} alt="Leave" />}
+              >
+                Leave
+              </Button>
+            )}
+
             <LeaveGameDialog
               open={leaveDialogOpen}
               onClose={() => setLeaveDialogOpen(false)}

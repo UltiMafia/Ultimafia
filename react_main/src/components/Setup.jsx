@@ -26,17 +26,13 @@ import { usePopover } from "./Popover";
 export default function Setup(props) {
   const user = useContext(UserContext);
   const setupRef = useRef();
-  const {
-    InfoPopover,
-    popoverOpen,
-    handleClick,
-  } = usePopover({
+  const { InfoPopover, popoverOpen, handleClick } = usePopover({
     path: `/api/setup/${props.setup.id}`,
     page: `/learn/setup/${props.setup.id}`,
     type: "setup",
     boundingEl: setupRef.current,
     title: filterProfanity(props.setup.name, user.settings),
-    postprocessData: (data) => (data.roles = JSON.parse(data.roles))
+    postprocessData: (data) => (data.roles = JSON.parse(data.roles)),
   });
 
   const iconContainerRef = useRef();
@@ -190,74 +186,79 @@ export default function Setup(props) {
     );
   }
 
-  return (<>
-    {popoverOpen && <InfoPopover/>}
-    <Card
-      variant="outlined"
-      className={"setup " + classList}
-      ref={setupRef}
-      sx={{
-        minWidth: 0,
-        width: "100%",
-        backgroundColor:
-          backgroundColor !== undefined
-            ? "background.paper"
-            : "var(--scheme-color-sec)",
-      }}
-    >
-      <Stack
-        direction="row"
+  return (
+    <>
+      {popoverOpen && <InfoPopover />}
+      <Card
+        variant="outlined"
+        className={"setup " + classList}
+        ref={setupRef}
         sx={{
+          minWidth: 0,
           width: "100%",
-          alignItems: "stretch",
-          borderRadius: "var(--mui-shape-borderRadius)",
-          backgroundColor: backgroundColor,
+          backgroundColor:
+            backgroundColor !== undefined
+              ? "background.paper"
+              : "var(--scheme-color-sec)",
         }}
       >
-        <Stack 
-          direction="column"
-          aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
-          aria-haspopup="true"
-          onClick={handleClick}
-          sx={{
-            justifyContent: "center",
-            cursor: "pointer",
-            borderTopLeftRadius: "var(--mui-shape-borderRadius)",
-            borderBottomLeftRadius: "var(--mui-shape-borderRadius)",
-            bgcolor: popoverOpen ? "rgba(12, 12, 12, 0.15)" : undefined,
-            '&:hover': { bgcolor: "rgba(12, 12, 12, 0.15)" },
-          }}
-        >
-          <GameIcon className="role-count-wrap" gameType={props.setup.gameType}/>
-        </Stack>
-        <Divider orientation="vertical" flexItem />
         <Stack
-          direction="column"
+          direction="row"
           sx={{
-            p: 1,
-            flex: "1 1",
+            width: "100%",
             alignItems: "stretch",
-            overflowX: "hidden",
+            borderRadius: "var(--mui-shape-borderRadius)",
+            backgroundColor: backgroundColor,
           }}
         >
-          <Typography variant="body2" className="setup-name">
-            {filterProfanity(props.setup.name, user.settings)}
-          </Typography>
           <Stack
-            direction="row"
-            ref={iconContainerRef}
+            direction="column"
+            aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
+            aria-haspopup="true"
+            onClick={handleClick}
             sx={{
-              minWidth: "0",
-              alignItems: "center",
-              flexWrap: wrapIcons ? "wrap" : "nowrap",
+              justifyContent: "center",
+              cursor: "pointer",
+              borderTopLeftRadius: "var(--mui-shape-borderRadius)",
+              borderBottomLeftRadius: "var(--mui-shape-borderRadius)",
+              bgcolor: popoverOpen ? "rgba(12, 12, 12, 0.15)" : undefined,
+              "&:hover": { bgcolor: "rgba(12, 12, 12, 0.15)" },
             }}
           >
-            {roleCounts}
+            <GameIcon
+              className="role-count-wrap"
+              gameType={props.setup.gameType}
+            />
+          </Stack>
+          <Divider orientation="vertical" flexItem />
+          <Stack
+            direction="column"
+            sx={{
+              p: 1,
+              flex: "1 1",
+              alignItems: "stretch",
+              overflowX: "hidden",
+            }}
+          >
+            <Typography variant="body2" className="setup-name">
+              {filterProfanity(props.setup.name, user.settings)}
+            </Typography>
+            <Stack
+              direction="row"
+              ref={iconContainerRef}
+              sx={{
+                minWidth: "0",
+                alignItems: "center",
+                flexWrap: wrapIcons ? "wrap" : "nowrap",
+              }}
+            >
+              {roleCounts}
+            </Stack>
           </Stack>
         </Stack>
-      </Stack>
-    </Card>
-  </>);
+      </Card>
+    </>
+  );
 }
 
 export function determineSetupType(setup) {
@@ -548,9 +549,7 @@ export function FullRoleList({ setup }) {
 export function GameIcon(props) {
   const gameType = hyphenDelimit(props.gameType);
 
-  return (
-    <div className={`game-icon ${gameType}`}/>
-  );
+  return <div className={`game-icon ${gameType}`} />;
 }
 
 export function GameStateIcon(props) {
@@ -561,9 +560,14 @@ export function GameStateIcon(props) {
   if (state === "Day") iconName = "sun";
   else if (state === "Night") iconName = "moon";
 
-  return <i className={`fa-${iconName} fas state-icon`} style={{
-    fontSize: size ? size : undefined,
-  }} />;
+  return (
+    <i
+      className={`fa-${iconName} fas state-icon`}
+      style={{
+        fontSize: size ? size : undefined,
+      }}
+    />
+  );
 }
 
 export function SetupManipulationButtons(props) {
