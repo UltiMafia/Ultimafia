@@ -9,9 +9,14 @@ import {
   DialogTitle,
   TextField,
   Typography,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import { useErrorAlert } from "./Alerts";
 import { UserContext, SiteInfoContext } from "../Contexts";
+import { rulesData } from "../constants/rules";
 
 import janitor from "images/roles/mafia/janitor-vivid.png";
 
@@ -100,12 +105,23 @@ export default function ReportDialog({ open, onClose }) {
               onChange={(e) => setUserReported(e.target.value)}
               fullWidth
             />
-            <TextField
-              label="Rule Broken"
-              value={ruleBroken}
-              onChange={(e) => setRuleBroken(e.target.value)}
-              fullWidth
-            />
+
+            <FormControl fullWidth>
+              <InputLabel id="rule-broken-label">Rule Broken</InputLabel>
+              <Select
+                labelId="rule-broken-label"
+                value={ruleBroken}
+                label="Rule Broken"
+                onChange={(e) => setRuleBroken(e.target.value)}
+              >
+                {rulesData.map((rule) => (
+                  <MenuItem key={rule.name} value={rule.name}>
+                    {rule.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
             <TextField
               label="Description"
               value={description}
