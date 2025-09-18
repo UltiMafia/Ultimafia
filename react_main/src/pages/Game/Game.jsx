@@ -38,6 +38,7 @@ import { ClientSocket as Socket } from "../../Socket";
 import { RoleCount } from "../../components/Roles";
 import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
+import SiteLogo from "../../components/SiteLogo";
 import LeaveGameDialog from "../../components/LeaveGameDialog";
 import ReportDialog from "../../components/ReportDialog";
 import { useErrorAlert } from "../../components/Alerts";
@@ -932,7 +933,7 @@ export function BotBar(props) {
     <div className="top">
       {!isPhoneDevice && (
         <div className="game-name-wrapper" onClick={onLogoClick}>
-          {props.gameName}
+          <SiteLogo />
         </div>
       )}
       <div className="state-wrapper">
