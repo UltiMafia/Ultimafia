@@ -73,7 +73,12 @@ export default function LeaveGameDialog({ open, onClose, onConfirm }) {
           <Button onClick={handleStayClick} color="secondary" fullWidth>
             Stay
           </Button>
-          <Button onClick={onConfirm} color="primary" fullWidth startIcon={<img src={exit} alt="Leave" />}>
+          <Button
+            onClick={onConfirm}
+            color="primary"
+            fullWidth
+            startIcon={<img src={exit} alt="Leave" />}
+          >
             Leave
           </Button>
         </DialogActions>

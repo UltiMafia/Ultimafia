@@ -61,9 +61,7 @@ export default function Rules() {
               >
                 {rule.name}
               </Typography>
-              <Typography variant="body1">
-                {rule.description}
-              </Typography>
+              <Typography variant="body1">{rule.description}</Typography>
             </div>
           ))}
         </AccordionDetails>
@@ -88,9 +86,7 @@ export default function Rules() {
               >
                 {rule.name}
               </Typography>
-              <Typography variant="body1">
-                {rule.description}
-              </Typography>
+              <Typography variant="body1">{rule.description}</Typography>
             </div>
           ))}
         </AccordionDetails>

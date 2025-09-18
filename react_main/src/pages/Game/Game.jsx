@@ -850,7 +850,12 @@ export function BotBar(props) {
   }
 
   function onLeaveGameClick() {
-    if (props.history.currentState == -1 || props.history.currentState == -2 || game.finished || game.review) {
+    if (
+      props.history.currentState == -1 ||
+      props.history.currentState == -2 ||
+      game.finished ||
+      game.review
+    ) {
       leaveGame();
     } else {
       setLeaveDialogOpen(true);
