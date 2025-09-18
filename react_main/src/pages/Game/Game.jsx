@@ -39,6 +39,7 @@ import { RoleCount } from "../../components/Roles";
 import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
 import LeaveGameDialog from "../../components/LeaveGameDialog";
+import ReportDialog from "../../components/ReportDialog";
 import { useErrorAlert } from "../../components/Alerts";
 import {
   MaxGameMessageLength,
@@ -80,6 +81,7 @@ import lore from "images/emotes/lore.webp";
 import poison from "images/emotes/poison.webp";
 import exit from "images/emotes/exit.png";
 import veg from "images/emotes/veg.webp";
+import system from "images/emotes/system.webp";
 
 export default function Game() {
   return (
@@ -832,6 +834,7 @@ export function BotBar(props) {
   const hideStateSwitcher = props.hideStateSwitcher;
   const game = props.game;
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   function onLogoClick() {
     window.open(process.env.REACT_APP_URL, "_blank");
@@ -842,8 +845,17 @@ export function BotBar(props) {
       window.open(window.location + "?bot");
   }
 
+  function onReportClick() {
+    setReportDialogOpen(true);
+  }
+
   function onLeaveGameClick() {
-    if (props.history.currentState == -1 || game.finished || game.review) {
+    if (
+      props.history.currentState == -1 ||
+      props.history.currentState == -2 ||
+      game.finished ||
+      game.review
+    ) {
       leaveGame();
     } else {
       setLeaveDialogOpen(true);
@@ -965,6 +977,7 @@ export function BotBar(props) {
                 </IconButton>
               </Tooltip>
             )}
+
             {!isPhoneDevice && game.dev && props.history.currentState == -1 && (
               <Tooltip title="Fill">
                 <IconButton size="large" onClick={onTestClick}>
@@ -981,11 +994,32 @@ export function BotBar(props) {
               </Tooltip>
             )}
 
-            <Tooltip title="Leave">
-              <IconButton size="large" onClick={onLeaveGameClick}>
-                <img src={exit} alt="Leave" />
+            {/* <Tooltip title="File Report">
+              <IconButton size="large" onClick={onReportClick}>
+                <img src={system} alt="Report" />
               </IconButton>
             </Tooltip>
+            <ReportDialog
+              open={reportDialogOpen}
+              onClose={() => setReportDialogOpen(false)}
+              onConfirm={leaveGame}
+            /> */}
+
+            {isPhoneDevice ? (
+              <Tooltip title="Leave">
+                <IconButton size="large" onClick={onLeaveGameClick}>
+                  <img src={exit} alt="Leave" />
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <Button
+                onClick={onLeaveGameClick}
+                startIcon={<img src={exit} alt="Leave" />}
+              >
+                Leave
+              </Button>
+            )}
+
             <LeaveGameDialog
               open={leaveDialogOpen}
               onClose={() => setLeaveDialogOpen(false)}

@@ -2134,75 +2134,75 @@
 */
 
 .item-Mafia-Gun {
-  background-position: -16px 0;
+  background-image: url("/src/images/items/gun.png");
 }
 
 .item-Mafia-Rifle {
-  background-position: 0px 0;
+  background-image: url("/src/images/modifiers/unknown-modifier.png");
 }
 
 .item-Mafia-Armor {
-  background-position: -32px 0;
+  background-image: url("/src/images/modifiers/shielded.png");
 }
 
 .item-Mafia-Bomb {
-  background-position: -48px 0;
+  background-image: url("/src/images/items/bomb.png");
 }
 
 .item-Mafia-Knife {
-  background-position: -64px 0;
+  background-image: url("/src/images/items/knife.png");
 }
 
 .item-Mafia-Timebomb {
-  background-position: -80px 0;
+  background-image: url("/src/images/items/timebomb.png");
 }
 
 .item-Mafia-Crystal {
-  background-position: -96px 0;
+  background-image: url("/src/images/items/crystal.png");
 }
 
 .item-Mafia-Whiskey {
-  background-position: -112px 0;
+  background-image: url("/src/images/items/whiskey.png");
 }
 
 .item-Mafia-Key {
-  background-position: -128px 0;
+  background-image: url("/src/images/items/key.png");
 }
 
 .item-Mafia-Bread {
-  background-position: -144px 0;
+  background-image: url("/src/images/items/bread.png");
 }
 
 .item-Mafia-Yuzu-Orange {
-  background-position: 0px -16px;
+  background-image: url("/src/images/items/yuzu-orange.png");
 }
 
 .item-Mafia-Suit {
-  background-position: -16px -16px;
+  background-image: url("/src/images/items/suit.png");
 }
 
 .item-Mafia-Match {
-  background-position: -32px -16px;
+  background-image: url("/src/images/items/match.png");
 }
 
 .item-Mafia-Candle {
-  background-position: -48px -16px;
+  background-image: url("/src/images/items/candle.png");
 }
 
 .item-Mafia-Falcon {
-  background-position: -64px -16px;
+  background-image: url("/src/images/items/falcon.png");
 }
 
 .item-Mafia-Tract {
-  background-position: -80px -16px;
+  background-image: url("/src/images/items/tract.png");
 }
 
 .item-Mafia-Syringe {
-  background-position: -96px -16px;
+  background-image: url("/src/images/items/syringe.png");
 }
 
 .item-Mafia-Envelope {
-  background-position: -112px -16px;
+  background-image: url("/src/images/items/envelope.png");
 }
 
 /*
@@ -2509,6 +2509,10 @@
 
 .modifier-Mafia-Masked {
   background-image: url("/src/images/modifiers/masked.png");
+}
+
+.modifier-Mafia-Medical {
+  background-image: url("/src/images/modifiers/medical.png");
 }
 
 .modifier-Mafia-Modest {
