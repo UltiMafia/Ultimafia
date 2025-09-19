@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useReducer, useContext } from "react";
 import { Redirect, useLocation } from "react-router-dom";
-import update from 'immutability-helper';
+import update from "immutability-helper";
 import axios from "axios";
 
 import {
@@ -19,7 +19,7 @@ import {
   IconButton,
 } from "@mui/material";
 
-import { MaxModifiersPerRole } from "Constants"
+import { MaxModifiersPerRole } from "Constants";
 import { UserContext, SiteInfoContext } from "Contexts";
 import {
   RoleCount,
@@ -43,39 +43,57 @@ function StickyStateViewer(props) {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   return (
-    <Stack direction="row" sx={{
-      position: isSticky ? "sticky" : "relative",
-      bottom: isSticky ? "var(--mui-spacing)" : undefined,
-      mt: 1,
-    }}>
-      <Paper variant="outline" sx={{
-        p: 1,
-        maxWidth: "80%",
-        flex: "1",
-        mx: "auto",
-      }}>
-        <Stack direction={isVertical ? "column" : "row"} spacing={isSmallScreen ? 0.5 : 1} sx={{
-          justifyContent: isVertical? "stretch" : "center",
-          alignItems: "stretch",
-          width: "100%",
-        }}>
-          <Stack direction="column" sx={{
-            justifyContent: "center",
-            flex: "0 0",
-            bgcolor: isSticky ? "var(--scheme-color-sec)" : "var(--scheme-color-background)",
-            borderRadius: "var(--mui-shape-borderRadius)",
-            p: 1,
-          }}>
+    <Stack
+      direction="row"
+      sx={{
+        position: isSticky ? "sticky" : "relative",
+        bottom: isSticky ? "var(--mui-spacing)" : undefined,
+        mt: 1,
+      }}
+    >
+      <Paper
+        variant="outline"
+        sx={{
+          p: 1,
+          maxWidth: "80%",
+          flex: "1",
+          mx: "auto",
+        }}
+      >
+        <Stack
+          direction={isVertical ? "column" : "row"}
+          spacing={isSmallScreen ? 0.5 : 1}
+          sx={{
+            justifyContent: isVertical ? "stretch" : "center",
+            alignItems: "stretch",
+            width: "100%",
+          }}
+        >
+          <Stack
+            direction="column"
+            sx={{
+              justifyContent: "center",
+              flex: "0 0",
+              bgcolor: isSticky
+                ? "var(--scheme-color-sec)"
+                : "var(--scheme-color-background)",
+              borderRadius: "var(--mui-shape-borderRadius)",
+              p: 1,
+            }}
+          >
             <Typography variant="h4" textAlign="center">
               {title}
             </Typography>
           </Stack>
-          <Divider orientation={isVertical ? "horizontal" : "vertical"} flexItem/>
+          <Divider
+            orientation={isVertical ? "horizontal" : "vertical"}
+            flexItem
+          />
           {props.children}
         </Stack>
       </Paper>
     </Stack>
-  )
+  );
 }
 
 export default function CreateSetup(props) {
@@ -122,7 +140,9 @@ export default function CreateSetup(props) {
             }
             if (newRoleData.roleGroupSizes.length > 1) {
               newRoleData = update(newRoleData, {
-                roleGroupSizes: { $splice: [[1, newRoleData.roleGroupSizes.length - 1]] },
+                roleGroupSizes: {
+                  $splice: [[1, newRoleData.roleGroupSizes.length - 1]],
+                },
               });
             }
           }
@@ -138,7 +158,9 @@ export default function CreateSetup(props) {
             }
             if (newRoleData.roleGroupSizes.length > 1) {
               newRoleData = update(newRoleData, {
-                roleGroupSizes: { $splice: [[1, newRoleData.roleGroupSizes.length - 1]] },
+                roleGroupSizes: {
+                  $splice: [[1, newRoleData.roleGroupSizes.length - 1]],
+                },
               });
             }
           }
@@ -146,12 +168,17 @@ export default function CreateSetup(props) {
         case "addRole":
           if (newRoleData.roles[selRoleSet][action.role] === undefined) {
             newRoleData = update(newRoleData, {
-              roles: { [selRoleSet]: { $merge: { [action.role]: 1} } },
+              roles: { [selRoleSet]: { $merge: { [action.role]: 1 } } },
             });
-          }
-          else {
+          } else {
             newRoleData = update(newRoleData, {
-              roles: { [selRoleSet]: { [action.role] : { $set: newRoleData.roles[selRoleSet][action.role] + 1 } } },
+              roles: {
+                [selRoleSet]: {
+                  [action.role]: {
+                    $set: newRoleData.roles[selRoleSet][action.role] + 1,
+                  },
+                },
+              },
             });
           }
           /* var roleSet = newRoleData.roles[selRoleSet];
@@ -163,12 +190,17 @@ export default function CreateSetup(props) {
         case "removeRole":
           if (newRoleData.roles[selRoleSet][action.role] === 1) {
             newRoleData = update(newRoleData, {
-              roles: { [selRoleSet]: { $unset: [action.role] } } },
-            );
-          }
-          else {
+              roles: { [selRoleSet]: { $unset: [action.role] } },
+            });
+          } else {
             newRoleData = update(newRoleData, {
-              roles: { [selRoleSet]: { [action.role] : { $set: newRoleData.roles[selRoleSet][action.role] - 1 } } },
+              roles: {
+                [selRoleSet]: {
+                  [action.role]: {
+                    $set: newRoleData.roles[selRoleSet][action.role] - 1,
+                  },
+                },
+              },
             });
           }
           /* var roleSet = newRoleData.roles[selRoleSet];
@@ -193,12 +225,20 @@ export default function CreateSetup(props) {
           break;
         case "increaseRolesetSize":
           newRoleData = update(newRoleData, {
-            roleGroupSizes: { [action.index]: { $set: newRoleData.roleGroupSizes[action.index] + 1 } },
+            roleGroupSizes: {
+              [action.index]: {
+                $set: newRoleData.roleGroupSizes[action.index] + 1,
+              },
+            },
           });
           break;
         case "decreaseRolesetSize":
           newRoleData = update(newRoleData, {
-            roleGroupSizes: { [action.index]: { $set: newRoleData.roleGroupSizes[action.index] - 1 } },
+            roleGroupSizes: {
+              [action.index]: {
+                $set: newRoleData.roleGroupSizes[action.index] - 1,
+              },
+            },
           });
           break;
         case "setFromSetup":
@@ -291,7 +331,10 @@ export default function CreateSetup(props) {
       type: "addRole",
       role: `${role.name}:${
         modifiers.filter((e) => e).length > 0
-          ? modifiers.filter((e) => e).map((e) => e.name).join("/")
+          ? modifiers
+              .filter((e) => e)
+              .map((e) => e.name)
+              .join("/")
           : ""
       }`,
       alignment: role.alignment,
@@ -382,50 +425,75 @@ export default function CreateSetup(props) {
     const isSelected = selRoleSet == i;
 
     return (
-      <StickyStateViewer isSticky={(modifiers.length == 0) && isSelected} title={`Roleset ${i}`} key={i} >
-        <Box onClick={() => setSelRoleSet(i)} className="roleset" sx={{
-          p: 1,
-          width: "100%",
-          bgcolor: isSelected ? "var(--scheme-color-sec)" : "var(--scheme-color-background)",
-          maxHeight: "calc(8em + 4 * var(--mui-spacing))", // 8em = max 4 rows of icons before scrolling
-          overflowY: "auto",
-        }}>
-          <Stack direction="row" sx={{
-            alignItems: "center",
-            minHeight: "100%",
-          }}>
+      <StickyStateViewer
+        isSticky={modifiers.length == 0 && isSelected}
+        title={`Roleset ${i}`}
+        key={i}
+      >
+        <Box
+          onClick={() => setSelRoleSet(i)}
+          className="roleset"
+          sx={{
+            p: 1,
+            width: "100%",
+            bgcolor: isSelected
+              ? "var(--scheme-color-sec)"
+              : "var(--scheme-color-background)",
+            maxHeight: "calc(8em + 4 * var(--mui-spacing))", // 8em = max 4 rows of icons before scrolling
+            overflowY: "auto",
+          }}
+        >
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              minHeight: "100%",
+            }}
+          >
             <Stack direction="column" sx={{ width: "100%" }}>
               {usingRoleGroups && (
                 <Stack direction="row" spacing={1} alignItems="center">
-                  <Typography>
-                    Size:
-                  </Typography>
-                  <IconButton aria-label="decrease roleset size" onClick={() => {
-                    updateRoleData({
-                      type: "decreaseRolesetSize",
-                      index: i,
-                    });
-                  }}>
-                    <i className="fas fa-minus-circle"/>
+                  <Typography>Size:</Typography>
+                  <IconButton
+                    aria-label="decrease roleset size"
+                    onClick={() => {
+                      updateRoleData({
+                        type: "decreaseRolesetSize",
+                        index: i,
+                      });
+                    }}
+                  >
+                    <i className="fas fa-minus-circle" />
                   </IconButton>
-                  <Typography>
-                    {roleData.roleGroupSizes[i]}
-                  </Typography>
-                  <IconButton aria-label="increase roleset size" onClick={() => {
-                    updateRoleData({
-                      type: "increaseRolesetSize",
-                      index: i,
-                    });
-                  }}>
-                    <i className="fas fa-plus-circle"/>
+                  <Typography>{roleData.roleGroupSizes[i]}</Typography>
+                  <IconButton
+                    aria-label="increase roleset size"
+                    onClick={() => {
+                      updateRoleData({
+                        type: "increaseRolesetSize",
+                        index: i,
+                      });
+                    }}
+                  >
+                    <i className="fas fa-plus-circle" />
                   </IconButton>
                 </Stack>
               )}
               <Stack direction="column" spacing={0.5} sx={{ width: "100%" }}>
-                <Stack direction="row" spacing={0.5} sx={{ width: "100%", alignItems: "center", flexWrap: "wrap" }}>
+                <Stack
+                  direction="row"
+                  spacing={0.5}
+                  sx={{ width: "100%", alignItems: "center", flexWrap: "wrap" }}
+                >
                   {roles}
                   {roles.length > 0 && (
-                    <Typography sx={{ ml: "auto !important", flex: "0 0", whiteSpace: "nowrap", }}>
+                    <Typography
+                      sx={{
+                        ml: "auto !important",
+                        flex: "0 0",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
                       Total: {roles.reduce((acc, e) => acc + e.props.count, 0)}
                     </Typography>
                   )}
@@ -446,8 +514,13 @@ export default function CreateSetup(props) {
                   alignSelf: "stretch",
                   minWidth: "0px",
                   ml: 1,
-                }}>
-                  <i className="fa-times fas" aria-hidden="true" style={{ fontSize: isSmallScreen ? "0.5em" : "1em", }}/>
+                }}
+              >
+                <i
+                  className="fa-times fas"
+                  aria-hidden="true"
+                  style={{ fontSize: isSmallScreen ? "0.5em" : "1em" }}
+                />
               </Button>
             )}
           </Stack>
@@ -495,16 +568,27 @@ export default function CreateSetup(props) {
   const innerContentHeight = "calc(1.2 * 2em)";
   const iconLength = isSmallScreen ? "1em" : innerContentHeight;
 
-  const selectedModifiers = [...Array(isSmallScreen ? modifiers.length : MaxModifiersPerRole).keys()].map((i) => {
+  const selectedModifiers = [
+    ...Array(isSmallScreen ? modifiers.length : MaxModifiersPerRole).keys(),
+  ].map((i) => {
     const m = modifiers[i];
     return (
-      <Grid2 size={1} sx={{ width: isSmallScreen ? "100%" : undefined }} key={i}>
-        <RoleCell iconLength={iconLength} role={m} onDelClick={() => onRemoveModifier(m)} icon={
-          <ModifierCount
-            iconLength={iconLength}
-            role={m}
-            gameType={gameType}
-          />}
+      <Grid2
+        size={1}
+        sx={{ width: isSmallScreen ? "100%" : undefined }}
+        key={i}
+      >
+        <RoleCell
+          iconLength={iconLength}
+          role={m}
+          onDelClick={() => onRemoveModifier(m)}
+          icon={
+            <ModifierCount
+              iconLength={iconLength}
+              role={m}
+              gameType={gameType}
+            />
+          }
         />
       </Grid2>
     );
@@ -512,44 +596,65 @@ export default function CreateSetup(props) {
 
   return (
     <Stack direction="column" spacing={1} sx={{ mt: 1 }}>
-      <RoleSearch onAddClick={onAddRole} gameType={gameType}/>
-      {(modifiers.length > 0) && (<Paper sx={{ p: 1 }}>
-        <Accordion>
-          <AccordionSummary>
-            <Typography variant="h3">Modifiers</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <ModifierSearch
-              onAddClick={onAddModifier}
-              gameType={gameType}
-              curMods={modifiers}
-            />
-          </AccordionDetails>
-        </Accordion>
-      </Paper>)}
-      {(modifiers.length > 0) && (<StickyStateViewer isSticky={modifiers.length > 0} title="Selected Modifiers" isVertical={isSmallScreen}>
-        <Grid2 container columns={MaxModifiersPerRole} direction={isSmallScreen ? "column" : "row"} spacing={1} sx={{ flexGrow: "1", width: "100%" }}>
-          {selectedModifiers}
-        </Grid2>
-      </StickyStateViewer>)}
-      <Divider orientation="horizontal" flexItem sx={{ width: "80%", mx: "auto !important" }} />
-      {roleSets}
-      <Paper sx={{ 
-        p: 1,
-        width: "80%",
-        mx: "auto !important"
-      }}>
-        <Grid2 container columns={3} spacing={1}>
-          <Grid2 size={{xs: 1}}>
-
+      <RoleSearch onAddClick={onAddRole} gameType={gameType} />
+      {modifiers.length > 0 && (
+        <Paper sx={{ p: 1 }}>
+          <Accordion>
+            <AccordionSummary>
+              <Typography variant="h3">Modifiers</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <ModifierSearch
+                onAddClick={onAddModifier}
+                gameType={gameType}
+                curMods={modifiers}
+              />
+            </AccordionDetails>
+          </Accordion>
+        </Paper>
+      )}
+      {modifiers.length > 0 && (
+        <StickyStateViewer
+          isSticky={modifiers.length > 0}
+          title="Selected Modifiers"
+          isVertical={isSmallScreen}
+        >
+          <Grid2
+            container
+            columns={MaxModifiersPerRole}
+            direction={isSmallScreen ? "column" : "row"}
+            spacing={1}
+            sx={{ flexGrow: "1", width: "100%" }}
+          >
+            {selectedModifiers}
           </Grid2>
-          <Grid2 size={{xs: 1}}>
+        </StickyStateViewer>
+      )}
+      <Divider
+        orientation="horizontal"
+        flexItem
+        sx={{ width: "80%", mx: "auto !important" }}
+      />
+      {roleSets}
+      <Paper
+        sx={{
+          p: 1,
+          width: "80%",
+          mx: "auto !important",
+        }}
+      >
+        <Grid2 container columns={3} spacing={1}>
+          <Grid2 size={{ xs: 1 }}></Grid2>
+          <Grid2 size={{ xs: 1 }}>
             {showAddRoleSet && (
-              <Stack direction="row" sx={{
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
-              }}>
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "100%",
+                }}
+              >
                 <Button
                   onClick={() => updateRoleData({ type: "addRoleSet" })}
                   sx={{
@@ -558,21 +663,26 @@ export default function CreateSetup(props) {
                     alignSelf: "stretch",
                     minWidth: "0px",
                     ml: 1,
-                  }}>
-                    <i className="fa-plus fas" aria-hidden="true"/>
+                  }}
+                >
+                  <i className="fa-plus fas" aria-hidden="true" />
                 </Button>
               </Stack>
             )}
           </Grid2>
-          <Grid2 size={{xs: 1}}>
+          <Grid2 size={{ xs: 1 }}>
             {usingRoleGroups && (
-              <Stack direction="row" sx={{
-                justifyContent: "right",
-                alignItems: "center",
-                height: "100%",
-              }}>
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: "right",
+                  alignItems: "center",
+                  height: "100%",
+                }}
+              >
                 <Typography>
-                  {"Total Size: "}{roleData.roleGroupSizes.reduce((a, b) => a + b)}
+                  {"Total Size: "}
+                  {roleData.roleGroupSizes.reduce((a, b) => a + b)}
                 </Typography>
               </Stack>
             )}

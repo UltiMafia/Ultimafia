@@ -510,7 +510,8 @@ export function ModifierCount(props) {
 
   return (
     <>
-      <div className={`modifier modifier-${roleClass}`}
+      <div
+        className={`modifier modifier-${roleClass}`}
         aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
         aria-haspopup="true"
         onClick={handleRoleCountClick}
@@ -543,10 +544,8 @@ export function ModifierCount(props) {
           <div className={"mui-popover"}>
             <div className={"mui-popover-title"}>
               <Stack direction="row" spacing={1} alignItems="center">
-                <div className={`modifier modifier-${roleClass}`}/>
-                <Typography>
-                  {roleName}
-                </Typography>
+                <div className={`modifier modifier-${roleClass}`} />
+                <Typography>{roleName}</Typography>
               </Stack>
             </div>
             <div style={{ margin: "3px" }}>
@@ -592,13 +591,17 @@ export function RoleCell(props) {
   const myHeight = `calc(1.2 * ${iconLength} + 2 * var(--mui-spacing))`;
 
   if (role === undefined) {
-    return (<Box sx={{
-      minWidth: 0,
-      height: myHeight,
-      minHeight: "var(--mui-spacing)",
-      borderRadius: "var(--mui-shape-borderRadius)",
-      border: `1px solid var(--mui-palette-divider)`,
-    }}/>);
+    return (
+      <Box
+        sx={{
+          minWidth: 0,
+          height: myHeight,
+          minHeight: "var(--mui-spacing)",
+          borderRadius: "var(--mui-shape-borderRadius)",
+          border: `1px solid var(--mui-palette-divider)`,
+        }}
+      />
+    );
   }
 
   function onRoleCellClick() {
@@ -632,9 +635,7 @@ export function RoleCell(props) {
           alignItems: "center",
           width: "100%",
         }}
-        onMouseOver={() =>
-          null && onRoleCellClick()
-        }
+        onMouseOver={() => null && onRoleCellClick()}
         ref={roleCellRef}
       >
         {user.loggedIn && onAddClick && (
@@ -648,8 +649,13 @@ export function RoleCell(props) {
               bgcolor: "#62a0db",
               alignSelf: "stretch",
               minWidth: "0px",
-            }}>
-              <i className="fa-plus fas" aria-hidden="true" style={{ fontSize: "0.5em" }}/>
+            }}
+          >
+            <i
+              className="fa-plus fas"
+              aria-hidden="true"
+              style={{ fontSize: "0.5em" }}
+            />
           </Button>
         )}
         {user.loggedIn && onDelClick && (
@@ -663,26 +669,36 @@ export function RoleCell(props) {
               bgcolor: "#e45050",
               alignSelf: "stretch",
               minWidth: "0px",
-            }}>
-              <i className="fa-times fas" aria-hidden="true" style={{ fontSize: "0.5em" }}/>
+            }}
+          >
+            <i
+              className="fa-times fas"
+              aria-hidden="true"
+              style={{ fontSize: "0.5em" }}
+            />
           </Button>
         )}
         {icon}
-        <Typography variant="body2" sx={{
-          flex: "1",
-          textAlign: "right",
-          wordBreak: "break-word",
-          hyphens: "auto",
-        }}>
+        <Typography
+          variant="body2"
+          sx={{
+            flex: "1",
+            textAlign: "right",
+            wordBreak: "break-word",
+            hyphens: "auto",
+          }}
+        >
           {role.name}
         </Typography>
       </Stack>
-      {(role.newlyAdded || role.recentlyUpdated || role.featured) && <RoleBanners
-        newlyAdded={role.newlyAdded}
-        recentlyUpdated={role.recentlyUpdated}
-        featured={role.featured}
-        sx={{ padding: "2px" }}
-      />}
+      {(role.newlyAdded || role.recentlyUpdated || role.featured) && (
+        <RoleBanners
+          newlyAdded={role.newlyAdded}
+          recentlyUpdated={role.recentlyUpdated}
+          featured={role.featured}
+          sx={{ padding: "2px" }}
+        />
+      )}
     </Paper>
   );
 }
@@ -772,11 +788,10 @@ export function RoleSearch(props) {
     ) {
       return (
         <Grid2 size={{ xs: 2 }} key={role.name}>
-          <RoleCell onAddClick={props.onAddClick} role={role} icon={
-            <RoleCount
-              role={role.name}
-              gameType={props.gameType}
-            />}
+          <RoleCell
+            onAddClick={props.onAddClick}
+            role={role}
+            icon={<RoleCount role={role.name} gameType={props.gameType} />}
           />
         </Grid2>
       );
@@ -800,7 +815,7 @@ export function RoleSearch(props) {
           />
         </Box>
       </Stack>
-      <Divider direction="horizontal" sx={{ mb: 1 }}/>
+      <Divider direction="horizontal" sx={{ mb: 1 }} />
       <Paper sx={{ p: 1 }}>
         <Grid2 container spacing={1} columns={{ xs: 4, sm: 6, md: 8 }}>
           {roleCells}
@@ -913,12 +928,16 @@ export function ModifierSearch(props) {
     ) {
       return (
         <Grid2 size={{ xs: 2 }} key={role.name}>
-          <RoleCell onAddClick={props.onAddClick} role={role} icon={
-            <ModifierCount
-              iconLength="2em"
-              role={role.name}
-              gameType={props.gameType}
-            />}
+          <RoleCell
+            onAddClick={props.onAddClick}
+            role={role}
+            icon={
+              <ModifierCount
+                iconLength="2em"
+                role={role.name}
+                gameType={props.gameType}
+              />
+            }
           />
         </Grid2>
       );
@@ -942,7 +961,7 @@ export function ModifierSearch(props) {
           />
         </Box>
       </Stack>
-      <Divider direction="horizontal" sx={{ mb: 1 }}/>
+      <Divider direction="horizontal" sx={{ mb: 1 }} />
       <Paper sx={{ p: 1 }}>
         <Grid2 container spacing={1} columns={{ xs: 2, sm: 6, md: 8 }}>
           {roleCells}

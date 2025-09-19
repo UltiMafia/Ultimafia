@@ -1,12 +1,11 @@
 import React from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
-import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
+import { Box, Card } from "@mui/material";
 
 import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
 import Rules from "./Rules";
-import Report from "./Report";
 import CustomAppBar from "components/CustomAppBar";
 
 export default function Policy(props) {
@@ -16,11 +15,6 @@ export default function Policy(props) {
     {
       text: "Rules",
       path: "/policy/rules",
-      exact: true,
-    },
-    {
-      text: "File Report",
-      path: "/policy/report",
       exact: true,
     },
     {
@@ -44,7 +38,6 @@ export default function Policy(props) {
             <Route exact path="/policy/rules" component={Rules} />
             <Route exact path="/policy/tos" component={TermsOfService} />
             <Route exact path="/policy/privacy" component={PrivacyPolicy} />
-            <Route exact path="/policy/report" component={Report} />
             <Route render={() => <Redirect to="/policy/rules" />} />
           </Switch>
         </Card>

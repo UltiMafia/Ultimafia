@@ -3948,9 +3948,9 @@ const roleData = {
       category: "Chaos",
       tags: ["Win Con", "Information", "Condemn Interaction", "Advanced"],
       description: [
-        "Will be Twins with an Opposing player.",
-        "The Twins will learn each other's roles.",
-        "If the Village-aligned Twin is Condemned, Cult Wins.",
+        "The Changeling has a Twin among the Village.",
+        "The Changeling and their Twin will learn each other's roles.",
+        "If the Village-aligned Twin is condemned, the Cult wins.",
       ],
     },
     Reaper: {

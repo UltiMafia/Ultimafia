@@ -28,6 +28,7 @@ import "css/user.css";
 import { Modal } from "components/Modal";
 import CustomMarkdown from "components/CustomMarkdown";
 import ModerationSideDrawer from "components/ModerationSideDrawer";
+import ReportDialog from "../../components/ReportDialog";
 import { PieChart } from "./PieChart";
 import { NewLoading } from "../Welcome/NewLoading";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
@@ -36,11 +37,14 @@ import {
   Grid,
   IconButton,
   Stack,
+  Tooltip,
   Typography,
   useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+
+import system from "images/emotes/system.webp";
 
 export const KUDOS_ICON = require(`images/kudos.png`);
 export const KARMA_ICON = require(`images/karma.png`);
@@ -87,6 +91,7 @@ export default function Profile() {
   const [autoplay, setAutoplay] = useState(false);
   const [saved, setSaved] = useState(false);
   const [moderationDrawerOpen, setModerationDrawerOpen] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [currentUserLove, setCurrentUserLove] = useState({});
 
   const theme = useTheme();
@@ -378,6 +383,10 @@ export default function Profile() {
         else siteInfo.showAlert("User blocked.", "success");
       })
       .catch(errorAlert);
+  }
+
+  function onReportClick() {
+    setReportDialogOpen(true);
   }
 
   function onBioClick() {
@@ -672,6 +681,16 @@ export default function Profile() {
                 title="Block user"
               />
             </IconButton>
+            <Tooltip title="File Report">
+              <IconButton size="large" onClick={onReportClick}>
+                <img src={system} alt="Report" />
+              </IconButton>
+            </Tooltip>
+            <ReportDialog
+              open={reportDialogOpen}
+              onClose={() => setReportDialogOpen(false)}
+              prefilledArgs={{ user: userId }}
+            />
           </>
         )}
       </Stack>
