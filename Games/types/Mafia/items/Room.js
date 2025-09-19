@@ -40,12 +40,16 @@ module.exports = class Room extends Item {
         item: this,
         run: function () {
           let isReelect = false;
-          if(this.item.Room.leader == this.target){
+          if (this.item.Room.leader == this.target) {
             isReelect = true;
           }
           this.item.Room.leader = this.target;
-          this.game.events.emit("ElectedRoomLeader", this.target, this.item.Room.number, isReelect);
-    
+          this.game.events.emit(
+            "ElectedRoomLeader",
+            this.target,
+            this.item.Room.number,
+            isReelect
+          );
         },
       },
     };

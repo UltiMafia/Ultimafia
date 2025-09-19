@@ -70,9 +70,9 @@ module.exports = class WinWithFaction extends Card {
         );
 
         const hasMajority = factionCount >= aliveCount / 2 && aliveCount > 0;
-        const assassinInGame = this.game.alivePlayers().filter((p) =>
-          p.hasEffect("AssassinEffect")
-        );
+        const assassinInGame = this.game
+          .alivePlayers()
+          .filter((p) => p.hasEffect("AssassinEffect"));
 
         //Special Win Cons
         //MagusWin
@@ -499,9 +499,9 @@ module.exports = class WinWithFaction extends Card {
 
         if (this.oblivious["Faction"]) return;
 
-        const assassinInGame = this.game.alivePlayers().filter((p) =>
-          p.hasEffect("AssassinEffect")
-        );
+        const assassinInGame = this.game
+          .alivePlayers()
+          .filter((p) => p.hasEffect("AssassinEffect"));
         if (assassinInGame.length > 0) return;
 
         if (

@@ -41,19 +41,22 @@ module.exports = class RoomLeader extends Item {
             }
             let RoomCount = this.game.Rooms.length;
             let index = this.item.room.number;
-            if(index >= RoomCount){
+            if (index >= RoomCount) {
               index = 0;
             }
-              for (let player of this.target) {
-                this.item.room.members.splice(this.item.room.members.indexOf(player), 1);
-                this.game.Rooms[index].members.push(player);
-                this.game.events.emit(
-                  "RoonSwitch",
-                  player,
-                  this.actor,
-                  this.item.room
-                );
-              }
+            for (let player of this.target) {
+              this.item.room.members.splice(
+                this.item.room.members.indexOf(player),
+                1
+              );
+              this.game.Rooms[index].members.push(player);
+              this.game.events.emit(
+                "RoonSwitch",
+                player,
+                this.actor,
+                this.item.room
+              );
+            }
 
             this.actor.dropItem("Leader");
           },

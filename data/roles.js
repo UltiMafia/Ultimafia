@@ -3301,13 +3301,7 @@ const roleData = {
     },
     Assassin: {
       alignment: "Mafia",
-      tags: [
-        "Mini-game",
-        "Essential",
-        "Split Decision",
-        "Killing",
-        "Advanced",
-      ],
+      tags: ["Mini-game", "Essential", "Split Decision", "Killing", "Advanced"],
       description: [
         "Splits all players into two rooms.",
         "During the Day, each room meets and choose a city leader. In turn, at Night city leaders meet and choose players to switch rooms.",
@@ -3326,12 +3320,8 @@ const roleData = {
         },
       ],
       SpecialInteractionsModifiers: {
-        "X-Shot": [
-          "Splits players into an additional room.",
-        ],
-        Delayed: [
-          "Adds an extra round of switching before killing.",
-        ],
+        "X-Shot": ["Splits players into an additional room."],
+        Delayed: ["Adds an extra round of switching before killing."],
       },
     },
     Stylist: {
