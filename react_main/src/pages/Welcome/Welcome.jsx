@@ -17,10 +17,7 @@ import axios from "axios";
 import { useSnackbar } from "hooks/useSnackbar";
 import { NewLoading } from "./NewLoading";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
-
-import umpride2 from "images/holiday/umpride2.png";
-import logobloody from "images/holiday/logobloody.png";
-import fadelogohat from "images/fadelogohat.png";
+import SiteLogo from "../../components/SiteLogo";
 
 // localStorage.setItem('firebase:debug', 'true');
 
@@ -37,24 +34,6 @@ export const Welcome = () => {
   const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const snackbarHook = useSnackbar();
-  const getLogoSrc = () => {
-    const currentMonth = new Date().getMonth();
-    // 0 = January
-    // 11 = December
-
-    // Pride logo for June
-    if (currentMonth === 5) {
-      return umpride2;
-    }
-
-    // Bloody logo for Halloween
-    if (currentMonth === 9) {
-      return logobloody;
-    }
-
-    // Default logo
-    return fadelogohat;
-  };
 
   useEffect(() => {
     document.body.style.backgroundImage = `none`;
@@ -178,17 +157,7 @@ export const Welcome = () => {
               boxSizing: "border-box",
             }}
           >
-            <Box
-              component="img"
-              sx={{
-                height: 144,
-                width: 247,
-                ml: "auto",
-                mr: "auto",
-              }}
-              alt="Site logo"
-              src={getLogoSrc()}
-            />
+            <SiteLogo />
             <Typography
               variant={isPhoneDevice ? "body1" : "h4"}
               align="center"

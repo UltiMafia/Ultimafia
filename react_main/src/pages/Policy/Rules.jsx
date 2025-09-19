@@ -23,7 +23,6 @@ export default function Rules() {
     document.title = "Rules | UltiMafia";
   }, []);
 
-  // Group rules by category
   const communityRules = rulesData.filter((r) => r.category === "Community");
   const gameRules = rulesData.filter((r) => r.category === "Game");
 
