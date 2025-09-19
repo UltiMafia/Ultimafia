@@ -933,10 +933,25 @@ export function BotBar(props) {
     <div className="top">
       {!isPhoneDevice && (
         <div className="game-name-wrapper" onClick={onLogoClick}>
-          <SiteLogo />
+          <SiteLogo
+            sx={{
+              height: 75,
+              width: 145,
+            }}
+          />
         </div>
       )}
-      <div className="state-wrapper">
+      <div
+        className="state-wrapper"
+        style={{
+          position: "absolute",
+          left: "50%",
+          transform: "translateX(-50%)",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+        }}
+      >
         {!hideStateSwitcher && (
           <StateSwitcher
             history={props.history}

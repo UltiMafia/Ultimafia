@@ -117,7 +117,7 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
             </Typography>
 
             <TextField
-              label="Game (link or ID, optional)"
+              label="Game"
               value={game}
               onChange={(e) => setGame(e.target.value)}
               fullWidth
