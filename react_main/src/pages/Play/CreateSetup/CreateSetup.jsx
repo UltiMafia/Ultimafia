@@ -10,6 +10,7 @@ import {
   Box,
   Paper,
   useTheme,
+  ListItemButton,
 } from "@mui/material";
 
 import CreateMafiaSetup from "./CreateMafiaSetup";
@@ -102,8 +103,7 @@ export default function CreateSetup(props) {
       >
         <List>
           {GameTypes.map((game) => (
-            <ListItem
-              button
+            <ListItemButton
               key={game}
               selected={gameType === game}
               onClick={() => handleListItemClick(game)}
@@ -112,7 +112,7 @@ export default function CreateSetup(props) {
                 <GameIcon gameType={game} size={24} />
               </ListItemIcon>
               <ListItemText primary={game} />
-            </ListItem>
+            </ListItemButton>
           ))}
         </List>
       </SwipeableDrawer>

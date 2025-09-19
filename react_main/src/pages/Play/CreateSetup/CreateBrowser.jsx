@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useReducer, useContext } from "react";
 import { Redirect, useLocation } from "react-router-dom";
+import update from 'immutability-helper';
 import axios from "axios";
 
 import {
@@ -8,20 +9,74 @@ import {
   AccordionDetails,
   Typography,
   Stack,
+  Paper,
+  Box,
+  Divider,
+  useMediaQuery,
+  useTheme,
+  Grid2,
+  Button,
+  IconButton,
 } from "@mui/material";
 
-import { UserContext, SiteInfoContext } from "../../../Contexts";
+import { MaxModifiersPerRole } from "Constants"
+import { UserContext, SiteInfoContext } from "Contexts";
 import {
   RoleCount,
   RoleSearch,
   ModifierSearch,
   ModifierCount,
-} from "../../../components/Roles";
-import Form from "../../../components/Form";
-import { useErrorAlert } from "../../../components/Alerts";
+  RoleCell,
+} from "components/Roles";
+import Form from "components/Form";
+import { useErrorAlert } from "components/Alerts";
 
 import "css/createSetup.css";
-import { NewLoading } from "../../Welcome/NewLoading";
+import { NewLoading } from "pages/Welcome/NewLoading";
+
+function StickyStateViewer(props) {
+  const isSticky = props.isSticky;
+  const title = props.title;
+  const isVertical = props.isVertical;
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
+  return (
+    <Stack direction="row" sx={{
+      position: isSticky ? "sticky" : "relative",
+      bottom: isSticky ? "var(--mui-spacing)" : undefined,
+      mt: 1,
+    }}>
+      <Paper variant="outline" sx={{
+        p: 1,
+        maxWidth: "80%",
+        flex: "1",
+        mx: "auto",
+      }}>
+        <Stack direction={isVertical ? "column" : "row"} spacing={isSmallScreen ? 0.5 : 1} sx={{
+          justifyContent: isVertical? "stretch" : "center",
+          alignItems: "stretch",
+          width: "100%",
+        }}>
+          <Stack direction="column" sx={{
+            justifyContent: "center",
+            flex: "0 0",
+            bgcolor: isSticky ? "var(--scheme-color-sec)" : "var(--scheme-color-background)",
+            borderRadius: "var(--mui-shape-borderRadius)",
+            p: 1,
+          }}>
+            <Typography variant="h4" textAlign="center">
+              {title}
+            </Typography>
+          </Stack>
+          <Divider orientation={isVertical ? "horizontal" : "vertical"} flexItem/>
+          {props.children}
+        </Stack>
+      </Paper>
+    </Stack>
+  )
+}
 
 export default function CreateSetup(props) {
   const gameType = props.gameType;
@@ -42,73 +97,109 @@ export default function CreateSetup(props) {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const siteInfo = useContext(SiteInfoContext);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const [roleData, updateRoleData] = useReducer(
     (roleData, action) => {
       var newRoleData = { ...roleData };
 
-      if (action.type !== "reset" && action.type !== "setClosed") {
-        newRoleData.roles = roleData.roles.slice();
-        newRoleData.role = roleData.roleGroupSizes.slice();
-
-        for (let i in roleData.roles)
-          newRoleData.roles[i] = { ...roleData.roles[i] };
-      }
-
       switch (action.type) {
         case "reset":
-          newRoleData.roles = [{}];
-          newRoleData.roleGroupSizes = [1];
+          newRoleData = update(newRoleData, {
+            roles: { $set: [{}] },
+            roleGroupSizes: { $set: [1] },
+          });
           break;
         case "setClosed":
           newRoleData.closed = action.closed;
 
           if (action.closed && !newRoleData.useRoleGroups) {
-            newRoleData.roles = newRoleData.roles.slice(0, 1);
-            newRoleData.roleGroupSizes = newRoleData.roleGroupSizes.slice(0, 1);
+            if (newRoleData.roles.length > 1) {
+              newRoleData = update(newRoleData, {
+                roles: { $splice: [[1, newRoleData.roles.length - 1]] },
+              });
+            }
+            if (newRoleData.roleGroupSizes.length > 1) {
+              newRoleData = update(newRoleData, {
+                roleGroupSizes: { $splice: [[1, newRoleData.roleGroupSizes.length - 1]] },
+              });
+            }
           }
           break;
         case "setUseRoleGroups":
           newRoleData.useRoleGroups = action.useRoleGroups;
 
           if (!action.useRoleGroups) {
-            newRoleData.roles = newRoleData.roles.slice(0, 1);
-            newRoleData.roleGroupSizes = newRoleData.roleGroupSizes.slice(0, 1);
+            if (newRoleData.roles.length > 1) {
+              newRoleData = update(newRoleData, {
+                roles: { $splice: [[1, newRoleData.roles.length - 1]] },
+              });
+            }
+            if (newRoleData.roleGroupSizes.length > 1) {
+              newRoleData = update(newRoleData, {
+                roleGroupSizes: { $splice: [[1, newRoleData.roleGroupSizes.length - 1]] },
+              });
+            }
           }
           break;
         case "addRole":
-          // TODO if using rolesets, each roleset must have only one alignment type
-          var roleSet = newRoleData.roles[selRoleSet];
+          if (newRoleData.roles[selRoleSet][action.role] === undefined) {
+            newRoleData = update(newRoleData, {
+              roles: { [selRoleSet]: { $merge: { [action.role]: 1} } },
+            });
+          }
+          else {
+            newRoleData = update(newRoleData, {
+              roles: { [selRoleSet]: { [action.role] : { $set: newRoleData.roles[selRoleSet][action.role] + 1 } } },
+            });
+          }
+          /* var roleSet = newRoleData.roles[selRoleSet];
 
           if (!roleSet[action.role]) roleSet[action.role] = 0;
 
-          roleSet[action.role]++;
+          roleSet[action.role]++; */
           break;
         case "removeRole":
-          var roleSet = newRoleData.roles[selRoleSet];
+          if (newRoleData.roles[selRoleSet][action.role] === 1) {
+            newRoleData = update(newRoleData, {
+              roles: { [selRoleSet]: { $unset: [action.role] } } },
+            );
+          }
+          else {
+            newRoleData = update(newRoleData, {
+              roles: { [selRoleSet]: { [action.role] : { $set: newRoleData.roles[selRoleSet][action.role] - 1 } } },
+            });
+          }
+          /* var roleSet = newRoleData.roles[selRoleSet];
 
           if (roleSet[action.role]) roleSet[action.role]--;
 
-          if (roleSet[action.role] < 1) delete roleSet[action.role];
+          if (roleSet[action.role] < 1) delete roleSet[action.role]; */
           break;
         case "addRoleSet":
-          newRoleData.roles.push({});
-          newRoleData.roleGroupSizes.push(1);
+          newRoleData = update(newRoleData, {
+            roles: { $push: [{}] },
+            roleGroupSizes: { $push: [1] },
+          });
           break;
         case "removeRoleSet":
-          newRoleData.roles.splice(action.index, 1);
-          newRoleData.roleGroupSizes.splice(action.index, 1);
+          newRoleData = update(newRoleData, {
+            roles: { $splice: [[action.index, 1]] },
+            roleGroupSizes: { $splice: [[action.index, 1]] },
+          });
 
           if (action.index === selRoleSet) setSelRoleSet(0);
           break;
         case "increaseRolesetSize":
-          newRoleData.roleGroupSizes[action.index] += 1;
+          newRoleData = update(newRoleData, {
+            roleGroupSizes: { [action.index]: { $set: newRoleData.roleGroupSizes[action.index] + 1 } },
+          });
           break;
         case "decreaseRolesetSize":
-          newRoleData.roleGroupSizes[action.index] = Math.max(
-            newRoleData.roleGroupSizes[action.index] - 1,
-            1
-          );
+          newRoleData = update(newRoleData, {
+            roleGroupSizes: { [action.index]: { $set: newRoleData.roleGroupSizes[action.index] - 1 } },
+          });
           break;
         case "setFromSetup":
           newRoleData.closed = action.closed;
@@ -200,7 +291,7 @@ export default function CreateSetup(props) {
       type: "addRole",
       role: `${role.name}:${
         modifiers.filter((e) => e).length > 0
-          ? modifiers.filter((e) => e).join("/")
+          ? modifiers.filter((e) => e).map((e) => e.name).join("/")
           : ""
       }`,
       alignment: role.alignment,
@@ -288,46 +379,80 @@ export default function CreateSetup(props) {
       );
     }
 
+    const isSelected = selRoleSet == i;
+
     return (
-      <React.Fragment key={Object.values(roleSet).join("") + i}>
-        {usingRoleGroups && (
-          <div className="roleset-size">
-            Size:
-            <i
-              className="fas fa-caret-left"
-              onClick={() => {
-                updateRoleData({
-                  type: "decreaseRolesetSize",
-                  index: i,
-                });
-              }}
-            />
-            <span> {roleData.roleGroupSizes[i]} </span>
-            <i
-              className="fas fa-caret-right"
-              onClick={() => {
-                updateRoleData({
-                  type: "increaseRolesetSize",
-                  index: i,
-                });
-              }}
-            />
-          </div>
-        )}
-        <RoleSetRow
-          roles={roles}
-          index={i}
-          sel={selRoleSet}
-          onClick={() => setSelRoleSet(i)}
-          onDelete={() => {
-            updateRoleData({
-              type: "removeRoleSet",
-              index: i,
-            });
-          }}
-          key={i}
-        />
-      </React.Fragment>
+      <StickyStateViewer isSticky={(modifiers.length == 0) && isSelected} title={`Roleset ${i}`} key={i} >
+        <Box onClick={() => setSelRoleSet(i)} className="roleset" sx={{
+          p: 1,
+          width: "100%",
+          bgcolor: isSelected ? "var(--scheme-color-sec)" : "var(--scheme-color-background)",
+          maxHeight: "calc(8em + 4 * var(--mui-spacing))", // 8em = max 4 rows of icons before scrolling
+          overflowY: "auto",
+        }}>
+          <Stack direction="row" sx={{
+            alignItems: "center",
+            minHeight: "100%",
+          }}>
+            <Stack direction="column" sx={{ width: "100%" }}>
+              {usingRoleGroups && (
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography>
+                    Size:
+                  </Typography>
+                  <IconButton aria-label="decrease roleset size" onClick={() => {
+                    updateRoleData({
+                      type: "decreaseRolesetSize",
+                      index: i,
+                    });
+                  }}>
+                    <i className="fas fa-minus-circle"/>
+                  </IconButton>
+                  <Typography>
+                    {roleData.roleGroupSizes[i]}
+                  </Typography>
+                  <IconButton aria-label="increase roleset size" onClick={() => {
+                    updateRoleData({
+                      type: "increaseRolesetSize",
+                      index: i,
+                    });
+                  }}>
+                    <i className="fas fa-plus-circle"/>
+                  </IconButton>
+                </Stack>
+              )}
+              <Stack direction="column" spacing={0.5} sx={{ width: "100%" }}>
+                <Stack direction="row" spacing={0.5} sx={{ width: "100%", alignItems: "center", flexWrap: "wrap" }}>
+                  {roles}
+                  {roles.length > 0 && (
+                    <Typography sx={{ ml: "auto !important", flex: "0 0", whiteSpace: "nowrap", }}>
+                      Total: {roles.reduce((acc, e) => acc + e.props.count, 0)}
+                    </Typography>
+                  )}
+                </Stack>
+              </Stack>
+            </Stack>
+            {i > 0 && (
+              <Button
+                onClick={() => {
+                  updateRoleData({
+                    type: "removeRoleSet",
+                    index: i,
+                  });
+                }}
+                sx={{
+                  padding: 1,
+                  bgcolor: "#e45050",
+                  alignSelf: "stretch",
+                  minWidth: "0px",
+                  ml: 1,
+                }}>
+                  <i className="fa-times fas" aria-hidden="true" style={{ fontSize: isSmallScreen ? "0.5em" : "1em", }}/>
+              </Button>
+            )}
+          </Stack>
+        </Box>
+      </StickyStateViewer>
     );
   });
 
@@ -367,92 +492,106 @@ export default function CreateSetup(props) {
 
   if (params.get("edit") && !editing) return <NewLoading small />;
 
-  return (
-    <div className="span-panel main create-setup">
-      <RoleSearch onAddClick={onAddRole} gameType={gameType} />
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Modifiers</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <ModifierSearch
-            onAddClick={onAddModifier}
-            gameType={gameType}
-            curMods={modifiers}
-          />
-        </AccordionDetails>
-      </Accordion>
-      <mod>
-        Selected Modifiers
-        <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
-          {modifiers.map((m) => (
-            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
-              <ModifierCount
-                role={m}
-                gameType={gameType}
-                sx={{ fontSize: "14px" }}
-                onClick={() => {
-                  onRemoveModifier(m);
-                }}
-              />
-              {m}
-            </Stack>
-          ))}
-        </Stack>
-      </mod>
-      {user.loggedIn && (
-        <div className="creation-options">
-          <Form
-            fields={formFields}
-            onChange={updateFormFields}
-            submitText={editing ? "Edit" : "Create"}
-            onSubmit={() => onCreateSetup(roleData, editing, setRedirect)}
-          />
-          <div className="rolesets-wrapper">
-            <div className="rolesets">
-              {roleSets}
-              {showAddRoleSet && (
-                <i
-                  className="add-roleset fa-plus-circle fas"
-                  onClick={() => updateRoleData({ type: "addRoleSet" })}
-                />
-              )}
-              {usingRoleGroups && (
-                <div className="roleset-group-total-size">
-                  Total Size:{" "}
-                  <span>
-                    {" "}
-                    {roleData.roleGroupSizes.reduce((a, b) => a + b)}{" "}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-      {redirect && <Redirect to={`/play/host/?setup=${redirect}`} />}
-    </div>
-  );
-}
+  const innerContentHeight = "calc(1.2 * 2em)";
+  const iconLength = isSmallScreen ? "1em" : innerContentHeight;
 
-function RoleSetRow(props) {
-  return (
-    <div
-      className={`roleset ${props.sel === props.index ? "sel" : ""}`}
-      onClick={props.onClick}
-    >
-      {props.roles}
-      {props.index > 0 && (
-        <i
-          className="del-roleset fa-times-circle fas"
-          onClick={props.onDelete}
+  const selectedModifiers = [...Array(isSmallScreen ? modifiers.length : MaxModifiersPerRole).keys()].map((i) => {
+    const m = modifiers[i];
+    return (
+      <Grid2 size={1} sx={{ width: isSmallScreen ? "100%" : undefined }} key={i}>
+        <RoleCell iconLength={iconLength} role={m} onDelClick={() => onRemoveModifier(m)} icon={
+          <ModifierCount
+            iconLength={iconLength}
+            role={m}
+            gameType={gameType}
+          />}
         />
-      )}
-      {props.roles.length > 0 && (
-        <div className={`roleset-counts`}>
-          Total: {props.roles.reduce((acc, e) => acc + e.props.count, 0)}
-        </div>
-      )}
-    </div>
+      </Grid2>
+    );
+  });
+
+  return (
+    <Stack direction="column" spacing={1} sx={{ mt: 1 }}>
+      <RoleSearch onAddClick={onAddRole} gameType={gameType}/>
+      {(modifiers.length > 0) && (<Paper sx={{ p: 1 }}>
+        <Accordion>
+          <AccordionSummary>
+            <Typography variant="h3">Modifiers</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <ModifierSearch
+              onAddClick={onAddModifier}
+              gameType={gameType}
+              curMods={modifiers}
+            />
+          </AccordionDetails>
+        </Accordion>
+      </Paper>)}
+      {(modifiers.length > 0) && (<StickyStateViewer isSticky={modifiers.length > 0} title="Selected Modifiers" isVertical={isSmallScreen}>
+        <Grid2 container columns={MaxModifiersPerRole} direction={isSmallScreen ? "column" : "row"} spacing={1} sx={{ flexGrow: "1", width: "100%" }}>
+          {selectedModifiers}
+        </Grid2>
+      </StickyStateViewer>)}
+      <Divider orientation="horizontal" flexItem sx={{ width: "80%", mx: "auto !important" }} />
+      {roleSets}
+      <Paper sx={{ 
+        p: 1,
+        width: "80%",
+        mx: "auto !important"
+      }}>
+        <Grid2 container columns={3} spacing={1}>
+          <Grid2 size={{xs: 1}}>
+
+          </Grid2>
+          <Grid2 size={{xs: 1}}>
+            {showAddRoleSet && (
+              <Stack direction="row" sx={{
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}>
+                <Button
+                  onClick={() => updateRoleData({ type: "addRoleSet" })}
+                  sx={{
+                    padding: 1,
+                    bgcolor: "#62a0db",
+                    alignSelf: "stretch",
+                    minWidth: "0px",
+                    ml: 1,
+                  }}>
+                    <i className="fa-plus fas" aria-hidden="true"/>
+                </Button>
+              </Stack>
+            )}
+          </Grid2>
+          <Grid2 size={{xs: 1}}>
+            {usingRoleGroups && (
+              <Stack direction="row" sx={{
+                justifyContent: "right",
+                alignItems: "center",
+                height: "100%",
+              }}>
+                <Typography>
+                  {"Total Size: "}{roleData.roleGroupSizes.reduce((a, b) => a + b)}
+                </Typography>
+              </Stack>
+            )}
+          </Grid2>
+        </Grid2>
+      </Paper>
+      <Paper sx={{ p: 1 }}>
+        {user.loggedIn && (
+          <Stack direction={isSmallScreen ? "column" : "row"}>
+            <Form
+              fields={formFields}
+              onChange={updateFormFields}
+              submitText={editing ? "Edit" : "Create"}
+              onSubmit={() => onCreateSetup(roleData, editing, setRedirect)}
+            />
+          </Stack>
+        )}
+        {redirect && <Redirect to={`/play/host/?setup=${redirect}`} />}
+      </Paper>
+    </Stack>
   );
 }

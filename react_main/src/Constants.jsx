@@ -63,6 +63,8 @@ export const RatingThresholds = {
   abandons: {},
 };
 
+export const MaxModifiersPerRole = 3;
+
 export const RequiredTotalForStats = 1;
 
 export const MaxGameMessageLength = 240;

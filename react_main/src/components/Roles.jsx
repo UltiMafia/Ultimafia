@@ -13,10 +13,14 @@ import {
   Tabs,
   Tab,
   Box,
-  Card,
-  CardContent,
   IconButton,
   Typography,
+  Grid2,
+  Paper,
+  Stack,
+  Divider,
+  useMediaQuery,
+  Button,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
@@ -156,7 +160,7 @@ export function RoleCount(props) {
     <List dense sx={{ ...(hasModifiers ? { paddingBottom: 0 } : {}) }}>
       {roleData?.description?.map((text, i) => (
         <ListItem
-          key={text + i}
+          key={i}
           sx={{
             paddingBottom: "0",
             paddingTop: "0",
@@ -184,7 +188,7 @@ export function RoleCount(props) {
     <List dense sx={{ paddingTop: "0" }}>
       {roleData?.modifiers?.map((modifier, i) => (
         <ListItem
-          key={modifier.name + i}
+          key={modifier.name}
           sx={{
             paddingBottom: "0",
             paddingTop: "0",
@@ -252,7 +256,7 @@ export function RoleCount(props) {
       </div>
       {specials.map((special, i) => (
         <ListItem
-          key={special[0] + i}
+          key={i}
           sx={{
             paddingBottom: "0",
             paddingTop: "0",
@@ -336,6 +340,7 @@ export function RoleCount(props) {
                 .split("/")
                 .map((modifier, k) => (
                   <div
+                    key={modifier}
                     className={`modifier modifier-pos-${k} modifier-${
                       props.gameType
                     }-${hyphenDelimit(modifier)}`}
@@ -387,6 +392,7 @@ export function RoleCount(props) {
 }
 
 export function ModifierCount(props) {
+  const iconLength = props.iconLength || undefined;
   const roleRef = useRef();
   const popover = useContext(PopoverContext);
   const user = useContext(UserContext);
@@ -477,7 +483,7 @@ export function ModifierCount(props) {
     <List dense sx={{ ...{ paddingTop: "0" } }}>
       {[roleData?.description].map((text, i) => (
         <ListItem
-          key={text + i}
+          key={i}
           sx={{
             paddingBottom: "0",
             paddingTop: "0",
@@ -504,17 +510,18 @@ export function ModifierCount(props) {
 
   return (
     <>
-      <div
-        className="role-count-wrap"
+      <div className={`modifier modifier-${roleClass}`}
         aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
         aria-haspopup="true"
         onClick={handleRoleCountClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        style={{
+          height: iconLength,
+          width: iconLength,
+        }}
       >
-        <div className={`modifier modifier-${roleClass}`} ref={roleRef}>
-          {props.count > 1 && <DigitsCount digits={digits} />}
-        </div>
+        {props.count > 1 && <DigitsCount digits={digits} />}
       </div>
       <div>
         <Popover
@@ -531,11 +538,16 @@ export function ModifierCount(props) {
           }}
           onClose={closePopover}
           disableScrollLock
+          disableRestoreFocus
         >
           <div className={"mui-popover"}>
             <div className={"mui-popover-title"}>
-              <div className={`modifier modifier-${roleClass}`} />
-              &nbsp;{roleName}&nbsp;
+              <Stack direction="row" spacing={1} alignItems="center">
+                <div className={`modifier modifier-${roleClass}`}/>
+                <Typography>
+                  {roleName}
+                </Typography>
+              </Stack>
             </div>
             <div style={{ margin: "3px" }}>
               <div>
@@ -556,10 +568,122 @@ function DigitsCount(props) {
     <>
       <div className="digits-wrapper">
         {digits.map((digit, index) => (
-          <div key={index} className={`digit digit-${digit}`}></div>
+          <div key={digit} className={`digit digit-${digit}`}></div>
         ))}
       </div>
     </>
+  );
+}
+
+export function RoleCell(props) {
+  const iconLength = props.iconLength || "2em";
+  const role = props.role;
+  const icon = props.icon;
+  const onAddClick = props.onAddClick;
+  const onDelClick = props.onDelClick;
+
+  const siteInfo = useContext(SiteInfoContext);
+  const popover = useContext(PopoverContext);
+  const user = useContext(UserContext);
+  const roleCellRef = useRef();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
+  const myHeight = `calc(1.2 * ${iconLength} + 2 * var(--mui-spacing))`;
+
+  if (role === undefined) {
+    return (<Box sx={{
+      minWidth: 0,
+      height: myHeight,
+      minHeight: "var(--mui-spacing)",
+      borderRadius: "var(--mui-shape-borderRadius)",
+      border: `1px solid var(--mui-palette-divider)`,
+    }}/>);
+  }
+
+  function onRoleCellClick() {
+    popover.onClick(
+      Promise.resolve({
+        data: {
+          roleName: siteInfo.modifiers[props.gameType][role.name],
+        },
+      }),
+      "role",
+      roleCellRef,
+      role.name
+    );
+  }
+
+  return (
+    <Paper
+      variant="outlined"
+      className="role-cell"
+      key={role.name}
+      sx={{
+        p: isSmallScreen ? 0.5 : 1,
+        lineHeight: "normal",
+        height: myHeight,
+      }}
+    >
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          alignItems: "center",
+          width: "100%",
+        }}
+        onMouseOver={() =>
+          null && onRoleCellClick()
+        }
+        ref={roleCellRef}
+      >
+        {user.loggedIn && onAddClick && (
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddClick(role);
+            }}
+            sx={{
+              padding: 1,
+              bgcolor: "#62a0db",
+              alignSelf: "stretch",
+              minWidth: "0px",
+            }}>
+              <i className="fa-plus fas" aria-hidden="true" style={{ fontSize: "0.5em" }}/>
+          </Button>
+        )}
+        {user.loggedIn && onDelClick && (
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelClick(role);
+            }}
+            sx={{
+              padding: 1,
+              bgcolor: "#e45050",
+              alignSelf: "stretch",
+              minWidth: "0px",
+            }}>
+              <i className="fa-times fas" aria-hidden="true" style={{ fontSize: "0.5em" }}/>
+          </Button>
+        )}
+        {icon}
+        <Typography variant="body2" sx={{
+          flex: "1",
+          textAlign: "right",
+          wordBreak: "break-word",
+          hyphens: "auto",
+        }}>
+          {role.name}
+        </Typography>
+      </Stack>
+      {(role.newlyAdded || role.recentlyUpdated || role.featured) && <RoleBanners
+        newlyAdded={role.newlyAdded}
+        recentlyUpdated={role.recentlyUpdated}
+        featured={role.featured}
+        sx={{ padding: "2px" }}
+      />}
+    </Paper>
   );
 }
 
@@ -569,10 +693,9 @@ export function RoleSearch(props) {
     Alignments[props.gameType][0]
   );
   const [searchVal, setSearchVal] = useState("");
-  const roleCellRefs = useRef([]);
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
-  const popover = useContext(PopoverContext);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   function onAlignNavClick(alignment) {
     setSearchVal("");
@@ -612,19 +735,6 @@ export function RoleSearch(props) {
       setRoleListType(Alignments[props.gameType][0]);
   }
 
-  function onRoleCellClick(roleCellEl, role) {
-    popover.onClick(
-      Promise.resolve({
-        data: {
-          roleName: siteInfo.rolesRaw[props.gameType][role.name],
-        },
-      }),
-      "role",
-      roleCellEl,
-      role.name
-    );
-  }
-
   const alignButtons = Alignments[props.gameType].map((type) => (
     <Tab
       label={type}
@@ -661,66 +771,42 @@ export function RoleSearch(props) {
           (role.name.toLowerCase().indexOf(searchVal) !== -1 || matchesSearch)))
     ) {
       return (
-        <Card
-          variant="outlined"
-          className="role-cell"
-          key={role.name}
-          sx={{ padding: "4px", margin: "4px" }}
-        >
-          {user.loggedIn && props.onAddClick && (
-            <IconButton
-              className="add-role fa-plus-circle fas"
-              onClick={(e) => {
-                e.stopPropagation();
-                props.onAddClick(role);
-              }}
-              sx={{ padding: "4px" }}
-            ></IconButton>
-          )}
-          <CardContent
-            className="role-cell-content"
-            onMouseOver={() =>
-              null && onRoleCellClick(roleCellRefs.current[i], role)
-            }
-            ref={(el) => (roleCellRefs.current[i] = el)}
-            sx={{ padding: "4px" }}
-          >
+        <Grid2 size={{ xs: 2 }} key={role.name}>
+          <RoleCell onAddClick={props.onAddClick} role={role} icon={
             <RoleCount
               role={role.name}
               gameType={props.gameType}
-              sx={{ fontSize: "14px" }}
-            />
-            <Typography variant="body2">{role.name}</Typography>
-          </CardContent>
-          <RoleBanners
-            newlyAdded={role.newlyAdded}
-            recentlyUpdated={role.recentlyUpdated}
-            featured={role.featured}
-            sx={{ padding: "2px" }}
+            />}
           />
-        </Card>
+        </Grid2>
       );
     }
   });
 
   return (
-    <Box className="role-list-container">
-      <Box className="bot-bar">
+    <Stack direction="column">
+      <Stack direction={isSmallScreen ? "column-reverse" : "row"} spacing={1}>
         <Tabs
           value={roleListType}
           onChange={(_, value) => setRoleListType(value)}
-          centered
         >
           {alignButtons}
         </Tabs>
-        <SearchBar
-          value={searchVal}
-          placeholder="🔎 Role Name"
-          onInput={onSearchInput}
-        />
-      </Box>
-      <Box className="role-list">{roleCells}</Box>
-    </Box>
+        <Box sx={{ ml: isSmallScreen ? undefined : "auto !important" }}>
+          <SearchBar
+            value={searchVal}
+            placeholder="🔎 Role Name"
+            onInput={onSearchInput}
+          />
+        </Box>
+      </Stack>
+      <Divider direction="horizontal" sx={{ mb: 1 }}/>
+      <Paper sx={{ p: 1 }}>
+        <Grid2 container spacing={1} columns={{ xs: 4, sm: 6, md: 8 }}>
+          {roleCells}
+        </Grid2>
+      </Paper>
+    </Stack>
   );
 }
 
@@ -734,37 +820,13 @@ export function ModifierSearch(props) {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const popover = useContext(PopoverContext);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   function onAlignNavClick(alignment) {
     setSearchVal("");
     setRoleListType(alignment);
   }
-  /*
-  const roleAbbreviations = {
-    blue: ["Villager"],
-    nilla: ["Villager", "Mafioso"],
-    gs: ["Gunsmith"],
-    gf: ["Godfather"],
-    bs: ["Blacksmith"],
-    orc: ["Oracle"],
-    ww: ["Werewolf", "Hellhound"],
-    hh: ["Hellhound"],
-    bg: ["Bodyguard"],
-    cl: ["Cult Leader"],
-    gr: ["Graverobber"],
-    hb: ["Heartbreaker"],
-    lk: ["Lightkeeper"],
-    lm: ["Loudmouth"],
-    mm: ["Mastermind"],
-    ph: ["Party Host"],
-    sk: ["Serial Killer"],
-    sw: ["Sleepwalker"],
-    tc: ["Town Crier"],
-    tl: ["Tea Lady"],
-    rh: ["Robin Hood"],
-    hk: ["Housekeeper"],
-  };
-*/
+
   function onSearchInput(query) {
     setSearchVal(query.toLowerCase());
 
@@ -850,66 +912,43 @@ export function ModifierSearch(props) {
           (role.name.toLowerCase().indexOf(searchVal) !== -1 || matchesSearch)))
     ) {
       return (
-        <Card
-          variant="outlined"
-          className="role-cell"
-          key={role.name}
-          sx={{ padding: "0px", margin: "4px" }}
-        >
-          {user.loggedIn && props.onAddClick && (
-            <IconButton
-              className="add-role fa-plus-circle fas"
-              onClick={(e) => {
-                e.stopPropagation();
-                props.onAddClick(role.name);
-              }}
-              sx={{ padding: "2px" }}
-            ></IconButton>
-          )}
-          <CardContent
-            className="role-cell-content"
-            onMouseOver={() =>
-              null && onRoleCellClick(roleCellRefs.current[i], role)
-            }
-            ref={(el) => (roleCellRefs.current[i] = el)}
-            sx={{ padding: "2px" }}
-          >
+        <Grid2 size={{ xs: 2 }} key={role.name}>
+          <RoleCell onAddClick={props.onAddClick} role={role} icon={
             <ModifierCount
+              iconLength="2em"
               role={role.name}
               gameType={props.gameType}
-              sx={{ fontSize: "10px" }}
-            />
-
-            <Typography variant="body2">{role.name}</Typography>
-          </CardContent>
-        </Card>
+            />}
+          />
+        </Grid2>
       );
     }
   });
 
   return (
-    <Box className="role-list-container">
-      <Box className="bot-bar">
+    <Stack direction="column" spacing={1}>
+      <Stack direction={isSmallScreen ? "column-reverse" : "row"} spacing={1}>
         <Tabs
           value={roleListType}
           onChange={(_, value) => setRoleListType(value)}
-          centered
         >
           {alignButtons}
         </Tabs>
-        <Tabs
-          value={roleListType}
-          onChange={(_, value) => setRoleListType(value)}
-          centered
-        ></Tabs>
-        <SearchBar
-          value={searchVal}
-          placeholder="🔎 Modifier Name"
-          onInput={onSearchInput}
-        />
-      </Box>
-      <Box className="role-list">{roleCells}</Box>
-    </Box>
+        <Box sx={{ ml: isSmallScreen ? undefined : "auto !important" }}>
+          <SearchBar
+            value={searchVal}
+            placeholder="🔎 Role Name"
+            onInput={onSearchInput}
+          />
+        </Box>
+      </Stack>
+      <Divider direction="horizontal" sx={{ mb: 1 }}/>
+      <Paper sx={{ p: 1 }}>
+        <Grid2 container spacing={1} columns={{ xs: 2, sm: 6, md: 8 }}>
+          {roleCells}
+        </Grid2>
+      </Paper>
+    </Stack>
   );
 }
 
