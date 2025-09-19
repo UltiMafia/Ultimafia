@@ -1,95 +1,14 @@
-.add-role {
-  margin-right: 3px;
-}
-
-.add-role,
-.add-roleset {
-  color: #62a0db;
-  cursor: pointer;
-}
-
-.add-role:hover,
-.add-roleset:hover,
-.del-roleset:hover {
-  opacity: 0.8;
-}
-
-.del-roleset {
-  position: absolute;
-  right: 10px;
-
-  color: #e45050;
-  cursor: pointer;
-}
-
 .creation-options {
   display: flex;
   flex-flow: row nowrap;
-
-  margin-top: 20px;
-}
-
-.rolesets-wrapper {
-  flex-grow: 1;
-
-  display: flex;
-  flex-flow: column;
-
-  margin-left: 10px;
-}
-
-.rolesets {
-  flex-grow: 1;
-
-  display: flex;
-  flex-flow: column;
-}
-
-.roleset {
-  flex-basis: 60px;
-
-  display: flex;
-  flex-flow: row wrap;
-  align-items: center;
-  justify-content: center;
-
-  position: relative;
-  box-sizing: border-box;
-  margin-bottom: 10px;
-  padding: 10px;
-
-  background-color: var(--scheme-color);
-}
-
-.roleset.sel {
-  background-color: var(--scheme-color-sec);
 }
 
 .roleset .role {
   cursor: pointer;
 }
 
-.roleset-counts {
-  color: var(--scheme-color-text);
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-
-.rolesets-wrapper .fa-plus-circle {
-  align-self: center;
-}
-
 @media (max-width: 700px) {
   .play .create-setup .top-link {
     font-size: 13px !important;
-  }
-
-  .play .create-setup .creation-options {
-    flex-flow: column;
-  }
-
-  .play .create-setup .rolesets-wrapper {
-    margin: 10px 0px 0px 0px;
   }
 }
