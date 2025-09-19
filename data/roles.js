@@ -3306,22 +3306,15 @@ const roleData = {
         "Essential",
         "Split Decision",
         "Killing",
-        "Setup Changes",
-        "Dusk",
-        "Pregame Actions",
-        "Dawn",
         "Advanced",
       ],
       description: [
         "Splits all players into two rooms.",
         "During the Day, each room meets and choose a city leader. In turn, at Night city leaders meet and choose players to switch rooms.",
         "After three rounds of switching, the Assassin will kill all players who are in the same room as them.",
-        "The presence of an Assassin will force a President to spawn in the setup (unless Senators are present). Village-aligned players will not learn who the President is.",
-        "Village wins if an Assassin dies before a President or majority of the Senators die.",
         "Mafia will not win by majority if an Assassin is present.",
       ],
       nightOrder: [["Kill players in Room", PRIORITY_KILL_DEFAULT]],
-      RolesMadeBy: ["President"],
       skins: [
         {
           label: "Vivid",
@@ -3332,6 +3325,14 @@ const roleData = {
           value: "old",
         },
       ],
+      SpecialInteractionsModifiers: {
+        "X-Shot": [
+          "Splits players into an additional room.",
+        ],
+        Delayed: [
+          "Adds an extra round of switching before killing.",
+        ],
+      },
     },
     Stylist: {
       alignment: "Mafia",

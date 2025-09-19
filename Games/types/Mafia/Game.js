@@ -57,6 +57,12 @@ module.exports = class MafiaGame extends Game {
       Village: true,
       Pregame: true,
       Postgame: true,
+      "Room 1": true,
+      "Room 2": true,
+      "Room 3": true,
+      "Room 4": true,
+      "Room 5": true,
+      "Room 6": true,
     };
     this.stateEventMessages = stateEventMessages;
     this.noDeathLimit = this.setup.noDeathLimit;

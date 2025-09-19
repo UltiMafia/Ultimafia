@@ -27,7 +27,7 @@ module.exports = class RoomLeader extends Item {
       "Hostage Swap": {
         states: ["Night"],
         flags: ["voting", "multi", "mustAct"],
-        targets: { include: this.targets, exclude: ["members"] },
+        targets: { include: ["all"], exclude: ["self"] },
         multiMin: game.currentSwapAmt,
         multiMax: game.currentSwapAmt,
         item: this,
@@ -45,7 +45,7 @@ module.exports = class RoomLeader extends Item {
               index = 0;
             }
               for (let player of this.target) {
-                this.item.room.members.splice(this.game.RoomOne.indexOf(player), 1);
+                this.item.room.members.splice(this.item.room.members.indexOf(player), 1);
                 this.game.Rooms[index].members.push(player);
                 this.game.events.emit(
                   "RoonSwitch",

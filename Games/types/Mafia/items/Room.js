@@ -16,7 +16,7 @@ module.exports = class Room extends Item {
     super("Room");
     this.Room = Room;
     //this.reveal = reveal;
-    this.lifespan = 1;
+    //this.lifespan = 1;
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
     this.meetings[this.Room.name] = {
