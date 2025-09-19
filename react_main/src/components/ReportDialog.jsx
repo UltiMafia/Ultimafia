@@ -31,23 +31,43 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
 
-  const handleSubmit = () => {
-    axios
-      .post("/api/report/send", {
-        game,
-        user: userReported,
+  const handleSubmit = async () => {
+    const reportedUserValue =
+      userReported && typeof userReported === "object" && userReported.id
+        ? userReported.id
+        : userReported;
+
+    if (!reportedUserValue || !ruleBroken) {
+      siteInfo.showAlert(
+        "Please choose a user to report and select the rule that was broken.",
+        "error"
+      );
+      return;
+    }
+
+
+    try {
+      await axios.post("/api/report/send", {
+        game: game || undefined,
+        user: reportedUserValue,
         rule: ruleBroken,
-        description,
-      })
-      .then(() => {
-        setGame("");
-        setUserReported("");
-        setRuleBroken("");
-        setDescription("");
-        siteInfo.showAlert("Thank you for filing your report.", "success");
-        onClose();
-      })
-      .catch(errorAlert);
+        description: description || undefined,
+      });
+
+      setGame("");
+      setUserReported("");
+      setRuleBroken("");
+      setDescription("");
+
+      siteInfo.showAlert("Thank you — your report was delivered to moderators.", "success");
+      onClose();
+    } catch (e) {
+      if (e?.response?.data) {
+        siteInfo.showAlert(e.response.data.toString(), "error");
+      } else {
+        errorAlert(e);
+      }
+    }
   };
 
   return (
@@ -95,7 +115,7 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
             </Typography>
 
             <TextField
-              label="Game"
+              label="Game (link or ID, optional)"
               value={game}
               onChange={(e) => setGame(e.target.value)}
               fullWidth

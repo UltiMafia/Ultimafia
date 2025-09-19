@@ -1004,7 +1004,6 @@ export function BotBar(props) {
               open={reportDialogOpen}
               onClose={() => setReportDialogOpen(false)}
               prefilledArgs={{ game: gameId }}
-              onConfirm={leaveGame}
             />
 
             {isPhoneDevice ? (

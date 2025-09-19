@@ -7,29 +7,29 @@ const axios = require("axios");
 
 router.post("/send", async function (req, res) {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var user = await models.User.findOne({ id: userId, deleted: false }).select(
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const user = await models.User.findOne({ id: userId, deleted: false }).select(
       "_id name"
     );
 
-    let reportTitle = req.body.title;
-    let report = req.body.value;
+    const { game, user: reportedUser, rule, description } = req.body;
 
-    if (
-      !reportTitle ||
-      reportTitle.length < 1 ||
-      !report ||
-      report.length < 15
-    ) {
-      // Should send a 400 error code if the report title doesn't meet our requirements
-      res
-        .status(400)
-        .send("Please complete the form with all relevant information..");
-      return;
+    if (!reportedUser || !rule) {
+      return res.status(400).send("User and rule broken are required to file a report.");
     }
 
-    let ping = "<@&1107343293848768622>\n";
-    let title = `[${user.name}] reporting ${req.body.title}`;
+    const title = `[${user.name}] reporting ${reportedUser}`;
+    let reportDetails = `**Rule Broken:** ${rule}\n`;
+
+    if (game) {
+      reportDetails += `**Game:** ${game}\n`;
+    }
+
+    if (description) {
+      reportDetails += `**Description:** ${description}`;
+    }
+
+    const ping = "<@&1107343293848768622>\n";
 
     // Decode the Base64 webhook URL components
     const wht =
@@ -41,16 +41,11 @@ router.post("/send", async function (req, res) {
     const webhookURL =
       decodeBase64(base) + decodeBase64(whId) + "/" + decodeBase64(wht);
 
-    // Constructs a dynamic message with the report content to send to Discord
-    await axios({
-      method: "POST",
-      url: webhookURL,
-      data: {
-        content: `${ping} ${title}: ${report}`,
-        username: "SnitchBot",
-      },
+    await axios.post(webhookURL, {
+      content: `${ping}${title}\n${reportDetails}`,
+      username: "SnitchBot",
     });
-    // Confirms the report has been successfully sent
+
     res.status(200).send("Report has been sent to mod chat!");
   } catch (e) {
     logger.error(e);
