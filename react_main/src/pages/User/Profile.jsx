@@ -385,7 +385,7 @@ export default function Profile() {
       .catch(errorAlert);
   }
 
-    function onReportClick() {
+  function onReportClick() {
     setReportDialogOpen(true);
   }
 

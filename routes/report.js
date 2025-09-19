@@ -8,14 +8,17 @@ const axios = require("axios");
 router.post("/send", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    const user = await models.User.findOne({ id: userId, deleted: false }).select(
-      "_id name"
-    );
+    const user = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("_id name");
 
     const { game, user: reportedUser, rule, description } = req.body;
 
     if (!reportedUser || !rule) {
-      return res.status(400).send("User and rule broken are required to file a report.");
+      return res
+        .status(400)
+        .send("User and rule broken are required to file a report.");
     }
 
     const title = `[${user.name}] reporting ${reportedUser}`;

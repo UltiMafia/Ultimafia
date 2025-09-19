@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
-import { Box, Card, } from "@mui/material";
+import { Box, Card } from "@mui/material";
 
 import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";

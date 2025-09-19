@@ -45,7 +45,6 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
       return;
     }
 
-
     try {
       await axios.post("/api/report/send", {
         game: game || undefined,
@@ -59,7 +58,10 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
       setRuleBroken("");
       setDescription("");
 
-      siteInfo.showAlert("Thank you — your report was delivered to moderators.", "success");
+      siteInfo.showAlert(
+        "Thank you — your report was delivered to moderators.",
+        "success"
+      );
       onClose();
     } catch (e) {
       if (e?.response?.data) {
