@@ -15,14 +15,15 @@ import {
   FormControl,
 } from "@mui/material";
 import { useErrorAlert } from "./Alerts";
+import { UserSearchSelect } from "./Form";
 import { UserContext, SiteInfoContext } from "../Contexts";
 import { rulesData } from "../constants/rules";
 
 import janitor from "images/roles/mafia/janitor-vivid.png";
 
-export default function ReportDialog({ open, onClose }) {
-  const [game, setGame] = useState("");
-  const [userReported, setUserReported] = useState("");
+export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
+  const [game, setGame] = useState(prefilledArgs.game || "");
+  const [userReported, setUserReported] = useState(prefilledArgs.userId || "");
   const [ruleBroken, setRuleBroken] = useState("");
   const [description, setDescription] = useState("");
 
@@ -94,17 +95,26 @@ export default function ReportDialog({ open, onClose }) {
             </Typography>
 
             <TextField
-              label="Game (link or ID)"
+              label="Game"
               value={game}
               onChange={(e) => setGame(e.target.value)}
               fullWidth
+              disabled={!!prefilledArgs.game}
             />
-            <TextField
-              label="User Reported"
-              value={userReported}
-              onChange={(e) => setUserReported(e.target.value)}
-              fullWidth
-            />
+
+            {prefilledArgs.userId ? (
+              <TextField
+                label="User Reported"
+                value={userReported}
+                disabled
+                fullWidth
+              />
+            ) : (
+              <UserSearchSelect
+                onChange={(value) => setUserReported(value)}
+                placeholder="User Reported"
+              />
+            )}
 
             <FormControl fullWidth>
               <InputLabel id="rule-broken-label">Rule Broken</InputLabel>
@@ -123,7 +133,7 @@ export default function ReportDialog({ open, onClose }) {
             </FormControl>
 
             <TextField
-              label="Description"
+              label="Description (Optional)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               fullWidth

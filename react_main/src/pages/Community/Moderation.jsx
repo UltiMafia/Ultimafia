@@ -2,9 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import update from "immutability-helper";
 import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Dialog,
   DialogContent,
   Typography,
@@ -12,7 +9,6 @@ import {
   Stack,
   TextField,
   Box,
-  Divider,
   Button,
 } from "@mui/material";
 

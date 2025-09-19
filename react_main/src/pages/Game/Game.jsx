@@ -995,7 +995,7 @@ export function BotBar(props) {
               </Tooltip>
             )}
 
-            {/* <Tooltip title="File Report">
+            <Tooltip title="File Report">
               <IconButton size="large" onClick={onReportClick}>
                 <img src={system} alt="Report" />
               </IconButton>
@@ -1003,8 +1003,9 @@ export function BotBar(props) {
             <ReportDialog
               open={reportDialogOpen}
               onClose={() => setReportDialogOpen(false)}
+              prefilledArgs={{ game: gameId }}
               onConfirm={leaveGame}
-            /> */}
+            />
 
             {isPhoneDevice ? (
               <Tooltip title="Leave">
