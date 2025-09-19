@@ -651,7 +651,12 @@ module.exports = class Meeting {
           }
         }
       }
-      if (self && this.game.Rooms && this.game.Rooms.length > 0 && self.hasItem("Room")) {
+      if (
+        self &&
+        this.game.Rooms &&
+        this.game.Rooms.length > 0 &&
+        self.hasItem("Room")
+      ) {
         for (let room of this.game.Rooms) {
           if (room.members.includes(self)) {
             if (!room.members.includes(player)) {
