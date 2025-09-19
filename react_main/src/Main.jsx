@@ -55,12 +55,9 @@ import MuiLink from "@mui/material/Link";
 import { useColorScheme } from "@mui/material/styles";
 
 import { Announcement } from "./components/alerts/Announcement";
+import SiteLogo from "./components/SiteLogo";
 import { BadTextContrast } from "./components/alerts/BadTextContrast";
 import { useIsPhoneDevice } from "./hooks/useIsPhoneDevice";
-
-import umpride2 from "images/holiday/umpride2.png";
-import logobloody from "images/holiday/logobloody.png";
-import fadelogohat from "images/fadelogohat.png";
 
 function ErrorBox({ error, resetErrorBoundary }) {
   console.log(error);
@@ -393,25 +390,6 @@ function Header({ setShowAnnouncementTemporarily }) {
     };
   }, [location]);
 
-  const getLogoSrc = () => {
-    const currentMonth = new Date().getMonth();
-    // 0 = January
-    // 11 = December
-
-    // Pride logo for June
-    if (currentMonth === 5) {
-      return umpride2;
-    }
-
-    // Bloody logo for Halloween
-    if (currentMonth === 9) {
-      return logobloody;
-    }
-
-    // Default logo
-    return fadelogohat;
-  };
-
   return (
     <div className="header">
       {new Date().getMonth() === 9 && (
@@ -436,15 +414,7 @@ function Header({ setShowAnnouncementTemporarily }) {
         }}
       >
         <Link to="/" className="logo-wrapper">
-          <Box
-            component="img"
-            sx={{
-              height: 105,
-              width: 179,
-            }}
-            alt="Site logo"
-            src={getLogoSrc()}
-          />
+          <SiteLogo />
         </Link>
         <Stack direction="column">
           {user.loggedIn && smallWidth && (

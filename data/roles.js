@@ -2340,16 +2340,6 @@ const roleData = {
         "If the player speaks the word the next day, they will die.",
       ],
       nightOrder: [["Curse Word", PRIORITY_EFFECT_GIVER_DEFAULT]],
-      skins: [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-        {
-          label: "Old",
-          value: "old",
-        },
-      ],
     },
     Poisoner: {
       alignment: "Mafia",
