@@ -557,7 +557,7 @@ const roleData = {
       tags: ["Redirection", "Items", "Shield", "Visiting", "Advanced"],
       description: [
         "Gives out shield to one player each night.",
-        "Shields can be used at night to redirect kills targeting the holder on to a random player of the same alignment if possible.",
+        "Shields can be used at night to redirect kills targeting the holder onto a random player of the same alignment if possible.",
       ],
       nightOrder: [["Give Shield", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -615,7 +615,7 @@ const roleData = {
       tags: ["Killing", "Items", "Gun", "Visiting", "Day Actions", "Basic"],
       description: [
         "Gives out a Rifle each night.",
-        "Guns can be used to shoot and kill someone during the day.",
+        "Rifles can be used to shoot and kill someone during the day.",
         "If a player killed by a Rifle shares alignment with shooter, shooter will die too. If a player killed by a Rifle is of an opposing alignment, shooter gains another rifle.",
       ],
       nightOrder: [["Give Rifle", PRIORITY_ITEM_GIVER_DEFAULT]],
@@ -1328,7 +1328,7 @@ const roleData = {
         "The following day, targeted player has two options:",
         "They can reveal their role,",
         "Or they can reveal the Drama Queen's role.",
-        "After someone reveals the Drama Queen's role, The Drama Queen will be unable to their night action.",
+        "After someone reveals the Drama Queen's role, The Drama Queen will be unable to use their night action.",
       ],
       nightOrder: [["Start Drama", PRIORITY_SUPPORT_VISIT_DEFAULT]],
     },
@@ -1632,7 +1632,7 @@ const roleData = {
       tags: ["Redirection", "Reflexive", "Visiting", "Basic"],
       description: [
         "Each night, chooses a player.",
-        "Anyone who visits the Coward will be redirect to the choosen player.",
+        "Anyone who visits the Coward will be redirect to the chosen player.",
       ],
       nightOrder: [["Redirect Visitors", PRIORITY_MODIFY_ACTION]],
     },
@@ -1654,7 +1654,7 @@ const roleData = {
       tags: ["Setup Changes", "Delirium", "Cult", "Advanced"],
       description: [
         "Sees self as a random Demonic Cult role from the setup.",
-        "Can use fake versions of that roles abilities.",
+        "Can use fake versions of that role's abilities.",
         "Will attend a Fake Cult Meeting with the non-Demonic Cult roles.",
         "Cult players will learn who the Televangelist selects at night.",
       ],
@@ -1666,7 +1666,7 @@ const roleData = {
       tags: ["Copy Actions", "Advanced"],
       description: [
         "Before each Night chooses a player.",
-        "Copies the actions of the choosen player at night.",
+        "Copies the actions of the chosen player at night.",
       ],
     },
     Philosopher: {
@@ -1686,7 +1686,7 @@ const roleData = {
       category: "Manipulative",
       tags: ["Advanced", "Banished Interaction"],
       description: [
-        "At night chooses a banished Village role, gains it's abilities until the next night",
+        "At night chooses a banished Village role, gains its abilities until the next night",
         "Cannot select a role they already selected.",
       ],
     },
@@ -2027,7 +2027,7 @@ const roleData = {
         "When a player is passed the chest they may steal gold or become a role in the chest. Players who steal Gold become Evil roles.",
         "The Admiral must steal 1-5 Gold but will not become an Evil role.",
         "The Player directly below the Admiral can Choose to become an excess role, while the player directly above the Admiral can choose to become Grouch.",
-        "If 2 or more non-evil roles are condemned, All village aligned players die.",
+        "If 2 or more non-evil roles are condemned, All Village-aligned players die.",
       ],
       RolesMadeBy: ["Grouch"],
     },
@@ -2132,7 +2132,7 @@ const roleData = {
       description: [
         "The Mole is assigned a Mafia or Cult role in addition to the Mole role",
         "The Mole will appear as that role and have that role's abilities but will still win with Village.",
-        "The Mole will count torwards Mafia/Cult majority and attend their meetings.",
+        "The Mole will count towards Mafia/Cult majority and attend their meetings.",
         "Once per game, at night Mafia/Cult can guess who the Mole is even if dead.",
         "On a correct guess, Mafia/Cult wins.",
         "The Mole will still be the Mole even if converted.",
@@ -2194,7 +2194,7 @@ const roleData = {
         "During the day, can open the door.",
         "When the Mistress opens the Door all players will learn that the Mistress opened the door.",
         "When the door is opened, the Mistress will learn an evil player.",
-        "After the Door was opened, The Mistress will Die the at night unless visited by a town-aligned player at night.",
+        "After the Door was opened, The Mistress will die at night unless visited by a Village-aligned player.",
       ],
       nightOrder: [["Die unless visited", PRIORITY_KILL_DEFAULT + 1]],
     },
@@ -2573,7 +2573,7 @@ const roleData = {
       tags: ["Garbage", "Voting", "Items", "Advanced"],
       description: [
         "While alive, the Mafia's kill is replaced with a Coronation meeting.",
-        "One player is picked to be King for the next day. Their vote worth 10000 votes.",
+        "One player is picked to be King for the next day. Their vote is worth 10000 votes.",
         "The Vizier cannot pick the same player to be King twice in a row.",
         "Upon death, the Mafia reverts to killing.",
       ],
@@ -2929,7 +2929,7 @@ const roleData = {
       tags: ["Manipulative", "Copy Actions", "Advanced"],
       description: [
         "Before each Night chooses a player.",
-        "Copies the actions of the choosen player at night.",
+        "Copies the actions of the chosen player at night.",
       ],
     },
     Blackguard: {
@@ -2960,7 +2960,7 @@ const roleData = {
       category: "Manipulative",
       tags: ["Advanced", "Banished Interaction"],
       description: [
-        "At night chooses a banished Mafia role, gains it's abilities until the next night",
+        "At night chooses a banished Mafia role, gains its abilities until the next night",
         "Cannot select a role they already selected.",
       ],
     },
@@ -3056,7 +3056,7 @@ const roleData = {
       tags: ["Events", "Advanced"],
       description: [
         "At Night can Choose an Event.",
-        "That Event will Occur in addition to any other events.",
+        "That Event will Occur in addition to any other Events.",
       ],
       skins: [
         {
@@ -3292,7 +3292,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Deception", "Night-acting", "No Investigate", "Basic"],
       description: [
-        "Chooses a role each night to appear as on death and to information role.",
+        "Chooses a role each night to appear as on death and to information roles.",
         "Can not be seen as a Villager, Impersonator or Imposter",
       ],
       nightOrder: [
@@ -3301,27 +3301,14 @@ const roleData = {
     },
     Assassin: {
       alignment: "Mafia",
-      tags: [
-        "Mini-game",
-        "Essential",
-        "Split Decision",
-        "Killing",
-        "Setup Changes",
-        "Dusk",
-        "Pregame Actions",
-        "Dawn",
-        "Advanced",
-      ],
+      tags: ["Mini-game", "Essential", "Split Decision", "Killing", "Advanced"],
       description: [
         "Splits all players into two rooms.",
         "During the Day, each room meets and choose a city leader. In turn, at Night city leaders meet and choose players to switch rooms.",
         "After three rounds of switching, the Assassin will kill all players who are in the same room as them.",
-        "The presence of an Assassin will force a President to spawn in the setup (unless Senators are present). Village-aligned players will not learn who the President is.",
-        "Village wins if an Assassin dies before a President or majority of the Senators die.",
         "Mafia will not win by majority if an Assassin is present.",
       ],
       nightOrder: [["Kill players in Room", PRIORITY_KILL_DEFAULT]],
-      RolesMadeBy: ["President"],
       skins: [
         {
           label: "Vivid",
@@ -3332,6 +3319,10 @@ const roleData = {
           value: "old",
         },
       ],
+      SpecialInteractionsModifiers: {
+        "X-Shot": ["Splits players into an additional room."],
+        Delayed: ["Adds an extra round of switching before killing."],
+      },
     },
     Stylist: {
       alignment: "Mafia",
@@ -3350,7 +3341,7 @@ const roleData = {
       description: [
         "Each day assigns every Mafia member a task.",
         "Tasks will be related to voting and sending messages.",
-        "If All Living Mafia members complete their task, The Busybody may choose to Make all information false for the night or grant each mafia member an extra role ability.",
+        "If all living Mafia members complete their task, The Busybody may choose to make all information false for the night or grant each mafia member an extra role ability.",
       ],
       SpecialInteractions: {
         Butterfly: [
@@ -3724,9 +3715,9 @@ const roleData = {
       ],
       description: [
         "Chooses a player to Infest on their first night and Dies.",
-        "Will count torwards Cult Majority when dead.",
+        "Will count towards Cult Majority when dead.",
         "Can Speak as the Infested player",
-        "Can Control the Infested players actions at night.",
+        "Can Control the Infested player's actions at night.",
         "If the Infested player dies the Parasite is Exorcised.",
       ],
       nightOrder: [
@@ -3823,7 +3814,7 @@ const roleData = {
       category: "Manipulative",
       tags: ["Advanced", "Banished Interaction"],
       description: [
-        "At night chooses a banished Cult role, gains it's abilities until the next night",
+        "At night chooses a banished Cult role, gains its abilities until the next night",
         "Cannot select a role they already selected.",
       ],
     },
@@ -3901,7 +3892,7 @@ const roleData = {
       alignment: "Cult",
       tags: ["Deception", "Night-acting", "Basic"],
       description: [
-        "Chooses a role each night to appear as on death and to information role.",
+        "Chooses a role each night to appear as on death and to information roles.",
         "Can not be seen as a Villager, Impersonator or Imposter",
       ],
       nightOrder: [
@@ -3949,7 +3940,7 @@ const roleData = {
       description: [
         "When a non-Cult player is voted off, the Cannibal can cook the player.",
         "The cooked player is then served as two Stew to every member of the Cult.",
-        "If the stew is stolen by non-Cult players and then eaten, they will get poisoned.",
+        "If the Stew is stolen by non-Cult players and then eaten, they will get poisoned.",
       ],
     },
     Changeling: {
@@ -3958,7 +3949,7 @@ const roleData = {
       tags: ["Win Con", "Information", "Condemn Interaction", "Advanced"],
       description: [
         "Will be Twins with an Opposing player.",
-        "The Twins will learn eachothers roles.",
+        "The Twins will learn each other's roles.",
         "If the Village-aligned Twin is Condemned, Cult Wins.",
       ],
     },
@@ -4082,7 +4073,7 @@ const roleData = {
       tags: ["Killing", "Conversion", "Visiting", "Basic"],
       description: [
         "Each night, may choose any player to kill.",
-        "If an Imp kills themself, a random Cult-aligned player becomes an Imp.",
+        "If an Imp kills themselves, a random Cult-aligned player becomes an Imp.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_SPECIAL]],
     },
@@ -4130,8 +4121,8 @@ const roleData = {
       tags: ["Killing", "Delirium", "Visiting", "Advanced"],
       description: [
         "Each night, may choose a player to kill.",
-        "If a player survives a Lamia's attack, They will be delirious until the Lamia dies.",
-        "If a Lamia attacks a delirious player, That player will die even if protected.",
+        "If a player survives a Lamia's attack, they will be delirious until the Lamia dies.",
+        "If a Lamia attacks a delirious player, that player will die even if protected.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT]],
     },
@@ -4223,7 +4214,7 @@ const roleData = {
       ],
       description: [
         "Each night, may choose 2 players to kill.",
-        "Players killed by shoggoth have a chance of reviving the following night.",
+        "Players killed by a Shoggoth have a chance of reviving the following night.",
         "Shoggoth will only revive a player once per game.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 2]],
@@ -4236,7 +4227,7 @@ const roleData = {
       description: [
         "Each night, may choose a player to kill.",
         "Can choose to charge their kill instead of killing.",
-        "If a Snallygaster chooses to Charge kill, They may kill 3 players the Next Night",
+        "If a Snallygaster chooses to charge kill, They may kill 3 players the next night",
       ],
       nightOrder: [
         ["Kill", PRIORITY_KILL_DEFAULT + 1],
@@ -4257,7 +4248,7 @@ const roleData = {
       ],
       description: [
         "If no one is Condemned during the day, may choose a player to Kill during the night. (Even if dead)",
-        "Will count torwards Cult Majority when dead.",
+        "Will count towards Cult Majority when dead.",
         "If a Poltergeist is Exorcised, All Cult-aligned players die.",
         "If it is possible for a Poltergeist to spawn in a setup, Dead players can be voted in village meeting.",
         "If a dead Poltergeist is condemned in the Village Meeting, they are exorcised.",
@@ -4350,7 +4341,7 @@ const roleData = {
       tags: ["Events", "Advanced"],
       description: [
         "At Night can Choose an Event.",
-        "That Event will Occur in addition to any other events.",
+        "That Event will Occur in addition to any other Events.",
       ],
     },
     Bogeyman: {
@@ -4447,7 +4438,7 @@ const roleData = {
       tags: ["Traitor", "Mafia", "Basic"],
       description: [
         "Wins with Mafia.",
-        "Does not count towards mafia win count.",
+        "Does not count towards Mafia win count.",
       ],
     },
     Clown: {
@@ -4627,7 +4618,7 @@ const roleData = {
       description: [
         "Each Night Will make one of their visitors Delirious.",
         "Will Switch to that player's alignment.",
-        "Wins with their current Alignment.",
+        "Wins with their current alignment.",
       ],
       nightOrder: [
         ["Become Alignment of Visitor", PRIORITY_BLOCK_VISITORS - 1],
@@ -4834,7 +4825,7 @@ const roleData = {
       ],
       description: [
         "Meets with All Independents",
-        "Grants All Independents a random Infomation or Role Swapping ability.",
+        "Grants All Independents a random infomation or role swapping ability.",
         "Wins if Independents have majority.",
         "Lone Independents do not meet or count for majority",
       ],
@@ -4949,7 +4940,7 @@ const roleData = {
       tags: ["Hostile", "Conversion", "Advanced"],
       description: [
         "At night may choose to convert to a Independent role that can spawn in the setup.",
-        "If the selected role is already in play, The player with that role will be converted to Amnesiac.",
+        "If the selected role is already in play, a player with that role will be converted to Amnesiac.",
         "Cannot win the game as Egg.",
       ],
       nightOrder: [
@@ -5065,7 +5056,7 @@ const roleData = {
       ],
       description: [
         "Mafia and Cult meetings are anonymous if Mastermind is present in the game.",
-        "Wins instead of mafia/cult and counts toward their total.",
+        "Wins instead of Mafia/Cult and counts toward their total.",
       ],
     },
     Usurper: {
@@ -5083,8 +5074,8 @@ const roleData = {
       ],
       description: [
         "Meets with the Mafia and Cult, makes their night meeting anonymous.",
-        "Each night, chooses a player. If the player is sided with the mafia/cult, they become a Mafioso/Cultist.",
-        "Wins when all mafia-aligned players are Mafiosos or all cult-aligned players are Cultists.",
+        "Each night, chooses a player. If the player is sided with the Mafia/Cult, they become a Mafioso/Cultist.",
+        "Wins when all Mafia-aligned players are Mafiosos or all Cult-aligned players are Cultists.",
       ],
       nightOrder: [["Convert", PRIORITY_CONVERT_DEFAULT + 8]],
       RolesMadeBy: ["Mafioso", "Cultist"],
@@ -5105,7 +5096,7 @@ const roleData = {
         "Can kill one player per night.",
         "Appears as Mafia on investigation.",
         "Attends Mafia and Cult meetings, makes them anonymous and cannot vote in them.",
-        "Wins if alive alone or the final two, and the other is not a mafia or cult",
+        "Wins if alive alone or the final two, and the other is not a Mafia or Cult",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
     },
@@ -5123,7 +5114,7 @@ const roleData = {
       tags: ["Linked", "Alignment", "Visiting", "Hostile", "Advanced"],
       description: [
         "Each night chooses two players to go on a date. If they are the same alignment, the date will be succesful.",
-        "Wins if all players left alive have went on a successful date.",
+        "Wins if all players left alive have gone on a successful date.",
       ],
       nightOrder: [["Matchmaker", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -5175,7 +5166,7 @@ const roleData = {
         "Gives out a timebomb each night.",
         "The timebomb can be passed around during the day, randomly exploding.",
         "Wins if 3 players are killed by the timebomb, or if the Anarchist is among the last two alive.",
-        "Timebomb reveals Anarchist when exploded on themself.",
+        "Timebomb reveals Anarchist when it explodes on themselves.",
       ],
       nightOrder: [["Give Timebomb", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -5209,7 +5200,7 @@ const roleData = {
         "During the day a player can either choose to pull the trigger or spin the barrel.",
         "If the chamber is empty, they pass the revolver to player below them. If the chamber is full, the shooter is hit.",
         "Wins if 3 players are killed by the revolver, or if the Dragoon is among the last two alive.",
-        "Revolver reveals Dragoon when shooting on themself.",
+        "Revolver reveals Dragoon when shooting themselves.",
       ],
       nightOrder: [["Give Revolver", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -5392,10 +5383,10 @@ const roleData = {
       alignment: "Event",
       tags: ["Event", "Items"],
       description: [
-        "If this event occurs, One player receives a Haunted Mask.",
+        "If this event occurs, one player receives a Haunted Mask.",
         "Only the player with the Haunted Mask is informed if this event occurs.",
         "Players being attacked are prioritized for receiving the Mask.",
-        "If a player with a Haunted Mask is attacked. They will kill their attacker and steal their identity.",
+        "If a player with a Haunted Mask is attacked, they will kill their attacker and steal their identity.",
       ],
       nightOrder: [["Give Haunted Mask", PRIORITY_ITEM_GIVER_EARLY]],
     },
@@ -5436,14 +5427,14 @@ const roleData = {
     Feast: {
       alignment: "Event",
       tags: ["Event"],
-      description: ["If this Event occurs, All Players gain food."],
+      description: ["If this Event occurs, all players gain food."],
       nightOrder: [["Give Bread", PRIORITY_ITEM_GIVER_EARLY]],
     },
     Famine: {
       alignment: "Event",
       tags: ["Event"],
       description: [
-        "If this Event occurs, All Players lose food if they have no food to lose they die.",
+        "If this Event occurs, all players lose food. If they have no food to lose, they die.",
         "If this Event is in a setup, All players start with 1 Food.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT]],
@@ -5470,7 +5461,7 @@ const roleData = {
       alignment: "Event",
       tags: ["Event"],
       description: [
-        "If this Event occurs, players can only see there neighbors messages.",
+        "If this Event occurs, players can only see their neighbors messages.",
       ],
       nightOrder: [["Semi-Blind", PRIORITY_EFFECT_GIVER_DEFAULT]],
     },
@@ -5495,14 +5486,14 @@ const roleData = {
       alignment: "Event",
       tags: ["Event"],
       description: [
-        "If this Event occurs, All players will be blocked during the night.",
+        "If this Event occurs, all players will be blocked during the night.",
       ],
       nightOrder: [["Block Players", PRIORITY_FULL_DISABLE + 3]],
     },
     Sabbath: {
       alignment: "Event",
       tags: ["Event"],
-      description: ["If this Event occurs, No one will die at night."],
+      description: ["If this Event occurs, no one will die at night."],
       nightOrder: [["Protect Players", PRIORITY_FULL_DISABLE + 3]],
     },
     "Self-Awareness": {
@@ -5519,7 +5510,7 @@ const roleData = {
       alignment: "Event",
       tags: ["Event"],
       description: [
-        "If this Event occurs, All players learn that a player is 1 of 3 roles.",
+        "If this Event occurs, all players learn that a player is 1 of 3 roles.",
         "One of the roles is always Evil.",
       ],
       nightOrder: [
@@ -5547,7 +5538,7 @@ const roleData = {
       alignment: "Event",
       tags: ["Event"],
       description: [
-        "If this Event occurs, One player gains the ability to role share today.",
+        "If this Event occurs, one player gains the ability to role share today.",
       ],
       nightOrder: [["Give Role Share Powers", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -5571,26 +5562,27 @@ const roleData = {
       alignment: "Event",
       tags: ["Event", "Game Ender"],
       description: [
-        "If this Event occurs, The game will end and No One wins if nobody dies during the day.",
-        "This is uneffected by Win-con altering abilities.",
+        "If this Event occurs, the game will end and No One wins if nobody dies during the day.",
+        "This is unaffected by Win-con altering abilities.",
       ],
     },
     "Black Hole": {
       alignment: "Event",
       tags: ["Event", "Game Ender"],
       description: [
-        "If this Event occurs, The game will end in 5 Minutes and No One wins if the game doesn't end before the 5 Minutes are up.",
-        "This is uneffected by Win-con altering abilities.",
+        "If this Event occurs, the game will end in 5 Minutes",
+        "No one wins if the game doesn't end before the 5 Minutes are up.",
+        "This is unaffected by Win-con altering abilities.",
       ],
     },
     "Blood Moon": {
       alignment: "Event",
       tags: ["Event", "Game Ender"],
       description: [
-        "If this Event Occurs, The game will end the following day.",
+        "If this Event occurs, the game will end the following day.",
         "If all Mafia survive, Mafia wins.",
         "If all Cult survive, Cult wins.",
-        "If at least 1 member from each Evil faction is killed, Village Wins.",
+        "If at least 1 member from each Evil faction is killed, Village wins.",
       ],
     },
     Necronomicon: {

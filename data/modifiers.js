@@ -254,7 +254,7 @@ const modifierData = {
       category: "Other",
       internal: ["LearnIfRoleChanged"],
       tags: ["Information"],
-      description: "Each night learn what their role is.",
+      description: "Each night, learns what their role is.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Shielded: {
@@ -305,7 +305,7 @@ const modifierData = {
       category: "Other",
       internal: ["UnluckyDeath"],
       tags: ["Killing"],
-      description: "After Night 1, You can die at any time.",
+      description: "Can die at any time after night 1.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Unwavering: {
@@ -600,7 +600,7 @@ const modifierData = {
       category: "Visits",
       internal: ["GlobalModifier"],
       tags: ["Visits", "Dawn"],
-      description: "Will target All players at Night",
+      description: "Will target all players at Night",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Lazy: {
@@ -641,7 +641,7 @@ const modifierData = {
       internal: ["WatchPlayerBoolean"],
       tags: ["Information", "Visits"],
       description:
-        "Learns IF their visit target was visited by another player.",
+        "Learns if their visit target was visited by another player.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Checking"],
     },

@@ -57,6 +57,12 @@ module.exports = class MafiaGame extends Game {
       Village: true,
       Pregame: true,
       Postgame: true,
+      "Room 1": true,
+      "Room 2": true,
+      "Room 3": true,
+      "Room 4": true,
+      "Room 5": true,
+      "Room 6": true,
     };
     this.stateEventMessages = stateEventMessages;
     this.noDeathLimit = this.setup.noDeathLimit;
@@ -66,14 +72,16 @@ module.exports = class MafiaGame extends Game {
     this.extensionVotes = 0;
     this.hasBeenDay = false;
     this.ForceMustAct = this.setup.ForceMustAct;
+    //Assassin Things
     this.currentSwapAmt = 1;
-    this.RoomOne = [];
-    this.RoomTwo = [];
+    this.Rooms = [];
     this.FinalRound = 3;
     this.CurrentRound = 0;
+    //Admiral
     this.AdmiralGoodRoles = [];
     this.AdmiralEvilRoles = [];
     this.AdmiralGold = 15;
+    //Other
     this.EventsPerNight = this.setup.EventsPerNight;
     this.GameEndEvent = this.setup.GameEndEvent || "Meteor";
     this.lastNightVisits = [];

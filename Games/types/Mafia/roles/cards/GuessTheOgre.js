@@ -32,7 +32,7 @@ module.exports = class GuessTheOgre extends Card {
             let victim = Random.randArrayVal(players, true);
 
             victim.queueAlert(
-              `You learn their is an Orge in Town! If you guess who they are they will get condemned.`
+              `You learn there is an Ogre in Town! If you guess who they are they will get condemned.`
             );
             victim.holdItem("GuessPlayer", this.actor);
           },

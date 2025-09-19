@@ -12,14 +12,14 @@ const {
 const { PRIORITY_ROOM_SWAP } = require("../const/Priority");
 
 module.exports = class Room extends Item {
-  constructor(meetingName) {
+  constructor(Room) {
     super("Room");
-
+    this.Room = Room;
     //this.reveal = reveal;
-    this.lifespan = 1;
+    //this.lifespan = 1;
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
-    this.meetings[meetingName] = {
+    this.meetings[this.Room.name] = {
       actionName: "Elect Leader",
       states: ["Day"],
       targets: { include: ["members"], exclude: [cannotBeVoted, "dead"] },
@@ -37,30 +37,19 @@ module.exports = class Room extends Item {
       action: {
         labels: ["hidden"],
         priority: PRIORITY_ROOM_SWAP,
+        item: this,
         run: function () {
-          if (meetingName == "Room 1") {
-            if (
-              this.game.RoomOneLeader == null ||
-              this.game.RoomOneLeader == this.target
-            ) {
-              this.game.events.emit("ElectedRoomLeader", this.target, 1, false);
-            } else {
-              this.game.events.emit("ElectedRoomLeader", this.target, 1, true);
-            }
-            this.game.RoomOneLeader = this.target;
-          } else if (meetingName == "Room 2") {
-            if (
-              this.game.RoomTwoLeader == null ||
-              this.game.RoomTwoLeader == this.target
-            ) {
-              this.game.events.emit("ElectedRoomLeader", this.target, 2, false);
-            } else {
-              this.game.events.emit("ElectedRoomLeader", this.target, 2, true);
-            }
-            this.game.RoomTwoLeader = this.target;
-          } else {
-            this.game.RoomThreeLeader = this.target;
+          let isReelect = false;
+          if (this.item.Room.leader == this.target) {
+            isReelect = true;
           }
+          this.item.Room.leader = this.target;
+          this.game.events.emit(
+            "ElectedRoomLeader",
+            this.target,
+            this.item.Room.number,
+            isReelect
+          );
         },
       },
     };

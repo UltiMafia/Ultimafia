@@ -9,11 +9,7 @@ module.exports = class RoomLeader extends Item {
     this.lifespan = 1;
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
-    if (this.room == 1) {
-      this.targets = [isInRoom1];
-    } else {
-      this.targets = [isInRoom2];
-    }
+    this.targets = room.members;
     this.listeners = {
       meetingsMade: function () {
         this.holder.sendAlert(
@@ -31,7 +27,7 @@ module.exports = class RoomLeader extends Item {
       "Hostage Swap": {
         states: ["Night"],
         flags: ["voting", "multi", "mustAct"],
-        targets: { include: this.targets, exclude: ["members"] },
+        targets: { include: ["all"], exclude: ["self"] },
         multiMin: game.currentSwapAmt,
         multiMax: game.currentSwapAmt,
         item: this,
@@ -43,28 +39,23 @@ module.exports = class RoomLeader extends Item {
             if (!Array.isArray(this.target)) {
               this.target = [this.target];
             }
-            if (this.item.room == 1) {
-              for (let player of this.target) {
-                this.game.RoomOne.splice(this.game.RoomOne.indexOf(player), 1);
-                this.game.RoomTwo.push(player);
-                this.game.events.emit(
-                  "RoonSwitch",
-                  player,
-                  this.actor,
-                  this.room
-                );
-              }
-            } else if (this.item.room == 2) {
-              for (let player of this.target) {
-                this.game.RoomTwo.splice(this.game.RoomTwo.indexOf(player), 1);
-                this.game.RoomOne.push(player);
-                this.game.events.emit(
-                  "RoonSwitch",
-                  player,
-                  this.actor,
-                  this.room
-                );
-              }
+            let RoomCount = this.game.Rooms.length;
+            let index = this.item.room.number;
+            if (index >= RoomCount) {
+              index = 0;
+            }
+            for (let player of this.target) {
+              this.item.room.members.splice(
+                this.item.room.members.indexOf(player),
+                1
+              );
+              this.game.Rooms[index].members.push(player);
+              this.game.events.emit(
+                "RoonSwitch",
+                player,
+                this.actor,
+                this.item.room
+              );
             }
 
             this.actor.dropItem("Leader");
@@ -74,11 +65,3 @@ module.exports = class RoomLeader extends Item {
     };
   }
 };
-function isInRoom1(player) {
-  return player.game.RoomOne.includes(player);
-  // return this.room && player == this.role.data.prevTarget;
-}
-function isInRoom2(player) {
-  return player.game.RoomTwo.includes(player);
-  // return this.room && player == this.role.data.prevTarget;
-}

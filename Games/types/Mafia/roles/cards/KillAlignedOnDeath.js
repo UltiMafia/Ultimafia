@@ -13,12 +13,13 @@ module.exports = class KillAlignedOnDeath extends Card {
         if (player !== this.player) {
           return;
         }
-
+        /*
         this.game.queueAlert(
           `${this.player.name} is the ${this.player.role.modifier}! Protect them at all costs!`,
           0,
           this.game.players.filter((p) => p.faction === this.player.faction)
         );
+        */
       },
       death: function (player, killer, killType, instant) {
         if (player !== this.player) {
