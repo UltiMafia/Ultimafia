@@ -8,7 +8,6 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-
         if (stateInfo.name.match(/Day/)) {
           this.player.role.evilDied = false;
           return;
@@ -45,7 +44,7 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
       },
       death: function (player, killer, deathType) {
         if (!this.canTargetPlayer(leader)) {
-            return;
+          return;
         }
         /*
         if (
@@ -57,20 +56,19 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
           ) == "Mafia"
         ) {
           */
-          if (deathType != "condemn") return;
+        if (deathType != "condemn") return;
 
-          this.evilDied = true;
-        
+        this.evilDied = true;
       },
       ElectedRoomLeader: function (leader, room, HasChanged) {
         if (!this.canDoSpecialInteractions()) {
           return;
         }
-        if(!room.members.includes(this.player)){
+        if (!room.members.includes(this.player)) {
           return;
         }
         if (!this.canTargetPlayer(leader)) {
-            return;
+          return;
         }
         /*
         if (
@@ -82,8 +80,7 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
           ) == "Mafia"
         ) {
           */
-          this.evilDied = true;
-        
+        this.evilDied = true;
       },
     };
   }
