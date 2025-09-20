@@ -9,15 +9,15 @@ module.exports = class WinIfCondemned extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if (
+        if (this.data.condemned && !winners.groups[this.name]) {
+          winners.addPlayer(this.player, this.name);
+        }
+        else if (
           confirmedFinished &&
           this.canDoSpecialInteractions() &&
           this.hasBeenRoomLeader &&
-          this.hasBeenRoomLeader.length >= 2
+          this.hasBeenRoomLeader.length >= 2 && !winners.groups[this.name])
         ) {
-          winners.addPlayer(this.player, this.name);
-        }
-        if (this.data.condemned && !winners.groups[this.name]) {
           winners.addPlayer(this.player, this.name);
         }
       },
