@@ -13,7 +13,6 @@ module.exports = class Meeting {
     this.id = shortid.generate();
     this.game = game;
     this.events = game.events;
-    
 
     /* Flags */
     this.group = false;

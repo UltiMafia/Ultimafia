@@ -43,7 +43,8 @@ module.exports = class WinByCondemning extends Card {
           confirmedFinished &&
           this.canDoSpecialInteractions() &&
           this.hasFailedToPreventLeaderSwitch != true &&
-          this.AssassinWasPresent == true && !winners.groups[this.name]
+          this.AssassinWasPresent == true &&
+          !winners.groups[this.name]
         ) {
           winners.addPlayer(this.player, this.name);
         }
@@ -53,7 +54,9 @@ module.exports = class WinByCondemning extends Card {
       roleAssigned: function (player) {
         if (
           this.canDoSpecialInteractions() &&
-          this.game.players.filter((p) => p.hasEffect("AssassinEffect")).length > 0 && this.AssassinWasPresent != true
+          this.game.players.filter((p) => p.hasEffect("AssassinEffect"))
+            .length > 0 &&
+          this.AssassinWasPresent != true
         ) {
           this.player.queueAlert(
             `You wish to see that no Room Leader gets voted out of office.`
@@ -92,7 +95,7 @@ module.exports = class WinByCondemning extends Card {
         if (!room.members.includes(this.player)) {
           return;
         }
-        if(HasChanged) {
+        if (HasChanged) {
           this.player.queueAlert(
             `You failed to stop ${leader.name} from usurping the Room Leader! Better hope you can get ${this.target.name} condemned!`
           );

@@ -114,11 +114,11 @@ module.exports = class MafiaPlayer extends Player {
               game: this.game,
               labels: ["hidden"],
               run: function () {
-                if(!this.actor.isInSameRoom(this.target)){
+                if (!this.actor.isInSameRoom(this.target)) {
                   this.actor.queueAlert(
-                  `You can only share with players in your Room.`
-                );
-                return;
+                    `You can only share with players in your Room.`
+                  );
+                  return;
                 }
                 this.target.queueAlert(
                   `${this.actor.name} wants to Role Share.`
@@ -129,9 +129,9 @@ module.exports = class MafiaPlayer extends Player {
               },
             });
             this.game.instantAction(action);
-              if(!this.isInSameRoom(player)){
-                return;
-              }
+            if (!this.isInSameRoom(player)) {
+              return;
+            }
             let ShareWith = player.holdItem(
               "RoleShareAccept",
               this,
@@ -165,11 +165,11 @@ module.exports = class MafiaPlayer extends Player {
               game: this.game,
               labels: ["hidden"],
               run: function () {
-                if(!this.actor.isInSameRoom(this.target)){
+                if (!this.actor.isInSameRoom(this.target)) {
                   this.actor.queueAlert(
-                  `You can only share with players in your Room.`
-                );
-                return;
+                    `You can only share with players in your Room.`
+                  );
+                  return;
                 }
                 this.target.queueAlert(
                   `${this.actor.name} wants to Alignment Share.`
@@ -180,9 +180,9 @@ module.exports = class MafiaPlayer extends Player {
               },
             });
             this.game.instantAction(action);
-             if(!this.isInSameRoom(player)){
-                return;
-              }
+            if (!this.isInSameRoom(player)) {
+              return;
+            }
             let ShareWith = player.holdItem(
               "RoleShareAccept",
               this,
@@ -216,11 +216,11 @@ module.exports = class MafiaPlayer extends Player {
               game: this.game,
               labels: ["hidden"],
               run: function () {
-                if(!this.actor.isInSameRoom(this.target)){
+                if (!this.actor.isInSameRoom(this.target)) {
                   this.actor.queueAlert(
-                  `You can only Private Reveal to players in your Room.`
-                );
-                return;
+                    `You can only Private Reveal to players in your Room.`
+                  );
+                  return;
                 }
                 this.target.queueAlert(
                   `${this.actor.name} Private Reveals to you.`
@@ -256,17 +256,13 @@ module.exports = class MafiaPlayer extends Player {
           game: this.game,
           labels: ["hidden"],
           run: function () {
-            for(let player of this.game.alivePlayers()){
-                if(this.actor.isInSameRoom(player)){
-                  player.queueAlert(
-              `${this.actor.name} Public Reveals to Everyone.`
-            );
-                  this.actor.role.revealToPlayer(
-                  player,
-                  null,
-                  "investigate"
+            for (let player of this.game.alivePlayers()) {
+              if (this.actor.isInSameRoom(player)) {
+                player.queueAlert(
+                  `${this.actor.name} Public Reveals to Everyone.`
                 );
-                }
+                this.actor.role.revealToPlayer(player, null, "investigate");
+              }
             }
             //this.actor.role.revealToAll(null, "investigate");
           },
@@ -685,14 +681,13 @@ module.exports = class MafiaPlayer extends Player {
     return votePower;
   }
 
-  isInSameRoom(player){
-    if(this.game.Rooms && this.game.Rooms.length >0){
-      for(let Room of this.game.Rooms){
-        if(Room.members.includes(this)){
-          if(Room.members.includes(player)){
+  isInSameRoom(player) {
+    if (this.game.Rooms && this.game.Rooms.length > 0) {
+      for (let Room of this.game.Rooms) {
+        if (Room.members.includes(this)) {
+          if (Room.members.includes(player)) {
             return true;
-          }
-          else{
+          } else {
             return false;
           }
         }

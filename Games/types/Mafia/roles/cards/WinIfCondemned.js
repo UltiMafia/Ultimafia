@@ -11,12 +11,12 @@ module.exports = class WinIfCondemned extends Card {
       check: function (counts, winners, aliveCount, confirmedFinished) {
         if (this.data.condemned && !winners.groups[this.name]) {
           winners.addPlayer(this.player, this.name);
-        }
-        else if (
+        } else if (
           confirmedFinished &&
           this.canDoSpecialInteractions() &&
           this.hasBeenRoomLeader &&
-          this.hasBeenRoomLeader.length >= 2 && !winners.groups[this.name]
+          this.hasBeenRoomLeader.length >= 2 &&
+          !winners.groups[this.name]
         ) {
           winners.addPlayer(this.player, this.name);
         }

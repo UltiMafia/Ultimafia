@@ -42,10 +42,9 @@ module.exports = class Room extends Item {
         item: this,
         run: function () {
           let hasChanged = false;
-          if(this.item.Room.leader == null){
+          if (this.item.Room.leader == null) {
             hasChanged = false;
-          }
-          else if(this.item.Room.leader != this.target) {
+          } else if (this.item.Room.leader != this.target) {
             hasChanged = true;
           }
           this.item.Room.leader = this.target;
@@ -60,35 +59,39 @@ module.exports = class Room extends Item {
     };
 
     this.listeners = {
-      death: function(){
-        if(this.game.alivePlayers().filter((p) => p.hasEffect("AssassinEffect")).length > 0){
+      death: function () {
+        if (
+          this.game.alivePlayers().filter((p) => p.hasEffect("AssassinEffect"))
+            .length > 0
+        ) {
           return;
         }
         for (let player of this.game.players) {
-        for (let item of player.items) {
+          for (let item of player.items) {
             if (item.name == "NoVillageMeeting") {
               item.drop();
+            }
           }
-          }
-          }
+        }
         this.drop();
       },
       roleAssigned: function (player) {
-        if(this.game.alivePlayers().filter((p) => p.hasEffect("AssassinEffect")).length > 0){
+        if (
+          this.game.alivePlayers().filter((p) => p.hasEffect("AssassinEffect"))
+            .length > 0
+        ) {
           return;
         }
         for (let player of this.game.players) {
-        for (let item of player.items) {
+          for (let item of player.items) {
             if (item.name == "NoVillageMeeting") {
               item.drop();
+            }
           }
-          }
-          }
+        }
         this.drop();
       },
     };
-
-
   }
 };
 function cannotBeVoted(player) {

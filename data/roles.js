@@ -1542,7 +1542,7 @@ const roleData = {
           "If an Assassin is Present, All players are Delirious if an Evil Player is Elected as Room Leader.",
         ],
       },
-        SpecialInteractionsModifiers: {
+      SpecialInteractionsModifiers: {
         Loyal: [
           "Players will only become Delirious if the condemned player is the same alignment as the Jazzman.",
         ],
