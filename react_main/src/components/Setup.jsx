@@ -458,6 +458,7 @@ export function FullRoleList({ setup }) {
             gameType={gameType}
             showSecondaryHover
             key={role}
+            otherRoles={setup.roles}
           />
         )
       );
@@ -516,6 +517,7 @@ export function FullRoleList({ setup }) {
       gameType={gameType}
       showSecondaryHover
       key={role}
+      otherRoles={setup.roles}
     />
   ));
 

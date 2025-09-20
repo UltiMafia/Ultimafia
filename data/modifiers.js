@@ -864,7 +864,7 @@ const modifierData = {
       tags: ["Block Self", "Death"],
       description:
         "If killed at night, their secondary actions will be blocked.",
-      eventDescription: "This Event will not apply to Non-Evil players.",
+      eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Sorrowful"],
     },
     Sorrowful: {
@@ -873,7 +873,7 @@ const modifierData = {
       tags: ["Block Self", "Death"],
       description:
         "Unless killed at night, their secondary actions will be blocked.",
-      eventDescription: "This Event will not apply to Non-Evil players.",
+      eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Fatal"],
     },
 

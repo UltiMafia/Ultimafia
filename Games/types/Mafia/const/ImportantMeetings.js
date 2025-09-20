@@ -21,9 +21,12 @@ const STARTS_WITH_MEETINGS = [
 ];
 const IMPORTANT_MEETINGS_DAY = [
   "Village",
-  "Magus Game",
   "Room 1",
   "Room 2",
+  "Room 3",
+  "Room 4",
+  "Room 5",
+  "Room 6",
   "Extra Condemn",
   "Bonus Condemn",
 ];

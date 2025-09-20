@@ -8,7 +8,10 @@ module.exports = class IfVotedForceCondemn extends Card {
 
     this.listeners = {
       vote: function (vote) {
-        if (vote.meeting.name === "Village" && vote.target === this.player.id) {
+        if (
+          vote.meeting.useVotingPower == true &&
+          vote.target === this.player.id
+        ) {
           if (this.data.hasBeenVoted == true) return;
 
           this.data.hasBeenVoted = true;

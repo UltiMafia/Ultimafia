@@ -8,12 +8,12 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (!this.hasAbility(["Delirium"])) {
+        if (stateInfo.name.match(/Day/)) {
+          this.player.role.evilDied = false;
           return;
         }
 
-        if (stateInfo.name.match(/Day/)) {
-          this.player.role.evilDied = false;
+        if (!this.hasAbility(["Delirium"])) {
           return;
         }
 
@@ -43,6 +43,10 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
         }
       },
       death: function (player, killer, deathType) {
+        if (!this.canTargetPlayer(leader)) {
+          return;
+        }
+        /*
         if (
           this.game.getRoleAlignment(
             player.getRoleAppearance().split(" (")[0]
@@ -51,15 +55,22 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
             player.getRoleAppearance().split(" (")[0]
           ) == "Mafia"
         ) {
-          if (deathType != "condemn") return;
+          */
+        if (deathType != "condemn") return;
 
-          this.evilDied = true;
-        }
+        this.evilDied = true;
       },
       ElectedRoomLeader: function (leader, room, HasChanged) {
         if (!this.canDoSpecialInteractions()) {
           return;
         }
+        if (!room.members.includes(this.player)) {
+          return;
+        }
+        if (!this.canTargetPlayer(leader)) {
+          return;
+        }
+        /*
         if (
           this.game.getRoleAlignment(
             leader.getRoleAppearance().split(" (")[0]
@@ -68,8 +79,8 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
             leader.getRoleAppearance().split(" (")[0]
           ) == "Mafia"
         ) {
-          this.evilDied = true;
-        }
+          */
+        this.evilDied = true;
       },
     };
   }

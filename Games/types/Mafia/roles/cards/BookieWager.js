@@ -77,7 +77,7 @@ module.exports = class RiskyPrediction extends Card {
         if (leader === this.predictedVote && this.player.alive) {
           this.predictedCorrect = true;
           this.player.queueAlert(
-            `Room ${room} has Elected ${this.predictedVote.name}, giving you a bonus kill.`
+            `Room ${room.number} has Elected ${this.predictedVote.name}, giving you a bonus kill.`
           );
         }
       },
