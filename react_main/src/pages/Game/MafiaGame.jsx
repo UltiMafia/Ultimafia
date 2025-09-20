@@ -77,6 +77,12 @@ export default function MafiaGame() {
       volumes: 1,
     },
     { fileName: "music/NightLove", loops: true, overrides: false, volumes: 1 },
+    {
+      fileName: "music/NightMystical",
+      loops: true,
+      overrides: false,
+      volumes: 1,
+    },
     { fileName: "music/NightMafia", loops: true, overrides: false, volumes: 1 },
     {
       fileName: "music/NightProtector",
@@ -293,6 +299,7 @@ export default function MafiaGame() {
             break;
           case "Mayor":
           case "Governor":
+          case "Senator":
           case "President":
           case "Prince":
           case "Princess":
@@ -321,10 +328,37 @@ export default function MafiaGame() {
           case "Prankster":
             game.playAudio("music/NightFool");
             break;
+          case "Suitress":
+          case "Mistress":
           case "Lover":
+          case "Astrologer":
           case "Heartbreaker":
           case "Yandere":
             game.playAudio("music/NightLove");
+            break;
+          case "Oracle":
+          case "Resurrectionist":
+          case "Diviner":
+          case "Psychic":
+          case "Medium":
+          case "Mourner":
+          case "Fortune Teller":
+          case "Clairvoyant":
+          case "Groundskeeper":
+          case "Mooncalf":
+          case "Graverobber":
+          case "Ghostbuster":
+          case "Poltergeist":
+          case "Banshee":
+          case "Ghost":
+          case "Vengeful Spirit":
+          case "Phantom":
+          case "Alien":
+          case "Doppelgänger":
+          case "Grey Goo":
+          case "Prophet":
+          case "Fatalist":
+            game.playAudio("music/NightMystical");
             break;
           default:
             if (currentAlignment === "Mafia") {
