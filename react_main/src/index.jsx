@@ -10,7 +10,7 @@ const LazyMain = lazy(() => import("./Main.jsx"));
 
 ReactDOM.render(
   <Router>
-    <ThemeProvider theme={SITE_THEME} noSsr>
+    <ThemeProvider theme={SITE_THEME} noSsr defaultMode="dark">
       <CssBaseline enableColorScheme />
       <Suspense fallback={<NewLoading />}>
         <LazyMain />

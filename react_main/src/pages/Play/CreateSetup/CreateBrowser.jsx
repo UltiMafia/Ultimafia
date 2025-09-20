@@ -597,7 +597,7 @@ export default function CreateSetup(props) {
   return (
     <Stack direction="column" spacing={1} sx={{ mt: 1 }}>
       <RoleSearch onAddClick={onAddRole} gameType={gameType} />
-      {modifiers.length > 0 && (
+      {siteInfo.modifiers[props.gameType].length > 0 && (
         <Paper sx={{ p: 1 }}>
           <Accordion>
             <AccordionSummary>
@@ -613,7 +613,7 @@ export default function CreateSetup(props) {
           </Accordion>
         </Paper>
       )}
-      {modifiers.length > 0 && (
+      {siteInfo.modifiers[props.gameType].length > 0 && (
         <StickyStateViewer
           isSticky={modifiers.length > 0}
           title="Selected Modifiers"
