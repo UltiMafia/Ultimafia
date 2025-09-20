@@ -1532,7 +1532,7 @@ const roleData = {
       category: "Voting",
       tags: ["Condemn Interaction", "Delirium", "Alignment", "Advanced"],
       description: [
-        "If an Evil player is condemned, All players are Delirious that night.",
+        "If a player is condemned, All players are Delirious that night.",
       ],
       nightOrder: [
         ["Give Everyone Delirium If Evil Condemned", PRIORITY_BLOCK_EARLY],
@@ -1540,6 +1540,32 @@ const roleData = {
       SpecialInteractions: {
         Assassin: [
           "If an Assassin is Present, All players are Delirious if an Evil Player is Elected as Room Leader.",
+        ],
+      },
+      SpecialInteractionsModifiers: {
+        Loyal: [
+          "Players will only become Delirious if the condemned player is the same alignment as the Jazzman.",
+        ],
+        Disloyal: [
+          "Players will only become Delirious if the condemned player is a different alignment to the Jazzman.",
+        ],
+        Holy: [
+          "Players will only become Delirious if the condemned player is non-Demonic.",
+        ],
+        Unholy: [
+          "Players will only become Delirious if the condemned player is Demonic.",
+        ],
+        Simple: [
+          "Players will only become Delirious if the condemned player is a Vanilla role.",
+        ],
+        Complex: [
+          "Players will only become Delirious if the condemned player is a Power role.",
+        ],
+        Refined: [
+          "Players will only become Delirious if the condemned player is a non-Banished role.",
+        ],
+        Unrefined: [
+          "Players will only become Delirious if the condemned player is a Banished role.",
         ],
       },
       skins: [
@@ -4386,6 +4412,11 @@ const roleData = {
         "Independent roles with the Scatterbrained modifier appear as this role to self.",
       ],
       nightOrder: [["Visit", PRIORITY_SUPPORT_VISIT_DEFAULT]],
+      SpecialInteractions: {
+        Assassin: [
+          "If an Assassin is Present, Fool will win at the end of the game if they were elected as Room Leader in 2 diffrent rooms.",
+        ],
+      },
     },
     Executioner: {
       alignment: "Independent",
@@ -4394,6 +4425,11 @@ const roleData = {
         "Randomly assigned a Village/Independent player as a target.",
         "Wins if their target player is condemned in Village meeting while alive.",
       ],
+      SpecialInteractions: {
+        Assassin: [
+          "If an Assassin is Present, an Executioner will win at the end of the game if they were never in a room when the Room Leader changed.",
+        ],
+      },
     },
     Dodo: {
       alignment: "Independent",
@@ -4577,6 +4613,11 @@ const roleData = {
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
       graveyardParticipation: "self",
+      SpecialInteractions: {
+        Assassin: [
+          "If an Assassin is Present, a Vengeful Spirit will win at the end of the game if they are dead and no Presidents, Senators, or Vital Village roles are dead.",
+        ],
+      },
     },
     Phantom: {
       alignment: "Independent",
