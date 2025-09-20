@@ -15,9 +15,7 @@ module.exports = class Wrangled extends Effect {
         if (this.NotFirstVoter == true) {
           return;
         }
-        if (
-          vote.meeting.useVotingPower == true
-        ) {
+        if (vote.meeting.useVotingPower == true) {
           if (vote.voter != this.player) {
             this.NotFirstVoter = true;
             return;
