@@ -154,10 +154,7 @@ module.exports = class DayTask extends Effect {
         this.remove();
       },
       vote: function (vote) {
-        if (
-          (vote.meeting.useVotingPower == true) &&
-          vote.voter === this.player
-        ) {
+        if (vote.meeting.useVotingPower == true && vote.voter === this.player) {
           if (
             vote.target === this.ExtraPlayer.id &&
             this.task == "VoteForAPlayer" &&
