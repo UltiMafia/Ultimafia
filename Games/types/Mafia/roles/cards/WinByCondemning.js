@@ -36,8 +36,11 @@ module.exports = class WinByCondemning extends Card {
     this.winCheck = {
       priority: PRIORITY_WIN_BY_CONDEMNING,
       againOnFinished: true,
-      check: function (counts, winners, aliveCount) {
+      check: function (counts, winners, aliveCount, confirmedFinished) {
         if (this.data.targetcondemned) {
+          winners.addPlayer(this.player, this.name);
+        }
+        else if(confirmedFinished && this.canDoSpecialInteractions() && this.hasFailedToPreventLeaderSwitch != true && this.AssassinWasPresent == true){
           winners.addPlayer(this.player, this.name);
         }
       },
@@ -59,6 +62,13 @@ module.exports = class WinByCondemning extends Card {
         this.player.queueAlert(
           `You wish to see ${this.target.name} condemned for ${this.pettyReason}.`
         );
+        if(this.canDoSpecialInteractions() && this.game.players.filter((p) => p.role.name == "Assassin").length > 0){
+          this.player.queueAlert(
+          `You also wish to see that no Room Leader gets voted out of office.`
+        );
+          this.AssassinWasPresent = true;
+        }
+        
       },
       death: function (player, killer, deathType) {
         if (
@@ -67,6 +77,17 @@ module.exports = class WinByCondemning extends Card {
           this.player.alive
         ) {
           this.data.targetcondemned = true;
+        }
+      },
+      ElectedRoomLeader: function (leader, room, HasChanged) {
+        if (!this.canDoSpecialInteractions()) {
+          return;
+        }
+        if (!room.members.includes(this.player)) {
+          return;
+        }
+        if (HasChanged) {
+          this.hasFailedToPreventLeaderSwitch = true;
         }
       },
     };
