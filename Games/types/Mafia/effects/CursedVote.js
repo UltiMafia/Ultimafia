@@ -11,7 +11,7 @@ module.exports = class CursedVote extends Effect {
     this.listeners = {
       vote: function (vote) {
         if (
-          (vote.meeting.useVotingPower == true) &&
+          vote.meeting.useVotingPower == true &&
           vote.voter === this.player &&
           vote.target === this.target.id
         ) {
