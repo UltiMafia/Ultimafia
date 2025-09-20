@@ -155,9 +155,7 @@ module.exports = class DayTask extends Effect {
       },
       vote: function (vote) {
         if (
-          (vote.meeting.name === "Village" ||
-            vote.meeting.name === "Room 1" ||
-            vote.meeting.name === "Room 2") &&
+          (vote.meeting.useVotingPower == true) &&
           vote.voter === this.player
         ) {
           if (
