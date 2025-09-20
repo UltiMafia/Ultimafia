@@ -9,7 +9,12 @@ module.exports = class WinIfCondemned extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if(confirmedFinished && this.canDoSpecialInteractions() && this.hasBeenRoomLeader && this.hasBeenRoomLeader.length >= 2){
+        if (
+          confirmedFinished &&
+          this.canDoSpecialInteractions() &&
+          this.hasBeenRoomLeader &&
+          this.hasBeenRoomLeader.length >= 2
+        ) {
           winners.addPlayer(this.player, this.name);
         }
         if (this.data.condemned && !winners.groups[this.name]) {
@@ -26,17 +31,16 @@ module.exports = class WinIfCondemned extends Card {
         if (!this.canDoSpecialInteractions()) {
           return;
         }
-        if(leader != this.player){
+        if (leader != this.player) {
           return;
         }
-        if(!this.hasBeenRoomLeader){
+        if (!this.hasBeenRoomLeader) {
           this.hasBeenRoomLeader = [];
         }
-        if(this.hasBeenRoomLeader.includes(room.name)){
+        if (this.hasBeenRoomLeader.includes(room.name)) {
           return;
         }
-         this.hasBeenRoomLeader.push(room.name);
-        
+        this.hasBeenRoomLeader.push(room.name);
       },
     };
   }
