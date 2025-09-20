@@ -4386,6 +4386,11 @@ const roleData = {
         "Independent roles with the Scatterbrained modifier appear as this role to self.",
       ],
       nightOrder: [["Visit", PRIORITY_SUPPORT_VISIT_DEFAULT]],
+      SpecialInteractions: {
+        Assassin: [
+          "If an Assassin is Present, Fool will win at the end of the game if they were elected as Room Leader in 2 diffrent rooms.",
+        ],
+      },
     },
     Executioner: {
       alignment: "Independent",
@@ -4394,6 +4399,11 @@ const roleData = {
         "Randomly assigned a Village/Independent player as a target.",
         "Wins if their target player is condemned in Village meeting while alive.",
       ],
+      SpecialInteractions: {
+        Assassin: [
+          "If an Assassin is Present, Executioner will win at the end of the game if they were never in a room where the Room Leader changed.",
+        ],
+      },
     },
     Dodo: {
       alignment: "Independent",
@@ -4577,6 +4587,11 @@ const roleData = {
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
       graveyardParticipation: "self",
+      SpecialInteractions: {
+        Assassin: [
+          "If an Assassin is Present, a Vengeful Spirit will win at the end of the game if they are dead and no Presidents, Senators, or Vital Village roles are dead.",
+        ],
+      },
     },
     Phantom: {
       alignment: "Independent",
