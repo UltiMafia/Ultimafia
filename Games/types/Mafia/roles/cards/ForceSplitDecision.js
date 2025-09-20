@@ -1,10 +1,7 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
-const {
-  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
-} = require("../../const/Priority");
-const { PRIORITY_ROOM_SWAP } = require("../../const/Priority");
+const { PRIORITY_ROOM_SWAP, PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT } = require("../../const/Priority");
 
 module.exports = class ForceSplitDecision extends Card {
   constructor(role) {
@@ -126,6 +123,7 @@ module.exports = class ForceSplitDecision extends Card {
             members: [],
             leader: null,
             number: x + 1,
+            game: this.game,
           };
           for (let y = 0; y < playersPerRoom; y++) {
             room.members.push(playersRandom.pop());
@@ -204,10 +202,13 @@ module.exports = class ForceSplitDecision extends Card {
         var villageBlock = new Action({
           actor: this.player,
           game: this.player.game,
-          priority: PRIORITY_ROOM_SWAP + 5,
+          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT+100,
           labels: ["absolute", "hidden"],
           run: function () {
             if (!this.actor.alive) {
+              return;
+            }
+            if(!this.actor.hasEffect("AssassinEffect")){
               return;
             }
             if (this.game.Rooms.length > 0) {
@@ -232,6 +233,12 @@ module.exports = class ForceSplitDecision extends Card {
             priority: PRIORITY_ROOM_SWAP + 5,
             labels: ["absolute", "hidden"],
             run: function () {
+              if (!this.actor.alive) {
+                return;
+              }
+              if(!this.actor.hasEffect("AssassinEffect")){
+              return;
+            }
               let playerCount = this.game.alivePlayers().length;
               if (
                 playerCount <= 10 ||
@@ -283,12 +290,7 @@ module.exports = class ForceSplitDecision extends Card {
                 }
 
                 Room.leader.holdItem("RoomLeader", this.game, Room);
-              }
-
-              if (this.actor.alive && this.game.Rooms.length > 0) {
-                for (let player of this.game.players) {
-                  player.holdItem("NoVillageMeeting");
-                }
+                this.game.queueAlert(`${Room.leader.name} is ${Room.name}'s Leader this round!`);
               }
             },
           });
@@ -303,10 +305,8 @@ module.exports = class ForceSplitDecision extends Card {
               if (!this.actor.alive) {
                 return;
               }
-              if (this.game.Rooms.length > 0) {
-                for (let player of this.game.players) {
-                  player.holdItem("NoVillageMeeting");
-                }
+              if(!this.actor.hasEffect("AssassinEffect")){
+              return;
               }
               for (let Room of this.game.Rooms) {
                 if (Room.leader == null) {

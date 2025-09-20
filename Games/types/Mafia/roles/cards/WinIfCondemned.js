@@ -16,7 +16,7 @@ module.exports = class WinIfCondemned extends Card {
           confirmedFinished &&
           this.canDoSpecialInteractions() &&
           this.hasBeenRoomLeader &&
-          this.hasBeenRoomLeader.length >= 2 && !winners.groups[this.name])
+          this.hasBeenRoomLeader.length >= 2 && !winners.groups[this.name]
         ) {
           winners.addPlayer(this.player, this.name);
         }

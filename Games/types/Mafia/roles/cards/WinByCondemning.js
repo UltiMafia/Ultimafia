@@ -51,6 +51,15 @@ module.exports = class WinByCondemning extends Card {
     };
     this.listeners = {
       roleAssigned: function (player) {
+        if (
+          this.canDoSpecialInteractions() &&
+          this.game.players.filter((p) => p.hasEffect("AssassinEffect")).length > 0 && this.AssassinWasPresent != true
+        ) {
+          this.player.queueAlert(
+            `You wish to see that no Room Leader gets voted out of office.`
+          );
+          this.AssassinWasPresent = true;
+        }
         if (player !== this.player) {
           return;
         }
@@ -66,15 +75,6 @@ module.exports = class WinByCondemning extends Card {
         this.player.queueAlert(
           `You wish to see ${this.target.name} condemned for ${this.pettyReason}.`
         );
-        if (
-          this.canDoSpecialInteractions() &&
-          this.game.players.filter((p) => p.role.name == "Assassin").length > 0
-        ) {
-          this.player.queueAlert(
-            `You also wish to see that no Room Leader gets voted out of office.`
-          );
-          this.AssassinWasPresent = true;
-        }
       },
       death: function (player, killer, deathType) {
         if (
@@ -92,7 +92,10 @@ module.exports = class WinByCondemning extends Card {
         if (!room.members.includes(this.player)) {
           return;
         }
-        if (HasChanged) {
+        if(HasChanged) {
+          this.player.queueAlert(
+            `You failed to stop ${leader.name} from usurping the Room Leader! Better hope you can get ${this.target.name} condemned!`
+          );
           this.hasFailedToPreventLeaderSwitch = true;
         }
       },

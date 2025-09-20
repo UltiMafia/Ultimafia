@@ -17,6 +17,7 @@ module.exports = class Room extends Item {
     this.Room = Room;
     //this.reveal = reveal;
     //this.lifespan = 1;
+
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
     this.meetings[this.Room.name] = {
@@ -33,26 +34,61 @@ module.exports = class Room extends Item {
         "Important",
       ],
       whileDead: true,
-      passiveDead: true,
+      passiveDead: !this.Room.game.isVotingDead(),
+      speakDead: this.Room.game.isTalkingDead(),
       action: {
         labels: ["hidden"],
         priority: PRIORITY_ROOM_SWAP,
         item: this,
         run: function () {
-          let isReelect = false;
-          if (this.item.Room.leader == this.target) {
-            isReelect = true;
+          let hasChanged = false;
+          if(this.item.Room.leader == null){
+            hasChanged = false;
+          }
+          else if(this.item.Room.leader != this.target) {
+            hasChanged = true;
           }
           this.item.Room.leader = this.target;
           this.game.events.emit(
             "ElectedRoomLeader",
             this.target,
-            this.item.Room.number,
-            isReelect
+            this.item.Room,
+            hasChanged
           );
         },
       },
     };
+
+    this.listeners = {
+      death: function(){
+        if(this.game.alivePlayers().filter((p) => p.hasEffect("AssassinEffect")).length > 0){
+          return;
+        }
+        for (let player of this.game.players) {
+        for (let item of player.items) {
+            if (item.name == "NoVillageMeeting") {
+              item.drop();
+          }
+          }
+          }
+        this.drop();
+      },
+      roleAssigned: function (player) {
+        if(this.game.alivePlayers().filter((p) => p.hasEffect("AssassinEffect")).length > 0){
+          return;
+        }
+        for (let player of this.game.players) {
+        for (let item of player.items) {
+            if (item.name == "NoVillageMeeting") {
+              item.drop();
+          }
+          }
+          }
+        this.drop();
+      },
+    };
+
+
   }
 };
 function cannotBeVoted(player) {
