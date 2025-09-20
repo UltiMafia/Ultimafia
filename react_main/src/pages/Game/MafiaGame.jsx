@@ -77,7 +77,12 @@ export default function MafiaGame() {
       volumes: 1,
     },
     { fileName: "music/NightLove", loops: true, overrides: false, volumes: 1 },
-    { fileName: "music/NightMystical", loops: true, overrides: false, volumes: 1 },
+    {
+      fileName: "music/NightMystical",
+      loops: true,
+      overrides: false,
+      volumes: 1,
+    },
     { fileName: "music/NightMafia", loops: true, overrides: false, volumes: 1 },
     {
       fileName: "music/NightProtector",
