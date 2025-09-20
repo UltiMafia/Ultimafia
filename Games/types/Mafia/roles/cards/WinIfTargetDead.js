@@ -14,7 +14,7 @@ module.exports = class WinIfTargetDead extends Card {
         if(this.canDoSpecialInteractions() && this.game.players.filter((p) => p.hasEffect("AssassinEffect")).length > 0){
         if(confirmedFinished &&
            !this.player.alive &&
-           this.game.players.filter((p) => !p.alive && (p.hasEffect("PresidentEffect") || p.hasEffect("SenatorEffect") || p.role.modifier.split("/").includes("Vital"))).length <= 0
+           this.game.players.filter((p) => !p.alive && (p.hasEffect("PresidentEffect") || p.hasEffect("SenatorEffect") || (p.role.modifier.split("/").includes("Vital") && p.role.alignment == "Village"))).length <= 0
           ){
           winners.addPlayer(this.player, this.name);
         }
