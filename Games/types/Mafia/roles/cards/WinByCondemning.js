@@ -43,7 +43,7 @@ module.exports = class WinByCondemning extends Card {
           confirmedFinished &&
           this.canDoSpecialInteractions() &&
           this.hasFailedToPreventLeaderSwitch != true &&
-          this.AssassinWasPresent == true
+          this.AssassinWasPresent == true && !winners.groups[this.name]
         ) {
           winners.addPlayer(this.player, this.name);
         }
