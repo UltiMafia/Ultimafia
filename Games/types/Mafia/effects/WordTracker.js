@@ -34,7 +34,7 @@ module.exports = class WordTracker extends Effect {
     }
   }
 
-    speakQuote(quote) {
+  speakQuote(quote) {
     if (
       quote.messageContent
         .replace(" ", "")
@@ -57,7 +57,4 @@ module.exports = class WordTracker extends Effect {
       this.game.instantAction(action);
     }
   }
-
-
-
 };

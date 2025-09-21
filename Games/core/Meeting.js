@@ -1088,7 +1088,7 @@ module.exports = class Meeting {
       fromMeetingId: quote.fromMeetingId,
       fromState: quote.fromState,
       anonymous: this.anonymous,
-      messageContent: quote.messageContent
+      messageContent: quote.messageContent,
     });
 
     quote.send();
