@@ -28,7 +28,7 @@ module.exports = class Cursed extends Effect {
     }
   }
 
-    speakQuote(message) {
+  speakQuote(message) {
     if (message.content.replace(" ", "").toLowerCase().includes(this.word)) {
       var action = new Action({
         actor: this.actor,
