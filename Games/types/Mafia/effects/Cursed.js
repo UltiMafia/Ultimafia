@@ -28,8 +28,8 @@ module.exports = class Cursed extends Effect {
     }
   }
 
-  speakQuote(message) {
-    if (message.content.replace(" ", "").toLowerCase().includes(this.word)) {
+  speakQuote(quote) {
+    if (quote.messageContent.replace(" ", "").toLowerCase().includes(this.word)) {
       var action = new Action({
         actor: this.actor,
         target: this.player,

@@ -200,6 +200,7 @@ module.exports = class Player {
         quote.toMeetingId = String(quote.toMeetingId);
         quote.fromMeetingId = String(quote.fromMeetingId);
         quote.fromState = String(quote.fromState);
+        quote.messageContent = String(quote.messageContent);
 
         if (!Utils.validProp(quote.messageId)) return;
 
