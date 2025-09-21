@@ -722,6 +722,7 @@ function GameWrapper(props) {
         toMeetingId: history.states[history.currentState].selTab,
         fromMeetingId: message.meetingId,
         fromState: message.fromState ? message.fromState : stateViewing,
+        messageContent: message.content,
       });
     }
   }

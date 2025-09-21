@@ -10,6 +10,7 @@ module.exports = class Quote extends Message {
     this.fromState = info.fromState;
     this.quotable = false;
     this.cancel = false;
+    this.messageContent = info.messageContent;
   }
 
   send() {

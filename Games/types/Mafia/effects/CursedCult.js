@@ -27,4 +27,25 @@ module.exports = class CursedCult extends Effect {
       this.game.instantAction(action);
     }
   }
+
+  speakQuote(quote) {
+    if (
+      quote.messageContent.replace(" ", "").toLowerCase().includes(this.word)
+    ) {
+      var action = new Action({
+        actor: this.actor,
+        target: this.player,
+        game: this.game,
+        effect: this,
+        power: 2,
+        labels: ["convert", "curse", "hidden"],
+        run: function () {
+          if (this.dominates()) this.target.setRole("Cultist");
+          this.effect.remove();
+        },
+      });
+
+      this.game.instantAction(action);
+    }
+  }
 };
