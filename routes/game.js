@@ -30,6 +30,39 @@ router.post("/leave", async function (req, res) {
   }
 });
 
+router.post("/:id/change-setup", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const gameId = String(req.params.id);
+    const { setupId } = req.body;
+
+    if (!setupId) {
+      return res.status(400).send("No setup ID provided.");
+    }
+
+    const gameInfo = await redis.getGameInfo(gameId, true);
+    if (!gameInfo) {
+      return res.status(404).send("Game not found.");
+    }
+
+    if (gameInfo.hostId !== userId) {
+      return res.status(403).send("Only the host can change the setup.");
+    }
+
+    const game = await gameLoadBalancer.getGame(gameId);
+    if (!game || typeof game.changeSetup !== "function") {
+      return res.status(500).send("Unable to access live game instance.");
+    }
+
+    await game.changeSetup(setupId);
+
+    res.status(200).send(`Setup successfully changed to ${setupId}.`);
+  } catch (err) {
+    logger.error(err);
+    res.status(500).send("Error changing setup.");
+  }
+});
+
 router.get("/mostPlayedRecently", async (req, res) => {
   try {
     const maxSetups = 5;

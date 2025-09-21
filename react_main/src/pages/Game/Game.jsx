@@ -41,6 +41,7 @@ import { Modal } from "../../components/Modal";
 import SiteLogo from "../../components/SiteLogo";
 import LeaveGameDialog from "../../components/LeaveGameDialog";
 import ReportDialog from "../../components/ReportDialog";
+import ChangeSetupDialog from "../../components/ChangeSetupDialog";
 import { useErrorAlert } from "../../components/Alerts";
 import {
   MaxGameMessageLength,
@@ -83,6 +84,7 @@ import poison from "images/emotes/poison.webp";
 import exit from "images/emotes/exit.png";
 import veg from "images/emotes/veg.webp";
 import system from "images/emotes/system.webp";
+import suit from "images/emotes/suit.webp";
 
 export default function Game() {
   return (
@@ -837,6 +839,7 @@ export function BotBar(props) {
   const game = props.game;
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [changeSetupDialogOpen, setChangeSetupDialogOpen] = useState(false);
 
   function onLogoClick() {
     window.open(process.env.REACT_APP_URL, "_blank");
@@ -849,6 +852,10 @@ export function BotBar(props) {
 
   function onReportClick() {
     setReportDialogOpen(true);
+  }
+
+  function onChangeSetupClick() {
+    setChangeSetupDialogOpen(true);
   }
 
   function onLeaveGameClick() {
@@ -1010,6 +1017,17 @@ export function BotBar(props) {
                 </IconButton>
               </Tooltip>
             )}
+
+            <Tooltip title="Change Setup">
+              <IconButton size="large" onClick={onChangeSetupClick}>
+                <img src={suit} alt="Change Setup" />
+              </IconButton>
+            </Tooltip>
+            <ChangeSetupDialog
+              open={changeSetupDialogOpen}
+              onClose={() => setChangeSetupDialogOpen(false)}
+              gameId={gameId}
+            />
 
             <Tooltip title="File Report">
               <IconButton size="large" onClick={onReportClick}>

@@ -358,6 +358,7 @@ const artContributors = {
       "Fisherman:vivid",
       "Oddfather:vivid",
       "Sculptor:vivid",
+      "Changeling:vivid",
     ],
     Battlesnakes: ["Snake:vivid"],
     "Connect Four": ["Starman:vivid"],
