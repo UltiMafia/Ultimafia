@@ -59,6 +59,8 @@ import SiteLogo from "./components/SiteLogo";
 import { BadTextContrast } from "./components/alerts/BadTextContrast";
 import { useIsPhoneDevice } from "./hooks/useIsPhoneDevice";
 
+import spiderweb from "images/holiday/spiderweb.gif";
+
 function ErrorBox({ error, resetErrorBoundary }) {
   console.log(error);
 
@@ -394,7 +396,7 @@ function Header({ setShowAnnouncementTemporarily }) {
     <div className="header">
       {new Date().getMonth() === 9 && (
         <img
-          src="/images/holiday/spiderweb.gif"
+          src={spiderweb}
           alt="Holiday Spider"
           style={{
             position: "absolute",

@@ -72,7 +72,7 @@ var schemas = {
       youtube: String,
       hideStatistics: { type: Boolean, default: false },
       hideKarma: { type: Boolean, default: false },
-      hidePointsNegative: { type: Boolean, default: false },
+      hidePointsNegative: { type: Boolean, default: true },
       deathMessage: String,
     },
     accounts: {

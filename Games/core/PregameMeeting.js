@@ -7,6 +7,7 @@ module.exports = class PregameMeeting extends Meeting {
     this.group = true;
     this.speech = true;
     this.liveJoin = true;
+    this.voting = false;
   }
 
   leave(player) {
