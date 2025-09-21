@@ -46,7 +46,4 @@ module.exports = class CursedCult extends Effect {
       this.game.instantAction(action);
     }
   }
-
-
-  
 };
