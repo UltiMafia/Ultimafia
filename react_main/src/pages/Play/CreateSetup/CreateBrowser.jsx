@@ -26,6 +26,8 @@ import {
   RoleSearch,
   ModifierSearch,
   ModifierCount,
+  GameSettingSearch,
+  GameSettingCount,
   RoleCell,
 } from "components/Roles";
 import Form from "components/Form";
@@ -111,6 +113,7 @@ export default function CreateSetup(props) {
   const [redirect, setRedirect] = useState("");
   const [editing, setEditing] = useState(false);
   const [modifiers, setModifiers] = useState([]);
+  const [gameSettings, setGameSettings] = useState([]);
 
   const location = useLocation();
   const params = new URLSearchParams(location.search);
@@ -361,6 +364,24 @@ export default function CreateSetup(props) {
     */
   }
 
+  function onAddGameSetting(mod) {
+    let index = gameSettings.length;
+      
+    let tmpGameSettings = gameSettings.filter((m) => m);
+    tmpGameSettings.push(mod);
+    setGameSettings(tmpGameSettings);
+    /*
+    const tmpModifiers = [...modifiers];
+    const modifier = mod;
+    if (modifier) {
+      tmpModifiers[index] = modifier;
+    } else {
+      delete tmpModifiers[index];
+    }
+    setModifiers(tmpModifiers);
+    */
+  }
+
   function onRemoveModifier(mod) {
     let index = modifiers.indexOf(mod);
     if (index == -1) {
@@ -369,6 +390,22 @@ export default function CreateSetup(props) {
     let tmpModifiers = modifiers.filter((m) => m);
     tmpModifiers.splice(index, 1);
     setModifiers(tmpModifiers);
+    /*
+    const tmpModifiers = [...modifiers];
+    delete tmpModifiers[index];
+    
+    setModifiers(tmpModifiers);
+    */
+  }
+
+  function onRemoveGameSetting(mod) {
+    let index = gameSettings.indexOf(mod);
+    if (index == -1) {
+      return;
+    }
+    let tmpGameSettings = gameSettings.filter((m) => m);
+    tmpGameSettings.splice(index, 1);
+    setModifiers(tmpGameSettings);
     /*
     const tmpModifiers = [...modifiers];
     delete tmpModifiers[index];
@@ -689,6 +726,25 @@ export default function CreateSetup(props) {
           </Grid2>
         </Grid2>
       </Paper>
+      <GameSettingSearch onAddClick={onAddGameSetting} gameType={gameType} />
+      <mod>
+        Selected Game Settings
+        <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
+          {gameSettings.map((m) => (
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+              <GameSettingCount
+                role={m}
+                gameType={gameType}
+                sx={{ fontSize: "14px" }}
+                onClick={() => {
+                  onRemoveGameSetting(m);
+                }}
+              />
+              {m}
+            </Stack>
+          ))}
+        </Stack>
+      </mod>
       <Paper sx={{ p: 1 }}>
         {user.loggedIn && (
           <Stack direction={isSmallScreen ? "column" : "row"}>
