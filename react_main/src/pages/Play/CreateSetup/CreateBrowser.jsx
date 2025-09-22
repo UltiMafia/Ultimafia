@@ -366,7 +366,7 @@ export default function CreateSetup(props) {
 
   function onAddGameSetting(mod) {
     let index = gameSettings.length;
-      
+
     let tmpGameSettings = gameSettings.filter((m) => m);
     tmpGameSettings.push(mod);
     setGameSettings(tmpGameSettings);
