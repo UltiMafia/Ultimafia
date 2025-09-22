@@ -580,8 +580,7 @@ export function GameSettingCount(props) {
     closePopover,
   } = usePopoverOpen();
 
-  const handleRoleCountClick = (e) => {
-  };
+  const handleRoleCountClick = (e) => {};
 
   // Display predicted icon
   const isRolePrediction = props.isRolePrediction;
@@ -1192,16 +1191,14 @@ export function GameSettingSearch(props) {
 
   if (!siteInfo.gamesettings) return <NewLoading small />;
 
-  const alignButtons = ["Standard", "Voting", "Other"].map(
-    (type) => (
-      <Tab
-        label={type}
-        value={type}
-        onClick={() => onAlignNavClick(type)}
-        key={type}
-      />
-    )
-  );
+  const alignButtons = ["Standard", "Voting", "Other"].map((type) => (
+    <Tab
+      label={type}
+      value={type}
+      onClick={() => onAlignNavClick(type)}
+      key={type}
+    />
+  ));
 
   const roleCells = siteInfo.gamesettings[props.gameType].map((role, i) => {
     const searchTerms = searchVal
