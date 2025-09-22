@@ -1,4 +1,4 @@
-const modifierData = {
+const gameSettingData = {
   Mafia: {
     "Placeholder": {
       category: "Standard",
@@ -132,7 +132,7 @@ const modifierData = {
       tags: ["Information", "Death"],
       description: "Mafia and Cult cannot win if a member another Evil faction is alive.",
     },
-    
+    /*
     Austere: {
       category: "Other",
       internal: ["OnlyUseInPlayRoles"],
@@ -148,7 +148,7 @@ const modifierData = {
       description: "Any Special Interactions this role has are disabled.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
-    /*
+    */
   },
   Resistance: {},
   Ghost: {},
@@ -164,4 +164,4 @@ const modifierData = {
   "Connect Four": {},
 };
 
-module.exports = modifierData;
+module.exports = gameSettingData;
