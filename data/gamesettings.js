@@ -17,17 +17,19 @@ const gameSettingData = {
       tags: ["State", "Time", "Voting"],
       description: "The game starts at day.",
     },
-    "Whispers": {
+    Whispers: {
       category: "Standard",
       internal: ["Whispers"],
       tags: ["Speaking", "Chat"],
-      description: "Allow players to privately contact another player in the village meeting.",
+      description:
+        "Allow players to privately contact another player in the village meeting.",
     },
     "Whisper Leak Chance": {
       category: "Standard",
       internal: ["Whispers"],
       tags: ["Speaking", "Chat"],
-      description: "Whispers will have 1% chance to leak (Add this additional times to increase the leak chance). If a whisper leaks then everyone will see it.",
+      description:
+        "Whispers will have 1% chance to leak (Add this additional times to increase the leak chance). If a whisper leaks then everyone will see it.",
       allowDuplicate: true,
       requires: ["Whispers"],
     },
@@ -35,7 +37,8 @@ const gameSettingData = {
       category: "Standard",
       internal: ["MustAct"],
       tags: ["Night", "Actions"],
-      description: "Players cannot select 'no one' for their actions, not including the village meeting.",
+      description:
+        "Players cannot select 'no one' for their actions, not including the village meeting.",
     },
     "No Reveal": {
       category: "Standard",
@@ -51,14 +54,14 @@ const gameSettingData = {
       description: "Only the alignments of dead players are revealed.",
       incompatible: ["No Reveal"],
     },
-    
 
     //Voting
     "Must Condemn": {
       category: "Voting",
       internal: ["MustCondemn"],
       tags: ["Day", "Voting"],
-      description: "Players cannot condemn 'no one' during the village meeting.",
+      description:
+        "Players cannot condemn 'no one' during the village meeting.",
     },
     "Hidden Votes": {
       category: "Voting",
@@ -70,7 +73,8 @@ const gameSettingData = {
       category: "Voting",
       internal: ["MajorityVotes"],
       tags: ["Voting"],
-      description: "A player must get at least 50% of the vote in the village meeting to be condemned.",
+      description:
+        "A player must get at least 50% of the vote in the village meeting to be condemned.",
     },
     "Voting Dead": {
       category: "Voting",
@@ -84,25 +88,29 @@ const gameSettingData = {
       category: "Other",
       internal: ["RoleSharing"],
       tags: ["Information"],
-      description: "Players can use /roleshare to offer a Role Share with another player. If the other player accepts, both players will learn eachothers roles",
+      description:
+        "Players can use /roleshare to offer a Role Share with another player. If the other player accepts, both players will learn eachothers roles",
     },
     "Alignment Sharing": {
       category: "Other",
       internal: ["AlignmentSharing"],
       tags: ["Information"],
-      description: "Players can use /alignmentshare to offer a Role Share with another player. If the other player accepts, both players will learn eachothers roles",
+      description:
+        "Players can use /alignmentshare to offer a Role Share with another player. If the other player accepts, both players will learn eachothers roles",
     },
     "Private Revealing": {
       category: "Other",
       internal: ["PrivateRevealing"],
       tags: ["Information"],
-      description: "Players can use /privatereveal to privatly reveal their role to another player.",
+      description:
+        "Players can use /privatereveal to privatly reveal their role to another player.",
     },
     "Public Revealing": {
       category: "Other",
       internal: ["PublicRevealing"],
       tags: ["Information"],
-      description: "Players can use /publicreveal to privatly reveal their role to all players.",
+      description:
+        "Players can use /publicreveal to privatly reveal their role to all players.",
     },
     "Talking Dead": {
       category: "Other",
@@ -114,25 +122,29 @@ const gameSettingData = {
       category: "Other",
       internal: ["HiddenConverts"],
       tags: ["Information"],
-      description: "Players who change roles will not be told about their role changing.",
+      description:
+        "Players who change roles will not be told about their role changing.",
     },
     "Last Wills": {
       category: "Other",
       internal: ["LastWills"],
       tags: ["Information", "Death"],
-      description: "Allow players to write a message that will be revealed when they die.",
+      description:
+        "Allow players to write a message that will be revealed when they die.",
     },
     "Hostiles Vs Mafia": {
       category: "Other",
       internal: ["MafiaVsHostile"],
       tags: ["Information", "Death"],
-      description: "Mafia and Cult cannot win if a Hostile Independent is alive.",
+      description:
+        "Mafia and Cult cannot win if a Hostile Independent is alive.",
     },
     "Competing Evil Factions": {
       category: "Other",
       internal: ["MafiaVsCult"],
       tags: ["Information", "Death"],
-      description: "Mafia and Cult cannot win if a member another Evil faction is alive.",
+      description:
+        "Mafia and Cult cannot win if a member another Evil faction is alive.",
     },
     /*
     Austere: {
@@ -153,17 +165,19 @@ const gameSettingData = {
     */
   },
   Resistance: {
-      "Whispers": {
+    Whispers: {
       category: "Standard",
       internal: ["Whispers"],
       tags: ["Speaking", "Chat"],
-      description: "Allow players to privately contact another player in the village meeting.",
+      description:
+        "Allow players to privately contact another player in the village meeting.",
     },
     "Whisper Leak Chance": {
       category: "Standard",
       internal: ["Whispers"],
       tags: ["Speaking", "Chat"],
-      description: "Whispers will have 1% chance to leak (Add this additional times to increase the leak chance). If a whisper leaks then everyone will see it.",
+      description:
+        "Whispers will have 1% chance to leak (Add this additional times to increase the leak chance). If a whisper leaks then everyone will see it.",
       allowDuplicate: true,
       requires: ["Whispers"],
     },
@@ -175,66 +189,74 @@ const gameSettingData = {
   "Secret Hitler": {},
   "Wacky Words": {},
   "Liars Dice": {
-    "Whispers": {
+    Whispers: {
       category: "Standard",
       internal: ["Whispers"],
       tags: ["Speaking", "Chat"],
-      description: "Allow players to privately contact another player in the village meeting.",
+      description:
+        "Allow players to privately contact another player in the village meeting.",
     },
     "Whisper Leak Chance": {
       category: "Standard",
       internal: ["Whispers"],
       tags: ["Speaking", "Chat"],
-      description: "Whispers will have 1% chance to leak (Add this additional times to increase the leak chance). If a whisper leaks then everyone will see it.",
+      description:
+        "Whispers will have 1% chance to leak (Add this additional times to increase the leak chance). If a whisper leaks then everyone will see it.",
       allowDuplicate: true,
       requires: ["Whispers"],
     },
   },
   "Texas Hold Em": {
-      "Whispers": {
+    Whispers: {
       category: "Standard",
       internal: ["Whispers"],
       tags: ["Speaking", "Chat"],
-      description: "Allow players to privately contact another player in the village meeting.",
+      description:
+        "Allow players to privately contact another player in the village meeting.",
     },
     "Whisper Leak Chance": {
       category: "Standard",
       internal: ["Whispers"],
       tags: ["Speaking", "Chat"],
-      description: "Whispers will have 1% chance to leak (Add this additional times to increase the leak chance). If a whisper leaks then everyone will see it.",
+      description:
+        "Whispers will have 1% chance to leak (Add this additional times to increase the leak chance). If a whisper leaks then everyone will see it.",
       allowDuplicate: true,
       requires: ["Whispers"],
     },
   },
   Cheat: {
-    "Whispers": {
+    Whispers: {
       category: "Standard",
       internal: ["Whispers"],
       tags: ["Speaking", "Chat"],
-      description: "Allow players to privately contact another player in the village meeting.",
+      description:
+        "Allow players to privately contact another player in the village meeting.",
     },
     "Whisper Leak Chance": {
       category: "Standard",
       internal: ["Whispers"],
       tags: ["Speaking", "Chat"],
-      description: "Whispers will have 1% chance to leak (Add this additional times to increase the leak chance). If a whisper leaks then everyone will see it.",
+      description:
+        "Whispers will have 1% chance to leak (Add this additional times to increase the leak chance). If a whisper leaks then everyone will see it.",
       allowDuplicate: true,
       requires: ["Whispers"],
     },
   },
   Battlesnakes: {},
   "Connect Four": {
-    "Whispers": {
+    Whispers: {
       category: "Standard",
       internal: ["Whispers"],
       tags: ["Speaking", "Chat"],
-      description: "Allow players to privately contact another player in the village meeting.",
+      description:
+        "Allow players to privately contact another player in the village meeting.",
     },
     "Whisper Leak Chance": {
       category: "Standard",
       internal: ["Whispers"],
       tags: ["Speaking", "Chat"],
-      description: "Whispers will have 1% chance to leak (Add this additional times to increase the leak chance). If a whisper leaks then everyone will see it.",
+      description:
+        "Whispers will have 1% chance to leak (Add this additional times to increase the leak chance). If a whisper leaks then everyone will see it.",
       allowDuplicate: true,
       requires: ["Whispers"],
     },
