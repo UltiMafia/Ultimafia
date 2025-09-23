@@ -561,6 +561,175 @@ export function ModifierCount(props) {
   );
 }
 
+export function GameSettingCount(props) {
+  const iconLength = props.iconLength || undefined;
+  const roleRef = useRef();
+  const popover = useContext(PopoverContext);
+  const user = useContext(UserContext);
+  const siteInfo = useContext(SiteInfoContext);
+  //const [roleData, setRoleData] = useState(null);
+  const isPhoneDevice = useIsPhoneDevice();
+
+  const {
+    popoverOpen: canOpenPopover,
+    popoverClasses,
+    anchorEl,
+    handleClick: handlePopoverClick,
+    handleMouseEnter,
+    handleMouseLeave,
+    closePopover,
+  } = usePopoverOpen();
+
+  const handleRoleCountClick = (e) => {
+    if (props.onClick) return props.onClick();
+
+    if (makeRolePrediction) {
+      makeRolePrediction(props.role);
+      popover.close();
+      return;
+    }
+
+    if (!roleName || props.showPopover == false || roleName === "null") return;
+
+    handlePopoverClick(e);
+  };
+
+  // Display predicted icon
+  const isRolePrediction = props.isRolePrediction;
+  // Choose from list of icons to predict from
+  const makeRolePrediction = props.makeRolePrediction;
+
+  var roleName;
+
+  if (typeof props.role == "string") {
+    roleName = props.role.split(":")[0];
+  } else if (props.role) {
+    roleName = props.role.name;
+  }
+  /*
+  useEffect(() => {
+    setRoleData({
+      ...siteInfo.modifiers[props.gameType][roleName],
+    });
+  }, [siteInfo, roleName]);
+*/
+  let tempData = null;
+  if (siteInfo.gamesettings[props.gameType].filter((t) => t.name == roleName)) {
+    tempData = siteInfo.gamesettings[props.gameType].filter(
+      (t) => t.name == roleName
+    )[0];
+  } else {
+    tempData = siteInfo.gamesettings[props.gameType]["Day Start"];
+  }
+  const roleData = tempData;
+
+  const roleClass = roleName
+    ? `${hyphenDelimit(props.gameType)}-${hyphenDelimit(roleName)}`
+    : "null";
+
+  function onRoleGroupClick() {
+    if (props.roleGroup) {
+      popover.onClick(
+        Promise.resolve({
+          data: {
+            roles: props.roleGroup,
+            gameType: props.gameType,
+            setup: props,
+            otherRoles: props.otherRoles,
+          },
+        }),
+        "modifier"
+      );
+    }
+  }
+
+  const digits = props.count;
+
+  const popoverDisabled = Boolean(props.showPopover === false);
+  const popoverOpen = !popoverDisabled && canOpenPopover;
+  const roleTags = roleData?.tags ? roleData.tags.sort().join(", ") : "";
+  const DescriptionLines = (
+    <List dense sx={{ ...{ paddingTop: "0" } }}>
+      {[roleData?.description].map((text, i) => (
+        <ListItem
+          key={i}
+          sx={{
+            paddingBottom: "0",
+            paddingTop: "0",
+            px: isPhoneDevice ? 1 : 2,
+          }}
+        >
+          <ListItemIcon
+            sx={{
+              minWidth: "0",
+              marginRight: "8px",
+            }}
+          >
+            <i className={"fas fa-info-circle"} />
+          </ListItemIcon>
+          <ListItemText
+            disableTypography
+            className={"mui-popover-text"}
+            primary={text}
+          />
+        </ListItem>
+      ))}
+    </List>
+  );
+
+  return (
+    <>
+      <div
+        className={`modifier modifier-${roleClass}`}
+        aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
+        aria-haspopup="true"
+        onClick={handleRoleCountClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          height: iconLength,
+          width: iconLength,
+        }}
+      >
+        {props.count > 1 ? <DigitsCount digits={digits} /> : ""}
+      </div>
+      <div>
+        <Popover
+          open={props.showPopover !== false && popoverOpen}
+          sx={popoverClasses}
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "center",
+          }}
+          onClose={closePopover}
+          disableScrollLock
+          disableRestoreFocus
+        >
+          <div className={"mui-popover"}>
+            <div className={"mui-popover-title"}>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <div className={`modifier modifier-${roleClass}`} />
+                <Typography>{roleName}</Typography>
+              </Stack>
+            </div>
+            <div style={{ margin: "3px" }}>
+              <div>
+                <span style={{ fontWeight: "bold" }}>Tags</span>: {roleTags}
+              </div>
+              {DescriptionLines}
+            </div>
+          </div>
+        </Popover>
+      </div>
+    </>
+  );
+}
+
 function DigitsCount(props) {
   const digits = props.digits;
   return (
@@ -957,6 +1126,150 @@ export function ModifierSearch(props) {
           <SearchBar
             value={searchVal}
             placeholder="🔎 Role Name"
+            onInput={onSearchInput}
+          />
+        </Box>
+      </Stack>
+      <Divider direction="horizontal" sx={{ mb: 1 }} />
+      <Paper sx={{ p: 1 }}>
+        <Grid2 container spacing={1} columns={{ xs: 2, sm: 6, md: 8 }}>
+          {roleCells}
+        </Grid2>
+      </Paper>
+    </Stack>
+  );
+}
+
+export function GameSettingSearch(props) {
+  const theme = useTheme();
+
+  const [roleListType, setRoleListType] = useState("Items");
+
+  const [searchVal, setSearchVal] = useState("");
+  const roleCellRefs = useRef([]);
+  const user = useContext(UserContext);
+  const siteInfo = useContext(SiteInfoContext);
+  const popover = useContext(PopoverContext);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
+  function onAlignNavClick(alignment) {
+    setSearchVal("");
+    setRoleListType(alignment);
+  }
+
+  function onSearchInput(query) {
+    setSearchVal(query.toLowerCase());
+
+    if (query !== "" && roleListType.length > 0) setRoleListType("");
+    else if (query === "" && roleListType.length === 0)
+      setRoleListType("Items");
+  }
+
+  function onRoleCellClick(roleCellEl, role) {
+    popover.onClick(
+      Promise.resolve({
+        data: {
+          roleName: siteInfo.gamesettings[props.gameType][role.name],
+        },
+      }),
+      "role",
+      roleCellEl,
+      role.name
+    );
+  }
+
+  function getCompatibleModifiersOther(mods) {
+    if (!mods) {
+      mods = [];
+    }
+    const mappedMods = siteInfo.gamesettings[props.gameType].filter((t) =>
+      mods.includes(t.name)
+    );
+    let temp = [];
+    for (let mod of mappedMods) {
+      if (mod && mod.incompatible) {
+        temp.push(...mod.incompatible);
+      }
+    }
+    const incompatibles = temp;
+    const modifierOptions = siteInfo.gamesettings[props.gameType]
+      .filter((e) => !e.hidden)
+      .filter((e) => e.allowDuplicate || !mods.includes(e.name))
+      .filter((e) => !incompatibles.includes(e.name))
+      .map((modifier) => modifier.name);
+    return modifierOptions;
+  }
+
+  if (!siteInfo.gamesettings) return <NewLoading small />;
+
+  const alignButtons = ["Standard", "Voting", "Other"].map((type) => (
+    <Tab
+      label={type}
+      value={type}
+      onClick={() => onAlignNavClick(type)}
+      key={type}
+    />
+  ));
+
+  const roleCells = siteInfo.gamesettings[props.gameType].map((role, i) => {
+    const searchTerms = searchVal
+      .split(",")
+      .filter((term) => term.trim() !== "")
+      .map((term) => term.trim().toLowerCase());
+
+    const matchesSearch =
+      searchTerms.length === 0 ||
+      searchTerms.some(
+        (term) =>
+          role.name.toLowerCase().includes(term) ||
+          role.tags.join("").toLowerCase().includes(term)
+        /*
+          ||
+          Object.entries(roleAbbreviations).some(
+            ([shortcut, roleNames]) =>
+              shortcut === term && roleNames.includes(role.name)
+          )
+          */
+      );
+
+    if (
+      !role.disabled &&
+      getCompatibleModifiersOther(props.curMods).includes(role.name) &&
+      (role.category === roleListType ||
+        (searchVal.length > 0 &&
+          (role.name.toLowerCase().indexOf(searchVal) !== -1 || matchesSearch)))
+    ) {
+      return (
+        <Grid2 size={{ xs: 2 }} key={role.name}>
+          <RoleCell
+            onAddClick={props.onAddClick}
+            role={role}
+            icon={
+              <GameSettingCount
+                iconLength="2em"
+                role={role.name}
+                gameType={props.gameType}
+              />
+            }
+          />
+        </Grid2>
+      );
+    }
+  });
+
+  return (
+    <Stack direction="column" spacing={1}>
+      <Stack direction={isSmallScreen ? "column-reverse" : "row"} spacing={1}>
+        <Tabs
+          value={roleListType}
+          onChange={(_, value) => setRoleListType(value)}
+        >
+          {alignButtons}
+        </Tabs>
+        <Box sx={{ ml: isSmallScreen ? undefined : "auto !important" }}>
+          <SearchBar
+            value={searchVal}
+            placeholder="🔎 Game Setting Name"
             onInput={onSearchInput}
           />
         </Box>

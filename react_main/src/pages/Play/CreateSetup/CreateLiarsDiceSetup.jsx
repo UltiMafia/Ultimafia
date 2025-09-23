@@ -42,11 +42,12 @@ export default function CreateLiarsDiceSetup() {
     document.title = "Create Liars Dice Setup | UltiMafia";
   }, []);
 
-  function onCreateSetup(roleData, editing, setRedirect) {
+  function onCreateSetup(roleData, editing, setRedirect, gameSettings) {
     axios
       .post("/api/setup/create", {
         gameType: gameType,
         roles: roleData.roles,
+        gameSettings: gameSettings,
         name: formFields[0].value,
         startState: "Guess Dice",
         whispers: formFields[1].value,

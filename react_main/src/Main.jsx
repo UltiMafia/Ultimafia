@@ -235,6 +235,9 @@ function Main(props) {
 
         res = await axios.get("/api/roles/modifiers");
         siteInfo.update("modifiers", res.data);
+
+        res = await axios.get("/api/roles/gamesettings");
+        siteInfo.update("gamesettings", res.data);
       } catch (e) {
         errorAlert(e);
       } finally {

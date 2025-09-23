@@ -20,6 +20,7 @@ const roleData = require("../../data/roles");
 const gameAchievements = require("../../data/Achievements");
 const dailyChallengesData = require("../../data/DailyChallenge");
 const modifierData = require("../../data/modifiers");
+const gameSettingData = require("../../data/gamesettings");
 const protips = require("../../data/protips");
 const logger = require("../../modules/logging")("games");
 const constants = require("../../data/constants");
@@ -1158,7 +1159,7 @@ module.exports = class Game {
       }
     }
     //this.sendAlert(`${this.StartingRoleset.join(", ")}`);
-
+    /*
     if (
       this.setup.AllExcessRoles &&
       this.PossibleRoles &&
@@ -1169,7 +1170,7 @@ module.exports = class Game {
         .map((r) => r[0]);
       this.PossibleRoles = this.PossibleRoles.concat(AllRoles);
     }
-
+    */
     // force assign "Host"
     let hostCount = 0;
     let toDelete = [];
@@ -1348,72 +1349,7 @@ module.exports = class Game {
         this.SpecialInteractionRoles.push(`${this.AddedRoles[w]}`);
       }
     }
-    /*
-    if (this.setup.closed && this.setup.banished > 0) {
-      var banishedRoles = this.banishedRoles;
-      var banishedCount = this.setup.banished;
-      var validReplace = this.players.filter(
-        (p) =>
-          p.role.alignment == "Village" ||
-          (p.role.alignment == "Independent" &&
-            !this.getRoleTags(p.role.name).includes("Hostile"))
-      );
-      validReplace = Random.randomizeArray(validReplace);
-      if (banishedCount > validReplace.length) {
-        banishedCount = validReplace.length;
-      }
-      if (this.setup.unique && banishedRoles.length < banishedCount) {
-        banishedCount = banishedRoles.length;
-      }
-      if (banishedCount > 0) {
-        for (let i = 0; i < banishedCount; i++) {
-          let newRole = Random.randArrayVal(banishedRoles);
-          //let targetPlayer = Random.randArrayVal(validReplace);
-          validReplace[i].setRole(
-            newRole,
-            undefined,
-            false,
-            true,
-            null,
-            null,
-            "RemoveStartingItems"
-          );
-          if (this.setup.unique) {
-            let currentBanishedPlayers = this.players.filter(
-              (p) => p.role.data.banished
-            );
-            let currentBanishedRoles = [];
-            for (let x = 0; x < currentBanishedPlayers.length; x++) {
-              let tempName = currentBanishedPlayers[x].role.name;
-              let tempModifier = currentBanishedPlayers[x].role.modifier;
-              currentBanishedRoles.push(`${tempName}:${tempModifier}`);
-            }
-            let match = false;
-            let validRoles = [];
-            for (let x = 0; x < banishedRoles.length; x++) {
-              for (let y = 0; y < currentBanishedRoles.length; y++) {
-                if (banishedRoles[x] == currentBanishedRoles[y]) {
-                  banishedRoles.slice(
-                    banishedRoles.indexOf(banishedRoles[x]),
-                    1
-                  );
-                  match = true;
-                }
-              }
-              if (!match) {
-                validRoles.push(banishedRoles[x]);
-              }
-              match = false;
-            }
-            banishedRoles = validRoles;
-            //banishedRoles.slice(banishedRoles.indexOf(newRole), 1);
-          }
-          //validReplace.slice(validReplace.indexOf(targetPlayer), 1);
-          this.originalRoles[validReplace[i].id] = newRole;
-        }
-      }
-    }
-    */
+
     this.PossibleRoles = this.PossibleRoles.filter(
       (r) => !r.split(":")[0].includes("Banished")
     );
@@ -1535,6 +1471,11 @@ module.exports = class Game {
 
   calculateStateOffset() {
     let start = this.setup.startState;
+    if (this.hasGameSetting("Day Start")) {
+      start = "Day";
+    } else {
+      start = "Night";
+    }
     if (this.HaveTreasureChestState == true) {
       start = "Treasure Chest";
     } else if (this.HaveDuskOrDawn == true && start == "Day") {
@@ -1762,7 +1703,7 @@ module.exports = class Game {
           { color: "#F1F1F1" }
         ),
       ];
-    if (this.setup.talkingDead && this.currentState == 0)
+    if (this.isTalkingDead() && this.currentState == 0)
       [
         this.sendAlert(
           `:rip: ${this.setup.name}: This setup is using the Talking Dead game setting so Dead Players can speak during the Village meeting!`,
@@ -1770,7 +1711,7 @@ module.exports = class Game {
           { color: "#F1F1F1" }
         ),
       ];
-    if (this.setup.votingDead && this.currentState == 0)
+    if (this.isVotingDead() && this.currentState == 0)
       [
         this.sendAlert(
           `:rip: ${this.setup.name}: This setup is using the Voting Dead game setting so Dead Players can Vote during the Village meeting!`,
@@ -1796,7 +1737,7 @@ module.exports = class Game {
         ),
       ];
     }
-    if (this.setup.majorityVoting && this.currentState == 0) {
+    if (this.isMajorityVoting() && this.currentState == 0) {
       [
         this.sendAlert(
           `:crystal2: ${this.setup.name}: This setup is using Majority Voting! A player must get at least 50% of the vote to be condemned`,
@@ -1805,7 +1746,7 @@ module.exports = class Game {
         ),
       ];
     }
-    if (this.setup.hiddenConverts && this.currentState == 0) {
+    if (this.isHiddenConverts() && this.currentState == 0) {
       [
         this.sendAlert(
           `:crystal: ${this.setup.name}: This Setup is using Hidden Converts! Players who change roles will not be told about the role changes.`,
@@ -1814,7 +1755,7 @@ module.exports = class Game {
         ),
       ];
     }
-    if (this.setup.RoleShare && this.currentState == 0) {
+    if (this.isRoleSharing() && this.currentState == 0) {
       [
         this.sendAlert(
           `:message: ${this.setup.name}: This Setup is has Role Sharing Enabled! Do /roleshare to role share with other players.`,
@@ -1823,7 +1764,7 @@ module.exports = class Game {
         ),
       ];
     }
-    if (this.setup.AlignmentShare && this.currentState == 0) {
+    if (this.isAlignmentSharing() && this.currentState == 0) {
       [
         this.sendAlert(
           `:message: ${this.setup.name}: This Setup is has Alignment Sharing Enabled! Do /alignmentshare to alignment share with other players.`,
@@ -1832,7 +1773,7 @@ module.exports = class Game {
         ),
       ];
     }
-    if (this.setup.PrivateShare && this.currentState == 0) {
+    if (this.isPrivateRevealing() && this.currentState == 0) {
       [
         this.sendAlert(
           `:message: ${this.setup.name}: This Setup has Private Revealing enabled! Do /privatereveal to privatly reveal your role to a player.`,
@@ -1841,7 +1782,7 @@ module.exports = class Game {
         ),
       ];
     }
-    if (this.setup.PublicShare && this.currentState == 0) {
+    if (this.isPublicRevealing() && this.currentState == 0) {
       [
         this.sendAlert(
           `:message: ${this.setup.name}: This Setup has Public Revealing enabled! Do /publicreveal to publicly reveal your role.`,
@@ -1850,6 +1791,7 @@ module.exports = class Game {
         ),
       ];
     }
+    /*
     if (this.setup.AllExcessRoles && this.currentState == 0) {
       [
         this.sendAlert(
@@ -1859,7 +1801,8 @@ module.exports = class Game {
         ),
       ];
     }
-    if (this.setup.HostileVsMafia && this.currentState == 0) {
+    */
+    if (this.isHostileVsMafia() && this.currentState == 0) {
       [
         this.sendAlert(
           `:crystal2: ${this.setup.name}: This setup is using Hostiles Vs Mafia! Mafia/Cult will have to kill all Hostile Independents in order to win.`,
@@ -1868,7 +1811,7 @@ module.exports = class Game {
         ),
       ];
     }
-    if (this.setup.CultVsMafia && this.currentState == 0) {
+    if (this.isCultVsMafia() && this.currentState == 0) {
       [
         this.sendAlert(
           `:crystal2: ${this.setup.name}: This setup is using Competing Evil Factions! Mafia/Cult must remove any other evil factions in order to win.`,
@@ -2323,25 +2266,168 @@ module.exports = class Game {
     }
   }
 
+  //Game Settings Section
+
+  isDayStart() {
+    if (this.hasGameSetting("Day Start")) {
+      return true;
+    }
+    return false;
+  }
+
+  isWhispers() {
+    if (this.hasGameSetting("Whispers")) {
+      return true;
+    }
+    return false;
+  }
+
+  getWhisperLeakChance() {
+    if (this.hasGameSetting("Whisper Leak Chance")) {
+      let temp = this.setup.gameSettings[0].filter(
+        (m) =>
+          (Array.isArray(m) && m[0] == "Whisper Leak Chance") ||
+          m == "Whisper Leak Chance"
+      );
+      if (temp[0] == "Whisper Leak Chance") {
+        return 1;
+      } else {
+        return temp[0].length;
+      }
+    }
+    return 0;
+  }
+
   isMustAct() {
-    return this.mustAct || this.setup.mustAct;
+    if (this.hasGameSetting("Must Act")) {
+      return true;
+    }
+    return false;
   }
 
   isMustCondemn() {
-    return this.mustCondemn || this.setup.mustCondemn;
+    if (this.hasGameSetting("Must Condemn")) {
+      return true;
+    }
+    return false;
+  }
+
+  isNoReveal() {
+    if (this.hasGameSetting("No Reveal")) {
+      return true;
+    }
+    return false;
+  }
+
+  isAlignmentOnlyReveal() {
+    if (this.hasGameSetting("Alignment Only Reveal")) {
+      return true;
+    }
+    return false;
+  }
+
+  isHiddenVotes() {
+    if (this.hasGameSetting("Hidden Votes")) {
+      return true;
+    }
+    return false;
   }
 
   isTalkingDead() {
-    return this.talkingDead || this.setup.talkingDead;
+    if (this.hasGameSetting("Talking Dead")) {
+      return true;
+    }
+    return false;
   }
 
   isVotingDead() {
-    return this.votingDead || this.setup.votingDead;
+    if (this.hasGameSetting("Voting Dead")) {
+      return true;
+    }
+    return false;
   }
 
   isMajorityVoting() {
-    return this.setup.majorityVoting;
+    if (this.hasGameSetting("Majority Voting")) {
+      return true;
+    }
+    return false;
   }
+
+  isRoleSharing() {
+    if (this.hasGameSetting("Role Sharing")) {
+      return true;
+    }
+    return false;
+  }
+
+  isAlignmentSharing() {
+    if (this.hasGameSetting("Alignment Sharing")) {
+      return true;
+    }
+    return false;
+  }
+
+  isPrivateRevealing() {
+    if (this.hasGameSetting("Private Revealing")) {
+      return true;
+    }
+    return false;
+  }
+
+  isPublicRevealing() {
+    if (this.hasGameSetting("Public Revealing")) {
+      return true;
+    }
+    return false;
+  }
+
+  isHiddenConverts() {
+    if (this.hasGameSetting("Hidden Conversions")) {
+      return true;
+    }
+    return false;
+  }
+
+  isLastWills() {
+    if (this.hasGameSetting("Last Wills")) {
+      return true;
+    }
+    return false;
+  }
+
+  isHostileVsMafia() {
+    if (this.hasGameSetting("Hostiles Vs Mafia")) {
+      return true;
+    }
+    return false;
+  }
+
+  isCultVsMafia() {
+    if (this.hasGameSetting("Competing Evil Factions")) {
+      return true;
+    }
+    return false;
+  }
+
+  hasGameSetting(gameSetting) {
+    //Object.entries(gameSettingData[this.type]).map((m) => m[1].in)
+    let tempgameSettings;
+    if (this.setup.gameSettings && this.setup.gameSettings[0]) {
+      tempgameSettings = this.setup.gameSettings[0].map((k) =>
+        Array.isArray(k) ? k[0] : k
+      );
+    } else {
+      return false;
+    }
+    if (tempgameSettings && tempgameSettings.includes(gameSetting)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  //End Game Settings Section
 
   isNoVeg() {
     return this.noVeg;

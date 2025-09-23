@@ -26,6 +26,8 @@ import {
   RoleSearch,
   ModifierSearch,
   ModifierCount,
+  GameSettingSearch,
+  GameSettingCount,
   RoleCell,
 } from "components/Roles";
 import Form from "components/Form";
@@ -111,6 +113,7 @@ export default function CreateSetup(props) {
   const [redirect, setRedirect] = useState("");
   const [editing, setEditing] = useState(false);
   const [modifiers, setModifiers] = useState([]);
+  const [gameSettings, setGameSettings] = useState([]);
 
   const location = useLocation();
   const params = new URLSearchParams(location.search);
@@ -361,6 +364,38 @@ export default function CreateSetup(props) {
     */
   }
 
+  function onAddGameSetting(mod) {
+    let index = gameSettings.length;
+
+    let tmpGameSettings = gameSettings.filter((m) => m);
+    for (let x = 0; x < tmpGameSettings.length; x++) {
+      if (tmpGameSettings[x] == mod.name) {
+        tmpGameSettings[x] = [mod.name, mod.name];
+        setGameSettings(tmpGameSettings);
+        return;
+      } else if (tmpGameSettings[x].includes(mod.name)) {
+        if (tmpGameSettings[x].length > 99) {
+          return;
+        }
+        tmpGameSettings[x].push(mod.name);
+        setGameSettings(tmpGameSettings);
+        return;
+      }
+    }
+    tmpGameSettings.push(mod.name);
+    setGameSettings(tmpGameSettings);
+    /*
+    const tmpModifiers = [...modifiers];
+    const modifier = mod;
+    if (modifier) {
+      tmpModifiers[index] = modifier;
+    } else {
+      delete tmpModifiers[index];
+    }
+    setModifiers(tmpModifiers);
+    */
+  }
+
   function onRemoveModifier(mod) {
     let index = modifiers.indexOf(mod);
     if (index == -1) {
@@ -369,6 +404,30 @@ export default function CreateSetup(props) {
     let tmpModifiers = modifiers.filter((m) => m);
     tmpModifiers.splice(index, 1);
     setModifiers(tmpModifiers);
+    /*
+    const tmpModifiers = [...modifiers];
+    delete tmpModifiers[index];
+    
+    setModifiers(tmpModifiers);
+    */
+  }
+
+  function onRemoveGameSetting(mod) {
+    let index = gameSettings.indexOf(mod);
+    if (index == -1) {
+      return;
+    }
+    let tmpGameSettings = gameSettings.filter((m) => m);
+    if (Array.isArray(mod)) {
+      tmpGameSettings[index].pop();
+      if (tmpGameSettings[index].length <= 1) {
+        tmpGameSettings[index] = mod[0];
+      }
+      setGameSettings(tmpGameSettings);
+      return;
+    }
+    tmpGameSettings.splice(index, 1);
+    setGameSettings(tmpGameSettings);
     /*
     const tmpModifiers = [...modifiers];
     delete tmpModifiers[index];
@@ -689,6 +748,30 @@ export default function CreateSetup(props) {
           </Grid2>
         </Grid2>
       </Paper>
+      <GameSettingSearch
+        onAddClick={onAddGameSetting}
+        gameType={gameType}
+        curMods={gameSettings}
+      />
+      <mod>
+        Selected Game Settings
+        <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
+          {gameSettings.map((m) => (
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+              <GameSettingCount
+                role={Array.isArray(m) ? m[0] : m}
+                count={gameSettings[m]}
+                gameType={gameType}
+                sx={{ fontSize: "14px" }}
+                onClick={() => {
+                  onRemoveGameSetting(m);
+                }}
+              />
+              {Array.isArray(m) ? `${m[0]} x${m.length}` : m}
+            </Stack>
+          ))}
+        </Stack>
+      </mod>
       <Paper sx={{ p: 1 }}>
         {user.loggedIn && (
           <Stack direction={isSmallScreen ? "column" : "row"}>
@@ -696,7 +779,9 @@ export default function CreateSetup(props) {
               fields={formFields}
               onChange={updateFormFields}
               submitText={editing ? "Edit" : "Create"}
-              onSubmit={() => onCreateSetup(roleData, editing, setRedirect)}
+              onSubmit={() =>
+                onCreateSetup(roleData, editing, setRedirect, gameSettings)
+              }
             />
           </Stack>
         )}

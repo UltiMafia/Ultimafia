@@ -1872,7 +1872,9 @@ function ObituariesMessage(props) {
         deaths={deaths}
         onFullyAnimated={() => game.setIsObituaryPlaying(false)}
         playAudio={game.playAudio}
-        isAlignmentReveal={game.setup?.alignmentReveal}
+        isAlignmentReveal={game.setup?.gameSettings[0].includes(
+          "Alignment Only Reveal"
+        )}
       />
     </>
   );
@@ -1940,7 +1942,7 @@ function SpeechInput(props) {
         });
       }
     }
-    if (props.setup.whispers) {
+    if (props.setup.gameSettings[0].includes("Whispers")) {
       newDropdownOptions.push("divider");
       newDropdownOptions.push({
         id: "forceLeak",
@@ -2568,8 +2570,9 @@ export function OptionsList(props) {
 }
 
 export function getUnresolvedActionCount(meetings) {
-  return Object.values(meetings).filter((meeting) => !meeting.playerHasVoted && meeting.voting && meeting.canVote)
-    .length;
+  return Object.values(meetings).filter(
+    (meeting) => !meeting.playerHasVoted && meeting.voting && meeting.canVote
+  ).length;
 }
 
 export function ActionList(props) {

@@ -469,6 +469,7 @@ module.exports = {
     playRanked: true,
     playCompetitive: true,
     viewVotes: true,
+    editAnySetup: true,
   },
   defaultGroups: {
     Owner: {
@@ -543,6 +544,7 @@ module.exports = {
         "approveCompetitive",
         "playRanked",
         "playCompetitive",
+        "editAnySetup",
       ],
     },
     Liaison: {
@@ -550,6 +552,7 @@ module.exports = {
       visible: true,
       perms: [
         "kick",
+        "breakGame",
         "announce",
         "featureSetup",
         "approveRanked",
@@ -558,6 +561,7 @@ module.exports = {
         "playCompetitive",
         "competitiveBan",
         "competitiveUnban",
+        "editAnySetup",
       ],
     },
     Mod: {

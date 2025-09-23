@@ -504,10 +504,7 @@ module.exports = class WinWithFaction extends Card {
           .filter((p) => p.hasEffect("AssassinEffect"));
         if (assassinInGame.length > 0) return;
 
-        if (
-          this.game.started == true &&
-          this.game.setup.hiddenConverts == true
-        ) {
+        if (this.game.started == true && this.game.isHiddenConverts() == true) {
           return;
         }
 

@@ -96,7 +96,7 @@ module.exports = class MafiaPlayer extends Player {
         if (this.game.getStateName() != "Day" || !this.alive) {
           return;
         }
-        if (!this.game.setup.RoleShare) {
+        if (!this.game.isRoleSharing()) {
           this.sendAlert("Role Sharing is not Enabled in this Setup.");
           return;
         }
@@ -147,7 +147,7 @@ module.exports = class MafiaPlayer extends Player {
         if (this.game.getStateName() != "Day" || !this.alive) {
           return;
         }
-        if (!this.game.setup.AlignmentShare) {
+        if (!this.game.isAlignmentSharing()) {
           this.sendAlert("Alignment Sharing is not Enabled in this Setup.");
           return;
         }
@@ -198,7 +198,7 @@ module.exports = class MafiaPlayer extends Player {
         if (this.game.getStateName() != "Day" || !this.alive) {
           return;
         }
-        if (!this.game.setup.PrivateShare) {
+        if (!this.game.isPrivateRevealing()) {
           this.sendAlert("Private Revealing is not Enabled in this Setup.");
           return;
         }
@@ -229,7 +229,7 @@ module.exports = class MafiaPlayer extends Player {
                   `You Privatly Reveal to ${this.target.name}.`
                 );
                 this.actor.role.revealToPlayer(
-                  targetPlayer,
+                  this.target,
                   null,
                   "investigate"
                 );
@@ -244,7 +244,7 @@ module.exports = class MafiaPlayer extends Player {
         if (this.game.getStateName() != "Day" || !this.alive) {
           return;
         }
-        if (!this.game.setup.PublicShare) {
+        if (!this.game.isPublicRevealing()) {
           this.sendAlert("Public Revealing is not Enabled in this Setup.");
           return;
         }
@@ -373,7 +373,7 @@ module.exports = class MafiaPlayer extends Player {
   speak(message) {
     if (
       !this.alive &&
-      this.game.setup.talkingDead != true &&
+      this.game.isTalkingDead() != true &&
       (message.meeting.name == "Village" ||
         message.meeting.name == "Room 1" ||
         message.meeting.name == "Room 2" ||
@@ -391,7 +391,7 @@ module.exports = class MafiaPlayer extends Player {
   speakQuote(quote) {
     if (
       !this.alive &&
-      this.game.setup.talkingDead != true &&
+      this.game.isTalkingDead() != true &&
       (quote.meeting.name == "Village" ||
         quote.meeting.name == "Room 1" ||
         quote.meeting.name == "Room 2" ||

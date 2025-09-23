@@ -147,7 +147,7 @@ router.get("/list", async function (req, res) {
       newGame.setup = await models.Setup.findOne({
         id: game.settings.setup,
       }).select(
-        "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
+        "id gameType name roles closed gameSettings useRoleGroups roleGroupSizes count total -_id"
       );
       newGame.setup = newGame.setup.toJSON();
       newGame.hostId = game.hostId;

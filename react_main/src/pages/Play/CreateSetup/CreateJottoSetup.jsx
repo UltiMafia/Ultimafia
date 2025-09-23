@@ -27,11 +27,12 @@ export default function CreateJottoSetup() {
     document.title = "Create Jotto Setup | UltiMafia";
   }, []);
 
-  function onCreateSetup(roleData, editing, setRedirect) {
+  function onCreateSetup(roleData, editing, setRedirect, gameSettings) {
     axios
       .post("/api/setup/create", {
         gameType: gameType,
         roles: roleData.roles,
+        gameSettings: gameSettings,
         name: formFields[0].value,
         startState: "Select Word",
         whispers: false,

@@ -27,11 +27,12 @@ export default function CreateAcrotopiaSetup() {
     document.title = "Create Acrotopia Setup | UltiMafia";
   }, []);
 
-  function onCreateSetup(roleData, editing, setRedirect) {
+  function onCreateSetup(roleData, editing, setRedirect, gameSettings) {
     axios
       .post("/api/setup/create", {
         gameType: gameType,
         roles: roleData.roles,
+        gameSettings: gameSettings,
         name: formFields[0].value,
         startState: "Night",
         whispers: false,

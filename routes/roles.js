@@ -2,11 +2,13 @@ const express = require("express");
 const constants = require("../data/constants");
 const roleData = require("..//data/roles");
 const modifierData = require("../data/modifiers");
+const gameSettingData = require("../data/gamesettings");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 
 var condensedRoleData = { Modifiers: {} };
 var fullModifierData = {};
+var fullGameSettingData = {};
 
 for (let gameType in roleData) {
   condensedRoleData[gameType] = [];
@@ -36,6 +38,12 @@ for (let gameType in modifierData) {
   );
 }
 
+for (let gameType in gameSettingData) {
+  fullGameSettingData[gameType] = Object.entries(gameSettingData[gameType]).map(
+    (v) => ({ name: v[0], ...v[1] })
+  );
+}
+
 router.get("/all", async function (req, res, next) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -60,6 +68,16 @@ router.get("/modifiers", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     res.send(fullModifierData);
+  } catch (e) {
+    logger.error(e);
+    res.send([]);
+  }
+});
+
+router.get("/gamesettings", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    res.send(fullGameSettingData);
   } catch (e) {
     logger.error(e);
     res.send([]);
