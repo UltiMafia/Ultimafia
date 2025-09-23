@@ -220,6 +220,8 @@ export function parseSetupPopover(setup, roleData) {
     result.push(<InfoRow title="Created By" content={name} key="createdBy" />);
   }
 
+  let settings = setup.gameSettings[0].map((s, i) => (<InfoRow title={Array.isArray(s) ? s[0] : s} content={(Array.isArray(s)) ? s.length : true} key={i} />))
+
   // Common settings
   result.push(
     <InfoSection title="Common settings">
@@ -230,6 +232,16 @@ export function parseSetupPopover(setup, roleData) {
         content={setup.competitive}
         key="competitive"
       />
+    </InfoSection>
+  );
+  if(settings){
+  result.push(
+      <InfoSection title="Game Settings">
+      {settings}
+    </InfoSection>
+  );
+  }
+  /*
       <InfoRow title="Must Act" content={setup.mustAct} key="mustAct" />
       <InfoRow
         title="Must Condemn"
@@ -248,10 +260,11 @@ export function parseSetupPopover(setup, roleData) {
           key="leakPercentage"
         />
       )}
-    </InfoSection>
-  );
+
+  */
 
   switch (setup.gameType) {
+    /*
     case "Mafia":
       result.push(
         <InfoSection title="Mafia specific settings">
@@ -271,6 +284,7 @@ export function parseSetupPopover(setup, roleData) {
         </InfoSection>
       );
       break;
+      */
     case "Resistance":
       result.push(
         <InfoSection title="Resistance specific settings">

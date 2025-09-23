@@ -102,12 +102,13 @@ export default function CreateResistanceSetup() {
     document.title = "Create Resistance Setup | UltiMafia";
   }, []);
 
-  function onCreateSetup(roleData, editing, setRedirect) {
+  function onCreateSetup(roleData, editing, setRedirect, gameSettings) {
     axios
       .post("/api/setup/create", {
         gameType: gameType,
         roles: roleData.roles,
         closed: roleData.closed,
+        gameSettings: gameSettings,
         name: formFields[0].value,
         startState: "Team Selection",
         firstTeamSize: Number(formFields[1].value),

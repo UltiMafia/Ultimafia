@@ -522,7 +522,7 @@ export function ModifierCount(props) {
           width: iconLength,
         }}
       >
-        {props.count > 1 && <DigitsCount digits={digits} />}
+      {props.count > 1 && <DigitsCount digits={digits} />}
       </div>
       <div>
         <Popover
@@ -580,7 +580,19 @@ export function GameSettingCount(props) {
     closePopover,
   } = usePopoverOpen();
 
-  const handleRoleCountClick = (e) => {};
+  const handleRoleCountClick = (e) => {
+    if (props.onClick) return props.onClick();
+
+    if (makeRolePrediction) {
+      makeRolePrediction(props.role);
+      popover.close();
+      return;
+    }
+
+  if (!roleName || props.showPopover == false || roleName === "null") return;
+
+    handlePopoverClick(e);
+  };
 
   // Display predicted icon
   const isRolePrediction = props.isRolePrediction;
@@ -631,8 +643,7 @@ export function GameSettingCount(props) {
     }
   }
 
-  const digits =
-    props.count && !props.hideCount ? props.count.toString().split("") : "";
+  const digits = props.count;
 
   const popoverDisabled = Boolean(props.showPopover === false);
   const popoverOpen = !popoverDisabled && canOpenPopover;
@@ -680,7 +691,7 @@ export function GameSettingCount(props) {
           width: iconLength,
         }}
       >
-        {props.count > 1 && <DigitsCount digits={digits} />}
+        {props.count > 1 ? <DigitsCount digits={digits} /> : ""}
       </div>
       <div>
         <Popover
@@ -1158,7 +1169,7 @@ export function GameSettingSearch(props) {
     popover.onClick(
       Promise.resolve({
         data: {
-          roleName: siteInfo.modifiers[props.gameType][role.name],
+          roleName: siteInfo.gamesettings[props.gameType][role.name],
         },
       }),
       "role",

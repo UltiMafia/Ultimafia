@@ -32,7 +32,7 @@ module.exports = class Meeting {
     this.liveJoin = false;
     this.randomizeTieResults = false;
     this.requireMajority = game.isMajorityVoting() && this.name == "Village";
-    this.votesInvisible = game.setup.votesInvisible;
+    this.votesInvisible = game.isHiddenVotes();
     this.mustAct = game.isMustAct() && this.name != "Village";
     this.mustCondemn = game.isMustCondemn() && this.name == "Village";
     this.talkingDead = game.isTalkingDead() && this.name == "Village";
@@ -139,7 +139,7 @@ module.exports = class Meeting {
       this.voteVersions[player.id] = { votes: {}, voteRecord: [] };
 
     if (
-      this.game.setup.whispers &&
+      this.game.isWhispers() &&
       this.name != "Pregame" &&
       // disable whispers for anonymous meetings that are not the village meeting
       !(this.anonymous && this.name != "Village") &&
@@ -1019,7 +1019,7 @@ module.exports = class Meeting {
 
     if (
       message.abilityName == "Whisper" &&
-      this.game.setup.whispers &&
+      this.game.isWhispers() &&
       this.name != "Pregame" &&
       !this.anonymous
     ) {
@@ -1032,17 +1032,17 @@ module.exports = class Meeting {
 
       let leakChance = -1;
 
-      if (this.game.setup.leakPercentage > 0)
+      if (this.game.getWhisperLeakChance() > 0)
         leakChance = Random.randFloatRange(0, 100);
 
       if (message.forceLeak) {
-        leakChance = this.game.setup.leakPercentage;
+        leakChance = this.game.getWhisperLeakChance();
       }
       if (message.recipients.find((e) => e.hasEffect("Leak Whispers"))) {
-        leakChance = this.game.setup.leakPercentage;
+        leakChance = this.game.getWhisperLeakChance();
       }
 
-      if (leakChance > 0 && leakChance <= this.game.setup.leakPercentage)
+      if (leakChance > 0 && leakChance <= this.game.getWhisperLeakChance())
         message.recipients = this.getPlayers();
     }
 

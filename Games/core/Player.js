@@ -296,7 +296,7 @@ module.exports = class Player {
 
     socket.on("lastWill", (will) => {
       try {
-        if (!this.game.setup.lastWill) return;
+        if (!this.game.isLastWills()) return;
 
         if (this.game.type == "Mafia" && this.game.getStateName() == "Day")
           return;
@@ -801,7 +801,7 @@ module.exports = class Player {
     }
     this.role.init(modifiers);
 
-    if (this.game.started == true && this.game.setup.hiddenConverts == true) {
+    if (this.game.started == true && this.game.isHiddenConverts() == true) {
       noReveal = true;
     }
 
@@ -1566,11 +1566,11 @@ module.exports = class Player {
 
     let roleReveal = true;
 
-    if (this.game.setup.noReveal) {
+    if (this.game.isNoReveal()) {
       roleReveal = false;
     }
 
-    if (this.game.setup.alignmentReveal) {
+    if (this.game.isAlignmentOnlyReveal()) {
       roleReveal = false;
       this.role.revealAlignmentToAll(false, this.getRevealType(killType), true);
     }
@@ -1653,7 +1653,7 @@ module.exports = class Player {
   }
 
   queueLastWill() {
-    if (!this.game.setup.lastWill) return;
+    if (!this.game.isLastWills()) return;
 
     var will;
 

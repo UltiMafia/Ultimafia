@@ -506,7 +506,7 @@ module.exports = class WinWithFaction extends Card {
 
         if (
           this.game.started == true &&
-          this.game.setup.hiddenConverts == true
+          this.game.isHiddenConverts() == true
         ) {
           return;
         }

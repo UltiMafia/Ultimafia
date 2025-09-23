@@ -45,18 +45,18 @@ function generateMafiaSetupManifest(setup, roles) {
     lines = [
       `Name: ${setup.name}`,
       `Starting state: ${setup.startState}`,
-      `Whispers enabled: ${setup.whispers}`,
-      `Whisper leak percentage: ${setup.leakPercentage}`,
-      `Last wills enabled: ${setup.lastWill}`,
-      `Banished count: ${setup.banished}`,
-      `Talking dead enabled: ${setup.talkingDead}`,
-      `Voting dead enabled: ${setup.votingDead}`,
-      `Majority Voting: ${setup.majorityVoting}`,
-      `Hidden converts: ${setup.hiddenConverts}`,
-      `Role sharing: ${setup.RoleShare}`,
-      `Alignment sharing: ${setup.AlignmentShare}`,
-      `Private sharing: ${setup.PrivateShare}`,
-      `Public sharing: ${setup.PublicShare}`,
+     // `Whispers enabled: ${setup.whispers}`,
+     // `Whisper leak percentage: ${setup.leakPercentage}`,
+     // `Last wills enabled: ${setup.lastWill}`,
+     // `Banished count: ${setup.banished}`,
+     // `Talking dead enabled: ${setup.talkingDead}`,
+     // `Voting dead enabled: ${setup.votingDead}`,
+     // `Majority Voting: ${setup.majorityVoting}`,
+     // `Hidden converts: ${setup.hiddenConverts}`,
+     // `Role sharing: ${setup.RoleShare}`,
+     // `Alignment sharing: ${setup.AlignmentShare}`,
+     // `Private sharing: ${setup.PrivateShare}`,
+    //  `Public sharing: ${setup.PublicShare}`,
       `Events per night: ${setup.EventsPerNight}`,
       `No death limit: ${setup.noDeathLimit}`,
       `Force must act: ${setup.ForceMustAct}`,
@@ -64,16 +64,16 @@ function generateMafiaSetupManifest(setup, roles) {
       `Unique roles: ${setup.unique}`,
       `Unique roles sans modifier: ${setup.uniqueWithoutModifier}`,
       `Use role groups: ${setup.useRoleGroups}`,
-      `Dawn enabled: ${setup.dawn}`,
-      `Must act: ${setup.mustAct}`,
-      `Must condemn: ${setup.mustCondemn}`,
+     // `Dawn enabled: ${setup.dawn}`,
+     // `Must act: ${setup.mustAct}`,
+     // `Must condemn: ${setup.mustCondemn}`,
       `Game start prompt: ${setup.gameStartPrompt}`,
-      `No reveal: ${setup.noReveal}`,
-      `Votes invisible: ${setup.votesInvisible}`,
+     // `No reveal: ${setup.noReveal}`,
+     // `Votes invisible: ${setup.votesInvisible}`,
       `Game ending event: ${setup.GameEndEvent}`,
-      `All Excess Roles: ${setup.AllExcessRoles}`,
-      `Mafia Vs Hostiles: ${setup.HostileVsMafia}`,
-      `Competing Evil Factions: ${setup.CultVsMafia}`,
+     // `All Excess Roles: ${setup.AllExcessRoles}`,
+     // `Mafia Vs Hostiles: ${setup.HostileVsMafia}`,
+     // `Competing Evil Factions: ${setup.CultVsMafia}`,
     ];
 
     if (setup.useRoleGroups) {
@@ -594,7 +594,7 @@ router.post("/create", async function (req, res) {
         .select("creator ranked")
         .populate("creator", "id");
 
-      if (!setup || setup.creator.id != userId) {
+      if ((!setup || setup.creator.id != userId) && !(await routeUtils.verifyPermission(res, userId, "editAnySetup"))) {
         res.status(500);
         res.send("You can only edit setups you have created.");
         return;
@@ -606,6 +606,7 @@ router.post("/create", async function (req, res) {
     setup.name = String(setup.name || "");
     setup.roles = Object(setup.roles);
     setup.count = Object(setup.count);
+    setup.gameSettings = Array(setup.gameSettings),
     setup.closed = Boolean(setup.closed);
     setup.unique = setup.closed ? Boolean(setup.unique) : false;
     setup.uniqueWithoutModifier = setup.unique
@@ -618,28 +619,28 @@ router.post("/create", async function (req, res) {
     setup.startState = String(
       setup.startState || constants.startStates[setup.gameType][0]
     );
-    setup.whispers = Boolean(setup.whispers);
-    setup.leakPercentage = Number(setup.leakPercentage);
-    setup.dawn = Boolean(setup.dawn);
-    setup.mustAct = Boolean(setup.mustAct);
-    setup.mustCondemn = Boolean(setup.mustCondemn);
+    //setup.whispers = Boolean(setup.whispers);
+    //setup.leakPercentage = Number(setup.leakPercentage);
+    //setup.dawn = Boolean(setup.dawn);
+    //setup.mustAct = Boolean(setup.mustAct);
+    //setup.mustCondemn = Boolean(setup.mustCondemn);
     setup.gameStartPrompt = String(setup.gameStartPrompt || "");
-    setup.banished = Number(setup.banished || 0);
-    setup.talkingDead = Boolean(setup.talkingDead);
-    setup.votingDead = Boolean(setup.votingDead);
-    setup.majorityVoting = Boolean(setup.majorityVoting);
-    setup.hiddenConverts = Boolean(setup.hiddenConverts);
-    setup.RoleShare = Boolean(setup.RoleShare);
-    setup.AlignmentShare = Boolean(setup.AlignmentShare);
-    setup.PrivateShare = Boolean(setup.PrivateShare);
-    setup.PublicShare = Boolean(setup.PublicShare);
+    //setup.banished = Number(setup.banished || 0);
+    //setup.talkingDead = Boolean(setup.talkingDead);
+    //setup.votingDead = Boolean(setup.votingDead);
+    //setup.majorityVoting = Boolean(setup.majorityVoting);
+    //setup.hiddenConverts = Boolean(setup.hiddenConverts);
+    //setup.RoleShare = Boolean(setup.RoleShare);
+    //setup.AlignmentShare = Boolean(setup.AlignmentShare);
+    //setup.PrivateShare = Boolean(setup.PrivateShare);
+    //setup.PublicShare = Boolean(setup.PublicShare);
     setup.EventsPerNight = Number(setup.EventsPerNight || 0);
     setup.noDeathLimit = Number(setup.noDeathLimit || 6);
     setup.ForceMustAct = Boolean(setup.ForceMustAct);
     setup.GameEndEvent = String(setup.GameEndEvent || "Meteor");
-    setup.AllExcessRoles = Boolean(setup.AllExcessRoles);
-    setup.HostileVsMafia = Boolean(setup.HostileVsMafia);
-    setup.CultVsMafia = Boolean(setup.CultVsMafia);
+    //setup.AllExcessRoles = Boolean(setup.AllExcessRoles);
+    //setup.HostileVsMafia = Boolean(setup.HostileVsMafia);
+    //setup.CultVsMafia = Boolean(setup.CultVsMafia);
 
     if (
       !routeUtils.validProp(setup.gameType) ||
@@ -1248,11 +1249,7 @@ const countChecks = {
 
 const optionsChecks = {
   Mafia: (setup) => {
-    var lastWill = Boolean(setup.lastWill);
-    var noReveal = Boolean(setup.noReveal);
-    var votesInvisible = Boolean(setup.votesInvisible);
-
-    return { lastWill, noReveal, votesInvisible };
+    return setup;
   },
   Resistance: (setup) => {
     var firstTeamSize = Number(setup.firstTeamSize);

@@ -30,13 +30,13 @@ module.exports = class TrueAndFalseInfo extends Information {
     }
     if (
       this.game.deadPlayers().length >= 2 &&
-      this.game.setup.noReveal == true
+      this.game.isNoReveal() == true
     ) {
       possibleInfo.push("EvilDeadCountInfo");
     }
     if (
       this.game.deadPlayers().length >= 1 &&
-      this.game.setup.noReveal == true
+      this.game.isNoReveal() == true
     ) {
       possibleInfo.push("DeadRoleInfo");
     }

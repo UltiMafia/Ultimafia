@@ -42,11 +42,12 @@ export default function CreateConnectFourSetup() {
     document.title = "Create Connect Four Setup | UltiMafia";
   }, []);
 
-  function onCreateSetup(roleData, editing, setRedirect) {
+  function onCreateSetup(roleData, editing, setRedirect, gameSettings) {
     axios
       .post("/api/setup/create", {
         gameType: gameType,
         roles: roleData.roles,
+        gameSettings: gameSettings,
         name: formFields[0].value,
         startState: "Turn",
         whispers: formFields[1].value,

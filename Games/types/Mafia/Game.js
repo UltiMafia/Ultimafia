@@ -111,7 +111,7 @@ module.exports = class MafiaGame extends Game {
 
     this.rebroadcastSetup();
 
-    if (this.setup.votingDead) {
+    if (this.isVotingDead()) {
       this.graveyardParticipation = true;
     }
 
@@ -188,8 +188,8 @@ module.exports = class MafiaGame extends Game {
     super.incrementState(index, skipped);
 
     if (
-      (this.setup.startState == "Night" && this.getStateName() == "Night") ||
-      (this.setup.startState == "Day" && this.getStateName() == "Day")
+      (!this.hasGameSetting("Day Start") && this.getStateName() == "Night") ||
+      (this.hasGameSetting("Day Start") && this.getStateName() == "Day")
     ) {
       this.dayCount++;
     }
@@ -396,16 +396,8 @@ module.exports = class MafiaGame extends Game {
       this.setup.dawn &&
       this.getStateName() == "Night" &&
       (this.dayCount == 0 ||
-        (this.dayCount == 1 && this.setup.startState == "Day"))
+        (this.dayCount == 1 && this.hasGameSetting("Day Start")))
     );
-  }
-
-  isHostileVsMafia() {
-    return this.setup.HostileVsMafia;
-  }
-
-  isCultVsMafia() {
-    return this.setup.CultVsMafia;
   }
 
   checkGameEnd() {

@@ -547,7 +547,7 @@ export default function MafiaGame() {
             {!game.review &&
               !isSpectator &&
               history.currentState >= 0 &&
-              game.setup.lastWill && (
+              game.setup.gameSettings[0].includes("Last Wills") && (
                 <LastWillEntry
                   lastWill={game.lastWill}
                   cannotModifyLastWill={history.states[
