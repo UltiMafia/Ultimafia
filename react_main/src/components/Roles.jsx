@@ -522,7 +522,7 @@ export function ModifierCount(props) {
           width: iconLength,
         }}
       >
-      {props.count > 1 && <DigitsCount digits={digits} />}
+        {props.count > 1 && <DigitsCount digits={digits} />}
       </div>
       <div>
         <Popover
@@ -589,7 +589,7 @@ export function GameSettingCount(props) {
       return;
     }
 
-  if (!roleName || props.showPopover == false || roleName === "null") return;
+    if (!roleName || props.showPopover == false || roleName === "null") return;
 
     handlePopoverClick(e);
   };

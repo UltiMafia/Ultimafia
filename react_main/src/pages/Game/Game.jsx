@@ -1872,7 +1872,9 @@ function ObituariesMessage(props) {
         deaths={deaths}
         onFullyAnimated={() => game.setIsObituaryPlaying(false)}
         playAudio={game.playAudio}
-        isAlignmentReveal={game.setup?.gameSettings[0].includes("Alignment Only Reveal")}
+        isAlignmentReveal={game.setup?.gameSettings[0].includes(
+          "Alignment Only Reveal"
+        )}
       />
     </>
   );

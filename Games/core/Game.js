@@ -1349,7 +1349,7 @@ module.exports = class Game {
         this.SpecialInteractionRoles.push(`${this.AddedRoles[w]}`);
       }
     }
- 
+
     this.PossibleRoles = this.PossibleRoles.filter(
       (r) => !r.split(":")[0].includes("Banished")
     );
@@ -1471,11 +1471,10 @@ module.exports = class Game {
 
   calculateStateOffset() {
     let start = this.setup.startState;
-    if(this.hasGameSetting("Day Start")){
+    if (this.hasGameSetting("Day Start")) {
       start = "Day";
-    }
-    else{
-     start = "Night"; 
+    } else {
+      start = "Night";
     }
     if (this.HaveTreasureChestState == true) {
       start = "Treasure Chest";
@@ -2270,26 +2269,29 @@ module.exports = class Game {
   //Game Settings Section
 
   isDayStart() {
-    if(this.hasGameSetting("Day Start")){
+    if (this.hasGameSetting("Day Start")) {
       return true;
     }
     return false;
   }
 
   isWhispers() {
-    if(this.hasGameSetting("Whispers")){
+    if (this.hasGameSetting("Whispers")) {
       return true;
     }
     return false;
   }
 
-  getWhisperLeakChance(){
-    if(this.hasGameSetting("Whisper Leak Chance")){
-      let temp = this.setup.gameSettings[0].filter((m) => (Array.isArray(m) && m[0] == "Whisper Leak Chance") || m == "Whisper Leak Chance");
-      if(temp[0] == "Whisper Leak Chance"){
+  getWhisperLeakChance() {
+    if (this.hasGameSetting("Whisper Leak Chance")) {
+      let temp = this.setup.gameSettings[0].filter(
+        (m) =>
+          (Array.isArray(m) && m[0] == "Whisper Leak Chance") ||
+          m == "Whisper Leak Chance"
+      );
+      if (temp[0] == "Whisper Leak Chance") {
         return 1;
-      }
-      else{
+      } else {
         return temp[0].length;
       }
     }
@@ -2297,130 +2299,130 @@ module.exports = class Game {
   }
 
   isMustAct() {
-    if(this.hasGameSetting("Must Act")){
+    if (this.hasGameSetting("Must Act")) {
       return true;
     }
     return false;
   }
 
   isMustCondemn() {
-    if(this.hasGameSetting("Must Condemn")){
+    if (this.hasGameSetting("Must Condemn")) {
       return true;
     }
     return false;
   }
 
-  isNoReveal(){
-    if(this.hasGameSetting("No Reveal")){
+  isNoReveal() {
+    if (this.hasGameSetting("No Reveal")) {
       return true;
     }
     return false;
   }
 
-  isAlignmentOnlyReveal(){
-    if(this.hasGameSetting("Alignment Only Reveal")){
+  isAlignmentOnlyReveal() {
+    if (this.hasGameSetting("Alignment Only Reveal")) {
       return true;
     }
     return false;
   }
 
-  isHiddenVotes(){
-    if(this.hasGameSetting("Hidden Votes")){
+  isHiddenVotes() {
+    if (this.hasGameSetting("Hidden Votes")) {
       return true;
     }
     return false;
   }
 
   isTalkingDead() {
-    if(this.hasGameSetting("Talking Dead")){
+    if (this.hasGameSetting("Talking Dead")) {
       return true;
     }
     return false;
   }
 
   isVotingDead() {
-    if(this.hasGameSetting("Voting Dead")){
+    if (this.hasGameSetting("Voting Dead")) {
       return true;
     }
     return false;
   }
 
   isMajorityVoting() {
-    if(this.hasGameSetting("Majority Voting")){
+    if (this.hasGameSetting("Majority Voting")) {
       return true;
     }
     return false;
   }
 
-  isRoleSharing(){
-    if(this.hasGameSetting("Role Sharing")){
+  isRoleSharing() {
+    if (this.hasGameSetting("Role Sharing")) {
       return true;
     }
     return false;
   }
 
-  isAlignmentSharing(){
-    if(this.hasGameSetting("Alignment Sharing")){
+  isAlignmentSharing() {
+    if (this.hasGameSetting("Alignment Sharing")) {
       return true;
     }
     return false;
   }
 
-  isPrivateRevealing(){
-    if(this.hasGameSetting("Private Revealing")){
+  isPrivateRevealing() {
+    if (this.hasGameSetting("Private Revealing")) {
       return true;
     }
     return false;
   }
 
-  isPublicRevealing(){
-    if(this.hasGameSetting("Public Revealing")){
+  isPublicRevealing() {
+    if (this.hasGameSetting("Public Revealing")) {
       return true;
     }
     return false;
   }
 
-  isHiddenConverts(){
-    if(this.hasGameSetting("Hidden Conversions")){
+  isHiddenConverts() {
+    if (this.hasGameSetting("Hidden Conversions")) {
       return true;
     }
     return false;
   }
 
-  isLastWills(){
-    if(this.hasGameSetting("Last Wills")){
+  isLastWills() {
+    if (this.hasGameSetting("Last Wills")) {
       return true;
     }
     return false;
   }
 
   isHostileVsMafia() {
-    if(this.hasGameSetting("Hostiles Vs Mafia")){
+    if (this.hasGameSetting("Hostiles Vs Mafia")) {
       return true;
     }
     return false;
   }
 
   isCultVsMafia() {
-    if(this.hasGameSetting("Competing Evil Factions")){
+    if (this.hasGameSetting("Competing Evil Factions")) {
       return true;
     }
     return false;
   }
 
-  hasGameSetting(gameSetting){
+  hasGameSetting(gameSetting) {
     //Object.entries(gameSettingData[this.type]).map((m) => m[1].in)
     let tempgameSettings;
-    if(this.setup.gameSettings && this.setup.gameSettings[0]){
-    tempgameSettings = this.setup.gameSettings[0].map((k) => Array.isArray(k) ? k[0] : k);
-    }
-    else{
+    if (this.setup.gameSettings && this.setup.gameSettings[0]) {
+      tempgameSettings = this.setup.gameSettings[0].map((k) =>
+        Array.isArray(k) ? k[0] : k
+      );
+    } else {
       return false;
     }
-    if(tempgameSettings && (tempgameSettings.includes(gameSetting))){
+    if (tempgameSettings && tempgameSettings.includes(gameSetting)) {
       return true;
-    }
-    else{
+    } else {
       return false;
     }
   }

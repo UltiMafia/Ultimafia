@@ -27,7 +27,7 @@ export default function CreateBattlesnakesSetup() {
     document.title = "Create Battlesnakes Setup | UltiMafia";
   }, []);
 
-  function onCreateSetup(roleData, editing, setRedirect,gameSettings) {
+  function onCreateSetup(roleData, editing, setRedirect, gameSettings) {
     axios
       .post("/api/setup/create", {
         gameType: gameType,

@@ -28,16 +28,10 @@ module.exports = class TrueAndFalseInfo extends Information {
     if (this.game.alivePlayers().length <= 3 || this.game.IsBloodMoon == true) {
       possibleInfo.push("BinaryAlignmentInfo");
     }
-    if (
-      this.game.deadPlayers().length >= 2 &&
-      this.game.isNoReveal() == true
-    ) {
+    if (this.game.deadPlayers().length >= 2 && this.game.isNoReveal() == true) {
       possibleInfo.push("EvilDeadCountInfo");
     }
-    if (
-      this.game.deadPlayers().length >= 1 &&
-      this.game.isNoReveal() == true
-    ) {
+    if (this.game.deadPlayers().length >= 1 && this.game.isNoReveal() == true) {
       possibleInfo.push("DeadRoleInfo");
     }
     if (this.game.alivePlayers().length <= 3 || this.game.IsBloodMoon == true) {

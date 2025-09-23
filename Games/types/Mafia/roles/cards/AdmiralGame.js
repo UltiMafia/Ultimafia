@@ -92,12 +92,11 @@ module.exports = class AdmiralGame extends Card {
         }
         if (stateInfo.name.match(/Treasure Chest/)) {
           if (this.game.AdmiralStateBlock == null) {
-             if(this.game.isDayStart()){
+            if (this.game.isDayStart()) {
               this.game.AdmiralStateBlock = "Day";
-             }
-             else{
+            } else {
               this.game.AdmiralStateBlock = "Night";
-             }
+            }
           }
         }
         if (

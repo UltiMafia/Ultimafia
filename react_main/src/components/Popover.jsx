@@ -220,7 +220,13 @@ export function parseSetupPopover(setup, roleData) {
     result.push(<InfoRow title="Created By" content={name} key="createdBy" />);
   }
 
-  let settings = setup.gameSettings[0].map((s, i) => (<InfoRow title={Array.isArray(s) ? s[0] : s} content={(Array.isArray(s)) ? s.length : true} key={i} />))
+  let settings = setup.gameSettings[0].map((s, i) => (
+    <InfoRow
+      title={Array.isArray(s) ? s[0] : s}
+      content={Array.isArray(s) ? s.length : true}
+      key={i}
+    />
+  ));
 
   // Common settings
   result.push(
@@ -234,12 +240,8 @@ export function parseSetupPopover(setup, roleData) {
       />
     </InfoSection>
   );
-  if(settings){
-  result.push(
-      <InfoSection title="Game Settings">
-      {settings}
-    </InfoSection>
-  );
+  if (settings) {
+    result.push(<InfoSection title="Game Settings">{settings}</InfoSection>);
   }
   /*
       <InfoRow title="Must Act" content={setup.mustAct} key="mustAct" />
