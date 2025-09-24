@@ -623,9 +623,7 @@ export function GameSettingCount(props) {
   }
   const roleData = tempData;
 
-  const roleClass = roleName
-    ? `${hyphenDelimit(roleName)}`
-    : "null";
+  const roleClass = roleName ? `${hyphenDelimit(roleName)}` : "null";
 
   function onRoleGroupClick() {
     if (props.roleGroup) {

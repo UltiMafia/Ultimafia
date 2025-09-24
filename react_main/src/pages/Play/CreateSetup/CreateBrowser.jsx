@@ -755,25 +755,35 @@ export default function CreateSetup(props) {
       />
       <mod>
         Selected Game Settings
-        <Stack display="flex" direction="row" spacing={2} sx={{ alignItems: "center", width: "100%", overflowY: "auto", flexWrap: "wrap" }}>
+        <Stack
+          display="flex"
+          direction="row"
+          spacing={2}
+          sx={{
+            alignItems: "center",
+            width: "100%",
+            overflowY: "auto",
+            flexWrap: "wrap",
+          }}
+        >
           {gameSettings.map((m) => (
-          <div>
-          <RoleCell
-          iconLength={iconLength}
-          role={Array.isArray(m) ? m[0] : m}
-          onDelClick={() => onRemoveGameSetting(m)}
-          icon={
-                <GameSettingCount
+            <div>
+              <RoleCell
                 iconLength={iconLength}
                 role={Array.isArray(m) ? m[0] : m}
-                count={gameSettings[m]}
-                gameType={gameType}
-                sx={{ fontSize: "14px" }}
+                onDelClick={() => onRemoveGameSetting(m)}
+                icon={
+                  <GameSettingCount
+                    iconLength={iconLength}
+                    role={Array.isArray(m) ? m[0] : m}
+                    count={gameSettings[m]}
+                    gameType={gameType}
+                    sx={{ fontSize: "14px" }}
+                  />
+                }
               />
-          }
-        />
-        {Array.isArray(m) ? `${m[0]} x${m.length}` : m}
-        </div>
+              {Array.isArray(m) ? `${m[0]} x${m.length}` : m}
+            </div>
           ))}
         </Stack>
       </mod>
