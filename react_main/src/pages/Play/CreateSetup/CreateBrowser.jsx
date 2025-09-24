@@ -294,7 +294,7 @@ export default function CreateSetup(props) {
             useRoleGroups: setup.useRoleGroups,
             roleGroupSizes: setup.roleGroupSizes,
           });
-
+          setGameSettings(setup.gameSettings[0]);
           var formFieldChanges = [];
 
           for (let field of formFields) {
@@ -755,20 +755,25 @@ export default function CreateSetup(props) {
       />
       <mod>
         Selected Game Settings
-        <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
+        <Stack display="flex" direction="row" spacing={2} sx={{ alignItems: "center", width: "100%", overflowY: "auto", flexWrap: "wrap" }}>
           {gameSettings.map((m) => (
-            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
-              <GameSettingCount
+          <div>
+          <RoleCell
+          iconLength={iconLength}
+          role={Array.isArray(m) ? m[0] : m}
+          onDelClick={() => onRemoveGameSetting(m)}
+          icon={
+                <GameSettingCount
+                iconLength={iconLength}
                 role={Array.isArray(m) ? m[0] : m}
                 count={gameSettings[m]}
                 gameType={gameType}
                 sx={{ fontSize: "14px" }}
-                onClick={() => {
-                  onRemoveGameSetting(m);
-                }}
               />
-              {Array.isArray(m) ? `${m[0]} x${m.length}` : m}
-            </Stack>
+          }
+        />
+        {Array.isArray(m) ? `${m[0]} x${m.length}` : m}
+        </div>
           ))}
         </Stack>
       </mod>

@@ -78,6 +78,14 @@
   background-image: url("/src/images/modifiers/unknown-modifier.png");
 }
 
+.gamesetting {
+  width: 1rem;
+  height: 1rem;
+
+  background-size: 100% 100%;
+  background-image: url("/src/images/modifiers/unknown-modifier.png");
+}
+
 .role-count-wrap {
   display: flex;
   flex-flow: row nowrap;
@@ -3042,6 +3050,88 @@
 
 .role-icon-vivid-Connect-Four-Starman {
   background-image: url("/src/images/roles/minigame/connectfour/starman-vivid.png");
+}
+
+/***************
+
+Game Settings
+
+*****************/
+
+.gamesetting-Must-Act {
+  background-image: url("/src/images/modifiers/proactive.png");
+}
+
+.gamesetting-Must-Condemn {
+  background-image: url("/src/images/modifiers/proactive.png");
+}
+
+.gamesetting-Day-Start {
+  background-image: url("/src/images/modifiers/insightful.png");
+}
+
+.gamesetting-Whispers {
+  background-image: url("/src/images/modifiers/preoccupied.png");
+}
+
+.gamesetting-Whisper-Leak-Chance {
+  background-image: url("/src/images/modifiers/leaky.png");
+}
+
+.gamesetting-No-Reveal {
+  background-image: url("/src/images/modifiers/faceless.png");
+}
+
+.gamesetting-Alignment-Only-Reveal {
+  background-image: url("/src/images/modifiers/unassuming.png");
+}
+
+.gamesetting-Hidden-Votes {
+  background-image: url("/src/images/modifiers/blind.png");
+}
+
+.gamesetting-Majority-Voting {
+  background-image: url("/src/images/modifiers/clannish.png");
+}
+
+.gamesetting-Voting-Dead {
+  background-image: url("/src/images/modifiers/restless-scary.png");
+}
+
+.gamesetting-Talking-Dead {
+  background-image: url("/src/images/modifiers/dead.png");
+}
+
+.gamesetting-Role-Sharing {
+  background-image: url("/src/images/modifiers/neighborly.png");
+}
+
+.gamesetting-Alignment-Sharing {
+  background-image: url("/src/images/modifiers/social.png");
+}
+
+.gamesetting-Private-Revealing {
+  background-image: url("/src/images/modifiers/noisy.png");
+}
+
+.gamesetting-Public-Revealing {
+  background-image: url("/src/images/modifiers/exposed.png");
+}
+
+.gamesetting-Hidden-Conversions {
+  background-image: url("/src/images/modifiers/scatterbrained.png");
+}
+
+.gamesetting-Last-Wills {
+  background-image: url("/src/images/modifiers/prosaic.png");
+}
+
+.gamesetting-Hostiles-Vs-Mafia {
+  background-image: url("/src/images/modifiers/braggadocious.png");
+}
+
+.gamesetting-Competing-Evil-Factions {
+  background-image: url("/src/images/modifiers/brutish.png");
 }
 
 /***********

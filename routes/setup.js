@@ -595,7 +595,7 @@ router.post("/create", async function (req, res) {
         .populate("creator", "id");
 
       if (
-        (!setup || setup.creator.id != userId) &&
+        (!setup || (setup.creator && setup.creator.id != userId)) &&
         !(await routeUtils.verifyPermission(res, userId, "editAnySetup"))
       ) {
         res.status(500);
