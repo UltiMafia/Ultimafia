@@ -114,7 +114,7 @@ module.exports = class MafiaAction extends Action {
         continue;
       }
 
-      if(action.priority <= this.priority){
+      if (action.priority <= this.priority) {
         continue;
       }
 
