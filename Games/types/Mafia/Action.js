@@ -114,6 +114,10 @@ module.exports = class MafiaAction extends Action {
         continue;
       }
 
+      if(action.priority <= this.priority){
+        continue;
+      }
+
       if (action.actor && action.actor.role.alignment == excludeAlignment) {
         continue;
       }
