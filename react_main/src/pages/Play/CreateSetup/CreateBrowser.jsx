@@ -368,6 +368,13 @@ export default function CreateSetup(props) {
     let index = gameSettings.length;
 
     let tmpGameSettings = gameSettings.filter((m) => m);
+    if(mod.includes(" x10")){
+      mod = mod.split(" x10")[0];
+      for(let x = 0; x < 10; x++){
+        onAddGameSetting(mod);
+      }
+      return;
+    }
     for (let x = 0; x < tmpGameSettings.length; x++) {
       if (tmpGameSettings[x] == mod.name) {
         tmpGameSettings[x] = [mod.name, mod.name];
@@ -418,6 +425,7 @@ export default function CreateSetup(props) {
       return;
     }
     let tmpGameSettings = gameSettings.filter((m) => m);
+    /*
     if (Array.isArray(mod)) {
       tmpGameSettings[index].pop();
       if (tmpGameSettings[index].length <= 1) {
@@ -426,6 +434,7 @@ export default function CreateSetup(props) {
       setGameSettings(tmpGameSettings);
       return;
     }
+    */
     tmpGameSettings.splice(index, 1);
     setGameSettings(tmpGameSettings);
     /*
