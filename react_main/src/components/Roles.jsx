@@ -623,9 +623,7 @@ export function GameSettingCount(props) {
   }
   const roleData = tempData;
 
-  const roleClass = roleName
-    ? `${hyphenDelimit(props.gameType)}-${hyphenDelimit(roleName)}`
-    : "null";
+  const roleClass = roleName ? `${hyphenDelimit(roleName)}` : "null";
 
   function onRoleGroupClick() {
     if (props.roleGroup) {
@@ -680,7 +678,7 @@ export function GameSettingCount(props) {
   return (
     <>
       <div
-        className={`modifier modifier-${roleClass}`}
+        className={`gamesetting gamesetting-${roleClass}`}
         aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
         aria-haspopup="true"
         onClick={handleRoleCountClick}
@@ -713,7 +711,7 @@ export function GameSettingCount(props) {
           <div className={"mui-popover"}>
             <div className={"mui-popover-title"}>
               <Stack direction="row" spacing={1} alignItems="center">
-                <div className={`modifier modifier-${roleClass}`} />
+                <div className={`gamesetting gamesetting-${roleClass}`} />
                 <Typography>{roleName}</Typography>
               </Stack>
             </div>
@@ -1036,6 +1034,7 @@ export function ModifierSearch(props) {
     if (!mods) {
       mods = [];
     }
+    mods = mods.map((m) => m.name);
     const mappedMods = siteInfo.modifiers[props.gameType].filter((t) =>
       mods.includes(t.name)
     );
@@ -1143,7 +1142,7 @@ export function ModifierSearch(props) {
 export function GameSettingSearch(props) {
   const theme = useTheme();
 
-  const [roleListType, setRoleListType] = useState("Items");
+  const [roleListType, setRoleListType] = useState("Standard");
 
   const [searchVal, setSearchVal] = useState("");
   const roleCellRefs = useRef([]);
@@ -1162,7 +1161,7 @@ export function GameSettingSearch(props) {
 
     if (query !== "" && roleListType.length > 0) setRoleListType("");
     else if (query === "" && roleListType.length === 0)
-      setRoleListType("Items");
+      setRoleListType("Standard");
   }
 
   function onRoleCellClick(roleCellEl, role) {
@@ -1178,7 +1177,7 @@ export function GameSettingSearch(props) {
     );
   }
 
-  function getCompatibleModifiersOther(mods) {
+  function getCompatibleGameSettingsOther(mods) {
     if (!mods) {
       mods = [];
     }
@@ -1234,7 +1233,7 @@ export function GameSettingSearch(props) {
 
     if (
       !role.disabled &&
-      getCompatibleModifiersOther(props.curMods).includes(role.name) &&
+      getCompatibleGameSettingsOther(props.curMods).includes(role.name) &&
       (role.category === roleListType ||
         (searchVal.length > 0 &&
           (role.name.toLowerCase().indexOf(searchVal) !== -1 || matchesSearch)))
