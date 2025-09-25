@@ -367,10 +367,42 @@ export default function CreateSetup(props) {
   function onAddGameSetting(mod) {
     let index = gameSettings.length;
 
-    let tmpGameSettings = gameSettings.filter((m) => m);
+    var tmpGameSettings = gameSettings.filter((m) => m);
+    if(mod.name && mod.name.includes(" x10")){
+      let tempMod = {
+        name: mod.name.split(" x10")[0],
+      }
+      //mod.name = mod.name.split(" x10")[0];
+      var p = 0;
+      let tempArray = [tempMod.name, tempMod.name, tempMod.name, tempMod.name, tempMod.name,
+        tempMod.name, tempMod.name, tempMod.name, tempMod.name, tempMod.name,
+      ];
+      for (let x = 0; x < tmpGameSettings.length; x++) {
+      if (tmpGameSettings[x] == tempMod.name) {
+        tmpGameSettings[x] = [tempMod.name];
+        tmpGameSettings[x].push(...tempArray);
+        setGameSettings(tmpGameSettings);
+        return;
+      } else if (tmpGameSettings[x].includes(tempMod.name)) {
+        if (tmpGameSettings[x].length > 99) {
+          return;
+        }
+        tmpGameSettings[x].push(...tempArray);
+        while(tmpGameSettings[x].length > 100){
+          tmpGameSettings[x].pop();
+        }
+        setGameSettings(tmpGameSettings);
+        return;
+      }
+    }
+    tmpGameSettings.push(tempArray);
+    setGameSettings(tmpGameSettings);
+    return;
+    }
     for (let x = 0; x < tmpGameSettings.length; x++) {
       if (tmpGameSettings[x] == mod.name) {
-        tmpGameSettings[x] = [mod.name, mod.name];
+        tmpGameSettings[x] = [mod.name];
+        tmpGameSettings[x].push(mod.name);
         setGameSettings(tmpGameSettings);
         return;
       } else if (tmpGameSettings[x].includes(mod.name)) {
@@ -384,6 +416,7 @@ export default function CreateSetup(props) {
     }
     tmpGameSettings.push(mod.name);
     setGameSettings(tmpGameSettings);
+    return;
     /*
     const tmpModifiers = [...modifiers];
     const modifier = mod;
@@ -418,6 +451,7 @@ export default function CreateSetup(props) {
       return;
     }
     let tmpGameSettings = gameSettings.filter((m) => m);
+    /*
     if (Array.isArray(mod)) {
       tmpGameSettings[index].pop();
       if (tmpGameSettings[index].length <= 1) {
@@ -426,6 +460,7 @@ export default function CreateSetup(props) {
       setGameSettings(tmpGameSettings);
       return;
     }
+    */
     tmpGameSettings.splice(index, 1);
     setGameSettings(tmpGameSettings);
     /*
