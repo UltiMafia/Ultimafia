@@ -3078,6 +3078,10 @@ Game Settings
   background-image: url("/src/images/modifiers/leaky.png");
 }
 
+.gamesetting-Whisper-Leak-Chance-x10 {
+  background-image: url("/src/images/modifiers/leaky.png");
+}
+
 .gamesetting-No-Reveal {
   background-image: url("/src/images/modifiers/faceless.png");
 }
