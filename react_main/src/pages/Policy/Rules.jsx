@@ -40,7 +40,7 @@ export default function Rules() {
         successfully evading a ban in any way will also incur penalties.
       </Typography>
 
-      <Accordion>
+      <Accordion sx={{ mt: 1 }}>
         <AccordionSummary>
           <Typography variant="h3">Community Violations</Typography>
         </AccordionSummary>

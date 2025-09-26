@@ -1,4 +1,5 @@
 import React, {
+  lazy,
   useState,
   useContext,
   useRef,
@@ -10,10 +11,10 @@ import {
   Route,
   Link,
   NavLink,
-  Redirect,
-  Switch,
-  useHistory,
+  Navigate,
+  Routes,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 import { ErrorBoundary, useErrorBoundary } from "react-error-boundary";
 import axios from "axios";
@@ -34,13 +35,7 @@ import {
 } from "./components/Basic";
 import { Nav } from "./components/Nav";
 import { Welcome } from "./pages/Welcome/Welcome";
-import Game from "./pages/Game/Game";
-import Play from "./pages/Play/Play";
-import Community from "./pages/Community/Community";
-import Fame from "./pages/Fame/Fame";
-import Learn from "./pages/Learn/Learn";
-import Policy from "./pages/Policy/Policy";
-import User, { Avatar, useUser } from "./pages/User/User";
+import { Avatar, useUser } from "./pages/User/User";
 import UserNotifications from "./pages/User/UserNotifications";
 import Popover, { usePopover } from "./components/PopoverOld";
 import CookieBanner from "./components/CookieBanner";
@@ -258,7 +253,7 @@ function Main(props) {
 
   const isWelcomePage = location.pathname === "/";
   if (user.loggedIn && isWelcomePage) {
-    return <Redirect to="/play" />;
+    return <Navigate to="/play" />;
   }
 
   if (isLoading) {
@@ -266,6 +261,14 @@ function Main(props) {
   }
 
   const style = isPhoneDevice ? { padding: "8px" } : { padding: "24px" };
+
+  const Game = lazy(() => import("pages/Game/Game"));
+  const Play = lazy(() => import("pages/Play/Play"));
+  const Community = lazy(() => import("pages/Community/Community"));
+  const Fame = lazy(() => import("pages/Fame/Fame"));
+  const Learn = lazy(() => import("pages/Learn/Learn"));
+  const Policy = lazy(() => import("pages/Policy/Policy"));
+  const User = lazy(() => import("pages/User/User"));
 
   const siteContent = (
     <Box
@@ -294,14 +297,17 @@ function Main(props) {
           {errorContent ? (
             errorContent
           ) : (
-            <Switch>
-              <Route path="/play" render={() => <Play />} />
-              <Route path="/community" render={() => <Community />} />
-              <Route path="/fame" render={() => <Fame />} />
-              <Route path="/learn" render={() => <Learn />} />
-              <Route path="/policy" render={() => <Policy />} />
-              <Route path="/user" render={() => <User />} />
-            </Switch>
+            <Suspense fallback={<NewLoading />}>
+              <Routes>
+                <Route path="play/*" element={<Play />} />
+                <Route path="community/*" element={<Community />} />
+                <Route path="fame/*" element={<Fame />} />
+                <Route path="learn/*" element={<Learn />} />
+                <Route path="policy/*" element={<Policy />} />
+                <Route path="user/*" element={<User />} />
+                <Route path="*" element={<Navigate to="play" />} />
+              </Routes>
+            </Suspense>
           )}
         </div>
         <Footer />
@@ -311,25 +317,23 @@ function Main(props) {
     </Box>
   );
 
+  // Site content will display instead of game if content is being overriden by the error boundary
+  const gameContent = (errorContent ? (siteContent) : (
+    <Suspense fallback={<NewLoading />}>
+      <Game />
+      <AlertList />
+    </Suspense>
+  ));
+
   const mainContent = (
     <UserContext.Provider value={user}>
       <SiteInfoContext.Provider value={siteInfo}>
         <PopoverContext.Provider value={popover}>
           <CookieBanner />
-          <Switch>
-            <Route path="/game">
-              {/* Site content will display instead of game if content is being overriden by the error boundary*/}
-              {errorContent ? (
-                siteContent
-              ) : (
-                <>
-                  <Game />
-                  <AlertList />
-                </>
-              )}
-            </Route>
-            <Route path="/">{siteContent}</Route>
-          </Switch>
+          <Routes>
+            <Route path="/game/*" element={gameContent} />
+            <Route path="/*" element={siteContent} />
+          </Routes>
           <Popover />
         </PopoverContext.Provider>
       </SiteInfoContext.Provider>
@@ -346,12 +350,10 @@ function Main(props) {
           window.location.origin + window.location.pathname)
       }
     >
-      <Switch>
-        <Route exact path="/">
-          <Welcome />
-        </Route>
-        <Route>{mainContent}</Route>
-      </Switch>
+      <Routes>
+        <Route path="/" element={<Welcome />} />
+        <Route path="/*" element={mainContent} />
+      </Routes>
     </ErrorBoundary>
   );
 }
@@ -524,7 +526,7 @@ function SiteNotifs() {
   const [notifInfo, updateNotifInfo] = useNotifInfoReducer();
   const [nextRestart, setNextRestart] = useState();
   const siteInfo = useContext(SiteInfoContext);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const bellRef = useRef();
   const notifListRef = useRef();
@@ -599,7 +601,7 @@ function SiteNotifs() {
   function onNotifClick(e, notif) {
     if (!notif.link) e.preventDefault();
     else if (window.location.pathname === notif.link.split("?")[0])
-      history.go(0);
+      navigate.go(0);
   }
 
   const notifs = notifInfo.notifs.map((notif) => (

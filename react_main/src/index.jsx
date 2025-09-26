@@ -5,15 +5,14 @@ import { ThemeProvider, CssBaseline } from "@mui/material";
 
 import { SITE_THEME } from "./constants/themes";
 import { NewLoading } from "pages/Welcome/NewLoading";
-
-const LazyMain = lazy(() => import("./Main.jsx"));
+import Main from "Main";
 
 ReactDOM.render(
   <Router>
     <ThemeProvider theme={SITE_THEME} noSsr defaultMode="dark">
       <CssBaseline enableColorScheme />
       <Suspense fallback={<NewLoading />}>
-        <LazyMain />
+        <Main />
       </Suspense>
     </ThemeProvider>
   </Router>,

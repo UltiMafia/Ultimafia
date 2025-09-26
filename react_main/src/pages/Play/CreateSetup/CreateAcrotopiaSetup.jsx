@@ -27,7 +27,7 @@ export default function CreateAcrotopiaSetup() {
     document.title = "Create Acrotopia Setup | UltiMafia";
   }, []);
 
-  function onCreateSetup(roleData, editing, setRedirect, gameSettings) {
+  function onCreateSetup(roleData, editing, setNavigate, gameSettings) {
     axios
       .post("/api/setup/create", {
         gameType: gameType,
@@ -46,7 +46,7 @@ export default function CreateAcrotopiaSetup() {
           `${editing ? "Edited" : "Created"} setup '${formFields[0].value}'`,
           "success"
         );
-        setRedirect(res.data);
+        setNavigate(res.data);
       })
       .catch(errorAlert);
   }

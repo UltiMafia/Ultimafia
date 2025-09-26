@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import { useErrorAlert } from "../../components/Alerts";
@@ -18,7 +18,7 @@ export default function Review() {
   const [gameState, setGameState] = useState(0);
   const errorAlert = useErrorAlert();
   const { gameId } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -30,7 +30,7 @@ export default function Review() {
       })
       .catch((e) => {
         errorAlert(e);
-        history.push("/play");
+        navigate("/play");
       });
   }, []);
 

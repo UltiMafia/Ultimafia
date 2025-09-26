@@ -3,8 +3,7 @@ import "css/host.css";
 import "css/deck.css";
 import "css/play.css";
 import { BotBarLink } from "../Play";
-import { useLocation } from "react-router-dom/cjs/react-router-dom";
-import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useErrorAlert } from "../../../components/Alerts";
 import { UserContext } from "../../../Contexts";
 import axios from "axios";
@@ -13,7 +12,7 @@ import { PageNav, SearchBar } from "../../../components/Nav";
 import { camelCase } from "../../../utils";
 import AnonymousDeck from "../../../components/Deck";
 import { SiteInfoContext } from "../../../Contexts";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { Button } from "@mui/material";
 
 export default function DeckSelector() {
@@ -25,7 +24,7 @@ export default function DeckSelector() {
   const [selDeck, setSelDeck] = useState({});
 
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const errorAlert = useErrorAlert();
 
   const user = useContext(UserContext);
@@ -85,7 +84,7 @@ export default function DeckSelector() {
   }
 
   function onEditDeck(deck) {
-    history.push(`/play/createDeck?edit=${deck.id}`);
+    navigate(`/play/createDeck?edit=${deck.id}`);
   }
 
   function onDelDeck(deck) {
@@ -152,7 +151,7 @@ function DeckRow(props) {
 
   if (props.sel.id === props.deck.id) selIconFormat = "fas";
 
-  if (redirect) return <Redirect to={redirect} />;
+  if (redirect) return <Navigate to={redirect} />;
 
   return (
     <div className={`row ${props.odd ? "odd" : ""}`}>

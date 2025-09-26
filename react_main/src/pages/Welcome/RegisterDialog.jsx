@@ -61,7 +61,7 @@ export const RegisterDialog = ({ open, setOpen }) => {
     e.preventDefault();
     try {
       const allowedEmailDomans = JSON.parse(
-        process.env.REACT_APP_EMAIL_DOMAINS
+        import.meta.env.REACT_APP_EMAIL_DOMAINS
       );
       const emailDomain = email.split("@")[1] || "";
       if (allowedEmailDomans.indexOf(emailDomain) === -1) {
@@ -75,7 +75,7 @@ export const RegisterDialog = ({ open, setOpen }) => {
 
       setLoading(true);
 
-      if (process.env.REACT_APP_ENVIRONMENT !== "development") {
+      if (import.meta.env.MODE !== "development") {
         await verifyRecaptcha("auth");
       }
 
@@ -117,7 +117,7 @@ export const RegisterDialog = ({ open, setOpen }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      if (process.env.REACT_APP_ENVIRONMENT !== "development") {
+      if (import.meta.env.MODE !== "development") {
         await verifyRecaptcha("auth");
       }
       await signInWithRedirect(getAuth(), googleProvider);
@@ -136,7 +136,7 @@ export const RegisterDialog = ({ open, setOpen }) => {
     setLoading(true);
     try {
       let hrefUrl =
-        process.env.REACT_APP_ENVIRONMENT !== "development"
+        import.meta.env.MODE !== "development"
           ? `${window.location.origin}/auth/discord`
           : `${window.location.origin}:3000/auth/discord`;
       window.location.href = hrefUrl;

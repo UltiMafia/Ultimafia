@@ -30,7 +30,7 @@ import { NewLoading } from "pages/Welcome/NewLoading";
 
 import "css/main.css";
 import "css/moderation.css";
-import { useParams } from "react-router-dom/cjs/react-router-dom";
+import { useParams } from "react-router-dom";
 
 const COMMAND_GROUP_ORDER = {
   "User Management": 1, // the lower the number, the higher it appears

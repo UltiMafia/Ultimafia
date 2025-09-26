@@ -1,7 +1,7 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
 import axios from "axios";
 
-import { Link, Route, Switch, Redirect } from "react-router-dom";
+import { Link, Route, Routes, Navigate } from "react-router-dom";
 import update from "immutability-helper";
 
 import Profile, { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "./Profile";
@@ -13,13 +13,14 @@ import { HiddenUpload } from "components/Form";
 import "css/user.css";
 import { youtubeRegex } from "components/Basic";
 import { useTheme } from "@mui/material/styles";
-import { Link as MuiLink, Popover } from "@mui/material";
-import { Box, Card, AppBar, IconButton, Stack, Toolbar } from "@mui/material";
+import { Popover } from "@mui/material";
+import { Box, IconButton, Stack } from "@mui/material";
 import { PieChart } from "./PieChart";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import santaDir from "images/holiday/santahat.png";
+import CustomAppBar from "components/CustomAppBar";
 
 export function YouTubeEmbed(props) {
   const embedId = props.embedId;
@@ -154,34 +155,18 @@ export default function User(props) {
       hide: !user.loggedIn,
     },
   ];
-  if (user.loaded && !user.loggedIn) return <Redirect to="/" />;
+  if (user.loaded && !user.loggedIn) return <Navigate to="/" />;
 
   return (
     <>
-      <AppBar position="static">
-        <Toolbar>
-          {links.map((link, index) => (
-            <MuiLink
-              key={index}
-              href={link.path}
-              underline="none"
-              color="inherit"
-              variant="button"
-              sx={{ margin: theme.spacing(1) }}
-            >
-              {link.text}
-            </MuiLink>
-          ))}
-        </Toolbar>
-      </AppBar>
+      <CustomAppBar links={links} />
       <Box maxWidth="1080px" sx={{ mt: 1 }}>
-        <Switch>
-          <Route exact path="/user" render={() => <Profile />} />
-          <Route exact path="/user/settings" render={() => <Settings />} />
-          <Route exact path="/user/shop" render={() => <Shop />} />
-          <Route exact path="/user/:userId" render={() => <Profile />} />
-          <Route render={() => <Redirect to="/user" />} />
-        </Switch>
+        <Routes>
+          <Route path="/" element={<Profile />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="shop" element={<Shop />} />
+          <Route path=":userId" element={<Profile />} />
+        </Routes>
       </Box>
     </>
   );

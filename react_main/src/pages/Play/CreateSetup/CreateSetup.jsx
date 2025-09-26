@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Route, Switch, Redirect, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import {
   SwipeableDrawer,
   List,
@@ -55,6 +55,38 @@ export default function CreateSetup(props) {
     }
     setDrawerOpen(open);
   };
+
+  function CreatePage() {
+    switch (gameType) {
+      case "Mafia":
+        return <CreateMafiaSetup />;
+      case "Resistance":
+        return <CreateResistanceSetup />;
+      case "Ghost":
+        return <CreateGhostSetup />;
+      case "Jotto":
+        return <CreateJottoSetup />;
+      case "Acrotopia":
+        return <CreateAcrotopiaSetup />;
+      case "Secret Dictator":
+        return <CreateSecretDictatorSetup />;
+      case "Wacky Words":
+        return <CreateWackyWordsSetup />;
+      case "Liars Dice":
+        return <CreateLiarsDiceSetup />;
+      case "Texas Hold Em":
+        return <CreateTexasHoldEmSetup />;
+      case "Cheat":
+        return <CreateCheatSetup />;
+      case "Battlesnakes":
+        return <CreateBattlesnakesSetup />;
+      case "Connect Four":
+        return <CreateConnectFourSetup />;
+      default:
+        setGameType(defaultGameType);
+        return null;
+    }
+  }
 
   return (
     <>
@@ -117,44 +149,7 @@ export default function CreateSetup(props) {
         </List>
       </SwipeableDrawer>
       <Box>
-        <Switch>
-          <Route
-            exact
-            path="/play/create"
-            render={() => {
-              switch (gameType) {
-                case "Mafia":
-                  return <CreateMafiaSetup />;
-                case "Resistance":
-                  return <CreateResistanceSetup />;
-                case "Ghost":
-                  return <CreateGhostSetup />;
-                case "Jotto":
-                  return <CreateJottoSetup />;
-                case "Acrotopia":
-                  return <CreateAcrotopiaSetup />;
-                case "Secret Dictator":
-                  return <CreateSecretDictatorSetup />;
-                case "Wacky Words":
-                  return <CreateWackyWordsSetup />;
-                case "Liars Dice":
-                  return <CreateLiarsDiceSetup />;
-                case "Texas Hold Em":
-                  return <CreateTexasHoldEmSetup />;
-                case "Cheat":
-                  return <CreateCheatSetup />;
-                case "Battlesnakes":
-                  return <CreateBattlesnakesSetup />;
-                case "Connect Four":
-                  return <CreateConnectFourSetup />;
-                default:
-                  setGameType(defaultGameType);
-                  return null;
-              }
-            }}
-          />
-          <Route render={() => <Redirect to="/play" />} />
-        </Switch>
+        {CreatePage()}
       </Box>
     </>
   );

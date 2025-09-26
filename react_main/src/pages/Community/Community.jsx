@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Route, Switch, Redirect } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
 
@@ -27,19 +27,19 @@ export default function Community() {
     },
   ];
   const user = useContext(UserContext);
-  if (user.loaded && !user.loggedIn) return <Redirect to="/" />;
+  if (user.loaded && !user.loggedIn) return <Navigate to="/" />;
 
   return (
     <>
       <CustomAppBar links={links} />
       <Box maxWidth="1080px" sx={{ mt: 1, flexGrow: 1 }}>
         <Card sx={{ p: 1, textAlign: "justify" }}>
-          <Switch>
-            <Route path="/community/forums" render={() => <Forums />} />
-            <Route path="/community/users" render={() => <UserSearch />} />
-            <Route path="/community/moderation" render={() => <Moderation />} />
-            <Route render={() => <Redirect to="/community/forums" />} />
-          </Switch>
+          <Routes>
+            <Route path="forums/*" element={<Forums />} />
+            <Route path="users" element={<UserSearch />} />
+            <Route path="moderation" element={<Moderation />} />
+            <Route path="*" element={<Navigate to="forums" />} />
+          </Routes>
         </Card>
       </Box>
     </>

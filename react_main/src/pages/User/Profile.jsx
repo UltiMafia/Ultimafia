@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { Link, Redirect, useParams, useHistory } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 import colorContrast from "color-contrast";
@@ -97,7 +97,7 @@ export default function Profile() {
   const theme = useTheme();
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const errorAlert = useErrorAlert();
   const { userId } = useParams();
   const isPhoneDevice = useIsPhoneDevice();
@@ -165,7 +165,7 @@ export default function Profile() {
         })
         .catch((e) => {
           errorAlert(e);
-          history.push("/play");
+          navigate("/play");
         });
 
       axios
@@ -631,10 +631,10 @@ export default function Profile() {
     </div>
   ));
 
-  if (user.loaded && !user.loggedIn && !userId) return <Redirect to="/play" />;
+  if (user.loaded && !user.loggedIn && !userId) return <Navigate to="/play" />;
 
   if (user.loaded && user.loggedIn && !userId)
-    return <Redirect to={`/user/${user.id}`} />;
+    return <Navigate to={`/user/${user.id}`} />;
 
   if (!profileLoaded || !user.loaded) return <NewLoading small />;
 

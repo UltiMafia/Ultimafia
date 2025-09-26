@@ -128,6 +128,9 @@ export const SITE_THEME = createTheme({
       },
       palette: {
         ...commonPalette,
+        activeAppBarText: {
+          main: "var(--scheme-color-sec)",
+        },
       },
     },
     dark: {
@@ -136,6 +139,9 @@ export const SITE_THEME = createTheme({
       },
       palette: {
         ...commonPalette,
+        activeAppBarText: {
+          main: "var(--mui-palette-primary-main)",
+        },
       },
     },
   },

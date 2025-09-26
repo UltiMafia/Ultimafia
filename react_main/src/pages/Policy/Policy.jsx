@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch, Redirect } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import { Box, Card } from "@mui/material";
 
@@ -34,12 +34,12 @@ export default function Policy(props) {
       <CustomAppBar links={links} />
       <Box maxWidth="1080px" sx={{ mt: 1, flexGrow: 1 }}>
         <Card sx={{ padding: theme.spacing(3), textAlign: "justify" }}>
-          <Switch>
-            <Route exact path="/policy/rules" component={Rules} />
-            <Route exact path="/policy/tos" component={TermsOfService} />
-            <Route exact path="/policy/privacy" component={PrivacyPolicy} />
-            <Route render={() => <Redirect to="/policy/rules" />} />
-          </Switch>
+          <Routes>
+            <Route path="rules" element={<Rules />} />
+            <Route path="tos" element={<TermsOfService />} />
+            <Route path="privacy" element={<PrivacyPolicy />} />
+            <Route path="*" element={<Navigate to="rules" />} />
+          </Routes>
         </Card>
       </Box>
     </>

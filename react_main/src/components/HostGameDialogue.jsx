@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
@@ -103,7 +103,7 @@ export default function HostGameDialogue({ open, setOpen, setup }) {
       .catch(errorAlert);
   };
 
-  if (redirect) return <Redirect to={redirect} />;
+  if (redirect) return <Navigate to={redirect} />;
 
   const lobby = getFormFieldValue("lobby");
   const isRanked = getFormFieldValue("ranked");

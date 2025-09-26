@@ -1,37 +1,34 @@
-const { AppBar, Toolbar, Link, Stack } = require("@mui/material");
+import { NavLink } from "react-router-dom";
+import { AppBar, Toolbar, Stack, Typography } from "@mui/material";
 
 export default function CustomAppBar({ links }) {
-  const windowPath = window.location.pathname;
-
   return (
     <AppBar position="static">
       <Toolbar>
         <Stack direction="row" spacing={0} sx={{ alignItems: "center" }}>
-          {links.map((link, index) => {
-            const linkPath = link.path
-              .replace(window.location.protocol, "")
-              .replace(window.location.host, "")
-              .replace(window.location.port, "");
-            const isSelected = windowPath === linkPath;
+          {links.map((link) => {
+            if (link.hide) return <></>;
 
             return (
-              <Link
-                key={index}
-                href={link.path}
-                underline="none"
-                color="inherit"
-                variant="button"
-                sx={{
-                  p: 1,
-                  border: isSelected ? "1px solid" : undefined,
-                  borderColor: isSelected ? "primary.main" : undefined,
-                  borderRadius: isSelected
-                    ? "var(--mui-shape-borderRadius)"
-                    : undefined,
+              <NavLink 
+                key={link.path}
+                to={link.path}
+                end={link.end}
+                style={({ isActive }) => {
+                  return {
+                    padding: "var(--mui-spacing)",
+                    fontWeight: isActive ? "bold" : undefined,
+                    color: isActive ? "var(--mui-palette-activeAppBarText-main)" : "inherit",
+                  };
                 }}
               >
-                {link.text}
-              </Link>
+                <Typography sx={{
+                  fontWeight: "inherit",
+                  color: "inherit",
+                }}>
+                  {link.text}
+                </Typography>
+              </NavLink>
             );
           })}
         </Stack>

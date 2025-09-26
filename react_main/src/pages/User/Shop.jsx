@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 
@@ -172,7 +172,7 @@ export default function Shop(props) {
     </Grid>
   ));
 
-  if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
+  if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
 
   if (!loaded) return <NewLoading small />;
 

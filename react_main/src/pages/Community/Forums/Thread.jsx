@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
-import { Redirect, Link, useParams, useLocation } from "react-router-dom";
+import { Navigate, Link, useParams, useLocation } from "react-router-dom";
 import update from "immutability-helper";
 
 import CustomMarkdown from "components/CustomMarkdown";
@@ -182,7 +182,7 @@ export default function Thread(props) {
     );
   }
 
-  if (redirect) return <Redirect to={redirect} />;
+  if (redirect) return <Navigate to={redirect} />;
 
   if (!loaded) return <NewLoading small />;
 

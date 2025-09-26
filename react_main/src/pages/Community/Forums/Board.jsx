@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Redirect, useParams, Link } from "react-router-dom";
+import { Navigate, useParams, Link } from "react-router-dom";
 import axios from "axios";
 
 import { useErrorAlert } from "../../../components/Alerts";
@@ -167,7 +167,7 @@ export default function Board(props) {
     );
   }
 
-  if (redirect) return <Redirect to={redirect} />;
+  if (redirect) return <Navigate to={redirect} />;
 
   if (!loaded) return <NewLoading small />;
 

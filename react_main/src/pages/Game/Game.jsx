@@ -6,7 +6,7 @@ import React, {
   useRef,
   useMemo,
 } from "react";
-import { useParams, Switch, Route, Redirect } from "react-router-dom";
+import { useParams, Route, Navigate, Routes } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
 import ReactLoading from "react-loading";
@@ -85,20 +85,12 @@ import veg from "images/emotes/veg.webp";
 import system from "images/emotes/system.webp";
 
 export default function Game() {
+  const { gameId } = useParams();
   return (
-    <Switch>
-      <Route
-        exact
-        path="/game/:gameId"
-        render={(props) => <GameWrapper key={props.match.params.gameId} />}
-      />
-      <Route
-        exact
-        path="/game/:gameId/review"
-        render={() => <GameWrapper review />}
-      />
-      <Redirect to="/play" />
-    </Switch>
+    <Routes>
+      <Route path=":gameId" element={<GameWrapper key={gameId} />} />
+      <Route path=":gameId/review" element={<GameWrapper review />} />
+    </Routes>
   );
 }
 
@@ -335,14 +327,12 @@ function GameWrapper(props) {
   useEffect(() => {
     if (token == null) return;
 
-    siteInfo.hideAllAlerts();
-
     var socketURL;
 
-    if (process.env.REACT_APP_USE_PORT === "true")
-      socketURL = `${process.env.REACT_APP_SOCKET_PROTOCOL}://${process.env.REACT_APP_SOCKET_URI}:${port}`;
+    if (import.meta.env.REACT_APP_USE_PORT === "true")
+      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${import.meta.env.REACT_APP_SOCKET_URI}:${port}`;
     else
-      socketURL = `${process.env.REACT_APP_SOCKET_PROTOCOL}://${process.env.REACT_APP_SOCKET_URI}/${port}`;
+      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${import.meta.env.REACT_APP_SOCKET_URI}/${port}`;
 
     var newSocket = new Socket(socketURL);
     newSocket.on("connected", () => setConnected(connected + 1));
@@ -727,9 +717,9 @@ function GameWrapper(props) {
     }
   }
 
-  if (leave === "review") return <Redirect to={`/game/${gameId}/review`} />;
-  else if (leave) return <Redirect to="/play" />;
-  else if (rehostId) return <Redirect to={`/game/${rehostId}`} />;
+  if (leave === "review") return <Navigate to={`/game/${gameId}/review`} />;
+  else if (leave) return <Navigate to="/play" />;
+  else if (rehostId) return <Navigate to={`/game/${rehostId}`} />;
   else if (!loaded || stateViewing == null)
     return (
       <div className="game">
@@ -839,7 +829,7 @@ export function BotBar(props) {
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   function onLogoClick() {
-    window.open(process.env.REACT_APP_URL, "_blank");
+    window.open(import.meta.env.REACT_APP_URL, "_blank");
   }
 
   function onTestClick() {

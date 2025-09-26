@@ -51,10 +51,10 @@ export default function Chat(/*{ setShowChatTab }*/) {
 
     var socketURL;
 
-    if (process.env.REACT_APP_USE_PORT === "true")
-      socketURL = `${process.env.REACT_APP_SOCKET_PROTOCOL}://${process.env.REACT_APP_SOCKET_URI}:${process.env.REACT_APP_CHAT_PORT}`;
+    if (import.meta.env.REACT_APP_USE_PORT === "true")
+      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${import.meta.env.REACT_APP_SOCKET_URI}:${import.meta.env.REACT_APP_CHAT_PORT}`;
     else
-      socketURL = `${process.env.REACT_APP_SOCKET_PROTOCOL}://${process.env.REACT_APP_SOCKET_URI}/chatSocket`;
+      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${import.meta.env.REACT_APP_SOCKET_URI}/chatSocket`;
 
     var newSocket = new Socket(socketURL);
     newSocket.on("connected", () => setConnected(connected + 1));

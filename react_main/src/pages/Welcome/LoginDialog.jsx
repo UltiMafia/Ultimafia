@@ -30,7 +30,7 @@ export const LoginDialog = ({ open, setOpen }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const googleProvider = new GoogleAuthProvider();
-  const skips = JSON.parse(process.env.REACT_APP_RECAP_SKIP || "[]");
+  const skips = JSON.parse(import.meta.env.REACT_APP_RECAP_SKIP || "[]");
 
   useEffect(() => {
     if (open) {
@@ -58,10 +58,10 @@ export const LoginDialog = ({ open, setOpen }) => {
     let emailTest = true;
     if (skips.includes(email)) {
       emailTest = false;
-    }
+    } 
 
     try {
-      if (process.env.REACT_APP_ENVIRONMENT !== "development" && emailTest) {
+      if (import.meta.env.MODE !== "development" && emailTest) {
         await verifyRecaptcha("auth");
       }
 
@@ -100,7 +100,7 @@ export const LoginDialog = ({ open, setOpen }) => {
   const loginGoogle = async () => {
     setLoading(true);
     try {
-      if (process.env.REACT_APP_ENVIRONMENT !== "development") {
+      if (import.meta.env.MODE !== "development") {
         await verifyRecaptcha("auth");
       }
       const userCred = await signInWithPopup(getAuth(), googleProvider);
@@ -128,7 +128,7 @@ export const LoginDialog = ({ open, setOpen }) => {
     setLoading(true);
     try {
       let hrefUrl;
-      if (process.env.REACT_APP_ENVIRONMENT !== "development") {
+      if (import.meta.env.MODE !== "development") {
         await verifyRecaptcha("auth");
         hrefUrl = window.location.origin + "/auth/discord";
       } else {

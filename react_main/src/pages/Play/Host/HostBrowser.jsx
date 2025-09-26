@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useReducer } from "react";
-import { useLocation, useHistory } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import { UserContext } from "Contexts";
@@ -49,7 +49,7 @@ export default function HostBrowser(props) {
   const theme = useTheme();
   const errorAlert = useErrorAlert();
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const minSlots = 1;
   const maxSlots = 50;
@@ -204,11 +204,11 @@ export default function HostBrowser(props) {
   }
 
   function onEditSetup(setup) {
-    history.push(`/play/create?edit=${setup.id}`);
+    navigate(`/play/create?edit=${setup.id}`);
   }
 
   function onCopySetup(setup) {
-    history.push(`/play/create?copy=${setup.id}`);
+    navigate(`/play/create?copy=${setup.id}`);
   }
 
   function onDelSetup(setup) {

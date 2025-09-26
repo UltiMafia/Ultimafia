@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Redirect, useHistory } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 
@@ -41,7 +41,7 @@ export default function Settings() {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [siteFields, updateSiteFields] = useForm([
     {
@@ -49,7 +49,7 @@ export default function Settings() {
       ref: "referralURL",
       type: "text",
       value: (deps) =>
-        `${process.env.REACT_APP_URL}/auth/login?ref=${deps.user.id}`,
+        `${import.meta.env.REACT_APP_URL}/auth/login?ref=${deps.user.id}`,
       fixed: true,
       highlight: true,
     },
@@ -335,7 +335,7 @@ export default function Settings() {
     setLoading(false);
   };
 
-  if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
+  if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
   if (!settingsLoaded || !accountsLoaded || !user.loaded)
     return <NewLoading small />;
 
@@ -615,7 +615,7 @@ export default function Settings() {
       .then(() => {
         user.clear();
         setCaptchaVisible(true);
-        history.push("/");
+        navigate("/");
         window.location.reload();
       })
       .catch(errorAlert);
@@ -627,7 +627,7 @@ export default function Settings() {
         .post("/api/user/delete")
         .then(() => {
           user.clear();
-          history.push("/");
+          navigate("/");
         })
         .catch(errorAlert);
     }
