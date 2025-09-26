@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch, Redirect } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
 
@@ -34,12 +34,12 @@ export default function Fame(props) {
       <CustomAppBar links={links} />
       <Box maxWidth="1080px" sx={{ mt: 1, flexGrow: 1 }}>
         <Card sx={{ padding: theme.spacing(3), textAlign: "justify" }}>
-          <Switch>
-            <Route exact path="/fame/leaderboard" component={Leaderboard} />
-            <Route exact path="/fame/contributors" component={Contributors} />
-            <Route exact path="/fame/donors" component={Donors} />
-            <Route render={() => <Redirect to="/fame/leaderboard" />} />
-          </Switch>
+          <Routes>
+            <Route path="leaderboard" element={<Leaderboard />} />
+            <Route path="contributors" element={<Contributors />} />
+            <Route path="donors" element={<Donors />} />
+            <Route path="*" element={<Navigate to="leaderboard" />} />
+          </Routes>
         </Card>
       </Box>
     </>

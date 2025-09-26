@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Route, Switch, Redirect, useLocation } from "react-router-dom";
+import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 
 import Setups from "./Setup/SetupPage";
 import SetupsNightOrder from "./Setup/SetupNightOrder";
@@ -43,35 +43,15 @@ export default function Learn(props) {
       <CustomAppBar links={links} />
       <Box maxWidth="1080px" sx={{ mt: 1, flexGrow: 1 }}>
         <Card sx={{ padding: theme.spacing(3), textAlign: "justify" }}>
-          <Switch>
-            <Route
-              exact
-              path="/learn/setup/:setupId"
-              render={() => <Setups />}
-            />
-            <Route
-              exact
-              path="/learn/setup/:setupId/nightorder"
-              render={() => <SetupsNightOrder />}
-            />
-            <Route
-              exact
-              path="/learn/role/:RoleName"
-              render={() => <RolePage />}
-            />
-            <Route
-              exact
-              path="/learn/terminology"
-              render={() => <Terminology />}
-            />
-            <Route
-              exact
-              path="/learn/achievements"
-              render={() => <Achievements />}
-            />
-            <Route exact path="/learn/games" render={() => <Games />} />
-            <Route render={() => <Redirect to="/learn/games" />} />
-          </Switch>
+          <Routes>
+            <Route path="games" element={<Games />} />
+            <Route path="setup/:setupId" element={<Setups />}/>
+            <Route path="setup/:setupId/nightorder" element={<SetupsNightOrder />} />
+            <Route path="role/:RoleName" element={<RolePage />} />
+            <Route path="terminology" element={<Terminology />} />
+            <Route path="achievements" element={<Achievements />} />
+            <Route path="*" element={<Navigate to="games" />} />
+          </Routes>
         </Card>
       </Box>
     </>

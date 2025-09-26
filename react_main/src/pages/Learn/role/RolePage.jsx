@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
 import {
   Route,
-  Switch,
-  Redirect,
+  Routes,
+  Navigate,
   useParams,
-  useHistory,
+  useNavigate,
   Link,
 } from "react-router-dom";
 import { NameWithAvatar } from "../../User/User";
@@ -42,17 +42,9 @@ import { RoleCount } from "../../../components/Roles";
 
 export default function RolePage() {
   return (
-    <>
-      <div className="inner-content">
-        <Switch>
-          <Route
-            exact
-            path="/learn/role/:RoleName"
-            render={() => <RoleThings />}
-          />
-        </Switch>
-      </div>
-    </>
+    <div className="inner-content">
+      <RoleThings />
+    </div>
   );
 }
 
@@ -60,7 +52,7 @@ export function RoleThings() {
   const { RoleName } = useParams();
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const errorAlert = useErrorAlert();
   const [contributors, setContributors] = useState([]);
   const [loaded, setLoaded] = useState(false);
@@ -91,7 +83,7 @@ export function RoleThings() {
       .then((res) => setAchievements(res.data.achievements))
       .catch((e) => {
         errorAlert(e);
-        history.push("/play");
+        navigate("/play");
       });
   }, [user?.id]);
 
@@ -151,7 +143,7 @@ export function RoleThings() {
       });
   }, []);
 
-  if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
+  if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
   // TODO if setupId not set, redirect to a setup page
 
   if (!role || !user.loaded) return <NewLoading small />;

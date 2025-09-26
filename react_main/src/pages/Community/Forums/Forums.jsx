@@ -5,7 +5,7 @@ import React, {
   useRef,
   useLayoutEffect,
 } from "react";
-import { NavLink, Switch, Route, Redirect } from "react-router-dom";
+import { NavLink, Routes, Route, Navigate } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 
@@ -26,24 +26,12 @@ export default function Forums() {
   return (
     <div className="forums">
       <ForumNav forumNavInfo={forumNavInfo} />
-      <Switch>
-        <Route
-          exact
-          path="/community/forums"
-          render={() => <Categories updateForumNavInfo={updateForumNavInfo} />}
-        />
-        <Route
-          exact
-          path="/community/forums/board/:boardId"
-          render={() => <Board updateForumNavInfo={updateForumNavInfo} />}
-        />
-        <Route
-          exact
-          path="/community/forums/thread/:threadId"
-          render={() => <Thread updateForumNavInfo={updateForumNavInfo} />}
-        />
-        <Route render={() => <Redirect to="/community/forums" />} />
-      </Switch>
+      <Routes>
+        <Route path="/" element={<Categories updateForumNavInfo={updateForumNavInfo} />} />
+        <Route path="board/:boardId" element={<Board updateForumNavInfo={updateForumNavInfo} />} />
+        <Route path="thread/:threadId" element={<Thread updateForumNavInfo={updateForumNavInfo} />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
     </div>
   );
 }

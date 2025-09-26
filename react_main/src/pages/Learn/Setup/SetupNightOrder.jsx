@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
 import {
   Route,
-  Switch,
-  Redirect,
+  Routes,
+  Navigate,
   useParams,
-  useHistory,
+  useNavigate,
 } from "react-router-dom";
 import "css/play.css";
 import axios from "axios";
@@ -34,17 +34,9 @@ import { RoleCount } from "../../../components/Roles";
 
 export default function SetupsNightOrder() {
   return (
-    <>
-      <div className="inner-content">
-        <Switch>
-          <Route
-            exact
-            path={`/learn/setup/:setupId/nightorder`}
-            render={() => <NightOrder />}
-          />
-        </Switch>
-      </div>
-    </>
+    <div className="inner-content">
+      <NightOrder />
+    </div>
   );
 }
 
@@ -52,7 +44,7 @@ export function NightOrder() {
   const [setup, setSetup] = useState();
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const errorAlert = useErrorAlert();
   const { setupId } = useParams();
   const [gameType, setGameType] = useState("");
@@ -78,7 +70,7 @@ export function NightOrder() {
     }
   }, [setupId]);
 
-  if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
+  if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
   // TODO if setupId not set, redirect to a setup page
 
   if (!setup || !user.loaded) return <NewLoading small />;

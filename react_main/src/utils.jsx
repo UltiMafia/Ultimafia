@@ -175,7 +175,7 @@ export async function verifyRecaptcha(action) {
     window.grecaptcha.ready(async () => {
       try {
         const token = await window.grecaptcha.execute(
-          process.env.REACT_APP_RECAPTCHA_KEY,
+          import.meta.env.REACT_APP_RECAPTCHA_KEY,
           { action }
         );
         await axios.post("/api/auth/verifyCaptcha", { token });

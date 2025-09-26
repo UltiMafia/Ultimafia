@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useReducer, useContext } from "react";
-import { Redirect, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
 
@@ -835,7 +835,7 @@ export default function CreateSetup(props) {
             />
           </Stack>
         )}
-        {redirect && <Redirect to={`/play/host/?setup=${redirect}`} />}
+        {redirect && <Navigate to={`/play/host/?setup=${redirect}`} />}
       </Paper>
     </Stack>
   );

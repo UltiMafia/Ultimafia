@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
 import {
   Route,
-  Switch,
-  Redirect,
+  Routes,
+  Navigate,
   useParams,
-  useHistory,
+  useNavigate,
 } from "react-router-dom";
 import axios from "axios";
 
@@ -49,13 +49,7 @@ export default function Setups() {
   return (
     <>
       <div className="inner-content">
-        <Switch>
-          <Route
-            exact
-            path="/learn/setup/:setupId"
-            render={() => <SetupPage />}
-          />
-        </Switch>
+        <SetupPage />
       </div>
     </>
   );
@@ -130,7 +124,7 @@ export function SetupPage() {
   const siteInfo = useContext(SiteInfoContext);
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const history = useHistory();
+  const navigate = useNavigate();
   const errorAlert = useErrorAlert();
   const { setupId } = useParams();
 
@@ -193,13 +187,13 @@ export function SetupPage() {
           }
         })
         .catch((e) => {
-          console.error(e);
+          navigate("/play");
           errorAlert(e);
         });
     }
   }, [setupId]);
 
-  if (user.loaded && !user.loggedIn) return <Redirect to="/play" />;
+  if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
   // TODO if setupId not set, redirect to a setup page
 
   if (!setup || !user.loaded) return <NewLoading small />;

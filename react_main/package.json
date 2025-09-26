@@ -24,8 +24,7 @@
     "react-loading": "^2.0.3",
     "react-markdown": "^8.0.0",
     "react-mde": "^11.5.0",
-    "react-router-dom": "^5.1.2",
-    "react-scripts": "^5.0.1",
+    "react-router-dom": "^6.30.1",
     "react-sound": "^1.2.0"
   },
   "overrides": {
@@ -37,14 +36,16 @@
     }
   },
   "scripts": {
-    "start": "./node_modules/.bin/react-scripts start",
-    "start-windows": "npx react-scripts start",
-    "build": "./node_modules/.bin/react-scripts build",
-    "test": "./node_modules/.bin/react-scripts test",
-    "eject": "./node_modules/.bin/react-scripts eject"
+    "start": "rsbuild dev",
+    "build": "rsbuild build",
+    "preview": "rsbuild preview",
+    "lint": "eslint src"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "browserslist": {
     "production": [
@@ -59,12 +60,15 @@
     ]
   },
   "devDependencies": {
+    "@rsbuild/core": "^1.5.10",
+    "@rsbuild/plugin-react": "^1.4.0",
+    "@rsdoctor/rspack-plugin": "^1.2.3",
+    "eslint": "^8.57.1",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-react-hooks": "^5.2.0",
     "react-error-overlay": "^6.0.9"
   },
   "resolutions": {
     "react-error-overlay": "6.0.9"
-  },
-  "proxy": "http://backend:3000"
+  }
 }

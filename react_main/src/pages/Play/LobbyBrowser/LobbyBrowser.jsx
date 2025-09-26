@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
-import { Redirect, useLocation, useHistory, Link } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 import { UserContext } from "Contexts";
@@ -43,7 +43,7 @@ const lobbies = [
   { name: "Roleplay", displayName: "🎭 Roleplay", disabled: true },
 ];
 
-export const LobbyBrowser = () => {
+export default function LobbyBrowser() {
   const isPhoneDevice = useIsPhoneDevice();
   const theme = useTheme();
   const defaultLobbyName = lobbies[0].name;
@@ -57,7 +57,7 @@ export const LobbyBrowser = () => {
   const [games, setGames] = useState([]);
   const { loading, setLoading } = useLoading();
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
@@ -74,7 +74,7 @@ export const LobbyBrowser = () => {
     localStorage.setItem("lobby", lobbyName);
 
     if (params.get("lobby") !== lobbyName) {
-      history.push(location.pathname + `?lobby=${lobbyName}`);
+      navigate(location.pathname + `?lobby=${lobbyName}`);
     }
 
     document.title = `🔪 Ultimafia Lobby`;
@@ -162,7 +162,7 @@ export const LobbyBrowser = () => {
     setLobbyName(defaultLobbyName);
 
   if (!user.loaded) return <NewLoading small />;
-  if (user.loaded && !user.loggedIn) return <Redirect to="/" />;
+  if (user.loaded && !user.loggedIn) return <Navigate to="/" />;
 
   const lobbyTabs = (
     <Box sx={{ display: "flex" }}>

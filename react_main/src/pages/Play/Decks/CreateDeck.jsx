@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   useLocation,
-  useHistory,
-} from "react-router-dom/cjs/react-router-dom.min";
+  useNavigate,
+} from "react-router-dom";
 import { SiteInfoContext } from "../../../Contexts";
 import { useFieldArray, useForm } from "react-hook-form";
 import axios from "axios";
@@ -12,7 +12,7 @@ import "css/form.css";
 
 export default function CreateDecks() {
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
@@ -108,7 +108,7 @@ export default function CreateDecks() {
           }
           onFileUpload(profiles);
         } else {
-          history.push({ search: `?edit=${res.data.id}` });
+          navigate({ search: `?edit=${res.data.id}` });
           setEditing(true);
         }
       })

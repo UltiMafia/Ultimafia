@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Route, Switch, Redirect, useLocation } from "react-router-dom";
+import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import {
   SwipeableDrawer,
   List,
@@ -54,6 +54,38 @@ export default function Games(props) {
     }
     setDrawerOpen(open);
   };
+
+  function LearnPage() {
+    switch (gameType) {
+      case "Mafia":
+        return <LearnMafia />;
+      case "Resistance":
+        return <LearnResistance />;
+      case "Ghost":
+        return <LearnGhost />;
+      case "Jotto":
+        return <LearnJotto />;
+      case "Acrotopia":
+        return <LearnAcrotopia />;
+      case "Secret Dictator":
+        return <LearnSecretDictator />;
+      case "Wacky Words":
+        return <LearnWackyWords />;
+      case "Liars Dice":
+        return <LearnLiarsDice />;
+      case "Texas Hold Em":
+        return <LearnTexasHoldEm />;
+      case "Cheat":
+        return <LearnCheat />;
+      case "Battlesnakes":
+        return <LearnBattlesnakes />;
+      case "Connect Four":
+        return <LearnConnectFour />;
+      default:
+        setGameType(defaultGameType);
+        return <></>;
+    }
+  }
 
   return (
     <>
@@ -117,44 +149,7 @@ export default function Games(props) {
         </List>
       </SwipeableDrawer>
       <Box>
-        <Switch>
-          <Route
-            exact
-            path="/learn/games"
-            render={() => {
-              switch (gameType) {
-                case "Mafia":
-                  return <LearnMafia />;
-                case "Resistance":
-                  return <LearnResistance />;
-                case "Ghost":
-                  return <LearnGhost />;
-                case "Jotto":
-                  return <LearnJotto />;
-                case "Acrotopia":
-                  return <LearnAcrotopia />;
-                case "Secret Dictator":
-                  return <LearnSecretDictator />;
-                case "Wacky Words":
-                  return <LearnWackyWords />;
-                case "Liars Dice":
-                  return <LearnLiarsDice />;
-                case "Texas Hold Em":
-                  return <LearnTexasHoldEm />;
-                case "Cheat":
-                  return <LearnCheat />;
-                case "Battlesnakes":
-                  return <LearnBattlesnakes />;
-                case "Connect Four":
-                  return <LearnConnectFour />;
-                default:
-                  setGameType(defaultGameType);
-                  return <></>;
-              }
-            }}
-          />
-          <Route render={() => <Redirect to="/play" />} />
-        </Switch>
+        {LearnPage()}
       </Box>
     </>
   );
