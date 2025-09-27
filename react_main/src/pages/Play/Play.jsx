@@ -60,7 +60,7 @@ export default function Play(props) {
   function onFilterGameType(gameType) {
     setGameType(gameType);
   }
-  
+
   const LobbyBrowser = lazy(() => import("./LobbyBrowser/LobbyBrowser"));
   const CreateSetup = lazy(() => import("./CreateSetup/CreateSetup"));
   const DeckSelector = lazy(() => import("./Decks/DeckSelector"));

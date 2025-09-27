@@ -10,7 +10,7 @@ export default function CustomAppBar({ links }) {
             if (link.hide) return <></>;
 
             return (
-              <NavLink 
+              <NavLink
                 key={link.path}
                 to={link.path}
                 end={link.end}
@@ -18,14 +18,18 @@ export default function CustomAppBar({ links }) {
                   return {
                     padding: "var(--mui-spacing)",
                     fontWeight: isActive ? "bold" : undefined,
-                    color: isActive ? "var(--mui-palette-activeAppBarText-main)" : "inherit",
+                    color: isActive
+                      ? "var(--mui-palette-activeAppBarText-main)"
+                      : "inherit",
                   };
                 }}
               >
-                <Typography sx={{
-                  fontWeight: "inherit",
-                  color: "inherit",
-                }}>
+                <Typography
+                  sx={{
+                    fontWeight: "inherit",
+                    color: "inherit",
+                  }}
+                >
                   {link.text}
                 </Typography>
               </NavLink>

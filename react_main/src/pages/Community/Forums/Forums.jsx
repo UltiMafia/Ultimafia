@@ -27,9 +27,18 @@ export default function Forums() {
     <div className="forums">
       <ForumNav forumNavInfo={forumNavInfo} />
       <Routes>
-        <Route path="/" element={<Categories updateForumNavInfo={updateForumNavInfo} />} />
-        <Route path="board/:boardId" element={<Board updateForumNavInfo={updateForumNavInfo} />} />
-        <Route path="thread/:threadId" element={<Thread updateForumNavInfo={updateForumNavInfo} />} />
+        <Route
+          path="/"
+          element={<Categories updateForumNavInfo={updateForumNavInfo} />}
+        />
+        <Route
+          path="board/:boardId"
+          element={<Board updateForumNavInfo={updateForumNavInfo} />}
+        />
+        <Route
+          path="thread/:threadId"
+          element={<Thread updateForumNavInfo={updateForumNavInfo} />}
+        />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </div>

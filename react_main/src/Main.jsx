@@ -318,12 +318,14 @@ function Main(props) {
   );
 
   // Site content will display instead of game if content is being overriden by the error boundary
-  const gameContent = (errorContent ? (siteContent) : (
+  const gameContent = errorContent ? (
+    siteContent
+  ) : (
     <Suspense fallback={<NewLoading />}>
       <Game />
       <AlertList />
     </Suspense>
-  ));
+  );
 
   const mainContent = (
     <UserContext.Provider value={user}>

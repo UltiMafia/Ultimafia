@@ -148,9 +148,7 @@ export default function CreateSetup(props) {
           ))}
         </List>
       </SwipeableDrawer>
-      <Box>
-        {CreatePage()}
-      </Box>
+      <Box>{CreatePage()}</Box>
     </>
   );
 }
