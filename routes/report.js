@@ -21,11 +21,11 @@ router.post("/send", async function (req, res) {
         .send("User and rule broken are required to file a report.");
     }
 
-    const title = `[${user.name}] reporting ${reportedUser}`;
+    const title = `[${user.name}] reporting https://ultimafia.com/user/${reportedUser}`;
     let reportDetails = `**Rule Broken:** ${rule}\n`;
 
     if (game) {
-      reportDetails += `**Game:** ${game}\n`;
+      reportDetails += `**Game:** https://ultimafia.com/game/${game}\n`;
     }
 
     if (description) {
