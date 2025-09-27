@@ -10,7 +10,7 @@ module.exports = class ModifierLoud extends Card {
   constructor(role) {
     super(role);
 
-    this.startEffects = ["Leak Whispers"];
+    //this.startEffects = ["Leak Whispers"];
     /*
     this.actions = [
       {
