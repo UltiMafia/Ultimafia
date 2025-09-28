@@ -42,11 +42,11 @@ export const slangList = {
   cc: {
     definition:
       "A Counter-Claim (or CC): a claim that contradicts other claims that were made, such as two players claiming the same role.",
-    emoji: ["❗", "⚠", "😈", "🙈", "❌"],
+    emoji: ["❗", "⚠", "😈", "🙈"],
   },
   cross: {
     definition: "Two players voting eachother so a clear can hammer.",
-    emoji: "❌",
+    emoji: "❎",
   },
   fos: {
     definition:
@@ -61,6 +61,7 @@ export const slangList = {
   gt: {
     definition:
       "Gamethrow: when a player purposefully plays against their win condition.",
+    emoji: "🤪",
   },
   gy: {
     definition: "Graveyard: is a place where you end up once you are dead.",
@@ -111,7 +112,7 @@ export const slangList = {
   },
   nk: {
     definition: "No Kill: refers to when the Mafia chooses to kill no one.",
-    emoji: "❌",
+    emoji: "☮️",
   },
   nl: {
     definition: "No-lim (No-condemn): literally, condemning nobody.",
@@ -227,10 +228,15 @@ export const slangList = {
       "A player whose alignment is known to the game at large in a way that is undeniable.",
     emoji: "✔",
   },
-  auto: {
+  autowin: {
     definition:
-      "Auto. A scenario in which the game's winner is known before the end of the game, assuming ordinary play.",
+      "Automatic Win. A scenario in which the game's winner is known before the end of the game, assuming ordinary play.",
     emoji: "✅",
+  },
+  autoloss: {
+    definition:
+      "Automatic Loss. A scenario in which a faction can no longer win, assuming ordinary play.",
+    emoji: "❌",
   },
   blue: {
     definition: "Villager.",
@@ -656,3 +662,4 @@ slangList.vested = slangList.vest;
 slangList.gamesolving = slangList.gamesolve;
 slangList.gamesolved = slangList.gamesolve;
 slangList.gamesolves = slangList.gamesolve;
+slangList.auto = slangList.autowin;
