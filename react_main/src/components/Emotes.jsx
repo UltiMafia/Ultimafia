@@ -296,6 +296,10 @@ export const Emotes = {
     name: "fox",
     type: "webp",
   },
+  ":boo:": {
+    name: "boo",
+    type: "png",
+  },
   ":ghost:": {
     name: "ghost",
     type: "webp",

@@ -585,8 +585,6 @@ export function parseGamePopover(game) {
         </InfoSection>
       );
       break;
-    case "Ghost":
-      break;
     case "Jotto":
       const duplicateLetters = game.settings.gameTypeOptions.duplicateLetters;
       const competitiveMode = game.settings.gameTypeOptions.competitiveMode;

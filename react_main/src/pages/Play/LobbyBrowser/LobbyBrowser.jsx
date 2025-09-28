@@ -296,4 +296,4 @@ export default function LobbyBrowser() {
       </Grid>
     </Box>
   );
-};
+}

@@ -1179,14 +1179,6 @@ const countChecks = {
 
     return true;
   },
-  Ghost: (roles, count, total, closed, unique) => {
-    if (count["Town"] < 1 || count["Ghost"] < 1)
-      return "Must have at least one Town member and at leasty one Ghost member.";
-
-    if (count["Ghost"] >= count["Town"])
-      return "Ghosts must not make up the majority.";
-    return true;
-  },
   Battlesnakes: (roles, count, total, closed, unique) => {
     if (total < 2 || total > 10)
       return "Only 2 to 10 players for now. Will support more players soon.";
@@ -1276,9 +1268,6 @@ const optionsChecks = {
       return "Team fail limit must be between 1 and the number of players.";
 
     return { firstTeamSize, lastTeamSize, numMissions, teamFailLimit };
-  },
-  Ghost: (setup) => {
-    return setup;
   },
   Battlesnakes: (setup) => {
     return setup;

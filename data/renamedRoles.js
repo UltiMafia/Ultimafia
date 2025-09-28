@@ -72,7 +72,4 @@ module.exports = {
     Blackmailer: "Mafioso",
     Slayer: "Sheriff",
   },
-  Ghost: {
-    Town: "Villager",
-  },
 };

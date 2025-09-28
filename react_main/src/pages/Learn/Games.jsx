@@ -14,7 +14,6 @@ import {
 
 import LearnMafia from "./LearnMafia";
 import LearnResistance from "./LearnResistance";
-import LearnGhost from "./LearnGhost";
 import LearnJotto from "./LearnJotto";
 import LearnAcrotopia from "./LearnAcrotopia";
 import LearnSecretDictator from "./LearnSecretDictator";
@@ -61,8 +60,6 @@ export default function Games(props) {
         return <LearnMafia />;
       case "Resistance":
         return <LearnResistance />;
-      case "Ghost":
-        return <LearnGhost />;
       case "Jotto":
         return <LearnJotto />;
       case "Acrotopia":
@@ -148,9 +145,7 @@ export default function Games(props) {
           ))}
         </List>
       </SwipeableDrawer>
-      <Box>
-        {LearnPage()}
-      </Box>
+      <Box>{LearnPage()}</Box>
     </>
   );
 }

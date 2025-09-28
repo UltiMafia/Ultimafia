@@ -15,7 +15,6 @@ import {
 
 import CreateMafiaSetup from "./CreateMafiaSetup";
 import CreateResistanceSetup from "./CreateResistanceSetup";
-import CreateGhostSetup from "./CreateGhostSetup";
 import CreateJottoSetup from "./CreateJottoSetup";
 import CreateAcrotopiaSetup from "./CreateAcrotopiaSetup";
 import CreateSecretDictatorSetup from "./CreateSecretDictatorSetup";
@@ -62,8 +61,6 @@ export default function CreateSetup(props) {
         return <CreateMafiaSetup />;
       case "Resistance":
         return <CreateResistanceSetup />;
-      case "Ghost":
-        return <CreateGhostSetup />;
       case "Jotto":
         return <CreateJottoSetup />;
       case "Acrotopia":
@@ -148,9 +145,7 @@ export default function CreateSetup(props) {
           ))}
         </List>
       </SwipeableDrawer>
-      <Box>
-        {CreatePage()}
-      </Box>
+      <Box>{CreatePage()}</Box>
     </>
   );
 }

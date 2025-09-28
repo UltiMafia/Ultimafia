@@ -15,7 +15,6 @@ import { UserText } from "../../components/Basic";
 import Newspaper from "../../components/Newspaper";
 import MafiaGame from "./MafiaGame";
 import ResistanceGame from "./ResistanceGame";
-import GhostGame from "./GhostGame";
 import JottoGame from "./JottoGame";
 import AcrotopiaGame from "./AcrotopiaGame";
 import SecretDictatorGame from "./SecretDictatorGame";
@@ -330,9 +329,13 @@ function GameWrapper(props) {
     var socketURL;
 
     if (import.meta.env.REACT_APP_USE_PORT === "true")
-      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${import.meta.env.REACT_APP_SOCKET_URI}:${port}`;
+      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${
+        import.meta.env.REACT_APP_SOCKET_URI
+      }:${port}`;
     else
-      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${import.meta.env.REACT_APP_SOCKET_URI}/${port}`;
+      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${
+        import.meta.env.REACT_APP_SOCKET_URI
+      }/${port}`;
 
     var newSocket = new Socket(socketURL);
     newSocket.on("connected", () => setConnected(connected + 1));
@@ -791,7 +794,6 @@ function GameWrapper(props) {
           />
           {gameType === "Mafia" && <MafiaGame />}
           {gameType === "Resistance" && <ResistanceGame />}
-          {gameType === "Ghost" && <GhostGame />}
           {gameType === "Jotto" && <JottoGame />}
           {gameType === "Acrotopia" && <AcrotopiaGame />}
           {gameType === "Secret Dictator" && <SecretDictatorGame />}

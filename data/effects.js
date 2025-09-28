@@ -151,7 +151,6 @@ const effectData = {
     },
   },
   Resistance: {},
-  Ghost: {},
   Jotto: {},
   Acrotopia: {},
   "Secret Dictator": {},

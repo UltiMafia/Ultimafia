@@ -134,7 +134,6 @@ export function AchievementCount(props) {
     Resistance: "Resistance ✊",
     Spies: "Spies 🕵️",
     Town: "Village 💙",
-    Ghost: "Ghost 👻",
     Host: "Host 🎤",
     Liberals: "Liberals 🇺🇸",
     Fascists: "Fascists 🛠️",
