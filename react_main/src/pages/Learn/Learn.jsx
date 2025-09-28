@@ -45,8 +45,11 @@ export default function Learn(props) {
         <Card sx={{ padding: theme.spacing(3), textAlign: "justify" }}>
           <Routes>
             <Route path="games" element={<Games />} />
-            <Route path="setup/:setupId" element={<Setups />}/>
-            <Route path="setup/:setupId/nightorder" element={<SetupsNightOrder />} />
+            <Route path="setup/:setupId" element={<Setups />} />
+            <Route
+              path="setup/:setupId/nightorder"
+              element={<SetupsNightOrder />}
+            />
             <Route path="role/:RoleName" element={<RolePage />} />
             <Route path="terminology" element={<Terminology />} />
             <Route path="achievements" element={<Achievements />} />

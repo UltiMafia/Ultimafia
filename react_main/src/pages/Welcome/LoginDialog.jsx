@@ -58,7 +58,7 @@ export const LoginDialog = ({ open, setOpen }) => {
     let emailTest = true;
     if (skips.includes(email)) {
       emailTest = false;
-    } 
+    }
 
     try {
       if (import.meta.env.MODE !== "development" && emailTest) {

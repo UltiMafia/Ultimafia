@@ -148,9 +148,7 @@ export default function Games(props) {
           ))}
         </List>
       </SwipeableDrawer>
-      <Box>
-        {LearnPage()}
-      </Box>
+      <Box>{LearnPage()}</Box>
     </>
   );
 }

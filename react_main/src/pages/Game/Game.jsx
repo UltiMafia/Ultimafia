@@ -330,9 +330,13 @@ function GameWrapper(props) {
     var socketURL;
 
     if (import.meta.env.REACT_APP_USE_PORT === "true")
-      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${import.meta.env.REACT_APP_SOCKET_URI}:${port}`;
+      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${
+        import.meta.env.REACT_APP_SOCKET_URI
+      }:${port}`;
     else
-      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${import.meta.env.REACT_APP_SOCKET_URI}/${port}`;
+      socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${
+        import.meta.env.REACT_APP_SOCKET_URI
+      }/${port}`;
 
     var newSocket = new Socket(socketURL);
     newSocket.on("connected", () => setConnected(connected + 1));

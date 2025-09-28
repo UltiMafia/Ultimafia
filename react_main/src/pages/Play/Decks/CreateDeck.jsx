@@ -1,8 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import {
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { SiteInfoContext } from "../../../Contexts";
 import { useFieldArray, useForm } from "react-hook-form";
 import axios from "axios";
