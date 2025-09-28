@@ -15,7 +15,6 @@ import { UserText } from "../../components/Basic";
 import Newspaper from "../../components/Newspaper";
 import MafiaGame from "./MafiaGame";
 import ResistanceGame from "./ResistanceGame";
-import GhostGame from "./GhostGame";
 import JottoGame from "./JottoGame";
 import AcrotopiaGame from "./AcrotopiaGame";
 import SecretDictatorGame from "./SecretDictatorGame";
@@ -795,7 +794,6 @@ function GameWrapper(props) {
           />
           {gameType === "Mafia" && <MafiaGame />}
           {gameType === "Resistance" && <ResistanceGame />}
-          {gameType === "Ghost" && <GhostGame />}
           {gameType === "Jotto" && <JottoGame />}
           {gameType === "Acrotopia" && <AcrotopiaGame />}
           {gameType === "Secret Dictator" && <SecretDictatorGame />}

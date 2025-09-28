@@ -2838,7 +2838,7 @@
 
 /***********
 *
-* Ghost
+* Battlesnakes
 *
 ***********/
 
@@ -2848,53 +2848,6 @@
 
 .role-icon-vivid-Battlesnakes-Host {
   background-image: url("/src/images/roles/independent/host-vivid.png");
-}
-
-/***********
-*
-* Ghost
-*
-***********/
-
-/*
-* Town
-*/
-
-.role-icon-vivid-Ghost-Villager {
-  background-image: url("/src/images/roles/village/villager-vivid.png");
-}
-
-.role-icon-vivid-Ghost-Fool {
-  background-image: url("/src/images/roles/independent/fool-vivid.png");
-}
-
-.role-icon-vivid-Ghost-Saint {
-  background-image: url("/src/images/roles/village/saint-vivid.png");
-}
-
-/*
-* Ghost
-*/
-
-.role-icon-vivid-Ghost-Ghost {
-  background-image: url("/src/images/roles/ghost-vivid.png");
-}
-
-.role-icon-vivid-Ghost-Vengeful-Spirit {
-  background-image: url("/src/images/roles/independent/vengeful-spirit-vivid.png");
-}
-
-/*
-* Host
-*/
-
-.role-icon-vivid-Ghost-Host {
-  background-image: url("/src/images/roles/independent/host-vivid.png");
-}
-
-/* for role prediction */
-.modifier-Ghost-Unknown {
-  background-position: -144px -32px;
 }
 
 /***********

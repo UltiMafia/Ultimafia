@@ -1,7 +1,6 @@
 export const GameTypes = [
   "Mafia",
   "Resistance",
-  "Ghost",
   "Jotto",
   "Acrotopia",
   "Secret Dictator",
@@ -24,7 +23,6 @@ export const Lobbies = [
 export const Alignments = {
   Mafia: ["Village", "Mafia", "Cult", "Independent", "Event"],
   Resistance: ["Resistance", "Spies"],
-  Ghost: ["Town", "Ghost", "Host"],
   Jotto: ["Town"],
   Acrotopia: ["Town"],
   "Secret Dictator": ["Liberals", "Fascists"],
@@ -39,7 +37,6 @@ export const Alignments = {
 export const GameStates = {
   Mafia: ["Day", "Night"],
   Resistance: ["Team Selection", "Team Approval", "Mission"],
-  Ghost: ["Night", "Give Clue", "Day", "Guess Word"],
   Jotto: ["Select Word", "Guess Word"],
   Acrotopia: ["Day", "Night"],
   "Secret Dictator": [

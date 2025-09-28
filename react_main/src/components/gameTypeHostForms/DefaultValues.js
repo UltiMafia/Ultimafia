@@ -8,7 +8,6 @@ function getStorageKey(gameType) {
 const HOST_OPTIONS_VERSIONS = {
   Mafia: 1,
   Acrotopia: 1,
-  Ghost: 1,
   Jotto: 1,
   "Liars Dice": 1,
   Battlesnakes: 1,
@@ -71,15 +70,6 @@ var defaultOptions = {
     enablePunctuation: true,
     standardiseCapitalisation: true,
     turnOnCaps: true,
-  },
-  Ghost: existingHostOptions["Ghost"] || {
-    ...commonHostOptions,
-    configureWords: false,
-    wordLength: 5,
-    guessWordLength: 2,
-    giveClueLength: 2,
-    dayLength: 5,
-    nightLength: 0.5,
   },
   Jotto: existingHostOptions["Jotto"] || {
     ...commonHostOptions,

@@ -4892,14 +4892,14 @@ const roleData = {
         "Wins if a Ghost guesses the real word when condemned or if Ghosts have majority.",
       ],
     },
-    Playwright: {
+    Poet: {
       alignment: "Independent",
       disabled: true,
       tags: ["Ghost"],
       description: [
         "Picks two words at night: the real word and the fake word. The Ghost must guess the real word to win.",
         "If a Ghost is not present in the setup, it will be spawned in.",
-        "If the Village guesses the identity of the Playwright, the Ghosts and the Playwright both lose.",
+        "If the Village guesses the identity of the Poet, the Ghosts and the Poet both lose.",
         "Wins with Ghosts.",
       ],
       RolesMadeBy: ["Ghost"],
@@ -5711,51 +5711,6 @@ const roleData = {
       description: [
         "Will be the only player to guess Merlin or Tristan and Isolde.",
       ],
-    },
-  },
-  Ghost: {
-    Villager: {
-      alignment: "Town",
-      tags: ["None"],
-      description: ["Knows the hidden word."],
-    },
-    Fool: {
-      alignment: "Town",
-      tags: ["None"],
-      description: [
-        "Knows the decoy word, which has the same number of letters as the hidden word.",
-        "Appears to self as Villager, and does not know that their word is the decoy word.",
-      ],
-    },
-    Saint: {
-      alignment: "Town",
-      tags: ["None"],
-      description: [
-        "Does not learn any words",
-        "If voted out, must guess the Fool Word or Town loses",
-      ],
-    },
-    Ghost: {
-      alignment: "Ghost",
-      tags: ["None"],
-      description: [
-        "Knows other Ghosts.",
-        "Only knows the number of letters in the hidden word.",
-        "Must blend in and guess the hidden word.",
-      ],
-    },
-    "Vengeful Spirit": {
-      alignment: "Ghost",
-      tags: ["Hint"],
-      description: [
-        "Is Assigned a Town Player as a Target.",
-        "Learns a letter in the Town word if the Target is killed",
-      ],
-    },
-    Host: {
-      alignment: "Host",
-      tags: ["None"],
-      description: ["Knows both words.", "Facilitates the game."],
     },
   },
   Jotto: {

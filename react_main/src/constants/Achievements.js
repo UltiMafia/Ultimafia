@@ -298,7 +298,6 @@ export const AchievementData = {
     },
   },
   Resistance: {},
-  Ghost: {},
   Jotto: {},
   Acrotopia: {},
   "Secret Dictator": {},
