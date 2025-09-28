@@ -16,8 +16,8 @@ module.exports = class GuessTheOgre extends Card {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-        if (this.OrgeGuessUsedYesterday == true) {
-          this.OrgeGuessUsedYesterday = false;
+        if (this.OgreGuessUsedYesterday == true) {
+          this.OgreGuessUsedYesterday = false;
           return;
         }
 

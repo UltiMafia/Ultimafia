@@ -2,7 +2,7 @@ import React from "react";
 import { Box } from "@mui/material";
 
 import umpride2 from "images/holiday/umpride2.png";
-import logobloody from "images/holiday/logobloody.png";
+import logobloody from "images/holiday/fadelogoHalloween.webp";
 import fadelogohat from "images/fadelogohat.png";
 
 export default function SiteLogo({ height = 144, width = 247, ...props }) {
