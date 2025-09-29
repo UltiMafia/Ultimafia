@@ -10,8 +10,8 @@ module.exports = class AnnouceNeighborVisitors extends Card {
   constructor(role) {
     super(role);
 
-        this.meetings = {
-      "Open the Door": {
+      this.meetings = {
+      "Leave a Trail": {
         states: ["Day"],
         flags: ["voting"],
         inputType: "boolean",
@@ -24,7 +24,7 @@ module.exports = class AnnouceNeighborVisitors extends Card {
             this.role.leftATrail = true;
             for(let player of this.game.players){
               if(player.isEvil()){
-                player.queueAlert(`The ${this.role.name} left a trail of Moonstones!`);
+                player.queueAlert(`The ${this.role.name} left a trail!`);
               }
             }
             //this.game.queueAlert(`The ${this.role.name} left a trail of Moonstones!`);
@@ -56,10 +56,10 @@ module.exports = class AnnouceNeighborVisitors extends Card {
           ],
           role: this.role,
           run: function () {
-            if(){
-              
+            if(this.role.leftATrail != true){
+              return;
             }
-            let this.role.neighbors = this.actor. getNeighbors();
+            this.role.neighborsForTrail = this.actor.getNeighbors();
           },
         });
 
@@ -78,42 +78,37 @@ module.exports = class AnnouceNeighborVisitors extends Card {
           ],
           role: this.role,
           run: function () {
+            if(this.role.neighborsForTrail.length <= 0){
+              return;
+            }
+            if(this.role.leftATrail != true){
+              return;
+            }
+            let visitors = [];
+            for(let neighbor of this.role.neighborsForTrail){
             let info = this.game.createInformation(
               "WatcherInfo",
               this.actor,
               this.game,
-              this.actor,
+              neighbor,
               true
             );
             info.processInfo();
-            let visitors = info.getInfoRaw();
-
+            visitors.push(...info.getInfoRaw());
+            }
+            
             if (visitors?.length) {
+              visitors = Random.randomizeArray(visitors);
               let names = visitors?.map((visitor) => visitor.name);
 
               this.game.queueAlert(
-                `:loud: Someone shouts during the night: ` +
-                  `Curses! ${names.join(", ")} disturbed my slumber!`
+                `:loud: As the ${this.role.name} followed a trail. They saw` +
+                  ` ${names.join(", ")} visiting their neighbors!`
               );
-              this.actor.role.data.visitors = [];
+              this.role.neighborsForTrail = [];
+              this.role.leftATrail = false;
             }
 
-            let info2 = this.game.createInformation(
-              "ReportsInfo",
-              this.actor,
-              this.game,
-              this.actor
-            );
-            info2.processInfo();
-            let reports = info2.getInfoRaw();
-
-            for (let report of reports) {
-              this.game.queueAlert(
-                `:loud: ${addArticle(
-                  this.actor.getRoleAppearance()
-                )} is overheard reading: ${report}`
-              );
-            }
           },
         });
 
