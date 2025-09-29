@@ -117,7 +117,7 @@ module.exports = class ModifierLoud extends Card {
               );
               this.actor.role.data.visitors = [];
             }
-
+            /*
             let info2 = this.game.createInformation(
               "ReportsInfo",
               this.actor,
@@ -134,6 +134,7 @@ module.exports = class ModifierLoud extends Card {
                 )} is overheard reading: ${report}`
               );
             }
+            */
           },
         });
 
