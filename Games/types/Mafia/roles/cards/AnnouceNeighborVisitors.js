@@ -2,7 +2,9 @@ const Card = require("../../Card");
 const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
 const {
-  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT, PRIORITY_PREKILL_ACTION, PRIORITY_DAY_DEFAULT,
+  PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
+  PRIORITY_PREKILL_ACTION,
+  PRIORITY_DAY_DEFAULT,
 } = require("../../const/Priority");
 const { addArticle } = require("../../../../core/Utils");
 
@@ -10,7 +12,7 @@ module.exports = class AnnouceNeighborVisitors extends Card {
   constructor(role) {
     super(role);
 
-      this.meetings = {
+    this.meetings = {
       "Leave a Trail": {
         states: ["Day"],
         flags: ["voting"],
@@ -22,8 +24,8 @@ module.exports = class AnnouceNeighborVisitors extends Card {
             if (this.target == "No") return;
 
             this.role.leftATrail = true;
-            for(let player of this.game.players){
-              if(player.isEvil()){
+            for (let player of this.game.players) {
+              if (player.isEvil()) {
                 player.queueAlert(`The ${this.role.name} left a trail!`);
               }
             }
@@ -56,7 +58,7 @@ module.exports = class AnnouceNeighborVisitors extends Card {
           ],
           role: this.role,
           run: function () {
-            if(this.role.leftATrail != true){
+            if (this.role.leftATrail != true) {
               return;
             }
             this.role.neighborsForTrail = this.actor.getNeighbors();
@@ -64,7 +66,7 @@ module.exports = class AnnouceNeighborVisitors extends Card {
         });
 
         this.game.queueAction(action1);
-        
+
         var action = new Action({
           actor: this.player,
           game: this.player.game,
@@ -78,25 +80,25 @@ module.exports = class AnnouceNeighborVisitors extends Card {
           ],
           role: this.role,
           run: function () {
-            if(this.role.neighborsForTrail.length <= 0){
+            if (this.role.neighborsForTrail.length <= 0) {
               return;
             }
-            if(this.role.leftATrail != true){
+            if (this.role.leftATrail != true) {
               return;
             }
             let visitors = [];
-            for(let neighbor of this.role.neighborsForTrail){
-            let info = this.game.createInformation(
-              "WatcherInfo",
-              this.actor,
-              this.game,
-              neighbor,
-              true
-            );
-            info.processInfo();
-            visitors.push(...info.getInfoRaw());
+            for (let neighbor of this.role.neighborsForTrail) {
+              let info = this.game.createInformation(
+                "WatcherInfo",
+                this.actor,
+                this.game,
+                neighbor,
+                true
+              );
+              info.processInfo();
+              visitors.push(...info.getInfoRaw());
             }
-            
+
             if (visitors?.length) {
               visitors = Random.randomizeArray(visitors);
               let names = visitors?.map((visitor) => visitor.name);
@@ -108,7 +110,6 @@ module.exports = class AnnouceNeighborVisitors extends Card {
               this.role.neighborsForTrail = [];
               this.role.leftATrail = false;
             }
-
           },
         });
 
