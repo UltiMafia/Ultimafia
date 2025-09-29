@@ -147,7 +147,6 @@ export function RoleCount(props) {
     Resistance: "Resistance ✊",
     Spies: "Spies 🕵️",
     Town: "Village 💙",
-    Ghost: "Ghost 👻",
     Host: "Host 🎤",
     Liberals: "Liberals 🇺🇸",
     Fascists: "Fascists 🛠️",

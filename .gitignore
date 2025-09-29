@@ -16,6 +16,7 @@ build_public/
 cmds.txt
 tmp/
 testing/
+dumps/
 
 # Data.
 uploads/

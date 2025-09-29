@@ -2513,8 +2513,6 @@ module.exports = class Game {
         this.hasHost = this.setup.roles[0]["Host:"];
       } else if (this.type == "Cheat") {
         this.hasHost = this.setup.roles[0]["Host:"];
-      } else if (this.type == "Ghost") {
-        this.hasFool = this.setup.roles[0]["Fool:"];
       } else if (this.type == "Liars Dice") {
         this.hasHost = this.setup.roles[0]["Host:"];
       } else if (this.type == "Resistance") {

@@ -24,7 +24,6 @@ import Setup from "components/Setup";
 
 import HostMafia from "./gameTypeHostForms/HostMafia";
 import HostResistance from "./gameTypeHostForms/HostResistance";
-import HostGhost from "./gameTypeHostForms/HostGhost";
 import HostJotto from "./gameTypeHostForms/HostJotto";
 import HostAcrotopia from "./gameTypeHostForms/HostAcrotopia";
 import HostSecretDictator from "./gameTypeHostForms/HostSecretDictator";
@@ -52,13 +51,10 @@ export default function HostGameDialogue({ open, setOpen, setup }) {
         return HostMafia();
       case "Resistance":
         return HostResistance();
-      case "Ghost":
-        return HostGhost();
       case "Jotto":
         return HostJotto();
       case "Acrotopia":
         return HostAcrotopia();
-      case "Secret Hitler":
       case "Secret Dictator":
         return HostSecretDictator();
       case "Wacky Words":

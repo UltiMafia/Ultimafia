@@ -191,7 +191,6 @@ const gameSettingData = {
       requires: ["Whispers"],
     },
   },
-  Ghost: {},
   Jotto: {},
   Acrotopia: {},
   "Secret Dictator": {},
