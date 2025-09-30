@@ -159,7 +159,7 @@ var schemas = {
     roles: String,
     count: { type: Map, of: Number },
     total: Number,
-    gameSettings: [],
+    gameSettings: { type: mongoose.Mixed, default: {} },
     startState: { type: String, default: "Night" },
     gameStartPrompt: { type: String, default: undefined },
     EventsPerNight: Number,
@@ -188,7 +188,7 @@ var schemas = {
         elo: { type: Number },
       },
     ],
-  }),
+  }, { minimize: false }),
   SetupVersion: new mongoose.Schema({
     version: { type: Number, index: true },
     setup: { type: mongoose.Schema.Types.ObjectId, ref: "Setup", index: true },

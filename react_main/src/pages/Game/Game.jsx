@@ -720,6 +720,14 @@ function GameWrapper(props) {
     }
   }
 
+  function getSetupGameSetting(gameSetting) {
+    if (setup && setup.gameSettings && gameSetting in setup.gameSettings) {
+      return setup.gameSettings[gameSetting];
+    }
+
+    return null;
+  }
+
   if (leave === "review") return <Navigate to={`/game/${gameId}/review`} />;
   else if (leave) return <Navigate to="/play" />;
   else if (rehostId) return <Navigate to={`/game/${rehostId}`} />;
@@ -735,6 +743,7 @@ function GameWrapper(props) {
       socket: socket,
       review: props.review,
       setup: setup,
+      getSetupGameSetting: getSetupGameSetting,
       startTime: startTime,
       history: history,
       updateHistory: updateHistory,
@@ -1274,11 +1283,11 @@ export function TextMeetingLayout(props) {
               selTab={selTab}
               players={players}
               options={props.options}
-              setup={props.setup}
               socket={props.socket}
               setAutoScroll={setAutoScroll}
               speechInput={speechInput}
               setSpeechInput={setSpeechInput}
+              whispersEnabled={game.getSetupGameSetting("Whispers")}
             />
           </>
         )}
@@ -1864,9 +1873,7 @@ function ObituariesMessage(props) {
         deaths={deaths}
         onFullyAnimated={() => game.setIsObituaryPlaying(false)}
         playAudio={game.playAudio}
-        isAlignmentReveal={game.setup?.gameSettings[0].includes(
-          "Alignment Only Reveal"
-        )}
+        isAlignmentReveal={game.getSetupGameSetting("Alignment Only Reveal")}
       />
     </>
   );
@@ -1934,7 +1941,7 @@ function SpeechInput(props) {
         });
       }
     }
-    if (props.setup.gameSettings[0].includes("Whispers")) {
+    if (props.whispersEnabled) {
       newDropdownOptions.push("divider");
       newDropdownOptions.push({
         id: "forceLeak",
