@@ -188,8 +188,8 @@ module.exports = class MafiaGame extends Game {
     super.incrementState(index, skipped);
 
     if (
-      (!this.hasGameSetting("Day Start") && this.getStateName() == "Night") ||
-      (this.hasGameSetting("Day Start") && this.getStateName() == "Day")
+      (!this.getGameSetting("Day Start") && this.getStateName() == "Night") ||
+      (this.getGameSetting("Day Start") && this.getStateName() == "Day")
     ) {
       this.dayCount++;
     }
@@ -396,7 +396,7 @@ module.exports = class MafiaGame extends Game {
       this.setup.dawn &&
       this.getStateName() == "Night" &&
       (this.dayCount == 0 ||
-        (this.dayCount == 1 && this.hasGameSetting("Day Start")))
+        (this.dayCount == 1 && this.getGameSetting("Day Start")))
     );
   }
 

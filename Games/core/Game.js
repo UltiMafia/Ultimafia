@@ -1471,7 +1471,7 @@ module.exports = class Game {
 
   calculateStateOffset() {
     let start = this.setup.startState;
-    if (this.hasGameSetting("Day Start")) {
+    if (this.getGameSetting("Day Start")) {
       start = "Day";
     } else {
       start = "Night";
@@ -2269,162 +2269,145 @@ module.exports = class Game {
   //Game Settings Section
 
   isDayStart() {
-    if (this.hasGameSetting("Day Start")) {
+    if (this.getGameSetting("Day Start")) {
       return true;
     }
     return false;
   }
 
   isWhispers() {
-    if (this.hasGameSetting("Whispers")) {
+    if (this.getGameSetting("Whispers")) {
       return true;
     }
     return false;
   }
 
   getWhisperLeakChance() {
-    if (this.hasGameSetting("Whisper Leak Chance")) {
-      let temp = this.setup.gameSettings[0].filter(
-        (m) =>
-          (Array.isArray(m) && m[0] == "Whisper Leak Chance") ||
-          m == "Whisper Leak Chance"
-      );
-      if (temp[0] == "Whisper Leak Chance") {
-        return 1;
-      } else {
-        return temp[0].length;
-      }
+    const leakPercentage = this.getGameSetting("Whisper Leak Chance");
+    if (leakPercentage) {
+      return leakPercentage;
     }
     return 0;
   }
 
   isMustAct() {
-    if (this.hasGameSetting("Must Act")) {
+    if (this.getGameSetting("Must Act")) {
       return true;
     }
     return false;
   }
 
   isMustCondemn() {
-    if (this.hasGameSetting("Must Condemn")) {
+    if (this.getGameSetting("Must Condemn")) {
       return true;
     }
     return false;
   }
 
   isNoReveal() {
-    if (this.hasGameSetting("No Reveal")) {
+    if (this.getGameSetting("No Reveal")) {
       return true;
     }
     return false;
   }
 
   isAlignmentOnlyReveal() {
-    if (this.hasGameSetting("Alignment Only Reveal")) {
+    if (this.getGameSetting("Alignment Only Reveal")) {
       return true;
     }
     return false;
   }
 
   isHiddenVotes() {
-    if (this.hasGameSetting("Hidden Votes")) {
+    if (this.getGameSetting("Hidden Votes")) {
       return true;
     }
     return false;
   }
 
   isTalkingDead() {
-    if (this.hasGameSetting("Talking Dead")) {
+    if (this.getGameSetting("Talking Dead")) {
       return true;
     }
     return false;
   }
 
   isVotingDead() {
-    if (this.hasGameSetting("Voting Dead")) {
+    if (this.getGameSetting("Voting Dead")) {
       return true;
     }
     return false;
   }
 
   isMajorityVoting() {
-    if (this.hasGameSetting("Majority Voting")) {
+    if (this.getGameSetting("Majority Voting")) {
       return true;
     }
     return false;
   }
 
   isRoleSharing() {
-    if (this.hasGameSetting("Role Sharing")) {
+    if (this.getGameSetting("Role Sharing")) {
       return true;
     }
     return false;
   }
 
   isAlignmentSharing() {
-    if (this.hasGameSetting("Alignment Sharing")) {
+    if (this.getGameSetting("Alignment Sharing")) {
       return true;
     }
     return false;
   }
 
   isPrivateRevealing() {
-    if (this.hasGameSetting("Private Revealing")) {
+    if (this.getGameSetting("Private Revealing")) {
       return true;
     }
     return false;
   }
 
   isPublicRevealing() {
-    if (this.hasGameSetting("Public Revealing")) {
+    if (this.getGameSetting("Public Revealing")) {
       return true;
     }
     return false;
   }
 
   isHiddenConverts() {
-    if (this.hasGameSetting("Hidden Conversions")) {
+    if (this.getGameSetting("Hidden Conversions")) {
       return true;
     }
     return false;
   }
 
   isLastWills() {
-    if (this.hasGameSetting("Last Wills")) {
+    if (this.getGameSetting("Last Wills")) {
       return true;
     }
     return false;
   }
 
   isHostileVsMafia() {
-    if (this.hasGameSetting("Hostiles Vs Mafia")) {
+    if (this.getGameSetting("Hostiles Vs Mafia")) {
       return true;
     }
     return false;
   }
 
   isCultVsMafia() {
-    if (this.hasGameSetting("Competing Evil Factions")) {
+    if (this.getGameSetting("Competing Evil Factions")) {
       return true;
     }
     return false;
   }
 
-  hasGameSetting(gameSetting) {
+  getGameSetting(gameSetting) {
     //Object.entries(gameSettingData[this.type]).map((m) => m[1].in)
-    let tempgameSettings;
-    if (this.setup.gameSettings && this.setup.gameSettings[0]) {
-      tempgameSettings = this.setup.gameSettings[0].map((k) =>
-        Array.isArray(k) ? k[0] : k
-      );
-    } else {
-      return false;
+    if (this.setup.gameSettings && gameSetting in this.setup.gameSettings) {
+      return this.setup.gameSettings[gameSetting];
     }
-    if (tempgameSettings && tempgameSettings.includes(gameSetting)) {
-      return true;
-    } else {
-      return false;
-    }
+    return null;
   }
 
   //End Game Settings Section
