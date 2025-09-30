@@ -263,14 +263,15 @@ export default function CreateSetup(props) {
     { roles: [{}], roleGroupSizes: [1], closed: false }
   );
 
-  const [gameSettings, updateGameSettings] = useReducer((gameSettings, action) => {
-    switch (action.type) {
+  const [gameSettings, updateGameSettings] = useReducer(
+    (gameSettings, action) => {
+      switch (action.type) {
         case "add":
           let actualKey = action.gameSetting.name;
           let increment = 1;
           let intitialCount = 0;
 
-          if(actualKey.includes(" x10")) {
+          if (actualKey.includes(" x10")) {
             increment = 10;
             actualKey = actualKey.split(" x10")[0];
           }
@@ -725,14 +726,14 @@ export default function CreateSetup(props) {
         </Grid2>
       </Paper>
       <GameSettingSearch
-        onAddClick={(gameSetting) => updateGameSettings({ type: "add", gameSetting: gameSetting })}
+        onAddClick={(gameSetting) =>
+          updateGameSettings({ type: "add", gameSetting: gameSetting })
+        }
         gameType={gameType}
         curMods={gameSettings}
       />
       <Stack direction="column" spacing={1}>
-        <Typography>
-          Selected Game Settings
-        </Typography>
+        <Typography>Selected Game Settings</Typography>
         <Stack
           display="flex"
           direction="row"
@@ -753,7 +754,9 @@ export default function CreateSetup(props) {
                 <RoleCell
                   iconLength={iconLength}
                   role={gameSetting}
-                  onDelClick={() => updateGameSettings({ type: "remove", key: gameSetting })}
+                  onDelClick={() =>
+                    updateGameSettings({ type: "remove", key: gameSetting })
+                  }
                   icon={
                     <GameSettingCount
                       iconLength={iconLength}
@@ -768,7 +771,7 @@ export default function CreateSetup(props) {
                   {count > 1 ? `${gameSetting} x${count}` : gameSetting}
                 </Typography>
               </div>
-            )
+            );
           })}
         </Stack>
       </Stack>
