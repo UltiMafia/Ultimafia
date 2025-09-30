@@ -113,13 +113,14 @@ export default function CreateSetup(props) {
   const [redirect, setRedirect] = useState("");
   const [editing, setEditing] = useState(false);
   const [modifiers, setModifiers] = useState([]);
-  const [gameSettings, setGameSettings] = useState([]);
 
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const siteInfo = useContext(SiteInfoContext);
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+
+  const gameTypeSettings = siteInfo.gamesettings[gameType];
 
   const [roleData, updateRoleData] = useReducer(
     (roleData, action) => {
@@ -262,6 +263,45 @@ export default function CreateSetup(props) {
     { roles: [{}], roleGroupSizes: [1], closed: false }
   );
 
+  const [gameSettings, updateGameSettings] = useReducer((gameSettings, action) => {
+    switch (action.type) {
+        case "add":
+          let actualKey = action.gameSetting.name;
+          let increment = 1;
+          let intitialCount = 0;
+
+          if(actualKey.includes(" x10")) {
+            increment = 10;
+            actualKey = actualKey.split(" x10")[0];
+          }
+
+          if (!action.gameSetting.allowDuplicate) {
+            // Set the value to true and short circuit if no duplicates allowed
+            return update(gameSettings, {
+              [actualKey]: { $set: true },
+            });
+          }
+
+          if (actualKey in gameSettings) {
+            intitialCount = gameSettings[actualKey];
+          }
+
+          return update(gameSettings, {
+            [actualKey]: { $set: intitialCount + increment },
+          });
+        case "remove":
+          return update(gameSettings, {
+            $unset: [action.key],
+          });
+        case "setFromSetup":
+          return action.gameSettings;
+        default:
+          throw new Error();
+      }
+    },
+    {}
+  );
+
   const user = useContext(UserContext);
 
   useEffect(() => {
@@ -294,7 +334,10 @@ export default function CreateSetup(props) {
             useRoleGroups: setup.useRoleGroups,
             roleGroupSizes: setup.roleGroupSizes,
           });
-          setGameSettings(setup.gameSettings[0]);
+          updateGameSettings({
+            type: "setFromSetup",
+            gameSettings: setup.gameSettings,
+          });
           var formFieldChanges = [];
 
           for (let field of formFields) {
@@ -364,80 +407,6 @@ export default function CreateSetup(props) {
     */
   }
 
-  function onAddGameSetting(mod) {
-    let index = gameSettings.length;
-
-    var tmpGameSettings = gameSettings.filter((m) => m);
-    if (mod.name && mod.name.includes(" x10")) {
-      let tempMod = {
-        name: mod.name.split(" x10")[0],
-      };
-      //mod.name = mod.name.split(" x10")[0];
-      var p = 0;
-      let tempArray = [
-        tempMod.name,
-        tempMod.name,
-        tempMod.name,
-        tempMod.name,
-        tempMod.name,
-        tempMod.name,
-        tempMod.name,
-        tempMod.name,
-        tempMod.name,
-        tempMod.name,
-      ];
-      for (let x = 0; x < tmpGameSettings.length; x++) {
-        if (tmpGameSettings[x] == tempMod.name) {
-          tmpGameSettings[x] = [tempMod.name];
-          tmpGameSettings[x].push(...tempArray);
-          setGameSettings(tmpGameSettings);
-          return;
-        } else if (tmpGameSettings[x].includes(tempMod.name)) {
-          if (tmpGameSettings[x].length > 99) {
-            return;
-          }
-          tmpGameSettings[x].push(...tempArray);
-          while (tmpGameSettings[x].length > 100) {
-            tmpGameSettings[x].pop();
-          }
-          setGameSettings(tmpGameSettings);
-          return;
-        }
-      }
-      tmpGameSettings.push(tempArray);
-      setGameSettings(tmpGameSettings);
-      return;
-    }
-    for (let x = 0; x < tmpGameSettings.length; x++) {
-      if (tmpGameSettings[x] == mod.name) {
-        tmpGameSettings[x] = [mod.name];
-        tmpGameSettings[x].push(mod.name);
-        setGameSettings(tmpGameSettings);
-        return;
-      } else if (tmpGameSettings[x].includes(mod.name)) {
-        if (tmpGameSettings[x].length > 99) {
-          return;
-        }
-        tmpGameSettings[x].push(mod.name);
-        setGameSettings(tmpGameSettings);
-        return;
-      }
-    }
-    tmpGameSettings.push(mod.name);
-    setGameSettings(tmpGameSettings);
-    return;
-    /*
-    const tmpModifiers = [...modifiers];
-    const modifier = mod;
-    if (modifier) {
-      tmpModifiers[index] = modifier;
-    } else {
-      delete tmpModifiers[index];
-    }
-    setModifiers(tmpModifiers);
-    */
-  }
-
   function onRemoveModifier(mod) {
     let index = modifiers.indexOf(mod);
     if (index == -1) {
@@ -452,43 +421,6 @@ export default function CreateSetup(props) {
     
     setModifiers(tmpModifiers);
     */
-  }
-
-  function onRemoveGameSetting(mod) {
-    let index = gameSettings.indexOf(mod);
-    if (index == -1) {
-      return;
-    }
-    let tmpGameSettings = gameSettings.filter((m) => m);
-    /*
-    if (Array.isArray(mod)) {
-      tmpGameSettings[index].pop();
-      if (tmpGameSettings[index].length <= 1) {
-        tmpGameSettings[index] = mod[0];
-      }
-      setGameSettings(tmpGameSettings);
-      return;
-    }
-    */
-    tmpGameSettings.splice(index, 1);
-    setGameSettings(tmpGameSettings);
-    /*
-    const tmpModifiers = [...modifiers];
-    delete tmpModifiers[index];
-    
-    setModifiers(tmpModifiers);
-    */
-  }
-
-  function onModifierChange(e, index) {
-    const tmpModifiers = [...modifiers];
-    const modifier = e.target.value;
-    if (modifier) {
-      tmpModifiers[index] = modifier;
-    } else {
-      delete tmpModifiers[index];
-    }
-    setModifiers(tmpModifiers);
   }
 
   if (editing && !params.get("edit")) {
@@ -793,12 +725,14 @@ export default function CreateSetup(props) {
         </Grid2>
       </Paper>
       <GameSettingSearch
-        onAddClick={onAddGameSetting}
+        onAddClick={(gameSetting) => updateGameSettings({ type: "add", gameSetting: gameSetting })}
         gameType={gameType}
         curMods={gameSettings}
       />
-      <mod>
-        Selected Game Settings
+      <Stack direction="column" spacing={1}>
+        <Typography>
+          Selected Game Settings
+        </Typography>
         <Stack
           display="flex"
           direction="row"
@@ -810,27 +744,34 @@ export default function CreateSetup(props) {
             flexWrap: "wrap",
           }}
         >
-          {gameSettings.map((m) => (
-            <div>
-              <RoleCell
-                iconLength={iconLength}
-                role={Array.isArray(m) ? m[0] : m}
-                onDelClick={() => onRemoveGameSetting(m)}
-                icon={
-                  <GameSettingCount
-                    iconLength={iconLength}
-                    role={Array.isArray(m) ? m[0] : m}
-                    count={gameSettings[m]}
-                    gameType={gameType}
-                    sx={{ fontSize: "14px" }}
-                  />
-                }
-              />
-              {Array.isArray(m) ? `${m[0]} x${m.length}` : m}
-            </div>
-          ))}
+          {Object.keys(gameSettings).map((gameSetting) => {
+            const value = gameSettings[gameSetting];
+            const count = typeof value === "number" ? value : 1;
+
+            return (
+              <div>
+                <RoleCell
+                  iconLength={iconLength}
+                  role={gameSetting}
+                  onDelClick={() => updateGameSettings({ type: "remove", key: gameSetting })}
+                  icon={
+                    <GameSettingCount
+                      iconLength={iconLength}
+                      role={gameSetting}
+                      count={count}
+                      gameType={gameType}
+                      sx={{ fontSize: "14px" }}
+                    />
+                  }
+                />
+                <Typography>
+                  {count > 1 ? `${gameSetting} x${count}` : gameSetting}
+                </Typography>
+              </div>
+            )
+          })}
         </Stack>
-      </mod>
+      </Stack>
       <Paper sx={{ p: 1 }}>
         {user.loggedIn && (
           <Stack direction={isSmallScreen ? "column" : "row"}>

@@ -640,7 +640,8 @@ export function GameSettingCount(props) {
     }
   }
 
-  const digits = props.count;
+  const digits =
+    props.count && !props.hideCount ? props.count.toString().split("") : "";
 
   const popoverDisabled = Boolean(props.showPopover === false);
   const popoverOpen = !popoverDisabled && canOpenPopover;
@@ -1178,11 +1179,9 @@ export function GameSettingSearch(props) {
 
   function getCompatibleGameSettingsOther(mods) {
     if (!mods) {
-      mods = [];
+      mods = {};
     }
-    const mappedMods = siteInfo.gamesettings[props.gameType].filter((t) =>
-      mods.includes(t.name)
-    );
+    const mappedMods = siteInfo.gamesettings[props.gameType].filter((t) => t.name in mods);
     let temp = [];
     for (let mod of mappedMods) {
       if (mod && mod.incompatible) {
@@ -1192,7 +1191,7 @@ export function GameSettingSearch(props) {
     const incompatibles = temp;
     const modifierOptions = siteInfo.gamesettings[props.gameType]
       .filter((e) => !e.hidden)
-      .filter((e) => e.allowDuplicate || !mods.includes(e.name))
+      .filter((e) => e.allowDuplicate || !(e.name in mods))
       .filter((e) => !incompatibles.includes(e.name))
       .map((modifier) => modifier.name);
     return modifierOptions;

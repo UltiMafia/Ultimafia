@@ -6,6 +6,7 @@ const routeUtils = require("./utils");
 const constants = require("../data/constants");
 const roleData = require("../data/roles");
 const modifierData = require("../data/modifiers");
+const gamesettingsData = require("../data/gamesettings");
 const redis = require("../modules/redis");
 const logger = require("../modules/logging")(".");
 const utils = require("./utils");
@@ -45,18 +46,6 @@ function generateMafiaSetupManifest(setup, roles) {
     lines = [
       `Name: ${setup.name}`,
       `Starting state: ${setup.startState}`,
-      // `Whispers enabled: ${setup.whispers}`,
-      // `Whisper leak percentage: ${setup.leakPercentage}`,
-      // `Last wills enabled: ${setup.lastWill}`,
-      // `Banished count: ${setup.banished}`,
-      // `Talking dead enabled: ${setup.talkingDead}`,
-      // `Voting dead enabled: ${setup.votingDead}`,
-      // `Majority Voting: ${setup.majorityVoting}`,
-      // `Hidden converts: ${setup.hiddenConverts}`,
-      // `Role sharing: ${setup.RoleShare}`,
-      // `Alignment sharing: ${setup.AlignmentShare}`,
-      // `Private sharing: ${setup.PrivateShare}`,
-      //  `Public sharing: ${setup.PublicShare}`,
       `Events per night: ${setup.EventsPerNight}`,
       `No death limit: ${setup.noDeathLimit}`,
       `Force must act: ${setup.ForceMustAct}`,
@@ -64,17 +53,21 @@ function generateMafiaSetupManifest(setup, roles) {
       `Unique roles: ${setup.unique}`,
       `Unique roles sans modifier: ${setup.uniqueWithoutModifier}`,
       `Use role groups: ${setup.useRoleGroups}`,
-      // `Dawn enabled: ${setup.dawn}`,
-      // `Must act: ${setup.mustAct}`,
-      // `Must condemn: ${setup.mustCondemn}`,
       `Game start prompt: ${setup.gameStartPrompt}`,
-      // `No reveal: ${setup.noReveal}`,
-      // `Votes invisible: ${setup.votesInvisible}`,
       `Game ending event: ${setup.GameEndEvent}`,
-      // `All Excess Roles: ${setup.AllExcessRoles}`,
-      // `Mafia Vs Hostiles: ${setup.HostileVsMafia}`,
-      // `Competing Evil Factions: ${setup.CultVsMafia}`,
     ];
+
+    lines.push("Game settings:");
+    for (let gameSettingName in Object.keys(gamesettingsData)) {
+      let setupValue = setup.gameSettings[gameSettingName];
+      if (setupValue === undefined) {
+        setupValue = false;
+      }
+      if (gameSettingName.includes("x10")) {
+        continue;
+      }
+      lines.push(`- ${gameSettingName}: ${setupValue}`);
+    }
 
     if (setup.useRoleGroups) {
       lines.push(`Role group sizes:`);
@@ -110,7 +103,7 @@ router.get("/id", async function (req, res) {
     var setup = await models.Setup.findOne({
       id: String(req.query.query),
     }).select(
-      "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id"
+      "id gameType name roles closed useRoleGroups roleGroupSizes gameSettings count total -_id"
     );
     var setups = setup ? [setup] : [];
 
@@ -226,7 +219,7 @@ router.get("/search", async function (req, res) {
         .skip(start)
         .limit(pageSize)
         .select(
-          "id gameType name roles closed useRoleGroups roleGroupSizes count total featured -_id"
+          "id gameType name roles closed useRoleGroups roleGroupSizes gameSettings count total featured -_id"
         )
         .populate("creator", "id name avatar tag -_id");
       var count = await models.Setup.countDocuments(search);
@@ -609,8 +602,8 @@ router.post("/create", async function (req, res) {
     setup.name = String(setup.name || "");
     setup.roles = Object(setup.roles);
     setup.count = Object(setup.count);
-    (setup.gameSettings = Array(setup.gameSettings)),
-      (setup.closed = Boolean(setup.closed));
+    setup.gameSettings = setup.gameSettings,
+    setup.closed = Boolean(setup.closed);
     setup.unique = setup.closed ? Boolean(setup.unique) : false;
     setup.uniqueWithoutModifier = setup.unique
       ? Boolean(setup.uniqueWithoutModifier)

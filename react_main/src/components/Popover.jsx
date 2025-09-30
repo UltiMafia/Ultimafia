@@ -10,6 +10,7 @@ import { NameWithAvatar } from "pages/User/User";
 
 import { Divider, Popover, Stack, Typography } from "@mui/material";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
+import { GameSettingCount } from "./Roles";
 
 export function usePopover({
   path,
@@ -37,7 +38,7 @@ export function usePopover({
   function ready(data, type) {
     switch (type) {
       case "setup":
-        setContent(parseSetupPopover(data, siteInfo.roles));
+        setContent(parseSetupPopover(data, siteInfo));
         break;
       case "deck":
         setContent(parseDeckPopover(data));
@@ -204,7 +205,7 @@ export function InfoRow({ title, content, multiRow = false }) {
   }
 }
 
-export function parseSetupPopover(setup, roleData) {
+export function parseSetupPopover(setup, siteInfo) {
   const result = [];
 
   //Creator
@@ -220,13 +221,45 @@ export function parseSetupPopover(setup, roleData) {
     result.push(<InfoRow title="Created By" content={name} key="createdBy" />);
   }
 
-  let settings = setup.gameSettings[0].map((s, i) => (
-    <InfoRow
-      title={Array.isArray(s) ? s[0] : s}
-      content={Array.isArray(s) ? s.length : true}
-      key={i}
-    />
-  ));
+  const IMPORTANT_GAME_SETTINGS = ["Whispers"]
+  let settings = siteInfo.gamesettings[setup.gameType].map((gameSetting) => {
+    let setupValue = setup.gameSettings[gameSetting.name];
+    if (setupValue === undefined) {
+      setupValue = false;
+    }
+
+    if (gameSetting.name.includes("x10")) {
+      return;
+    }
+    if (gameSetting.requires) {
+      for (const requirement of gameSetting.requires) {
+        if (!(requirement in setup.gameSettings) || !setup.gameSettings[requirement]) {
+          return;
+        }
+      }
+    }
+    if (setupValue === false && !IMPORTANT_GAME_SETTINGS.includes(gameSetting.name)) {
+      return;
+    }
+
+    // Remain as false if setting is disabled otherwise display the icon for the game setting
+    const gameSettingCount = setupValue === false ? false : (
+      <GameSettingCount
+        iconLength={"1.5em"}
+        role={gameSetting.name}
+        count={typeof setupValue === "number" ? setupValue : 1}
+        gameType={setup.gameType}
+      />
+    );
+
+    return (
+      <InfoRow
+        title={gameSetting.name}
+        content={gameSettingCount}
+        key={gameSetting.name}
+      />
+    )
+  });
 
   // Common settings
   result.push(

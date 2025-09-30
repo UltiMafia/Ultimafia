@@ -77,21 +77,6 @@ export default function Settings() {
       showIf: (deps) => deps.user.perms.viewDeleted,
     },
     {
-      label: "Role Icon Scheme",
-      ref: "roleIconScheme",
-      type: "select",
-      options: [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-        {
-          label: "Noir",
-          value: "noir",
-        },
-      ],
-    },
-    {
       label: "Site Color Scheme",
       ref: "siteColorScheme",
       type: "select",
