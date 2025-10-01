@@ -86,7 +86,7 @@ const MalEffects =
   "Malicious effects include poison, bleeding, insanity, polarization, gasoline, anesthetic gas, lovesick, zombification, alcoholism, lycanthropy, and viruses.";
 
 //Effect Def
-const bleedingDef =  `Players who are "Bleeding" will die during the next night.`;
+const bleedingDef = `Players who are "Bleeding" will die during the next night.`;
 const deliriumDef = `Players who are "Delirious" will only learn false information with their abilities and will have their non-information abilities disabled.`;
 const leakyDef = `Players who are "Leaky" will have all whispers involving them leak.`;
 const blindDef = `Players who are "Blind" will see all speech as anonymous and cannot see votes.`;
@@ -142,9 +142,7 @@ const roleData = {
       alignment: "Village",
       category: "Basic",
       tags: ["Exposed", "Basic"],
-      description: [
-        "Starts revealed to all players.",
-      ],
+      description: ["Starts revealed to all players."],
       skins: [
         {
           label: "Vivid",
@@ -336,7 +334,9 @@ const roleData = {
       alignment: "Village",
       category: "Protective",
       tags: ["Protective", "Visiting", "Basic"],
-      description: ["Each night, can choose to visit one player and protect them from death."],
+      description: [
+        "Each night, can choose to visit one player and protect them from death.",
+      ],
       nightOrder: [["Protect", PRIORITY_NIGHT_SAVER]],
     },
     Soprano: {
@@ -615,7 +615,7 @@ const roleData = {
       category: "Gifting",
       tags: ["Items", "Tract", "Protective", "Visiting", "Basic"],
       description: [
-         `Each night, can choose to visit one player and give them an "Envelope".`,
+        `Each night, can choose to visit one player and give them an "Envelope".`,
         tractDef,
       ],
       nightOrder: [["Give Tract", PRIORITY_ITEM_GIVER_EARLY]],
@@ -653,8 +653,8 @@ const roleData = {
       category: "Gifting",
       tags: ["Killing", "Items", "Gun", "Visiting", "Day Actions", "Basic"],
       description: [
-      `Each night, can choose to visit one player and give them a "Rifle".`,
-      rifleDef,
+        `Each night, can choose to visit one player and give them a "Rifle".`,
+        rifleDef,
       ],
       nightOrder: [["Give Rifle", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -875,9 +875,7 @@ const roleData = {
       alignment: "Village",
       category: "Investigative",
       tags: ["Information", "Alignment", "Dead", "Basic"],
-      description: [
-        "Each night, learns how many dead players are Evil.",
-      ],
+      description: ["Each night, learns how many dead players are Evil."],
       nightOrder: [
         ["Evil Dead Count", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10],
       ],
@@ -975,7 +973,9 @@ const roleData = {
       alignment: "Village",
       category: "Investigative",
       tags: ["Information", "Excess Roles", "Advanced"],
-      description: ["Each night, can choose to reveal 1-3 Excess roles to All Players."],
+      description: [
+        "Each night, can choose to reveal 1-3 Excess roles to All Players.",
+      ],
       nightOrder: [
         ["Reveal Roles", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10],
       ],
@@ -1029,7 +1029,7 @@ const roleData = {
       tags: ["Information", "Roles", "Basic", "Visiting"],
       description: [
         "Each night, can choose to visit one player and learn two roles that are not their role.",
-       // "Visits one player each night and learns two roles that are not that player's role.",
+        // "Visits one player each night and learns two roles that are not that player's role.",
       ],
       nightOrder: [["Learn Not Roles", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
@@ -1066,7 +1066,9 @@ const roleData = {
       alignment: "Village",
       category: "Investigative",
       tags: ["Information", "Visit Interaction", "Visiting", "Basic"],
-      description: ["Each night, can choose to visit one player and learn who they visited.",],
+      description: [
+        "Each night, can choose to visit one player and learn who they visited.",
+      ],
       nightOrder: [["Track", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
     Voyeur: {
@@ -1086,7 +1088,7 @@ const roleData = {
       description: [
         "Each night, can choose to visit one player and learn who visited them.",
         //"Watches a player each night and learns who visited them.",
-                   ],
+      ],
       nightOrder: [["Watch", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5]],
     },
     Witness: {
@@ -1225,7 +1227,7 @@ const roleData = {
         //"Delirious players get False Info and have other abilities disabled.",
         "A Sailor can not die unless roleblocked/made delirious.",
         `Each night, can choose to visit one player and make them "Delirious" until the next night.`,
-        deliriumDef
+        deliriumDef,
       ],
       nightOrder: [["Give Delirium", PRIORITY_NIGHT_ROLE_BLOCKER + 1]],
     },
@@ -1245,7 +1247,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Conversion", "Role Swapping", "Visiting", "Advanced"],
       description: [
-        `Each night, can choose to visit two players and make them swap roles.`
+        `Each night, can choose to visit two players and make them swap roles.`,
         //"Each night chooses 2 players.",
         //"The selected players will swap roles.",
       ],
@@ -1256,7 +1258,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Visit Interaction", "Role Blocker", "Visiting", "Basic"],
       description: [
-        `Each night, can choose to visit one player and block the night actions of any players who visit them.`
+        `Each night, can choose to visit one player and block the night actions of any players who visit them.`,
         //"Each night, protects one player from all visits."
       ],
       nightOrder: [["Block Visitors", PRIORITY_UNTARGETABLE]],
@@ -1537,7 +1539,7 @@ const roleData = {
       category: "Sacrificial",
       tags: ["Kill Interaction", "Voting", "Basic"],
       description: [
-      `If a Typist dies, all players will be "Purblind" during the following Day.`,
+        `If a Typist dies, all players will be "Purblind" during the following Day.`,
         purblindDef,
         //"On the day following their death, all votes will be anonymous.",
       ],
@@ -1650,7 +1652,10 @@ const roleData = {
         "If a player is condemned, All players are Delirious that night.",
       ],
       nightOrder: [
-        ["Give Everyone Delirium If someone is Condemned", PRIORITY_BLOCK_EARLY],
+        [
+          "Give Everyone Delirium If someone is Condemned",
+          PRIORITY_BLOCK_EARLY,
+        ],
       ],
       SpecialInteractions: {
         Assassin: [
@@ -1930,7 +1935,7 @@ const roleData = {
       tags: ["Meetings", "Reflexive", "Basic"],
       description: [
         `Each night, each player who visits the Matron will be invited to the common room.`,
-        "Players invited to the common will meet with the Matron the following night."
+        "Players invited to the common will meet with the Matron the following night.",
         //"Passively invites visitors to the common room, where  they share a meeting.",
       ],
       nightOrder: [["Give Invites to Visitors", PRIORITY_ITEM_GIVER_DEFAULT]],
