@@ -1126,7 +1126,7 @@ const roleData = {
       ],
       description: [
         "Each night, can choose to visit one player.",
-        "If that player dies, the Avenger will be given a "Gun".",
+        'If that player dies, the Avenger will be given a "Gun".',
         gunDef,
         //"Each night, chooses someone to avenge.",
         //"Gets a gun if their chosen target dies.",
@@ -1234,7 +1234,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Conversion", "Role Swapping", "Visiting", "Advanced"],
       description: [
-        `Each night, can choose to visit one player and swap roles with them.`
+        "Each night, can choose to visit one player and swap roles with them.",
         //"Each night, chooses a player to swap roles with.",
         "A Snake Charmer can only swap roles once.",
       ],
@@ -1267,7 +1267,7 @@ const roleData = {
       tags: ["Item Interaction", "Visiting", "Advanced"],
       description: [
         "Each night, fixes any broken or corrupted items they are holding.",
-        "Each night, can choose to visit one player and fix any broken or corrupted items they have."
+        "Each night, can choose to visit one player and fix any broken or corrupted items they have.",
         //"Once per night, fixes the target's item(s).",
         //"Can undo an item's fabricated/sabotaged status, and can turn Gunrunner guns into normal guns and Gremlin guns into normal guns.",
         //"Each phase, fixes their own item(s).",
@@ -1868,7 +1868,7 @@ const roleData = {
       tags: ["Meetings", "Orange", "Items", "Visiting", "Advanced"],
       description: [
         "Meets with other Capybaras at night.",
-        `Each night, can choose to visit one player and give them an "Orange".`,
+        'Each night, can choose to visit one player and give them an "Orange".',
         orangeDef
         "Chooses a player to invite to a hot springs relaxation by giving them a Yuzu Orange each night.",
         //"When holding a Yuzu Orange, player can choose during the day to anonymously meet with the Capybara and other Yuzu Orange holders the following night.",
