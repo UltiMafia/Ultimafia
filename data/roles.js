@@ -995,7 +995,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Roles", "Visiting", "Guess", "Basic"],
       description: [
-        "Each night, chooses a role."
+        "Each night, chooses a role.",
         "Each night, can choose to visit one player and learn if their role is the selected role.",
         //"Chooses a player and a role and learns if they are that role or not.",
       ],
