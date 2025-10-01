@@ -221,7 +221,7 @@ export function parseSetupPopover(setup, siteInfo) {
     result.push(<InfoRow title="Created By" content={name} key="createdBy" />);
   }
 
-  const IMPORTANT_GAME_SETTINGS = ["Whispers"]
+  const IMPORTANT_GAME_SETTINGS = ["Whispers"];
   let settings = siteInfo.gamesettings[setup.gameType].map((gameSetting) => {
     let setupValue = setup.gameSettings[gameSetting.name];
     if (setupValue === undefined) {
@@ -233,24 +233,33 @@ export function parseSetupPopover(setup, siteInfo) {
     }
     if (gameSetting.requires) {
       for (const requirement of gameSetting.requires) {
-        if (!(requirement in setup.gameSettings) || !setup.gameSettings[requirement]) {
+        if (
+          !(requirement in setup.gameSettings) ||
+          !setup.gameSettings[requirement]
+        ) {
           return;
         }
       }
     }
-    if (setupValue === false && !IMPORTANT_GAME_SETTINGS.includes(gameSetting.name)) {
+    if (
+      setupValue === false &&
+      !IMPORTANT_GAME_SETTINGS.includes(gameSetting.name)
+    ) {
       return;
     }
 
     // Remain as false if setting is disabled otherwise display the icon for the game setting
-    const gameSettingCount = setupValue === false ? false : (
-      <GameSettingCount
-        iconLength={"1.5em"}
-        role={gameSetting.name}
-        count={typeof setupValue === "number" ? setupValue : 1}
-        gameType={setup.gameType}
-      />
-    );
+    const gameSettingCount =
+      setupValue === false ? (
+        false
+      ) : (
+        <GameSettingCount
+          iconLength={"1.5em"}
+          role={gameSetting.name}
+          count={typeof setupValue === "number" ? setupValue : 1}
+          gameType={setup.gameType}
+        />
+      );
 
     return (
       <InfoRow
@@ -258,7 +267,7 @@ export function parseSetupPopover(setup, siteInfo) {
         content={gameSettingCount}
         key={gameSetting.name}
       />
-    )
+    );
   });
 
   // Common settings

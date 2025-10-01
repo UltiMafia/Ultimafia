@@ -602,8 +602,8 @@ router.post("/create", async function (req, res) {
     setup.name = String(setup.name || "");
     setup.roles = Object(setup.roles);
     setup.count = Object(setup.count);
-    setup.gameSettings = setup.gameSettings,
-    setup.closed = Boolean(setup.closed);
+    (setup.gameSettings = setup.gameSettings),
+      (setup.closed = Boolean(setup.closed));
     setup.unique = setup.closed ? Boolean(setup.unique) : false;
     setup.uniqueWithoutModifier = setup.unique
       ? Boolean(setup.uniqueWithoutModifier)

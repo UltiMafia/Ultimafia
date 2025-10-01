@@ -1181,7 +1181,9 @@ export function GameSettingSearch(props) {
     if (!mods) {
       mods = {};
     }
-    const mappedMods = siteInfo.gamesettings[props.gameType].filter((t) => t.name in mods);
+    const mappedMods = siteInfo.gamesettings[props.gameType].filter(
+      (t) => t.name in mods
+    );
     let temp = [];
     for (let mod of mappedMods) {
       if (mod && mod.incompatible) {
