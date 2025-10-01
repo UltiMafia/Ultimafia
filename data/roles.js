@@ -1869,7 +1869,7 @@ const roleData = {
       description: [
         "Meets with other Capybaras at night.",
         'Each night, can choose to visit one player and give them an "Orange".',
-        orangeDef
+        orangeDef,
         "Chooses a player to invite to a hot springs relaxation by giving them a Yuzu Orange each night.",
         //"When holding a Yuzu Orange, player can choose during the day to anonymously meet with the Capybara and other Yuzu Orange holders the following night.",
       ],
@@ -1901,7 +1901,7 @@ const roleData = {
       category: "Meeting",
       tags: ["Meetings", "Conversion", "Alignment", "Visiting", "Basic"],
       description: [
-        "Meets with other Freemasons at night."
+        "Meets with other Freemasons at night.",
         "Each night, all Freemasons can choose to visit one player and convert them to Freemason.",
         "",
         //"Converts one player into a Freemason each night.",
