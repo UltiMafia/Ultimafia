@@ -1,4 +1,4 @@
-const DRY_RUN = true;
+const DRY_RUN = false;
 
 const query = { gameType: "Ghost" };
 const remappings = {
@@ -12,6 +12,10 @@ for(const setup of matchedSetups)
     const roles = JSON.parse(setup.roles);
     let newRoles = [];
     let updateThis = false;
+    if(setup.gameType === "Ghost")
+    {
+        updateThis = true;
+    }
     for(const roleset of roles)
     {
         let newRoleset = {...roleset};

@@ -171,6 +171,7 @@ export function dateToHTMLString(date) {
 }
 
 export async function verifyRecaptcha(action) {
+  return;
   return new Promise((res, rej) => {
     window.grecaptcha.ready(async () => {
       try {
