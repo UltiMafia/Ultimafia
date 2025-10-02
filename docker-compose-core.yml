@@ -8,6 +8,10 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PW}
       MONGO_INITDB_DATABASE: ${MONGO_DB}
+    expose:
+      - 27017
+    ports:
+      - "27017:27017"
     volumes:
       - mongodb:/data/db
       - ./scripts/mongo:/scripts
