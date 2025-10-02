@@ -7,11 +7,11 @@ module.exports = class ShooterFramer extends Card {
 
     this.meetings = {
       "Frame Shooter": {
-        actionName: "Frame as Shooter (no visit)",
+        actionName: "Frame as Shooter",
         states: ["Night"],
         flags: ["voting"],
         action: {
-          labels: ["hidden"],
+          labels: ["visit"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT + 1,
           run: function () {
             for (let item of this.actor.items) {
