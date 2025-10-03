@@ -1138,7 +1138,7 @@ const roleData = {
       ],
       description: [
         "Each night, can choose to visit one player.",
-        'If that player dies, the Avenger will be given a Gun.',
+        "If that player dies, the Avenger will be given a Gun.",
         gunDef,
         //"Each night, chooses someone to avenge.",
         //"Gets a gun if their chosen target dies.",
@@ -1883,7 +1883,7 @@ const roleData = {
       tags: ["Meetings", "Orange", "Items", "Visiting", "Advanced"],
       description: [
         "Meets with other Capybaras at night.",
-        'Each night, can choose to visit one player and give them an Orange.',
+        "Each night, can choose to visit one player and give them an Orange.",
         orangeDef,
         //"Chooses a player to invite to a hot springs relaxation by giving them a Yuzu Orange each night.",
         //"When holding a Yuzu Orange, player can choose during the day to anonymously meet with the Capybara and other Yuzu Orange holders the following night.",
@@ -2033,9 +2033,7 @@ const roleData = {
       alignment: "Village",
       category: "Reflexive",
       tags: ["Reflexive", "Information", "Roles", "Visit Interaction", "Basic"],
-      description: [
-        "Each night, learns what roles visited them.",
-      ],
+      description: ["Each night, learns what roles visited them."],
       nightOrder: [["Learn Role Visitors", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
     //killing roles
@@ -2225,8 +2223,7 @@ const roleData = {
         "If no roles or Gold remain in the Chest, a player will remain as Grouch.",
         "The Admiral's upper neighbor can choose to remain as Grouch even if Gold or roles remain in the Chest",
         "If 2 or more non-evil roles are condemned, All Village-aligned players die.",
-        
-        
+
         //"Starting with the Admiral, players will pass a chest containing Village/Independent roles and 15 Gold to their lower neighbor.",
         //"When a player is passed the chest they may steal gold or become a role in the chest. Players who steal Gold become Evil roles.",
         //"The Admiral must steal 1-5 Gold but will not become an Evil role.",
@@ -2541,7 +2538,9 @@ const roleData = {
       alignment: "Mafia",
       category: "Killing",
       tags: ["Killing", "Extra Night Deaths", "Visiting", "Basic"],
-      description: ["Each night, can choose to visit one player and kill them."],
+      description: [
+        "Each night, can choose to visit one player and kill them.",
+      ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT]],
     },
     Jinx: {
@@ -2664,7 +2663,9 @@ const roleData = {
       alignment: "Mafia",
       category: "Investigative",
       tags: ["Information", "Visit Interaction", "Basic"],
-      description: ["Each night, can choose to visit one player and learn who visited them."],
+      description: [
+        "Each night, can choose to visit one player and learn who visited them.",
+      ],
       nightOrder: [["Watch", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5]],
     },
     Lurker: {
@@ -2689,14 +2690,18 @@ const roleData = {
       alignment: "Mafia",
       category: "Investigative",
       tags: ["Information", "Visit Interaction", "Visiting", "Basic"],
-      description: ["Each night, can choose to visit one player and learn who they visited."],
+      description: [
+        "Each night, can choose to visit one player and learn who they visited.",
+      ],
       nightOrder: [["Track", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
     Stalker: {
       alignment: "Mafia",
       category: "Investigative",
       tags: ["Information", "Roles", "Visiting", "Basic"],
-      description: ["Each night, can choose to visit one player and learn their role."],
+      description: [
+        "Each night, can choose to visit one player and learn their role.",
+      ],
       nightOrder: [["Learn Role", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
     Wrangler: {
@@ -2734,8 +2739,8 @@ const roleData = {
       category: "Manipulative",
       tags: ["Manipulative", "Delirium", "Visiting", "Advanced"],
       description: [
-      `Each night, can choose to visit one player and make them "Delirious" until the next night.`,
-      deliriumDef,
+        `Each night, can choose to visit one player and make them "Delirious" until the next night.`,
+        deliriumDef,
       ],
       nightOrder: [["Give Delirium", PRIORITY_NIGHT_ROLE_BLOCKER + 1]],
     },
@@ -2917,9 +2922,9 @@ const roleData = {
         "Advanced",
       ],
       description: [
-      `Each night, can choose to visit one player and give them a Gun.`,
+        `Each night, can choose to visit one player and give them a Gun.`,
         gunDef,
-      "Guns given by the Gunrunner will only kill if the player being shot is the same alignment as the shooter.",
+        "Guns given by the Gunrunner will only kill if the player being shot is the same alignment as the shooter.",
       ],
       nightOrder: [["Give Tommy Gun", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -3088,7 +3093,9 @@ const roleData = {
     Thief: {
       alignment: "Mafia",
       tags: ["Items", "Night-Acting", "Visiting", "Advanced"],
-      description: ["Each night, can choose to visit one player and steal an item from them."],
+      description: [
+        "Each night, can choose to visit one player and steal an item from them.",
+      ],
       nightOrder: [
         ["Steal Item secound try", PRIORITY_ITEM_TAKER_DEFAULT],
         ["Steal Item", PRIORITY_ITEM_TAKER_EARLY],
@@ -3342,7 +3349,9 @@ const roleData = {
     Quack: {
       alignment: "Mafia",
       tags: ["Protective", "Visiting", "Basic"],
-      description: ["Each night, can choose to visit one player and protect them from death."],
+      description: [
+        "Each night, can choose to visit one player and protect them from death.",
+      ],
       nightOrder: [["Protect", PRIORITY_NIGHT_SAVER]],
     },
     Homeopath: {
@@ -3359,7 +3368,7 @@ const roleData = {
       category: "Reflexive",
       tags: ["Reflexive", "Malicious Effects", "Role Share", "Advanced"],
       description: [
-         "Each night, each player who visits the Apothecary will have any malicious effects they have removed and will be protected from death.",
+        "Each night, each player who visits the Apothecary will have any malicious effects they have removed and will be protected from death.",
         "Players who Role Share with an Apothecary will have any malicious effects they have removed.",
         MalEffects,
       ],
@@ -3408,7 +3417,9 @@ const roleData = {
         "Visiting",
         "Basic",
       ],
-      description: ["Each night, can choose to visit one player and block the night actions of any players who visit them."],
+      description: [
+        "Each night, can choose to visit one player and block the night actions of any players who visit them.",
+      ],
       nightOrder: [["Block Visitors", PRIORITY_UNTARGETABLE]],
     },
     Plumber: {
@@ -3441,7 +3452,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Voting", "Speech", "Eclipse", "Blind", "Basic", "Day Actions"],
       description: [
-      `Once per game during the day, can choose to make all players "Blind" for rest of the day.`,
+        `Once per game during the day, can choose to make all players "Blind" for rest of the day.`,
         blindDef,
       ],
     },
@@ -3466,7 +3477,9 @@ const roleData = {
       alignment: "Mafia",
       category: "Night-acting",
       tags: ["Modifiers", "Conversion", "Visiting", "Advanced"],
-      description: ["Each night, can choose to visit one player and remove modifiers from their role."],
+      description: [
+        "Each night, can choose to visit one player and remove modifiers from their role.",
+      ],
       nightOrder: [["Remove Modifiers", PRIORITY_CONVERT_DEFAULT + 7]],
     },
     Tattooist: {
@@ -3653,9 +3666,7 @@ const roleData = {
       alignment: "Cult",
       category: "Basic",
       tags: ["Vanilla", "Basic"],
-      description: [
-        "Meets with the Cult during the night.",
-      ],
+      description: ["Meets with the Cult during the night."],
     },
     //Conversions
     "Cult Leader": {
