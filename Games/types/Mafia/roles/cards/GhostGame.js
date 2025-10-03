@@ -122,11 +122,11 @@ module.exports = class GhostGame extends Card {
           fakePlayer.queueAlert(`The secret word is: ${this.game.fakeWord}.`);
         }
       },
-      aboutToFinish: function(){
-        if(this.game.realWord){
+      aboutToFinish: function () {
+        if (this.game.realWord) {
           this.game.queueAlert(`The real word was ${this.game.realWord}.`);
         }
-        if(this.game.fakeWord){
+        if (this.game.fakeWord) {
           this.game.queueAlert(`The fake word was ${this.game.fakeWord}.`);
         }
       },
@@ -144,8 +144,12 @@ module.exports = class GhostGame extends Card {
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-            if(!this.target.alive){
-              this.target = Random.randArrayVal(this.game.alivePlayers().filter((p) => p.role && p.role.name != "Host"));
+            if (!this.target.alive) {
+              this.target = Random.randArrayVal(
+                this.game
+                  .alivePlayers()
+                  .filter((p) => p.role && p.role.name != "Host")
+              );
             }
             this.game.PlayersWhoGaveClue = [];
             this.target.holdItem("Ouija Board");
