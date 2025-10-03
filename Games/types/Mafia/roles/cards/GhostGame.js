@@ -16,7 +16,7 @@ module.exports = class GhostGame extends Card {
     let shuffledWordPack = Random.randomizeArray(wordPack);
     if (
       !role.game.realWord &&
-      role.game.players.filter((p) => p.role.name == "Host").length <= 0
+      role.game.players.filter((p) => p.role && p.role.name == "Host").length <= 0
     ) {
       role.game.realWord = shuffledWordPack[0];
       role.game.fakeWord = shuffledWordPack[1];
