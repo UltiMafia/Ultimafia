@@ -6,6 +6,7 @@ const {
   PRIORITY_WIN_CHECK_DEFAULT,
   PRIORITY_DAY_EFFECT_DEFAULT,
 } = require("../../const/Priority");
+const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
 
 module.exports = class GhostGame extends Card {
   constructor(role) {
@@ -121,6 +122,14 @@ module.exports = class GhostGame extends Card {
           fakePlayer.queueAlert(`The secret word is: ${this.game.fakeWord}.`);
         }
       },
+      aboutToFinish: function(){
+        if(this.game.realWord){
+          this.game.queueAlert(`The real word was ${this.game.realWord}.`);
+        }
+        if(this.game.fakeWord){
+          this.game.queueAlert(`The fake word was ${this.game.fakeWord}.`);
+        }
+      },
     };
 
     this.meetings = {
@@ -133,7 +142,11 @@ module.exports = class GhostGame extends Card {
           return this.game.GhostHaveClueMeeting;
         },
         action: {
+          priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
+            if(!this.target.alive){
+              this.target = Random.randArrayVal(this.game.alivePlayers().filter((p) => p.role && p.role.name != "Host"));
+            }
             this.game.PlayersWhoGaveClue = [];
             this.target.holdItem("Ouija Board");
           },
