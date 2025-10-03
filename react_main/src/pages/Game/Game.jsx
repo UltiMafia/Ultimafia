@@ -7,7 +7,13 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
-import { useParams, Route, Navigate, Routes, useNavigate } from "react-router-dom";
+import {
+  useParams,
+  Route,
+  Navigate,
+  Routes,
+  useNavigate,
+} from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
 import ReactLoading from "react-loading";
@@ -25,11 +31,7 @@ import TexasHoldEmGame from "./TexasHoldEmGame";
 import CheatGame from "./CheatGame";
 import BattlesnakesGame from "./BattlesnakesGame";
 import ConnectFourGame from "./ConnectFourGame";
-import {
-  GameContext,
-  SiteInfoContext,
-  UserContext,
-} from "Contexts";
+import { GameContext, SiteInfoContext, UserContext } from "Contexts";
 import Dropdown from "../../components/Dropdown";
 import Setup from "../../components/Setup";
 import { NameWithAvatar } from "../User/User";
@@ -98,7 +100,7 @@ const emoteMap = {
   dice4: dice4,
   dice5: dice5,
   dice6: dice6,
-}
+};
 
 export default function Game() {
   const { gameId } = useParams();
@@ -167,11 +169,10 @@ function GameWrapper(props) {
         case "addPinnedMessage": {
           if (action.message && action.message.id) {
             newState = update(state, {
-                pinnedMessages: {
-                  [action.message.id]: { $set: action.message },
-                }
-              }
-            );
+              pinnedMessages: {
+                [action.message.id]: { $set: action.message },
+              },
+            });
           }
           break;
         }
@@ -179,10 +180,9 @@ function GameWrapper(props) {
           if (action.messageId) {
             newState = update(state, {
               pinnedMessages: {
-                  $unset: [action.messageId]
-                }
-              }
-            );
+                $unset: [action.messageId],
+              },
+            });
           }
           break;
         }
@@ -190,18 +190,15 @@ function GameWrapper(props) {
           if (action.prediction === null) {
             newState = update(state, {
               rolePredictions: {
-                  $unset: [action.playerId]
-                }
-              }
-            );
-          }
-          else {
+                $unset: [action.playerId],
+              },
+            });
+          } else {
             newState = update(state, {
-                rolePredictions: {
-                  [action.playerId]: { $set: action.prediction },
-                }
-              }
-            );
+              rolePredictions: {
+                [action.playerId]: { $set: action.prediction },
+              },
+            });
           }
           break;
         }
@@ -216,12 +213,15 @@ function GameWrapper(props) {
       }
 
       if (persistAfterAction) {
-        console.log("persistentGameData", newState)
+        console.log("persistentGameData", newState);
         // Save data in localStorage for remembering it in future refreshes
-        window.localStorage.setItem("persistentGameData", JSON.stringify({
-          state: newState,
-          gameId: gameId,
-        }));
+        window.localStorage.setItem(
+          "persistentGameData",
+          JSON.stringify({
+            state: newState,
+            gameId: gameId,
+          })
+        );
       }
 
       return newState;
@@ -2284,12 +2284,7 @@ export function SideMenu({
 function RoleMarkerToggle({ playerId, setup, toggleRolePrediction }) {
   const roleMarkerRef = useRef();
 
-  const {
-    InfoPopover,
-    popoverOpen,
-    handleClick,
-    closePopover,
-  } = usePopover({
+  const { InfoPopover, popoverOpen, handleClick, closePopover } = usePopover({
     path: `/api/setup/${setup.id}`,
     type: "rolePrediction",
     boundingEl: roleMarkerRef.current,
@@ -2302,17 +2297,20 @@ function RoleMarkerToggle({ playerId, setup, toggleRolePrediction }) {
 
       data.roles = roles;
       data.makeRolePrediction = makeRolePrediction;
-    }
+    },
   });
 
-  const makeRolePrediction = useCallback((prediction) => {
-    toggleRolePrediction(playerId, prediction);
-    closePopover();
-  }, [playerId]);
+  const makeRolePrediction = useCallback(
+    (prediction) => {
+      toggleRolePrediction(playerId, prediction);
+      closePopover();
+    },
+    [playerId]
+  );
 
   return (
     <>
-      {popoverOpen && <InfoPopover/>}
+      {popoverOpen && <InfoPopover />}
       <div
         className="role-marker"
         onClick={handleClick}
@@ -2404,7 +2402,13 @@ export function PlayerRows(props) {
         key={player.id}
       >
         {isolationCheckbox}
-        {props.stateViewing != -1 && <RoleMarkerToggle playerId={player.id} setup={game.setup} toggleRolePrediction={game.toggleRolePrediction} />}
+        {props.stateViewing != -1 && (
+          <RoleMarkerToggle
+            playerId={player.id}
+            setup={game.setup}
+            toggleRolePrediction={game.toggleRolePrediction}
+          />
+        )}
         {props.stateViewing != -1 && (
           <RoleCount
             role={roleToShow}
