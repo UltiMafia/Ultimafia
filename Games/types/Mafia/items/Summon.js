@@ -31,5 +31,4 @@ module.exports = class Summon extends Item {
 
     return false;
   }
-  
 };
