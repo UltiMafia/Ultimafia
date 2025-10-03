@@ -74,7 +74,7 @@ export default function LobbyBrowser() {
     localStorage.setItem("lobby", lobbyName);
 
     if (params.get("lobby") !== lobbyName) {
-      navigate(location.pathname + `?lobby=${lobbyName}`);
+      navigate(location.pathname + `?lobby=${lobbyName}`, { replace: true });
     }
 
     document.title = `🔪 Ultimafia Lobby`;

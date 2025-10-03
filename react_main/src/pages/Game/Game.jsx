@@ -5,8 +5,9 @@ import React, {
   useContext,
   useRef,
   useMemo,
+  useCallback,
 } from "react";
-import { useParams, Route, Navigate, Routes } from "react-router-dom";
+import { useParams, Route, Navigate, Routes, useNavigate } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
 import ReactLoading from "react-loading";
@@ -26,10 +27,9 @@ import BattlesnakesGame from "./BattlesnakesGame";
 import ConnectFourGame from "./ConnectFourGame";
 import {
   GameContext,
-  PopoverContext,
   SiteInfoContext,
   UserContext,
-} from "../../Contexts";
+} from "Contexts";
 import Dropdown from "../../components/Dropdown";
 import Setup from "../../components/Setup";
 import { NameWithAvatar } from "../User/User";
@@ -82,6 +82,7 @@ import poison from "images/emotes/poison.webp";
 import exit from "images/emotes/exit.png";
 import veg from "images/emotes/veg.webp";
 import system from "images/emotes/system.webp";
+import { usePopover } from "components/Popover";
 
 export default function Game() {
   const { gameId } = useParams();
@@ -125,7 +126,6 @@ function GameWrapper(props) {
   });
   const [isolationEnabled, setIsolationEnabled] = useState(false);
   const [isolatedPlayers, setIsolatedPlayers] = useState(new Set());
-  const [rolePredictions, setRolePredictions] = useState({});
   const [rehostId, setRehostId] = useState();
   const [dev, setDev] = useState(false);
   const [pingInfo, setPingInfo] = useState(null);
@@ -142,83 +142,115 @@ function GameWrapper(props) {
 
   const isParticipant = !isSpectator && !props.review;
 
-  function PinnedMessagesReducer(state, action) {
-    var newState = state;
+  const [persistentGameData, updatePersistentGameData] = useReducer(
+    (state, action) => {
+      let newState = state;
+      let persistAfterAction = true;
 
-    switch (action.type) {
-      case "addMessage": {
-        if (action.message && action.message.id) {
-          newState = update(state, {
-            [action.message.id]: { $set: action.message },
-          });
+      switch (action.type) {
+        case "addPinnedMessage": {
+          if (action.message && action.message.id) {
+            newState = update(state, {
+                pinnedMessages: {
+                  [action.message.id]: { $set: action.message },
+                }
+              }
+            );
+          }
+          break;
         }
-        break;
-      }
-      case "removeMessage": {
-        if (action.messageId) {
-          newState = update(state, { $unset: [action.messageId] });
+        case "removePinnedMessage": {
+          if (action.messageId) {
+            newState = update(state, {
+              pinnedMessages: {
+                  $unset: [action.messageId]
+                }
+              }
+            );
+          }
+          break;
         }
-        break;
+        case "toggleRolePrediction": {
+          if (action.prediction === null) {
+            newState = update(state, {
+              rolePredictions: {
+                  $unset: [action.playerId]
+                }
+              }
+            );
+          }
+          else {
+            newState = update(state, {
+                rolePredictions: {
+                  [action.playerId]: { $set: action.prediction },
+                }
+              }
+            );
+          }
+          break;
+        }
+        case "setPersistentGameData": {
+          persistAfterAction = false;
+          newState = action.state;
+          break;
+        }
+        default: {
+          throw Error("Unknown action: " + action.type);
+        }
       }
-      case "setMessages": {
-        newState = action.messages;
-        break;
+
+      if (persistAfterAction) {
+        console.log("persistentGameData", newState)
+        // Save data in localStorage for remembering it in future refreshes
+        window.localStorage.setItem("persistentGameData", JSON.stringify({
+          state: newState,
+          gameId: gameId,
+        }));
       }
-      default: {
-        throw Error("Unknown action: " + action.type);
-      }
+
+      return newState;
+    },
+    {
+      rolePredictions: {},
+      pinnedMessages: {},
     }
-
-    const pinnedMessageData = JSON.stringify({
-      state: newState,
-      gameId: gameId,
-    });
-
-    // Save data in localStorage for remembering it in future refreshes
-    window.localStorage.setItem("pinnedMessageData", pinnedMessageData);
-    return newState;
-  }
-
-  const [pinnedMessages, updatePinnedMessages] = useReducer(
-    PinnedMessagesReducer,
-    {}
   );
 
-  function isMessagePinned(message) {
-    return message && message.id in pinnedMessages;
-  }
-
-  function onPinMessage(message) {
-    if (isMessagePinned(message)) {
-      updatePinnedMessages({
-        type: "removeMessage",
-        messageId: message.id,
-      });
-    } else {
-      updatePinnedMessages({
-        type: "addMessage",
-        message: message,
-      });
-    }
-  }
-
-  // If a user refreshes, retain their pinned messages
+  // If a user refreshes, retain their persistent game data
   useEffect(() => {
-    var pinnedMessageData = window.localStorage.getItem("pinnedMessageData");
+    let _persistentGameData = window.localStorage.getItem("persistentGameData");
 
-    if (pinnedMessageData) {
-      pinnedMessageData = JSON.parse(pinnedMessageData);
+    if (_persistentGameData) {
+      _persistentGameData = JSON.parse(_persistentGameData);
 
-      if (pinnedMessageData.gameId !== gameId) {
-        window.localStorage.removeItem("pinnedMessageData");
+      if (_persistentGameData.gameId !== gameId) {
+        window.localStorage.removeItem("persistentGameData");
       } else {
-        updatePinnedMessages({
-          type: "setMessages",
-          messages: pinnedMessageData.state,
+        updatePersistentGameData({
+          type: "setPersistentGameData",
+          state: _persistentGameData.state,
         });
       }
     }
   }, []);
+
+  function isMessagePinned(message) {
+    return message && message.id in persistentGameData.pinnedMessages;
+  }
+
+  function onPinMessage(message) {
+    if (isMessagePinned(message)) {
+      updatePersistentGameData({
+        type: "removePinnedMessage",
+        messageId: message.id,
+      });
+    } else {
+      updatePersistentGameData({
+        type: "addPinnedMessage",
+        message: message,
+      });
+    }
+  }
 
   const [obituariesWatchedCookie, updateObituariesWatchedCookie] = useState({});
 
@@ -312,16 +344,13 @@ function GameWrapper(props) {
     setIsolatedPlayers(newIsolatedPlayers);
   };
 
-  function toggleRolePrediction(playerId) {
-    return function (prediction) {
-      let newRolePredictions = rolePredictions;
-      newRolePredictions[playerId] = prediction;
-      if (prediction === null) {
-        delete newRolePredictions[playerId];
-      }
-      setRolePredictions(newRolePredictions);
-    };
-  }
+  const toggleRolePrediction = (playerId, prediction) => {
+    updatePersistentGameData({
+      type: "toggleRolePrediction",
+      playerId: playerId,
+      prediction: prediction,
+    });
+  };
 
   useEffect(() => {
     if (token == null) return;
@@ -549,7 +578,7 @@ function GameWrapper(props) {
     });
 
     socket.on("reveal", (info) => {
-      toggleRolePrediction(info.playerId)(null);
+      toggleRolePrediction(info.playerId, null);
 
       updateHistory({
         type: "reveal",
@@ -773,9 +802,9 @@ function GameWrapper(props) {
       setIsolationEnabled,
       isolatedPlayers,
       togglePlayerIsolation,
-      rolePredictions,
+      rolePredictions: persistentGameData.rolePredictions,
       toggleRolePrediction,
-      pinnedMessages: pinnedMessages,
+      pinnedMessages: persistentGameData.pinnedMessages,
       onPinMessage: onPinMessage,
       isMessagePinned: isMessagePinned,
       onMessageQuote: onMessageQuote,
@@ -830,17 +859,16 @@ export function BotBar(props) {
   const theme = useTheme();
   const isPhoneDevice = useIsPhoneDevice();
   const { gameId } = useParams();
-  const infoRef = useRef();
   const errorAlert = useErrorAlert();
   const siteInfo = useContext(SiteInfoContext);
-  const popover = useContext(PopoverContext);
   const hideStateSwitcher = props.hideStateSwitcher;
   const game = props.game;
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const navigate = useNavigate();
 
   function onLogoClick() {
-    window.open(import.meta.env.REACT_APP_URL, "_blank");
+    navigate("/");
   }
 
   function onTestClick() {
@@ -2237,44 +2265,49 @@ export function SideMenu({
   );
 }
 
-function RoleMarkerToggle(props) {
+function RoleMarkerToggle({ playerId, setup, toggleRolePrediction }) {
   const roleMarkerRef = useRef();
-  const popover = useContext(PopoverContext);
-  const game = useContext(GameContext);
-  const { toggleRolePrediction } = game;
-  const playerId = props.playerId;
 
-  function onRoleMarkerClick() {
-    if (props.onClick) props.onClick();
-
-    popover.onClick(
-      `/api/setup/${game.setup.id}`,
-      "rolePrediction",
-      roleMarkerRef.current,
-      "Mark Role as",
-      (data) => {
-        let roles = {};
-        for (let r of JSON.parse(data.roles)) {
-          Object.assign(roles, r);
-        }
-
-        data.roles = roles;
-        data.toggleRolePrediction = toggleRolePrediction(playerId);
+  const {
+    InfoPopover,
+    popoverOpen,
+    handleClick,
+    closePopover,
+  } = usePopover({
+    path: `/api/setup/${setup.id}`,
+    type: "rolePrediction",
+    boundingEl: roleMarkerRef.current,
+    title: "Mark Role as",
+    postprocessData: (data) => {
+      let roles = {};
+      for (let r of JSON.parse(data.roles)) {
+        Object.assign(roles, r);
       }
-    );
-  }
+
+      data.roles = roles;
+      data.makeRolePrediction = makeRolePrediction;
+    }
+  });
+
+  const makeRolePrediction = useCallback((prediction) => {
+    toggleRolePrediction(playerId, prediction);
+    closePopover();
+  }, [playerId]);
 
   return (
-    <div
-      className="role-marker"
-      onClick={onRoleMarkerClick}
-      ref={roleMarkerRef}
-      style={{
-        cursor: "pointer",
-      }}
-    >
-      <i className="fas fa-user-edit"></i>
-    </div>
+    <>
+      {popoverOpen && <InfoPopover/>}
+      <div
+        className="role-marker"
+        onClick={handleClick}
+        ref={roleMarkerRef}
+        style={{
+          cursor: "pointer",
+        }}
+      >
+        <i className="fas fa-user-edit"></i>
+      </div>
+    </>
   );
 }
 
@@ -2282,6 +2315,7 @@ export function PlayerRows(props) {
   const game = useContext(GameContext);
   const [activity, updateActivity] = useActivity();
   const socket = game.socket;
+  const rolePredictions = props.rolePredictions;
 
   useEffect(() => {
     if (socket && socket.on) {
@@ -2296,7 +2330,6 @@ export function PlayerRows(props) {
   }, []);
 
   const { isolationEnabled, togglePlayerIsolation, isolatedPlayers } = game;
-  const { rolePredictions } = game;
   const history = props.history;
   const players = props.players;
   const stateViewingInfo = history.states[props.stateViewing];
@@ -2355,12 +2388,11 @@ export function PlayerRows(props) {
         key={player.id}
       >
         {isolationCheckbox}
-        {props.stateViewing != -1 && <RoleMarkerToggle playerId={player.id} />}
+        {props.stateViewing != -1 && <RoleMarkerToggle playerId={player.id} setup={game.setup} toggleRolePrediction={game.toggleRolePrediction} />}
         {props.stateViewing != -1 && (
           <RoleCount
             role={roleToShow}
             key={roleToShow}
-            isRolePrediction={rolePrediction !== undefined}
             gameType={props.gameType}
             showPopover
             otherRoles={props.setup?.roles}
@@ -2439,37 +2471,6 @@ export function PlayerList(props) {
     </Stack>
   );
 
-  function GameProps() {
-    props.noLeaveRef.current = true;
-
-    if (props.socket.on) props.socket.send("leave");
-
-    setTimeout(() => {
-      var stateLengths = {};
-
-      for (let stateName in props.options.stateLengths)
-        stateLengths[stateName] = props.options.stateLengths[stateName] / 60000;
-
-      axios
-        .post("/api/game/host", {
-          gameType: props.gameType,
-          setup: props.setup.id,
-          lobby: props.options.lobby,
-          private: props.options.private,
-          spectating: props.options.spectating,
-          guests: props.options.guests,
-          ranked: props.options.ranked,
-          competitive: props.options.competitive,
-          stateLengths: stateLengths,
-          ...props.options.gameTypeOptions,
-        })
-        .then((res) => props.setRehostId(res.data))
-        .catch((e) => {
-          props.noLeaveRef.current = false;
-        });
-    }, 500);
-  }
-
   return (
     <SideMenu
       title={title}
@@ -2485,6 +2486,7 @@ export function PlayerList(props) {
             stateViewing={props.stateViewing}
             activity={props.activity}
             setup={props.setup}
+            rolePredictions={game.rolePredictions}
           />
           {deadPlayers.length > 0 && (
             <div className="section-title">
@@ -2501,6 +2503,7 @@ export function PlayerList(props) {
             activity={props.activity}
             className="dead"
             setup={props.setup}
+            rolePredictions={game.rolePredictions}
           />
           {exorcisedPlayers.length > 0 && (
             <div className="section-title">
@@ -2517,6 +2520,7 @@ export function PlayerList(props) {
             activity={props.activity}
             className="dead"
             setup={props.setup}
+            rolePredictions={game.rolePredictions}
           />
         </div>
       }

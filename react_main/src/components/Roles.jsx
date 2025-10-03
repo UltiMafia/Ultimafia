@@ -50,7 +50,6 @@ export function RoleCount(props) {
 
     if (makeRolePrediction) {
       makeRolePrediction(props.role);
-      popover.close();
       return;
     }
 
@@ -59,8 +58,6 @@ export function RoleCount(props) {
     handlePopoverClick(e);
   };
 
-  // Display predicted icon
-  const isRolePrediction = props.isRolePrediction;
   // Choose from list of icons to predict from
   const makeRolePrediction = props.makeRolePrediction;
 
@@ -326,6 +323,9 @@ export function RoleCount(props) {
           onClick={handleRoleCountClick}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          style={{
+            cursor: makeRolePrediction ? "pointer" : "default",
+          }}
         >
           <div
             className={`role role-icon-${roleSkin}-${roleClass} ${
@@ -412,21 +412,10 @@ export function ModifierCount(props) {
   const handleRoleCountClick = (e) => {
     if (props.onClick) return props.onClick();
 
-    if (makeRolePrediction) {
-      makeRolePrediction(props.role);
-      popover.close();
-      return;
-    }
-
     if (!roleName || props.showPopover == false || roleName === "null") return;
 
     handlePopoverClick(e);
   };
-
-  // Display predicted icon
-  const isRolePrediction = props.isRolePrediction;
-  // Choose from list of icons to predict from
-  const makeRolePrediction = props.makeRolePrediction;
 
   var roleName;
 
@@ -455,22 +444,6 @@ export function ModifierCount(props) {
   const roleClass = roleName
     ? `${hyphenDelimit(props.gameType)}-${hyphenDelimit(roleName)}`
     : "null";
-
-  function onRoleGroupClick() {
-    if (props.roleGroup) {
-      popover.onClick(
-        Promise.resolve({
-          data: {
-            roles: props.roleGroup,
-            gameType: props.gameType,
-            setup: props,
-            otherRoles: props.otherRoles,
-          },
-        }),
-        "modifier"
-      );
-    }
-  }
 
   const digits =
     props.count && !props.hideCount ? props.count.toString().split("") : "";
@@ -582,21 +555,10 @@ export function GameSettingCount(props) {
   const handleRoleCountClick = (e) => {
     if (props.onClick) return props.onClick();
 
-    if (makeRolePrediction) {
-      makeRolePrediction(props.role);
-      popover.close();
-      return;
-    }
-
     if (!roleName || props.showPopover == false || roleName === "null") return;
 
     handlePopoverClick(e);
   };
-
-  // Display predicted icon
-  const isRolePrediction = props.isRolePrediction;
-  // Choose from list of icons to predict from
-  const makeRolePrediction = props.makeRolePrediction;
 
   var roleName;
 
@@ -623,22 +585,6 @@ export function GameSettingCount(props) {
   const roleData = tempData;
 
   const roleClass = roleName ? `${hyphenDelimit(roleName)}` : "null";
-
-  function onRoleGroupClick() {
-    if (props.roleGroup) {
-      popover.onClick(
-        Promise.resolve({
-          data: {
-            roles: props.roleGroup,
-            gameType: props.gameType,
-            setup: props,
-            otherRoles: props.otherRoles,
-          },
-        }),
-        "modifier"
-      );
-    }
-  }
 
   const digits =
     props.count && !props.hideCount ? props.count.toString().split("") : "";
@@ -1017,19 +963,6 @@ export function ModifierSearch(props) {
       setRoleListType("Items");
   }
 
-  function onRoleCellClick(roleCellEl, role) {
-    popover.onClick(
-      Promise.resolve({
-        data: {
-          roleName: siteInfo.modifiers[props.gameType][role.name],
-        },
-      }),
-      "role",
-      roleCellEl,
-      role.name
-    );
-  }
-
   function getCompatibleModifiersOther(mods) {
     if (!mods) {
       mods = [];
@@ -1162,19 +1095,6 @@ export function GameSettingSearch(props) {
     if (query !== "" && roleListType.length > 0) setRoleListType("");
     else if (query === "" && roleListType.length === 0)
       setRoleListType("Standard");
-  }
-
-  function onRoleCellClick(roleCellEl, role) {
-    popover.onClick(
-      Promise.resolve({
-        data: {
-          roleName: siteInfo.gamesettings[props.gameType][role.name],
-        },
-      }),
-      "role",
-      roleCellEl,
-      role.name
-    );
   }
 
   function getCompatibleGameSettingsOther(mods) {
