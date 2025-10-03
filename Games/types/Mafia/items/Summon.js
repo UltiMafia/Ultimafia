@@ -13,7 +13,7 @@ module.exports = class Summon extends Item {
       actionName: "End Seance Meeting?",
       states: ["Night"],
       speakDead: true,
-      flags: ["exclusive", "group", "speech", "anonymous", "voting"],
+      flags: ["group", "speech", "anonymous", "voting"],
       priority: MEETING_PRIORITY_SEANCE,
       canVote: false,
       displayOptions: {
@@ -22,4 +22,14 @@ module.exports = class Summon extends Item {
       whileDead: true,
     };
   }
+
+  shouldDisableMeeting(name) {
+    // do not disable jailing, gov actions
+    if (name == "Graveyard") {
+      return true;
+    }
+
+    return false;
+  }
+  
 };
