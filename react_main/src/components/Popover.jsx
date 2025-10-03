@@ -114,6 +114,7 @@ export function usePopover({
             },
           },
         }}
+        transitionDuration={0}
       >
         <Stack direction="column" bgcolor="var(--scheme-color)">
           <a href={page} target="_blank" rel="noopener noreferrer">
@@ -454,7 +455,7 @@ export function parseRolePredictionPopover(data) {
   return (
     <SmallRoleList
       roles={roleset}
-      makeRolePrediction={data.toggleRolePrediction}
+      makeRolePrediction={data.makeRolePrediction}
       gameType={data.gameType}
       setup={data.setup}
       otherRoles={data.otherRoles}

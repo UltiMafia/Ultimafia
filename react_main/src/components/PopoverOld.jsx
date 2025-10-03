@@ -240,7 +240,7 @@ export function parseRolePredictionPopover(data) {
   return (
     <SmallRoleList
       roles={roleset}
-      makeRolePrediction={data.toggleRolePrediction}
+      makeRolePrediction={data.makeRolePrediction}
       gameType={data.gameType}
       setup={data.setup}
       otherRoles={data.otherRoles}
