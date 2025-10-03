@@ -1040,6 +1040,10 @@ module.exports = class Meeting {
       }
       if (message.recipients.find((e) => e.hasEffect("Leak Whispers"))) {
         leakChance = this.game.getWhisperLeakChance();
+      } else if (
+        message.recipients.find((e) => e.hasEffect("SpeakOnlyWhispers"))
+      ) {
+        leakChance = 0;
       }
 
       if (leakChance > 0 && leakChance <= this.game.getWhisperLeakChance())

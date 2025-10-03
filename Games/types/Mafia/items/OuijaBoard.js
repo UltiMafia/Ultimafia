@@ -59,7 +59,7 @@ module.exports = class OuijaBoard extends Item {
             .filter(
               (p) =>
                 p.role.name != "Host" &&
-                this.game.PlayersWhoGaveClue.includes(p)
+                !this.game.PlayersWhoGaveClue.includes(p)
             );
           if (players.length <= 0) {
             return;
