@@ -49,12 +49,6 @@ export function AchievementCount(props) {
   const handleRoleCountClick = (e) => {
     if (props.onClick) return props.onClick();
 
-    if (makeRolePrediction) {
-      makeRolePrediction(props.role);
-      popover.close();
-      return;
-    }
-
     if (!achievementName || props.showPopover == false || achievementName === "null") return;
 
     handlePopoverClick(e);
