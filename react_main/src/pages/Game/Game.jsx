@@ -84,6 +84,22 @@ import veg from "images/emotes/veg.webp";
 import system from "images/emotes/system.webp";
 import { usePopover } from "components/Popover";
 
+import dice1 from "images/emotes/dice1.webp";
+import dice2 from "images/emotes/dice2.webp";
+import dice3 from "images/emotes/dice3.webp";
+import dice4 from "images/emotes/dice4.webp";
+import dice5 from "images/emotes/dice5.webp";
+import dice6 from "images/emotes/dice6.webp";
+
+const emoteMap = {
+  dice1: dice1,
+  dice2: dice2,
+  dice3: dice3,
+  dice4: dice4,
+  dice5: dice5,
+  dice6: dice6,
+}
+
 export default function Game() {
   const { gameId } = useParams();
   return (
@@ -3057,7 +3073,7 @@ function ActionImageButtons(props) {
       >
         <div style={imgContainerStyle}>
           <img
-            src={`/images/emotes/${targetDisplay}.webp`}
+            src={emoteMap[targetDisplay]}
             alt={targetDisplay}
             className="action-icon"
           />
