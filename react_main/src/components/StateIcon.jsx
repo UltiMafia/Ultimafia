@@ -17,25 +17,43 @@ export const statesIcons = {
   villagewin: require("images/game_state/villagewin-state.png"),
 };
 
-export default function StateIcon({ stateType, size = 40 }) {
-  const iconSrc = statesIcons[stateType] || statesIcons["nowin"];
+export default function StateIcon({ stateType, size = 40, number }) {
+  const iconSrc = statesIcons[stateType];
 
-  const formatTitle = (type) =>
-    type
-      ? type
-          .replace(/([a-z])([A-Z])/g, "$1 $2")
-          .replace(/-/g, " ")
-          .replace(/win/g, " Win!")
-          .replace(/\b\w/g, (l) => l.toUpperCase())
-      : "Unknown State";
+  const digits = number ? String(number).split("") : [];
 
   return (
-    <img
-      src={iconSrc}
-      alt={stateType}
-      width={size}
-      height={size}
-      style={{ objectFit: "contain" }}
-    />
+    <div
+      style={{
+        position: "relative",
+        display: "inline-block",
+        width: size,
+        height: size,
+      }}
+    >
+      <img
+        src={iconSrc}
+        alt={stateType}
+        width={size}
+        height={size}
+        style={{ display: "block" }}
+      />
+
+      {digits.length > 0 && (
+        <div
+          className="digit-wrapper"
+          style={{
+            position: "absolute",
+            bottom: "2px",
+            right: "2px",
+            display: "flex",
+          }}
+        >
+          {digits.map((digit, i) => (
+            <div key={i} className={`digit digit-${digit}`} />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
