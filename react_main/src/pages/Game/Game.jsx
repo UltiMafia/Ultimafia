@@ -56,6 +56,7 @@ import "./Game.css";
 import { NewLoading } from "../Welcome/NewLoading";
 import { ChangeHead } from "../../components/ChangeHead";
 import { ChangeHeadPing } from "../../components/ChangeHeadPing";
+import StateIcon from "../../components/StateIcon";
 
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
@@ -2151,21 +2152,34 @@ function SpeechInput(props) {
   );
 }
 
-export function StateSwitcher(props) {
-  const history = props.history;
-  const stateViewing = props.stateViewing;
-  const stateName = history.states[stateViewing]
-    ? history.states[stateViewing].name
-    : "";
+const stateIconMap = {
+  pregame: "pregame",
+  dawn: "day",
+  day: "day",
+  dusk: "night",
+  night: "night",
+  postgame: "bakerflagwin",
+};
 
-  const leftArrowVisible = props.stateViewing != -1;
-  const rigthArrowVisible =
-    props.stateViewing < history.currentState ||
-    (history.currentState == -2 && props.stateViewing != history.currentState);
+export function StateSwitcher(props) {
+  const { history, stateViewing, updateStateViewing, onStateNavigation } =
+    props;
+
+  const currentState = history.states[stateViewing];
+  const stateName = currentState ? currentState.name : "";
+
+  const normalizedName = stateName.toLowerCase().replace(/[0-9]/g, "").trim();
+
+  const mappedIconType = stateIconMap[normalizedName] || "nowin";
+
+  const leftArrowVisible = stateViewing != -1;
+  const rightArrowVisible =
+    stateViewing < history.currentState ||
+    (history.currentState == -2 && stateViewing != history.currentState);
 
   function onStateNameClick() {
-    props.updateStateViewing({ type: "current" });
-    props.onStateNavigation();
+    updateStateViewing({ type: "current" });
+    onStateNavigation();
   }
 
   return (
@@ -2175,20 +2189,24 @@ export function StateSwitcher(props) {
           leftArrowVisible ? "" : "invisible"
         }`}
         onClick={() => {
-          props.updateStateViewing({ type: "backward" });
-          props.onStateNavigation();
+          updateStateViewing({ type: "backward" });
+          onStateNavigation();
         }}
       />
-      <div className="state-name" onClick={onStateNameClick}>
-        {stateName.toUpperCase()}
-      </div>
+
+      <Tooltip title={stateName || "Unknown"}>
+        <div className="state-name" onClick={onStateNameClick}>
+          <StateIcon stateType={mappedIconType} size={32} />
+        </div>
+      </Tooltip>
+
       <i
         className={`hist-arrow fas fa-caret-right ${
-          rigthArrowVisible ? "" : "invisible"
+          rightArrowVisible ? "" : "invisible"
         }`}
         onClick={() => {
-          props.updateStateViewing({ type: "forward" });
-          props.onStateNavigation();
+          updateStateViewing({ type: "forward" });
+          onStateNavigation();
         }}
       />
     </div>
