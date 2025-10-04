@@ -2162,7 +2162,8 @@ const stateIconMap = {
 };
 
 export function StateSwitcher(props) {
-  const { history, stateViewing, updateStateViewing, onStateNavigation } = props;
+  const { history, stateViewing, updateStateViewing, onStateNavigation } =
+    props;
 
   const currentState = history.states[stateViewing];
   const stateName = currentState ? currentState.name : "";

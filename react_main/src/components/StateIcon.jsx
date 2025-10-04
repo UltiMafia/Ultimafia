@@ -30,12 +30,12 @@ export default function StateIcon({ stateType, size = 40 }) {
       : "Unknown State";
 
   return (
-      <img
-        src={iconSrc}
-        alt={stateType}
-        width={size}
-        height={size}
-        style={{ objectFit: "contain" }}
-      />
+    <img
+      src={iconSrc}
+      alt={stateType}
+      width={size}
+      height={size}
+      style={{ objectFit: "contain" }}
+    />
   );
 }
