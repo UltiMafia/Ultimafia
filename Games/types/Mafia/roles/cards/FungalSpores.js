@@ -18,19 +18,19 @@ module.exports = class FungalSpores extends Card {
             this.role.data.currentTarget = this.target;
 
             if (this.role.data.currentFungus == null) return;
-            else if (this.role.data.currentFungus == "Thrush") {
+            else if (this.role.data.currentFungus == "Silent") {
               if (this.dominates(this.target)) {
                 this.target.giveEffect("Silenced", 1);
               }
-            } else if (this.role.data.currentFungus == "Aspergillus") {
+            } else if (this.role.data.currentFungus == "Deaf") {
               if (this.dominates(this.target)) {
                 this.target.giveEffect("Fiddled", 1);
               }
-            } else if (this.role.data.currentFungus == "Cataracts") {
+            } else if (this.role.data.currentFungus == "Blind") {
               if (this.dominates(this.target)) {
                 this.target.giveEffect("Blind", 1);
               }
-            } else if (this.role.data.currentFungus == "Hallucinogens") {
+            } else if (this.role.data.currentFungus == "Clueless") {
               if (this.dominates(this.target)) {
                 this.target.giveEffect("Scrambled", 1);
               }
@@ -63,140 +63,7 @@ module.exports = class FungalSpores extends Card {
         },
       },
     };
-    /*
-    this.actions = [
-      {
-        priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-        labels: ["giveEffect", "silence"],
-        run: function () {
-          if (
-            this.game.getStateName() !== "Night" &&
-            this.game.getStateName() !== "Dawn"
-          ) {
-            return;
-          }
 
-          if (this.actor.role.data.currentFungus !== "Thrush") return;
-
-          let target = this.actor.role.data.currentTarget;
-          if (!target) {
-            return;
-          }
-
-          if (this.dominates(target)) {
-            target.giveEffect("Silenced", 1);
-          }
-
-          // set cooldown
-          var fungus = this.actor.role.data.currentFungus;
-          if (this.actor.role.data.fungusCounter) {
-            this.actor.role.data.fungusCounter[fungus] =
-              this.actor.role.data.fungusCooldown;
-          }
-
-          delete this.actor.role.data.currentFungus;
-          delete this.actor.role.data.currentTarget;
-        },
-      },
-      {
-        priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-        labels: ["giveEffect", "fiddle"],
-        run: function () {
-          if (
-            this.game.getStateName() !== "Night" &&
-            this.game.getStateName() !== "Dawn"
-          ) {
-            return;
-          }
-
-          if (this.actor.role.data.currentFungus !== "Aspergillus") return;
-
-          let target = this.actor.role.data.currentTarget;
-          if (!target) {
-            return;
-          }
-
-          if (this.dominates(target)) {
-            target.giveEffect("Fiddled", 1);
-          }
-
-          // set cooldown
-          var fungus = this.actor.role.data.currentFungus;
-          if (this.actor.role.data.fungusCounter) {
-            this.actor.role.data.fungusCounter[fungus] =
-              this.actor.role.data.fungusCooldown;
-          }
-
-          delete this.actor.role.data.currentFungus;
-          delete this.actor.role.data.currentTarget;
-        },
-      },
-      {
-        priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-        labels: ["giveEffect", "blind"],
-        run: function () {
-          if (
-            this.game.getStateName() !== "Night" &&
-            this.game.getStateName() !== "Dawn"
-          ) {
-            return;
-          }
-
-          if (this.actor.role.data.currentFungus !== "Cataracts") return;
-
-          let target = this.actor.role.data.currentTarget;
-          if (!target) {
-            return;
-          }
-
-          if (this.dominates(target)) {
-            target.giveEffect("Blind", 1);
-          }
-
-          // set cooldown
-          var fungus = this.actor.role.data.currentFungus;
-          if (this.actor.role.data.fungusCounter) {
-            this.actor.role.data.fungusCounter[fungus] =
-              this.actor.role.data.fungusCooldown;
-          }
-          delete this.actor.role.data.currentFungus;
-          delete this.actor.role.data.currentTarget;
-        },
-      },
-      {
-        priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-        labels: ["giveEffect", "scramble"],
-        run: function () {
-          if (
-            this.game.getStateName() !== "Night" &&
-            this.game.getStateName() !== "Dawn"
-          ) {
-            return;
-          }
-
-          if (this.actor.role.data.currentFungus !== "Hallucinogens") return;
-
-          let target = this.actor.role.data.currentTarget;
-          if (!target) {
-            return;
-          }
-
-          if (this.dominates(target)) {
-            target.giveEffect("Scrambled", 1);
-          }
-
-          // set cooldown
-          var fungus = this.actor.role.data.currentFungus;
-          if (this.actor.role.data.fungusCounter) {
-            this.actor.role.data.fungusCounter[fungus] =
-              this.actor.role.data.fungusCooldown;
-          }
-          delete this.actor.role.data.currentFungus;
-          delete this.actor.role.data.currentTarget;
-        },
-      },
-    ];
-*/
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -204,10 +71,10 @@ module.exports = class FungalSpores extends Card {
         }
 
         this.data.fullFungusList = [
-          "Thrush",
-          "Aspergillus",
-          "Cataracts",
-          "Hallucinogens",
+          "Silent",
+          "Deaf",
+          "Blind",
+          "Clueless",
         ];
         let cooldown = this.data.fullFungusList.length;
         this.data.fungusCooldown = cooldown;
