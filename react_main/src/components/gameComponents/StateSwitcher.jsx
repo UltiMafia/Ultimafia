@@ -1,5 +1,5 @@
 import React from "react";
-import { Tooltip } from "@mui/material";
+import { Box, IconButton, Tooltip, Typography } from "@mui/material";
 import StateIcon from "../StateIcon";
 
 const stateIconMap = {
@@ -23,43 +23,65 @@ export default function StateSwitcher(props) {
   const numberMatch = stateName.match(/\d+/);
   const number = numberMatch ? parseInt(numberMatch[0]) : null;
 
-  const leftArrowVisible = stateViewing != -1;
+  const leftArrowVisible = stateViewing !== -1;
   const rightArrowVisible =
     stateViewing < history.currentState ||
-    (history.currentState == -2 && stateViewing != history.currentState);
+    (history.currentState === -2 && stateViewing !== history.currentState);
 
-  function onStateNameClick() {
-    updateStateViewing({ type: "current" });
+  const handleClick = (direction) => {
+    updateStateViewing({ type: direction });
     onStateNavigation();
-  }
+  };
 
   return (
-    <div className="state-nav">
-      <i
-        className={`hist-arrow fas fa-caret-left ${
-          leftArrowVisible ? "" : "invisible"
-        }`}
-        onClick={() => {
-          updateStateViewing({ type: "backward" });
-          onStateNavigation();
+    <Box
+      className="state-nav"
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 0.5,
+        px: 0.5,
+        py: 0.25,
+        borderRadius: 1,
+        bgcolor: "rgba(255, 255, 255, 0.05)",
+      }}
+    >
+      <IconButton
+        size="small"
+        sx={{
+          color: leftArrowVisible ? "inherit" : "transparent",
+          lineHeight: 1,
         }}
-      />
+        onClick={() => handleClick("backward")}
+      >
+        ‹
+      </IconButton>
 
       <Tooltip title={stateName || "Unknown"}>
-        <div className="state-name" onClick={onStateNameClick}>
+        <Box
+          onClick={() => handleClick("current")}
+          sx={{
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <StateIcon stateType={mappedIconType} size={32} number={number} />
-        </div>
+        </Box>
       </Tooltip>
 
-      <i
-        className={`hist-arrow fas fa-caret-right ${
-          rightArrowVisible ? "" : "invisible"
-        }`}
-        onClick={() => {
-          updateStateViewing({ type: "forward" });
-          onStateNavigation();
+      <IconButton
+        size="small"
+        sx={{
+          color: rightArrowVisible ? "inherit" : "transparent",
+          lineHeight: 1,
         }}
-      />
-    </div>
+        onClick={() => handleClick("forward")}
+      >
+        ›
+      </IconButton>
+    </Box>
   );
 }
