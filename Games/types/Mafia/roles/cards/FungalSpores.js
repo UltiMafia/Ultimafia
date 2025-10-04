@@ -70,12 +70,7 @@ module.exports = class FungalSpores extends Card {
           return;
         }
 
-        this.data.fullFungusList = [
-          "Silent",
-          "Deaf",
-          "Blind",
-          "Clueless",
-        ];
+        this.data.fullFungusList = ["Silent", "Deaf", "Blind", "Clueless"];
         let cooldown = this.data.fullFungusList.length;
         this.data.fungusCooldown = cooldown;
 
