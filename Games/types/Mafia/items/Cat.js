@@ -12,7 +12,8 @@ module.exports = class Cat extends Item {
         actionName: "Do you let the cat in?",
         states: ["Night"],
         flags: ["voting"],
-        inputType: "boolean",
+        inputType: "custom",
+        targets: ["Be Blocked", "Reveal Role"],
         action: {
           labels: ["investigate", "role", "block"],
           priority: PRIORITY_NIGHT_ROLE_BLOCKER + 1,
@@ -23,7 +24,7 @@ module.exports = class Cat extends Item {
               return;
             }
 
-            if (this.target == "Yes") {
+            if (this.target == "Be Blocked") {
               this.blockActions(this.item.holder);
             } else {
               var role = this.item.holder.getRoleAppearance();
