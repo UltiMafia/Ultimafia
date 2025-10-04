@@ -56,6 +56,7 @@ import "./Game.css";
 import { NewLoading } from "../Welcome/NewLoading";
 import { ChangeHead } from "../../components/ChangeHead";
 import { ChangeHeadPing } from "../../components/ChangeHeadPing";
+import StateSwitcher from "../../components/gameComponents/StateSwitcher";
 
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
@@ -2147,50 +2148,6 @@ function SpeechInput(props) {
           onEmoteSelected={onEmoteSelected}
         />
       </div>
-    </div>
-  );
-}
-
-export function StateSwitcher(props) {
-  const history = props.history;
-  const stateViewing = props.stateViewing;
-  const stateName = history.states[stateViewing]
-    ? history.states[stateViewing].name
-    : "";
-
-  const leftArrowVisible = props.stateViewing != -1;
-  const rigthArrowVisible =
-    props.stateViewing < history.currentState ||
-    (history.currentState == -2 && props.stateViewing != history.currentState);
-
-  function onStateNameClick() {
-    props.updateStateViewing({ type: "current" });
-    props.onStateNavigation();
-  }
-
-  return (
-    <div className="state-nav">
-      <i
-        className={`hist-arrow fas fa-caret-left ${
-          leftArrowVisible ? "" : "invisible"
-        }`}
-        onClick={() => {
-          props.updateStateViewing({ type: "backward" });
-          props.onStateNavigation();
-        }}
-      />
-      <div className="state-name" onClick={onStateNameClick}>
-        {stateName.toUpperCase()}
-      </div>
-      <i
-        className={`hist-arrow fas fa-caret-right ${
-          rigthArrowVisible ? "" : "invisible"
-        }`}
-        onClick={() => {
-          props.updateStateViewing({ type: "forward" });
-          props.onStateNavigation();
-        }}
-      />
     </div>
   );
 }
