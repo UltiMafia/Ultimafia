@@ -56,7 +56,7 @@ import "./Game.css";
 import { NewLoading } from "../Welcome/NewLoading";
 import { ChangeHead } from "../../components/ChangeHead";
 import { ChangeHeadPing } from "../../components/ChangeHeadPing";
-import StateIcon from "../../components/StateIcon";
+import StateSwitcher from "../../components/gameComponents/StateSwitcher";
 
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
@@ -2148,67 +2148,6 @@ function SpeechInput(props) {
           onEmoteSelected={onEmoteSelected}
         />
       </div>
-    </div>
-  );
-}
-
-const stateIconMap = {
-  pregame: "pregame",
-  dawn: "day",
-  day: "day",
-  dusk: "night",
-  night: "night",
-  postgame: "bakerflagwin",
-};
-
-export function StateSwitcher(props) {
-  const { history, stateViewing, updateStateViewing, onStateNavigation } =
-    props;
-
-  const currentState = history.states[stateViewing];
-  const stateName = currentState ? currentState.name : "";
-
-  const normalizedName = stateName.toLowerCase().replace(/[0-9]/g, "").trim();
-
-  const mappedIconType = stateIconMap[normalizedName] || "nowin";
-
-  const leftArrowVisible = stateViewing != -1;
-  const rightArrowVisible =
-    stateViewing < history.currentState ||
-    (history.currentState == -2 && stateViewing != history.currentState);
-
-  function onStateNameClick() {
-    updateStateViewing({ type: "current" });
-    onStateNavigation();
-  }
-
-  return (
-    <div className="state-nav">
-      <i
-        className={`hist-arrow fas fa-caret-left ${
-          leftArrowVisible ? "" : "invisible"
-        }`}
-        onClick={() => {
-          updateStateViewing({ type: "backward" });
-          onStateNavigation();
-        }}
-      />
-
-      <Tooltip title={stateName || "Unknown"}>
-        <div className="state-name" onClick={onStateNameClick}>
-          <StateIcon stateType={mappedIconType} size={32} />
-        </div>
-      </Tooltip>
-
-      <i
-        className={`hist-arrow fas fa-caret-right ${
-          rightArrowVisible ? "" : "invisible"
-        }`}
-        onClick={() => {
-          updateStateViewing({ type: "forward" });
-          onStateNavigation();
-        }}
-      />
     </div>
   );
 }
