@@ -105,7 +105,7 @@ const infectDef = `Players who are "Infected" will be converted to Zombie during
 const hexDef = `Players who are "Hexed" with a word, will be converted to Cultist if they say that word.`;
 const lycanthropicDef = `Players who are "Lycanthropic" will randomly visit one non-Cult player on even nights and kill them.`;
 const plagueDef = `Players who are "Plagued" will make their neighbors "Plagued" each night. Players who have been "Plagued" for 2 nights will die.`;
-const madDef = `Players who are "Mad" about a role, must say the role's name or they will become the target of the condemnation.`
+const madDef = `Players who are "Mad" about a role, must say the role's name or they will become the target of the condemnation.`;
 const insaneDef = `Players who are "Insane" cannot vote and can only speak gibberish.`;
 const infestedDef = `Players who are "Infested" with a role will convert to that role with the Transcendent modifier added if condemned.`;
 
@@ -3708,7 +3708,7 @@ const roleData = {
         infectDef,
         //"Can infect one person each night.",
         //"That person converts to a zombie the next day.",
-       //"Nurses can cure/prevent infections.",
+        //"Nurses can cure/prevent infections.",
         //"Survivors will be infected but will not turn.",
       ],
       nightOrder: [["Infect", PRIORITY_EFFECT_GIVER_DEFAULT]],
@@ -3885,7 +3885,7 @@ const roleData = {
       ],
       description: [
         "When a Werewolf is present in the game, full moons will occur on even nights.",
-         `Each night, can choose to visit one player and make them become "Lycanthropic"`,
+        `Each night, can choose to visit one player and make them become "Lycanthropic"`,
         lycanthropicDef,
         "Cannot be killed during full moons",
         //, except for when visiting the Apothecary.
@@ -4152,7 +4152,7 @@ const roleData = {
       category: "Manipulative",
       tags: ["Manipulative", "Delirium", "Visiting", "Advanced"],
       description: [
-      `Each night, can choose to visit one player and make them "Delirious" until the next night.`,
+        `Each night, can choose to visit one player and make them "Delirious" until the next night.`,
         deliriumDef,
       ],
       nightOrder: [["Give Delirium", PRIORITY_NIGHT_ROLE_BLOCKER + 1]],
@@ -4399,7 +4399,7 @@ const roleData = {
       description: [
         "Each night, can choose to visit one player and kill them.",
         `If the Necromancer kills a Cult-aligned player, that player will gain the Transcendent modifier and make one of their non-banished Village-aligned neighbors "Delirious" until the Necromancer dies.`,
-          deliriumDef,
+        deliriumDef,
         "In closed setups, replaces 1 Banished role with a non-Banished Village role.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
@@ -4636,9 +4636,7 @@ const roleData = {
     Sorcerer: {
       alignment: "Cult",
       tags: ["Events", "Advanced"],
-      description: [
-        "Each night, can choose an Event, that Event occurs.",
-      ],
+      description: ["Each night, can choose an Event, that Event occurs."],
     },
     Bogeyman: {
       alignment: "Cult",
