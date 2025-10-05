@@ -134,7 +134,7 @@ module.exports = class GhostGame extends Card {
 
     this.meetings = {
       Ghost: {
-        actionName: "Select Leader",
+        actionName: "Pick first clue giver",
         states: ["Night"],
         flags: ["group", "speech", "voting", "mustAct", "instant"],
         targets: { include: ["alive"], exclude: ["dead"] },

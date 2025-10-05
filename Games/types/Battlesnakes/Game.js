@@ -14,7 +14,7 @@ module.exports = class BattlesnakesGame extends Game {
 
     this.type = "Battlesnakes";
     this.Player = Player;
-    this.gridSize = options.settings.boardSize || 20;
+    this.gridSize = parseInt(options.settings.boardSize) || 20;
     this.gameStarted = false;
     this.states = [
       { name: "Postgame" },
