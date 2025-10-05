@@ -12,7 +12,7 @@ import {
   Route,
   Navigate,
   Routes,
-  useNavigate,
+  Link,
 } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
@@ -54,11 +54,10 @@ import "css/game.css";
 import EmotePicker from "../../components/EmotePicker";
 import "./Game.css";
 import { NewLoading } from "../Welcome/NewLoading";
-import { ChangeHead } from "../../components/ChangeHead";
-import { ChangeHeadPing } from "../../components/ChangeHeadPing";
 import StateSwitcher from "../../components/gameComponents/StateSwitcher";
 
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
+import useInView from "hooks/useInView";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { useLongPress } from "../../hooks/useLongPress.jsx";
 import {
@@ -76,6 +75,7 @@ import {
   TextField,
   Typography,
   useTheme,
+  Grid2,
 } from "@mui/material";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
@@ -93,6 +93,8 @@ import dice3 from "images/emotes/dice3.webp";
 import dice4 from "images/emotes/dice4.webp";
 import dice5 from "images/emotes/dice5.webp";
 import dice6 from "images/emotes/dice6.webp";
+import { Timer } from "components/gameComponents/Timer";
+import { ChangeHeadPing } from "components/gameComponents/ChangeHeadPing";
 
 const emoteMap = {
   dice1: dice1,
@@ -214,7 +216,6 @@ function GameWrapper(props) {
       }
 
       if (persistAfterAction) {
-        console.log("persistentGameData", newState);
         // Save data in localStorage for remembering it in future refreshes
         window.localStorage.setItem(
           "persistentGameData",
@@ -872,7 +873,7 @@ export function useSocketListeners(listeners, socket) {
   }, [socket]);
 }
 
-export function BotBar(props) {
+export function TopBar(props) {
   const theme = useTheme();
   const isPhoneDevice = useIsPhoneDevice();
   const { gameId } = useParams();
@@ -882,11 +883,6 @@ export function BotBar(props) {
   const game = props.game;
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
-  const navigate = useNavigate();
-
-  function onLogoClick() {
-    navigate("/");
-  }
 
   function onTestClick() {
     for (let i = 0; i < game.setup.total - 1; i++)
@@ -976,122 +972,134 @@ export function BotBar(props) {
       });
   }
 
-  return (
-    <div className="top">
-      {!isPhoneDevice && (
-        <div className="game-name-wrapper" onClick={onLogoClick}>
-          <SiteLogo
-            sx={{
-              height: 75,
-              width: 145,
-            }}
-          />
-        </div>
-      )}
-      <div
-        className="state-wrapper"
-        style={{
-          position: "absolute",
-          left: "50%",
-          transform: "translateX(-50%)",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-        }}
-      >
-        {!hideStateSwitcher && (
-          <StateSwitcher
-            history={props.history}
-            stateViewing={props.stateViewing}
-            updateStateViewing={props.updateStateViewing}
-            onStateNavigation={game.onStateNavigation}
-          />
-        )}
-        <Timer />
-      </div>
-      <div
-        className="misc-wrapper"
-        style={{
-          // Apply different styling when mobile since it takes up entire width
-          width: isPhoneDevice ? "100%" : undefined,
-          paddingLeft: isPhoneDevice ? "8px" : undefined,
-          paddingRight: isPhoneDevice ? "8px" : "10px",
-          justifyContent: isPhoneDevice ? "space-between" : "center",
-        }}
-      >
-        {game.setup && (
-          <Setup
-            setup={game.setup}
-            backgroundColor={getSetupBackgroundColor(game.options, false)}
-          />
-        )}
-        <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1}>
-          <ButtonGroup
-            variant="contained"
-            sx={{
-              backgroundColor: theme.palette.secondary.main,
-              borderRadius: 1,
-            }}
-          >
-            {game.review && (
-              <Tooltip title="Archive">
-                <IconButton size="large" onClick={onArchiveGameClick}>
-                  <img src={lore} alt="Archive" />
-                </IconButton>
-              </Tooltip>
-            )}
-
-            {!isPhoneDevice && game.dev && props.history.currentState == -1 && (
-              <Tooltip title="Fill">
-                <IconButton size="large" onClick={onTestClick}>
-                  <img src={poison} alt="Fill" />
-                </IconButton>
-              </Tooltip>
-            )}
-
-            {!game.review && props.history.currentState === -2 && (
-              <Tooltip title="Rehost">
-                <IconButton size="large" onClick={onRehostGameClick}>
-                  <img src={veg} alt="Rehost" />
-                </IconButton>
-              </Tooltip>
-            )}
-
-            <Tooltip title="File Report">
-              <IconButton size="large" onClick={onReportClick}>
-                <img src={system} alt="Report" />
-              </IconButton>
-            </Tooltip>
-            <ReportDialog
-              open={reportDialogOpen}
-              onClose={() => setReportDialogOpen(false)}
-              prefilledArgs={{ game: gameId }}
-            />
-
-            {isPhoneDevice ? (
-              <Tooltip title="Leave">
-                <IconButton size="large" onClick={onLeaveGameClick}>
-                  <img src={exit} alt="Leave" />
-                </IconButton>
-              </Tooltip>
-            ) : (
-              <Button
-                onClick={onLeaveGameClick}
-                startIcon={<img src={exit} alt="Leave" />}
-              >
-                Leave
-              </Button>
-            )}
-
-            <LeaveGameDialog
-              open={leaveDialogOpen}
-              onClose={() => setLeaveDialogOpen(false)}
-              onConfirm={leaveGame}
-            />
-          </ButtonGroup>
-        </Stack>
-      </div>
+  const logo = (
+    <div style={{ flex: "1", }} key="logo">
+      <Link to="/play" target="_blank" rel="noopener noreferrer">
+        <SiteLogo
+          sx={{
+            height: 75,
+            width: 145,
+          }}
+        />
+      </Link>
     </div>
+  );
+
+  const stateSwitcher = (
+    <Stack direction="column" spacing={1} key="stateSwitcher"
+      sx={{
+        alignItems: "center",
+        justifyContent: "center",
+        flex: "none",
+      }}
+    >
+      {!hideStateSwitcher && (
+        <StateSwitcher
+          history={props.history}
+          stateViewing={props.stateViewing}
+          updateStateViewing={props.updateStateViewing}
+          onStateNavigation={game.onStateNavigation}
+        />
+      )}
+    </Stack>
+  );
+
+  const miscWrapper = (
+    <Stack direction="row" spacing={1} key="miscWrapper"
+      ref={game.scrollDownTriggerRef} 
+      sx={{
+        alignItems: "center",
+        flex: "1",
+      }}
+    >
+      {game.setup && (
+        <Setup
+          setup={game.setup}
+          backgroundColor={getSetupBackgroundColor(game.options, false)}
+        />
+      )}
+      <ButtonGroup
+        variant="contained"
+        sx={{
+          alignSelf: "stretch",
+          backgroundColor: theme.palette.secondary.main,
+          borderRadius: 1,
+        }}
+      >
+        {game.review && (
+          <Tooltip title="Archive">
+            <IconButton size="large" onClick={onArchiveGameClick}>
+              <img src={lore} alt="Archive" />
+            </IconButton>
+          </Tooltip>
+        )}
+
+        {!isPhoneDevice && game.dev && props.history.currentState == -1 && (
+          <Tooltip title="Fill">
+            <IconButton size="large" onClick={onTestClick}>
+              <img src={poison} alt="Fill" />
+            </IconButton>
+          </Tooltip>
+        )}
+
+        {!game.review && props.history.currentState === -2 && (
+          <Tooltip title="Rehost">
+            <IconButton size="large" onClick={onRehostGameClick}>
+              <img src={veg} alt="Rehost" />
+            </IconButton>
+          </Tooltip>
+        )}
+
+        <Tooltip title="File Report">
+          <IconButton size="large" onClick={onReportClick}>
+            <img src={system} alt="Report" />
+          </IconButton>
+        </Tooltip>
+        <ReportDialog
+          open={reportDialogOpen}
+          onClose={() => setReportDialogOpen(false)}
+          prefilledArgs={{ game: gameId }}
+        />
+
+        {isPhoneDevice ? (
+          <Tooltip title="Leave">
+            <IconButton size="large" onClick={onLeaveGameClick}>
+              <img src={exit} alt="Leave" />
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <Button
+            onClick={onLeaveGameClick}
+            startIcon={<img src={exit} alt="Leave" />}
+          >
+            Leave
+          </Button>
+        )}
+      </ButtonGroup>
+      <LeaveGameDialog
+        open={leaveDialogOpen}
+        onClose={() => setLeaveDialogOpen(false)}
+        onConfirm={leaveGame}
+      />
+    </Stack>
+  );
+
+  const flexItems = isPhoneDevice ? [
+    miscWrapper,
+    stateSwitcher,
+  ] : [
+    logo,
+    stateSwitcher,
+    miscWrapper,
+  ];
+
+  return (
+    <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1} sx={{
+      px: 1,
+      alignItems: isPhoneDevice ? "stretch" : "center",
+    }}>
+      {flexItems}
+    </Stack>
   );
 }
 
@@ -1307,6 +1315,11 @@ export function TextMeetingLayout(props) {
         {tabs.length === 0 && (
           <div className="tab sel">{stateInfo && stateInfo.name}</div>
         )}
+        <div style={{
+          marginLeft: "auto",
+        }}>
+          <Timer />
+        </div>
       </div>
       <div className="speech-wrapper">
         <div
@@ -2152,16 +2165,6 @@ function SpeechInput(props) {
   );
 }
 
-export function formatTimerTime(time) {
-  if (time > 0) time = Math.round(time / 1000);
-  else time = 0;
-
-  const minutes = String(Math.floor(time / 60)).padStart(2, "0");
-  const seconds = String(time % 60).padStart(2, "0");
-
-  return `${minutes}:${seconds}`;
-}
-
 export function SideMenu({
   title,
   lockIcon,
@@ -2851,6 +2854,7 @@ function ActionSelect(props) {
             // if the row item is just the string "divider" then short circuit and render a divider
             return (
               <Divider
+                key={"divider"}
                 direction="horizontal"
                 sx={{
                   marginBottom: 1,
@@ -3339,141 +3343,6 @@ function getTargetDisplay(targets, meeting, players) {
   return targets;
 }
 
-export function Timer(props) {
-  const game = useContext(GameContext);
-  const [timers, updateTimers] = useTimersReducer();
-  const [started, setStarted] = useState(null);
-  const [winners, setWinners] = useState(null);
-
-  const socket = game.socket;
-  const playAudio = game.playAudio;
-
-  useEffect(() => {
-    var timerInterval = setInterval(() => {
-      updateTimers({
-        type: "updateAll",
-        playAudio,
-      });
-    }, 200);
-
-    if (socket && socket.on) {
-      socket.on("timerInfo", (info) => {
-        if (info?.name === "vegKick") {
-          playAudio("vegPing");
-        }
-        updateTimers({
-          type: "create",
-          timer: info,
-        });
-
-        if (
-          info.name === "pregameCountdown" &&
-          Notification &&
-          Notification.permission === "granted" &&
-          !document.hasFocus()
-        ) {
-          new Notification("Your game is starting!");
-        }
-      });
-
-      socket.on("clearTimer", (name) => {
-        updateTimers({
-          type: "clear",
-          name,
-        });
-      });
-
-      socket.on("time", (info) => {
-        updateTimers({
-          type: "update",
-          name: info.name,
-          time: info.time,
-        });
-      });
-
-      socket.on("start", () => setStarted(true));
-
-      socket.on("isStarted", (isStarted) => setStarted(isStarted));
-
-      socket.on("winners", ({ groups }) => {
-        const newGroups = groups.map((group) => {
-          if (group === "Village") return "⛪ Village";
-          if (group === "Mafia") return "🔪 Mafia";
-          return group;
-        });
-        setWinners(`${newGroups.join("/")} won!`);
-      });
-    }
-
-    // cleanup
-    return () => {
-      clearInterval(timerInterval);
-    };
-  }, []);
-
-  const numPlayers = Object.values(game.players).filter((p) => !p?.left).length;
-
-  const isFilled = numPlayers === game.setup?.total;
-  const filledEmoji = isFilled ? " 🔔🔔" : "";
-  const fillingTitle = `🔪 ${numPlayers}/${game.setup?.total}${filledEmoji} Ultimafia`;
-  const ChangeHeadFilling = <ChangeHead title={fillingTitle} />;
-
-  const currentState = game.history?.states[game.history?.currentState]?.name;
-  const isFinished = currentState === "Postgame";
-
-  const mainTimer = formatTimerTime(timers?.main?.delay - timers?.main?.time);
-  const ChangeHeadInProgress = (
-    <ChangeHead title={`🔪 ${mainTimer} - ${currentState}`} />
-  );
-
-  let HeadChanges = null;
-  if (!game.review) {
-    if (isFinished) {
-      if (winners) HeadChanges = <ChangeHead title={winners} />;
-      else HeadChanges = <ChangeHead title=" Ultimafia" />;
-    } else if (started) HeadChanges = ChangeHeadInProgress;
-    else HeadChanges = ChangeHeadFilling;
-  }
-
-  var timerName;
-
-  if (!timers["pregameCountdown"] && timers["pregameWait"])
-    timerName = "pregameWait";
-  else if (game.history.currentState == -1) timerName = "pregameCountdown";
-  else if (game.history.currentState == -2) timerName = "postgame";
-  else if (timers["secondary"]) timerName = "secondary";
-  else if (timers["vegKick"]) timerName = "vegKick";
-  else if (timers["vegKickCountdown"]) timerName = "vegKickCountdown";
-  else timerName = "main";
-
-  const timer = timers[timerName];
-
-  if (!timer) return <></>;
-
-  var time = timer.delay - timer.time;
-
-  if (timers["secondary"]) {
-    // show main timer if needed
-    const mainTimer = timers["main"];
-    if (mainTimer) {
-      var mainTime = mainTimer.delay - mainTimer.time;
-      time = Math.min(time, mainTime);
-    }
-  }
-
-  time = formatTimerTime(time);
-
-  if (timerName === "vegKick") {
-    return <div className="state-timer">Kicking in {time}</div>;
-  }
-  return (
-    <>
-      {HeadChanges}
-      <div className="state-timer">{time}</div>
-    </>
-  );
-}
-
 export function LastWillEntry(props) {
   const [lastWill, setLastWill] = useState(props.lastWill);
   const cannotModifyLastWill = props.cannotModifyLastWill;
@@ -3932,7 +3801,7 @@ function useHistoryReducer(pauseHistoryUpdates) {
 
       switch (action.type) {
         case "set":
-          var stateIds = Object.keys(action.history).sort((a, b) => a - b);
+          var stateIds = Object.keys(action.history).map(a => parseInt(a)).sort((a, b) => a - b);
           newHistory = { states: action.history, pausedActions: [] };
 
           if (stateIds[0] == -2) newHistory.currentState = -2;
@@ -3963,7 +3832,7 @@ function useHistoryReducer(pauseHistoryUpdates) {
                 },
               },
               currentState: {
-                $set: action.state.id,
+                $set: Number.parseInt(action.state.id),
               },
             });
           } else newHistory = history;
@@ -4299,60 +4168,16 @@ export function useStateViewingReducer(history) {
       case "first":
         newState = -1;
         break;
+      case "set":
+        newState = action.stateNum;
+        break;
       default:
-        newState = state;
+        throw Error(`Unknown action type ${action.type}`);
     }
 
     if (history.states[newState]) return newState;
     else return state;
   }, history.currentState);
-}
-
-export function useTimersReducer() {
-  return useReducer((timers, action) => {
-    var newTimers = { ...timers };
-
-    switch (action.type) {
-      case "create":
-        newTimers[action.timer.name] = {
-          delay: action.timer.delay,
-          time: 0,
-        };
-        break;
-      case "clear":
-        delete newTimers[action.name];
-        break;
-      case "update":
-        newTimers[action.name].time = action.time;
-        break;
-      case "updateAll":
-        // for (var timerName in newTimers) newTimers[timerName].time += 200;
-
-        const timer =
-          newTimers["pregameCountdown"] ||
-          newTimers["secondary"] ||
-          newTimers["main"];
-
-        if (!timer) break;
-
-        const intTime = Math.round((timer.delay - timer.time) / 1000);
-        if (intTime !== timer?.lastTickTime) {
-          if (intTime < 16 && intTime > 0) action.playAudio("tick");
-        }
-        timer.lastTickTime = intTime;
-
-        const canVegPing =
-          !timer.lastVegPingDate ||
-          new Date() - timer?.lastVegPingDate >= 10 * 1000; // note: 10 * 1000 might not work, cuz lastVegPingDate becomes null upon reset/restart anyway...
-        if (canVegPing && intTime >= 25 && intTime <= 30) {
-          action.playAudio("vegPing");
-          timer.lastVegPingDate = new Date();
-        }
-        break;
-    }
-
-    return newTimers;
-  }, {});
 }
 
 export function usePlayersReducer() {

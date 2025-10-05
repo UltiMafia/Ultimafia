@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useContext } from "react";
 import {
   useSocketListeners,
   ThreePanelLayout,
-  BotBar,
+  TopBar,
   TextMeetingLayout,
   ActionList,
   PlayerList,
@@ -86,7 +86,7 @@ export default function ResistanceGame(props) {
 
   return (
     <>
-      <BotBar
+      <TopBar
         gameType={gameType}
         game={game}
         history={history}
