@@ -575,10 +575,9 @@ function HistoryKeeper(props) {
 
   if (stateViewing < 0) return <></>;
 
-
   const extraInfo = history.states[stateViewing].extraInfo;
 
-  if(extraInfo.showGameInfo != true){
+  if (extraInfo.showGameInfo != true) {
     return <></>;
   }
 
@@ -606,18 +605,17 @@ function GhostHistory(props) {
   let wordLength = props.wordLength;
 
   return (
-    
-      <div className="ghost">
-        <div className="ghost-word-info">
-          <>
-            <div className="ghost-name"> Word Length </div>
-            <div className="ghost-input"> {wordLength} </div>
-          </>
-        </div>
-        <div className="ghost-current-history">
-          <div className="ghost-name"> Current Round </div>
-          <ClueHistory clueHistory={currentClueHistory} />
-        </div>
+    <div className="ghost">
+      <div className="ghost-word-info">
+        <>
+          <div className="ghost-name"> Word Length </div>
+          <div className="ghost-input"> {wordLength} </div>
+        </>
+      </div>
+      <div className="ghost-current-history">
+        <div className="ghost-name"> Current Round </div>
+        <ClueHistory clueHistory={currentClueHistory} />
+      </div>
     </div>
   );
 }
