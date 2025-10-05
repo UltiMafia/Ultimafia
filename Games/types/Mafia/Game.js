@@ -292,8 +292,8 @@ module.exports = class MafiaGame extends Game {
     return info;
   }
 
-  showInfoPanel(){
-    if(this.GhostClues && this.GhostClues.length > 0){
+  showInfoPanel() {
+    if (this.GhostClues && this.GhostClues.length > 0) {
       return true;
     }
     return false;
