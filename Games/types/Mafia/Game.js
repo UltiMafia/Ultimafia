@@ -279,15 +279,24 @@ module.exports = class MafiaGame extends Game {
   getStateInfo(state) {
     var info = super.getStateInfo(state);
     info.dayCount = this.dayCount;
+    info.GhostClues = this.GhostClues;
 
     if (info.name != "Pregame" && info.name != "Postgame") {
       info = {
         ...info,
         name: `${info.name} ${this.dayCount}`,
+        showGameInfo: this.showInfoPanel(),
       };
     }
 
     return info;
+  }
+
+  showInfoPanel(){
+    if(this.GhostClues && this.GhostClues.length > 0){
+      return true;
+    }
+    return false;
   }
 
   isMustAct() {
