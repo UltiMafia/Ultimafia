@@ -17,6 +17,7 @@ import {
   PinnedMessages,
 } from "./Game";
 import { GameContext, SiteInfoContext } from "../../Contexts";
+import { SideMenu } from "./Game";
 
 export default function MafiaGame() {
   const game = useContext(GameContext);
@@ -535,7 +536,7 @@ export default function MafiaGame() {
         }
         rightPanelContent={
           <>
-            (game.showGameInfo ? <HistoryKeeper history={history} stateViewing={stateViewing} /> : "")
+            {<HistoryKeeper history={history} stateViewing={stateViewing} />}
             <ActionList
               socket={game.socket}
               isParticipant={game.isParticipant}
@@ -574,7 +575,12 @@ function HistoryKeeper(props) {
 
   if (stateViewing < 0) return <></>;
 
+
   const extraInfo = history.states[stateViewing].extraInfo;
+
+  if(extraInfo.showGameInfo != true){
+    return <></>;
+  }
 
   return (
     <SideMenu
@@ -600,7 +606,7 @@ function GhostHistory(props) {
   let wordLength = props.wordLength;
 
   return (
-    <>
+    
       <div className="ghost">
         <div className="ghost-word-info">
           <>
@@ -612,7 +618,7 @@ function GhostHistory(props) {
           <div className="ghost-name"> Current Round </div>
           <ClueHistory clueHistory={currentClueHistory} />
         </div>
-    </>
+    </div>
   );
 }
 
@@ -636,7 +642,7 @@ function Clue(props) {
   return (
     <>
       <div className="ghost-input ghost-clue">
-        <span> {c.split(":")[0]} </span> {c.split(":")[0]}
+        <span> {c.split(":")[0]} </span> {c.split(":")[1]}
       </div>
     </>
   );

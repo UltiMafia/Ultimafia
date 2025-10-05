@@ -283,13 +283,13 @@ module.exports = class MafiaGame extends Game {
       wordLength: this.wordLength,
       //responseHistory: this.GhostClues,
       currentClueHistory: this.GhostClues,
+      showGameInfo: this.showInfoPanel(),
     };
 
     if (info.name != "Pregame" && info.name != "Postgame") {
       info = {
         ...info,
         name: `${info.name} ${this.dayCount}`,
-        showGameInfo: this.showInfoPanel(),
       };
     }
 
