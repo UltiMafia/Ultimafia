@@ -535,6 +535,7 @@ export default function MafiaGame() {
         }
         rightPanelContent={
           <>
+            (game.showGameInfo ? <HistoryKeeper history={history} stateViewing={stateViewing} /> : "")
             <ActionList
               socket={game.socket}
               isParticipant={game.isParticipant}
@@ -563,6 +564,80 @@ export default function MafiaGame() {
           </>
         }
       />
+    </>
+  );
+}
+
+function HistoryKeeper(props) {
+  const history = props.history;
+  const stateViewing = props.stateViewing;
+
+  if (stateViewing < 0) return <></>;
+
+  const extraInfo = history.states[stateViewing].extraInfo;
+
+  return (
+    <SideMenu
+      title="Game Info"
+      scrollable
+      content={
+        <>
+          <GhostHistory
+            //responseHistory={extraInfo.responseHistory}
+            currentClueHistory={extraInfo.currentClueHistory}
+            word={extraInfo.word}
+            wordLength={extraInfo.wordLength}
+          />
+        </>
+      }
+    />
+  );
+}
+
+function GhostHistory(props) {
+  //let responseHistory = props.responseHistory;
+  let currentClueHistory = props.currentClueHistory;
+  let wordLength = props.wordLength;
+
+  return (
+    <>
+      <div className="ghost">
+        <div className="ghost-word-info">
+          <>
+            <div className="ghost-name"> Word Length </div>
+            <div className="ghost-input"> {wordLength} </div>
+          </>
+        </div>
+        <div className="ghost-current-history">
+          <div className="ghost-name"> Current Round </div>
+          <ClueHistory clueHistory={currentClueHistory} />
+        </div>
+    </>
+  );
+}
+
+function ClueHistory(props) {
+  let clueHistory = props.clueHistory;
+
+  return (
+    <>
+      <div className="ghost-history-group">
+        {clueHistory.map((c) => (
+          <Clue clue={c} />
+        ))}
+      </div>
+    </>
+  );
+}
+
+function Clue(props) {
+  let c = props.clue;
+
+  return (
+    <>
+      <div className="ghost-input ghost-clue">
+        <span> {c.split(":")[0]} </span> {c.split(":")[0]}
+      </div>
     </>
   );
 }
