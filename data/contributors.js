@@ -331,7 +331,7 @@ const artContributors = {
       "Heartbreaker:noir",
     ],
   },
-  aleph: {
+  megido: {
     Mafia: [
       "Count:vivid",
       "Harpy:vivid",
