@@ -8,10 +8,6 @@ module.exports = class ChangeRandomAlignment extends Card {
     super(role);
 
     this.listeners = {
-      roleAssigned: function (player) {
-        if (player !== this.player) return;
-        this.methods.changeAlignment();
-      },
       state: function (stateInfo) {
         if (!this.hasAbility(["Win-Con"])) {
           return;
