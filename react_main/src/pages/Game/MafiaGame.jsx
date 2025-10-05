@@ -4,7 +4,7 @@ import {
   useSocketListeners,
   // useStateViewingReducer,
   ThreePanelLayout,
-  BotBar,
+  TopBar,
   TextMeetingLayout,
   getUnresolvedActionCount,
   ActionList,
@@ -481,7 +481,7 @@ export default function MafiaGame() {
 
   return (
     <>
-      <BotBar
+      <TopBar
         gameType={gameType}
         game={game}
         history={history}
@@ -577,7 +577,7 @@ function HistoryKeeper(props) {
 
   const extraInfo = history.states[stateViewing].extraInfo;
 
-  if (extraInfo.showGameInfo != true) {
+  if (!extraInfo || extraInfo.showGameInfo !== true) {
     return <></>;
   }
 

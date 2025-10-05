@@ -15,23 +15,6 @@
   color: var(--theme-color-light);
 }
 
-.game .loading-page {
-  height: 100%;
-}
-
-.game .top {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-}
-
-.game .game-name-wrapper {
-  display: flex;
-  justify-content: flex-start;
-  cursor: pointer;
-  margin: 0px 0px 0px var(--mui-spacing);
-}
-
 .game .game-name {
   font-size: 40px;
   font-family: var(--primaryFont); /* used to be BNoir */
@@ -44,31 +27,6 @@
   text-shadow: 2px 3px 3px #f7e4dd;
 }
 
-.game .state-wrapper {
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.game .state-nav {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  justify-content: center;
-}
-
-.game .state-nav .hist-arrow {
-  margin: 0px 10px;
-
-  font-size: 25px;
-  cursor: pointer;
-}
-
-.game .state-nav .hist-arrow.invisible {
-  visibility: hidden;
-}
-
 .game .state-name {
   min-width: 100px;
 
@@ -79,19 +37,10 @@
 }
 
 .game .state-timer {
-  height: 1.5rem;
-}
+  padding: 4px var(--mui-spacing);
 
-.game .misc-wrapper {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-
-  gap: var(--mui-spacing);
-}
-
-.game .fas {
-  font-size: medium;
+  background-color: var(--scheme-color-sec);
+  border-radius: var(--mui-shape-borderRadius);
 }
 
 .game .main {
@@ -149,6 +98,7 @@
 .game .meeting-tabs {
   display: flex;
   flex-flow: row nowrap;
+  align-items: center;
 
   gap: var(--mui-spacing);
 
@@ -160,7 +110,6 @@
 .game .tab {
   padding: 4px var(--mui-spacing);
 
-  z-index: 0;
   background-color: var(--scheme-color-background);
   border-radius: var(--mui-shape-borderRadius);
   cursor: pointer;
@@ -169,7 +118,6 @@
 .game .tab.sel {
   background-color: var(--scheme-color-sec);
   box-shadow: none;
-  z-index: 1;
 }
 
 .game .message:hover {
@@ -1019,16 +967,6 @@
 
     scroll-snap-align: end;
     scroll-snap-stop: always;
-  }
-
-  .game .top {
-    flex-flow: column !important;
-  }
-
-  .game .state-wrapper {
-    order: 3;
-    margin-top: var(--mui-spacing);
-    justify-self: center;
   }
 
   .game .message .sender {

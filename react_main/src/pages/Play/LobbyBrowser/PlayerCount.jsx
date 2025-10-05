@@ -2,6 +2,8 @@ import React, { useContext, useRef } from "react";
 import { Box, Popover, Stack, Typography } from "@mui/material";
 import { usePopover } from "components/Popover";
 
+import "css/join.css";
+
 export const PlayerCount = (props) => {
   const game = props.game;
   const numSlotsTotal = game.setup.total;

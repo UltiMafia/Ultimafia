@@ -77,6 +77,10 @@ const commonComponents = {
       variant: "contained",
       color: "primary",
       sx: { textTransform: "none" },
+    },
+  },
+  MuiButtonBase: {
+    defaultProps: {
       disableRipple: true,
     },
   },

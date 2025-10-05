@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useContext, useState } from "react";
 import {
   useSocketListeners,
   ThreePanelLayout,
-  BotBar,
+  TopBar,
   TextMeetingLayout,
   ActionList,
   PlayerList,
@@ -102,7 +102,7 @@ export default function CheatGame(props) {
 
   return (
     <>
-      <BotBar
+      <TopBar
         gameType={gameType}
         game={game}
         history={history}

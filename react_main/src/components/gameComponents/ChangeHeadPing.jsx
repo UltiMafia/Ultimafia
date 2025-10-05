@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ChangeHead } from "./ChangeHead";
+import ChangeHead from "components/gameComponents/ChangeHead";
 
 const FLASH_INTERVAL = 800;
 

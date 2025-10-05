@@ -405,8 +405,7 @@ export function FullRoleList({ setup }) {
   const gameType = setup.gameType;
 
   const siteInfo = useContext(SiteInfoContext);
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isPhoneDevice = useIsPhoneDevice();
 
   var rolesDividedByAlignment = {};
   const events = [];
@@ -436,7 +435,7 @@ export function FullRoleList({ setup }) {
   // holy fricken FREAK this is a 3-dimensional effort
   const rolesetAlignments = Object.keys(rolesDividedByAlignment).map((i) => {
     const alignmentKeys = Object.keys(rolesDividedByAlignment[i]);
-    const gridItemSize = isSmallScreen ? 12 : 12 / alignmentKeys.length;
+    const gridItemSize = isPhoneDevice ? 12 : 12 / alignmentKeys.length;
     var sectionName =
       setup.roles.length > 1 ? INDEXED_ROLE_GROUP_LABELS[i] : null;
     if (sectionName && setup.useRoleGroups) {
@@ -485,7 +484,7 @@ export function FullRoleList({ setup }) {
 
     return (
       <Stack
-        direction={isSmallScreen ? "column" : "row"}
+        direction={isPhoneDevice ? "column" : "row"}
         sx={{
           alignItems: "center",
         }}

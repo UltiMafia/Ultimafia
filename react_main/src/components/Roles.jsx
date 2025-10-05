@@ -22,7 +22,6 @@ import {
   useMediaQuery,
   Button,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
 import { NewLoading } from "../pages/Welcome/NewLoading";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
@@ -698,8 +697,7 @@ export function RoleCell(props) {
   const popover = useContext(PopoverContext);
   const user = useContext(UserContext);
   const roleCellRef = useRef();
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isPhoneDevice = useIsPhoneDevice();
 
   const myHeight = `calc(1.2 * ${iconLength} + 2 * var(--mui-spacing))`;
 
@@ -736,7 +734,7 @@ export function RoleCell(props) {
       className="role-cell"
       key={role.name}
       sx={{
-        p: isSmallScreen ? 0.5 : 1,
+        p: isPhoneDevice ? 0.5 : 1,
         lineHeight: "normal",
         height: myHeight,
       }}
@@ -817,14 +815,13 @@ export function RoleCell(props) {
 }
 
 export function RoleSearch(props) {
-  const theme = useTheme();
   const [roleListType, setRoleListType] = useState(
     Alignments[props.gameType][0]
   );
   const [searchVal, setSearchVal] = useState("");
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isPhoneDevice = useIsPhoneDevice();
 
   function onAlignNavClick(alignment) {
     setSearchVal("");
@@ -913,14 +910,14 @@ export function RoleSearch(props) {
 
   return (
     <Stack direction="column">
-      <Stack direction={isSmallScreen ? "column-reverse" : "row"} spacing={1}>
+      <Stack direction={isPhoneDevice ? "column-reverse" : "row"} spacing={1}>
         <Tabs
           value={roleListType}
           onChange={(_, value) => setRoleListType(value)}
         >
           {alignButtons}
         </Tabs>
-        <Box sx={{ ml: isSmallScreen ? undefined : "auto !important" }}>
+        <Box sx={{ ml: isPhoneDevice ? undefined : "auto !important" }}>
           <SearchBar
             value={searchVal}
             placeholder="🔎 Role Name"
@@ -939,8 +936,6 @@ export function RoleSearch(props) {
 }
 
 export function ModifierSearch(props) {
-  const theme = useTheme();
-
   const [roleListType, setRoleListType] = useState("Items");
 
   const [searchVal, setSearchVal] = useState("");
@@ -948,7 +943,7 @@ export function ModifierSearch(props) {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const popover = useContext(PopoverContext);
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isPhoneDevice = useIsPhoneDevice();
 
   function onAlignNavClick(alignment) {
     setSearchVal("");
@@ -1047,14 +1042,14 @@ export function ModifierSearch(props) {
 
   return (
     <Stack direction="column" spacing={1}>
-      <Stack direction={isSmallScreen ? "column-reverse" : "row"} spacing={1}>
+      <Stack direction={isPhoneDevice ? "column-reverse" : "row"} spacing={1}>
         <Tabs
           value={roleListType}
           onChange={(_, value) => setRoleListType(value)}
         >
           {alignButtons}
         </Tabs>
-        <Box sx={{ ml: isSmallScreen ? undefined : "auto !important" }}>
+        <Box sx={{ ml: isPhoneDevice ? undefined : "auto !important" }}>
           <SearchBar
             value={searchVal}
             placeholder="🔎 Role Name"
@@ -1073,8 +1068,6 @@ export function ModifierSearch(props) {
 }
 
 export function GameSettingSearch(props) {
-  const theme = useTheme();
-
   const [roleListType, setRoleListType] = useState("Standard");
 
   const [searchVal, setSearchVal] = useState("");
@@ -1082,7 +1075,7 @@ export function GameSettingSearch(props) {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const popover = useContext(PopoverContext);
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isPhoneDevice = useIsPhoneDevice();
 
   function onAlignNavClick(alignment) {
     setSearchVal("");
@@ -1178,14 +1171,14 @@ export function GameSettingSearch(props) {
 
   return (
     <Stack direction="column" spacing={1}>
-      <Stack direction={isSmallScreen ? "column-reverse" : "row"} spacing={1}>
+      <Stack direction={isPhoneDevice ? "column-reverse" : "row"} spacing={1}>
         <Tabs
           value={roleListType}
           onChange={(_, value) => setRoleListType(value)}
         >
           {alignButtons}
         </Tabs>
-        <Box sx={{ ml: isSmallScreen ? undefined : "auto !important" }}>
+        <Box sx={{ ml: isPhoneDevice ? undefined : "auto !important" }}>
           <SearchBar
             value={searchVal}
             placeholder="🔎 Game Setting Name"

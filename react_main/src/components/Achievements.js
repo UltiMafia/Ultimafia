@@ -382,8 +382,7 @@ export function RoleCell(props) {
   const popover = useContext(PopoverContext);
   const user = useContext(UserContext);
   const roleCellRef = useRef();
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isPhoneDevice = useIsPhoneDevice();
 
   const myHeight = `calc(1.2 * ${iconLength} + 2 * var(--mui-spacing))`;
 
@@ -420,7 +419,7 @@ export function RoleCell(props) {
       className="role-cell"
       key={role.name}
       sx={{
-        p: isSmallScreen ? 0.5 : 1,
+        p: isPhoneDevice ? 0.5 : 1,
         lineHeight: "normal",
         height: myHeight,
       }}

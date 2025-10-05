@@ -122,8 +122,7 @@ function getEloPieStats(factionRatings) {
 export function SetupPage() {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isPhoneDevice = useIsPhoneDevice();
   const navigate = useNavigate();
   const errorAlert = useErrorAlert();
   const { setupId } = useParams();
@@ -260,7 +259,7 @@ export function SetupPage() {
     }
   };
 
-  const iconSize = isSmallScreen ? 30 : 60;
+  const iconSize = isPhoneDevice ? 30 : 60;
 
   return (
     <Stack
@@ -304,7 +303,7 @@ export function SetupPage() {
               <IconButton
                 onClick={() => setIshostGameDialogueOpen(true)}
                 sx={{
-                  p: isSmallScreen ? 1 : 2,
+                  p: isPhoneDevice ? 1 : 2,
                   borderRadius: "50%",
                   backgroundColor: setupHeadingIconColor,
                 }}
@@ -314,7 +313,7 @@ export function SetupPage() {
               <Typography
                 variant="h2"
                 sx={{
-                  ml: isSmallScreen ? "auto !important" : undefined,
+                  ml: isPhoneDevice ? "auto !important" : undefined,
                 }}
               >
                 {setup.name}
@@ -343,7 +342,7 @@ export function SetupPage() {
           {setup.creator && (
             <Grid item xs={12} md={2}>
               <Stack
-                direction={isSmallScreen ? "row" : "column"}
+                direction={isPhoneDevice ? "row" : "column"}
                 sx={{
                   alignItems: "center",
                 }}
@@ -351,7 +350,7 @@ export function SetupPage() {
                 <Typography
                   variant="italicRelation"
                   sx={{
-                    ml: isSmallScreen ? "auto" : 1,
+                    ml: isPhoneDevice ? "auto" : 1,
                   }}
                 >
                   {"Created by"}
