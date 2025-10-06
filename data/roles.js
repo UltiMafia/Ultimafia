@@ -108,7 +108,7 @@ const plagueDef = `Players who are "Plagued" will make their neighbors "Plagued"
 const madDef = `Players who are "Mad" about a role, must say the role's name or they will become the target of the condemnation.`;
 const insaneDef = `Players who are "Insane" cannot vote and can only speak gibberish.`;
 const infestedDef = `Players who are "Infested" with a role will convert to that role with the Transcendent modifier added if condemned.`;
-const gassedDef = `Players who are "Gassed" will die during the next night if they visit another player.`
+const gassedDef = `Players who are "Gassed" will die during the next night if they visit another player.`;
 
 //Item Def
 const coffeeDef = `Coffee can be used at night to perform their role's night actions an additional time.`;
@@ -4762,7 +4762,8 @@ const roleData = {
       tags: ["Village", "Win Steal", "Advanced"],
       description: [
         "All players will learn if a Autocrat is present.",
-        "Wins instead of Village and counts toward their total.",],
+        "Wins instead of Village and counts toward their total.",
+      ],
     },
     Palladist: {
       alignment: "Independent",
