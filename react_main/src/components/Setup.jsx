@@ -5,6 +5,7 @@ import { Alignments } from "Constants";
 import { RoleCount } from "components/Roles";
 import { filterProfanity } from "components/Basic";
 import { SearchBar } from "components/Nav";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { hyphenDelimit } from "utils";
 
 import {

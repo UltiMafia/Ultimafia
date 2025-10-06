@@ -382,7 +382,7 @@ function Header({ setShowAnnouncementTemporarily }) {
             left: "0",
             zIndex: 1000,
             width: "10%",
-            height: "10%",
+            aspectRatio: "1",
             display: window.innerWidth <= 768 ? "none" : "block",
           }}
         />

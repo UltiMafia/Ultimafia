@@ -35,6 +35,7 @@ import { useErrorAlert } from "components/Alerts";
 
 import "css/createSetup.css";
 import { NewLoading } from "pages/Welcome/NewLoading";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 function StickyStateViewer(props) {
   const isSticky = props.isSticky;

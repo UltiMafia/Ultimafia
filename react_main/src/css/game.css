@@ -8,6 +8,8 @@
   height: 100%;
   width: 100%;
 
+  isolation: isolate;
+
   background-image: url("/src/images/white-diamond-dark.png");
 }
 
@@ -41,6 +43,8 @@
 
   background-color: var(--scheme-color-sec);
   border-radius: var(--mui-shape-borderRadius);
+
+  font-family: RobotoMono;
 }
 
 .game .main {
@@ -93,6 +97,7 @@
   height: calc(1em + 4 * var(--mui-spacing));
   padding: var(--mui-spacing);
   line-height: normal;
+  flex: none;
 }
 
 .game .meeting-tabs {
@@ -927,10 +932,12 @@
  */
 
 @media (max-width: 900px) {
+  .game {
+    padding: 0px !important;
+  }
+
   .game .main {
-    overflow-x: scroll;
-    scrollbar-width: none;
-    scroll-snap-type: x mandatory;
+    padding: 0px !important;
   }
 
   .game .main::-webkit-scrollbar {
@@ -946,46 +953,19 @@
   }
 
   .game .left-panel {
-    width: calc(100vw - 3 * var(--mui-spacing)) !important;
-
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
+    width: 100vw !important;
   }
 
   .game .center-panel {
-    flex-basis: initial !important;
-    flex-grow: 0 !important;
-
-    width: calc(100vw - 3 * var(--mui-spacing)) !important;
-
-    scroll-snap-align: center;
-    scroll-snap-stop: always;
+    width: 100vw !important;
   }
 
   .game .right-panel {
-    width: calc(100vw - 3 * var(--mui-spacing)) !important;
-
-    scroll-snap-align: end;
-    scroll-snap-stop: always;
+    width: 100vw !important;
   }
 
   .game .message .sender {
     padding-left: 0px;
-  }
-}
-
-@media (max-width: 600px) {
-  .game .modal.settings,
-  .game .modal.first-game {
-    width: 300px;
-  }
-
-  .hide-on-mobile {
-    display: none !important;
-  }
-
-  .game .rehost-game {
-    display: none;
   }
 }
 

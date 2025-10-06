@@ -14,12 +14,14 @@ import {
 import { GameContext } from "../../Contexts";
 import { Avatar } from "../User/User";
 import { SideMenu } from "./Game";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/game.css";
 import "css/gameConnectFour.css";
 
 export default function ConnectFourGame(props) {
   const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
 
   const history = game.history;
   const updateHistory = game.updateHistory;
@@ -90,17 +92,10 @@ export default function ConnectFourGame(props) {
         hideStateSwitcher
       />
       <ThreePanelLayout
+        selectedPanel={game.selectedPanel}
         leftPanelContent={
           <>
-            {history.currentState == -1 && (
-              <PlayerList
-                players={players}
-                history={history}
-                gameType={gameType}
-                stateViewing={stateViewing}
-                activity={game.activity}
-              />
-            )}
+            {history.currentState == -1 && game.componentFactory.playerList()}
             <ActionList
               socket={game.socket}
               isParticipant={game.isParticipant}
@@ -110,13 +105,7 @@ export default function ConnectFourGame(props) {
               history={history}
               stateViewing={stateViewing}
             />
-            <SettingsMenu
-              settings={game.settings}
-              updateSettings={game.updateSettings}
-              showMenu={game.showMenu}
-              setShowMenu={game.setShowMenu}
-              stateViewing={stateViewing}
-            />
+            {!isPhoneDevice && game.componentFactory.settingsMenu()}
           </>
         }
         centerPanelContent={
@@ -130,20 +119,8 @@ export default function ConnectFourGame(props) {
         }
         rightPanelContent={
           <>
-            <TextMeetingLayout
-              combineMessagesFromAllMeetings
-              socket={game.socket}
-              history={history}
-              updateHistory={updateHistory}
-              players={players}
-              stateViewing={stateViewing}
-              settings={game.settings}
-              filters={game.speechFilters}
-              options={game.options}
-              setup={game.setup}
-              localAudioTrack={game.localAudioTrack}
-            />
-            {!isSpectator && <Notes stateViewing={stateViewing} />}
+            {game.componentFactory.textMeetingLayout({combineMessagesFromAllMeetings: true})}
+            {!isPhoneDevice && game.componentFactory.notes()}
           </>
         }
       />

@@ -10,12 +10,15 @@ import {
   Timer,
 } from "./Game";
 import { GameContext } from "../../Contexts";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/gameBattlesnakes.css";
 import SnakeGameDisplay from "./SnakeGameDisplay";
 
 function SnakeGame(props) {
   const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
+
   const history = game.history;
   const updateHistory = game.updateHistory;
   const stateViewing = game.stateViewing;
@@ -70,17 +73,13 @@ function SnakeGame(props) {
             <span>Battlesnakes</span>
           </div>
         }
+        hideStateSwitcher
       />
       <ThreePanelLayout
+        selectedPanel={game.selectedPanel}
         leftPanelContent={
           <>
-            <PlayerList
-              players={players}
-              history={history}
-              gameType={gameType}
-              stateViewing={stateViewing}
-              activity={game.activity}
-            />
+            {game.componentFactory.playerList()}
             <ActionList
               socket={game.socket}
               isParticipant={game.isParticipant}
