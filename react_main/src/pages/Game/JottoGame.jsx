@@ -13,12 +13,14 @@ import {
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/game.css";
 import "css/gameJotto.css";
 
 export default function JottoGame(props) {
   const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
 
   const history = game.history;
   const updateHistory = game.updateHistory;
@@ -93,17 +95,10 @@ export default function JottoGame(props) {
         hideStateSwitcher
       />
       <ThreePanelLayout
+        selectedPanel={game.selectedPanel}
         leftPanelContent={
           <>
-            {history.currentState == -1 && (
-              <PlayerList
-                players={players}
-                history={history}
-                gameType={gameType}
-                stateViewing={stateViewing}
-                activity={game.activity}
-              />
-            )}
+            {history.currentState == -1 && game.componentFactory.playerList()}
             <HistoryKeeper history={history} stateViewing={stateViewing} />
             <ActionList
               socket={game.socket}
@@ -114,36 +109,18 @@ export default function JottoGame(props) {
               history={history}
               stateViewing={stateViewing}
             />
-            <SettingsMenu
-              settings={game.settings}
-              updateSettings={game.updateSettings}
-              showMenu={game.showMenu}
-              setShowMenu={game.setShowMenu}
-              stateViewing={stateViewing}
-            />
+            {!isPhoneDevice && game.componentFactory.settingsMenu()}
           </>
         }
         centerPanelContent={
           <>
-            <TextMeetingLayout
-              combineMessagesFromAllMeetings
-              socket={game.socket}
-              history={history}
-              updateHistory={updateHistory}
-              players={players}
-              stateViewing={stateViewing}
-              settings={game.settings}
-              filters={game.speechFilters}
-              options={game.options}
-              setup={game.setup}
-              localAudioTrack={game.localAudioTrack}
-            />
+            {game.componentFactory.textMeetingLayout({combineMessagesFromAllMeetings: true})}
           </>
         }
         rightPanelContent={
           <>
             <JottoCheatSheetWrapper stateViewing={stateViewing} />
-            {!isSpectator && <Notes stateViewing={stateViewing} />}
+            {!isPhoneDevice && game.componentFactory.notes()}
           </>
         }
       />

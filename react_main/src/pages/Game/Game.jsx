@@ -75,7 +75,9 @@ import {
   TextField,
   Typography,
   useTheme,
-  Grid2,
+  BottomNavigation,
+  BottomNavigationAction,
+  Paper,
 } from "@mui/material";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
@@ -150,6 +152,7 @@ function GameWrapper(props) {
   const [rehostId, setRehostId] = useState();
   const [dev, setDev] = useState(false);
   const [pingInfo, setPingInfo] = useState(null);
+  const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
 
   const playersRef = useRef();
   const selfRef = useRef();
@@ -159,9 +162,112 @@ function GameWrapper(props) {
     useAudio(settings);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+  const isPhoneDevice = useIsPhoneDevice();
   const { gameId } = useParams();
+  const [selectedPanel, setSelectedPanel] = useState(isPhoneDevice ? "chat" : null);
 
   const isParticipant = !isSpectator && !props.review;
+  const currentStateObject = history.states[history.currentState];
+  const unresolvedActionCount = getUnresolvedActionCount(currentStateObject ? currentStateObject.meetings : {});
+
+  // Use this factory for components that are re-used across different gameTypes
+  const componentFactory = {
+    playerList: function() {
+      return (
+        <PlayerList
+          players={players}
+          history={history}
+          gameType={gameType}
+          stateViewing={stateViewing}
+          self={self}
+          setup={setup}
+        />
+      );
+    },
+    textMeetingLayout: function(props) {
+      return (
+        <TextMeetingLayout
+          {...props}
+          socket={socket}
+          history={history}
+          updateHistory={updateHistory}
+          players={players}
+          stateViewing={stateViewing}
+          settings={settings}
+          filters={speechFilters}
+          options={options}
+          setup={setup}
+        />
+      )
+    },
+    speechFilter: function() {
+      return (
+        <SpeechFilter
+          filters={speechFilters}
+          setFilters={setSpeechFilters}
+          stateViewing={stateViewing}
+        />
+      );
+    },
+    settingsMenu: function() {
+      return (
+        <SettingsMenu
+          settings={settings}
+          updateSettings={updateSettings}
+          stateViewing={stateViewing}
+        />
+      );
+    },
+    notes: function() {
+      return (
+        <>
+          {isParticipant && (<Notes stateViewing={stateViewing} />)}
+        </>
+      )
+    },
+    pinnedMessages: function() {
+      return (
+        <>
+          {isParticipant && <PinnedMessages />}
+        </>
+      )
+    },
+  }
+
+  function onLeaveGameClick() {
+    if (
+      history.currentState == -1 ||
+      history.currentState == -2 ||
+      finished ||
+      !isParticipant
+    ) {
+      leaveGame();
+    } else {
+      setLeaveDialogOpen(true);
+    }
+  }
+
+  function leaveGame() {
+    if (finished) siteInfo.hideAllAlerts();
+
+    if (socket.on) socket.send("leave");
+    else setLeave(true);
+
+    setLeaveDialogOpen(false);
+  }
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape") {
+        onLeaveGameClick();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   const [persistentGameData, updatePersistentGameData] = useReducer(
     (state, action) => {
@@ -775,6 +881,15 @@ function GameWrapper(props) {
     return null;
   }
 
+  function onBottomNavigationChange(event, newValue) {
+    if(newValue === "leave") {
+      onLeaveGameClick();
+    }
+    else {
+      setSelectedPanel(newValue);
+    }
+  }
+
   if (leave === "review") return <Navigate to={`/game/${gameId}/review`} />;
   else if (leave) return <Navigate to="/play" />;
   else if (rehostId) return <Navigate to={`/game/${rehostId}`} />;
@@ -789,6 +904,7 @@ function GameWrapper(props) {
       gameId: gameId,
       socket: socket,
       review: props.review,
+      componentFactory: componentFactory,
       setup: setup,
       getSetupGameSetting: getSetupGameSetting,
       startTime: startTime,
@@ -807,8 +923,10 @@ function GameWrapper(props) {
       lastWill: lastWill,
       emojis: emojis,
       setLeave: setLeave,
+      onLeaveGameClick: onLeaveGameClick,
       finished: finished,
       settings: settings,
+      selectedPanel: selectedPanel,
       updateSettings: updateSettings,
       speechFilters: speechFilters,
       setSpeechFilters: setSpeechFilters,
@@ -838,28 +956,79 @@ function GameWrapper(props) {
     return (
       <GameContext.Provider value={gameContext}>
         <ChangeHeadPing title={pingInfo?.msg} timestamp={pingInfo?.timestamp} />
-        <Box
-          className="game no-highlight"
-          sx={{
-            backgroundColor: "background.paper",
-          }}
-        >
-          <FirstGameModal
-            showModal={showFirstGameModal}
-            setShowModal={setShowFirstGameModal}
-          />
-          {gameType === "Mafia" && <MafiaGame />}
-          {gameType === "Resistance" && <ResistanceGame />}
-          {gameType === "Jotto" && <JottoGame />}
-          {gameType === "Acrotopia" && <AcrotopiaGame />}
-          {gameType === "Secret Dictator" && <SecretDictatorGame />}
-          {gameType === "Wacky Words" && <WackyWordsGame />}
-          {gameType === "Liars Dice" && <LiarsDiceGame />}
-          {gameType === "Texas Hold Em" && <TexasHoldEmGame />}
-          {gameType === "Cheat" && <CheatGame />}
-          {gameType === "Battlesnakes" && <BattlesnakesGame />}
-          {gameType === "Connect Four" && <ConnectFourGame />}
-        </Box>
+        <Stack direction="column" sx={{
+          height: "100%",
+        }}>
+          <Box
+            className="game no-highlight"
+            sx={{
+              backgroundColor: "background.paper",
+            }}
+          >
+            <FirstGameModal
+              showModal={showFirstGameModal}
+              setShowModal={setShowFirstGameModal}
+            />
+            {gameType === "Mafia" && <MafiaGame />}
+            {gameType === "Resistance" && <ResistanceGame />}
+            {gameType === "Jotto" && <JottoGame />}
+            {gameType === "Acrotopia" && <AcrotopiaGame />}
+            {gameType === "Secret Dictator" && <SecretDictatorGame />}
+            {gameType === "Wacky Words" && <WackyWordsGame />}
+            {gameType === "Liars Dice" && <LiarsDiceGame />}
+            {gameType === "Texas Hold Em" && <TexasHoldEmGame />}
+            {gameType === "Cheat" && <CheatGame />}
+            {gameType === "Battlesnakes" && <BattlesnakesGame />}
+            {gameType === "Connect Four" && <ConnectFourGame />}
+          </Box>
+          {isPhoneDevice && (
+            <Paper elevation={3}>
+              <Divider orientation="horizontal" />
+              <BottomNavigation showLabels value={selectedPanel} onChange={onBottomNavigationChange} sx={{
+                "& > .MuiBottomNavigationAction-root": {
+                  minWidth: "unset",
+                  width: "56px",
+                }
+              }}>
+                <BottomNavigationAction label="Players" value="players" icon={<i className="fas fa-user"/>} />
+                <BottomNavigationAction label="Info" value="info" icon={<i className="fas fa-info"/>} />
+                <Stack direction="row" onClick={() => setSelectedPanel("chat")} sx={{
+                  filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
+                }}>
+                  <Divider orientation="vertical" flexItem />
+                  <StateSwitcher
+                    history={history}
+                    stateViewing={stateViewing}
+                    updateStateViewing={updateStateViewing}
+                    onStateNavigation={onStateNavigation}
+                    hideFastForward={isPhoneDevice}
+                  />
+                  <Divider orientation="vertical" flexItem />
+                </Stack>
+                <BottomNavigationAction label="Actions" value="actions" icon={
+                  <Badge
+                    badgeContent={unresolvedActionCount}
+                    color="primary"
+                    invisible={!isParticipant || unresolvedActionCount === 0}
+                    sx={{
+                      "& .MuiBadge-badge": {
+                        transform: "scale(1) translate(100%, -50%)",
+                      }
+                    }}
+                  >
+                    <i className="fas fa-bolt"/>
+                  </Badge>
+                }/>
+                <BottomNavigationAction label="Leave" value="leave" icon={<i className="fas fa-user"/>} />
+              </BottomNavigation>
+            </Paper>
+          )}
+        </Stack>
+        <LeaveGameDialog
+          open={leaveDialogOpen}
+          onClose={() => setLeaveDialogOpen(false)}
+          onConfirm={leaveGame}
+        />
       </GameContext.Provider>
     );
   }
@@ -881,7 +1050,6 @@ export function TopBar(props) {
   const siteInfo = useContext(SiteInfoContext);
   const hideStateSwitcher = props.hideStateSwitcher;
   const game = props.game;
-  const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   function onTestClick() {
@@ -892,41 +1060,6 @@ export function TopBar(props) {
   function onReportClick() {
     setReportDialogOpen(true);
   }
-
-  function onLeaveGameClick() {
-    if (
-      props.history.currentState == -1 ||
-      props.history.currentState == -2 ||
-      game.finished ||
-      game.review
-    ) {
-      leaveGame();
-    } else {
-      setLeaveDialogOpen(true);
-    }
-  }
-
-  function leaveGame() {
-    if (game.finished) siteInfo.hideAllAlerts();
-
-    if (game.socket.on) game.socket.send("leave");
-    else game.setLeave(true);
-
-    setLeaveDialogOpen(false);
-  }
-
-  useEffect(() => {
-    function handleKeyDown(e) {
-      if (e.key === "Escape") {
-        onLeaveGameClick();
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [game]);
 
   function onRehostGameClick() {
     game.noLeaveRef.current = true;
@@ -972,6 +1105,11 @@ export function TopBar(props) {
       });
   }
 
+  if(isPhoneDevice && game.selectedPanel !== "info") {
+    // The top bar doubles as an info panel for mobile
+    return <></>;
+  }
+
   const logo = (
     <div style={{ flex: "1", }} key="logo">
       <Link to="/play" target="_blank" rel="noopener noreferrer">
@@ -994,129 +1132,166 @@ export function TopBar(props) {
       }}
     >
       {!hideStateSwitcher && (
-        <StateSwitcher
-          history={props.history}
-          stateViewing={props.stateViewing}
-          updateStateViewing={props.updateStateViewing}
-          onStateNavigation={game.onStateNavigation}
-        />
+        <Paper>
+          <StateSwitcher
+            history={props.history}
+            stateViewing={props.stateViewing}
+            updateStateViewing={props.updateStateViewing}
+            onStateNavigation={game.onStateNavigation}
+          />
+        </Paper>
       )}
     </Stack>
   );
 
-  const miscWrapper = (
-    <Stack direction="row" spacing={1} key="miscWrapper"
-      ref={game.scrollDownTriggerRef} 
+  const setup = game.setup ? (
+    <Setup
+      setup={game.setup}
+      backgroundColor={getSetupBackgroundColor(game.options, false)}
+    />
+  ) : <></>;
+
+  const buttonGroup = (
+    <ButtonGroup
+      variant="contained"
       sx={{
-        alignItems: "center",
-        flex: "1",
+        alignSelf: "stretch",
+        backgroundColor: theme.palette.secondary.main,
+        borderRadius: 1,
       }}
     >
-      {game.setup && (
-        <Setup
-          setup={game.setup}
-          backgroundColor={getSetupBackgroundColor(game.options, false)}
-        />
-      )}
-      <ButtonGroup
-        variant="contained"
-        sx={{
-          alignSelf: "stretch",
-          backgroundColor: theme.palette.secondary.main,
-          borderRadius: 1,
-        }}
-      >
-        {game.review && (
-          <Tooltip title="Archive">
-            <IconButton size="large" onClick={onArchiveGameClick}>
-              <img src={lore} alt="Archive" />
-            </IconButton>
-          </Tooltip>
-        )}
-
-        {!isPhoneDevice && game.dev && props.history.currentState == -1 && (
-          <Tooltip title="Fill">
-            <IconButton size="large" onClick={onTestClick}>
-              <img src={poison} alt="Fill" />
-            </IconButton>
-          </Tooltip>
-        )}
-
-        {!game.review && props.history.currentState === -2 && (
-          <Tooltip title="Rehost">
-            <IconButton size="large" onClick={onRehostGameClick}>
-              <img src={veg} alt="Rehost" />
-            </IconButton>
-          </Tooltip>
-        )}
-
-        <Tooltip title="File Report">
-          <IconButton size="large" onClick={onReportClick}>
-            <img src={system} alt="Report" />
+      {game.review && (
+        <Tooltip title="Archive">
+          <IconButton size="large" onClick={onArchiveGameClick}>
+            <img src={lore} alt="Archive" />
           </IconButton>
         </Tooltip>
-        <ReportDialog
-          open={reportDialogOpen}
-          onClose={() => setReportDialogOpen(false)}
-          prefilledArgs={{ game: gameId }}
-        />
+      )}
 
-        {isPhoneDevice ? (
-          <Tooltip title="Leave">
-            <IconButton size="large" onClick={onLeaveGameClick}>
-              <img src={exit} alt="Leave" />
-            </IconButton>
-          </Tooltip>
-        ) : (
-          <Button
-            onClick={onLeaveGameClick}
-            startIcon={<img src={exit} alt="Leave" />}
-          >
-            Leave
-          </Button>
-        )}
-      </ButtonGroup>
-      <LeaveGameDialog
-        open={leaveDialogOpen}
-        onClose={() => setLeaveDialogOpen(false)}
-        onConfirm={leaveGame}
+      {game.dev && props.history.currentState == -1 && (
+        <Tooltip title="Fill">
+          <IconButton size="large" onClick={onTestClick}>
+            <img src={poison} alt="Fill" />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      {!game.review && props.history.currentState === -2 && (
+        <Tooltip title="Rehost">
+          <IconButton size="large" onClick={onRehostGameClick}>
+              <img src={veg} alt="Rehost" />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      <Tooltip title="File Report">
+        <IconButton size="large" onClick={onReportClick}>
+          <img src={system} alt="Report" />
+        </IconButton>
+      </Tooltip>
+      <ReportDialog
+        open={reportDialogOpen}
+        onClose={() => setReportDialogOpen(false)}
+        prefilledArgs={{ game: gameId }}
       />
-    </Stack>
+
+      {!isPhoneDevice && (
+        <Button onClick={game.onLeaveGameClick} startIcon={<img src={exit} alt="Leave" />}>
+          Leave
+        </Button>
+      )}
+    </ButtonGroup>
   );
 
-  const flexItems = isPhoneDevice ? [
-    miscWrapper,
-    stateSwitcher,
-  ] : [
-    logo,
-    stateSwitcher,
-    miscWrapper,
-  ];
-
-  return (
-    <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1} sx={{
-      px: 1,
-      alignItems: isPhoneDevice ? "stretch" : "center",
-    }}>
-      {flexItems}
-    </Stack>
-  );
+  if(!isPhoneDevice) {
+    // DESKTOP ================================================================
+    return (
+      <Stack direction="row" spacing={1} sx={{
+        px: 1,
+        alignItems: "center",
+      }}>
+        {logo}
+        {stateSwitcher}
+        <Stack direction="row" spacing={1} key="miscWrapper"
+          ref={game.scrollDownTriggerRef} 
+          sx={{
+            alignItems: "center",
+            flex: "1",
+          }}
+        >
+          {setup}
+          {buttonGroup}
+        </Stack>
+      </Stack>
+    );
+  }
+  else {
+    // MOBILE ================================================================
+    return(
+      <Stack direction="column" sx={{
+        position: "relative",
+        flex: "1",
+        bgcolor: "var(--scheme-color)",
+      }}>
+        <Stack direction="column" className="title-box" sx={{
+          justifyContent: "center",
+          bgcolor: "var(--scheme-color-background)",
+        }}>
+          <Typography>
+            Info
+          </Typography>
+        </Stack>
+        <Stack direction="column" spacing={1} sx={{
+          px: 1,
+          pt: 1,
+          alignItems: "stretch",
+          flex: "1",
+        }}>
+          <Stack direction="row" spacing={1}>
+            {logo}
+            {buttonGroup}
+          </Stack>
+          {setup}
+        </Stack>
+        <Box sx={{
+          position: "absolute",
+          bottom: "0",
+          zIndex: "1",
+          width: "100%",
+        }}>
+          {game.componentFactory.notes()}
+          {game.componentFactory.pinnedMessages()}
+          {game.componentFactory.speechFilter()}
+          {game.componentFactory.settingsMenu()}
+        </Box>
+      </Stack>
+    );
+  }
 }
 
 export function ThreePanelLayout(props) {
   const isPhoneDevice = useIsPhoneDevice();
+  const selectedPanel = props.selectedPanel || "chat";
+
+  const showLeft = (!isPhoneDevice) || (selectedPanel === "players");
+  const showCenter = (!isPhoneDevice) || (selectedPanel === "chat");
+  const showRight = (!isPhoneDevice) || (selectedPanel === "actions");
+
+  if (!showLeft && !showCenter && !showRight) {
+    return <></>;
+  }
 
   return (
     <Stack className="main" direction="row" sx={{ gap: isPhoneDevice ? 1 : 2 }}>
-      <div className="left-panel panel with-radial-gradient">
+      {showLeft && (<div className="left-panel panel with-radial-gradient">
         {props.leftPanelContent}
-      </div>
-      <div className="center-panel panel with-radial-gradient">
+      </div>)}
+      {showCenter && (<div className="center-panel panel with-radial-gradient">
         {props.centerPanelContent}
-      </div>
-      <div className="right-panel panel with-radial-gradient">
+      </div>)}
+      {showRight && (<div className="right-panel panel with-radial-gradient">
         {props.rightPanelContent}
-      </div>
+      </div>)}
     </Stack>
   );
 }
@@ -2674,6 +2849,11 @@ export function ActionList(props) {
           badgeContent={unresolvedActionCount}
           color="primary"
           invisible={!isParticipant || unresolvedActionCount === 0}
+          sx={{
+            "& .MuiBadge-badge": {
+              transform: "scale(1) translate(80%, -50%)",
+            }
+          }}
         >
           {props.title || "Actions"}
         </Badge>
@@ -3351,6 +3531,10 @@ export function LastWillEntry(props) {
     var newWill = e.target.value.slice(0, MaxWillLength);
     setLastWill(newWill);
     props.socket.send("lastWill", newWill);
+  }
+
+  if (cannotModifyLastWill) {
+    return <></>;
   }
 
   return (

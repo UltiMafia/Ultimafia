@@ -3,13 +3,10 @@ import { Box, IconButton, Paper, Stack, Tab, Tabs, Tooltip, Typography } from "@
 import StateIcon from "../StateIcon";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
-const STATE_RANGE = 2;
-
-export default function StateSwitcher(props) {
-  const { history, stateViewing, updateStateViewing, onStateNavigation, timer } =
-    props;
-
+export default function StateSwitcher({ history, stateViewing, updateStateViewing, onStateNavigation, hideFastForward = false }) {
   const isPhoneDevice = useIsPhoneDevice();
+
+  const STATE_RANGE = isPhoneDevice ? 1 : 2;
 
   const leftArrowVisible = stateViewing !== -1;
   const rightArrowVisible =
@@ -53,8 +50,6 @@ export default function StateSwitcher(props) {
 
     const isInRange = (index >= currentStateIndex - STATE_RANGE) && (index <= currentStateIndex + STATE_RANGE);
 
-    console.log(stateNum, stateViewing)
-
     // If you change the sizing of this, make sure to tweak the padInvisibleLeft and padInvisibleRight calcs accordingly
     return (
       <Tab
@@ -86,72 +81,69 @@ export default function StateSwitcher(props) {
   };
 
   return (
-    <Paper>
-      <Stack direction="row"
+    <Stack direction="row"
+      sx={{
+        alignItems: "center",
+        justifyContent: "center",
+        py: .5,
+        borderRadius: 1,
+      }}
+    >
+      {/* <IconButton
         sx={{
-          alignItems: "center",
-          justifyContent: "center",
-          py: .5,
-          borderRadius: 1,
+          visibility: leftArrowVisible ? undefined : "hidden",
         }}
+        onClick={() => handleClick({ type: "backward" })}
       >
-        {/* <IconButton
-          sx={{
-            visibility: leftArrowVisible ? undefined : "hidden",
-          }}
-          onClick={() => handleClick({ type: "backward" })}
-        >
-          <i className="fas fa-angle-left" style={iconStyle} />
-        </IconButton> */}
+        <i className="fas fa-angle-left" style={iconStyle} />
+      </IconButton> */}
 
-        <IconButton
-          sx={{
-            visibility: leftArrowVisible ? undefined : "hidden",
-          }}
-          onClick={() => handleClick({ type: "first" })}
-        >
-          <i className="fas fa-angle-double-left" style={iconStyle} />
-        </IconButton>
+      {!hideFastForward && (<IconButton
+        sx={{
+          visibility: leftArrowVisible ? undefined : "hidden",
+        }}
+        onClick={() => handleClick({ type: "first" })}
+      >
+        <i className="fas fa-angle-double-left" style={iconStyle} />
+      </IconButton>)}
 
-        <Stack direction="column" sx={{
-          alignItems: "center",
-        }}>
-          <Tabs
-            value={reverseStateNums[stateViewing]}
-            onChange={handleChange}
-            sx={{
-              maxWidth: "100%",
-              minHeight: 0,
-              paddingLeft: `calc(${padInvisibleLeft} * (var(--mui-spacing) + ${stateIconSize}px))`,
-              paddingRight: `calc(${padInvisibleRight} * (var(--mui-spacing) + ${stateIconSize}px))`,
-              '& .MuiTabs-indicator': {
-                transition: "none",
-              },
-            }}
-          >
-            {paginatedStates}
-          </Tabs>
-          {timer}
-        </Stack>
-
-        <IconButton
+      <Stack direction="column" sx={{
+        alignItems: "center",
+      }}>
+        <Tabs
+          value={reverseStateNums[stateViewing]}
+          onChange={handleChange}
           sx={{
-            visibility: rightArrowVisible ? undefined : "hidden",
+            maxWidth: "100%",
+            minHeight: 0,
+            paddingLeft: `calc(${padInvisibleLeft} * (var(--mui-spacing) + ${stateIconSize}px))`,
+            paddingRight: `calc(${padInvisibleRight} * (var(--mui-spacing) + ${stateIconSize}px))`,
+            '& .MuiTabs-indicator': {
+              transition: "none",
+            },
           }}
-          onClick={() => handleClick({ type: "current" })}
         >
-          <i className="fas fa-angle-double-right" style={iconStyle} />
-        </IconButton>
-
-        {/* <IconButton
-          sx={{
-            visibility: rightArrowVisible ? undefined : "hidden",
-          }}
-          onClick={() => handleClick({ type: "forward" })}
-        >
-          <i className="fas fa-angle-right" style={iconStyle}  />
-        </IconButton> */}
+          {paginatedStates}
+        </Tabs>
       </Stack>
-    </Paper>
+
+      {!hideFastForward && (<IconButton
+        sx={{
+          visibility: rightArrowVisible ? undefined : "hidden",
+        }}
+        onClick={() => handleClick({ type: "current" })}
+      >
+        <i className="fas fa-angle-double-right" style={iconStyle} />
+      </IconButton>)}
+
+      {/* <IconButton
+        sx={{
+          visibility: rightArrowVisible ? undefined : "hidden",
+        }}
+        onClick={() => handleClick({ type: "forward" })}
+      >
+        <i className="fas fa-angle-right" style={iconStyle}  />
+      </IconButton> */}
+    </Stack>
   );
 }

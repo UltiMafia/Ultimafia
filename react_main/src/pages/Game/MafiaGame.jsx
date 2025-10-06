@@ -18,10 +18,12 @@ import {
 } from "./Game";
 import { GameContext, SiteInfoContext } from "../../Contexts";
 import { SideMenu } from "./Game";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 export default function MafiaGame() {
   const game = useContext(GameContext);
   const siteInfo = useContext(SiteInfoContext);
+  const isPhoneDevice = useIsPhoneDevice();
 
   const history = game.history;
   const updateHistory = game.updateHistory;
@@ -491,47 +493,17 @@ export default function MafiaGame() {
         gameName={<div className="game-name">Mafia</div>}
       />
       <ThreePanelLayout
+        selectedPanel={game.selectedPanel}
         leftPanelContent={
           <>
-            <PlayerList
-              players={players}
-              history={history}
-              gameType={gameType}
-              stateViewing={stateViewing}
-              self={self}
-              activity={game.activity}
-              setup={game.setup}
-            />
-            <SpeechFilter
-              filters={game.speechFilters}
-              setFilters={game.setSpeechFilters}
-              stateViewing={stateViewing}
-            />
-            <SettingsMenu
-              settings={game.settings}
-              updateSettings={game.updateSettings}
-              showMenu={game.showMenu}
-              setShowMenu={game.setShowMenu}
-              stateViewing={stateViewing}
-            />
+            {game.componentFactory.playerList()}
+            {!isPhoneDevice && game.componentFactory.speechFilter()}
+            {!isPhoneDevice && game.componentFactory.settingsMenu()}
           </>
         }
         centerPanelContent={
           <>
-            <TextMeetingLayout
-              socket={game.socket}
-              history={history}
-              updateHistory={updateHistory}
-              players={players}
-              stateViewing={stateViewing}
-              settings={game.settings}
-              filters={game.speechFilters}
-              review={game.review}
-              options={game.options}
-              setup={game.setup}
-              setTyping={game.setTyping}
-              localAudioTrack={game.localAudioTrack}
-            />
+            {game.componentFactory.textMeetingLayout({combineMessagesFromAllMeetings: false})}
           </>
         }
         rightPanelContent={
@@ -558,10 +530,8 @@ export default function MafiaGame() {
                   socket={game.socket}
                 />
               )}
-            {!game.review && !isSpectator && <PinnedMessages />}
-            {!game.review && !isSpectator && (
-              <Notes stateViewing={stateViewing} />
-            )}
+            {!isPhoneDevice && game.componentFactory.pinnedMessages()}
+            {!isPhoneDevice && game.componentFactory.notes()}
           </>
         }
       />

@@ -14,12 +14,14 @@ import {
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/game.css";
 import "css/gameLiarsDice.css";
 
 export default function LiarsDiceGame(props) {
   const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
 
   const history = game.history;
   const updateHistory = game.updateHistory;
@@ -113,46 +115,21 @@ export default function LiarsDiceGame(props) {
         hideStateSwitcher
       />
       <ThreePanelLayout
+        selectedPanel={game.selectedPanel}
         leftPanelContent={
           <>
-            {history.currentState == -1 && (
-              <PlayerList
-                players={players}
-                history={history}
-                gameType={gameType}
-                stateViewing={stateViewing}
-                activity={game.activity}
-              />
-            )}
+            {history.currentState == -1 && game.componentFactory.playerList()}
             <LiarsDiceDiceViewWrapper
               history={history}
               stateViewing={stateViewing}
               self={self}
             />
-            <SettingsMenu
-              settings={game.settings}
-              updateSettings={game.updateSettings}
-              showMenu={game.showMenu}
-              setShowMenu={game.setShowMenu}
-              stateViewing={stateViewing}
-            />
+            {!isPhoneDevice && game.componentFactory.settingsMenu()}
           </>
         }
         centerPanelContent={
           <>
-            <TextMeetingLayout
-              combineMessagesFromAllMeetings
-              socket={game.socket}
-              history={history}
-              updateHistory={updateHistory}
-              players={players}
-              stateViewing={stateViewing}
-              settings={game.settings}
-              filters={game.speechFilters}
-              options={game.options}
-              setup={game.setup}
-              localAudioTrack={game.localAudioTrack}
-            />
+            {game.componentFactory.textMeetingLayout({combineMessagesFromAllMeetings: true})}
           </>
         }
         rightPanelContent={
@@ -183,7 +160,7 @@ export default function LiarsDiceGame(props) {
                   : undefined,
               }}
             />
-            {!isSpectator && <Notes stateViewing={stateViewing} />}
+            {!isPhoneDevice && game.componentFactory.notes()}
           </>
         }
       />

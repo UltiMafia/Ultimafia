@@ -14,11 +14,13 @@ import {
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/gameAcrotopia.css";
 
 export default function AcrotopiaGame(props) {
   const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
 
   const history = game.history;
   const updateHistory = game.updateHistory;
@@ -97,46 +99,20 @@ export default function AcrotopiaGame(props) {
             <span>Acrotopia</span>
           </div>
         }
+        hideStateSwitcher
       />
       <ThreePanelLayout
+        selectedPanel={game.selectedPanel}
         leftPanelContent={
           <>
-            <PlayerList
-              players={players}
-              history={history}
-              gameType={gameType}
-              stateViewing={stateViewing}
-              activity={game.activity}
-            />
-            <SpeechFilter
-              filters={game.speechFilters}
-              setFilters={game.setSpeechFilters}
-              stateViewing={stateViewing}
-            />
-            <SettingsMenu
-              settings={game.settings}
-              updateSettings={game.updateSettings}
-              showMenu={game.showMenu}
-              setShowMenu={game.setShowMenu}
-              stateViewing={stateViewing}
-            />
+            {game.componentFactory.playerList()}
+            {!isPhoneDevice && game.componentFactory.speechFilter()}
+            {!isPhoneDevice && game.componentFactory.settingsMenu()}
           </>
         }
         centerPanelContent={
           <>
-            <TextMeetingLayout
-              combineMessagesFromAllMeetings
-              socket={game.socket}
-              history={history}
-              updateHistory={updateHistory}
-              players={players}
-              stateViewing={stateViewing}
-              settings={game.settings}
-              filters={game.speechFilters}
-              options={game.options}
-              setup={game.setup}
-              localAudioTrack={game.localAudioTrack}
-            />
+            {game.componentFactory.textMeetingLayout({combineMessagesFromAllMeetings: true})}
           </>
         }
         rightPanelContent={
@@ -151,7 +127,7 @@ export default function AcrotopiaGame(props) {
               history={history}
               stateViewing={stateViewing}
             />
-            {!isSpectator && <Notes stateViewing={stateViewing} />}
+            {!isPhoneDevice && game.componentFactory.notes()}
           </>
         }
       />

@@ -16,15 +16,19 @@ export const statesIcons = {
   nowin: require("images/game_state/nowin-state.png"),
   triwin: require("images/game_state/triwin-state.png"),
   villagewin: require("images/game_state/villagewin-state.png"),
+  ghost: require("images/roles/ghost-vivid.png"),
+  admiral: require("images/roles/village/admiral-vivid.png"),
 };
 
 const stateIconMap = {
   pregame: "pregame",
-  dawn: "day",
+  dawn: "night",
   day: "day",
   dusk: "night",
   night: "night",
   postgame: "bakerflagwin",
+  "give clue": "ghost",
+  "treasure chest": "admiral",
 };
 
 export default function StateIcon({ stateName, stateNum, unfocused = false, size = 40 }) {
