@@ -5813,7 +5813,7 @@ const roleData = {
       description: [
         `If this Event occurs, all players will become "Paralyzed".`,
         paralyzedDef,
-        ],
+      ],
       nightOrder: [
         ["Apply disable vote switching effect", PRIORITY_EFFECT_GIVER_DEFAULT],
       ],
@@ -5829,7 +5829,9 @@ const roleData = {
     Sabbath: {
       alignment: "Event",
       tags: ["Event"],
-      description: ["If this Event occurs, all players will be protected from death."],
+      description: [
+        "If this Event occurs, all players will be protected from death.",
+      ],
       nightOrder: [["Protect Players", PRIORITY_FULL_DISABLE + 3]],
     },
     "Self-Awareness": {
