@@ -44,6 +44,7 @@ import {
 import { PieChart } from "./PieChart";
 
 import "css/setupPage.css";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 export default function Setups() {
   return (

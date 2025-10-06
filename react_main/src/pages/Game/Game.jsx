@@ -75,7 +75,6 @@ import {
   TextField,
   Typography,
   useTheme,
-  Grid2,
   BottomNavigation,
   BottomNavigationAction,
   Paper,
