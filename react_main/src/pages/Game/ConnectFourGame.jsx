@@ -77,35 +77,13 @@ export default function ConnectFourGame(props) {
 
   return (
     <>
-      <TopBar
-        gameType={gameType}
-        game={game}
-        history={history}
-        stateViewing={stateViewing}
-        updateStateViewing={updateStateViewing}
-        players={players}
-        gameName={
-          <div className="game-name">
-            <span>Connect Four</span>
-          </div>
-        }
-        hideStateSwitcher
-      />
+      <TopBar hideStateSwitcher />
       <ThreePanelLayout
-        selectedPanel={game.selectedPanel}
         leftPanelContent={
           <>
-            {history.currentState == -1 && game.componentFactory.playerList()}
-            <ActionList
-              socket={game.socket}
-              isParticipant={game.isParticipant}
-              meetings={meetings}
-              players={players}
-              self={self}
-              history={history}
-              stateViewing={stateViewing}
-            />
-            {!isPhoneDevice && game.componentFactory.settingsMenu()}
+            {history.currentState == -1 && <PlayerList />}
+            <ActionList />
+            {!isPhoneDevice && <SettingsMenu />}
           </>
         }
         centerPanelContent={
@@ -119,8 +97,8 @@ export default function ConnectFourGame(props) {
         }
         rightPanelContent={
           <>
-            {game.componentFactory.textMeetingLayout({combineMessagesFromAllMeetings: true})}
-            {!isPhoneDevice && game.componentFactory.notes()}
+            <TextMeetingLayout combineMessagesFromAllMeetings />
+            {!isPhoneDevice && <Notes />}
           </>
         }
       />

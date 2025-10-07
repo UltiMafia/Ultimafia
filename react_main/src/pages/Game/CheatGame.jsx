@@ -99,46 +99,21 @@ export default function CheatGame(props) {
 
   return (
     <>
-      <TopBar
-        gameType={gameType}
-        game={game}
-        history={history}
-        stateViewing={stateViewing}
-        updateStateViewing={updateStateViewing}
-        players={players}
-        gameName={
-          <div className="game-name">
-            <span
-              style={{
-                color: history.states?.[stateViewing]?.extraInfo
-                  ?.isTheFlyingDutchman
-                  ? "#48654e"
-                  : "#8B0000",
-              }}
-            >
-              Cheat
-            </span>
-          </div>
-        }
-        hideStateSwitcher
-      />
+      <TopBar hideStateSwitcher />
       <ThreePanelLayout
-        selectedPanel={game.selectedPanel}
         leftPanelContent={
           <>
-            {history.currentState == -1 && game.componentFactory.playerList()}
+            {history.currentState == -1 && <PlayerList />}
             <LiarscardcardViewWrapper
               history={history}
               stateViewing={stateViewing}
               self={self}
             />
-            {!isPhoneDevice && game.componentFactory.settingsMenu()}
+            {!isPhoneDevice && <SettingsMenu />}
           </>
         }
         centerPanelContent={
-          <>
-            {game.componentFactory.textMeetingLayout({combineMessagesFromAllMeetings: true})}
-          </>
+          <TextMeetingLayout combineMessagesFromAllMeetings />
         }
         rightPanelContent={
           <>
@@ -162,13 +137,6 @@ export default function CheatGame(props) {
               />
             )}
             <ActionList
-              socket={game.socket}
-              isParticipant={game.isParticipant}
-              meetings={meetings}
-              players={players}
-              self={self}
-              history={history}
-              stateViewing={stateViewing}
               title="Play your Cards!"
               style={{
                 color: history.states?.[stateViewing]?.extraInfo
@@ -177,7 +145,7 @@ export default function CheatGame(props) {
                   : undefined,
               }}
             />
-            {!isPhoneDevice && game.componentFactory.notes()}
+            {!isPhoneDevice && <Notes />}
           </>
         }
       />

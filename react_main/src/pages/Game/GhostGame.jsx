@@ -88,48 +88,24 @@ export default function GhostGame(props) {
 
   return (
     <>
-      <TopBar
-        gameType={gameType}
-        game={game}
-        history={history}
-        stateViewing={stateViewing}
-        updateStateViewing={updateStateViewing}
-        players={players}
-        gameName={
-          <div className="game-name">
-            <span>Ghost</span>
-          </div>
-        }
-        hideStateSwitcher
-      />
+      <TopBar hideStateSwitcher />
       <ThreePanelLayout
-        selectedPanel={game.selectedPanel}
         leftPanelContent={
           <>
-            {game.componentFactory.playerList()}
-            {!isPhoneDevice && game.componentFactory.speechFilter()}
-            {!isPhoneDevice && game.componentFactory.settingsMenu()}
+            {<PlayerList />}
+            {!isPhoneDevice && <SpeechFilter />}
+            {!isPhoneDevice && <SettingsMenu />}
           </>
         }
         centerPanelContent={
-          <>
-            {game.componentFactory.textMeetingLayout({combineMessagesFromAllMeetings: true})}
-          </>
+          <TextMeetingLayout combineMessagesFromAllMeetings />
         }
         rightPanelContent={
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
-            <ActionList
-              socket={game.socket}
-              isParticipant={game.isParticipant}
-              meetings={meetings}
-              players={players}
-              self={self}
-              history={history}
-              stateViewing={stateViewing}
-            />
-            {!isPhoneDevice && game.componentFactory.pinnedMessages()}
-            {!isPhoneDevice && game.componentFactory.notes()}
+            <ActionList />
+            {!isPhoneDevice && <PinnedMessages />}
+            {!isPhoneDevice && <Notes />}
           </>
         }
       />

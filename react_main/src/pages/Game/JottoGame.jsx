@@ -10,6 +10,7 @@ import {
   Timer,
   Notes,
   SettingsMenu,
+  MobileLayout,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -80,47 +81,38 @@ export default function JottoGame(props) {
 
   return (
     <>
-      <TopBar
-        gameType={gameType}
-        game={game}
-        history={history}
-        stateViewing={stateViewing}
-        updateStateViewing={updateStateViewing}
-        players={players}
-        gameName={
-          <div className="game-name">
-            <span>Jotto</span>
-          </div>
-        }
-        hideStateSwitcher
-      />
+      <TopBar hideStateSwitcher />
       <ThreePanelLayout
-        selectedPanel={game.selectedPanel}
         leftPanelContent={
           <>
-            {history.currentState == -1 && game.componentFactory.playerList()}
+            {history.currentState == -1 && <PlayerList />}
             <HistoryKeeper history={history} stateViewing={stateViewing} />
-            <ActionList
-              socket={game.socket}
-              isParticipant={game.isParticipant}
-              meetings={meetings}
-              players={players}
-              self={self}
-              history={history}
-              stateViewing={stateViewing}
-            />
-            {!isPhoneDevice && game.componentFactory.settingsMenu()}
+            <ActionList />
+            <SettingsMenu />
           </>
         }
         centerPanelContent={
-          <>
-            {game.componentFactory.textMeetingLayout({combineMessagesFromAllMeetings: true})}
-          </>
+          <TextMeetingLayout combineMessagesFromAllMeetings />
         }
         rightPanelContent={
           <>
             <JottoCheatSheetWrapper stateViewing={stateViewing} />
-            {!isPhoneDevice && game.componentFactory.notes()}
+            <Notes />
+          </>
+        }
+      />
+      <MobileLayout
+        singleState
+        outerLeftContent={
+          <>
+            {history.currentState == -1 && <PlayerList />}
+            <HistoryKeeper history={history} stateViewing={stateViewing} />
+          </>
+        }
+        innerRightContent={
+          <>
+            <JottoCheatSheetWrapper stateViewing={stateViewing} />
+            <ActionList />
           </>
         }
       />

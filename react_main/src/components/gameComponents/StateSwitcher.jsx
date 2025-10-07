@@ -1,12 +1,22 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Box, IconButton, Paper, Stack, Tab, Tabs, Tooltip, Typography } from "@mui/material";
 import StateIcon from "../StateIcon";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { GameContext } from "Contexts";
 
-export default function StateSwitcher({ history, stateViewing, updateStateViewing, onStateNavigation, hideFastForward = false }) {
+export default function StateSwitcher({ stateRange = null, }) {
+  const game = useContext(GameContext);
   const isPhoneDevice = useIsPhoneDevice();
+  const hideFastForward = isPhoneDevice;
 
-  const STATE_RANGE = isPhoneDevice ? 1 : 2;
+  const {
+    history,
+    stateViewing,
+    updateStateViewing,
+    onStateNavigation,
+  } = game;
+
+  const STATE_RANGE = stateRange !== null ? stateRange : isPhoneDevice ? 1 : 2;
 
   const leftArrowVisible = stateViewing !== -1;
   const rightArrowVisible =

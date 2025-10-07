@@ -6,7 +6,6 @@ import {
   ThreePanelLayout,
   TopBar,
   TextMeetingLayout,
-  getUnresolvedActionCount,
   ActionList,
   PlayerList,
   LastWillEntry,
@@ -483,41 +482,22 @@ export default function MafiaGame() {
 
   return (
     <>
-      <TopBar
-        gameType={gameType}
-        game={game}
-        history={history}
-        stateViewing={stateViewing}
-        updateStateViewing={updateStateViewing}
-        players={players}
-        gameName={<div className="game-name">Mafia</div>}
-      />
+      <TopBar />
       <ThreePanelLayout
-        selectedPanel={game.selectedPanel}
         leftPanelContent={
           <>
-            {game.componentFactory.playerList()}
-            {!isPhoneDevice && game.componentFactory.speechFilter()}
-            {!isPhoneDevice && game.componentFactory.settingsMenu()}
+            {<PlayerList />}
+            {!isPhoneDevice && <SpeechFilter />}
+            {!isPhoneDevice && <SettingsMenu />}
           </>
         }
         centerPanelContent={
-          <>
-            {game.componentFactory.textMeetingLayout({combineMessagesFromAllMeetings: false})}
-          </>
+          <TextMeetingLayout />
         }
         rightPanelContent={
           <>
             {<HistoryKeeper history={history} stateViewing={stateViewing} />}
-            <ActionList
-              socket={game.socket}
-              isParticipant={game.isParticipant}
-              meetings={meetings}
-              players={players}
-              self={self}
-              history={history}
-              stateViewing={stateViewing}
-            />
+            <ActionList />
             {!game.review &&
               !isSpectator &&
               history.currentState >= 0 &&
@@ -530,8 +510,8 @@ export default function MafiaGame() {
                   socket={game.socket}
                 />
               )}
-            {!isPhoneDevice && game.componentFactory.pinnedMessages()}
-            {!isPhoneDevice && game.componentFactory.notes()}
+            {!isPhoneDevice && <PinnedMessages />}
+            {!isPhoneDevice && <Notes />}
           </>
         }
       />

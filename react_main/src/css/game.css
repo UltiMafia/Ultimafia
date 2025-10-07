@@ -2,13 +2,10 @@
   display: flex;
   flex-flow: column;
 
-  gap: var(--mui-spacing);
   padding-top: var(--mui-spacing);
 
   height: 100%;
   width: 100%;
-
-  isolation: isolate;
 
   background-image: url("/src/images/white-diamond-dark.png");
 }
@@ -934,6 +931,8 @@
 @media (max-width: 900px) {
   .game {
     padding: 0px !important;
+    background-color: var(--scheme-color) !important;
+    background-image: none;
   }
 
   .game .main {

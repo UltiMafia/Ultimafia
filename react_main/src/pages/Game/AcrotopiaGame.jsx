@@ -11,6 +11,7 @@ import {
   SpeechFilter,
   SettingsMenu,
   Notes,
+  MobileLayout,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -87,50 +88,27 @@ export default function AcrotopiaGame(props) {
 
   return (
     <>
-      <TopBar
-        gameType={gameType}
-        game={game}
-        history={history}
-        stateViewing={stateViewing}
-        updateStateViewing={updateStateViewing}
-        players={players}
-        gameName={
-          <div className="game-name">
-            <span>Acrotopia</span>
-          </div>
-        }
-        hideStateSwitcher
-      />
+      <TopBar hideStateSwitcher />
       <ThreePanelLayout
-        selectedPanel={game.selectedPanel}
         leftPanelContent={
           <>
-            {game.componentFactory.playerList()}
-            {!isPhoneDevice && game.componentFactory.speechFilter()}
-            {!isPhoneDevice && game.componentFactory.settingsMenu()}
+            {<PlayerList />}
+            {!isPhoneDevice && <SpeechFilter />}
+            {!isPhoneDevice && <SettingsMenu />}
           </>
         }
         centerPanelContent={
-          <>
-            {game.componentFactory.textMeetingLayout({combineMessagesFromAllMeetings: true})}
-          </>
+          <TextMeetingLayout combineMessagesFromAllMeetings />
         }
         rightPanelContent={
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
-            <ActionList
-              socket={game.socket}
-              isParticipant={game.isParticipant}
-              meetings={meetings}
-              players={players}
-              self={self}
-              history={history}
-              stateViewing={stateViewing}
-            />
-            {!isPhoneDevice && game.componentFactory.notes()}
+            <ActionList />
+            {!isPhoneDevice && <Notes />}
           </>
         }
       />
+      <MobileLayout singleState />
     </>
   );
 }

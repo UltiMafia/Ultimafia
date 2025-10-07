@@ -87,27 +87,14 @@ export default function WackyWordsGame(props) {
 
   return (
     <>
-      <TopBar
-        gameType={gameType}
-        game={game}
-        history={history}
-        stateViewing={stateViewing}
-        updateStateViewing={updateStateViewing}
-        players={players}
-        gameName={
-          <div className="game-name">
-            <span>Wacky Words</span>
-          </div>
-        }
-        hideStateSwitcher
-      />
+      <TopBar hideStateSwitcher />
       <ThreePanelLayout
         selectedPanel={game.selectedPanel}
         leftPanelContent={
           <>
-            {game.componentFactory.playerList()}
-            {!isPhoneDevice && game.componentFactory.speechFilter()}
-            {!isPhoneDevice && game.componentFactory.settingsMenu()}
+            {<PlayerList />}
+            {!isPhoneDevice && <SpeechFilter />}
+            {!isPhoneDevice && <SettingsMenu />}
           </>
         }
         centerPanelContent={
@@ -127,7 +114,7 @@ export default function WackyWordsGame(props) {
               history={history}
               stateViewing={stateViewing}
             />
-            {!isPhoneDevice && game.componentFactory.notes()}
+            {!isPhoneDevice && <Notes />}
           </>
         }
       />
