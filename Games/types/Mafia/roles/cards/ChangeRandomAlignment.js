@@ -22,9 +22,7 @@ module.exports = class ChangeRandomAlignment extends Card {
           labels: ["hidden"],
           run: function () {
             let factions = [];
-            let players = this.game
-              .alivePlayers()
-              .filter((p) => p.faction != this.player.faction);
+            let players = this.game.alivePlayers().filter((p) => p.faction != this.actor.faction);
             for (let x = 0; x < players.length; x++) {
               if (!factions.includes(players[x].faction)) {
                 factions.push(players[x].faction);
@@ -34,14 +32,14 @@ module.exports = class ChangeRandomAlignment extends Card {
 
             for (let x = 0; x < factions.length; x++) {
               if (
-                factions[x] != this.player.faction &&
+                factions[x] != this.actor.faction &&
                 factions[x] != "Independent"
               ) {
-                this.player.faction = factions[x];
+                this.actor.faction = factions[x];
               }
             }
-            this.player.queueAlert(
-              `:anon: You believe that siding with the ${this.player.faction} will help your career!`
+            this.actor.queueAlert(
+              `:anon: You believe that siding with the ${this.actor.faction} will help your career!`
             );
           },
         });
