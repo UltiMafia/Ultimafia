@@ -108,6 +108,10 @@ const plagueDef = `Players who are "Plagued" will make their neighbors "Plagued"
 const madDef = `Players who are "Mad" about a role, must say the role's name or they will become the target of the condemnation.`;
 const insaneDef = `Players who are "Insane" cannot vote and can only speak gibberish.`;
 const infestedDef = `Players who are "Infested" with a role will convert to that role with the Transcendent modifier added if condemned.`;
+const gassedDef = `Players who are "Gassed" will die during the next night if they visit another player.`;
+const polarisedDef = `Players who are "Polarised" will die if they visit or get visited by another "Polarised".`;
+const frozenDef = `Players who are "Frozen" cannot vote or will have their night actions blocked. If a "Frozen" player is visited, they will stop being "Frozen".`;
+const foggyDef = `Players who are "Foggy" can only see their neighbors messages.`;
 
 //Item Def
 const coffeeDef = `Coffee can be used at night to perform their role's night actions an additional time.`;
@@ -129,6 +133,9 @@ const envelopeDef = `An Envelope can be used at night to send a message to a sel
 const orangeDef = `An Orange can be used during the day to meet with Capybaras at night. When meeting with Capybaras no night actions can be performed.`;
 const shavingCreamDef = `Shaving Cream can be used at night to make two selected players swap roles but not alignments. A switch fails if one of the players is an Independent role.`;
 const sceptreDef = `A Sceptre can be used during the day to gain 10000 voting power.`;
+const timeBombDef = `A Timebomb can be passed around during the day, it will explode after 10-30 seconds.`;
+const revolverDef = `A Revolver has 6 chambers one of which has full. A Revolver must be used during the day to fire the selected chamber or a random chamber. Then pass it to another player if the chamber was empty or die if the chamber was full.`;
+const snowballDef = `Snowballs can be used during the day to make a player "Frozen".`;
 
 const roleData = {
   Mafia: {
@@ -1122,7 +1129,7 @@ const roleData = {
     Paladin: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Kill Interaction", "Killing", "Visiting", "Basic"],
+      tags: ["Kill Interaction", "Visiting", "Basic"],
       description: [
         "Each night, can choose to visit one player.",
         "If that player dies, the Paladin will gains that player's abilities.",
@@ -1925,7 +1932,6 @@ const roleData = {
       description: [
         "Meets with other Freemasons at night.",
         "Each night, all Freemasons can choose to visit one player and convert them to Freemason.",
-        "",
         //"Converts one player into a Freemason each night.",
         //"Shares a night meeting with other Freemasons.",
         "All Freemasons die if they attempt to convert a member of the Mafia.",
@@ -2975,7 +2981,7 @@ const roleData = {
       tags: ["Linked", "Lover", "Visiting", "Advanced"],
       description: [
         "Once per game at night, can choose to visit one player and makes that player the Heartbreaker's beloved.",
-        "The beloved player will learn that they fell in love with Heartbreaker.",
+        "The beloved player will learn that they fell in love with the Heartbreaker.",
         "If the Heartbreaker dies, the beloved player also dies.",
         //"Both players will die if Heartbreaker dies.",
       ],
@@ -3193,7 +3199,7 @@ const roleData = {
     Blackguard: {
       alignment: "Mafia",
       category: "Night-acting",
-      tags: ["Kill Interaction", "Killing", "Visiting", "Basic"],
+      tags: ["Kill Interaction", "Visiting", "Basic"],
       description: [
         "Each night, can choose to visit one player.",
         "If that player dies, the Blackguard will gains that player's abilities.",
@@ -4113,7 +4119,7 @@ const roleData = {
     Yith: {
       alignment: "Cult",
       category: "Night-acting",
-      tags: ["Kill Interaction", "Killing", "Visiting", "Basic"],
+      tags: ["Kill Interaction", "Visiting", "Basic"],
       description: [
         "Each night, can choose to visit one player.",
         "If that player dies, the Yith will gains that player's abilities.",
@@ -4703,8 +4709,9 @@ const roleData = {
       alignment: "Independent",
       tags: ["Items", "Gun", "Killing", "Visiting", "Basic"],
       description: [
+        `Each night, can choose to visit one player and give them a Gun.`,
+        gunDef,
         "Wins if shot and killed with a gun.",
-        "Flocks around at night, giving their target a gun.",
       ],
       nightOrder: [["Give Gun", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -4717,7 +4724,7 @@ const roleData = {
       alignment: "Independent",
       tags: ["Dead", "Conversion", "Visiting", "Basic"],
       description: [
-        "Chooses to become the role of a dead player once per game.",
+        "Once per game at night, can choose to visit one dead player and convert to their role.",
         "Cannot win the game as Amnesiac.",
       ],
       nightOrder: [["Become Dead Role", PRIORITY_BECOME_DEAD_ROLE]],
@@ -4731,8 +4738,7 @@ const roleData = {
       alignment: "Independent",
       tags: ["Conversion", "Role Swapping", "Visiting", "Advanced"],
       description: [
-        "Chooses a player to swap roles with each night.",
-        "Chosen player becomes the Old Maid.",
+        "Each night, can choose to visit one player and swap roles with them.",
         "Cannot win the game as Old Maid.",
       ],
       nightOrder: [["Swap Roles", PRIORITY_SWAP_ROLES]],
@@ -4749,10 +4755,10 @@ const roleData = {
       alignment: "Independent",
       tags: ["Condmen", "Mafia", "Win Con", "Visiting", "Expert"],
       description: [
-        "Clowns around at night, visiting another player. The visit does nothing.",
-        "The Mafia will be alerted that there is a Clown they must condemn in order to win.",
-        "The Mafia will not win if the Clown is not Condemned.",
-        "If a Clown is Killed by non-condemn method, a Mafia-Aligned player becomes Clown",
+        "Each night, can choose to visit one player.",
+        "All Mafia-aligned players will learn if a Clown is present.",
+        "The Mafia can not win unless a Clown is condemned.",
+        "If a Clown is killed by non-condemn, a Mafia-Aligned player becomes Clown",
         "Wins with Mafia.",
       ],
       nightOrder: [["Visit", PRIORITY_SUPPORT_VISIT_DEFAULT]],
@@ -4760,7 +4766,10 @@ const roleData = {
     Autocrat: {
       alignment: "Independent",
       tags: ["Village", "Win Steal", "Advanced"],
-      description: ["Wins instead of Village and counts toward their total."],
+      description: [
+        "All players will learn if a Autocrat is present.",
+        "Wins instead of Village and counts toward their total.",
+      ],
     },
     Palladist: {
       alignment: "Independent",
@@ -4773,8 +4782,9 @@ const roleData = {
         "Expert",
       ],
       description: [
-        "If there are no Freemasons, converts a player to Freemason.",
+        "Meets with Freemasons at night.",
         "Anonymizes Freemason meetings and forces them to act.",
+        "Each night, choose to visit one player with the Freemasons and convert them to Freemason.",
         "Immune to conversions.",
         "Wins instead of Village if there is a Freemason majority and counts toward their total.",
       ],
@@ -4795,10 +4805,10 @@ const roleData = {
         "Expert",
       ],
       description: [
-        "Walks around at night, visiting another player with no effect.",
+        "Each night, can choose to visit one player and mate with them if they are a Panda Bear.",
         "When present in the game, the Village cannot win unless the Panda Bear visits another Panda Bear and they mate.",
         "Wins instead of Village if the Panda Bears survive without mating.",
-        "Adds 1 Panda in Closed Setups.",
+        "Adds another Panda in Closed Setups.",
       ],
       nightOrder: [["Visit", PRIORITY_EFFECT_GIVER_DEFAULT]],
     },
@@ -4808,7 +4818,7 @@ const roleData = {
       description: [
         "Vote weight is worth 2 votes.",
         "Gets assigned to random alignment on game start.",
-        "Every day, switches alignment between Mafia and Village.",
+        "Each night, switches to a random alignment.",
         "Wins if their current alignment wins.",
       ],
     },
@@ -4816,9 +4826,10 @@ const roleData = {
       alignment: "Independent",
       tags: ["Survivor", "Lover", "Linked", "Visiting", "Basic"],
       description: [
-        "Falls in love with another player once per game.",
-        "Both players die if either of them are killed.",
-        "Wins if both players survive until the end of the game.",
+        "Once per game at night, can choose to visit one player and makes that player the Lover's beloved.",
+        "The beloved player will learn that they fell in love with the Lover.",
+        "If one of the Lover or their beloved player dies, the other also dies.",
+        "Wins if alive with their beloved at the end of the game.",
       ],
       nightOrder: [["Fall in love", PRIORITY_EFFECT_GIVER_EARLY]],
       skins: [
@@ -4866,7 +4877,7 @@ const roleData = {
       alignment: "Independent",
       tags: ["Conversion", "Basic"],
       description: [
-        "At Night chooses a player.",
+        "Once per game at night, must choose a player.",
         "Will instantly convert to that player's role.",
         "Cannot win the game as Doppelgänger.",
       ],
@@ -4875,9 +4886,9 @@ const roleData = {
       alignment: "Independent",
       tags: ["Killing", "Graveyard", "Visiting", "Advanced"],
       description: [
-        "If murdered by another player, gains the ability to kill each night from the graveyard.",
+        "If killed by another player, gains the ability to each night, can choose to visit one player and kill them.",
         "Does not gain the ability if condemned by village vote.",
-        "Wins if they kill all of their murderers.",
+        "Wins if they kill all of their killers.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
       graveyardParticipation: "self",
@@ -4891,7 +4902,7 @@ const roleData = {
       alignment: "Independent",
       tags: ["Killing", "Conversion", "Visiting", "Basic"],
       description: [
-        "Chooses a player to kill once during the night and convert to their role.",
+        "Once per game at night, can choose to visit one player and convert to their role and kill them.",
         "The killed player will have their role hidden upon death, and instead reveal as their alignment.",
         "Cannot win the game as Phantom.",
       ],
@@ -4901,9 +4912,9 @@ const roleData = {
       alignment: "Independent",
       tags: ["Essential", "Alignment", "Visiting", "Advanced"],
       description: [
-        "Once per game, visits a player and joins their alignment.",
+        "On their first night, must choose to visit a player and become their alignment.",
         "If the Prince dies, everyone of that alignment dies.",
-        "Wins if their chosen alignment wins.",
+        "Wins if their alignment wins.",
       ],
       nightOrder: [
         ["Conquer Alignment", PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT],
@@ -4913,7 +4924,7 @@ const roleData = {
       alignment: "Independent",
       tags: ["Alignments", "Visiting", "Basic"],
       description: [
-        "Must visit another player every night.",
+        "Each night, must choose to visit one player.",
         "Cannot choose the same player consecutively.",
         "Wins if they are alive when the last player they visited wins.",
       ],
@@ -4925,8 +4936,8 @@ const roleData = {
       alignment: "Independent",
       tags: ["Alignments", "Visits", "Delirium", "Reflexive", "Advanced"],
       description: [
-        "Each Night Will make one of their visitors Delirious.",
-        "Will Switch to that player's alignment.",
+        `Each night, makes one player who visits them "Delirious" and becomes their alignment.`,
+        deliriumDef,
         "Wins with their current alignment.",
       ],
       nightOrder: [
@@ -4937,9 +4948,9 @@ const roleData = {
       alignment: "Independent",
       tags: ["Kill Interaction", "Items", "Advanced"],
       description: [
-        "Can give out one doll at night",
-        "The doll can be passed to someone else each night.",
-        "Wins if the player holding the doll dies.",
+        "On their first night, must choose to visit one player and give them a Doll",
+        "Players with the Doll can passed it to someone else each night.",
+        "Wins if the player holding the Doll dies.",
       ],
       nightOrder: [["Give Doll", PRIORITY_ITEM_GIVER_EARLY]],
     },
@@ -4968,8 +4979,7 @@ const roleData = {
       alignment: "Independent",
       tags: ["Killing", "Visits", "Reflexive", "Advanced"],
       description: [
-        "Beckons a player each night.",
-        "If the beckoned player visits the Siren that night, the player dies.",
+        "Each night, can choose one player and kill them if they visit the Siren.",
         "Wins if successfully kills two players.",
       ],
       nightOrder: [["Kill Beckoned", PRIORITY_KILL_SIREN]],
@@ -4979,8 +4989,8 @@ const roleData = {
       category: "Gifting",
       tags: ["Killing", "Items", "Meeting", "Mini-game"],
       description: [
-        "Gives out a fishing rod each night.",
-        "Fishing Rods can be used to play a fishing mini-game instead of Mafia.",
+        "Each night, can choose to visit one player and give them a Fishing Rod.",
+        "Fishing Rods can be used to play a terrible fishing mini-game instead of Mafia.",
       ],
       nightOrder: [["Give Fishing Rod", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -4988,8 +4998,8 @@ const roleData = {
       alignment: "Independent",
       tags: ["Survivor", "Visits", "Extra Lives", "Visiting", "Basic"],
       description: [
-        "Each night, hides behind a player and becomes immune to death.",
-        "Will get eaten if the player visits them. That player will gain an extra life.",
+        "Each night, can choose to visit a player and become immune to death unless that player visits the Gingerbread Man.",
+        "If that player visits the Gingerbread Man, the Gingerbread Man dies and that player will gain an extra life.",
         "Wins if alive at the end of the game.",
       ],
       nightOrder: [["Hide Behind Player", PRIORITY_NIGHT_SAVER]],
@@ -4998,7 +5008,9 @@ const roleData = {
       alignment: "Independent",
       tags: ["Linked", "Survivor", "Visiting", "Advanced"],
       description: [
-        "Chooses two players and makes them fall in love with each other.",
+        "On their first night, must choose to visit two players and make them fall in love.",
+        "The players who fell in love will learn who they fell in love with.",
+        "If one player who fell in love dies, the other also dies.",
         "Wins if their chosen lovers are alive at the end of the game.",
       ],
       nightOrder: [["Make players in love.", PRIORITY_EFFECT_GIVER_EARLY]],
@@ -5028,9 +5040,10 @@ const roleData = {
       alignment: "Independent",
       tags: ["Voting", "Protective", "Visiting", "Basic"],
       description: [
-        "Has no voting power.",
-        "Each night, can save one player and also grant them condemn immunity the following day.",
-        "Wins from two saves, or if no deaths happen in 2 days and 2 nights.",
+        "Each night, can choose to visit one player and protect them from death until the following night.",
+        "If that player is attacked, the Monk gains 1 point.",
+        "Vote weight is worth 0 votes.",
+        "Wins from if they have 2 points, or if no deaths happen in 2 days and 2 nights.",
       ],
       nightOrder: [["Protect Player", PRIORITY_NIGHT_SAVER]],
     },
@@ -5038,9 +5051,9 @@ const roleData = {
       alignment: "Independent",
       tags: ["Voting", "Condemn", "Extra Lives", "Visiting", "Guess", "Basic"],
       description: [
-        "Each night chooses one person.",
-        "If that person is condemned the next day, the Warlock has predicted correctly. They gain an extra life.",
-        "The Warlock wins if they predict the condemnation correctly twice.",
+        "Each night, can choose to visit one player.",
+        "If that player is condemned the next day, the Warlock gains an extra life and gain 1 point.",
+        "The Warlock wins if they get 2 points.",
       ],
       nightOrder: [["Guess Vote", PRIORITY_SUPPORT_VISIT_DEFAULT]],
       SpecialInteractions: {
@@ -5064,7 +5077,7 @@ const roleData = {
       alignment: "Independent",
       tags: ["Mafia", "Conversion", "Visiting", "Expert"],
       description: [
-        "Every night, can visit a player.",
+        "Each night, can choose to visit one player.",
         "If that player is mafia, the Picciotto will be notified.",
         "When the Picciotto has visited all the living mafia, they are converted into a random mafia role.",
         "Does not win if not converted to mafia.",
@@ -5079,8 +5092,9 @@ const roleData = {
       tags: ["Protective", "Graveyard", "Sacrificial", "Basic"],
       graveyardParticipation: "self",
       description: [
-        "Will become the guardian angel for one player in the game.",
-        "Once per game while alive or dead, can turn on sacrificial powers and protect their target from all kills",
+        "Randomly assigned a player as a target.",
+        "Once per game while alive or dead at night, can choose to protect their target from death until the following night.",
+        "If their target is attacked when protected, the Angel dies.",
         "Wins if their target is alive at the end of the game.",
       ],
       nightOrder: [["Protect Player", PRIORITY_NIGHT_SAVER]],
@@ -5089,10 +5103,11 @@ const roleData = {
       alignment: "Independent",
       tags: ["Voting", "Condemn", "Visiting", "Basic"],
       description: [
-        "Chooses two players each night to force into a duel.",
-        "During the following day, only the two duelists may be voted.",
-        "Must predict which duelist will survive.",
-        "Wins if they predict correctly twice.",
+        "Each night, can choose to visit two players.",
+        "During the following day, only those two players may be voted.",
+        "Each night, must choose one of the two player to be their champion.",
+        "If the champion survives the following day, the Emperor gains 1 point.",
+        "Wins if they have 2 points.",
       ],
       nightOrder: [["Duel", PRIORITY_EFFECT_GIVER_EARLY + 1]],
     },
@@ -5133,7 +5148,7 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Meets with All Independents",
+        "Meets with all Independents roles.",
         "Grants All Independents a random infomation or role swapping ability.",
         "Wins if Independents have majority.",
         "Lone Independents do not meet or count for majority",
@@ -5155,7 +5170,7 @@ const roleData = {
         "When present in the game, all village players except for the Ghost will know one of two randomly-selected words: the real word and the fake word.",
         "All Village roles will learn the real word",
         "Miller, Sleepwalker, Braggart, and roles with the Insane modifier will learn the fake word instead.",
-        "Each night, gives players a Ouija Board. Players give clues about their word before the day starts.",
+        "Each night if no one was condemned, all Ghosts must choose one player. Then all players will give clues about their word starting with that player.",
         "Wins if a Ghost guesses the real word when condemned or if Ghosts have majority.",
       ],
     },
@@ -5164,8 +5179,8 @@ const roleData = {
       disabled: true,
       tags: ["Ghost"],
       description: [
-        "Picks two words at night: the real word and the fake word. The Ghost must guess the real word to win.",
-        "If a Ghost is not present in the setup, it will be spawned in.",
+        "Before the game starts, chooses a real word and a fake word.",
+        "Forces a Ghost to spawn in closed setups.",
         "If the Village guesses the identity of the Poet, the Ghosts and the Poet both lose.",
         "Wins with Ghosts.",
       ],
@@ -5175,7 +5190,7 @@ const roleData = {
       alignment: "Independent",
       tags: ["Killing", "Must Act", "Last Two", "Visiting", "Hostile", "Basic"],
       description: [
-        "Must kill a player each night.",
+        "Each night, must choose to visit one player and kill them.",
         "Wins if among last two alive.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
@@ -5192,9 +5207,9 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Falls in love with another player once per game.",
-        "The beloved will not be alerted. If the beloved dies, the Yandere dies. If the Yandere dies, the beloved will not die.",
-        "Must kill a player each night.",
+        "On their first night, must choose to visit one player and makes that player the Yandere's beloved.",
+        "If the beloved player dies, the Yandere also dies.",
+        "Each night, must choose to visit one player and kill them.",
         "Wins if the Yandere and their beloved are the last two alive.",
       ],
       nightOrder: [
@@ -5214,10 +5229,10 @@ const roleData = {
       ],
       description: [
         "Has a clock that starts at 6 o'clock.",
-        "Choosing to kill a player each night changes the time based on that player's alignment.",
-        "Clock goes up by 1 hour for village, 2 hours for Mafia or Cult, and down by 3 hours for Independent.",
-        "Dies instantly at 3 o'clock.",
-        "Gains an extra life at 9 o'clock.",
+        "Each night, can choose to visit one player and kill them.",
+        "Clock goes up by 1 hour for killing Village roles, 2 hours for killing Mafia or Cult roles, and down by 3 hours for killing Independent roles.",
+        "If the clock strikes 3 o'clock, the Clockmaker dies.",
+        "If the clock strikes 9 o'clock, the Clockmaker gains an extra life.",
         "Wins when clock strikes 12 o'clock or if among last two alive.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
@@ -5226,8 +5241,8 @@ const roleData = {
       alignment: "Independent",
       tags: ["Killing", "Gasoline", "Last Two", "Visiting", "Hostile", "Basic"],
       description: [
-        "Douses one player with Gasoline each night.",
-        "Chooses to light a match during the day to burn doused players to ashes.",
+        `Each night, can choose to visit one player and make them "Doused".`,
+        `Each day, can choose to kill all players that are "Doused".`,
         "Wins if among last two alive.",
       ],
       nightOrder: [["Douse In Gasoline", PRIORITY_EFFECT_GIVER_DEFAULT - 1]],
@@ -5236,9 +5251,8 @@ const roleData = {
       alignment: "Independent",
       tags: ["Killing", "Visits", "Last Two", "Visiting", "Hostile", "Basic"],
       description: [
-        "Gasses one player with anesthetic each night.",
-        "If that player acts the next night, they die.",
-        "Anesthetic attack can be cured by not acting.",
+        `Each night, can choose to visit one player and make them "Gassed".`,
+        gassedDef,
         "Wins if among last two alive.",
       ],
       nightOrder: [["Gas Player", PRIORITY_EFFECT_GIVER_DEFAULT]],
@@ -5247,8 +5261,9 @@ const roleData = {
       alignment: "Independent",
       tags: ["Hostile", "Conversion", "Advanced"],
       description: [
-        "At night may choose to convert to a Independent role that can spawn in the setup.",
-        "If the selected role is already in play, a player with that role will be converted to Amnesiac.",
+        "Once per game at night, can choose Independent role from the setup.",
+        "The Associate will convert to the chosen role.",
+        `If the chosen role is already in play, The player with that role will be converted to Amnesiac.`,
         "Cannot win the game as Egg.",
       ],
       nightOrder: [
@@ -5272,10 +5287,11 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Chooses to hunt at night by choosing a player and guessing their role.",
-        "If guessed correct, becomes immortal for the following day.",
-        "If guessed incorrect, identity will be revealed to all.",
-        "Wins if Hellhounds outnumber all other living parties.",
+        "Each night, chooses a role.",
+        "Each night, can choose to visit one player and kill them if their role is the selected role.",
+        "If that player dies, the Hellhound will protected from death the following day.",
+        "If that player's role is not chosen role, the Hellhound will be revealed to all.",
+        "Wins if Hellhounds have majority.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_GUESS_ROLE]],
       skins: [
@@ -5298,10 +5314,10 @@ const roleData = {
       alignment: "Independent",
       tags: ["Killing", "Items", "Visiting", "Hostile", "Advanced"],
       description: [
-        "At the beginning of the game, one player randomly receives a notebook.",
-        "That player can kill during the night.",
-        "The holder of the notebook must pass it to another player each day.",
-        "The Shinigami guesses the current holder of the notebook each night. If they guess correctly once, they win.",
+        "At the beginning of the game, one player randomly receives a Notebook.",
+        "A player holding a Notebook can kill a selected player during the night.",
+        "A player holding a Notebook must pass it to another player each day.",
+        "Each night, can choose to visit one player and win if they are holding a Notebook.",
       ],
       nightOrder: [["Guess Book Holder", PRIORITY_ITEM_TAKER_DEFAULT]],
     },
@@ -5309,7 +5325,7 @@ const roleData = {
       alignment: "Independent",
       tags: ["Killing", "Independent", "Visiting", "Hostile", "Advanced"],
       description: [
-        "Kills one player every night.",
+        "Each night, can choose to visit one player and kill them.",
         "Wins when all other Hostile Independents are dead.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
@@ -5327,10 +5343,10 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Absorbs one person each night, killing them and cleaning their deaths.",
-        "Absorbed players may speak amongst themselves inside of the Blob.",
-        "For every 2 absorbed players, the Blob gains an extra life.",
-        "Upon death, everyone absorbed by the Blob is regurgitated.",
+        "Each night, can choose to visit one player and kill them and hide their role.",
+        "Players killed by a Blob meet with the Blob.",
+        "For every two players the Blob kills, the Blob gains an extra life.",
+        "If the Blob dies, all players killed by the Blob are revived.",
         "Wins if among the last two alive.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
@@ -5347,7 +5363,7 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Chooses to sacrifice self at night to convert another player to Grey Goo.",
+        "Each night, can choose to visit one player and die, then convert that player to Grey Goo.",
         "Wins if a Grey Goo is in the last two alive.",
       ],
       nightOrder: [["Convert and Die", PRIORITY_CONVERT_DEFAULT + 5]],
@@ -5363,7 +5379,8 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Mafia and Cult meetings are anonymous if Mastermind is present in the game.",
+        "Meets with Mafia and Cult.",
+        "Anonymizes Mafia and Cult meetings.",
         "Wins instead of Mafia/Cult and counts toward their total.",
       ],
     },
@@ -5381,8 +5398,9 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Meets with the Mafia and Cult, makes their night meeting anonymous.",
-        "Each night, chooses a player. If the player is sided with the Mafia/Cult, they become a Mafioso/Cultist.",
+        "Meets with Mafia and Cult.",
+        "Anonymizes Mafia and Cult meetings.",
+        "Each night, can choose to visit one player and if the player is sided with the Mafia/Cult convert them to Mafioso/Cultist.",
         "Wins when all Mafia-aligned players are Mafiosos or all Cult-aligned players are Cultists.",
       ],
       nightOrder: [["Convert", PRIORITY_CONVERT_DEFAULT + 8]],
@@ -5401,9 +5419,9 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Can kill one player per night.",
-        "Appears as Mafia on investigation.",
-        "Attends Mafia and Cult meetings, makes them anonymous and cannot vote in them.",
+        "Meets with Mafia and Cult but does not act with them.",
+        "Anonymizes Mafia and Cult meetings.",
+        "Each night, can choose to visit one player and kill them.",
         "Wins if alive alone or the final two, and the other is not a Mafia or Cult",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
@@ -5412,7 +5430,7 @@ const roleData = {
       alignment: "Independent",
       tags: ["Probe", "Visiting", "Hostile", "Advanced"],
       description: [
-        "Chooses one player to probe each night.",
+        "Each night, can choose to visit one player and probe them.",
         "Wins if all players left alive have been probed.",
       ],
       nightOrder: [["Probe", PRIORITY_EFFECT_GIVER_DEFAULT]],
@@ -5421,8 +5439,8 @@ const roleData = {
       alignment: "Independent",
       tags: ["Linked", "Alignment", "Visiting", "Hostile", "Advanced"],
       description: [
-        "Each night chooses two players to go on a date. If they are the same alignment, the date will be succesful.",
-        "Wins if all players left alive have gone on a successful date.",
+        `Each night, can choose to visit two players and if they are the same alignment, they will become "Starstruck".`,
+        `Wins if all players left alive are "Starstruck".`,
       ],
       nightOrder: [["Matchmaker", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -5430,9 +5448,10 @@ const roleData = {
       alignment: "Independent",
       tags: ["Famine", "Alignment", "Survivor", "Hostile", "Advanced"],
       description: [
-        "The game begins with a famine, with each player starting with four bread.",
+        //"The game begins with a famine, with each player starting with four bread.",
+        "Adds the Famine event to the setup.",
         "Tofurkeys are immune to the famine.",
-        "If a Tofurkey dies, each remaining player loses one meal.",
+        "If a Tofurkey dies, each remaining player loses one food.",
         "Appears as Turkey to investigators.",
         "Wins if they survive to the end of the game and everyone else dies of famine.",
       ],
@@ -5441,9 +5460,10 @@ const roleData = {
       alignment: "Independent",
       tags: ["Famine", "Alignment", "Survivor", "Hostile", "Advanced"],
       description: [
-        "The game begins with a famine, with each player starting with four bread.",
+        //"The game begins with a famine, with each player starting with four bread.",
+        "Adds the Famine event to the setup.",
         "Turkeys are immune to the famine.",
-        "If a Turkey dies, each remaining player gets one meal.",
+        "If a Turkey dies, each remaining player gets given a food.",
         "Wins if they survive to the end of the game and everyone else dies of famine.",
       ],
     },
@@ -5451,10 +5471,10 @@ const roleData = {
       alignment: "Independent",
       tags: ["Items", "Killing", "Visiting", "Hostile", "Advanced"],
       description: [
-        "When present in the game, four-leaf clovers are randomly assigned to players.",
-        "Each night, steals a random item from their target, preferentially stealing Clovers.",
-        "If it finds another Leprechaun, will kill them and steal all their items.",
-        "Wins if holding three four-leaf clovers.",
+        "When present in the game, Clovers are randomly assigned to players.",
+        "Each night, can choose to visit one player and steals a random item from them, preferentially stealing Clovers.",
+        "If that player is a Leprechaun, the Leprechaun kills them.",
+        "Wins if holding three Clovers.",
       ],
       nightOrder: [["Steal Items", PRIORITY_ITEM_TAKER_DEFAULT]],
     },
@@ -5471,8 +5491,8 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Gives out a timebomb each night.",
-        "The timebomb can be passed around during the day, randomly exploding.",
+        "Each night, can choose to visit one player and give them a Timebomb.",
+        timeBombDef,
         "Wins if 3 players are killed by the timebomb, or if the Anarchist is among the last two alive.",
         "Timebomb reveals Anarchist when it explodes on themselves.",
       ],
@@ -5483,8 +5503,7 @@ const roleData = {
       tags: ["Conversion", "Vanilla", "Visiting", "Hostile", "Basic"],
       description: [
         "Meets with other Communists at night.",
-        "Visits one player each night.",
-        "Turns that player into their alignment's vanilla role.",
+        "Each night, all Communists can choose to visits one player each night and convert them to their alignment's vanilla role.",
         "Wins if alive when all other players are vanilla.",
       ],
       nightOrder: [["Convert to Vanilla", PRIORITY_CONVERT_DEFAULT + 8]],
@@ -5503,10 +5522,8 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Gives out a revolver each night.",
-        "6 chambers in the barrel, one of them has a bullet.",
-        "During the day a player can either choose to pull the trigger or spin the barrel.",
-        "If the chamber is empty, they pass the revolver to player below them. If the chamber is full, the shooter is hit.",
+        "Each night, can choose to visit one player and give them a Revolver.",
+        revolverDef,
         "Wins if 3 players are killed by the revolver, or if the Dragoon is among the last two alive.",
         "Revolver reveals Dragoon when shooting themselves.",
       ],
@@ -5523,8 +5540,8 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Each night, challenges a player to a game of Rock, Paper, Scissors. Game is played during the day.",
-        "If the Gambler wins, the Challenger dies.",
+        "Each night, can choose to visit one player and challenges them to a game of Rock, Paper, Scissors the following day.",
+        "If the Gambler wins, that player dies.",
         "Wins the game when they have 2 gamble wins, or are among the last two standing.",
       ],
       nightOrder: [["Gamble", 0]],
@@ -5540,8 +5557,8 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Visits one player each night.",
-        "Any player to visit the Grizzly Bear's target will be killed. If the Grizzly Bear's target does not visit that night, they will be killed as well.",
+        "Each night, can choose to visit one player and kill each player who visits that player.",
+        "If no one visits that player, the Grizzly Bear kills them.",
         "Wins if among last two alive.",
       ],
       nightOrder: [["Kill Visitors", PRIORITY_KILL_DEFAULT + 1]],
@@ -5559,7 +5576,8 @@ const roleData = {
       ],
       description: [
         "Meets with other Polar Bears at night.",
-        "Visits two players each night, polarising them.",
+        `Each night, all Polar Bears can choose to visits two players and make them "Polarised".`,
+        polarisedDef,
         "A polarised player visiting another polarised player will kill both of them.",
         //"If visited by a Penguin, will eat it.",
         "Wins if four polarised players die or if majority is attained.",
@@ -5578,12 +5596,12 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Picks a player at night to enage in a turn-based duel during the day once per game.",
-        "Both duelists have the option to use four moves:",
+        "Each night, can choose to visit one player and duel them in turn based combat mini-game.",
+        "The Samurai and that player have the option to use four moves during the duel:",
         "Attack - Deals damage. There is a chance to Crit for double damage.",
         "Defend - Grants Block. Block will absorb damage.",
         "Focus - Raises Attack Power, Block Power, or Crit Chance at random",
-        "Charge - Strengthens the duelist's next move. Charging multiple times will allow for Special moves to be used.",
+        "Charge - Strengthens the duelist's next move. Charging multiple times will allow for special moves to be used.",
         "Wins if they win their duel.",
       ],
       nightOrder: [["Start Duel", PRIORITY_ITEM_GIVER_DEFAULT]],
@@ -5593,9 +5611,9 @@ const roleData = {
       tags: ["Items", "Mini-Game", "Hostile", "Advanced"],
       description: [
         "Each night, may declare a snowball fight.",
-        "Half of all players will receive a snowball.",
-        "Throwing a snowball at someone freezes them.",
-        "A frozen player cannot vote or take any action at night. To be unfrozen, they must be visited by another player.",
+        "Half of all players will receive a Snowball.",
+        snowballDef,
+        frozenDef,
         "Wins if all living players have been frozen.",
       ],
       nightOrder: [["Snowballs", PRIORITY_ITEM_GIVER_DEFAULT]],
@@ -5605,8 +5623,8 @@ const roleData = {
       tags: ["Speaking", "Voting", "Meeting", "Dusk", "Hostile", "Advanced"],
       description: [
         "Can anonymously broadcast messages during the day.",
-        "Twice per game, may declare a court session.",
-        "During court, all players but the Judge speak and vote anonymously as the jury.",
+        "Twice per game during the day, can choose for a court session to happen at dusk.",
+        "During a court session an additional player can be condemned and all voting and speaking is anonymous.",
         "The Judge's vote counts for three during a Court session.",
         "Wins among the last two standing.",
       ],
@@ -5622,8 +5640,8 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Attaches strings to a player each night and learn their role.",
-        "Can redirect all players with attached strings at night.",
+        "Each night, can choose to visit one player and learn their role and attach strings to them.",
+        "Each night, can choose to redirect each player they have attached strings to's visits on to other players. (Not a visit)",
         "Wins among the last two standing.",
       ],
       nightOrder: [
@@ -5659,6 +5677,7 @@ const roleData = {
       tags: ["Event", "Items"],
       description: [
         "If this Event occurs, one random player will be given a Gun.",
+        gunDef,
       ],
       nightOrder: [["Give Gun", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -5667,6 +5686,7 @@ const roleData = {
       tags: ["Event", "Items"],
       description: [
         "If this Event occurs, one random player will be given Whiskey.",
+        whiskeyDef,
       ],
       nightOrder: [["Give Whiskey", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -5675,6 +5695,8 @@ const roleData = {
       tags: ["Event", "Items"],
       description: [
         "If this Event occurs, one random player will be given a Knife.",
+        knifeDef,
+        bleedingDef,
       ],
       nightOrder: [["Give Knife", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -5683,6 +5705,7 @@ const roleData = {
       tags: ["Event", "Items"],
       description: [
         "If this Event occurs, one random player will be given a Syringe.",
+        needleDef,
       ],
       nightOrder: [["Give Syringe", PRIORITY_ITEM_GIVER_DEFAULT]],
       graveyardParticipation: "all",
@@ -5751,7 +5774,8 @@ const roleData = {
       alignment: "Event",
       tags: ["Event"],
       description: [
-        "If this Event occurs, all speech and votes are anonymous.",
+        `If this Event occurs, all players will become "Blind".`,
+        blindDef,
       ],
       nightOrder: [["Blind", PRIORITY_EFFECT_GIVER_DEFAULT]],
       skins: [
@@ -5769,7 +5793,8 @@ const roleData = {
       alignment: "Event",
       tags: ["Event"],
       description: [
-        "If this Event occurs, players can only see their neighbors messages.",
+        `If this Event occurs, all players will become "Foggy".`,
+        foggyDef,
       ],
       nightOrder: [["Semi-Blind", PRIORITY_EFFECT_GIVER_DEFAULT]],
     },
@@ -5785,7 +5810,10 @@ const roleData = {
     "Mail-In Ballots": {
       alignment: "Event",
       tags: ["Event"],
-      description: ["If this Event occurs, players can not switch votes."],
+      description: [
+        `If this Event occurs, all players will become "Paralyzed".`,
+        paralyzedDef,
+      ],
       nightOrder: [
         ["Apply disable vote switching effect", PRIORITY_EFFECT_GIVER_DEFAULT],
       ],
@@ -5794,14 +5822,16 @@ const roleData = {
       alignment: "Event",
       tags: ["Event"],
       description: [
-        "If this Event occurs, all players will be blocked during the night.",
+        "If this Event occurs, all players will have their night actions blocked.",
       ],
       nightOrder: [["Block Players", PRIORITY_FULL_DISABLE + 3]],
     },
     Sabbath: {
       alignment: "Event",
       tags: ["Event"],
-      description: ["If this Event occurs, no one will die at night."],
+      description: [
+        "If this Event occurs, all players will be protected from death.",
+      ],
       nightOrder: [["Protect Players", PRIORITY_FULL_DISABLE + 3]],
     },
     "Self-Awareness": {
