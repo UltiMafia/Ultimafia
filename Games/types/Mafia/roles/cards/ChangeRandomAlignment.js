@@ -22,7 +22,9 @@ module.exports = class ChangeRandomAlignment extends Card {
           labels: ["hidden"],
           run: function () {
             let factions = [];
-            let players = this.game.alivePlayers().filter((p) => p.faction != this.actor.faction);
+            let players = this.game
+              .alivePlayers()
+              .filter((p) => p.faction != this.actor.faction);
             for (let x = 0; x < players.length; x++) {
               if (!factions.includes(players[x].faction)) {
                 factions.push(players[x].faction);

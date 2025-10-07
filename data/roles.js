@@ -5705,7 +5705,7 @@ const roleData = {
       tags: ["Event", "Items"],
       description: [
         "If this Event occurs, one random player will be given a Syringe.",
-         needleDef,
+        needleDef,
       ],
       nightOrder: [["Give Syringe", PRIORITY_ITEM_GIVER_DEFAULT]],
       graveyardParticipation: "all",
