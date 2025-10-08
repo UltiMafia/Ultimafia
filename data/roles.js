@@ -260,8 +260,6 @@ const roleData = {
         "Appears as a random Evil role upon being condemned.",
         "Appears as Miller upon being killed.",
       ],
-      SpecialInteractions: {
-        Ghost: ["If a Ghost is Present, a Miller will learn a fake word."],
       skins: [
         {
           label: "Vivid",
@@ -272,6 +270,8 @@ const roleData = {
           value: "halloween",
         },
       ],
+      SpecialInteractions: {
+        Ghost: ["If a Ghost is Present, a Miller will learn a fake word."],
       },
     },
     "Party Host": {
