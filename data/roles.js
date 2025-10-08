@@ -150,6 +150,16 @@ const roleData = {
         "Wins when no Mafia, Cult, or Hostile Independents remain.",
         "Other roles appear as Villager to information roles, upon death, and to themself.",
       ],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Halloween",
+          value: "halloween",
+        },
+      ],
     },
     Bleeder: {
       alignment: "Village",
@@ -252,6 +262,16 @@ const roleData = {
       ],
       SpecialInteractions: {
         Ghost: ["If a Ghost is Present, a Miller will learn a fake word."],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Halloween",
+          value: "halloween",
+        },
+      ],
       },
     },
     "Party Host": {
@@ -362,6 +382,16 @@ const roleData = {
         "Each night, can choose to visit one player and protect them from death.",
       ],
       nightOrder: [["Protect", PRIORITY_NIGHT_SAVER]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Halloween",
+          value: "halloween",
+        },
+      ],
     },
     Soprano: {
       alignment: "Village",
@@ -804,6 +834,16 @@ const roleData = {
         //"Investigates one player each night and learns their alignment.",
       ],
       nightOrder: [["Learn Alignment", PRIORITY_INVESTIGATIVE_DEFAULT]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Halloween",
+          value: "halloween",
+        },
+      ],
     },
     Coroner: {
       alignment: "Village",
@@ -1387,6 +1427,16 @@ const roleData = {
         //"Visits one player each night whose role will be revealed upon death.",
       ],
       nightOrder: [["Reveal Role", PRIORITY_REVEAL_DEFAULT]],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Halloween",
+          value: "halloween",
+        },
+      ],
     },
     Penguin: {
       alignment: "Village",
@@ -2441,6 +2491,16 @@ const roleData = {
       category: "Basic",
       tags: ["Vanilla", "Basic"],
       description: ["Wins when the mafia outnumbers all other players."],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Halloween",
+          value: "halloween",
+        },
+      ],
     },
     //basic roles
     Godfather: {
@@ -2450,6 +2510,16 @@ const roleData = {
       description: [
         //"Leads the mafia kill each night.",
         "Appears as Villager to information roles.",
+      ],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Halloween",
+          value: "halloween",
+        },
       ],
     },
     Gramps: {
@@ -2744,6 +2814,10 @@ const roleData = {
         {
           label: "Old",
           value: "old",
+        },
+        {
+          label: "Halloween",
+          value: "halloween",
         },
       ],
     },
@@ -4691,6 +4765,16 @@ const roleData = {
           "If an Assassin is Present, Fool will win at the end of the game if they were elected as Room Leader in 2 diffrent rooms.",
         ],
       },
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Halloween",
+          value: "halloween",
+        },
+      ],
     },
     Executioner: {
       alignment: "Independent",
@@ -5130,6 +5214,16 @@ const roleData = {
         "Village must declare a Magus game to win if a Magus is present.",
         "Village and The Magus lose if only 2 players are alive.",
         "Magus Wins with Village.",
+      ],
+      skins: [
+        {
+          label: "Vivid",
+          value: "vivid",
+        },
+        {
+          label: "Halloween",
+          value: "halloween",
+        },
       ],
     },
     Superhero: {
