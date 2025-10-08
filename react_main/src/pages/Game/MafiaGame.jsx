@@ -506,7 +506,6 @@ export default function MafiaGame() {
         }
       />
       <MobileLayout
-        singleState
         outerLeftContent={
           <>
             <PlayerList />

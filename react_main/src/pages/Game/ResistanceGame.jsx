@@ -111,7 +111,6 @@ export default function ResistanceGame(props) {
         }
       />
       <MobileLayout
-        singleState
         outerLeftContent={
           <>
             <PlayerList />
