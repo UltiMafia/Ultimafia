@@ -1,3 +1,4 @@
+import { Tooltip } from "@mui/material";
 import React from "react";
 
 export const statesIcons = {
@@ -15,20 +16,40 @@ export const statesIcons = {
   nowin: require("images/game_state/nowin-state.png"),
   triwin: require("images/game_state/triwin-state.png"),
   villagewin: require("images/game_state/villagewin-state.png"),
+  ghost: require("images/roles/ghost-vivid.png"),
+  admiral: require("images/roles/village/admiral-vivid.png"),
 };
 
-export default function StateIcon({ stateType, size = 40, number }) {
+const stateIconMap = {
+  pregame: "pregame",
+  dawn: "night",
+  day: "day",
+  dusk: "night",
+  night: "night",
+  postgame: "bakerflagwin",
+  "give clue": "ghost",
+  "treasure chest": "admiral",
+};
+
+export default function StateIcon({ stateName, stateNum, unfocused = false, size = 40 }) {
+  const normalizedName = stateName.toLowerCase().replace(/[0-9]/g, "").trim();
+  const stateType = stateIconMap[normalizedName] || "nowin";
+
+  const numberMatch = stateName.match(/\d+/);
+  const number = numberMatch ? parseInt(numberMatch[0]) : null;
+
   const iconSrc = statesIcons[stateType];
 
   const digits = number ? String(number).split("") : [];
 
-  return (
+  const icon = (
     <div
       style={{
         position: "relative",
         display: "inline-block",
         width: size,
         height: size,
+        filter: unfocused ? "opacity(50%)" : undefined,
       }}
     >
       <img
@@ -44,9 +65,8 @@ export default function StateIcon({ stateType, size = 40, number }) {
           className="digit-wrapper"
           style={{
             position: "absolute",
-            bottom: "2px",
-            right: "2px",
-            display: "flex",
+            bottom: "0px",
+            right: "0px",
           }}
         >
           {digits.map((digit, i) => (
@@ -56,4 +76,18 @@ export default function StateIcon({ stateType, size = 40, number }) {
       )}
     </div>
   );
+
+  if(unfocused) {
+    return icon;
+  }
+  else {
+    return (
+      <Tooltip
+        title={stateName}
+        key={stateNum}
+      >
+        {icon}
+      </Tooltip>
+    );
+  }
 }

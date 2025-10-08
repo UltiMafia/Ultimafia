@@ -35,6 +35,7 @@ import { useErrorAlert } from "components/Alerts";
 
 import "css/createSetup.css";
 import { NewLoading } from "pages/Welcome/NewLoading";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 function StickyStateViewer(props) {
   const isSticky = props.isSticky;
@@ -42,7 +43,7 @@ function StickyStateViewer(props) {
   const isVertical = props.isVertical;
 
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isPhoneDevice = useIsPhoneDevice();
 
   return (
     <Stack
@@ -64,7 +65,7 @@ function StickyStateViewer(props) {
       >
         <Stack
           direction={isVertical ? "column" : "row"}
-          spacing={isSmallScreen ? 0.5 : 1}
+          spacing={isPhoneDevice ? 0.5 : 1}
           sx={{
             justifyContent: isVertical ? "stretch" : "center",
             alignItems: "stretch",
@@ -118,7 +119,7 @@ export default function CreateSetup(props) {
   const params = new URLSearchParams(location.search);
   const siteInfo = useContext(SiteInfoContext);
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const isPhoneDevice = useIsPhoneDevice();
 
   const gameTypeSettings = siteInfo.gamesettings[gameType];
 
@@ -555,7 +556,7 @@ export default function CreateSetup(props) {
                 <i
                   className="fa-times fas"
                   aria-hidden="true"
-                  style={{ fontSize: isSmallScreen ? "0.5em" : "1em" }}
+                  style={{ fontSize: isPhoneDevice ? "0.5em" : "1em" }}
                 />
               </Button>
             )}
@@ -602,16 +603,16 @@ export default function CreateSetup(props) {
   if (params.get("edit") && !editing) return <NewLoading small />;
 
   const innerContentHeight = "calc(1.2 * 2em)";
-  const iconLength = isSmallScreen ? "1em" : innerContentHeight;
+  const iconLength = isPhoneDevice ? "1em" : innerContentHeight;
 
   const selectedModifiers = [
-    ...Array(isSmallScreen ? modifiers.length : MaxModifiersPerRole).keys(),
+    ...Array(isPhoneDevice ? modifiers.length : MaxModifiersPerRole).keys(),
   ].map((i) => {
     const m = modifiers[i];
     return (
       <Grid2
         size={1}
-        sx={{ width: isSmallScreen ? "100%" : undefined }}
+        sx={{ width: isPhoneDevice ? "100%" : undefined }}
         key={i}
       >
         <RoleCell
@@ -653,12 +654,12 @@ export default function CreateSetup(props) {
         <StickyStateViewer
           isSticky={modifiers.length > 0}
           title="Selected Modifiers"
-          isVertical={isSmallScreen}
+          isVertical={isPhoneDevice}
         >
           <Grid2
             container
             columns={MaxModifiersPerRole}
-            direction={isSmallScreen ? "column" : "row"}
+            direction={isPhoneDevice ? "column" : "row"}
             spacing={1}
             sx={{ flexGrow: "1", width: "100%" }}
           >
@@ -777,7 +778,7 @@ export default function CreateSetup(props) {
       </Stack>
       <Paper sx={{ p: 1 }}>
         {user.loggedIn && (
-          <Stack direction={isSmallScreen ? "column" : "row"}>
+          <Stack direction={isPhoneDevice ? "column" : "row"}>
             <Form
               fields={formFields}
               onChange={updateFormFields}

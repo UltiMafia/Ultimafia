@@ -3,22 +3,25 @@ import React, { useRef, useEffect, useContext, useState } from "react";
 import {
   useSocketListeners,
   ThreePanelLayout,
-  BotBar,
+  TopBar,
   TextMeetingLayout,
   ActionList,
   PlayerList,
   Timer,
   Notes,
   SettingsMenu,
+  MobileLayout,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/game.css";
 import "css/gameJotto.css";
 
 export default function JottoGame(props) {
   const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
 
   const history = game.history;
   const updateHistory = game.updateHistory;
@@ -78,72 +81,38 @@ export default function JottoGame(props) {
 
   return (
     <>
-      <BotBar
-        gameType={gameType}
-        game={game}
-        history={history}
-        stateViewing={stateViewing}
-        updateStateViewing={updateStateViewing}
-        players={players}
-        gameName={
-          <div className="game-name">
-            <span>Jotto</span>
-          </div>
-        }
-        hideStateSwitcher
-      />
+      <TopBar hideStateSwitcher />
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {history.currentState == -1 && (
-              <PlayerList
-                players={players}
-                history={history}
-                gameType={gameType}
-                stateViewing={stateViewing}
-                activity={game.activity}
-              />
-            )}
+            {history.currentState == -1 && <PlayerList />}
             <HistoryKeeper history={history} stateViewing={stateViewing} />
-            <ActionList
-              socket={game.socket}
-              isParticipant={game.isParticipant}
-              meetings={meetings}
-              players={players}
-              self={self}
-              history={history}
-              stateViewing={stateViewing}
-            />
-            <SettingsMenu
-              settings={game.settings}
-              updateSettings={game.updateSettings}
-              showMenu={game.showMenu}
-              setShowMenu={game.setShowMenu}
-              stateViewing={stateViewing}
-            />
+            <ActionList />
+            <SettingsMenu />
           </>
         }
         centerPanelContent={
-          <>
-            <TextMeetingLayout
-              combineMessagesFromAllMeetings
-              socket={game.socket}
-              history={history}
-              updateHistory={updateHistory}
-              players={players}
-              stateViewing={stateViewing}
-              settings={game.settings}
-              filters={game.speechFilters}
-              options={game.options}
-              setup={game.setup}
-              localAudioTrack={game.localAudioTrack}
-            />
-          </>
+          <TextMeetingLayout combineMessagesFromAllMeetings />
         }
         rightPanelContent={
           <>
             <JottoCheatSheetWrapper stateViewing={stateViewing} />
-            {!isSpectator && <Notes stateViewing={stateViewing} />}
+            <Notes />
+          </>
+        }
+      />
+      <MobileLayout
+        singleState
+        innerRightContent={
+          <>
+            <HistoryKeeper history={history} stateViewing={stateViewing} />
+            <ActionList />
+          </>
+        }
+        additionalInfoContent={
+          <>
+            <JottoCheatSheetWrapper stateViewing={stateViewing} />
+            <Notes />
           </>
         }
       />

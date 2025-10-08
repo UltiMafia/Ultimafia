@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useContext } from "react";
 import {
   useSocketListeners,
   ThreePanelLayout,
-  BotBar,
+  TopBar,
   TextMeetingLayout,
   ActionList,
   PlayerList,
@@ -12,14 +12,17 @@ import {
   SettingsMenu,
   Notes,
   PinnedMessages,
+  MobileLayout,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 
 import { SideMenu } from "./Game";
 import "css/game.css";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 export default function ResistanceGame(props) {
   const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
 
   const history = game.history;
   const updateHistory = game.updateHistory;
@@ -86,75 +89,45 @@ export default function ResistanceGame(props) {
 
   return (
     <>
-      <BotBar
-        gameType={gameType}
-        game={game}
-        history={history}
-        stateViewing={stateViewing}
-        updateStateViewing={updateStateViewing}
-        players={players}
-        gameName={<div className="game-name">Resistance</div>}
-      />
+      <TopBar />
       <ThreePanelLayout
         leftPanelContent={
           <>
-            <PlayerList
-              players={players}
-              history={history}
-              gameType={gameType}
-              stateViewing={stateViewing}
-              activity={game.activity}
-            />
-            <SpeechFilter
-              filters={game.speechFilters}
-              setFilters={game.setSpeechFilters}
-              stateViewing={stateViewing}
-            />
-            <SettingsMenu
-              settings={game.settings}
-              updateSettings={game.updateSettings}
-              showMenu={game.showMenu}
-              setShowMenu={game.setShowMenu}
-              stateViewing={stateViewing}
-            />
+            <PlayerList />
+            <SpeechFilter />
+            <SettingsMenu />
           </>
         }
         centerPanelContent={
-          <>
-            <TextMeetingLayout
-              socket={game.socket}
-              history={history}
-              updateHistory={updateHistory}
-              players={players}
-              stateViewing={stateViewing}
-              settings={game.settings}
-              filters={game.speechFilters}
-              options={game.options}
-              setup={game.setup}
-              localAudioTrack={game.localAudioTrack}
-            />
-          </>
+          <TextMeetingLayout />
         }
         rightPanelContent={
           <>
-            <ScoreKeeper
-              numMissions={game.setup.numMissions}
-              history={history}
-              stateViewing={stateViewing}
-            />
-            <ActionList
-              socket={game.socket}
-              isParticipant={game.isParticipant}
-              meetings={meetings}
-              players={players}
-              self={self}
-              history={history}
-              stateViewing={stateViewing}
-            />
-            {!game.review && !isSpectator && <PinnedMessages />}
-            {!game.review && !isSpectator && (
-              <Notes stateViewing={stateViewing} />
-            )}
+            <ScoreKeeper />
+            <ActionList />
+            <PinnedMessages />
+            <Notes />
+          </>
+        }
+      />
+      <MobileLayout
+        singleState
+        outerLeftContent={
+          <>
+            <PlayerList />
+            <SpeechFilter />
+          </>
+        }
+        innerRightContent={
+          <>
+            <ScoreKeeper />
+            <ActionList />
+          </>
+        }
+        additionalInfoContent={
+          <>
+            <PinnedMessages />
+            <Notes />
           </>
         }
       />
@@ -162,11 +135,12 @@ export default function ResistanceGame(props) {
   );
 }
 
-function ScoreKeeper(props) {
-  const numMissions = props.numMissions;
-  const history = props.history;
+function ScoreKeeper() {
+  const game = useContext(GameContext);
 
-  const stateViewing = props.stateViewing;
+  const numMissions = game.numMissions;
+  const history = game.history;
+  const stateViewing = game.stateViewing;
 
   if (stateViewing < 0) return <></>;
 

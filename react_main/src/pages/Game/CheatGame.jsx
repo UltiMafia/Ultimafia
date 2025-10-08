@@ -3,23 +3,25 @@ import React, { useRef, useEffect, useContext, useState } from "react";
 import {
   useSocketListeners,
   ThreePanelLayout,
-  BotBar,
-  TextMeetingLayout,
+  TopBar,
   ActionList,
-  PlayerList,
   OptionsList,
-  Timer,
-  Notes,
+  PlayerList,
   SettingsMenu,
+  TextMeetingLayout,
+  Notes,
+  MobileLayout,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/game.css";
 import "css/gameCardGames.css";
 
 export default function CheatGame(props) {
   const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
 
   const history = game.history;
   const updateHistory = game.updateHistory;
@@ -100,112 +102,59 @@ export default function CheatGame(props) {
     });
   }, game.socket);
 
-  return (
+  const playerList = (
     <>
-      <BotBar
-        gameType={gameType}
-        game={game}
+      {stateViewing < 0 && <PlayerList />}
+      <LiarscardcardViewWrapper
         history={history}
         stateViewing={stateViewing}
-        updateStateViewing={updateStateViewing}
-        players={players}
-        gameName={
-          <div className="game-name">
-            <span
-              style={{
-                color: history.states?.[stateViewing]?.extraInfo
-                  ?.isTheFlyingDutchman
-                  ? "#48654e"
-                  : "#8B0000",
-              }}
-            >
-              Cheat
-            </span>
-          </div>
-        }
-        hideStateSwitcher
+        self={self}
       />
+    </>
+  );
+
+  const actionsList = (
+    <ActionList
+      title="Play your Cards!"
+      style={{
+        color: history.states?.[stateViewing]?.extraInfo
+          ?.isTheFlyingDutchman
+          ? "#718E77"
+          : undefined,
+      }}
+    />
+  );
+
+  return (
+    <>
+      <TopBar hideStateSwitcher />
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {history.currentState == -1 && (
-              <PlayerList
-                players={players}
-                history={history}
-                gameType={gameType}
-                stateViewing={stateViewing}
-                activity={game.activity}
-              />
-            )}
-            <LiarscardcardViewWrapper
-              history={history}
-              stateViewing={stateViewing}
-              self={self}
-            />
-            <SettingsMenu
-              settings={game.settings}
-              updateSettings={game.updateSettings}
-              showMenu={game.showMenu}
-              setShowMenu={game.setShowMenu}
-              stateViewing={stateViewing}
-            />
+            {playerList}
+            <SettingsMenu />
           </>
         }
         centerPanelContent={
-          <>
-            <TextMeetingLayout
-              combineMessagesFromAllMeetings
-              socket={game.socket}
-              history={history}
-              updateHistory={updateHistory}
-              players={players}
-              stateViewing={stateViewing}
-              settings={game.settings}
-              filters={game.speechFilters}
-              options={game.options}
-              setup={game.setup}
-              localAudioTrack={game.localAudioTrack}
-            />
-          </>
+          <TextMeetingLayout combineMessagesFromAllMeetings />
         }
         rightPanelContent={
           <>
-            {history.currentState == -1 && (
-              <OptionsList
-                players={players}
-                history={history}
-                gameType={gameType}
-                gameOptions={gameOptions}
-                stateViewing={stateViewing}
-                activity={game.activity}
-              />
-            )}
-            {history.currentState != -1 && (
-              <ThePot
-                players={players}
-                history={history}
-                gameType={gameType}
-                stateViewing={stateViewing}
-                activity={game.activity}
-              />
-            )}
-            <ActionList
-              socket={game.socket}
-              isParticipant={game.isParticipant}
-              meetings={meetings}
-              players={players}
-              self={self}
-              history={history}
-              stateViewing={stateViewing}
-              title="Play your Cards!"
-              style={{
-                color: history.states?.[stateViewing]?.extraInfo
-                  ?.isTheFlyingDutchman
-                  ? "#718E77"
-                  : undefined,
-              }}
-            />
-            {!isSpectator && <Notes stateViewing={stateViewing} />}
+            <OptionsList />
+            <ThePot />
+            {actionsList}
+            <Notes />
+          </>
+        }
+      />
+      <MobileLayout
+        singleState 
+        outerLeftContent={playerList}
+        innerRightContent={
+          <>
+            <OptionsList />
+            <ThePot />
+            {actionsList}
           </>
         }
       />
@@ -213,10 +162,11 @@ export default function CheatGame(props) {
   );
 }
 
-export function ThePot(props) {
-  const history = props.history;
-  const stateViewing = props.stateViewing;
-  const self = props.self;
+export function ThePot() {
+  const game = useContext(GameContext);
+
+  const history = game.history;
+  const stateViewing = game.stateViewing;
 
   if (stateViewing < 0) return <></>;
 

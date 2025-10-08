@@ -94,14 +94,12 @@ export default function Profile() {
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [currentUserLove, setCurrentUserLove] = useState({});
 
-  const theme = useTheme();
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const navigate = useNavigate();
   const errorAlert = useErrorAlert();
   const { userId } = useParams();
   const isPhoneDevice = useIsPhoneDevice();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md")); // This is for the mui breakpoint
 
   const isSelf = userId === user.id;
   const isBlocked = !isSelf && user.blockedUsers.indexOf(userId) !== -1;
@@ -709,12 +707,12 @@ export default function Profile() {
       />
     ));
 
-  const avatarUpliftPx = !banner ? 0 : isSmallScreen ? 38 : 58;
+  const avatarUpliftPx = !banner ? 0 : isPhoneDevice ? 38 : 58;
   const avatarPaddingPx = !banner
-    ? isSmallScreen
+    ? isPhoneDevice
       ? 60
       : 100
-    : isSmallScreen
+    : isPhoneDevice
     ? 22
     : 50;
 
@@ -736,8 +734,8 @@ export default function Profile() {
         >
           {!bustCache && (
             <Avatar
-              mediumlarge={isSmallScreen}
-              large={!isSmallScreen}
+              mediumlarge={isPhoneDevice}
+              large={!isPhoneDevice}
               id={userId}
               hasImage={avatar}
               bustCache={bustCache}
@@ -807,8 +805,8 @@ export default function Profile() {
             }}
           >
             <Stack
-              direction={isSmallScreen ? "row" : "column"}
-              spacing={isSmallScreen ? 1 : 0}
+              direction={isPhoneDevice ? "row" : "column"}
+              spacing={isPhoneDevice ? 1 : 0}
               sx={{
                 mb: 1,
                 height: "100%",
@@ -828,7 +826,7 @@ export default function Profile() {
     </Grid>
   );
 
-  const aviGridItems = isSmallScreen ? (
+  const aviGridItems = isPhoneDevice ? (
     <>
       {nameBox}
       {inLoveBox}
@@ -933,7 +931,7 @@ export default function Profile() {
                 )}
               </div>
             </div>
-            {!isSmallScreen && (
+            {!isPhoneDevice && (
               <Box
                 sx={{
                   mt: "16px !important",
@@ -1153,7 +1151,7 @@ export default function Profile() {
             )}
           </Stack>
         </Grid>
-        {isSmallScreen && (
+        {isPhoneDevice && (
           <Grid item xs={12} sx={{ mt: 1 }}>
             <Comments fullWidth location={userId} />
           </Grid>

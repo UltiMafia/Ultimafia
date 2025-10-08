@@ -3,7 +3,7 @@ import React, { useRef, useEffect, useContext, useState } from "react";
 import {
   useSocketListeners,
   ThreePanelLayout,
-  BotBar,
+  TopBar,
   TextMeetingLayout,
   ActionList,
   PlayerList,
@@ -11,15 +11,18 @@ import {
   Timer,
   Notes,
   SettingsMenu,
+  MobileLayout,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/game.css";
 import "css/gameCardGames.css";
 
 export default function TexasHoldEmGame(props) {
   const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
 
   const history = game.history;
   const updateHistory = game.updateHistory;
@@ -100,119 +103,57 @@ export default function TexasHoldEmGame(props) {
     });
   }, game.socket);
 
+  const playerList = (
+    <>
+      {history.currentState < 0 && <PlayerList />}
+      <LiarscardcardViewWrapper />
+    </>
+  );
+
+  const actionList = (
+    <ActionList
+      title="Make A Bid!"
+      style={{
+        color: history.states?.[stateViewing]?.extraInfo
+          ?.isTheFlyingDutchman
+          ? "#718E77"
+          : undefined,
+      }}
+    />
+  );
+
   return (
     <>
-      <BotBar
-        gameType={gameType}
-        game={game}
-        history={history}
-        stateViewing={stateViewing}
-        updateStateViewing={updateStateViewing}
-        players={players}
-        gameName={
-          <div className="game-name">
-            <span
-              style={{
-                color: history.states?.[stateViewing]?.extraInfo
-                  ?.isTheFlyingDutchman
-                  ? "#48654e"
-                  : "#8B0000",
-              }}
-            >
-              Texas Hold Em
-            </span>
-          </div>
-        }
-        hideStateSwitcher
-      />
+      <TopBar hideStateSwitcher />
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {history.currentState == -1 && (
-              <PlayerList
-                players={players}
-                history={history}
-                gameType={gameType}
-                stateViewing={stateViewing}
-                activity={game.activity}
-              />
-            )}
-            <LiarscardcardViewWrapper
-              history={history}
-              stateViewing={stateViewing}
-              self={self}
-            />
-            <SettingsMenu
-              settings={game.settings}
-              updateSettings={game.updateSettings}
-              showMenu={game.showMenu}
-              setShowMenu={game.setShowMenu}
-              stateViewing={stateViewing}
-            />
+            {playerList}
+            <SettingsMenu />
           </>
         }
         centerPanelContent={
-          <>
-            <TextMeetingLayout
-              combineMessagesFromAllMeetings
-              socket={game.socket}
-              history={history}
-              updateHistory={updateHistory}
-              players={players}
-              stateViewing={stateViewing}
-              settings={game.settings}
-              filters={game.speechFilters}
-              options={game.options}
-              setup={game.setup}
-              localAudioTrack={game.localAudioTrack}
-            />
-          </>
+          <TextMeetingLayout combineMessagesFromAllMeetings />
         }
         rightPanelContent={
           <>
-            {history.currentState == -1 && (
-              <OptionsList
-                players={players}
-                history={history}
-                gameType={gameType}
-                gameOptions={gameOptions}
-                stateViewing={stateViewing}
-                activity={game.activity}
-              />
-            )}
-            {history.currentState != -1 && (
-              <ThePot
-                players={players}
-                history={history}
-                gameType={gameType}
-                stateViewing={stateViewing}
-                activity={game.activity}
-              />
-            )}
-            {history.currentState != -1 && (
-              <CommunityCards
-                history={history}
-                stateViewing={stateViewing}
-                self={self}
-              />
-            )}
-            <ActionList
-              socket={game.socket}
-              isParticipant={game.isParticipant}
-              meetings={meetings}
-              players={players}
-              self={self}
-              history={history}
-              stateViewing={stateViewing}
-              title="Make A Bid!"
-              style={{
-                color: history.states?.[stateViewing]?.extraInfo
-                  ?.isTheFlyingDutchman
-                  ? "#718E77"
-                  : undefined,
-              }}
-            />
-            {!isSpectator && <Notes stateViewing={stateViewing} />}
+            <OptionsList />
+            <ThePot />
+            <CommunityCards />
+            {actionList}
+            <Notes />
+          </>
+        }
+      />
+      <MobileLayout
+        singleState 
+        outerLeftContent={playerList}
+        innerRightContent={
+          <>
+            <OptionsList />
+            <ThePot />
+            <CommunityCards />
+            {actionList}
           </>
         }
       />
@@ -220,10 +161,11 @@ export default function TexasHoldEmGame(props) {
   );
 }
 
-export function ThePot(props) {
-  const history = props.history;
-  const stateViewing = props.stateViewing;
-  const self = props.self;
+export function ThePot() {
+  const game = useContext(GameContext);
+
+  const history = game.history;
+  const stateViewing = game.stateViewing;
 
   if (stateViewing < 0) return <></>;
 
@@ -250,10 +192,11 @@ export function ThePot(props) {
   );
 }
 
-function CommunityCards(props) {
-  const history = props.history;
-  const stateViewing = props.stateViewing;
-  const self = props.self;
+function CommunityCards() {
+  const game = useContext(GameContext);
+
+  const history = game.history;
+  const stateViewing = game.stateViewing;
 
   if (stateViewing < 0) return <></>;
 
@@ -279,10 +222,12 @@ function CommunityCards(props) {
   );
 }
 
-function LiarscardcardViewWrapper(props) {
-  const history = props.history;
-  const stateViewing = props.stateViewing;
-  const self = props.self;
+function LiarscardcardViewWrapper() {
+  const game = useContext(GameContext);
+
+  const history = game.history;
+  const stateViewing = game.stateViewing;
+  const self = game.self;
 
   if (stateViewing < 0) return <></>;
 

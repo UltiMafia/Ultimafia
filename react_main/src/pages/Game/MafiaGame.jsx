@@ -4,9 +4,8 @@ import {
   useSocketListeners,
   // useStateViewingReducer,
   ThreePanelLayout,
-  BotBar,
+  TopBar,
   TextMeetingLayout,
-  getUnresolvedActionCount,
   ActionList,
   PlayerList,
   LastWillEntry,
@@ -15,13 +14,16 @@ import {
   SettingsMenu,
   Notes,
   PinnedMessages,
+  MobileLayout,
 } from "./Game";
 import { GameContext, SiteInfoContext } from "../../Contexts";
 import { SideMenu } from "./Game";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 export default function MafiaGame() {
   const game = useContext(GameContext);
   const siteInfo = useContext(SiteInfoContext);
+  const isPhoneDevice = useIsPhoneDevice();
 
   const history = game.history;
   const updateHistory = game.updateHistory;
@@ -481,87 +483,47 @@ export default function MafiaGame() {
 
   return (
     <>
-      <BotBar
-        gameType={gameType}
-        game={game}
-        history={history}
-        stateViewing={stateViewing}
-        updateStateViewing={updateStateViewing}
-        players={players}
-        gameName={<div className="game-name">Mafia</div>}
-      />
+      <TopBar />
       <ThreePanelLayout
         leftPanelContent={
           <>
-            <PlayerList
-              players={players}
-              history={history}
-              gameType={gameType}
-              stateViewing={stateViewing}
-              self={self}
-              activity={game.activity}
-              setup={game.setup}
-            />
-            <SpeechFilter
-              filters={game.speechFilters}
-              setFilters={game.setSpeechFilters}
-              stateViewing={stateViewing}
-            />
-            <SettingsMenu
-              settings={game.settings}
-              updateSettings={game.updateSettings}
-              showMenu={game.showMenu}
-              setShowMenu={game.setShowMenu}
-              stateViewing={stateViewing}
-            />
+            <PlayerList />
+            <SpeechFilter />
+            <SettingsMenu />
           </>
         }
         centerPanelContent={
-          <>
-            <TextMeetingLayout
-              socket={game.socket}
-              history={history}
-              updateHistory={updateHistory}
-              players={players}
-              stateViewing={stateViewing}
-              settings={game.settings}
-              filters={game.speechFilters}
-              review={game.review}
-              options={game.options}
-              setup={game.setup}
-              setTyping={game.setTyping}
-              localAudioTrack={game.localAudioTrack}
-            />
-          </>
+          <TextMeetingLayout />
         }
         rightPanelContent={
           <>
-            {<HistoryKeeper history={history} stateViewing={stateViewing} />}
-            <ActionList
-              socket={game.socket}
-              isParticipant={game.isParticipant}
-              meetings={meetings}
-              players={players}
-              self={self}
-              history={history}
-              stateViewing={stateViewing}
-            />
-            {!game.review &&
-              !isSpectator &&
-              history.currentState >= 0 &&
-              game.getSetupGameSetting("Last Wills") && (
-                <LastWillEntry
-                  lastWill={game.lastWill}
-                  cannotModifyLastWill={history.states[
-                    history.currentState
-                  ].name.startsWith("Day")}
-                  socket={game.socket}
-                />
-              )}
-            {!game.review && !isSpectator && <PinnedMessages />}
-            {!game.review && !isSpectator && (
-              <Notes stateViewing={stateViewing} />
-            )}
+            <HistoryKeeper history={history} stateViewing={stateViewing} />
+            <ActionList />
+            <LastWillEntry />
+            <PinnedMessages />
+            <Notes />
+          </>
+        }
+      />
+      <MobileLayout
+        singleState
+        outerLeftContent={
+          <>
+            <PlayerList />
+            <SpeechFilter />
+          </>
+        }
+        innerRightContent={
+          <>
+            <HistoryKeeper history={history} stateViewing={stateViewing} />
+            <ActionList />
+            <LastWillEntry />
+          </>
+        }
+        additionalInfoContent={
+          <>
+            <PinnedMessages />
+            <Notes />
           </>
         }
       />
@@ -577,7 +539,7 @@ function HistoryKeeper(props) {
 
   const extraInfo = history.states[stateViewing].extraInfo;
 
-  if (extraInfo.showGameInfo != true) {
+  if (!extraInfo || extraInfo.showGameInfo !== true) {
     return <></>;
   }
 

@@ -1,87 +1,159 @@
-import React from "react";
-import { Box, IconButton, Tooltip, Typography } from "@mui/material";
+import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Box, IconButton, Paper, Stack, Tab, Tabs, Tooltip, Typography } from "@mui/material";
 import StateIcon from "../StateIcon";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { GameContext } from "Contexts";
 
-const stateIconMap = {
-  pregame: "pregame",
-  dawn: "day",
-  day: "day",
-  dusk: "night",
-  night: "night",
-  postgame: "bakerflagwin",
-};
+export default function StateSwitcher({ stateRange = null, }) {
+  const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
+  const hideFastForward = isPhoneDevice;
 
-export default function StateSwitcher(props) {
-  const { history, stateViewing, updateStateViewing, onStateNavigation } =
-    props;
-  const currentState = history.states[stateViewing];
-  const stateName = currentState ? currentState.name : "";
+  const {
+    history,
+    stateViewing,
+    updateStateViewing,
+    onStateNavigation,
+  } = game;
 
-  const normalizedName = stateName.toLowerCase().replace(/[0-9]/g, "").trim();
-  const mappedIconType = stateIconMap[normalizedName] || "nowin";
-
-  const numberMatch = stateName.match(/\d+/);
-  const number = numberMatch ? parseInt(numberMatch[0]) : null;
+  const STATE_RANGE = stateRange !== null ? stateRange : isPhoneDevice ? 1 : 2;
 
   const leftArrowVisible = stateViewing !== -1;
   const rightArrowVisible =
     stateViewing < history.currentState ||
     (history.currentState === -2 && stateViewing !== history.currentState);
 
-  const handleClick = (direction) => {
-    updateStateViewing({ type: direction });
+  const handleClick = (action) => {
+    updateStateViewing(action);
+    onStateNavigation();
+  };
+
+  const stateIconSize = 40;
+  const iconStyle = {
+    width: "1em",
+    height: "1em",
+  };
+
+  let stateNums = Object.keys(history.states).map(stateNum => Number.parseInt(stateNum));
+  stateNums.sort((a, b) => {
+    // Postgame is always greater
+    if(a === -2) {
+      return 1;
+    }
+    if(b === -2) {
+      return -1;
+    }
+    else {
+      return a - b;
+    }
+  });
+  const reverseStateNums = Object.fromEntries(stateNums.map((stateNum, i) => [stateNum, i]));
+  const currentStateIndex = reverseStateNums[stateViewing];
+
+  const padInvisibleLeft = Math.max(0, STATE_RANGE - currentStateIndex);
+  const padInvisibleRight = Math.max(0, STATE_RANGE - stateNums.length + 1 + currentStateIndex);
+
+  const paginatedStates = stateNums.map((stateNum) => {
+    const state = history.states[stateNum];
+    const stateName = state ? state.name : "Unknown State";
+    const index = reverseStateNums[stateNum];
+
+    const isInRange = (index >= currentStateIndex - STATE_RANGE) && (index <= currentStateIndex + STATE_RANGE);
+
+    // If you change the sizing of this, make sure to tweak the padInvisibleLeft and padInvisibleRight calcs accordingly
+    return (
+      <Tab
+        component="div"
+        key={stateNum}
+        aria-label={stateName}
+        icon={<StateIcon
+          stateName={stateName}
+          stateNum={stateNum}
+          unfocused={stateNum !== stateViewing}
+          size={stateIconSize}
+        />}
+        sx={{
+          display: isInRange ? undefined : "none",
+          px: 0.5,
+          paddingBottom: 0.5,
+          paddingTop: 0,
+          minWidth: 0,
+          minHeight: 0,
+        }}
+      />
+    );
+  });
+
+  const handleChange = (event, newValue) => {
+    const newState = stateNums[newValue];
+    handleClick({ type: "set", stateNum: newState });
     onStateNavigation();
   };
 
   return (
-    <Box
-      className="state-nav"
+    <Stack direction="row"
       sx={{
-        display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        gap: 0.5,
-        px: 0.5,
-        py: 0.25,
+        py: .5,
         borderRadius: 1,
-        bgcolor: "rgba(255, 255, 255, 0.05)",
       }}
     >
-      <IconButton
-        size="small"
+      {/* <IconButton
         sx={{
-          color: leftArrowVisible ? "inherit" : "transparent",
-          lineHeight: 1,
+          visibility: leftArrowVisible ? undefined : "hidden",
         }}
-        onClick={() => handleClick("backward")}
+        onClick={() => handleClick({ type: "backward" })}
       >
-        ‹
-      </IconButton>
+        <i className="fas fa-angle-left" style={iconStyle} />
+      </IconButton> */}
 
-      <Tooltip title={stateName || "Unknown"}>
-        <Box
-          onClick={() => handleClick("current")}
+      {!hideFastForward && (<IconButton
+        sx={{
+          visibility: leftArrowVisible ? undefined : "hidden",
+        }}
+        onClick={() => handleClick({ type: "first" })}
+      >
+        <i className="fas fa-angle-double-left" style={iconStyle} />
+      </IconButton>)}
+
+      <Stack direction="column" sx={{
+        alignItems: "center",
+      }}>
+        <Tabs
+          value={reverseStateNums[stateViewing]}
+          onChange={handleChange}
           sx={{
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            maxWidth: "100%",
+            minHeight: 0,
+            paddingLeft: `calc(${padInvisibleLeft} * (var(--mui-spacing) + ${stateIconSize}px))`,
+            paddingRight: `calc(${padInvisibleRight} * (var(--mui-spacing) + ${stateIconSize}px))`,
+            '& .MuiTabs-indicator': {
+              transition: "none",
+            },
           }}
         >
-          <StateIcon stateType={mappedIconType} size={32} number={number} />
-        </Box>
-      </Tooltip>
+          {paginatedStates}
+        </Tabs>
+      </Stack>
 
-      <IconButton
-        size="small"
+      {!hideFastForward && (<IconButton
         sx={{
-          color: rightArrowVisible ? "inherit" : "transparent",
-          lineHeight: 1,
+          visibility: rightArrowVisible ? undefined : "hidden",
         }}
-        onClick={() => handleClick("forward")}
+        onClick={() => handleClick({ type: "current" })}
       >
-        ›
-      </IconButton>
-    </Box>
+        <i className="fas fa-angle-double-right" style={iconStyle} />
+      </IconButton>)}
+
+      {/* <IconButton
+        sx={{
+          visibility: rightArrowVisible ? undefined : "hidden",
+        }}
+        onClick={() => handleClick({ type: "forward" })}
+      >
+        <i className="fas fa-angle-right" style={iconStyle}  />
+      </IconButton> */}
+    </Stack>
   );
 }

@@ -3,23 +3,26 @@ import React, { useRef, useEffect, useContext, useState } from "react";
 import {
   useSocketListeners,
   ThreePanelLayout,
-  BotBar,
+  TopBar,
   TextMeetingLayout,
   ActionList,
   PlayerList,
   Timer,
   Notes,
   SettingsMenu,
+  MobileLayout,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { Avatar } from "../User/User";
 import { SideMenu } from "./Game";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/game.css";
 import "css/gameConnectFour.css";
 
 export default function ConnectFourGame(props) {
   const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
 
   const history = game.history;
   const updateHistory = game.updateHistory;
@@ -75,75 +78,33 @@ export default function ConnectFourGame(props) {
 
   return (
     <>
-      <BotBar
-        gameType={gameType}
-        game={game}
-        history={history}
-        stateViewing={stateViewing}
-        updateStateViewing={updateStateViewing}
-        players={players}
-        gameName={
-          <div className="game-name">
-            <span>Connect Four</span>
-          </div>
-        }
-        hideStateSwitcher
-      />
+      <TopBar hideStateSwitcher />
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {history.currentState == -1 && (
-              <PlayerList
-                players={players}
-                history={history}
-                gameType={gameType}
-                stateViewing={stateViewing}
-                activity={game.activity}
-              />
-            )}
-            <ActionList
-              socket={game.socket}
-              isParticipant={game.isParticipant}
-              meetings={meetings}
-              players={players}
-              self={self}
-              history={history}
-              stateViewing={stateViewing}
-            />
-            <SettingsMenu
-              settings={game.settings}
-              updateSettings={game.updateSettings}
-              showMenu={game.showMenu}
-              setShowMenu={game.setShowMenu}
-              stateViewing={stateViewing}
-            />
+            {history.currentState < 0 && <PlayerList />}
+            <ActionList />
+            <SettingsMenu />
           </>
         }
         centerPanelContent={
           <>
-            <ConnectFourBoardWrapper
-              stateViewing={stateViewing}
-              history={history}
-              players={players}
-            />
+            <ConnectFourBoardWrapper  />
           </>
         }
         rightPanelContent={
           <>
-            <TextMeetingLayout
-              combineMessagesFromAllMeetings
-              socket={game.socket}
-              history={history}
-              updateHistory={updateHistory}
-              players={players}
-              stateViewing={stateViewing}
-              settings={game.settings}
-              filters={game.speechFilters}
-              options={game.options}
-              setup={game.setup}
-              localAudioTrack={game.localAudioTrack}
-            />
-            {!isSpectator && <Notes stateViewing={stateViewing} />}
+            <TextMeetingLayout combineMessagesFromAllMeetings />
+          </>
+        }
+      />
+      <MobileLayout
+        singleState
+        centerContent={<ConnectFourBoardWrapper />}
+        innerRightContent={
+          <>
+            {stateViewing >= 0 && <TextMeetingLayout combineMessagesFromAllMeetings />}
+            <ActionList />
           </>
         }
       />
@@ -151,10 +112,14 @@ export default function ConnectFourGame(props) {
   );
 }
 
-function ConnectFourBoardWrapper(props) {
-  const stateViewing = props.stateViewing;
+function ConnectFourBoardWrapper() {
+  const game = useContext(GameContext);
 
-  if (stateViewing < 0) return <></>;
+  const players = game.players;
+  const history = game.history;
+  const stateViewing = game.stateViewing;
+
+  if (stateViewing < 0) return <TextMeetingLayout combineMessagesFromAllMeetings />;
 
   return (
     <SideMenu
@@ -163,9 +128,9 @@ function ConnectFourBoardWrapper(props) {
       content={
         <>
           <ConnectFourBoard
-            history={props.history}
+            history={history}
             stateViewing={stateViewing}
-            players={props.players}
+            players={players}
           />
         </>
       }

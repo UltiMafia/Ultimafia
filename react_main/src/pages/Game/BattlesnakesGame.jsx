@@ -3,19 +3,22 @@ import React, { useRef, useEffect, useContext } from "react";
 import {
   useSocketListeners,
   ThreePanelLayout,
-  BotBar,
+  TopBar,
   TextMeetingLayout,
   ActionList,
   PlayerList,
   Timer,
 } from "./Game";
 import { GameContext } from "../../Contexts";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/gameBattlesnakes.css";
 import SnakeGameDisplay from "./SnakeGameDisplay";
 
 function SnakeGame(props) {
   const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
+
   const history = game.history;
   const updateHistory = game.updateHistory;
   const stateViewing = game.stateViewing;
@@ -56,40 +59,21 @@ function SnakeGame(props) {
     });
   }, game.socket);
 
+  if (isPhoneDevice) {
+    // Unsupported
+    game.leaveGame();
+    alert("Battlesnakes is not presently supported on mobile devices.");
+    return <></>;
+  }
+
   return (
     <>
-      <BotBar
-        gameType={gameType}
-        game={game}
-        history={history}
-        stateViewing={stateViewing}
-        updateStateViewing={updateStateViewing}
-        players={players}
-        gameName={
-          <div className="game-name">
-            <span>Battlesnakes</span>
-          </div>
-        }
-      />
+      <TopBar hideStateSwitcher />
       <ThreePanelLayout
         leftPanelContent={
           <>
-            <PlayerList
-              players={players}
-              history={history}
-              gameType={gameType}
-              stateViewing={stateViewing}
-              activity={game.activity}
-            />
-            <ActionList
-              socket={game.socket}
-              isParticipant={game.isParticipant}
-              meetings={meetings}
-              players={players}
-              self={self}
-              history={history}
-              stateViewing={stateViewing}
-            />
+            <PlayerList />
+            <ActionList />
           </>
         }
         centerPanelContent={
@@ -105,19 +89,7 @@ function SnakeGame(props) {
         }
         rightPanelContent={
           <>
-            <TextMeetingLayout
-              combineMessagesFromAllMeetings
-              socket={game.socket}
-              history={history}
-              updateHistory={updateHistory}
-              players={players}
-              stateViewing={stateViewing}
-              settings={game.settings}
-              filters={game.speechFilters}
-              options={game.options}
-              setup={game.setup}
-              localAudioTrack={game.localAudioTrack}
-            />
+            <TextMeetingLayout combineMessagesFromAllMeetings />
           </>
         }
       />

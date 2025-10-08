@@ -12,7 +12,7 @@ import {
   Route,
   Navigate,
   Routes,
-  useNavigate,
+  Link,
 } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
@@ -54,8 +54,6 @@ import "css/game.css";
 import EmotePicker from "../../components/EmotePicker";
 import "./Game.css";
 import { NewLoading } from "../Welcome/NewLoading";
-import { ChangeHead } from "../../components/ChangeHead";
-import { ChangeHeadPing } from "../../components/ChangeHeadPing";
 import StateSwitcher from "../../components/gameComponents/StateSwitcher";
 
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
@@ -76,6 +74,9 @@ import {
   TextField,
   Typography,
   useTheme,
+  BottomNavigation,
+  BottomNavigationAction,
+  Paper,
 } from "@mui/material";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
@@ -93,6 +94,8 @@ import dice3 from "images/emotes/dice3.webp";
 import dice4 from "images/emotes/dice4.webp";
 import dice5 from "images/emotes/dice5.webp";
 import dice6 from "images/emotes/dice6.webp";
+import { Timer } from "components/gameComponents/Timer";
+import { ChangeHeadPing } from "components/gameComponents/ChangeHeadPing";
 
 const emoteMap = {
   dice1: dice1,
@@ -148,6 +151,7 @@ function GameWrapper(props) {
   const [rehostId, setRehostId] = useState();
   const [dev, setDev] = useState(false);
   const [pingInfo, setPingInfo] = useState(null);
+  const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
 
   const playersRef = useRef();
   const selfRef = useRef();
@@ -157,9 +161,49 @@ function GameWrapper(props) {
     useAudio(settings);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+  const isPhoneDevice = useIsPhoneDevice();
   const { gameId } = useParams();
+  const [selectedPanel, setSelectedPanel] = useState("chat");
 
   const isParticipant = !isSpectator && !props.review;
+  const currentStateObject = history.states[history.currentState];
+  const unresolvedActionCount = Object.values(currentStateObject ? currentStateObject.meetings : {})
+    .filter((meeting) => !meeting.playerHasVoted && meeting.voting && meeting.canVote).length;
+
+  function onLeaveGameClick() {
+    if (
+      history.currentState == -1 ||
+      history.currentState == -2 ||
+      finished ||
+      !isParticipant
+    ) {
+      leaveGame();
+    } else {
+      setLeaveDialogOpen(true);
+    }
+  }
+
+  function leaveGame() {
+    if (finished) siteInfo.hideAllAlerts();
+
+    if (socket.on) socket.send("leave");
+    else setLeave(true);
+
+    setLeaveDialogOpen(false);
+  }
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape") {
+        onLeaveGameClick();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   const [persistentGameData, updatePersistentGameData] = useReducer(
     (state, action) => {
@@ -214,7 +258,6 @@ function GameWrapper(props) {
       }
 
       if (persistAfterAction) {
-        console.log("persistentGameData", newState);
         // Save data in localStorage for remembering it in future refreshes
         window.localStorage.setItem(
           "persistentGameData",
@@ -788,11 +831,13 @@ function GameWrapper(props) {
       gameId: gameId,
       socket: socket,
       review: props.review,
+      gameType: gameType,
       setup: setup,
       getSetupGameSetting: getSetupGameSetting,
       startTime: startTime,
       history: history,
       updateHistory: updateHistory,
+      unresolvedActionCount: unresolvedActionCount,
       stateViewing: stateViewing,
       updateStateViewing: updateStateViewing,
       onStateNavigation: onStateNavigation,
@@ -806,8 +851,12 @@ function GameWrapper(props) {
       lastWill: lastWill,
       emojis: emojis,
       setLeave: setLeave,
+      onLeaveGameClick: onLeaveGameClick,
+      leaveGame: leaveGame,
       finished: finished,
       settings: settings,
+      selectedPanel: selectedPanel,
+      setSelectedPanel: setSelectedPanel,
       updateSettings: updateSettings,
       speechFilters: speechFilters,
       setSpeechFilters: setSpeechFilters,
@@ -837,28 +886,37 @@ function GameWrapper(props) {
     return (
       <GameContext.Provider value={gameContext}>
         <ChangeHeadPing title={pingInfo?.msg} timestamp={pingInfo?.timestamp} />
-        <Box
-          className="game no-highlight"
-          sx={{
-            backgroundColor: "background.paper",
-          }}
-        >
-          <FirstGameModal
-            showModal={showFirstGameModal}
-            setShowModal={setShowFirstGameModal}
-          />
-          {gameType === "Mafia" && <MafiaGame />}
-          {gameType === "Resistance" && <ResistanceGame />}
-          {gameType === "Jotto" && <JottoGame />}
-          {gameType === "Acrotopia" && <AcrotopiaGame />}
-          {gameType === "Secret Dictator" && <SecretDictatorGame />}
-          {gameType === "Wacky Words" && <WackyWordsGame />}
-          {gameType === "Liars Dice" && <LiarsDiceGame />}
-          {gameType === "Texas Hold Em" && <TexasHoldEmGame />}
-          {gameType === "Cheat" && <CheatGame />}
-          {gameType === "Battlesnakes" && <BattlesnakesGame />}
-          {gameType === "Connect Four" && <ConnectFourGame />}
-        </Box>
+        <Stack direction="column" sx={{
+          height: "100%",
+        }}>
+          <Box
+            className="game no-highlight"
+            sx={{
+              backgroundColor: "background.paper",
+            }}
+          >
+            <FirstGameModal
+              showModal={showFirstGameModal}
+              setShowModal={setShowFirstGameModal}
+            />
+            {gameType === "Mafia" && <MafiaGame />}
+            {gameType === "Resistance" && <ResistanceGame />}
+            {gameType === "Jotto" && <JottoGame />}
+            {gameType === "Acrotopia" && <AcrotopiaGame />}
+            {gameType === "Secret Dictator" && <SecretDictatorGame />}
+            {gameType === "Wacky Words" && <WackyWordsGame />}
+            {gameType === "Liars Dice" && <LiarsDiceGame />}
+            {gameType === "Texas Hold Em" && <TexasHoldEmGame />}
+            {gameType === "Cheat" && <CheatGame />}
+            {gameType === "Battlesnakes" && <BattlesnakesGame />}
+            {gameType === "Connect Four" && <ConnectFourGame />}
+          </Box>
+        </Stack>
+        <LeaveGameDialog
+          open={leaveDialogOpen}
+          onClose={() => setLeaveDialogOpen(false)}
+          onConfirm={leaveGame}
+        />
       </GameContext.Provider>
     );
   }
@@ -872,21 +930,15 @@ export function useSocketListeners(listeners, socket) {
   }, [socket]);
 }
 
-export function BotBar(props) {
+export function TopBar({ hideStateSwitcher = false }) {
+  const game = useContext(GameContext);
+
   const theme = useTheme();
   const isPhoneDevice = useIsPhoneDevice();
   const { gameId } = useParams();
   const errorAlert = useErrorAlert();
   const siteInfo = useContext(SiteInfoContext);
-  const hideStateSwitcher = props.hideStateSwitcher;
-  const game = props.game;
-  const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
-  const navigate = useNavigate();
-
-  function onLogoClick() {
-    navigate("/");
-  }
 
   function onTestClick() {
     for (let i = 0; i < game.setup.total - 1; i++)
@@ -896,41 +948,6 @@ export function BotBar(props) {
   function onReportClick() {
     setReportDialogOpen(true);
   }
-
-  function onLeaveGameClick() {
-    if (
-      props.history.currentState == -1 ||
-      props.history.currentState == -2 ||
-      game.finished ||
-      game.review
-    ) {
-      leaveGame();
-    } else {
-      setLeaveDialogOpen(true);
-    }
-  }
-
-  function leaveGame() {
-    if (game.finished) siteInfo.hideAllAlerts();
-
-    if (game.socket.on) game.socket.send("leave");
-    else game.setLeave(true);
-
-    setLeaveDialogOpen(false);
-  }
-
-  useEffect(() => {
-    function handleKeyDown(e) {
-      if (e.key === "Escape") {
-        onLeaveGameClick();
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [game]);
 
   function onRehostGameClick() {
     game.noLeaveRef.current = true;
@@ -946,7 +963,7 @@ export function BotBar(props) {
       axios
         .post("/api/game/host", {
           rehost: gameId,
-          gameType: props.gameType,
+          gameType: game.gameType,
           setup: game.setup.id,
           lobby: game.options.lobby,
           private: game.options.private,
@@ -976,153 +993,298 @@ export function BotBar(props) {
       });
   }
 
-  return (
-    <div className="top">
-      {!isPhoneDevice && (
-        <div className="game-name-wrapper" onClick={onLogoClick}>
-          <SiteLogo
-            sx={{
-              height: 75,
-              width: 145,
-            }}
-          />
-        </div>
-      )}
-      <div
-        className="state-wrapper"
-        style={{
-          position: "absolute",
-          left: "50%",
-          transform: "translateX(-50%)",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-        }}
-      >
-        {!hideStateSwitcher && (
-          <StateSwitcher
-            history={props.history}
-            stateViewing={props.stateViewing}
-            updateStateViewing={props.updateStateViewing}
-            onStateNavigation={game.onStateNavigation}
-          />
-        )}
-        <Timer />
-      </div>
-      <div
-        className="misc-wrapper"
-        style={{
-          // Apply different styling when mobile since it takes up entire width
-          width: isPhoneDevice ? "100%" : undefined,
-          paddingLeft: isPhoneDevice ? "8px" : undefined,
-          paddingRight: isPhoneDevice ? "8px" : "10px",
-          justifyContent: isPhoneDevice ? "space-between" : "center",
-        }}
-      >
-        {game.setup && (
-          <Setup
-            setup={game.setup}
-            backgroundColor={getSetupBackgroundColor(game.options, false)}
-          />
-        )}
-        <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1}>
-          <ButtonGroup
-            variant="contained"
-            sx={{
-              backgroundColor: theme.palette.secondary.main,
-              borderRadius: 1,
-            }}
-          >
-            {game.review && (
-              <Tooltip title="Archive">
-                <IconButton size="large" onClick={onArchiveGameClick}>
-                  <img src={lore} alt="Archive" />
-                </IconButton>
-              </Tooltip>
-            )}
+  if(isPhoneDevice && game.selectedPanel !== "info") {
+    // The top bar doubles as an info panel for mobile
+    return <></>;
+  }
 
-            {!isPhoneDevice && game.dev && props.history.currentState == -1 && (
-              <Tooltip title="Fill">
-                <IconButton size="large" onClick={onTestClick}>
-                  <img src={poison} alt="Fill" />
-                </IconButton>
-              </Tooltip>
-            )}
-
-            {!game.review && props.history.currentState === -2 && (
-              <Tooltip title="Rehost">
-                <IconButton size="large" onClick={onRehostGameClick}>
-                  <img src={veg} alt="Rehost" />
-                </IconButton>
-              </Tooltip>
-            )}
-
-            <Tooltip title="File Report">
-              <IconButton size="large" onClick={onReportClick}>
-                <img src={system} alt="Report" />
-              </IconButton>
-            </Tooltip>
-            <ReportDialog
-              open={reportDialogOpen}
-              onClose={() => setReportDialogOpen(false)}
-              prefilledArgs={{ game: gameId }}
-            />
-
-            {isPhoneDevice ? (
-              <Tooltip title="Leave">
-                <IconButton size="large" onClick={onLeaveGameClick}>
-                  <img src={exit} alt="Leave" />
-                </IconButton>
-              </Tooltip>
-            ) : (
-              <Button
-                onClick={onLeaveGameClick}
-                startIcon={<img src={exit} alt="Leave" />}
-              >
-                Leave
-              </Button>
-            )}
-
-            <LeaveGameDialog
-              open={leaveDialogOpen}
-              onClose={() => setLeaveDialogOpen(false)}
-              onConfirm={leaveGame}
-            />
-          </ButtonGroup>
-        </Stack>
-      </div>
+  const logo = (
+    <div style={{ flex: "1", }} key="logo">
+      <Link to="/play" target="_blank" rel="noopener noreferrer">
+        <SiteLogo
+          sx={{
+            height: 75,
+            width: 145,
+          }}
+        />
+      </Link>
     </div>
+  );
+
+  const stateSwitcher = (
+    <Stack direction="column" spacing={1} key="stateSwitcher"
+      sx={{
+        alignItems: "center",
+        justifyContent: "center",
+        flex: "none",
+      }}
+    >
+      {!hideStateSwitcher && (
+        <Paper>
+          <StateSwitcher />
+        </Paper>
+      )}
+    </Stack>
+  );
+
+  const setup = game.setup ? (
+    <Setup
+      setup={game.setup}
+      backgroundColor={getSetupBackgroundColor(game.options, false)}
+    />
+  ) : <></>;
+
+  const buttonGroup = (
+    <ButtonGroup
+      variant="contained"
+      sx={{
+        alignSelf: "stretch",
+        backgroundColor: theme.palette.secondary.main,
+        borderRadius: 1,
+      }}
+    >
+      {game.review && (
+        <Tooltip title="Archive">
+          <IconButton size="large" onClick={onArchiveGameClick}>
+            <img src={lore} alt="Archive" />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      {game.dev && game.history.currentState == -1 && (
+        <Tooltip title="Fill">
+          <IconButton size="large" onClick={onTestClick}>
+            <img src={poison} alt="Fill" />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      {!game.review && game.history.currentState === -2 && (
+        <Tooltip title="Rehost">
+          <IconButton size="large" onClick={onRehostGameClick}>
+              <img src={veg} alt="Rehost" />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      <Tooltip title="File Report">
+        <IconButton size="large" onClick={onReportClick}>
+          <img src={system} alt="Report" />
+        </IconButton>
+      </Tooltip>
+      <ReportDialog
+        open={reportDialogOpen}
+        onClose={() => setReportDialogOpen(false)}
+        prefilledArgs={{ game: gameId }}
+      />
+
+      {!isPhoneDevice && (
+        <Button onClick={game.onLeaveGameClick} startIcon={<img src={exit} alt="Leave" />}>
+          Leave
+        </Button>
+      )}
+    </ButtonGroup>
+  );
+
+  if(!isPhoneDevice) {
+    // DESKTOP ================================================================
+    return (
+      <Stack direction="row" spacing={1} sx={{
+        px: 1,
+        alignItems: "center",
+      }}>
+        {logo}
+        {stateSwitcher}
+        <Stack direction="row" spacing={1} key="miscWrapper"
+          ref={game.scrollDownTriggerRef} 
+          sx={{
+            alignItems: "center",
+            flex: "1",
+          }}
+        >
+          {setup}
+          {buttonGroup}
+        </Stack>
+      </Stack>
+    );
+  }
+  else {
+    // MOBILE ================================================================
+    return (
+      <Stack direction="column" spacing={1} sx={{
+        p: 1,
+      }}>
+        <Stack direction="row" spacing={1}>
+          {logo}
+          {buttonGroup}
+        </Stack>
+        {setup}
+      </Stack>
+    );
+  }
+}
+
+function UnresolvedActionCount({ children }) {
+  const game = useContext(GameContext);
+
+  const {
+    isParticipant,
+    unresolvedActionCount,
+  } = game;
+
+  const hideBadge = !isParticipant || unresolvedActionCount === 0;
+
+  return (<Badge
+    badgeContent={unresolvedActionCount}
+    color="primary"
+    invisible={hideBadge}
+    sx={{
+      "& .MuiBadge-badge": {
+        transform: "scale(1) translate(100%, -50%)",
+      }
+    }}
+  >
+    {children}
+  </Badge>)
+}
+
+function MobileMenu() {
+  const game = useContext(GameContext);
+
+  const menuContent = (
+    <Stack direction="column" sx={{
+      flex: "1",
+      p: 1,
+    }}>
+      <SettingsForm />
+      <Button onClick={game.onLeaveGameClick} startIcon={<img src={exit} alt="Leave" />} sx={{
+        mt: "auto",
+      }}>
+        Leave
+      </Button>
+    </Stack>
+  );
+
+  return (
+    <SideMenu
+      scrollable
+      title="Settings"
+      content={menuContent}
+    />
   );
 }
 
-export function ThreePanelLayout(props) {
+export function MobileLayout({
+  singleState = false,
+  outerLeftNavigationProps = {
+    label: "Players",
+    value: "players",
+    icon: <i className="fas fa-user"/>,
+  },
+  outerLeftContent = <PlayerList />,
+  centerContent = <TextMeetingLayout />,
+  innerRightNavigationProps = {
+    label: "Actions",
+    value: "actions",
+    icon: <UnresolvedActionCount><i className="fas fa-bolt"/></UnresolvedActionCount>
+  },
+  innerRightContent = <ActionList />,
+  additionalInfoContent = <></>,
+}) {
+  const game = useContext(GameContext);
   const isPhoneDevice = useIsPhoneDevice();
 
+  if (!isPhoneDevice) {
+    // Mobile only
+    return  <></>;
+  }
+
+  const {
+    selectedPanel,
+    setSelectedPanel,
+  } = game;
+
+  function onBottomNavigationChange(event, newValue) {
+    if(newValue === "leave") {
+      onLeaveGameClick();
+    }
+    else {
+      setSelectedPanel(newValue);
+    }
+  }
+
   return (
-    <Stack className="main" direction="row" sx={{ gap: isPhoneDevice ? 1 : 2 }}>
+    <>
+      {selectedPanel === outerLeftNavigationProps.value && outerLeftContent}
+      {/* The additionalInfoContent displays after the mobile version of TopBar */}
+      {selectedPanel === "info" && (
+        <>
+          <div style={{ flex: "1", }} />
+          {additionalInfoContent}
+        </>
+      )}
+      {selectedPanel === "chat" && centerContent}
+      {selectedPanel === innerRightNavigationProps.value && innerRightContent}
+      {selectedPanel === "menu" && <MobileMenu />}
+      <Paper elevation={3}>
+        <Divider orientation="horizontal" />
+        <BottomNavigation showLabels value={selectedPanel} onChange={onBottomNavigationChange} sx={{
+          "& > .MuiBottomNavigationAction-root": {
+            minWidth: "unset",
+            width: "56px",
+          }
+        }}>
+          <BottomNavigationAction {...outerLeftNavigationProps} />
+          <BottomNavigationAction label="Info" value="info" icon={<i className="fas fa-info"/>} />
+          <Stack direction="row" onClick={() => setSelectedPanel("chat")} sx={{
+            filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
+          }}>
+            {!singleState && (<Divider orientation="vertical" flexItem />)}
+            <StateSwitcher stateRange={singleState ? 0 : undefined} />
+            {!singleState && (<Divider orientation="vertical" flexItem />)}
+          </Stack>
+          <BottomNavigationAction {...innerRightNavigationProps} />
+          <BottomNavigationAction label="Menu" value="menu" icon={<i className="fas fa-bars"/>} />
+        </BottomNavigation>
+      </Paper>
+    </>
+  );
+}
+
+export function ThreePanelLayout({ leftPanelContent, centerPanelContent, rightPanelContent }) {
+  const isPhoneDevice = useIsPhoneDevice();
+
+  if (isPhoneDevice) {
+    // Desktop only
+    return <></>;
+  }
+
+  return (
+    <Stack className="main" direction="row" sx={{ gap: 2 }}>
       <div className="left-panel panel with-radial-gradient">
-        {props.leftPanelContent}
+        {leftPanelContent}
       </div>
       <div className="center-panel panel with-radial-gradient">
-        {props.centerPanelContent}
+        {centerPanelContent}
       </div>
       <div className="right-panel panel with-radial-gradient">
-        {props.rightPanelContent}
+        {rightPanelContent}
       </div>
     </Stack>
   );
 }
 
-export function TextMeetingLayout(props) {
+export function TextMeetingLayout({ combineMessagesFromAllMeetings = false }) {
   const game = useContext(GameContext);
   const { isolationEnabled, isolatedPlayers } = game;
   const {
-    combineMessagesFromAllMeetings,
     history,
     players,
     stateViewing,
     updateHistory,
-  } = props;
+    settings,
+    filters,
+  } = game;
 
   const stateInfo = history.states[stateViewing];
   const meetings = stateInfo ? stateInfo.meetings : {};
@@ -1242,8 +1404,8 @@ export function TextMeetingLayout(props) {
         obituaries,
         selTab,
         players,
-        props.settings,
-        props.filters
+        settings,
+        filters
       );
     }
 
@@ -1273,7 +1435,7 @@ export function TextMeetingLayout(props) {
           onMessageQuote={game.onMessageQuote}
           onPinMessage={game.onPinMessage}
           isMessagePinned={game.isMessagePinned}
-          settings={props.settings}
+          settings={settings}
           unfocusedMessage={unfocusedMessage}
           chainToPrevious={chainToPrevious}
         />
@@ -1284,8 +1446,8 @@ export function TextMeetingLayout(props) {
        This is a performance improvement for preventing unnecessary re-renders caused by GameWrapper.
     */
     stateInfo,
-    props.settings,
-    props.filters,
+    settings,
+    filters,
     isolationEnabled,
     isolatedPlayers,
     game.pinnedMessages,
@@ -1307,6 +1469,11 @@ export function TextMeetingLayout(props) {
         {tabs.length === 0 && (
           <div className="tab sel">{stateInfo && stateInfo.name}</div>
         )}
+        <div style={{
+          marginLeft: "auto",
+        }}>
+          <Timer />
+        </div>
       </div>
       <div className="speech-wrapper">
         <div
@@ -1327,8 +1494,8 @@ export function TextMeetingLayout(props) {
               meetings={meetings}
               selTab={selTab}
               players={players}
-              options={props.options}
-              socket={props.socket}
+              options={game.options}
+              socket={game.socket}
               setAutoScroll={setAutoScroll}
               speechInput={speechInput}
               setSpeechInput={setSpeechInput}
@@ -2152,16 +2319,6 @@ function SpeechInput(props) {
   );
 }
 
-export function formatTimerTime(time) {
-  if (time > 0) time = Math.round(time / 1000);
-  else time = 0;
-
-  const minutes = String(Math.floor(time / 60)).padStart(2, "0");
-  const seconds = String(time % 60).padStart(2, "0");
-
-  return `${minutes}:${seconds}`;
-}
-
 export function SideMenu({
   title,
   lockIcon,
@@ -2170,7 +2327,6 @@ export function SideMenu({
   expanded,
   onChange,
   isAccordionMenu = false,
-  isTopMostMenu = false,
   defaultExpanded = false,
   disabled = false,
   contentPadding = "8px 16px",
@@ -2191,12 +2347,6 @@ export function SideMenu({
           sx={{
             alignItems: "center",
             p: 1,
-            borderTopLeftRadius: isTopMostMenu
-              ? "var(--mui-shape-borderRadius)"
-              : undefined,
-            borderTopRightRadius: isTopMostMenu
-              ? "var(--mui-shape-borderRadius)"
-              : undefined,
             bgcolor: "var(--scheme-color-background)",
           }}
         >
@@ -2282,11 +2432,9 @@ function RoleMarkerToggle({ playerId, setup, toggleRolePrediction }) {
   );
 }
 
-export function PlayerRows(props) {
+export function PlayerRows({ players, className = "" }) {
   const game = useContext(GameContext);
   const [activity, updateActivity] = useActivity();
-  const socket = game.socket;
-  const rolePredictions = props.rolePredictions;
 
   useEffect(() => {
     if (socket && socket.on) {
@@ -2300,10 +2448,20 @@ export function PlayerRows(props) {
     }
   }, []);
 
-  const { isolationEnabled, togglePlayerIsolation, isolatedPlayers } = game;
-  const history = props.history;
-  const players = props.players;
-  const stateViewingInfo = history.states[props.stateViewing];
+  const {
+    gameType,
+    socket,
+    history,
+    setup,
+    self,
+    stateViewing,
+    rolePredictions,
+    toggleRolePrediction,
+    isolationEnabled,
+    togglePlayerIsolation,
+    isolatedPlayers,
+  } = game;
+  const stateViewingInfo = history.states[stateViewing];
   const selTab = stateViewingInfo && stateViewingInfo.selTab;
 
   const isPlayerIsolated = (playerId) => isolatedPlayers.has(playerId);
@@ -2324,8 +2482,8 @@ export function PlayerRows(props) {
 
     var showBubbles =
       Object.keys(history.states[history.currentState].dead).includes(
-        props.self
-      ) || players.find((x) => x.id === props.self) !== undefined;
+        self
+      ) || players.find((x) => x.id === self) !== undefined;
     var colorAutoScheme = false;
     var bubbleColor = "black";
     if (document.documentElement.classList.length === 0) {
@@ -2355,24 +2513,24 @@ export function PlayerRows(props) {
 
     return (
       <div
-        className={`player ${props.className ? props.className : ""}`}
+        className={`player ${className ? className : ""}`}
         key={player.id}
       >
         {isolationCheckbox}
-        {props.stateViewing != -1 && (
+        {stateViewing !== -1 && (
           <RoleMarkerToggle
             playerId={player.id}
-            setup={game.setup}
-            toggleRolePrediction={game.toggleRolePrediction}
+            setup={setup}
+            toggleRolePrediction={toggleRolePrediction}
           />
         )}
-        {props.stateViewing != -1 && (
+        {stateViewing !== -1 && (
           <RoleCount
             role={roleToShow}
             key={roleToShow}
-            gameType={props.gameType}
+            gameType={gameType}
             showPopover
-            otherRoles={props.setup?.roles}
+            otherRoles={setup?.roles}
           />
         )}
         <NameWithAvatar
@@ -2382,14 +2540,14 @@ export function PlayerRows(props) {
           avatar={player.avatar}
           color={player.nameColor}
           active={activity.speaking[player.id]}
-          noLink={props.stateViewing >= 0 && game.options.anonymousGame}
+          noLink={stateViewing >= 0 && game.options.anonymousGame}
           includeMiniprofile
           newTab
         />
         {selTab && showBubbles && activity.typing[player.id] === selTab && (
           <ReactLoading
             className={`typing-icon ${
-              props.stateViewing != -1 ? "has-role" : ""
+              stateViewing != -1 ? "has-role" : ""
             }`}
             type="bubbles"
             color={bubbleColor}
@@ -2405,22 +2563,22 @@ export function PlayerRows(props) {
 }
 
 export function PlayerList(props) {
-  const history = props.history;
-  const stateViewingInfo = history.states[props.stateViewing];
-  const alivePlayers = Object.values(props.players).filter(
+  const game = useContext(GameContext);
+
+  const history = game.history;
+  const stateViewingInfo = history.states[game.stateViewing];
+  const alivePlayers = Object.values(game.players).filter(
     (p) => !stateViewingInfo.dead[p.id] && !p.left
   );
-  const deadPlayers = Object.values(props.players).filter(
+  const deadPlayers = Object.values(game.players).filter(
     (p) =>
       stateViewingInfo.dead[p.id] &&
       !p.left &&
       !stateViewingInfo.exorcised[p.id]
   );
-  const exorcisedPlayers = Object.values(props.players).filter(
+  const exorcisedPlayers = Object.values(game.players).filter(
     (p) => stateViewingInfo.exorcised[p.id] && !p.left
   );
-
-  const game = useContext(GameContext);
 
   const title = (
     <Stack
@@ -2451,62 +2609,37 @@ export function PlayerList(props) {
   return (
     <SideMenu
       title={title}
-      isTopMostMenu
       scrollable
       content={
         <div className="player-list">
-          <PlayerRows
-            players={alivePlayers}
-            history={history}
-            self={props.self}
-            gameType={props.gameType}
-            stateViewing={props.stateViewing}
-            activity={props.activity}
-            setup={props.setup}
-            rolePredictions={game.rolePredictions}
-          />
+          <PlayerRows players={alivePlayers} />
           {deadPlayers.length > 0 && (
             <div className="section-title">
               <i className="fas fa-skull" />
               Graveyard
             </div>
           )}
-          <PlayerRows
-            players={deadPlayers}
-            history={history}
-            self={props.self}
-            gameType={props.gameType}
-            stateViewing={props.stateViewing}
-            activity={props.activity}
-            className="dead"
-            setup={props.setup}
-            rolePredictions={game.rolePredictions}
-          />
+          <PlayerRows players={deadPlayers} className="dead" />
           {exorcisedPlayers.length > 0 && (
             <div className="section-title">
               <i className="fas fa-skull" />
               Underworld
             </div>
           )}
-          <PlayerRows
-            players={exorcisedPlayers}
-            history={history}
-            self={props.self}
-            gameType={props.gameType}
-            stateViewing={props.stateViewing}
-            activity={props.activity}
-            className="dead"
-            setup={props.setup}
-            rolePredictions={game.rolePredictions}
-          />
+          <PlayerRows players={exorcisedPlayers} className="dead" />
         </div>
       }
     />
   );
 }
 
-export function OptionsList(props) {
-  const gameOptions = props.gameOptions;
+export function OptionsList() {
+  const game = useContext(GameContext);
+  const gameOptions = game.options.gameTypeOptions;
+
+  if (history.currentState !== -1) {
+    return <></>;
+  }
 
   const formatOptionName = (optionName) => {
     const words = optionName.split(/(?=[A-Z])/);
@@ -2549,17 +2682,15 @@ export function OptionsList(props) {
   );
 }
 
-export function getUnresolvedActionCount(meetings) {
-  return Object.values(meetings).filter(
-    (meeting) => !meeting.playerHasVoted && meeting.voting && meeting.canVote
-  ).length;
-}
+export function ActionList({ title = "Actions", actionStyle = {}, }) {
+  const game = useContext(GameContext);
 
-export function ActionList(props) {
-  const unresolvedActionCount = getUnresolvedActionCount(props.meetings);
-  const isParticipant = props.isParticipant;
+  const currentlyViewedState = game.history.states[game.stateViewing]
+  const meetings = currentlyViewedState ? currentlyViewedState.meetings : {};
 
-  const actions = Object.values(props.meetings).reduce((actions, meeting) => {
+  const isParticipant = game.isParticipant;
+
+  const actions = Object.values(meetings).reduce((actions, meeting) => {
     if (meeting.voting) {
       var action;
 
@@ -2575,13 +2706,13 @@ export function ActionList(props) {
           action = (
             <ActionSelect
               key={meeting.id}
-              socket={props.socket}
+              socket={game.socket}
               meeting={meeting}
-              players={props.players}
-              self={props.self}
-              history={props.history}
-              stateViewing={props.stateViewing}
-              style={props.style}
+              players={game.players}
+              self={game.self}
+              history={game.history}
+              stateViewing={game.stateViewing}
+              style={actionStyle}
             />
           );
           break;
@@ -2589,13 +2720,13 @@ export function ActionList(props) {
           action = (
             <ActionButton
               key={meeting.id}
-              socket={props.socket}
+              socket={game.socket}
               meeting={meeting}
-              players={props.players}
-              self={props.self}
-              history={props.history}
-              stateViewing={props.stateViewing}
-              style={props.style}
+              players={game.players}
+              self={game.self}
+              history={game.history}
+              stateViewing={game.stateViewing}
+              style={actionStyle}
             />
           );
           break;
@@ -2603,13 +2734,13 @@ export function ActionList(props) {
           action = (
             <ActionText
               key={meeting.id}
-              socket={props.socket}
+              socket={game.socket}
               meeting={meeting}
-              players={props.players}
-              self={props.self}
-              history={props.history}
-              stateViewing={props.stateViewing}
-              style={props.style}
+              players={game.players}
+              self={game.self}
+              history={game.history}
+              stateViewing={game.stateViewing}
+              style={actionStyle}
             />
           );
           break;
@@ -2617,13 +2748,13 @@ export function ActionList(props) {
           action = (
             <ActionImageButtons
               key={meeting.id}
-              socket={props.socket}
+              socket={game.socket}
               meeting={meeting}
-              players={props.players}
-              self={props.self}
-              history={props.history}
-              stateViewing={props.stateViewing}
-              style={props.style}
+              players={game.players}
+              self={game.self}
+              history={game.history}
+              stateViewing={game.stateViewing}
+              style={actionStyle}
             />
           );
           break;
@@ -2631,13 +2762,13 @@ export function ActionList(props) {
           action = (
             <PlayingCardButtons
               key={meeting.id}
-              socket={props.socket}
+              socket={game.socket}
               meeting={meeting}
-              players={props.players}
-              self={props.self}
-              history={props.history}
-              stateViewing={props.stateViewing}
-              style={props.style}
+              players={game.players}
+              self={game.self}
+              history={game.history}
+              stateViewing={game.stateViewing}
+              style={actionStyle}
             />
           );
           break;
@@ -2645,13 +2776,13 @@ export function ActionList(props) {
           action = (
             <ActionSeparatingText
               key={meeting.id}
-              socket={props.socket}
+              socket={game.socket}
               meeting={meeting}
-              players={props.players}
-              self={props.self}
-              history={props.history}
-              stateViewing={props.stateViewing}
-              style={props.style}
+              players={game.players}
+              self={game.self}
+              history={game.history}
+              stateViewing={game.stateViewing}
+              style={actionStyle}
             />
           );
           break;
@@ -2664,16 +2795,11 @@ export function ActionList(props) {
 
   return (
     <SideMenu
-      isTopMostMenu
       scrollable
       title={
-        <Badge
-          badgeContent={unresolvedActionCount}
-          color="primary"
-          invisible={!isParticipant || unresolvedActionCount === 0}
-        >
-          {props.title || "Actions"}
-        </Badge>
+        <UnresolvedActionCount>
+          {title || "Actions"}
+        </UnresolvedActionCount>
       }
       content={<div className="action-list">{actions}</div>}
     />
@@ -2851,6 +2977,7 @@ function ActionSelect(props) {
             // if the row item is just the string "divider" then short circuit and render a divider
             return (
               <Divider
+                key={"divider"}
                 direction="horizontal"
                 sx={{
                   marginBottom: 1,
@@ -3339,149 +3466,25 @@ function getTargetDisplay(targets, meeting, players) {
   return targets;
 }
 
-export function Timer(props) {
-  const game = useContext(GameContext);
-  const [timers, updateTimers] = useTimersReducer();
-  const [started, setStarted] = useState(null);
-  const [winners, setWinners] = useState(null);
-
-  const socket = game.socket;
-  const playAudio = game.playAudio;
-
-  useEffect(() => {
-    var timerInterval = setInterval(() => {
-      updateTimers({
-        type: "updateAll",
-        playAudio,
-      });
-    }, 200);
-
-    if (socket && socket.on) {
-      socket.on("timerInfo", (info) => {
-        if (info?.name === "vegKick") {
-          playAudio("vegPing");
-        }
-        updateTimers({
-          type: "create",
-          timer: info,
-        });
-
-        if (
-          info.name === "pregameCountdown" &&
-          Notification &&
-          Notification.permission === "granted" &&
-          !document.hasFocus()
-        ) {
-          new Notification("Your game is starting!");
-        }
-      });
-
-      socket.on("clearTimer", (name) => {
-        updateTimers({
-          type: "clear",
-          name,
-        });
-      });
-
-      socket.on("time", (info) => {
-        updateTimers({
-          type: "update",
-          name: info.name,
-          time: info.time,
-        });
-      });
-
-      socket.on("start", () => setStarted(true));
-
-      socket.on("isStarted", (isStarted) => setStarted(isStarted));
-
-      socket.on("winners", ({ groups }) => {
-        const newGroups = groups.map((group) => {
-          if (group === "Village") return "⛪ Village";
-          if (group === "Mafia") return "🔪 Mafia";
-          return group;
-        });
-        setWinners(`${newGroups.join("/")} won!`);
-      });
-    }
-
-    // cleanup
-    return () => {
-      clearInterval(timerInterval);
-    };
-  }, []);
-
-  const numPlayers = Object.values(game.players).filter((p) => !p?.left).length;
-
-  const isFilled = numPlayers === game.setup?.total;
-  const filledEmoji = isFilled ? " 🔔🔔" : "";
-  const fillingTitle = `🔪 ${numPlayers}/${game.setup?.total}${filledEmoji} Ultimafia`;
-  const ChangeHeadFilling = <ChangeHead title={fillingTitle} />;
-
-  const currentState = game.history?.states[game.history?.currentState]?.name;
-  const isFinished = currentState === "Postgame";
-
-  const mainTimer = formatTimerTime(timers?.main?.delay - timers?.main?.time);
-  const ChangeHeadInProgress = (
-    <ChangeHead title={`🔪 ${mainTimer} - ${currentState}`} />
-  );
-
-  let HeadChanges = null;
-  if (!game.review) {
-    if (isFinished) {
-      if (winners) HeadChanges = <ChangeHead title={winners} />;
-      else HeadChanges = <ChangeHead title=" Ultimafia" />;
-    } else if (started) HeadChanges = ChangeHeadInProgress;
-    else HeadChanges = ChangeHeadFilling;
-  }
-
-  var timerName;
-
-  if (!timers["pregameCountdown"] && timers["pregameWait"])
-    timerName = "pregameWait";
-  else if (game.history.currentState == -1) timerName = "pregameCountdown";
-  else if (game.history.currentState == -2) timerName = "postgame";
-  else if (timers["secondary"]) timerName = "secondary";
-  else if (timers["vegKick"]) timerName = "vegKick";
-  else if (timers["vegKickCountdown"]) timerName = "vegKickCountdown";
-  else timerName = "main";
-
-  const timer = timers[timerName];
-
-  if (!timer) return <></>;
-
-  var time = timer.delay - timer.time;
-
-  if (timers["secondary"]) {
-    // show main timer if needed
-    const mainTimer = timers["main"];
-    if (mainTimer) {
-      var mainTime = mainTimer.delay - mainTimer.time;
-      time = Math.min(time, mainTime);
-    }
-  }
-
-  time = formatTimerTime(time);
-
-  if (timerName === "vegKick") {
-    return <div className="state-timer">Kicking in {time}</div>;
-  }
-  return (
-    <>
-      {HeadChanges}
-      <div className="state-timer">{time}</div>
-    </>
-  );
-}
-
 export function LastWillEntry(props) {
+  const game = useContext(GameContext);
   const [lastWill, setLastWill] = useState(props.lastWill);
-  const cannotModifyLastWill = props.cannotModifyLastWill;
+
+  const currentState = game.history.states[history.currentState];
+  const cannotModifyLastWill = !currentState || !currentState.name.startsWith("Day");
+
+  if (!game.isParticipant || (history.currentState < 0) || !game.getSetupGameSetting("Last Wills")) {
+    return <></>;
+  }
 
   function onWillChange(e) {
     var newWill = e.target.value.slice(0, MaxWillLength);
     setLastWill(newWill);
     props.socket.send("lastWill", newWill);
+  }
+
+  if (cannotModifyLastWill) {
+    return <></>;
   }
 
   return (
@@ -3510,17 +3513,9 @@ export function LastWillEntry(props) {
   );
 }
 
-export function SettingsMenu(props) {
-  const { settings, updateSettings } = props;
-  const [expanded, setExpanded] = useState(false);
-
-  const handleClose = () => {
-    setExpanded(false);
-  };
-
-  const handleToggle = () => {
-    setExpanded((prev) => !prev);
-  };
+function SettingsForm({ handleClose = null }) {
+  const game = useContext(GameContext);
+  const { settings, updateSettings } = game;
 
   const [formFields, updateFormFields] = useForm([
     {
@@ -3603,7 +3598,9 @@ export function SettingsMenu(props) {
       });
     });
 
-    handleClose();
+    if (handleClose) {
+      handleClose();
+    }
   }
 
   function saveSettings() {
@@ -3617,7 +3614,9 @@ export function SettingsMenu(props) {
       settings: newSettings,
     });
 
-    handleClose();
+    if (handleClose) {
+      handleClose();
+    }
   }
 
   const menuContent = <Form fields={formFields} onChange={updateFormFields} />;
@@ -3628,23 +3627,37 @@ export function SettingsMenu(props) {
         <Button color="primary" onClick={saveSettings}>
           Save
         </Button>
-        <Button color="secondary" onClick={cancel}>
+        {handleClose && (<Button color="secondary" onClick={cancel}>
           Cancel
-        </Button>
+        </Button>)}
       </ButtonGroup>
     </div>
   );
 
   return (
+    <>
+      {menuContent}
+      {menuFooter}
+    </>
+  );
+}
+
+export function SettingsMenu() {
+  const [expanded, setExpanded] = useState(false);
+
+  const handleClose = () => {
+    setExpanded(false);
+  };
+
+  const handleToggle = () => {
+    setExpanded((prev) => !prev);
+  };
+
+  return (
     <SideMenu
       title="Settings"
       isAccordionMenu
-      content={
-        <>
-          {menuContent}
-          {menuFooter}
-        </>
-      }
+      content={<SettingsForm handleClose={handleClose} />}
       expanded={expanded}
       onChange={handleToggle}
     />
@@ -3765,10 +3778,15 @@ function FirstGameModal(props) {
   );
 }
 
-export function SpeechFilter(props) {
+export function SpeechFilter() {
   const game = useContext(GameContext);
-  const { isolationEnabled, setIsolationEnabled } = game;
-  const { filters, setFilters, stateViewing } = props;
+  const {
+    isolationEnabled,
+    setIsolationEnabled,
+    speechFilters: filters,
+    setSpeechFilters: setFilters,
+    stateViewing
+  } = game;
 
   const toggleIsolationEnabled = () => setIsolationEnabled(!isolationEnabled);
 
@@ -3873,8 +3891,9 @@ export function PinnedMessages() {
   );
 }
 
-export function Notes(props) {
-  const stateViewing = props.stateViewing;
+export function Notes() {
+  const game = useContext(GameContext);
+  const stateViewing = game.stateViewing;
   const [notes, setNotes] = useState("");
   const { gameId } = useParams();
 
@@ -3932,7 +3951,7 @@ function useHistoryReducer(pauseHistoryUpdates) {
 
       switch (action.type) {
         case "set":
-          var stateIds = Object.keys(action.history).sort((a, b) => a - b);
+          var stateIds = Object.keys(action.history).map(a => parseInt(a)).sort((a, b) => a - b);
           newHistory = { states: action.history, pausedActions: [] };
 
           if (stateIds[0] == -2) newHistory.currentState = -2;
@@ -3963,7 +3982,7 @@ function useHistoryReducer(pauseHistoryUpdates) {
                 },
               },
               currentState: {
-                $set: action.state.id,
+                $set: Number.parseInt(action.state.id),
               },
             });
           } else newHistory = history;
@@ -4299,60 +4318,16 @@ export function useStateViewingReducer(history) {
       case "first":
         newState = -1;
         break;
+      case "set":
+        newState = action.stateNum;
+        break;
       default:
-        newState = state;
+        throw Error(`Unknown action type ${action.type}`);
     }
 
     if (history.states[newState]) return newState;
     else return state;
   }, history.currentState);
-}
-
-export function useTimersReducer() {
-  return useReducer((timers, action) => {
-    var newTimers = { ...timers };
-
-    switch (action.type) {
-      case "create":
-        newTimers[action.timer.name] = {
-          delay: action.timer.delay,
-          time: 0,
-        };
-        break;
-      case "clear":
-        delete newTimers[action.name];
-        break;
-      case "update":
-        newTimers[action.name].time = action.time;
-        break;
-      case "updateAll":
-        // for (var timerName in newTimers) newTimers[timerName].time += 200;
-
-        const timer =
-          newTimers["pregameCountdown"] ||
-          newTimers["secondary"] ||
-          newTimers["main"];
-
-        if (!timer) break;
-
-        const intTime = Math.round((timer.delay - timer.time) / 1000);
-        if (intTime !== timer?.lastTickTime) {
-          if (intTime < 16 && intTime > 0) action.playAudio("tick");
-        }
-        timer.lastTickTime = intTime;
-
-        const canVegPing =
-          !timer.lastVegPingDate ||
-          new Date() - timer?.lastVegPingDate >= 10 * 1000; // note: 10 * 1000 might not work, cuz lastVegPingDate becomes null upon reset/restart anyway...
-        if (canVegPing && intTime >= 25 && intTime <= 30) {
-          action.playAudio("vegPing");
-          timer.lastVegPingDate = new Date();
-        }
-        break;
-    }
-
-    return newTimers;
-  }, {});
 }
 
 export function usePlayersReducer() {
