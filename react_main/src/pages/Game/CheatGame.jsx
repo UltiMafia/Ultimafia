@@ -6,6 +6,11 @@ import {
   TopBar,
   ActionList,
   OptionsList,
+  PlayerList,
+  SettingsMenu,
+  TextMeetingLayout,
+  Notes,
+  MobileLayout,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -97,19 +102,37 @@ export default function CheatGame(props) {
     });
   }, game.socket);
 
+  const playerList = (
+    <>
+      {stateViewing < 0 && <PlayerList />}
+      <LiarscardcardViewWrapper
+        history={history}
+        stateViewing={stateViewing}
+        self={self}
+      />
+    </>
+  );
+
+  const actionsList = (
+    <ActionList
+      title="Play your Cards!"
+      style={{
+        color: history.states?.[stateViewing]?.extraInfo
+          ?.isTheFlyingDutchman
+          ? "#718E77"
+          : undefined,
+      }}
+    />
+  );
+
   return (
     <>
       <TopBar hideStateSwitcher />
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {history.currentState == -1 && <PlayerList />}
-            <LiarscardcardViewWrapper
-              history={history}
-              stateViewing={stateViewing}
-              self={self}
-            />
-            {!isPhoneDevice && <SettingsMenu />}
+            {playerList}
+            <SettingsMenu />
           </>
         }
         centerPanelContent={
@@ -117,35 +140,21 @@ export default function CheatGame(props) {
         }
         rightPanelContent={
           <>
-            {history.currentState == -1 && (
-              <OptionsList
-                players={players}
-                history={history}
-                gameType={gameType}
-                gameOptions={gameOptions}
-                stateViewing={stateViewing}
-                activity={game.activity}
-              />
-            )}
-            {history.currentState != -1 && (
-              <ThePot
-                players={players}
-                history={history}
-                gameType={gameType}
-                stateViewing={stateViewing}
-                activity={game.activity}
-              />
-            )}
-            <ActionList
-              title="Play your Cards!"
-              style={{
-                color: history.states?.[stateViewing]?.extraInfo
-                  ?.isTheFlyingDutchman
-                  ? "#718E77"
-                  : undefined,
-              }}
-            />
-            {!isPhoneDevice && <Notes />}
+            <OptionsList />
+            <ThePot />
+            {actionsList}
+            <Notes />
+          </>
+        }
+      />
+      <MobileLayout
+        singleState 
+        outerLeftContent={playerList}
+        innerRightContent={
+          <>
+            <OptionsList />
+            <ThePot />
+            {actionsList}
           </>
         }
       />
@@ -153,10 +162,11 @@ export default function CheatGame(props) {
   );
 }
 
-export function ThePot(props) {
-  const history = props.history;
-  const stateViewing = props.stateViewing;
-  const self = props.self;
+export function ThePot() {
+  const game = useContext(GameContext);
+
+  const history = game.history;
+  const stateViewing = game.stateViewing;
 
   if (stateViewing < 0) return <></>;
 

@@ -92,9 +92,9 @@ export default function AcrotopiaGame(props) {
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {<PlayerList />}
-            {!isPhoneDevice && <SpeechFilter />}
-            {!isPhoneDevice && <SettingsMenu />}
+            <PlayerList />
+            <SpeechFilter />
+            <SettingsMenu />
           </>
         }
         centerPanelContent={
@@ -104,11 +104,19 @@ export default function AcrotopiaGame(props) {
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
             <ActionList />
-            {!isPhoneDevice && <Notes />}
+            <Notes />
           </>
         }
       />
-      <MobileLayout singleState />
+      <MobileLayout
+        singleState 
+        innerRightContent={
+          <>
+            <HistoryKeeper history={history} stateViewing={stateViewing} />
+            <ActionList />
+          </>
+        }
+      />
     </>
   );
 }

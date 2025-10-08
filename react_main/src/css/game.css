@@ -95,6 +95,9 @@
   padding: var(--mui-spacing);
   line-height: normal;
   flex: none;
+
+  border-top-left-radius: var(--mui-shape-borderRadius);
+  border-top-right-radius: var(--mui-shape-borderRadius);
 }
 
 .game .meeting-tabs {
@@ -105,8 +108,6 @@
   gap: var(--mui-spacing);
 
   background-color: var(--scheme-color-background);
-  border-top-left-radius: var(--mui-shape-borderRadius);
-  border-top-right-radius: var(--mui-shape-borderRadius);
 }
 
 .game .tab {
@@ -933,6 +934,11 @@
     padding: 0px !important;
     background-color: var(--scheme-color) !important;
     background-image: none;
+  }
+
+  .game .title-box {
+    border-top-left-radius: unset !important;
+    border-top-right-radius: unset !important;
   }
 
   .game .main {

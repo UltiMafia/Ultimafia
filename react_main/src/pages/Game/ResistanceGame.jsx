@@ -12,6 +12,7 @@ import {
   SettingsMenu,
   Notes,
   PinnedMessages,
+  MobileLayout,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 
@@ -92,9 +93,9 @@ export default function ResistanceGame(props) {
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {<PlayerList />}
-            {!isPhoneDevice && <SpeechFilter />}
-            {!isPhoneDevice && <SettingsMenu />}
+            <PlayerList />
+            <SpeechFilter />
+            <SettingsMenu />
           </>
         }
         centerPanelContent={
@@ -102,14 +103,31 @@ export default function ResistanceGame(props) {
         }
         rightPanelContent={
           <>
-            <ScoreKeeper
-              numMissions={game.setup.numMissions}
-              history={history}
-              stateViewing={stateViewing}
-            />
+            <ScoreKeeper />
             <ActionList />
-            {!isPhoneDevice && <PinnedMessages />}
-            {!isPhoneDevice && <Notes />}
+            <PinnedMessages />
+            <Notes />
+          </>
+        }
+      />
+      <MobileLayout
+        singleState
+        outerLeftContent={
+          <>
+            <PlayerList />
+            <SpeechFilter />
+          </>
+        }
+        innerRightContent={
+          <>
+            <ScoreKeeper />
+            <ActionList />
+          </>
+        }
+        additionalInfoContent={
+          <>
+            <PinnedMessages />
+            <Notes />
           </>
         }
       />
@@ -117,11 +135,12 @@ export default function ResistanceGame(props) {
   );
 }
 
-function ScoreKeeper(props) {
-  const numMissions = props.numMissions;
-  const history = props.history;
+function ScoreKeeper() {
+  const game = useContext(GameContext);
 
-  const stateViewing = props.stateViewing;
+  const numMissions = game.numMissions;
+  const history = game.history;
+  const stateViewing = game.stateViewing;
 
   if (stateViewing < 0) return <></>;
 

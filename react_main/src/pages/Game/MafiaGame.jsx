@@ -14,6 +14,7 @@ import {
   SettingsMenu,
   Notes,
   PinnedMessages,
+  MobileLayout,
 } from "./Game";
 import { GameContext, SiteInfoContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -486,9 +487,9 @@ export default function MafiaGame() {
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {<PlayerList />}
-            {!isPhoneDevice && <SpeechFilter />}
-            {!isPhoneDevice && <SettingsMenu />}
+            <PlayerList />
+            <SpeechFilter />
+            <SettingsMenu />
           </>
         }
         centerPanelContent={
@@ -496,22 +497,33 @@ export default function MafiaGame() {
         }
         rightPanelContent={
           <>
-            {<HistoryKeeper history={history} stateViewing={stateViewing} />}
+            <HistoryKeeper history={history} stateViewing={stateViewing} />
             <ActionList />
-            {!game.review &&
-              !isSpectator &&
-              history.currentState >= 0 &&
-              game.getSetupGameSetting("Last Wills") && (
-                <LastWillEntry
-                  lastWill={game.lastWill}
-                  cannotModifyLastWill={history.states[
-                    history.currentState
-                  ].name.startsWith("Day")}
-                  socket={game.socket}
-                />
-              )}
-            {!isPhoneDevice && <PinnedMessages />}
-            {!isPhoneDevice && <Notes />}
+            <LastWillEntry />
+            <PinnedMessages />
+            <Notes />
+          </>
+        }
+      />
+      <MobileLayout
+        singleState
+        outerLeftContent={
+          <>
+            <PlayerList />
+            <SpeechFilter />
+          </>
+        }
+        innerRightContent={
+          <>
+            <HistoryKeeper history={history} stateViewing={stateViewing} />
+            <ActionList />
+            <LastWillEntry />
+          </>
+        }
+        additionalInfoContent={
+          <>
+            <PinnedMessages />
+            <Notes />
           </>
         }
       />

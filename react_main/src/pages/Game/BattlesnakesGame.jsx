@@ -59,6 +59,13 @@ function SnakeGame(props) {
     });
   }, game.socket);
 
+  if (isPhoneDevice) {
+    // Unsupported
+    game.leaveGame();
+    alert("Battlesnakes is not presently supported on mobile devices.");
+    return <></>;
+  }
+
   return (
     <>
       <TopBar hideStateSwitcher />

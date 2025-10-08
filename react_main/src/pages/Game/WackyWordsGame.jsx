@@ -11,6 +11,7 @@ import {
   SpeechFilter,
   SettingsMenu,
   Notes,
+  MobileLayout,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -89,32 +90,32 @@ export default function WackyWordsGame(props) {
     <>
       <TopBar hideStateSwitcher />
       <ThreePanelLayout
-        selectedPanel={game.selectedPanel}
         leftPanelContent={
           <>
-            {<PlayerList />}
-            {!isPhoneDevice && <SpeechFilter />}
-            {!isPhoneDevice && <SettingsMenu />}
+            <PlayerList />
+            <SpeechFilter />
+            <SettingsMenu />
           </>
         }
         centerPanelContent={
           <>
-            {game.componentFactory.textMeetingLayout({combineMessagesFromAllMeetings: true})}
+            <TextMeetingLayout combineMessagesFromAllMeetings />
           </>
         }
         rightPanelContent={
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
-            <ActionList
-              socket={game.socket}
-              isParticipant={game.isParticipant}
-              meetings={meetings}
-              players={players}
-              self={self}
-              history={history}
-              stateViewing={stateViewing}
-            />
-            {!isPhoneDevice && <Notes />}
+            <ActionList />
+            <Notes />
+          </>
+        }
+      />
+      <MobileLayout
+        singleState
+        innerRightContent={
+          <>
+            <HistoryKeeper history={history} stateViewing={stateViewing} />
+            <ActionList />
           </>
         }
       />

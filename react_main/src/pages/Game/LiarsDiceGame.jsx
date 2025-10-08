@@ -11,6 +11,8 @@ import {
   Timer,
   Notes,
   SettingsMenu,
+  MobileLayout,
+  SpeechFilter,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -89,19 +91,37 @@ export default function LiarsDiceGame(props) {
     });
   }, game.socket);
 
+  const playerList = (
+    <>
+      {stateViewing < 0 && <PlayerList />}
+      <LiarsDiceDiceViewWrapper
+        history={history}
+        stateViewing={stateViewing}
+        self={self}
+      />
+    </>
+  );
+
+  const actionList = (
+    <ActionList
+      title="Make A Bid!"
+      style={{
+        color: history.states?.[stateViewing]?.extraInfo
+          ?.isTheFlyingDutchman
+          ? "#718E77"
+          : undefined,
+      }}
+    />
+  );
+
   return (
     <>
       <TopBar hideStateSwitcher />
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {history.currentState == -1 && <PlayerList />}
-            <LiarsDiceDiceViewWrapper
-              history={history}
-              stateViewing={stateViewing}
-              self={self}
-            />
-            {!isPhoneDevice && <SettingsMenu />}
+            {playerList}
+            <SettingsMenu />
           </>
         }
         centerPanelContent={
@@ -109,26 +129,28 @@ export default function LiarsDiceGame(props) {
         }
         rightPanelContent={
           <>
-            {history.currentState == -1 && (
-              <OptionsList
-                players={players}
-                history={history}
-                gameType={gameType}
-                gameOptions={gameOptions}
-                stateViewing={stateViewing}
-                activity={game.activity}
-              />
-            )}
-            <ActionList
-              title="Make A Bid!"
-              style={{
-                color: history.states?.[stateViewing]?.extraInfo
-                  ?.isTheFlyingDutchman
-                  ? "#718E77"
-                  : undefined,
-              }}
-            />
-            {!isPhoneDevice && <Notes />}
+            <OptionsList />
+            {actionList}
+            <Notes />
+          </>
+        }
+      />
+      <MobileLayout
+        singleState
+        outerLeftContent={
+          <>
+            {playerList}
+          </>
+        }
+        innerRightContent={
+          <>
+            <OptionsList />
+            {actionList}
+          </>
+        }
+        additionalInfoContent={
+          <>
+            <Notes />
           </>
         }
       />

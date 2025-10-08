@@ -163,7 +163,7 @@ function GameWrapper(props) {
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
   const { gameId } = useParams();
-  const [selectedPanel, setSelectedPanel] = useState(isPhoneDevice ? "chat" : null);
+  const [selectedPanel, setSelectedPanel] = useState("chat");
 
   const isParticipant = !isSpectator && !props.review;
   const currentStateObject = history.states[history.currentState];
@@ -852,6 +852,7 @@ function GameWrapper(props) {
       emojis: emojis,
       setLeave: setLeave,
       onLeaveGameClick: onLeaveGameClick,
+      leaveGame: leaveGame,
       finished: finished,
       settings: settings,
       selectedPanel: selectedPanel,
@@ -1109,49 +1110,21 @@ export function TopBar({ hideStateSwitcher = false }) {
   }
   else {
     // MOBILE ================================================================
-    return(
-      <Stack direction="column" sx={{
-        position: "relative",
-        flex: "1",
-        bgcolor: "var(--scheme-color)",
+    return (
+      <Stack direction="column" spacing={1} sx={{
+        p: 1,
       }}>
-        <Stack direction="column" className="title-box" sx={{
-          justifyContent: "center",
-          bgcolor: "var(--scheme-color-background)",
-        }}>
-          <Typography>
-            Info
-          </Typography>
+        <Stack direction="row" spacing={1}>
+          {logo}
+          {buttonGroup}
         </Stack>
-        <Stack direction="column" spacing={1} sx={{
-          px: 1,
-          pt: 1,
-          alignItems: "stretch",
-          flex: "1",
-        }}>
-          <Stack direction="row" spacing={1}>
-            {logo}
-            {buttonGroup}
-          </Stack>
-          {setup}
-        </Stack>
-        <Box sx={{
-          position: "absolute",
-          bottom: "0",
-          zIndex: "1",
-          width: "100%",
-        }}>
-          <Notes />
-          <PinnedMessages />
-          <SpeechFilter />
-          <SettingsMenu />
-        </Box>
+        {setup}
       </Stack>
     );
   }
 }
 
-function UnresolvedActionCount() {
+function UnresolvedActionCount({ children }) {
   const game = useContext(GameContext);
 
   const {
@@ -1159,18 +1132,46 @@ function UnresolvedActionCount() {
     unresolvedActionCount,
   } = game;
 
+  const hideBadge = !isParticipant || unresolvedActionCount === 0;
+
   return (<Badge
     badgeContent={unresolvedActionCount}
     color="primary"
-    invisible={!isParticipant || unresolvedActionCount === 0}
+    invisible={hideBadge}
     sx={{
       "& .MuiBadge-badge": {
         transform: "scale(1) translate(100%, -50%)",
       }
     }}
   >
-    <i className="fas fa-bolt"/>
+    {children}
   </Badge>)
+}
+
+function MobileMenu() {
+  const game = useContext(GameContext);
+
+  const menuContent = (
+    <Stack direction="column" sx={{
+      flex: "1",
+      p: 1,
+    }}>
+      <SettingsForm />
+      <Button onClick={game.onLeaveGameClick} startIcon={<img src={exit} alt="Leave" />} sx={{
+        mt: "auto",
+      }}>
+        Leave
+      </Button>
+    </Stack>
+  );
+
+  return (
+    <SideMenu
+      scrollable
+      title="Settings"
+      content={menuContent}
+    />
+  );
 }
 
 export function MobileLayout({
@@ -1181,20 +1182,26 @@ export function MobileLayout({
     icon: <i className="fas fa-user"/>,
   },
   outerLeftContent = <PlayerList />,
+  centerContent = <TextMeetingLayout />,
   innerRightNavigationProps = {
     label: "Actions",
     value: "actions",
-    icon: <UnresolvedActionCount />
+    icon: <UnresolvedActionCount><i className="fas fa-bolt"/></UnresolvedActionCount>
   },
   innerRightContent = <ActionList />,
+  additionalInfoContent = <></>,
 }) {
   const game = useContext(GameContext);
   const isPhoneDevice = useIsPhoneDevice();
 
+  if (!isPhoneDevice) {
+    // Mobile only
+    return  <></>;
+  }
+
   const {
     selectedPanel,
     setSelectedPanel,
-    onLeaveGameClick,
   } = game;
 
   function onBottomNavigationChange(event, newValue) {
@@ -1209,33 +1216,39 @@ export function MobileLayout({
   return (
     <>
       {selectedPanel === outerLeftNavigationProps.value && outerLeftContent}
-      {selectedPanel === "chat" && <TextMeetingLayout />}
-      {selectedPanel === innerRightNavigationProps.value && innerRightContent}
-      {isPhoneDevice && ( // Mobile only
-        <Paper elevation={3}>
-          <Divider orientation="horizontal" />
-          <BottomNavigation showLabels value={selectedPanel} onChange={onBottomNavigationChange} sx={{
-            "& > .MuiBottomNavigationAction-root": {
-              minWidth: "unset",
-              width: "56px",
-            }
-          }}>
-            <BottomNavigationAction {...outerLeftNavigationProps} />
-            <BottomNavigationAction label="Info" value="info" icon={<i className="fas fa-info"/>} />
-            <Stack direction="row" onClick={() => setSelectedPanel("chat")} sx={{
-              filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
-            }}>
-              {!singleState && (<Divider orientation="vertical" flexItem />)}
-              <StateSwitcher stateRange={singleState ? 0 : undefined} />
-              {!singleState && (<Divider orientation="vertical" flexItem />)}
-            </Stack>
-            <BottomNavigationAction {...innerRightNavigationProps} />
-            <BottomNavigationAction label="Leave" value="leave" icon={<i className="fas fa-user"/>} />
-          </BottomNavigation>
-        </Paper>
+      {/* The additionalInfoContent displays after the mobile version of TopBar */}
+      {selectedPanel === "info" && (
+        <>
+          <div style={{ flex: "1", }} />
+          {additionalInfoContent}
+        </>
       )}
+      {selectedPanel === "chat" && centerContent}
+      {selectedPanel === innerRightNavigationProps.value && innerRightContent}
+      {selectedPanel === "menu" && <MobileMenu />}
+      <Paper elevation={3}>
+        <Divider orientation="horizontal" />
+        <BottomNavigation showLabels value={selectedPanel} onChange={onBottomNavigationChange} sx={{
+          "& > .MuiBottomNavigationAction-root": {
+            minWidth: "unset",
+            width: "56px",
+          }
+        }}>
+          <BottomNavigationAction {...outerLeftNavigationProps} />
+          <BottomNavigationAction label="Info" value="info" icon={<i className="fas fa-info"/>} />
+          <Stack direction="row" onClick={() => setSelectedPanel("chat")} sx={{
+            filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
+          }}>
+            {!singleState && (<Divider orientation="vertical" flexItem />)}
+            <StateSwitcher stateRange={singleState ? 0 : undefined} />
+            {!singleState && (<Divider orientation="vertical" flexItem />)}
+          </Stack>
+          <BottomNavigationAction {...innerRightNavigationProps} />
+          <BottomNavigationAction label="Menu" value="menu" icon={<i className="fas fa-bars"/>} />
+        </BottomNavigation>
+      </Paper>
     </>
-  )
+  );
 }
 
 export function ThreePanelLayout({ leftPanelContent, centerPanelContent, rightPanelContent }) {
@@ -2314,7 +2327,6 @@ export function SideMenu({
   expanded,
   onChange,
   isAccordionMenu = false,
-  isTopMostMenu = false,
   defaultExpanded = false,
   disabled = false,
   contentPadding = "8px 16px",
@@ -2335,12 +2347,6 @@ export function SideMenu({
           sx={{
             alignItems: "center",
             p: 1,
-            borderTopLeftRadius: isTopMostMenu
-              ? "var(--mui-shape-borderRadius)"
-              : undefined,
-            borderTopRightRadius: isTopMostMenu
-              ? "var(--mui-shape-borderRadius)"
-              : undefined,
             bgcolor: "var(--scheme-color-background)",
           }}
         >
@@ -2603,7 +2609,6 @@ export function PlayerList(props) {
   return (
     <SideMenu
       title={title}
-      isTopMostMenu
       scrollable
       content={
         <div className="player-list">
@@ -2628,8 +2633,13 @@ export function PlayerList(props) {
   );
 }
 
-export function OptionsList(props) {
-  const gameOptions = props.gameOptions;
+export function OptionsList() {
+  const game = useContext(GameContext);
+  const gameOptions = game.options.gameTypeOptions;
+
+  if (history.currentState !== -1) {
+    return <></>;
+  }
 
   const formatOptionName = (optionName) => {
     const words = optionName.split(/(?=[A-Z])/);
@@ -2672,7 +2682,7 @@ export function OptionsList(props) {
   );
 }
 
-export function ActionList({ title = "actions", actionStyle = {}, }) {
+export function ActionList({ title = "Actions", actionStyle = {}, }) {
   const game = useContext(GameContext);
 
   const currentlyViewedState = game.history.states[game.stateViewing]
@@ -2785,21 +2795,11 @@ export function ActionList({ title = "actions", actionStyle = {}, }) {
 
   return (
     <SideMenu
-      isTopMostMenu
       scrollable
       title={
-        <Badge
-          badgeContent={game.unresolvedActionCount}
-          color="primary"
-          invisible={!isParticipant || game.unresolvedActionCount === 0}
-          sx={{
-            "& .MuiBadge-badge": {
-              transform: "scale(1) translate(80%, -50%)",
-            }
-          }}
-        >
+        <UnresolvedActionCount>
           {title || "Actions"}
-        </Badge>
+        </UnresolvedActionCount>
       }
       content={<div className="action-list">{actions}</div>}
     />
@@ -3467,8 +3467,15 @@ function getTargetDisplay(targets, meeting, players) {
 }
 
 export function LastWillEntry(props) {
+  const game = useContext(GameContext);
   const [lastWill, setLastWill] = useState(props.lastWill);
-  const cannotModifyLastWill = props.cannotModifyLastWill;
+
+  const currentState = game.history.states[history.currentState];
+  const cannotModifyLastWill = !currentState || !currentState.name.startsWith("Day");
+
+  if (!game.isParticipant || (history.currentState < 0) || !game.getSetupGameSetting("Last Wills")) {
+    return <></>;
+  }
 
   function onWillChange(e) {
     var newWill = e.target.value.slice(0, MaxWillLength);
@@ -3506,18 +3513,9 @@ export function LastWillEntry(props) {
   );
 }
 
-export function SettingsMenu() {
+function SettingsForm({ handleClose = null }) {
   const game = useContext(GameContext);
   const { settings, updateSettings } = game;
-  const [expanded, setExpanded] = useState(false);
-
-  const handleClose = () => {
-    setExpanded(false);
-  };
-
-  const handleToggle = () => {
-    setExpanded((prev) => !prev);
-  };
 
   const [formFields, updateFormFields] = useForm([
     {
@@ -3600,7 +3598,9 @@ export function SettingsMenu() {
       });
     });
 
-    handleClose();
+    if (handleClose) {
+      handleClose();
+    }
   }
 
   function saveSettings() {
@@ -3614,7 +3614,9 @@ export function SettingsMenu() {
       settings: newSettings,
     });
 
-    handleClose();
+    if (handleClose) {
+      handleClose();
+    }
   }
 
   const menuContent = <Form fields={formFields} onChange={updateFormFields} />;
@@ -3625,23 +3627,37 @@ export function SettingsMenu() {
         <Button color="primary" onClick={saveSettings}>
           Save
         </Button>
-        <Button color="secondary" onClick={cancel}>
+        {handleClose && (<Button color="secondary" onClick={cancel}>
           Cancel
-        </Button>
+        </Button>)}
       </ButtonGroup>
     </div>
   );
 
   return (
+    <>
+      {menuContent}
+      {menuFooter}
+    </>
+  );
+}
+
+export function SettingsMenu() {
+  const [expanded, setExpanded] = useState(false);
+
+  const handleClose = () => {
+    setExpanded(false);
+  };
+
+  const handleToggle = () => {
+    setExpanded((prev) => !prev);
+  };
+
+  return (
     <SideMenu
       title="Settings"
       isAccordionMenu
-      content={
-        <>
-          {menuContent}
-          {menuFooter}
-        </>
-      }
+      content={<SettingsForm handleClose={handleClose} />}
       expanded={expanded}
       onChange={handleToggle}
     />

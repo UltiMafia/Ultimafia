@@ -92,9 +92,9 @@ export default function GhostGame(props) {
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {<PlayerList />}
-            {!isPhoneDevice && <SpeechFilter />}
-            {!isPhoneDevice && <SettingsMenu />}
+            <PlayerList />
+            <SpeechFilter />
+            <SettingsMenu />
           </>
         }
         centerPanelContent={
@@ -104,8 +104,29 @@ export default function GhostGame(props) {
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
             <ActionList />
-            {!isPhoneDevice && <PinnedMessages />}
-            {!isPhoneDevice && <Notes />}
+            <PinnedMessages />
+            <Notes />
+          </>
+        }
+      />
+      <MobileLayout
+        singleState
+        outerLeftContent={
+          <>
+            <PlayerList />
+            <SpeechFilter />
+          </>
+        }
+        innerRightContent={
+          <>
+            <HistoryKeeper history={history} stateViewing={stateViewing} />
+            <ActionList />
+          </>
+        }
+        additionalInfoContent={
+          <>
+            <PinnedMessages />
+            <Notes />
           </>
         }
       />

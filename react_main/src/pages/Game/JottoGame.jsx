@@ -103,16 +103,16 @@ export default function JottoGame(props) {
       />
       <MobileLayout
         singleState
-        outerLeftContent={
-          <>
-            {history.currentState == -1 && <PlayerList />}
-            <HistoryKeeper history={history} stateViewing={stateViewing} />
-          </>
-        }
         innerRightContent={
           <>
-            <JottoCheatSheetWrapper stateViewing={stateViewing} />
+            <HistoryKeeper history={history} stateViewing={stateViewing} />
             <ActionList />
+          </>
+        }
+        additionalInfoContent={
+          <>
+            <JottoCheatSheetWrapper stateViewing={stateViewing} />
+            <Notes />
           </>
         }
       />

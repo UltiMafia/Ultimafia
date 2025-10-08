@@ -11,6 +11,8 @@ import {
   SpeechFilter,
   SettingsMenu,
   Notes,
+  PinnedMessages,
+  MobileLayout,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -98,9 +100,9 @@ export default function SecretDictatorGame(props) {
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {<PlayerList />}
-            {!isPhoneDevice && <SpeechFilter />}
-            {!isPhoneDevice && <SettingsMenu />}
+            <PlayerList />
+            <SpeechFilter />
+            <SettingsMenu />
           </>
         }
         centerPanelContent={
@@ -110,7 +112,29 @@ export default function SecretDictatorGame(props) {
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
             <ActionList />
-            {!isPhoneDevice && <Notes />}
+            <PinnedMessages />
+            <Notes />
+          </>
+        }
+      />
+      <MobileLayout
+        singleState
+        outerLeftContent={
+          <>
+            <PlayerList />
+            <SpeechFilter />
+          </>
+        }
+        innerRightContent={
+          <>
+            <HistoryKeeper history={history} stateViewing={stateViewing} />
+            <ActionList />
+          </>
+        }
+        additionalInfoContent={
+          <>
+            <PinnedMessages />
+            <Notes />
           </>
         }
       />

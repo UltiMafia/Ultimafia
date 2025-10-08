@@ -11,6 +11,7 @@ import {
   Timer,
   Notes,
   SettingsMenu,
+  MobileLayout,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -102,19 +103,33 @@ export default function TexasHoldEmGame(props) {
     });
   }, game.socket);
 
+  const playerList = (
+    <>
+      {history.currentState < 0 && <PlayerList />}
+      <LiarscardcardViewWrapper />
+    </>
+  );
+
+  const actionList = (
+    <ActionList
+      title="Make A Bid!"
+      style={{
+        color: history.states?.[stateViewing]?.extraInfo
+          ?.isTheFlyingDutchman
+          ? "#718E77"
+          : undefined,
+      }}
+    />
+  );
+
   return (
     <>
       <TopBar hideStateSwitcher />
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {history.currentState == -1 && <PlayerList />}
-            <LiarscardcardViewWrapper
-              history={history}
-              stateViewing={stateViewing}
-              self={self}
-            />
-            {!isPhoneDevice && <SettingsMenu />}
+            {playerList}
+            <SettingsMenu />
           </>
         }
         centerPanelContent={
@@ -122,42 +137,23 @@ export default function TexasHoldEmGame(props) {
         }
         rightPanelContent={
           <>
-            {history.currentState == -1 && (
-              <OptionsList
-                players={players}
-                history={history}
-                gameType={gameType}
-                gameOptions={gameOptions}
-                stateViewing={stateViewing}
-                activity={game.activity}
-              />
-            )}
-            {history.currentState != -1 && (
-              <ThePot
-                players={players}
-                history={history}
-                gameType={gameType}
-                stateViewing={stateViewing}
-                activity={game.activity}
-              />
-            )}
-            {history.currentState != -1 && (
-              <CommunityCards
-                history={history}
-                stateViewing={stateViewing}
-                self={self}
-              />
-            )}
-            <ActionList
-              title="Make A Bid!"
-              style={{
-                color: history.states?.[stateViewing]?.extraInfo
-                  ?.isTheFlyingDutchman
-                  ? "#718E77"
-                  : undefined,
-              }}
-            />
-            {!isPhoneDevice && <Notes />}
+            <OptionsList />
+            <ThePot />
+            <CommunityCards />
+            {actionList}
+            <Notes />
+          </>
+        }
+      />
+      <MobileLayout
+        singleState 
+        outerLeftContent={playerList}
+        innerRightContent={
+          <>
+            <OptionsList />
+            <ThePot />
+            <CommunityCards />
+            {actionList}
           </>
         }
       />
@@ -165,10 +161,11 @@ export default function TexasHoldEmGame(props) {
   );
 }
 
-export function ThePot(props) {
-  const history = props.history;
-  const stateViewing = props.stateViewing;
-  const self = props.self;
+export function ThePot() {
+  const game = useContext(GameContext);
+
+  const history = game.history;
+  const stateViewing = game.stateViewing;
 
   if (stateViewing < 0) return <></>;
 
@@ -195,10 +192,11 @@ export function ThePot(props) {
   );
 }
 
-function CommunityCards(props) {
-  const history = props.history;
-  const stateViewing = props.stateViewing;
-  const self = props.self;
+function CommunityCards() {
+  const game = useContext(GameContext);
+
+  const history = game.history;
+  const stateViewing = game.stateViewing;
 
   if (stateViewing < 0) return <></>;
 
@@ -224,10 +222,12 @@ function CommunityCards(props) {
   );
 }
 
-function LiarscardcardViewWrapper(props) {
-  const history = props.history;
-  const stateViewing = props.stateViewing;
-  const self = props.self;
+function LiarscardcardViewWrapper() {
+  const game = useContext(GameContext);
+
+  const history = game.history;
+  const stateViewing = game.stateViewing;
+  const self = game.self;
 
   if (stateViewing < 0) return <></>;
 

@@ -10,6 +10,7 @@ import {
   Timer,
   Notes,
   SettingsMenu,
+  MobileLayout,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { Avatar } from "../User/User";
@@ -81,24 +82,29 @@ export default function ConnectFourGame(props) {
       <ThreePanelLayout
         leftPanelContent={
           <>
-            {history.currentState == -1 && <PlayerList />}
+            {history.currentState < 0 && <PlayerList />}
             <ActionList />
-            {!isPhoneDevice && <SettingsMenu />}
+            <SettingsMenu />
           </>
         }
         centerPanelContent={
           <>
-            <ConnectFourBoardWrapper
-              stateViewing={stateViewing}
-              history={history}
-              players={players}
-            />
+            <ConnectFourBoardWrapper  />
           </>
         }
         rightPanelContent={
           <>
             <TextMeetingLayout combineMessagesFromAllMeetings />
-            {!isPhoneDevice && <Notes />}
+          </>
+        }
+      />
+      <MobileLayout
+        singleState
+        centerContent={<ConnectFourBoardWrapper />}
+        innerRightContent={
+          <>
+            {stateViewing >= 0 && <TextMeetingLayout combineMessagesFromAllMeetings />}
+            <ActionList />
           </>
         }
       />
@@ -106,10 +112,14 @@ export default function ConnectFourGame(props) {
   );
 }
 
-function ConnectFourBoardWrapper(props) {
-  const stateViewing = props.stateViewing;
+function ConnectFourBoardWrapper() {
+  const game = useContext(GameContext);
 
-  if (stateViewing < 0) return <></>;
+  const players = game.players;
+  const history = game.history;
+  const stateViewing = game.stateViewing;
+
+  if (stateViewing < 0) return <TextMeetingLayout combineMessagesFromAllMeetings />;
 
   return (
     <SideMenu
@@ -118,9 +128,9 @@ function ConnectFourBoardWrapper(props) {
       content={
         <>
           <ConnectFourBoard
-            history={props.history}
+            history={history}
             stateViewing={stateViewing}
-            players={props.players}
+            players={players}
           />
         </>
       }
