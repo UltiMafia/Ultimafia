@@ -60,7 +60,8 @@ export default function StateIcon({
     socket.on("winners", handleWinners);
 
     return () => {
-      if (typeof socket.off === "function") socket.off("winners", handleWinners);
+      if (typeof socket.off === "function")
+        socket.off("winners", handleWinners);
     };
   }, [game?.socket]);
 
@@ -75,23 +76,17 @@ export default function StateIcon({
 
     if (hasNoOne) {
       stateType = "nowin";
-    }
-    else if (hasMafia && !hasVillage && !hasCult && winnerGroups.length > 1) {
+    } else if (hasMafia && !hasVillage && !hasCult && winnerGroups.length > 1) {
       stateType = "jointwin1";
-    }
-    else if (hasCult && !hasVillage && !hasMafia && winnerGroups.length > 1) {
+    } else if (hasCult && !hasVillage && !hasMafia && winnerGroups.length > 1) {
       stateType = "jointwin2";
-    }
-    else if (hasMafia && hasCult && winnerGroups.length === 2) {
+    } else if (hasMafia && hasCult && winnerGroups.length === 2) {
       stateType = "jointwin3";
-    }
-    else if (hasVillage && !hasMafia && !hasCult && winnerGroups.length > 1) {
+    } else if (hasVillage && !hasMafia && !hasCult && winnerGroups.length > 1) {
       stateType = "jointwin4";
-    }
-    else if (hasMafia && hasCult && !hasVillage && winnerGroups.length > 2) {
+    } else if (hasMafia && hasCult && !hasVillage && winnerGroups.length > 2) {
       stateType = "triwin";
-    }
-    else if (hasMafia) {
+    } else if (hasMafia) {
       stateType = "mafiawin";
     } else if (hasVillage) {
       stateType = "villagewin";
