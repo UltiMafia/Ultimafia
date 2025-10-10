@@ -26,4 +26,4 @@ export default function ChangeHead({ title, duration }) {
       <meta name="description" content={`Testing embed: ${title}`} />
     </Helmet>
   );
-};
+}

@@ -7,13 +7,7 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
-import {
-  useParams,
-  Route,
-  Navigate,
-  Routes,
-  Link,
-} from "react-router-dom";
+import { useParams, Route, Navigate, Routes, Link } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
 import ReactLoading from "react-loading";
@@ -167,8 +161,11 @@ function GameWrapper(props) {
 
   const isParticipant = !isSpectator && !props.review;
   const currentStateObject = history.states[history.currentState];
-  const unresolvedActionCount = Object.values(currentStateObject ? currentStateObject.meetings : {})
-    .filter((meeting) => !meeting.playerHasVoted && meeting.voting && meeting.canVote).length;
+  const unresolvedActionCount = Object.values(
+    currentStateObject ? currentStateObject.meetings : {}
+  ).filter(
+    (meeting) => !meeting.playerHasVoted && meeting.voting && meeting.canVote
+  ).length;
 
   function onLeaveGameClick() {
     if (
@@ -886,9 +883,12 @@ function GameWrapper(props) {
     return (
       <GameContext.Provider value={gameContext}>
         <ChangeHeadPing title={pingInfo?.msg} timestamp={pingInfo?.timestamp} />
-        <Stack direction="column" sx={{
-          height: "100%",
-        }}>
+        <Stack
+          direction="column"
+          sx={{
+            height: "100%",
+          }}
+        >
           <Box
             className="game no-highlight"
             sx={{
@@ -993,13 +993,13 @@ export function TopBar({ hideStateSwitcher = false }) {
       });
   }
 
-  if(isPhoneDevice && game.selectedPanel !== "info") {
+  if (isPhoneDevice && game.selectedPanel !== "info") {
     // The top bar doubles as an info panel for mobile
     return <></>;
   }
 
   const logo = (
-    <div style={{ flex: "1", }} key="logo">
+    <div style={{ flex: "1" }} key="logo">
       <Link to="/play" target="_blank" rel="noopener noreferrer">
         <SiteLogo
           sx={{
@@ -1012,7 +1012,10 @@ export function TopBar({ hideStateSwitcher = false }) {
   );
 
   const stateSwitcher = (
-    <Stack direction="column" spacing={1} key="stateSwitcher"
+    <Stack
+      direction="column"
+      spacing={1}
+      key="stateSwitcher"
       sx={{
         alignItems: "center",
         justifyContent: "center",
@@ -1032,7 +1035,9 @@ export function TopBar({ hideStateSwitcher = false }) {
       setup={game.setup}
       backgroundColor={getSetupBackgroundColor(game.options, false)}
     />
-  ) : <></>;
+  ) : (
+    <></>
+  );
 
   const buttonGroup = (
     <ButtonGroup
@@ -1062,7 +1067,7 @@ export function TopBar({ hideStateSwitcher = false }) {
       {!game.review && game.history.currentState === -2 && (
         <Tooltip title="Rehost">
           <IconButton size="large" onClick={onRehostGameClick}>
-              <img src={veg} alt="Rehost" />
+            <img src={veg} alt="Rehost" />
           </IconButton>
         </Tooltip>
       )}
@@ -1079,24 +1084,34 @@ export function TopBar({ hideStateSwitcher = false }) {
       />
 
       {!isPhoneDevice && (
-        <Button onClick={game.onLeaveGameClick} startIcon={<img src={exit} alt="Leave" />}>
+        <Button
+          onClick={game.onLeaveGameClick}
+          startIcon={<img src={exit} alt="Leave" />}
+        >
           Leave
         </Button>
       )}
     </ButtonGroup>
   );
 
-  if(!isPhoneDevice) {
+  if (!isPhoneDevice) {
     // DESKTOP ================================================================
     return (
-      <Stack direction="row" spacing={1} sx={{
-        px: 1,
-        alignItems: "center",
-      }}>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          px: 1,
+          alignItems: "center",
+        }}
+      >
         {logo}
         {stateSwitcher}
-        <Stack direction="row" spacing={1} key="miscWrapper"
-          ref={game.scrollDownTriggerRef} 
+        <Stack
+          direction="row"
+          spacing={1}
+          key="miscWrapper"
+          ref={game.scrollDownTriggerRef}
           sx={{
             alignItems: "center",
             flex: "1",
@@ -1107,13 +1122,16 @@ export function TopBar({ hideStateSwitcher = false }) {
         </Stack>
       </Stack>
     );
-  }
-  else {
+  } else {
     // MOBILE ================================================================
     return (
-      <Stack direction="column" spacing={1} sx={{
-        p: 1,
-      }}>
+      <Stack
+        direction="column"
+        spacing={1}
+        sx={{
+          p: 1,
+        }}
+      >
         <Stack direction="row" spacing={1}>
           {logo}
           {buttonGroup}
@@ -1127,51 +1145,51 @@ export function TopBar({ hideStateSwitcher = false }) {
 function UnresolvedActionCount({ children }) {
   const game = useContext(GameContext);
 
-  const {
-    isParticipant,
-    unresolvedActionCount,
-  } = game;
+  const { isParticipant, unresolvedActionCount } = game;
 
   const hideBadge = !isParticipant || unresolvedActionCount === 0;
 
-  return (<Badge
-    badgeContent={unresolvedActionCount}
-    color="primary"
-    invisible={hideBadge}
-    sx={{
-      "& .MuiBadge-badge": {
-        transform: "scale(1) translate(100%, -50%)",
-      }
-    }}
-  >
-    {children}
-  </Badge>)
+  return (
+    <Badge
+      badgeContent={unresolvedActionCount}
+      color="primary"
+      invisible={hideBadge}
+      sx={{
+        "& .MuiBadge-badge": {
+          transform: "scale(1) translate(100%, -50%)",
+        },
+      }}
+    >
+      {children}
+    </Badge>
+  );
 }
 
 function MobileMenu() {
   const game = useContext(GameContext);
 
   const menuContent = (
-    <Stack direction="column" sx={{
-      flex: "1",
-      p: 1,
-    }}>
+    <Stack
+      direction="column"
+      sx={{
+        flex: "1",
+        p: 1,
+      }}
+    >
       <SettingsForm />
-      <Button onClick={game.onLeaveGameClick} startIcon={<img src={exit} alt="Leave" />} sx={{
-        mt: "auto",
-      }}>
+      <Button
+        onClick={game.onLeaveGameClick}
+        startIcon={<img src={exit} alt="Leave" />}
+        sx={{
+          mt: "auto",
+        }}
+      >
         Leave
       </Button>
     </Stack>
   );
 
-  return (
-    <SideMenu
-      scrollable
-      title="Settings"
-      content={menuContent}
-    />
-  );
+  return <SideMenu scrollable title="Settings" content={menuContent} />;
 }
 
 export function MobileLayout({
@@ -1179,14 +1197,18 @@ export function MobileLayout({
   outerLeftNavigationProps = {
     label: "Players",
     value: "players",
-    icon: <i className="fas fa-user"/>,
+    icon: <i className="fas fa-user" />,
   },
   outerLeftContent = <PlayerList />,
   centerContent = <TextMeetingLayout />,
   innerRightNavigationProps = {
     label: "Actions",
     value: "actions",
-    icon: <UnresolvedActionCount><i className="fas fa-bolt"/></UnresolvedActionCount>
+    icon: (
+      <UnresolvedActionCount>
+        <i className="fas fa-bolt" />
+      </UnresolvedActionCount>
+    ),
   },
   innerRightContent = <ActionList />,
   additionalInfoContent = <></>,
@@ -1196,19 +1218,15 @@ export function MobileLayout({
 
   if (!isPhoneDevice) {
     // Mobile only
-    return  <></>;
+    return <></>;
   }
 
-  const {
-    selectedPanel,
-    setSelectedPanel,
-  } = game;
+  const { selectedPanel, setSelectedPanel } = game;
 
   function onBottomNavigationChange(event, newValue) {
-    if(newValue === "leave") {
+    if (newValue === "leave") {
       onLeaveGameClick();
-    }
-    else {
+    } else {
       setSelectedPanel(newValue);
     }
   }
@@ -1219,7 +1237,7 @@ export function MobileLayout({
       {/* The additionalInfoContent displays after the mobile version of TopBar */}
       {selectedPanel === "info" && (
         <>
-          <div style={{ flex: "1", }} />
+          <div style={{ flex: "1" }} />
           {additionalInfoContent}
         </>
       )}
@@ -1228,30 +1246,51 @@ export function MobileLayout({
       {selectedPanel === "menu" && <MobileMenu />}
       <Paper elevation={3}>
         <Divider orientation="horizontal" />
-        <BottomNavigation showLabels value={selectedPanel} onChange={onBottomNavigationChange} sx={{
-          "& > .MuiBottomNavigationAction-root": {
-            minWidth: "unset",
-            width: "56px",
-          }
-        }}>
+        <BottomNavigation
+          showLabels
+          value={selectedPanel}
+          onChange={onBottomNavigationChange}
+          sx={{
+            "& > .MuiBottomNavigationAction-root": {
+              minWidth: "unset",
+              width: "56px",
+            },
+          }}
+        >
           <BottomNavigationAction {...outerLeftNavigationProps} />
-          <BottomNavigationAction label="Info" value="info" icon={<i className="fas fa-info"/>} />
-          <Stack direction="row" onClick={() => setSelectedPanel("chat")} sx={{
-            filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
-          }}>
-            {!singleState && (<Divider orientation="vertical" flexItem />)}
+          <BottomNavigationAction
+            label="Info"
+            value="info"
+            icon={<i className="fas fa-info" />}
+          />
+          <Stack
+            direction="row"
+            onClick={() => setSelectedPanel("chat")}
+            sx={{
+              filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
+            }}
+          >
+            {!singleState && <Divider orientation="vertical" flexItem />}
             <StateSwitcher stateRange={singleState ? 0 : undefined} />
-            {!singleState && (<Divider orientation="vertical" flexItem />)}
+            {!singleState && <Divider orientation="vertical" flexItem />}
           </Stack>
           <BottomNavigationAction {...innerRightNavigationProps} />
-          <BottomNavigationAction label="Menu" value="menu" icon={<i className="fas fa-bars"/>} />
+          <BottomNavigationAction
+            label="Menu"
+            value="menu"
+            icon={<i className="fas fa-bars" />}
+          />
         </BottomNavigation>
       </Paper>
     </>
   );
 }
 
-export function ThreePanelLayout({ leftPanelContent, centerPanelContent, rightPanelContent }) {
+export function ThreePanelLayout({
+  leftPanelContent,
+  centerPanelContent,
+  rightPanelContent,
+}) {
   const isPhoneDevice = useIsPhoneDevice();
 
   if (isPhoneDevice) {
@@ -1277,14 +1316,8 @@ export function ThreePanelLayout({ leftPanelContent, centerPanelContent, rightPa
 export function TextMeetingLayout({ combineMessagesFromAllMeetings = false }) {
   const game = useContext(GameContext);
   const { isolationEnabled, isolatedPlayers } = game;
-  const {
-    history,
-    players,
-    stateViewing,
-    updateHistory,
-    settings,
-    filters,
-  } = game;
+  const { history, players, stateViewing, updateHistory, settings, filters } =
+    game;
 
   const stateInfo = history.states[stateViewing];
   const meetings = stateInfo ? stateInfo.meetings : {};
@@ -1469,9 +1502,11 @@ export function TextMeetingLayout({ combineMessagesFromAllMeetings = false }) {
         {tabs.length === 0 && (
           <div className="tab sel">{stateInfo && stateInfo.name}</div>
         )}
-        <div style={{
-          marginLeft: "auto",
-        }}>
+        <div
+          style={{
+            marginLeft: "auto",
+          }}
+        >
           <Timer />
         </div>
       </div>
@@ -2481,9 +2516,8 @@ export function PlayerRows({ players, className = "" }) {
       : stateViewingInfo.roles[player.id];
 
     var showBubbles =
-      Object.keys(history.states[history.currentState].dead).includes(
-        self
-      ) || players.find((x) => x.id === self) !== undefined;
+      Object.keys(history.states[history.currentState].dead).includes(self) ||
+      players.find((x) => x.id === self) !== undefined;
     var colorAutoScheme = false;
     var bubbleColor = "black";
     if (document.documentElement.classList.length === 0) {
@@ -2512,10 +2546,7 @@ export function PlayerRows({ players, className = "" }) {
     }
 
     return (
-      <div
-        className={`player ${className ? className : ""}`}
-        key={player.id}
-      >
+      <div className={`player ${className ? className : ""}`} key={player.id}>
         {isolationCheckbox}
         {stateViewing !== -1 && (
           <RoleMarkerToggle
@@ -2546,9 +2577,7 @@ export function PlayerRows({ players, className = "" }) {
         />
         {selTab && showBubbles && activity.typing[player.id] === selTab && (
           <ReactLoading
-            className={`typing-icon ${
-              stateViewing != -1 ? "has-role" : ""
-            }`}
+            className={`typing-icon ${stateViewing != -1 ? "has-role" : ""}`}
             type="bubbles"
             color={bubbleColor}
             width="20"
@@ -2682,10 +2711,10 @@ export function OptionsList() {
   );
 }
 
-export function ActionList({ title = "Actions", actionStyle = {}, }) {
+export function ActionList({ title = "Actions", actionStyle = {} }) {
   const game = useContext(GameContext);
 
-  const currentlyViewedState = game.history.states[game.stateViewing]
+  const currentlyViewedState = game.history.states[game.stateViewing];
   const meetings = currentlyViewedState ? currentlyViewedState.meetings : {};
 
   const isParticipant = game.isParticipant;
@@ -2797,9 +2826,7 @@ export function ActionList({ title = "Actions", actionStyle = {}, }) {
     <SideMenu
       scrollable
       title={
-        <UnresolvedActionCount>
-          {title || "Actions"}
-        </UnresolvedActionCount>
+        <UnresolvedActionCount>{title || "Actions"}</UnresolvedActionCount>
       }
       content={<div className="action-list">{actions}</div>}
     />
@@ -3471,9 +3498,14 @@ export function LastWillEntry(props) {
   const [lastWill, setLastWill] = useState(props.lastWill);
 
   const currentState = game.history.states[history.currentState];
-  const cannotModifyLastWill = !currentState || !currentState.name.startsWith("Day");
+  const cannotModifyLastWill =
+    !currentState || !currentState.name.startsWith("Day");
 
-  if (!game.isParticipant || (history.currentState < 0) || !game.getSetupGameSetting("Last Wills")) {
+  if (
+    !game.isParticipant ||
+    history.currentState < 0 ||
+    !game.getSetupGameSetting("Last Wills")
+  ) {
     return <></>;
   }
 
@@ -3627,9 +3659,11 @@ function SettingsForm({ handleClose = null }) {
         <Button color="primary" onClick={saveSettings}>
           Save
         </Button>
-        {handleClose && (<Button color="secondary" onClick={cancel}>
-          Cancel
-        </Button>)}
+        {handleClose && (
+          <Button color="secondary" onClick={cancel}>
+            Cancel
+          </Button>
+        )}
       </ButtonGroup>
     </div>
   );
@@ -3785,7 +3819,7 @@ export function SpeechFilter() {
     setIsolationEnabled,
     speechFilters: filters,
     setSpeechFilters: setFilters,
-    stateViewing
+    stateViewing,
   } = game;
 
   const toggleIsolationEnabled = () => setIsolationEnabled(!isolationEnabled);
@@ -3951,7 +3985,9 @@ function useHistoryReducer(pauseHistoryUpdates) {
 
       switch (action.type) {
         case "set":
-          var stateIds = Object.keys(action.history).map(a => parseInt(a)).sort((a, b) => a - b);
+          var stateIds = Object.keys(action.history)
+            .map((a) => parseInt(a))
+            .sort((a, b) => a - b);
           newHistory = { states: action.history, pausedActions: [] };
 
           if (stateIds[0] == -2) newHistory.currentState = -2;

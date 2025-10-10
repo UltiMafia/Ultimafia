@@ -89,7 +89,7 @@ export default function ConnectFourGame(props) {
         }
         centerPanelContent={
           <>
-            <ConnectFourBoardWrapper  />
+            <ConnectFourBoardWrapper />
           </>
         }
         rightPanelContent={
@@ -103,7 +103,9 @@ export default function ConnectFourGame(props) {
         centerContent={<ConnectFourBoardWrapper />}
         innerRightContent={
           <>
-            {stateViewing >= 0 && <TextMeetingLayout combineMessagesFromAllMeetings />}
+            {stateViewing >= 0 && (
+              <TextMeetingLayout combineMessagesFromAllMeetings />
+            )}
             <ActionList />
           </>
         }
@@ -119,7 +121,8 @@ function ConnectFourBoardWrapper() {
   const history = game.history;
   const stateViewing = game.stateViewing;
 
-  if (stateViewing < 0) return <TextMeetingLayout combineMessagesFromAllMeetings />;
+  if (stateViewing < 0)
+    return <TextMeetingLayout combineMessagesFromAllMeetings />;
 
   return (
     <SideMenu

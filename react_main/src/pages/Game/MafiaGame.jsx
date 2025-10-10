@@ -131,7 +131,7 @@ export default function MafiaGame() {
       overrides: false,
       volumes: 1,
     },
-      { fileName: "music/WinDodo", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinDodo", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinFool", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinMafia", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinCult", loops: false, overrides: false, volumes: 1 },
@@ -496,9 +496,7 @@ export default function MafiaGame() {
             <SettingsMenu />
           </>
         }
-        centerPanelContent={
-          <TextMeetingLayout />
-        }
+        centerPanelContent={<TextMeetingLayout />}
         rightPanelContent={
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />

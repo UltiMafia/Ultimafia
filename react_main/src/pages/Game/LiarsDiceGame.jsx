@@ -106,8 +106,7 @@ export default function LiarsDiceGame(props) {
     <ActionList
       title="Make A Bid!"
       style={{
-        color: history.states?.[stateViewing]?.extraInfo
-          ?.isTheFlyingDutchman
+        color: history.states?.[stateViewing]?.extraInfo?.isTheFlyingDutchman
           ? "#718E77"
           : undefined,
       }}
@@ -137,11 +136,7 @@ export default function LiarsDiceGame(props) {
       />
       <MobileLayout
         singleState
-        outerLeftContent={
-          <>
-            {playerList}
-          </>
-        }
+        outerLeftContent={<>{playerList}</>}
         innerRightContent={
           <>
             <OptionsList />
