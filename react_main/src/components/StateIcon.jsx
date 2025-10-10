@@ -1,5 +1,6 @@
+import React, { useContext, useEffect, useState } from "react";
 import { Tooltip } from "@mui/material";
-import React from "react";
+import { GameContext } from "Contexts";
 
 export const statesIcons = {
   pregame: require("images/game_state/pregame-state.png"),
@@ -37,8 +38,69 @@ export default function StateIcon({
   unfocused = false,
   size = 40,
 }) {
+  const game = useContext(GameContext);
+  const [winnerGroups, setWinnerGroups] = useState([]);
+
+  useEffect(() => {
+    const socket = game?.socket;
+
+    if (!socket || typeof socket.on !== "function") {
+      const lastState = game?.history?.states?.[game?.history?.currentState];
+      if (lastState?.winners?.groups) {
+        setWinnerGroups(lastState.winners.groups.map((g) => g.toLowerCase()));
+      }
+      return;
+    }
+
+    const handleWinners = ({ groups }) => {
+      if (!groups || !groups.length) return;
+      setWinnerGroups(groups.map((g) => g.toLowerCase()));
+    };
+
+    socket.on("winners", handleWinners);
+
+    return () => {
+      if (typeof socket.off === "function") socket.off("winners", handleWinners);
+    };
+  }, [game?.socket]);
+
   const normalizedName = stateName.toLowerCase().replace(/[0-9]/g, "").trim();
-  const stateType = stateIconMap[normalizedName] || "nowin";
+  let stateType = stateIconMap[normalizedName] || "nowin";
+
+  if (normalizedName === "postgame" && winnerGroups.length > 0) {
+    const hasMafia = winnerGroups.includes("mafia");
+    const hasVillage = winnerGroups.includes("village");
+    const hasCult = winnerGroups.includes("cult");
+    const hasNoOne = winnerGroups.includes("no one");
+
+    if (hasNoOne) {
+      stateType = "nowin";
+    }
+    else if (hasMafia && !hasVillage && !hasCult && winnerGroups.length > 1) {
+      stateType = "jointwin1";
+    }
+    else if (hasCult && !hasVillage && !hasMafia && winnerGroups.length > 1) {
+      stateType = "jointwin2";
+    }
+    else if (hasMafia && hasCult && winnerGroups.length === 2) {
+      stateType = "jointwin3";
+    }
+    else if (hasVillage && !hasMafia && !hasCult && winnerGroups.length > 1) {
+      stateType = "jointwin4";
+    }
+    else if (hasMafia && hasCult && !hasVillage && winnerGroups.length > 2) {
+      stateType = "triwin";
+    }
+    else if (hasMafia) {
+      stateType = "mafiawin";
+    } else if (hasVillage) {
+      stateType = "villagewin";
+    } else if (hasCult) {
+      stateType = "cultwin";
+    } else {
+      stateType = "independentwin";
+    }
+  }
 
   const numberMatch = stateName.match(/\d+/);
   const number = numberMatch ? parseInt(numberMatch[0]) : null;
