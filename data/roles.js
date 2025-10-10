@@ -3601,7 +3601,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Manipulative", "Redirection", "Reflexive", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and redirect anyone who visits the Coward to that player.",
+        "Each night, can choose to visit one player and redirect anyone who visits the Rat to that player.",
       ],
       nightOrder: [["Redirect Visitors", PRIORITY_MODIFY_ACTION]],
     },

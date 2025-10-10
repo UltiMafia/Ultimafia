@@ -126,11 +126,12 @@ export default function MafiaGame() {
     { fileName: "music/Draw", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinAlien", loops: false, overrides: false, volumes: 1 },
     {
-      fileName: "music/WinAnarchist",
+      fileName: "music/WinCommunist",
       loops: false,
       overrides: false,
       volumes: 1,
     },
+      { fileName: "music/WinDodo", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinFool", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinMafia", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinCult", loops: false, overrides: false, volumes: 1 },
@@ -403,6 +404,9 @@ export default function MafiaGame() {
       if (winners.groups.includes("Fool")) {
         game.playAudio("music/WinFool");
       }
+      if (winners.groups.includes("Dodo")) {
+        game.playAudio("music/WinDodo");
+      }
       if (winners.groups.includes("Matchmaker")) {
         game.playAudio("music/WinMatchmaker");
       }
@@ -460,8 +464,8 @@ export default function MafiaGame() {
       if (winners.groups.includes("Mastermind")) {
         game.playAudio("music/WinMastermind");
       }
-      if (winners.groups.includes("Anarchist")) {
-        game.playAudio("music/WinAnarchist");
+      if (winners.groups.includes("Communist")) {
+        game.playAudio("music/WinCommunist");
       }
       if (winners.groups.includes("Mafia")) {
         game.playAudio("music/WinMafia");
