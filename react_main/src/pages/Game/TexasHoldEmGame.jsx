@@ -114,8 +114,7 @@ export default function TexasHoldEmGame(props) {
     <ActionList
       title="Make A Bid!"
       style={{
-        color: history.states?.[stateViewing]?.extraInfo
-          ?.isTheFlyingDutchman
+        color: history.states?.[stateViewing]?.extraInfo?.isTheFlyingDutchman
           ? "#718E77"
           : undefined,
       }}
@@ -146,7 +145,7 @@ export default function TexasHoldEmGame(props) {
         }
       />
       <MobileLayout
-        singleState 
+        singleState
         outerLeftContent={playerList}
         innerRightContent={
           <>

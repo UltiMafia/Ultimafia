@@ -98,9 +98,7 @@ export default function ResistanceGame(props) {
             <SettingsMenu />
           </>
         }
-        centerPanelContent={
-          <TextMeetingLayout />
-        }
+        centerPanelContent={<TextMeetingLayout />}
         rightPanelContent={
           <>
             <ScoreKeeper />

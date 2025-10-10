@@ -27,7 +27,7 @@ function useTimersReducer() {
         delete newTimers[action.name];
         break;
       case "update":
-        if(!(action.name in newTimers)) {
+        if (!(action.name in newTimers)) {
           newTimers[action.name] = {
             time: 0,
           };
@@ -173,7 +173,8 @@ export function Timer(props) {
 
   const timer = timers[timerName];
 
-  if (!timer || game.review) return <div className="state-timer">{"--:--"}</div>;
+  if (!timer || game.review)
+    return <div className="state-timer">{"--:--"}</div>;
 
   var time = timer.delay - timer.time;
 

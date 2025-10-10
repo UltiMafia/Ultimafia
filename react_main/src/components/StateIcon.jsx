@@ -31,7 +31,12 @@ const stateIconMap = {
   "treasure chest": "admiral",
 };
 
-export default function StateIcon({ stateName, stateNum, unfocused = false, size = 40 }) {
+export default function StateIcon({
+  stateName,
+  stateNum,
+  unfocused = false,
+  size = 40,
+}) {
   const normalizedName = stateName.toLowerCase().replace(/[0-9]/g, "").trim();
   const stateType = stateIconMap[normalizedName] || "nowin";
 
@@ -77,15 +82,11 @@ export default function StateIcon({ stateName, stateNum, unfocused = false, size
     </div>
   );
 
-  if(unfocused) {
+  if (unfocused) {
     return icon;
-  }
-  else {
+  } else {
     return (
-      <Tooltip
-        title={stateName}
-        key={stateNum}
-      >
+      <Tooltip title={stateName} key={stateNum}>
         {icon}
       </Tooltip>
     );

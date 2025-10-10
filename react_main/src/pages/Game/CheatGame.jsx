@@ -117,8 +117,7 @@ export default function CheatGame(props) {
     <ActionList
       title="Play your Cards!"
       style={{
-        color: history.states?.[stateViewing]?.extraInfo
-          ?.isTheFlyingDutchman
+        color: history.states?.[stateViewing]?.extraInfo?.isTheFlyingDutchman
           ? "#718E77"
           : undefined,
       }}
@@ -148,7 +147,7 @@ export default function CheatGame(props) {
         }
       />
       <MobileLayout
-        singleState 
+        singleState
         outerLeftContent={playerList}
         innerRightContent={
           <>

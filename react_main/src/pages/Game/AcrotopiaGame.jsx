@@ -109,7 +109,7 @@ export default function AcrotopiaGame(props) {
         }
       />
       <MobileLayout
-        singleState 
+        singleState
         innerRightContent={
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />

@@ -1,20 +1,30 @@
-import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Box, IconButton, Paper, Stack, Tab, Tabs, Tooltip, Typography } from "@mui/material";
+import React, {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  Box,
+  IconButton,
+  Paper,
+  Stack,
+  Tab,
+  Tabs,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import StateIcon from "../StateIcon";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { GameContext } from "Contexts";
 
-export default function StateSwitcher({ stateRange = null, }) {
+export default function StateSwitcher({ stateRange = null }) {
   const game = useContext(GameContext);
   const isPhoneDevice = useIsPhoneDevice();
   const hideFastForward = isPhoneDevice;
 
-  const {
-    history,
-    stateViewing,
-    updateStateViewing,
-    onStateNavigation,
-  } = game;
+  const { history, stateViewing, updateStateViewing, onStateNavigation } = game;
 
   const STATE_RANGE = stateRange !== null ? stateRange : isPhoneDevice ? 1 : 2;
 
@@ -34,31 +44,39 @@ export default function StateSwitcher({ stateRange = null, }) {
     height: "1em",
   };
 
-  let stateNums = Object.keys(history.states).map(stateNum => Number.parseInt(stateNum));
+  let stateNums = Object.keys(history.states).map((stateNum) =>
+    Number.parseInt(stateNum)
+  );
   stateNums.sort((a, b) => {
     // Postgame is always greater
-    if(a === -2) {
+    if (a === -2) {
       return 1;
     }
-    if(b === -2) {
+    if (b === -2) {
       return -1;
-    }
-    else {
+    } else {
       return a - b;
     }
   });
-  const reverseStateNums = Object.fromEntries(stateNums.map((stateNum, i) => [stateNum, i]));
+  const reverseStateNums = Object.fromEntries(
+    stateNums.map((stateNum, i) => [stateNum, i])
+  );
   const currentStateIndex = reverseStateNums[stateViewing];
 
   const padInvisibleLeft = Math.max(0, STATE_RANGE - currentStateIndex);
-  const padInvisibleRight = Math.max(0, STATE_RANGE - stateNums.length + 1 + currentStateIndex);
+  const padInvisibleRight = Math.max(
+    0,
+    STATE_RANGE - stateNums.length + 1 + currentStateIndex
+  );
 
   const paginatedStates = stateNums.map((stateNum) => {
     const state = history.states[stateNum];
     const stateName = state ? state.name : "Unknown State";
     const index = reverseStateNums[stateNum];
 
-    const isInRange = (index >= currentStateIndex - STATE_RANGE) && (index <= currentStateIndex + STATE_RANGE);
+    const isInRange =
+      index >= currentStateIndex - STATE_RANGE &&
+      index <= currentStateIndex + STATE_RANGE;
 
     // If you change the sizing of this, make sure to tweak the padInvisibleLeft and padInvisibleRight calcs accordingly
     return (
@@ -66,12 +84,14 @@ export default function StateSwitcher({ stateRange = null, }) {
         component="div"
         key={stateNum}
         aria-label={stateName}
-        icon={<StateIcon
-          stateName={stateName}
-          stateNum={stateNum}
-          unfocused={stateNum !== stateViewing}
-          size={stateIconSize}
-        />}
+        icon={
+          <StateIcon
+            stateName={stateName}
+            stateNum={stateNum}
+            unfocused={stateNum !== stateViewing}
+            size={stateIconSize}
+          />
+        }
         sx={{
           display: isInRange ? undefined : "none",
           px: 0.5,
@@ -91,11 +111,12 @@ export default function StateSwitcher({ stateRange = null, }) {
   };
 
   return (
-    <Stack direction="row"
+    <Stack
+      direction="row"
       sx={{
         alignItems: "center",
         justifyContent: "center",
-        py: .5,
+        py: 0.5,
         borderRadius: 1,
       }}
     >
@@ -108,18 +129,23 @@ export default function StateSwitcher({ stateRange = null, }) {
         <i className="fas fa-angle-left" style={iconStyle} />
       </IconButton> */}
 
-      {!hideFastForward && (<IconButton
-        sx={{
-          visibility: leftArrowVisible ? undefined : "hidden",
-        }}
-        onClick={() => handleClick({ type: "first" })}
-      >
-        <i className="fas fa-angle-double-left" style={iconStyle} />
-      </IconButton>)}
+      {!hideFastForward && (
+        <IconButton
+          sx={{
+            visibility: leftArrowVisible ? undefined : "hidden",
+          }}
+          onClick={() => handleClick({ type: "first" })}
+        >
+          <i className="fas fa-angle-double-left" style={iconStyle} />
+        </IconButton>
+      )}
 
-      <Stack direction="column" sx={{
-        alignItems: "center",
-      }}>
+      <Stack
+        direction="column"
+        sx={{
+          alignItems: "center",
+        }}
+      >
         <Tabs
           value={reverseStateNums[stateViewing]}
           onChange={handleChange}
@@ -128,7 +154,7 @@ export default function StateSwitcher({ stateRange = null, }) {
             minHeight: 0,
             paddingLeft: `calc(${padInvisibleLeft} * (var(--mui-spacing) + ${stateIconSize}px))`,
             paddingRight: `calc(${padInvisibleRight} * (var(--mui-spacing) + ${stateIconSize}px))`,
-            '& .MuiTabs-indicator': {
+            "& .MuiTabs-indicator": {
               transition: "none",
             },
           }}
@@ -137,14 +163,16 @@ export default function StateSwitcher({ stateRange = null, }) {
         </Tabs>
       </Stack>
 
-      {!hideFastForward && (<IconButton
-        sx={{
-          visibility: rightArrowVisible ? undefined : "hidden",
-        }}
-        onClick={() => handleClick({ type: "current" })}
-      >
-        <i className="fas fa-angle-double-right" style={iconStyle} />
-      </IconButton>)}
+      {!hideFastForward && (
+        <IconButton
+          sx={{
+            visibility: rightArrowVisible ? undefined : "hidden",
+          }}
+          onClick={() => handleClick({ type: "current" })}
+        >
+          <i className="fas fa-angle-double-right" style={iconStyle} />
+        </IconButton>
+      )}
 
       {/* <IconButton
         sx={{
