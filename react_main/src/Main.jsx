@@ -21,11 +21,7 @@ import axios from "axios";
 import update from "immutability-helper";
 import { Icon } from "@iconify/react";
 
-import {
-  UserContext,
-  SiteInfoContext,
-  useSiteInfo,
-} from "./Contexts";
+import { UserContext, SiteInfoContext, useSiteInfo } from "./Contexts";
 import { AlertList, useErrorAlert } from "./components/Alerts";
 import {
   NotificationHolder,

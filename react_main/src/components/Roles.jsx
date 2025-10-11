@@ -59,10 +59,11 @@ export function RoleCount({
   let roleSkin = null;
   if (skin) {
     roleSkin = skin;
-  }
-  else if (user.settings && typeof user.settings.roleSkins == "string") {
+  } else if (user.settings && typeof user.settings.roleSkins == "string") {
     const userRoleSkins = user.settings.roleSkins.split(",");
-    const userRoleSkinsMatched = userRoleSkins.filter((s) => s.split(":")[0] == roleName);
+    const userRoleSkinsMatched = userRoleSkins.filter(
+      (s) => s.split(":")[0] == roleName
+    );
     if (userRoleSkinsMatched.length > 0) {
       roleSkin = userRoleSkinsMatched[0].split(":")[1];
     }
@@ -103,7 +104,8 @@ export function RoleCount({
       return;
     }
 
-    if (!alignment && (!roleName || !showPopover || roleName === "null")) return;
+    if (!alignment && (!roleName || !showPopover || roleName === "null"))
+      return;
 
     handlePopoverClick(e);
   };
@@ -145,13 +147,16 @@ export function RoleCount({
   const DescriptionLines = (
     <Stack direction="column" spacing={1}>
       {roleData?.description?.map((text, i) => (
-        <Stack direction="row" spacing={1} key={i} sx={{
-          alignItems: "center",
-        }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          key={i}
+          sx={{
+            alignItems: "center",
+          }}
+        >
           <i className={"fas fa-info-circle"} />
-          <Typography>
-            {text}
-          </Typography>
+          <Typography>{text}</Typography>
         </Stack>
       ))}
     </Stack>
@@ -159,12 +164,15 @@ export function RoleCount({
   const Modifiers = hasModifiers ? (
     <Stack direction="column" spacing={1}>
       {roleData?.modifiers?.map((modifier, i) => (
-        <Stack direction="row" spacing={1} key={modifier.name} sx={{
-          alignItems: "center",
-        }}>
-          <i
-            className={`modifier modifier-${gameType}-${modifier.name}`}
-          />
+        <Stack
+          direction="row"
+          spacing={1}
+          key={modifier.name}
+          sx={{
+            alignItems: "center",
+          }}
+        >
+          <i className={`modifier modifier-${gameType}-${modifier.name}`} />
           <Typography>
             <span style={{ fontWeight: "bold" }}>{modifier.name}</span>:{" "}
             {roleData?.SpecialInteractionsModifiers &&
@@ -255,7 +263,7 @@ export function RoleCount({
   };
 
   let layoutContent,
-    popoverTitle = null, 
+    popoverTitle = null,
     popoverContent = null,
     popoverPage = null,
     popoverIcon = null;
@@ -271,10 +279,7 @@ export function RoleCount({
     layoutContent = (
       <div className="role-count-wrap closed-role-count" {...popoverProps}>
         <DigitsCount digits={digits} />
-        <i
-          className={`fas fa-question i-${alignment}`}
-          onClick={onClick}
-        />
+        <i className={`fas fa-question i-${alignment}`} onClick={onClick} />
       </div>
     );
   } else if (roleGroup) {
@@ -289,14 +294,16 @@ export function RoleCount({
     layoutContent = (
       <div className="role-count-wrap closed-role-count" {...popoverProps}>
         <DigitsCount digits={digits} />
-        <Typography sx={{
-          lineHeight: 1,
-          fontFamily: "RobotoSlab",
-          fontSize: "2rem",
-          fontWeight: "bold",
-          userSelect: "none",
-          textShadow: "0 .04rem 0 #000",
-        }}>
+        <Typography
+          sx={{
+            lineHeight: 1,
+            fontFamily: "RobotoSlab",
+            fontSize: "2rem",
+            fontWeight: "bold",
+            userSelect: "none",
+            textShadow: "0 .04rem 0 #000",
+          }}
+        >
           {role}
         </Typography>
       </div>
@@ -304,10 +311,13 @@ export function RoleCount({
   } else if (!closed) {
     popoverTitle = roleName;
     popoverContent = (
-      <Stack direction="column" spacing={1} divider={<Divider orientation="horizontal" flexItem />}>
+      <Stack
+        direction="column"
+        spacing={1}
+        divider={<Divider orientation="horizontal" flexItem />}
+      >
         <Typography>
-          <span style={{ fontWeight: "bold" }}>Alignment</span>:{" "}
-          {roleAlignment}
+          <span style={{ fontWeight: "bold" }}>Alignment</span>: {roleAlignment}
         </Typography>
         <Typography>
           <span style={{ fontWeight: "bold" }}>Tags</span>: {roleTags}
@@ -339,7 +349,9 @@ export function RoleCount({
               .map((modifier, k) => (
                 <div
                   key={modifier}
-                  className={`modifier modifier-pos-${k} modifier-${gameType}-${hyphenDelimit(modifier)}`}
+                  className={`modifier modifier-pos-${k} modifier-${gameType}-${hyphenDelimit(
+                    modifier
+                  )}`}
                 />
               ))}
         </div>

@@ -14,25 +14,20 @@ import { GameSettingCount } from "./Roles";
 
 export function PopoverContent({ title, content, page = null, icon = <></> }) {
   let wrappedTitle = (
-    <Stack direction="row" spacing={1} className="mui-popover-title"
+    <Stack
+      direction="row"
+      spacing={1}
+      className="mui-popover-title"
       sx={{
         p: 1,
         textAlign: "center",
         cursor: page ? "pointer" : "default",
-        color:
-          page
-            ? "var(--mui-palette-primary-main)"
-            : undefined,
-        "&:hover":
-          page
-            ? { bgcolor: "rgba(12, 12, 12, 0.15)" }
-            : undefined,
+        color: page ? "var(--mui-palette-primary-main)" : undefined,
+        "&:hover": page ? { bgcolor: "rgba(12, 12, 12, 0.15)" } : undefined,
       }}
     >
       {icon}
-      <Typography variant="h3">
-        {title}
-      </Typography>
+      <Typography variant="h3">{title}</Typography>
     </Stack>
   );
 
@@ -51,7 +46,7 @@ export function PopoverContent({ title, content, page = null, icon = <></> }) {
         {content}
       </Stack>
     </Stack>
-  )
+  );
 }
 
 export function usePopover({
@@ -409,15 +404,12 @@ export function parseSetupPopover(setup, siteInfo) {
     !setup.closed && setup.roles.length > 1 ? multiName : "Roles";
   result.push(
     <InfoSection title={sectionName} key="roles">
-      <InfoRow
-        title="Closed roles"
-        content={setup.closed}
-      />
+      <InfoRow title="Closed roles" content={setup.closed} />
       {rolesetSettings}
     </InfoSection>
   );
 
-  result.push(<FullRoleList setup={setup} key="fullRoleList" />)
+  result.push(<FullRoleList setup={setup} key="fullRoleList" />);
 
   return result;
 }

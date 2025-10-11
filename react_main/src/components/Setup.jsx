@@ -94,10 +94,11 @@ export default function Setup(props) {
   var overSize = false;
 
   if (props.setup.closed && !useRoleGroups) {
-    const {
-      rolesDividedByAlignment,
-      events
-    } = getRolesByAlignment(siteInfo, props.setup.gameType, props.setup.roles)
+    const { rolesDividedByAlignment, events } = getRolesByAlignment(
+      siteInfo,
+      props.setup.gameType,
+      props.setup.roles
+    );
 
     for (let alignment of Object.keys(rolesDividedByAlignment[0])) {
       roleCounts.push(
@@ -444,10 +445,11 @@ export function FullRoleList({ setup }) {
   const siteInfo = useContext(SiteInfoContext);
   const isPhoneDevice = useIsPhoneDevice();
 
-  const {
-    rolesDividedByAlignment,
-    events
-  } = getRolesByAlignment(siteInfo, gameType, roles);
+  const { rolesDividedByAlignment, events } = getRolesByAlignment(
+    siteInfo,
+    gameType,
+    roles
+  );
 
   // holy fricken FREAK this is a 3-dimensional effort
   const rolesetAlignments = Object.keys(rolesDividedByAlignment).map((i) => {
