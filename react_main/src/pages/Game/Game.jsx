@@ -64,6 +64,8 @@ import {
   Divider,
   IconButton,
   Stack,
+  Tab,
+  Tabs,
   Tooltip,
   TextField,
   Typography,
@@ -1334,6 +1336,15 @@ export function TextMeetingLayout({ combineMessagesFromAllMeetings = false }) {
     (meeting) => meeting.speech
   );
 
+  function onTabChange(event, newValue) {
+    updateHistory({
+      type: "selTab",
+      state: stateViewing,
+      meetingId: newValue,
+    });
+    setAutoScroll(true);
+  }
+
   useEffect(() => doAutoScroll());
 
   useEffect(() => {
@@ -1497,19 +1508,56 @@ export function TextMeetingLayout({ combineMessagesFromAllMeetings = false }) {
     meetings[selTab].canTalk;
   return (
     <>
-      <div className="meeting-tabs title-box">
-        {tabs.length > 0 && tabs}
-        {tabs.length === 0 && (
-          <div className="tab sel">{stateInfo && stateInfo.name}</div>
-        )}
-        <div
-          style={{
-            marginLeft: "auto",
+      <Box
+        className="meeting-tabs title-box"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          overflow: "hidden",
+          borderBottom: 1,
+          borderColor: "divider",
+        }}
+      >
+        <Tabs
+          value={selTab || false}
+          onChange={onTabChange}
+          variant="scrollable"
+          scrollButtons="auto"
+          sx={{
+            flexGrow: 1,
+            minHeight: 36,
+            "& .MuiTab-root": {
+              textTransform: "none",
+              minHeight: 36,
+              fontWeight: 500,
+              fontSize: "0.9rem",
+            },
           }}
         >
+          {speechMeetings.map((meeting) => (
+            <Tab
+              key={meeting.id}
+              value={meeting.id}
+              label={meeting.name}
+              sx={{ paddingX: 1.5 }}
+            />
+          ))}
+
+          {speechMeetings.length === 0 && (
+            <Tab
+              value="noMeeting"
+              label={stateInfo?.name || "No Meeting"}
+              disabled
+            />
+          )}
+        </Tabs>
+
+        <Box sx={{ flexShrink: 0, ml: 1 }}>
           <Timer />
-        </div>
-      </div>
+        </Box>
+      </Box>
+
       <div className="speech-wrapper">
         <div
           className="speech-display"
@@ -1524,19 +1572,17 @@ export function TextMeetingLayout({ combineMessagesFromAllMeetings = false }) {
           {messages}
         </div>
         {canSpeak && (
-          <>
-            <SpeechInput
-              meetings={meetings}
-              selTab={selTab}
-              players={players}
-              options={game.options}
-              socket={game.socket}
-              setAutoScroll={setAutoScroll}
-              speechInput={speechInput}
-              setSpeechInput={setSpeechInput}
-              whispersEnabled={game.getSetupGameSetting("Whispers")}
-            />
-          </>
+          <SpeechInput
+            meetings={meetings}
+            selTab={selTab}
+            players={players}
+            options={game.options}
+            socket={game.socket}
+            setAutoScroll={setAutoScroll}
+            speechInput={speechInput}
+            setSpeechInput={setSpeechInput}
+            whispersEnabled={game.getSetupGameSetting("Whispers")}
+          />
         )}
       </div>
     </>
