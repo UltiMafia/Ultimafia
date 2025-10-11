@@ -1336,7 +1336,7 @@ export function TextMeetingLayout({ combineMessagesFromAllMeetings = false }) {
     (meeting) => meeting.speech
   );
 
-    function onTabChange(event, newValue) {
+  function onTabChange(event, newValue) {
     updateHistory({
       type: "selTab",
       state: stateViewing,
@@ -1545,7 +1545,11 @@ export function TextMeetingLayout({ combineMessagesFromAllMeetings = false }) {
           ))}
 
           {speechMeetings.length === 0 && (
-            <Tab value="noMeeting" label={stateInfo?.name || "No Meeting"} disabled />
+            <Tab
+              value="noMeeting"
+              label={stateInfo?.name || "No Meeting"}
+              disabled
+            />
           )}
         </Tabs>
 
@@ -1560,7 +1564,9 @@ export function TextMeetingLayout({ combineMessagesFromAllMeetings = false }) {
           onScroll={onSpeechScroll}
           ref={speechDisplayRef}
           style={{
-            flexDirection: game.isObituaryPlaying ? "column-reverse" : undefined,
+            flexDirection: game.isObituaryPlaying
+              ? "column-reverse"
+              : undefined,
           }}
         >
           {messages}
