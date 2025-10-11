@@ -1877,8 +1877,8 @@ module.exports = class Game {
     this.checkAllMeetingsReady();
   }
 
-  broadcastState() {
-    this.broadcast("state", this.getStateInfo());
+  broadcastState(stateInfo = this.getStateInfo()) {
+    this.broadcast("state", stateInfo);
   }
 
   addStateToHistories(name, state) {
@@ -2570,14 +2570,17 @@ module.exports = class Game {
       this.winners = winners;
       this.currentState = -2;
 
-      var stateInfo = this.getStateInfo();
+      let stateInfo = this.getStateInfo();
+      stateInfo.winners = winners.getWinnersInfo();
       this.broadcastState(stateInfo);
       this.addStateToHistories(stateInfo.name);
+      this.broadcast("winners", winners.getWinnersInfo());
 
       this.events.emit("aboutToFinish");
 
       this.history.recordAllRoles();
       this.history.recordAllDead();
+      this.history.recordWinners();
 
       winners.queueAlerts();
       this.processObituaryQueue("Postgame");
@@ -2599,7 +2602,6 @@ module.exports = class Game {
 
       this.players.map((p) => p.send("players", this.getAllPlayerInfo(p)));
 
-      this.broadcast("winners", winners.getWinnersInfo());
       if (this.achievementsAllowed()) {
         for (let player of this.players) {
           if (player.EarnedAchievements.length > 0) {

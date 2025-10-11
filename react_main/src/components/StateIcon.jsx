@@ -39,31 +39,13 @@ export default function StateIcon({
   size = 40,
 }) {
   const game = useContext(GameContext);
-  const [winnerGroups, setWinnerGroups] = useState([]);
+  const gameState = game.history.states[stateNum];
 
-  useEffect(() => {
-    const socket = game?.socket;
+  let winnerGroups = [];
 
-    if (!socket || typeof socket.on !== "function") {
-      const lastState = game?.history?.states?.[game?.history?.currentState];
-      if (lastState?.winners?.groups) {
-        setWinnerGroups(lastState.winners.groups.map((g) => g.toLowerCase()));
-      }
-      return;
-    }
-
-    const handleWinners = ({ groups }) => {
-      if (!groups || !groups.length) return;
-      setWinnerGroups(groups.map((g) => g.toLowerCase()));
-    };
-
-    socket.on("winners", handleWinners);
-
-    return () => {
-      if (typeof socket.off === "function")
-        socket.off("winners", handleWinners);
-    };
-  }, [game?.socket]);
+  if (gameState && gameState.winners && gameState.winners.groups) {
+    winnerGroups = gameState.winners.groups.map((g) => g.toLowerCase());
+  }
 
   const normalizedName = stateName.toLowerCase().replace(/[0-9]/g, "").trim();
   let stateType = stateIconMap[normalizedName] || "nowin";
