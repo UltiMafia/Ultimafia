@@ -17,13 +17,13 @@ export const statesIcons = {
   nowin: require("images/game_state/nowin-state.png"),
   triwin: require("images/game_state/triwin-state.png"),
   villagewin: require("images/game_state/villagewin-state.png"),
-  ghost: require("images/roles/ghost-vivid.png"),
+  ghost: require("images/game_state/ghost-state.png"),
   admiral: require("images/roles/village/admiral-vivid.png"),
 };
 
 const stateIconMap = {
   pregame: "pregame",
-  dawn: "night",
+  dawn: "day",
   day: "day",
   dusk: "night",
   night: "night",
