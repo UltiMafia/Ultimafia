@@ -376,15 +376,17 @@ export function parseSetupPopover(setup, siteInfo) {
       break;
   }
 
+  let rolesetSettings = [];
+
   //Roles
   if (setup.closed) {
-    result.push(
+    rolesetSettings.push(
       <InfoRow title="Unique Roles" content={setup.unique} key="uniqueRoles" />
     );
 
     // Currently, only Mafia supports unique without modifier
     if (setup.unique && setup.gameType === "Mafia") {
-      result.push(
+      rolesetSettings.push(
         <InfoRow
           title="Unique Without Modifier"
           content={setup.uniqueWithoutModifier}
@@ -393,7 +395,7 @@ export function parseSetupPopover(setup, siteInfo) {
       );
     }
 
-    result.push(
+    rolesetSettings.push(
       <InfoRow
         title="Role Groups"
         content={setup.useRoleGroups}
@@ -407,9 +409,15 @@ export function parseSetupPopover(setup, siteInfo) {
     !setup.closed && setup.roles.length > 1 ? multiName : "Roles";
   result.push(
     <InfoSection title={sectionName} key="roles">
-      <FullRoleList setup={setup} />
+      <InfoRow
+        title="Closed roles"
+        content={setup.closed}
+      />
+      {rolesetSettings}
     </InfoSection>
   );
+
+  result.push(<FullRoleList setup={setup} key="fullRoleList" />)
 
   return result;
 }

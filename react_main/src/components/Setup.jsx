@@ -453,11 +453,6 @@ export function FullRoleList({ setup }) {
   const rolesetAlignments = Object.keys(rolesDividedByAlignment).map((i) => {
     const alignmentKeys = Object.keys(rolesDividedByAlignment[i]);
     const gridItemSize = isPhoneDevice ? 12 : 12 / alignmentKeys.length;
-    var sectionName =
-      setup.roles.length > 1 ? INDEXED_ROLE_GROUP_LABELS[i] : null;
-    if (sectionName && setup.useRoleGroups) {
-      sectionName += `:${setup.roleGroupSizes[i]}`;
-    }
 
     const alignmentRoles = ALIGNMENT_ORDER.map((alignment) => {
       if (rolesDividedByAlignment[i][alignment] === undefined) {
@@ -506,17 +501,15 @@ export function FullRoleList({ setup }) {
           alignItems: "center",
         }}
       >
-        {sectionName && (
-          <Typography
-            sx={{
-              pr: 1,
-              fontSize: "1.5rem",
-              fontWeight: "600",
-              textAlign: "center",
-            }}
-          >
-            {sectionName}
-          </Typography>
+        {setup.roles.length > 1 && (
+          <RoleCount
+            key={i}
+            count={setup.roleGroupSizes[i]}
+            showPopover={false}
+            role={INDEXED_ROLE_GROUP_LABELS[i]}
+            roleGroup={setup.roles[i]}
+            gameType={gameType}
+          />
         )}
         <Grid container columns={12} spacing={1}>
           {alignmentRoles}
