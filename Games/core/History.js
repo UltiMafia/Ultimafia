@@ -114,6 +114,7 @@ module.exports = class History {
         roles: info.roles,
         dead: info.dead,
         exorcised: info.exorcised,
+        winners: info.winners? info.winners : null,
         extraInfo: info.extraInfo,
       };
 
@@ -174,5 +175,10 @@ module.exports = class History {
 
     for (let player of this.game.players)
       this.states[state].exorcised[player.id] = player.exorcised;
+  }
+
+  recordWinners() {
+    var state = this.game.currentState;
+    this.states[state].winners = this.game.winners.getWinnersInfo();
   }
 };

@@ -4056,6 +4056,7 @@ function useHistoryReducer(pauseHistoryUpdates) {
                     alerts: [],
                     stateEvents: [],
                     obituaries: {},
+                    winners: action.state.winners? action.state.winners : null,
                     roles: { ...history.states[prevState].roles },
                     dead: { ...history.states[prevState].dead },
                     exorcised: { ...history.states[prevState].exorcised },
