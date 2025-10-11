@@ -1,3 +1,7 @@
+:root {
+  --role-icon-size: 1.875rem;
+}
+
 .role-list {
   display: flex;
   flex-flow: row wrap;
@@ -93,13 +97,7 @@
   flex-flow: row nowrap;
 
   color: var(--scheme-color-text);
-  height: 2rem;
-}
-
-.role-group-placeholder {
-  background-color: #3a3a3d;
-  border-top-left-radius: 50px;
-  border-top-right-radius: 50px;
+  height: var(--role-icon-size);
 }
 
 .role .modifier {
@@ -111,20 +109,10 @@
 .role {
   position: relative;
 
-  width: 1.875rem;
-  height: 1.875rem;
-  border-radius: 3px;
+  width: var(--role-icon-size);
+  height: var(--role-icon-size);
   background-size: 100% 100%;
   background-image: url("/src/images/roles/01-default-tall.png");
-}
-
-.role.bg {
-  background-color: #484848;
-}
-
-.role.small {
-  width: 1.875rem;
-  height: 1.875rem;
 }
 
 .role.large {
@@ -196,11 +184,10 @@
   z-index: 1;
 }
 
-.closed-role-count .digits-wrapper {
+.closed-role-count {
   position: relative;
-  top: 20px;
-  left: 8px;
-  height: 12px;
+  width: var(--role-icon-size);
+  height: var(--role-icon-size);
 }
 
 .digit {

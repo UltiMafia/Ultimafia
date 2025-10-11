@@ -810,10 +810,6 @@ input:focus {
   padding: var(--mui-spacing);
 }
 
-.mui-popover-text {
-  font-size: 0.875rem; /* 14px */
-}
-
 @media only screen and (min-width: 700px) {
   /* For Webkit browsers like Chrome, Safari, and new Edge */
   *::-webkit-scrollbar {

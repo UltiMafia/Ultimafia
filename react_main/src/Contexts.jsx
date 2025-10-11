@@ -5,7 +5,6 @@ import { AlertFadeTimeout, AlertFadeDuration } from "./Constants";
 
 export const UserContext = React.createContext();
 export const SiteInfoContext = React.createContext();
-export const PopoverContext = React.createContext();
 export const GameContext = React.createContext();
 
 export function useSiteInfo(initData) {

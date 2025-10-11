@@ -8,9 +8,51 @@ import { SmallRoleList, GameStateIcon, FullRoleList } from "components/Setup";
 import { useErrorAlert } from "components/Alerts";
 import { NameWithAvatar } from "pages/User/User";
 
-import { Divider, Popover, Stack, Typography } from "@mui/material";
+import { Divider, Link, Popover, Stack, Typography } from "@mui/material";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { GameSettingCount } from "./Roles";
+
+export function PopoverContent({ title, content, page = null, icon = <></> }) {
+  let wrappedTitle = (
+    <Stack direction="row" spacing={1} className="mui-popover-title"
+      sx={{
+        p: 1,
+        textAlign: "center",
+        cursor: page ? "pointer" : "default",
+        color:
+          page
+            ? "var(--mui-palette-primary-main)"
+            : undefined,
+        "&:hover":
+          page
+            ? { bgcolor: "rgba(12, 12, 12, 0.15)" }
+            : undefined,
+      }}
+    >
+      {icon}
+      <Typography variant="h3">
+        {title}
+      </Typography>
+    </Stack>
+  );
+
+  if (page) {
+    wrappedTitle = (
+      <Link href={page} target="_blank" rel="noopener noreferrer">
+        {wrappedTitle}
+      </Link>
+    );
+  }
+
+  return (
+    <Stack direction="column" bgcolor="var(--scheme-color)">
+      {wrappedTitle}
+      <Stack direction="column" spacing={1} padding={1}>
+        {content}
+      </Stack>
+    </Stack>
+  )
+}
 
 export function usePopover({
   path,
@@ -116,31 +158,7 @@ export function usePopover({
         }}
         transitionDuration={0}
       >
-        <Stack direction="column" bgcolor="var(--scheme-color)">
-          <a href={page} target="_blank" rel="noopener noreferrer">
-            <Typography
-              className="mui-popover-title"
-              sx={{
-                p: 1,
-                textAlign: "center",
-                cursor: page !== undefined ? "pointer" : "default",
-                color:
-                  page !== undefined
-                    ? "var(--mui-palette-primary-main)"
-                    : undefined,
-                "&:hover":
-                  page !== undefined
-                    ? { bgcolor: "rgba(12, 12, 12, 0.15)" }
-                    : undefined,
-              }}
-            >
-              {title}
-            </Typography>
-          </a>
-          <Stack direction="column" spacing={1} padding={1}>
-            {content}
-          </Stack>
-        </Stack>
+        <PopoverContent page={page} title={title} content={content} />
       </Popover>
     );
   };
