@@ -40,11 +40,11 @@ export default function StateIcon({
 }) {
   const game = useContext(GameContext);
   const gameState = game.history.states[stateNum];
-  
+
   let winnerGroups = [];
 
   if (gameState && gameState.winners && gameState.winners.groups) {
-    winnerGroups = (gameState.winners.groups.map((g) => g.toLowerCase()));
+    winnerGroups = gameState.winners.groups.map((g) => g.toLowerCase());
   }
 
   const normalizedName = stateName.toLowerCase().replace(/[0-9]/g, "").trim();

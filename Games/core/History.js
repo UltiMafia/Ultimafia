@@ -114,7 +114,7 @@ module.exports = class History {
         roles: info.roles,
         dead: info.dead,
         exorcised: info.exorcised,
-        winners: info.winners? info.winners : null,
+        winners: info.winners ? info.winners : null,
         extraInfo: info.extraInfo,
       };
 
