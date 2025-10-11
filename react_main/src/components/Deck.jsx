@@ -1,6 +1,6 @@
 import React, { useContext, useRef } from "react";
 import { filterProfanity } from "./Basic";
-import { PopoverContext, UserContext } from "../Contexts";
+import { UserContext } from "../Contexts";
 import "css/deck.css";
 import { usePopover } from "./Popover";
 

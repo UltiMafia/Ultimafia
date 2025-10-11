@@ -1,5 +1,5 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
-import { UserContext, SiteInfoContext, PopoverContext } from "../Contexts";
+import { UserContext, SiteInfoContext } from "../Contexts";
 import { SearchBar } from "./Nav";
 import { hyphenDelimit } from "../utils";
 import { Alignments } from "../Constants";
@@ -13,23 +13,74 @@ import {
   Tabs,
   Tab,
   Box,
-  IconButton,
   Typography,
   Grid2,
   Paper,
   Stack,
   Divider,
-  useMediaQuery,
   Button,
 } from "@mui/material";
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
 import { NewLoading } from "../pages/Welcome/NewLoading";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
+import { PopoverContent } from "./Popover";
+import { SmallRoleList } from "./Setup";
 
-export function RoleCount(props) {
-  const roleRef = useRef();
-  const popover = useContext(PopoverContext);
+export function RoleCount({
+  gameType,
+  role,
+  count = null,
+  roleGroup = null,
+
+  // Should specify alignment if closed
+  closed = false,
+  alignment = null,
+
+  makeRolePrediction = null,
+  onClick = null,
+  otherRoles = null,
+  skin = null,
+  showPopover = true,
+  small = false,
+  large = false,
+}) {
+  // Rolename and modifiers are partitioned by colon. A role may have no colon which means it lacks modifiers
+  let roleName, modifiers;
+  if (typeof role == "string") {
+    roleName = role.split(":")[0];
+    modifiers = role.split(":")[1] || "";
+  } else if (role) {
+    roleName = role.name;
+    modifiers = role.modifier;
+  }
+
+  // Apply skins in order of precendence: skin specified by prop, skin chosen by user, default to vivid
   const user = useContext(UserContext);
+  let roleSkin = null;
+  if (skin) {
+    roleSkin = skin;
+  }
+  else if (user.settings && typeof user.settings.roleSkins == "string") {
+    const userRoleSkins = user.settings.roleSkins.split(",");
+    const userRoleSkinsMatched = userRoleSkins.filter((s) => s.split(":")[0] == roleName);
+    if (userRoleSkinsMatched.length > 0) {
+      roleSkin = userRoleSkinsMatched[0].split(":")[1];
+    }
+  }
+  if (roleSkin === null) {
+    roleSkin = "vivid";
+  }
+
+  // other roles in the setup provide context for special interactions that may occur
+  if (otherRoles) {
+    if (typeof otherRoles == "string") {
+      otherRoles = JSON.parse(otherRoles);
+    } else {
+      otherRoles = otherRoles;
+    }
+  }
+
+  const roleRef = useRef();
   const siteInfo = useContext(SiteInfoContext);
   const [roleData, setRoleData] = useState(null);
   const isPhoneDevice = useIsPhoneDevice();
@@ -45,94 +96,34 @@ export function RoleCount(props) {
   } = usePopoverOpen();
 
   const handleRoleCountClick = (e) => {
-    if (props.onClick) return props.onClick();
+    if (onClick) return onClick();
 
     if (makeRolePrediction) {
-      makeRolePrediction(props.role);
+      makeRolePrediction(role);
       return;
     }
 
-    if (!roleName || props.showPopover == false || roleName === "null") return;
+    if (!alignment && (!roleName || !showPopover || roleName === "null")) return;
 
     handlePopoverClick(e);
   };
 
-  // Choose from list of icons to predict from
-  const makeRolePrediction = props.makeRolePrediction;
-
-  var roleName, modifiers, roleSkin, otherRoles;
-  if (props.otherRoles) {
-    if (typeof props.otherRoles == "string") {
-      otherRoles = JSON.parse(props.otherRoles);
-    } else {
-      otherRoles = props.otherRoles;
-    }
-  }
-
-  if (typeof props.role == "string") {
-    roleName = props.role.split(":")[0];
-    modifiers = props.role.split(":")[1] || "";
-  } else if (props.role) {
-    roleName = props.role.name;
-    modifiers = props.role.modifier;
-  }
-  let userRoleSkins1;
-  if (user.settings && typeof user.settings.roleSkins == "string") {
-    userRoleSkins1 = user.settings.roleSkins.split(",");
-  }
-
-  let userRoleSkins = null;
-  if (userRoleSkins1) {
-    userRoleSkins = userRoleSkins1.filter((s) => s.split(":")[0] == roleName);
-  }
-
-  if (userRoleSkins && userRoleSkins.length == 1) {
-    roleSkin = userRoleSkins[0].split(":")[1];
-  } else {
-    roleSkin = "vivid";
-  }
-
-  if (props.skin) {
-    roleSkin = props.skin;
-  }
-
   useEffect(() => {
     setRoleData({
-      ...siteInfo.rolesRaw[props.gameType][roleName],
-      modifiers: siteInfo.modifiers[props.gameType].filter((m) =>
+      ...siteInfo.rolesRaw[gameType][roleName],
+      modifiers: siteInfo.modifiers[gameType].filter((m) =>
         modifiers?.split("/").includes(m.name)
       ),
     });
   }, [siteInfo, roleName]);
 
   const roleClass = roleName
-    ? `${hyphenDelimit(props.gameType)}-${hyphenDelimit(roleName)}`
+    ? `${hyphenDelimit(gameType)}-${hyphenDelimit(roleName)}`
     : "null";
 
-  function onRoleGroupClick() {
-    if (props.roleGroup) {
-      popover.onClick(
-        Promise.resolve({
-          data: {
-            roles: props.roleGroup,
-            gameType: props.gameType,
-            setup: props,
-            otherRoles: props.otherRoles,
-          },
-        }),
-        "roleGroup",
-        roleRef.current,
-        "Role Group"
-      );
-    }
-  }
+  const digits = count ? count.toString().split("") : [];
 
-  const digits =
-    props.count && !props.hideCount ? props.count.toString().split("") : "";
-
-  const popoverDisabled = Boolean(
-    props.showPopover === false || roleClass == "null"
-  );
+  const popoverDisabled = !showPopover || (roleClass == "null" && !alignment);
   const popoverOpen = !popoverDisabled && canOpenPopover;
   const mapAlignmentToText = {
     Village: "Village 💙",
@@ -152,72 +143,41 @@ export function RoleCount(props) {
   const roleTags = roleData?.tags ? roleData.tags.sort().join(", ") : "";
   const hasModifiers = roleData?.modifiers?.length;
   const DescriptionLines = (
-    <List dense sx={{ ...(hasModifiers ? { paddingBottom: 0 } : {}) }}>
+    <Stack direction="column" spacing={1}>
       {roleData?.description?.map((text, i) => (
-        <ListItem
-          key={i}
-          sx={{
-            paddingBottom: "0",
-            paddingTop: "0",
-            px: isPhoneDevice ? 1 : 2,
-          }}
-        >
-          <ListItemIcon
-            sx={{
-              minWidth: "0",
-              marginRight: "8px",
-            }}
-          >
-            <i className={"fas fa-info-circle"} />
-          </ListItemIcon>
-          <ListItemText
-            disableTypography
-            className={"mui-popover-text"}
-            primary={text}
-          />
-        </ListItem>
+        <Stack direction="row" spacing={1} key={i} sx={{
+          alignItems: "center",
+        }}>
+          <i className={"fas fa-info-circle"} />
+          <Typography>
+            {text}
+          </Typography>
+        </Stack>
       ))}
-    </List>
+    </Stack>
   );
   const Modifiers = hasModifiers ? (
-    <List dense sx={{ paddingTop: "0" }}>
+    <Stack direction="column" spacing={1}>
       {roleData?.modifiers?.map((modifier, i) => (
-        <ListItem
-          key={modifier.name}
-          sx={{
-            paddingBottom: "0",
-            paddingTop: "0",
-          }}
-        >
-          <ListItemIcon
-            sx={{
-              minWidth: "0",
-              marginRight: "8px",
-            }}
-          >
-            <i
-              className={`modifier modifier-${props.gameType}-${modifier.name}`}
-            />
-          </ListItemIcon>
-          <ListItemText
-            disableTypography
-            className={"mui-popover-text"}
-            primary={
-              <div>
-                <span style={{ fontWeight: "bold" }}>{modifier.name}</span>:{" "}
-                {roleData?.SpecialInteractionsModifiers &&
-                roleData?.SpecialInteractionsModifiers[modifier.name]
-                  ? roleData?.SpecialInteractionsModifiers[modifier.name]
-                  : roleData?.alignment == "Event" &&
-                    modifier.eventDescription != null
-                  ? modifier.eventDescription
-                  : modifier.description}
-              </div>
-            }
+        <Stack direction="row" spacing={1} key={modifier.name} sx={{
+          alignItems: "center",
+        }}>
+          <i
+            className={`modifier modifier-${gameType}-${modifier.name}`}
           />
-        </ListItem>
+          <Typography>
+            <span style={{ fontWeight: "bold" }}>{modifier.name}</span>:{" "}
+            {roleData?.SpecialInteractionsModifiers &&
+            roleData?.SpecialInteractionsModifiers[modifier.name]
+              ? roleData?.SpecialInteractionsModifiers[modifier.name]
+              : roleData?.alignment == "Event" &&
+                modifier.eventDescription != null
+              ? modifier.eventDescription
+              : modifier.description}
+          </Typography>
+        </Stack>
       ))}
-    </List>
+    </Stack>
   ) : (
     ""
   );
@@ -265,7 +225,7 @@ export function RoleCount(props) {
           >
             <i
               className={`role role-icon-vivid-${hyphenDelimit(
-                props.gameType
+                gameType
               )}-${hyphenDelimit(special[0])} "small"`}
             />
           </ListItemIcon>
@@ -273,10 +233,10 @@ export function RoleCount(props) {
             disableTypography
             className={"mui-popover-text"}
             primary={
-              <div>
+              <Typography>
                 <span style={{ fontWeight: "bold" }}>{special[0]}</span>:{" "}
                 {special[1][0]}
-              </div>
+              </Typography>
             }
           />
         </ListItem>
@@ -286,113 +246,142 @@ export function RoleCount(props) {
     ""
   );
 
-  if (props.closed && (props.count > 0 || props.hideCount)) {
-    return (
-      <div className="role-count-wrap closed-role-count">
-        {!props.hideCount && <DigitsCount digits={digits} />}
+  const popoverProps = {
+    "aria-owns": popoverOpen ? "mouse-over-popover" : undefined,
+    "aria-haspopup": "true",
+    onClick: handleRoleCountClick,
+    onMouseEnter: handleMouseEnter,
+    onMouseLeave: handleMouseLeave,
+  };
+
+  let layoutContent,
+    popoverTitle = null, 
+    popoverContent = null,
+    popoverPage = null,
+    popoverIcon = null;
+  if (closed && count > 0) {
+    popoverTitle = `${alignment} roleset`;
+    popoverContent = (
+      <SmallRoleList
+        roles={Object.keys(roleGroup)}
+        gameType={gameType}
+        otherRoles={otherRoles}
+      />
+    );
+    layoutContent = (
+      <div className="role-count-wrap closed-role-count" {...popoverProps}>
+        <DigitsCount digits={digits} />
         <i
-          className={`fas fa-question i-${props.alignment}`}
-          onClick={props.onClick}
+          className={`fas fa-question i-${alignment}`}
+          onClick={onClick}
         />
       </div>
     );
-  } else if (props.roleGroup) {
-    return (
-      <div className="role-count-wrap">
-        <div className="role-group-placeholder">
-          <div
-            className={`role role-icon-${roleSkin}-${roleClass} ${
-              props.small ? "small" : props.large ? "large" : ""
-            } ${props.bg ? "bg" : ""}`}
-            ref={roleRef}
-            onClick={onRoleGroupClick}
-          >
-            {!props.hideCount && <DigitsCount digits={digits} />}
-          </div>
-        </div>
+  } else if (roleGroup) {
+    popoverTitle = `Role group ${roleName}`;
+    popoverContent = (
+      <SmallRoleList
+        roles={Object.keys(roleGroup)}
+        gameType={gameType}
+        otherRoles={otherRoles}
+      />
+    );
+    layoutContent = (
+      <div className="role-count-wrap closed-role-count" {...popoverProps}>
+        <DigitsCount digits={digits} />
+        <Typography sx={{
+          lineHeight: 1,
+          fontFamily: "RobotoSlab",
+          fontSize: "2rem",
+          fontWeight: "bold",
+          userSelect: "none",
+          textShadow: "0 .04rem 0 #000",
+        }}>
+          {role}
+        </Typography>
       </div>
     );
-  } else if (!props.closed) {
-    return (
-      <>
+  } else if (!closed) {
+    popoverTitle = roleName;
+    popoverContent = (
+      <Stack direction="column" spacing={1} divider={<Divider orientation="horizontal" flexItem />}>
+        <Typography>
+          <span style={{ fontWeight: "bold" }}>Alignment</span>:{" "}
+          {roleAlignment}
+        </Typography>
+        <Typography>
+          <span style={{ fontWeight: "bold" }}>Tags</span>: {roleTags}
+        </Typography>
+        {DescriptionLines}
+        {Modifiers}
+        {SpecialInteractions}
+      </Stack>
+    );
+    popoverPage = `/learn/role/${roleName}`;
+    popoverIcon = <div className={`role role-icon-${roleSkin}-${roleClass}`} />;
+    layoutContent = (
+      <div
+        {...popoverProps}
+        style={{
+          cursor: makeRolePrediction ? "pointer" : "default",
+        }}
+      >
         <div
-          className="role-count-wrap"
-          aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
-          aria-haspopup="true"
-          onClick={handleRoleCountClick}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          style={{
-            cursor: makeRolePrediction ? "pointer" : "default",
-          }}
+          className={`role role-icon-${roleSkin}-${roleClass} ${
+            small ? "small" : large ? "large" : ""
+          }`}
+          ref={roleRef}
         >
-          <div
-            className={`role role-icon-${roleSkin}-${roleClass} ${
-              props.small ? "small" : props.large ? "large" : ""
-            } ${props.bg ? "bg" : ""}`}
-            ref={roleRef}
-          >
-            {props.count > 1 && <DigitsCount digits={digits} />}
-            {modifiers &&
-              modifiers
-                .split("/")
-                .map((modifier, k) => (
-                  <div
-                    key={modifier}
-                    className={`modifier modifier-pos-${k} modifier-${
-                      props.gameType
-                    }-${hyphenDelimit(modifier)}`}
-                  />
-                ))}
-          </div>
+          {count > 1 && <DigitsCount digits={digits} />}
+          {modifiers &&
+            modifiers
+              .split("/")
+              .map((modifier, k) => (
+                <div
+                  key={modifier}
+                  className={`modifier modifier-pos-${k} modifier-${gameType}-${hyphenDelimit(modifier)}`}
+                />
+              ))}
         </div>
-        <Popover
-          open={props.showPopover !== false && popoverOpen}
-          sx={popoverClasses}
-          anchorEl={anchorEl}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "center",
-          }}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "center",
-          }}
-          onClose={closePopover}
-          disableScrollLock
-          disableRestoreFocus
-        >
-          <div className={"mui-popover"}>
-            <div className={"mui-popover-title"}>
-              <div className={`role role-icon-${roleSkin}-${roleClass}`} />
-              &nbsp;{<Link href={`/learn/role/${roleName}`}>{roleName}</Link>}
-              &nbsp;
-            </div>
-            <div style={{ margin: "6px" }}>
-              <div>
-                <span style={{ fontWeight: "bold" }}>Alignment</span>:{" "}
-                {roleAlignment}
-              </div>
-              <div>
-                <span style={{ fontWeight: "bold" }}>Tags</span>: {roleTags}
-              </div>
-              {DescriptionLines}
-              {Modifiers}
-              {SpecialInteractions}
-            </div>
-          </div>
-        </Popover>
-      </>
+      </div>
     );
   } else {
     return <></>;
   }
+
+  return (
+    <>
+      {layoutContent}
+      <Popover
+        open={popoverOpen}
+        sx={popoverClasses}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        onClose={closePopover}
+        disableScrollLock
+        disableRestoreFocus
+      >
+        <PopoverContent
+          title={popoverTitle}
+          content={popoverContent}
+          page={popoverPage}
+          icon={popoverIcon}
+        />
+      </Popover>
+    </>
+  );
 }
 
 export function ModifierCount(props) {
   const iconLength = props.iconLength || undefined;
   const roleRef = useRef();
-  const popover = useContext(PopoverContext);
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   //const [roleData, setRoleData] = useState(null);
@@ -535,7 +524,6 @@ export function ModifierCount(props) {
 export function GameSettingCount(props) {
   const iconLength = props.iconLength || undefined;
   const roleRef = useRef();
-  const popover = useContext(PopoverContext);
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   //const [roleData, setRoleData] = useState(null);
@@ -694,7 +682,6 @@ export function RoleCell(props) {
   const onDelClick = props.onDelClick;
 
   const siteInfo = useContext(SiteInfoContext);
-  const popover = useContext(PopoverContext);
   const user = useContext(UserContext);
   const roleCellRef = useRef();
   const isPhoneDevice = useIsPhoneDevice();
@@ -712,19 +699,6 @@ export function RoleCell(props) {
           border: `1px solid var(--mui-palette-divider)`,
         }}
       />
-    );
-  }
-
-  function onRoleCellClick() {
-    popover.onClick(
-      Promise.resolve({
-        data: {
-          roleName: siteInfo.modifiers[props.gameType][role.name],
-        },
-      }),
-      "role",
-      roleCellRef,
-      role.name
     );
   }
 
@@ -942,7 +916,6 @@ export function ModifierSearch(props) {
   const roleCellRefs = useRef([]);
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
-  const popover = useContext(PopoverContext);
   const isPhoneDevice = useIsPhoneDevice();
 
   function onAlignNavClick(alignment) {
@@ -1074,7 +1047,6 @@ export function GameSettingSearch(props) {
   const roleCellRefs = useRef([]);
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
-  const popover = useContext(PopoverContext);
   const isPhoneDevice = useIsPhoneDevice();
 
   function onAlignNavClick(alignment) {

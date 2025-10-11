@@ -24,7 +24,6 @@ import { Icon } from "@iconify/react";
 import {
   UserContext,
   SiteInfoContext,
-  PopoverContext,
   useSiteInfo,
 } from "./Contexts";
 import { AlertList, useErrorAlert } from "./components/Alerts";
@@ -37,7 +36,6 @@ import { Nav } from "./components/Nav";
 import { Welcome } from "./pages/Welcome/Welcome";
 import { Avatar, useUser } from "./pages/User/User";
 import UserNotifications from "./pages/User/UserNotifications";
-import Popover, { usePopover } from "./components/PopoverOld";
 import CookieBanner from "./components/CookieBanner";
 import Chat from "./pages/Chat/Chat";
 
@@ -114,7 +112,6 @@ function Main(props) {
     alerts: [],
     cacheVal,
   });
-  const popover = usePopover(siteInfo);
   const errorAlert = useErrorAlert(siteInfo);
   const location = useLocation();
 
@@ -301,14 +298,11 @@ function Main(props) {
   const mainContent = (
     <UserContext.Provider value={user}>
       <SiteInfoContext.Provider value={siteInfo}>
-        <PopoverContext.Provider value={popover}>
-          <CookieBanner />
-          <Routes>
-            <Route path="/game/*" element={gameContent} />
-            <Route path="/*" element={siteContent} />
-          </Routes>
-          <Popover />
-        </PopoverContext.Provider>
+        <CookieBanner />
+        <Routes>
+          <Route path="/game/*" element={gameContent} />
+          <Route path="/*" element={siteContent} />
+        </Routes>
       </SiteInfoContext.Provider>
     </UserContext.Provider>
   );

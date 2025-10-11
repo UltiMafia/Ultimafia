@@ -1,7 +1,6 @@
 import React, { useContext, useLayoutEffect, useRef, useState } from "react";
 
-import { PopoverContext, UserContext, SiteInfoContext } from "Contexts";
-import { Alignments } from "Constants";
+import { UserContext, SiteInfoContext } from "Contexts";
 import { RoleCount } from "components/Roles";
 import { filterProfanity } from "components/Basic";
 import { SearchBar } from "components/Nav";
@@ -26,6 +25,7 @@ import { usePopover } from "./Popover";
 
 export default function Setup(props) {
   const user = useContext(UserContext);
+  const siteInfo = useContext(SiteInfoContext);
   const setupRef = useRef();
   const { InfoPopover, popoverOpen, handleClick } = usePopover({
     path: `/api/setup/${props.setup.id}`,
@@ -94,11 +94,17 @@ export default function Setup(props) {
   var overSize = false;
 
   if (props.setup.closed && !useRoleGroups) {
-    for (let alignment of Alignments[props.setup.gameType]) {
+    const {
+      rolesDividedByAlignment,
+      events
+    } = getRolesByAlignment(siteInfo, props.setup.gameType, props.setup.roles)
+
+    for (let alignment of Object.keys(rolesDividedByAlignment[0])) {
       roleCounts.push(
         <RoleCount
           closed
           alignment={alignment}
+          roleGroup={rolesDividedByAlignment[0][alignment]}
           count={props.setup.count[alignment]}
           gameType={props.setup.gameType}
           key={alignment}
@@ -107,6 +113,7 @@ export default function Setup(props) {
       );
     }
   } else if (useRoleGroups) {
+    let i = 0;
     for (let roleGroup in props.setup.roles) {
       if (maxIconsTotal !== null && roleCounts.length >= maxIconsTotal) {
         overSize = true;
@@ -119,12 +126,13 @@ export default function Setup(props) {
           count={props.setup.roleGroupSizes[roleGroup]}
           showPopover
           small={small}
-          role={Object.keys(roleGroupData)[0]}
+          role={INDEXED_ROLE_GROUP_LABELS[i]}
           roleGroup={roleGroupData}
           gameType={props.setup.gameType}
           otherRoles={props.setup.roles}
         />
       );
+      i++;
     }
   } else {
     selectSetup(setupIndex);
@@ -334,12 +342,7 @@ export function SmallRoleList(props) {
           key="searchbar"
         />
       )}
-      <div
-        className="small-role-list"
-        style={{
-          borderTop: includeSearchBar ? undefined : "1px solid #d6d6d6",
-        }}
-      >
+      <div className="small-role-list">
         {props.title} {roleList}
       </div>
     </Stack>
@@ -401,15 +404,10 @@ const INDEXED_ROLE_GROUP_LABELS = [
   "AX",
 ];
 
-export function FullRoleList({ setup }) {
-  const roles = setup.roles;
-  const gameType = setup.gameType;
-
-  const siteInfo = useContext(SiteInfoContext);
-  const isPhoneDevice = useIsPhoneDevice();
-
-  var rolesDividedByAlignment = {};
+function getRolesByAlignment(siteInfo, gameType, roles) {
+  let rolesDividedByAlignment = {};
   const events = [];
+
   for (let i in roles) {
     for (let role in roles[i]) {
       let roleName = role.split(":")[0];
@@ -433,15 +431,28 @@ export function FullRoleList({ setup }) {
     }
   }
 
+  return {
+    rolesDividedByAlignment: rolesDividedByAlignment,
+    events: events,
+  };
+}
+
+export function FullRoleList({ setup }) {
+  const roles = setup.roles;
+  const gameType = setup.gameType;
+
+  const siteInfo = useContext(SiteInfoContext);
+  const isPhoneDevice = useIsPhoneDevice();
+
+  const {
+    rolesDividedByAlignment,
+    events
+  } = getRolesByAlignment(siteInfo, gameType, roles);
+
   // holy fricken FREAK this is a 3-dimensional effort
   const rolesetAlignments = Object.keys(rolesDividedByAlignment).map((i) => {
     const alignmentKeys = Object.keys(rolesDividedByAlignment[i]);
     const gridItemSize = isPhoneDevice ? 12 : 12 / alignmentKeys.length;
-    var sectionName =
-      setup.roles.length > 1 ? INDEXED_ROLE_GROUP_LABELS[i] : null;
-    if (sectionName && setup.useRoleGroups) {
-      sectionName += `:${setup.roleGroupSizes[i]}`;
-    }
 
     const alignmentRoles = ALIGNMENT_ORDER.map((alignment) => {
       if (rolesDividedByAlignment[i][alignment] === undefined) {
@@ -490,17 +501,15 @@ export function FullRoleList({ setup }) {
           alignItems: "center",
         }}
       >
-        {sectionName && (
-          <Typography
-            sx={{
-              pr: 1,
-              fontSize: "1.5rem",
-              fontWeight: "600",
-              textAlign: "center",
-            }}
-          >
-            {sectionName}
-          </Typography>
+        {setup.roles.length > 1 && (
+          <RoleCount
+            key={i}
+            count={setup.roleGroupSizes[i]}
+            showPopover={false}
+            role={INDEXED_ROLE_GROUP_LABELS[i]}
+            roleGroup={setup.roles[i]}
+            gameType={gameType}
+          />
         )}
         <Grid container columns={12} spacing={1}>
           {alignmentRoles}
