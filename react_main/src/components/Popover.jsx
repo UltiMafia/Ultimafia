@@ -4,13 +4,14 @@ import axios from "axios";
 import { GameStates } from "Constants";
 import { SiteInfoContext } from "Contexts";
 import { Time } from "components/Basic";
-import { SmallRoleList, GameStateIcon, FullRoleList } from "components/Setup";
+import { SmallRoleList, GameStateIcon, FullRoleList, getAlignmentColor } from "components/Setup";
 import { useErrorAlert } from "components/Alerts";
 import { NameWithAvatar } from "pages/User/User";
 
-import { Divider, Link, Popover, Stack, Typography } from "@mui/material";
+import { Box, Divider, Link, Popover, Stack, Typography } from "@mui/material";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { GameSettingCount } from "./Roles";
+import { KUDOS_ICON } from "pages/User/Profile";
 
 export function PopoverContent({ title, content, page = null, icon = <></> }) {
   let wrappedTitle = (
@@ -510,28 +511,112 @@ export function parseGamePopover(game) {
 
   //Players
   const playerList = [];
+  const playerAlignmentMap = JSON.parse(game.playerAlignmentMap || "{}");
+  let playerIdMap = JSON.parse(game.playerIdMap || "{}");
+  const displayWinners = Object.keys(playerIdMap).length > 0;
+  let winnerCount = game.winners ? game.winners.length : 0;
 
-  for (let i = 0; i < game.players.length; i++) {
-    playerList.push(
-      <NameWithAvatar
-        small
-        id={game.players[i].id}
-        name={game.players[i].name}
-        avatar={game.players[i].avatar}
-        key={game.players[i].id}
-      />
-    );
-  }
+  const totalPlayers = game.totalPlayers ? game.totalPlayers : game.players.length;
+  for (let i = 0; i < totalPlayers; i++) {
+    let key = i;
+    let userId = null;
+    let avatarProps = {};
+    let isWinner = false;
+    if (i < game.players.length) {
+      // Real player
+      const player = game.players[i];
+      userId = player.id;
 
-  while (playerList.length < game.totalPlayers) {
+      key = userId;
+      avatarProps = {
+        id: player.id,
+        name: player.name,
+        avatar: player.avatar,
+      }
+    }
+    else {
+      // Guest
+      const idKeys = Object.keys(playerIdMap);
+      if (idKeys.length > 0) {
+        userId = idKeys[0];
+        key = userId;
+      }
+      else {
+        if (winnerCount > 0) {
+          winnerCount--;
+          isWinner = true;
+        }
+      }
+      avatarProps = {
+        name: "[Guest]",
+      }
+    }
+
+    if (userId && userId in playerIdMap) {
+      if (game.winners && game.winners.includes(playerIdMap[userId])) {
+        isWinner = true;
+        winnerCount--;
+      }
+      delete playerIdMap[userId];
+    }
+    const isKudos = game.kudosReceiver && game.kudosReceiver === userId;
+    const alignmentColor = getAlignmentColor(playerAlignmentMap[userId]);
+
+    let trophies = [];
+    if (isKudos) {
+      trophies.push(<img src={KUDOS_ICON} alt="Kudos" width="20px" height="20px" key="kudos" />);
+    }
+    if (displayWinners) {
+      if (isWinner) {
+        trophies.push(<i className="fas fa-trophy" key="winner" style={{ color: "yellow" }} />);
+      }
+    }
+
+    trophies = trophies.map(trophy => <Stack direction="row" style={{ minWidth: "1.5rem", justifyContent: "center" }}>{trophy}</Stack>)
+
     playerList.push(
-      <NameWithAvatar small name="[Guest]" key={playerList.length} />
+      <Stack direction="row" spacing={1} sx={{
+        alignItems: "center",
+        position: "relative",
+        zIndex: 1,
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: alignmentColor,
+          borderTopLeftRadius: "var(--mui-shape-borderRadius)",
+          borderBottomLeftRadius: "var(--mui-shape-borderRadius)",
+          opacity: 0.05,
+          zIndex: -1,
+        },
+      }}>
+        <Box sx={{
+          backgroundColor: alignmentColor,
+          borderTopLeftRadius: "var(--mui-shape-borderRadius)",
+          borderBottomLeftRadius: "var(--mui-shape-borderRadius)",
+          alignSelf: "stretch",
+          minWidth: "8px",
+        }}/>
+        <NameWithAvatar small {...avatarProps} />
+        <Stack direction="row" spacing={0.5} sx={{
+          minHeight: "1.5rem",
+          alignItems: "center",
+          marginLeft: "auto !important",
+        }}>
+          {trophies}
+        </Stack>
+      </Stack>
     );
   }
 
   result.push(
     <InfoSection title="Players" key="players">
-      <div>{playerList}</div>
+      <Stack direction="column" spacing={0.5} paddingTop={0.5}>
+        {playerList}
+      </Stack>
     </InfoSection>
   );
 

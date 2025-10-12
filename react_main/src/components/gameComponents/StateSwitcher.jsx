@@ -74,6 +74,13 @@ export default function StateSwitcher({ stateRange = null }) {
     const stateName = state ? state.name : "Unknown State";
     const index = reverseStateNums[stateNum];
 
+    // Determine winnerGroups, if any
+    const gameState = game.history.states[stateNum];
+    let winnerGroups = [];
+    if (gameState && gameState.winners && gameState.winners.groups) {
+      winnerGroups = gameState.winners.groups;
+    }
+
     const isInRange =
       index >= currentStateIndex - STATE_RANGE &&
       index <= currentStateIndex + STATE_RANGE;
@@ -87,7 +94,7 @@ export default function StateSwitcher({ stateRange = null }) {
         icon={
           <StateIcon
             stateName={stateName}
-            stateNum={stateNum}
+            winnerGroups={winnerGroups}
             unfocused={stateNum !== stateViewing}
             size={stateIconSize}
           />

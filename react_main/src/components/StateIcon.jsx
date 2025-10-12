@@ -34,19 +34,11 @@ const stateIconMap = {
 
 export default function StateIcon({
   stateName,
-  stateNum,
+  winnerGroups,
   unfocused = false,
   size = 40,
 }) {
-  const game = useContext(GameContext);
-  const gameState = game.history.states[stateNum];
-
-  let winnerGroups = [];
-
-  if (gameState && gameState.winners && gameState.winners.groups) {
-    winnerGroups = gameState.winners.groups.map((g) => g.toLowerCase());
-  }
-
+  winnerGroups = winnerGroups.map((g) => g.toLowerCase());
   const normalizedName = stateName.toLowerCase().replace(/[0-9]/g, "").trim();
   let stateType = stateIconMap[normalizedName] || "nowin";
 
@@ -125,7 +117,7 @@ export default function StateIcon({
     return icon;
   } else {
     return (
-      <Tooltip title={stateName} key={stateNum}>
+      <Tooltip title={stateName}>
         {icon}
       </Tooltip>
     );

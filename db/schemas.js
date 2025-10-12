@@ -236,6 +236,18 @@ var schemas = {
     left: [String],
     names: [String],
     winners: [String],
+    winnersInfo: {
+      players: {
+        type: [{ type: String }],
+        default: [],
+      },
+      groups: {
+        type: [{ type: String }],
+        default: [],
+      },
+    },
+    playerIdMap: { type: String, default: "{}" },
+    playerAlignmentMap: { type: String, default: "{}" },
     history: String,
     startTime: Number,
     endTime: { type: Number, index: true },
