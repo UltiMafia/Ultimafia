@@ -2114,9 +2114,7 @@ function WinnersMessage(props) {
   // didn't mess with deathMessage stuff
   const wins = winnerGroups.map((group, index) => {
     const groupPlayers = winnerPlayersByGroup[group] || [];
-    const groupMessage =
-      winnerMessages[index] ||
-      `${group} has won.`;
+    const groupMessage = winnerMessages[index] || `${group} has won.`;
 
     return groupPlayers.length > 0
       ? groupPlayers.map((player) => ({
@@ -2151,7 +2149,6 @@ function WinnersMessage(props) {
     />
   );
 }
-
 
 export function Timestamp(props) {
   const time = new Date(props.time);

@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Collapse,
-} from "@mui/material";
+import { Box, Card, CardContent, Typography, Collapse } from "@mui/material";
 import { emotify } from "../Emotes";
 import { Avatar } from "../../pages/User/User";
 
@@ -89,13 +83,13 @@ export default function Newspaper(props) {
                 <Typography
                   variant="subtitle2"
                   sx={{
-                  borderTop: "2px solid #2f2f2f",
-                  borderBottom: "2px solid #2f2f2f",
-                  textTransform: "uppercase",
-                  textAlign: "center",
-                  mb: 1,
+                    borderTop: "2px solid #2f2f2f",
+                    borderBottom: "2px solid #2f2f2f",
+                    textTransform: "uppercase",
+                    textAlign: "center",
+                    mb: 1,
                   }}
-                  >
+                >
                   {gameDate.toDateString()}
                 </Typography>
                 <Typography
@@ -144,9 +138,7 @@ export default function Newspaper(props) {
                 )}
 
                 {death.lastWill && (
-                  <Typography>
-                    {emotify(death.lastWill)}
-                  </Typography>
+                  <Typography>{emotify(death.lastWill)}</Typography>
                 )}
               </Box>
             ))
@@ -213,7 +205,7 @@ function reformatRoleName(role) {
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included
  * in all copies or substantial portions of the Software.
-*/
+ */
