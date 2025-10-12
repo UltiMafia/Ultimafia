@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from "react";
-
-import { emotify, Emotes } from "../Emotes";
+import React, { useState } from "react";
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Collapse,
+} from "@mui/material";
+import { emotify } from "../Emotes";
 import { Avatar } from "../../pages/User/User";
-
-import "css/newspaper.css";
 
 export default function Newspaper(props) {
   const title = props.title || "Obituary";
@@ -11,6 +15,8 @@ export default function Newspaper(props) {
   const deaths = props.deaths || [];
   const dayCount = props.dayCount || 0;
   const isAlignmentReveal = props.isAlignmentReveal || false;
+
+  const [open, setOpen] = useState(true);
 
   // Example props.deaths input data:
   /* [{
@@ -35,51 +41,123 @@ export default function Newspaper(props) {
   const gameDate = new Date(timestamp + dayCount * 24 * 60 * 60 * 1000);
   gameDate.setFullYear(gameDate.getFullYear() - 100);
 
-  const obituaries = deaths.map((death) => (
-    <div className="obituary" key={death.id}>
-      <div className="obituary-header">
-        <div className="obituary-avatar">
-          <Avatar
-            id={death.id}
-            hasImage={death.avatar}
-            avatarId={death.avatarId}
-            name={death.name}
-            large
-            isSquare
-          />
-        </div>
-        <h3>{death.name}</h3>
-      </div>
-
-      <div className="newspaper-paragraph">{emotify(death.deathMessage)}</div>
-
-      {death.revealMessage && (
-        <div className="newspaper-paragraph">
-          {formatRevealMessage(
-            death.revealMessage,
-            death.name,
-            isAlignmentReveal
-          )}
-        </div>
-      )}
-
-      {death.lastWill && (
-        <div className="newspaper-paragraph">{emotify(death.lastWill)}</div>
-      )}
-    </div>
-  ));
+  const toggleCollapse = () => setOpen((prev) => !prev);
 
   return (
-    <div className="newspaper">
-      <div className="newspaper-title">{title}</div>
-      <div className="newspaper-subheader">{gameDate.toDateString()}</div>
+    <Card
+      sx={{
+        width: 324,
+        mx: "auto",
+        mt: 1,
+        p: 1,
+        fontFamily: '"Droid Serif", serif',
+        fontSize: "18px",
+        backgroundColor: "#f9f7f1",
+        color: "#2f2f2f",
+        border: "4px solid #000",
+        boxShadow: "none",
+      }}
+    >
+      <CardContent sx={{ p: 1, "&:last-child": { pb: 1 } }}>
+        <Box
+          onClick={toggleCollapse}
+          sx={{
+            cursor: "pointer",
+            userSelect: "none",
+            "&:hover": { color: "#000", opacity: 0.8 },
+          }}
+        >
+          <Typography
+            variant="h5"
+            sx={{
+              fontFamily: '"Playfair Display", serif',
+              fontWeight: 900,
+              fontSize: "28px",
+              textTransform: "uppercase",
+              textAlign: "center",
+              mb: 1,
+            }}
+          >
+            {title}
+          </Typography>
+        </Box>
 
-      {obituaries.length > 0 ? (
-        obituaries
-      ) : (
-        <div className="newspaper-no-one-died">No one died last night.</div>
-      )}
-    </div>
+        <Collapse in={open}>
+          {deaths.length > 0 ? (
+            deaths.map((death) => (
+              <Box key={death.id} sx={{ mb: 1.5 }}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{
+                  borderTop: "2px solid #2f2f2f",
+                  borderBottom: "2px solid #2f2f2f",
+                  textTransform: "uppercase",
+                  textAlign: "center",
+                  mb: 1,
+                  }}
+                  >
+                  {gameDate.toDateString()}
+                </Typography>
+                <Typography
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: "20px",
+                    textTransform: "uppercase",
+                    mb: 0.5,
+                  }}
+                >
+                  {death.name}
+                </Typography>
+
+                <Box display="flex" alignItems="flex-start" mb={0.5}>
+                  <Box
+                    sx={{
+                      flexShrink: 0,
+                      mr: 1,
+                      filter: "sepia(80%) grayscale(1) contrast(1)",
+                      mixBlendMode: "multiply",
+                    }}
+                  >
+                    <Avatar
+                      id={death.id}
+                      hasImage={death.avatar}
+                      avatarId={death.avatarId}
+                      name={death.name}
+                      large
+                      isSquare
+                    />
+                  </Box>
+
+                  <Typography sx={{ flex: 1, overflow: "hidden" }}>
+                    {emotify(death.deathMessage)}
+                  </Typography>
+                </Box>
+
+                {death.revealMessage && (
+                  <Typography>
+                    {formatRevealMessage(
+                      death.revealMessage,
+                      death.name,
+                      isAlignmentReveal
+                    )}
+                  </Typography>
+                )}
+
+                {death.lastWill && (
+                  <Typography>
+                    {emotify(death.lastWill)}
+                  </Typography>
+                )}
+              </Box>
+            ))
+          ) : (
+            <Typography textAlign="center" sx={{ mt: 1 }}>
+              No one died last night.
+            </Typography>
+          )}
+        </Collapse>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -94,7 +172,10 @@ function formatRevealMessage(revealMessage, playerName, isAlignmentReveal) {
   return (
     <>
       {playerName}'s {revealType} was:
-      <span className="newspaper-emphasis"> {revealResult}</span>
+      <span style={{ fontWeight: 900, fontStyle: "italic" }}>
+        {" "}
+        {revealResult}
+      </span>
     </>
   );
 }
@@ -122,27 +203,17 @@ function reformatRoleName(role) {
   return `${modifiers.join(" ")} ${roleName}`;
 }
 
-function emotifyInline(text) {
-  if (!text) return;
-  if (!Array.isArray(text)) text = [text];
-  for (let i in text) {
-    let segment = text[i];
-    if (typeof segment != "string") continue;
-    const words = segment.split(" ");
-    for (let j in words) {
-      let word = words[j].toLowerCase();
-      if (Emotes[word] && typeof Emotes[word] != "function") {
-        const emote = Emotes[word];
-        words[j] = `<div class="emote" title=${
-          emote.name
-        } style="background-image: url('/images/emotes/${emote.name.toLowerCase()}.${
-          emote.type
-        }')"></div>`;
-      } else {
-        if (j < words.length - 1) words[j] += " ";
-      }
-    }
-    text[i] = words;
-  }
-  return text.flat().join("");
-}
+/* Note from nearbear: I borrowed styling choices from this codepen so I'm crediting it */
+
+/* Copyright (c) 2025 by Silke V (https://codepen.io/silkine/pen/QWBxVX)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+*/
