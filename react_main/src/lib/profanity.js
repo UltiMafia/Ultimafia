@@ -1,4 +1,8 @@
-import { slurs, swears, getSwearReplacement } from "../constants/filteredStrings";
+import {
+  slurs,
+  swears,
+  getSwearReplacement,
+} from "../constants/filteredStrings";
 
 /* --- ROT13 decoding --- */
 function rot13(str) {
