@@ -2107,6 +2107,61 @@ function Message(props) {
 //   );
 // }
 
+function WinnersMessage(props) {
+  const game = useContext(GameContext);
+  const message = props.message;
+
+  const winnersInfo = message.winners || {};
+  const winnerGroups = winnersInfo.groups || [];
+  const winnerPlayersByGroup = winnersInfo.players || {};
+  const winnerMessages = winnersInfo.messages || [];
+
+  let title = "Postgame Results";
+  if (winnerGroups.length === 1) {
+    title = `${winnerGroups[0]} Wins!`;
+  } else if (winnerGroups.length > 1) {
+    title = `${winnerGroups.join(" & ")} Win!`;
+  }
+
+  // didn't mess with deathMessage stuff
+  const wins = winnerGroups.map((group, index) => {
+    const groupPlayers = winnerPlayersByGroup[group] || [];
+    const groupMessage = winnerMessages[index] || `${group} has won.`;
+
+    return groupPlayers.length > 0
+      ? groupPlayers.map((player) => ({
+          id: player.userId || player.id,
+          name: player.name,
+          avatar: player.avatar,
+          avatarId: player.avatarId,
+          deathMessage: groupMessage,
+          revealMessage: `${player.name} was a member of the ${group}.`,
+          lastWill: "",
+        }))
+      : [
+          {
+            id: group,
+            name: group,
+            deathMessage: groupMessage,
+            revealMessage: "",
+            lastWill: "",
+          },
+        ];
+  });
+
+  const flattenedWins = wins.flat();
+
+  return (
+    <Newspaper
+      title={title}
+      timestamp={message.time}
+      dayCount={message.dayCount || 0}
+      deaths={flattenedWins}
+      isAlignmentReveal={false}
+    />
+  );
+}
+
 export function Timestamp(props) {
   const time = new Date(props.time);
 
