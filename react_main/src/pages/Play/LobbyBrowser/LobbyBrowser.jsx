@@ -215,10 +215,10 @@ export default function LobbyBrowser() {
               className={game.competitive ? "metallic-gold" : undefined}
               sx={{
                 backgroundColor: getRowStubColor(game),
-                borderTopLeftRadius: "5px",
-                borderBottomLeftRadius: "5px",
+                borderTopLeftRadius: "var(--mui-shape-borderRadius)",
+                borderBottomLeftRadius: "var(--mui-shape-borderRadius)",
                 alignSelf: "stretch",
-                minWidth: "15px",
+                minWidth: "16px",
               }}
             />
             <GameRow
@@ -229,6 +229,7 @@ export default function LobbyBrowser() {
               key={game.id}
               showLobbyName
               showGameTypeIcon
+              showGameState
             />
           </ListItem>
         );

@@ -540,6 +540,8 @@ async function getGameInfo(gameId, idsOnly) {
   info.hostId = await client.getAsync(`game:${gameId}:hostId`);
   info.lobby = await client.getAsync(`game:${gameId}:lobby`);
   info.spectatorCount = await client.getAsync(`game:${gameId}:spectatorCount`);
+  info.gameState = await client.getAsync(`game:${gameId}:gameState`);
+  info.winnersInfo = JSON.parse(await client.getAsync(`game:${gameId}:winnersInfo`) || "{}");
   info.lobbyName = await client.getAsync(`game:${gameId}:lobbyName`);
   info.settings = JSON.parse(
     (await client.getAsync(`game:${gameId}:settings`)) || "{}"
@@ -711,6 +713,8 @@ async function createGame(gameId, info) {
   }
 
   await client.setAsync(`game:${gameId}:spectatorCount`, 0);
+  await client.setAsync(`game:${gameId}:gameState`, "Pregame");
+  await client.setAsync(`game:${gameId}:winnersInfo`, "[]");
 
   await client.saddAsync("games", gameId);
 
@@ -825,6 +829,8 @@ async function deleteGame(gameId, game) {
   await client.delAsync(`game:${gameId}:hostId`);
   await client.delAsync(`game:${gameId}:lobby`);
   await client.delAsync(`game:${gameId}:spectatorCount`);
+  await client.delAsync(`game:${gameId}:gameState`);
+  await client.delAsync(`game:${gameId}:winnersInfo`);
   await client.delAsync(`game:${gameId}:lobbyName`);
   await client.delAsync(`game:${gameId}:players`);
   await client.delAsync(`game:${gameId}:settings`);
@@ -876,6 +882,14 @@ async function breakGame(gameId) {
 
 async function setSpectatorCount(gameId, spectatorCount) {
   await client.setAsync(`game:${gameId}:spectatorCount`, spectatorCount);
+}
+
+async function setGameState(gameId, gameState) {
+  await client.setAsync(`game:${gameId}:gameState`, gameState);
+}
+
+async function setWinnersInfo(gameId, winnersInfo) {
+  await client.setAsync(`game:${gameId}:winnersInfo`, JSON.stringify(winnersInfo));
 }
 
 async function gameWebhookPublished(gameId) {
@@ -1114,6 +1128,8 @@ module.exports = {
   deleteGame,
   breakGame,
   setSpectatorCount,
+  setGameState,
+  setWinnersInfo,
   gameWebhookPublished,
   registerGameServer,
   removeGameServer,
