@@ -128,8 +128,7 @@ function GameWrapper(props) {
   const [setup, setSetup] = useState();
   const [options, setOptions] = useState({});
   const [emojis, setEmojis] = useState({});
-  const [isObituaryPlaying, setIsObituaryPlaying] = useState(false);
-  const [history, updateHistory] = useHistoryReducer(isObituaryPlaying);
+  const [history, updateHistory] = useHistoryReducer(false);
   const [stateViewing, updateStateViewing] = useStateViewingReducer(history);
   const [players, updatePlayers] = usePlayersReducer();
   const [spectatorCount, setSpectatorCount] = useState(0);
@@ -310,82 +309,6 @@ function GameWrapper(props) {
       });
     }
   }
-
-  const [obituariesWatchedCookie, updateObituariesWatchedCookie] = useState({});
-
-  function wasObituaryWatched(state, source) {
-    return (
-      source &&
-      obituariesWatchedCookie[state] &&
-      obituariesWatchedCookie[state][source]
-    );
-  }
-
-  function toggleObituaryWatched(state, source) {
-    var obituariesWatchedData = window.localStorage.getItem(
-      "obituariesWatchedData"
-    );
-
-    if (!obituariesWatchedData) {
-      obituariesWatchedData = { gameId: gameId, state: {} };
-    } else {
-      obituariesWatchedData = JSON.parse(obituariesWatchedData);
-    }
-
-    // Somehow it seems possible for obituariesWatchedData to exist but not have a state key. So we null check it to prevent crashes.
-    if (!obituariesWatchedData.state) {
-      obituariesWatchedData = { gameId: gameId, state: {} };
-    }
-
-    if (obituariesWatchedData.gameId !== gameId) {
-      window.localStorage.removeItem("obituariesWatchedData");
-      obituariesWatchedData = {};
-    }
-
-    if (state && source) {
-      if (!obituariesWatchedData.state[state]) {
-        obituariesWatchedData.state[state] = {};
-      }
-      obituariesWatchedData.state[state][source] = true;
-    }
-    window.localStorage.setItem(
-      "obituariesWatchedData",
-      JSON.stringify(obituariesWatchedData)
-    );
-  }
-
-  // If a user refreshes or views a different state, don't make them watch obituaries again
-  function refreshObituariesWatched() {
-    var obituariesWatchedData = window.localStorage.getItem(
-      "obituariesWatchedData"
-    );
-
-    if (obituariesWatchedData) {
-      obituariesWatchedData = JSON.parse(obituariesWatchedData);
-
-      if (obituariesWatchedData.gameId !== gameId) {
-        window.localStorage.removeItem("obituariesWatchedData");
-      } else {
-        updateObituariesWatchedCookie(obituariesWatchedData.state);
-      }
-    }
-  }
-
-  function onStateNavigation() {
-    refreshObituariesWatched();
-  }
-
-  useEffect(() => {
-    refreshObituariesWatched();
-  }, []);
-
-  useEffect(() => {
-    if (!isObituaryPlaying) {
-      for (let action of history.pausedActions) {
-        updateHistory(action);
-      }
-    }
-  }, [isObituaryPlaying]);
 
   const audioFileNames = ["bell", "ping", "tick", "vegPing"];
   const audioLoops = [false, false, false];
@@ -636,6 +559,13 @@ function GameWrapper(props) {
       });
     });
 
+    socket.on("winners", (info) => {
+      updateHistory({
+        type: "winners",
+        winnersMessage: info,
+      });
+    });
+
     socket.on("reveal", (info) => {
       toggleRolePrediction(info.playerId, null);
 
@@ -839,7 +769,6 @@ function GameWrapper(props) {
       unresolvedActionCount: unresolvedActionCount,
       stateViewing: stateViewing,
       updateStateViewing: updateStateViewing,
-      onStateNavigation: onStateNavigation,
       self: self,
       isSpectator: isSpectator,
       isParticipant: isParticipant,
@@ -859,10 +788,6 @@ function GameWrapper(props) {
       updateSettings: updateSettings,
       speechFilters: speechFilters,
       setSpeechFilters: setSpeechFilters,
-      toggleObituaryWatched: toggleObituaryWatched,
-      wasObituaryWatched: wasObituaryWatched,
-      isObituaryPlaying: isObituaryPlaying,
-      setIsObituaryPlaying: setIsObituaryPlaying,
       isolationEnabled,
       setIsolationEnabled,
       isolatedPlayers,
@@ -1563,11 +1488,6 @@ export function TextMeetingLayout({ combineMessagesFromAllMeetings = false }) {
           className="speech-display"
           onScroll={onSpeechScroll}
           ref={speechDisplayRef}
-          style={{
-            flexDirection: game.isObituaryPlaying
-              ? "column-reverse"
-              : undefined,
-          }}
         >
           {messages}
         </div>
@@ -1678,6 +1598,19 @@ function getMessagesToDisplay(
       }
     }
   }
+
+  //   for (let source in winners) {
+  //   const winnersMessage = winners[source];
+  //   for (let i = 0; i <= messages.length; i++) {
+  //     if (i === messages.length) {
+  //       messages.push(winnersMessage);
+  //       break;
+  //     } else if (winnersMessage.time < messages[i].time) {
+  //       messages.splice(i, 0, winnersMessage);
+  //       break;
+  //     }
+  //   }
+  // }
 
   if (!settings.votingLog) return messages;
 
@@ -1823,6 +1756,18 @@ function Message(props) {
   if (message.obituaries) {
     return (
       <ObituariesMessage
+        message={message}
+        stateViewing={props.stateViewing}
+        settings={props.settings}
+        history={history}
+      />
+    );
+  }
+
+  // If message is winners, render the WinnersMessage instead
+  if (message.winners) {
+    return (
+      <WinnersMessage
         message={message}
         stateViewing={props.stateViewing}
         settings={props.settings}
@@ -2147,6 +2092,61 @@ function ObituariesMessage(props) {
         isAlignmentReveal={game.getSetupGameSetting("Alignment Only Reveal")}
       />
     </>
+  );
+}
+
+function WinnersMessage(props) {
+  const game = useContext(GameContext);
+  const message = props.message;
+
+  const winnersInfo = message.winners || {};
+  const winnerGroups = winnersInfo.groups || [];
+  const winnerPlayersByGroup = winnersInfo.players || {};
+  const winnerMessages = winnersInfo.messages || [];
+
+  let title = "Postgame Results";
+  if (winnerGroups.length === 1) {
+    title = `${winnerGroups[0]} Wins!`;
+  } else if (winnerGroups.length > 1) {
+    title = `${winnerGroups.join(" & ")} Win!`;
+  }
+
+  // didn't mess with deathMessage stuff
+  const wins = winnerGroups.map((group, index) => {
+    const groupPlayers = winnerPlayersByGroup[group] || [];
+    const groupMessage = winnerMessages[index] || `${group} has won.`;
+
+    return groupPlayers.length > 0
+      ? groupPlayers.map((player) => ({
+          id: player.userId || player.id,
+          name: player.name,
+          avatar: player.avatar,
+          avatarId: player.avatarId,
+          deathMessage: groupMessage,
+          revealMessage: `${player.name} was a member of the ${group}.`,
+          lastWill: "",
+        }))
+      : [
+          {
+            id: group,
+            name: group,
+            deathMessage: groupMessage,
+            revealMessage: "",
+            lastWill: "",
+          },
+        ];
+  });
+
+  const flattenedWins = wins.flat();
+
+  return (
+    <Newspaper
+      title={title}
+      timestamp={message.time}
+      dayCount={message.dayCount || 0}
+      deaths={flattenedWins}
+      isAlignmentReveal={false}
+    />
   );
 }
 
@@ -4300,6 +4300,21 @@ function useHistoryReducer(pauseHistoryUpdates) {
                   obituaries: {
                     [action.obituariesMessage.source]: {
                       $set: action.obituariesMessage,
+                    },
+                  },
+                },
+              },
+            });
+          }
+          break;
+        case "winners":
+          if (history.states[history.currentState]) {
+            newHistory = update(history, {
+              states: {
+                [history.currentState]: {
+                  winners: {
+                    [action.winnersMessage.source]: {
+                      $set: action.winnersMessage,
                     },
                   },
                 },
