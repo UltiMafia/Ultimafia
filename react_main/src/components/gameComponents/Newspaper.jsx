@@ -31,7 +31,7 @@ export default function Newspaper(props) {
         lastWill: ":will: As read from TheGameGuy's last will: I knew you guys were jealous."
     }] */
 
-// Subtract 100 years from the game's start time to get MAFIA time
+  // Subtract 100 years from the game's start time to get MAFIA time
   const gameDate = new Date(timestamp + dayCount * 24 * 60 * 60 * 1000);
   gameDate.setFullYear(gameDate.getFullYear() - 100);
 
@@ -51,13 +51,15 @@ export default function Newspaper(props) {
         <h3>{death.name}</h3>
       </div>
 
-      <div className="newspaper-paragraph">
-        {emotify(death.deathMessage)}
-      </div>
+      <div className="newspaper-paragraph">{emotify(death.deathMessage)}</div>
 
       {death.revealMessage && (
         <div className="newspaper-paragraph">
-          {formatRevealMessage(death.revealMessage, death.name, isAlignmentReveal)}
+          {formatRevealMessage(
+            death.revealMessage,
+            death.name,
+            isAlignmentReveal
+          )}
         </div>
       )}
 
@@ -75,9 +77,7 @@ export default function Newspaper(props) {
       {obituaries.length > 0 ? (
         obituaries
       ) : (
-        <div className="newspaper-no-one-died">
-          No one died last night.
-        </div>
+        <div className="newspaper-no-one-died">No one died last night.</div>
       )}
     </div>
   );
