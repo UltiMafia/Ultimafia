@@ -6,16 +6,6 @@ module.exports = class MafiaEffect extends Effect {
     this.source = "None";
   }
 
-  shouldAutoRemove(){
-  if(this.source == "None"){
-    return false;
-  }
-  if(this.source.modifier && this.modifier.split("/").includes("Forgettable") && !this.source.hasAbility("Effect")){
-    this.remove();
-    return true;
-  }
-  }
-
   age() {
     if (
       this.game &&
