@@ -1,5 +1,21 @@
-import { slurs } from "../constants/slurs";
-import { getSwearReplacement, swears } from "../constants/swears";
+import {
+  slurs,
+  swears,
+  getSwearReplacement,
+} from "../constants/filteredStrings";
+
+/* --- ROT13 decoding --- */
+function rot13(str) {
+  return str.replace(/[a-zA-Z]/g, (c) =>
+    String.fromCharCode(
+      (c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26
+    )
+  );
+}
+
+/* Decode lists before passing into RegExp creation */
+const decodedSlurs = slurs.map(rot13);
+const decodedSwears = swears.map(rot13);
 
 /* Creates an array of profanity RegExps. See https://regex101.com for a detailed breakdown.
  *
@@ -28,8 +44,8 @@ function createProfanityRegexps(words) {
 }
 
 // Creating profanity RegExps.
-const slurRegexps = createProfanityRegexps(slurs);
-const swearRegexps = createProfanityRegexps(swears);
+const slurRegexps = createProfanityRegexps(decodedSlurs);
+const swearRegexps = createProfanityRegexps(decodedSwears);
 
 // Leet speak mappings.
 const leetMappings = {
@@ -63,10 +79,10 @@ function filterProfanitySegment(profanityType, segment, char, seed = "") {
   let profanityRegexps;
   // Getting profanity list.
   switch (profanityType) {
-    case "slurs":
+    case "decodedSlurs":
       profanityRegexps = slurRegexps;
       break;
-    case "swears":
+    case "decodedSwears":
       profanityRegexps = swearRegexps;
       break;
     default:
@@ -87,9 +103,10 @@ function filterProfanitySegment(profanityType, segment, char, seed = "") {
       const index = regexRes.index + regexRes[0].indexOf(regexRes[1]);
       const length = regexRes[1].length;
       const replacement =
-        profanityType !== "swears"
+        profanityType !== "decodedSwears"
           ? char.repeat(length)
           : getSwearReplacement(seed + index);
+
       segment =
         segment.slice(0, index) + replacement + segment.slice(index + length);
       // Filtering mappedSegment, to ensure that segments match.
