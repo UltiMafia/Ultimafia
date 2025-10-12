@@ -13,7 +13,7 @@ import axios from "axios";
 import ReactLoading from "react-loading";
 
 import { UserText } from "../../components/Basic";
-import Newspaper from "../../components/Newspaper";
+import Newspaper from "../../components/gameComponents/Newspaper";
 import MafiaGame from "./MafiaGame";
 import ResistanceGame from "./ResistanceGame";
 import JottoGame from "./JottoGame";
@@ -2113,11 +2113,6 @@ function ObituariesMessage(props) {
   const message = props.message;
   const history = props.history;
 
-  const alreadyWatched =
-    game.wasObituaryWatched(props.stateViewing, message.source) ||
-    props.stateViewing !== history.currentState;
-
-  var shouldAnimateSource = false;
   var title = null;
   if (message.source === "Day") {
     title = "Evening News";
@@ -2129,20 +2124,6 @@ function ObituariesMessage(props) {
   } else {
     title = "Breaking News";
   }
-
-  const noAnimation = true; // props?.settings?.noAnimation || !shouldAnimateSource || alreadyWatched || game.review;
-
-  useEffect(() => {
-    try {
-      game.toggleObituaryWatched(props.stateViewing, message.source);
-    } catch (e) {
-      console.error("Failed to toggle obituary watched", e);
-    }
-
-    if (!noAnimation) {
-      game.setIsObituaryPlaying(true);
-    }
-  }, []);
 
   const deaths = message.obituaries.map((obituary) => {
     return {
@@ -2162,10 +2143,7 @@ function ObituariesMessage(props) {
         title={title}
         timestamp={message.time}
         dayCount={message.dayCount}
-        noAnimation={noAnimation}
         deaths={deaths}
-        onFullyAnimated={() => game.setIsObituaryPlaying(false)}
-        playAudio={game.playAudio}
         isAlignmentReveal={game.getSetupGameSetting("Alignment Only Reveal")}
       />
     </>
