@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext } from "react";
 
-import { emotify, Emotes } from "../Emotes";
+import { emotify } from "../Emotes";
 import { Avatar } from "../../pages/User/User";
+import { GameContext } from "Contexts";
 
 import "css/newspaper.css";
 
@@ -38,6 +39,9 @@ function Newspaper(props) {
   const obituaries = deaths.map((death) => (
     <div className="obituary" key={death.id}>
       <div className="obituary-header">
+        <div>{death.name}</div>
+      </div>
+      <div style= {{ display: "flex", alignItems: "left", gap: "10px" }}>
         <div className="obituary-avatar">
           <Avatar
             id={death.id}
@@ -48,11 +52,9 @@ function Newspaper(props) {
             isSquare
           />
         </div>
-        <h3>{death.name}</h3>
+
+        <div className="newspaper-paragraph">{emotify(death.deathMessage)}</div>
       </div>
-
-      <div className="newspaper-paragraph">{emotify(death.deathMessage)}</div>
-
       {death.revealMessage && (
         <div className="newspaper-paragraph">
           {formatRevealMessage(
@@ -121,7 +123,6 @@ export function ObituariesMessage(props) {
   const game = useContext(GameContext);
 
   const message = props.message;
-  const history = props.history;
 
   var title = null;
   if (message.source === "Day") {
