@@ -13,7 +13,7 @@ import axios from "axios";
 import ReactLoading from "react-loading";
 
 import { UserText } from "../../components/Basic";
-import Newspaper from "../../components/gameComponents/Newspaper";
+import { ObituariesMessage } from "../../components/gameComponents/Newspaper";
 import MafiaGame from "./MafiaGame";
 import ResistanceGame from "./ResistanceGame";
 import JottoGame from "./JottoGame";
@@ -559,12 +559,12 @@ function GameWrapper(props) {
       });
     });
 
-    socket.on("winners", (info) => {
-      updateHistory({
-        type: "winners",
-        winnersMessage: info,
-      });
-    });
+    // socket.on("winners", (info) => {
+    //   updateHistory({
+    //     type: "winners",
+    //     winnersMessage: info,
+    //   });
+    // });
 
     socket.on("reveal", (info) => {
       toggleRolePrediction(info.playerId, null);
@@ -1042,6 +1042,7 @@ export function TopBar({ hideStateSwitcher = false }) {
           sx={{
             alignItems: "center",
             flex: "1",
+            minWidth: "0px",
           }}
         >
           {setup}
@@ -1765,16 +1766,16 @@ function Message(props) {
   }
 
   // If message is winners, render the WinnersMessage instead
-  if (message.winners) {
-    return (
-      <WinnersMessage
-        message={message}
-        stateViewing={props.stateViewing}
-        settings={props.settings}
-        history={history}
-      />
-    );
-  }
+  // if (message.winners) {
+  //   return (
+  //     <WinnersMessage
+  //       message={message}
+  //       stateViewing={props.stateViewing}
+  //       settings={props.settings}
+  //       history={history}
+  //     />
+  //   );
+  // }
 
   if (isPlayerMessage) {
     player = players[message.senderId];
@@ -2052,48 +2053,60 @@ function Message(props) {
   );
 }
 
-function ObituariesMessage(props) {
-  const game = useContext(GameContext);
+// function WinnersMessage(props) {
+//   const game = useContext(GameContext);
+//   const message = props.message;
 
-  const message = props.message;
-  const history = props.history;
+//   const winnersInfo = message.winners || {};
+//   const winnerGroups = winnersInfo.groups || [];
+//   const winnerPlayersByGroup = winnersInfo.players || {};
+//   const winnerMessages = winnersInfo.messages || [];
 
-  var title = null;
-  if (message.source === "Day") {
-    title = "Evening News";
-  } else if (message.source === "Night") {
-    title = "Obituaries";
-    shouldAnimateSource = true;
-  } else if (message.source === "Postgame") {
-    title = "The Miller Times";
-  } else {
-    title = "Breaking News";
-  }
+//   let title = "Postgame Results";
+//   if (winnerGroups.length === 1) {
+//     title = `${winnerGroups[0]} Wins!`;
+//   } else if (winnerGroups.length > 1) {
+//     title = `${winnerGroups.join(" & ")} Win!`;
+//   }
 
-  const deaths = message.obituaries.map((obituary) => {
-    return {
-      id: obituary.playerInfo.userId,
-      name: obituary.playerInfo.name,
-      avatar: obituary.playerInfo.avatar,
-      customEmotes: obituary.playerInfo.customEmotes,
-      deathMessage: obituary.snippets.deathMessage,
-      revealMessage: obituary.snippets.revealMessage,
-      lastWill: obituary.snippets.lastWill,
-    };
-  });
+//   // didn't mess with deathMessage stuff
+//   const wins = winnerGroups.map((group, index) => {
+//     const groupPlayers = winnerPlayersByGroup[group] || [];
+//     const groupMessage = winnerMessages[index] || `${group} has won.`;
 
-  return (
-    <>
-      <Newspaper
-        title={title}
-        timestamp={message.time}
-        dayCount={message.dayCount}
-        deaths={deaths}
-        isAlignmentReveal={game.getSetupGameSetting("Alignment Only Reveal")}
-      />
-    </>
-  );
-}
+//     return groupPlayers.length > 0
+//       ? groupPlayers.map((player) => ({
+//           id: player.userId || player.id,
+//           name: player.name,
+//           avatar: player.avatar,
+//           avatarId: player.avatarId,
+//           deathMessage: groupMessage,
+//           revealMessage: `${player.name} was a member of the ${group}.`,
+//           lastWill: "",
+//         }))
+//       : [
+//           {
+//             id: group,
+//             name: group,
+//             deathMessage: groupMessage,
+//             revealMessage: "",
+//             lastWill: "",
+//           },
+//         ];
+//   });
+
+//   const flattenedWins = wins.flat();
+
+//   return (
+//     <Newspaper
+//       title={title}
+//       timestamp={message.time}
+//       dayCount={message.dayCount || 0}
+//       deaths={flattenedWins}
+//       isAlignmentReveal={false}
+//     />
+//   );
+// }
 
 function WinnersMessage(props) {
   const game = useContext(GameContext);
@@ -4034,7 +4047,7 @@ function useHistoryReducer(pauseHistoryUpdates) {
                     alerts: [],
                     stateEvents: [],
                     obituaries: {},
-                    winners: action.state.winners ? action.state.winners : null,
+                    // winners: action.state.winners ? action.state.winners : null,
                     roles: { ...history.states[prevState].roles },
                     dead: { ...history.states[prevState].dead },
                     exorcised: { ...history.states[prevState].exorcised },
@@ -4307,21 +4320,21 @@ function useHistoryReducer(pauseHistoryUpdates) {
             });
           }
           break;
-        case "winners":
-          if (history.states[history.currentState]) {
-            newHistory = update(history, {
-              states: {
-                [history.currentState]: {
-                  winners: {
-                    [action.winnersMessage.source]: {
-                      $set: action.winnersMessage,
-                    },
-                  },
-                },
-              },
-            });
-          }
-          break;
+        // case "winners":
+        //   if (history.states[history.currentState]) {
+        //     newHistory = update(history, {
+        //       states: {
+        //         [history.currentState]: {
+        //           winners: {
+        //             [action.winnersMessage.source]: {
+        //               $set: action.winnersMessage,
+        //             },
+        //           },
+        //         },
+        //       },
+        //     });
+        //   }
+        //   break;
         case "reveal":
           if (history.states[history.currentState]) {
             newHistory = update(history, {

@@ -153,6 +153,9 @@ router.get("/list", async function (req, res) {
       newGame.hostId = game.hostId;
       newGame.players = game.players.length;
       newGame.spectatorCount = game.spectatorCount;
+      newGame.gameState = game.gameState;
+      newGame.winnersInfo = game.winnersInfo;
+      newGame.spectatorCount = game.spectatorCount;
       newGame.lobbyName = game.settings.lobbyName;
       newGame.ranked = game.settings.ranked;
       newGame.competitive = game.settings.competitive;
@@ -185,7 +188,7 @@ router.get("/list", async function (req, res) {
         "endTime",
         last,
         first,
-        "id type setup lobby lobbyName anonymousGame anonymousDeck ranked competitive private spectating guests readyCheck noVeg stateLengths gameTypeOptions broken endTime -_id",
+        "id type setup lobby lobbyName anonymousGame anonymousDeck ranked competitive private spectating guests readyCheck noVeg stateLengths gameTypeOptions broken winnersInfo playerIdMap playerAlignmentMap endTime -_id",
         constants.lobbyPageSize - games.length,
         [
           "setup",
@@ -387,7 +390,7 @@ router.get("/:id/info", async function (req, res) {
     if (!game) {
       game = await models.Game.findOne({ id: gameId })
         .select(
-          "type users players left stateLengths lobbyName ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions -_id"
+          "type users players left stateLengths lobbyName ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions winners winnersInfo kudosReceiver playerIdMap playerAlignmentMap -_id"
         )
         .populate("users", "id name avatar -_id");
 

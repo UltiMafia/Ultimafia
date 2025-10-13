@@ -26,34 +26,41 @@ export function PanelGrid(props) {
 }
 
 export function Time(props) {
-  var unit = "millisecond";
-  var value = props.millisec;
-  var suffix = props.suffix || "";
-  var minSec = props.minSec;
+  let unit = "millisecond";
+  let value = props.millisec;
+  const suffix = props.suffix || "";
+  const minSec = props.minSec;
+  const abbreviate = props.abbreviate;
 
   const units = [
     {
       name: "second",
+      abbrevation: "s",
       scale: 1000,
     },
     {
       name: "minute",
+      abbrevation: "min",
       scale: 60,
     },
     {
       name: "hour",
+      abbrevation: "h",
       scale: 60,
     },
     {
       name: "day",
+      abbrevation: "d",
       scale: 24,
     },
     {
       name: "week",
+      abbrevation: "w",
       scale: 7,
     },
     {
       name: "year",
+      abbrevation: "y",
       scale: 52,
     },
   ];
@@ -61,17 +68,28 @@ export function Time(props) {
   let i = 0;
   while (i < units.length - 1 && value >= units[i].scale) {
     value /= units[i].scale;
-    unit = units[i].name;
+    unit = abbreviate ? units[i].abbrevation : units[i].name;
     i++;
   }
 
-  if (minSec && unit === "millisecond") return `Less than a second${suffix}`;
+  if (minSec && unit === "millisecond") {
+    if (abbreviate) {
+      return `<1s${suffix}`
+    }
+    else {
+      return `Less than a second${suffix}`;
+    }
+  }
 
   value = Math.floor(value);
 
-  if (value > 1) unit += "s";
-
-  return `${value} ${unit}${suffix}`;
+  if (abbreviate) {
+    return `${value}${unit}${suffix}`;
+  }
+  else {
+    if (value > 1) unit += "s";
+    return `${value} ${unit}${suffix}`;
+  }
 }
 
 export function NotificationHolder(props) {

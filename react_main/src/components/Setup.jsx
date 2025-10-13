@@ -298,7 +298,7 @@ export function getAlignmentColor(alignment) {
   } else if (alignment === "Independent") {
     return "#c7ce48";
   } else {
-    return "#808080";
+    return "#d3d3d3";
   }
 }
 

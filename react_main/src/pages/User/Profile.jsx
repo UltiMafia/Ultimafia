@@ -548,24 +548,6 @@ export default function Profile() {
   const archivedGamesRows = archivedGames.map((game) => {
     return (
       <div className="archived-game" key={game.id}>
-        <Typography
-          variant="body2"
-          sx={{
-            px: 1,
-            my: 0.5,
-
-            display: "-webkit-box",
-            lineClamp: "3",
-            "-webkit-line-clamp": "3",
-            "-webkit-box-orient": "vertical",
-            overflow: "hidden",
-            wordBreak: "break-word",
-
-            "line-height": "1em",
-          }}
-        >
-          {filterProfanity(game.description, user.settings)}
-        </Typography>
         {showDeleteArchivedGame && (
           <div className="btns-wrapper">
             <i

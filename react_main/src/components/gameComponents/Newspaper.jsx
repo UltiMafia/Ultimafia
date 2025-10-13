@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { GameContext } from "Contexts";
 import { Box, Card, CardContent, Typography, Collapse } from "@mui/material";
 import { emotify } from "../Emotes";
 import { Avatar } from "../../pages/User/User";
 
-export default function Newspaper(props) {
+function Newspaper(props) {
   const title = props.title || "Obituary";
   const timestamp = props.timestamp || Date.now();
   const deaths = props.deaths || [];
@@ -209,3 +210,46 @@ function reformatRoleName(role) {
  * The above copyright notice and this permission notice shall be included
  * in all copies or substantial portions of the Software.
  */
+
+export function ObituariesMessage(props) {
+  const game = useContext(GameContext);
+
+  const message = props.message;
+  const history = props.history;
+
+  var title = null;
+  if (message.source === "Day") {
+    title = "Evening News";
+  } else if (message.source === "Night") {
+    title = "Obituaries";
+    shouldAnimateSource = true;
+  } else if (message.source === "Postgame") {
+    title = "The Miller Times";
+  } else {
+    title = "Breaking News";
+  }
+
+  const deaths = message.obituaries.map((obituary) => {
+    return {
+      id: obituary.playerInfo.userId,
+      name: obituary.playerInfo.name,
+      avatar: obituary.playerInfo.avatar,
+      customEmotes: obituary.playerInfo.customEmotes,
+      deathMessage: obituary.snippets.deathMessage,
+      revealMessage: obituary.snippets.revealMessage,
+      lastWill: obituary.snippets.lastWill,
+    };
+  });
+
+  return (
+    <>
+      <Newspaper
+        title={title}
+        timestamp={message.time}
+        dayCount={message.dayCount}
+        deaths={deaths}
+        isAlignmentReveal={game.getSetupGameSetting("Alignment Only Reveal")}
+      />
+    </>
+  );
+}
