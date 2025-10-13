@@ -11,11 +11,12 @@ module.exports = class GetDrunk extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["Mafia"] },
         action: {
+          role: role,
           labels: ["giveEffect", "alcoholic"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             if (this.dominates()) {
-              this.target.giveEffect("Alcoholic");
+              this.role.giveEffect(this.target, "Alcoholic");
             }
           },
         },

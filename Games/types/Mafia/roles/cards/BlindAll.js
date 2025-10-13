@@ -27,7 +27,7 @@ module.exports = class BlindAll extends Card {
                 ":omg: Someone turns out the lights… nobody can see!"
               );
               for (const player of this.game.alivePlayers()) {
-                player.giveEffect("Blind", -1);
+                this.role.giveEffect(player, "Blind", -1);
               }
             }
           },

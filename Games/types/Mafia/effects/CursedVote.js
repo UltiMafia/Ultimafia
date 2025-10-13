@@ -7,6 +7,7 @@ module.exports = class CursedVote extends Effect {
     this.curser = curser;
     this.target = target;
     this.lifespan = lifespan;
+    this.isMalicious = true;
 
     this.listeners = {
       vote: function (vote) {

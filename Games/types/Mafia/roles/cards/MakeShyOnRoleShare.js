@@ -29,13 +29,14 @@ module.exports = class MakeShyOnRoleShare extends Card {
             target: otherPlayer,
             game: this.game,
             item: this,
+            role: this,
             labels: ["hidden"],
             run: function () {
               if (this.dominates(this.target)) {
                 this.target.queueAlert(
                   `Your feeling Shy after Role Sharing with ${this.actor.name}`
                 );
-                this.target.giveEffect("CannotRoleShare");
+                this.role.giveEffect(this.target,"CannotRoleShare");
               }
             },
           });

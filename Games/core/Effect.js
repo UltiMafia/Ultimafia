@@ -26,7 +26,7 @@ module.exports = class Effect {
     this.player.effects.push(this);
 
     this.ageListener = this.age.bind(this);
-    this.game.events.on("state", this.ageListener);
+    this.game.events.on("effectAge", this.ageListener);
 
     for (let eventName in this.listeners) {
       this.listeners[eventName] = this.listeners[eventName].bind(this);
@@ -44,7 +44,9 @@ module.exports = class Effect {
 
     for (let meeting of this.disabledMeetings) meeting.disabled = false;
 
-    this.game.events.removeListener("state", this.ageListener);
+    this.game.events.removeListener("effectAge", this.ageListener);
+
+    this.source = null;
 
     for (let eventName in this.listeners)
       this.player.events.removeListener(eventName, this.listeners[eventName]);

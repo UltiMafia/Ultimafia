@@ -11,11 +11,12 @@ module.exports = class Poisoner extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["Mafia"] },
         action: {
+          role: role,
           labels: ["effect", "poison"],
           priority: PRIORITY_EFFECT_GIVER_EARLY,
           run: function () {
             if (this.dominates()) {
-              this.target.giveEffect("Poison", this.actor);
+              this.role.giveEffect(this.target, "Poison", this.actor);
             }
           },
         },

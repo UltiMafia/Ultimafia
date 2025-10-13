@@ -15,7 +15,7 @@ module.exports = class NightGasser extends Card {
           labels: ["effect", "gas"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
-            if (this.dominates()) this.target.giveEffect("Gassed", this.actor);
+            if (this.dominates()) this.role.giveEffect(this.target, "Gassed", this.actor);
           },
         },
       },

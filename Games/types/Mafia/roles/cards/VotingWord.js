@@ -69,7 +69,7 @@ module.exports = class VotingWord extends Card {
               run: function () {
                 let players = this.role.data.PlayersWhoSaidPhrase;
                 for (let player of players) {
-                  player.giveEffect("SpeakOnlyWhispers", 1);
+                  this.role.giveEffect(player, "SpeakOnlyWhispers", 1);
                 }
               },
             });

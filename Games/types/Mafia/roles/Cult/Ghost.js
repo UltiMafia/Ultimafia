@@ -4,7 +4,8 @@ module.exports = class Ghost extends Role {
   constructor(player, data) {
     super("Ghost", player, data);
 
-    this.alignment = "Independent";
-    this.cards = ["VillageCore", "GhostGame"];
+    this.alignment = "Cult";
+    this.cards = ["VillageCore", "GhostGame", "WinWithFaction",
+      "MeetingFaction"];
   }
 };

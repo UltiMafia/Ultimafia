@@ -22,10 +22,10 @@ module.exports = class MakeTargetsInLove extends Card {
 
             if (!targetA || !targetB) return;
 
-            targetA.giveEffect("Lovesick", targetB);
+            this.role.giveEffect(targetA, "Lovesick", targetB);
             this.queueGetEffectAlert("Lovesick", targetA, targetB.name);
 
-            targetB.giveEffect("Lovesick", targetA);
+            this.role.giveEffect(targetB, "Lovesick", targetA);
             this.queueGetEffectAlert("Lovesick", targetB, targetA.name);
 
             this.role.pairedLovers = [targetA, targetB];

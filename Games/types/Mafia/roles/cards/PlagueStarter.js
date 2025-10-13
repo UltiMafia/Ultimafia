@@ -21,7 +21,7 @@ module.exports = class PlagueStarter extends Card {
           run: function () {
             this.role.hasInfected = true;
             if (this.dominates()) {
-              this.target.giveEffect("Virus");
+              this.role.giveEffect(this.target,"Virus");
             }
           },
         },
@@ -51,6 +51,7 @@ module.exports = class PlagueStarter extends Card {
           actor: null,
           game: this.player.game,
           priority: PRIORITY_KILL_DEFAULT,
+          role: this,
           labels: ["kill", "hidden", "absolute"],
           run: function () {
             let infectedPlayers = this.game.players.filter((p) =>
@@ -73,7 +74,7 @@ module.exports = class PlagueStarter extends Card {
                   continue;
                 }
 
-                neighbor.giveEffect("Virus");
+                this.role.giveEffect(neighbor, "Virus");
               }
             }
           },

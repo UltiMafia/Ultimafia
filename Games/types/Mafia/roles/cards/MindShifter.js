@@ -76,7 +76,7 @@ module.exports = class MindShifter extends Card {
             );
 
             if (becomesInsane && this.dominates(target)) {
-              target.giveEffect("Insanity");
+              this.role.giveEffect(target, "Insanity");
             }
 
             delete this.role.data.insane;

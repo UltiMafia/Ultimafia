@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
 const { addArticle } = require("../../../../core/Utils");
-module.exports = class ConvertToChosenRole extends Card {
+module.exports = class ConvertToChosenRoleOnDeath extends Card {
   constructor(role) {
     super(role);
     this.meetings = {
@@ -30,7 +30,7 @@ module.exports = class ConvertToChosenRole extends Card {
             let targetPlayer = this.role.data.targetPlayer;
             if (targetPlayer) {
               if (this.dominates(targetPlayer)) {
-                targetPlayer.giveEffect(
+                this.role.giveEffect(targetPlayer,
                   "BecomeRoleOnDeath",
                   this.actor,
                   this.target

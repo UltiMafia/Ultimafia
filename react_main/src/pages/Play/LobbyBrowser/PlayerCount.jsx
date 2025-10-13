@@ -3,6 +3,7 @@ import { Box, Popover, Stack, Typography } from "@mui/material";
 import { usePopover } from "components/Popover";
 
 import "css/join.css";
+import { Time } from "components/Basic";
 
 export const PlayerCount = (props) => {
   const game = props.game;
@@ -46,9 +47,12 @@ export const PlayerCount = (props) => {
             pointerEvents: "none",
           }}
         >
-          <Typography>
+          {!gameNotFinished && (<Typography>
+            <Time abbreviate minSec millisec={Date.now() - game.endTime} suffix={" ago"} />
+          </Typography>)}
+          {gameNotFinished && (<Typography>
             {numSlotsTaken}/{numSlotsTotal}
-          </Typography>
+          </Typography>)}
           {gameNotFinished && !spectatingAllowed && (
             <i className="fas fa-eye-slash" />
           )}

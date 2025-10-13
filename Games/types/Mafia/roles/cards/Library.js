@@ -19,7 +19,7 @@ module.exports = class Library extends Card {
 
             this.role.metLibrary = true;
             for (let p of this.game.players) {
-              p.giveEffect("SpeakOnlyWhispers", 1);
+              this.role.giveEffect(p, "SpeakOnlyWhispers", 1);
             }
 
             this.game.queueAlert(

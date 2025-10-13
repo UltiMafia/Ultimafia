@@ -4,6 +4,7 @@ module.exports = class Silenced extends Effect {
   constructor(lifespan) {
     super("Silenced");
     this.lifespan = lifespan || Infinity;
+    this.isMalicious = true;
   }
 
   speak(message) {

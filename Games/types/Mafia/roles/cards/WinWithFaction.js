@@ -647,13 +647,12 @@ module.exports = class WinWithFaction extends Card {
         },
       },
     };
-
+    /*
     this.stateMods = {
       Day: {
         type: "delayActions",
         delayActions: true,
       },
-      /*
       Dusk: {
         type: "length",
         length: 1000 * 60,
@@ -690,7 +689,8 @@ module.exports = class WinWithFaction extends Card {
           return true;
         },
       },
-      */
+      
     };
+    */
   }
 };

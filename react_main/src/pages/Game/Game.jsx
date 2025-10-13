@@ -1042,6 +1042,7 @@ export function TopBar({ hideStateSwitcher = false }) {
           sx={{
             alignItems: "center",
             flex: "1",
+            minWidth: "0px",
           }}
         >
           {setup}

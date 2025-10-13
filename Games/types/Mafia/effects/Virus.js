@@ -5,6 +5,7 @@ const { PRIORITY_KILL_DEFAULT } = require("../const/Priority");
 module.exports = class Virus extends Effect {
   constructor() {
     super("Virus");
+    this.isMalicious = true;
 
     this.InfectionTime = 0;
 
@@ -44,7 +45,8 @@ module.exports = class Virus extends Effect {
                   continue;
                 }
 
-                neighbor.giveEffect("Virus");
+               let effect = neighbor.giveEffect("Virus");
+               effect.source = this.source;
               }
             }
           },

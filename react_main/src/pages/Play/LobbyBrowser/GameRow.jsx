@@ -7,65 +7,64 @@ import { UserContext } from "Contexts";
 import { filterProfanity } from "components/Basic";
 import Setup from "components/Setup";
 import HostGameDialogue from "components/HostGameDialogue";
-import { Box, Button, IconButton, Stack, Typography } from "@mui/material";
+import { Box, Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { getRowColor, getSetupBackgroundColor } from "./gameRowColors.js";
+import StateIcon from "components/StateIcon";
 
 const GameStatus = (props) => {
   const user = useContext(UserContext);
-  const isPhoneDevice = useIsPhoneDevice();
+  const showGameState = props.showGameState;
 
   const canShowGameButton =
     (user.loggedIn || props.status === "Finished") &&
     !props.game.broken &&
     !props.game.private;
-  const gameButtonDisabled =
-    props?.status === "In Progress" && !props.game.spectating;
 
-  let buttonUrl, buttonText, buttonVariant, buttonColor;
+  let buttonUrl, buttonText, buttonVariant, buttonColor, buttonDisabled;
   if (props.game.status === "Open") {
     buttonUrl = `/game/${props.game.id}`;
     buttonText = "Join";
-    buttonColor = "secondary";
+    buttonColor = "primary";
     buttonVariant = "contained";
+    buttonDisabled = false;
   } else if (props.game.status === "In Progress") {
-    if (props.game.spectating || user.perms.canSpectateAny) {
+    if (props.game.spectating /* || user.perms.canSpectateAny */) {
       buttonUrl = `/game/${props.game.id}?spectate=true`;
       buttonText = "Spectate";
-      buttonColor = "info";
+      buttonColor = "inherit";
       buttonVariant = "contained";
+      buttonDisabled = false;
     } else {
       buttonUrl = "/play";
-      buttonText = "In Progress";
-      buttonColor = "secondary"; //"rgba(211, 211, 211, 0.15)";
+      buttonText = "Ongoing";
+      buttonColor = "inherit"; //"rgba(211, 211, 211, 0.15)";
       buttonVariant = "contained";
+      buttonDisabled = true;
     }
   } else if (props.game.status === "Finished") {
     buttonUrl = `/game/${props.game.id}`;
     buttonText = "Review";
-    buttonColor = "info"; //"rgba(211, 211, 211, 0.15)";
-    buttonVariant = "contained";
+    buttonColor = "inherit"; //"rgba(211, 211, 211, 0.15)";
+    buttonVariant = "outlined";
+    buttonDisabled = false;
   }
 
   const GameButton = (
-    <Link to={buttonUrl} disabled={gameButtonDisabled}>
-      <Button
-        variant={buttonVariant}
-        color={buttonColor}
-        sx={{
-          p: 0.5,
-          width: "100%",
-          textTransform: "none",
-          ...(props?.game?.status === "In Progress"
-            ? { cursor: "default" }
-            : {}),
-          transform: "translate3d(0,0,0)",
-          fontWeight: "800",
-        }}
-      >
-        {buttonText}
-      </Button>
-    </Link>
+    <Button
+      component={Link}
+      to={buttonUrl}
+      variant={buttonVariant}
+      color={buttonColor}
+      disabled={buttonDisabled}
+      sx={{
+        p: 0.5,
+        width: "100%",
+        fontWeight: "bold",
+      }}
+    >
+      {buttonText}
+    </Button>
   );
 
   const gameButtonWrapped = (
@@ -110,6 +109,10 @@ const GameStatus = (props) => {
         width: "60px",
       }}>
       </Box> */}
+      {showGameState && (<StateIcon
+        stateName={props.game.gameState || "Postgame"}
+        winnerGroups={props.game.winnersInfo?.groups || []}
+      />)}
       <Stack
         direction="column"
         spacing={1}
@@ -132,12 +135,6 @@ const GameStatus = (props) => {
         />
         {gameButtonWrapped}
       </Stack>
-      {/* GAME STATE ICON GOES HERE */}
-      {/* <Box sx={{
-        height: "60px",
-        width: "60px",
-      }}>
-      </Box> */}
     </Stack>
   );
 };
@@ -148,6 +145,7 @@ export const GameRow = (props) => {
   const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
 
   const showLobbyName = props.showLobbyName;
+  const showGameState = props.showGameState;
   const showGameTypeIcon = props.showGameTypeIcon;
   const showRedoButton = isPhoneDevice
     ? !props.small && props.game.status === "Finished" && user.loggedIn
@@ -157,7 +155,7 @@ export const GameRow = (props) => {
   if (!props.game.setup) return <></>;
 
   return (
-    <div className="shiny-container">
+    <div className="shiny-container" style={{ minWidth: "0px", }}>
       {props.game.competitive && <i className="shiny" />}
       <HostGameDialogue
         open={ishostGameDialogueOpen}
@@ -180,6 +178,7 @@ export const GameRow = (props) => {
           game={props.game}
           status={props.status}
           showGameTypeIcon={showGameTypeIcon}
+          showGameState={showGameState}
         />
         <Stack
           direction="column"
@@ -204,23 +203,36 @@ export const GameRow = (props) => {
                 }}
               >
                 {props.game.ranked && (
-                  <i
-                    className="fas fa-heart"
-                    title="ranked"
-                    style={{
-                      fontSize: "1rem",
-                      color: "rgb(226, 59, 59)",
-                    }}
-                  />
+                  <Tooltip title="ranked">
+                    <i
+                      className="fas fa-heart"
+                      style={{
+                        fontSize: "1rem",
+                        color: "rgb(226, 59, 59)",
+                      }}
+                    />
+                  </Tooltip>
+                )}
+                {props.game.competitive && (
+                  <Tooltip title="competitive">
+                    <i
+                      className="fas fa-heart"
+                      style={{
+                        fontSize: "1rem",
+                        color: "rgb(237, 179, 52)",
+                      }}
+                    />
+                  </Tooltip>
                 )}
                 {props.game.anonymousGame && (
-                  <i
-                    className="fas fa-theater-masks"
-                    title="Anonymous game"
-                    style={{
-                      fontSize: "1rem",
-                    }}
-                  />
+                  <Tooltip title="Anonymous game">
+                    <i
+                      className="fas fa-theater-masks"
+                      style={{
+                        fontSize: "1rem",
+                      }}
+                    />
+                  </Tooltip>
                 )}
               </Stack>
               <Box

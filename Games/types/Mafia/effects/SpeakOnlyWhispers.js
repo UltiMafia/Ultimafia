@@ -4,6 +4,7 @@ module.exports = class SpeakOnlyWhispers extends Effect {
   constructor(lifespan) {
     super("SpeakOnlyWhispers");
     this.lifespan = lifespan ?? Infinity;
+    this.isMalicious = true;
   }
 
   speak(message) {

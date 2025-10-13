@@ -7,6 +7,7 @@ module.exports = class CursedCult extends Effect {
     this.actor = actor;
     this.word = word;
     this.lifespan = lifespan || 1;
+    this.isMalicious = true;
   }
 
   speak(message) {

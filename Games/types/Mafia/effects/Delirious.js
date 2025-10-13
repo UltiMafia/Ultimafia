@@ -8,6 +8,8 @@ module.exports = class Delirious extends Effect {
     this.effecter = effecter;
     this.effecterRole = role;
     this.lifespan = lifespan;
+    this.isMalicious = true;
+
     if (types != null) {
       this.types = types;
     } else {
@@ -19,6 +21,7 @@ module.exports = class Delirious extends Effect {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
+        this.game.queueAlert("Why");
         var action = new Action({
           actor: this.effecter,
           target: this.player,

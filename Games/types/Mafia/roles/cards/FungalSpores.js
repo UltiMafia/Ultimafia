@@ -20,19 +20,19 @@ module.exports = class FungalSpores extends Card {
             if (this.role.data.currentFungus == null) return;
             else if (this.role.data.currentFungus == "Silent") {
               if (this.dominates(this.target)) {
-                this.target.giveEffect("Silenced", 1);
+                this.role.giveEffect(this.target, "Silenced", 1);
               }
             } else if (this.role.data.currentFungus == "Deaf") {
               if (this.dominates(this.target)) {
-                this.target.giveEffect("Fiddled", 1);
+                this.role.giveEffect(this.target, "Fiddled", 1);
               }
             } else if (this.role.data.currentFungus == "Blind") {
               if (this.dominates(this.target)) {
-                this.target.giveEffect("Blind", 1);
+                this.role.giveEffect(this.target, "Blind", 1);
               }
             } else if (this.role.data.currentFungus == "Clueless") {
               if (this.dominates(this.target)) {
-                this.target.giveEffect("Scrambled", 1);
+                this.role.giveEffect(this.target, "Scrambled", 1);
               }
             }
 

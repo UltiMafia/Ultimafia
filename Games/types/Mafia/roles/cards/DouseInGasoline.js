@@ -30,10 +30,11 @@ module.exports = class DouseInGasoline extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          role: role,
           labels: ["effect", "gasoline"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
-            this.target.giveEffect("Gasoline");
+            this.role.giveEffect(this.target, "Gasoline");
           },
         },
       },

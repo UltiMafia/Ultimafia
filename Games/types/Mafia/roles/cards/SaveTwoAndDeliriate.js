@@ -15,6 +15,7 @@ module.exports = class SaveTwoAndDeliriate extends Card {
         multiMin: 2,
         multiMax: 2,
         action: {
+          role: role,
           labels: ["save", "block"],
           priority: PRIORITY_NIGHT_ROLE_BLOCKER + 2,
           run: function () {

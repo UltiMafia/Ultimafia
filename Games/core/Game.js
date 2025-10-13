@@ -771,6 +771,7 @@ module.exports = class Game {
     player.send("setup", this.getSetupInfo());
     player.send("emojis", this.emojis);
     player.send("isStarted", this.started);
+    player.send("spectatorCount", this.spectators.length);
 
     if (!player.user.playedGame && !player.isBot) player.send("firstGame");
 
@@ -1684,8 +1685,10 @@ module.exports = class Game {
 
     // Tell clients the new state
     this.addStateToHistories(stateInfo.name);
+    redis.setGameState(this.id, stateInfo.name);
 
     this.broadcastState();
+    this.events.emit("effectAge", stateInfo);
     this.events.emit("state", stateInfo);
 
     // Send state events
@@ -1878,6 +1881,7 @@ module.exports = class Game {
   }
 
   broadcastState(stateInfo = this.getStateInfo()) {
+    //this.broadcast("effectAge", stateInfo);
     this.broadcast("state", stateInfo);
   }
 
@@ -2564,6 +2568,8 @@ module.exports = class Game {
     try {
       if (this.finished) return;
 
+      const winnersInfo = winners.getWinnersInfo();
+
       this.finished = true;
       this.clearTimers();
 
@@ -2571,10 +2577,12 @@ module.exports = class Game {
       this.currentState = -2;
 
       let stateInfo = this.getStateInfo();
-      stateInfo.winners = winners.getWinnersInfo();
+      stateInfo.winners = winnersInfo;
       this.broadcastState(stateInfo);
       this.addStateToHistories(stateInfo.name);
-      this.broadcast("winners", winners.getWinnersInfo());
+      this.broadcast("winners", winnersInfo);
+      redis.setGameState(this.id, stateInfo.name);
+      redis.setWinnersInfo(this.id, winnersInfo);
 
       this.events.emit("aboutToFinish");
 
@@ -3026,9 +3034,16 @@ module.exports = class Game {
       var playersGone = Object.values(this.playersGone);
       var players = this.players.concat(playersGone);
 
+      let playerIdMap = {};
+      let playerAlignmentMap = {};
       for (let player of players) {
+        const roleName = this.originalRoles[player.id].split(":")[0];
+        const alignment = this.getRoleAlignment(roleName);
+
         let userId = player.userId || player.user.id;
         let user = await models.User.findOne({ id: userId }).select("_id");
+        playerIdMap[userId] = player.id;
+        playerAlignmentMap[userId] = alignment;
 
         if (user) users.push(user._id);
       }
@@ -3047,6 +3062,9 @@ module.exports = class Game {
         left: playersGone.map((p) => p.id),
         names: playerNames,
         winners: this.winners.players.map((p) => p.id),
+        winnersInfo: this.winners.getWinnersInfo(),
+        playerIdMap: JSON.stringify(playerIdMap),
+        playerAlignmentMap: JSON.stringify(playerAlignmentMap),
         history: JSON.stringify(history),
         startTime: this.startTime,
         endTime: Date.now(),

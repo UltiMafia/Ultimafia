@@ -395,6 +395,12 @@ module.exports = class Role {
       effect.remove();
     }
     this.passiveEffects = [];
+    this.game.events.emit(
+            "RoleBeingRemoved",
+            this,
+            this.player,
+            this.isExtraRole,
+          );
     this.removeListeners();
   }
 
