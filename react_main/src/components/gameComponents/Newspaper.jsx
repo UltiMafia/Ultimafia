@@ -41,7 +41,7 @@ function Newspaper(props) {
       <div className="obituary-header">
         <div>{death.name}</div>
       </div>
-      <div style= {{ display: "flex", alignItems: "left", gap: "10px" }}>
+      <div style={{ display: "flex", alignItems: "left", gap: "10px" }}>
         <div className="obituary-avatar">
           <Avatar
             id={death.id}
