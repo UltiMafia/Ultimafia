@@ -323,6 +323,14 @@ const modifierData = {
         "On death a random Village Aligned player will be chosen to be made Delirious for the rest of the game.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    Forgettable: {
+      category: "Other",
+      internal: ["GivePermaDelirium"],
+      tags: ["Effects"],
+      description:
+        "When this role dies or gets converted, any effects it inflicted will be removed.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Versatile: {
       category: "Other",
       internal: ["InheritFirstDeadAligned"],
