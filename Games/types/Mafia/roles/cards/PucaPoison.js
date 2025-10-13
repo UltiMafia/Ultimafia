@@ -11,11 +11,12 @@ module.exports = class PucaPoison extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["Cult"] },
         action: {
+          role: role,
           labels: ["effect", "poison", "block"],
           priority: PRIORITY_NIGHT_ROLE_BLOCKER + 3,
           run: function () {
             if (this.dominates()) {
-              this.target.giveEffect("Poison", this.actor);
+              this.role.giveEffect(this.target,"Poison", this.actor);
               this.blockWithDelirium(this.target);
             }
           },

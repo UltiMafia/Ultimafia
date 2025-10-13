@@ -15,10 +15,11 @@ module.exports = class Polariser extends Card {
         flags: ["voting", "group", "speech"],
         targets: { include: ["alive"], exclude: ["members"] },
         action: {
+          role: role,
           labels: ["effect", "polarised"],
           priority: PRIORITY_EFFECT_GIVER_EARLY,
           run: function () {
-            this.target.giveEffect("Polarised");
+            this.role.giveEffect(this.target, "Polarised");
           },
         },
       },
@@ -27,10 +28,11 @@ module.exports = class Polariser extends Card {
         flags: ["voting", "group"],
         targets: { include: ["alive"], exclude: ["members"] },
         action: {
+          role: role,
           labels: ["effect", "polarised"],
           priority: PRIORITY_EFFECT_GIVER_EARLY,
           run: function () {
-            this.target.giveEffect("Polarised");
+            this.role.giveEffect(this.target, "Polarised");
           },
         },
       },

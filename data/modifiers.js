@@ -325,7 +325,7 @@ const modifierData = {
     },
     Forgettable: {
       category: "Other",
-      internal: ["GivePermaDelirium"],
+      internal: ["RemoveEffectsAppliedOnDeath"],
       tags: ["Effects"],
       description:
         "When this role dies or gets converted, any effects it inflicted will be removed.",
@@ -522,6 +522,24 @@ const modifierData = {
       description:
         "Players who role-share with a Reclusive player become shy. Shy players cannot accept incoming role-shares and cannot Private/Public Reveal.",
       eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Informed: {
+      category: "Other",
+      internal: ["LearnRealWord"],
+      tags: ["Ghost Interaction"],
+      description:
+        "Will learn the real word if a Ghost is present.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Misinformed"],
+    },
+    Misinformed: {
+      category: "Other",
+      internal: ["LearnFakeWord"],
+      tags: ["Ghost Interaction"],
+      description:
+        "Will learn the fake word if a Ghost is present.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Informed"],
     },
 
     //Non-Starting Item

@@ -113,6 +113,11 @@ module.exports = class VillageCore extends Card {
       Dusk: {
         type: "shouldSkip",
         shouldSkip: function () {
+          for (let player of this.game.alivePlayers()) {
+            if (player.hasItem("Ouija Board")) {
+              return true;
+            }
+          }
           for (let player of this.game.players) {
             //this.game.sendAlert(`Stuff Village ${player.role.name}: ${player.role.modifier}: `);
             if (
@@ -138,6 +143,11 @@ module.exports = class VillageCore extends Card {
       Dawn: {
         type: "shouldSkip",
         shouldSkip: function () {
+          for (let player of this.game.alivePlayers()) {
+            if (player.hasItem("Ouija Board")) {
+              return true;
+            }
+          }
           for (let player of this.game.players) {
             if (
               this.game

@@ -7,6 +7,7 @@ module.exports = class BecomeRoleOnDeath extends Effect {
     super("BecomeRoleOnDeath");
     this.infector = infector;
     this.role = role;
+    this.isMalicious = true;
 
     this.listeners = {
       death: function (player, killer, deathType, instant) {

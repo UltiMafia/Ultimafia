@@ -11,11 +11,12 @@ module.exports = class LeakWhispers extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["Mafia"] },
         action: {
+          role: role,
           labels: ["effect", "blind"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             if (this.dominates()) {
-              this.target.giveEffect("Leak Whispers", 2);
+              this.role.giveEffect(this.target,"Leak Whispers", 1);
             }
           },
         },

@@ -222,7 +222,7 @@ export function ObituariesMessage(props) {
     title = "Evening News";
   } else if (message.source === "Night") {
     title = "Obituaries";
-    shouldAnimateSource = true;
+    //shouldAnimateSource = true;
   } else if (message.source === "Postgame") {
     title = "The Miller Times";
   } else {

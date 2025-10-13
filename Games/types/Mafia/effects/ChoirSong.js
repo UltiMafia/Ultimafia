@@ -8,6 +8,7 @@ module.exports = class ChoirSong extends Effect {
     this.actor = actor;
     this.word = word;
     this.lifespan = lifespan || 1;
+    this.isMalicious = true;
 
     this.listeners = {
       state: function () {

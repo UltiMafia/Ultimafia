@@ -42,13 +42,14 @@ module.exports = class MakeVisitorsInsane extends Card {
         var action = new Action({
           actor: this.player,
           game: this.player.game,
+          role: this,
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           labels: ["hidden", "absolute", "giveEffect", "insanity"],
           run: function () {
             let visitors = this.getVisitors();
             for (let visitor of visitors) {
               if (this.dominates(visitor)) {
-                visitor.giveEffect("Insanity");
+                this.role.giveEffect(visitor, "Insanity");
               }
             }
           },

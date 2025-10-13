@@ -11,11 +11,12 @@ module.exports = class BlockWhispers extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["Mafia"] },
         action: {
+          role: role,
           labels: ["effect", "blind"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             if (this.dominates()) {
-              this.target.giveEffect("Block Whispers", 2);
+              this.role.giveEffect(this.target, "Block Whispers", 2);
             }
           },
         },

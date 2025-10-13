@@ -112,6 +112,7 @@ const gassedDef = `Players who are "Gassed" will die during the next night if th
 const polarisedDef = `Players who are "Polarised" will die if they visit or get visited by another "Polarised".`;
 const frozenDef = `Players who are "Frozen" cannot vote or will have their night actions blocked. If a "Frozen" player is visited, they will stop being "Frozen".`;
 const foggyDef = `Players who are "Foggy" can only see their neighbors messages.`;
+const lovesickDef = `Players who are "Lovesick" for another player, will die if that player dies.`;
 
 //Item Def
 const coffeeDef = `Coffee can be used at night to perform their role's night actions an additional time.`;
@@ -431,7 +432,7 @@ const roleData = {
         "Each night, can choose to visit one player and remove any malicious effects they have.",
         MalEffects,
       ],
-      nightOrder: [["Remove Effects", PRIORITY_EFFECT_REMOVER_DEFAULT]],
+      nightOrder: [["Remove Effects (after kills)", PRIORITY_EFFECT_REMOVER_DEFAULT],["Remove Effects",PRIORITY_EFFECT_REMOVER_EARLY]],
     },
     Resurrectionist: {
       alignment: "Village",
@@ -2038,7 +2039,7 @@ const roleData = {
       ],
       nightOrder: [
         ["Remove Effects from Visitors", PRIORITY_EFFECT_REMOVER_DEFAULT],
-        ["Kill Werewolf", PRIORITY_KILL_DEFAULT],
+        ["Kill Werewolf", PRIORITY_KILL_DEFAULT], ["Remove Effects",PRIORITY_EFFECT_REMOVER_EARLY]
       ],
     },
     Dreamer: {
@@ -2364,7 +2365,7 @@ const roleData = {
       category: "Essential",
       tags: ["Essential", "Condemn", "Sacrificial", "Basic"],
       description: [
-        "If the Saint is condemned, all Village-aligned players die.",
+        "If the Saint is condemned, all players who are aligned with the Saint die.",
       ],
       SpecialInteractions: {
         Ghost: ["If a Ghost is Present, a Saint will not learn any words."],
@@ -2521,6 +2522,9 @@ const roleData = {
           value: "halloween",
         },
       ],
+      SpecialInteractions: {
+        Ghost: ["If a Ghost is Present, a Godfather will learn the real word."],
+      },
     },
     Gramps: {
       alignment: "Mafia",
@@ -3054,8 +3058,8 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Linked", "Lover", "Visiting", "Advanced"],
       description: [
-        "Once per game at night, can choose to visit one player and makes that player the Heartbreaker's beloved.",
-        "The beloved player will learn that they fell in love with the Heartbreaker.",
+      `Once per game at night, can choose to visit one player and makes that player "Lovesick" for the Heartbreaker.`,
+       lovesickDef,
         "If the Heartbreaker dies, the beloved player also dies.",
         //"Both players will die if Heartbreaker dies.",
       ],
@@ -3448,7 +3452,7 @@ const roleData = {
         "Each night, can choose to visit one player and remove any malicious effects they have.",
         MalEffects,
       ],
-      nightOrder: [["Remove Effects", PRIORITY_EFFECT_REMOVER_DEFAULT]],
+      nightOrder: [["Remove Effects", PRIORITY_EFFECT_REMOVER_DEFAULT],["Remove Effects",PRIORITY_EFFECT_REMOVER_EARLY]],
     },
     Dealer: {
       alignment: "Mafia",
@@ -3459,7 +3463,7 @@ const roleData = {
         "Players who Role Share with an Apothecary will have any malicious effects they have removed.",
         MalEffects,
       ],
-      nightOrder: [["Remove Effects", PRIORITY_EFFECT_REMOVER_DEFAULT]],
+      nightOrder: [["Remove Effects", PRIORITY_EFFECT_REMOVER_DEFAULT],["Remove Effects",PRIORITY_EFFECT_REMOVER_EARLY]],
     },
     Diplomat: {
       alignment: "Mafia",
@@ -3652,6 +3656,9 @@ const roleData = {
       nightOrder: [
         ["Disguise Self", PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT],
       ],
+      SpecialInteractions: {
+        Ghost: ["If a Ghost is Present, an Imposter will learn the real word."],
+      },
     },
     Assassin: {
       alignment: "Mafia",
@@ -4323,6 +4330,17 @@ const roleData = {
         "If the Village-aligned Twin is condemned, the Cult wins.",
       ],
     },
+    Ghost: {
+      alignment: "Cult",
+      tags: ["Ghost", "Mini-game", "Dusk"],
+      description: [
+        "When present in the game, all non-Cult-aligned players will know one of two randomly-selected words: the real word and the fake word.",
+        "All Village roles will learn the real word",
+        "All Mafia roles and Sleepwalkers will learn the fake word instead.",
+        "Each night if no one was condemned, all Ghosts must choose one player. Then all players will give clues about their word starting with that player.",
+        "Wins if a Ghost guesses the real word when condemned or if Ghosts have majority.",
+      ],
+    },
     Reaper: {
       alignment: "Cult",
       category: "Chaos",
@@ -4910,10 +4928,9 @@ const roleData = {
       alignment: "Independent",
       tags: ["Survivor", "Lover", "Linked", "Visiting", "Basic"],
       description: [
-        "Once per game at night, can choose to visit one player and makes that player the Lover's beloved.",
-        "The beloved player will learn that they fell in love with the Lover.",
-        "If one of the Lover or their beloved player dies, the other also dies.",
-        "Wins if alive with their beloved at the end of the game.",
+        `Once per game at night, can choose to visit one player and become "Lovesick" for them and make them "Lovesick" for the Lover.`,
+        lovesickDef,
+        `Wins if alive with the player they are "Lovesick" for at the end of the game.`,
       ],
       nightOrder: [["Fall in love", PRIORITY_EFFECT_GIVER_EARLY]],
       skins: [
@@ -5092,9 +5109,8 @@ const roleData = {
       alignment: "Independent",
       tags: ["Linked", "Survivor", "Visiting", "Advanced"],
       description: [
-        "On their first night, must choose to visit two players and make them fall in love.",
-        "The players who fell in love will learn who they fell in love with.",
-        "If one player who fell in love dies, the other also dies.",
+        `On their first night, must choose to visit two players and make them "Lovesick" for each other.`,
+        lovesickDef,
         "Wins if their chosen lovers are alive at the end of the game.",
       ],
       nightOrder: [["Make players in love.", PRIORITY_EFFECT_GIVER_EARLY]],
@@ -5257,17 +5273,6 @@ const roleData = {
         ],
       },
     },
-    Ghost: {
-      alignment: "Independent",
-      tags: ["Ghost", "Mini-game", "Hostile", "Dusk"],
-      description: [
-        "When present in the game, all village players except for the Ghost will know one of two randomly-selected words: the real word and the fake word.",
-        "All Village roles will learn the real word",
-        "Miller, Sleepwalker, Braggart, and roles with the Insane modifier will learn the fake word instead.",
-        "Each night if no one was condemned, all Ghosts must choose one player. Then all players will give clues about their word starting with that player.",
-        "Wins if a Ghost guesses the real word when condemned or if Ghosts have majority.",
-      ],
-    },
     Poet: {
       alignment: "Independent",
       disabled: true,
@@ -5301,10 +5306,10 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "On their first night, must choose to visit one player and makes that player the Yandere's beloved.",
-        "If the beloved player dies, the Yandere also dies.",
+        `On their first night, must choose to visit one player and become "Lovesick" for them.`,
+        lovesickDef,
         "Each night, must choose to visit one player and kill them.",
-        "Wins if the Yandere and their beloved are the last two alive.",
+        `Wins if alive and only players they are "Lovesick" for are alive.`,
       ],
       nightOrder: [
         ["Kill", PRIORITY_KILL_DEFAULT + 1],

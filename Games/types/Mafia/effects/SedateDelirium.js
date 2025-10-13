@@ -6,6 +6,7 @@ module.exports = class SedateDelirium extends Effect {
   constructor(doer) {
     super("SedateDelirium");
     this.doer = doer;
+    this.isMalicious = true;
   }
 
   apply(player) {

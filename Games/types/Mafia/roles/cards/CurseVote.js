@@ -30,7 +30,7 @@ module.exports = class CurseVote extends Card {
               return;
             }
 
-            this.role.data.victim.giveEffect(
+            this.role.giveEffect(this.role.data.victim,
               "CursedVote",
               this.actor,
               this.target,

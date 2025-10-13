@@ -11,10 +11,11 @@ module.exports = class Scrambler extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
+          role: role,
           labels: ["effect"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
-            this.target.giveEffect("Scrambled", 1);
+            this.role.giveEffect(this.target, "Scrambled", 1);
           },
         },
       },

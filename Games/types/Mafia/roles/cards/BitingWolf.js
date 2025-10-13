@@ -11,11 +11,12 @@ module.exports = class BitingWolf extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["Cult"] },
         action: {
+          role: role,
           labels: ["wolfBite"],
           priority: PRIORITY_BITING_WOLF,
           run: function () {
             if (this.dominates()) {
-              this.target.giveEffect("Lycan");
+              this.role.giveEffect(this.target, "Lycan");
             }
           },
         },

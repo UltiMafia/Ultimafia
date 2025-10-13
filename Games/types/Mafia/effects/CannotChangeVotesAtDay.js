@@ -5,10 +5,12 @@ module.exports = class CannotChangeVoteAtDay extends Effect {
     super("CannotChangeVoteAtDay");
     this.lifespan = lifespan ?? Infinity;
     this.meetingName = meetingName || "Village";
+    this.isMalicious = true;
 
     this.listeners = {
       meetingsMade: function () {
-        this.player.giveEffect("CannotChangeVote", -1, this.meetingName);
+       let effect = this.player.giveEffect("CannotChangeVote", -1, this.meetingName);
+       effect.source = this.source;
       },
     };
   }

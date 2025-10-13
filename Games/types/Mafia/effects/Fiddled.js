@@ -4,6 +4,7 @@ module.exports = class Fiddled extends Effect {
   constructor(lifespan) {
     super("Fiddled");
     this.lifespan = lifespan || Infinity;
+    this.isMalicious = true;
   }
 
   hear(message) {

@@ -13,13 +13,6 @@ module.exports = class RemoveEffectsAppliedOnDeath extends Card {
         }
         if (this.hasAbility(["Effect"])) {
           return;
-          if (
-            this.BlindEffect == null ||
-            !this.player.effects.includes(this.BlindEffect)
-          ) {
-            this.BlindEffect = this.player.giveEffect("Blind", Infinity);
-            this.passiveEffects.push(this.BlindEffect);
-          }
         } else {
           for(let player of this.game.players){
             for(let effect of player.effects){

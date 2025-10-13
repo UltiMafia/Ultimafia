@@ -28,7 +28,7 @@ module.exports = class KillAndDeliriumSurvivors extends Card {
                 labels: ["block", "delirium"],
                 run: function () {
                   if (this.dominates()) {
-                    this.target.giveEffect(
+                    this.role.giveEffect(this.target,
                       "Delirious",
                       this.actor,
                       Infinity,
