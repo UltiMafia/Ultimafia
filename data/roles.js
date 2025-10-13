@@ -4335,10 +4335,10 @@ const roleData = {
       tags: ["Ghost", "Mini-game", "Dusk"],
       description: [
         "When present in the game, all non-Cult-aligned players will know one of two randomly-selected words: the real word and the fake word.",
-        "All Village roles will learn the real word",
+        "All Village roles will learn the real word.",
         "All Mafia roles and Sleepwalkers will learn the fake word instead.",
         "Each night if no one was condemned, all Ghosts must choose one player. Then all players will give clues about their word starting with that player.",
-        "Wins if a Ghost guesses the real word when condemned or if Ghosts have majority.",
+        "When a Cult-aligned player is condemned, they may guess the real word, if correct Cult wins.",
       ],
     },
     Reaper: {
