@@ -3649,12 +3649,6 @@ function SettingsForm({ handleClose = null }) {
       ],
       value: settings.messageLayout,
     },
-    /* {
-      label: "Disable Animations",
-      ref: "noAnimation",
-      type: "boolean",
-      value: settings.noAnimation,
-    }, */
   ]);
 
   function cancel() {
@@ -4474,7 +4468,6 @@ export function useSettingsReducer() {
     volume: 1,
     terminologyEmoticons: true,
     messageLayout: "default",
-    noAnimation: false,
   };
 
   return useReducer((settings, action) => {
