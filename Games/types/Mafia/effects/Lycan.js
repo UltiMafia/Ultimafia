@@ -6,6 +6,7 @@ const { PRIORITY_KILL_DEFAULT } = require("../const/Priority");
 module.exports = class Lycan extends Effect {
   constructor() {
     super("Lycan");
+    this.isMalicious = true;
 
     this.listeners = {
       state: function (stateInfo) {

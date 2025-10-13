@@ -1688,6 +1688,7 @@ module.exports = class Game {
     redis.setGameState(this.id, stateInfo.name);
 
     this.broadcastState();
+    this.events.emit("effectAge", stateInfo);
     this.events.emit("state", stateInfo);
 
     // Send state events
@@ -1880,6 +1881,7 @@ module.exports = class Game {
   }
 
   broadcastState(stateInfo = this.getStateInfo()) {
+    //this.broadcast("effectAge", stateInfo);
     this.broadcast("state", stateInfo);
   }
 

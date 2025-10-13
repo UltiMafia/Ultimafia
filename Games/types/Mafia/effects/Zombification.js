@@ -6,6 +6,7 @@ module.exports = class Zombification extends Effect {
   constructor(infector) {
     super("Zombification");
     this.infector = infector;
+    this.isMalicious = true;
   }
 
   apply(player) {

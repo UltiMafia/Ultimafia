@@ -7,7 +7,7 @@ module.exports = class Yandere extends Role {
     this.alignment = "Independent";
     this.cards = [
       "VillageCore",
-      "WinAmongLastTwo",
+      "WinAmongLovers",
       "OneWayBond",
       "NightKiller",
     ];

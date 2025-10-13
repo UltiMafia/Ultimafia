@@ -5,6 +5,7 @@ const { PRIORITY_KILL_DEFAULT } = require("../const/Priority");
 module.exports = class Polarised extends Effect {
   constructor(bear) {
     super("Polarised");
+    this.isMalicious = true;
     /*
     this.bear = bear;
     this.listeners = {

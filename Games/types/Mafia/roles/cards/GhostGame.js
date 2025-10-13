@@ -7,6 +7,10 @@ const {
   PRIORITY_DAY_EFFECT_DEFAULT,
 } = require("../../const/Priority");
 const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
+const {
+  CULT_FACTIONS,
+} = require("../../const/FactionList");
+
 
 module.exports = class GhostGame extends Card {
   constructor(role) {
@@ -43,6 +47,12 @@ module.exports = class GhostGame extends Card {
           }
         }
 
+        for(let player of this.game.players){
+          if(player.faction == "Cult"){
+            player.holdItem("GhostGuessWord");
+          }
+        }
+
         var action = new Action({
           role: this,
           actor: this.player,
@@ -70,6 +80,9 @@ module.exports = class GhostGame extends Card {
         this.game.queueAction(action);
       },
       roleAssigned: function (player) {
+        if(this.game.getStateName() == "Day" && player.faction == "Cult" && !player.hasItem("GhostGuessWord")){
+          player.holdItem("GhostGuessWord");
+        }
         if (player !== this.player) return;
         for (let player of this.game.players) {
           if (player.role.name == "Ghost" && player != this.player) {
@@ -82,7 +95,7 @@ module.exports = class GhostGame extends Card {
         if (!this.game.realWord) {
           return;
         }
-        this.game.HasSentGhostStartingMessage == true;
+        this.game.HasSentGhostStartingMessage = true;
         for (let player of this.game.players) {
           if (player.role.name == "Ghost") {
             player.queueAlert(
@@ -91,24 +104,38 @@ module.exports = class GhostGame extends Card {
           }
         }
         let fakeWordGetters = ["Miller", "Sleepwalker", "Braggart"];
+        let realWordGetters = ["Godfather", "Imposter"];
         let noWordGetters = ["Saint", "Seer", "Templar"];
 
-        let villagePlayers = this.game.players.filter(
-          (p) =>
-            p.role.alignment === "Village" &&
-            !(
-              ((fakeWordGetters.includes(p.role.name) ||
-                noWordGetters.includes(p.role.name)) &&
-                p.role.canDoSpecialInteractions()) ||
-              (p.role.modifier && p.role.modifier.split("/").includes("Insane"))
-            )
-        );
-        let fakeWordPlayers = this.game.players.filter(
-          (p) =>
-            (fakeWordGetters.includes(p.role.name) &&
-              p.role.canDoSpecialInteractions()) ||
-            (p.role.modifier && p.role.modifier.split("/").includes("Insane"))
-        );
+        let villagePlayers = [];
+        let fakeWordPlayers = [];
+
+        for(let p of this.game.players){
+          if(p.role && p.role.GhostWordLearnForce == "Real"){
+            villagePlayers.push(p);
+          }
+          else if(p.role && p.role.GhostWordLearnForce == "Fake"){
+            fakeWordPlayers.push(p);
+          }
+          else if(p.role && p.role.GhostWordLearnForce == "None"){
+            continue;
+          }
+          else if(p.role && realWordGetters.includes(p.role.name) && p.role.canDoSpecialInteractions()){
+            villagePlayers.push(p);
+          }
+          else if(p.role && fakeWordGetters.includes(p.role.name) && p.role.canDoSpecialInteractions()){
+            fakeWordPlayers.push(p);
+          }
+          else if(p.role && noWordGetters.includes(p.role.name) && p.role.canDoSpecialInteractions()){
+           continue;
+          }
+          else if(p.role.alignment === "Village"){
+            villagePlayers.push(p);
+          }
+          else if(p.role.alignment === "Mafia"){
+            fakeWordPlayers.push(p);
+          }
+        }
 
         for (let villagePlayer of villagePlayers) {
           villagePlayer.role.data.assignedWord = this.game.realWord;
@@ -136,10 +163,11 @@ module.exports = class GhostGame extends Card {
       Ghost: {
         actionName: "Pick first clue giver",
         states: ["Night"],
-        flags: ["group", "speech", "voting", "mustAct", "instant"],
+        flags: ["group", "voting", "mustAct", "instant"],
         targets: { include: ["alive"], exclude: ["dead"] },
         shouldMeet: function () {
-          return this.game.GhostHaveClueMeeting;
+
+          return this.game.GhostHaveClueMeeting && this.player.role.name == "Ghost";
         },
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
@@ -156,55 +184,22 @@ module.exports = class GhostGame extends Card {
           },
         },
       },
-      "Guess Word": {
-        states: ["Dusk"],
-        flags: ["instant", "voting"],
-        inputType: "text",
-        textOptions: {
-          minLength: 2,
-          maxLength: 20,
-          alphaOnly: true,
-          toLowerCase: true,
-          submit: "Confirm",
-        },
-        action: {
-          run: function () {
-            let word = this.target.toLowerCase();
-            this.game.queueAlert(`${this.actor.name} guesses ${word}.`);
-
-            this.actor.role.guessedWord = word;
-            if (word !== this.game.realWord) {
-              this.actor.kill();
-            }
-
-            this.actor.role.guessOnNext = false;
-          },
-        },
-        shouldMeet: function () {
-          for (let action of this.game.actions[0]) {
-            if (action.target == this.player && action.hasLabel("condemn")) {
-              return true;
-            }
-          }
-          return false;
-        },
-      },
     };
 
-    this.winCheck = {
+    this.winCheckSpecial = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       check: function (counts, winners, aliveCount) {
-        const numGhostAlive = this.game.players.filter(
-          (p) => p.alive && p.role.name == "Ghost"
-        ).length;
         if (!this.game.realWord) {
           return;
         }
         if (
-          (aliveCount > 0 && numGhostAlive >= aliveCount / 2) ||
-          this.guessedWord === this.game.realWord
+          this.game.guessedWord === this.game.realWord
         ) {
-          winners.addPlayer(this.player, this.name);
+            for (let player of this.game.players) {
+            if (CULT_FACTIONS.includes(player.faction)) {
+              winners.addPlayer(player, player.faction);
+            }
+          }
         }
       },
     };
@@ -221,29 +216,7 @@ module.exports = class GhostGame extends Card {
           return false;
         },
       },
-      Dusk: {
-        type: "shouldSkip",
-        shouldSkip: function () {
-          for (let player of this.game.alivePlayers()) {
-            if (player.hasItem("Ouija Board")) {
-              return true;
-            }
-          }
-          return false;
-        },
-      },
       Night: {
-        type: "shouldSkip",
-        shouldSkip: function () {
-          for (let player of this.game.alivePlayers()) {
-            if (player.hasItem("Ouija Board")) {
-              return true;
-            }
-          }
-          return false;
-        },
-      },
-      Dawn: {
         type: "shouldSkip",
         shouldSkip: function () {
           for (let player of this.game.alivePlayers()) {

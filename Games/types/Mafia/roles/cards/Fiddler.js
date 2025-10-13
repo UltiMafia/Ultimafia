@@ -11,10 +11,11 @@ module.exports = class Fiddler extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["self"] },
         action: {
+          role: role,
           labels: ["effect", "fiddled"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
-            this.target.giveEffect("Fiddled", 1);
+            this.role.giveEffect(this.target, "Fiddled", 1);
           },
         },
       },

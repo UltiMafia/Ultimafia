@@ -11,13 +11,14 @@ module.exports = class BondedForLife extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          role: role,
           priority: PRIORITY_EFFECT_GIVER_EARLY,
           run: function () {
-            this.target.giveEffect("Lovesick", this.actor);
+            this.role.giveEffect(this.target, "Lovesick", this.actor);
             this.queueGetEffectAlert("Lovesick", this.target, this.actor.name);
 
             if (this.actor.role.name == "Lover") {
-              this.actor.giveEffect("Lovesick", this.target);
+              this.role.giveEffect( this.actor,"Lovesick", this.target);
             }
             this.queueGetEffectAlert("Lovesick", this.actor, this.target.name);
 

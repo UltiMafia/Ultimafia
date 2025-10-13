@@ -29,6 +29,7 @@ module.exports = class MakeInsaneOnRoleShare extends Card {
             target: otherPlayer,
             game: this.game,
             item: this,
+            role: this,
             labels: ["hidden"],
             run: function () {
               if (this.dominates(this.target)) {
@@ -37,7 +38,7 @@ module.exports = class MakeInsaneOnRoleShare extends Card {
                   `Your feeling S after Role Sharing with ${this.actor.name}`
                 );
                 */
-                this.target.giveEffect("Insanity");
+                this.role.giveEffect(this.target, "Insanity");
               }
             },
           });

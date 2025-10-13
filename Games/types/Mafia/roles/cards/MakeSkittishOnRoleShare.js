@@ -29,13 +29,14 @@ module.exports = class MakeSkittishOnRoleShare extends Card {
             target: otherPlayer,
             game: this.game,
             item: this,
+            role: this,
             labels: ["hidden"],
             run: function () {
               if (this.dominates(this.target)) {
                 this.target.queueAlert(
                   `Your feeling Skittish after Role Sharing with ${this.actor.name}`
                 );
-                this.target.giveEffect("MustRoleShare");
+                this.role.giveEffect(this.target, "MustRoleShare");
               }
             },
           });

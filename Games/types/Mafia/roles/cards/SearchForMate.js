@@ -18,6 +18,7 @@ module.exports = class SearchForMate extends Card {
               this.role.data.mated = 0;
             }
             if (this.target.role == "Panda Bear") {
+              /*
               this.target.giveEffect("Lovesick", this.actor);
               this.queueGetEffectAlert(
                 "Lovesick",
@@ -30,6 +31,7 @@ module.exports = class SearchForMate extends Card {
                 this.actor,
                 this.target.name
               );
+              */
               this.role.data.mated++;
               this.target.role.data.mated++;
               return;

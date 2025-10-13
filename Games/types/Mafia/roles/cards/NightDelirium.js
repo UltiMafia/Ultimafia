@@ -13,6 +13,7 @@ module.exports = class NightDelirium extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["self", "dead"] },
         action: {
+          role: role,
           labels: ["block", "delirium"],
           priority: PRIORITY_NIGHT_ROLE_BLOCKER + 1,
           run: function () {

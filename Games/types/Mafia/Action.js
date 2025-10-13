@@ -29,6 +29,12 @@ module.exports = class MafiaAction extends Action {
     target = target || this.target;
 
     target.setTempImmunity("poison", power);
+    for(let effect of target.effects){
+      if(effect.isMalicious == true){
+        effect.remove();
+      }
+    }
+    /*
     target.removeEffect("Poison", true);
     target.removeEffect("Bleeding", true);
     target.removeEffect("BleedingCult", true);
@@ -43,6 +49,7 @@ module.exports = class MafiaAction extends Action {
     target.removeEffect("Virus", true);
     target.removeEffect("Alcoholic", true);
     target.removeEffect("Lycan", true);
+    */
   }
 
   preventConvert(power, target) {
@@ -73,7 +80,7 @@ module.exports = class MafiaAction extends Action {
     target = target || this.target;
     let hasInvestigate = false;
     if (fromEffect != true) {
-      target.giveEffect("Delirious", this.actor, 1, null, this.role);
+      this.role.giveEffect(target, "Delirious", this.actor, 1, null, this.role);
     }
     this.game.events.emit("AbilityToggle", target);
     for (let action of this.game.actions[0]) {
@@ -95,15 +102,45 @@ module.exports = class MafiaAction extends Action {
         ) {
           continue;
         }
-        action.cancelActor(target);
+        action.deliriumActor(target);
       } else if (
         action.priority > this.priority &&
         !action.hasLabel("absolute")
       ) {
-        action.cancelActor(target);
+        action.deliriumActor(target);
       }
     }
     // target.giveEffect("FalseMode", 1);
+  }
+
+  deliriumActor(acter) {
+    var actorIndex = this.actors.indexOf(acter);
+    if (actorIndex == -1) return;
+    let curRun = this.run;
+    let tempRun = function () {
+              let canRun = false;
+              for(let actor of this.actors){
+                if(!actor.hasEffect("Delirious")){
+                  canRun = true;
+                }
+                else{
+                  this.cancelActor(actor);
+                }
+              }
+              //this.game.queueAlert("Succuess")
+              if(canRun == true){
+                curRun();
+              }
+          }
+          this.run = tempRun.bind(this);
+    //this.actors.splice(actorIndex, 1);
+        /*
+    if (this.actors.length == 0) {
+      this.do = () => {};
+      this.actors = [];
+      delete this.target;
+    }
+    */
   }
 
   makeUntargetable(player, excludeLabel, excludeAlignment) {

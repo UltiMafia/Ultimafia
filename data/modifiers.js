@@ -323,6 +323,14 @@ const modifierData = {
         "On death a random Village Aligned player will be chosen to be made Delirious for the rest of the game.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    Forgettable: {
+      category: "Other",
+      internal: ["RemoveEffectsAppliedOnDeath"],
+      tags: ["Effects"],
+      description:
+        "When this role dies or gets converted, any effects it inflicted will be removed.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Versatile: {
       category: "Other",
       internal: ["InheritFirstDeadAligned"],
@@ -514,6 +522,24 @@ const modifierData = {
       description:
         "Players who role-share with a Reclusive player become shy. Shy players cannot accept incoming role-shares and cannot Private/Public Reveal.",
       eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Informed: {
+      category: "Other",
+      internal: ["LearnRealWord"],
+      tags: ["Ghost Interaction"],
+      description:
+        "Will learn the real word if a Ghost is present.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Misinformed"],
+    },
+    Misinformed: {
+      category: "Other",
+      internal: ["LearnFakeWord"],
+      tags: ["Ghost Interaction"],
+      description:
+        "Will learn the fake word if a Ghost is present.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Informed"],
     },
 
     //Non-Starting Item

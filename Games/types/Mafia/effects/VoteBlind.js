@@ -4,6 +4,7 @@ module.exports = class VoteBlind extends Effect {
   constructor(lifespan) {
     super("VoteBlind");
     this.lifespan = lifespan || Infinity;
+    this.isMalicious = true;
   }
 
   seeVote(vote) {

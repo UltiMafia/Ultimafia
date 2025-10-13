@@ -4,6 +4,7 @@ module.exports = class Lovesick extends Effect {
   constructor(lover) {
     super("Lovesick");
     this.lover = lover;
+    this.isMalicious = true;
 
     this.listeners = {
       death: function (player, killer, deathType, instant) {
