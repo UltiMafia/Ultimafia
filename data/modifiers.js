@@ -527,8 +527,7 @@ const modifierData = {
       category: "Other",
       internal: ["LearnRealWord"],
       tags: ["Ghost Interaction"],
-      description:
-        "Will learn the real word if a Ghost is present.",
+      description: "Will learn the real word if a Ghost is present.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Misinformed"],
     },
@@ -536,8 +535,7 @@ const modifierData = {
       category: "Other",
       internal: ["LearnFakeWord"],
       tags: ["Ghost Interaction"],
-      description:
-        "Will learn the fake word if a Ghost is present.",
+      description: "Will learn the fake word if a Ghost is present.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Informed"],
     },

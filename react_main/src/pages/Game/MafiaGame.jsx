@@ -139,8 +139,18 @@ export default function MafiaGame() {
       volumes: 1,
     },
     { fileName: "music/WinDodo", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/WinPyromaniac", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/WinGreyGoo", loops: false, overrides: false, volumes: 1 },
+    {
+      fileName: "music/WinPyromaniac",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/WinGreyGoo",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
     { fileName: "music/WinFool", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinMafia", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinCult", loops: false, overrides: false, volumes: 1 },
@@ -412,7 +422,6 @@ export default function MafiaGame() {
       if (playBellRef.current) game.playAudio("bell");
 
       playBellRef.current = true;
-
     });
 
     socket.on("winners", (winners) => {

@@ -70,7 +70,8 @@ module.exports = class DeliriateNeighbors extends Card {
             this.startingNeighbors = victims;
           }
           for (let player of this.startingNeighbors) {
-            let effect = this.giveEffect(player,
+            let effect = this.giveEffect(
+              player,
               "Delirious",
               this.player,
               Infinity,

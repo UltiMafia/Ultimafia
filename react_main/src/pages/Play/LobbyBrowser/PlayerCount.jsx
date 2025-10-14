@@ -47,12 +47,21 @@ export const PlayerCount = (props) => {
             pointerEvents: "none",
           }}
         >
-          {!gameNotFinished && (<Typography>
-            <Time abbreviate minSec millisec={Date.now() - game.endTime} suffix={" ago"} />
-          </Typography>)}
-          {gameNotFinished && (<Typography>
-            {numSlotsTaken}/{numSlotsTotal}
-          </Typography>)}
+          {!gameNotFinished && (
+            <Typography>
+              <Time
+                abbreviate
+                minSec
+                millisec={Date.now() - game.endTime}
+                suffix={" ago"}
+              />
+            </Typography>
+          )}
+          {gameNotFinished && (
+            <Typography>
+              {numSlotsTaken}/{numSlotsTotal}
+            </Typography>
+          )}
           {gameNotFinished && !spectatingAllowed && (
             <i className="fas fa-eye-slash" />
           )}

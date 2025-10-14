@@ -31,10 +31,20 @@ module.exports = class ParalyzeAll extends Card {
                   ":omg: The whole town can't move… everyone is paralyzed!"
                 );
                 for (const player of this.game.RoomOne) {
-                  this.role.giveEffect(player, "CannotChangeVote", -1, "Room 1");
+                  this.role.giveEffect(
+                    player,
+                    "CannotChangeVote",
+                    -1,
+                    "Room 1"
+                  );
                 }
                 for (const player of this.game.RoomTwo) {
-                  this.role.giveEffect(player, "CannotChangeVote", -1, "Room 2");
+                  this.role.giveEffect(
+                    player,
+                    "CannotChangeVote",
+                    -1,
+                    "Room 2"
+                  );
                 }
                 return;
               }

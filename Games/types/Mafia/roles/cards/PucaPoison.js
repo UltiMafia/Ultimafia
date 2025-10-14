@@ -16,7 +16,7 @@ module.exports = class PucaPoison extends Card {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER + 3,
           run: function () {
             if (this.dominates()) {
-              this.role.giveEffect(this.target,"Poison", this.actor);
+              this.role.giveEffect(this.target, "Poison", this.actor);
               this.blockWithDelirium(this.target);
             }
           },

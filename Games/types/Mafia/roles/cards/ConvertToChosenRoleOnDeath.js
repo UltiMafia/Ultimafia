@@ -30,7 +30,8 @@ module.exports = class ConvertToChosenRoleOnDeath extends Card {
             let targetPlayer = this.role.data.targetPlayer;
             if (targetPlayer) {
               if (this.dominates(targetPlayer)) {
-                this.role.giveEffect(targetPlayer,
+                this.role.giveEffect(
+                  targetPlayer,
                   "BecomeRoleOnDeath",
                   this.actor,
                   this.target

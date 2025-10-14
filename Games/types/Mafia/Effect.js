@@ -9,8 +9,7 @@ module.exports = class MafiaEffect extends Effect {
   age() {
     if (
       this.game &&
-      (this.game.getStateName() == "Day" ||
-      this.game.getStateName() == "Night")
+      (this.game.getStateName() == "Day" || this.game.getStateName() == "Night")
     ) {
       this.lifespan--;
     } else {

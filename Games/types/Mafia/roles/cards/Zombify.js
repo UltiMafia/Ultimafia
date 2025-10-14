@@ -14,7 +14,7 @@ module.exports = class Zombify extends Card {
           labels: ["effect", "zombification"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
-            this.role.giveEffect(this.target,"Zombification", this.actor);
+            this.role.giveEffect(this.target, "Zombification", this.actor);
           },
         },
       },

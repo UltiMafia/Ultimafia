@@ -45,8 +45,8 @@ module.exports = class Virus extends Effect {
                   continue;
                 }
 
-               let effect = neighbor.giveEffect("Virus");
-               effect.source = this.source;
+                let effect = neighbor.giveEffect("Virus");
+                effect.source = this.source;
               }
             }
           },

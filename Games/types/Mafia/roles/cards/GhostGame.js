@@ -7,10 +7,7 @@ const {
   PRIORITY_DAY_EFFECT_DEFAULT,
 } = require("../../const/Priority");
 const { PRIORITY_ITEM_GIVER_DEFAULT } = require("../../const/Priority");
-const {
-  CULT_FACTIONS,
-} = require("../../const/FactionList");
-
+const { CULT_FACTIONS } = require("../../const/FactionList");
 
 module.exports = class GhostGame extends Card {
   constructor(role) {
@@ -47,8 +44,8 @@ module.exports = class GhostGame extends Card {
           }
         }
 
-        for(let player of this.game.players){
-          if(player.faction == "Cult"){
+        for (let player of this.game.players) {
+          if (player.faction == "Cult") {
             player.holdItem("GhostGuessWord");
           }
         }
@@ -80,7 +77,11 @@ module.exports = class GhostGame extends Card {
         this.game.queueAction(action);
       },
       roleAssigned: function (player) {
-        if(this.game.getStateName() == "Day" && player.faction == "Cult" && !player.hasItem("GhostGuessWord")){
+        if (
+          this.game.getStateName() == "Day" &&
+          player.faction == "Cult" &&
+          !player.hasItem("GhostGuessWord")
+        ) {
           player.holdItem("GhostGuessWord");
         }
         if (player !== this.player) return;
@@ -110,29 +111,34 @@ module.exports = class GhostGame extends Card {
         let villagePlayers = [];
         let fakeWordPlayers = [];
 
-        for(let p of this.game.players){
-          if(p.role && p.role.GhostWordLearnForce == "Real"){
+        for (let p of this.game.players) {
+          if (p.role && p.role.GhostWordLearnForce == "Real") {
             villagePlayers.push(p);
-          }
-          else if(p.role && p.role.GhostWordLearnForce == "Fake"){
+          } else if (p.role && p.role.GhostWordLearnForce == "Fake") {
             fakeWordPlayers.push(p);
-          }
-          else if(p.role && p.role.GhostWordLearnForce == "None"){
+          } else if (p.role && p.role.GhostWordLearnForce == "None") {
             continue;
-          }
-          else if(p.role && realWordGetters.includes(p.role.name) && p.role.canDoSpecialInteractions()){
+          } else if (
+            p.role &&
+            realWordGetters.includes(p.role.name) &&
+            p.role.canDoSpecialInteractions()
+          ) {
             villagePlayers.push(p);
-          }
-          else if(p.role && fakeWordGetters.includes(p.role.name) && p.role.canDoSpecialInteractions()){
+          } else if (
+            p.role &&
+            fakeWordGetters.includes(p.role.name) &&
+            p.role.canDoSpecialInteractions()
+          ) {
             fakeWordPlayers.push(p);
-          }
-          else if(p.role && noWordGetters.includes(p.role.name) && p.role.canDoSpecialInteractions()){
-           continue;
-          }
-          else if(p.role.alignment === "Village"){
+          } else if (
+            p.role &&
+            noWordGetters.includes(p.role.name) &&
+            p.role.canDoSpecialInteractions()
+          ) {
+            continue;
+          } else if (p.role.alignment === "Village") {
             villagePlayers.push(p);
-          }
-          else if(p.role.alignment === "Mafia"){
+          } else if (p.role.alignment === "Mafia") {
             fakeWordPlayers.push(p);
           }
         }
@@ -166,8 +172,9 @@ module.exports = class GhostGame extends Card {
         flags: ["group", "voting", "mustAct", "instant"],
         targets: { include: ["alive"], exclude: ["dead"] },
         shouldMeet: function () {
-
-          return this.game.GhostHaveClueMeeting && this.player.role.name == "Ghost";
+          return (
+            this.game.GhostHaveClueMeeting && this.player.role.name == "Ghost"
+          );
         },
         action: {
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
@@ -192,10 +199,8 @@ module.exports = class GhostGame extends Card {
         if (!this.game.realWord) {
           return;
         }
-        if (
-          this.game.guessedWord === this.game.realWord
-        ) {
-            for (let player of this.game.players) {
+        if (this.game.guessedWord === this.game.realWord) {
+          for (let player of this.game.players) {
             if (CULT_FACTIONS.includes(player.faction)) {
               winners.addPlayer(player, player.faction);
             }

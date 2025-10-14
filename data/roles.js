@@ -432,7 +432,10 @@ const roleData = {
         "Each night, can choose to visit one player and remove any malicious effects they have.",
         MalEffects,
       ],
-      nightOrder: [["Remove Effects (after kills)", PRIORITY_EFFECT_REMOVER_DEFAULT],["Remove Effects",PRIORITY_EFFECT_REMOVER_EARLY]],
+      nightOrder: [
+        ["Remove Effects (after kills)", PRIORITY_EFFECT_REMOVER_DEFAULT],
+        ["Remove Effects", PRIORITY_EFFECT_REMOVER_EARLY],
+      ],
     },
     Resurrectionist: {
       alignment: "Village",
@@ -2039,7 +2042,8 @@ const roleData = {
       ],
       nightOrder: [
         ["Remove Effects from Visitors", PRIORITY_EFFECT_REMOVER_DEFAULT],
-        ["Kill Werewolf", PRIORITY_KILL_DEFAULT], ["Remove Effects",PRIORITY_EFFECT_REMOVER_EARLY]
+        ["Kill Werewolf", PRIORITY_KILL_DEFAULT],
+        ["Remove Effects", PRIORITY_EFFECT_REMOVER_EARLY],
       ],
     },
     Dreamer: {
@@ -3058,8 +3062,8 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Linked", "Lover", "Visiting", "Advanced"],
       description: [
-      `Once per game at night, can choose to visit one player and makes that player "Lovesick" for the Heartbreaker.`,
-       lovesickDef,
+        `Once per game at night, can choose to visit one player and makes that player "Lovesick" for the Heartbreaker.`,
+        lovesickDef,
         "If the Heartbreaker dies, the beloved player also dies.",
         //"Both players will die if Heartbreaker dies.",
       ],
@@ -3452,7 +3456,10 @@ const roleData = {
         "Each night, can choose to visit one player and remove any malicious effects they have.",
         MalEffects,
       ],
-      nightOrder: [["Remove Effects", PRIORITY_EFFECT_REMOVER_DEFAULT],["Remove Effects",PRIORITY_EFFECT_REMOVER_EARLY]],
+      nightOrder: [
+        ["Remove Effects", PRIORITY_EFFECT_REMOVER_DEFAULT],
+        ["Remove Effects", PRIORITY_EFFECT_REMOVER_EARLY],
+      ],
     },
     Dealer: {
       alignment: "Mafia",
@@ -3463,7 +3470,10 @@ const roleData = {
         "Players who Role Share with an Apothecary will have any malicious effects they have removed.",
         MalEffects,
       ],
-      nightOrder: [["Remove Effects", PRIORITY_EFFECT_REMOVER_DEFAULT],["Remove Effects",PRIORITY_EFFECT_REMOVER_EARLY]],
+      nightOrder: [
+        ["Remove Effects", PRIORITY_EFFECT_REMOVER_DEFAULT],
+        ["Remove Effects", PRIORITY_EFFECT_REMOVER_EARLY],
+      ],
     },
     Diplomat: {
       alignment: "Mafia",
