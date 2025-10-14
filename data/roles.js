@@ -4351,6 +4351,17 @@ const roleData = {
         "When a Cult-aligned player is condemned, they may guess the real word, if correct Cult wins.",
       ],
     },
+    Poet: {
+      alignment: "Cult",
+      tags: ["Ghost", "Mini-game", "Dusk"],
+      description: [
+        "Before the game starts, chooses a real word and a fake word.",
+        "Forces a Ghost to spawn in closed setups.",
+        "If the Village guesses the identity of the Poet, the Ghosts and the Poet both lose.",
+        "Does not meet with the Cult or Ghosts.",
+      ],
+      RolesMadeBy: ["Ghost"],
+    },
     Reaper: {
       alignment: "Cult",
       category: "Chaos",
@@ -5282,18 +5293,6 @@ const roleData = {
           "During the Blood Moon Event, Superheros Wins if no Independents die and non-Lone Independents are counted as an Evil Faction for Village.",
         ],
       },
-    },
-    Poet: {
-      alignment: "Independent",
-      disabled: true,
-      tags: ["Ghost"],
-      description: [
-        "Before the game starts, chooses a real word and a fake word.",
-        "Forces a Ghost to spawn in closed setups.",
-        "If the Village guesses the identity of the Poet, the Ghosts and the Poet both lose.",
-        "Wins with Ghosts.",
-      ],
-      RolesMadeBy: ["Ghost"],
     },
     "Serial Killer": {
       alignment: "Independent",

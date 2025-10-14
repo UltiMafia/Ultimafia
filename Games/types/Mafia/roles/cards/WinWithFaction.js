@@ -46,6 +46,9 @@ module.exports = class WinWithFaction extends Card {
         const seersInGame = this.game.players.filter(
           (p) => p.role.name == "Seer"
         );
+        const poetsInGame = this.game.players.filter(
+          (p) => p.role.name == "Poet"
+        );
 
         const MolesInGame = this.game.players.filter((p) =>
           p.hasItem("IsTheMole")
@@ -113,6 +116,20 @@ module.exports = class WinWithFaction extends Card {
                 this.game.guessedSeers[EVIL_FACTIONS[x]]?.length
               ) {
                 //seers have been guessed, village cannot win
+                return;
+              }
+            }
+          }
+        }
+        //Guessed Poet Conditional
+        if (this.player.faction == "Cult") {
+          if (poetsInGame.length > 0) {
+            for (let x = 0; x < EVIL_FACTIONS.length; x++) {
+              if (
+                poetsInGame.length ==
+                this.game.guessedPoets[EVIL_FACTIONS[x]]?.length
+              ) {
+                //poets have been guessed, cult cannot win
                 return;
               }
             }
@@ -205,7 +222,7 @@ module.exports = class WinWithFaction extends Card {
           }
         }
 
-        //Zealot Condictional
+        //Zealot conditional
         if (this.player.faction == "Village") {
           let aliveZealots2 = this.game.players.filter(
             (p) =>
@@ -491,6 +508,11 @@ module.exports = class WinWithFaction extends Card {
         }
         this.game.guessedSeers[this.player.faction] = [];
 
+        if (!this.game.guessedPoets) {
+          this.game.guessedPoets = {};
+        }
+        this.game.guessedPoets[this.player.faction] = [];
+
         if (
           !FACTION_LEARN_TEAM.includes(this.player.faction) &&
           !this.player.hasItem("IsTheTelevangelist")
@@ -647,50 +669,47 @@ module.exports = class WinWithFaction extends Card {
         },
       },
     };
-    /*
-    this.stateMods = {
-      Day: {
-        type: "delayActions",
-        delayActions: true,
-      },
-      Dusk: {
-        type: "length",
-        length: 1000 * 60,
-      },
-      Overturn: {
-        type: "delayActions",
-        delayActions: true,
-      },
-      Sunset: {
-        type: "add",
-        index: 6,
-        length: 1000 * 30,
-        shouldSkip: function () {
+    // poet meeting and state mods
+    this.meetings = {
+      "Guess Poet": {
+        states: ["Dusk"],
+        flags: ["voting"],
+        targets: { include: ["alive", "dead"], exclude: ["self"] },
+        shouldMeet: function () {
           if (
-            this.game.players.filter((p) => p.role.name == "Seer").length <= 0
+            this.game.players.filter((p) => p.role.name == "Poet").length <= 0
           ) {
-            return true;
+            return false;
           }
 
           if (NOT_EVIL_FACTIONS.includes(this.player.faction)) {
             return true;
           }
 
-          if (
-            this.game.getRoleAlignment(this.player.role.name) == "Independent"
-          ) {
-            return true;
+          for (const action of this.game.actions[0]) {
+            if (action.hasLabel("condemn") && action.target == this.player) {
+              return true;
+            }
           }
 
-          for (let action of this.game.actions[0])
-            if (action.target == this.player && action.hasLabel("condemn"))
-              return false;
+          return false;
+        },
+        action: {
+          labels: ["kill"],
+          priority: PRIORITY_SUNSET_DEFAULT,
+          run: function () {
+            if (this.target.role.name !== "Poet") {
+              return;
+            }
+            if (!this.target.hasAbility(["Win-Con", "WhenDead"])) {
+              return;
+            }
 
-          return true;
+            this.game.guessedPoets[this.actor.faction].push(this.target);
+            this.target.kill("condemnRevenge", this.actor);
+          },
         },
       },
-      
     };
-    */
   }
 };

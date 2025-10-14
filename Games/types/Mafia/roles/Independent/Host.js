@@ -13,7 +13,7 @@ module.exports = class Host extends Role {
       "UnReplaceable",
       //"HostChosenRoles",
       "HostActions",
-      "HostChooseWordsForGhost",
+      "ChooseWordsForGhost",
     ];
   }
 };
