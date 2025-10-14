@@ -268,7 +268,7 @@ export const AchievementData = {
       reward: 15,
       roles: ["Silencer"],
     },
-    "Psychoanalyze Me!": {
+    "Tell Me About Your Mother": {
       ID: "Mafia37",
       internal: ["ShrinkSaveTwice"],
       description: "As Shrink, Prevent 2 conversions.",

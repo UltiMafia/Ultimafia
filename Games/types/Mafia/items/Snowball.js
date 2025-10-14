@@ -37,7 +37,7 @@ module.exports = class Snowball extends Item {
                 `:snowman: You are frozen and cannot move!`
               );
             }
-
+            this.game.broadcast("snowball");
             this.item.drop();
           },
         },

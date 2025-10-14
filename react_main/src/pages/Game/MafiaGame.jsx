@@ -40,12 +40,6 @@ export default function MafiaGame() {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
-  /*
-  const stateEvents = history.states[stateViewing]
-    ? history.states[stateViewing].stateEvents
-    : [];
-  const stateNames = ["Day", "Night", "Sunset"];
-  */
   const audioFileNames = [];
   const audioLoops = [];
   const audioOverrides = [];
@@ -55,6 +49,7 @@ export default function MafiaGame() {
     { fileName: "gunshot", loops: false, overrides: false, volumes: 1 },
     { fileName: "condemn", loops: false, overrides: false, volumes: 1 },
     { fileName: "explosion", loops: false, overrides: false, volumes: 0.5 },
+    { fileName: "snowball", loops: false, overrides: false, volumes: 0.5 },
     {
       fileName: "music/NightCrafter",
       loops: true,
@@ -118,7 +113,19 @@ export default function MafiaGame() {
       volumes: 1,
     },
     {
-      fileName: "music/NightCult",
+      fileName: "music/NightPyromaniac",
+      loops: true,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/NightHostile",
+      loops: true,
+      overrides: false,
+      volumes: 1,
+    },
+    {
+      fileName: "music/NightGeneric",
       loops: true,
       overrides: false,
       volumes: 0.6,
@@ -132,6 +139,8 @@ export default function MafiaGame() {
       volumes: 1,
     },
     { fileName: "music/WinDodo", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinPyromaniac", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinGreyGoo", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinFool", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinMafia", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinCult", loops: false, overrides: false, volumes: 1 },
@@ -273,6 +282,7 @@ export default function MafiaGame() {
             game.playAudio("music/NightInvestigator");
             break;
           case "Baker":
+          case "Barista":
           case "Blacksmith":
           case "Chandler":
           case "Cutler":
@@ -294,6 +304,7 @@ export default function MafiaGame() {
           case "Surgeon":
           case "Nurse":
           case "Medic":
+          case "Dentist":
             game.playAudio("music/NightProtector");
             break;
           case "Sheriff":
@@ -310,6 +321,7 @@ export default function MafiaGame() {
           case "King":
           case "Kingmaker":
           case "Queen":
+          case "Judge":
             game.playAudio("music/NightEssential");
             break;
           case "Caroler":
@@ -317,6 +329,7 @@ export default function MafiaGame() {
           case "Snowman":
           case "Polar Bear":
           case "Snow Queen":
+          case "Matchmaker":
             game.playAudio("music/NightWinter");
             break;
           case "Fiddler":
@@ -325,7 +338,21 @@ export default function MafiaGame() {
           case "Clockmaker":
             game.playAudio("music/NightClockmaker");
             break;
+          case "Pyromaniac":
+            game.playAudio("music/NightPyromaniac");
+            break;
+          case "Serial Killer":
+          case "Mastermind":
+          case "Usurper":
+          case "Mutineer":
+          case "Hellhound":
+          case "Grizzly Bear":
+          case "Puppeteer":
+          case "Supervillain":
+            game.playAudio("music/NightHostile");
+            break;
           case "Clown":
+          case "Dodo":
           case "Fool":
           case "Joker":
           case "Trickster":
@@ -368,11 +395,9 @@ export default function MafiaGame() {
             if (currentAlignment === "Mafia") {
               // If mafia role isn't listed above the mafia track plays
               game.playAudio("music/NightMafia");
-            } else if (currentAlignment === "Cult") {
-              // If cult role isn't listed above then the cult track plays
-              game.playAudio("music/NightCult");
             } else {
-              console.log(`${currentRoleName} has no night music`);
+              // If no role has assigned music the generic track plays
+              game.playAudio("music/NightGeneric");
             }
             break;
         }
@@ -388,9 +413,6 @@ export default function MafiaGame() {
 
       playBellRef.current = true;
 
-      // for (let stateName of stateNames)
-      // 	if (state.name.indexOf(stateName) == 0)
-      // 		game.playAudio(stateName);
     });
 
     socket.on("winners", (winners) => {
@@ -467,6 +489,12 @@ export default function MafiaGame() {
       if (winners.groups.includes("Communist")) {
         game.playAudio("music/WinCommunist");
       }
+      if (winners.groups.includes("Pyromaniac")) {
+        game.playAudio("music/WinPyromaniac");
+      }
+      if (winners.groups.includes("Grey Goo")) {
+        game.playAudio("music/WinGreyGoo");
+      }
       if (winners.groups.includes("Mafia")) {
         game.playAudio("music/WinMafia");
       } else if (winners.groups.includes("No one")) {
@@ -482,6 +510,9 @@ export default function MafiaGame() {
     });
     socket.on("explosion", () => {
       game.playAudio("explosion");
+    });
+    socket.on("snowball", () => {
+      game.playAudio("snowball");
     });
   }, game.socket);
 
