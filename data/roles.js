@@ -6295,6 +6295,11 @@ const roleData = {
       tags: ["None"],
       description: ["Eats the food on the board."],
     },
+    "Cheese Snake": {
+      alignment: "Town",
+      tags: ["None"],
+      description: ["Has a 1 space wide gaps between each segment"],
+    },
 
     Host: {
       alignment: "Host",
