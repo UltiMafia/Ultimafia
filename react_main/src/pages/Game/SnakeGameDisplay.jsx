@@ -146,14 +146,16 @@ export default function SnakeGameDisplay({ player, players, gameSocket }) {
     let allSegs = [];
     snakePlayerIds.forEach((id, idx) => {
       const snake = gameState.snakes[id];
-      const segs = snake.segments.map((s, i) => ({
-        ...s,
-        player: id,
-        index: i,
-        isHead: i === 0,
-        isTail: i === snake.segments.length - 1,
-        dead: !snake.alive,
-      }));
+      const segs = snake.segments
+        .filter((se) => se.active == true)
+        .map((s, i) => ({
+          ...s,
+          player: id,
+          index: i,
+          isHead: i === 0,
+          isTail: i === snake.segments.length - 1,
+          dead: !snake.alive,
+        }));
       allSegs.push(...segs);
     });
 

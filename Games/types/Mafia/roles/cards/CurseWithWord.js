@@ -36,7 +36,8 @@ module.exports = class CurseWithWord extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             if (this.dominates())
-              this.role.giveEffect(this.target,
+              this.role.giveEffect(
+                this.target,
                 "Cursed",
                 this.actor,
                 this.role.cursedWord,

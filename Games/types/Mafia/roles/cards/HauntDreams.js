@@ -21,7 +21,8 @@ module.exports = class HauntDreams extends Card {
             this.role.loved = true;
             this.role.data.DreamHost = this.target;
             this.role.passiveEffects.push(
-              this.role.giveEffect(this.target,
+              this.role.giveEffect(
+                this.target,
                 "Delirious",
                 this.actor,
                 Infinity,

@@ -6,7 +6,7 @@ module.exports = class GhostGuessWord extends Item {
   constructor() {
     super("GhostGuessWord");
 
-   this.cannotBeStolen = true;
+    this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
 
     this.meetings = {
@@ -46,13 +46,11 @@ module.exports = class GhostGuessWord extends Item {
     };
 
     this.listeners = {
-        state: function (stateInfo) {
+      state: function (stateInfo) {
         if (stateInfo.name.match(/Night/)) {
           this.drop();
         }
-    }
+      },
     };
-
   }
-
 };

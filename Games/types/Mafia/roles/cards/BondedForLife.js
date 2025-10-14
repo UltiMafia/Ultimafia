@@ -18,7 +18,7 @@ module.exports = class BondedForLife extends Card {
             this.queueGetEffectAlert("Lovesick", this.target, this.actor.name);
 
             if (this.actor.role.name == "Lover") {
-              this.role.giveEffect( this.actor,"Lovesick", this.target);
+              this.role.giveEffect(this.actor, "Lovesick", this.target);
             }
             this.queueGetEffectAlert("Lovesick", this.actor, this.target.name);
 

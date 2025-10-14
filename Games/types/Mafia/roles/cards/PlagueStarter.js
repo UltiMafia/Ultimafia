@@ -21,7 +21,7 @@ module.exports = class PlagueStarter extends Card {
           run: function () {
             this.role.hasInfected = true;
             if (this.dominates()) {
-              this.role.giveEffect(this.target,"Virus");
+              this.role.giveEffect(this.target, "Virus");
             }
           },
         },

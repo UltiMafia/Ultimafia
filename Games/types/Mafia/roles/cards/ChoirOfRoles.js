@@ -96,7 +96,7 @@ module.exports = class ChoirOfRoles extends Card {
             victim.queueAlert(
               `From your bedroom window you heard the Banshee's wailing about the ${role}. You must say ${role} today or you will be condenmed! If the Banshee guesses your name as their target you will be condenmed anyway so be sneaky!`
             );
-            this.role.giveEffect(victim,"ChoirSong", this.actor, role, 1); //,this.actor,role,1
+            this.role.giveEffect(victim, "ChoirSong", this.actor, role, 1); //,this.actor,role,1
             this.role.data.singer = victim;
             this.role.data.singAbout = role;
           },

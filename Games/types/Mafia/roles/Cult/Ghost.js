@@ -5,7 +5,11 @@ module.exports = class Ghost extends Role {
     super("Ghost", player, data);
 
     this.alignment = "Cult";
-    this.cards = ["VillageCore", "GhostGame", "WinWithFaction",
-      "MeetingFaction"];
+    this.cards = [
+      "VillageCore",
+      "GhostGame",
+      "WinWithFaction",
+      "MeetingFaction",
+    ];
   }
 };

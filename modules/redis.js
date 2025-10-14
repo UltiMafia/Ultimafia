@@ -541,7 +541,9 @@ async function getGameInfo(gameId, idsOnly) {
   info.lobby = await client.getAsync(`game:${gameId}:lobby`);
   info.spectatorCount = await client.getAsync(`game:${gameId}:spectatorCount`);
   info.gameState = await client.getAsync(`game:${gameId}:gameState`);
-  info.winnersInfo = JSON.parse(await client.getAsync(`game:${gameId}:winnersInfo`) || "{}");
+  info.winnersInfo = JSON.parse(
+    (await client.getAsync(`game:${gameId}:winnersInfo`)) || "{}"
+  );
   info.lobbyName = await client.getAsync(`game:${gameId}:lobbyName`);
   info.settings = JSON.parse(
     (await client.getAsync(`game:${gameId}:settings`)) || "{}"
@@ -889,7 +891,10 @@ async function setGameState(gameId, gameState) {
 }
 
 async function setWinnersInfo(gameId, winnersInfo) {
-  await client.setAsync(`game:${gameId}:winnersInfo`, JSON.stringify(winnersInfo));
+  await client.setAsync(
+    `game:${gameId}:winnersInfo`,
+    JSON.stringify(winnersInfo)
+  );
 }
 
 async function gameWebhookPublished(gameId) {

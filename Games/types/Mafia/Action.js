@@ -29,8 +29,8 @@ module.exports = class MafiaAction extends Action {
     target = target || this.target;
 
     target.setTempImmunity("poison", power);
-    for(let effect of target.effects){
-      if(effect.isMalicious == true){
+    for (let effect of target.effects) {
+      if (effect.isMalicious == true) {
         effect.remove();
       }
     }
@@ -118,23 +118,22 @@ module.exports = class MafiaAction extends Action {
     if (actorIndex == -1) return;
     let curRun = this.run;
     let tempRun = function () {
-              let canRun = false;
-              for(let actor of this.actors){
-                if(!actor.hasEffect("Delirious")){
-                  canRun = true;
-                }
-                else{
-                  this.cancelActor(actor);
-                }
-              }
-              //this.game.queueAlert("Succuess")
-              if(canRun == true){
-                curRun();
-              }
-          }
-          this.run = tempRun.bind(this);
+      let canRun = false;
+      for (let actor of this.actors) {
+        if (!actor.hasEffect("Delirious")) {
+          canRun = true;
+        } else {
+          this.cancelActor(actor);
+        }
+      }
+      //this.game.queueAlert("Succuess")
+      if (canRun == true) {
+        curRun();
+      }
+    };
+    this.run = tempRun.bind(this);
     //this.actors.splice(actorIndex, 1);
-        /*
+    /*
     if (this.actors.length == 0) {
       this.do = () => {};
       this.actors = [];

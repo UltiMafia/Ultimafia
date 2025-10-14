@@ -16,7 +16,7 @@ module.exports = class LeakWhispers extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             if (this.dominates()) {
-              this.role.giveEffect(this.target,"Leak Whispers", 1);
+              this.role.giveEffect(this.target, "Leak Whispers", 1);
             }
           },
         },

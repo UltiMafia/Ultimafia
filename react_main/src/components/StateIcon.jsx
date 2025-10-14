@@ -118,10 +118,6 @@ export default function StateIcon({
   if (unfocused) {
     return icon;
   } else {
-    return (
-      <Tooltip title={stateName}>
-        {icon}
-      </Tooltip>
-    );
+    return <Tooltip title={stateName}>{icon}</Tooltip>;
   }
 }

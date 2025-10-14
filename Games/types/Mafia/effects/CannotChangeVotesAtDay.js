@@ -9,8 +9,12 @@ module.exports = class CannotChangeVoteAtDay extends Effect {
 
     this.listeners = {
       meetingsMade: function () {
-       let effect = this.player.giveEffect("CannotChangeVote", -1, this.meetingName);
-       effect.source = this.source;
+        let effect = this.player.giveEffect(
+          "CannotChangeVote",
+          -1,
+          this.meetingName
+        );
+        effect.source = this.source;
       },
     };
   }

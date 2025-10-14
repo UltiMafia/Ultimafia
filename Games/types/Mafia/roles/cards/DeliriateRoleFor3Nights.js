@@ -41,7 +41,8 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
             }
             for (let y = 0; y < currentRoles.length; y++) {
               if (this.target == currentRoles[y]) {
-                this.role.giveEffect(players[y],
+                this.role.giveEffect(
+                  players[y],
                   "Delirious",
                   this.actor,
                   4,

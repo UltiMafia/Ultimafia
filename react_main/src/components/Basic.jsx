@@ -74,9 +74,8 @@ export function Time(props) {
 
   if (minSec && unit === "millisecond") {
     if (abbreviate) {
-      return `<1s${suffix}`
-    }
-    else {
+      return `<1s${suffix}`;
+    } else {
       return `Less than a second${suffix}`;
     }
   }
@@ -85,8 +84,7 @@ export function Time(props) {
 
   if (abbreviate) {
     return `${value}${unit}${suffix}`;
-  }
-  else {
+  } else {
     if (value > 1) unit += "s";
     return `${value} ${unit}${suffix}`;
   }

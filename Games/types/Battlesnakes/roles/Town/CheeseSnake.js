@@ -1,8 +1,8 @@
 const Role = require("../../Role");
 
-module.exports = class Snake extends Role {
+module.exports = class CheeseSnake extends Role {
   constructor(player, data) {
-    super("Snake", player, data);
+    super("Cheese Snake", player, data);
 
     this.alignment = "Town";
     this.cards = ["MoveSnake", "TownCore"];

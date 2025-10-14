@@ -7,7 +7,14 @@ import { UserContext } from "Contexts";
 import { filterProfanity } from "components/Basic";
 import Setup from "components/Setup";
 import HostGameDialogue from "components/HostGameDialogue";
-import { Box, Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Stack,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { getRowColor, getSetupBackgroundColor } from "./gameRowColors.js";
 import StateIcon from "components/StateIcon";
@@ -109,10 +116,12 @@ const GameStatus = (props) => {
         width: "60px",
       }}>
       </Box> */}
-      {showGameState && (<StateIcon
-        stateName={props.game.gameState || "Postgame"}
-        winnerGroups={props.game.winnersInfo?.groups || []}
-      />)}
+      {showGameState && (
+        <StateIcon
+          stateName={props.game.gameState || "Postgame"}
+          winnerGroups={props.game.winnersInfo?.groups || []}
+        />
+      )}
       <Stack
         direction="column"
         spacing={1}
@@ -155,7 +164,7 @@ export const GameRow = (props) => {
   if (!props.game.setup) return <></>;
 
   return (
-    <div className="shiny-container" style={{ minWidth: "0px", }}>
+    <div className="shiny-container" style={{ minWidth: "0px" }}>
       {props.game.competitive && <i className="shiny" />}
       <HostGameDialogue
         open={ishostGameDialogueOpen}

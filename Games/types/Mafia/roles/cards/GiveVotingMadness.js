@@ -34,7 +34,8 @@ module.exports = class GiveVotingMadness extends Card {
             victim.queueAlert(
               `A ${this.actor.role.name} has selected for you to be mad at ${this.target.name}. If ${this.target.name} does not receive votes from 1/3 or more of the living players, You, ${this.target.name}, or Both will Die!`
             );
-            this.role.giveEffect(this.role.data.victim,
+            this.role.giveEffect(
+              this.role.data.victim,
               "VotingMadness",
               this.actor,
               this.target,

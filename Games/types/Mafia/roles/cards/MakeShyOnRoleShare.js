@@ -36,7 +36,7 @@ module.exports = class MakeShyOnRoleShare extends Card {
                 this.target.queueAlert(
                   `Your feeling Shy after Role Sharing with ${this.actor.name}`
                 );
-                this.role.giveEffect(this.target,"CannotRoleShare");
+                this.role.giveEffect(this.target, "CannotRoleShare");
               }
             },
           });
