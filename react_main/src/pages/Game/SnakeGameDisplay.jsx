@@ -146,7 +146,7 @@ export default function SnakeGameDisplay({ player, players, gameSocket }) {
     let allSegs = [];
     snakePlayerIds.forEach((id, idx) => {
       const snake = gameState.snakes[id];
-      const segs = snake.segments.map((s, i) => ({
+      const segs = snake.segments.filter((s) => s.active == true).map((s, i) => ({
         ...s,
         player: id,
         index: i,
