@@ -139,6 +139,8 @@ export default function MafiaGame() {
       volumes: 1,
     },
     { fileName: "music/WinDodo", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinJoker", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinPuppeteer", loops: false, overrides: false, volumes: 1 },
     {
       fileName: "music/WinPyromaniac",
       loops: false,
@@ -437,6 +439,12 @@ export default function MafiaGame() {
       }
       if (winners.groups.includes("Dodo")) {
         game.playAudio("music/WinDodo");
+      }
+      if (winners.groups.includes("Joker")) {
+        game.playAudio("music/WinJoker");
+      }
+      if (winners.groups.includes("Puppeteer")) {
+        game.playAudio("music/WinPuppeteer");
       }
       if (winners.groups.includes("Matchmaker")) {
         game.playAudio("music/WinMatchmaker");

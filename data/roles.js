@@ -4353,6 +4353,7 @@ const roleData = {
     },
     Poet: {
       alignment: "Cult",
+      disabled: true,
       tags: ["Ghost", "Mini-game", "Dusk"],
       description: [
         "Before the game starts, chooses a real word and a fake word.",
