@@ -4,7 +4,9 @@ import { GameContext } from "Contexts";
 
 export const statesIcons = {
   pregame: require("images/game_state/pregame-state.png"),
+  dawn: require("images/game_state/dawn-state.png"),
   day: require("images/game_state/day-state.png"),
+  dusk: require("images/game_state/dusk-state.png"),
   night: require("images/game_state/night-state.png"),
   bakerflagwin: require("images/game_state/bakerflagwin-state.png"),
   cultwin: require("images/game_state/cultwin-state.png"),
@@ -23,9 +25,9 @@ export const statesIcons = {
 
 const stateIconMap = {
   pregame: "pregame",
-  dawn: "day",
+  dawn: "dawn",
   day: "day",
-  dusk: "night",
+  dusk: "dusk",
   night: "night",
   postgame: "bakerflagwin",
   "give clue": "ghost",

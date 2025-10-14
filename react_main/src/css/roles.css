@@ -652,10 +652,6 @@
   background-image: url("/src/images/roles/village/party-host-vivid.png");
 }
 
-.role-icon-vivid-Mafia-Ghost {
-  background-image: url("/src/images/roles/ghost-vivid.png");
-}
-
 .role-icon-vivid-Mafia-Lightkeeper {
   background-image: url("/src/images/roles/village/lightkeeper-vivid.png");
 }
@@ -1455,6 +1451,14 @@
 }
 
 /*------------------Cult Roles----------------------*/
+
+.role-icon-vivid-Mafia-Ghost {
+  background-image: url("/src/images/roles/cult/ghost-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Poet {
+  background-image: url("/src/images/roles/cult/poet-vivid.png");
+}
 
 .role-icon-vivid-Mafia-Yith {
   background-image: url("/src/images/roles/cult/yith-vivid.png");

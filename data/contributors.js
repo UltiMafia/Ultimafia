@@ -63,7 +63,6 @@ const artContributors = {
       "Psychic:vivid",
       "Empath:vivid",
       "Guard:vivid",
-      "Shrink:vivid",
       "Martyr:vivid",
       "Troublemaker:vivid",
       "Avenger:vivid",
@@ -360,6 +359,7 @@ const artContributors = {
       "Changeling:vivid",
       "Magus:vivid",
       "Fool:vivid",
+      "Shrink:vivid",
       //Skins
       "Cop:halloween",
       "Doctor:halloween",
