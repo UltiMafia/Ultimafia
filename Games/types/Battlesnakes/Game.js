@@ -144,7 +144,11 @@ module.exports = class BattlesnakesGame extends Game {
 
       // Remove wall collision check, only check for self/other snake collisions
       // Check self collisions
-      if (snake.segments.some((seg) => seg.x === head.x && seg.y === head.y && seg.active)) {
+      if (
+        snake.segments.some(
+          (seg) => seg.x === head.x && seg.y === head.y && seg.active
+        )
+      ) {
         this.killSnake(snake);
         continue;
       }
@@ -166,25 +170,23 @@ module.exports = class BattlesnakesGame extends Game {
 
       // Move snake
       snake.segments.unshift(head);
-      if(snake.type == "Cheese Snake"){
+      if (snake.type == "Cheese Snake") {
         snake.segments.forEach((seg, index) => {
-          if(index % 2 == 1){
+          if (index % 2 == 1) {
             seg.active = false;
-          }
-          else{
+          } else {
             seg.active = true;
           }
-        })
+        });
       }
-      if(snake.type == "Gap Snake"){
+      if (snake.type == "Gap Snake") {
         snake.segments.forEach((seg, index) => {
-          if(index == 0 || index == snake.segments.length-2){
+          if (index == 0 || index == snake.segments.length - 2) {
             seg.active = true;
-          }
-          else{
+          } else {
             seg.active = false;
           }
-        })
+        });
       }
 
       // Food collection logic for multiple foods
