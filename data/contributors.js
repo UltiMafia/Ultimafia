@@ -275,6 +275,7 @@ const artContributors = {
       "Televangelist:vivid",
       "Dragoon:vivid",
       "Barista:vivid",
+      "Poet:vivid",
       "Time Loop:vivid",
       //Skins
     ],
