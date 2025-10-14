@@ -167,12 +167,22 @@ module.exports = class BattlesnakesGame extends Game {
       // Move snake
       snake.segments.unshift(head);
       if(snake.type == "Cheese Snake"){
-        snake.segments = snake.segments.map((s, i) => {
-          if(i % 2 = 1){
-          s.active = false;
+        snake.segments.forEach((seg, index) => {
+          if(index % 2 == 1){
+            seg.active = false;
           }
           else{
-          s.active = true;
+            seg.active = true;
+          }
+        })
+      }
+      if(snake.type == "Gap Snake"){
+        snake.segments.forEach((seg, index) => {
+          if(index == 0 || index == snake.segments.length-2){
+            seg.active = true;
+          }
+          else{
+            seg.active = false;
           }
         })
       }

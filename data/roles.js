@@ -6298,7 +6298,12 @@ const roleData = {
     "Cheese Snake": {
       alignment: "Town",
       tags: ["None"],
-      description: ["Has a 1 space wide gaps between each segment"],
+      description: ["Only has every other segment."],
+    },
+    "Gap Snake": {
+      alignment: "Town",
+      tags: ["None"],
+      description: ["Only has a head and a tail."],
     },
 
     Host: {
