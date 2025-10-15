@@ -19,7 +19,7 @@ module.exports = class GhostGame extends Card {
     if (
       !role.game.realWord &&
       role.game.players.filter(
-        (p) => (p.role && p.role.name == "Host") || p.role.name == "Poet"
+        (p) => p.role && (p.role.name == "Host" || p.role.name == "Poet")
       ).length <= 0
     ) {
       role.game.realWord = shuffledWordPack[0];
