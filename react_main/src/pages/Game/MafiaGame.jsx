@@ -140,7 +140,12 @@ export default function MafiaGame() {
     },
     { fileName: "music/WinDodo", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinJoker", loops: false, overrides: false, volumes: 1 },
-    { fileName: "music/WinPuppeteer", loops: false, overrides: false, volumes: 1 },
+    {
+      fileName: "music/WinPuppeteer",
+      loops: false,
+      overrides: false,
+      volumes: 1,
+    },
     {
       fileName: "music/WinPyromaniac",
       loops: false,
