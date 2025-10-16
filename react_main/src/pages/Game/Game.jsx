@@ -1258,7 +1258,7 @@ export function TextMeetingLayout({ combineMessagesFromAllMeetings = false }) {
   const [autoScroll, setAutoScroll] = useState(true);
   const [mouseMoved, setMouseMoved] = useState(false);
   const speechDisplayRef = useRef();
-  const hasMouse = useMediaQuery('(pointer:fine)');
+  const hasMouse = useMediaQuery("(pointer:fine)");
 
   const speechMeetings = Object.values(meetings).filter(
     (meeting) => meeting.speech
@@ -3534,7 +3534,7 @@ function getTargetDisplay(targets, meeting, players) {
 
 export function LastWillEntry() {
   const game = useContext(GameContext);
-  
+
   const [lastWill, setLastWill] = useState(game.lastWill);
 
   const currentState = game.history.states[game.history.currentState];
@@ -4099,8 +4099,7 @@ function useHistoryReducer() {
             });
 
             if (
-              update1.states[history.currentState].selTab ===
-              action.meetingId
+              update1.states[history.currentState].selTab === action.meetingId
             ) {
               return update(update1, {
                 states: {
@@ -4109,8 +4108,7 @@ function useHistoryReducer() {
                   },
                 },
               });
-            }
-            else {
+            } else {
               return update1;
             }
           }
@@ -4221,8 +4219,7 @@ function useHistoryReducer() {
                   },
                 },
               });
-            }
-            else {
+            } else {
               return update1;
             }
           }
