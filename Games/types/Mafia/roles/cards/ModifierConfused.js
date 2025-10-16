@@ -12,7 +12,7 @@ module.exports = class ModifierConfused extends Card {
       death: true,
       condemn: true,
     };
-    
+
     /*
     this.actions = [
       {
