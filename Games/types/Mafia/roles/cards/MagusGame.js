@@ -40,13 +40,16 @@ module.exports = class MagusGame extends Card {
           const alivePlayers = this.game
             .alivePlayers()
             .filter((p) => p != this.actor);
+          if(alivePlayers.length <= 0){
+            return;
+          }
           const allPlayers = this.game.alivePlayers();
           let roles = this.game.PossibleRoles.filter((r) => r);
 
           let shuffledPlayers = Random.randomizeArray(alivePlayers);
 
           if (this.actor.role.data.FakeVoteKill) {
-            shuffledPlayers[1].giveEffect(
+            shuffledPlayers[0].giveEffect(
               "CursedVote",
               this.actor,
               Random.randArrayVal(allPlayers),
@@ -83,6 +86,9 @@ module.exports = class MagusGame extends Card {
           const alivePlayers = this.game
             .alivePlayers()
             .filter((p) => p != this.actor);
+          if(alivePlayers.length <= 0){
+            return;
+          }
           let roles = this.game.PossibleRoles.filter((r) => r);
 
           let shuffledPlayers = Random.randomizeArray(alivePlayers);
@@ -103,8 +109,12 @@ module.exports = class MagusGame extends Card {
           shuffledPlayers = Random.randomizeArray(alivePlayers);
 
           if (this.actor.role.data.FakeFalseMode) {
-            shuffledPlayers[0].giveEffect("FalseMode", 1);
-            shuffledPlayers[1].giveEffect("FalseMode", 1);
+            if(shuffledPlayers[0]){
+              shuffledPlayers[0].giveEffect("FalseMode", 1);
+            }
+            if(shuffledPlayers[1]){
+              shuffledPlayers[1].giveEffect("FalseMode", 1);
+            }
           }
 
           let rolesEvil = roles.filter(
@@ -114,7 +124,7 @@ module.exports = class MagusGame extends Card {
           );
           rolesEvil = Random.randomizeArray(rolesEvil);
           shuffledPlayers = Random.randomizeArray(alivePlayers);
-
+          if(shuffledPlayers[0]){
           shuffledPlayers[0].role.appearance.reveal = rolesEvil[0].split(":");
           shuffledPlayers[0].role.appearance.investigate =
             rolesEvil[0].split(":");
@@ -125,6 +135,7 @@ module.exports = class MagusGame extends Card {
             investigate: true,
             condemn: true,
           };
+        }
           rolesEvil = Random.randomizeArray(rolesEvil);
           this.actor.role.alignment = this.game.getRoleAlignment(rolesEvil[0]);
           this.actor.role.appearance.death = rolesEvil[0].split(":");
