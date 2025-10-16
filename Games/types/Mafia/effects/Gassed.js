@@ -20,6 +20,9 @@ module.exports = class Gassed extends Effect {
       effect: this,
       power: 2,
       run: function () {
+        if(!this.target.hasEffect("Gassed")){
+          return;
+        }
         const visits = this.getVisits(this.target);
         if (visits.length > 0) this.target.kill("gas", this.actor);
         if ((visits.length = 0)) return;
