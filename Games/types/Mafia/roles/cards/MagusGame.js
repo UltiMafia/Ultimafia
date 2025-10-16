@@ -40,7 +40,7 @@ module.exports = class MagusGame extends Card {
           const alivePlayers = this.game
             .alivePlayers()
             .filter((p) => p != this.actor);
-          if(alivePlayers.length <= 0){
+          if (alivePlayers.length <= 0) {
             return;
           }
           const allPlayers = this.game.alivePlayers();
@@ -86,7 +86,7 @@ module.exports = class MagusGame extends Card {
           const alivePlayers = this.game
             .alivePlayers()
             .filter((p) => p != this.actor);
-          if(alivePlayers.length <= 0){
+          if (alivePlayers.length <= 0) {
             return;
           }
           let roles = this.game.PossibleRoles.filter((r) => r);
@@ -109,10 +109,10 @@ module.exports = class MagusGame extends Card {
           shuffledPlayers = Random.randomizeArray(alivePlayers);
 
           if (this.actor.role.data.FakeFalseMode) {
-            if(shuffledPlayers[0]){
+            if (shuffledPlayers[0]) {
               shuffledPlayers[0].giveEffect("FalseMode", 1);
             }
-            if(shuffledPlayers[1]){
+            if (shuffledPlayers[1]) {
               shuffledPlayers[1].giveEffect("FalseMode", 1);
             }
           }
@@ -124,18 +124,19 @@ module.exports = class MagusGame extends Card {
           );
           rolesEvil = Random.randomizeArray(rolesEvil);
           shuffledPlayers = Random.randomizeArray(alivePlayers);
-          if(shuffledPlayers[0]){
-          shuffledPlayers[0].role.appearance.reveal = rolesEvil[0].split(":");
-          shuffledPlayers[0].role.appearance.investigate =
-            rolesEvil[0].split(":");
-          shuffledPlayers[0].role.appearance.condemn = rolesEvil[0].split(":");
-          shuffledPlayers[0].role.hideModifier = {
-            death: false,
-            reveal: true,
-            investigate: true,
-            condemn: true,
-          };
-        }
+          if (shuffledPlayers[0]) {
+            shuffledPlayers[0].role.appearance.reveal = rolesEvil[0].split(":");
+            shuffledPlayers[0].role.appearance.investigate =
+              rolesEvil[0].split(":");
+            shuffledPlayers[0].role.appearance.condemn =
+              rolesEvil[0].split(":");
+            shuffledPlayers[0].role.hideModifier = {
+              death: false,
+              reveal: true,
+              investigate: true,
+              condemn: true,
+            };
+          }
           rolesEvil = Random.randomizeArray(rolesEvil);
           this.actor.role.alignment = this.game.getRoleAlignment(rolesEvil[0]);
           this.actor.role.appearance.death = rolesEvil[0].split(":");
