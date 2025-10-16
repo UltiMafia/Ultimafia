@@ -73,6 +73,7 @@ import {
   BottomNavigation,
   BottomNavigationAction,
   Paper,
+  useMediaQuery,
 } from "@mui/material";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
@@ -128,7 +129,7 @@ function GameWrapper(props) {
   const [setup, setSetup] = useState();
   const [options, setOptions] = useState({});
   const [emojis, setEmojis] = useState({});
-  const [history, updateHistory] = useHistoryReducer(false);
+  const [history, updateHistory] = useHistoryReducer();
   const [stateViewing, updateStateViewing] = useStateViewingReducer(history);
   const [players, updatePlayers] = usePlayersReducer();
   const [spectatorCount, setSpectatorCount] = useState(0);
@@ -1257,6 +1258,7 @@ export function TextMeetingLayout({ combineMessagesFromAllMeetings = false }) {
   const [autoScroll, setAutoScroll] = useState(true);
   const [mouseMoved, setMouseMoved] = useState(false);
   const speechDisplayRef = useRef();
+  const hasMouse = useMediaQuery('(pointer:fine)');
 
   const speechMeetings = Object.values(meetings).filter(
     (meeting) => meeting.speech
@@ -1316,7 +1318,7 @@ export function TextMeetingLayout({ combineMessagesFromAllMeetings = false }) {
   }
 
   function onSpeechScroll() {
-    if (!mouseMoved) {
+    if (hasMouse && !mouseMoved) {
       doAutoScroll();
       return;
     }
@@ -1711,7 +1713,7 @@ function Message(props) {
   // Mobile only - users pin message by long pressing them
   const messageLongPress = useLongPress(
     () => props.onPinMessage(props.message),
-    300
+    600
   );
 
   const history = props.history;
@@ -3530,17 +3532,18 @@ function getTargetDisplay(targets, meeting, players) {
   return targets;
 }
 
-export function LastWillEntry(props) {
+export function LastWillEntry() {
   const game = useContext(GameContext);
-  const [lastWill, setLastWill] = useState(props.lastWill);
+  
+  const [lastWill, setLastWill] = useState(game.lastWill);
 
-  const currentState = game.history.states[history.currentState];
+  const currentState = game.history.states[game.history.currentState];
   const cannotModifyLastWill =
-    !currentState || !currentState.name.startsWith("Day");
+    !currentState || currentState.name.startsWith("Day");
 
   if (
     !game.isParticipant ||
-    history.currentState < 0 ||
+    game.history.currentState < 0 ||
     !game.getSetupGameSetting("Last Wills")
   ) {
     return <></>;
@@ -3549,11 +3552,7 @@ export function LastWillEntry(props) {
   function onWillChange(e) {
     var newWill = e.target.value.slice(0, MaxWillLength);
     setLastWill(newWill);
-    props.socket.send("lastWill", newWill);
-  }
-
-  if (cannotModifyLastWill) {
-    return <></>;
+    game.socket.send("lastWill", newWill);
   }
 
   return (
@@ -3563,21 +3562,20 @@ export function LastWillEntry(props) {
       lockIcon={
         <i
           className={`fas ${
-            props.cannotModifyLastWill ? "fa-lock" : "fa-lock-open"
+            cannotModifyLastWill ? "fa-lock" : "fa-lock-open"
           } fa-fw`}
         />
       }
       content={
         <div className="last-will-wrapper">
           <textarea
-            readOnly={props.cannotModifyLastWill}
+            readOnly={cannotModifyLastWill}
             className="last-will-entry"
             value={lastWill}
             onChange={onWillChange}
           />
         </div>
       }
-      disabled={props.cannotModifyLastWill}
     />
   );
 }
@@ -4001,30 +3999,23 @@ export function Notes() {
   );
 }
 
-function useHistoryReducer(pauseHistoryUpdates) {
+function useHistoryReducer() {
   return useReducer(
     (history, action) => {
-      var newHistory;
-
-      if (pauseHistoryUpdates) {
-        return update(history, {
-          pausedActions: {
-            $push: [action],
-          },
-        });
-      }
-
       switch (action.type) {
-        case "set":
+        case "set": {
           var stateIds = Object.keys(action.history)
             .map((a) => parseInt(a))
             .sort((a, b) => a - b);
-          newHistory = { states: action.history, pausedActions: [] };
+          const newHistory = { states: action.history, pausedActions: [] };
 
           if (stateIds[0] == -2) newHistory.currentState = -2;
           else newHistory.currentState = stateIds[stateIds.length - 1];
+
+          return newHistory;
           break;
-        case "addState":
+        }
+        case "addState": {
           if (!history.states[action.state.id]) {
             var prevState;
 
@@ -4032,7 +4023,7 @@ function useHistoryReducer(pauseHistoryUpdates) {
             else
               prevState = Object.keys(history.states).sort((a, b) => b - a)[0];
 
-            newHistory = update(history, {
+            return update(history, {
               states: {
                 [action.state.id]: {
                   $set: {
@@ -4053,25 +4044,14 @@ function useHistoryReducer(pauseHistoryUpdates) {
                 $set: Number.parseInt(action.state.id),
               },
             });
-          } else newHistory = history;
+          }
           break;
-        case "addMeeting":
-          var state = history.states[history.currentState];
+        }
+        case "addMeeting": {
+          let state = history.states[history.currentState];
 
           if (state) {
-            if (!state.meetings) {
-              newHistory = update(history, {
-                states: {
-                  [history.currentState]: {
-                    meetings: {
-                      $set: {},
-                    },
-                  },
-                },
-              });
-            }
-
-            newHistory = update(newHistory || history, {
+            return update(history, {
               states: {
                 [history.currentState]: {
                   meetings: {
@@ -4084,12 +4064,13 @@ function useHistoryReducer(pauseHistoryUpdates) {
             });
           }
           break;
-        case "meetingMembers":
+        }
+        case "meetingMembers": {
           if (
             history.states[history.currentState] &&
             history.states[history.currentState].meetings[action.meetingId]
           ) {
-            newHistory = update(history, {
+            return update(history, {
               states: {
                 [history.currentState]: {
                   meetings: {
@@ -4104,9 +4085,10 @@ function useHistoryReducer(pauseHistoryUpdates) {
             });
           }
           break;
-        case "removeMeeting":
+        }
+        case "removeMeeting": {
           if (history.states[history.currentState]) {
-            newHistory = update(history, {
+            const update1 = update(history, {
               states: {
                 [history.currentState]: {
                   meetings: {
@@ -4117,10 +4099,10 @@ function useHistoryReducer(pauseHistoryUpdates) {
             });
 
             if (
-              newHistory.states[history.currentState].selTab ===
+              update1.states[history.currentState].selTab ===
               action.meetingId
             ) {
-              newHistory = update(newHistory, {
+              return update(update1, {
                 states: {
                   [history.currentState]: {
                     $unset: ["selTab"],
@@ -4128,9 +4110,13 @@ function useHistoryReducer(pauseHistoryUpdates) {
                 },
               });
             }
+            else {
+              return update1;
+            }
           }
           break;
-        case "addMessage":
+        }
+        case "addMessage": {
           if (history.states[history.currentState]) {
             if (action.message.meetingId) {
               if (
@@ -4138,7 +4124,7 @@ function useHistoryReducer(pauseHistoryUpdates) {
                   action.message.meetingId
                 ]
               ) {
-                newHistory = update(history, {
+                return update(history, {
                   states: {
                     [history.currentState]: {
                       meetings: {
@@ -4153,7 +4139,7 @@ function useHistoryReducer(pauseHistoryUpdates) {
                 });
               }
             } else {
-              newHistory = update(history, {
+              return update(history, {
                 states: {
                   [history.currentState]: {
                     alerts: {
@@ -4165,14 +4151,15 @@ function useHistoryReducer(pauseHistoryUpdates) {
             }
           }
           break;
-        case "addQuote":
+        }
+        case "addQuote": {
           if (
             history.states[history.currentState] &&
             history.states[history.currentState].meetings[
               action.quote.toMeetingId
             ]
           ) {
-            newHistory = update(history, {
+            return update(history, {
               states: {
                 [history.currentState]: {
                   meetings: {
@@ -4187,16 +4174,17 @@ function useHistoryReducer(pauseHistoryUpdates) {
             });
           }
           break;
-        case "vote":
-          var target = action.vote.target;
-          var state = history.states[history.currentState];
-          var meeting = state && state.meetings[action.vote.meetingId];
+        }
+        case "vote": {
+          let target = action.vote.target;
+          const state = history.states[history.currentState];
+          const meeting = state && state.meetings[action.vote.meetingId];
 
           if (meeting) {
             if (meeting.multi)
               target = [...(meeting.votes[action.vote.voterId] || []), target];
 
-            newHistory = update(history, {
+            const update1 = update(history, {
               states: {
                 [history.currentState]: {
                   meetings: {
@@ -4213,7 +4201,7 @@ function useHistoryReducer(pauseHistoryUpdates) {
             });
 
             if (!action.vote.noLog) {
-              newHistory = update(newHistory, {
+              return update(update1, {
                 states: {
                   [history.currentState]: {
                     meetings: {
@@ -4234,12 +4222,16 @@ function useHistoryReducer(pauseHistoryUpdates) {
                 },
               });
             }
+            else {
+              return update1;
+            }
           }
           break;
-        case "unvote":
-          var target = undefined;
-          var state = history.states[history.currentState];
-          var meeting = state && state.meetings[action.info.meetingId];
+        }
+        case "unvote": {
+          let target = undefined;
+          const state = history.states[history.currentState];
+          const meeting = state && state.meetings[action.info.meetingId];
 
           if (meeting) {
             if (meeting.multi)
@@ -4247,7 +4239,7 @@ function useHistoryReducer(pauseHistoryUpdates) {
                 (t) => t !== action.info.target
               );
 
-            newHistory = update(history, {
+            return update(history, {
               states: {
                 [history.currentState]: {
                   meetings: {
@@ -4273,9 +4265,10 @@ function useHistoryReducer(pauseHistoryUpdates) {
             });
           }
           break;
-        case "stateEvents":
+        }
+        case "stateEvents": {
           if (history.states[history.currentState]) {
-            newHistory = update(history, {
+            return update(history, {
               states: {
                 [history.currentState]: {
                   stateEvents: {
@@ -4286,9 +4279,10 @@ function useHistoryReducer(pauseHistoryUpdates) {
             });
           }
           break;
-        case "selTab":
+        }
+        case "selTab": {
           if (history.states[action.state]) {
-            newHistory = update(history, {
+            return update(history, {
               states: {
                 [action.state]: {
                   selTab: {
@@ -4299,9 +4293,10 @@ function useHistoryReducer(pauseHistoryUpdates) {
             });
           }
           break;
-        case "obituaries":
+        }
+        case "obituaries": {
           if (history.states[history.currentState]) {
-            newHistory = update(history, {
+            return update(history, {
               states: {
                 [history.currentState]: {
                   obituaries: {
@@ -4314,9 +4309,10 @@ function useHistoryReducer(pauseHistoryUpdates) {
             });
           }
           break;
+        }
         // case "winners":
         //   if (history.states[history.currentState]) {
-        //     newHistory = update(history, {
+        //     return update(history, {
         //       states: {
         //         [history.currentState]: {
         //           winners: {
@@ -4329,9 +4325,9 @@ function useHistoryReducer(pauseHistoryUpdates) {
         //     });
         //   }
         //   break;
-        case "reveal":
+        case "reveal": {
           if (history.states[history.currentState]) {
-            newHistory = update(history, {
+            return update(history, {
               states: {
                 [history.currentState]: {
                   roles: {
@@ -4344,9 +4340,10 @@ function useHistoryReducer(pauseHistoryUpdates) {
             });
           }
           break;
-        case "death":
+        }
+        case "death": {
           if (history.states[history.currentState]) {
-            newHistory = update(history, {
+            return update(history, {
               states: {
                 [history.currentState]: {
                   dead: {
@@ -4359,9 +4356,10 @@ function useHistoryReducer(pauseHistoryUpdates) {
             });
           }
           break;
-        case "revival":
+        }
+        case "revival": {
           if (history.states[history.currentState]) {
-            newHistory = update(history, {
+            return update(history, {
               states: {
                 [history.currentState]: {
                   dead: {
@@ -4374,9 +4372,13 @@ function useHistoryReducer(pauseHistoryUpdates) {
             });
           }
           break;
+        }
+        default: {
+          throw Error(`Unknown action type: ${action.type}`);
+        }
       }
 
-      return newHistory || history;
+      return history;
     },
     { states: {}, pausedActions: [] }
   );
