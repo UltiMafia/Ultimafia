@@ -10,7 +10,9 @@ export function Emote(props) {
       className="emote"
       title={emote.name}
       style={{
-        backgroundImage: `url('${require(`images/emotes/${emote.name.toLowerCase()}.${emote.type}`)}')`,
+        backgroundImage: `url('${require(`images/emotes/${emote.name.toLowerCase()}.${
+          emote.type
+        }`)}')`,
       }}
     />
   );
