@@ -10,7 +10,6 @@ module.exports = class Polarised extends Effect {
     //this.bear = bear;
     this.listeners = {
       actionsNext: function () {
-        if (!this.player.alive) return;
 
         if (this.game.getStateName() != "Night"){ 
           this.game.HasDonePolarisedAction = false;
