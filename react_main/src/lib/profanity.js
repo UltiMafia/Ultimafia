@@ -3,7 +3,7 @@ import {
   swears,
   getSwearReplacement,
   theLWord,
-  theLWordFilter
+  theLWordFilter,
 } from "../constants/filteredStrings";
 
 /* --- ROT13 decoding --- */
@@ -156,9 +156,7 @@ function filterLWord(segment) {
       const length = matchedWord.length;
 
       segment =
-        segment.slice(0, index) +
-        replacement +
-        segment.slice(index + length);
+        segment.slice(0, index) + replacement + segment.slice(index + length);
       mappedSegment =
         mappedSegment.slice(0, index) +
         replacement +
