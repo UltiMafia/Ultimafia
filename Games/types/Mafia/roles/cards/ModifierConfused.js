@@ -6,6 +6,13 @@ const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 module.exports = class ModifierConfused extends Card {
   constructor(role) {
     super(role);
+
+    this.hideModifier = {
+      self: true,
+      death: true,
+      condemn: true,
+    };
+
     /*
     this.actions = [
       {
