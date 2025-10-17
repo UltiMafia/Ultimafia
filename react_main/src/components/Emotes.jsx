@@ -6,10 +6,12 @@ export function Emote(props) {
   const emote = Emotes[emoteKey];
 
   return (
-    <img
+    <div
       className="emote"
       title={emote.name}
-      src={require(`images/emotes/${emote.name.toLowerCase()}.${emote.type}`)}
+      style={{
+        backgroundImage: `url('${require(`images/emotes/${emote.name.toLowerCase()}.${emote.type}`)}')`,
+      }}
     />
   );
 }

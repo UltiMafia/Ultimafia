@@ -321,6 +321,11 @@
   opacity: 0.8;
 }
 
+.game .message .content .emote {
+  vertical-align: middle;
+  margin-right: calc(0.5*var(--mui-spacing));
+}
+
 .game .message .content.quote {
   opacity: 0.5;
 }
@@ -972,10 +977,4 @@
   .game .message .sender {
     padding-left: 0px;
   }
-}
-
-.emote-picker-panel {
-  max-width: 250px;
-  max-height: 400px !important;
-  padding: 5px 5px !important;
 }
