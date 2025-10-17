@@ -22,14 +22,9 @@ export default function EmotePicker(props) {
     }
   }
   */
-  
-  const {
-    popoverOpen,
-    popoverClasses,
-    anchorEl,
-    handleClick,
-    closePopover,
-  } = usePopoverOpen();
+
+  const { popoverOpen, popoverClasses, anchorEl, handleClick, closePopover } =
+    usePopoverOpen();
 
   const userCustomEmotes = emotesToUse || {};
   const customEmotes = (
@@ -70,9 +65,13 @@ export default function EmotePicker(props) {
   return (
     <div className={`dropdown ${props.className || ""}`}>
       <Tooltip title="Emotes!" placement="top">
-        <Button className="dropdown-control" onClick={handleClick} sx={{
-          height: "100%",
-        }}>
+        <Button
+          className="dropdown-control"
+          onClick={handleClick}
+          sx={{
+            height: "100%",
+          }}
+        >
           <img src={happy} />
         </Button>
       </Tooltip>

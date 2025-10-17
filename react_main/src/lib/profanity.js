@@ -2,6 +2,8 @@ import {
   slurs,
   swears,
   getSwearReplacement,
+  theLWord,
+  theLWordFilter,
 } from "../constants/filteredStrings";
 
 /* --- ROT13 decoding --- */
@@ -16,6 +18,7 @@ function rot13(str) {
 /* Decode lists before passing into RegExp creation */
 const decodedSlurs = slurs.map(rot13);
 const decodedSwears = swears.map(rot13);
+const decodedLWord = theLWord.map(rot13);
 
 /* Creates an array of profanity RegExps. See https://regex101.com for a detailed breakdown.
  *
@@ -46,6 +49,9 @@ function createProfanityRegexps(words) {
 // Creating profanity RegExps.
 const slurRegexps = createProfanityRegexps(decodedSlurs);
 const swearRegexps = createProfanityRegexps(decodedSwears);
+const lWordRegexps = decodedLWord.map(
+  (word) => new RegExp(`\\b${word}(es|ed|ing|s)?\\b`, "gi")
+);
 
 // Leet speak mappings.
 const leetMappings = {
@@ -76,6 +82,8 @@ function textIncludesSlurs(text) {
 
 // Client-side speech filtering.
 function filterProfanitySegment(profanityType, segment, char, seed = "") {
+  segment = filterLWord(segment);
+
   let profanityRegexps;
   // Getting profanity list.
   switch (profanityType) {
@@ -115,6 +123,44 @@ function filterProfanitySegment(profanityType, segment, char, seed = "") {
         replacement +
         mappedSegment.slice(index + length);
       regexRes = profanityRegex.exec(mappedSegment);
+    }
+  }
+  return segment;
+}
+
+function conjugateCondemn(originalWord) {
+  const lw = originalWord.toLowerCase();
+
+  if (lw.endsWith("ing")) return "condemning";
+  if (lw.endsWith("ed")) return "condemned";
+  if (lw.endsWith("es") || lw.endsWith("s")) return "condemns";
+  return "condemn";
+}
+
+function filterLWord(segment) {
+  let mappedSegment = segment;
+  for (const num in leetMappings)
+    mappedSegment = mappedSegment.replaceAll(num, leetMappings[num]);
+
+  const lWordRegexps = decodedLWord.map(
+    (word) => new RegExp(`\\b(${word})(es|ed|ing|s)?\\b`, "gi")
+  );
+
+  for (const lWordRegex of lWordRegexps) {
+    let regexRes;
+    while ((regexRes = lWordRegex.exec(mappedSegment)) !== null) {
+      const matchedWord = regexRes[0];
+      const replacement = conjugateCondemn(matchedWord);
+
+      const index = regexRes.index;
+      const length = matchedWord.length;
+
+      segment =
+        segment.slice(0, index) + replacement + segment.slice(index + length);
+      mappedSegment =
+        mappedSegment.slice(0, index) +
+        replacement +
+        mappedSegment.slice(index + length);
     }
   }
   return segment;

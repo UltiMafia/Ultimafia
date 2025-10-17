@@ -1,9 +1,9 @@
 // TODO / note: slang containing spaces currently does not work (although this list may contain it)
 
 export const slangList = {
-  kl: {
+  kc: {
     definition:
-      "Kicklim (Kick-condemn). condemning a player which has not voted yet (in order to maintain the game ranked).",
+      "Kick-condemn. condemning a player which has not voted yet (in order to maintain the game ranked).",
     emoji: "🦶",
   },
   afk: {
@@ -22,7 +22,7 @@ export const slangList = {
   },
   blitz: {
     definition:
-      "A Blitz: a rapid vote, usually the hammer, as by the time the blitz is noticed, the mafia has already won or it is too late. It is usually employed by the mafia in MYLO or LYLO situations to quickly condemn someone if an inattentive town has a stray vote, and the mafia has the hammer to themselves.",
+      "A Blitz: a rapid vote, usually the hammer, as by the time the blitz is noticed, the mafia has already won or it is too late. It is usually employed by the mafia in MYLO or CYLO situations to quickly condemn someone if an inattentive town has a stray vote, and the mafia has the hammer to themselves.",
     emoji: "⚡",
   },
   bus: {
@@ -90,7 +90,7 @@ export const slangList = {
       "Leak. When a whispered statement is publicly visible to the town.",
     emoji: "💧",
   },
-  lylo: {
+  cylo: {
     definition:
       "condemn or Lose: a situation where town must condemn correctly in order to avoid losing.",
     emoji: "⚠",
@@ -114,8 +114,8 @@ export const slangList = {
     definition: "No Kill: refers to when the Mafia chooses to kill no one.",
     emoji: "☮️",
   },
-  nl: {
-    definition: "No-lim (No-condemn): literally, condemning nobody.",
+  nc: {
+    definition: "No-condemn: literally, condemning nobody.",
     emoji: "🙅",
   },
   omgus: {
@@ -298,7 +298,7 @@ export const slangList = {
   },
   RC: {
     definition:
-      "Random Condemn. A single vote or the town's collective vote to condemn a player to the guillotine without prior evidence, for the purpose of identifying which players will support or reject the vote. Synonymous with RL.",
+      "Random Condemn. A single vote or the town's collective vote to condemn a player to the guillotine without prior evidence, for the purpose of identifying which players will support or reject the vote.",
   },
   MC: {
     definition:

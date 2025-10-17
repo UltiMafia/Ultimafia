@@ -123,6 +123,9 @@ const fruitsAndVegetables = [
   ":boar:",
 ];
 
+export const theLWord = ["ylapu"];
+export const theLWordFilter = "condemn";
+
 const swearReplacementArr = Array.from(new Set([...fruitsAndVegetables]));
 
 export const getSwearReplacement = (seed) =>
