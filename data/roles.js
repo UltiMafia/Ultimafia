@@ -5840,6 +5840,15 @@ const roleData = {
       nightOrder: [["Evolve Player", PRIORITY_BECOME_DEAD_ROLE]],
       RolesMadeBy: ["All Roles"],
     },
+    Mutation: {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, all players will have a random modifier added to their role.",
+      ],
+      nightOrder: [["Add Modifiers", PRIORITY_CONVERT_DEFAULT + 6]],
+      RolesMadeBy: ["All Roles"],
+    },
     "Time Loop": {
       alignment: "Event",
       tags: ["Event"],
