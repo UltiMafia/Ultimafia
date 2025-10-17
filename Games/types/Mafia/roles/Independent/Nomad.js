@@ -6,6 +6,6 @@ module.exports = class Nomad extends Role {
 
     this.alignment = "Independent";
     this.winCount = "Village";
-    this.cards = ["VillageCore", "RoamingAlignment"];
+    this.cards = ["VillageCore", "RoamingAlignment", "WinWithCurrentAlignment"];
   }
 };
