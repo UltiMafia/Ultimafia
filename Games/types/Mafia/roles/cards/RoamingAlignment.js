@@ -18,13 +18,13 @@ module.exports = class RoamingAlignment extends Card {
           role: this.role,
           run: function () {
             this.actor.role.data.prevTarget = this.target;
-            let alignment = this.target.role.alignment;
+            let alignment = this.target.faction;
             if (alignment == "Independent") {
               alignment = this.target.role.name;
               return;
             }
 
-            this.role.data.alignment = alignment;
+            this.actor.faction = alignment;
             this.actor.queueAlert(
               `You follow ${this.target.name} and will win if they win.`
             );
@@ -32,7 +32,7 @@ module.exports = class RoamingAlignment extends Card {
         },
       },
     };
-
+  /*
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
@@ -58,6 +58,7 @@ module.exports = class RoamingAlignment extends Card {
         }
       },
     };
+    */
   }
 };
 
