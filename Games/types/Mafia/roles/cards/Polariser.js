@@ -45,8 +45,13 @@ module.exports = class Polariser extends Card {
         }
 
         if (!stateInfo.name.match(/Night/)) {
+          this.game.HasDonePolarisedAction = false;
           return;
         }
+        if (this.game.HasDonePolarisedAction == true) {
+          return;
+        }
+        this.game.HasDonePolarisedAction = true;
 
         var action = new Action({
           actor: this.player,

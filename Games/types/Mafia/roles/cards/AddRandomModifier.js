@@ -22,7 +22,7 @@ module.exports = class AddRandomModifier extends Card {
             let modifiersToUse = Object.entries(modifiers.Mafia)
               .filter(
                 (modifierData) =>
-                  (!modifierData[1].tags.includes("Items") ||
+                  (!modifierData[1].tags.includes("Starting Item") ||
                     modifierData[0] == "Apprehensive") &&
                   !modBlacklist.includes(modifierData[0])
               )

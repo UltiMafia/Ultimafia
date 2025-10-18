@@ -24,6 +24,10 @@ module.exports = class Zombification extends Effect {
           return;
         }
 
+        if(!this.target.hasEffect("Zombification")){
+          return;
+        }
+
         if (this.dominates()) {
           this.target.setRole("Zombie");
           /* if (!this.target.alive) {

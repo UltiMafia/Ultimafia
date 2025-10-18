@@ -24,6 +24,9 @@ module.exports = class Bleeding extends Effect {
       delay: 1,
       effect: this,
       run: function () {
+        if(!this.target.hasEffect("Bleeding")){
+          return;
+        }
         if (this.dominates()) {
           this.target.kill("bleed", this.actor);
         }

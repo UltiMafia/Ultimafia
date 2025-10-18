@@ -26,6 +26,9 @@ module.exports = class Poison extends Effect {
       effect: this,
       power: 2,
       run: function () {
+        if(!this.target.hasEffect("Poison")){
+          return;
+        }
         if (this.actor.role.name == "Puca") {
           if (this.dominates()) this.target.kill("basic", this.actor);
         } else {

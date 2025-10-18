@@ -17,11 +17,9 @@ module.exports = class ConquerAlignment extends Card {
           role: this.role,
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
           run: function () {
-            let alignment;
             var princeAlignment = this.target.faction;
             if (princeAlignment == "Independent") {
-              alignment = this.target.role.name;
-              return;
+              princeAlignment = this.target.role.name;
             }
 
             this.actor.faction = princeAlignment;
@@ -31,7 +29,7 @@ module.exports = class ConquerAlignment extends Card {
             this.game.queueAlert(
               `Prince ${this.actor.name} has returned from an adventure overseas to find the town in turmoil. They have joined with you, but if they die then all is lost!`,
               0,
-              this.game.players.filter((p) => p.faction === this.actor.faction)
+              this.game.players.filter((p) => p.faction === this.actor.faction || p.role.name == this.actor.faction)
             );
             this.role.conquered = true;
           },
@@ -55,8 +53,6 @@ module.exports = class ConquerAlignment extends Card {
         if (player !== this.player) {
           return;
         }
-
-        if (this.player.faction == "Independent") return;
 
         if (
           this.player.role.alignment == "Cult" ||
@@ -86,7 +82,7 @@ module.exports = class ConquerAlignment extends Card {
         }
 
         for (let p of this.game.alivePlayers()) {
-          if (p.faction === this.player.faction) {
+          if (p.faction === this.player.faction || p.role.name == this.player.faction) {
             p.kill("basic", this.player, instant);
           }
         }
