@@ -5047,9 +5047,10 @@ const roleData = {
       alignment: "Independent",
       tags: ["Alignments", "Visiting", "Basic"],
       description: [
-        "Each night, must choose to visit one player.",
+        "Each night, must choose to visit one player and become their alignment.",
+        "Does not learn their new alignment.",
         "Cannot choose the same player consecutively.",
-        "Wins if they are alive when the last player they visited wins.",
+        "Wins with their current alignment.",
       ],
       nightOrder: [
         ["Become Alignment", PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT],
@@ -5061,6 +5062,7 @@ const roleData = {
       description: [
         `Each night, makes one player who visits them "Delirious" and becomes their alignment.`,
         deliriumDef,
+        "Hitchhiker will start the game Village-aligned.",
         "Wins with their current alignment.",
       ],
       nightOrder: [
