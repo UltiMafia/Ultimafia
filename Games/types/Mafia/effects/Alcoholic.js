@@ -24,7 +24,7 @@ module.exports = class Alcoholic extends Effect {
           game: this.player.game,
           priority: PRIORITY_NIGHT_ROLE_BLOCKER,
           run: function () {
-            if(!this.actor.hasEffect("Alcoholic")){
+            if (!this.actor.hasEffect("Alcoholic")) {
               return;
             }
             this.blockActions();

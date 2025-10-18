@@ -5144,6 +5144,17 @@ const roleData = {
       tags: ["Mafia", "Cult", "Survivor", "Vanilla", "Basic"],
       description: ["Wins if alive when Village loses."],
     },
+    Shinigami: {
+      alignment: "Independent",
+      tags: ["Killing", "Items", "Visiting", "Advanced"],
+      description: [
+        "At the beginning of the game, one player randomly receives a Notebook.",
+        "A player holding a Notebook can kill a selected player during the night.",
+        "A player holding a Notebook must pass it to another player each day.",
+        "Each night, can choose to visit one player and win if they are holding a Notebook.",
+      ],
+      nightOrder: [["Guess Book Holder", PRIORITY_ITEM_TAKER_DEFAULT]],
+    },
     Sidekick: {
       alignment: "Independent",
       tags: ["Linked", "Independent", "Basic"],
@@ -5420,17 +5431,6 @@ const roleData = {
           value: "old",
         },
       ],
-    },
-    Shinigami: {
-      alignment: "Independent",
-      tags: ["Killing", "Items", "Visiting", "Hostile", "Advanced"],
-      description: [
-        "At the beginning of the game, one player randomly receives a Notebook.",
-        "A player holding a Notebook can kill a selected player during the night.",
-        "A player holding a Notebook must pass it to another player each day.",
-        "Each night, can choose to visit one player and win if they are holding a Notebook.",
-      ],
-      nightOrder: [["Guess Book Holder", PRIORITY_ITEM_TAKER_DEFAULT]],
     },
     Ripper: {
       alignment: "Independent",

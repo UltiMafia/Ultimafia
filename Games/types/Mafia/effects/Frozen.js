@@ -1,6 +1,9 @@
 const Effect = require("../Effect");
 const Action = require("../Action");
-const { PRIORITY_FULL_DISABLE, PRIORITY_EFFECT_REMOVER_DEFAULT } = require("../const/Priority");
+const {
+  PRIORITY_FULL_DISABLE,
+  PRIORITY_EFFECT_REMOVER_DEFAULT,
+} = require("../const/Priority");
 
 module.exports = class Frozen extends Effect {
   constructor(power, lifespan) {
@@ -8,9 +11,8 @@ module.exports = class Frozen extends Effect {
     this.lifespan = lifespan ?? Infinity;
     this.isMalicious = true;
 
-      this.listeners = {
+    this.listeners = {
       state: function (stateInfo) {
-
         if (stateInfo.name.match(/Night/)) {
           this.game.queueAction(
             new Action({
@@ -20,7 +22,7 @@ module.exports = class Frozen extends Effect {
               labels: ["block", "hidden", "absolute"],
               priority: PRIORITY_FULL_DISABLE,
               run: function () {
-                if (this.dominates()){ 
+                if (this.dominates()) {
                   this.blockActions(this.actor);
                 }
               },
@@ -35,11 +37,13 @@ module.exports = class Frozen extends Effect {
               labels: ["block", "hidden", "absolute"],
               priority: PRIORITY_EFFECT_REMOVER_DEFAULT,
               run: function () {
-                if (this.hasVisitors(this.target)){ 
+                if (this.hasVisitors(this.target)) {
                   this.effect.remove();
-                }
-                else if(this.actor.hasEffect("Frozen")){
-                this.effect.cannotVoteEffect = this.actor.giveEffect("CannotVote", 1);
+                } else if (this.actor.hasEffect("Frozen")) {
+                  this.effect.cannotVoteEffect = this.actor.giveEffect(
+                    "CannotVote",
+                    1
+                  );
                 }
               },
             })
@@ -47,15 +51,12 @@ module.exports = class Frozen extends Effect {
         }
       },
     };
-    
-
-    
   }
   apply(player) {
     super.apply(player);
     this.cannotVoteEffect = player.giveEffect("CannotVote", 1);
   }
-  remove(){
+  remove() {
     this.cannotVoteEffect.remove();
     super.remove();
   }

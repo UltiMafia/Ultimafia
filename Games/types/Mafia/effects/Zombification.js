@@ -24,7 +24,7 @@ module.exports = class Zombification extends Effect {
           return;
         }
 
-        if(!this.target.hasEffect("Zombification")){
+        if (!this.target.hasEffect("Zombification")) {
           return;
         }
 

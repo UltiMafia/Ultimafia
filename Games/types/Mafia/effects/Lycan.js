@@ -28,7 +28,7 @@ module.exports = class Lycan extends Effect {
               labels: ["kill", "lycan"],
               priority: PRIORITY_KILL_DEFAULT,
               run: function () {
-                if(!this.actor.hasEffect("Lycan")){
+                if (!this.actor.hasEffect("Lycan")) {
                   return;
                 }
                 if (this.dominates()) this.target.kill("basic", this.actor);

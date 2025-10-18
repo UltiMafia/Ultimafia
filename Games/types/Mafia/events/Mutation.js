@@ -2,9 +2,7 @@ const Event = require("../Event");
 const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 const modifiers = require("../../../../data/modifiers");
-const {
-  PRIORITY_CONVERT_DEFAULT,
-} = require("../const/Priority");
+const { PRIORITY_CONVERT_DEFAULT } = require("../const/Priority");
 const modBlacklist = ["Clannish", "Exclusive", "Inclusive"];
 
 module.exports = class Mutation extends Event {
@@ -31,11 +29,11 @@ module.exports = class Mutation extends Event {
           this.game.queueAlert(`Event: Mutation, All players gain a modifier!`);
         }
         for (const player of this.event.generatePossibleVictims()) {
-          if(this.dominates(player)){
+          if (this.dominates(player)) {
             let modifiersToUse = Object.entries(modifiers.Mafia)
               .filter(
                 (modifierData) =>
-                  (!modifierData[1].tags.includes("Starting Item")) &&
+                  !modifierData[1].tags.includes("Starting Item") &&
                   !modBlacklist.includes(modifierData[0])
               )
               .map((modifierData) => modifierData[0]);
@@ -71,8 +69,6 @@ module.exports = class Mutation extends Event {
                 "NoStartingItems"
               );
             }
-
-            
           }
         }
       },
