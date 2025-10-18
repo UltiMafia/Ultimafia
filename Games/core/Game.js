@@ -2954,6 +2954,11 @@ module.exports = class Game {
       }
 
       for (let playerId of this.winners.getPlayers()) {
+        // Skip players who don't have an original role
+        if (!this.originalRoles[playerId]) {
+          continue;
+        }
+        
         let roleName = this.originalRoles[playerId].split(":")[0];
         let alignment = this.getRoleAlignment(roleName);
 
@@ -3032,7 +3037,10 @@ module.exports = class Game {
       var history = this.history.getHistoryInfo(null, true);
       var users = [];
       var playersGone = Object.values(this.playersGone);
-      var players = this.players.concat(playersGone);
+      var allPlayers = this.players.concat(playersGone);
+      
+      // Filter to only include players who were assigned roles (i.e., were in the game when it started)
+      var players = allPlayers.filter(p => this.originalRoles[p.id]);
 
       let playerIdMap = {};
       let playerAlignmentMap = {};
@@ -3050,6 +3058,9 @@ module.exports = class Game {
 
       var playerNames = players.map((p) => p.name);
       var playerIds = players.map((p) => p.id);
+      
+      // Only include players who left and had roles assigned
+      var playersLeft = playersGone.filter(p => this.originalRoles[p.id]);
 
       var game = new models.Game({
         id: this.id,
@@ -3059,7 +3070,7 @@ module.exports = class Game {
         setup: setup._id,
         users: users,
         players: playerIds,
-        left: playersGone.map((p) => p.id),
+        left: playersLeft.map((p) => p.id),
         names: playerNames,
         winners: this.winners.players.map((p) => p.id),
         winnersInfo: this.winners.getWinnersInfo(),
