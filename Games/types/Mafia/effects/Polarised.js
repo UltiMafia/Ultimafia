@@ -7,10 +7,9 @@ module.exports = class Polarised extends Effect {
     super("Polarised");
     this.isMalicious = true;
     
-    //this.bear = bear;
+    this.bear = bear;
     this.listeners = {
-      actionsNext: function () {
-
+      state: function (stateInfo) {
         if (this.game.getStateName() != "Night"){ 
           this.game.HasDonePolarisedAction = false;
           return;
@@ -21,7 +20,7 @@ module.exports = class Polarised extends Effect {
         this.game.HasDonePolarisedAction = true;
         
         var action = new Action({
-          actor: this.player,
+          actor: this.bear,
           game: this.player.game,
           priority: PRIORITY_KILL_DEFAULT,
           labels: ["kill", "hidden", "absolute"],

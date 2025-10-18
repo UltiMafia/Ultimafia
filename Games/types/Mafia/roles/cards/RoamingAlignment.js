@@ -21,7 +21,6 @@ module.exports = class RoamingAlignment extends Card {
             let alignment = this.target.faction;
             if (alignment == "Independent") {
               alignment = this.target.role.name;
-              return;
             }
 
             this.actor.faction = alignment;

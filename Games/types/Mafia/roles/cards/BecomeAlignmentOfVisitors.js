@@ -28,6 +28,7 @@ module.exports = class BecomeAlignmentOfVisitors extends Card {
           game: this.player.game,
           priority: PRIORITY_BLOCK_VISITORS - 1,
           labels: ["block", "hidden"],
+          role: this,
           run: function () {
             for (let visit of this.getVisitors(this.actor)) {
               if (this.dominates(visit)) {

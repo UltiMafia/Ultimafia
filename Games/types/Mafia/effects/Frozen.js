@@ -10,7 +10,6 @@ module.exports = class Frozen extends Effect {
 
       this.listeners = {
       state: function (stateInfo) {
-        if (!this.player.alive) return;
 
         if (stateInfo.name.match(/Night/)) {
           this.game.queueAction(
@@ -36,7 +35,7 @@ module.exports = class Frozen extends Effect {
               labels: ["block", "hidden", "absolute"],
               priority: PRIORITY_EFFECT_REMOVER_DEFAULT,
               run: function () {
-                if (this.hasVisitors() === true){ 
+                if (this.hasVisitors(this.target)){ 
                   this.effect.remove();
                 }
                 else if(this.actor.hasEffect("Frozen")){
@@ -58,5 +57,6 @@ module.exports = class Frozen extends Effect {
   }
   remove(){
     this.cannotVoteEffect.remove();
+    super.remove();
   }
 };
