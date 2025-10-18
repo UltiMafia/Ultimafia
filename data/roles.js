@@ -3963,7 +3963,7 @@ const roleData = {
       ],
       description: [
         "In closed setups, replaces 1 non-Banished Village role with a Banished role or replaces 1 Banished Role with a non-Banished Village role.",
-        "If that player is condemned the following day, then at night the Bookie will be able to choose to vist one player and kill them.",
+        "If that player is condemned the following day, then at night the Tormentor will be able to choose to vist one player and kill them.",
         "If a player with a Banished Role dies during the Day, then at night the Tormentor will be able to choose to vist one player and kill them..",
         "Knows which Banished Roles are in the Current Game.",
       ],
@@ -4049,7 +4049,7 @@ const roleData = {
       ],
       description: [
         `Each night, each player who visits Cthulhu will become "Insane".`,
-        `Players who Role Share with the Doomsayer will become "Insane".`,
+        `Players who Role Share with the Cthulhu will become "Insane".`,
         insaneDef,
       ],
       nightOrder: [["Make Visitors Insane", PRIORITY_EFFECT_GIVER_DEFAULT]],
