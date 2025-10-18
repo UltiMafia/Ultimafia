@@ -5423,7 +5423,7 @@ const roleData = {
     },
     Shinigami: {
       alignment: "Independent",
-      tags: ["Killing", "Items", "Visiting", "Hostile", "Advanced"],
+      tags: ["Killing", "Items", "Visiting", "Advanced"],
       description: [
         "At the beginning of the game, one player randomly receives a Notebook.",
         "A player holding a Notebook can kill a selected player during the night.",
