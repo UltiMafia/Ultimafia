@@ -30,7 +30,7 @@ const protips = {
   ],
   Resistance: [],
   Jotto: [],
-  Battlesnakes: ["Sometimes, size does matter.",],
+  Battlesnakes: ["Sometimes, size does matter."],
   Acrotopia: [],
   "Secret Dictator": ["Count the cards!"],
   "Wacky Words": ["Be wacky.", "Be bold.", "Be brave.", "Be funny."],

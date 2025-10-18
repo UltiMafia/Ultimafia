@@ -24,7 +24,7 @@ module.exports = class BleedingCult extends Effect {
       delay: 1,
       effect: this,
       run: function () {
-        if(!this.actor.hasEffect("BleedingCult")){
+        if (!this.actor.hasEffect("BleedingCult")) {
           return;
         }
         if (this.dominates()) {

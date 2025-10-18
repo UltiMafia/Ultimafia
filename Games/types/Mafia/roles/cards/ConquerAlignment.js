@@ -29,7 +29,11 @@ module.exports = class ConquerAlignment extends Card {
             this.game.queueAlert(
               `Prince ${this.actor.name} has returned from an adventure overseas to find the town in turmoil. They have joined with you, but if they die then all is lost!`,
               0,
-              this.game.players.filter((p) => p.faction === this.actor.faction || p.role.name == this.actor.faction)
+              this.game.players.filter(
+                (p) =>
+                  p.faction === this.actor.faction ||
+                  p.role.name == this.actor.faction
+              )
             );
             this.role.conquered = true;
           },
@@ -82,7 +86,10 @@ module.exports = class ConquerAlignment extends Card {
         }
 
         for (let p of this.game.alivePlayers()) {
-          if (p.faction === this.player.faction || p.role.name == this.player.faction) {
+          if (
+            p.faction === this.player.faction ||
+            p.role.name == this.player.faction
+          ) {
             p.kill("basic", this.player, instant);
           }
         }

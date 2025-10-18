@@ -2958,7 +2958,7 @@ module.exports = class Game {
         if (!this.originalRoles[playerId]) {
           continue;
         }
-        
+
         let roleName = this.originalRoles[playerId].split(":")[0];
         let alignment = this.getRoleAlignment(roleName);
 
@@ -3038,9 +3038,9 @@ module.exports = class Game {
       var users = [];
       var playersGone = Object.values(this.playersGone);
       var allPlayers = this.players.concat(playersGone);
-      
+
       // Filter to only include players who were assigned roles (i.e., were in the game when it started)
-      var players = allPlayers.filter(p => this.originalRoles[p.id]);
+      var players = allPlayers.filter((p) => this.originalRoles[p.id]);
 
       let playerIdMap = {};
       let playerAlignmentMap = {};
@@ -3058,9 +3058,9 @@ module.exports = class Game {
 
       var playerNames = players.map((p) => p.name);
       var playerIds = players.map((p) => p.id);
-      
+
       // Only include players who left and had roles assigned
-      var playersLeft = playersGone.filter(p => this.originalRoles[p.id]);
+      var playersLeft = playersGone.filter((p) => this.originalRoles[p.id]);
 
       var game = new models.Game({
         id: this.id,

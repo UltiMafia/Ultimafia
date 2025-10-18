@@ -6,11 +6,11 @@ module.exports = class Polarised extends Effect {
   constructor(bear) {
     super("Polarised");
     this.isMalicious = true;
-    
+
     this.bear = bear;
     this.listeners = {
       state: function (stateInfo) {
-        if (this.game.getStateName() != "Night"){ 
+        if (this.game.getStateName() != "Night") {
           this.game.HasDonePolarisedAction = false;
           return;
         }
@@ -18,7 +18,7 @@ module.exports = class Polarised extends Effect {
           return;
         }
         this.game.HasDonePolarisedAction = true;
-        
+
         var action = new Action({
           actor: this.bear,
           game: this.player.game,
@@ -49,6 +49,5 @@ module.exports = class Polarised extends Effect {
         this.game.queueAction(action);
       },
     };
-    
   }
 };

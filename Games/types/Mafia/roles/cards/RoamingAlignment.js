@@ -31,7 +31,7 @@ module.exports = class RoamingAlignment extends Card {
         },
       },
     };
-  /*
+    /*
     this.winCheck = {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
