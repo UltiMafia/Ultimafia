@@ -373,7 +373,14 @@ module.exports = class Role {
       });
     }
 
-    if (!noAlert) return;
+    if (!noAlert)
+      this.player.queueAlert(
+        `:system: Your role is ${this.getRevealText(
+          roleName,
+          modifiers,
+          "self"
+        )}.`
+      );
   }
 
   revealToPlayer(player, noAlert, revealType) {
