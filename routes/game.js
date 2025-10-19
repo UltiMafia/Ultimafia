@@ -302,7 +302,7 @@ router.get("/:id/connect", async function (req, res) {
     var port = game.port;
     var token = userId && (await redis.createAuthToken(userId));
 
-    if (type && !isNaN(port)) res.send({ port, type, token });
+    if (type && !isNaN(port)) res.send({ port, type, token, hostId: game.hostId });
     else {
       res.status(500);
       res.send("Error loading game.");
