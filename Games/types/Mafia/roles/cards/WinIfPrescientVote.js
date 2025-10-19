@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 
 module.exports = class WinIfPrescientVote extends Card {
@@ -22,7 +23,42 @@ module.exports = class WinIfPrescientVote extends Card {
     };
 
     this.listeners = {
+      state: function (stateInfo) {
+        if (!stateInfo.name.match(/Day/)) {
+          return;
+        }
+        if(this.predictedVote == "*"){
+          return;
+        }
+        var action = new Action({
+          role: this,
+          actor: this.player,
+          game: this.player.game,
+          priority: PRIORITY_DAY_EFFECT_DEFAULT + 1,
+          labels: ["hidden", "absolute"],
+          role: role,
+          run: function () {
+            let alivePlayers = this.game.players.filter((p) => p.role);
+            for (let x = 0; x < alivePlayers.length; x++) {
+              for (let action of this.game.actions[0]) {
+                if (
+                  action.target == alivePlayers[x] &&
+                  action.hasLabel("condemn") && 
+                ) {
+                  return;
+                }
+              }
+            }
+            this.predictedCorrect += 1;
+          },
+          });
+
+        this.game.queueAction(action);
+      },
       death: function (player, killer, deathType) {
+        if(this.predictedVote == "*"){
+          return;
+        }
         if (
           player === this.predictedVote &&
           deathType === "condemn" &&
