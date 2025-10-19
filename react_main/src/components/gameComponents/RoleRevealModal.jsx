@@ -1,11 +1,24 @@
 import React from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Box,
+} from "@mui/material";
 import { hyphenDelimit } from "../../utils";
 import { RoleDetails } from "../Roles";
 
 // no-op
 
-const RoleRevealModal = ({ open, onClose, roleData, gameType = "Mafia", otherRoles = null }) => {
+const RoleRevealModal = ({
+  open,
+  onClose,
+  roleData,
+  gameType = "Mafia",
+  otherRoles = null,
+}) => {
   if (!roleData) return null;
 
   const { roleName, modifiers } = roleData;
