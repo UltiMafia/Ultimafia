@@ -10,16 +10,16 @@ router.post("/create", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var lobby = String(req.body.lobby);
-    var title = String(req.body.title);
     var question = String(req.body.question);
     var options = req.body.options || [];
 
-    if (!(await routeUtils.verifyPermission(res, userId, "createPoll"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "createPoll")))
+      return;
 
     // Validate inputs
-    if (!lobby || !title || !question || !options.length) {
+    if (!lobby || !question || !options.length) {
       res.status(400);
-      res.send("Missing required fields: lobby, title, question, and options.");
+      res.send("Missing required fields: lobby, question, and options.");
       return;
     }
 
@@ -33,7 +33,7 @@ router.post("/create", async function (req, res) {
     var poll = new models.Poll({
       id: shortid.generate(),
       lobby,
-      title,
+      title: question, // Use question as title
       question,
       options,
       creator: userId,
@@ -45,7 +45,7 @@ router.post("/create", async function (req, res) {
     // Create mod action
     routeUtils.createModAction(userId, "Create Poll", [
       lobby,
-      title,
+      question,
       options.join(","),
     ]);
 
@@ -84,7 +84,7 @@ router.get("/list/:lobby", async function (req, res) {
     if (currentPoll) {
       var votes = await models.PollVote.find({ pollId: currentPoll.id }).lean();
       var userVote = votes.find((vote) => vote.userId === userId);
-
+      
       // Count votes per option
       var voteCounts = currentPoll.options.map((_, index) => {
         return votes.filter((vote) => vote.optionIndex === index).length;
@@ -172,7 +172,8 @@ router.post("/complete", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var pollId = String(req.body.pollId);
 
-    if (!(await routeUtils.verifyPermission(res, userId, "createPoll"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "createPoll")))
+      return;
 
     var poll = await models.Poll.findOne({ id: pollId, completed: false });
     if (!poll) {

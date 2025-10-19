@@ -584,7 +584,9 @@ export default function Settings() {
 
         deps.user.set(
           update(deps.user, {
-            vanityUrl: { $set: vanityUrl },
+            settings: {
+              vanityUrl: { $set: vanityUrl },
+            },
           })
         );
       })

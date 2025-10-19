@@ -136,9 +136,6 @@ export function Poll({ lobby }) {
     return (
       <Stack spacing={2}>
         <Box>
-          <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
-            {currentPoll.title}
-          </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             {currentPoll.question}
           </Typography>

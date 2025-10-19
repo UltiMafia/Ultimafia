@@ -10,6 +10,10 @@ import {
   TextField,
   Box,
   Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
@@ -31,6 +35,7 @@ import { NewLoading } from "pages/Welcome/NewLoading";
 import "css/main.css";
 import "css/moderation.css";
 import { useParams } from "react-router-dom";
+import { lobbies } from "../../constants/lobbies";
 
 const COMMAND_GROUP_ORDER = {
   "User Management": 1, // the lower the number, the higher it appears
@@ -321,6 +326,26 @@ export function ModCommands(props) {
             />
           );
         }
+      }
+
+      if (arg.type === "select") {
+        return (
+          <FormControl key={arg.name} sx={{ width: "100%" }}>
+            <InputLabel>{arg.label}</InputLabel>
+            <Select
+              value={argValue || ""}
+              label={arg.label}
+              onChange={(e) => updateArgValue(arg.name, e.target.value, arg.isArray)}
+              disabled={isPrefilled}
+            >
+              {arg.options.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        );
       }
 
       return (
@@ -1864,42 +1889,41 @@ export function useModCommands(argValues, commandRan, setResults) {
         },
       ],
     },
-    "Create Poll": {
-      perm: "createPoll",
-      category: "Poll Management",
-      args: [
-        {
-          label: "Lobby",
-          name: "lobby",
-          type: "text",
-        },
-        {
-          label: "Title",
-          name: "title",
-          type: "text",
-        },
-        {
-          label: "Question",
-          name: "question",
-          type: "text",
-        },
-        {
-          label: "Options (comma-separated)",
-          name: "options",
-          type: "text",
-          isArray: true,
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/poll/create", argValues)
-          .then(() => {
-            siteInfo.showAlert("Poll created.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
+    // "Create Poll": {
+    //   perm: "createPoll",
+    //   category: "Poll Management",
+    //   args: [
+    //     {
+    //       label: "Lobby",
+    //       name: "lobby",
+    //       type: "select",
+    //       options: lobbies.filter(lobby => !lobby.disabled).map(lobby => ({
+    //         value: lobby.name,
+    //         label: lobby.displayName
+    //       })),
+    //     },
+    //     {
+    //       label: "Question",
+    //       name: "question",
+    //       type: "text",
+    //     },
+    //     {
+    //       label: "Options (comma-separated)",
+    //       name: "options",
+    //       type: "text",
+    //       isArray: true,
+    //     },
+    //   ],
+    //   run: function () {
+    //     axios
+    //       .post("/api/poll/create", argValues)
+    //       .then(() => {
+    //         siteInfo.showAlert("Poll created.", "success");
+    //         commandRan();
+    //       })
+    //       .catch(errorAlert);
+    //   },
+    // },
   };
 }
 
