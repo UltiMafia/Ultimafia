@@ -10,8 +10,6 @@ import {
 import { hyphenDelimit } from "../../utils";
 import { RoleDetails } from "../Roles";
 
-// no-op
-
 const RoleRevealModal = ({
   open,
   onClose,
