@@ -1299,6 +1299,26 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Clear Vanity URL": {
+      perm: "clearVanityUrl",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/clearVanityUrl", argValues)
+          .then(() => {
+            siteInfo.showAlert("Vanity URL cleared.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Clear Birthday": {
       perm: "clearBirthday",
       category: "User Management",

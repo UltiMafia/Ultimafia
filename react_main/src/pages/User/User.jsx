@@ -140,7 +140,7 @@ export default function User(props) {
   const links = [
     {
       text: "Profile",
-      path: user.id ? `/user/${user.id}` : "/user",
+      path: user.id ? (user.settings?.vanityUrl ? `/user/${user.settings.vanityUrl}` : `/user/${user.id}`) : "/user",
       exact: true,
       hide: !user.loggedIn,
     },
