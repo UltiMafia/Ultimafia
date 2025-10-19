@@ -151,7 +151,12 @@ function roleifySegments(text, siteInfo) {
       if (before) parts.push(before);
       const matched = match[0];
       const canonical = nameMap.get(matched.toLowerCase()) || matched;
-      parts.push(<InlineRoleMention roleName={canonical} key={`${match.index}-${canonical}`} />);
+      parts.push(
+        <InlineRoleMention
+          roleName={canonical}
+          key={`${match.index}-${canonical}`}
+        />
+      );
       lastIndex = regex.lastIndex;
       match = regex.exec(segment);
     }
