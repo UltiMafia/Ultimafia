@@ -25,7 +25,13 @@ import Setup from "../Setup";
 import { getSetupBackgroundColor } from "../../pages/Play/LobbyBrowser/gameRowColors.js";
 import changeling from "images/roles/cult/changeling-vivid.png";
 
-export default function ChangeSetupDialog({ open, onClose, gameType, currentSetup, onSetupChange }) {
+export default function ChangeSetupDialog({
+  open,
+  onClose,
+  gameType,
+  currentSetup,
+  onSetupChange,
+}) {
   const user = useContext(UserContext);
   const [setups, setSetups] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -53,7 +59,7 @@ export default function ChangeSetupDialog({ open, onClose, gameType, currentSetu
   const loadSetups = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const params = new URLSearchParams({
         gameType: gameType,
@@ -64,7 +70,9 @@ export default function ChangeSetupDialog({ open, onClose, gameType, currentSetu
         maxSlots: currentSetup?.total || 50,
       });
 
-      const response = await axios.get(`/api/setup/search?${params.toString()}`);
+      const response = await axios.get(
+        `/api/setup/search?${params.toString()}`
+      );
       setSetups(response.data.setups || []);
       setTotalPages(response.data.pages || 1);
     } catch (err) {
@@ -114,37 +122,37 @@ export default function ChangeSetupDialog({ open, onClose, gameType, currentSetu
         },
       }}
     >
-        <Box
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1.5,
+          p: 2,
+          flexWrap: "wrap",
+        }}
+      >
+        <img
+          src={changeling}
+          alt="changeling"
+          width="60"
+          height="60"
+          style={{ flexShrink: 0 }}
+        />
+        <DialogTitle
           sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1.5,
-            p: 2,
-            flexWrap: "wrap",
+            p: 0,
+            flex: 1,
+            fontSize: "1.25rem",
+            lineHeight: 1.3,
+            fontWeight: 600,
+            whiteSpace: "normal",
+            wordBreak: "break-word",
           }}
         >
-          <img
-            src={changeling}
-            alt="changeling"
-            width="60"
-            height="60"
-            style={{ flexShrink: 0 }}
-          />
-          <DialogTitle
-            sx={{
-              p: 0,
-              flex: 1,
-              fontSize: "1.25rem",
-              lineHeight: 1.3,
-              fontWeight: 600,
-              whiteSpace: "normal",
-              wordBreak: "break-word",
-            }}
-          >
-            Change Setup
-          </DialogTitle>
-        </Box>
-      
+          Change Setup
+        </DialogTitle>
+      </Box>
+
       <DialogContent>
         <Stack spacing={2}>
           <Box>
@@ -152,7 +160,12 @@ export default function ChangeSetupDialog({ open, onClose, gameType, currentSetu
               Current Setup
             </Typography>
             {currentSetup && (
-              <Paper sx={{ p: 1, backgroundColor: getSetupBackgroundColor({}, false) }}>
+              <Paper
+                sx={{
+                  p: 1,
+                  backgroundColor: getSetupBackgroundColor({}, false),
+                }}
+              >
                 <Setup setup={currentSetup} />
               </Paper>
             )}
@@ -164,14 +177,13 @@ export default function ChangeSetupDialog({ open, onClose, gameType, currentSetu
             <Typography variant="subtitle2" gutterBottom>
               Select New Setup ({gameType})
             </Typography>
-            
+
             <TextField
               fullWidth
               placeholder="🔎 Setup Name"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              InputProps={{
-              }}
+              InputProps={{}}
               sx={{ mb: 2 }}
             />
 
@@ -224,11 +236,18 @@ export default function ChangeSetupDialog({ open, onClose, gameType, currentSetu
                       >
                         <ListItemText
                           primary={
-                            <Stack direction="row" spacing={1} alignItems="center">
+                            <Stack
+                              direction="row"
+                              spacing={1}
+                              alignItems="center"
+                            >
                               <Typography variant="body1" fontWeight="medium">
                                 {setup.name}
                               </Typography>
-                              <Typography variant="caption" color="text.secondary">
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
                                 ({setup.total} players)
                               </Typography>
                             </Stack>
@@ -247,7 +266,12 @@ export default function ChangeSetupDialog({ open, onClose, gameType, currentSetu
             </Paper>
 
             {totalPages > 1 && (
-              <Stack direction="row" justifyContent="center" spacing={1} sx={{ mt: 2 }}>
+              <Stack
+                direction="row"
+                justifyContent="center"
+                spacing={1}
+                sx={{ mt: 2 }}
+              >
                 <Button
                   disabled={page === 1}
                   onClick={() => setPage(page - 1)}

@@ -586,8 +586,12 @@ function GameWrapper(props) {
 
     socket.on("roleReveal", (info) => {
       // Only show modal if this is for the current player and game type supports it
-      if (info.playerId === selfRef.current && 
-          (gameType === "Mafia" || gameType === "Resistance" || gameType === "Secret Dictator")) {
+      if (
+        info.playerId === selfRef.current &&
+        (gameType === "Mafia" ||
+          gameType === "Resistance" ||
+          gameType === "Secret Dictator")
+      ) {
         setRoleRevealData(info.roleData);
         setRoleRevealModalOpen(true);
       }
@@ -873,7 +877,9 @@ function GameWrapper(props) {
           onClose={() => setLeaveDialogOpen(false)}
           onConfirm={leaveGame}
         />
-        {(gameType === "Mafia" || gameType === "Resistance" || gameType === "Secret Dictator") && (
+        {(gameType === "Mafia" ||
+          gameType === "Resistance" ||
+          gameType === "Secret Dictator") && (
           <RoleRevealModal
             open={roleRevealModalOpen}
             onClose={() => setRoleRevealModalOpen(false)}
@@ -1041,13 +1047,20 @@ export function TopBar({ hideStateSwitcher = false }) {
         </Tooltip>
       )}
 
-      {!game.review && game.history.currentState === -1 && game.self && game.players[game.self] && game.players[game.self].userId === game.hostId && (
-        <Tooltip title="Change Setup">
-          <IconButton size="large" onClick={() => game.setChangeSetupDialogOpen(true)}>
-            <img src={unicorn} alt="Change Setup" />
-          </IconButton>
-        </Tooltip>
-      )}
+      {!game.review &&
+        game.history.currentState === -1 &&
+        game.self &&
+        game.players[game.self] &&
+        game.players[game.self].userId === game.hostId && (
+          <Tooltip title="Change Setup">
+            <IconButton
+              size="large"
+              onClick={() => game.setChangeSetupDialogOpen(true)}
+            >
+              <img src={unicorn} alt="Change Setup" />
+            </IconButton>
+          </Tooltip>
+        )}
 
       {!game.review && game.history.currentState === -2 && (
         <Tooltip title="Rehost">
