@@ -38,6 +38,7 @@ const COMMAND_GROUP_ORDER = {
   "Game Management": 3,
   "Site Management": 4,
   "Group Management": 5,
+  "Poll Management": 6,
   "Deck Management": 9,
   "Forum Management": 99,
   "Chat Window Management": 999,
@@ -1862,6 +1863,42 @@ export function useModCommands(argValues, commandRan, setResults) {
           label: "Comment ID",
         },
       ],
+    },
+    "Create Poll": {
+      perm: "createPoll",
+      category: "Poll Management",
+      args: [
+        {
+          label: "Lobby",
+          name: "lobby",
+          type: "text",
+        },
+        {
+          label: "Title",
+          name: "title",
+          type: "text",
+        },
+        {
+          label: "Question",
+          name: "question",
+          type: "text",
+        },
+        {
+          label: "Options (comma-separated)",
+          name: "options",
+          type: "text",
+          isArray: true,
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/poll/create", argValues)
+          .then(() => {
+            siteInfo.showAlert("Poll created.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
     },
   };
 }

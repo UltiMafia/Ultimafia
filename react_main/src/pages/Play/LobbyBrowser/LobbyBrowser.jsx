@@ -29,6 +29,7 @@ import { GameRow } from "./GameRow";
 import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
 import { RecentlyPlayedSetups } from "./RecentlyPlayedSetups";
 import { RecentForumReplies } from "components/RecentForumReplies";
+import { Poll } from "components/Poll";
 import { FeaturedSetup } from "./FeaturedSetup";
 import { DailyChallenges } from "./DailyChallengeDisplay";
 import { getRowStubColor } from "./gameRowColors.js";
@@ -283,6 +284,7 @@ export default function LobbyBrowser() {
             <DailyChallenges />
             <RecentlyPlayedSetups lobby={lobbyName} />
             <RecentForumReplies />
+            <Poll lobby={lobbyName} />
           </Stack>
         </Grid>
         <Grid item xs={12} md={8}>
