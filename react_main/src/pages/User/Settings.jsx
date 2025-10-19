@@ -205,6 +205,17 @@ export default function Settings() {
         ref: "hidePointsNegative",
         type: "boolean",
       },
+      {
+        label: "Vanity URL",
+        ref: "vanityUrl",
+        type: "text",
+        saveBtn: "Change",
+        saveBtnDiffer: "vanityUrl",
+        saveBtnOnClick: onVanityUrlSave,
+        disabled: (deps) => !deps.user.itemsOwned.vanityUrl,
+        extraInfo:
+          "Set a custom URL for your profile (1-20 characters, letters, numbers, and hyphens only)",
+      },
     ],
     [accounts]
   );
@@ -559,6 +570,21 @@ export default function Settings() {
         deps.user.set(
           update(deps.user, {
             deathMessage: { $set: deathMessage },
+          })
+        );
+      })
+      .catch(deps.errorAlert);
+  }
+
+  function onVanityUrlSave(vanityUrl, deps) {
+    axios
+      .post("/api/user/vanityUrl", { vanityUrl })
+      .then((res) => {
+        deps.siteInfo.showAlert("Vanity URL changed", "success");
+
+        deps.user.set(
+          update(deps.user, {
+            vanityUrl: { $set: vanityUrl },
           })
         );
       })

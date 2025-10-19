@@ -73,6 +73,7 @@ var schemas = {
       hideKarma: { type: Boolean, default: false },
       hidePointsNegative: { type: Boolean, default: true },
       deathMessage: String,
+      vanityUrl: { type: String, default: "" },
     },
     accounts: {
       discord: String,
@@ -116,6 +117,7 @@ var schemas = {
       archivedGames: { type: Number, default: 0 },
       archivedGamesMax: { type: Number, default: 0 },
       bonusRedHearts: { type: Number, default: 0 },
+      vanityUrl: { type: Number, default: 0 },
     },
     stats: {},
     winRate: { type: Number, default: 0 },
