@@ -446,6 +446,7 @@ module.exports = {
     playCompetitive: true,
     viewVotes: true,
     editAnySetup: true,
+    createPoll: true,
   },
   defaultGroups: {
     Owner: {
@@ -522,6 +523,7 @@ module.exports = {
         "playRanked",
         "playCompetitive",
         "editAnySetup",
+        "createPoll",
       ],
     },
     Liaison: {
@@ -539,6 +541,7 @@ module.exports = {
         "competitiveBan",
         "competitiveUnban",
         "editAnySetup",
+        "createPoll",
       ],
     },
     Mod: {

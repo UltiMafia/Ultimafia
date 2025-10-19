@@ -6,6 +6,7 @@ import {
   DialogActions,
   Button,
   Box,
+  Typography,
 } from "@mui/material";
 import { hyphenDelimit } from "../../utils";
 import { RoleDetails } from "../Roles";
@@ -70,19 +71,37 @@ const RoleRevealModal = ({
           className={`role role-icon-${roleSkin}-${roleClass}`}
           style={{ width: "60px", height: "60px", flexShrink: 0 }}
         />
-        <DialogTitle
-          sx={{
-            p: 0,
-            flex: 1,
-            fontSize: "1.25rem",
-            lineHeight: 1.3,
-            fontWeight: 600,
-            whiteSpace: "normal",
-            wordBreak: "break-word",
-          }}
-        >
-          Your role is {roleName}
-        </DialogTitle>
+        <Box sx={{ position: "relative", flex: 1, minWidth: 0 }}>
+          <Typography
+            variant="h4"
+            fontStyle="italic"
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              zIndex: 2,
+              pointerEvents: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Your role is
+          </Typography>
+          <DialogTitle
+            sx={{
+              p: 0,
+              width: "100%",
+              fontSize: "1.25rem",
+              lineHeight: 1.3,
+              fontWeight: 600,
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              // add top padding so the title sits visually below the overlaid typography
+              pt: "1.6rem",
+            }}
+          >
+            {roleName}
+          </DialogTitle>
+        </Box>
       </Box>
 
       <DialogContent sx={{ px: 2 }}>

@@ -555,6 +555,23 @@ var schemas = {
     canPlayAfter: { type: Number },
     level: { type: Number, default: 0 },
   }),
+  Poll: new mongoose.Schema({
+    id: { type: String, index: true },
+    lobby: { type: String, index: true },
+    title: String,
+    question: String,
+    options: [String],
+    creator: { type: String, index: true },
+    created: { type: Number, index: true },
+    completed: { type: Boolean, default: false, index: true },
+    completedAt: { type: Number, index: true },
+  }),
+  PollVote: new mongoose.Schema({
+    pollId: { type: String, index: true },
+    userId: { type: String, index: true },
+    optionIndex: { type: Number, index: true },
+    votedAt: { type: Number, index: true },
+  }),
 };
 
 schemas.ForumVote.virtual("user", {

@@ -183,20 +183,23 @@ router.get("/:id/profile", async function (req, res) {
     var reqUserId = await routeUtils.verifyLoggedIn(req, true);
     var userId = String(req.params.id);
 
-    // Check if this is a vanity URL
-    if (!userId.match(/^[0-9]+$/)) {
-      // This is a vanity URL, find the user by vanity URL
+    // First try to find user by ID
+    var userById = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("id -_id");
+
+    // If not found by ID, try to find by vanity URL
+    if (!userById) {
       var userByVanity = await models.User.findOne({
         "settings.vanityUrl": userId,
         deleted: false,
       }).select("id -_id");
-
       if (!userByVanity) {
         res.status(404);
         res.send("User not found.");
         return;
       }
-
       userId = userByVanity.id;
     }
 
@@ -516,9 +519,14 @@ router.get("/:id/love", async function (req, res) {
   try {
     var userId = String(req.params.id);
 
-    // Check if this is a vanity URL
-    if (!userId.match(/^[0-9]+$/)) {
-      // This is a vanity URL, find the user by vanity URL
+    // First try to find user by ID
+    var userById = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("id -_id");
+
+    // If not found by ID, try to find by vanity URL
+    if (!userById) {
       var userByVanity = await models.User.findOne({
         "settings.vanityUrl": userId,
         deleted: false,
@@ -559,9 +567,14 @@ router.get("/:id/friends", async function (req, res) {
   try {
     var userId = String(req.params.id);
 
-    // Check if this is a vanity URL
-    if (!userId.match(/^[0-9]+$/)) {
-      // This is a vanity URL, find the user by vanity URL
+    // First try to find user by ID
+    var userById = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("id -_id");
+
+    // If not found by ID, try to find by vanity URL
+    if (!userById) {
       var userByVanity = await models.User.findOne({
         "settings.vanityUrl": userId,
         deleted: false,
@@ -611,9 +624,14 @@ router.get("/:id/info", async function (req, res) {
   try {
     var userId = String(req.params.id);
 
-    // Check if this is a vanity URL
-    if (!userId.match(/^[0-9]+$/)) {
-      // This is a vanity URL, find the user by vanity URL
+    // First try to find user by ID
+    var userById = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("id -_id");
+
+    // If not found by ID, try to find by vanity URL
+    if (!userById) {
       var userByVanity = await models.User.findOne({
         "settings.vanityUrl": userId,
         deleted: false,

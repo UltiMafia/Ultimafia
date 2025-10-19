@@ -22,6 +22,7 @@ const notifsRouter = require("./routes/notifs");
 const shopRouter = require("./routes/shop");
 const reportRouter = require("./routes/report");
 const siteRouter = require("./routes/site");
+const pollRouter = require("./routes/poll");
 const compression = require("compression");
 const cors = require("cors");
 
@@ -73,6 +74,7 @@ apiRouter.use("/notifs", notifsRouter);
 apiRouter.use("/shop", shopRouter);
 apiRouter.use("/report", reportRouter);
 apiRouter.use("/site", siteRouter);
+apiRouter.use("/poll", pollRouter);
 
 app.use("/api", apiRouter);
 

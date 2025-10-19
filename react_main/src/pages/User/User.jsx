@@ -651,6 +651,8 @@ export function useUser() {
       perms: {},
       rank: 0,
       blockedUsers: [],
+      settings: {},
+      itemsOwned: {},
     });
   }
 
