@@ -44,9 +44,7 @@ export function RoleDetails({
     roleSkin = skin;
   } else if (user.settings && typeof user.settings.roleSkins == "string") {
     const userRoleSkins = user.settings.roleSkins.split(",");
-    const userRoleSkinsMatched = userRoleSkins.filter(
-      (s) => s.split(":")[0] == roleName
-    );
+    const userRoleSkinsMatched = userRoleSkins.filter((s) => s.split(":")[0] == roleName);
     if (userRoleSkinsMatched.length > 0) {
       roleSkin = userRoleSkinsMatched[0].split(":")[1];
     }
@@ -61,9 +59,7 @@ export function RoleDetails({
     ? siteInfo.modifiers[gameType].filter((m) => {
         const source = Array.isArray(modifiersOverride)
           ? modifiersOverride
-          : baseRoleData?.modifiers
-          ? baseRoleData.modifiers.split("/")
-          : [];
+          : (baseRoleData?.modifiers ? baseRoleData.modifiers.split("/") : []);
         return source.includes(m.name);
       })
     : [];
@@ -94,12 +90,7 @@ export function RoleDetails({
   const DescriptionLines = (
     <Stack direction="column" spacing={1}>
       {roleData?.description?.map((text, i) => (
-        <Stack
-          direction="row"
-          spacing={1}
-          key={i}
-          sx={{ alignItems: "center" }}
-        >
+        <Stack direction="row" spacing={1} key={i} sx={{ alignItems: "center" }}>
           <i className={"fas fa-info-circle"} />
           <Typography>{text}</Typography>
         </Stack>
@@ -111,20 +102,12 @@ export function RoleDetails({
   const Modifiers = hasModifiers ? (
     <Stack direction="column" spacing={1}>
       {roleData?.modifiers?.map((modifier) => (
-        <Stack
-          direction="row"
-          spacing={1}
-          key={modifier.name}
-          sx={{ alignItems: "center" }}
-        >
+        <Stack direction="row" spacing={1} key={modifier.name} sx={{ alignItems: "center" }}>
           <i className={`modifier modifier-${gameType}-${modifier.name}`} />
           <Typography>
-            <span style={{ fontWeight: "bold" }}>{modifier.name}</span>:{" "}
-            {roleData?.SpecialInteractionsModifiers &&
-            roleData?.SpecialInteractionsModifiers[modifier.name]
+            <span style={{ fontWeight: "bold" }}>{modifier.name}</span>: {roleData?.SpecialInteractionsModifiers && roleData?.SpecialInteractionsModifiers[modifier.name]
               ? roleData?.SpecialInteractionsModifiers[modifier.name]
-              : roleData?.alignment == "Event" &&
-                modifier.eventDescription != null
+              : roleData?.alignment == "Event" && modifier.eventDescription != null
               ? modifier.eventDescription
               : modifier.description}
           </Typography>
@@ -150,10 +133,7 @@ export function RoleDetails({
       for (let i in otherRolesParsed) {
         let roleSet = otherRolesParsed[i];
         for (let thing in roleSet) {
-          if (
-            roleData.SpecialInteractions[thing.split(":")[0]] &&
-            !specialRoles.includes(thing.split(":")[0])
-          ) {
+          if (roleData.SpecialInteractions[thing.split(":")[0]] && !specialRoles.includes(thing.split(":")[0])) {
             specialRoles.push(thing.split(":")[0]);
             specials.push([
               thing.split(":")[0],
@@ -174,9 +154,9 @@ export function RoleDetails({
         <ListItem key={i} sx={{ paddingBottom: "0", paddingTop: "0" }}>
           <ListItemIcon sx={{ minWidth: "0", marginRight: "8px" }}>
             <i
-              className={`role role-icon-vivid-${hyphenDelimit(
-                gameType
-              )}-${hyphenDelimit(special[0])} "small"`}
+              className={`role role-icon-vivid-${hyphenDelimit(gameType)}-${hyphenDelimit(
+                special[0]
+              )} "small"`}
             />
           </ListItemIcon>
           <ListItemText
@@ -184,8 +164,7 @@ export function RoleDetails({
             className={"mui-popover-text"}
             primary={
               <Typography>
-                <span style={{ fontWeight: "bold" }}>{special[0]}</span>:{" "}
-                {special[1][0]}
+                <span style={{ fontWeight: "bold" }}>{special[0]}</span>: {special[1][0]}
               </Typography>
             }
           />
@@ -197,11 +176,7 @@ export function RoleDetails({
   );
 
   return (
-    <Stack
-      direction="column"
-      spacing={1}
-      divider={<Divider orientation="horizontal" flexItem />}
-    >
+    <Stack direction="column" spacing={1} divider={<Divider orientation="horizontal" flexItem />}>
       {showHeader && (
         <Stack direction="row" spacing={1} alignItems="center">
           <div className={`role role-icon-${roleSkin}-${roleClass}`} />
@@ -1423,6 +1398,78 @@ function RoleBanner(props) {
       <div className={`role-banner ${type}`}>
         <div className="role-banner-text">{text}</div>
       </div>
+    </>
+  );
+}
+
+// Inline role mention with icon, themed text, and popover
+export function InlineRoleMention({ roleName, gameType = "Mafia", textStyle = {} }) {
+  const user = useContext(UserContext);
+  const siteInfo = useContext(SiteInfoContext);
+  const {
+    popoverOpen: canOpenPopover,
+    popoverClasses,
+    anchorEl,
+    handleClick: handlePopoverClick,
+    handleMouseEnter,
+    handleMouseLeave,
+    closePopover,
+  } = usePopoverOpen();
+
+  // Determine role skin same precedence as RoleCount
+  let roleSkin = null;
+  if (user.settings && typeof user.settings.roleSkins == "string") {
+    const userRoleSkins = user.settings.roleSkins.split(",");
+    const userRoleSkinsMatched = userRoleSkins.filter((s) => s.split(":")[0] == roleName);
+    if (userRoleSkinsMatched.length > 0) {
+      roleSkin = userRoleSkinsMatched[0].split(":")[1];
+    }
+  }
+  if (roleSkin === null) {
+    roleSkin = "vivid";
+  }
+
+  const baseRoleData = siteInfo.rolesRaw?.[gameType]?.[roleName] || {};
+  const roleClass = roleName ? `${hyphenDelimit(gameType)}-${hyphenDelimit(roleName)}` : "null";
+  const popoverOpen = canOpenPopover && roleClass !== "null";
+
+  const popoverIcon = <div className={`role role-icon-${roleSkin}-${roleClass}`} />;
+
+  return (
+    <>
+      <span
+        aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
+        aria-haspopup="true"
+        onClick={handlePopoverClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={{ display: "inline-flex", alignItems: "center", verticalAlign: "middle", lineHeight: "inherit" }}
+      >
+        <div
+          className={`role role-icon-${roleSkin}-${roleClass}`}
+          style={{ width: "1rem", height: "1rem", marginRight: 4, backgroundSize: "100% 100%", display: "inline-block", verticalAlign: "middle" }}
+        />
+        <span style={{ color: "var(--mui-palette-primary-main)", fontWeight: 600, verticalAlign: "middle", ...textStyle }}>
+          {roleName}
+        </span>
+      </span>
+      <Popover
+        open={popoverOpen}
+        sx={popoverClasses}
+        anchorEl={anchorEl}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        transformOrigin={{ vertical: "top", horizontal: "center" }}
+        onClose={closePopover}
+        disableScrollLock
+        disableRestoreFocus
+      >
+        <PopoverContent
+          title={roleName}
+          content={<RoleDetails gameType={gameType} roleName={roleName} showHeader={false} />}
+          page={`/learn/role/${roleName}`}
+          icon={popoverIcon}
+        />
+      </Popover>
     </>
   );
 }

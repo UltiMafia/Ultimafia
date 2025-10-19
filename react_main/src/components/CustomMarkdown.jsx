@@ -1,9 +1,45 @@
+import React, { useContext } from "react";
 import ReactMarkdown from "react-markdown";
 
 import { emotify } from "components/Emotes";
 import { MediaEmbed } from "pages/User/User";
+import { SiteInfoContext } from "../Contexts";
+import { InlineRoleMention } from "./Roles";
+
+function roleifyMarkdown(children, siteInfo) {
+  if (!children) return children;
+  const roles = siteInfo?.roles?.Mafia || [];
+  const names = roles.map((r) => r.name).sort((a, b) => b.length - a.length);
+  if (names.length === 0) return children;
+  const pattern = names.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
+  const regex = new RegExp(`\\b(${pattern})\\b`, "gi");
+
+  function transform(nodeChildren) {
+    return nodeChildren.map((child, idx) => {
+      if (typeof child !== "string") return child;
+      const parts = [];
+      let lastIndex = 0;
+      regex.lastIndex = 0;
+      let match = regex.exec(child);
+      while (match) {
+        const before = child.slice(lastIndex, match.index);
+        if (before) parts.push(before);
+        const matched = match[0];
+        parts.push(<InlineRoleMention roleName={matched} key={`${idx}-${match.index}`} />);
+        lastIndex = regex.lastIndex;
+        match = regex.exec(child);
+      }
+      const after = child.slice(lastIndex);
+      if (after) parts.push(after);
+      return parts.length ? parts : child;
+    });
+  }
+
+  return transform(Array.isArray(children) ? children : [children]);
+}
 
 export default function CustomMarkdown(props) {
+  const siteInfo = useContext(SiteInfoContext);
   return (
     <ReactMarkdown
       components={{
@@ -24,7 +60,7 @@ export default function CustomMarkdown(props) {
         },
         p(properties) {
           const { node, ...rest } = properties;
-          return <p {...rest}>{emotify(properties.children)}</p>;
+          return <p {...rest}>{roleifyMarkdown(emotify(properties.children), siteInfo)}</p>;
         },
       }}
     >

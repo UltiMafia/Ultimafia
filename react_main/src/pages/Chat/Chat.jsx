@@ -554,6 +554,7 @@ function Message(props) {
           filterProfanity
           linkify
           emotify
+          roleify
         />
       </div>
       {showContextMenu &&
