@@ -65,10 +65,7 @@ export function RecentForumReplies() {
         Forum Activity
       </Typography>
 
-      <Typography
-        variant="subtitle2"
-        sx={{ fontWeight: 700, mb: 0.5 }}
-      >
+      <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
         Newest Thread
       </Typography>
       {newestThreads.length === 0 ? (
@@ -104,10 +101,7 @@ export function RecentForumReplies() {
         </Stack>
       )}
 
-      <Typography
-        variant="subtitle2"
-        sx={{ fontWeight: 700, mb: 0.5 }}
-      >
+      <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
         Recent Replies
       </Typography>
       {recentReplies.length === 0 ? (
@@ -141,5 +135,3 @@ export function RecentForumReplies() {
     </Paper>
   );
 }
-
-
