@@ -26,6 +26,201 @@ import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 import { PopoverContent } from "./Popover";
 import { SmallRoleList } from "./Setup";
 
+export function RoleDetails({
+  gameType,
+  roleName,
+  otherRoles = null,
+  skin = null,
+  showHeader = true,
+  modifiersOverride = null,
+}) {
+  const user = useContext(UserContext);
+  const siteInfo = useContext(SiteInfoContext);
+  const isPhoneDevice = useIsPhoneDevice();
+
+  // Determine role skin (same precedence as RoleCount)
+  let roleSkin = null;
+  if (skin) {
+    roleSkin = skin;
+  } else if (user.settings && typeof user.settings.roleSkins == "string") {
+    const userRoleSkins = user.settings.roleSkins.split(",");
+    const userRoleSkinsMatched = userRoleSkins.filter(
+      (s) => s.split(":")[0] == roleName
+    );
+    if (userRoleSkinsMatched.length > 0) {
+      roleSkin = userRoleSkinsMatched[0].split(":")[1];
+    }
+  }
+  if (roleSkin === null) {
+    roleSkin = "vivid";
+  }
+
+  // Gather role data and modifiers exactly like RoleCount
+  const baseRoleData = siteInfo.rolesRaw?.[gameType]?.[roleName] || {};
+  const mappedModifiers = siteInfo.modifiers?.[gameType]
+    ? siteInfo.modifiers[gameType].filter((m) => {
+        const source = Array.isArray(modifiersOverride)
+          ? modifiersOverride
+          : baseRoleData?.modifiers
+          ? baseRoleData.modifiers.split("/")
+          : [];
+        return source.includes(m.name);
+      })
+    : [];
+  const roleData = { ...baseRoleData, modifiers: mappedModifiers };
+
+  const roleClass = roleName
+    ? `${hyphenDelimit(gameType)}-${hyphenDelimit(roleName)}`
+    : "null";
+
+  // Map alignment, tags, and description formatting exactly as in RoleCount
+  const mapAlignmentToText = {
+    Village: "Village 💙",
+    Mafia: "Mafia 🔪",
+    Cult: "Cult 🦑",
+    Independent: "Independent ✨",
+    Event: "Event ⚡",
+    Resistance: "Resistance ✊",
+    Spies: "Spies 🕵️",
+    Town: "Village 💙",
+    Host: "Host 🎤",
+    Liberals: "Liberals 🇺🇸",
+    Fascists: "Fascists 🛠️",
+    Liars: "Liars 🤥",
+  };
+  const roleAlignment = mapAlignmentToText[roleData?.alignment];
+  const roleTags = roleData?.tags ? roleData.tags.sort().join(", ") : "";
+
+  const DescriptionLines = (
+    <Stack direction="column" spacing={1}>
+      {roleData?.description?.map((text, i) => (
+        <Stack
+          direction="row"
+          spacing={1}
+          key={i}
+          sx={{ alignItems: "center" }}
+        >
+          <i className={"fas fa-info-circle"} />
+          <Typography>{text}</Typography>
+        </Stack>
+      ))}
+    </Stack>
+  );
+
+  const hasModifiers = roleData?.modifiers?.length;
+  const Modifiers = hasModifiers ? (
+    <Stack direction="column" spacing={1}>
+      {roleData?.modifiers?.map((modifier) => (
+        <Stack
+          direction="row"
+          spacing={1}
+          key={modifier.name}
+          sx={{ alignItems: "center" }}
+        >
+          <i className={`modifier modifier-${gameType}-${modifier.name}`} />
+          <Typography>
+            <span style={{ fontWeight: "bold" }}>{modifier.name}</span>:{" "}
+            {roleData?.SpecialInteractionsModifiers &&
+            roleData?.SpecialInteractionsModifiers[modifier.name]
+              ? roleData?.SpecialInteractionsModifiers[modifier.name]
+              : roleData?.alignment == "Event" &&
+                modifier.eventDescription != null
+              ? modifier.eventDescription
+              : modifier.description}
+          </Typography>
+        </Stack>
+      ))}
+    </Stack>
+  ) : (
+    ""
+  );
+
+  let specials = [];
+  let specialRoles = [];
+  let otherRolesParsed = otherRoles;
+  if (otherRolesParsed && typeof otherRolesParsed == "string") {
+    try {
+      otherRolesParsed = JSON.parse(otherRolesParsed);
+    } catch (e) {
+      otherRolesParsed = null;
+    }
+  }
+  if (otherRolesParsed && otherRolesParsed.length > 0) {
+    if (roleData?.SpecialInteractions) {
+      for (let i in otherRolesParsed) {
+        let roleSet = otherRolesParsed[i];
+        for (let thing in roleSet) {
+          if (
+            roleData.SpecialInteractions[thing.split(":")[0]] &&
+            !specialRoles.includes(thing.split(":")[0])
+          ) {
+            specialRoles.push(thing.split(":")[0]);
+            specials.push([
+              thing.split(":")[0],
+              roleData.SpecialInteractions[thing.split(":")[0]],
+            ]);
+          }
+        }
+      }
+    }
+  }
+  let hasSpecials = specials.length > 0;
+  const SpecialInteractions = hasSpecials ? (
+    <List dense sx={{ paddingTop: "0" }}>
+      <div>
+        <span style={{ fontWeight: "bold" }}>Special Interactions</span>
+      </div>
+      {specials.map((special, i) => (
+        <ListItem key={i} sx={{ paddingBottom: "0", paddingTop: "0" }}>
+          <ListItemIcon sx={{ minWidth: "0", marginRight: "8px" }}>
+            <i
+              className={`role role-icon-vivid-${hyphenDelimit(
+                gameType
+              )}-${hyphenDelimit(special[0])} "small"`}
+            />
+          </ListItemIcon>
+          <ListItemText
+            disableTypography
+            className={"mui-popover-text"}
+            primary={
+              <Typography>
+                <span style={{ fontWeight: "bold" }}>{special[0]}</span>:{" "}
+                {special[1][0]}
+              </Typography>
+            }
+          />
+        </ListItem>
+      ))}
+    </List>
+  ) : (
+    ""
+  );
+
+  return (
+    <Stack
+      direction="column"
+      spacing={1}
+      divider={<Divider orientation="horizontal" flexItem />}
+    >
+      {showHeader && (
+        <Stack direction="row" spacing={1} alignItems="center">
+          <div className={`role role-icon-${roleSkin}-${roleClass}`} />
+          <Typography sx={{ fontWeight: "bold" }}>{roleName}</Typography>
+        </Stack>
+      )}
+      <Typography>
+        <span style={{ fontWeight: "bold" }}>Alignment</span>: {roleAlignment}
+      </Typography>
+      <Typography>
+        <span style={{ fontWeight: "bold" }}>Tags</span>: {roleTags}
+      </Typography>
+      {DescriptionLines}
+      {Modifiers}
+      {SpecialInteractions}
+    </Stack>
+  );
+}
+
 export function RoleCount({
   gameType,
   role,

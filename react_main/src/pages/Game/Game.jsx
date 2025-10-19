@@ -93,6 +93,7 @@ import dice5 from "images/emotes/dice5.webp";
 import dice6 from "images/emotes/dice6.webp";
 import { Timer } from "components/gameComponents/Timer";
 import { ChangeHeadPing } from "components/gameComponents/ChangeHeadPing";
+import RoleRevealModal from "components/gameComponents/RoleRevealModal";
 
 const emoteMap = {
   dice1: dice1,
@@ -148,6 +149,8 @@ function GameWrapper(props) {
   const [dev, setDev] = useState(false);
   const [pingInfo, setPingInfo] = useState(null);
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const [roleRevealModalOpen, setRoleRevealModalOpen] = useState(false);
+  const [roleRevealData, setRoleRevealData] = useState(null);
 
   const playersRef = useRef();
   const selfRef = useRef();
@@ -577,6 +580,22 @@ function GameWrapper(props) {
       });
     });
 
+    socket.on("roleReveal", (info) => {
+      // Only show modal if this is for the current player
+      if (info.playerId === selfRef.current) {
+        setRoleRevealData(info.roleData);
+        setRoleRevealModalOpen(true);
+      }
+
+      // Still update history for role prediction clearing
+      toggleRolePrediction(info.playerId, null);
+      updateHistory({
+        type: "reveal",
+        playerId: info.playerId,
+        role: info.role,
+      });
+    });
+
     socket.on("death", (playerId) => {
       updateHistory({
         type: "death",
@@ -844,6 +863,12 @@ function GameWrapper(props) {
           open={leaveDialogOpen}
           onClose={() => setLeaveDialogOpen(false)}
           onConfirm={leaveGame}
+        />
+        <RoleRevealModal
+          open={roleRevealModalOpen}
+          onClose={() => setRoleRevealModalOpen(false)}
+          roleData={roleRevealData}
+          gameType={gameType}
         />
       </GameContext.Provider>
     );

@@ -339,16 +339,41 @@ module.exports = class Role {
     var modifiers = appearance.split(":")[1];
 
     this.player.history.recordRole(this.player, appearance);
-    this.player.send("reveal", { playerId: this.player.id, role: appearance });
 
-    if (!noAlert)
-      this.player.queueAlert(
-        `:system: Your role is ${this.getRevealText(
-          roleName,
-          modifiers,
-          "self"
-        )}.`
-      );
+    // Get full role data for the modal
+    const roleData = require("../../data/roles");
+    const roleFromData = roleData[this.game.type][roleName];
+
+    if (roleFromData) {
+      // Prepare role data for the frontend modal
+      const roleInfo = {
+        roleName: roleName,
+        modifiers: modifiers ? modifiers.split("/") : [],
+        alignment: roleFromData.alignment,
+        description: Array.isArray(roleFromData.description)
+          ? roleFromData.description.join(" ")
+          : roleFromData.description || "",
+        specialInteractions: roleFromData.SpecialInteractions
+          ? Object.values(roleFromData.SpecialInteractions).flat()
+          : [],
+        tags: roleFromData.tags || [],
+        category: roleFromData.category || "",
+      };
+
+      this.player.send("roleReveal", {
+        playerId: this.player.id,
+        role: appearance,
+        roleData: roleInfo,
+      });
+    } else {
+      // Fallback to original behavior if role data not found
+      this.player.send("reveal", {
+        playerId: this.player.id,
+        role: appearance,
+      });
+    }
+
+    if (!noAlert) return;
   }
 
   revealToPlayer(player, noAlert, revealType) {
