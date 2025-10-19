@@ -213,7 +213,8 @@ export default function Settings() {
         saveBtnDiffer: "vanityUrl",
         saveBtnOnClick: onVanityUrlSave,
         disabled: (deps) => !deps.user.itemsOwned.vanityUrl,
-        extraInfo: "Set a custom URL for your profile (1-20 characters, letters, numbers, and hyphens only)",
+        extraInfo:
+          "Set a custom URL for your profile (1-20 characters, letters, numbers, and hyphens only)",
       },
     ],
     [accounts]
