@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 
 import { emotify } from "./Emotes";
 import { filterProfanitySegment } from "../lib/profanity";
@@ -6,6 +6,8 @@ import { MediaEmbed } from "../pages/User/User";
 import { slangList } from "../constants/slangList";
 import { Slang } from "./Slang";
 import { Typography } from "@mui/material";
+import { SiteInfoContext } from "../Contexts";
+import { InlineRoleMention } from "./Roles";
 
 export function ItemList(props) {
   const itemRows = props.items.map(props.map);
@@ -115,7 +117,60 @@ export function NotificationHolder(props) {
   );
 }
 
+function escapeRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function buildRoleRegex(siteInfo) {
+  const roles = siteInfo?.roles?.Mafia || [];
+  const names = roles.map((r) => r.name).sort((a, b) => b.length - a.length);
+  if (names.length === 0) return null;
+  const pattern = names.map((n) => escapeRegex(n)).join("|");
+  return new RegExp(`\\b(${pattern})\\b`, "gi");
+}
+
+function roleifySegments(text, siteInfo) {
+  if (text == null) return;
+  if (!Array.isArray(text)) text = [text];
+
+  const roles = siteInfo?.roles?.Mafia || [];
+  const nameMap = new Map(roles.map((r) => [r.name.toLowerCase(), r.name]));
+  const regex = buildRoleRegex(siteInfo);
+  if (!regex) return text;
+
+  for (let i in text) {
+    let segment = text[i];
+    if (typeof segment !== "string") continue;
+
+    const parts = [];
+    let lastIndex = 0;
+    regex.lastIndex = 0;
+    let match = regex.exec(segment);
+    while (match) {
+      const before = segment.slice(lastIndex, match.index);
+      if (before) parts.push(before);
+      const matched = match[0];
+      const canonical = nameMap.get(matched.toLowerCase()) || matched;
+      parts.push(
+        <InlineRoleMention
+          roleName={canonical}
+          key={`${match.index}-${canonical}`}
+        />
+      );
+      lastIndex = regex.lastIndex;
+      match = regex.exec(segment);
+    }
+    const after = segment.slice(lastIndex);
+    if (after) parts.push(after);
+    text[i] = parts.length ? parts : segment;
+  }
+
+  text = text.flat();
+  return text.length === 1 ? text[0] : text;
+}
+
 export function UserText(props) {
+  const siteInfo = useContext(SiteInfoContext);
   const [content, setContent] = useState(props.text);
 
   useEffect(() => {
@@ -144,6 +199,8 @@ export function UserText(props) {
         displayEmoji: props.terminologyEmoticons,
       });
     if (props.iconUsername) text = iconUsername(text, props.players);
+
+    if (props.roleify) text = roleifySegments(text, siteInfo);
 
     setContent(text);
   }, [props.text, props.terminologyEmoticons]);

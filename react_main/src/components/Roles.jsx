@@ -1426,3 +1426,110 @@ function RoleBanner(props) {
     </>
   );
 }
+
+// Inline role mention with icon, themed text, and popover
+export function InlineRoleMention({
+  roleName,
+  gameType = "Mafia",
+  textStyle = {},
+}) {
+  const user = useContext(UserContext);
+  const siteInfo = useContext(SiteInfoContext);
+  const {
+    popoverOpen: canOpenPopover,
+    popoverClasses,
+    anchorEl,
+    handleClick: handlePopoverClick,
+    handleMouseEnter,
+    handleMouseLeave,
+    closePopover,
+  } = usePopoverOpen();
+
+  // Determine role skin same precedence as RoleCount
+  let roleSkin = null;
+  if (user.settings && typeof user.settings.roleSkins == "string") {
+    const userRoleSkins = user.settings.roleSkins.split(",");
+    const userRoleSkinsMatched = userRoleSkins.filter(
+      (s) => s.split(":")[0] == roleName
+    );
+    if (userRoleSkinsMatched.length > 0) {
+      roleSkin = userRoleSkinsMatched[0].split(":")[1];
+    }
+  }
+  if (roleSkin === null) {
+    roleSkin = "vivid";
+  }
+
+  const baseRoleData = siteInfo.rolesRaw?.[gameType]?.[roleName] || {};
+  const roleClass = roleName
+    ? `${hyphenDelimit(gameType)}-${hyphenDelimit(roleName)}`
+    : "null";
+  const popoverOpen = canOpenPopover && roleClass !== "null";
+
+  const popoverIcon = (
+    <div className={`role role-icon-${roleSkin}-${roleClass}`} />
+  );
+
+  return (
+    <>
+      <span
+        aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
+        aria-haspopup="true"
+        onClick={handlePopoverClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          verticalAlign: "middle",
+          lineHeight: "inherit",
+        }}
+      >
+        <div
+          className={`role role-icon-${roleSkin}-${roleClass}`}
+          style={{
+            width: "1rem",
+            height: "1rem",
+            marginRight: 4,
+            backgroundSize: "100% 100%",
+            display: "inline-block",
+            verticalAlign: "middle",
+          }}
+        />
+        <span
+          style={{
+            color: "var(--mui-palette-primary-main)",
+            fontWeight: 600,
+            verticalAlign: "middle",
+            ...textStyle,
+          }}
+        >
+          {roleName}
+        </span>
+      </span>
+      <Popover
+        open={popoverOpen}
+        sx={popoverClasses}
+        anchorEl={anchorEl}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        transformOrigin={{ vertical: "top", horizontal: "center" }}
+        onClose={closePopover}
+        disableScrollLock
+        disableRestoreFocus
+      >
+        <PopoverContent
+          title={roleName}
+          content={
+            <RoleDetails
+              gameType={gameType}
+              roleName={roleName}
+              showHeader={false}
+            />
+          }
+          page={`/learn/role/${roleName}`}
+          icon={popoverIcon}
+        />
+      </Popover>
+    </>
+  );
+}

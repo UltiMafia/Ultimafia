@@ -2035,6 +2035,7 @@ function Message(props) {
                 slangifySeed={message.time.toString()}
                 terminologyEmoticons={props.settings.terminologyEmoticons}
                 iconUsername
+                roleify
               />
             </>
           )}
@@ -2056,6 +2057,7 @@ function Message(props) {
                   emotify
                   slangifySeed={quotedMessage.time.toString()}
                   iconUsername
+                  roleify
                 />
               </span>
               <i className="fas fa-quote-right" />
