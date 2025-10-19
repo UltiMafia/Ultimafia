@@ -13,8 +13,7 @@ router.post("/create", async function (req, res) {
     var question = String(req.body.question);
     var options = req.body.options || [];
 
-    if (!(await routeUtils.verifyPermission(res, userId, "createPoll")))
-      return;
+    if (!(await routeUtils.verifyPermission(res, userId, "createPoll"))) return;
 
     // Validate inputs
     if (!lobby || !question || !options.length) {
@@ -84,7 +83,7 @@ router.get("/list/:lobby", async function (req, res) {
     if (currentPoll) {
       var votes = await models.PollVote.find({ pollId: currentPoll.id }).lean();
       var userVote = votes.find((vote) => vote.userId === userId);
-      
+
       // Count votes per option
       var voteCounts = currentPoll.options.map((_, index) => {
         return votes.filter((vote) => vote.optionIndex === index).length;
@@ -172,8 +171,7 @@ router.post("/complete", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var pollId = String(req.body.pollId);
 
-    if (!(await routeUtils.verifyPermission(res, userId, "createPoll")))
-      return;
+    if (!(await routeUtils.verifyPermission(res, userId, "createPoll"))) return;
 
     var poll = await models.Poll.findOne({ id: pollId, completed: false });
     if (!poll) {

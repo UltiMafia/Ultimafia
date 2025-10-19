@@ -335,7 +335,9 @@ export function ModCommands(props) {
             <Select
               value={argValue || ""}
               label={arg.label}
-              onChange={(e) => updateArgValue(arg.name, e.target.value, arg.isArray)}
+              onChange={(e) =>
+                updateArgValue(arg.name, e.target.value, arg.isArray)
+              }
               disabled={isPrefilled}
             >
               {arg.options.map((option) => (
