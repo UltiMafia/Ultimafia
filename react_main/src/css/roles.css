@@ -80,6 +80,7 @@
 
   background-size: 100% 100%;
   background-image: url("/src/images/modifiers/unknown-modifier.png");
+  image-rendering: crisp-edges;
 }
 
 .gamesetting {
@@ -90,6 +91,7 @@
 
   background-size: 100% 100%;
   background-image: url("/src/images/modifiers/unknown-modifier.png");
+  image-rendering: crisp-edges;
 }
 
 .role-count-wrap {
@@ -113,6 +115,7 @@
   height: var(--role-icon-size);
   background-size: 100% 100%;
   background-image: url("/src/images/roles/01-default-tall.png");
+  image-rendering: crisp-edges;
 }
 
 .role.large {
