@@ -26,6 +26,7 @@ module.exports = class Meeting {
     this.multi = false;
     this.multiSplit = false;
     this.useVotingPower = false;
+    this.runOnNoOne = false;
     this.repeatable = false;
     this.includeNo = false;
     this.noRecord = false;
