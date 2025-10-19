@@ -1,13 +1,26 @@
 import React, { useContext } from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Box,
+} from "@mui/material";
 import { hyphenDelimit } from "../../utils";
 import { RoleDetails } from "../Roles";
 import { UserContext, GameContext } from "../../Contexts";
 
-const RoleRevealModal = ({ open, onClose, roleData, gameType = "Mafia", otherRoles = null }) => {
+const RoleRevealModal = ({
+  open,
+  onClose,
+  roleData,
+  gameType = "Mafia",
+  otherRoles = null,
+}) => {
   const user = useContext(UserContext);
   const gameContext = useContext(GameContext);
-  
+
   if (!roleData) return null;
 
   const { roleName, modifiers } = roleData;
@@ -29,7 +42,9 @@ const RoleRevealModal = ({ open, onClose, roleData, gameType = "Mafia", otherRol
   let roleSkin = null;
   if (user.settings && typeof user.settings.roleSkins == "string") {
     const userRoleSkins = user.settings.roleSkins.split(",");
-    const userRoleSkinsMatched = userRoleSkins.filter((s) => s.split(":")[0] == roleName);
+    const userRoleSkinsMatched = userRoleSkins.filter(
+      (s) => s.split(":")[0] == roleName
+    );
     if (userRoleSkinsMatched.length > 0) {
       roleSkin = userRoleSkinsMatched[0].split(":")[1];
     }
