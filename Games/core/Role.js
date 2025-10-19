@@ -373,8 +373,7 @@ module.exports = class Role {
       });
     }
 
-    if (!noAlert)
-      return;
+    if (!noAlert) return;
   }
 
   revealToPlayer(player, noAlert, revealType) {

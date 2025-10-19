@@ -37,9 +37,11 @@ export function Poll({ lobby }) {
   const fetchPolls = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`/api/poll/list/${lobby}?page=${currentPage}`);
+      const response = await axios.get(
+        `/api/poll/list/${lobby}?page=${currentPage}`
+      );
       const { currentPoll, polls, hasMore } = response.data;
-      
+
       setCurrentPoll(currentPoll);
       setPolls(polls);
       setTotalPages(currentPage + (hasMore ? 1 : 0));
@@ -51,13 +53,13 @@ export function Poll({ lobby }) {
 
   const handleVote = async (optionIndex) => {
     if (!currentPoll) return;
-    
+
     try {
       await axios.post("/api/poll/vote", {
         pollId: currentPoll.id,
         optionIndex,
       });
-      
+
       // Refresh the poll data
       fetchPolls();
     } catch (error) {
@@ -67,12 +69,12 @@ export function Poll({ lobby }) {
 
   const handleCompletePoll = async () => {
     if (!currentPoll) return;
-    
+
     try {
       await axios.post("/api/poll/complete", {
         pollId: currentPoll.id,
       });
-      
+
       // Refresh the poll data
       fetchPolls();
     } catch (error) {
@@ -82,7 +84,7 @@ export function Poll({ lobby }) {
 
   const canViewResults = () => {
     if (!currentPoll) return false;
-    
+
     // Show results if:
     // 1. User has voted
     // 2. User is admin/dev
@@ -144,9 +146,14 @@ export function Poll({ lobby }) {
 
         <Stack spacing={1}>
           {currentPoll.options.map((option, index) => {
-            const voteCount = currentPoll.voteCounts ? currentPoll.voteCounts[index] : 0;
-            const totalVotes = currentPoll.voteCounts ? currentPoll.voteCounts.reduce((a, b) => a + b, 0) : 0;
-            const percentage = totalVotes > 0 ? (voteCount / totalVotes) * 100 : 0;
+            const voteCount = currentPoll.voteCounts
+              ? currentPoll.voteCounts[index]
+              : 0;
+            const totalVotes = currentPoll.voteCounts
+              ? currentPoll.voteCounts.reduce((a, b) => a + b, 0)
+              : 0;
+            const percentage =
+              totalVotes > 0 ? (voteCount / totalVotes) * 100 : 0;
             const isUserVote = currentPoll.userVote === index;
             const showResults = canViewResults();
 
@@ -163,7 +170,12 @@ export function Poll({ lobby }) {
                     mb: 1,
                   }}
                 >
-                  <Stack direction="row" alignItems="center" spacing={1} sx={{ width: "100%" }}>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    spacing={1}
+                    sx={{ width: "100%" }}
+                  >
                     <Typography variant="body2" sx={{ flexGrow: 1 }}>
                       {option}
                     </Typography>
@@ -174,7 +186,7 @@ export function Poll({ lobby }) {
                     )}
                   </Stack>
                 </Button>
-                
+
                 {showResults && totalVotes > 0 && (
                   <Box>
                     <LinearProgress
@@ -220,19 +232,25 @@ export function Poll({ lobby }) {
     return (
       <Stack spacing={2}>
         {polls.map((poll) => (
-          <Box key={poll.id} sx={{ p: 2, border: 1, borderColor: "divider", borderRadius: 1 }}>
+          <Box
+            key={poll.id}
+            sx={{ p: 2, border: 1, borderColor: "divider", borderRadius: 1 }}
+          >
             <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
               {poll.title}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
               {poll.question}
             </Typography>
-            
+
             <Stack spacing={1}>
               {poll.options.map((option, index) => {
                 const voteCount = poll.voteCounts ? poll.voteCounts[index] : 0;
-                const totalVotes = poll.voteCounts ? poll.voteCounts.reduce((a, b) => a + b, 0) : 0;
-                const percentage = totalVotes > 0 ? (voteCount / totalVotes) * 100 : 0;
+                const totalVotes = poll.voteCounts
+                  ? poll.voteCounts.reduce((a, b) => a + b, 0)
+                  : 0;
+                const percentage =
+                  totalVotes > 0 ? (voteCount / totalVotes) * 100 : 0;
 
                 return (
                   <Box key={index}>
@@ -254,7 +272,11 @@ export function Poll({ lobby }) {
               })}
             </Stack>
 
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: "block" }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ mt: 2, display: "block" }}
+            >
               {poll.completed ? "Completed" : "Active"} •{" "}
               <Time millisec={Date.now() - poll.created} /> ago
             </Typography>
@@ -293,7 +315,10 @@ export function Poll({ lobby }) {
       </Typography>
 
       <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
-        <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
+        <Tabs
+          value={activeTab}
+          onChange={(_, newValue) => setActiveTab(newValue)}
+        >
           <Tab label="Question" />
           <Tab label="Responses" />
         </Tabs>
