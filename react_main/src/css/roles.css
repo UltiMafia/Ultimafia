@@ -3123,6 +3123,10 @@ Game Settings
   background-image: url("/src/images/modifiers/scatterbrained.png");
 }
 
+.gamesetting-Cleansing-Deaths {
+  background-image: url("/src/images/modifiers/pious.png");
+}
+
 .gamesetting-Last-Wills {
   background-image: url("/src/images/modifiers/prosaic.png");
 }

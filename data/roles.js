@@ -5184,10 +5184,11 @@ const roleData = {
     },
     Warlock: {
       alignment: "Independent",
-      tags: ["Voting", "Condemn", "Extra Lives", "Visiting", "Guess", "Basic"],
+      tags: ["Voting", "Condemn", "Visiting", "Guess", "Basic"],
       description: [
         "Each night, can choose to visit one player.",
-        "If that player is condemned the next day, the Warlock gains an extra life and gain 1 point.",
+        "If that player is condemned the next day, the Warlock gains 1 point.",
+        "If the Warlock visits no one and no one is condemned, the Warlock gains 1 point.",
         "The Warlock wins if they get 2 points.",
       ],
       nightOrder: [["Guess Vote", PRIORITY_SUPPORT_VISIT_DEFAULT]],

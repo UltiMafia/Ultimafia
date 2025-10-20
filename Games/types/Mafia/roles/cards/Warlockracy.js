@@ -8,7 +8,7 @@ module.exports = class Warlockracy extends Card {
     this.meetings = {
       "Predict Vote": {
         states: ["Night"],
-        flags: ["voting"],
+        flags: ["voting", "runOnNoOne"],
         action: {
           role: this.role,
           priority: PRIORITY_SUPPORT_VISIT_DEFAULT,
