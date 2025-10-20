@@ -28,16 +28,15 @@ module.exports = class InsightfulMood extends Event {
         }
         for (const player of this.event.generatePossibleVictims()) {
           let info = this.game.createInformation(
-          "ExcessRolesInfo",
-          player,
-          this.game,
-          3
-        );
-        info.processInfo();
-        var alert = `:invest: Insightful Mood: ${info.getInfoFormated()}.`;
-        player.queueAlert(alert);
+            "ExcessRolesInfo",
+            player,
+            this.game,
+            3
+          );
+          info.processInfo();
+          var alert = `:invest: Insightful Mood: ${info.getInfoFormated()}.`;
+          player.queueAlert(alert);
         }
-        
       },
     });
     this.action.do();

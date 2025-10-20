@@ -3886,7 +3886,7 @@ const roleData = {
       category: "Killing",
       tags: ["Vote Kills", "Killing", "Voting", "Visiting", "Basic"],
       description: [
-       `Each night, can choose to visit two players and make first player have "Cold Feet" torwards the second player.`,
+        `Each night, can choose to visit two players and make first player have "Cold Feet" torwards the second player.`,
         coldfeetDef,
       ],
       nightOrder: [["Curse Player", PRIORITY_EFFECT_GIVER_DEFAULT]],

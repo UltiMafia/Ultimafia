@@ -52,7 +52,8 @@ module.exports = class KillAndCreateUndead extends Card {
 
                 let victims = [foundUp, foundDown];
                 var villageTarget = Random.randArrayVal(victims);
-                this.role.giveEffect(villageTarget,
+                this.role.giveEffect(
+                  villageTarget,
                   "Delirious",
                   this.actor,
                   Infinity,
