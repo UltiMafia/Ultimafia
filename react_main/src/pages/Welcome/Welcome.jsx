@@ -93,7 +93,13 @@ export const Welcome = () => {
         {/*  I want to play!*/}
         {/*</Button>*/}
         <Box sx={{ mt: 1 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginBottom: "8px",
+            }}
+          >
             <Button
               variant="outlined"
               sx={{
