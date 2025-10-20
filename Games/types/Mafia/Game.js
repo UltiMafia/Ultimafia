@@ -538,6 +538,18 @@ module.exports = class MafiaGame extends Game {
     return info;
   }
 
+  CleansePlayer(player){
+    let action = new Action({
+          actor: player,
+          game: this.game,
+          labels: ["block", "hidden"],
+          run: function () {
+            this.cleanse(2, this.actor);
+          },
+        });
+        action.do();
+  }
+
   resetIdentities() {
     if (!this.swaps) return;
 

@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const { PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_WIN_CHECK_DEFAULT, PRIORITY_DAY_EFFECT_DEFAULT } = require("../../const/Priority");
 
 module.exports = class WinIfPrescientVote extends Card {
   constructor(role) {
@@ -27,7 +27,13 @@ module.exports = class WinIfPrescientVote extends Card {
         if (!stateInfo.name.match(/Day/)) {
           return;
         }
-        if(this.predictedVote == "*"){
+        const assassinInGame = this.game.players.filter(
+            (p) => p.role.name === "Assassin"
+          );
+        if (this.canDoSpecialInteractions() && assassinInGame > 0) {
+          return;
+        }
+        if(this.predictedVote != "*"){
           return;
         }
         var action = new Action({
@@ -43,13 +49,19 @@ module.exports = class WinIfPrescientVote extends Card {
               for (let action of this.game.actions[0]) {
                 if (
                   action.target == alivePlayers[x] &&
-                  action.hasLabel("condemn") && 
+                  action.hasLabel("condemn")
                 ) {
                   return;
                 }
               }
             }
-            this.predictedCorrect += 1;
+          this.role.predictedCorrect += 1;
+          if (this.game.IsBloodMoon && this.role.canDoSpecialInteractions()) {
+            this.role.predictedCorrect = 2;
+          }
+          this.actor.queueAlert(
+            `The Village has condemned no one to death, strengthening your bond with the spirit world. `
+          );
           },
           });
 
@@ -68,9 +80,8 @@ module.exports = class WinIfPrescientVote extends Card {
           if (this.game.IsBloodMoon && this.canDoSpecialInteractions()) {
             this.predictedCorrect = 2;
           }
-          this.player.giveEffect("ExtraLife");
           this.player.queueAlert(
-            `The Village has condemned ${this.predictedVote.name} to death, strengthening your bond with the spirit world. You gain an extra life.`
+            `The Village has condemned ${this.predictedVote.name} to death, strengthening your bond with the spirit world. `
           );
         }
       },
@@ -80,9 +91,8 @@ module.exports = class WinIfPrescientVote extends Card {
         }
         if (leader === this.predictedVote && this.player.alive) {
           this.predictedCorrect += 1;
-          this.player.giveEffect("ExtraLife");
           this.player.queueAlert(
-            `Room ${room} has Elected ${this.predictedVote.name}, strengthening your bond with the spirit world. You gain an extra life.`
+            `Room ${room} has Elected ${this.predictedVote.name}, strengthening your bond with the spirit world.`
           );
         }
       },
