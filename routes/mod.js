@@ -1224,7 +1224,7 @@ router.post("/clearVanityUrl", async (req, res) => {
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
     await models.VanityUrl.deleteOne({
-      userId: userIdToClear
+      userId: userIdToClear,
     });
 
     routeUtils.createModAction(userId, "Clear Vanity URL", [userIdToClear]);

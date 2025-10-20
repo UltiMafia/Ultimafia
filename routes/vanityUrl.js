@@ -10,7 +10,7 @@ router.get("/:identifier", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     const identifier = String(req.params.identifier);
-    
+
     // First try to find user by ID
     let user = await models.User.findOne({
       id: identifier,
@@ -20,7 +20,7 @@ router.get("/:identifier", async function (req, res) {
     // If not found by ID, try to find by vanity URL
     if (!user) {
       const vanityUrl = await models.VanityUrl.findOne({
-        url: identifier
+        url: identifier,
       }).select("userId -_id");
 
       if (!vanityUrl) {
@@ -79,7 +79,7 @@ router.post("/", async function (req, res) {
 
     // Check if user already has a vanity URL
     const existingVanityUrl = await models.VanityUrl.findOne({
-      userId: userId
+      userId: userId,
     });
 
     if (existingVanityUrl) {
@@ -90,7 +90,7 @@ router.post("/", async function (req, res) {
       // Create new vanity URL
       await models.VanityUrl.create({
         url: vanityUrl,
-        userId: userId
+        userId: userId,
       });
     }
 
@@ -115,7 +115,7 @@ router.delete("/", async function (req, res) {
     const userId = await routeUtils.verifyLoggedIn(req);
 
     await models.VanityUrl.deleteOne({
-      userId: userId
+      userId: userId,
     });
 
     res.send("Vanity URL deleted successfully");
@@ -133,7 +133,7 @@ router.get("/user/:userId", async function (req, res) {
     const userId = String(req.params.userId);
 
     const vanityUrl = await models.VanityUrl.findOne({
-      userId: userId
+      userId: userId,
     }).select("url -_id");
 
     if (vanityUrl) {

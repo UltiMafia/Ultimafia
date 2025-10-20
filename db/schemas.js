@@ -722,32 +722,32 @@ schemas.Ban.virtual("mod", {
 
 // VanityUrl schema for custom user URLs
 schemas.VanityUrl = new mongoose.Schema({
-  url: { 
-    type: String, 
-    required: true, 
-    unique: true, 
+  url: {
+    type: String,
+    required: true,
+    unique: true,
     index: true,
     minlength: 1,
     maxlength: 20,
-    match: /^[a-zA-Z0-9-]+$/
+    match: /^[a-zA-Z0-9-]+$/,
   },
-  userId: { 
-    type: String, 
-    required: true, 
-    index: true 
+  userId: {
+    type: String,
+    required: true,
+    index: true,
   },
-  createdAt: { 
-    type: Date, 
-    default: Date.now 
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
-  updatedAt: { 
-    type: Date, 
-    default: Date.now 
-  }
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 // Update the updatedAt field on save
-schemas.VanityUrl.pre('save', function(next) {
+schemas.VanityUrl.pre("save", function (next) {
   this.updatedAt = Date.now();
   next();
 });
