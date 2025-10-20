@@ -134,6 +134,13 @@ const gameSettingData = {
       description:
         "Players who change roles will not be told about their role changing.",
     },
+    "Cleansing Deaths": {
+      category: "Other",
+      internal: ["RemoveEffectsFromDead"],
+      tags: ["Effect", "Death"],
+      description:
+        "Players who die will have any malicious effects they have removed.",
+    },
     "Last Wills": {
       category: "Other",
       internal: ["LastWills"],

@@ -26,6 +26,7 @@ module.exports = class Meeting {
     this.multi = false;
     this.multiSplit = false;
     this.useVotingPower = false;
+    this.runOnNoOne = false;
     this.repeatable = false;
     this.includeNo = false;
     this.noRecord = false;
@@ -961,7 +962,7 @@ module.exports = class Meeting {
     // Return if no action to take
     if (
       !finalTarget ||
-      finalTarget == "*" ||
+      (finalTarget == "*" && !this.runOnNoOne) ||
       (this.inputType == "boolean" && this.instant && !isVote)
     ) {
       if (this.instant && isVote) this.game.checkAllMeetingsReady();
@@ -969,7 +970,7 @@ module.exports = class Meeting {
       return;
     }
 
-    if (finalTarget != "*magus") {
+    if (finalTarget != "*magus" && finalTarget != "*") {
       // Get player targeted
       if (this.inputType == "player") {
         if (!this.multi && !this.multiSplit)

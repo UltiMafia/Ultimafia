@@ -1583,6 +1583,10 @@ module.exports = class Player {
     this.game.events.emit("death", this, killer, killType, instant);
     this.game.events.emit("AbilityToggle", this);
 
+    if (this.game.isCleansingDeaths() && this.game.type == "Mafia") {
+      this.game.CleansePlayer(this);
+    }
+
     if (!instant) return;
 
     for (let meeting of this.getMeetings()) {

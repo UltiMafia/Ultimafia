@@ -1758,6 +1758,15 @@ module.exports = class Game {
         ),
       ];
     }
+    if (this.isCleansingDeaths() && this.currentState == 0) {
+      [
+        this.sendAlert(
+          `:crystal: ${this.setup.name}: This Setup is using Cleansing Deaths! Players who die will have any malicious effects they have removed.`,
+          undefined,
+          { color: " #cc57f7" }
+        ),
+      ];
+    }
     if (this.isRoleSharing() && this.currentState == 0) {
       [
         this.sendAlert(
@@ -2380,6 +2389,13 @@ module.exports = class Game {
 
   isHiddenConverts() {
     if (this.getGameSetting("Hidden Conversions")) {
+      return true;
+    }
+    return false;
+  }
+
+  isCleansingDeaths() {
+    if (this.getGameSetting("Cleansing Deaths")) {
       return true;
     }
     return false;
