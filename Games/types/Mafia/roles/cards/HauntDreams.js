@@ -41,6 +41,35 @@ module.exports = class HauntDreams extends Card {
     };
 
     this.listeners = {
+      state: function (stateInfo){
+       if (!this.hasAbility(["Effect"])) {
+          return;
+        }
+
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+
+        var action = new Action({
+          actor: this.player,
+          game: this.player.game,
+          role: this,
+          priority: PRIORITY_BLOCK_EARLY - 1,
+          labels: ["block", "delirium"],
+          run: function () {
+               if(this.role.data.DreamHost.effects.filter((e) => e.name == "Delirious" && e.source == this.role).length <= 0){
+                 if (this.dominates()) {
+                  let effect = this.giveEffect(player,"Delirious", this.player,Infinity, null, this);
+                  this.blockWithDelirium(this.target, true);
+                }
+               }
+             
+          },
+        });
+
+      this.game.queueAction(action);
+
+      },
       AbilityToggle: function (player) {
         if (
           this.hasAbility(["OnlyWhenAlive"]) &&
