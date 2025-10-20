@@ -14,22 +14,18 @@ const utils = require("../lib/Utils");
 const redis = require("../modules/redis");
 const constants = require("../data/constants");
 const dbStats = require("../db/stats");
-const { colorHasGoodBackgroundContrast } = require("../shared/colors");
+const { colorHasGoodContrastForBothThemes } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 
-const youtubeRegex =
-  /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;
+const youtubeRegex = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;
 const soundcloudRegex = /^https?:\/\/(www\.)?soundcloud\.com\/[^\/]+\/[^\/\?]+/;
-const spotifyRegex =
-  /^https?:\/\/open\.spotify\.com\/(track|album|playlist|artist)\/[a-zA-Z0-9]+/;
-const bandcampRegex =
-  /^https?:\/\/([^\/]+\.)?bandcamp\.com\/(track|album)\/[^\/\?]+/;
+const spotifyRegex = /^https?:\/\/open\.spotify\.com\/(track|album|playlist|artist)\/[a-zA-Z0-9]+/;
+const bandcampRegex = /^https?:\/\/([^\/]+\.)?bandcamp\.com\/(track|album)\/[^\/\?]+/;
 const vimeoRegex = /^https?:\/\/(www\.)?vimeo\.com\/(\d+)/;
-const invidiousRegex =
-  /^https?:\/\/(www\.)?(invidious\.io|yewtu\.be|invidious\.flokinet\.to|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.fdn\.fr|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt)\/watch\?v=([a-zA-Z0-9_-]{11})/;
+const invidiousRegex = /^https?:\/\/(www\.)?(invidious\.io|yewtu\.be|invidious\.flokinet\.to|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.fdn\.fr|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt)\/watch\?v=([a-zA-Z0-9_-]{11})/;
 
 router.get("/info", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
@@ -735,6 +731,31 @@ router.get("/accounts", async function (req, res) {
   }
 });
 
+router.post("/bandcamp/oembed", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const { url } = req.body;
+    
+    if (!url || !url.match(bandcampRegex)) {
+      throw new Error("Invalid Bandcamp URL");
+    }
+
+    // Call Bandcamp's oEmbed API
+    const oembedUrl = `https://bandcamp.com/api/oembed/1.0?url=${encodeURIComponent(url)}&format=json`;
+    const response = await fetch(oembedUrl);
+    
+    if (!response.ok) {
+      throw new Error("Failed to fetch Bandcamp oEmbed data");
+    }
+    
+    const data = await response.json();
+    res.send(data);
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error fetching Bandcamp embed data");
+  }
+});
+
 router.post("/youtube", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -752,11 +773,9 @@ router.post("/youtube", async function (req, res) {
     let bandcampMatches = value.match(bandcampRegex);
     let vimeoMatches = value.match(vimeoRegex);
     let invidiousMatches = value.match(invidiousRegex);
-    let directMediaMatches = value.match(
-      /^https?:\/\/.*?\.(ogg|mp3|mp4|webm)$/
-    );
+    let directMediaMatches = value.match(/^https?:\/\/.*?\.(ogg|mp3|mp4|webm)$/);
     let emptyMatches = value.match(/^$/g);
-
+    
     if (matches) {
       let embedId = 0;
       if (matches && matches.length >= 7) {
@@ -772,15 +791,7 @@ router.post("/youtube", async function (req, res) {
         { id: userId },
         { $set: { [`settings.youtube`]: value } }
       );
-    } else if (
-      soundcloudMatches ||
-      spotifyMatches ||
-      bandcampMatches ||
-      vimeoMatches ||
-      invidiousMatches ||
-      directMediaMatches ||
-      emptyMatches
-    ) {
+    } else if (soundcloudMatches || spotifyMatches || bandcampMatches || vimeoMatches || invidiousMatches || directMediaMatches || emptyMatches) {
       await models.User.updateOne(
         { id: userId },
         { $set: { [`settings.youtube`]: value } }
@@ -1126,11 +1137,11 @@ router.post("/settings/update", async function (req, res) {
 
     const propRequiresGoodContrast =
       prop === "textColor" || prop === "nameColor";
-    if (propRequiresGoodContrast && !colorHasGoodBackgroundContrast(value)) {
+    if (propRequiresGoodContrast && !colorHasGoodContrastForBothThemes(value)) {
       return res
         .status(422)
         .end(
-          "how did you manage to abuse bad contrast? lol. fix your color pls"
+          "Color must have good contrast in both light and dark themes. Please choose a different color."
         );
     }
 

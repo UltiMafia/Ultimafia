@@ -3,7 +3,7 @@ const dotenv = require("dotenv").config(".env");
 const db = require("../db/db");
 const models = require("../db/models");
 const redis = require("../modules/redis");
-const { colorHasGoodBackgroundContrast } = require("../shared/colors");
+const { colorHasGoodContrastForBothThemes } = require("../lib/ColorUtils");
 
 const fixBadContrast = async () => {
   try {
@@ -18,24 +18,24 @@ const fixBadContrast = async () => {
       .filter(
         (user) =>
           user?.settings?.nameColor &&
-          !colorHasGoodBackgroundContrast(user.settings.nameColor)
+          !colorHasGoodContrastForBothThemes(user.settings.nameColor)
       )
       .map((user) => user._id);
     let user_idsWithBadTextColor = users
       .filter(
         (user) =>
           user?.settings?.textColor &&
-          !colorHasGoodBackgroundContrast(user.settings.textColor)
+          !colorHasGoodContrastForBothThemes(user.settings.textColor)
       )
       .map((user) => user._id);
     const userIdsWithBadSettings = users
       .filter((user) => {
         const badNameColor =
           user?.settings?.nameColor &&
-          !colorHasGoodBackgroundContrast(user.settings.nameColor);
+          !colorHasGoodContrastForBothThemes(user.settings.nameColor);
         const badTextColor =
           user?.settings?.textColor &&
-          !colorHasGoodBackgroundContrast(user.settings.textColor);
+          !colorHasGoodContrastForBothThemes(user.settings.textColor);
 
         return badNameColor || badTextColor;
       })
@@ -83,14 +83,14 @@ const fixBadContrast = async () => {
       .filter(
         (user) =>
           user?.settings?.nameColor &&
-          !colorHasGoodBackgroundContrast(user.settings.nameColor)
+          !colorHasGoodContrastForBothThemes(user.settings.nameColor)
       )
       .map((user) => user._id);
     user_idsWithBadTextColor = users
       .filter(
         (user) =>
           user?.settings?.textColor &&
-          !colorHasGoodBackgroundContrast(user.settings.textColor)
+          !colorHasGoodContrastForBothThemes(user.settings.textColor)
       )
       .map((user) => user._id);
     console.log(
