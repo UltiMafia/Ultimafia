@@ -151,8 +151,7 @@ export default function Settings() {
         saveBtnDiffer: "youtube",
         saveBtnOnClick: onMediaSave,
         default: "",
-        extraInfo:
-          "Supports YouTube, SoundCloud, Spotify, Bandcamp, Vimeo, Invidious, and direct media files (mp3, mp4, webm, ogg)",
+        extraInfo: "Supports YouTube, SoundCloud, Spotify, Bandcamp, Vimeo, Invidious, and direct media files (mp3, mp4, webm, ogg)",
       },
       {
         label: "Autoplay Media",
@@ -582,7 +581,7 @@ export default function Settings() {
 
   function onVanityUrlSave(vanityUrl, deps) {
     axios
-      .post("/api/user/vanityUrl", { vanityUrl })
+      .post("/api/vanityUrl", { vanityUrl })
       .then((res) => {
         deps.siteInfo.showAlert("Vanity URL changed", "success");
 

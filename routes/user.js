@@ -17,19 +17,47 @@ const dbStats = require("../db/stats");
 const { colorHasGoodContrastForBothThemes } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
+
+// Helper function to resolve user ID from identifier (ID or vanity URL)
+async function resolveUserId(identifier) {
+  // First try to find user by ID
+  let user = await models.User.findOne({
+    id: identifier,
+    deleted: false,
+  }).select("id -_id");
+
+  if (user) {
+    return user.id;
+  }
+
+  // If not found by ID, try to find by vanity URL
+  const vanityUrl = await models.VanityUrl.findOne({
+    url: identifier
+  }).select("userId -_id");
+
+  if (vanityUrl) {
+    // Verify the user still exists and is not deleted
+    const userByVanity = await models.User.findOne({
+      id: vanityUrl.userId,
+      deleted: false,
+    }).select("id -_id");
+
+    if (userByVanity) {
+      return userByVanity.id;
+    }
+  }
+
+  return null;
+}
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 
-const youtubeRegex =
-  /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;
+const youtubeRegex = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;
 const soundcloudRegex = /^https?:\/\/(www\.)?soundcloud\.com\/[^\/]+\/[^\/\?]+/;
-const spotifyRegex =
-  /^https?:\/\/open\.spotify\.com\/(track|album|playlist|artist)\/[a-zA-Z0-9]+/;
-const bandcampRegex =
-  /^https?:\/\/([^\/]+\.)?bandcamp\.com\/(track|album)\/[^\/\?]+/;
+const spotifyRegex = /^https?:\/\/open\.spotify\.com\/(track|album|playlist|artist)\/[a-zA-Z0-9]+/;
+const bandcampRegex = /^https?:\/\/([^\/]+\.)?bandcamp\.com\/(track|album)\/[^\/\?]+/;
 const vimeoRegex = /^https?:\/\/(www\.)?vimeo\.com\/(\d+)/;
-const invidiousRegex =
-  /^https?:\/\/(www\.)?(invidious\.io|yewtu\.be|invidious\.flokinet\.to|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.fdn\.fr|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt)\/watch\?v=([a-zA-Z0-9_-]{11})/;
+const invidiousRegex = /^https?:\/\/(www\.)?(invidious\.io|yewtu\.be|invidious\.flokinet\.to|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.fdn\.fr|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt)\/watch\?v=([a-zA-Z0-9_-]{11})/;
 
 router.get("/info", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
@@ -525,28 +553,13 @@ router.post("/karma", async function (req, res) {
 router.get("/:id/love", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = String(req.params.id);
+    const identifier = String(req.params.id);
+    const userId = await resolveUserId(identifier);
 
-    // First try to find user by ID
-    var userById = await models.User.findOne({
-      id: userId,
-      deleted: false,
-    }).select("id -_id");
-
-    // If not found by ID, try to find by vanity URL
-    if (!userById) {
-      var userByVanity = await models.User.findOne({
-        "settings.vanityUrl": userId,
-        deleted: false,
-      }).select("id -_id");
-
-      if (!userByVanity) {
-        res.status(404);
-        res.send("User not found.");
-        return;
-      }
-
-      userId = userByVanity.id;
+    if (!userId) {
+      res.status(404);
+      res.send("User not found.");
+      return;
     }
 
     var love = await models.Love.findOne({ userId })
@@ -573,28 +586,13 @@ router.get("/:id/love", async function (req, res) {
 router.get("/:id/friends", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = String(req.params.id);
+    const identifier = String(req.params.id);
+    const userId = await resolveUserId(identifier);
 
-    // First try to find user by ID
-    var userById = await models.User.findOne({
-      id: userId,
-      deleted: false,
-    }).select("id -_id");
-
-    // If not found by ID, try to find by vanity URL
-    if (!userById) {
-      var userByVanity = await models.User.findOne({
-        "settings.vanityUrl": userId,
-        deleted: false,
-      }).select("id -_id");
-
-      if (!userByVanity) {
-        res.status(404);
-        res.send("User not found.");
-        return;
-      }
-
-      userId = userByVanity.id;
+    if (!userId) {
+      res.status(404);
+      res.send("User not found.");
+      return;
     }
 
     var last = Number(req.query.last);
@@ -630,31 +628,16 @@ router.get("/:id/friends", async function (req, res) {
 
 router.get("/:id/info", async function (req, res) {
   try {
-    var userId = String(req.params.id);
+    const identifier = String(req.params.id);
+    const userId = await resolveUserId(identifier);
 
-    // First try to find user by ID
-    var userById = await models.User.findOne({
-      id: userId,
-      deleted: false,
-    }).select("id -_id");
-
-    // If not found by ID, try to find by vanity URL
-    if (!userById) {
-      var userByVanity = await models.User.findOne({
-        "settings.vanityUrl": userId,
-        deleted: false,
-      }).select("id -_id");
-
-      if (!userByVanity) {
-        res.status(404);
-        res.send({
-          name: "[not found]",
-          avatar: false,
-        });
-        return;
-      }
-
-      userId = userByVanity.id;
+    if (!userId) {
+      res.status(404);
+      res.send({
+        name: "[not found]",
+        avatar: false,
+      });
+      return;
     }
 
     var user = await redis.getUserInfo(userId);
@@ -739,21 +722,19 @@ router.post("/bandcamp/oembed", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     const { url } = req.body;
-
+    
     if (!url || !url.match(bandcampRegex)) {
       throw new Error("Invalid Bandcamp URL");
     }
 
     // Call Bandcamp's oEmbed API
-    const oembedUrl = `https://bandcamp.com/api/oembed/1.0?url=${encodeURIComponent(
-      url
-    )}&format=json`;
+    const oembedUrl = `https://bandcamp.com/api/oembed/1.0?url=${encodeURIComponent(url)}&format=json`;
     const response = await fetch(oembedUrl);
-
+    
     if (!response.ok) {
       throw new Error("Failed to fetch Bandcamp oEmbed data");
     }
-
+    
     const data = await response.json();
     res.send(data);
   } catch (e) {
@@ -779,11 +760,9 @@ router.post("/youtube", async function (req, res) {
     let bandcampMatches = value.match(bandcampRegex);
     let vimeoMatches = value.match(vimeoRegex);
     let invidiousMatches = value.match(invidiousRegex);
-    let directMediaMatches = value.match(
-      /^https?:\/\/.*?\.(ogg|mp3|mp4|webm)$/
-    );
+    let directMediaMatches = value.match(/^https?:\/\/.*?\.(ogg|mp3|mp4|webm)$/);
     let emptyMatches = value.match(/^$/g);
-
+    
     if (matches) {
       let embedId = 0;
       if (matches && matches.length >= 7) {
@@ -799,15 +778,7 @@ router.post("/youtube", async function (req, res) {
         { id: userId },
         { $set: { [`settings.youtube`]: value } }
       );
-    } else if (
-      soundcloudMatches ||
-      spotifyMatches ||
-      bandcampMatches ||
-      vimeoMatches ||
-      invidiousMatches ||
-      directMediaMatches ||
-      emptyMatches
-    ) {
+    } else if (soundcloudMatches || spotifyMatches || bandcampMatches || vimeoMatches || invidiousMatches || directMediaMatches || emptyMatches) {
       await models.User.updateOne(
         { id: userId },
         { $set: { [`settings.youtube`]: value } }
@@ -879,57 +850,7 @@ router.post("/deathMessage", async function (req, res) {
   }
 });
 
-router.post("/vanityUrl", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    let userId = await routeUtils.verifyLoggedIn(req);
-    var itemsOwned = await redis.getUserItemsOwned(userId);
-    let vanityUrl = String(req.body.vanityUrl).trim();
-
-    if (!itemsOwned.vanityUrl) {
-      res.status(500);
-      res.send("You must purchase Vanity URL from the Shop.");
-      return;
-    }
-
-    // Validate vanity URL
-    if (vanityUrl.length < 1 || vanityUrl.length > 20) {
-      res.status(500);
-      res.send("Vanity URL must be between 1 and 20 characters.");
-      return;
-    }
-
-    // Only allow letters, numbers, and hyphens
-    if (!/^[a-zA-Z0-9-]+$/.test(vanityUrl)) {
-      res.status(500);
-      res.send("Vanity URL can only contain letters, numbers, and hyphens.");
-      return;
-    }
-
-    // Check if vanity URL is already taken
-    var existingUser = await models.User.findOne({
-      "settings.vanityUrl": vanityUrl,
-      deleted: false,
-    }).select("_id");
-
-    if (existingUser) {
-      res.status(500);
-      res.send("This vanity URL is already taken.");
-      return;
-    }
-
-    await models.User.updateOne(
-      { id: userId },
-      { $set: { [`settings.vanityUrl`]: vanityUrl } }
-    ).exec();
-    await redis.cacheUserInfo(userId, true);
-    res.send("Vanity URL updated successfully");
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error updating vanity URL.");
-  }
-});
+// Vanity URL routes moved to /api/vanityUrl
 
 router.post("/customEmote/create", async function (req, res) {
   try {
