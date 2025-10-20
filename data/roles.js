@@ -4589,6 +4589,7 @@ const roleData = {
       description: [
         "Each night, can choose to visit one player and kill them.",
         `A Satyr's starting neighbors are "Delirious". Neighbors whose roles are banished or not village aligned are skipped over.`,
+        `If a Satyr's starting neighbors stop being "Delirious", they will become "Delirious" the next night.`,
         deliriumDef,
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
@@ -4606,8 +4607,8 @@ const roleData = {
       ],
       description: [
         "Each night, can choose to visit one player and kill them.",
-        "On the first night, must choose to visit one player and make them their vessel.",
-        `The Lich's vessel is "Delirious".`,
+        `On the first night, must choose to visit one player and make them their vessel and "Delirious".`,
+        `If a Lich's vessel stops being "Delirious", they will become "Delirious" the next night.`,
         deliriumDef,
         "A Lich dies if and only if their Vessel dies.",
       ],
