@@ -24,7 +24,7 @@ const getContrast = (color1, color2) => {
   return ratio;
 };
 
-export const colorHasGoodBackgroundContrast = (color, theme = 'dark') => {
+export const colorHasGoodBackgroundContrast = (color, theme = "dark") => {
   const MIN_CONTRAST_RATIO = 3.0;
   const backgroundColorDark = "#121212";
   const backgroundColorLight = "#ffffff";
@@ -32,7 +32,7 @@ export const colorHasGoodBackgroundContrast = (color, theme = 'dark') => {
   const darkRatio = getContrast(color, backgroundColorDark);
   const lightRatio = getContrast(color, backgroundColorLight);
 
-  if (theme === 'light') {
+  if (theme === "light") {
     return lightRatio >= MIN_CONTRAST_RATIO;
   } else {
     return darkRatio >= MIN_CONTRAST_RATIO;
