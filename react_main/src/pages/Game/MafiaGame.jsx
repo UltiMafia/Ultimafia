@@ -47,6 +47,7 @@ export default function MafiaGame() {
 
   const customAudios = [
     { fileName: "gunshot", loops: false, overrides: false, volumes: 1 },
+    { fileName: "askGhost", loops: false, overrides: false, volumes: 1 },
     { fileName: "condemn", loops: false, overrides: false, volumes: 1 },
     { fileName: "explosion", loops: false, overrides: false, volumes: 0.5 },
     { fileName: "snowball", loops: false, overrides: false, volumes: 0.5 },
@@ -419,7 +420,8 @@ export default function MafiaGame() {
             break;
         }
       }
-    } else {
+    } 
+    else {
       game.stopAudio();
     }
   }, [history.currentState]);
@@ -526,6 +528,11 @@ export default function MafiaGame() {
 
     socket.on("gunshot", () => {
       game.playAudio("gunshot");
+    });
+    socket.on("giveClue", (player) => {
+      if(player == self){
+      game.playAudio("askGhost");
+      }
     });
     socket.on("condemn", () => {
       game.playAudio("condemn");
