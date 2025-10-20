@@ -32,6 +32,7 @@ import { Nav } from "./components/Nav";
 import { Welcome } from "./pages/Welcome/Welcome";
 import { Avatar, useUser } from "./pages/User/User";
 import UserNotifications from "./pages/User/UserNotifications";
+import { GuestAuthButtons } from "./components/GuestAuthButtons";
 import CookieBanner from "./components/CookieBanner";
 import Chat from "./pages/Chat/Chat";
 
@@ -387,13 +388,17 @@ function Header({ setShowAnnouncementTemporarily }) {
           <SiteLogo />
         </Link>
         <Stack direction="column">
-          {user.loggedIn && smallWidth && (
+          {smallWidth && (
             <div className="user-wrapper">
-              <UserNotifications
-                openAnnouncements={openAnnouncements}
-                user={user}
-                SiteNotifs={SiteNotifs}
-              />
+              {user.loggedIn ? (
+                <UserNotifications
+                  openAnnouncements={openAnnouncements}
+                  user={user}
+                  SiteNotifs={SiteNotifs}
+                />
+              ) : (
+                <GuestAuthButtons />
+              )}
             </div>
           )}
           <div
@@ -469,13 +474,17 @@ function Header({ setShowAnnouncementTemporarily }) {
           >
             <span>Policy</span>
           </NavLink>
-          {user.loggedIn && !smallWidth && (
+          {!smallWidth && (
             <div className="user-wrapper">
-              <UserNotifications
-                openAnnouncements={openAnnouncements}
-                user={user}
-                SiteNotifs={SiteNotifs}
-              />
+              {user.loggedIn ? (
+                <UserNotifications
+                  openAnnouncements={openAnnouncements}
+                  user={user}
+                  SiteNotifs={SiteNotifs}
+                />
+              ) : (
+                <GuestAuthButtons />
+              )}
             </div>
           )}
         </Nav>

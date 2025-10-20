@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import "css/main.css";
 import "./Welcome.css";
 import { RegisterDialog } from "./RegisterDialog";
@@ -34,6 +35,7 @@ export const Welcome = () => {
   const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const snackbarHook = useSnackbar();
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.body.style.backgroundImage = `none`;
@@ -65,6 +67,7 @@ export const Welcome = () => {
   }, []);
   const openLoginDialog = () => setLoginDialogOpen(true);
   const openRegisterDialog = () => setRegisterDialogOpen(true);
+  const proceedAsGuest = () => navigate("/play");
 
   const paddingX = isPhoneDevice ? 1 : 4;
   const CTAbuttons = (
@@ -90,7 +93,13 @@ export const Welcome = () => {
         {/*  I want to play!*/}
         {/*</Button>*/}
         <Box sx={{ mt: 1 }}>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginBottom: "8px",
+            }}
+          >
             <Button
               variant="outlined"
               sx={{
@@ -118,6 +127,18 @@ export const Welcome = () => {
               Register
             </Button>
           </div>
+          <Button
+            variant="text"
+            sx={{
+              textTransform: "none",
+              fontSize: "16px",
+              width: "100%",
+              color: "text.secondary",
+            }}
+            onClick={proceedAsGuest}
+          >
+            Proceed as Guest
+          </Button>
         </Box>
       </div>
     </Box>
