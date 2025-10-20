@@ -144,13 +144,14 @@ export default function Settings() {
         disabled: (deps) => !deps.user.itemsOwned.customProfile,
       },
       {
-        label: "Media video",
+        label: "Media URL",
         ref: "youtube",
         type: "text",
         saveBtn: "Change",
         saveBtnDiffer: "youtube",
-        saveBtnOnClick: onYoutubeSave,
+        saveBtnOnClick: onMediaSave,
         default: "",
+        extraInfo: "Supports YouTube, SoundCloud, Spotify, Vimeo, Invidious, and direct media files (mp3, mp4, webm, ogg)",
       },
       {
         label: "Autoplay Media",
@@ -546,11 +547,11 @@ export default function Settings() {
       .catch(deps.errorAlert);
   }
 
-  function onYoutubeSave(link, deps) {
+  function onMediaSave(link, deps) {
     axios
       .post("/api/user/youtube", { link })
       .then((res) => {
-        deps.siteInfo.showAlert("Profile video changed", "success");
+        deps.siteInfo.showAlert("Profile media changed", "success");
 
         deps.user.set(
           update(deps.user, {
