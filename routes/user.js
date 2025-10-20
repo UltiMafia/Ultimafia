@@ -32,7 +32,7 @@ async function resolveUserId(identifier) {
 
   // If not found by ID, try to find by vanity URL
   const vanityUrl = await models.VanityUrl.findOne({
-    url: identifier,
+    url: identifier
   }).select("userId -_id");
 
   if (vanityUrl) {
@@ -52,16 +52,12 @@ async function resolveUserId(identifier) {
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 
-const youtubeRegex =
-  /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;
+const youtubeRegex = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]{11}).*/;
 const soundcloudRegex = /^https?:\/\/(www\.)?soundcloud\.com\/[^\/]+\/[^\/\?]+/;
-const spotifyRegex =
-  /^https?:\/\/open\.spotify\.com\/(track|album|playlist|artist)\/[a-zA-Z0-9]+/;
-const bandcampRegex =
-  /^https?:\/\/([^\/]+\.)?bandcamp\.com\/(track|album)\/[^\/\?]+/;
+const spotifyRegex = /^https?:\/\/open\.spotify\.com\/(track|album|playlist|artist)\/[a-zA-Z0-9]+/;
+const bandcampRegex = /^https?:\/\/([^\/]+\.)?bandcamp\.com\/(track|album)\/[^\/\?]+/;
 const vimeoRegex = /^https?:\/\/(www\.)?vimeo\.com\/(\d+)/;
-const invidiousRegex =
-  /^https?:\/\/(www\.)?(invidious\.io|yewtu\.be|invidious\.flokinet\.to|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.fdn\.fr|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt)\/watch\?v=([a-zA-Z0-9_-]{11})/;
+const invidiousRegex = /^https?:\/\/(www\.)?(invidious\.io|yewtu\.be|invidious\.flokinet\.to|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.fdn\.fr|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt)\/watch\?v=([a-zA-Z0-9_-]{11})/;
 
 router.get("/info", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
@@ -246,7 +242,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar settings accounts wins losses kudos karma points pointsNegative achievements bio pronouns banner setups games numFriends stats _id"
+        "id name avatar settings accounts wins losses kudos karma points pointsNegative achievements bio pronouns banner setups games numFriends stats lastActive _id"
       )
       .populate({
         path: "setups",
@@ -464,6 +460,10 @@ router.get("/:id/profile", async function (req, res) {
       }
     }
 
+    // Add online status and last active time
+    user.status = await redis.getUserStatus(userId);
+    user.lastActive = user.lastActive;
+
     res.send(user);
   } catch (e) {
     logger.error(e);
@@ -660,7 +660,11 @@ router.get("/:id/info", async function (req, res) {
     user.perms = (await redis.getUserPermissions(req.params.id)) || {};
     user.rank = String(user.perms.rank || 0);
     user.perms = user.perms.perms || {};
-    delete user.status;
+    
+    // Get online status and last active time
+    user.status = await redis.getUserStatus(user.id);
+    const userDoc = await models.User.findOne({ id: user.id }).select("lastActive -_id");
+    user.lastActive = userDoc?.lastActive;
 
     res.send(user);
   } catch (e) {
@@ -726,21 +730,19 @@ router.post("/bandcamp/oembed", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     const { url } = req.body;
-
+    
     if (!url || !url.match(bandcampRegex)) {
       throw new Error("Invalid Bandcamp URL");
     }
 
     // Call Bandcamp's oEmbed API
-    const oembedUrl = `https://bandcamp.com/api/oembed/1.0?url=${encodeURIComponent(
-      url
-    )}&format=json`;
+    const oembedUrl = `https://bandcamp.com/api/oembed/1.0?url=${encodeURIComponent(url)}&format=json`;
     const response = await fetch(oembedUrl);
-
+    
     if (!response.ok) {
       throw new Error("Failed to fetch Bandcamp oEmbed data");
     }
-
+    
     const data = await response.json();
     res.send(data);
   } catch (e) {
@@ -766,11 +768,9 @@ router.post("/youtube", async function (req, res) {
     let bandcampMatches = value.match(bandcampRegex);
     let vimeoMatches = value.match(vimeoRegex);
     let invidiousMatches = value.match(invidiousRegex);
-    let directMediaMatches = value.match(
-      /^https?:\/\/.*?\.(ogg|mp3|mp4|webm)$/
-    );
+    let directMediaMatches = value.match(/^https?:\/\/.*?\.(ogg|mp3|mp4|webm)$/);
     let emptyMatches = value.match(/^$/g);
-
+    
     if (matches) {
       let embedId = 0;
       if (matches && matches.length >= 7) {
@@ -786,15 +786,7 @@ router.post("/youtube", async function (req, res) {
         { id: userId },
         { $set: { [`settings.youtube`]: value } }
       );
-    } else if (
-      soundcloudMatches ||
-      spotifyMatches ||
-      bandcampMatches ||
-      vimeoMatches ||
-      invidiousMatches ||
-      directMediaMatches ||
-      emptyMatches
-    ) {
+    } else if (soundcloudMatches || spotifyMatches || bandcampMatches || vimeoMatches || invidiousMatches || directMediaMatches || emptyMatches) {
       await models.User.updateOne(
         { id: userId },
         { $set: { [`settings.youtube`]: value } }

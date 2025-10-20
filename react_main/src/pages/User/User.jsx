@@ -14,14 +14,13 @@ import "css/user.css";
 import { youtubeRegex } from "components/Basic";
 
 const soundcloudRegex = /^https?:\/\/(www\.)?soundcloud\.com\/[^\/]+\/[^\/\?]+/;
-const spotifyRegex =
-  /^https?:\/\/open\.spotify\.com\/(track|album|playlist|artist)\/[a-zA-Z0-9]+/;
+const spotifyRegex = /^https?:\/\/open\.spotify\.com\/(track|album|playlist|artist)\/[a-zA-Z0-9]+/;
+const bandcampRegex = /^https?:\/\/([^\/]+\.)?bandcamp\.com\/(track|album)\/[^\/\?]+/;
 const vimeoRegex = /^https?:\/\/(www\.)?vimeo\.com\/(\d+)/;
-const invidiousRegex =
-  /^https?:\/\/(www\.)?(invidious\.io|yewtu\.be|invidious\.flokinet\.to|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.fdn\.fr|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt)\/watch\?v=([a-zA-Z0-9_-]{11})/;
+const invidiousRegex = /^https?:\/\/(www\.)?(invidious\.io|yewtu\.be|invidious\.flokinet\.to|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.fdn\.fr|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt)\/watch\?v=([a-zA-Z0-9_-]{11})/;
 import { useTheme } from "@mui/material/styles";
 import { Popover } from "@mui/material";
-import { Box, IconButton, Stack } from "@mui/material";
+import { Box, IconButton, Stack, Typography } from "@mui/material";
 import { PieChart } from "./PieChart";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
@@ -60,9 +59,7 @@ export function SoundCloudEmbed(props) {
       <div id="profile-video" className="video-responsive-generic">
         <iframe
           className="video-responsive-content"
-          src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(
-            mediaUrl
-          )}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true`}
+          src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(mediaUrl)}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true`}
           allow="autoplay"
           allowFullScreen
         ></iframe>
@@ -77,10 +74,7 @@ export function SpotifyEmbed(props) {
   const mediaUrl = props.mediaUrl;
   if (mediaUrl) {
     // Convert Spotify URL to embed format
-    const embedUrl = mediaUrl.replace(
-      "open.spotify.com",
-      "open.spotify.com/embed"
-    );
+    const embedUrl = mediaUrl.replace('open.spotify.com', 'open.spotify.com/embed');
     return (
       <div id="profile-video" className="video-responsive-generic">
         <iframe
@@ -94,6 +88,64 @@ export function SpotifyEmbed(props) {
   } else {
     return null;
   }
+}
+
+export function BandcampEmbed(props) {
+  const mediaUrl = props.mediaUrl;
+  const [embedHtml, setEmbedHtml] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (mediaUrl) {
+      // Use our backend endpoint to get Bandcamp oEmbed data
+      axios.post('/api/user/bandcamp/oembed', { url: mediaUrl })
+        .then(response => {
+          if (response.data.html) {
+            setEmbedHtml(response.data.html);
+          } else {
+            setError(true);
+          }
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error('Error fetching Bandcamp oEmbed:', err);
+          setError(true);
+          setLoading(false);
+        });
+    }
+  }, [mediaUrl]);
+
+  if (loading) {
+    return (
+      <div id="profile-video" className="video-responsive-generic">
+        <div style={{ padding: '20px', textAlign: 'center' }}>Loading Bandcamp player...</div>
+      </div>
+    );
+  }
+
+  if (error || !embedHtml) {
+    // Fallback to simple iframe with embed parameters
+    const embedUrl = `${mediaUrl}?size=small&bgcol=ffffff&linkcol=0687f5&transparent=true`;
+    return (
+      <div id="profile-video" className="video-responsive-generic">
+        <iframe
+          style={{ border: 0, width: '100%', height: '42px' }}
+          src={embedUrl}
+          seamless
+        >
+          <a href={mediaUrl}>View on Bandcamp</a>
+        </iframe>
+      </div>
+    );
+  }
+
+  // Use the HTML returned by Bandcamp's oEmbed API
+  return (
+    <div id="profile-video" className="video-responsive-generic">
+      <div dangerouslySetInnerHTML={{ __html: embedHtml }} />
+    </div>
+  );
 }
 
 export function VimeoEmbed(props) {
@@ -141,7 +193,6 @@ export function InvidiousEmbed(props) {
   }
   return null;
 }
-
 export function MediaEmbed(props) {
   const mediaUrl = props.mediaUrl;
   const autoplay = !!props.autoplay;
@@ -169,6 +220,9 @@ export function MediaEmbed(props) {
     }
     if (mediaUrl.match(spotifyRegex)) {
       return "spotify";
+    }
+    if (mediaUrl.match(bandcampRegex)) {
+      return "bandcamp";
     }
     if (mediaUrl.match(vimeoRegex)) {
       return "vimeo";
@@ -241,6 +295,8 @@ export function MediaEmbed(props) {
       return <SoundCloudEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
     case "spotify":
       return <SpotifyEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+    case "bandcamp":
+      return <BandcampEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
     case "vimeo":
       return <VimeoEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
     case "invidious":
@@ -667,6 +723,56 @@ export function getLoveTitle(loveType) {
 
 export function StatusIcon(props) {
   return <div className={`status-icon ${props.status}`} />;
+}
+
+export function OnlineStatus(props) {
+  const { status, lastActive } = props;
+  
+  if (status === "online") {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 0.5,
+        }}
+      >
+        <Typography
+          variant="caption"
+          sx={{
+            filter: "opacity(.75)",
+            fontSize: "0.75rem",
+          }}
+        >
+          Online
+        </Typography>
+        <div className="status-icon online" />
+      </Box>
+    );
+  }
+  
+  if (lastActive) {
+    const lastActiveDate = new Date(lastActive);
+    const formattedDate = lastActiveDate.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit", 
+      year: "numeric"
+    });
+    
+    return (
+      <Typography
+        variant="caption"
+        sx={{
+          filter: "opacity(.75)",
+          fontSize: "0.75rem",
+        }}
+      >
+        Last online {formattedDate}
+      </Typography>
+    );
+  }
+  
+  return null;
 }
 
 export function Badges(props) {

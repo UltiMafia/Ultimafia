@@ -13,6 +13,7 @@ import {
   MarriedIcon,
   getLoveTitle,
   NameWithAvatar,
+  OnlineStatus,
 } from "./User";
 import { HiddenUpload, TextEditor } from "components/Form";
 import Setup from "components/Setup";
@@ -93,6 +94,8 @@ export default function Profile() {
   const [moderationDrawerOpen, setModerationDrawerOpen] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [currentUserLove, setCurrentUserLove] = useState({});
+  const [status, setStatus] = useState("offline");
+  const [lastActive, setLastActive] = useState(null);
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -148,6 +151,8 @@ export default function Profile() {
           setPointsNegative(res.data.pointsNegative);
           setKarmaInfo(res.data.karmaInfo);
           setGroups(res.data.groups);
+          setStatus(res.data.status || "offline");
+          setLastActive(res.data.lastActive);
           setMediaUrl("");
           setAutoplay(false);
           setSaved(res.data.saved);
@@ -764,6 +769,15 @@ export default function Profile() {
             </Typography>
           )}
         </Stack>
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          mt: 0.5,
+        }}
+      >
+        <OnlineStatus status={status} lastActive={lastActive} />
       </Box>
     </Grid>
   );
