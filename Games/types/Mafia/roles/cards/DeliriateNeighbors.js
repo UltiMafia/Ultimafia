@@ -1,31 +1,47 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
+const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
 
 module.exports = class DeliriateNeighbors extends Card {
   constructor(role) {
     super(role);
 
     this.listeners = {
-      AbilityToggle: function (player) {
-        if (this.startingNeighbors && this.startingNeighbors.includes(player)) {
+      state: function (stateInfo){
+       if (!this.hasAbility(["Effect"])) {
           return;
         }
-        if (this.DeliriumNeighborEffects == null) {
-          this.DeliriumNeighborEffects = [];
+
+        if (!stateInfo.name.match(/Night/)) {
+          return;
         }
-        for (let x = 0; x < this.DeliriumNeighborEffects.length; x++) {
-          if (this.DeliriumNeighborEffects[x].player) {
-            var index = this.passiveEffects.indexOf(
-              this.DeliriumNeighborEffects[x]
-            );
-            if (index != -1) {
-              this.passiveEffects.splice(index, 1);
-            }
-            this.DeliriumNeighborEffects[x].remove();
-          }
+
+        var action = new Action({
+          actor: this.player,
+          game: this.player.game,
+          role: this,
+          priority: PRIORITY_NIGHT_ROLE_BLOCKER + 1,
+          labels: ["block", "delirium"],
+          run: function () {
+             for (let player of this.role.startingNeighbors){
+               if(player.effects.filter((e) => e.name == "Delirious" && e.source == this.role).length <= 0){
+                 if (this.dominates(player)) {
+                  let effect = this.role.giveEffect(player,"Delirious", this.actor,Infinity, null, this.role);
+                  this.blockWithDelirium(player, true);
+                }
+               }
+             }
+          },
+        });
+
+      this.game.queueAction(action);
+
+      },
+      AbilityToggle: function (player) {
+        if (this.startingNeighbors) {
+          return;
         }
-        this.DeliriumNeighborEffects = [];
         if (this.hasAbility(["Deception"])) {
           if (this.startingNeighbors == null) {
             let players = this.game.alivePlayers();
@@ -78,8 +94,6 @@ module.exports = class DeliriateNeighbors extends Card {
               null,
               this
             );
-            this.passiveEffects.push(effect);
-            this.DeliriumNeighborEffects.push(effect);
           }
         }
       },

@@ -47,6 +47,7 @@ export default function MafiaGame() {
 
   const customAudios = [
     { fileName: "gunshot", loops: false, overrides: false, volumes: 1 },
+    { fileName: "ghostAsk", loops: false, overrides: false, volumes: 1 },
     { fileName: "condemn", loops: false, overrides: false, volumes: 1 },
     { fileName: "explosion", loops: false, overrides: false, volumes: 0.5 },
     { fileName: "snowball", loops: false, overrides: false, volumes: 0.5 },
@@ -419,14 +420,23 @@ export default function MafiaGame() {
             break;
         }
       }
-    } else {
+    } 
+    else if(currentState && (currentState.name.startsWith("Give Clue") || currentState.name.startsWith("Dawn"))){
+      //Night Music Contiunes at Give Clue and Dawn
+    }
+    else {
       game.stopAudio();
     }
   }, [history.currentState]);
 
   useSocketListeners((socket) => {
     socket.on("state", (state) => {
-      if (playBellRef.current) game.playAudio("bell");
+      if(state && state.name && state.name.startsWith("Give Clue")){
+
+      }
+      else if (playBellRef.current){ 
+        game.playAudio("bell");
+      }
 
       playBellRef.current = true;
     });
@@ -526,6 +536,11 @@ export default function MafiaGame() {
 
     socket.on("gunshot", () => {
       game.playAudio("gunshot");
+    });
+    socket.on("giveClue", (player) => {
+      if(player == self){
+      game.playAudio("ghostAsk");
+      }
     });
     socket.on("condemn", () => {
       game.playAudio("condemn");
