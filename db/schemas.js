@@ -73,6 +73,7 @@ var schemas = {
       hideKarma: { type: Boolean, default: false },
       hidePointsNegative: { type: Boolean, default: true },
       deathMessage: String,
+      vanityUrl: { type: String, default: "" },
     },
     accounts: {
       discord: String,
@@ -116,6 +117,7 @@ var schemas = {
       archivedGames: { type: Number, default: 0 },
       archivedGamesMax: { type: Number, default: 0 },
       bonusRedHearts: { type: Number, default: 0 },
+      vanityUrl: { type: Number, default: 0 },
     },
     stats: {},
     winRate: { type: Number, default: 0 },
@@ -552,6 +554,23 @@ var schemas = {
     expiresOn: { type: Number, index: true },
     canPlayAfter: { type: Number },
     level: { type: Number, default: 0 },
+  }),
+  Poll: new mongoose.Schema({
+    id: { type: String, index: true },
+    lobby: { type: String, index: true },
+    title: String,
+    question: String,
+    options: [String],
+    creator: { type: String, index: true },
+    created: { type: Number, index: true },
+    completed: { type: Boolean, default: false, index: true },
+    completedAt: { type: Number, index: true },
+  }),
+  PollVote: new mongoose.Schema({
+    pollId: { type: String, index: true },
+    userId: { type: String, index: true },
+    optionIndex: { type: Number, index: true },
+    votedAt: { type: Number, index: true },
   }),
 };
 

@@ -80,6 +80,7 @@ import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
 
 import lore from "images/emotes/lore.webp";
 import poison from "images/emotes/poison.webp";
+import unicorn from "images/emotes/unicorn.webp";
 import exit from "images/emotes/exit.png";
 import veg from "images/emotes/veg.webp";
 import system from "images/emotes/system.webp";
@@ -93,6 +94,8 @@ import dice5 from "images/emotes/dice5.webp";
 import dice6 from "images/emotes/dice6.webp";
 import { Timer } from "components/gameComponents/Timer";
 import { ChangeHeadPing } from "components/gameComponents/ChangeHeadPing";
+import RoleRevealModal from "components/gameComponents/RoleRevealModal";
+import ChangeSetupDialog from "components/gameComponents/ChangeSetupDialog";
 
 const emoteMap = {
   dice1: dice1,
@@ -148,6 +151,10 @@ function GameWrapper(props) {
   const [dev, setDev] = useState(false);
   const [pingInfo, setPingInfo] = useState(null);
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const [roleRevealModalOpen, setRoleRevealModalOpen] = useState(false);
+  const [roleRevealData, setRoleRevealData] = useState(null);
+  const [hostId, setHostId] = useState(null);
+  const [changeSetupDialogOpen, setChangeSetupDialogOpen] = useState(false);
 
   const playersRef = useRef();
   const selfRef = useRef();
@@ -577,6 +584,27 @@ function GameWrapper(props) {
       });
     });
 
+    socket.on("roleReveal", (info) => {
+      // Only show modal if this is for the current player and game type supports it
+      if (
+        info.playerId === selfRef.current &&
+        (gameType === "Mafia" ||
+          gameType === "Resistance" ||
+          gameType === "Secret Dictator")
+      ) {
+        setRoleRevealData(info.roleData);
+        setRoleRevealModalOpen(true);
+      }
+
+      // Still update history for role prediction clearing
+      toggleRolePrediction(info.playerId, null);
+      updateHistory({
+        type: "reveal",
+        playerId: info.playerId,
+        role: info.role,
+      });
+    });
+
     socket.on("death", (playerId) => {
       updateHistory({
         type: "death",
@@ -711,6 +739,7 @@ function GameWrapper(props) {
         setGameType(res.data.type);
         setPort(res.data.port);
         setToken(res.data.token || false);
+        setHostId(res.data.hostId);
       })
       .catch((e) => {
         var msg = e && e.response && e.response.data;
@@ -806,6 +835,9 @@ function GameWrapper(props) {
       setRehostId: setRehostId,
       noLeaveRef,
       dev: dev,
+      hostId: hostId,
+      changeSetupDialogOpen: changeSetupDialogOpen,
+      setChangeSetupDialogOpen: setChangeSetupDialogOpen,
     };
 
     return (
@@ -844,6 +876,29 @@ function GameWrapper(props) {
           open={leaveDialogOpen}
           onClose={() => setLeaveDialogOpen(false)}
           onConfirm={leaveGame}
+        />
+        {(gameType === "Mafia" ||
+          gameType === "Resistance" ||
+          gameType === "Secret Dictator") && (
+          <RoleRevealModal
+            open={roleRevealModalOpen}
+            onClose={() => setRoleRevealModalOpen(false)}
+            roleData={roleRevealData}
+            gameType={gameType}
+          />
+        )}
+        <ChangeSetupDialog
+          open={changeSetupDialogOpen}
+          onClose={() => setChangeSetupDialogOpen(false)}
+          gameType={gameType}
+          currentSetup={setup}
+          onSetupChange={(setupId) => {
+            socket.send("speak", {
+              content: `/changeSetup ${setupId}`,
+              meetingId: "main",
+            });
+            setChangeSetupDialogOpen(false);
+          }}
         />
       </GameContext.Provider>
     );
@@ -991,6 +1046,21 @@ export function TopBar({ hideStateSwitcher = false }) {
           </IconButton>
         </Tooltip>
       )}
+
+      {!game.review &&
+        game.history.currentState === -1 &&
+        game.self &&
+        game.players[game.self] &&
+        game.players[game.self].userId === game.hostId && (
+          <Tooltip title="Change Setup">
+            <IconButton
+              size="large"
+              onClick={() => game.setChangeSetupDialogOpen(true)}
+            >
+              <img src={unicorn} alt="Change Setup" />
+            </IconButton>
+          </Tooltip>
+        )}
 
       {!game.review && game.history.currentState === -2 && (
         <Tooltip title="Rehost">
@@ -2010,6 +2080,7 @@ function Message(props) {
                 slangifySeed={message.time.toString()}
                 terminologyEmoticons={props.settings.terminologyEmoticons}
                 iconUsername
+                roleify={props.settings.roleMentions}
               />
             </>
           )}
@@ -2031,6 +2102,7 @@ function Message(props) {
                   emotify
                   slangifySeed={quotedMessage.time.toString()}
                   iconUsername
+                  roleify={props.settings.roleMentions}
                 />
               </span>
               <i className="fas fa-quote-right" />
@@ -3627,6 +3699,12 @@ function SettingsForm({ handleClose = null }) {
       value: settings.terminologyEmoticons,
     },
     {
+      label: "Highlight role names in chat/comments",
+      ref: "roleMentions",
+      type: "boolean",
+      value: settings.roleMentions,
+    },
+    {
       label: "Message Layout",
       ref: "messageLayout",
       type: "select",
@@ -4469,6 +4547,7 @@ export function useSettingsReducer() {
     music: true,
     volume: 1,
     terminologyEmoticons: true,
+    roleMentions: true,
     messageLayout: "default",
   };
 

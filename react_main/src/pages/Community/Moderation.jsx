@@ -10,6 +10,10 @@ import {
   TextField,
   Box,
   Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
@@ -31,6 +35,7 @@ import { NewLoading } from "pages/Welcome/NewLoading";
 import "css/main.css";
 import "css/moderation.css";
 import { useParams } from "react-router-dom";
+import { lobbies } from "../../constants/lobbies";
 
 const COMMAND_GROUP_ORDER = {
   "User Management": 1, // the lower the number, the higher it appears
@@ -38,6 +43,7 @@ const COMMAND_GROUP_ORDER = {
   "Game Management": 3,
   "Site Management": 4,
   "Group Management": 5,
+  "Poll Management": 6,
   "Deck Management": 9,
   "Forum Management": 99,
   "Chat Window Management": 999,
@@ -320,6 +326,28 @@ export function ModCommands(props) {
             />
           );
         }
+      }
+
+      if (arg.type === "select") {
+        return (
+          <FormControl key={arg.name} sx={{ width: "100%" }}>
+            <InputLabel>{arg.label}</InputLabel>
+            <Select
+              value={argValue || ""}
+              label={arg.label}
+              onChange={(e) =>
+                updateArgValue(arg.name, e.target.value, arg.isArray)
+              }
+              disabled={isPrefilled}
+            >
+              {arg.options.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        );
       }
 
       return (
@@ -1299,6 +1327,26 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Clear Vanity URL": {
+      perm: "clearVanityUrl",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/clearVanityUrl", argValues)
+          .then(() => {
+            siteInfo.showAlert("Vanity URL cleared.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Clear Birthday": {
       perm: "clearBirthday",
       category: "User Management",
@@ -1843,6 +1891,41 @@ export function useModCommands(argValues, commandRan, setResults) {
         },
       ],
     },
+    // "Create Poll": {
+    //   perm: "createPoll",
+    //   category: "Poll Management",
+    //   args: [
+    //     {
+    //       label: "Lobby",
+    //       name: "lobby",
+    //       type: "select",
+    //       options: lobbies.filter(lobby => !lobby.disabled).map(lobby => ({
+    //         value: lobby.name,
+    //         label: lobby.displayName
+    //       })),
+    //     },
+    //     {
+    //       label: "Question",
+    //       name: "question",
+    //       type: "text",
+    //     },
+    //     {
+    //       label: "Options (comma-separated)",
+    //       name: "options",
+    //       type: "text",
+    //       isArray: true,
+    //     },
+    //   ],
+    //   run: function () {
+    //     axios
+    //       .post("/api/poll/create", argValues)
+    //       .then(() => {
+    //         siteInfo.showAlert("Poll created.", "success");
+    //         commandRan();
+    //       })
+    //       .catch(errorAlert);
+    //   },
+    // },
   };
 }
 

@@ -182,6 +182,27 @@ router.get("/:id/profile", async function (req, res) {
   try {
     var reqUserId = await routeUtils.verifyLoggedIn(req, true);
     var userId = String(req.params.id);
+
+    // First try to find user by ID
+    var userById = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("id -_id");
+
+    // If not found by ID, try to find by vanity URL
+    if (!userById) {
+      var userByVanity = await models.User.findOne({
+        "settings.vanityUrl": userId,
+        deleted: false,
+      }).select("id -_id");
+      if (!userByVanity) {
+        res.status(404);
+        res.send("User not found.");
+        return;
+      }
+      userId = userByVanity.id;
+    }
+
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
@@ -498,6 +519,28 @@ router.get("/:id/love", async function (req, res) {
   try {
     var userId = String(req.params.id);
 
+    // First try to find user by ID
+    var userById = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("id -_id");
+
+    // If not found by ID, try to find by vanity URL
+    if (!userById) {
+      var userByVanity = await models.User.findOne({
+        "settings.vanityUrl": userId,
+        deleted: false,
+      }).select("id -_id");
+
+      if (!userByVanity) {
+        res.status(404);
+        res.send("User not found.");
+        return;
+      }
+
+      userId = userByVanity.id;
+    }
+
     var love = await models.Love.findOne({ userId })
       .select("loveId type")
       .populate({
@@ -523,6 +566,29 @@ router.get("/:id/friends", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
     var userId = String(req.params.id);
+
+    // First try to find user by ID
+    var userById = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("id -_id");
+
+    // If not found by ID, try to find by vanity URL
+    if (!userById) {
+      var userByVanity = await models.User.findOne({
+        "settings.vanityUrl": userId,
+        deleted: false,
+      }).select("id -_id");
+
+      if (!userByVanity) {
+        res.status(404);
+        res.send("User not found.");
+        return;
+      }
+
+      userId = userByVanity.id;
+    }
+
     var last = Number(req.query.last);
     var first = Number(req.query.first);
 
@@ -556,7 +622,34 @@ router.get("/:id/friends", async function (req, res) {
 
 router.get("/:id/info", async function (req, res) {
   try {
-    var user = await redis.getUserInfo(req.params.id);
+    var userId = String(req.params.id);
+
+    // First try to find user by ID
+    var userById = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("id -_id");
+
+    // If not found by ID, try to find by vanity URL
+    if (!userById) {
+      var userByVanity = await models.User.findOne({
+        "settings.vanityUrl": userId,
+        deleted: false,
+      }).select("id -_id");
+
+      if (!userByVanity) {
+        res.status(404);
+        res.send({
+          name: "[not found]",
+          avatar: false,
+        });
+        return;
+      }
+
+      userId = userByVanity.id;
+    }
+
+    var user = await redis.getUserInfo(userId);
 
     if (!user) {
       res.status(404);
@@ -732,6 +825,58 @@ router.post("/deathMessage", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Error updating death message.");
+  }
+});
+
+router.post("/vanityUrl", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    let userId = await routeUtils.verifyLoggedIn(req);
+    var itemsOwned = await redis.getUserItemsOwned(userId);
+    let vanityUrl = String(req.body.vanityUrl).trim();
+
+    if (!itemsOwned.vanityUrl) {
+      res.status(500);
+      res.send("You must purchase Vanity URL from the Shop.");
+      return;
+    }
+
+    // Validate vanity URL
+    if (vanityUrl.length < 1 || vanityUrl.length > 20) {
+      res.status(500);
+      res.send("Vanity URL must be between 1 and 20 characters.");
+      return;
+    }
+
+    // Only allow letters, numbers, and hyphens
+    if (!/^[a-zA-Z0-9-]+$/.test(vanityUrl)) {
+      res.status(500);
+      res.send("Vanity URL can only contain letters, numbers, and hyphens.");
+      return;
+    }
+
+    // Check if vanity URL is already taken
+    var existingUser = await models.User.findOne({
+      "settings.vanityUrl": vanityUrl,
+      deleted: false,
+    }).select("_id");
+
+    if (existingUser) {
+      res.status(500);
+      res.send("This vanity URL is already taken.");
+      return;
+    }
+
+    await models.User.updateOne(
+      { id: userId },
+      { $set: { [`settings.vanityUrl`]: vanityUrl } }
+    ).exec();
+    await redis.cacheUserInfo(userId, true);
+    res.send("Vanity URL updated successfully");
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error updating vanity URL.");
   }
 });
 
@@ -1763,6 +1908,13 @@ router.post("/delete", async function (req, res) {
       $or: [{ userId: userId }, { friendId: userId }],
     }).exec();
     await models.InGroup.deleteMany({ user: dbId }).exec();
+
+    // Clear vanity URL so it can be claimed by other users
+    await models.User.updateOne(
+      { id: userId },
+      { $unset: { "settings.vanityUrl": "" } }
+    ).exec();
+
     await models.User.updateOne(
       { id: userId },
       {

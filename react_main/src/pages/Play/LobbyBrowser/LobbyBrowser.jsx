@@ -4,7 +4,6 @@ import axios from "axios";
 
 import { UserContext } from "Contexts";
 import { getPageNavFilterArg, PageNav } from "components/Nav";
-import Setup from "components/Setup";
 import { useErrorAlert } from "components/Alerts";
 import { camelCase } from "../../../utils";
 import Comments from "../../Community/Comments";
@@ -29,19 +28,13 @@ import { useLoading } from "../../../hooks/useLoading";
 import { GameRow } from "./GameRow";
 import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
 import { RecentlyPlayedSetups } from "./RecentlyPlayedSetups";
+import { RecentForumReplies } from "components/RecentForumReplies";
+import { Poll } from "components/Poll";
 import { FeaturedSetup } from "./FeaturedSetup";
 import { DailyChallenges } from "./DailyChallengeDisplay";
 import { getRowStubColor } from "./gameRowColors.js";
 
-const lobbies = [
-  { name: "All", displayName: "All" },
-  { name: "Main", displayName: "🔪 Main" },
-  { name: "Sandbox", displayName: "⏳ Sandbox" },
-  { name: "Competitive", displayName: "💛 Competitive" },
-  { name: "Games", displayName: "🎲 Minigames" },
-  { name: "Survivor", displayName: "🍹 Survivor" },
-  { name: "Roleplay", displayName: "🎭 Roleplay", disabled: true },
-];
+import { lobbies } from "../../../constants/lobbies";
 
 export default function LobbyBrowser() {
   const isPhoneDevice = useIsPhoneDevice();
@@ -282,6 +275,8 @@ export default function LobbyBrowser() {
             />
             <DailyChallenges />
             <RecentlyPlayedSetups lobby={lobbyName} />
+            <RecentForumReplies />
+            {/* <Poll lobby={lobbyName} /> */}
           </Stack>
         </Grid>
         <Grid item xs={12} md={8}>

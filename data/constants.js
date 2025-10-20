@@ -415,6 +415,7 @@ module.exports = {
     clearBio: true,
     clearPronouns: true,
     clearVideo: true,
+    clearVanityUrl: true,
     clearBirthday: true,
     clearAvi: true,
     clearCustomEmotes: true,
@@ -445,6 +446,7 @@ module.exports = {
     playCompetitive: true,
     viewVotes: true,
     editAnySetup: true,
+    createPoll: true,
   },
   defaultGroups: {
     Owner: {
@@ -492,6 +494,7 @@ module.exports = {
         "clearBio",
         "clearPronouns",
         "clearVideo",
+        "clearVanityUrl",
         "clearBirthday",
         "clearAvi",
         "clearCustomEmotes",
@@ -520,6 +523,7 @@ module.exports = {
         "playRanked",
         "playCompetitive",
         "editAnySetup",
+        "createPoll",
       ],
     },
     Liaison: {
@@ -537,6 +541,7 @@ module.exports = {
         "competitiveBan",
         "competitiveUnban",
         "editAnySetup",
+        "createPoll",
       ],
     },
     Mod: {
@@ -570,6 +575,7 @@ module.exports = {
         "clearBio",
         "clearPronouns",
         "clearVideo",
+        "clearVanityUrl",
         "clearBirthday",
         "clearAvi",
         "clearCustomEmotes",
