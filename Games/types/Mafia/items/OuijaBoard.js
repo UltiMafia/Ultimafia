@@ -74,5 +74,6 @@ module.exports = class OuijaBoard extends Item {
   hold(player) {
     super.hold(player);
     player.game.queueAlert(`${player.name} is giving a clue…`);
+    player.game.broadcast("giveClue", player);
   }
 };
