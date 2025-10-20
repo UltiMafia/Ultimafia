@@ -1,6 +1,9 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const { PRIORITY_WIN_CHECK_DEFAULT, PRIORITY_DAY_EFFECT_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_WIN_CHECK_DEFAULT,
+  PRIORITY_DAY_EFFECT_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class WinIfPrescientVote extends Card {
   constructor(role) {
@@ -28,12 +31,12 @@ module.exports = class WinIfPrescientVote extends Card {
           return;
         }
         const assassinInGame = this.game.players.filter(
-            (p) => p.role.name === "Assassin"
-          );
+          (p) => p.role.name === "Assassin"
+        );
         if (this.canDoSpecialInteractions() && assassinInGame > 0) {
           return;
         }
-        if(this.predictedVote != "*"){
+        if (this.predictedVote != "*") {
           return;
         }
         var action = new Action({
@@ -55,20 +58,20 @@ module.exports = class WinIfPrescientVote extends Card {
                 }
               }
             }
-          this.role.predictedCorrect += 1;
-          if (this.game.IsBloodMoon && this.role.canDoSpecialInteractions()) {
-            this.role.predictedCorrect = 2;
-          }
-          this.actor.queueAlert(
-            `The Village has condemned no one to death, strengthening your bond with the spirit world. `
-          );
+            this.role.predictedCorrect += 1;
+            if (this.game.IsBloodMoon && this.role.canDoSpecialInteractions()) {
+              this.role.predictedCorrect = 2;
+            }
+            this.actor.queueAlert(
+              `The Village has condemned no one to death, strengthening your bond with the spirit world. `
+            );
           },
-          });
+        });
 
         this.game.queueAction(action);
       },
       death: function (player, killer, deathType) {
-        if(this.predictedVote == "*"){
+        if (this.predictedVote == "*") {
           return;
         }
         if (
