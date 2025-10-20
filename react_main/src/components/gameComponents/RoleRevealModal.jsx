@@ -64,6 +64,7 @@ const RoleRevealModal = ({
           alignItems: "center",
           gap: 1.5,
           p: 2,
+          pb: 1, // Reduced bottom padding
           flexWrap: "wrap",
         }}
       >
@@ -82,6 +83,7 @@ const RoleRevealModal = ({
               zIndex: 2,
               pointerEvents: "none",
               whiteSpace: "nowrap",
+              fontWeight: 400, // Removed bold
             }}
           >
             Your role is
@@ -95,7 +97,6 @@ const RoleRevealModal = ({
               fontWeight: 600,
               whiteSpace: "normal",
               wordBreak: "break-word",
-              // add top padding so the title sits visually below the overlaid typography
               pt: "1.6rem",
             }}
           >
@@ -104,7 +105,7 @@ const RoleRevealModal = ({
         </Box>
       </Box>
 
-      <DialogContent sx={{ px: 2 }}>
+      <DialogContent sx={{ px: 2, py: 1 }}>
         <RoleDetails
           gameType={gameType}
           roleName={roleName}
@@ -114,7 +115,7 @@ const RoleRevealModal = ({
         />
       </DialogContent>
 
-      <DialogActions sx={{ px: 2, pb: 2 }}>
+      <DialogActions sx={{ px: 2, pb: 1 }}>
         <Button onClick={onClose} color="primary" fullWidth>
           OK
         </Button>

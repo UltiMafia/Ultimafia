@@ -12,6 +12,11 @@ import { HiddenUpload } from "components/Form";
 
 import "css/user.css";
 import { youtubeRegex } from "components/Basic";
+
+const soundcloudRegex = /^https?:\/\/(www\.)?soundcloud\.com\/[^\/]+\/[^\/\?]+/;
+const spotifyRegex = /^https?:\/\/open\.spotify\.com\/(track|album|playlist|artist)\/[a-zA-Z0-9]+/;
+const vimeoRegex = /^https?:\/\/(www\.)?vimeo\.com\/(\d+)/;
+const invidiousRegex = /^https?:\/\/(www\.)?(invidious\.io|yewtu\.be|invidious\.flokinet\.to|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.fdn\.fr|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt)\/watch\?v=([a-zA-Z0-9_-]{11})/;
 import { useTheme } from "@mui/material/styles";
 import { Popover } from "@mui/material";
 import { Box, IconButton, Stack } from "@mui/material";
@@ -45,6 +50,91 @@ export function YouTubeEmbed(props) {
     return null;
   }
 }
+
+export function SoundCloudEmbed(props) {
+  const mediaUrl = props.mediaUrl;
+  if (mediaUrl) {
+    return (
+      <div id="profile-video" className="video-responsive-generic">
+        <iframe
+          className="video-responsive-content"
+          src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(mediaUrl)}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true`}
+          allow="autoplay"
+          allowFullScreen
+        ></iframe>
+      </div>
+    );
+  } else {
+    return null;
+  }
+}
+
+export function SpotifyEmbed(props) {
+  const mediaUrl = props.mediaUrl;
+  if (mediaUrl) {
+    // Convert Spotify URL to embed format
+    const embedUrl = mediaUrl.replace('open.spotify.com', 'open.spotify.com/embed');
+    return (
+      <div id="profile-video" className="video-responsive-generic">
+        <iframe
+          className="video-responsive-content"
+          src={embedUrl}
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
+    );
+  } else {
+    return null;
+  }
+}
+
+export function VimeoEmbed(props) {
+  const mediaUrl = props.mediaUrl;
+  const autoplay = props.autoplay ? 1 : 0;
+  if (mediaUrl) {
+    // Extract video ID from Vimeo URL
+    const vimeoMatches = mediaUrl.match(vimeoRegex);
+    if (vimeoMatches && vimeoMatches[2]) {
+      const videoId = vimeoMatches[2];
+      return (
+        <div id="profile-video" className="video-responsive-generic">
+          <iframe
+            className="video-responsive-content"
+            src={`https://player.vimeo.com/video/${videoId}?autoplay=${autoplay}&muted=0`}
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </div>
+      );
+    }
+  }
+  return null;
+}
+
+export function InvidiousEmbed(props) {
+  const mediaUrl = props.mediaUrl;
+  const autoplay = props.autoplay ? 1 : 0;
+  if (mediaUrl) {
+    // Extract video ID from Invidious URL
+    const invidiousMatches = mediaUrl.match(invidiousRegex);
+    if (invidiousMatches && invidiousMatches[3]) {
+      const videoId = invidiousMatches[3];
+      return (
+        <div id="profile-video" className="video-responsive-generic">
+          <iframe
+            className="video-responsive-content"
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=${autoplay}&mute=0`}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media;"
+            allowFullScreen
+          ></iframe>
+        </div>
+      );
+    }
+  }
+  return null;
+}
+
 export function MediaEmbed(props) {
   const mediaUrl = props.mediaUrl;
   const autoplay = !!props.autoplay;
@@ -66,6 +156,18 @@ export function MediaEmbed(props) {
     if (ytMatches && ytMatches.length >= 7) {
       embedId = ytMatches[7];
       return "youtube";
+    }
+    if (mediaUrl.match(soundcloudRegex)) {
+      return "soundcloud";
+    }
+    if (mediaUrl.match(spotifyRegex)) {
+      return "spotify";
+    }
+    if (mediaUrl.match(vimeoRegex)) {
+      return "vimeo";
+    }
+    if (mediaUrl.match(invidiousRegex)) {
+      return "invidious";
     }
     const extension = mediaUrl.split(".").slice("-1")[0];
     switch (extension) {
@@ -128,6 +230,14 @@ export function MediaEmbed(props) {
       );
     case "youtube":
       return <YouTubeEmbed embedId={embedId} autoplay={autoplay} />;
+    case "soundcloud":
+      return <SoundCloudEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+    case "spotify":
+      return <SpotifyEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+    case "vimeo":
+      return <VimeoEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+    case "invidious":
+      return <InvidiousEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
     default:
       return null;
   }
