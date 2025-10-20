@@ -155,7 +155,7 @@ export default function LobbyBrowser() {
     setLobbyName(defaultLobbyName);
 
   if (!user.loaded) return <NewLoading small />;
-  if (user.loaded && !user.loggedIn) return <Navigate to="/" />;
+  // Allow logged-out users to access LobbyBrowser
 
   const lobbyTabs = (
     <Box sx={{ display: "flex" }}>

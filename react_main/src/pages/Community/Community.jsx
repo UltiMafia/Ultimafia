@@ -27,7 +27,7 @@ export default function Community() {
     },
   ];
   const user = useContext(UserContext);
-  if (user.loaded && !user.loggedIn) return <Navigate to="/" />;
+  // Allow logged-out users to access Community page
 
   return (
     <>

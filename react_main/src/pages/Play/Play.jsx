@@ -55,7 +55,7 @@ export default function Play(props) {
     if (!inLobby && !params.get("edit") && params.get("game") !== gameType)
       navigate(location.pathname + `?game=${gameType}`);
   }, [location.pathname, gameType]);
-  if (user.loaded && !user.loggedIn) return <Navigate to="/" />;
+  // Allow logged-out users to access Play page
 
   function onFilterGameType(gameType) {
     setGameType(gameType);
