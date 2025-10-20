@@ -3886,8 +3886,8 @@ const roleData = {
       category: "Killing",
       tags: ["Vote Kills", "Killing", "Voting", "Visiting", "Basic"],
       description: [
-        "Chooses a victim and a target each night.",
-        "If the victim votes for the target in the village meeting the following day, the victim will die.",
+       `Each night, can choose to visit two players and make first player have "Cold Feet" torwards the second player.`,
+        coldfeetDef,
       ],
       nightOrder: [["Curse Player", PRIORITY_EFFECT_GIVER_DEFAULT]],
     },
@@ -4518,7 +4518,7 @@ const roleData = {
       ],
       description: [
         "Each night, can choose to visit one player and kill them.",
-        `If the Necromancer kills a Cult-aligned player, that player will gain the Transcendent modifier and make one of their non-banished Village-aligned neighbors "Delirious" until the Necromancer dies.`,
+        `If the Necromancer kills a Cult-aligned player, that player will gain the Transcendent modifier and make one of their non-banished Village-aligned neighbors "Delirious".`,
         deliriumDef,
         "In closed setups, replaces 1 Banished role with a non-Banished Village role.",
       ],
@@ -4531,7 +4531,7 @@ const roleData = {
       tags: ["Killing", "Delirium", "Visiting", "Advanced"],
       description: [
         "Each night, can choose to visit one player and kill them.",
-        `If that player survives, they will become "Delirious" until the Lamia dies.`,
+        `If that player survives, they will become "Delirious".`,
         deliriumDef,
         `If a Lamia attacks a "Delirious" player, that player will die even if protected.`,
       ],
@@ -5974,6 +5974,14 @@ const roleData = {
       ],
       nightOrder: [
         ["Tell Joke", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10],
+      ],
+    },
+    "Insightful Mood": {
+      alignment: "Event",
+      tags: ["Event"],
+      description: [
+        "If this Event occurs, each players learn 3 excess roles instantly.",
+        "Evil players will always learn village roles.",
       ],
     },
     Opera: {

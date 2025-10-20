@@ -58,9 +58,9 @@ module.exports = class HauntDreams extends Card {
           labels: ["block", "delirium"],
           run: function () {
                if(this.role.data.DreamHost && this.role.data.DreamHost.effects.filter((e) => e.name == "Delirious" && e.source == this.role).length <= 0){
-                 if (this.dominates()) {
-                  let effect = this.giveEffect(player,"Delirious", this.player,Infinity, null, this);
-                  this.blockWithDelirium(this.target, true);
+                 if (this.dominates(this.role.data.DreamHost)) {
+                  let effect = this.role.giveEffect(this.role.data.DreamHost,"Delirious", this.actor,Infinity, null, this.role);
+                  this.blockWithDelirium(this.role.data.DreamHost, true);
                 }
                }
              
