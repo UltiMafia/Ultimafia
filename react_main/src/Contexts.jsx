@@ -288,24 +288,20 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
         .then((res) =>
           updateSiteInfo({ type: "setProp", prop: "rolesRaw", value: res.data })
         ),
-      axios
-        .get("/api/roles/modifiers")
-        .then((res) =>
-          updateSiteInfo({
-            type: "setProp",
-            prop: "modifiers",
-            value: res.data,
-          })
-        ),
-      axios
-        .get("/api/roles/gamesettings")
-        .then((res) =>
-          updateSiteInfo({
-            type: "setProp",
-            prop: "gamesettings",
-            value: res.data,
-          })
-        ),
+      axios.get("/api/roles/modifiers").then((res) =>
+        updateSiteInfo({
+          type: "setProp",
+          prop: "modifiers",
+          value: res.data,
+        })
+      ),
+      axios.get("/api/roles/gamesettings").then((res) =>
+        updateSiteInfo({
+          type: "setProp",
+          prop: "gamesettings",
+          value: res.data,
+        })
+      ),
     ]).then(() => {
       setSiteInfoLoading(false);
     });

@@ -19,7 +19,14 @@ import { UserContext } from "../../../Contexts";
 import { NameWithAvatar } from "../../User/User";
 
 import "css/forums.css";
-import { Divider, IconButton, Popover, Stack, Typography, Tooltip } from "@mui/material";
+import {
+  Divider,
+  IconButton,
+  Popover,
+  Stack,
+  Typography,
+  Tooltip,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 
@@ -29,8 +36,8 @@ export default function Forums() {
 
   return (
     <div className="forums">
-      <ForumNav 
-        forumNavInfo={forumNavInfo} 
+      <ForumNav
+        forumNavInfo={forumNavInfo}
         onSearchClick={() => setSearchDialogOpen(true)}
       />
       <Routes>
@@ -52,9 +59,9 @@ export default function Forums() {
         />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
-      <ForumSearch 
-        open={searchDialogOpen} 
-        onClose={() => setSearchDialogOpen(false)} 
+      <ForumSearch
+        open={searchDialogOpen}
+        onClose={() => setSearchDialogOpen(false)}
       />
     </div>
   );
@@ -86,10 +93,10 @@ function ForumNav(props) {
         </div>
         <div className="forum-nav-actions">
           <Tooltip title="Search Forums">
-            <IconButton 
+            <IconButton
               onClick={props.onSearchClick}
               size="small"
-              sx={{ color: 'text.secondary' }}
+              sx={{ color: "text.secondary" }}
             >
               🔎
             </IconButton>

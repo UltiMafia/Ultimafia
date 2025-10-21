@@ -28,7 +28,7 @@ export default function ForumSearch({ open, onClose }) {
   const [selectedBoard, setSelectedBoard] = useState("");
   const [boards, setBoards] = useState([]);
   const [loading, setLoading] = useState(false);
-  
+
   const navigate = useNavigate();
   const errorAlert = useErrorAlert();
 
@@ -57,13 +57,13 @@ export default function ForumSearch({ open, onClose }) {
     }
 
     setLoading(true);
-    
+
     try {
       const params = new URLSearchParams();
       if (searchQuery.trim()) params.append("query", searchQuery.trim());
       if (username.trim()) params.append("username", username.trim());
       if (selectedBoard) params.append("boardId", selectedBoard);
-      
+
       // Navigate to search results page with query parameters
       navigate(`/community/forums/search?${params.toString()}`);
       onClose();
@@ -129,7 +129,7 @@ export default function ForumSearch({ open, onClose }) {
           Search Forums
         </DialogTitle>
       </Box>
-      
+
       <DialogContent>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
           <TextField
@@ -141,14 +141,12 @@ export default function ForumSearch({ open, onClose }) {
             onKeyPress={handleKeyPress}
             InputProps={{
               startAdornment: (
-                <InputAdornment position="start">
-                  🔎
-                </InputAdornment>
+                <InputAdornment position="start">🔎</InputAdornment>
               ),
             }}
             helperText="Search in thread titles and post content"
           />
-          
+
           <TextField
             fullWidth
             label="Filter by username"
@@ -158,7 +156,7 @@ export default function ForumSearch({ open, onClose }) {
             onKeyPress={handleKeyPress}
             helperText="Find posts by a specific user"
           />
-          
+
           <FormControl fullWidth>
             <InputLabel>Filter by board</InputLabel>
             <Select
@@ -169,16 +167,17 @@ export default function ForumSearch({ open, onClose }) {
               <MenuItem value="">
                 <em>All boards</em>
               </MenuItem>
-              {Array.isArray(boards) && boards.map((board) => (
-                <MenuItem key={board.id} value={board.id}>
-                  {board.name}
-                </MenuItem>
-              ))}
+              {Array.isArray(boards) &&
+                boards.map((board) => (
+                  <MenuItem key={board.id} value={board.id}>
+                    {board.name}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
         </Box>
       </DialogContent>
-      
+
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={handleClose} color="inherit">
           Cancel

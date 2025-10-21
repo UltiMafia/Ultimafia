@@ -24,7 +24,7 @@ export default function SearchResults(props) {
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  
+
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
 
@@ -50,7 +50,9 @@ export default function SearchResults(props) {
       params.append("page", page);
       params.append("limit", 10);
 
-      const response = await axios.get(`/api/forums/search?${params.toString()}`);
+      const response = await axios.get(
+        `/api/forums/search?${params.toString()}`
+      );
       setResults(response.data);
     } catch (error) {
       errorAlert(error);
@@ -65,37 +67,50 @@ export default function SearchResults(props) {
 
   const highlightText = (text, searchTerm) => {
     if (!searchTerm || !text) return text;
-    
-    const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+
+    const regex = new RegExp(
+      `(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+      "gi"
+    );
     const parts = text.split(regex);
-    
-    return parts.map((part, index) => 
+
+    return parts.map((part, index) =>
       regex.test(part) ? (
-        <mark key={index} style={{ backgroundColor: '#ffeb3b', padding: '0 2px' }}>
+        <mark
+          key={index}
+          style={{ backgroundColor: "#ffeb3b", padding: "0 2px" }}
+        >
           {part}
         </mark>
-      ) : part
+      ) : (
+        part
+      )
     );
   };
 
   const getContextSnippet = (content, searchTerm, maxLength = 200) => {
     if (!content) return "";
-    
+
     const lowerContent = content.toLowerCase();
     const lowerSearchTerm = searchTerm.toLowerCase();
     const index = lowerContent.indexOf(lowerSearchTerm);
-    
+
     if (index === -1) {
-      return content.length > maxLength ? content.substring(0, maxLength) + "..." : content;
+      return content.length > maxLength
+        ? content.substring(0, maxLength) + "..."
+        : content;
     }
-    
+
     const start = Math.max(0, index - maxLength / 2);
-    const end = Math.min(content.length, index + searchTerm.length + maxLength / 2);
-    
+    const end = Math.min(
+      content.length,
+      index + searchTerm.length + maxLength / 2
+    );
+
     let snippet = content.substring(start, end);
     if (start > 0) snippet = "..." + snippet;
     if (end < content.length) snippet = snippet + "...";
-    
+
     return snippet;
   };
 
@@ -119,12 +134,12 @@ export default function SearchResults(props) {
 
   const { threads, replies, totalThreads, totalReplies, totalPages } = results;
   const allResults = [
-    ...threads.map(thread => ({ ...thread, type: 'thread' })),
-    ...replies.map(reply => ({ ...reply, type: 'reply' }))
+    ...threads.map((thread) => ({ ...thread, type: "thread" })),
+    ...replies.map((reply) => ({ ...reply, type: "reply" })),
   ].sort((a, b) => {
     // Sort by date, threads by bumpDate, replies by postDate
-    const dateA = a.type === 'thread' ? a.bumpDate : a.postDate;
-    const dateB = b.type === 'thread' ? b.bumpDate : b.postDate;
+    const dateA = a.type === "thread" ? a.bumpDate : a.postDate;
+    const dateB = b.type === "thread" ? b.bumpDate : b.postDate;
     return dateB - dateA;
   });
 
@@ -137,7 +152,7 @@ export default function SearchResults(props) {
             Search Results
           </Typography>
         </Box>
-        
+
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
           {query && (
             <Chip
@@ -156,13 +171,15 @@ export default function SearchResults(props) {
           )}
           {boardId && (
             <Chip
-              label={`Board: "${results.threads[0]?.board?.name || 'Selected Board'}"`}
+              label={`Board: "${
+                results.threads[0]?.board?.name || "Selected Board"
+              }"`}
               color="default"
               variant="outlined"
             />
           )}
         </Box>
-        
+
         <Typography variant="body2" color="text.secondary">
           Found {totalThreads} threads and {totalReplies} replies
         </Typography>
@@ -179,42 +196,64 @@ export default function SearchResults(props) {
               <CardContent>
                 <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
                   <Box sx={{ flex: 1 }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                        mb: 1,
+                      }}
+                    >
                       <Chip
-                        label={result.type === 'thread' ? 'Thread' : 'Reply'}
+                        label={result.type === "thread" ? "Thread" : "Reply"}
                         size="small"
-                        color={result.type === 'thread' ? 'primary' : 'secondary'}
+                        color={
+                          result.type === "thread" ? "primary" : "secondary"
+                        }
                         variant="outlined"
                       />
-                      {result.type === 'thread' ? (
+                      {result.type === "thread" ? (
                         <Link
                           to={`/community/forums/thread/${result.id}`}
-                          style={{ textDecoration: 'none', color: 'inherit' }}
+                          style={{ textDecoration: "none", color: "inherit" }}
                         >
-                          <Typography variant="h6" component="h2" sx={{ 
-                            '&:hover': { color: 'primary.main' },
-                            fontWeight: 'bold'
-                          }}>
+                          <Typography
+                            variant="h6"
+                            component="h2"
+                            sx={{
+                              "&:hover": { color: "primary.main" },
+                              fontWeight: "bold",
+                            }}
+                          >
                             {highlightText(result.title, query)}
                           </Typography>
                         </Link>
                       ) : (
                         <Link
                           to={`/community/forums/thread/${result.thread.id}`}
-                          style={{ textDecoration: 'none', color: 'inherit' }}
+                          style={{ textDecoration: "none", color: "inherit" }}
                         >
-                          <Typography variant="h6" component="h2" sx={{ 
-                            '&:hover': { color: 'primary.main' },
-                            fontWeight: 'bold'
-                          }}>
-                            Reply to: {highlightText(result.thread.title, query)}
+                          <Typography
+                            variant="h6"
+                            component="h2"
+                            sx={{
+                              "&:hover": { color: "primary.main" },
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Reply to:{" "}
+                            {highlightText(result.thread.title, query)}
                           </Typography>
                         </Link>
                       )}
                     </Box>
-                    
+
                     <Box sx={{ mb: 2 }}>
-                      <Typography variant="body2" color="text.secondary" component="div">
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        component="div"
+                      >
                         <CustomMarkdown>
                           {highlightText(
                             getContextSnippet(result.content, query),
@@ -223,21 +262,35 @@ export default function SearchResults(props) {
                         </CustomMarkdown>
                       </Typography>
                     </Box>
-                    
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 2,
+                        flexWrap: "wrap",
+                      }}
+                    >
                       <NameWithAvatar
                         small
                         id={result.author.id}
                         name={result.author.name}
                         avatar={result.author.avatar}
                       />
-                      
+
                       <Typography variant="caption" color="text.secondary">
-                        <Time millisec={Date.now() - (result.type === 'thread' ? result.postDate : result.postDate)} />
+                        <Time
+                          millisec={
+                            Date.now() -
+                            (result.type === "thread"
+                              ? result.postDate
+                              : result.postDate)
+                          }
+                        />
                         {" ago"}
                       </Typography>
-                      
-                      {result.type === 'thread' && (
+
+                      {result.type === "thread" && (
                         <>
                           <Typography variant="caption" color="text.secondary">
                             {result.replyCount} replies
@@ -247,16 +300,26 @@ export default function SearchResults(props) {
                           </Typography>
                         </>
                       )}
-                      
+
                       <Link
-                        to={`/community/forums/board/${result.type === 'thread' ? result.board.id : result.thread.board.id}`}
-                        style={{ textDecoration: 'none' }}
+                        to={`/community/forums/board/${
+                          result.type === "thread"
+                            ? result.board.id
+                            : result.thread.board.id
+                        }`}
+                        style={{ textDecoration: "none" }}
                       >
                         <Chip
-                          label={result.type === 'thread' ? result.board.name : result.thread.board.name}
+                          label={
+                            result.type === "thread"
+                              ? result.board.name
+                              : result.thread.board.name
+                          }
                           size="small"
                           variant="outlined"
-                          sx={{ '&:hover': { backgroundColor: 'action.hover' } }}
+                          sx={{
+                            "&:hover": { backgroundColor: "action.hover" },
+                          }}
                         />
                       </Link>
                     </Box>
@@ -265,7 +328,7 @@ export default function SearchResults(props) {
               </CardContent>
             </Card>
           ))}
-          
+
           {totalPages > 1 && (
             <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
               <Pagination

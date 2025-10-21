@@ -1232,8 +1232,11 @@ router.get("/search", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var rank = userId ? await redis.getUserRank(userId) : 0;
-    var canViewDeleted = await routeUtils.verifyPermission(userId, "viewDeleted");
-    
+    var canViewDeleted = await routeUtils.verifyPermission(
+      userId,
+      "viewDeleted"
+    );
+
     var query = String(req.query.query || "");
     var username = String(req.query.username || "");
     var boardId = String(req.query.boardId || "");
@@ -1250,20 +1253,24 @@ router.get("/search", async function (req, res) {
       var board = await models.ForumBoard.findOne({ id: boardId })
         .select("_id rank")
         .populate("category", "rank");
-      
+
       if (!board || board.category.rank > rank) {
         res.status(500);
         res.send("Board not found or access denied.");
         return;
       }
-      
+
       threadFilter.board = board._id;
-      replyFilter.thread = { $in: await models.ForumThread.find({ board: board._id }).select("_id") };
+      replyFilter.thread = {
+        $in: await models.ForumThread.find({ board: board._id }).select("_id"),
+      };
     }
 
     // User filter
     if (username) {
-      var user = await models.User.findOne({ name: new RegExp(username, "i") }).select("_id");
+      var user = await models.User.findOne({
+        name: new RegExp(username, "i"),
+      }).select("_id");
       if (user) {
         threadFilter.author = user._id;
         replyFilter.author = user._id;
@@ -1275,7 +1282,7 @@ router.get("/search", async function (req, res) {
           totalThreads: 0,
           totalReplies: 0,
           page: page,
-          totalPages: 0
+          totalPages: 0,
         });
         return;
       }
@@ -1283,11 +1290,11 @@ router.get("/search", async function (req, res) {
 
     // Content search filter
     if (query) {
-      var contentRegex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), "i");
-      threadFilter.$or = [
-        { title: contentRegex },
-        { content: contentRegex }
-      ];
+      var contentRegex = new RegExp(
+        query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+        "i"
+      );
+      threadFilter.$or = [{ title: contentRegex }, { content: contentRegex }];
       replyFilter.content = contentRegex;
     }
 
@@ -1299,7 +1306,9 @@ router.get("/search", async function (req, res) {
 
     // Get threads
     var threads = await models.ForumThread.find(threadFilter)
-      .select("id author title content postDate bumpDate replyCount voteCount viewCount board -_id")
+      .select(
+        "id author title content postDate bumpDate replyCount voteCount viewCount board -_id"
+      )
       .populate("author", "id name avatar -_id")
       .populate("board", "id name -_id")
       .sort("-bumpDate")
@@ -1315,8 +1324,8 @@ router.get("/search", async function (req, res) {
         select: "id title board -_id",
         populate: {
           path: "board",
-          select: "id name -_id"
-        }
+          select: "id name -_id",
+        },
       })
       .sort("-postDate")
       .skip(skip)
@@ -1345,7 +1354,7 @@ router.get("/search", async function (req, res) {
       totalThreads: totalThreads,
       totalReplies: totalReplies,
       page: page,
-      totalPages: Math.ceil(Math.max(totalThreads, totalReplies) / limit)
+      totalPages: Math.ceil(Math.max(totalThreads, totalReplies) / limit),
     });
   } catch (e) {
     logger.error(e);
@@ -1366,7 +1375,7 @@ router.get("/search/boards", async function (req, res) {
       .sort("name");
 
     // Filter boards by user rank
-    boards = boards.filter(board => board.category.rank <= rank);
+    boards = boards.filter((board) => board.category.rank <= rank);
 
     res.send(boards);
   } catch (e) {
