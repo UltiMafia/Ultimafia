@@ -10,7 +10,7 @@ import { UserContext } from "../../Contexts";
 import "css/forums.css";
 import "css/comments.css";
 import { NewLoading } from "../Welcome/NewLoading";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Paper, Stack, Typography } from "@mui/material";
 import { Comment } from "./Comment";
 
 export default function Comments(props) {
@@ -70,36 +70,27 @@ export default function Comments(props) {
     setShowInput(false);
   }
 
-  const marginY = 0.5;
-  const commentRows = (
-    <Box sx={{ my: -marginY + 1, width: "100%" }}>
-      {comments.map((comment) => (
-        <Comment
-          fullWidth={props?.fullWidth}
-          location={location}
-          comment={comment}
-          comments={comments}
-          setComments={setComments}
-          onDelete={() => onCommentsPageNav(page)}
-          onRestore={() => onCommentsPageNav(page)}
-          key={comment.id}
-          marginY={marginY}
-        />
-      ))}
-    </Box>
-  );
+  const commentRows = comments.map((comment) => (
+    <Comment
+      fullWidth={props?.fullWidth}
+      location={location}
+      comment={comment}
+      comments={comments}
+      setComments={setComments}
+      onDelete={() => onCommentsPageNav(page)}
+      onRestore={() => onCommentsPageNav(page)}
+      key={comment.id}
+    />
+  ));
 
   if (!loaded) return <NewLoading small />;
 
   return (
-    <div className="comments-wrapper thread-wrapper">
+    <Stack direction="column" spacing={1}>
       <div className="comments-input-wrapper">
         {!showInput && user.loggedIn && user.perms.postReply && (
-          <div
-            style={{
-              display: "flex",
+          <Stack direction="row" spacing={1} sx={{
               alignItems: "center",
-              width: "100%",
               justifyContent: "space-between",
             }}
           >
@@ -111,27 +102,41 @@ export default function Comments(props) {
               Post Comment
             </Button>
             <PageNav inverted page={page} onNav={onCommentsPageNav} />
-          </div>
+          </Stack>
         )}
         {showInput && (
-          <div className="reply-form span-panel">
-            <TextEditor value={postContent} onChange={setPostContent} />
-            <div className="post-btn-wrapper">
-              <div className="post-reply btn btn-theme" onClick={onPostSubmit}>
-                Post
-              </div>
-              <div className="btn btn-theme-sec" onClick={onPostCancel}>
-                Cancel
-              </div>
-            </div>
-          </div>
+          <Paper sx={{
+            p: 1,
+            ".react-mde, .mde-header, .mde-text, .mde-preview": {
+              backgroundColor: "unset !important",
+              borderColor: "var(--mui-palette-divider)",
+            },
+            ".react-mde": {
+              borderRadius: "var(--mui-shape-borderRadius)",
+            }
+          }}>
+            <Stack direction="column" spacing={1} sx={{ flex: "1" }}>
+              <TextEditor value={postContent} onChange={setPostContent} />
+              <Stack direction="row" spacing={1}>
+                <Button variant="outlined" onClick={onPostCancel} sx={{ flex: "1" }}>
+                  Cancel
+                </Button>
+                <div style={{ flex: "1", }} />
+                <Button onClick={onPostSubmit} sx={{ flex: "1", marginLeft: "auto !important", }}>
+                  Post
+                </Button>
+              </Stack>
+            </Stack>
+          </Paper>
         )}
       </div>
-      <Box className="comments-page" sx={{ mt: 1 }}>
-        {comments.length === 0 && "No comments yet"}
+      <Stack direction="column" spacing={1} className="comments-page">
+        {comments.length === 0 && (<Typography>
+          No comments yet
+        </Typography>)}
         {commentRows}
         <PageNav inverted page={page} onNav={onCommentsPageNav} />
-      </Box>
-    </div>
+      </Stack>
+    </Stack>
   );
 }

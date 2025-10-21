@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import "css/main.css";
 import "./Welcome.css";
 import { RegisterDialog } from "./RegisterDialog";
@@ -19,6 +19,7 @@ import { useSnackbar } from "hooks/useSnackbar";
 import { NewLoading } from "./NewLoading";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import SiteLogo from "../../components/SiteLogo";
+import { UserContext } from "Contexts";
 
 // localStorage.setItem('firebase:debug', 'true');
 
@@ -30,6 +31,7 @@ if (localStorage.getItem("showChatTab") !== null) {
 }
 
 export const Welcome = () => {
+  const user = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(true);
   const isPhoneDevice = useIsPhoneDevice();
   const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
@@ -143,6 +145,10 @@ export const Welcome = () => {
       </div>
     </Box>
   );
+
+  if (user && user.loggedIn) {
+    return <Navigate to="/play" />;
+  }
 
   if (isLoading) {
     return <NewLoading />;

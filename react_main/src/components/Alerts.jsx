@@ -1,42 +1,54 @@
 import React, { useContext } from "react";
 import { SiteInfoContext } from "../Contexts";
+import { Alert, Portal, Stack } from "@mui/material";
 
-import "css/alerts.css";
-
-export function AlertList(props) {
+export function AlertList() {
   const siteInfo = useContext(SiteInfoContext);
 
   const alerts = siteInfo.alerts.map((alert, i) => {
     return (
       <Alert
-        id={alert.id}
-        index={i}
-        text={alert.text}
-        type={alert.type}
-        onHide={siteInfo.hideAlert}
+        onClose={() => siteInfo.hideAlert(i)}
+        id={`alert-id-${alert.id}`}
+        severity={alert.type}
         key={alert.id}
-      />
+        sx={{
+          opacity: "100%",
+          "-webkit-transition": "opacity 500ms linear",
+          transition: "opacity 500ms linear",
+        }}
+      >
+        {alert.text}
+      </Alert>
     );
   });
 
-  return <div className="alert-list">{alerts}</div>;
-}
-
-export function Alert(props) {
   return (
-    <div id={`alert-id-${props.id}`} className={`alert alert-${props.type}`}>
-      <i
-        className={`hide-alert fa-times-circle fas`}
-        onClick={() => props.onHide(props.index)}
-      />
-      {props.text}
-    </div>
+    <Portal>
+      {/* This is akin to a MUI snackbar but with verically stacking toasts.
+        * For proper integration with MUI dialogs, their snackbar zIndex var is used.
+        */}
+      <Stack direction="row" sx={{
+        width: "100%",
+        justifyContent: "center",
+        position: "fixed",
+        top: "var(--mui-spacing)",
+        left: "0px",
+        zIndex: "var(--mui-zIndex-snackbar)",
+        pointerEvents: "none",
+      }}>
+        <Stack direction="column" spacing={1} sx={{
+          pointerEvents: "auto",
+        }}>
+          {alerts}
+        </Stack>
+      </Stack>
+    </Portal>
   );
 }
 
-export function useErrorAlert(siteInfo) {
-  const siteInfoContext = useContext(SiteInfoContext);
-  siteInfo = siteInfo || siteInfoContext;
+export function useErrorAlert() {
+  const siteInfo = useContext(SiteInfoContext);
 
   return (e) => {
     var message;

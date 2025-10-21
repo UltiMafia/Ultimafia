@@ -120,6 +120,7 @@ const NO_ONE_NAME = "no one";
 const MAGUS_NAME = "Declare Magus Game";
 
 function GameWrapper(props) {
+  const user = useContext(UserContext);
   const [loaded, setLoaded] = useState(false);
   const [leave, setLeave] = useState(false);
   const [finished, setFinished] = useState(false);
@@ -189,11 +190,15 @@ function GameWrapper(props) {
     }
   }
 
-  function leaveGame() {
+  function leaveGame() {    
     if (finished) siteInfo.hideAllAlerts();
 
     if (socket.on) socket.send("leave");
     else setLeave(true);
+
+    if (gameId === user.inGame) {
+      user.setInGame(null);
+    }
 
     setLeaveDialogOpen(false);
   }
@@ -1865,14 +1870,19 @@ function Message(props) {
 
     for (let msg of meeting.messages) {
       if (msg.id === message.messageId) {
+        const senderPlayer = players[msg.senderId];
+
+
+        let senderName = "Anonymous";
+        if (senderPlayer && msg.senderId !== "anonymous") {
+          senderName = senderPlayer.name;
+        }
+
         quotedMessage = { ...msg };
+        quotedMessage.senderName = senderName;
         quotedMessage.meetingName = meeting.name;
         quotedMessage.fromStateName = state.name;
         customEmotes = msg.customEmotes; // allow players to use other players' custom emotes if they quote them
-
-        if (msg.senderId === "anonymous")
-          quotedMessage.senderName = "Anonymous";
-        else quotedMessage.senderName = players[msg.senderId].name;
         break;
       }
     }

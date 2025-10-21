@@ -14,11 +14,12 @@ import Board from "./Board";
 import Thread from "./Thread";
 import { useErrorAlert } from "../../../components/Alerts";
 import { UserContext } from "../../../Contexts";
-import { Avatar } from "../../User/User";
+import { NameWithAvatar } from "../../User/User";
 
 import "css/forums.css";
-import { IconButton } from "@mui/material";
+import { Divider, IconButton, Popover, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { usePopoverOpen } from "hooks/usePopoverOpen";
 
 export default function Forums() {
   const [forumNavInfo, updateForumNavInfo] = useForumNavInfo();
@@ -118,10 +119,18 @@ export function VoteWidget(props) {
 
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
-  const [showVoteBox, setShowVoteBox] = useState(false);
   const [userVotes, setUserVotes] = useState([]);
-  const widgetRef = useRef();
-  const popupRef = useRef();
+
+  const upvoters = userVotes.slice().filter(vote => vote.direction === 1);
+  const downvoters = userVotes.slice().filter(vote => vote.direction === -1);
+
+  const {
+    popoverOpen,
+    popoverClasses,
+    anchorEl,
+    handleClick,
+    closePopover,
+  } = usePopoverOpen();
 
   function updateItemVoteCount(direction, newDirection) {
     var voteCount = item.voteCount;
@@ -183,83 +192,88 @@ export function VoteWidget(props) {
       .catch(errorAlert);
   }
 
-  function getVotes(itemId, direction) {
+  function getVotes(e, itemId) {
     if (!user.perms.viewVotes) return;
-    axios.get(`/api/forums/vote/${itemId}/${direction}`).then((res) => {
+    handleClick(e); 
+    axios.get(`/api/forums/vote/${itemId}`).then((res) => {
       setUserVotes(res.data);
-      setShowVoteBox(true);
     });
   }
 
-  function hideVotes() {
-    setShowVoteBox(false);
-  }
-
-  useLayoutEffect(() => {
-    if (!showVoteBox || !widgetRef.current || !popupRef.current) return;
-
-    const elmRect = widgetRef.current.getBoundingClientRect();
-    const popRect = popupRef.current.getBoundingClientRect();
-
-    popupRef.current.style.visibility = "visible";
-    popupRef.current.style.top =
-      elmRect.top -
-      popRect.height / 2 +
-      elmRect.height / 2 +
-      window.scrollY +
-      "px";
-    popupRef.current.style.left = elmRect.left - popRect.width - 10 + "px";
-  });
-
   return (
-    <div ref={widgetRef} className="vote-widget">
+    <Stack direction="column">
       <IconButton
-        onMouseEnter={() => {
-          getVotes(item.id, 1);
-        }}
-        onMouseLeave={hideVotes}
         className={`fas fa-arrow-up`}
-        style={{
-          fontSize: "16px",
+        sx={{
+          fontSize: "1em",
           ...(item.vote === 1 ? { color: theme.palette.info.main } : {}),
         }}
         onClick={() => onVote(item.id, 1)}
       />
-      <div style={{ cursor: "default" }}>{item.voteCount || 0}</div>
+      <IconButton onClick={(e) => getVotes(e, item.id)} sx={{
+          position: "relative",
+          fontSize: "1em",
+          minWidth: "2em",
+          minHeight: "2em",
+      }}>
+        <Typography sx={{
+          position: "absolute",
+          lineHeight: "1",
+        }}>
+          {item.voteCount || 0}
+        </Typography>
+      </IconButton>
       <IconButton
-        onMouseEnter={() => {
-          getVotes(item.id, -1);
-        }}
-        onMouseLeave={hideVotes}
         className={`fas fa-arrow-down`}
-        style={{
-          fontSize: "16px",
+        sx={{
+          fontSize: "1em",
           ...(item.vote === -1 ? { color: theme.palette.info.main } : {}),
         }}
         onClick={() => onVote(item.id, -1)}
       />
-      {showVoteBox && userVotes.length > 0 && (
-        <div ref={popupRef} className={`vote-user-box popover-window`}>
-          <div className={`popover-content`}>
-            <ul style={{ listStyle: "none" }}>
-              {userVotes.map((e) => (
-                <li style={{ display: "flex" }}>
-                  {
-                    <Avatar
-                      small
-                      hasImage={e.voter.avatar}
-                      id={e.voter.id}
-                      name={e.voter.name}
-                    />
-                  }{" "}
-                  {e.voter.name}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
-    </div>
+      <Popover
+        open={popoverOpen}
+        sx={popoverClasses}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "center",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "center",
+          horizontal: "left",
+        }}
+        onClose={closePopover}
+        disableScrollLock
+        disableRestoreFocus
+      >
+        <Stack direction="column" spacing={1} sx={{
+          p: 1,
+        }}>
+          <i className="fas fa-arrow-up" style={{ alignSelf: "center", }} />
+          {upvoters.map((e) => (
+            <NameWithAvatar
+              small
+              id={e.voter.id}
+              name={e.voter.name}
+              avatar={e.voter.avatar}
+            />
+          ))}
+          {upvoters.length === 0 && <Typography sx={{ alignSelf: "center", }}>None</Typography>}
+          <Divider orientation="horizontal" flexItem />
+          {downvoters.map((e) => (
+            <NameWithAvatar
+              small
+              id={e.voter.id}
+              name={e.voter.name}
+              avatar={e.voter.avatar}
+            />
+          ))}
+          {downvoters.length === 0 && <Typography sx={{ alignSelf: "center", }}>None</Typography>}
+          <i className="fas fa-arrow-down" style={{ alignSelf: "center", }} />
+        </Stack>
+      </Popover>
+    </Stack>
   );
 }
 
