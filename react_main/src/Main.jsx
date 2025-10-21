@@ -21,7 +21,12 @@ import axios from "axios";
 import update from "immutability-helper";
 import { Icon } from "@iconify/react";
 
-import { UserContext, SiteInfoContext, SiteInfoProvider, UserProvider } from "./Contexts";
+import {
+  UserContext,
+  SiteInfoContext,
+  SiteInfoProvider,
+  UserProvider,
+} from "./Contexts";
 import { AlertList, useErrorAlert } from "./components/Alerts";
 import {
   NotificationHolder,
@@ -38,7 +43,16 @@ import Chat from "./pages/Chat/Chat";
 import "css/main.css";
 import { useReducer } from "react";
 import { NewLoading } from "./pages/Welcome/NewLoading";
-import { Box, Stack, Paper, Typography, Button, Snackbar, Alert, AlertTitle } from "@mui/material";
+import {
+  Box,
+  Stack,
+  Paper,
+  Typography,
+  Button,
+  Snackbar,
+  Alert,
+  AlertTitle,
+} from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
 
 import { Announcement } from "./components/alerts/Announcement";
@@ -384,18 +398,18 @@ function InGameWarning() {
         severity="warning"
         variant="outlined"
         sx={{
-          width: '100%',
+          width: "100%",
           backgroundColor: "background.paper",
         }}
         slotProps={{
-          "message": { sx: {
-            flex: "1",
-          }}
+          message: {
+            sx: {
+              flex: "1",
+            },
+          },
         }}
       >
-        <AlertTitle>
-          You are in a game in progress.
-        </AlertTitle>
+        <AlertTitle>You are in a game in progress.</AlertTitle>
         <Stack direction="row" spacing={1} alignItems="center">
           <Button href={`/game/${user.inGame}`} size="small" sx={{ flex: "1" }}>
             Return
@@ -406,7 +420,7 @@ function InGameWarning() {
         </Stack>
       </Alert>
     </Snackbar>
-  )
+  );
 }
 
 function SiteNotifs() {

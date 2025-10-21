@@ -10,7 +10,7 @@ export const UserContext = React.createContext();
 export const SiteInfoContext = React.createContext();
 export const GameContext = React.createContext();
 
-export function UserProvider({ children, setUserLoading  }) {
+export function UserProvider({ children, setUserLoading }) {
   const location = useLocation();
   const [inGame, setInGame] = useState(null);
   const [user, setUser] = useState({
@@ -84,7 +84,7 @@ export function UserProvider({ children, setUserLoading  }) {
   useEffect(() => {
     let onlineInterval = null;
 
-    axios.get("/api/user/info").then(res => {
+    axios.get("/api/user/info").then((res) => {
       if (res.data.id) {
         setCaptchaVisible(false);
 
@@ -140,9 +140,7 @@ export function UserProvider({ children, setUserLoading  }) {
   }, []);
 
   return (
-    <UserContext.Provider value={userVal}>
-      {children}
-    </UserContext.Provider>
+    <UserContext.Provider value={userVal}>{children}</UserContext.Provider>
   );
 }
 
@@ -153,70 +151,73 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
     localStorage.setItem("cacheVal", cacheVal);
   }
 
-  const [siteInfo, updateSiteInfo] = useReducer((siteInfo, action) => {
-    var newSiteInfo;
+  const [siteInfo, updateSiteInfo] = useReducer(
+    (siteInfo, action) => {
+      var newSiteInfo;
 
-    switch (action.type) {
-      case "setProp":
-        if (siteInfo[action.prop] !== action.value) {
-          newSiteInfo = update(siteInfo, {
-            [action.prop]: {
-              $set: action.value,
-            },
-          });
-        }
-        break;
-      case "showAlert":
-        if (typeof action.text == "function")
-          action.text = action.text(siteInfo.alerts.length);
-
-        if (siteInfo.alerts.length < 5) {
-          newSiteInfo = update(siteInfo, {
-            alerts: {
-              $push: [
-                {
-                  text: action.text,
-                  type: action.alertType || "",
-                  id: action.id,
-                },
-              ],
-            },
-          });
-        }
-        break;
-      case "hideAlert":
-        newSiteInfo = update(siteInfo, {
-          alerts: {
-            $splice: [[action.index, 1]],
-          },
-        });
-        break;
-      case "hideAlertById":
-        for (let i = 0; i < siteInfo.alerts.length; i++) {
-          if (siteInfo.alerts[i].id === action.id) {
+      switch (action.type) {
+        case "setProp":
+          if (siteInfo[action.prop] !== action.value) {
             newSiteInfo = update(siteInfo, {
-              alerts: {
-                $splice: [[i, 1]],
+              [action.prop]: {
+                $set: action.value,
               },
             });
-            break;
           }
-        }
-        break;
-      case "hideAllAlerts":
-        newSiteInfo = update(siteInfo, {
-          alerts: {
-            $set: [],
-          },
-        });
-        break;
-    }
+          break;
+        case "showAlert":
+          if (typeof action.text == "function")
+            action.text = action.text(siteInfo.alerts.length);
 
-    return newSiteInfo || siteInfo;
-  }, {
-    alerts: [],
-    cacheVal,
-  });
+          if (siteInfo.alerts.length < 5) {
+            newSiteInfo = update(siteInfo, {
+              alerts: {
+                $push: [
+                  {
+                    text: action.text,
+                    type: action.alertType || "",
+                    id: action.id,
+                  },
+                ],
+              },
+            });
+          }
+          break;
+        case "hideAlert":
+          newSiteInfo = update(siteInfo, {
+            alerts: {
+              $splice: [[action.index, 1]],
+            },
+          });
+          break;
+        case "hideAlertById":
+          for (let i = 0; i < siteInfo.alerts.length; i++) {
+            if (siteInfo.alerts[i].id === action.id) {
+              newSiteInfo = update(siteInfo, {
+                alerts: {
+                  $splice: [[i, 1]],
+                },
+              });
+              break;
+            }
+          }
+          break;
+        case "hideAllAlerts":
+          newSiteInfo = update(siteInfo, {
+            alerts: {
+              $set: [],
+            },
+          });
+          break;
+      }
+
+      return newSiteInfo || siteInfo;
+    },
+    {
+      alerts: [],
+      cacheVal,
+    }
+  );
 
   function showAlert(text, alertType, noFade) {
     var alertId = Math.random();
@@ -275,10 +276,34 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
 
   useEffect(() => {
     Promise.all([
-      axios.get("/api/roles/all").then(res => updateSiteInfo({ type: "setProp", prop: "roles", value: res.data })),
-      axios.get("/api/roles/raw").then(res => updateSiteInfo({ type: "setProp", prop: "rolesRaw", value: res.data })),
-      axios.get("/api/roles/modifiers").then(res => updateSiteInfo({ type: "setProp", prop: "modifiers", value: res.data })),
-      axios.get("/api/roles/gamesettings").then(res => updateSiteInfo({ type: "setProp", prop: "gamesettings", value: res.data })),
+      axios
+        .get("/api/roles/all")
+        .then((res) =>
+          updateSiteInfo({ type: "setProp", prop: "roles", value: res.data })
+        ),
+      axios
+        .get("/api/roles/raw")
+        .then((res) =>
+          updateSiteInfo({ type: "setProp", prop: "rolesRaw", value: res.data })
+        ),
+      axios
+        .get("/api/roles/modifiers")
+        .then((res) =>
+          updateSiteInfo({
+            type: "setProp",
+            prop: "modifiers",
+            value: res.data,
+          })
+        ),
+      axios
+        .get("/api/roles/gamesettings")
+        .then((res) =>
+          updateSiteInfo({
+            type: "setProp",
+            prop: "gamesettings",
+            value: res.data,
+          })
+        ),
     ]).then(() => {
       setSiteInfoLoading(false);
     });

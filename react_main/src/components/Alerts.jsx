@@ -26,20 +26,27 @@ export function AlertList() {
   return (
     <Portal>
       {/* This is akin to a MUI snackbar but with verically stacking toasts.
-        * For proper integration with MUI dialogs, their snackbar zIndex var is used.
-        */}
-      <Stack direction="row" sx={{
-        width: "100%",
-        justifyContent: "center",
-        position: "fixed",
-        top: "var(--mui-spacing)",
-        left: "0px",
-        zIndex: "var(--mui-zIndex-snackbar)",
-        pointerEvents: "none",
-      }}>
-        <Stack direction="column" spacing={1} sx={{
-          pointerEvents: "auto",
-        }}>
+       * For proper integration with MUI dialogs, their snackbar zIndex var is used.
+       */}
+      <Stack
+        direction="row"
+        sx={{
+          width: "100%",
+          justifyContent: "center",
+          position: "fixed",
+          top: "var(--mui-spacing)",
+          left: "0px",
+          zIndex: "var(--mui-zIndex-snackbar)",
+          pointerEvents: "none",
+        }}
+      >
+        <Stack
+          direction="column"
+          spacing={1}
+          sx={{
+            pointerEvents: "auto",
+          }}
+        >
           {alerts}
         </Stack>
       </Stack>

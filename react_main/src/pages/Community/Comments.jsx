@@ -89,7 +89,10 @@ export default function Comments(props) {
     <Stack direction="column" spacing={1}>
       <div className="comments-input-wrapper">
         {!showInput && user.loggedIn && user.perms.postReply && (
-          <Stack direction="row" spacing={1} sx={{
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{
               alignItems: "center",
               justifyContent: "space-between",
             }}
@@ -105,24 +108,33 @@ export default function Comments(props) {
           </Stack>
         )}
         {showInput && (
-          <Paper sx={{
-            p: 1,
-            ".react-mde, .mde-header, .mde-text, .mde-preview": {
-              backgroundColor: "unset !important",
-              borderColor: "var(--mui-palette-divider)",
-            },
-            ".react-mde": {
-              borderRadius: "var(--mui-shape-borderRadius)",
-            }
-          }}>
+          <Paper
+            sx={{
+              p: 1,
+              ".react-mde, .mde-header, .mde-text, .mde-preview": {
+                backgroundColor: "unset !important",
+                borderColor: "var(--mui-palette-divider)",
+              },
+              ".react-mde": {
+                borderRadius: "var(--mui-shape-borderRadius)",
+              },
+            }}
+          >
             <Stack direction="column" spacing={1} sx={{ flex: "1" }}>
               <TextEditor value={postContent} onChange={setPostContent} />
               <Stack direction="row" spacing={1}>
-                <Button variant="outlined" onClick={onPostCancel} sx={{ flex: "1" }}>
+                <Button
+                  variant="outlined"
+                  onClick={onPostCancel}
+                  sx={{ flex: "1" }}
+                >
                   Cancel
                 </Button>
-                <div style={{ flex: "1", }} />
-                <Button onClick={onPostSubmit} sx={{ flex: "1", marginLeft: "auto !important", }}>
+                <div style={{ flex: "1" }} />
+                <Button
+                  onClick={onPostSubmit}
+                  sx={{ flex: "1", marginLeft: "auto !important" }}
+                >
                   Post
                 </Button>
               </Stack>
@@ -131,9 +143,7 @@ export default function Comments(props) {
         )}
       </div>
       <Stack direction="column" spacing={1} className="comments-page">
-        {comments.length === 0 && (<Typography>
-          No comments yet
-        </Typography>)}
+        {comments.length === 0 && <Typography>No comments yet</Typography>}
         {commentRows}
         <PageNav inverted page={page} onNav={onCommentsPageNav} />
       </Stack>
