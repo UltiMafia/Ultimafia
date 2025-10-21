@@ -190,7 +190,7 @@ function GameWrapper(props) {
     }
   }
 
-  function leaveGame() {    
+  function leaveGame() {
     if (finished) siteInfo.hideAllAlerts();
 
     if (socket.on) socket.send("leave");
@@ -1871,7 +1871,6 @@ function Message(props) {
     for (let msg of meeting.messages) {
       if (msg.id === message.messageId) {
         const senderPlayer = players[msg.senderId];
-
 
         let senderName = "Anonymous";
         if (senderPlayer && msg.senderId !== "anonymous") {

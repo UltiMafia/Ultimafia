@@ -3,7 +3,7 @@ import { pluginReact } from "@rsbuild/plugin-react";
 
 const { publicVars } = loadEnv({ prefixes: ["REACT_APP_"] });
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === "production";
 
 export default defineConfig({
   plugins: [pluginReact()],
@@ -19,10 +19,10 @@ export default defineConfig({
       root: "build",
     },
     sourceMap: {
-      js: isProduction ? 'source-map' : 'eval-source-map',
+      js: isProduction ? "source-map" : "eval-source-map",
     },
   },
-  devtool: isProduction ? 'source-map' : 'eval-source-map',
+  devtool: isProduction ? "source-map" : "eval-source-map",
   source: {
     define: publicVars,
     tsconfigPath: "./jsconfig.json",
