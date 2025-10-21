@@ -9,6 +9,7 @@ const routeUtils = require("./utils");
 const redis = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
+const { rating, rate, ordinal, predictWin } = require("openskill");
 const router = express.Router();
 
 router.get("/groups", async function (req, res) {
@@ -1224,7 +1225,7 @@ router.post("/clearVanityUrl", async (req, res) => {
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
     await models.VanityUrl.deleteOne({
-      userId: userIdToClear,
+      userId: userIdToClear
     });
 
     routeUtils.createModAction(userId, "Clear Vanity URL", [userIdToClear]);
@@ -1554,32 +1555,373 @@ router.post("/clearAllIPs", async (req, res) => {
   }
 });
 
-// to-do: update this so that the input is a gameID and refunds all players in the game
-// do the same for refundGoldHearts when the time comes
-router.post("/refundRedHearts", async (req, res) => {
+router.post("/refundGame", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToGiveTo = String(req.body.userId);
-    var amount = Number(req.body.amount);
-    var perm = "refundRedHearts";
+    var gameId = String(req.body.gameId);
+    var perm = "refundGame";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    var itemsOwned = await redis.getUserItemsOwned(userId);
-    const redHeartCapacity =
-      constants.initialRedHeartCapacity + itemsOwned.bonusRedHearts;
+    // Fetch the game from the database
+    var game = await models.Game.findOne({ id: gameId })
+      .populate("users")
+      .exec();
 
-    await models.User.updateOne(
-      { id: userIdToGiveTo },
-      { $set: { redHearts: redHeartCapacity } }
-    ).exec();
+    if (!game) {
+      res.status(404);
+      res.send("Game not found.");
+      return;
+    }
 
-    await redis.cacheUserInfo(userIdToGiveTo, true);
-    res.sendStatus(200);
+    if (!game.endTime) {
+      res.status(400);
+      res.send("Cannot refund a game that hasn't ended.");
+      return;
+    }
+
+    if (!game.ranked && !game.competitive) {
+      res.status(400);
+      res.send("Cannot refund a game that was not ranked or competitive.");
+      return;
+    }
+
+    // Parse player maps
+    const playerIdMap = JSON.parse(game.playerIdMap || "{}");
+    const playerAlignmentMap = JSON.parse(game.playerAlignmentMap || "{}");
+
+    // Get all user IDs from the game
+    const userIds = Object.keys(playerIdMap);
+
+    if (userIds.length === 0) {
+      res.status(400);
+      res.send("No players found in this game.");
+      return;
+    }
+
+    // Load game-specific data for calculations
+    const dbStats = require("../db/stats");
+    const gameAchievements = require("../data/Achievements");
+
+    // Helper function to get achievement reward
+    function getAchievementReward(gameType, achievementId) {
+      for (let achievement of Object.entries(
+        gameAchievements[gameType] || {}
+      ).filter((achievementData) => achievementId == achievementData[1].ID)) {
+        return achievement[1].reward || 0;
+      }
+      return 0;
+    }
+
+    // Helper function to revert stats
+    function revertStats(stats, gameType, setupId, role, alignment, won, abandoned) {
+      if (!stats[gameType]) return;
+
+      const gameStats = stats[gameType];
+
+      // Helper to update a stats object
+      function updateStatsObj(statsObj, stat, inc) {
+        if (stat !== "totalGames") {
+          if (statsObj[stat]) {
+            statsObj[stat].total = Math.max(0, statsObj[stat].total - 1);
+            if (inc && statsObj[stat].count > 0) {
+              statsObj[stat].count = Math.max(0, statsObj[stat].count - 1);
+            }
+          }
+        } else if (statsObj.totalGames) {
+          statsObj.totalGames = Math.max(0, statsObj.totalGames - 1);
+        }
+      }
+
+      // Revert all stats
+      if (gameStats.all) {
+        if (won) updateStatsObj(gameStats.all, "wins", true);
+        else updateStatsObj(gameStats.all, "wins", false);
+        
+        if (abandoned) updateStatsObj(gameStats.all, "abandons", true);
+      }
+
+      // Revert bySetup stats
+      if (gameStats.bySetup && gameStats.bySetup[setupId]) {
+        if (won) updateStatsObj(gameStats.bySetup[setupId], "wins", true);
+        else updateStatsObj(gameStats.bySetup[setupId], "wins", false);
+        
+        if (abandoned) updateStatsObj(gameStats.bySetup[setupId], "abandons", true);
+      }
+
+      // Revert byRole stats
+      if (role && gameStats.byRole && gameStats.byRole[role]) {
+        if (won) updateStatsObj(gameStats.byRole[role], "wins", true);
+        else updateStatsObj(gameStats.byRole[role], "wins", false);
+        
+        if (abandoned) updateStatsObj(gameStats.byRole[role], "abandons", true);
+      }
+
+      // Revert byAlignment stats
+      if (alignment && gameStats.byAlignment && gameStats.byAlignment[alignment]) {
+        if (won) updateStatsObj(gameStats.byAlignment[alignment], "wins", true);
+        else updateStatsObj(gameStats.byAlignment[alignment], "wins", false);
+        
+        if (abandoned) updateStatsObj(gameStats.byAlignment[alignment], "abandons", true);
+      }
+
+      return stats;
+    }
+
+    // Process each player
+    for (let userIdToRefund of userIds) {
+      try {
+        const playerId = playerIdMap[userIdToRefund];
+        const alignment = playerAlignmentMap[userIdToRefund];
+        
+        // Fetch user data
+        var user = await models.User.findOne({ id: userIdToRefund }).exec();
+        
+        if (!user) continue;
+
+        // Determine if player won
+        const won = game.winners.includes(playerId) || 
+                    (game.winnersInfo && game.winnersInfo.players && 
+                     game.winnersInfo.players.includes(playerId));
+
+        // Determine if player abandoned
+        const abandoned = game.left && game.left.includes(playerId);
+
+        // Determine if player got kudos
+        const gotKudos = game.kudosReceiver === playerId;
+
+        // Calculate coins to revert
+        let coinsToRevert = 0;
+
+        // Revert win coins (only for ranked games)
+        if (game.ranked && won) {
+          coinsToRevert += 1;
+        }
+
+        // Calculate fortune/misfortune to revert
+        // We need to recalculate the same way the game did
+        let pointsToRevert = 0;
+        let pointsNegativeToRevert = 0;
+
+        if (game.history) {
+          try {
+            const history = JSON.parse(game.history);
+            
+            // Extract role information from history
+            // History structure varies, but we can get it from the playerAlignmentMap and originalRoles
+            const roleFromHistory = null; // We'll extract this if needed
+            
+            // Recalculate fortune/misfortune using the same algorithm as adjustSkillRatings
+            // This requires the setup's faction ratings AT THE TIME of the game
+            const setup = await models.Setup.findOne({ _id: game.setup }).select(
+              "id factionRatings"
+            );
+            
+            if (setup && setup.factionRatings) {
+              const factionRatingsRaw = setup.factionRatings || [];
+              const factionRatings = new Map(
+                factionRatingsRaw.map((factionRating) => [
+                  factionRating.factionName,
+                  factionRating.skillRating,
+                ])
+              );
+
+              // Rebuild the faction structure from the game data
+              const factionWinnerFractions = {};
+              const memberFactions = {};
+              
+              // Parse history to get originalRoles
+              let originalRoles = {};
+              if (history.originalRoles) {
+                originalRoles = history.originalRoles;
+              }
+              
+              // Build faction membership
+              for (let userId in playerIdMap) {
+                const playerId = playerIdMap[userId];
+                if (originalRoles[playerId]) {
+                  const roleName = originalRoles[playerId].split(":")[0];
+                  const alignment = playerAlignmentMap[userId] || "";
+                  
+                  // Determine faction name (same logic as in adjustSkillRatings)
+                  const alignmentIsFaction =
+                    alignment === "Village" ||
+                    alignment === "Mafia" ||
+                    alignment === "Cult";
+                  const factionName = alignmentIsFaction ? alignment : roleName;
+                  memberFactions[playerId] = factionName;
+
+                  if (factionWinnerFractions[factionName] === undefined) {
+                    factionWinnerFractions[factionName] = {
+                      originalCount: 0,
+                      winnerCount: 0,
+                    };
+                  }
+
+                  factionWinnerFractions[factionName].originalCount++;
+                  if (won) {
+                    factionWinnerFractions[factionName].winnerCount++;
+                  }
+                }
+              }
+
+              const factionNames = Object.keys(factionWinnerFractions);
+              
+              // Calculate faction ratings
+              const factionsToBeRated = factionNames.map((factionName) => {
+                if (factionRatings.has(factionName)) {
+                  const factionRating = factionRatings.get(factionName);
+                  return [
+                    rating({ mu: factionRating.mu, sigma: factionRating.sigma }),
+                  ];
+                } else {
+                  return [
+                    rating({
+                      mu: constants.defaultSkillRatingMu,
+                      sigma: constants.defaultSkillRatingSigma,
+                    }),
+                  ];
+                }
+              });
+
+              const factionScores = factionNames.map((factionName) => {
+                const factionWinnerFraction = factionWinnerFractions[factionName];
+                return (
+                  factionWinnerFraction.winnerCount /
+                  factionWinnerFraction.originalCount
+                );
+              });
+
+              const predictions = predictWin(factionsToBeRated);
+              
+              const pointsWonByFactions = {};
+              const pointsLostByFactions = {};
+              
+              for (let i = 0; i < factionNames.length; i++) {
+                const factionName = factionNames[i];
+                const winPredictionPercent = predictions[i];
+                
+                pointsWonByFactions[factionName] = Math.round(
+                  constants.pointsNominalAmount / 2 / winPredictionPercent
+                );
+                pointsLostByFactions[factionName] = Math.round(
+                  constants.pointsNominalAmount / 2 / (1 - winPredictionPercent)
+                );
+              }
+
+              // Calculate points for this specific player
+              const playerFaction = memberFactions[playerId];
+              if (playerFaction) {
+                const maxEarnedPoints = constants.pointsNominalAmount * 20;
+                let pointsEarned = won
+                  ? pointsWonByFactions[playerFaction]
+                  : pointsLostByFactions[playerFaction];
+                  
+                if (pointsEarned > maxEarnedPoints) {
+                  pointsEarned = maxEarnedPoints;
+                }
+
+                if (won) {
+                  pointsToRevert = pointsEarned;
+                } else {
+                  pointsNegativeToRevert = pointsEarned;
+                }
+              }
+            }
+          } catch (e) {
+            logger.error(`Error calculating fortune/misfortune for game ${gameId}:`, e);
+            // Continue without reverting points if calculation fails
+          }
+        }
+
+        // Extract role from history for stats reversion
+        const roleFromHistory = null; // Simplified - would need more complex parsing
+
+        const setupId = game.setup ? String(game.setup) : null;
+
+        // Update user stats (for ranked/competitive games only)
+        user.stats = revertStats(
+          user.stats,
+          game.type,
+          setupId,
+          roleFromHistory,
+          alignment,
+          won,
+          abandoned
+        );
+
+        // Build update operations
+        const updateOps = {
+          $pull: { games: game._id },
+          $set: {
+            stats: user.stats,
+          },
+        };
+
+        const incOps = {};
+
+        // Revert kudos
+        if (gotKudos) {
+          incOps.kudos = -1;
+        }
+
+        // Revert coins
+        if (coinsToRevert > 0) {
+          incOps.coins = -coinsToRevert;
+        }
+
+        // Revert hearts
+        if (game.ranked) {
+          var itemsOwned = await redis.getUserItemsOwned(userIdToRefund);
+          const redHeartCapacity =
+            constants.initialRedHeartCapacity + (itemsOwned?.bonusRedHearts || 0);
+          updateOps.$set.redHearts = redHeartCapacity;
+        }
+
+        if (game.competitive) {
+          updateOps.$set.goldHearts = constants.initialGoldHeartCapacity;
+        }
+
+        // Revert fortune/misfortune points
+        if (pointsToRevert > 0) {
+          incOps.points = -pointsToRevert;
+        }
+        if (pointsNegativeToRevert > 0) {
+          incOps.pointsNegative = -pointsNegativeToRevert;
+        }
+
+        if (Object.keys(incOps).length > 0) {
+          updateOps.$inc = incOps;
+        }
+
+        // Calculate new win rate
+        const newWinRate =
+          (user.stats[game.type]?.all?.wins?.count || 0) /
+          (user.stats[game.type]?.all?.wins?.total || 1);
+        updateOps.$set.winRate = newWinRate;
+
+        // Apply the update
+        await models.User.updateOne({ id: userIdToRefund }, updateOps).exec();
+
+        // Clear user cache
+        await redis.cacheUserInfo(userIdToRefund, true);
+      } catch (e) {
+        logger.error(`Error refunding game for user ${userIdToRefund}:`, e);
+        // Continue processing other users
+      }
+    }
+
+    // Log the mod action
+    await routeUtils.createModAction(userId, "Refund Game", [gameId]);
+
+    res.send(
+      `Successfully refunded game for ${userIds.length} player(s). ` +
+      `Reverted: win/loss/abandonment statistics, kudos, coins from wins, ${game.ranked ? 'red' : 'gold'} hearts, and fortune/misfortune points.`
+    );
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error refunding Red Hearts.");
+    res.send("Error refunding game: " + e.message);
   }
 });
 

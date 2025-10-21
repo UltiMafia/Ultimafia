@@ -1492,51 +1492,21 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Refund Red Hearts": {
-      perm: "refundRedHearts",
-      category: "User Management",
+    "Refund Game": {
+      perm: "refundGame",
+      category: "Game Management",
       args: [
         {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-        {
-          label: "Amount",
-          name: "amount",
-          type: "number",
+          label: "Game ID",
+          name: "gameId",
+          type: "text",
         },
       ],
       run: function () {
         axios
-          .post("/api/mod/refundRedHearts", argValues)
-          .then(() => {
-            siteInfo.showAlert("Red Hearts refunded.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Refund Gold Hearts": {
-      perm: "refundGoldHearts",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-        {
-          label: "Amount",
-          name: "amount",
-          type: "number",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/refundGoldHearts", argValues)
-          .then(() => {
-            siteInfo.showAlert("Gold Hearts refunded.", "success");
+          .post("/api/mod/refundGame", argValues)
+          .then((res) => {
+            siteInfo.showAlert(res.data || "Game refunded.", "success");
             commandRan();
           })
           .catch(errorAlert);
