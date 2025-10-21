@@ -134,16 +134,11 @@ export default function ForumSearch({ open, onClose }) {
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
           <TextField
             fullWidth
-            label="Search for content"
-            placeholder="Enter keywords to search in posts..."
+            label="Filter by content"
+            placeholder="🔎 Search thread/post content"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyPress={handleKeyPress}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">🔎</InputAdornment>
-              ),
-            }}
             helperText="Search in thread titles and post content"
           />
 
@@ -154,7 +149,6 @@ export default function ForumSearch({ open, onClose }) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             onKeyPress={handleKeyPress}
-            helperText="Find posts by a specific user"
           />
 
           <FormControl fullWidth>

@@ -25,7 +25,7 @@ import {
   Popover,
   Stack,
   Typography,
-  Tooltip,
+  Button,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
@@ -91,16 +91,16 @@ function ForumNav(props) {
             </NavLink>
           )}
         </div>
-        <div className="forum-nav-actions">
-          <Tooltip title="Search Forums">
-            <IconButton
-              onClick={props.onSearchClick}
-              size="small"
-              sx={{ color: "text.secondary" }}
-            >
-              🔎
-            </IconButton>
-          </Tooltip>
+        <div className="forum-nav-actions" style={{ marginLeft: 'auto' }}>
+          <Button
+            onClick={props.onSearchClick}
+            startIcon="🔎"
+            variant="text"
+            size="small"
+            sx={{ color: 'text.secondary' }}
+          >
+            Search
+          </Button>
         </div>
       </div>
     </div>

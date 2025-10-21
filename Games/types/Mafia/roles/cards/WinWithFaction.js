@@ -627,7 +627,7 @@ module.exports = class WinWithFaction extends Card {
       },
     };
 
-    // seer meeting and state mods
+    // seer and poet meeting and state mods
     this.meetings = {
       "Guess Seer": {
         states: ["Dusk"],
@@ -668,9 +668,6 @@ module.exports = class WinWithFaction extends Card {
           },
         },
       },
-    };
-    // poet meeting and state mods
-    this.meetings = {
       "Guess Poet": {
         states: ["Dusk"],
         flags: ["voting"],
@@ -708,6 +705,71 @@ module.exports = class WinWithFaction extends Card {
             this.game.guessedPoets[this.actor.faction].push(this.target);
             this.target.kill("condemnRevenge", this.actor);
           },
+        },
+      },
+      "Guess the Poet After Ghost Win": {
+        states: ["Epilogue"],
+        flags: ["group", "voting", "mustAct"],
+        targets: { include: ["alive", "dead"], exclude: [] },
+        whileAlive: false,
+        whileDead: true,
+        action: {
+          run: function () {
+            if (!this.game.poetGuessPhaseActive) {
+              return;
+            }
+
+            // Mark that the poet guess phase is completed
+            this.game.poetGuessPhaseCompleted = true;
+
+            // Check if the guessed player is actually the Poet
+            if (this.target.role.name === "Poet") {
+              // Village guessed correctly - Ghosts and Poet lose
+              this.game.queueAlert(
+                `The Village has correctly identified ${this.target.name} as the Poet!`
+              );
+              this.game.queueAlert(
+                `The Ghosts and Poet both lose! The Village wins!`
+              );
+
+              const Winners = require("../../Winners");
+              const winners = new Winners(this.game);
+              winners.addGroup("Village");
+
+              // Add all Village players as winners
+              for (let player of this.game.players) {
+                if (player.faction === "Village") {
+                  winners.addPlayer(player, "Village");
+                }
+              }
+
+              // End the game with Village winners
+              this.game.endGame(winners);
+            } else {
+              // Village guessed incorrectly - Cult wins as originally planned
+              this.game.queueAlert(
+                `The Village incorrectly identified ${this.target.name} as the Poet!`
+              );
+              this.game.queueAlert(`The Cult wins!`);
+
+              const Winners = require("../../Winners");
+              const winners = new Winners(this.game);
+
+              // Add all Cult players as winners
+              for (let player of this.game.players) {
+                if (CULT_FACTIONS.includes(player.faction)) {
+                  winners.addPlayer(player, player.faction);
+                }
+              }
+
+              // End the game with Cult winners
+              this.game.endGame(winners);
+            }
+          },
+        },
+        shouldMeet: function () {
+          // Only meet if the poet guess phase is active
+          return this.game.poetGuessPhaseActive === true;
         },
       },
     };

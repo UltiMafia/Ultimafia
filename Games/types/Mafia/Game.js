@@ -47,6 +47,10 @@ module.exports = class MafiaGame extends Game {
         name: "Day",
         length: options.settings.stateLengths["Day"],
       },
+      {
+        name: "Epilogue",
+        length: 1000 * 60,
+      },
     ];
     this.useObituaries = true;
     this.pregameWaitLength = options.settings.pregameWaitLength;
@@ -57,6 +61,7 @@ module.exports = class MafiaGame extends Game {
       Village: true,
       Pregame: true,
       Postgame: true,
+      Epilogue: true,
       "Room 1": true,
       "Room 2": true,
       "Room 3": true,
