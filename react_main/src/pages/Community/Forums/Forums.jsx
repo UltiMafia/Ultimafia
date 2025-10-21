@@ -12,21 +12,34 @@ import update from "immutability-helper";
 import Categories from "./Categories";
 import Board from "./Board";
 import Thread from "./Thread";
+import SearchResults from "./SearchResults";
+import ForumSearch from "./ForumSearch";
 import { useErrorAlert } from "../../../components/Alerts";
 import { UserContext } from "../../../Contexts";
 import { NameWithAvatar } from "../../User/User";
 
 import "css/forums.css";
-import { Divider, IconButton, Popover, Stack, Typography } from "@mui/material";
+import {
+  Divider,
+  IconButton,
+  Popover,
+  Stack,
+  Typography,
+  Button,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 
 export default function Forums() {
   const [forumNavInfo, updateForumNavInfo] = useForumNavInfo();
+  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
 
   return (
     <div className="forums">
-      <ForumNav forumNavInfo={forumNavInfo} />
+      <ForumNav
+        forumNavInfo={forumNavInfo}
+        onSearchClick={() => setSearchDialogOpen(true)}
+      />
       <Routes>
         <Route
           path="/"
@@ -40,8 +53,16 @@ export default function Forums() {
           path="thread/:threadId"
           element={<Thread updateForumNavInfo={updateForumNavInfo} />}
         />
+        <Route
+          path="search"
+          element={<SearchResults updateForumNavInfo={updateForumNavInfo} />}
+        />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+      <ForumSearch
+        open={searchDialogOpen}
+        onClose={() => setSearchDialogOpen(false)}
+      />
     </div>
   );
 }
@@ -69,6 +90,17 @@ function ForumNav(props) {
               {forumNavInfo.thread.title}
             </NavLink>
           )}
+        </div>
+        <div className="forum-nav-actions" style={{ marginLeft: "auto" }}>
+          <Button
+            onClick={props.onSearchClick}
+            startIcon="🔎"
+            variant="text"
+            size="small"
+            sx={{ color: "text.secondary" }}
+          >
+            Search
+          </Button>
         </div>
       </div>
     </div>
@@ -121,16 +153,11 @@ export function VoteWidget(props) {
   const errorAlert = useErrorAlert();
   const [userVotes, setUserVotes] = useState([]);
 
-  const upvoters = userVotes.slice().filter(vote => vote.direction === 1);
-  const downvoters = userVotes.slice().filter(vote => vote.direction === -1);
+  const upvoters = userVotes.slice().filter((vote) => vote.direction === 1);
+  const downvoters = userVotes.slice().filter((vote) => vote.direction === -1);
 
-  const {
-    popoverOpen,
-    popoverClasses,
-    anchorEl,
-    handleClick,
-    closePopover,
-  } = usePopoverOpen();
+  const { popoverOpen, popoverClasses, anchorEl, handleClick, closePopover } =
+    usePopoverOpen();
 
   function updateItemVoteCount(direction, newDirection) {
     var voteCount = item.voteCount;
@@ -194,7 +221,7 @@ export function VoteWidget(props) {
 
   function getVotes(e, itemId) {
     if (!user.perms.viewVotes) return;
-    handleClick(e); 
+    handleClick(e);
     axios.get(`/api/forums/vote/${itemId}`).then((res) => {
       setUserVotes(res.data);
     });
@@ -210,16 +237,21 @@ export function VoteWidget(props) {
         }}
         onClick={() => onVote(item.id, 1)}
       />
-      <IconButton onClick={(e) => getVotes(e, item.id)} sx={{
+      <IconButton
+        onClick={(e) => getVotes(e, item.id)}
+        sx={{
           position: "relative",
           fontSize: "1em",
           minWidth: "2em",
           minHeight: "2em",
-      }}>
-        <Typography sx={{
-          position: "absolute",
-          lineHeight: "1",
-        }}>
+        }}
+      >
+        <Typography
+          sx={{
+            position: "absolute",
+            lineHeight: "1",
+          }}
+        >
           {item.voteCount || 0}
         </Typography>
       </IconButton>
@@ -247,10 +279,14 @@ export function VoteWidget(props) {
         disableScrollLock
         disableRestoreFocus
       >
-        <Stack direction="column" spacing={1} sx={{
-          p: 1,
-        }}>
-          <i className="fas fa-arrow-up" style={{ alignSelf: "center", }} />
+        <Stack
+          direction="column"
+          spacing={1}
+          sx={{
+            p: 1,
+          }}
+        >
+          <i className="fas fa-arrow-up" style={{ alignSelf: "center" }} />
           {upvoters.map((e) => (
             <NameWithAvatar
               small
@@ -259,7 +295,9 @@ export function VoteWidget(props) {
               avatar={e.voter.avatar}
             />
           ))}
-          {upvoters.length === 0 && <Typography sx={{ alignSelf: "center", }}>None</Typography>}
+          {upvoters.length === 0 && (
+            <Typography sx={{ alignSelf: "center" }}>None</Typography>
+          )}
           <Divider orientation="horizontal" flexItem />
           {downvoters.map((e) => (
             <NameWithAvatar
@@ -269,8 +307,10 @@ export function VoteWidget(props) {
               avatar={e.voter.avatar}
             />
           ))}
-          {downvoters.length === 0 && <Typography sx={{ alignSelf: "center", }}>None</Typography>}
-          <i className="fas fa-arrow-down" style={{ alignSelf: "center", }} />
+          {downvoters.length === 0 && (
+            <Typography sx={{ alignSelf: "center" }}>None</Typography>
+          )}
+          <i className="fas fa-arrow-down" style={{ alignSelf: "center" }} />
         </Stack>
       </Popover>
     </Stack>

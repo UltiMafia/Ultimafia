@@ -9,14 +9,7 @@ import CustomMarkdown from "components/CustomMarkdown";
 import { VoteWidget } from "./Forums/Forums";
 import { NameWithAvatar } from "../User/User";
 
-import {
-  Box,
-  Divider,
-  Grid,
-  IconButton,
-  Paper,
-  Stack,
-} from "@mui/material";
+import { Box, Divider, Grid, IconButton, Paper, Stack } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 export const Comment = (props) => {
@@ -58,7 +51,7 @@ export const Comment = (props) => {
   return (
     <Grid container>
       <Grid item xs={12} md={props?.fullWidth ? 12 : 6}>
-        <Paper sx={{ p: 1, }} className={`${comment.deleted ? "deleted" : ""}`}>
+        <Paper sx={{ p: 1 }} className={`${comment.deleted ? "deleted" : ""}`}>
           <Stack direction="row" spacing={1} alignItems="flex-start">
             <VoteWidget
               item={comment}
@@ -75,11 +68,17 @@ export const Comment = (props) => {
                   groups={comment.author.groups}
                   color={theme.palette.text.primary}
                 />
-                <Stack sx={{
-                  marginLeft: "auto !important",
-                  opacity: "0.5",
-                }}>
-                  <Time minSec millisec={Date.now() - comment.date} suffix=" ago" />
+                <Stack
+                  sx={{
+                    marginLeft: "auto !important",
+                    opacity: "0.5",
+                  }}
+                >
+                  <Time
+                    minSec
+                    millisec={Date.now() - comment.date}
+                    suffix=" ago"
+                  />
                 </Stack>
                 {!comment.deleted &&
                   (user.perms.deleteAnyPost ||
