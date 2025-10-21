@@ -12,21 +12,34 @@ import update from "immutability-helper";
 import Categories from "./Categories";
 import Board from "./Board";
 import Thread from "./Thread";
+import SearchResults from "./SearchResults";
+import ForumSearch from "./ForumSearch";
 import { useErrorAlert } from "../../../components/Alerts";
 import { UserContext } from "../../../Contexts";
 import { NameWithAvatar } from "../../User/User";
 
 import "css/forums.css";
-import { Divider, IconButton, Popover, Stack, Typography } from "@mui/material";
+import {
+  Divider,
+  IconButton,
+  Popover,
+  Stack,
+  Typography,
+  Button,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 
 export default function Forums() {
   const [forumNavInfo, updateForumNavInfo] = useForumNavInfo();
+  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
 
   return (
     <div className="forums">
-      <ForumNav forumNavInfo={forumNavInfo} />
+      <ForumNav
+        forumNavInfo={forumNavInfo}
+        onSearchClick={() => setSearchDialogOpen(true)}
+      />
       <Routes>
         <Route
           path="/"
@@ -40,8 +53,16 @@ export default function Forums() {
           path="thread/:threadId"
           element={<Thread updateForumNavInfo={updateForumNavInfo} />}
         />
+        <Route
+          path="search"
+          element={<SearchResults updateForumNavInfo={updateForumNavInfo} />}
+        />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+      <ForumSearch
+        open={searchDialogOpen}
+        onClose={() => setSearchDialogOpen(false)}
+      />
     </div>
   );
 }
@@ -69,6 +90,17 @@ function ForumNav(props) {
               {forumNavInfo.thread.title}
             </NavLink>
           )}
+        </div>
+        <div className="forum-nav-actions" style={{ marginLeft: "auto" }}>
+          <Button
+            onClick={props.onSearchClick}
+            startIcon="🔎"
+            variant="text"
+            size="small"
+            sx={{ color: "text.secondary" }}
+          >
+            Search
+          </Button>
         </div>
       </div>
     </div>

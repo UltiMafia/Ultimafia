@@ -32,6 +32,7 @@ const stateIconMap = {
   postgame: "bakerflagwin",
   "give clue": "ghost",
   "treasure chest": "admiral",
+  epilogue: "ghost",
 };
 
 export default function StateIcon({

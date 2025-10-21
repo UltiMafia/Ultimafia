@@ -208,11 +208,32 @@ module.exports = class GhostGame extends Card {
           return;
         }
         if (this.game.guessedWord === this.game.realWord) {
-          for (let player of this.game.players) {
-            if (CULT_FACTIONS.includes(player.faction)) {
-              winners.addPlayer(player, player.faction);
+          // Check if there's a Poet in the game
+          const poetsInGame = this.game.players.filter(
+            (p) => p.role.name === "Poet"
+          );
+
+          if (poetsInGame.length > 0 && !this.game.poetGuessPhaseCompleted) {
+            // Poet is in game - trigger the guess phase
+            this.game.poetGuessPhaseActive = true;
+            this.game.queueAlert(
+              "The Ghost has successfully guessed the word!"
+            );
+            this.game.queueAlert(
+              "All players must now vote to identify who the Poet is!"
+            );
+            // Don't add any winners yet - wait for the Epilogue vote
+            // Return false to prevent game end and allow state progression
+            return false;
+          } else if (poetsInGame.length === 0) {
+            // No Poet in game - Cult wins immediately
+            for (let player of this.game.players) {
+              if (CULT_FACTIONS.includes(player.faction)) {
+                winners.addPlayer(player, player.faction);
+              }
             }
           }
+          // If poetGuessPhaseCompleted is true, the winners have already been set by the meeting
         }
       },
     };
@@ -238,6 +259,13 @@ module.exports = class GhostGame extends Card {
             }
           }
           return false;
+        },
+      },
+      Epilogue: {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          // Only enter Epilogue state if poet guess phase is active
+          return !this.game.poetGuessPhaseActive;
         },
       },
     };

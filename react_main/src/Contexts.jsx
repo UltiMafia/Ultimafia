@@ -1,6 +1,7 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useReducer, useState, useContext } from "react";
 import { setCaptchaVisible } from "./utils";
 import update from "immutability-helper";
+import MuiLink from "@mui/material/Link";
 
 import { AlertFadeTimeout, AlertFadeDuration } from "./Constants";
 import { useLocation } from "react-router-dom";
@@ -12,6 +13,7 @@ export const GameContext = React.createContext();
 
 export function UserProvider({ children, setUserLoading }) {
   const location = useLocation();
+  const siteInfo = useContext(SiteInfoContext);
   const [inGame, setInGame] = useState(null);
   const [user, setUser] = useState({
     loggedIn: false,
@@ -108,7 +110,7 @@ export function UserProvider({ children, setUserLoading }) {
       }
 
       if (res.data.nameChanged === false) {
-        siteInfo.showAlert(
+        siteInfo?.showAlert(
           () => (
             <div>
               New account created, you can change your username once in your{" "}
