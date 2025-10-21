@@ -1230,21 +1230,149 @@ router.post("/vote", async function (req, res) {
 router.get("/search", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
-    var query = String(req.query.query);
-    var user = String(req.query.user);
-    var last = String(req.query.last);
+    var userId = await routeUtils.verifyLoggedIn(req, true);
+    var rank = userId ? await redis.getUserRank(userId) : 0;
+    var canViewDeleted = await routeUtils.verifyPermission(userId, "viewDeleted");
+    
+    var query = String(req.query.query || "");
+    var username = String(req.query.username || "");
+    var boardId = String(req.query.boardId || "");
+    var page = Number(req.query.page) || 1;
+    var limit = Number(req.query.limit) || 20;
+    var skip = (page - 1) * limit;
 
-    var threads = await models.ForumThread.find({})
-      .select("id author title content")
-      .populate("author", "id name avatar");
-    var replies = await models.ForumReply.find()
-      .select("id author thread content")
-      .populate("author", "id name avatar")
-      .populate("thread", "title");
+    // Build search filters
+    var threadFilter = {};
+    var replyFilter = {};
+
+    // Board filter
+    if (boardId) {
+      var board = await models.ForumBoard.findOne({ id: boardId })
+        .select("_id rank")
+        .populate("category", "rank");
+      
+      if (!board || board.category.rank > rank) {
+        res.status(500);
+        res.send("Board not found or access denied.");
+        return;
+      }
+      
+      threadFilter.board = board._id;
+      replyFilter.thread = { $in: await models.ForumThread.find({ board: board._id }).select("_id") };
+    }
+
+    // User filter
+    if (username) {
+      var user = await models.User.findOne({ name: new RegExp(username, "i") }).select("_id");
+      if (user) {
+        threadFilter.author = user._id;
+        replyFilter.author = user._id;
+      } else {
+        // If user not found, return empty results
+        res.send({
+          threads: [],
+          replies: [],
+          totalThreads: 0,
+          totalReplies: 0,
+          page: page,
+          totalPages: 0
+        });
+        return;
+      }
+    }
+
+    // Content search filter
+    if (query) {
+      var contentRegex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), "i");
+      threadFilter.$or = [
+        { title: contentRegex },
+        { content: contentRegex }
+      ];
+      replyFilter.content = contentRegex;
+    }
+
+    // Deleted content filter
+    if (!canViewDeleted) {
+      threadFilter.deleted = false;
+      replyFilter.deleted = false;
+    }
+
+    // Get threads
+    var threads = await models.ForumThread.find(threadFilter)
+      .select("id author title content postDate bumpDate replyCount voteCount viewCount board -_id")
+      .populate("author", "id name avatar -_id")
+      .populate("board", "id name -_id")
+      .sort("-bumpDate")
+      .skip(skip)
+      .limit(limit);
+
+    // Get replies
+    var replies = await models.ForumReply.find(replyFilter)
+      .select("id author thread content postDate voteCount -_id")
+      .populate("author", "id name avatar -_id")
+      .populate({
+        path: "thread",
+        select: "id title board -_id",
+        populate: {
+          path: "board",
+          select: "id name -_id"
+        }
+      })
+      .sort("-postDate")
+      .skip(skip)
+      .limit(limit);
+
+    // Get total counts for pagination
+    var totalThreads = await models.ForumThread.countDocuments(threadFilter);
+    var totalReplies = await models.ForumReply.countDocuments(replyFilter);
+
+    // Process results
+    for (let i in threads) {
+      let thread = threads[i].toJSON();
+      thread.author = await redis.getBasicUserInfo(thread.author.id, true);
+      threads[i] = thread;
+    }
+
+    for (let i in replies) {
+      let reply = replies[i].toJSON();
+      reply.author = await redis.getBasicUserInfo(reply.author.id, true);
+      replies[i] = reply;
+    }
+
+    res.send({
+      threads: threads,
+      replies: replies,
+      totalThreads: totalThreads,
+      totalReplies: totalReplies,
+      page: page,
+      totalPages: Math.ceil(Math.max(totalThreads, totalReplies) / limit)
+    });
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error voting.");
+    res.send("Error searching forums.");
+  }
+});
+
+router.get("/search/boards", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req, true);
+    var rank = userId ? await redis.getUserRank(userId) : 0;
+
+    var boards = await models.ForumBoard.find({})
+      .select("id name category -_id")
+      .populate("category", "id name rank -_id")
+      .sort("name");
+
+    // Filter boards by user rank
+    boards = boards.filter(board => board.category.rank <= rank);
+
+    res.send(boards);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send([]);
   }
 });
 
