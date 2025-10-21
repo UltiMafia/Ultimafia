@@ -1223,12 +1223,9 @@ router.post("/clearVanityUrl", async (req, res) => {
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    await models.User.updateOne(
-      { id: userIdToClear },
-      { $unset: { "settings.vanityUrl": "" } }
-    ).exec();
-
-    await redis.cacheUserInfo(userIdToClear, true);
+    await models.VanityUrl.deleteOne({
+      userId: userIdToClear,
+    });
 
     routeUtils.createModAction(userId, "Clear Vanity URL", [userIdToClear]);
     res.sendStatus(200);

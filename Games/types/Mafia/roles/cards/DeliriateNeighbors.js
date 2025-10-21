@@ -8,8 +8,8 @@ module.exports = class DeliriateNeighbors extends Card {
     super(role);
 
     this.listeners = {
-      state: function (stateInfo){
-       if (!this.hasAbility(["Effect"])) {
+      state: function (stateInfo) {
+        if (!this.hasAbility(["Effect"])) {
           return;
         }
 
@@ -24,19 +24,29 @@ module.exports = class DeliriateNeighbors extends Card {
           priority: PRIORITY_NIGHT_ROLE_BLOCKER + 1,
           labels: ["block", "delirium"],
           run: function () {
-             for (let player of this.role.startingNeighbors){
-               if(player.effects.filter((e) => e.name == "Delirious" && e.source == this.role).length <= 0){
-                 if (this.dominates(player)) {
-                  let effect = this.role.giveEffect(player,"Delirious", this.actor,Infinity, null, this.role);
+            for (let player of this.role.startingNeighbors) {
+              if (
+                player.effects.filter(
+                  (e) => e.name == "Delirious" && e.source == this.role
+                ).length <= 0
+              ) {
+                if (this.dominates(player)) {
+                  let effect = this.role.giveEffect(
+                    player,
+                    "Delirious",
+                    this.actor,
+                    Infinity,
+                    null,
+                    this.role
+                  );
                   this.blockWithDelirium(player, true);
                 }
-               }
-             }
+              }
+            }
           },
         });
 
-      this.game.queueAction(action);
-
+        this.game.queueAction(action);
       },
       AbilityToggle: function (player) {
         if (this.startingNeighbors) {

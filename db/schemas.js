@@ -720,4 +720,44 @@ schemas.Ban.virtual("mod", {
   justOne: true,
 });
 
+// VanityUrl schema for custom user URLs
+schemas.VanityUrl = new mongoose.Schema({
+  url: {
+    type: String,
+    required: true,
+    unique: true,
+    index: true,
+    minlength: 1,
+    maxlength: 20,
+    match: /^[a-zA-Z0-9-]+$/,
+  },
+  userId: {
+    type: String,
+    required: true,
+    index: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+// Update the updatedAt field on save
+schemas.VanityUrl.pre("save", function (next) {
+  this.updatedAt = Date.now();
+  next();
+});
+
+// Virtual to populate user data
+schemas.VanityUrl.virtual("user", {
+  ref: "User",
+  localField: "userId",
+  foreignField: "id",
+  justOne: true,
+});
+
 module.exports = schemas;

@@ -420,21 +420,21 @@ export default function MafiaGame() {
             break;
         }
       }
-    } 
-    else if(currentState && (currentState.name.startsWith("Give Clue") || currentState.name.startsWith("Dawn"))){
+    } else if (
+      currentState &&
+      (currentState.name.startsWith("Give Clue") ||
+        currentState.name.startsWith("Dawn"))
+    ) {
       //Night Music Contiunes at Give Clue and Dawn
-    }
-    else {
+    } else {
       game.stopAudio();
     }
   }, [history.currentState]);
 
   useSocketListeners((socket) => {
     socket.on("state", (state) => {
-      if(state && state.name && state.name.startsWith("Give Clue")){
-
-      }
-      else if (playBellRef.current){ 
+      if (state && state.name && state.name.startsWith("Give Clue")) {
+      } else if (playBellRef.current) {
         game.playAudio("bell");
       }
 
@@ -538,8 +538,8 @@ export default function MafiaGame() {
       game.playAudio("gunshot");
     });
     socket.on("giveClue", (player) => {
-      if(player == self){
-      game.playAudio("ghostAsk");
+      if (player == self) {
+        game.playAudio("ghostAsk");
       }
     });
     socket.on("condemn", () => {

@@ -14,9 +14,41 @@ const utils = require("../lib/Utils");
 const redis = require("../modules/redis");
 const constants = require("../data/constants");
 const dbStats = require("../db/stats");
-const { colorHasGoodBackgroundContrast } = require("../shared/colors");
+const { colorHasGoodContrastForBothThemes } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
+
+// Helper function to resolve user ID from identifier (ID or vanity URL)
+async function resolveUserId(identifier) {
+  // First try to find user by ID
+  let user = await models.User.findOne({
+    id: identifier,
+    deleted: false,
+  }).select("id -_id");
+
+  if (user) {
+    return user.id;
+  }
+
+  // If not found by ID, try to find by vanity URL
+  const vanityUrl = await models.VanityUrl.findOne({
+    url: identifier,
+  }).select("userId -_id");
+
+  if (vanityUrl) {
+    // Verify the user still exists and is not deleted
+    const userByVanity = await models.User.findOne({
+      id: vanityUrl.userId,
+      deleted: false,
+    }).select("id -_id");
+
+    if (userByVanity) {
+      return userByVanity.id;
+    }
+  }
+
+  return null;
+}
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 
@@ -214,7 +246,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar settings accounts wins losses kudos karma points pointsNegative achievements bio pronouns banner setups games numFriends stats _id"
+        "id name avatar settings accounts wins losses kudos karma points pointsNegative achievements bio pronouns banner setups games numFriends stats lastActive _id"
       )
       .populate({
         path: "setups",
@@ -432,6 +464,10 @@ router.get("/:id/profile", async function (req, res) {
       }
     }
 
+    // Add online status and last active time
+    user.status = await redis.getUserStatus(userId);
+    user.lastActive = user.lastActive;
+
     res.send(user);
   } catch (e) {
     logger.error(e);
@@ -525,28 +561,13 @@ router.post("/karma", async function (req, res) {
 router.get("/:id/love", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = String(req.params.id);
+    const identifier = String(req.params.id);
+    const userId = await resolveUserId(identifier);
 
-    // First try to find user by ID
-    var userById = await models.User.findOne({
-      id: userId,
-      deleted: false,
-    }).select("id -_id");
-
-    // If not found by ID, try to find by vanity URL
-    if (!userById) {
-      var userByVanity = await models.User.findOne({
-        "settings.vanityUrl": userId,
-        deleted: false,
-      }).select("id -_id");
-
-      if (!userByVanity) {
-        res.status(404);
-        res.send("User not found.");
-        return;
-      }
-
-      userId = userByVanity.id;
+    if (!userId) {
+      res.status(404);
+      res.send("User not found.");
+      return;
     }
 
     var love = await models.Love.findOne({ userId })
@@ -573,28 +594,13 @@ router.get("/:id/love", async function (req, res) {
 router.get("/:id/friends", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
-    var userId = String(req.params.id);
+    const identifier = String(req.params.id);
+    const userId = await resolveUserId(identifier);
 
-    // First try to find user by ID
-    var userById = await models.User.findOne({
-      id: userId,
-      deleted: false,
-    }).select("id -_id");
-
-    // If not found by ID, try to find by vanity URL
-    if (!userById) {
-      var userByVanity = await models.User.findOne({
-        "settings.vanityUrl": userId,
-        deleted: false,
-      }).select("id -_id");
-
-      if (!userByVanity) {
-        res.status(404);
-        res.send("User not found.");
-        return;
-      }
-
-      userId = userByVanity.id;
+    if (!userId) {
+      res.status(404);
+      res.send("User not found.");
+      return;
     }
 
     var last = Number(req.query.last);
@@ -630,31 +636,16 @@ router.get("/:id/friends", async function (req, res) {
 
 router.get("/:id/info", async function (req, res) {
   try {
-    var userId = String(req.params.id);
+    const identifier = String(req.params.id);
+    const userId = await resolveUserId(identifier);
 
-    // First try to find user by ID
-    var userById = await models.User.findOne({
-      id: userId,
-      deleted: false,
-    }).select("id -_id");
-
-    // If not found by ID, try to find by vanity URL
-    if (!userById) {
-      var userByVanity = await models.User.findOne({
-        "settings.vanityUrl": userId,
-        deleted: false,
-      }).select("id -_id");
-
-      if (!userByVanity) {
-        res.status(404);
-        res.send({
-          name: "[not found]",
-          avatar: false,
-        });
-        return;
-      }
-
-      userId = userByVanity.id;
+    if (!userId) {
+      res.status(404);
+      res.send({
+        name: "[not found]",
+        avatar: false,
+      });
+      return;
     }
 
     var user = await redis.getUserInfo(userId);
@@ -673,7 +664,13 @@ router.get("/:id/info", async function (req, res) {
     user.perms = (await redis.getUserPermissions(req.params.id)) || {};
     user.rank = String(user.perms.rank || 0);
     user.perms = user.perms.perms || {};
-    delete user.status;
+
+    // Get online status and last active time
+    user.status = await redis.getUserStatus(user.id);
+    const userDoc = await models.User.findOne({ id: user.id }).select(
+      "lastActive -_id"
+    );
+    user.lastActive = userDoc?.lastActive;
 
     res.send(user);
   } catch (e) {
@@ -732,6 +729,33 @@ router.get("/accounts", async function (req, res) {
   } catch (e) {
     logger.error(e);
     res.send("Unable to load settings");
+  }
+});
+
+router.post("/bandcamp/oembed", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const { url } = req.body;
+
+    if (!url || !url.match(bandcampRegex)) {
+      throw new Error("Invalid Bandcamp URL");
+    }
+
+    // Call Bandcamp's oEmbed API
+    const oembedUrl = `https://bandcamp.com/api/oembed/1.0?url=${encodeURIComponent(
+      url
+    )}&format=json`;
+    const response = await fetch(oembedUrl);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch Bandcamp oEmbed data");
+    }
+
+    const data = await response.json();
+    res.send(data);
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error fetching Bandcamp embed data");
   }
 });
 
@@ -852,57 +876,7 @@ router.post("/deathMessage", async function (req, res) {
   }
 });
 
-router.post("/vanityUrl", async function (req, res) {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    let userId = await routeUtils.verifyLoggedIn(req);
-    var itemsOwned = await redis.getUserItemsOwned(userId);
-    let vanityUrl = String(req.body.vanityUrl).trim();
-
-    if (!itemsOwned.vanityUrl) {
-      res.status(500);
-      res.send("You must purchase Vanity URL from the Shop.");
-      return;
-    }
-
-    // Validate vanity URL
-    if (vanityUrl.length < 1 || vanityUrl.length > 20) {
-      res.status(500);
-      res.send("Vanity URL must be between 1 and 20 characters.");
-      return;
-    }
-
-    // Only allow letters, numbers, and hyphens
-    if (!/^[a-zA-Z0-9-]+$/.test(vanityUrl)) {
-      res.status(500);
-      res.send("Vanity URL can only contain letters, numbers, and hyphens.");
-      return;
-    }
-
-    // Check if vanity URL is already taken
-    var existingUser = await models.User.findOne({
-      "settings.vanityUrl": vanityUrl,
-      deleted: false,
-    }).select("_id");
-
-    if (existingUser) {
-      res.status(500);
-      res.send("This vanity URL is already taken.");
-      return;
-    }
-
-    await models.User.updateOne(
-      { id: userId },
-      { $set: { [`settings.vanityUrl`]: vanityUrl } }
-    ).exec();
-    await redis.cacheUserInfo(userId, true);
-    res.send("Vanity URL updated successfully");
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error updating vanity URL.");
-  }
-});
+// Vanity URL routes moved to /api/vanityUrl
 
 router.post("/customEmote/create", async function (req, res) {
   try {
@@ -1126,11 +1100,11 @@ router.post("/settings/update", async function (req, res) {
 
     const propRequiresGoodContrast =
       prop === "textColor" || prop === "nameColor";
-    if (propRequiresGoodContrast && !colorHasGoodBackgroundContrast(value)) {
+    if (propRequiresGoodContrast && !colorHasGoodContrastForBothThemes(value)) {
       return res
         .status(422)
         .end(
-          "how did you manage to abuse bad contrast? lol. fix your color pls"
+          "Color must have good contrast in both light and dark themes. Please choose a different color."
         );
     }
 

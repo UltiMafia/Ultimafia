@@ -152,7 +152,7 @@ export default function Settings() {
         saveBtnOnClick: onMediaSave,
         default: "",
         extraInfo:
-          "Supports YouTube, SoundCloud, Spotify, Vimeo, Invidious, and direct media files (mp3, mp4, webm, ogg)",
+          "Supports YouTube, SoundCloud, Spotify, Bandcamp, Vimeo, Invidious, and direct media files (mp3, mp4, webm, ogg)",
       },
       {
         label: "Autoplay Media",
@@ -230,7 +230,7 @@ export default function Settings() {
       default: "#68a9dc",
       disabled: (deps) => !deps.user.itemsOwned.textColors,
       extraInfo:
-        "Note: You may only use colors with nice contrast. (dark text on the dark background won't do)",
+        "Note: Colors must have good contrast in both light and dark themes (minimum 3:1 ratio). Choose colors that are readable on both white and dark backgrounds.",
     },
     {
       label: "Text Color",
@@ -238,6 +238,8 @@ export default function Settings() {
       type: "color",
       default: "#FFF",
       disabled: (deps) => !deps.user.itemsOwned.textColors,
+      extraInfo:
+        "Note: Colors must have good contrast in both light and dark themes (minimum 3:1 ratio). Choose colors that are readable on both white and dark backgrounds.",
     },
     {
       label: "Ignore Custom Text Color",
@@ -580,7 +582,7 @@ export default function Settings() {
 
   function onVanityUrlSave(vanityUrl, deps) {
     axios
-      .post("/api/user/vanityUrl", { vanityUrl })
+      .post("/api/vanityUrl", { vanityUrl })
       .then((res) => {
         deps.siteInfo.showAlert("Vanity URL changed", "success");
 

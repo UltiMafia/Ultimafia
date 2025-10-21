@@ -20,8 +20,9 @@ export const BadTextContrast = ({ colorType, color }) => {
       }}
     >
       Your <span style={{ textDecoration: "underline" }}>{colorType}</span>{" "}
-      color {color} is too difficult to read in-game. Please change it in your
-      profile's settings.
+      color {color} has poor contrast in the current theme. Colors must be
+      readable in both light and dark themes. Please change it in your profile's
+      settings.
     </Alert>
   );
 };
