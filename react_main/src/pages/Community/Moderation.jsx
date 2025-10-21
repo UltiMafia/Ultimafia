@@ -1994,7 +1994,7 @@ function ModActions(props) {
   }
 
   const actionRows = actions.map((action) => {
-    if (!action.name in modCommands) {
+    if (!(action.name in modCommands)) {
       console.error(
         `Not displaying action ${action.name} because it isn't listed in modCommands. Please report this error.`
       );
@@ -2003,7 +2003,7 @@ function ModActions(props) {
 
     let command = modCommands[action.name];
     let actionArgs = action.args.map((arg, i) => (
-      <ModActionArg label={command.args[i].label} arg={arg} key={i} />
+      <ModActionArg label={command.args[i]?.label || "Unknown"} arg={arg} key={i} />
     ));
 
     return (
