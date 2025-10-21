@@ -2003,7 +2003,11 @@ function ModActions(props) {
 
     let command = modCommands[action.name];
     let actionArgs = action.args.map((arg, i) => (
-      <ModActionArg label={command.args[i]?.label || "Unknown"} arg={arg} key={i} />
+      <ModActionArg
+        label={command.args[i]?.label || "Unknown"}
+        arg={arg}
+        key={i}
+      />
     ));
 
     return (
