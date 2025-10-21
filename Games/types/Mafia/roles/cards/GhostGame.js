@@ -46,7 +46,7 @@ module.exports = class GhostGame extends Card {
         }
 
         for (let player of this.game.players) {
-          if (player.faction == "Cult") {
+          if (player.faction == "Cult" && !player.hasItem("GhostGuessWord")) {
             player.holdItem("GhostGuessWord");
           }
         }
@@ -157,6 +157,10 @@ module.exports = class GhostGame extends Card {
         }
       },
       aboutToFinish: function () {
+        if (this.game.HasRevealedWordsForGameEnd == true) {
+          return;
+        }
+        this.game.HasRevealedWordsForGameEnd = true;
         if (this.game.realWord) {
           this.game.queueAlert(`The real word was ${this.game.realWord}.`);
         }
