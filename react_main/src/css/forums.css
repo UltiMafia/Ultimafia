@@ -42,7 +42,7 @@
 }
 
 .forums .forum-category {
-  margin-top: 10px;
+  margin-top: var(--mui-spacing);
 }
 
 .forums .forum-category .title {
@@ -68,8 +68,8 @@
   align-items: center;
   justify-content: flex-start;
 
-  margin-bottom: 10px;
-  padding-bottom: 10px;
+  margin-bottom: var(--mui-spacing);
+  padding-bottom: var(--mui-spacing);
   border-bottom: 1px solid white;
 }
 
@@ -85,7 +85,7 @@
   align-items: center;
   justify-content: flex-start;
 
-  margin-right: 10px;
+  margin-right: var(--mui-spacing);
 }
 
 .forums .forum-category .board-icon {
@@ -149,7 +149,7 @@
   justify-content: flex-end;
 
   box-sizing: border-box;
-  padding: 0px 10px;
+  padding: 0px var(--mui-spacing);
   border-left: 1px solid white;
 }
 
@@ -232,7 +232,7 @@
   align-items: center;
   justify-content: space-between;
 
-  padding: 10px 0px 0px 0px;
+  padding: var(--mui-spacing) 0px 0px 0px;
 }
 
 .forums .board-wrapper .board-title-wrapper {
@@ -257,7 +257,7 @@
 }
 
 .forums .board-wrapper .create-thread i {
-  margin-right: 10px;
+  margin-right: var(--mui-spacing);
 }
 
 .forums .board-wrapper .threads {
@@ -268,7 +268,7 @@
 }
 
 .forums .board-wrapper .pinned-threads {
-  margin-top: 10px;
+  margin-top: var(--mui-spacing);
 }
 
 .forums .board-wrapper .thread {
@@ -277,13 +277,9 @@
   align-items: center;
   justify-content: flex-start;
 
-  margin-bottom: 10px;
-  padding-bottom: 10px;
+  margin-bottom: var(--mui-spacing);
+  padding-bottom: var(--mui-spacing);
   border-bottom: 1px solid white;
-}
-
-.forums .board-wrapper .thread .vote-widget {
-  margin-right: 15px;
 }
 
 .forums .board-wrapper .thread:last-child {
@@ -297,29 +293,7 @@
 }
 
 .forums .board-wrapper .thread .thread-title i {
-  margin-right: 10px;
-}
-
-.vote-widget {
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.vote-widget i {
-  font-size: 12px;
-  font-weight: 900;
-
-  cursor: pointer;
-}
-
-.vote-widget i:hover {
-  opacity: 0.8;
-}
-
-.vote-widget i.sel {
-  color: var(--theme-color-light);
+  margin-right: var(--mui-spacing);
 }
 
 .forums .board-wrapper .thread-link {
@@ -368,7 +342,7 @@
 }
 
 .forums .board-wrapper .modal .control .post {
-  margin-right: 10px;
+  margin-right: var(--mui-spacing);
 }
 
 .forums .board-wrapper .modal .thread-title {
@@ -399,7 +373,7 @@
   align-items: stretch;
   justify-content: flex-start;
 
-  margin-top: 10px;
+  margin-top: var(--mui-spacing);
 }
 
 .vote-wrapper {
@@ -422,7 +396,7 @@
   justify-content: flex-start;
 
   margin-bottom: 5px;
-  padding-bottom: 10px;
+  padding-bottom: var(--mui-spacing);
   border-bottom: 1px solid #c7c7c7;
 }
 
@@ -432,7 +406,7 @@
   align-items: center;
   justify-content: flex-start;
 
-  margin-top: 10px;
+  margin-top: var(--mui-spacing);
 }
 
 .thread-wrapper .post .title {
@@ -441,11 +415,11 @@
 }
 
 .thread-wrapper .post .title i {
-  margin-right: 10px;
+  margin-right: var(--mui-spacing);
 }
 
 .thread-wrapper .post-date {
-  margin-left: 10px;
+  margin-left: var(--mui-spacing);
 
   opacity: 0.5;
 }
@@ -484,7 +458,7 @@
 .thread-wrapper .reply-form {
   display: block;
 
-  margin-top: 10px;
+  margin-top: var(--mui-spacing);
   padding: 0px;
 
   background-color: transparent;
@@ -496,11 +470,11 @@
   align-items: stretch;
   justify-content: flex-start;
 
-  margin-top: 10px;
+  margin-top: var(--mui-spacing);
 }
 
 .thread-wrapper .post-reply {
-  margin-right: 10px;
+  margin-right: var(--mui-spacing);
 }
 
 .thread-wrapper .replies-wrapper {
@@ -614,7 +588,7 @@
   }
 
   .forums .thread-wrapper .post .btns-wrapper {
-    margin-top: 10px;
+    margin-top: var(--mui-spacing);
   }
 
   .forums .thread-wrapper .post .btns-wrapper i:first-child {

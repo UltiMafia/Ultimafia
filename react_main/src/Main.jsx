@@ -16,12 +16,12 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
-import { ErrorBoundary, useErrorBoundary } from "react-error-boundary";
+import { ErrorBoundary } from "react-error-boundary";
 import axios from "axios";
 import update from "immutability-helper";
 import { Icon } from "@iconify/react";
 
-import { UserContext, SiteInfoContext, useSiteInfo } from "./Contexts";
+import { UserContext, SiteInfoContext, SiteInfoProvider, UserProvider } from "./Contexts";
 import { AlertList, useErrorAlert } from "./components/Alerts";
 import {
   NotificationHolder,
@@ -30,7 +30,6 @@ import {
 } from "./components/Basic";
 import { Nav } from "./components/Nav";
 import { Welcome } from "./pages/Welcome/Welcome";
-import { Avatar, useUser } from "./pages/User/User";
 import UserNotifications from "./pages/User/UserNotifications";
 import { GuestAuthButtons } from "./components/GuestAuthButtons";
 import CookieBanner from "./components/CookieBanner";
@@ -38,10 +37,8 @@ import Chat from "./pages/Chat/Chat";
 
 import "css/main.css";
 import { useReducer } from "react";
-import { setCaptchaVisible } from "./utils";
 import { NewLoading } from "./pages/Welcome/NewLoading";
-import { Box, Stack, Paper, Typography, Button } from "@mui/material";
-import MuiLink from "@mui/material/Link";
+import { Box, Stack, Paper, Typography, Button, Snackbar, Alert, AlertTitle } from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
 
 import { Announcement } from "./components/alerts/Announcement";
@@ -88,38 +85,12 @@ function ErrorFallbackNoMain({ error, resetErrorBoundary }) {
 function Main(props) {
   const errorContent = props.errorContent;
 
-  var cacheVal = window.localStorage.getItem("cacheVal");
-  const [isLoading, setLoading] = useState(true);
+  const [isUserLoading, setUserLoading] = useState(true);
+  const [isSiteInfoLoading, setSiteInfoLoading] = useState(true);
   const [showAnnouncementTemporarily, setShowAnnouncementTemporarily] =
     useState(false);
 
-  if (!cacheVal) {
-    cacheVal = Date.now();
-    window.localStorage.setItem("cacheVal", cacheVal);
-  }
-
-  const openAnnouncements = () => {
-    setShowAnnouncementTemporarily(true);
-  };
-
   const isPhoneDevice = useIsPhoneDevice();
-
-  const user = useUser();
-  const siteInfo = useSiteInfo({
-    alerts: [],
-    cacheVal,
-  });
-  const errorAlert = useErrorAlert(siteInfo);
-  const location = useLocation();
-
-  function onGameLeave(index) {
-    axios
-      .post("/api/game/leave")
-      .then(() => {
-        siteInfo.hideAlert(index);
-      })
-      .catch(errorAlert);
-  }
 
   const { mode, systemMode } = useColorScheme();
   useEffect(() => {
@@ -128,102 +99,7 @@ function Main(props) {
     document.documentElement.classList.add(`${colorScheme}-mode`);
   }, [mode]);
 
-  useEffect(() => {
-    async function getInfo() {
-      try {
-        var res = await axios.get("/api/user/info");
-
-        if (res.data.id) {
-          setCaptchaVisible(false);
-
-          axios.defaults.headers.common["x-csrf"] = res.data.csrf;
-          axios.post("/api/user/online");
-
-          res.data.loggedIn = true;
-          res.data.loaded = true;
-          res.data.rank = Number(res.data.rank);
-          user.set(res.data);
-
-          var referrer = window.localStorage.getItem("referrer");
-
-          if (referrer) {
-            axios.post("/api/user/referred", { referrer });
-            window.localStorage.removeItem("referrer");
-          }
-        } else {
-          user.clear();
-          setCaptchaVisible(true);
-        }
-
-        if (res.data.nameChanged === false) {
-          siteInfo.showAlert(
-            () => (
-              <div>
-                New account created, you can change your username once in your{" "}
-                <MuiLink href={`/user/settings`}>settings</MuiLink>.
-              </div>
-            ),
-            "basic",
-            true
-          );
-        }
-
-        if (
-          res.data.inGame &&
-          !window.location.href.includes(`/game/${res.data.inGame}`)
-        ) {
-          siteInfo.showAlert(
-            (index) => (
-              <div>
-                {"You are in a game in progress. "}
-                <MuiLink href={`/game/${res.data.inGame}`}>
-                  {"Return to game "}
-                </MuiLink>
-                or <MuiLink onClick={() => onGameLeave(index)}>Leave</MuiLink>
-              </div>
-            ),
-            "basic",
-            true
-          );
-        }
-
-        res = await axios.get("/api/roles/all");
-        siteInfo.update("roles", res.data);
-
-        res = await axios.get("/api/roles/raw");
-        siteInfo.update("rolesRaw", res.data);
-
-        res = await axios.get("/api/roles/modifiers");
-        siteInfo.update("modifiers", res.data);
-
-        res = await axios.get("/api/roles/gamesettings");
-        siteInfo.update("gamesettings", res.data);
-      } catch (e) {
-        errorAlert(e);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    getInfo();
-
-    var onlineInterval = setInterval(() => {
-      axios.post("/api/user/online");
-    }, 1000 * 30);
-
-    return () => {
-      clearInterval(onlineInterval);
-    };
-  }, []);
-
-  const isWelcomePage = location.pathname === "/";
-  if (user.loggedIn && isWelcomePage) {
-    return <Navigate to="/play" />;
-  }
-
-  if (isLoading) {
-    return <NewLoading />;
-  }
+  const loading = isUserLoading || isSiteInfoLoading;
 
   const style = isPhoneDevice ? { padding: "8px" } : { padding: "24px" };
 
@@ -239,9 +115,10 @@ function Main(props) {
     <Box
       className="site-wrapper"
       sx={{
-        backgroundColor: (theme) => theme.palette.background.paper,
+        backgroundColor: "background.paper",
       }}
     >
+      <CookieBanner />
       <div className="main-container" style={style}>
         <Header
           setShowAnnouncementTemporarily={setShowAnnouncementTemporarily}
@@ -249,14 +126,6 @@ function Main(props) {
         <Announcement
           showAnnouncementTemporarily={showAnnouncementTemporarily}
           setShowAnnouncementTemporarily={setShowAnnouncementTemporarily}
-        />
-        <BadTextContrast
-          colorType="username"
-          color={user?.settings?.warnNameColor}
-        />
-        <BadTextContrast
-          colorType="text"
-          color={user?.settings?.warnTextColor}
         />
         <div className="inner-container">
           {errorContent ? (
@@ -275,6 +144,7 @@ function Main(props) {
             </Suspense>
           )}
         </div>
+        <InGameWarning />
         <Footer />
         <AlertList />
         {<Chat SiteNotifs={SiteNotifs} />}
@@ -293,15 +163,15 @@ function Main(props) {
   );
 
   const mainContent = (
-    <UserContext.Provider value={user}>
-      <SiteInfoContext.Provider value={siteInfo}>
-        <CookieBanner />
+    <SiteInfoProvider setSiteInfoLoading={setSiteInfoLoading}>
+      {loading && <NewLoading />}
+      {!loading && (
         <Routes>
           <Route path="/game/*" element={gameContent} />
           <Route path="/*" element={siteContent} />
         </Routes>
-      </SiteInfoContext.Provider>
-    </UserContext.Provider>
+      )}
+    </SiteInfoProvider>
   );
 
   return (
@@ -314,10 +184,12 @@ function Main(props) {
           window.location.origin + window.location.pathname)
       }
     >
-      <Routes>
-        <Route path="/" element={<Welcome />} />
-        <Route path="/*" element={mainContent} />
-      </Routes>
+      <UserProvider setUserLoading={setUserLoading}>
+        <Routes>
+          <Route path="/" element={<Welcome />} />
+          <Route path="/*" element={mainContent} />
+        </Routes>
+      </UserProvider>
     </ErrorBoundary>
   );
 }
@@ -384,7 +256,7 @@ function Header({ setShowAnnouncementTemporarily }) {
           justifyContent: "space-between",
         }}
       >
-        <Link to="/" className="logo-wrapper">
+        <Link to="/play" className="logo-wrapper">
           <SiteLogo />
         </Link>
         <Stack direction="column">
@@ -491,6 +363,50 @@ function Header({ setShowAnnouncementTemporarily }) {
       </div>
     </div>
   );
+}
+
+function InGameWarning() {
+  const user = useContext(UserContext);
+  const errorAlert = useErrorAlert();
+
+  function onGameLeave() {
+    axios
+      .post("/api/game/leave")
+      .then(() => {
+        user.setInGame(null);
+      })
+      .catch(errorAlert);
+  }
+
+  return (
+    <Snackbar open={user.inGame !== null}>
+      <Alert
+        severity="warning"
+        variant="outlined"
+        sx={{
+          width: '100%',
+          backgroundColor: "background.paper",
+        }}
+        slotProps={{
+          "message": { sx: {
+            flex: "1",
+          }}
+        }}
+      >
+        <AlertTitle>
+          You are in a game in progress.
+        </AlertTitle>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Button href={`/game/${user.inGame}`} size="small" sx={{ flex: "1" }}>
+            Return
+          </Button>
+          <Button onClick={() => onGameLeave()} size="small" sx={{ flex: "1" }}>
+            Leave
+          </Button>
+        </Stack>
+      </Alert>
+    </Snackbar>
+  )
 }
 
 function SiteNotifs() {

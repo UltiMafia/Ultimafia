@@ -1187,7 +1187,7 @@ export function KarmaVoteWidget(props) {
   }
 
   return (
-    <div ref={widgetRef} className="vote-widget">
+    <Stack direction="column" spacing={1}>
       <IconButton
         className={`fas fa-arrow-up`}
         style={{
@@ -1204,7 +1204,7 @@ export function KarmaVoteWidget(props) {
         }}
         onClick={() => onVote(-1)}
       />
-    </div>
+    </Stack>
   );
 }
 
