@@ -91,13 +91,13 @@ function ForumNav(props) {
             </NavLink>
           )}
         </div>
-        <div className="forum-nav-actions" style={{ marginLeft: 'auto' }}>
+        <div className="forum-nav-actions" style={{ marginLeft: "auto" }}>
           <Button
             onClick={props.onSearchClick}
             startIcon="🔎"
             variant="text"
             size="small"
-            sx={{ color: 'text.secondary' }}
+            sx={{ color: "text.secondary" }}
           >
             Search
           </Button>
