@@ -10,6 +10,7 @@ module.exports = class Hunter extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "CondemnRevenge",
+      "AddDusk",
     ];
   }
 };
