@@ -141,6 +141,18 @@ export default function Form(props) {
                   {field.saveBtn}
                 </div>
               )}
+            {field.clearBtn && field.value && (
+              <div
+                className="btn btn-theme-sec extra"
+                onClick={(e) => {
+                  if (field.clearBtnOnClick) {
+                    field.clearBtnOnClick(props.deps);
+                  }
+                }}
+              >
+                {field.clearBtn}
+              </div>
+            )}
             {ExtraInfo}
           </div>
         );

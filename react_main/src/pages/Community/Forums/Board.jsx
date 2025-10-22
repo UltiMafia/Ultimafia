@@ -95,6 +95,7 @@ export default function Board(props) {
           id={reply.author.id}
           name={reply.author.name}
           avatar={reply.author.avatar}
+          vanityUrl={reply.author.vanityUrl}
         />
         <Link
           className="reply-age"
@@ -133,6 +134,7 @@ export default function Board(props) {
             avatar={thread.author.avatar}
             name={thread.author.name}
             groups={thread.author.groups}
+            vanityUrl={thread.author.vanityUrl}
           />
           <div className="counts">
             <ViewsAndReplies
