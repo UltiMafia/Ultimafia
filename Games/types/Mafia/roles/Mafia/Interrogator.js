@@ -12,6 +12,7 @@ module.exports = class Interrogator extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "JailTarget",
+      "AddDusk",
     ];
 
     this.meetingMods = {
