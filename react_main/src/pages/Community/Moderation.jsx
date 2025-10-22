@@ -1492,51 +1492,21 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Refund Red Hearts": {
-      perm: "refundRedHearts",
-      category: "User Management",
+    "Refund Game": {
+      perm: "refundGame",
+      category: "Game Management",
       args: [
         {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-        {
-          label: "Amount",
-          name: "amount",
-          type: "number",
+          label: "Game ID",
+          name: "gameId",
+          type: "text",
         },
       ],
       run: function () {
         axios
-          .post("/api/mod/refundRedHearts", argValues)
-          .then(() => {
-            siteInfo.showAlert("Red Hearts refunded.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Refund Gold Hearts": {
-      perm: "refundGoldHearts",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-        {
-          label: "Amount",
-          name: "amount",
-          type: "number",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/refundGoldHearts", argValues)
-          .then(() => {
-            siteInfo.showAlert("Gold Hearts refunded.", "success");
+          .post("/api/mod/refundGame", argValues)
+          .then((res) => {
+            siteInfo.showAlert(res.data || "Game refunded.", "success");
             commandRan();
           })
           .catch(errorAlert);
@@ -2024,7 +1994,7 @@ function ModActions(props) {
   }
 
   const actionRows = actions.map((action) => {
-    if (!action.name in modCommands) {
+    if (!(action.name in modCommands)) {
       console.error(
         `Not displaying action ${action.name} because it isn't listed in modCommands. Please report this error.`
       );
@@ -2033,7 +2003,11 @@ function ModActions(props) {
 
     let command = modCommands[action.name];
     let actionArgs = action.args.map((arg, i) => (
-      <ModActionArg label={command.args[i].label} arg={arg} key={i} />
+      <ModActionArg
+        label={command.args[i]?.label || "Unknown"}
+        arg={arg}
+        key={i}
+      />
     ));
 
     return (
