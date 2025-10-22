@@ -165,9 +165,18 @@ async function cacheUserInfo(userId, reset) {
     user = user.toJSON();
     utils.remapCustomEmotes(user, userId);
 
+    // Fetch vanity URL
+    const vanityUrl = await models.VanityUrl.findOne({
+      userId: userId,
+    }).select("url -_id");
+
     await client.setAsync(`user:${userId}:info:id`, userId);
     await client.setAsync(`user:${userId}:info:name`, user.name);
     await client.setAsync(`user:${userId}:info:avatar`, user.avatar || false);
+    await client.setAsync(
+      `user:${userId}:info:vanityUrl`,
+      vanityUrl ? vanityUrl.url : ""
+    );
     await client.setAsync(`user:${userId}:info:nameChanged`, user.nameChanged);
     await client.setAsync(`user:${userId}:info:bdayChanged`, user.bdayChanged);
     await client.setAsync(`user:${userId}:info:birthday`, user.birthday || 0);
@@ -211,6 +220,7 @@ async function cacheUserInfo(userId, reset) {
   client.expire(`user:${userId}:info:id`, 3600);
   client.expire(`user:${userId}:info:name`, 3600);
   client.expire(`user:${userId}:info:avatar`, 3600);
+  client.expire(`user:${userId}:info:vanityUrl`, 3600);
   client.expire(`user:${userId}:info:nameChanged`, 3600);
   client.expire(`user:${userId}:info:bdayChanged`, 3600);
   client.expire(`user:${userId}:info:birthday`, 3600);
@@ -233,6 +243,7 @@ async function deleteUserInfo(userId) {
   await client.delAsync(`user:${userId}:info:id`);
   await client.delAsync(`user:${userId}:info:name`);
   await client.delAsync(`user:${userId}:info:avatar`);
+  await client.delAsync(`user:${userId}:info:vanityUrl`);
   await client.delAsync(`user:${userId}:info:nameChanged`);
   await client.delAsync(`user:${userId}:info:bdayChanged`);
   await client.delAsync(`user:${userId}:info:birthday`);
@@ -314,6 +325,11 @@ async function getBasicUserInfo(userId, delTemplate) {
   info.avatar = (await client.getAsync(`user:${userId}:info:avatar`)) == "true";
   info.status = await client.getAsync(`user:${userId}:info:status`);
   info.groups = JSON.parse(await client.getAsync(`user:${userId}:info:groups`));
+
+  const vanityUrl = await client.getAsync(`user:${userId}:info:vanityUrl`);
+  if (vanityUrl) {
+    info.vanityUrl = vanityUrl;
+  }
 
   var settings = JSON.parse(
     await client.getAsync(`user:${userId}:info:settings`)

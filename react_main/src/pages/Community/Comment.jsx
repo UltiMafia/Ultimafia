@@ -66,6 +66,7 @@ export const Comment = (props) => {
                   name={comment.author.name}
                   avatar={comment.author.avatar}
                   groups={comment.author.groups}
+                  vanityUrl={comment.author.vanityUrl}
                   color={theme.palette.text.primary}
                 />
                 <Stack

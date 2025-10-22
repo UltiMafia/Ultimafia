@@ -386,6 +386,7 @@ function Post(props) {
                 name={postInfo.author.name}
                 avatar={postInfo.author.avatar}
                 groups={postInfo.author.groups}
+                vanityUrl={postInfo.author.vanityUrl}
               />
               <div className="post-date">
                 <Time minSec millisec={Date.now() - postInfo.postDate} />

@@ -264,8 +264,20 @@ export default function LobbyBrowser() {
       <Divider sx={{ mb: 1 }} />
       <Grid container rowSpacing={2} columnSpacing={2}>
         <Grid item xs={12} md={8}>
-          {buttons}
-          {gameList}
+          <Stack spacing={2}>
+            <Box>
+              {buttons}
+              {gameList}
+            </Box>
+            <Comments
+              fullWidth
+              location={
+                lobbyName === "Main" || lobbyName === "All"
+                  ? "lobby"
+                  : `lobby-${lobbyName}`
+              }
+            />
+          </Stack>
         </Grid>
         <Grid item xs={12} md={4}>
           <Stack spacing={1}>
@@ -278,16 +290,6 @@ export default function LobbyBrowser() {
             <RecentForumReplies />
             {/* <Poll lobby={lobbyName} /> */}
           </Stack>
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <Comments
-            fullWidth
-            location={
-              lobbyName === "Main" || lobbyName === "All"
-                ? "lobby"
-                : `lobby-${lobbyName}`
-            }
-          />
         </Grid>
       </Grid>
     </Box>

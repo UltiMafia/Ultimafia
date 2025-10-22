@@ -214,6 +214,8 @@ export default function Settings() {
         saveBtn: "Change",
         saveBtnDiffer: "vanityUrl",
         saveBtnOnClick: onVanityUrlSave,
+        clearBtn: "Clear",
+        clearBtnOnClick: onVanityUrlClear,
         disabled: (deps) => !deps.user.itemsOwned.vanityUrl,
         extraInfo:
           "Set a custom URL for your profile (1-20 characters, letters, numbers, and hyphens only)",
@@ -593,6 +595,34 @@ export default function Settings() {
             },
           })
         );
+      })
+      .catch(deps.errorAlert);
+  }
+
+  function onVanityUrlClear(deps) {
+    if (!window.confirm("Are you sure you want to clear your vanity URL?")) {
+      return;
+    }
+
+    axios
+      .delete("/api/vanityUrl")
+      .then((res) => {
+        deps.siteInfo.showAlert("Vanity URL cleared", "success");
+
+        deps.user.set(
+          update(deps.user, {
+            settings: {
+              vanityUrl: { $set: undefined },
+            },
+          })
+        );
+
+        // Update the form field to empty
+        updateProfileFields({
+          ref: "vanityUrl",
+          prop: "value",
+          value: "",
+        });
       })
       .catch(deps.errorAlert);
   }
