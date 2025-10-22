@@ -394,6 +394,7 @@ const artContributors = {
       "Weatherman:blue",
       "Zombie:jockey",
       "Interrogator:gator",
+      "Egg:halloween"
     ],
   },
   bee: {
