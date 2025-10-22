@@ -11,6 +11,7 @@ module.exports = class Poet extends Role {
       "AddCopyOfRole",
       "WinWithFaction",
       "AddDusk",
+      "AddEpilogue",
     ];
   }
 };
