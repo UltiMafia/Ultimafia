@@ -11,6 +11,7 @@ module.exports = class Governor extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "OverturnVote",
+      "AddDusk",
     ];
   }
 };
