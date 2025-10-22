@@ -10,6 +10,7 @@ module.exports = class Poet extends Role {
       "ChooseWordsForGhost",
       "AddCopyOfRole",
       "WinWithFaction",
+      "AddDusk",
     ];
   }
 };
