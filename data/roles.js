@@ -5393,7 +5393,8 @@ const roleData = {
         [
           "Become Role and Convert players to Amnesiac",
           PRIORITY_NIGHT_ROLE_BLOCKER + 1,
-        ]],
+        ],
+      ],
       skins: [
         {
           label: "Vivid",

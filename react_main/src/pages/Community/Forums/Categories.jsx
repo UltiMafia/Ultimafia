@@ -53,6 +53,7 @@ export default function Categories(props) {
             id={thread.author.id}
             name={thread.author.name}
             avatar={thread.author.avatar}
+            vanityUrl={thread.author.vanityUrl}
           />
           <div className="thread-counts">
             <ViewsAndReplies
@@ -77,6 +78,7 @@ export default function Categories(props) {
             id={reply.author.id}
             name={reply.author.name}
             avatar={reply.author.avatar}
+            vanityUrl={reply.author.vanityUrl}
           />
           <div className="reply-age">
             <Time millisec={Date.now() - reply.postDate} />

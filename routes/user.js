@@ -231,15 +231,27 @@ router.get("/:id/profile", async function (req, res) {
 
     // If not found by ID, try to find by vanity URL
     if (!userById) {
-      var userByVanity = await models.User.findOne({
-        "settings.vanityUrl": userId,
+      const vanityUrl = await models.VanityUrl.findOne({
+        url: userId,
+      }).select("userId -_id");
+
+      if (!vanityUrl) {
+        res.status(404);
+        res.send("User not found.");
+        return;
+      }
+
+      const userByVanity = await models.User.findOne({
+        id: vanityUrl.userId,
         deleted: false,
       }).select("id -_id");
+
       if (!userByVanity) {
         res.status(404);
         res.send("User not found.");
         return;
       }
+
       userId = userByVanity.id;
     }
 
@@ -467,6 +479,15 @@ router.get("/:id/profile", async function (req, res) {
     // Add online status and last active time
     user.status = await redis.getUserStatus(userId);
     user.lastActive = user.lastActive;
+
+    // Add vanity URL if exists
+    const vanityUrl = await models.VanityUrl.findOne({
+      userId: userId,
+    }).select("url -_id");
+
+    if (vanityUrl) {
+      user.vanityUrl = vanityUrl.url;
+    }
 
     res.send(user);
   } catch (e) {
@@ -706,6 +727,16 @@ router.get("/settings/data", async function (req, res) {
       user.settings.pronouns = user.pronouns;
       user.birthday = Date.parse(user.birthday);
       utils.remapCustomEmotes(user, userId);
+
+      // Fetch vanity URL
+      const vanityUrl = await models.VanityUrl.findOne({
+        userId: userId,
+      }).select("url -_id");
+
+      if (vanityUrl) {
+        user.settings.vanityUrl = vanityUrl.url;
+      }
+
       res.send(user.settings);
     } else res.send({});
   } catch (e) {

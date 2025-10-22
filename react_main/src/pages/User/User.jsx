@@ -518,6 +518,7 @@ export function NameWithAvatar(props) {
   const deckProfile = props.deckProfile;
   const includeMiniprofile = props.includeMiniprofile;
   const absoluteLeftAvatarPx = props.absoluteLeftAvatarPx;
+  const vanityUrl = props.vanityUrl;
 
   const game = useContext(GameContext);
   const [userProfile, setUserProfile] = useState(null);
@@ -648,10 +649,11 @@ export function NameWithAvatar(props) {
       </>
     );
   } else {
+    const profileLink = vanityUrl ? `/user/${vanityUrl}` : `/user/${id}`;
     return (
       <Link
         className={`name-with-avatar`}
-        to={`/user/${id}`}
+        to={profileLink}
         target={newTab ? "_blank" : ""}
       >
         {contents}
@@ -672,13 +674,16 @@ export function Miniprofile(props) {
   const color = inheritedProps.color;
   const avatarId = inheritedProps.avatarId;
   const hasDefaultPronouns = pronouns === "";
+  const vanityUrl = user.vanityUrl;
 
   var mafiaStats = user.stats["Mafia"].all;
+
+  const profileLink = vanityUrl ? `/user/${vanityUrl}` : `/user/${id}`;
 
   return (
     <div className="miniprofile">
       <div className="mui-popover-title">
-        <Link className={`name-with-avatar`} to={`/user/${id}`} target="_blank">
+        <Link className={`name-with-avatar`} to={profileLink} target="_blank">
           <Stack direction="row" spacing={1}>
             <Avatar hasImage={avatar} id={id} avatarId={avatarId} name={name} />
             <div
