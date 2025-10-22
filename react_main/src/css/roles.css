@@ -1807,6 +1807,10 @@
   background-image: url("/src/images/roles/independent/egg-vivid.png");
 }
 
+.role-icon-halloween-Mafia-Egg {
+  background-image: url("/src/images/holiday/halloween/egg-halloween.png");
+}
+
 .role-icon-vivid-Mafia-Grey-Goo {
   background-image: url("/src/images/roles/independent/grey-goo-vivid.png");
 }
@@ -2606,6 +2610,10 @@
 
 .modifier-Mafia-Paranoid {
   background-image: url("/src/images/modifiers/paranoid.png");
+}
+
+.modifier-Mafia-Peeking {
+  background-image: url("/src/images/modifiers/peeking.png");
 }
 
 .modifier-Mafia-Phony {
