@@ -133,6 +133,7 @@ export default function MafiaGame() {
     },
     { fileName: "music/Draw", loops: false, overrides: false, volumes: 1 },
     { fileName: "music/WinAlien", loops: false, overrides: false, volumes: 1 },
+    { fileName: "music/WinBlob", loops: false, overrides: false, volumes: 1 },
     {
       fileName: "music/WinCommunist",
       loops: false,
@@ -403,6 +404,7 @@ export default function MafiaGame() {
           case "Vengeful Spirit":
           case "Phantom":
           case "Alien":
+          case "Blob":
           case "Doppelgänger":
           case "Grey Goo":
           case "Prophet":
@@ -445,6 +447,9 @@ export default function MafiaGame() {
       game.stopAudio();
       if (winners.groups.includes("Alien")) {
         game.playAudio("music/WinAlien");
+      }
+      if (winners.groups.includes("Blob")) {
+        game.playAudio("music/WinBlob");
       }
       if (winners.groups.includes("Prophet")) {
         game.playAudio("music/WinProphet");

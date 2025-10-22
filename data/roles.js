@@ -5985,7 +5985,7 @@ const roleData = {
         ["Tell Joke", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10],
       ],
     },
-    "Insightful Mood": {
+    Revelation: {
       alignment: "Event",
       tags: ["Event"],
       description: [

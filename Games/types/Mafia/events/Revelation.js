@@ -5,9 +5,9 @@ const {
   PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT,
 } = require("../const/Priority");
 
-module.exports = class InsightfulMood extends Event {
+module.exports = class Revelation extends Event {
   constructor(modifiers, game) {
-    super("Insightful Mood", modifiers, game);
+    super("Revelation", modifiers, game);
   }
 
   doEvent() {
@@ -23,7 +23,7 @@ module.exports = class InsightfulMood extends Event {
       run: function () {
         if (this.game.SilentEvents != false) {
           this.game.queueAlert(
-            `Event: Insightful Mood! Each players learn 3 excess roles!`
+            `Event: Revelation! Each players learn 3 excess roles!`
           );
         }
         for (const player of this.event.generatePossibleVictims()) {
@@ -34,7 +34,7 @@ module.exports = class InsightfulMood extends Event {
             3
           );
           info.processInfo();
-          var alert = `:invest: Insightful Mood: ${info.getInfoFormated()}.`;
+          var alert = `:invest: Revelation: ${info.getInfoFormated()}.`;
           player.queueAlert(alert);
         }
       },

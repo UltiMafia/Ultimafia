@@ -323,7 +323,7 @@ const modifierData = {
         "On death a random Village Aligned player will be chosen to be made Delirious for the rest of the game.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
-    Forgetful: {
+    Cursed: {
       category: "Other",
       internal: ["RemoveEffectsAppliedOnDeath"],
       tags: ["Effects"],
