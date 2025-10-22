@@ -934,7 +934,6 @@ module.exports = [
 
   // blood
   ["hypercoagulation", "hemagglutination"],
-  
 ];
 
 /*
