@@ -728,42 +728,17 @@ module.exports = class WinWithFaction extends Card {
               this.game.queueAlert(
                 `The Village has correctly identified ${this.target.name} as the Poet!`
               );
-              this.game.queueAlert(
-                `The Ghosts and Poet both lose! The Village wins!`
-              );
-
-              const Winners = require("../../Winners");
-              const winners = new Winners(this.game);
-              winners.addGroup("Village");
-
-              // Add all Village players as winners
-              for (let player of this.game.players) {
-                if (player.faction === "Village") {
-                  winners.addPlayer(player, "Village");
-                }
-              }
-
-              // End the game with Village winners
-              this.game.endGame(winners);
+              this.game.VillageFailedToGuessPoet = false;
+              this.game.VillageGuessedThePoet = true
             } else {
               // Village guessed incorrectly - Cult wins as originally planned
               this.game.queueAlert(
                 `The Village incorrectly identified ${this.target.name} as the Poet!`
               );
-              this.game.queueAlert(`The Cult wins!`);
-
-              const Winners = require("../../Winners");
-              const winners = new Winners(this.game);
-
-              // Add all Cult players as winners
-              for (let player of this.game.players) {
-                if (CULT_FACTIONS.includes(player.faction)) {
-                  winners.addPlayer(player, player.faction);
-                }
-              }
+              this.game.VillageFailedToGuessPoet = true;
 
               // End the game with Cult winners
-              this.game.endGame(winners);
+              //this.game.endGame(winners);
             }
           },
         },
