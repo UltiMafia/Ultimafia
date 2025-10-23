@@ -114,22 +114,44 @@ export default function AvatarUpload(props) {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
-    canvas.width = 100;
-    canvas.height = 100;
-
     const previewSize = 300;
-    const scale =
-      imageRef.current.naturalWidth / (imageRef.current.width * zoom);
-
+    
+    // Output size is directly controlled by zoom: zoom * 100
+    // zoom = 0.5 → 50px, zoom = 1.0 → 100px, zoom = 2.0 → 200px
+    const outputSize = Math.round(100 * zoom);
+    
+    canvas.width = outputSize;
+    canvas.height = outputSize;
+    
+    // Calculate scale: how many source pixels per displayed pixel
+    // The image is displayed at 300px width in the DOM
+    const scale = imageRef.current.naturalWidth / 300;
+    
+    // Calculate the center of the crop in source image coordinates
+    // position is in screen pixels, so we need to scale it to source pixels
     const centerX = imageRef.current.naturalWidth / 2 - position.x * scale;
     const centerY = imageRef.current.naturalHeight / 2 - position.y * scale;
+    
+    // The visible crop area in the preview is 300px (the circle size)
+    // At zoom=1, we want this to correspond to 100px output
+    // So we need to crop: 300 * scale / zoom source pixels
+    const cropSizeInSourcePixels = (previewSize * scale) / zoom;
+    
+    // Calculate source crop coordinates
+    const sx = centerX - cropSizeInSourcePixels / 2;
+    const sy = centerY - cropSizeInSourcePixels / 2;
 
-    const cropSize = previewSize * scale;
-
-    const sx = centerX - cropSize / 2;
-    const sy = centerY - cropSize / 2;
-
-    ctx.drawImage(imageRef.current, sx, sy, cropSize, cropSize, 0, 0, 100, 100);
+    ctx.drawImage(
+      imageRef.current,
+      sx,
+      sy,
+      cropSizeInSourcePixels,
+      cropSizeInSourcePixels,
+      0,
+      0,
+      outputSize,
+      outputSize
+    );
 
     canvas.toBlob((blob) => {
       if (blob) {

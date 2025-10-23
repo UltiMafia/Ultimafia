@@ -241,6 +241,17 @@ router.get("/thread/:id", async function (req, res) {
         }).select("direction");
         reply.vote = (vote && vote.direction) || 0;
       }
+      
+      // Add subscription status for current user
+      var subscribers = thread.subscribers || [];
+      thread.isSubscribed = subscribers.indexOf(userId) !== -1;
+      
+      // Get subscriber user info for popover
+      thread.subscriberUsers = await Promise.all(
+        subscribers.map(async (subId) => {
+          return await redis.getBasicUserInfo(subId, true);
+        })
+      );
     }
 
     res.send(thread);
@@ -754,13 +765,13 @@ router.post("/thread/edit", async function (req, res) {
 
 router.post("/thread/notify", async function (req, res) {
   try {
+    var userId = await routeUtils.verifyLoggedIn(req);
     var threadId = String(req.body.thread);
 
     var thread = await models.ForumThread.findOne({
       id: threadId,
-      author: req.session.user._id,
       deleted: false,
-    }).select("replyNotify");
+    }).select("author subscribers replyNotify");
 
     if (!thread) {
       res.status(500);
@@ -768,10 +779,31 @@ router.post("/thread/notify", async function (req, res) {
       return;
     }
 
-    await models.ForumThread.updateOne(
-      { id: threadId },
-      { $set: { replyNotify: !thread.replyNotify } }
-    ).exec();
+    // Check if user is the author
+    var isAuthor = String(thread.author) === String(req.session.user._id);
+    var subscribers = thread.subscribers || [];
+    var isSubscribed = subscribers.indexOf(userId) !== -1;
+
+    if (isAuthor) {
+      // Author toggles replyNotify (backward compatibility)
+      await models.ForumThread.updateOne(
+        { id: threadId },
+        { $set: { replyNotify: !thread.replyNotify } }
+      ).exec();
+    } else {
+      // Non-author toggles subscription
+      if (isSubscribed) {
+        await models.ForumThread.updateOne(
+          { id: threadId },
+          { $pull: { subscribers: userId } }
+        ).exec();
+      } else {
+        await models.ForumThread.updateOne(
+          { id: threadId },
+          { $addToSet: { subscribers: userId } }
+        ).exec();
+      }
+    }
 
     res.sendStatus(200);
   } catch (e) {
@@ -841,7 +873,7 @@ router.post("/reply", async function (req, res) {
       id: threadId,
       deleted: false,
     })
-      .select("board author replyCount locked replyNotify")
+      .select("board author replyCount locked replyNotify subscribers")
       .populate("board", "id rank")
       .populate("author", "id");
 
@@ -940,6 +972,7 @@ router.post("/reply", async function (req, res) {
       }
     }
 
+    // Notify thread author if they have notifications enabled
     if (thread.replyNotify && thread.author.id != userId) {
       routeUtils.createNotification(
         {
@@ -948,6 +981,23 @@ router.post("/reply", async function (req, res) {
           link: `/community/forums/thread/${threadId}?reply=${reply.id}`,
         },
         [thread.author.id]
+      );
+    }
+
+    // Notify all subscribers (excluding the reply author)
+    var subscribers = thread.subscribers || [];
+    var subscribersToNotify = subscribers.filter(
+      (subId) => subId !== userId && subId !== thread.author.id
+    );
+
+    if (subscribersToNotify.length > 0) {
+      routeUtils.createNotification(
+        {
+          content: `${userName} replied to a thread you're following.`,
+          icon: "reply",
+          link: `/community/forums/thread/${threadId}?reply=${reply.id}`,
+        },
+        subscribersToNotify
       );
     }
 

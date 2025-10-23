@@ -325,6 +325,7 @@ var schemas = {
     pinned: { type: Boolean, default: false, index: true },
     locked: { type: Boolean, default: false },
     replyNotify: { type: Boolean, default: true },
+    subscribers: [String], // Array of user IDs subscribed to this thread
     deleted: { type: Boolean, default: false },
     pending: { type: Boolean, default: false },
   }),

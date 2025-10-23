@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
 import { Navigate, Link, useParams, useLocation } from "react-router-dom";
 import update from "immutability-helper";
+import { Popover, List, ListItem, Typography } from "@mui/material";
 
 import CustomMarkdown from "components/CustomMarkdown";
 import { useErrorAlert } from "components/Alerts";
@@ -153,13 +154,25 @@ export default function Thread(props) {
   }
 
   function onNotifyToggled() {
-    setThreadInfo(
-      update(threadInfo, {
-        replyNotify: {
-          $set: !threadInfo.replyNotify,
-        },
-      })
-    );
+    // For the author, toggle replyNotify
+    // For non-authors, toggle isSubscribed
+    if (threadInfo.author.id === user.id) {
+      setThreadInfo(
+        update(threadInfo, {
+          replyNotify: {
+            $set: !threadInfo.replyNotify,
+          },
+        })
+      );
+    } else {
+      setThreadInfo(
+        update(threadInfo, {
+          isSubscribed: {
+            $set: !threadInfo.isSubscribed,
+          },
+        })
+      );
+    }
   }
 
   function onPinToggled() {
@@ -281,6 +294,7 @@ function Post(props) {
 
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(postInfo.content);
+  const [anchorEl, setAnchorEl] = useState(null);
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
 
@@ -348,6 +362,14 @@ function Post(props) {
       .post(`/api/forums/thread/toggleLocked`, { thread: postInfo.id })
       .then(onLockToggled)
       .catch(errorAlert);
+  }
+
+  function handlePopoverOpen(event) {
+    setAnchorEl(event.currentTarget);
+  }
+
+  function handlePopoverClose() {
+    setAnchorEl(null);
   }
 
   var content = postInfo.content;
@@ -421,11 +443,81 @@ function Post(props) {
                   (!locked || user.perms.postInLocked) && (
                     <i className="fas fa-pencil-alt" onClick={onEditClick} />
                   )}
-                {itemType === "thread" && postInfo.author.id === user.id && (
-                  <i
-                    className={`fa${postInfo.replyNotify ? "s" : "r"} fa-bell`}
-                    onClick={onNotifyClick}
-                  />
+                {itemType === "thread" && user.loggedIn && (
+                  <>
+                    <i
+                      className={`fa${
+                        postInfo.author.id === user.id
+                          ? postInfo.replyNotify
+                            ? "s"
+                            : "r"
+                          : postInfo.isSubscribed
+                          ? "s"
+                          : "r"
+                      } fa-bell`}
+                      onClick={onNotifyClick}
+                      onMouseEnter={handlePopoverOpen}
+                      onMouseLeave={handlePopoverClose}
+                      style={{ cursor: "pointer" }}
+                    />
+                    <Popover
+                      sx={{
+                        pointerEvents: "none",
+                      }}
+                      open={Boolean(anchorEl)}
+                      anchorEl={anchorEl}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "left",
+                      }}
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "left",
+                      }}
+                      onClose={handlePopoverClose}
+                      disableRestoreFocus
+                    >
+                      <div style={{ padding: "8px 12px" }}>
+                        <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 1 }}>
+                          Subscribed Users:
+                        </Typography>
+                        {postInfo.subscriberUsers && postInfo.subscriberUsers.length > 0 ? (
+                          <List dense sx={{ py: 0 }}>
+                            {postInfo.author.id && postInfo.replyNotify && (
+                              <ListItem sx={{ py: 0.5, px: 1 }}>
+                                <Typography variant="body2">
+                                  {postInfo.author.name} (Author)
+                                </Typography>
+                              </ListItem>
+                            )}
+                            {postInfo.subscriberUsers.map((subscriber) => (
+                              <ListItem key={subscriber.id} sx={{ py: 0.5, px: 1 }}>
+                                <Typography variant="body2">
+                                  {subscriber.name}
+                                </Typography>
+                              </ListItem>
+                            ))}
+                          </List>
+                        ) : (
+                          <>
+                            {postInfo.author.id && postInfo.replyNotify ? (
+                              <List dense sx={{ py: 0 }}>
+                                <ListItem sx={{ py: 0.5, px: 1 }}>
+                                  <Typography variant="body2">
+                                    {postInfo.author.name} (Author)
+                                  </Typography>
+                                </ListItem>
+                              </List>
+                            ) : (
+                              <Typography variant="body2" sx={{ fontStyle: "italic" }}>
+                                No subscribers
+                              </Typography>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </Popover>
+                  </>
                 )}
                 {permaLink && (
                   <Link to={permaLink} onClick={() => onPermaLinkClick()}>
