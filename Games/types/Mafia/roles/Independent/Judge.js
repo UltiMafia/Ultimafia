@@ -9,6 +9,7 @@ module.exports = class Judge extends Role {
       "WinAmongLastTwo",
       "CourtSession",
       "BroadcastMessage",
+      "AddDusk",
     ];
     this.meetingMods = {
       Village: {

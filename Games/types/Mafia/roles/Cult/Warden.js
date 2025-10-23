@@ -10,6 +10,7 @@ module.exports = class Warden extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "Choose3toLiveOrDie",
+      "AddDawn",
     ];
   }
 };

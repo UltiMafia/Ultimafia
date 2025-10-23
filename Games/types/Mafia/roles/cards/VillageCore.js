@@ -118,20 +118,22 @@ module.exports = class VillageCore extends Card {
               return true;
             }
           }
-          for (let player of this.game.players) {
-            //this.game.sendAlert(`Stuff Village ${player.role.name}: ${player.role.modifier}: `);
-            if (
-              this.game
-                .getRoleTags(
-                  this.game.formatRoleInternal(
-                    player.role.name,
-                    player.role.modifier
-                  )
-                )
-                .includes("Dusk")
-            ) {
-              return false;
-            }
+          this.game.ExtraStates = [];
+          this.game.events.emit("extraStateCheck", "Dusk");
+          if (this.game.ExtraStates.includes("Dusk")) {
+            return false;
+          }
+          return true;
+        },
+      },
+      Epilogue: {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          // Only enter Epilogue state if poet guess phase is active
+          this.game.ExtraStates = [];
+          this.game.events.emit("extraStateCheck", "Epilogue");
+          if (this.game.ExtraStates.includes("Epilogue")) {
+            return false;
           }
           return true;
         },
@@ -148,19 +150,10 @@ module.exports = class VillageCore extends Card {
               return true;
             }
           }
-          for (let player of this.game.players) {
-            if (
-              this.game
-                .getRoleTags(
-                  this.game.formatRoleInternal(
-                    player.role.name,
-                    player.role.modifier
-                  )
-                )
-                .includes("Dawn")
-            ) {
-              return false;
-            }
+          this.game.ExtraStates = [];
+          this.game.events.emit("extraStateCheck", "Dawn");
+          if (this.game.ExtraStates.includes("Dawn")) {
+            return false;
           }
           return true;
           /*

@@ -107,6 +107,16 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
+        //Dead Unguessed Poet
+        if (this.player.faction == "Village") {
+          if (
+            poetsInGame &&
+            this.game.poetGuessPhaseActive &&
+            !this.game.VillageGuessedThePoet
+          ) {
+            return;
+          }
+        }
         //Guessed Seer Conditional
         if (this.player.faction == "Village") {
           if (seersInGame.length > 0) {
@@ -116,20 +126,6 @@ module.exports = class WinWithFaction extends Card {
                 this.game.guessedSeers[EVIL_FACTIONS[x]]?.length
               ) {
                 //seers have been guessed, village cannot win
-                return;
-              }
-            }
-          }
-        }
-        //Guessed Poet Conditional
-        if (this.player.faction == "Cult") {
-          if (poetsInGame.length > 0) {
-            for (let x = 0; x < EVIL_FACTIONS.length; x++) {
-              if (
-                poetsInGame.length ==
-                this.game.guessedPoets[EVIL_FACTIONS[x]]?.length
-              ) {
-                //poets have been guessed, cult cannot win
                 return;
               }
             }
@@ -668,50 +664,11 @@ module.exports = class WinWithFaction extends Card {
           },
         },
       },
-      "Guess Poet": {
-        states: ["Dusk"],
-        flags: ["voting"],
-        targets: { include: ["alive", "dead"], exclude: ["self"] },
-        shouldMeet: function () {
-          if (
-            this.game.players.filter((p) => p.role.name == "Poet").length <= 0
-          ) {
-            return false;
-          }
-
-          if (NOT_EVIL_FACTIONS.includes(this.player.faction)) {
-            return true;
-          }
-
-          for (const action of this.game.actions[0]) {
-            if (action.hasLabel("condemn") && action.target == this.player) {
-              return true;
-            }
-          }
-
-          return false;
-        },
-        action: {
-          labels: ["kill"],
-          priority: PRIORITY_SUNSET_DEFAULT,
-          run: function () {
-            if (this.target.role.name !== "Poet") {
-              return;
-            }
-            if (!this.target.hasAbility(["Win-Con", "WhenDead"])) {
-              return;
-            }
-
-            this.game.guessedPoets[this.actor.faction].push(this.target);
-            this.target.kill("condemnRevenge", this.actor);
-          },
-        },
-      },
       "Guess the Poet After Ghost Win": {
         states: ["Epilogue"],
         flags: ["group", "voting", "mustAct"],
         targets: { include: ["alive", "dead"], exclude: [] },
-        whileAlive: false,
+        whileAlive: true,
         whileDead: true,
         action: {
           run: function () {
@@ -728,42 +685,17 @@ module.exports = class WinWithFaction extends Card {
               this.game.queueAlert(
                 `The Village has correctly identified ${this.target.name} as the Poet!`
               );
-              this.game.queueAlert(
-                `The Ghosts and Poet both lose! The Village wins!`
-              );
-
-              const Winners = require("../../Winners");
-              const winners = new Winners(this.game);
-              winners.addGroup("Village");
-
-              // Add all Village players as winners
-              for (let player of this.game.players) {
-                if (player.faction === "Village") {
-                  winners.addPlayer(player, "Village");
-                }
-              }
-
-              // End the game with Village winners
-              this.game.endGame(winners);
+              this.game.VillageFailedToGuessPoet = false;
+              this.game.VillageGuessedThePoet = true;
             } else {
               // Village guessed incorrectly - Cult wins as originally planned
               this.game.queueAlert(
                 `The Village incorrectly identified ${this.target.name} as the Poet!`
               );
-              this.game.queueAlert(`The Cult wins!`);
-
-              const Winners = require("../../Winners");
-              const winners = new Winners(this.game);
-
-              // Add all Cult players as winners
-              for (let player of this.game.players) {
-                if (CULT_FACTIONS.includes(player.faction)) {
-                  winners.addPlayer(player, player.faction);
-                }
-              }
+              this.game.VillageFailedToGuessPoet = true;
 
               // End the game with Cult winners
-              this.game.endGame(winners);
+              //this.game.endGame(winners);
             }
           },
         },

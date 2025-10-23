@@ -28,6 +28,10 @@ module.exports = class MafiaGame extends Game {
         length: 1000 * 60,
       },
       {
+        name: "Epilogue",
+        length: 1000 * 60,
+      },
+      {
         name: "Treasure Chest",
         length: 1000 * 60,
       },
@@ -46,10 +50,6 @@ module.exports = class MafiaGame extends Game {
       {
         name: "Day",
         length: options.settings.stateLengths["Day"],
-      },
-      {
-        name: "Epilogue",
-        length: 1000 * 60,
       },
     ];
     this.useObituaries = true;

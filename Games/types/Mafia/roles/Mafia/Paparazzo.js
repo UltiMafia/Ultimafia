@@ -9,7 +9,7 @@ module.exports = class Paparazzo extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-
+      "AddDusk",
       "CondemnReveal",
     ];
   }

@@ -10,6 +10,7 @@ module.exports = class Jailer extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "JailTarget",
+      "AddDusk",
     ];
   }
 };
