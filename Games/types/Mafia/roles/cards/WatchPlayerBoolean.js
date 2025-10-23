@@ -52,8 +52,8 @@ module.exports = class WatchPlayerBoolean extends Card {
                   v
                 );
                 info.processInfo();
-                if(info == "visited by somebody"){
-                this.actor.queueAlert(`:watch: ${info.getInfoFormated()}`);
+                if (info == "visited by somebody") {
+                  this.actor.queueAlert(`:watch: ${info.getInfoFormated()}`);
                 }
               }
             }
