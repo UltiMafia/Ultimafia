@@ -7,7 +7,14 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
-import { useParams, Route, Navigate, Routes, Link, useNavigate } from "react-router-dom";
+import {
+  useParams,
+  Route,
+  Navigate,
+  Routes,
+  Link,
+  useNavigate,
+} from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
 import ReactLoading from "react-loading";
@@ -1231,11 +1238,7 @@ export function MobileLayout({
     <>
       {selectedPanel === outerLeftNavigationProps.value && outerLeftContent}
       {/* The additionalInfoContent displays after the mobile version of TopBar */}
-      {selectedPanel === "info" && (
-        <>
-          {additionalInfoContent}
-        </>
-      )}
+      {selectedPanel === "info" && <>{additionalInfoContent}</>}
       {selectedPanel === "chat" && centerContent}
       {selectedPanel === innerRightNavigationProps.value && innerRightContent}
       {selectedPanel === "menu" && <MobileMenu />}
@@ -2488,7 +2491,10 @@ export function SideMenu({
 
   if (!isAccordionMenu) {
     return (
-      <div className={`side-menu ${scrollable ? "scrollable" : ""}`} style={{ flex: flex }}>
+      <div
+        className={`side-menu ${scrollable ? "scrollable" : ""}`}
+        style={{ flex: flex }}
+      >
         <Stack
           direction="row"
           spacing={1}
@@ -2516,7 +2522,7 @@ export function SideMenu({
       onChange={handleToggle}
       disabled={disabled}
       sx={{
-        flex: flex
+        flex: flex,
       }}
     >
       <AccordionSummary

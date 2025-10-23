@@ -1,4 +1,10 @@
-import React, { useRef, useEffect, useContext, useState, useReducer } from "react";
+import React, {
+  useRef,
+  useEffect,
+  useContext,
+  useState,
+  useReducer,
+} from "react";
 import update from "immutability-helper";
 
 import {
@@ -20,7 +26,12 @@ import "css/gameJotto.css";
 import { Button, Stack, Typography } from "@mui/material";
 
 const ENGLISH_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-const CHEATSHEET_STATES = [undefined, "success.main", "var(--mui-palette-error-main)", "var(--mui-palette-warning-main)"];
+const CHEATSHEET_STATES = [
+  undefined,
+  "success.main",
+  "var(--mui-palette-error-main)",
+  "var(--mui-palette-warning-main)",
+];
 export default function JottoGame() {
   const game = useContext(GameContext);
 
@@ -45,21 +56,19 @@ export default function JottoGame() {
     if (letter === null) {
       // Let a null signal that we want to reset everything
       return update(state, {
-        $set: {}
+        $set: {},
       });
-    }
-    else if (letter in state) {
+    } else if (letter in state) {
       return update(state, {
         [letter]: {
-          $set: (state[letter] + 1) % CHEATSHEET_STATES.length
-        }
+          $set: (state[letter] + 1) % CHEATSHEET_STATES.length,
+        },
       });
-    }
-    else {
+    } else {
       return update(state, {
         [letter]: {
-          $set: 1
-        }
+          $set: 1,
+        },
       });
     }
   }, {});
@@ -98,7 +107,12 @@ export default function JottoGame() {
       {stateViewing >= 0 && (
         <SideMenu
           title="Cheatsheet"
-          content={<JottoCheatSheet cheatSheet={cheatSheet} updateCheatSheet={updateCheatSheet} />}
+          content={
+            <JottoCheatSheet
+              cheatSheet={cheatSheet}
+              updateCheatSheet={updateCheatSheet}
+            />
+          }
           flex="1 0"
         />
       )}
@@ -148,14 +162,17 @@ export default function JottoGame() {
 
 function JottoCheatSheet({ cheatSheet, updateCheatSheet }) {
   return (
-    <Stack direction="row" sx={{
-      flexWrap: "wrap",
-      p: 1,
-      rowGap: 1,
-      columnGap: 1,
-      alignContent: "center",
-      justifyContent: "center",
-    }}>
+    <Stack
+      direction="row"
+      sx={{
+        flexWrap: "wrap",
+        p: 1,
+        rowGap: 1,
+        columnGap: 1,
+        alignContent: "center",
+        justifyContent: "center",
+      }}
+    >
       {ENGLISH_ALPHABET.map((letter) => {
         const clicks = cheatSheet[letter] || 0;
 
@@ -182,22 +199,30 @@ function JottoCheatSheet({ cheatSheet, updateCheatSheet }) {
                 borderRadius: "var(--mui-shape-borderRadius)",
                 opacity: 0.5,
                 zIndex: -1,
-              }
+              },
             }}
           >
-            <Typography sx={{
-              fontSize: "2em",
-              fontWeight: "bold",
-              color: "var(--mui-palette-text-primary)",
-            }}>
+            <Typography
+              sx={{
+                fontSize: "2em",
+                fontWeight: "bold",
+                color: "var(--mui-palette-text-primary)",
+              }}
+            >
               {letter}
             </Typography>
           </Button>
-        )
+        );
       })}
-      <Button onClick={() => confirm("Are you sure you want to reset all letters?") && updateCheatSheet(null)} sx={{
-        height: "3em",
-      }}>
+      <Button
+        onClick={() =>
+          confirm("Are you sure you want to reset all letters?") &&
+          updateCheatSheet(null)
+        }
+        sx={{
+          height: "3em",
+        }}
+      >
         Reset
       </Button>
     </Stack>
