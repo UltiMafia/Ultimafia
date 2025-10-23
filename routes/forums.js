@@ -177,22 +177,34 @@ router.get("/thread/:id", async function (req, res) {
     var page = Number(req.query.page) || 1;
     var reply = String(req.query.reply || "");
 
+    // First, get the thread to calculate page count
+    var thread = await models.ForumThread.findOne({ id: threadId })
+      .populate("board", "id name -_id")
+      .populate("author", "id -_id");
+
+    if (!thread) {
+      res.status(500);
+      res.send("Thread not found.");
+      return;
+    }
+
+    // Handle "last" page parameter
+    if (req.query.page === "last") {
+      page = Math.ceil(thread.replyCount / constants.repliesPerPage) || 1;
+    }
+
     if (reply) {
       reply = await models.ForumReply.findOne({ id: reply }).select("page");
 
       if (reply) page = reply.page;
     }
 
-    var thread = await models.ForumThread.findOne({ id: threadId })
-      .populate("board", "id name -_id")
-      .populate("author", "id -_id");
-
     var canViewDeleted = await routeUtils.verifyPermission(
       userId,
       "viewDeleted"
     );
 
-    if (!thread || (thread.deleted && !canViewDeleted)) {
+    if (thread.deleted && !canViewDeleted) {
       res.status(500);
       res.send("Thread not found.");
       return;

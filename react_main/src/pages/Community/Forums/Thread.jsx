@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
 import { Navigate, Link, useParams, useLocation } from "react-router-dom";
 import update from "immutability-helper";
-import { Popover, List, ListItem, Typography } from "@mui/material";
+import { Popover, List, ListItem, Typography, Button } from "@mui/material";
 
 import CustomMarkdown from "components/CustomMarkdown";
 import { useErrorAlert } from "components/Alerts";
@@ -37,8 +37,14 @@ export default function Thread(props) {
   }, []);
 
   useEffect(() => {
+    // If there's a specific reply to view, load that; otherwise load the last page
+    const replyParam = params.get("reply") || "";
+    const url = replyParam 
+      ? `/api/forums/thread/${threadId}?reply=${replyParam}`
+      : `/api/forums/thread/${threadId}?page=last`;
+    
     axios
-      .get(`/api/forums/thread/${threadId}?reply=${params.get("reply") || ""}`)
+      .get(url)
       .then((res) => {
         res.data.content = filterProfanity(
           res.data.content,
@@ -268,6 +274,19 @@ export default function Thread(props) {
           maxPage={threadInfo.pageCount}
           onNav={onThreadPageNav}
         />
+        {user.perms.postReply &&
+          (!threadInfo.locked || user.perms.postInLocked) && (
+            <div style={{ marginTop: "16px" }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => onReplyClick()}
+                sx={{ minWidth: "120px" }}
+              >
+                Reply
+              </Button>
+            </div>
+          )}
       </div>
     </div>
   );
@@ -524,13 +543,6 @@ function Post(props) {
                     <i className="fas fa-link" />
                   </Link>
                 )}
-                {user.perms.postReply &&
-                  (!locked || user.perms.postInLocked) && (
-                    <i
-                      className="reply-btn fas fa-reply"
-                      onClick={onReplyClick}
-                    />
-                  )}
               </>
             )}
             {postInfo.deleted && user.perms.restoreDeleted && (
