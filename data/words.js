@@ -933,7 +933,7 @@ module.exports = [
   ["hair", "comb"],
 
   // blood
-  ["hypercoagulation", "hemagglutination"],
+  //["hypercoagulation", "hemagglutination"],
 ];
 
 /*
