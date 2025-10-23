@@ -29,8 +29,8 @@ module.exports = class ExtraRoleEffect extends Effect {
     if (index != -1) {
       this.player.ExtraRoles.splice(index, 1);
     }
-    if(this.ExtraRole){
-    this.ExtraRole.remove();
+    if (this.ExtraRole) {
+      this.ExtraRole.remove();
     }
     super.remove();
   }
