@@ -121,20 +121,6 @@ module.exports = class WinWithFaction extends Card {
             }
           }
         }
-        //Guessed Poet Conditional
-        if (this.player.faction == "Cult") {
-          if (poetsInGame.length > 0) {
-            for (let x = 0; x < EVIL_FACTIONS.length; x++) {
-              if (
-                poetsInGame.length ==
-                this.game.guessedPoets[EVIL_FACTIONS[x]]?.length
-              ) {
-                //poets have been guessed, cult cannot win
-                return;
-              }
-            }
-          }
-        }
         //Guessed Mole Conditional
         if (this.player.faction == "Village") {
           if (MolesInGame.length > 0 && this.game.hasGuessedMole) {
@@ -668,50 +654,11 @@ module.exports = class WinWithFaction extends Card {
           },
         },
       },
-      "Guess Poet": {
-        states: ["Dusk"],
-        flags: ["voting"],
-        targets: { include: ["alive", "dead"], exclude: ["self"] },
-        shouldMeet: function () {
-          if (
-            this.game.players.filter((p) => p.role.name == "Poet").length <= 0
-          ) {
-            return false;
-          }
-
-          if (NOT_EVIL_FACTIONS.includes(this.player.faction)) {
-            return true;
-          }
-
-          for (const action of this.game.actions[0]) {
-            if (action.hasLabel("condemn") && action.target == this.player) {
-              return true;
-            }
-          }
-
-          return false;
-        },
-        action: {
-          labels: ["kill"],
-          priority: PRIORITY_SUNSET_DEFAULT,
-          run: function () {
-            if (this.target.role.name !== "Poet") {
-              return;
-            }
-            if (!this.target.hasAbility(["Win-Con", "WhenDead"])) {
-              return;
-            }
-
-            this.game.guessedPoets[this.actor.faction].push(this.target);
-            this.target.kill("condemnRevenge", this.actor);
-          },
-        },
-      },
       "Guess the Poet After Ghost Win": {
         states: ["Epilogue"],
         flags: ["group", "voting", "mustAct"],
         targets: { include: ["alive", "dead"], exclude: [] },
-        whileAlive: false,
+        whileAlive: true,
         whileDead: true,
         action: {
           run: function () {

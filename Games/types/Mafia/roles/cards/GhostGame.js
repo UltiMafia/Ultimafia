@@ -18,9 +18,9 @@ module.exports = class GhostGame extends Card {
     let shuffledWordPack = Random.randomizeArray(wordPack);
     if (
       !role.game.realWord &&
-      role.game.players.filter(
+      (role.game.players.filter(
         (p) => p.role && (p.role.name == "Host" || p.role.name == "Poet")
-      ).length <= 0
+      ).length <= 0 && role.game.StartingRoleset.filter((r) => r.split(":")[0] == "Poet" || r.split(":")[0] == "Host").length <= 0) 
     ) {
       role.game.realWord = shuffledWordPack[0];
       role.game.fakeWord = shuffledWordPack[1];
@@ -30,6 +30,9 @@ module.exports = class GhostGame extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
+        if(role.game.realWord == null){
+          return;
+        }
         if (!stateInfo.name.match(/Day/)) {
           return;
         }
@@ -46,7 +49,7 @@ module.exports = class GhostGame extends Card {
         }
 
         for (let player of this.game.players) {
-          if (player.faction == "Cult" && !player.hasItem("GhostGuessWord")) {
+          if (player.faction == "Cult" && player.role.name != "Poet" && !player.hasItem("GhostGuessWord")) {
             player.holdItem("GhostGuessWord");
           }
         }
@@ -80,7 +83,7 @@ module.exports = class GhostGame extends Card {
       roleAssigned: function (player) {
         if (
           this.game.getStateName() == "Day" &&
-          player.faction == "Cult" &&
+          player.faction == "Cult" && player.role.name != "Poet" &&
           !player.hasItem("GhostGuessWord")
         ) {
           player.holdItem("GhostGuessWord");
@@ -190,7 +193,7 @@ module.exports = class GhostGame extends Card {
                   .alivePlayers()
                   .filter(
                     (p) =>
-                      (p.role && p.role.name != "Host") || p.role.name != "Poet"
+                      p.role && (p.role.name != "Host" || p.role.name != "Poet")
                   )
               );
             }
@@ -248,4 +251,33 @@ module.exports = class GhostGame extends Card {
       },
     };
 
+ this.stateMods = {
+      Day: {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          for (let player of this.game.alivePlayers()) {
+            if (player.hasItem("Ouija Board")) {
+              return true;
+            }
+          }
+          return false;
+        },
+      },
+      Night: {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          for (let player of this.game.alivePlayers()) {
+            if (player.hasItem("Ouija Board")) {
+              return true;
+            }
+          }
+          return false;
+        },
+      },
+    };
+
+
+
+
+  }
 };

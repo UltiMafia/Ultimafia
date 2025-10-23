@@ -4353,12 +4353,13 @@ const roleData = {
     },
     Poet: {
       alignment: "Cult",
-      tags: ["Ghost", "Mini-game", "Dusk"],
+      tags: ["Ghost", "Mini-game", "Dusk", "Pregame Actions"],
       description: [
         "Before the game starts, chooses a real word and a fake word.",
         "Forces a Ghost to spawn in closed setups.",
-        "If the Village guesses the identity of the Poet, the Ghosts and the Poet both lose.",
-        "Does not meet with the Cult or Ghosts.",
+        "If a Ghost guesses the real word, all players will guess who the Poet is."
+        "If the Village guesses the identity of the Poet, Village Wins and Cult loses.",
+        "Does not meet with the Cult.",
       ],
       RolesMadeBy: ["Ghost"],
     },

@@ -8,6 +8,7 @@ module.exports = class Whistleblown extends Effect {
 
   apply(player) {
     super.apply(player);
+    /*
     if (this.game.RoomOne.length > 0 && this.game.RoomTwo.length > 0) {
       for (let item of this.player.items) {
         if (item.name == "Room" && this.game.RoomOne.includes(this.player)) {
@@ -18,6 +19,7 @@ module.exports = class Whistleblown extends Effect {
         }
       }
     }
+    */
 
     this.cannotVoteEffect = player.giveEffect("CannotVote", 1);
 
