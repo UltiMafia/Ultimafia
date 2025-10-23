@@ -4,7 +4,12 @@ module.exports = class Dentist extends Role {
   constructor(player, data) {
     super("Dentist", player, data);
 
-    this.alignment = "Independent";
-    this.cards = ["VillageCore", "WinAmongLastTwo", "NightGasser"];
+    this.alignment = "Mafia";
+    this.cards = [
+    "VillageCore", 
+    "NightGasser",
+    "WinWithFaction",
+    "MeetingFaction"
+    ];
   }
 };

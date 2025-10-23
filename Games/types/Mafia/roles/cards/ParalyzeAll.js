@@ -24,28 +24,18 @@ module.exports = class ParalyzeAll extends Card {
                 return;
               }
               if (
-                this.game.RoomOne.length > 0 &&
-                this.game.RoomTwo.length > 0
+                this.game.Rooms
               ) {
                 this.game.queueAlert(
                   ":omg: The whole town can't move… everyone is paralyzed!"
                 );
-                for (const player of this.game.RoomOne) {
-                  this.role.giveEffect(
-                    player,
-                    "CannotChangeVote",
-                    -1,
-                    "Room 1"
-                  );
+                for (const player of this.game.alivePlayers()) {
+                  for(let item of player.items){
+                  if(item.name == "Room"){
+                  this.role.giveEffect(player, "CannotChangeVote", -1, item.Room.name);
+                  }
                 }
-                for (const player of this.game.RoomTwo) {
-                  this.role.giveEffect(
-                    player,
-                    "CannotChangeVote",
-                    -1,
-                    "Room 2"
-                  );
-                }
+              }
                 return;
               }
 

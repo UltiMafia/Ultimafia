@@ -107,6 +107,12 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
+        //Dead Unguessed Poet
+        if (this.player.faction == "Village") {
+          if (poetsInGame && this.game.poetGuessPhaseActive && !this.game.VillageGuessedThePoet) {
+            return;
+          }
+        }
         //Guessed Seer Conditional
         if (this.player.faction == "Village") {
           if (seersInGame.length > 0) {
