@@ -7,7 +7,7 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
-import { useParams, Route, Navigate, Routes, Link } from "react-router-dom";
+import { useParams, Route, Navigate, Routes, Link, useNavigate } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
 import ReactLoading from "react-loading";
@@ -106,22 +106,13 @@ const emoteMap = {
   dice6: dice6,
 };
 
-export default function Game() {
-  const { gameId } = useParams();
-  return (
-    <Routes>
-      <Route path=":gameId" element={<GameWrapper key={gameId} />} />
-      <Route path=":gameId/review" element={<GameWrapper review />} />
-    </Routes>
-  );
-}
-
 const NO_ONE_NAME = "no one";
 const MAGUS_NAME = "Declare Magus Game";
 
-function GameWrapper(props) {
+export default function Game() {
   const user = useContext(UserContext);
   const [loaded, setLoaded] = useState(false);
+  const [review, setReview] = useState(false);
   const [leave, setLeave] = useState(false);
   const [finished, setFinished] = useState(false);
   const [port, setPort] = useState();
@@ -167,9 +158,10 @@ function GameWrapper(props) {
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
   const { gameId } = useParams();
+  const nagivate = useNavigate();
   const [selectedPanel, setSelectedPanel] = useState("chat");
 
-  const isParticipant = !isSpectator && !props.review;
+  const isParticipant = !isSpectator && !review;
   const currentStateObject = history.states[history.currentState];
   const unresolvedActionCount = Object.values(
     currentStateObject ? currentStateObject.meetings : {}
@@ -381,7 +373,7 @@ function GameWrapper(props) {
   useEffect(() => {
     updateSettings({ type: "load" });
 
-    if (!props.review) {
+    if (!review) {
       loadAudioFiles(audioFileNames, audioLoops, audioOverrides, audioVolumes);
       requestNotificationAccess();
 
@@ -465,7 +457,7 @@ function GameWrapper(props) {
           errorAlert(e);
         });
     }
-  }, []);
+  }, [review]);
 
   useEffect(() => {
     selfRef.current = self;
@@ -485,7 +477,7 @@ function GameWrapper(props) {
         (socket.readyState == null || socket.readyState === 3) &&
         !leave &&
         !finished &&
-        !props.review
+        !review
       ) {
         getConnectionInfo();
       }
@@ -748,7 +740,7 @@ function GameWrapper(props) {
       })
       .catch((e) => {
         var msg = e && e.response && e.response.data;
-        if (msg === "Game not found.") setLeave("review");
+        if (msg === "Game not found.") setReview(true);
         else {
           setLeave(true);
           errorAlert(e);
@@ -758,7 +750,7 @@ function GameWrapper(props) {
 
   function onMessageQuote(message) {
     if (
-      !props.review &&
+      !review &&
       message.senderId !== "server" &&
       !message.isQuote &&
       message.quotable
@@ -781,8 +773,7 @@ function GameWrapper(props) {
     return null;
   }
 
-  if (leave === "review") return <Navigate to={`/game/${gameId}/review`} />;
-  else if (leave) return <Navigate to="/play" />;
+  if (leave) return <Navigate to="/play" />;
   else if (rehostId) return <Navigate to={`/game/${rehostId}`} />;
   else if (!loaded || stateViewing == null)
     return (
@@ -794,7 +785,7 @@ function GameWrapper(props) {
     const gameContext = {
       gameId: gameId,
       socket: socket,
-      review: props.review,
+      review: review,
       gameType: gameType,
       setup: setup,
       getSetupGameSetting: getSetupGameSetting,
@@ -1134,6 +1125,7 @@ export function TopBar({ hideStateSwitcher = false }) {
         spacing={1}
         sx={{
           p: 1,
+          flex: "1 1",
         }}
       >
         <Stack direction="row" spacing={1}>
@@ -1241,7 +1233,6 @@ export function MobileLayout({
       {/* The additionalInfoContent displays after the mobile version of TopBar */}
       {selectedPanel === "info" && (
         <>
-          <div style={{ flex: "1" }} />
           {additionalInfoContent}
         </>
       )}
@@ -2487,6 +2478,7 @@ export function SideMenu({
   defaultExpanded = false,
   disabled = false,
   contentPadding = "8px 16px",
+  flex = undefined,
 }) {
   const handleToggle = () => {
     if (!disabled && onChange) {
@@ -2496,7 +2488,7 @@ export function SideMenu({
 
   if (!isAccordionMenu) {
     return (
-      <div className={`side-menu ${scrollable ? "scrollable" : ""}`}>
+      <div className={`side-menu ${scrollable ? "scrollable" : ""}`} style={{ flex: flex }}>
         <Stack
           direction="row"
           spacing={1}
@@ -2523,6 +2515,9 @@ export function SideMenu({
       disableGutters
       onChange={handleToggle}
       disabled={disabled}
+      sx={{
+        flex: flex
+      }}
     >
       <AccordionSummary
         sx={{

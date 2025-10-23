@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef, useEffect } from "react";
+import React, { useState, useContext, useRef, useEffect, useMemo } from "react";
 import { UserContext, SiteInfoContext } from "../Contexts";
 import { SearchBar } from "./Nav";
 import { hyphenDelimit } from "../utils";
@@ -1053,7 +1053,7 @@ export function RoleSearch(props) {
 
   if (!siteInfo.roles) return <NewLoading small />;
 
-  const roleCells = siteInfo.roles[props.gameType].map((role, i) => {
+  const roleCells = useMemo(() => siteInfo.roles[props.gameType].map((role, i) => {
     const searchTerms = searchVal
       .split(",")
       .filter((term) => term.trim() !== "")
@@ -1087,7 +1087,7 @@ export function RoleSearch(props) {
         </Grid2>
       );
     }
-  });
+  }), [searchVal, roleListType, props.onAddClick, props.gameType]);
 
   return (
     <Stack direction="column">
