@@ -1473,16 +1473,10 @@ export function InlineRoleMention({
   return (
     <>
       <span
-        aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
-        aria-haspopup="true"
-        onClick={handlePopoverClick}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
         style={{
           display: "inline-flex",
-          alignItems: "center",
-          verticalAlign: "middle",
-          lineHeight: "inherit",
+          alignItems: "baseline",
+          verticalAlign: "baseline",
         }}
       >
         <div
@@ -1493,20 +1487,35 @@ export function InlineRoleMention({
             marginRight: 4,
             backgroundSize: "100% 100%",
             display: "inline-block",
-            verticalAlign: "middle",
+            verticalAlign: "baseline",
           }}
         />
         <span
+          aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
+          aria-haspopup="true"
+          onClick={handlePopoverClick}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           style={{
-            color: "var(--mui-palette-primary-main)",
-            fontWeight: 600,
-            verticalAlign: "middle",
-            ...textStyle,
+            display: "inline-flex",
+            alignItems: "baseline",
+            verticalAlign: "baseline",
+            lineHeight: "inherit",
           }}
         >
-          {roleName}
+          <span
+            style={{
+              color: "var(--mui-palette-primary-main)",
+              fontWeight: 600,
+              verticalAlign: "baseline",
+              ...textStyle,
+            }}
+          >
+            {roleName}
+          </span>
         </span>
       </span>
+
       <Popover
         open={popoverOpen}
         sx={popoverClasses}

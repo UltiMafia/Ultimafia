@@ -3708,7 +3708,7 @@ function SettingsForm({ handleClose = null }) {
       value: settings.terminologyEmoticons,
     },
     {
-      label: "Highlight role names in chat/comments",
+      label: "Highlight role names",
       ref: "roleMentions",
       type: "boolean",
       value: settings.roleMentions,
