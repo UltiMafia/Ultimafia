@@ -249,7 +249,7 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
 
   function clearCache() {
     var cacheVal = Date.now();
-    setSiteInfoProp({ type: "setProp", prop: "cacheVal", value: cacheVal });
+    updateSiteInfo({ type: "setProp", prop: "cacheVal", value: cacheVal });
     window.localStorage.setItem("cacheVal", cacheVal);
   }
 
