@@ -68,7 +68,7 @@ module.exports = class ChooseWordsForGhost extends Card {
             }
 
             for (let fakePlayer of fakeWordPlayers) {
-             fakePlayer.role.data.assignedWord = this.game.fakeWord;
+              fakePlayer.role.data.assignedWord = this.game.fakeWord;
               fakePlayer.queueAlert(
                 `The secret word is: ${this.game.fakeWord}.`
               );
