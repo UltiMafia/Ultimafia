@@ -14,6 +14,8 @@ module.exports = class Host extends Role {
       //"HostChosenRoles",
       "HostActions",
       "ChooseWordsForGhost",
+      "AddDusk",
+      "AddDawn",
     ];
   }
 };

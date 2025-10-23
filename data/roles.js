@@ -2614,6 +2614,15 @@ const roleData = {
       ],
       nightOrder: [["Kill Target If Visited", PRIORITY_KILL_DEFAULT]],
     },
+    Dentist: {
+      alignment: "Mafia",
+      tags: ["Killing", "Visits", "Visiting", "Basic"],
+      description: [
+        `Each night, can choose to visit one player and make them "Gassed".`,
+        gassedDef,
+      ],
+      nightOrder: [["Gas Player", PRIORITY_EFFECT_GIVER_DEFAULT]],
+    },
     Hider: {
       alignment: "Mafia",
       category: "Killing",
@@ -4172,8 +4181,8 @@ const roleData = {
         "Each night, can choose a role.",
         "Each night, can choose to visit one player and convert them to chosen role without changing their alignment.",
         "If the chosen role is already in play, The conversion fails.",
-        "Independant roles can only be converted to other Independant roles.",
-        "Non-independant roles can not be converted to Independant roles.",
+        "Independent roles can only be converted to other Independent roles.",
+        "Non-independent roles can not be converted to Independent roles.",
       ],
       nightOrder: [["Convert", PRIORITY_CONVERT_DEFAULT + 4]],
     },
@@ -4353,14 +4362,17 @@ const roleData = {
     },
     Poet: {
       alignment: "Cult",
-      tags: ["Ghost", "Mini-game", "Dusk"],
+      tags: ["Ghost", "Mini-game", "Dusk", "Pregame Actions"],
       description: [
         "Before the game starts, chooses a real word and a fake word.",
         "Forces a Ghost to spawn in closed setups.",
-        "If the Village guesses the identity of the Poet, the Ghosts and the Poet both lose.",
-        "Does not meet with the Cult or Ghosts.",
+        "If a Cult member guesses the real word, Village will have a chance to guess who the Poet is.",
+        "On a correct guess, Village Wins and Cult loses.",
+        "Appears as villager on death.",
+        "Does not attend the cult meeting.",
       ],
       RolesMadeBy: ["Ghost"],
+      graveyardParticipation: "all",
     },
     Reaper: {
       alignment: "Cult",
@@ -5370,22 +5382,12 @@ const roleData = {
       ],
       nightOrder: [["Douse In Gasoline", PRIORITY_EFFECT_GIVER_DEFAULT - 1]],
     },
-    Dentist: {
-      alignment: "Independent",
-      tags: ["Killing", "Visits", "Last Two", "Visiting", "Hostile", "Basic"],
-      description: [
-        `Each night, can choose to visit one player and make them "Gassed".`,
-        gassedDef,
-        "Wins if among last two alive.",
-      ],
-      nightOrder: [["Gas Player", PRIORITY_EFFECT_GIVER_DEFAULT]],
-    },
     Egg: {
       alignment: "Independent",
       tags: ["Hostile", "Conversion", "Advanced"],
       description: [
         "Once per game at night, can choose Independent role from the setup.",
-        "The Associate will convert to the chosen role.",
+        "The Egg will convert to the chosen role.",
         `If the chosen role is already in play, The player with that role will be converted to Amnesiac.`,
         "Cannot win the game as Egg.",
       ],

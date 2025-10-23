@@ -9,6 +9,7 @@ module.exports = class Superhero extends Role {
       "VillageCore",
       "WinWithIndependentMajority",
       "GiveSuperpowers",
+      "AddDusk",
     ];
   }
 };

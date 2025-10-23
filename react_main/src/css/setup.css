@@ -55,8 +55,8 @@
 }
 
 .small-role-list {
-  display: flex;
-  flex-flow: row wrap;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
 
   padding: 5px 0px;
 }

@@ -181,7 +181,7 @@ function Main(props) {
       {loading && <NewLoading />}
       {!loading && (
         <Routes>
-          <Route path="/game/*" element={gameContent} />
+          <Route path="/game/:gameId/*" element={gameContent} />
           <Route path="/*" element={siteContent} />
         </Routes>
       )}

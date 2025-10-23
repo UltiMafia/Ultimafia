@@ -481,8 +481,9 @@ module.exports = [
     "pixie",
     "golem",
   ],
-  ["dragon", "goblin", "wizard", "potion", "sphinx", "selkie"][
-    ("crystal",
+  ["dragon", "goblin", "wizard", "potion", "sphinx", "selkie"],
+  [
+    "crystal",
     "magical",
     "rainbow",
     "centaur",
@@ -495,7 +496,7 @@ module.exports = [
     "monster",
     "gremlin",
     "alchemy",
-    "phoenix")
+    "phoenix",
   ],
 
   // food and eating
@@ -930,6 +931,9 @@ module.exports = [
   ["rick", "roll"],
   ["plan", "fail"],
   ["hair", "comb"],
+
+  // blood
+  //["hypercoagulation", "hemagglutination"],
 ];
 
 /*

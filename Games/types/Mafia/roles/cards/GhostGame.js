@@ -20,6 +20,9 @@ module.exports = class GhostGame extends Card {
       !role.game.realWord &&
       role.game.players.filter(
         (p) => p.role && (p.role.name == "Host" || p.role.name == "Poet")
+      ).length <= 0 &&
+      role.game.StartingRoleset.filter(
+        (r) => r.split(":")[0] == "Poet" || r.split(":")[0] == "Host"
       ).length <= 0
     ) {
       role.game.realWord = shuffledWordPack[0];
@@ -30,6 +33,9 @@ module.exports = class GhostGame extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
+        if (role.game.realWord == null) {
+          return;
+        }
         if (!stateInfo.name.match(/Day/)) {
           return;
         }
@@ -46,7 +52,11 @@ module.exports = class GhostGame extends Card {
         }
 
         for (let player of this.game.players) {
-          if (player.faction == "Cult" && !player.hasItem("GhostGuessWord")) {
+          if (
+            player.faction == "Cult" &&
+            player.role.name != "Poet" &&
+            !player.hasItem("GhostGuessWord")
+          ) {
             player.holdItem("GhostGuessWord");
           }
         }
@@ -81,6 +91,7 @@ module.exports = class GhostGame extends Card {
         if (
           this.game.getStateName() == "Day" &&
           player.faction == "Cult" &&
+          player.role.name != "Poet" &&
           !player.hasItem("GhostGuessWord")
         ) {
           player.holdItem("GhostGuessWord");
@@ -190,7 +201,7 @@ module.exports = class GhostGame extends Card {
                   .alivePlayers()
                   .filter(
                     (p) =>
-                      (p.role && p.role.name != "Host") || p.role.name != "Poet"
+                      p.role && (p.role.name != "Host" || p.role.name != "Poet")
                   )
               );
             }
@@ -213,7 +224,20 @@ module.exports = class GhostGame extends Card {
             (p) => p.role.name === "Poet"
           );
 
-          if (poetsInGame.length > 0 && !this.game.poetGuessPhaseCompleted) {
+          if (this.game.VillageGuessedThePoet && poetsInGame.length > 0) {
+            for (let player of this.game.players) {
+              if (player.faction == "Village") {
+                winners.addPlayer(player, player.faction);
+              }
+            }
+            return;
+          }
+
+          if (
+            poetsInGame.length > 0 &&
+            !this.game.poetGuessPhaseCompleted &&
+            !this.game.VillageFailedToGuessPoet
+          ) {
             // Poet is in game - trigger the guess phase
             this.game.poetGuessPhaseActive = true;
             this.game.queueAlert(
@@ -225,7 +249,7 @@ module.exports = class GhostGame extends Card {
             // Don't add any winners yet - wait for the Epilogue vote
             // Return false to prevent game end and allow state progression
             return false;
-          } else if (poetsInGame.length === 0) {
+          } else {
             // No Poet in game - Cult wins immediately
             for (let player of this.game.players) {
               if (CULT_FACTIONS.includes(player.faction)) {
@@ -261,33 +285,6 @@ module.exports = class GhostGame extends Card {
           return false;
         },
       },
-      Epilogue: {
-        type: "shouldSkip",
-        shouldSkip: function () {
-          // Only enter Epilogue state if poet guess phase is active
-          return !this.game.poetGuessPhaseActive;
-        },
-      },
     };
   }
-  /*
-  assignWordsToPlayers() {
-    let villagePlayers = this.game.players.filter(
-      (p) => p.role.alignment === "Village"
-    );
-    let mafiaOrCultPlayers = this.game.players.filter(
-      (p) => p.role.alignment === "Mafia" || p.role.alignment === "Cult"
-    );
-
-    for (let villagePlayer of villagePlayers) {
-      villagePlayer.role.data.assignedWord = this.realWord;
-      villagePlayer.queueAlert(`The secret word is: ${this.realWord}.`);
-    }
-
-    for (let mafiaOrCultPlayer of mafiaOrCultPlayers) {
-      mafiaOrCultPlayer.role.data.assignedWord = this.fakeWord;
-      mafiaOrCultPlayer.queueAlert(`The secret word is: ${this.fakeWord}.`);
-    }
-  }
-    */
 };

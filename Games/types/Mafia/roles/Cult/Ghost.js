@@ -10,6 +10,7 @@ module.exports = class Ghost extends Role {
       "GhostGame",
       "WinWithFaction",
       "MeetingFaction",
+      "AddDusk",
     ];
   }
 };

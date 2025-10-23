@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef, useEffect } from "react";
+import React, { useState, useContext, useRef, useEffect, useMemo } from "react";
 import { UserContext, SiteInfoContext } from "../Contexts";
 import { SearchBar } from "./Nav";
 import { hyphenDelimit } from "../utils";
@@ -1053,41 +1053,46 @@ export function RoleSearch(props) {
 
   if (!siteInfo.roles) return <NewLoading small />;
 
-  const roleCells = siteInfo.roles[props.gameType].map((role, i) => {
-    const searchTerms = searchVal
-      .split(",")
-      .filter((term) => term.trim() !== "")
-      .map((term) => term.trim().toLowerCase());
+  const roleCells = useMemo(
+    () =>
+      siteInfo.roles[props.gameType].map((role, i) => {
+        const searchTerms = searchVal
+          .split(",")
+          .filter((term) => term.trim() !== "")
+          .map((term) => term.trim().toLowerCase());
 
-    const matchesSearch =
-      searchTerms.length === 0 ||
-      searchTerms.some(
-        (term) =>
-          role.name.toLowerCase().includes(term) ||
-          role.tags.join("").toLowerCase().includes(term) ||
-          Object.entries(roleAbbreviations).some(
-            ([shortcut, roleNames]) =>
-              shortcut === term && roleNames.includes(role.name)
-          )
-      );
+        const matchesSearch =
+          searchTerms.length === 0 ||
+          searchTerms.some(
+            (term) =>
+              role.name.toLowerCase().includes(term) ||
+              role.tags.join("").toLowerCase().includes(term) ||
+              Object.entries(roleAbbreviations).some(
+                ([shortcut, roleNames]) =>
+                  shortcut === term && roleNames.includes(role.name)
+              )
+          );
 
-    if (
-      !role.disabled &&
-      (role.alignment === roleListType ||
-        (searchVal.length > 0 &&
-          (role.name.toLowerCase().indexOf(searchVal) !== -1 || matchesSearch)))
-    ) {
-      return (
-        <Grid2 size={{ xs: 2 }} key={role.name}>
-          <RoleCell
-            onAddClick={props.onAddClick}
-            role={role}
-            icon={<RoleCount role={role.name} gameType={props.gameType} />}
-          />
-        </Grid2>
-      );
-    }
-  });
+        if (
+          !role.disabled &&
+          (role.alignment === roleListType ||
+            (searchVal.length > 0 &&
+              (role.name.toLowerCase().indexOf(searchVal) !== -1 ||
+                matchesSearch)))
+        ) {
+          return (
+            <Grid2 size={{ xs: 2 }} key={role.name}>
+              <RoleCell
+                onAddClick={props.onAddClick}
+                role={role}
+                icon={<RoleCount role={role.name} gameType={props.gameType} />}
+              />
+            </Grid2>
+          );
+        }
+      }),
+    [searchVal, roleListType, props.onAddClick, props.gameType]
+  );
 
   return (
     <Stack direction="column">

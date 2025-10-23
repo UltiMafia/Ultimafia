@@ -10,8 +10,8 @@ module.exports = class Don extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-
       "OverturnVote",
+      "AddDusk",
     ];
   }
 };

@@ -9,7 +9,7 @@ module.exports = class Undertaker extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-
+      "AddDusk",
       "CleanCondemnation",
     ];
   }
