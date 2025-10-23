@@ -8,7 +8,7 @@ import Profile, { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "./Profile";
 import Settings from "./Settings";
 import Shop from "./Shop";
 import { UserContext, SiteInfoContext, GameContext } from "Contexts";
-import { HiddenUpload } from "components/Form";
+import AvatarUpload from "components/AvatarUpload";
 
 import "css/user.css";
 import { youtubeRegex } from "components/Basic";
@@ -484,9 +484,9 @@ var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/
       }}
     >
       {edit && (
-        <HiddenUpload className="edit" name="avatar" onFileUpload={onUpload}>
+        <AvatarUpload className="edit" name="avatar" onFileUpload={onUpload}>
           <i className="far fa-file-image" />
-        </HiddenUpload>
+        </AvatarUpload>
       )}
 
       {/*SANTA CHANGES: In December, uncomment the below lines*/}
