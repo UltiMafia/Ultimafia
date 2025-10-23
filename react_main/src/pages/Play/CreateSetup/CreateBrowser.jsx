@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useReducer, useContext, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useReducer,
+  useContext,
+  useCallback,
+} from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
@@ -376,20 +382,23 @@ export default function CreateSetup(props) {
     }
   }, []);
 
-  const onAddRole = useCallback(function(role) {
-    updateRoleData({
-      type: "addRole",
-      role: `${role.name}:${
-        modifiers.filter((e) => e).length > 0
-          ? modifiers
-              .filter((e) => e)
-              .map((e) => e.name)
-              .join("/")
-          : ""
-      }`,
-      alignment: role.alignment,
-    });
-  }, [modifiers])
+  const onAddRole = useCallback(
+    function (role) {
+      updateRoleData({
+        type: "addRole",
+        role: `${role.name}:${
+          modifiers.filter((e) => e).length > 0
+            ? modifiers
+                .filter((e) => e)
+                .map((e) => e.name)
+                .join("/")
+            : ""
+        }`,
+        alignment: role.alignment,
+      });
+    },
+    [modifiers]
+  );
 
   function onAddModifier(mod) {
     let index = modifiers.length;
