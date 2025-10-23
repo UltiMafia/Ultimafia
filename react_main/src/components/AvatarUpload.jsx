@@ -22,7 +22,7 @@ export default function AvatarUpload(props) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  
+
   const fileInputRef = useRef();
   const canvasRef = useRef();
   const imageRef = useRef();
@@ -113,32 +113,23 @@ export default function AvatarUpload(props) {
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    
+
     canvas.width = 100;
     canvas.height = 100;
 
     const previewSize = 300;
-    const scale = imageRef.current.naturalWidth / (imageRef.current.width * zoom);
-    
-    const centerX = imageRef.current.naturalWidth / 2 - (position.x * scale);
-    const centerY = imageRef.current.naturalHeight / 2 - (position.y * scale);
-    
+    const scale =
+      imageRef.current.naturalWidth / (imageRef.current.width * zoom);
+
+    const centerX = imageRef.current.naturalWidth / 2 - position.x * scale;
+    const centerY = imageRef.current.naturalHeight / 2 - position.y * scale;
+
     const cropSize = previewSize * scale;
-    
+
     const sx = centerX - cropSize / 2;
     const sy = centerY - cropSize / 2;
 
-    ctx.drawImage(
-      imageRef.current,
-      sx,
-      sy,
-      cropSize,
-      cropSize,
-      0,
-      0,
-      100,
-      100
-    );
+    ctx.drawImage(imageRef.current, sx, sy, cropSize, cropSize, 0, 0, 100, 100);
 
     canvas.toBlob((blob) => {
       if (blob) {
@@ -176,7 +167,12 @@ export default function AvatarUpload(props) {
         {props.children}
       </div>
 
-      <Dialog open={uploadDialogOpen} onClose={handleCloseUpload} maxWidth="sm" fullWidth>
+      <Dialog
+        open={uploadDialogOpen}
+        onClose={handleCloseUpload}
+        maxWidth="sm"
+        fullWidth
+      >
         <Box
           sx={{
             display: "flex",
@@ -234,10 +230,10 @@ export default function AvatarUpload(props) {
         </DialogActions>
       </Dialog>
 
-      <Dialog 
-        open={cropDialogOpen} 
-        onClose={handleCloseCrop} 
-        maxWidth="md" 
+      <Dialog
+        open={cropDialogOpen}
+        onClose={handleCloseCrop}
+        maxWidth="md"
         fullWidth
       >
         <Box
@@ -293,49 +289,49 @@ export default function AvatarUpload(props) {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
-               {imageUrl && (
-                 <img
-                   src={imageUrl}
-                   alt="Preview"
-                   style={{
-                     position: "absolute",
-                     top: "50%",
-                     left: "50%",
-                     transform: `translate(calc(-50% + ${position.x}px), calc(-50% + ${position.y}px)) scale(${zoom})`,
-                     transformOrigin: "center",
-                     maxWidth: "none",
-                     width: "300px",
-                     height: "auto",
-                     userSelect: "none",
-                     pointerEvents: "none",
-                   }}
-                   draggable={false}
-                 />
-               )}
+              {imageUrl && (
+                <img
+                  src={imageUrl}
+                  alt="Preview"
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: `translate(calc(-50% + ${position.x}px), calc(-50% + ${position.y}px)) scale(${zoom})`,
+                    transformOrigin: "center",
+                    maxWidth: "none",
+                    width: "300px",
+                    height: "auto",
+                    userSelect: "none",
+                    pointerEvents: "none",
+                  }}
+                  draggable={false}
+                />
+              )}
             </Box>
 
-             <Box sx={{ display: "flex", alignItems: "center", gap: 2, px: 2 }}>
-               <IconButton 
-                 onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
-                 size="small"
-               >
-                 -
-               </IconButton>
-               <Slider
-                 value={zoom}
-                 onChange={(e, value) => setZoom(value)}
-                 min={0.5}
-                 max={3}
-                 step={0.1}
-                 sx={{ flex: 1 }}
-               />
-               <IconButton 
-                 onClick={() => setZoom(Math.min(3, zoom + 0.1))}
-                 size="small"
-               >
-                 +
-               </IconButton>
-             </Box>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, px: 2 }}>
+              <IconButton
+                onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
+                size="small"
+              >
+                -
+              </IconButton>
+              <Slider
+                value={zoom}
+                onChange={(e, value) => setZoom(value)}
+                min={0.5}
+                max={3}
+                step={0.1}
+                sx={{ flex: 1 }}
+              />
+              <IconButton
+                onClick={() => setZoom(Math.min(3, zoom + 0.1))}
+                size="small"
+              >
+                +
+              </IconButton>
+            </Box>
           </Box>
         </DialogContent>
         <DialogActions>
@@ -350,4 +346,3 @@ export default function AvatarUpload(props) {
     </>
   );
 }
-
