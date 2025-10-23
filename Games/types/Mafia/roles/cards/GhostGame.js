@@ -18,9 +18,12 @@ module.exports = class GhostGame extends Card {
     let shuffledWordPack = Random.randomizeArray(wordPack);
     if (
       !role.game.realWord &&
-      (role.game.players.filter(
+      role.game.players.filter(
         (p) => p.role && (p.role.name == "Host" || p.role.name == "Poet")
-      ).length <= 0 && role.game.StartingRoleset.filter((r) => r.split(":")[0] == "Poet" || r.split(":")[0] == "Host").length <= 0) 
+      ).length <= 0 &&
+      role.game.StartingRoleset.filter(
+        (r) => r.split(":")[0] == "Poet" || r.split(":")[0] == "Host"
+      ).length <= 0
     ) {
       role.game.realWord = shuffledWordPack[0];
       role.game.fakeWord = shuffledWordPack[1];
@@ -30,7 +33,7 @@ module.exports = class GhostGame extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if(role.game.realWord == null){
+        if (role.game.realWord == null) {
           return;
         }
         if (!stateInfo.name.match(/Day/)) {
@@ -49,7 +52,11 @@ module.exports = class GhostGame extends Card {
         }
 
         for (let player of this.game.players) {
-          if (player.faction == "Cult" && player.role.name != "Poet" && !player.hasItem("GhostGuessWord")) {
+          if (
+            player.faction == "Cult" &&
+            player.role.name != "Poet" &&
+            !player.hasItem("GhostGuessWord")
+          ) {
             player.holdItem("GhostGuessWord");
           }
         }
@@ -83,7 +90,8 @@ module.exports = class GhostGame extends Card {
       roleAssigned: function (player) {
         if (
           this.game.getStateName() == "Day" &&
-          player.faction == "Cult" && player.role.name != "Poet" &&
+          player.faction == "Cult" &&
+          player.role.name != "Poet" &&
           !player.hasItem("GhostGuessWord")
         ) {
           player.holdItem("GhostGuessWord");
@@ -216,17 +224,20 @@ module.exports = class GhostGame extends Card {
             (p) => p.role.name === "Poet"
           );
 
-          
-        if(this.game.VillageGuessedThePoet && poetsInGame.length > 0){
-          for (let player of this.game.players) {
-            if (player.faction == "Village") {
-              winners.addPlayer(player, player.faction);
+          if (this.game.VillageGuessedThePoet && poetsInGame.length > 0) {
+            for (let player of this.game.players) {
+              if (player.faction == "Village") {
+                winners.addPlayer(player, player.faction);
+              }
             }
+            return;
           }
-          return;
-        }
 
-          if (poetsInGame.length > 0 && !this.game.poetGuessPhaseCompleted && !this.game.VillageFailedToGuessPoet) {
+          if (
+            poetsInGame.length > 0 &&
+            !this.game.poetGuessPhaseCompleted &&
+            !this.game.VillageFailedToGuessPoet
+          ) {
             // Poet is in game - trigger the guess phase
             this.game.poetGuessPhaseActive = true;
             this.game.queueAlert(
@@ -238,7 +249,7 @@ module.exports = class GhostGame extends Card {
             // Don't add any winners yet - wait for the Epilogue vote
             // Return false to prevent game end and allow state progression
             return false;
-          } else{
+          } else {
             // No Poet in game - Cult wins immediately
             for (let player of this.game.players) {
               if (CULT_FACTIONS.includes(player.faction)) {
@@ -251,7 +262,7 @@ module.exports = class GhostGame extends Card {
       },
     };
 
- this.stateMods = {
+    this.stateMods = {
       Day: {
         type: "shouldSkip",
         shouldSkip: function () {
@@ -275,9 +286,5 @@ module.exports = class GhostGame extends Card {
         },
       },
     };
-
-
-
-
   }
 };

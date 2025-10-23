@@ -10,13 +10,13 @@ module.exports = class Whistleblown extends Effect {
     super.apply(player);
 
     this.cannotVoteEffect = player.giveEffect("CannotVote", 1);
-    if(this.game.Rooms){
-      for(let item of player.items){
-        if(item.name == "Room"){
+    if (this.game.Rooms) {
+      for (let item of player.items) {
+        if (item.name == "Room") {
           player.giveEffect("CannotVote", 1, item.Room.name);
         }
       }
-        }
+    }
     this.cannotBeVotedEffect = player.giveEffect("CannotBeVoted", 1);
   }
 

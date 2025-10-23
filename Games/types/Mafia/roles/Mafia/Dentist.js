@@ -6,10 +6,10 @@ module.exports = class Dentist extends Role {
 
     this.alignment = "Mafia";
     this.cards = [
-    "VillageCore", 
-    "NightGasser",
-    "WinWithFaction",
-    "MeetingFaction"
+      "VillageCore",
+      "NightGasser",
+      "WinWithFaction",
+      "MeetingFaction",
     ];
   }
 };

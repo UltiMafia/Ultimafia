@@ -120,8 +120,8 @@ module.exports = class VillageCore extends Card {
           }
           this.game.ExtraStates = [];
           this.game.events.emit("extraStateCheck", "Dusk");
-          if(this.game.ExtraStates.includes("Dusk")){
-          return false;
+          if (this.game.ExtraStates.includes("Dusk")) {
+            return false;
           }
           return true;
         },
@@ -132,8 +132,8 @@ module.exports = class VillageCore extends Card {
           // Only enter Epilogue state if poet guess phase is active
           this.game.ExtraStates = [];
           this.game.events.emit("extraStateCheck", "Epilogue");
-          if(this.game.ExtraStates.includes("Epilogue")){
-          return false;
+          if (this.game.ExtraStates.includes("Epilogue")) {
+            return false;
           }
           return true;
         },
@@ -152,8 +152,8 @@ module.exports = class VillageCore extends Card {
           }
           this.game.ExtraStates = [];
           this.game.events.emit("extraStateCheck", "Dawn");
-          if(this.game.ExtraStates.includes("Dawn")){
-          return false;
+          if (this.game.ExtraStates.includes("Dawn")) {
+            return false;
           }
           return true;
           /*

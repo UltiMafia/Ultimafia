@@ -9,10 +9,13 @@ module.exports = class AddEpilogue extends Card {
         if (this.game.ExtraStates == null) {
           this.game.ExtraStates = [];
         }
-        if(this.game.poetGuessPhaseActive != true){
+        if (this.game.poetGuessPhaseActive != true) {
           return;
         }
-        if (stateName == "Epilogue" && !this.game.ExtraStates.includes("Epilogue")) {
+        if (
+          stateName == "Epilogue" &&
+          !this.game.ExtraStates.includes("Epilogue")
+        ) {
           this.game.ExtraStates.push("Epilogue");
         }
       },

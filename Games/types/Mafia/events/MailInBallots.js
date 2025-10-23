@@ -33,16 +33,14 @@ module.exports = class MailInBallots extends Event {
         }
         for (const player of this.event.generatePossibleVictims()) {
           player.giveEffect("CannotChangeVotesAtDay", 1);
-          if(this.game.Rooms){
-            for(let item of player.items){
-                  if(item.name == "Room"){
-                  player.giveEffect("CannotChangeVotesAtDay", 1, item.Room.name);
-                  }
+          if (this.game.Rooms) {
+            for (let item of player.items) {
+              if (item.name == "Room") {
+                player.giveEffect("CannotChangeVotesAtDay", 1, item.Room.name);
+              }
             }
           }
         }
-        
-
       },
     });
     this.game.queueAction(this.action);

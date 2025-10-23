@@ -44,12 +44,12 @@ module.exports = class Frozen extends Effect {
                     "CannotVote",
                     1
                   );
-                  if(this.game.Rooms){
-                    for(let item of this.actor.items){
-                      if(item.name == "Room"){
+                  if (this.game.Rooms) {
+                    for (let item of this.actor.items) {
+                      if (item.name == "Room") {
                         this.actor.giveEffect("CannotVote", 1, item.Room.name);
-                        }
                       }
+                    }
                   }
                 }
               },

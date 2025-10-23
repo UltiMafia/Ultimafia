@@ -23,19 +23,22 @@ module.exports = class ParalyzeAll extends Card {
               if (!this.role.hasAbility(["Effect"])) {
                 return;
               }
-              if (
-                this.game.Rooms
-              ) {
+              if (this.game.Rooms) {
                 this.game.queueAlert(
                   ":omg: The whole town can't move… everyone is paralyzed!"
                 );
                 for (const player of this.game.alivePlayers()) {
-                  for(let item of player.items){
-                  if(item.name == "Room"){
-                  this.role.giveEffect(player, "CannotChangeVote", -1, item.Room.name);
+                  for (let item of player.items) {
+                    if (item.name == "Room") {
+                      this.role.giveEffect(
+                        player,
+                        "CannotChangeVote",
+                        -1,
+                        item.Room.name
+                      );
+                    }
                   }
                 }
-              }
                 return;
               }
 

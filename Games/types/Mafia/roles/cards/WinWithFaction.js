@@ -109,7 +109,11 @@ module.exports = class WinWithFaction extends Card {
         }
         //Dead Unguessed Poet
         if (this.player.faction == "Village") {
-          if (poetsInGame && this.game.poetGuessPhaseActive && !this.game.VillageGuessedThePoet) {
+          if (
+            poetsInGame &&
+            this.game.poetGuessPhaseActive &&
+            !this.game.VillageGuessedThePoet
+          ) {
             return;
           }
         }
@@ -682,7 +686,7 @@ module.exports = class WinWithFaction extends Card {
                 `The Village has correctly identified ${this.target.name} as the Poet!`
               );
               this.game.VillageFailedToGuessPoet = false;
-              this.game.VillageGuessedThePoet = true
+              this.game.VillageGuessedThePoet = true;
             } else {
               // Village guessed incorrectly - Cult wins as originally planned
               this.game.queueAlert(

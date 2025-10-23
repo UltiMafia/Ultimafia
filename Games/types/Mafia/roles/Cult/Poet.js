@@ -22,6 +22,5 @@ module.exports = class Poet extends Role {
       death: "Villager",
       investigate: "real",
     };
-
   }
 };
