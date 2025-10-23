@@ -253,11 +253,11 @@ router.get("/thread/:id", async function (req, res) {
         }).select("direction");
         reply.vote = (vote && vote.direction) || 0;
       }
-      
+
       // Add subscription status for current user
       var subscribers = thread.subscribers || [];
       thread.isSubscribed = subscribers.indexOf(userId) !== -1;
-      
+
       // Get subscriber user info for popover
       thread.subscriberUsers = await Promise.all(
         subscribers.map(async (subId) => {

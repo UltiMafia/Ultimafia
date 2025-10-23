@@ -39,10 +39,10 @@ export default function Thread(props) {
   useEffect(() => {
     // If there's a specific reply to view, load that; otherwise load the last page
     const replyParam = params.get("reply") || "";
-    const url = replyParam 
+    const url = replyParam
       ? `/api/forums/thread/${threadId}?reply=${replyParam}`
       : `/api/forums/thread/${threadId}?page=last`;
-    
+
     axios
       .get(url)
       .then((res) => {
@@ -497,10 +497,14 @@ function Post(props) {
                       disableRestoreFocus
                     >
                       <div style={{ padding: "8px 12px" }}>
-                        <Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 1 }}>
+                        <Typography
+                          variant="subtitle2"
+                          sx={{ fontWeight: "bold", mb: 1 }}
+                        >
                           Subscribed Users:
                         </Typography>
-                        {postInfo.subscriberUsers && postInfo.subscriberUsers.length > 0 ? (
+                        {postInfo.subscriberUsers &&
+                        postInfo.subscriberUsers.length > 0 ? (
                           <List dense sx={{ py: 0 }}>
                             {postInfo.author.id && postInfo.replyNotify && (
                               <ListItem sx={{ py: 0.5, px: 1 }}>
@@ -510,7 +514,10 @@ function Post(props) {
                               </ListItem>
                             )}
                             {postInfo.subscriberUsers.map((subscriber) => (
-                              <ListItem key={subscriber.id} sx={{ py: 0.5, px: 1 }}>
+                              <ListItem
+                                key={subscriber.id}
+                                sx={{ py: 0.5, px: 1 }}
+                              >
                                 <Typography variant="body2">
                                   {subscriber.name}
                                 </Typography>
@@ -528,7 +535,10 @@ function Post(props) {
                                 </ListItem>
                               </List>
                             ) : (
-                              <Typography variant="body2" sx={{ fontStyle: "italic" }}>
+                              <Typography
+                                variant="body2"
+                                sx={{ fontStyle: "italic" }}
+                              >
                                 No subscribers
                               </Typography>
                             )}
