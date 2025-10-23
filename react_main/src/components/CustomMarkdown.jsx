@@ -11,10 +11,10 @@ function roleifyMarkdown(children, siteInfo) {
   const roles = siteInfo?.roles?.Mafia || [];
   const names = roles.map((r) => r.name).sort((a, b) => b.length - a.length);
   if (names.length === 0) return children;
-  
+
   // Create a map from lowercase role names to canonical names for case-insensitive matching
   const nameMap = new Map(roles.map((r) => [r.name.toLowerCase(), r.name]));
-  
+
   const pattern = names
     .map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
     .join("|");
@@ -35,7 +35,10 @@ function roleifyMarkdown(children, siteInfo) {
         // Normalize to canonical role name (correct case)
         const canonical = nameMap.get(matched.toLowerCase()) || matched;
         parts.push(
-          <InlineRoleMention roleName={canonical} key={`${idx}-${match.index}`} />
+          <InlineRoleMention
+            roleName={canonical}
+            key={`${idx}-${match.index}`}
+          />
         );
         lastIndex = regex.lastIndex;
         match = regex.exec(child);
