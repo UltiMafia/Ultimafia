@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useContext } from "react";
+import React, { useState, useEffect, useReducer, useContext, useCallback } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
@@ -77,9 +77,7 @@ function StickyStateViewer(props) {
             sx={{
               justifyContent: "center",
               flex: "0 0",
-              bgcolor: isSticky
-                ? "var(--scheme-color-sec)"
-                : "var(--scheme-color-background)",
+              bgcolor: "var(--scheme-color-background)",
               borderRadius: "var(--mui-shape-borderRadius)",
               p: 1,
             }}
@@ -91,6 +89,10 @@ function StickyStateViewer(props) {
           <Divider
             orientation={isVertical ? "horizontal" : "vertical"}
             flexItem
+            sx={{
+              borderWidth: "2px",
+              backgroundColor: isSticky ? "primary.main" : undefined,
+            }}
           />
           {props.children}
         </Stack>
@@ -374,7 +376,7 @@ export default function CreateSetup(props) {
     }
   }, []);
 
-  function onAddRole(role) {
+  const onAddRole = useCallback(function(role) {
     updateRoleData({
       type: "addRole",
       role: `${role.name}:${
@@ -387,7 +389,7 @@ export default function CreateSetup(props) {
       }`,
       alignment: role.alignment,
     });
-  }
+  }, [modifiers])
 
   function onAddModifier(mod) {
     let index = modifiers.length;
@@ -473,9 +475,7 @@ export default function CreateSetup(props) {
           sx={{
             p: 1,
             width: "100%",
-            bgcolor: isSelected
-              ? "var(--scheme-color-sec)"
-              : "var(--scheme-color-background)",
+            bgcolor: "var(--scheme-color-background)",
             maxHeight: "calc(8em + 4 * var(--mui-spacing))", // 8em = max 4 rows of icons before scrolling
             overflowY: "auto",
           }}

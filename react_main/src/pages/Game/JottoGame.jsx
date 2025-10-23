@@ -1,4 +1,5 @@
-import React, { useRef, useEffect, useContext, useState } from "react";
+import React, { useRef, useEffect, useContext, useState, useReducer } from "react";
+import update from "immutability-helper";
 
 import {
   useSocketListeners,
@@ -7,36 +8,28 @@ import {
   TextMeetingLayout,
   ActionList,
   PlayerList,
-  Timer,
   Notes,
   SettingsMenu,
   MobileLayout,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
-import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/game.css";
 import "css/gameJotto.css";
+import { Button, Stack, Typography } from "@mui/material";
 
-export default function JottoGame(props) {
+const ENGLISH_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const CHEATSHEET_STATES = [undefined, "success.main", "var(--mui-palette-error-main)", "var(--mui-palette-warning-main)"];
+export default function JottoGame() {
   const game = useContext(GameContext);
-  const isPhoneDevice = useIsPhoneDevice();
 
   const history = game.history;
-  const updateHistory = game.updateHistory;
   const stateViewing = game.stateViewing;
   const updateStateViewing = game.updateStateViewing;
-  const self = game.self;
-  const players = game.players;
-  const isSpectator = game.isSpectator;
 
   const playBellRef = useRef(false);
 
-  const gameType = "Jotto";
-  const meetings = history.states[stateViewing]
-    ? history.states[stateViewing].meetings
-    : {};
   const audioFileNames = [];
   const audioLoops = [];
   const audioOverrides = [];
@@ -47,6 +40,30 @@ export default function JottoGame(props) {
     updateStateViewing({ type: "current" });
   }, [history.currentState]);
 
+  // Cycle letters through "none", "correct", "wrong", "maybe"
+  const [cheatSheet, updateCheatSheet] = useReducer((state, letter) => {
+    if (letter === null) {
+      // Let a null signal that we want to reset everything
+      return update(state, {
+        $set: {}
+      });
+    }
+    else if (letter in state) {
+      return update(state, {
+        [letter]: {
+          $set: (state[letter] + 1) % CHEATSHEET_STATES.length
+        }
+      });
+    }
+    else {
+      return update(state, {
+        [letter]: {
+          $set: 1
+        }
+      });
+    }
+  }, {});
+
   useEffect(() => {
     game.loadAudioFiles(
       audioFileNames,
@@ -54,9 +71,6 @@ export default function JottoGame(props) {
       audioOverrides,
       audioVolumes
     );
-
-    // Make game review start at pregame
-    if (game.review) updateStateViewing({ type: "first" });
   }, []);
 
   useSocketListeners((socket) => {
@@ -79,6 +93,18 @@ export default function JottoGame(props) {
     });
   }, game.socket);
 
+  const jottoCheatSheet = (
+    <>
+      {stateViewing >= 0 && (
+        <SideMenu
+          title="Cheatsheet"
+          content={<JottoCheatSheet cheatSheet={cheatSheet} updateCheatSheet={updateCheatSheet} />}
+          flex="1 0"
+        />
+      )}
+    </>
+  );
+
   return (
     <>
       <TopBar hideStateSwitcher />
@@ -96,7 +122,7 @@ export default function JottoGame(props) {
         }
         rightPanelContent={
           <>
-            <JottoCheatSheetWrapper stateViewing={stateViewing} />
+            {jottoCheatSheet}
             <Notes />
           </>
         }
@@ -111,7 +137,7 @@ export default function JottoGame(props) {
         }
         additionalInfoContent={
           <>
-            <JottoCheatSheetWrapper stateViewing={stateViewing} />
+            {jottoCheatSheet}
             <Notes />
           </>
         }
@@ -120,95 +146,61 @@ export default function JottoGame(props) {
   );
 }
 
-function JottoCheatSheetWrapper(props) {
-  const stateViewing = props.stateViewing;
-
-  if (stateViewing < 0) return <></>;
-
+function JottoCheatSheet({ cheatSheet, updateCheatSheet }) {
   return (
-    <SideMenu
-      title="Cheatsheet"
-      scrollable
-      content={
-        <>
-          <JottoCheatSheet />
-        </>
-      }
-    />
-  );
-}
+    <Stack direction="row" sx={{
+      flexWrap: "wrap",
+      p: 1,
+      rowGap: 1,
+      columnGap: 1,
+      alignContent: "center",
+      justifyContent: "center",
+    }}>
+      {ENGLISH_ALPHABET.map((letter) => {
+        const clicks = cheatSheet[letter] || 0;
 
-function JottoCheatSheet() {
-  let cheatsheetRows = ["ABCDE", "FGHIJ", "KLMNO", "PQRST", "UVWXY", "Z"];
-  const [toReset, setToReset] = useState(false);
-
-  function resetCheatsheet() {
-    setToReset(true);
-  }
-
-  useEffect(() => {
-    if (toReset) {
-      setToReset(false);
-    }
-  });
-
-  return (
-    <>
-      <div className="jotto-cheatsheet">
-        {cheatsheetRows.map((row) => {
-          return <CheatSheetRow letters={row} toReset={toReset} />;
-        })}
-        <div className="btn jotto-cheatsheet-clear" onClick={resetCheatsheet}>
-          CLEAR
-        </div>
-      </div>
-    </>
-  );
-}
-
-function CheatSheetRow(props) {
-  const letters = props.letters;
-  const toReset = props.toReset;
-
-  let rowData = [];
-  for (let letter of letters) {
-    rowData.push(<CheatSheetBox letter={letter} toReset={toReset} />);
-  }
-
-  return (
-    <>
-      <div className="jotto-cheatsheet-row">{rowData}</div>
-    </>
-  );
-}
-
-function CheatSheetBox(props) {
-  const [numClicks, setNumClicks] = useState(0);
-  const letter = props.letter;
-
-  let boxState = ["none", "correct", "wrong", "maybe"];
-  const getBoxState = () => boxState[numClicks % boxState.length];
-  const clickBox = () => {
-    setNumClicks(numClicks + 1);
-  };
-
-  useEffect(() => {
-    if (props.toReset) {
-      setNumClicks(0);
-    }
-  });
-
-  return (
-    <>
-      <div
-        className={`jotto-cheatsheet-box cheatsheet-box-${getBoxState()}
-        }`}
-        key={letter}
-        onClick={clickBox}
-      >
-        <div className="jotto-cheatsheet-text">{letter}</div>
-      </div>
-    </>
+        return (
+          <Button
+            key={letter}
+            onClick={() => updateCheatSheet(letter)}
+            variant="text"
+            sx={{
+              position: "relative",
+              minWidth: "0",
+              width: "3em",
+              height: "3em",
+              zIndex: 1,
+              "&::after": {
+                content: '""',
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                backgroundColor: CHEATSHEET_STATES[clicks],
+                border: "1px solid var(--mui-palette-primary-main)",
+                borderRadius: "var(--mui-shape-borderRadius)",
+                opacity: 0.5,
+                zIndex: -1,
+              }
+            }}
+          >
+            <Typography sx={{
+              fontSize: "2em",
+              fontWeight: "bold",
+              color: "var(--mui-palette-text-primary)",
+            }}>
+              {letter}
+            </Typography>
+          </Button>
+        )
+      })}
+      <Button onClick={() => confirm("Are you sure you want to reset all letters?") && updateCheatSheet(null)} sx={{
+        height: "3em",
+      }}>
+        Reset
+      </Button>
+    </Stack>
   );
 }
 
