@@ -1848,7 +1848,7 @@ const roleData = {
         `If a Braggart stops being "Delirious", they will become "Delirious" at night.`,
         "Each night, breaks items they are holding.",
       ],
-      nightOrder: [["Self Deliriate", PRIORITY_FULL_DISABLE + 1]],
+      nightOrder: [["Self Deliriate", PRIORITY_ITEM_TAKER_DEFAULT+1]],
       SpecialInteractions: {
         Ghost: ["If a Ghost is Present, a Braggart will learn a fake word."],
       },
