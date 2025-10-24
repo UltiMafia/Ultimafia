@@ -35,10 +35,11 @@ import {
 } from "./components/Basic";
 import { Nav } from "./components/Nav";
 import { Welcome } from "./pages/Welcome/Welcome";
-import UserNotifications from "./pages/User/UserNotifications";
+import UserNavSection from "./pages/User/UserNavSection";
 import { GuestAuthButtons } from "./components/GuestAuthButtons";
 import CookieBanner from "./components/CookieBanner";
 import Chat from "./pages/Chat/Chat";
+import NavDropdown from "./components/NavDropdown";
 
 import "css/main.css";
 import { useReducer } from "react";
@@ -181,7 +182,7 @@ function Main(props) {
       {loading && <NewLoading />}
       {!loading && (
         <Routes>
-          <Route path="/game/:gameId/*" element={gameContent} />
+          <Route path="/game/*" element={gameContent} />
           <Route path="/*" element={siteContent} />
         </Routes>
       )}
@@ -277,7 +278,7 @@ function Header({ setShowAnnouncementTemporarily }) {
           {smallWidth && (
             <div className="user-wrapper">
               {user.loggedIn ? (
-                <UserNotifications
+                <UserNavSection
                   openAnnouncements={openAnnouncements}
                   user={user}
                   SiteNotifs={SiteNotifs}
@@ -325,45 +326,51 @@ function Header({ setShowAnnouncementTemporarily }) {
         }}
       >
         <Nav>
-          <NavLink
-            to="/play"
-            className={"glow-on-hover"}
-            style={expandedMenu ? { width: "100%" } : { width: "auto" }}
-          >
-            <span>Play</span>
-          </NavLink>
-          <NavLink
-            to="/community"
-            className={"glow-on-hover"}
-            style={expandedMenu ? { width: "100%" } : { width: "auto" }}
-          >
-            <span>Community</span>
-          </NavLink>
-          <NavLink
-            to="/fame"
-            className={"glow-on-hover"}
-            style={expandedMenu ? { width: "100%" } : { width: "auto" }}
-          >
-            <span>Fame</span>
-          </NavLink>
-          <NavLink
-            to="/learn"
-            className={"glow-on-hover"}
-            style={expandedMenu ? { width: "100%" } : { width: "auto" }}
-          >
-            <span>Learn</span>
-          </NavLink>
-          <NavLink
-            to="/policy"
-            className={"glow-on-hover"}
-            style={expandedMenu ? { width: "100%" } : { width: "auto" }}
-          >
-            <span>Policy</span>
-          </NavLink>
+          <NavDropdown
+            label="Play"
+            items={[
+              { text: "Play", path: "/play" },
+              { text: "Host", path: "/play/host", hide: !user.loggedIn },
+              { text: "Create Setup", path: "/play/create", hide: !user.loggedIn },
+              { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
+            ]}
+          />
+          <NavDropdown
+            label="Community"
+            items={[
+              { text: "Forums", path: "/community/forums" },
+              { text: "Users", path: "/community/users" },
+              { text: "Moderation", path: "/community/moderation" },
+            ]}
+          />
+          <NavDropdown
+            label="Fame"
+            items={[
+              { text: "Leaderboard", path: "/fame/leaderboard" },
+              { text: "Contributors", path: "/fame/contributors" },
+              { text: "Donors", path: "/fame/donors" },
+            ]}
+          />
+          <NavDropdown
+            label="Learn"
+            items={[
+              { text: "Games", path: "/learn/games" },
+              { text: "Terminology", path: "/learn/terminology" },
+              { text: "Achievements", path: "/learn/achievements" },
+            ]}
+          />
+          <NavDropdown
+            label="Policy"
+            items={[
+              { text: "Rules", path: "/policy/rules" },
+              { text: "Terms of Service", path: "/policy/tos" },
+              { text: "Privacy Policy", path: "/policy/privacy" },
+            ]}
+          />
           {!smallWidth && (
             <div className="user-wrapper">
               {user.loggedIn ? (
-                <UserNotifications
+                <UserNavSection
                   openAnnouncements={openAnnouncements}
                   user={user}
                   SiteNotifs={SiteNotifs}

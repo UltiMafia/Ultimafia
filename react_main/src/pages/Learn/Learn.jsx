@@ -7,7 +7,6 @@ import RolePage from "./role/RolePage";
 import Games from "./Games";
 import Terminology from "./Terminology";
 import Achievements from "./Achievements";
-import CustomAppBar from "components/CustomAppBar";
 
 import "css/play.css";
 
@@ -16,31 +15,11 @@ import { useTheme } from "@mui/material/styles";
 
 export default function Learn(props) {
   const theme = useTheme();
-
-  const links = [
-    {
-      text: "Games",
-      path: "/learn/games",
-      exact: true,
-    },
-    {
-      text: "Terminology",
-      path: "/learn/terminology",
-      exact: true,
-    },
-    {
-      text: "Achievements",
-      path: "/learn/achievements",
-      exact: true,
-    },
-  ];
-
   const location = useLocation();
   let setupView = location.pathname.startsWith("/learn/setup");
 
   return (
     <>
-      <CustomAppBar links={links} />
       <Box maxWidth="1080px" sx={{ mt: 1, flexGrow: 1 }}>
         <Card sx={{ padding: theme.spacing(3), textAlign: "justify" }}>
           <Routes>
