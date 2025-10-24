@@ -63,6 +63,8 @@ module.exports = class Card {
       } else {
         this.role.game.DumbMeetingNumber += 1;
       }
+
+      
       let tempMeetings = Object.entries(this.meetings);
       this.meetings = {};
       for (let tempMeet of tempMeetings) {
@@ -73,7 +75,16 @@ module.exports = class Card {
           this.meetings[tempMeet[0]] = tempMeet[1];
           continue;
         }
+        for (let prop in this["meetingMods"]) {
+          if (prop != "*") {
+            if(tempMeet[0] == prop[0]){
+              prop[0] = tempMeet[0] + " " + this.role.game.DumbMeetingNumber;
+            }
+          }
+        }        
+        if(!tempMeet[1].actionName){
         tempMeet[1].actionName = tempMeet[0];
+        }
         this.meetings[tempMeet[0] + " " + this.role.game.DumbMeetingNumber] =
           tempMeet[1];
       }
