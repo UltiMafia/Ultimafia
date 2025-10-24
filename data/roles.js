@@ -1034,7 +1034,7 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Each Day, can choose to learn about the relation between a player and a role.",
+        "Each Day, can choose to learn if a player is, neighbors, was visited by, or visited a role.",
       ],
     },
     Tourist: {
@@ -1843,8 +1843,10 @@ const roleData = {
       tags: ["Setup Changes", "Delirium", "Banished", "Advanced"],
       description: [
         "Sees self as a random non-Banished Village role from the setup.",
-        "Has that role's abilities but is permanently Delirious.",
-        "Items used by a Braggart will be broken.",
+        `Has that role's abilities but is "Delirious".`,
+        deliriumDef,
+        `If a Braggart stops being "Delirious", they will become "Delirious" at night.`,
+        "Each night, breaks items they are holding.",
       ],
       nightOrder: [["Self Deliriate", PRIORITY_FULL_DISABLE + 1]],
       SpecialInteractions: {
