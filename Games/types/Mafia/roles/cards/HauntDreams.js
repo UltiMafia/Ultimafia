@@ -50,6 +50,7 @@ module.exports = class HauntDreams extends Card {
           return;
         }
 
+
         var action = new Action({
           actor: this.player,
           game: this.player.game,

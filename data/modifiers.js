@@ -1,3 +1,9 @@
+const leakyDef = `Players who are "Leaky" will have all whispers involving them leak.`;
+const blindDef = `Players who are "Blind" will see all speech as anonymous and cannot see votes.`;
+const cluelessDef = `Players who are "Clueless" will see messages as being sent from random players.`;
+
+
+
 const modifierData = {
   Mafia: {
     Armed: {
@@ -8,30 +14,6 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
-    Austere: {
-      category: "Other",
-      internal: ["OnlyUseInPlayRoles"],
-      tags: ["Austere"],
-      description: "This role can only reference roles currently in the game.",
-      eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Excessive"],
-    },
-    Bland: {
-      category: "Other",
-      internal: ["NoSpecialInteractions"],
-      tags: ["Bland"],
-      description: "Any Special Interactions this role has are disabled.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Backup: {
-      category: "Other",
-      internal: ["BackUpModifier"],
-      tags: ["Conversion"],
-      description:
-        "Independents will become a Sidekick with this role as the Target. Other roles will have no abilities until a player with their role dies.",
-      eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Retired"],
-    },
     Birdbrained: {
       category: "Items",
       internal: ["StartWithFalcon"],
@@ -39,13 +21,6 @@ const modifierData = {
       description: "Starts with a falcon.",
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
-    },
-    Blessed: {
-      category: "Other",
-      internal: ["StartWithExtraLife"],
-      tags: ["Extra Lives"],
-      description: "Starts with an Extra Life",
-      eventDescription: "This modifier does nothing when on an Event.",
     },
     Medical: {
       category: "Other",
@@ -60,14 +35,6 @@ const modifierData = {
       internal: ["ModifierBloodthirsty"],
       tags: ["Visits", "Killing"],
       description: "When visiting, their target will be killed.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Boastful: {
-      category: "Other",
-      internal: ["ModifierBoastful"],
-      tags: ["Information", "Reports"],
-      description:
-        "All reports received are announced to everyone, with the player's role revealed.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Bulletproof: {
@@ -85,14 +52,6 @@ const modifierData = {
       description: "Starts with a Coffee.",
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
-    },
-    Chaotic: {
-      category: "Other",
-      internal: ["BecomeExcessRole"],
-      tags: ["Conversion", "Excess Roles"],
-      description:
-        "On the first night, a player with this modifier will become a random excess role within their alignment. Independents will become excess roles from any alignment.",
-      eventDescription: "This modifier does nothing when on an Event.",
     },
     Churchgoing: {
       category: "Items",
@@ -133,14 +92,6 @@ const modifierData = {
       description: "Starts game dead",
       eventDescription: "This modifier does nothing when on an Event.",
     },
-    Excessive: {
-      category: "Other",
-      internal: ["ExcessiveRole"],
-      tags: ["Excessive"],
-      description: "This role treats every role on the site as an Excess Role.",
-      eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Austere"],
-    },
     Explosive: {
       category: "Items",
       internal: ["StartWithBomb"],
@@ -148,29 +99,6 @@ const modifierData = {
       description: "Starts with a bomb.",
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
-    },
-    Gunslinging: {
-      category: "Items",
-      internal: ["DefendAndSnatchGun"],
-      tags: ["Items", "Gun"],
-      description: "80% chance of snatching a gun when shot at.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Hemophilic: {
-      category: "Other",
-      internal: ["ConvertKillToBleed"],
-      tags: ["Bleeding"],
-      description:
-        "If this player is shot or targeted for a kill, will bleed and then die in one day.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Insightful: {
-      category: "Other",
-      internal: ["Learn3ExcessRoles"],
-      tags: ["Investigative", "Roles", "Excess Roles"],
-      description:
-        "Learns 3 excess roles upon the game's start. Mafia/Cult roles always learn Village-aligned excess roles.",
-      eventDescription: "This modifier does nothing when on an Event.",
     },
     Luminous: {
       category: "Items",
@@ -180,13 +108,6 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
-    Macho: {
-      category: "Other",
-      internal: ["SaveImmune"],
-      tags: ["Macho", "Save Immune"],
-      description: "Can not be saved or protected from kills by any means.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
     Macabre: {
       category: "Items",
       internal: ["StartWithSyringe"],
@@ -194,28 +115,6 @@ const modifierData = {
       description: "Starts with a syringe.",
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
-    },
-    Married: {
-      category: "Other",
-      internal: ["LearnAndLifeLinkToPlayer"],
-      tags: ["Information", "Linked"],
-      description:
-        "On Night 1 will learn a Village-aligned player and their role. If that player is killed by the Mafia or a Demonic role, the Married player dies.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Omniscient: {
-      category: "Other",
-      internal: ["Omniscient"],
-      tags: ["Roles", "Visits", "Information"],
-      description: "Each night see all visits and learn all players roles.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Pious: {
-      category: "Other",
-      internal: ["ConvertKillersOnDeath"],
-      tags: ["Sacrificial", "Conversion"],
-      description: "On death, has a chance to redeem their killer.",
-      eventDescription: "This modifier does nothing when on an Event.",
     },
     Prosaic: {
       category: "Items",
@@ -225,38 +124,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
-    Reactionary: {
-      category: "Other",
-      internal: ["KillConverters"],
-      tags: ["Convert Saver", "Killing", "Reflexive"],
-      description:
-        "Kills anyone (up to two people) who tries to convert them at night.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Retired: {
-      category: "Other",
-      internal: ["Retired"],
-      tags: ["Information", "Retired"],
-      description:
-        "Starts knowing anyone who has the same role. Has all other abilities disabled",
-      eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Backup"],
-    },
-    Rifled: {
-      category: "Items",
-      internal: ["StartWithRifle"],
-      tags: ["Items", "Killing", "Gun", "Alignments", "Day Killer"],
-      description: "Starts with a rifle.",
-      eventDescription: "This modifier does nothing when on an Event.",
-      allowDuplicate: true,
-    },
-    Sensible: {
-      category: "Other",
-      internal: ["LearnIfRoleChanged"],
-      tags: ["Information"],
-      description: "Each night, learns what their role is.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
+
     Shielded: {
       category: "Items",
       internal: ["StartWithShield"],
@@ -273,6 +141,39 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
+    Rifled: {
+      category: "Items",
+      internal: ["StartWithRifle"],
+      tags: ["Items", "Killing", "Gun", "Alignments", "Day Killer"],
+      description: "Starts with a rifle.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      allowDuplicate: true,
+    },
+    //Referance
+    Austere: {
+      category: "Other",
+      internal: ["OnlyUseInPlayRoles"],
+      tags: ["Austere"],
+      description: "This role can only reference roles currently in the game.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Excessive"],
+    },
+    Bland: {
+      category: "Other",
+      internal: ["NoSpecialInteractions"],
+      tags: ["Bland"],
+      description: "Any Special Interactions this role has are disabled.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Excessive: {
+      category: "Other",
+      internal: ["ExcessiveRole"],
+      tags: ["Excessive"],
+      description: "This role treats every role on the site as an Excess Role.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Austere"],
+    },
+    //Death
     Strong: {
       category: "Other",
       internal: ["StrongModifier"],
@@ -280,25 +181,11 @@ const modifierData = {
       description: "All kills performed by this player cannot be saved.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
-    Temporary: {
+    Macho: {
       category: "Other",
-      internal: ["LoseModifiers"],
-      tags: ["Temporary", "Modifiers"],
-      description: "Loses their Modifiers at the end of the Night.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Traitorous: {
-      category: "Other",
-      internal: ["TurnIntoTraitorOnMafiaKill"],
-      tags: ["Sacrificial", "Conversion", "Traitor"],
-      description: "If killed by the Mafia, will turn into a Traitor instead.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Unkillable: {
-      category: "Other",
-      internal: ["KillImmune"],
-      tags: ["Unkillable"],
-      description: "Can only be killed by condemn.",
+      internal: ["SaveImmune"],
+      tags: ["Macho", "Save Immune"],
+      description: "Can not be saved or protected from kills by any means.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Unlucky: {
@@ -308,6 +195,107 @@ const modifierData = {
       description: "Can die at any time after night 1.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    //Convert
+    Temporary: {
+      category: "Other",
+      internal: ["LoseModifiers"],
+      tags: ["Temporary", "Modifiers"],
+      description: "Loses their Modifiers at the end of the Night.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Pious: {
+      category: "Other",
+      internal: ["ConvertKillersOnDeath"],
+      tags: ["Sacrificial", "Conversion"],
+      description: "On death, has a chance to redeem their killer.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Chaotic: {
+      category: "Other",
+      internal: ["BecomeExcessRole"],
+      tags: ["Conversion", "Excess Roles"],
+      description:
+        "On the first night, a player with this modifier will become a random excess role within their alignment. Independents will become excess roles from any alignment.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Versatile: {
+      category: "Other",
+      internal: ["InheritFirstDeadAligned"],
+      tags: ["Dead", "Conversion"],
+      description:
+        "Will passively convert to the role of the first aligned power role.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    //Retired
+      Backup: {
+      category: "Other",
+      internal: ["BackUpModifier"],
+      tags: ["Conversion"],
+      description:
+        "Independents will become a Sidekick with this role as the Target. Other roles will have no abilities until a player with their role dies.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Retired"],
+    },
+    Retired: {
+      category: "Other",
+      internal: ["Retired"],
+      tags: ["Information", "Retired"],
+      description:
+        "Starts knowing anyone who has the same role. Has all other abilities disabled",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Backup"],
+    },
+    //Info
+      Married: {
+      category: "Other",
+      internal: ["LearnAndLifeLinkToPlayer"],
+      tags: ["Information", "Linked"],
+      description:
+        "On Night 1 will learn a Village-aligned player and their role. If that player is killed by the Mafia or a Demonic role, the Married player dies.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Omniscient: {
+      category: "Other",
+      internal: ["Omniscient"],
+      tags: ["Roles", "Visits", "Information"],
+      description: "Each night see all visits and learn all players roles.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Insightful: {
+      category: "Other",
+      internal: ["Learn3ExcessRoles"],
+      tags: ["Investigative", "Roles", "Excess Roles"],
+      description:
+        "Learns 3 excess roles upon the game's start. Mafia/Cult roles always learn Village-aligned excess roles.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Boastful: {
+      category: "Other",
+      internal: ["ModifierBoastful"],
+      tags: ["Information", "Reports"],
+      description:
+        "All reports received are announced to everyone, with the player's role revealed.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Sensible: {
+      category: "Other",
+      internal: ["LearnIfRoleChanged"],
+      tags: ["Information"],
+      description: "Each night, learns what their role is.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+     Wise: {
+      category: "Other",
+      internal: ["MakePlayerLearnOneOfTwoPlayersOnDeath"],
+      tags: ["Sacrificial", "Information", "Graveyard Participation"],
+      description:
+        "If killed at night, a player with this modifier learns that 1 of 2 players is evil.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+
+
+
+    //Immunites
     Unwavering: {
       category: "Other",
       internal: ["ConvertImmune"],
@@ -315,6 +303,53 @@ const modifierData = {
       description: "Cannot be converted to another role.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    Reactionary: {
+      category: "Other",
+      internal: ["KillConverters"],
+      tags: ["Convert Saver", "Killing", "Reflexive"],
+      description:
+        "Kills anyone (up to two people) who tries to convert them at night.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Unkillable: {
+      category: "Other",
+      internal: ["KillImmune"],
+      tags: ["Unkillable"],
+      description: "Can only be killed by condemn.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Blessed: {
+      category: "Other",
+      internal: ["StartWithExtraLife"],
+      tags: ["Extra Lives"],
+      description: "Starts with an Extra Life",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Traitorous: {
+      category: "Other",
+      internal: ["TurnIntoTraitorOnMafiaKill"],
+      tags: ["Sacrificial", "Conversion", "Traitor"],
+      description: "If killed by the Mafia, will turn into a Traitor instead.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Hemophilic: {
+      category: "Other",
+      internal: ["ConvertKillToBleed"],
+      tags: ["Bleeding"],
+      description:
+        "If this player is shot or targeted for a kill, will bleed and then die in one day.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Gunslinging: {
+      category: "Items",
+      internal: ["DefendAndSnatchGun"],
+      tags: ["Items", "Gun"],
+      description: "80% chance of snatching a gun when shot at.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+
+
+    //Effect Mods
     Verrucose: {
       category: "Other",
       internal: ["GivePermaDelirium"],
@@ -331,43 +366,29 @@ const modifierData = {
         "When this role dies or gets converted, any effects it inflicted will be removed.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
-    Versatile: {
-      category: "Other",
-      internal: ["InheritFirstDeadAligned"],
-      tags: ["Dead", "Conversion"],
-      description:
-        "Will passively convert to the role of the first aligned power role.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Wise: {
-      category: "Other",
-      internal: ["MakePlayerLearnOneOfTwoPlayersOnDeath"],
-      tags: ["Sacrificial", "Information", "Graveyard Participation"],
-      description:
-        "If killed at night, a player with this modifier learns that 1 of 2 players is evil.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
+
+
     //Speaking Mods
     Blind: {
       category: "Other",
       internal: ["Blind"],
-      tags: ["Speech", "Blind"],
-      description: "Sees all speech as anonymous.",
+      tags: ["Speech", "Blind", "Effect"],
+      description: `Starts the game "Blind". ${blindDef}`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Clueless: {
       category: "Other",
       internal: ["Clueless"],
-      tags: ["Speech", "Clueless", "Random Messages"],
-      description: "Sees all speech as coming from random people.",
+      tags: ["Speech", "Clueless", "Random Messages", "Effect"],
+      description: `Starts the game "Clueless". ${cluelessDef}`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Leaky: {
       category: "Other",
       internal: ["ModifierLeaky"],
-      tags: ["Whispers"],
+      tags: ["Whispers", "Effect"],
       description:
-        "All whispers involving a player with this modifier are leaked.",
+        `Starts the game "Leaky". ${leakyDef}`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Telepathic: {

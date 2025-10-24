@@ -1840,12 +1840,12 @@ const roleData = {
     Braggart: {
       alignment: "Village",
       category: "Manipulative",
-      tags: ["Setup Changes", "Delirium", "Banished", "Advanced"],
+      tags: ["Delirium", "Banished", "Advanced", "Item Interaction"],
       description: [
         "Sees self as a random non-Banished Village role from the setup.",
         `Has that role's abilities but is "Delirious".`,
         deliriumDef,
-        `If a Braggart stops being "Delirious", they will become "Delirious" at night.`,
+        `If a Braggart stops being "Delirious", they will become "Delirious" the next night.`,
         "Each night, breaks items they are holding.",
       ],
       nightOrder: [["Self Deliriate", PRIORITY_ITEM_TAKER_DEFAULT + 1]],

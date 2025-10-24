@@ -12,24 +12,13 @@ module.exports = class Blind extends Card {
         if (player != this.player) {
           return;
         }
-        if (this.hasAbility(["Modifier", "Speaking"])) {
-          if (
-            this.BlindEffect == null ||
-            !this.player.effects.includes(this.BlindEffect)
-          ) {
-            this.BlindEffect = this.player.giveEffect("Blind", Infinity);
-            this.passiveEffects.push(this.BlindEffect);
-          }
-        } else {
-          var index = this.passiveEffects.indexOf(this.BlindEffect);
-          if (index != -1) {
-            this.passiveEffects.splice(index, 1);
-          }
-          if (this.BlindEffect != null) {
-            this.BlindEffect.remove();
-            this.BlindEffect = null;
-          }
+        if(this.hasBlindEffect){
+          return;
         }
+        if (this.hasAbility(["Modifier", "Speaking"])) {
+          this.giveEffect(this.player, "Blind", Infinity);
+          this.hasBlindEffect = true;
+        } 
       },
     };
   }
