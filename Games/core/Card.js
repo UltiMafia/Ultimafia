@@ -83,9 +83,10 @@ module.exports = class Card {
         }
         for (let prop in this.role["meetingMods"]) {
           if (prop != "*") {
-            
             if (tempMeet[0] == prop) {
-              this.meetingMods[tempMeet[0] + " " + this.role.game.DumbMeetingNumber] = this.role["meetingMods"][prop];
+              this.meetingMods[
+                tempMeet[0] + " " + this.role.game.DumbMeetingNumber
+              ] = this.role["meetingMods"][prop];
             }
           }
         }
@@ -94,7 +95,6 @@ module.exports = class Card {
         }
         this.meetings[tempMeet[0] + " " + this.role.game.DumbMeetingNumber] =
           tempMeet[1];
-          
       }
     }
 

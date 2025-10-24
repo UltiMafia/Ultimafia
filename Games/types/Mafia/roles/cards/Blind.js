@@ -12,13 +12,13 @@ module.exports = class Blind extends Card {
         if (player != this.player) {
           return;
         }
-        if(this.hasBlindEffect){
+        if (this.hasBlindEffect) {
           return;
         }
         if (this.hasAbility(["Modifier", "Speaking"])) {
           this.giveEffect(this.player, "Blind", Infinity);
           this.hasBlindEffect = true;
-        } 
+        }
       },
     };
   }

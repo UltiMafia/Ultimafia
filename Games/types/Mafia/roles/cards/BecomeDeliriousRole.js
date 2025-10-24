@@ -119,7 +119,7 @@ module.exports = class BecomeDeliriousRole extends Card {
           priority: PRIORITY_FULL_DISABLE + 1,
           labels: ["block", "hidden"],
           run: function () {
-               if (
+            if (
               this.role.player &&
               this.role.player.effects.filter(
                 (e) => e.name == "Delirious" && e.source == this.role

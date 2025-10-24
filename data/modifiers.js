@@ -2,8 +2,6 @@ const leakyDef = `Players who are "Leaky" will have all whispers involving them 
 const blindDef = `Players who are "Blind" will see all speech as anonymous and cannot see votes.`;
 const cluelessDef = `Players who are "Clueless" will see messages as being sent from random players.`;
 
-
-
 const modifierData = {
   Mafia: {
     Armed: {
@@ -227,7 +225,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
     //Retired
-      Backup: {
+    Backup: {
       category: "Other",
       internal: ["BackUpModifier"],
       tags: ["Conversion"],
@@ -246,7 +244,7 @@ const modifierData = {
       incompatible: ["Backup"],
     },
     //Info
-      Married: {
+    Married: {
       category: "Other",
       internal: ["LearnAndLifeLinkToPlayer"],
       tags: ["Information", "Linked"],
@@ -284,7 +282,7 @@ const modifierData = {
       description: "Each night, learns what their role is.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
-     Wise: {
+    Wise: {
       category: "Other",
       internal: ["MakePlayerLearnOneOfTwoPlayersOnDeath"],
       tags: ["Sacrificial", "Information", "Graveyard Participation"],
@@ -292,8 +290,6 @@ const modifierData = {
         "If killed at night, a player with this modifier learns that 1 of 2 players is evil.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
-
-
 
     //Immunites
     Unwavering: {
@@ -348,7 +344,6 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
-
     //Effect Mods
     Verrucose: {
       category: "Other",
@@ -366,7 +361,6 @@ const modifierData = {
         "When this role dies or gets converted, any effects it inflicted will be removed.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
-
 
     //Speaking Mods
     Blind: {
@@ -387,8 +381,7 @@ const modifierData = {
       category: "Other",
       internal: ["ModifierLeaky"],
       tags: ["Whispers", "Effect"],
-      description:
-        `Starts the game "Leaky". ${leakyDef}`,
+      description: `Starts the game "Leaky". ${leakyDef}`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Telepathic: {

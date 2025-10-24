@@ -10,7 +10,7 @@ module.exports = class ModifierLeaky extends Card {
         if (player != this.player) {
           return;
         }
-        if(this.hasLeakyEffect){
+        if (this.hasLeakyEffect) {
           return;
         }
         if (this.hasAbility(["Modifier", "Speaking", "Whispers"])) {

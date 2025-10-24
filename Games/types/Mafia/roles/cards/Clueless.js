@@ -16,14 +16,13 @@ module.exports = class Clueless extends Card {
         if (player != this.player) {
           return;
         }
-        if(this.hasCluelessEffect){
+        if (this.hasCluelessEffect) {
           return;
         }
         if (this.hasAbility(["Modifier", "Speaking"])) {
           this.giveEffect(this.player, "Scrambled", Infinity);
           this.hasCluelessEffect = true;
-        
-        } 
+        }
       },
     };
   }
