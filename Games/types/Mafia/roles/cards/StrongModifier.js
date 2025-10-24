@@ -45,7 +45,7 @@ module.exports = class StrongModifier extends Card {
               ) {
                 action.power = Infinity;
                 action.labels = [...action.labels, "absolute", "strong"];
-                if(action.target && action.target instanceof Player){
+                if (action.target && action.target instanceof Player) {
                   action.target.removeEffect("Extra Life", true);
                 }
               }
