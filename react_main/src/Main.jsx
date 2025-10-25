@@ -169,7 +169,7 @@ function Main(props) {
         <InGameWarning />
         <Footer />
         <AlertList />
-        {<Chat SiteNotifs={SiteNotifs} />}
+        {<Chat SiteNotifs={InboxLink} />}
       </div>
     </Box>
   );
@@ -348,7 +348,7 @@ function Header({ setShowAnnouncementTemporarily }) {
                 <UserNavSection
                   openAnnouncements={openAnnouncements}
                   user={user}
-                  SiteNotifs={SiteNotifs}
+                  SiteNotifs={InboxLink}
                 />
               ) : (
                 <GuestAuthButtons />
@@ -389,62 +389,62 @@ function Header({ setShowAnnouncementTemporarily }) {
             }}
           >
             <Nav>
-              <NavDropdown
-                label="Play"
-                icon={flagblueIcon}
-                items={[
-                  { text: "Play", path: "/play" },
-                  { text: "Host", path: "/play/host", hide: !user.loggedIn },
-                  {
-                    text: "Create Setup",
-                    path: "/play/create",
-                    hide: !user.loggedIn,
-                  },
-                  { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
-                ]}
-              />
-              <NavDropdown
-                label="Community"
-                icon={messageIcon}
-                items={[
-                  { text: "Forums", path: "/community/forums" },
-                  { text: "Users", path: "/community/users" },
-                  { text: "Moderation", path: "/community/moderation" },
-                ]}
-              />
-              <NavDropdown
-                label="Fame"
-                icon={medalsilverIcon}
-                items={[
-                  { text: "Leaderboard", path: "/fame/leaderboard" },
-                  { text: "Contributors", path: "/fame/contributors" },
-                  { text: "Donors", path: "/fame/donors" },
-                ]}
-              />
-              <NavDropdown
-                label="Learn"
-                icon={loreIcon}
-                items={[
-                  { text: "Games", path: "/learn/games" },
-                  { text: "Terminology", path: "/learn/terminology" },
-                  { text: "Achievements", path: "/learn/achievements" },
-                ]}
-              />
-              <NavDropdown
-                label="Policy"
-                icon={lawIcon}
-                items={[
-                  { text: "Rules", path: "/policy/rules" },
-                  { text: "Terms of Service", path: "/policy/tos" },
-                  { text: "Privacy Policy", path: "/policy/privacy" },
-                ]}
-              />
+            <NavDropdown
+              label="Play"
+              icon={flagblueIcon}
+              items={[
+                { text: "Play", path: "/play" },
+                { text: "Host", path: "/play/host", hide: !user.loggedIn },
+                {
+                  text: "Create Setup",
+                  path: "/play/create",
+                  hide: !user.loggedIn,
+                },
+                { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
+              ]}
+            />
+            <NavDropdown
+              label="Community"
+              icon={messageIcon}
+              items={[
+                { text: "Forums", path: "/community/forums" },
+                { text: "Users", path: "/community/users" },
+                { text: "Moderation", path: "/community/moderation" },
+              ]}
+            />
+            <NavDropdown
+              label="Fame"
+              icon={medalsilverIcon}
+              items={[
+                { text: "Leaderboard", path: "/fame/leaderboard" },
+                { text: "Contributors", path: "/fame/contributors" },
+                { text: "Donors", path: "/fame/donors" },
+              ]}
+            />
+            <NavDropdown
+              label="Learn"
+              icon={loreIcon}
+              items={[
+                { text: "Games", path: "/learn/games" },
+                { text: "Terminology", path: "/learn/terminology" },
+                { text: "Achievements", path: "/learn/achievements" },
+              ]}
+            />
+            <NavDropdown
+              label="Policy"
+              icon={lawIcon}
+              items={[
+                { text: "Rules", path: "/policy/rules" },
+                { text: "Terms of Service", path: "/policy/tos" },
+                { text: "Privacy Policy", path: "/policy/privacy" },
+              ]}
+            />
               <div className="user-wrapper">
                 {user.loggedIn ? (
                   <UserNavSection
                     openAnnouncements={openAnnouncements}
                     user={user}
-                    SiteNotifs={SiteNotifs}
+                    SiteNotifs={InboxLink}
                   />
                 ) : (
                   <GuestAuthButtons />
@@ -502,27 +502,17 @@ function InGameWarning() {
   );
 }
 
-function SiteNotifs() {
-  const [showNotifList, setShowNotifList] = useState(false);
-  const [notifInfo, updateNotifInfo] = useNotifInfoReducer();
+function InboxLink() {
+  const [unreadCount, setUnreadCount] = useState(0);
   const [nextRestart, setNextRestart] = useState();
   const siteInfo = useContext(SiteInfoContext);
   const navigate = useNavigate();
-
-  const bellRef = useRef();
-  const notifListRef = useRef();
-
-  useOnOutsideClick([bellRef, notifListRef], () => setShowNotifList(false));
 
   useEffect(() => {
     getNotifs();
     var notifGetInterval = setInterval(() => getNotifs(), 10 * 1000);
     return () => clearInterval(notifGetInterval);
   }, []);
-
-  useEffect(() => {
-    if (showNotifList) viewedNotifs();
-  }, [notifInfo.notifs]);
 
   useEffect(() => {
     if (nextRestart && nextRestart > Date.now()) {
@@ -535,18 +525,6 @@ function SiteNotifs() {
     }
   }, [nextRestart]);
 
-  useLayoutEffect(() => {
-    if (!showNotifList) return;
-
-    const listRect = notifListRef.current.getBoundingClientRect();
-    const listRight = listRect.left + listRect.width;
-
-    if (listRight > window.innerWidth)
-      notifListRef.current.style.left = window.innerWidth - listRight + "px";
-
-    notifListRef.current.style.visibility = "visible";
-  });
-
   function getNotifs() {
     axios
       .get("/api/notifs")
@@ -555,109 +533,17 @@ function SiteNotifs() {
         var notifs = res.data.slice(1);
 
         setNextRestart(nextRestart);
-
-        updateNotifInfo({
-          type: "add",
-          notifs: notifs,
-        });
+        setUnreadCount(notifs.length);
       })
       .catch(() => {});
   }
-
-  function viewedNotifs() {
-    axios
-      .post("/api/notifs/viewed")
-      .then(() => {
-        updateNotifInfo({ type: "viewed" });
-      })
-      .catch(() => {});
-  }
-
-  function onShowNotifsClick() {
-    setShowNotifList(!showNotifList);
-
-    if (!showNotifList && notifInfo.unread > 0) viewedNotifs();
-  }
-
-  function onNotifClick(e, notif) {
-    if (!notif.link) e.preventDefault();
-    else if (window.location.pathname === notif.link.split("?")[0])
-      navigate.go(0);
-  }
-
-  const notifs = notifInfo.notifs.map((notif) => (
-    <Link
-      className="notif"
-      key={notif.id}
-      to={notif.link}
-      onClick={(e) => onNotifClick(e, notif)}
-    >
-      {notif.icon && <i className={`fas fa-${notif.icon}`} />}
-      <div className="info">
-        <div className="time">
-          <Time millisec={Date.now() - notif.date} suffix=" ago" />
-        </div>
-        <div className="content">{notif.content}</div>
-      </div>
-    </Link>
-  ));
 
   return (
-    <div className="notifs-wrapper">
-      <NotificationHolder
-        lOffset
-        notifCount={notifInfo.unread}
-        onClick={onShowNotifsClick}
-        fwdRef={bellRef}
-      >
+    <Link to="/user/inbox" style={{ textDecoration: "none", color: "inherit" }}>
+      <NotificationHolder lOffset notifCount={unreadCount}>
         <i className="fas fa-bell" />
       </NotificationHolder>
-      {showNotifList && (
-        <div className="notif-list" ref={notifListRef}>
-          {notifs}
-          {notifs.length === 0 && "No unread notifications"}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function useNotifInfoReducer() {
-  return useReducer(
-    (notifInfo, action) => {
-      var newNotifInfo;
-
-      switch (action.type) {
-        case "add":
-          var existingNotifIds = notifInfo.notifs.map((notif) => notif.id);
-          var newNotifs = action.notifs.filter(
-            (notif) => existingNotifIds.indexOf(notif.id) === -1
-          );
-
-          newNotifInfo = update(notifInfo, {
-            notifs: {
-              $set: newNotifs.concat(notifInfo.notifs),
-            },
-            unread: {
-              $set: notifInfo.unread + newNotifs.length,
-            },
-          });
-
-          // if (newNotifs.length > 0 && document.hidden && document.title.indexOf("🔴") == -1)
-          //     document.title = document.title + "🔴";
-          break;
-        case "viewed":
-          newNotifInfo = update(notifInfo, {
-            unread: {
-              $set: 0,
-            },
-          });
-          break;
-      }
-
-      return newNotifInfo || notifInfo;
-    },
-    { notifs: [], unread: 0 }
+    </Link>
   );
 }
 

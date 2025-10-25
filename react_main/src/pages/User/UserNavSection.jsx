@@ -34,6 +34,7 @@ export default function UserNavSection({
 
   const userMenuItems = [
     { text: "Profile", path: "/user" },
+    { text: "Inbox", path: "/user/inbox" },
     { text: "Settings", path: "/user/settings" },
     { text: "Shop", path: "/user/shop" },
     { divider: true },

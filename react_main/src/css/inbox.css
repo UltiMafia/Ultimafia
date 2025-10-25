@@ -1,0 +1,19 @@
+.inbox {
+  /* Inbox page styles */
+}
+
+.inbox .notification-item {
+  transition: all 0.2s ease-in-out;
+}
+
+.inbox .notification-item:hover {
+  transform: translateX(4px);
+}
+
+.inbox .unread-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #1976d2;
+}
+
