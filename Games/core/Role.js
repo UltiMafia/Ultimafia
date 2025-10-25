@@ -406,6 +406,14 @@ module.exports = class Role {
     }
   }
 
+  queueNightActions(){
+    for (let options of this.PassiveActions){
+      if(options.state == this.game.getStateInfo().name){
+        this.game.queueAction(new this.Action(options));
+      }
+    }
+  }
+
   getImmunity(type) {
     var immunity = this.immunity[type];
     if (immunity == null) immunity = 0;
