@@ -29,6 +29,7 @@ import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import santaDir from "images/holiday/santahat.png";
+import CustomAppBar from "components/CustomAppBar";
 
 export function YouTubeEmbed(props) {
   const embedId = props.embedId;
@@ -320,10 +321,33 @@ export default function User(props) {
   const user = useContext(UserContext);
   const isPhoneDevice = useIsPhoneDevice();
 
+  const links = [
+    {
+      text: "Profile",
+      path: user.id
+        ? user.settings?.vanityUrl
+          ? `/user/${user.settings.vanityUrl}`
+          : `/user/${user.id}`
+        : "/user",
+      exact: true,
+      hide: !user.loggedIn,
+    },
+    {
+      text: "Settings",
+      path: "/user/settings",
+      hide: !user.loggedIn,
+    },
+    {
+      text: "Shop",
+      path: "/user/shop",
+      hide: !user.loggedIn,
+    },
+  ];
   if (user.loaded && !user.loggedIn) return <Navigate to="/" />;
 
   return (
     <>
+      <CustomAppBar links={links} />
       <Box maxWidth="1080px" sx={{ mt: 1 }}>
         <Routes>
           <Route path="/" element={<Profile />} />
