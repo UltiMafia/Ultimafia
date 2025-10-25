@@ -5,4 +5,3 @@ module.exports = class DiceWarsWinners extends Winners {
     super();
   }
 };
-

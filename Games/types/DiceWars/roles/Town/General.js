@@ -18,4 +18,3 @@ module.exports = class General extends Role {
     };
   }
 };
-

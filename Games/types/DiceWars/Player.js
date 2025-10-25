@@ -8,4 +8,3 @@ module.exports = class DiceWarsPlayer extends Player {
     // No socket-based attack handlers needed
   }
 };
-

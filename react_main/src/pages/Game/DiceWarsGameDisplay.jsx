@@ -37,8 +37,8 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
 
   // Convert axial hex coordinates to pixel position (flat-top orientation)
   const hexToPixel = (q, r) => {
-    const x = hexSize * (3/2 * q);
-    const y = hexSize * (Math.sqrt(3)/2 * q + Math.sqrt(3) * r);
+    const x = hexSize * ((3 / 2) * q);
+    const y = hexSize * ((Math.sqrt(3) / 2) * q + Math.sqrt(3) * r);
     return { x, y };
   };
 
@@ -51,13 +51,24 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
       const y = centerY + hexSize * Math.sin(angle);
       points.push([x, y]);
     }
-    return points.map((p, i) => (i === 0 ? `M${p[0]},${p[1]}` : `L${p[0]},${p[1]}`)).join(" ") + "Z";
+    return (
+      points
+        .map((p, i) => (i === 0 ? `M${p[0]},${p[1]}` : `L${p[0]},${p[1]}`))
+        .join(" ") + "Z"
+    );
   };
 
   // Handle territory click
   const handleTerritoryClick = (territory) => {
-    console.log("Territory clicked:", territory.id, "Current player:", playerId, "Turn player:", gameState?.currentTurnPlayerId);
-    
+    console.log(
+      "Territory clicked:",
+      territory.id,
+      "Current player:",
+      playerId,
+      "Turn player:",
+      gameState?.currentTurnPlayerId
+    );
+
     if (!gameState || gameState.currentTurnPlayerId !== playerId) {
       console.log("Not your turn!");
       return;
@@ -82,10 +93,19 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
     }
 
     // If a different territory is selected, try to attack
-    const fromTerritory = gameState.territories.find(t => t.id === selectedTerritoryId);
-    if (fromTerritory && fromTerritory.neighbors.includes(territory.id) && territory.playerId !== playerId) {
+    const fromTerritory = gameState.territories.find(
+      (t) => t.id === selectedTerritoryId
+    );
+    if (
+      fromTerritory &&
+      fromTerritory.neighbors.includes(territory.id) &&
+      territory.playerId !== playerId
+    ) {
       console.log("Attacking from", selectedTerritoryId, "to", territory.id);
-      gameSocket.send("attack", { fromId: selectedTerritoryId, toId: territory.id });
+      gameSocket.send("attack", {
+        fromId: selectedTerritoryId,
+        toId: territory.id,
+      });
       setSelectedTerritoryId(null);
     } else if (territory.playerId === playerId && territory.dice >= 2) {
       // Select a different owned territory
@@ -112,8 +132,11 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
     const playerColors = gameState.playerColors || {};
 
     // Calculate bounds for centering
-    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-    territories.forEach(t => {
+    let minX = Infinity,
+      maxX = -Infinity,
+      minY = Infinity,
+      maxY = -Infinity;
+    territories.forEach((t) => {
       const pos = hexToPixel(t.q, t.r);
       minX = Math.min(minX, pos.x);
       maxX = Math.max(maxX, pos.x);
@@ -140,7 +163,7 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
     const territoryGroup = svg.append("g");
 
     // Draw territories
-    territories.forEach(territory => {
+    territories.forEach((territory) => {
       const pos = hexToPixel(territory.q, territory.r);
       const centerX = pos.x + offsetX;
       const centerY = pos.y + offsetY;
@@ -150,9 +173,13 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
       const isOwned = territory.playerId === playerId;
       const isCurrentPlayer = gameState.currentTurnPlayerId === playerId;
       const canSelect = isOwned && territory.dice >= 2 && isCurrentPlayer;
-      const isNeighborOfSelected = selectedTerritoryId && 
-        gameState.territories.find(t => t.id === selectedTerritoryId)?.neighbors.includes(territory.id);
-      const isValidAttackTarget = isNeighborOfSelected && !isOwned && isCurrentPlayer;
+      const isNeighborOfSelected =
+        selectedTerritoryId &&
+        gameState.territories
+          .find((t) => t.id === selectedTerritoryId)
+          ?.neighbors.includes(territory.id);
+      const isValidAttackTarget =
+        isNeighborOfSelected && !isOwned && isCurrentPlayer;
 
       // Determine territory color
       let fillColor = "#333"; // neutral
@@ -164,33 +191,43 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
       const isClickable = isCurrentPlayer && (canSelect || isValidAttackTarget);
 
       // Draw hex
-      const hex = territoryGroup.append("path")
+      const hex = territoryGroup
+        .append("path")
         .attr("d", hexPath)
         .attr("fill", fillColor)
-        .attr("stroke", isSelected ? "#FFD700" : (isValidAttackTarget ? "#FFA500" : "#222"))
-        .attr("stroke-width", isSelected ? 5 : (isValidAttackTarget ? 4 : 2))
+        .attr(
+          "stroke",
+          isSelected ? "#FFD700" : isValidAttackTarget ? "#FFA500" : "#222"
+        )
+        .attr("stroke-width", isSelected ? 5 : isValidAttackTarget ? 4 : 2)
         .attr("opacity", territory.playerId ? 0.8 : 0.3)
         .style("cursor", isClickable ? "pointer" : "default")
-        .on("click", function(event) {
+        .on("click", function (event) {
           event.stopPropagation();
           handleTerritoryClick(territory);
         });
 
       // Add hover effect for clickable hexes
       if (isClickable) {
-        hex.on("mouseenter", function() {
-          d3.select(this)
-            .attr("opacity", 1)
-            .attr("stroke-width", isSelected ? 6 : 5);
-        }).on("mouseleave", function() {
-          d3.select(this)
-            .attr("opacity", territory.playerId ? 0.8 : 0.3)
-            .attr("stroke-width", isSelected ? 5 : (isValidAttackTarget ? 4 : 2));
-        });
+        hex
+          .on("mouseenter", function () {
+            d3.select(this)
+              .attr("opacity", 1)
+              .attr("stroke-width", isSelected ? 6 : 5);
+          })
+          .on("mouseleave", function () {
+            d3.select(this)
+              .attr("opacity", territory.playerId ? 0.8 : 0.3)
+              .attr(
+                "stroke-width",
+                isSelected ? 5 : isValidAttackTarget ? 4 : 2
+              );
+          });
       }
 
       // Draw dice count
-      territoryGroup.append("text")
+      territoryGroup
+        .append("text")
         .attr("x", centerX)
         .attr("y", centerY)
         .attr("text-anchor", "middle")
@@ -203,7 +240,8 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
         .text(territory.dice || "");
 
       // Draw territory ID (small)
-      territoryGroup.append("text")
+      territoryGroup
+        .append("text")
         .attr("x", centerX)
         .attr("y", centerY + hexSize * 0.6)
         .attr("text-anchor", "middle")
@@ -213,7 +251,6 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
         .style("pointer-events", "none")
         .text(`#${territory.id}`);
     });
-
   }, [gameState, selectedTerritoryId, playerId, hexSize]);
 
   // Get player name by ID
@@ -262,40 +299,53 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
       }}
     >
       {/* Game info header */}
-      <div style={{ 
-        color: "#FFF", 
-        marginBottom: "12px", 
-        textAlign: "center",
-        fontSize: "18px",
-        fontWeight: "bold"
-      }}>
+      <div
+        style={{
+          color: "#FFF",
+          marginBottom: "12px",
+          textAlign: "center",
+          fontSize: "18px",
+          fontWeight: "bold",
+        }}
+      >
         <div>Turn {gameState.turnNumber}</div>
-        <div style={{ color: gameState.currentTurnPlayerId === playerId ? "#FFD700" : "#AAA" }}>
+        <div
+          style={{
+            color:
+              gameState.currentTurnPlayerId === playerId ? "#FFD700" : "#AAA",
+          }}
+        >
           {getCurrentTurnPlayerName()}'s Turn
           {gameState.currentTurnPlayerId === playerId && " (You)"}
         </div>
-        {gameState?.currentTurnPlayerId === playerId && selectedTerritoryId === null && (
-          <div style={{ 
-            color: "#4CAF50", 
-            fontSize: "14px", 
-            marginTop: "8px",
-            backgroundColor: "rgba(76, 175, 80, 0.2)",
-            padding: "8px",
-            borderRadius: "4px"
-          }}>
-            👆 Click your territory (2+ dice) to select it
-          </div>
-        )}
+        {gameState?.currentTurnPlayerId === playerId &&
+          selectedTerritoryId === null && (
+            <div
+              style={{
+                color: "#4CAF50",
+                fontSize: "14px",
+                marginTop: "8px",
+                backgroundColor: "rgba(76, 175, 80, 0.2)",
+                padding: "8px",
+                borderRadius: "4px",
+              }}
+            >
+              👆 Click your territory (2+ dice) to select it
+            </div>
+          )}
         {selectedTerritoryId !== null && (
-          <div style={{ 
-            color: "#FFA500", 
-            fontSize: "14px", 
-            marginTop: "8px",
-            backgroundColor: "rgba(255, 165, 0, 0.2)",
-            padding: "8px",
-            borderRadius: "4px"
-          }}>
-            ⚔️ Territory #{selectedTerritoryId} selected - Click adjacent enemy to attack
+          <div
+            style={{
+              color: "#FFA500",
+              fontSize: "14px",
+              marginTop: "8px",
+              backgroundColor: "rgba(255, 165, 0, 0.2)",
+              padding: "8px",
+              borderRadius: "4px",
+            }}
+          >
+            ⚔️ Territory #{selectedTerritoryId} selected - Click adjacent enemy
+            to attack
           </div>
         )}
       </div>
@@ -317,10 +367,10 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
               border: "none",
               borderRadius: "4px",
               cursor: "pointer",
-              marginRight: "10px"
+              marginRight: "10px",
             }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = "#45a049"}
-            onMouseLeave={(e) => e.target.style.backgroundColor = "#4CAF50"}
+            onMouseEnter={(e) => (e.target.style.backgroundColor = "#45a049")}
+            onMouseLeave={(e) => (e.target.style.backgroundColor = "#4CAF50")}
           >
             End Turn
           </button>
@@ -336,10 +386,10 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
               color: "white",
               border: "none",
               borderRadius: "4px",
-              cursor: "pointer"
+              cursor: "pointer",
             }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = "#da190b"}
-            onMouseLeave={(e) => e.target.style.backgroundColor = "#f44336"}
+            onMouseEnter={(e) => (e.target.style.backgroundColor = "#da190b")}
+            onMouseLeave={(e) => (e.target.style.backgroundColor = "#f44336")}
           >
             Cancel Selection
           </button>
@@ -348,40 +398,53 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
 
       {/* Attack result display */}
       {attackResult && (
-        <div style={{
-          marginTop: "12px",
-          padding: "12px",
-          backgroundColor: attackResult.won ? "#4CAF50" : "#f44336",
-          color: "white",
-          borderRadius: "4px",
-          textAlign: "center",
-          fontWeight: "bold"
-        }}>
-          <div>{attackResult.won ? "Attack Successful! ✓" : "Attack Failed! ✗"}</div>
+        <div
+          style={{
+            marginTop: "12px",
+            padding: "12px",
+            backgroundColor: attackResult.won ? "#4CAF50" : "#f44336",
+            color: "white",
+            borderRadius: "4px",
+            textAlign: "center",
+            fontWeight: "bold",
+          }}
+        >
+          <div>
+            {attackResult.won ? "Attack Successful! ✓" : "Attack Failed! ✗"}
+          </div>
           <div style={{ fontSize: "14px", marginTop: "4px" }}>
-            Attacker rolled: {attackResult.attackRoll?.join(", ")} = {attackResult.attackTotal}
+            Attacker rolled: {attackResult.attackRoll?.join(", ")} ={" "}
+            {attackResult.attackTotal}
           </div>
           <div style={{ fontSize: "14px" }}>
-            Defender rolled: {attackResult.defenseRoll?.join(", ")} = {attackResult.defenseTotal}
+            Defender rolled: {attackResult.defenseRoll?.join(", ")} ={" "}
+            {attackResult.defenseTotal}
           </div>
         </div>
       )}
 
       {/* Instructions */}
-      <div style={{
-        marginTop: "12px",
-        color: "#AAA",
-        fontSize: "12px",
-        textAlign: "center",
-        maxWidth: "600px"
-      }}>
-        <div><strong>How to Play:</strong></div>
+      <div
+        style={{
+          marginTop: "12px",
+          color: "#AAA",
+          fontSize: "12px",
+          textAlign: "center",
+          maxWidth: "600px",
+        }}
+      >
+        <div>
+          <strong>How to Play:</strong>
+        </div>
         <div>1. Click your territory with 2+ dice to select it</div>
         <div>2. Click an adjacent enemy territory to attack</div>
-        <div>3. Higher dice roll wins! Winner keeps dice-1, loser gets 1 die</div>
-        <div>4. End turn to get bonus dice based on largest connected region</div>
+        <div>
+          3. Higher dice roll wins! Winner keeps dice-1, loser gets 1 die
+        </div>
+        <div>
+          4. End turn to get bonus dice based on largest connected region
+        </div>
       </div>
     </div>
   );
 }
-

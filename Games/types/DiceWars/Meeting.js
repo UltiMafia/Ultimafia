@@ -5,4 +5,3 @@ module.exports = class DiceWarsMeeting extends Meeting {
     super(game, name);
   }
 };
-

@@ -5,4 +5,3 @@ module.exports = class DiceWarsRole extends Role {
     super(name, player, data);
   }
 };
-

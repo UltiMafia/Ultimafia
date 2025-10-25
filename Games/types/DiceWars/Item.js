@@ -5,4 +5,3 @@ module.exports = class DiceWarsItem extends Item {
     super(type, game);
   }
 };
-

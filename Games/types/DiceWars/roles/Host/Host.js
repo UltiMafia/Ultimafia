@@ -8,4 +8,3 @@ module.exports = class Host extends Role {
     this.cards = [];
   }
 };
-

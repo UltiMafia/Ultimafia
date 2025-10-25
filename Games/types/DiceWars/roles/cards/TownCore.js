@@ -5,4 +5,3 @@ module.exports = class TownCore extends Card {
     super(role);
   }
 };
-

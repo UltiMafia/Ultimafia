@@ -5,4 +5,3 @@ module.exports = class DiceWarsAction extends Action {
     super(options);
   }
 };
-

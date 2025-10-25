@@ -6354,7 +6354,7 @@ const roleData = {
         "Receives bonus dice based on largest connected region.",
       ],
     },
-    
+
     Host: {
       alignment: "Host",
       tags: ["None"],

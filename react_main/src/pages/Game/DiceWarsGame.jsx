@@ -98,4 +98,3 @@ function DiceWarsGame(props) {
 }
 
 export default React.memo(DiceWarsGame);
-

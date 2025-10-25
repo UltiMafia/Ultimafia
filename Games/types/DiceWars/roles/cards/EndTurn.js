@@ -28,4 +28,3 @@ module.exports = class EndTurn extends Card {
     };
   }
 };
-

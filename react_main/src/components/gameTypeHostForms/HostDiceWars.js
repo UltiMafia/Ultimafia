@@ -146,4 +146,3 @@ export default function HostDiceWars() {
 
   return [initialFormFields, onHostGame];
 }
-

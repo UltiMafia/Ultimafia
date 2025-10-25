@@ -10,48 +10,74 @@ module.exports = class AttackTerritory extends Card {
         states: ["Play"],
         flags: ["voting"],
         inputType: "custom",
-        targets: function() {
+        targets: function () {
           // Generate list of valid attack combinations
           const validAttacks = [];
           const playerTerritories = this.game.territories.filter(
-            t => t.playerId === this.player.id && t.dice >= 2
+            (t) => t.playerId === this.player.id && t.dice >= 2
           );
 
           for (let fromTerritory of playerTerritories) {
             for (let neighborId of fromTerritory.neighbors) {
-              const toTerritory = this.game.territories.find(t => t.id === neighborId);
-              if (toTerritory && toTerritory.playerId !== this.player.id && toTerritory.playerId !== null) {
+              const toTerritory = this.game.territories.find(
+                (t) => t.id === neighborId
+              );
+              if (
+                toTerritory &&
+                toTerritory.playerId !== this.player.id &&
+                toTerritory.playerId !== null
+              ) {
                 // Format: "Territory X (3 dice) -> Territory Y (2 dice)"
-                const fromPlayer = this.game.players.find(p => p.id === fromTerritory.playerId);
-                const toPlayer = this.game.players.find(p => p.id === toTerritory.playerId);
-                const attackLabel = `Territory ${fromTerritory.id} (${fromTerritory.dice}🎲) → Territory ${toTerritory.id} (${toTerritory.dice}🎲, ${toPlayer?.name || 'Unknown'})`;
+                const fromPlayer = this.game.players.find(
+                  (p) => p.id === fromTerritory.playerId
+                );
+                const toPlayer = this.game.players.find(
+                  (p) => p.id === toTerritory.playerId
+                );
+                const attackLabel = `Territory ${fromTerritory.id} (${
+                  fromTerritory.dice
+                }🎲) → Territory ${toTerritory.id} (${toTerritory.dice}🎲, ${
+                  toPlayer?.name || "Unknown"
+                })`;
                 validAttacks.push({
                   label: attackLabel,
-                  value: `${fromTerritory.id}:${toTerritory.id}`
+                  value: `${fromTerritory.id}:${toTerritory.id}`,
                 });
               }
             }
           }
 
-          return validAttacks.map(a => a.value);
+          return validAttacks.map((a) => a.value);
         },
         action: {
-          labels: function() {
+          labels: function () {
             // Provide human-readable labels for the attack options
             const validAttacks = [];
             const playerTerritories = this.game.territories.filter(
-              t => t.playerId === this.actor.id && t.dice >= 2
+              (t) => t.playerId === this.actor.id && t.dice >= 2
             );
 
             for (let fromTerritory of playerTerritories) {
               for (let neighborId of fromTerritory.neighbors) {
-                const toTerritory = this.game.territories.find(t => t.id === neighborId);
-                if (toTerritory && toTerritory.playerId !== this.actor.id && toTerritory.playerId !== null) {
-                  const toPlayer = this.game.players.find(p => p.id === toTerritory.playerId);
-                  const attackLabel = `Territory ${fromTerritory.id} (${fromTerritory.dice}🎲) → Territory ${toTerritory.id} (${toTerritory.dice}🎲, ${toPlayer?.name || 'Unknown'})`;
+                const toTerritory = this.game.territories.find(
+                  (t) => t.id === neighborId
+                );
+                if (
+                  toTerritory &&
+                  toTerritory.playerId !== this.actor.id &&
+                  toTerritory.playerId !== null
+                ) {
+                  const toPlayer = this.game.players.find(
+                    (p) => p.id === toTerritory.playerId
+                  );
+                  const attackLabel = `Territory ${fromTerritory.id} (${
+                    fromTerritory.dice
+                  }🎲) → Territory ${toTerritory.id} (${toTerritory.dice}🎲, ${
+                    toPlayer?.name || "Unknown"
+                  })`;
                   validAttacks.push({
                     key: `${fromTerritory.id}:${toTerritory.id}`,
-                    value: attackLabel
+                    value: attackLabel,
                   });
                 }
               }
@@ -61,7 +87,7 @@ module.exports = class AttackTerritory extends Card {
           },
           run: function () {
             // Parse the attack target (format: "fromId:toId")
-            const [fromIdStr, toIdStr] = this.target.split(':');
+            const [fromIdStr, toIdStr] = this.target.split(":");
             const fromId = parseInt(fromIdStr);
             const toId = parseInt(toIdStr);
 
@@ -85,13 +111,19 @@ module.exports = class AttackTerritory extends Card {
 
           // Check if player has any valid attacks
           const playerTerritories = this.game.territories.filter(
-            t => t.playerId === this.player.id && t.dice >= 2
+            (t) => t.playerId === this.player.id && t.dice >= 2
           );
 
           for (let fromTerritory of playerTerritories) {
             for (let neighborId of fromTerritory.neighbors) {
-              const toTerritory = this.game.territories.find(t => t.id === neighborId);
-              if (toTerritory && toTerritory.playerId !== this.player.id && toTerritory.playerId !== null) {
+              const toTerritory = this.game.territories.find(
+                (t) => t.id === neighborId
+              );
+              if (
+                toTerritory &&
+                toTerritory.playerId !== this.player.id &&
+                toTerritory.playerId !== null
+              ) {
                 return true; // At least one valid attack exists
               }
             }
@@ -103,4 +135,3 @@ module.exports = class AttackTerritory extends Card {
     };
   }
 };
-
