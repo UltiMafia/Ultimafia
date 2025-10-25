@@ -389,56 +389,56 @@ function Header({ setShowAnnouncementTemporarily }) {
             }}
           >
             <Nav>
-            <NavDropdown
-              label="Play"
-              icon={flagblueIcon}
-              items={[
-                { text: "Play", path: "/play" },
-                { text: "Host", path: "/play/host", hide: !user.loggedIn },
-                {
-                  text: "Create Setup",
-                  path: "/play/create",
-                  hide: !user.loggedIn,
-                },
-                { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
-              ]}
-            />
-            <NavDropdown
-              label="Community"
-              icon={messageIcon}
-              items={[
-                { text: "Forums", path: "/community/forums" },
-                { text: "Users", path: "/community/users" },
-                { text: "Moderation", path: "/community/moderation" },
-              ]}
-            />
-            <NavDropdown
-              label="Fame"
-              icon={medalsilverIcon}
-              items={[
-                { text: "Leaderboard", path: "/fame/leaderboard" },
-                { text: "Contributors", path: "/fame/contributors" },
-                { text: "Donors", path: "/fame/donors" },
-              ]}
-            />
-            <NavDropdown
-              label="Learn"
-              icon={loreIcon}
-              items={[
-                { text: "Games", path: "/learn/games" },
-                { text: "Terminology", path: "/learn/terminology" },
-                { text: "Achievements", path: "/learn/achievements" },
-              ]}
-            />
-            <NavDropdown
-              label="Policy"
-              icon={lawIcon}
-              items={[
-                { text: "Rules", path: "/policy/rules" },
-                { text: "Terms of Service", path: "/policy/tos" },
-                { text: "Privacy Policy", path: "/policy/privacy" },
-              ]}
-            />
+              <NavDropdown
+                label="Play"
+                icon={flagblueIcon}
+                items={[
+                  { text: "Play", path: "/play" },
+                  { text: "Host", path: "/play/host", hide: !user.loggedIn },
+                  {
+                    text: "Create Setup",
+                    path: "/play/create",
+                    hide: !user.loggedIn,
+                  },
+                  { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
+                ]}
+              />
+              <NavDropdown
+                label="Community"
+                icon={messageIcon}
+                items={[
+                  { text: "Forums", path: "/community/forums" },
+                  { text: "Users", path: "/community/users" },
+                  { text: "Moderation", path: "/community/moderation" },
+                ]}
+              />
+              <NavDropdown
+                label="Fame"
+                icon={medalsilverIcon}
+                items={[
+                  { text: "Leaderboard", path: "/fame/leaderboard" },
+                  { text: "Contributors", path: "/fame/contributors" },
+                  { text: "Donors", path: "/fame/donors" },
+                ]}
+              />
+              <NavDropdown
+                label="Learn"
+                icon={loreIcon}
+                items={[
+                  { text: "Games", path: "/learn/games" },
+                  { text: "Terminology", path: "/learn/terminology" },
+                  { text: "Achievements", path: "/learn/achievements" },
+                ]}
+              />
+              <NavDropdown
+                label="Policy"
+                icon={lawIcon}
+                items={[
+                  { text: "Rules", path: "/policy/rules" },
+                  { text: "Terms of Service", path: "/policy/tos" },
+                  { text: "Privacy Policy", path: "/policy/privacy" },
+                ]}
+              />
               <div className="user-wrapper">
                 {user.loggedIn ? (
                   <UserNavSection
