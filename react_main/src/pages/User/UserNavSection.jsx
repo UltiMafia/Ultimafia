@@ -1,37 +1,25 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { NameWithAvatar, Avatar } from "./User";
 import { useNow } from "../../hooks/useNow";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
-import { Box, Divider, Stack, Tooltip, Typography, Menu, MenuItem } from "@mui/material";
+import { Divider, Stack, Tooltip, Typography } from "@mui/material";
+import NavDropdown from "../../components/NavDropdown";
 
 import "css/main.css";
 import exitIcon from "../../images/emotes/exit.png";
 
-function UserMenu({ user, onLogout }) {
-  const [anchorEl, setAnchorEl] = useState(null);
+export default function UserNavSection({
+  openAnnouncements,
+  user,
+  SiteNotifs,
+}) {
+  const now = useNow(200);
   const navigate = useNavigate();
   const isMobile = useIsPhoneDevice();
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleMenuItemClick = (path) => {
-    handleClose();
-    if (path) {
-      navigate(path);
-    }
-  };
 
   const handleLogout = () => {
-    handleClose();
     axios
       .post("/api/user/logout")
       .then(() => {
@@ -44,81 +32,36 @@ function UserMenu({ user, onLogout }) {
       });
   };
 
-  return (
-    <>
-      <Box
-        sx={{
-          display: "inline-flex",
-          alignItems: "center",
-          cursor: "pointer",
-        }}
-        onClick={handleClick}
-      >
-        {isMobile ? (
-          <Avatar
-            id={user.id}
-            name={user.name}
-            hasImage={user.avatar}
-          />
-        ) : (
-          <NameWithAvatar
-            id={user.id}
-            name={user.name}
-            avatar={user.avatar}
-            noLink={true}
-          />
-        )}
-      </Box>
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: isMobile ? "left" : "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: isMobile ? "left" : "right",
-        }}
-        slotProps={{
-          paper: {
-            sx: {
-              minWidth: isMobile ? "200px" : "160px",
-              maxWidth: "90vw",
-            },
-          },
-        }}
-      >
-        <MenuItem onClick={() => handleMenuItemClick("/user")}>
-          Profile
-        </MenuItem>
-        <MenuItem onClick={() => handleMenuItemClick("/user/settings")}>
-          Settings
-        </MenuItem>
-        <MenuItem onClick={() => handleMenuItemClick("/user/shop")}>
-          Shop
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={handleLogout}>
-          <img
-            src={exitIcon}
-            alt="exit"
-            style={{ width: "16px", height: "16px", marginRight: "8px" }}
-          />
-          Log Out
-        </MenuItem>
-      </Menu>
-    </>
-  );
-}
+  const userMenuItems = [
+    { text: "Profile", path: "/user" },
+    { text: "Settings", path: "/user/settings" },
+    { text: "Shop", path: "/user/shop" },
+    { divider: true },
+    {
+      text: "Log Out",
+      onClick: handleLogout,
+      icon: (
+        <img
+          src={exitIcon}
+          alt="exit"
+          style={{ width: "16px", height: "16px" }}
+        />
+      ),
+    },
+  ];
 
-export default function UserNavSection({
-  openAnnouncements,
-  user,
-  SiteNotifs,
-}) {
-  const now = useNow(200);
+  const UserMenuTrigger = ({ user }) => {
+    return isMobile ? (
+      <Avatar id={user.id} name={user.name} hasImage={user.avatar} />
+    ) : (
+      <NameWithAvatar
+        id={user.id}
+        name={user.name}
+        avatar={user.avatar}
+        noLink={true}
+      />
+    );
+  };
 
   function timeToGo(timestamp) {
     // Utility to add leading zero
@@ -214,7 +157,11 @@ export default function UserNavSection({
         style={{ fontSize: "14px" }}
       />
       <SiteNotifs />
-      <UserMenu user={user} />
+      <NavDropdown
+        items={userMenuItems}
+        customTrigger={UserMenuTrigger}
+        customTriggerProps={{ user }}
+      />
     </Stack>
   );
 }

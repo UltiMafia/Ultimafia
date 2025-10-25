@@ -1,9 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Menu, MenuItem, Box } from "@mui/material";
+import { Menu, MenuItem, Box, Divider } from "@mui/material";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 
-export default function NavDropdown({ label, items, basePath }) {
+export default function NavDropdown({ 
+  label, 
+  items, 
+  customTrigger, 
+  customTriggerProps,
+  onMenuItemClick: customOnMenuItemClick 
+}) {
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,39 +31,70 @@ export default function NavDropdown({ label, items, basePath }) {
     setAnchorEl(null);
   };
 
-  const handleMenuItemClick = (path) => {
+  const handleMenuItemClick = (item) => {
     handleClose();
-    if (path) {
-      navigate(path);
+    
+    // If item has custom onClick, use that
+    if (item.onClick) {
+      item.onClick();
+      return;
+    }
+    
+    // If parent has custom handler, use that
+    if (customOnMenuItemClick) {
+      customOnMenuItemClick(item.path);
+      return;
+    }
+    
+    // Default navigation
+    if (item.path) {
+      navigate(item.path);
     }
   };
 
+  // Render custom trigger if provided
+  const triggerContent = customTrigger ? (
+    <Box
+      component="span"
+      onClick={handleClick}
+      sx={{
+        display: "inline-flex",
+        alignItems: "center",
+        cursor: "pointer",
+      }}
+    >
+      {customTrigger(customTriggerProps)}
+    </Box>
+  ) : (
+    <Box
+      component="span"
+      onClick={handleClick}
+      className={`nav-dropdown ${isActive ? "active" : ""}`}
+      sx={{
+        padding: "8px 16px",
+        display: "inline-flex",
+        alignItems: "center",
+        cursor: "pointer",
+        position: "relative",
+        textTransform: "uppercase",
+        color: isActive ? "var(--color-main-1)" : "inherit",
+        fontWeight: isActive ? "bold" : "normal",
+        "&:hover": {
+          color: "var(--color-main-1)",
+        },
+      }}
+    >
+      <span>{label}</span>
+      <i
+        className="fas fa-caret-down"
+        style={{ marginLeft: "6px", fontSize: "12px" }}
+      />
+    </Box>
+  );
+
   return (
     <>
-      <Box
-        component="span"
-        onClick={handleClick}
-        className={`nav-dropdown ${isActive ? "active" : ""} glow-on-hover`}
-        sx={{
-          padding: "8px 16px",
-          display: "inline-flex",
-          alignItems: "center",
-          cursor: "pointer",
-          position: "relative",
-          textTransform: "uppercase",
-          color: isActive ? "var(--color-main-1)" : "inherit",
-          fontWeight: isActive ? "bold" : "normal",
-          "&:hover": {
-            color: "var(--color-main-1)",
-          },
-        }}
-      >
-        <span>{label}</span>
-        <i
-          className="fas fa-caret-down"
-          style={{ marginLeft: "6px", fontSize: "12px" }}
-        />
-      </Box>
+      {triggerContent}
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -82,12 +119,22 @@ export default function NavDropdown({ label, items, basePath }) {
         {items.map((item, index) => {
           if (item.hide) return null;
           
+          // Handle dividers
+          if (item.divider) {
+            return <Divider key={`divider-${index}`} />;
+          }
+          
           return (
             <MenuItem
-              key={item.path || index}
-              onClick={() => handleMenuItemClick(item.path)}
+              key={item.path || item.text || index}
+              onClick={() => handleMenuItemClick(item)}
               selected={location.pathname === item.path}
             >
+              {item.icon && (
+                <Box component="span" sx={{ mr: 1, display: "inline-flex" }}>
+                  {item.icon}
+                </Box>
+              )}
               {item.text}
             </MenuItem>
           );
@@ -96,4 +143,3 @@ export default function NavDropdown({ label, items, basePath }) {
     </>
   );
 }
-

@@ -265,17 +265,38 @@ function Header({ setShowAnnouncementTemporarily }) {
           }}
         />
       )}
-      <Stack
-        direction="row"
-        sx={{
-          justifyContent: "space-between",
-        }}
-      >
-        <Link to="/play" className="logo-wrapper">
-          <SiteLogo />
-        </Link>
-        <Stack direction="column">
-          {smallWidth && (
+      
+      {/* Desktop Logo - Top Center */}
+      {!smallWidth && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            py: 2,
+          }}
+        >
+          <Link to="/play" className="logo-wrapper">
+            <SiteLogo />
+          </Link>
+        </Box>
+      )}
+
+      {/* Mobile Header - Logo Left, User/Menu Right */}
+      {smallWidth && (
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            px: 2,
+            py: 1,
+          }}
+        >
+          <Link to="/play" className="logo-wrapper">
+            <SiteLogo />
+          </Link>
+          <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
             <div className="user-wrapper">
               {user.loggedIn ? (
                 <UserNavSection
@@ -287,25 +308,14 @@ function Header({ setShowAnnouncementTemporarily }) {
                 <GuestAuthButtons />
               )}
             </div>
-          )}
-          <div
-            className="navbar nav-wrapper"
-            style={{
-              display: smallWidth === false ? "none" : "flex",
-              width: "100%",
-              justifyContent: "space-between",
-              alignItems: "center",
-              fontSize: "24px",
-              flexDirection: "row",
-            }}
-          >
             <Stack
               direction="row"
               spacing={0.5}
               sx={{
                 alignItems: "center",
                 fontWeight: "bold",
-                marginLeft: "auto",
+                fontSize: "24px",
+                cursor: "pointer",
               }}
               onClick={toggleMenu}
             >
@@ -315,73 +325,86 @@ function Header({ setShowAnnouncementTemporarily }) {
                 style={{ marginRight: 8 }}
               />
             </Stack>
-          </div>
+          </Stack>
         </Stack>
-      </Stack>
-      <div
-        className="nav-wrapper"
-        style={{
-          display:
-            smallWidth === true ? (expandedMenu ? "flex" : "none") : "flex",
+      )}
+      {/* Navigation Bar with Backdrop */}
+      <Box
+        sx={{
+          backgroundColor: "var(--scheme-color-background)",
+          borderTop: "1px solid var(--scheme-color-border)",
+          borderBottom: "1px solid var(--scheme-color-border)",
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
         }}
       >
-        <Nav>
-          <NavDropdown
-            label="Play"
-            items={[
-              { text: "Play", path: "/play" },
-              { text: "Host", path: "/play/host", hide: !user.loggedIn },
-              { text: "Create Setup", path: "/play/create", hide: !user.loggedIn },
-              { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
-            ]}
-          />
-          <NavDropdown
-            label="Community"
-            items={[
-              { text: "Forums", path: "/community/forums" },
-              { text: "Users", path: "/community/users" },
-              { text: "Moderation", path: "/community/moderation" },
-            ]}
-          />
-          <NavDropdown
-            label="Fame"
-            items={[
-              { text: "Leaderboard", path: "/fame/leaderboard" },
-              { text: "Contributors", path: "/fame/contributors" },
-              { text: "Donors", path: "/fame/donors" },
-            ]}
-          />
-          <NavDropdown
-            label="Learn"
-            items={[
-              { text: "Games", path: "/learn/games" },
-              { text: "Terminology", path: "/learn/terminology" },
-              { text: "Achievements", path: "/learn/achievements" },
-            ]}
-          />
-          <NavDropdown
-            label="Policy"
-            items={[
-              { text: "Rules", path: "/policy/rules" },
-              { text: "Terms of Service", path: "/policy/tos" },
-              { text: "Privacy Policy", path: "/policy/privacy" },
-            ]}
-          />
-          {!smallWidth && (
-            <div className="user-wrapper">
-              {user.loggedIn ? (
-                <UserNavSection
-                  openAnnouncements={openAnnouncements}
-                  user={user}
-                  SiteNotifs={SiteNotifs}
-                />
-              ) : (
-                <GuestAuthButtons />
-              )}
-            </div>
-          )}
-        </Nav>
-      </div>
+        <Box
+          sx={{
+            maxWidth: "1080px",
+            width: "100%",
+            display:
+              smallWidth === true ? (expandedMenu ? "flex" : "none") : "flex",
+          }}
+        >
+          <Nav>
+            <NavDropdown
+              label="Play"
+              items={[
+                { text: "Play", path: "/play" },
+                { text: "Host", path: "/play/host", hide: !user.loggedIn },
+                { text: "Create Setup", path: "/play/create", hide: !user.loggedIn },
+                { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
+              ]}
+            />
+            <NavDropdown
+              label="Community"
+              items={[
+                { text: "Forums", path: "/community/forums" },
+                { text: "Users", path: "/community/users" },
+                { text: "Moderation", path: "/community/moderation" },
+              ]}
+            />
+            <NavDropdown
+              label="Fame"
+              items={[
+                { text: "Leaderboard", path: "/fame/leaderboard" },
+                { text: "Contributors", path: "/fame/contributors" },
+                { text: "Donors", path: "/fame/donors" },
+              ]}
+            />
+            <NavDropdown
+              label="Learn"
+              items={[
+                { text: "Games", path: "/learn/games" },
+                { text: "Terminology", path: "/learn/terminology" },
+                { text: "Achievements", path: "/learn/achievements" },
+              ]}
+            />
+            <NavDropdown
+              label="Policy"
+              items={[
+                { text: "Rules", path: "/policy/rules" },
+                { text: "Terms of Service", path: "/policy/tos" },
+                { text: "Privacy Policy", path: "/policy/privacy" },
+              ]}
+            />
+            {!smallWidth && (
+              <div className="user-wrapper">
+                {user.loggedIn ? (
+                  <UserNavSection
+                    openAnnouncements={openAnnouncements}
+                    user={user}
+                    SiteNotifs={SiteNotifs}
+                  />
+                ) : (
+                  <GuestAuthButtons />
+                )}
+              </div>
+            )}
+          </Nav>
+        </Box>
+      </Box>
     </div>
   );
 }
