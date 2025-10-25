@@ -4,7 +4,14 @@ import axios from "axios";
 import { NameWithAvatar, Avatar } from "./User";
 import { useNow } from "../../hooks/useNow";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
-import { Divider, Stack, Tooltip, Typography, IconButton, Badge } from "@mui/material";
+import {
+  Divider,
+  Stack,
+  Tooltip,
+  Typography,
+  IconButton,
+  Badge,
+} from "@mui/material";
 import NavDropdown from "../../components/NavDropdown";
 
 import "css/main.css";
@@ -188,11 +195,7 @@ export default function UserNavSection({
         onClick={() => navigate("/user/inbox")}
         sx={{ p: 0.5 }}
       >
-        <Badge
-          badgeContent={unreadCount}
-          color="error"
-          max={99}
-        >
+        <Badge badgeContent={unreadCount} color="error" max={99}>
           <i
             className="fas fa-bell"
             style={{ fontSize: isMobile ? "12px" : "14px" }}

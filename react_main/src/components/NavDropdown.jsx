@@ -105,7 +105,10 @@ export default function NavDropdown({
       {!iconOnly && <span>{label}</span>}
       <i
         className="fas fa-caret-down"
-        style={{ marginLeft: iconOnly ? "2px" : "6px", fontSize: isMobile ? "10px" : "12px" }}
+        style={{
+          marginLeft: iconOnly ? "2px" : "6px",
+          fontSize: isMobile ? "10px" : "12px",
+        }}
       />
     </Box>
   );

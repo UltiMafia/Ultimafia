@@ -73,7 +73,9 @@ router.get("/inbox", async function (req, res) {
     const totalPages = Math.ceil(totalNotifs / limit);
     const notifs = allNotifs.slice(skip, skip + limit);
 
-    const unreadCount = allNotifs.filter((notif) => notif.read === false).length;
+    const unreadCount = allNotifs.filter(
+      (notif) => notif.read === false
+    ).length;
 
     res.send({
       notifications: notifs,

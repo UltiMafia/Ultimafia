@@ -3,7 +3,9 @@ const models = require("../db/models");
 
 async function addReadFieldToNotifications() {
   try {
-    console.log("Starting migration: Adding 'read' field to existing notifications...");
+    console.log(
+      "Starting migration: Adding 'read' field to existing notifications..."
+    );
 
     // Update all notifications that don't have a 'read' field
     const result = await models.Notification.updateMany(
@@ -11,8 +13,12 @@ async function addReadFieldToNotifications() {
       { $set: { read: false } }
     );
 
-    console.log(`Migration complete! Updated ${result.modifiedCount} notifications.`);
-    console.log(`Matched ${result.matchedCount} notifications without 'read' field.`);
+    console.log(
+      `Migration complete! Updated ${result.modifiedCount} notifications.`
+    );
+    console.log(
+      `Matched ${result.matchedCount} notifications without 'read' field.`
+    );
 
     return result;
   } catch (error) {
@@ -24,7 +30,7 @@ async function addReadFieldToNotifications() {
 // Run if called directly
 if (require.main === module) {
   const db = require("../db/db");
-  
+
   addReadFieldToNotifications()
     .then(() => {
       console.log("Migration successful!");
@@ -37,4 +43,3 @@ if (require.main === module) {
 }
 
 module.exports = addReadFieldToNotifications;
-
