@@ -223,37 +223,18 @@ function Header({ setShowAnnouncementTemporarily }) {
     setShowAnnouncementTemporarily(true);
   };
 
-  const [expandedMenu, setExpandedMenu] = useState(false);
-
-  const toggleMenu = () => {
-    setExpandedMenu(!expandedMenu);
-  };
-
   const [smallWidth, setSmallWidth] = useState(window.innerWidth <= 700);
 
   const handleResize = () => {
     setSmallWidth(window.innerWidth <= 700);
   };
 
-  const location = useLocation();
-
   useEffect(() => {
     window.addEventListener("resize", handleResize);
     return () => {
-      // smallWidth ? {
-
-      // } : {
-
-      // };
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
-  useEffect(() => {
-    return () => {
-      setExpandedMenu(false);
-    };
-  }, [location]);
 
   return (
     <div className="header">
@@ -289,21 +270,79 @@ function Header({ setShowAnnouncementTemporarily }) {
         </Box>
       )}
 
-      {/* Mobile Header - Logo Left, User/Menu Right */}
+      {/* Mobile Header - Icon Navigation Top, Logo Centered Below */}
       {smallWidth && (
-        <Stack
-          direction="row"
-          sx={{
-            justifyContent: "space-between",
-            alignItems: "center",
-            px: 2,
-            py: 1,
-          }}
-        >
-          <Link to="/play" className="logo-wrapper">
-            <SiteLogo />
-          </Link>
-          <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
+        <Stack direction="column" sx={{ width: "100%" }}>
+          {/* Top bar with navigation icons and user section */}
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: "space-between",
+              alignItems: "center",
+              px: 1,
+              py: 1,
+              borderBottom: "1px solid var(--scheme-color-border)",
+            }}
+          >
+            {/* Icon-only navigation */}
+            <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
+              <NavDropdown
+                label="Play"
+                icon={flagblueIcon}
+                iconOnly={true}
+                items={[
+                  { text: "Play", path: "/play" },
+                  { text: "Host", path: "/play/host", hide: !user.loggedIn },
+                  {
+                    text: "Create Setup",
+                    path: "/play/create",
+                    hide: !user.loggedIn,
+                  },
+                  { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
+                ]}
+              />
+              <NavDropdown
+                label="Community"
+                icon={messageIcon}
+                iconOnly={true}
+                items={[
+                  { text: "Forums", path: "/community/forums" },
+                  { text: "Users", path: "/community/users" },
+                  { text: "Moderation", path: "/community/moderation" },
+                ]}
+              />
+              <NavDropdown
+                label="Fame"
+                icon={medalsilverIcon}
+                iconOnly={true}
+                items={[
+                  { text: "Leaderboard", path: "/fame/leaderboard" },
+                  { text: "Contributors", path: "/fame/contributors" },
+                  { text: "Donors", path: "/fame/donors" },
+                ]}
+              />
+              <NavDropdown
+                label="Learn"
+                icon={loreIcon}
+                iconOnly={true}
+                items={[
+                  { text: "Games", path: "/learn/games" },
+                  { text: "Terminology", path: "/learn/terminology" },
+                  { text: "Achievements", path: "/learn/achievements" },
+                ]}
+              />
+              <NavDropdown
+                label="Policy"
+                icon={lawIcon}
+                iconOnly={true}
+                items={[
+                  { text: "Rules", path: "/policy/rules" },
+                  { text: "Terms of Service", path: "/policy/tos" },
+                  { text: "Privacy Policy", path: "/policy/privacy" },
+                ]}
+              />
+            </Stack>
+            {/* User section */}
             <div className="user-wrapper">
               {user.loggedIn ? (
                 <UserNavSection
@@ -315,46 +354,41 @@ function Header({ setShowAnnouncementTemporarily }) {
                 <GuestAuthButtons />
               )}
             </div>
-            <Stack
-              direction="row"
-              spacing={0.5}
-              sx={{
-                alignItems: "center",
-                fontWeight: "bold",
-                fontSize: "24px",
-                cursor: "pointer",
-              }}
-              onClick={toggleMenu}
-            >
-              <span>{expandedMenu === false ? "Menu" : "Close"}</span>
-              <Icon
-                icon="material-symbols:menu-rounded"
-                style={{ marginRight: 8 }}
-              />
-            </Stack>
           </Stack>
+          {/* Centered logo */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              py: 1.5,
+            }}
+          >
+            <Link to="/play" className="logo-wrapper">
+              <SiteLogo />
+            </Link>
+          </Box>
         </Stack>
       )}
-      {/* Navigation Bar with Backdrop */}
-      <Box
-        sx={{
-          backgroundColor: "var(--scheme-color-background)",
-          borderTop: "1px solid var(--scheme-color-border)",
-          borderBottom: "1px solid var(--scheme-color-border)",
-          display: "flex",
-          justifyContent: "center",
-          width: "100%",
-        }}
-      >
+      {/* Desktop Navigation Bar */}
+      {!smallWidth && (
         <Box
           sx={{
-            maxWidth: "1080px",
+            backgroundColor: "var(--scheme-color-background)",
+            borderTop: "1px solid var(--scheme-color-border)",
+            borderBottom: "1px solid var(--scheme-color-border)",
+            display: "flex",
+            justifyContent: "center",
             width: "100%",
-            display:
-              smallWidth === true ? (expandedMenu ? "flex" : "none") : "flex",
           }}
         >
-          <Nav>
+          <Box
+            sx={{
+              maxWidth: "1080px",
+              width: "100%",
+            }}
+          >
+            <Nav>
             <NavDropdown
               label="Play"
               icon={flagblueIcon}
@@ -405,7 +439,6 @@ function Header({ setShowAnnouncementTemporarily }) {
                 { text: "Privacy Policy", path: "/policy/privacy" },
               ]}
             />
-            {!smallWidth && (
               <div className="user-wrapper">
                 {user.loggedIn ? (
                   <UserNavSection
@@ -417,10 +450,10 @@ function Header({ setShowAnnouncementTemporarily }) {
                   <GuestAuthButtons />
                 )}
               </div>
-            )}
-          </Nav>
+            </Nav>
+          </Box>
         </Box>
-      </Box>
+      )}
     </div>
   );
 }

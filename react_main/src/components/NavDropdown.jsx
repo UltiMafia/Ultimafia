@@ -10,6 +10,7 @@ export default function NavDropdown({
   customTrigger,
   customTriggerProps,
   onMenuItemClick: customOnMenuItemClick,
+  iconOnly = false,
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
@@ -75,7 +76,7 @@ export default function NavDropdown({
       onClick={handleClick}
       className={`nav-dropdown ${isActive ? "active" : ""}`}
       sx={{
-        padding: "8px 16px",
+        padding: iconOnly ? "8px" : "8px 16px",
         display: "inline-flex",
         alignItems: "center",
         cursor: "pointer",
@@ -92,19 +93,19 @@ export default function NavDropdown({
         <Box
           component="img"
           src={icon}
-          alt=""
+          alt={label}
           sx={{
-            width: "16px",
-            height: "16px",
-            marginRight: "6px",
+            width: iconOnly ? "20px" : "16px",
+            height: iconOnly ? "20px" : "16px",
+            marginRight: iconOnly ? "0" : "6px",
             display: "inline-block",
           }}
         />
       )}
-      <span>{label}</span>
+      {!iconOnly && <span>{label}</span>}
       <i
         className="fas fa-caret-down"
-        style={{ marginLeft: "6px", fontSize: "12px" }}
+        style={{ marginLeft: iconOnly ? "2px" : "6px", fontSize: "12px" }}
       />
     </Box>
   );
