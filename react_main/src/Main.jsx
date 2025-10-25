@@ -35,14 +35,22 @@ import {
 } from "./components/Basic";
 import { Nav } from "./components/Nav";
 import { Welcome } from "./pages/Welcome/Welcome";
-import UserNotifications from "./pages/User/UserNotifications";
+import UserNavSection from "./pages/User/UserNavSection";
 import { GuestAuthButtons } from "./components/GuestAuthButtons";
 import CookieBanner from "./components/CookieBanner";
 import Chat from "./pages/Chat/Chat";
+import NavDropdown from "./components/NavDropdown";
 
 import "css/main.css";
 import { useReducer } from "react";
 import { NewLoading } from "./pages/Welcome/NewLoading";
+
+// Navigation icons
+import flagblueIcon from "./images/emotes/flagblue.webp";
+import messageIcon from "./images/emotes/message.webp";
+import medalsilverIcon from "./images/emotes/medalsilver.webp";
+import loreIcon from "./images/emotes/lore.webp";
+import lawIcon from "./images/emotes/law.webp";
 import {
   Box,
   Stack,
@@ -215,37 +223,18 @@ function Header({ setShowAnnouncementTemporarily }) {
     setShowAnnouncementTemporarily(true);
   };
 
-  const [expandedMenu, setExpandedMenu] = useState(false);
-
-  const toggleMenu = () => {
-    setExpandedMenu(!expandedMenu);
-  };
-
   const [smallWidth, setSmallWidth] = useState(window.innerWidth <= 700);
 
   const handleResize = () => {
     setSmallWidth(window.innerWidth <= 700);
   };
 
-  const location = useLocation();
-
   useEffect(() => {
     window.addEventListener("resize", handleResize);
     return () => {
-      // smallWidth ? {
-
-      // } : {
-
-      // };
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
-  useEffect(() => {
-    return () => {
-      setExpandedMenu(false);
-    };
-  }, [location]);
 
   return (
     <div className="header">
@@ -264,106 +253,99 @@ function Header({ setShowAnnouncementTemporarily }) {
           }}
         />
       )}
-      <Stack
-        direction="row"
-        sx={{
-          justifyContent: "space-between",
-        }}
-      >
-        <Link to="/play" className="logo-wrapper">
-          <SiteLogo />
-        </Link>
-        <Stack direction="column">
-          {smallWidth && (
-            <div className="user-wrapper">
-              {user.loggedIn ? (
-                <UserNotifications
-                  openAnnouncements={openAnnouncements}
-                  user={user}
-                  SiteNotifs={SiteNotifs}
-                />
-              ) : (
-                <GuestAuthButtons />
-              )}
-            </div>
-          )}
-          <div
-            className="navbar nav-wrapper"
-            style={{
-              display: smallWidth === false ? "none" : "flex",
-              width: "100%",
+
+      {/* Desktop Logo - Top Center */}
+      {!smallWidth && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            py: 2,
+          }}
+        >
+          <Link to="/play" className="logo-wrapper">
+            <SiteLogo />
+          </Link>
+        </Box>
+      )}
+
+      {/* Mobile Header - Icon Navigation Top, Logo Centered Below */}
+      {smallWidth && (
+        <Stack direction="column" sx={{ width: "100%" }}>
+          {/* Top bar with navigation icons and user section */}
+          <Stack
+            direction="row"
+            sx={{
               justifyContent: "space-between",
               alignItems: "center",
-              fontSize: "24px",
-              flexDirection: "row",
+              px: 1,
+              py: 1,
+              borderBottom: "1px solid var(--scheme-color-border)",
             }}
           >
-            <Stack
-              direction="row"
-              spacing={0.5}
-              sx={{
-                alignItems: "center",
-                fontWeight: "bold",
-                marginLeft: "auto",
-              }}
-              onClick={toggleMenu}
-            >
-              <span>{expandedMenu === false ? "Menu" : "Close"}</span>
-              <Icon
-                icon="material-symbols:menu-rounded"
-                style={{ marginRight: 8 }}
+            {/* Icon-only navigation */}
+            <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
+              <NavDropdown
+                label="Play"
+                icon={flagblueIcon}
+                iconOnly={true}
+                items={[
+                  { text: "Play", path: "/play" },
+                  { text: "Host", path: "/play/host", hide: !user.loggedIn },
+                  {
+                    text: "Create Setup",
+                    path: "/play/create",
+                    hide: !user.loggedIn,
+                  },
+                  { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
+                ]}
+              />
+              <NavDropdown
+                label="Community"
+                icon={messageIcon}
+                iconOnly={true}
+                items={[
+                  { text: "Forums", path: "/community/forums" },
+                  { text: "Users", path: "/community/users" },
+                  { text: "Moderation", path: "/community/moderation" },
+                ]}
+              />
+              <NavDropdown
+                label="Fame"
+                icon={medalsilverIcon}
+                iconOnly={true}
+                items={[
+                  { text: "Leaderboard", path: "/fame/leaderboard" },
+                  { text: "Contributors", path: "/fame/contributors" },
+                  { text: "Donors", path: "/fame/donors" },
+                ]}
+              />
+              <NavDropdown
+                label="Learn"
+                icon={loreIcon}
+                iconOnly={true}
+                items={[
+                  { text: "Games", path: "/learn/games" },
+                  { text: "Terminology", path: "/learn/terminology" },
+                  { text: "Achievements", path: "/learn/achievements" },
+                ]}
+              />
+              <NavDropdown
+                label="Policy"
+                icon={lawIcon}
+                iconOnly={true}
+                items={[
+                  { text: "Rules", path: "/policy/rules" },
+                  { text: "Terms of Service", path: "/policy/tos" },
+                  { text: "Privacy Policy", path: "/policy/privacy" },
+                ]}
               />
             </Stack>
-          </div>
-        </Stack>
-      </Stack>
-      <div
-        className="nav-wrapper"
-        style={{
-          display:
-            smallWidth === true ? (expandedMenu ? "flex" : "none") : "flex",
-        }}
-      >
-        <Nav>
-          <NavLink
-            to="/play"
-            className={"glow-on-hover"}
-            style={expandedMenu ? { width: "100%" } : { width: "auto" }}
-          >
-            <span>Play</span>
-          </NavLink>
-          <NavLink
-            to="/community"
-            className={"glow-on-hover"}
-            style={expandedMenu ? { width: "100%" } : { width: "auto" }}
-          >
-            <span>Community</span>
-          </NavLink>
-          <NavLink
-            to="/fame"
-            className={"glow-on-hover"}
-            style={expandedMenu ? { width: "100%" } : { width: "auto" }}
-          >
-            <span>Fame</span>
-          </NavLink>
-          <NavLink
-            to="/learn"
-            className={"glow-on-hover"}
-            style={expandedMenu ? { width: "100%" } : { width: "auto" }}
-          >
-            <span>Learn</span>
-          </NavLink>
-          <NavLink
-            to="/policy"
-            className={"glow-on-hover"}
-            style={expandedMenu ? { width: "100%" } : { width: "auto" }}
-          >
-            <span>Policy</span>
-          </NavLink>
-          {!smallWidth && (
+            {/* User section */}
             <div className="user-wrapper">
               {user.loggedIn ? (
-                <UserNotifications
+                <UserNavSection
                   openAnnouncements={openAnnouncements}
                   user={user}
                   SiteNotifs={SiteNotifs}
@@ -372,9 +354,106 @@ function Header({ setShowAnnouncementTemporarily }) {
                 <GuestAuthButtons />
               )}
             </div>
-          )}
-        </Nav>
-      </div>
+          </Stack>
+          {/* Centered logo */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              py: 1.5,
+            }}
+          >
+            <Link to="/play" className="logo-wrapper">
+              <SiteLogo />
+            </Link>
+          </Box>
+        </Stack>
+      )}
+      {/* Desktop Navigation Bar */}
+      {!smallWidth && (
+        <Box
+          sx={{
+            backgroundColor: "var(--scheme-color-background)",
+            borderTop: "1px solid var(--scheme-color-border)",
+            borderBottom: "1px solid var(--scheme-color-border)",
+            display: "flex",
+            justifyContent: "center",
+            width: "100%",
+          }}
+        >
+          <Box
+            sx={{
+              maxWidth: "1080px",
+              width: "100%",
+            }}
+          >
+            <Nav>
+              <NavDropdown
+                label="Play"
+                icon={flagblueIcon}
+                items={[
+                  { text: "Play", path: "/play" },
+                  { text: "Host", path: "/play/host", hide: !user.loggedIn },
+                  {
+                    text: "Create Setup",
+                    path: "/play/create",
+                    hide: !user.loggedIn,
+                  },
+                  { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
+                ]}
+              />
+              <NavDropdown
+                label="Community"
+                icon={messageIcon}
+                items={[
+                  { text: "Forums", path: "/community/forums" },
+                  { text: "Users", path: "/community/users" },
+                  { text: "Moderation", path: "/community/moderation" },
+                ]}
+              />
+              <NavDropdown
+                label="Fame"
+                icon={medalsilverIcon}
+                items={[
+                  { text: "Leaderboard", path: "/fame/leaderboard" },
+                  { text: "Contributors", path: "/fame/contributors" },
+                  { text: "Donors", path: "/fame/donors" },
+                ]}
+              />
+              <NavDropdown
+                label="Learn"
+                icon={loreIcon}
+                items={[
+                  { text: "Games", path: "/learn/games" },
+                  { text: "Terminology", path: "/learn/terminology" },
+                  { text: "Achievements", path: "/learn/achievements" },
+                ]}
+              />
+              <NavDropdown
+                label="Policy"
+                icon={lawIcon}
+                items={[
+                  { text: "Rules", path: "/policy/rules" },
+                  { text: "Terms of Service", path: "/policy/tos" },
+                  { text: "Privacy Policy", path: "/policy/privacy" },
+                ]}
+              />
+              <div className="user-wrapper">
+                {user.loggedIn ? (
+                  <UserNavSection
+                    openAnnouncements={openAnnouncements}
+                    user={user}
+                    SiteNotifs={SiteNotifs}
+                  />
+                ) : (
+                  <GuestAuthButtons />
+                )}
+              </div>
+            </Nav>
+          </Box>
+        </Box>
+      )}
     </div>
   );
 }

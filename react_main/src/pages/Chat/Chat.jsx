@@ -12,7 +12,7 @@ import update from "immutability-helper";
 import { ClientSocket as Socket } from "../../Socket";
 import { useErrorAlert } from "../../components/Alerts";
 import { NameWithAvatar, StatusIcon } from "../User/User";
-import UserNotifications from "../User/UserNotifications";
+import UserNotifications from "../User/UserNavSection";
 import { UserContext } from "../../Contexts";
 import { MaxChatMessageLength } from "../../Constants";
 import { Time, UserText } from "../../components/Basic";

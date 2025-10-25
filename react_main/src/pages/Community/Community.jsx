@@ -7,31 +7,14 @@ import Forums from "./Forums/Forums";
 import UserSearch from "./UserSearch";
 import Moderation from "./Moderation";
 import { UserContext } from "../../Contexts";
-import CustomAppBar from "components/CustomAppBar";
 
 export default function Community() {
   const theme = useTheme();
-
-  const links = [
-    {
-      text: "Forums",
-      path: `/community/forums`,
-    },
-    {
-      text: "Users",
-      path: `/community/users`,
-    },
-    {
-      text: "Moderation",
-      path: `/community/moderation`,
-    },
-  ];
   const user = useContext(UserContext);
   // Allow logged-out users to access Community page
 
   return (
     <>
-      <CustomAppBar links={links} />
       <Box maxWidth="1080px" sx={{ mt: 1, flexGrow: 1 }}>
         <Card sx={{ p: 1, textAlign: "justify" }}>
           <Routes>
