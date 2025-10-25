@@ -5,7 +5,7 @@ import { ThemeProvider, CssBaseline } from "@mui/material";
 
 import { SITE_THEME } from "./constants/themes";
 import { NewLoading } from "pages/Welcome/NewLoading";
-import Main from "./Main";
+import Main from "Main";
 
 ReactDOM.render(
   <Router>
