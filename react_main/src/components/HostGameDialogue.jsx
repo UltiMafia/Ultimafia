@@ -32,6 +32,7 @@ import HostLiarsDice from "./gameTypeHostForms/HostLiarsDice";
 import HostTexasHoldEm from "./gameTypeHostForms/HostTexasHoldEm";
 import HostCheat from "./gameTypeHostForms/HostCheat";
 import HostBattlesnakes from "./gameTypeHostForms/HostBattlesnakes";
+import HostDiceWars from "./gameTypeHostForms/HostDiceWars";
 import HostConnectFour from "./gameTypeHostForms/HostConnectFour";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { getSetupBackgroundColor } from "pages/Play/LobbyBrowser/gameRowColors";
@@ -67,6 +68,8 @@ export default function HostGameDialogue({ open, setOpen, setup }) {
         return HostCheat();
       case "Battlesnakes":
         return HostBattlesnakes();
+      case "DiceWars":
+        return HostDiceWars();
       case "Connect Four":
         return HostConnectFour();
     }

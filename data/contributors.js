@@ -373,6 +373,7 @@ const artContributors = {
       "Fool:halloween",
     ],
     Battlesnakes: ["Snake:vivid"],
+    DiceWars: ["General:vivid"],
     "Connect Four": ["Starman:vivid"],
   },
   Jumpy: {
