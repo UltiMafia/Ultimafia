@@ -3,12 +3,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Menu, MenuItem, Box, Divider } from "@mui/material";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 
-export default function NavDropdown({ 
-  label, 
-  items, 
-  customTrigger, 
+export default function NavDropdown({
+  label,
+  items,
+  customTrigger,
   customTriggerProps,
-  onMenuItemClick: customOnMenuItemClick 
+  onMenuItemClick: customOnMenuItemClick,
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
@@ -17,9 +17,12 @@ export default function NavDropdown({
   const open = Boolean(anchorEl);
 
   // Check if any of the dropdown items are currently active
-  const isActive = items.some(item => {
+  const isActive = items.some((item) => {
     if (item.hide) return false;
-    return location.pathname === item.path || location.pathname.startsWith(item.path + "/");
+    return (
+      location.pathname === item.path ||
+      location.pathname.startsWith(item.path + "/")
+    );
   });
 
   const handleClick = (event) => {
@@ -33,19 +36,19 @@ export default function NavDropdown({
 
   const handleMenuItemClick = (item) => {
     handleClose();
-    
+
     // If item has custom onClick, use that
     if (item.onClick) {
       item.onClick();
       return;
     }
-    
+
     // If parent has custom handler, use that
     if (customOnMenuItemClick) {
       customOnMenuItemClick(item.path);
       return;
     }
-    
+
     // Default navigation
     if (item.path) {
       navigate(item.path);
@@ -118,12 +121,12 @@ export default function NavDropdown({
       >
         {items.map((item, index) => {
           if (item.hide) return null;
-          
+
           // Handle dividers
           if (item.divider) {
             return <Divider key={`divider-${index}`} />;
           }
-          
+
           return (
             <MenuItem
               key={item.path || item.text || index}

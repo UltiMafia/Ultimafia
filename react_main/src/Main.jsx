@@ -265,7 +265,7 @@ function Header({ setShowAnnouncementTemporarily }) {
           }}
         />
       )}
-      
+
       {/* Desktop Logo - Top Center */}
       {!smallWidth && (
         <Box
@@ -353,7 +353,11 @@ function Header({ setShowAnnouncementTemporarily }) {
               items={[
                 { text: "Play", path: "/play" },
                 { text: "Host", path: "/play/host", hide: !user.loggedIn },
-                { text: "Create Setup", path: "/play/create", hide: !user.loggedIn },
+                {
+                  text: "Create Setup",
+                  path: "/play/create",
+                  hide: !user.loggedIn,
+                },
                 { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
               ]}
             />
