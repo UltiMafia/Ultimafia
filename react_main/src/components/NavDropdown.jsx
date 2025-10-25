@@ -5,6 +5,7 @@ import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 
 export default function NavDropdown({
   label,
+  icon,
   items,
   customTrigger,
   customTriggerProps,
@@ -87,6 +88,19 @@ export default function NavDropdown({
         },
       }}
     >
+      {icon && (
+        <Box
+          component="img"
+          src={icon}
+          alt=""
+          sx={{
+            width: "16px",
+            height: "16px",
+            marginRight: "6px",
+            display: "inline-block",
+          }}
+        />
+      )}
       <span>{label}</span>
       <i
         className="fas fa-caret-down"

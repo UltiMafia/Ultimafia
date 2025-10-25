@@ -44,6 +44,13 @@ import NavDropdown from "./components/NavDropdown";
 import "css/main.css";
 import { useReducer } from "react";
 import { NewLoading } from "./pages/Welcome/NewLoading";
+
+// Navigation icons
+import flagblueIcon from "./images/emotes/flagblue.webp";
+import messageIcon from "./images/emotes/message.webp";
+import medalsilverIcon from "./images/emotes/medalsilver.webp";
+import loreIcon from "./images/emotes/lore.webp";
+import lawIcon from "./images/emotes/law.webp";
 import {
   Box,
   Stack,
@@ -182,7 +189,7 @@ function Main(props) {
       {loading && <NewLoading />}
       {!loading && (
         <Routes>
-          <Route path="/game/*" element={gameContent} />
+          <Route path="/game/:gameId/*" element={gameContent} />
           <Route path="/*" element={siteContent} />
         </Routes>
       )}
@@ -350,6 +357,7 @@ function Header({ setShowAnnouncementTemporarily }) {
           <Nav>
             <NavDropdown
               label="Play"
+              icon={flagblueIcon}
               items={[
                 { text: "Play", path: "/play" },
                 { text: "Host", path: "/play/host", hide: !user.loggedIn },
@@ -363,6 +371,7 @@ function Header({ setShowAnnouncementTemporarily }) {
             />
             <NavDropdown
               label="Community"
+              icon={messageIcon}
               items={[
                 { text: "Forums", path: "/community/forums" },
                 { text: "Users", path: "/community/users" },
@@ -371,6 +380,7 @@ function Header({ setShowAnnouncementTemporarily }) {
             />
             <NavDropdown
               label="Fame"
+              icon={medalsilverIcon}
               items={[
                 { text: "Leaderboard", path: "/fame/leaderboard" },
                 { text: "Contributors", path: "/fame/contributors" },
@@ -379,6 +389,7 @@ function Header({ setShowAnnouncementTemporarily }) {
             />
             <NavDropdown
               label="Learn"
+              icon={loreIcon}
               items={[
                 { text: "Games", path: "/learn/games" },
                 { text: "Terminology", path: "/learn/terminology" },
@@ -387,6 +398,7 @@ function Header({ setShowAnnouncementTemporarily }) {
             />
             <NavDropdown
               label="Policy"
+              icon={lawIcon}
               items={[
                 { text: "Rules", path: "/policy/rules" },
                 { text: "Terms of Service", path: "/policy/tos" },
