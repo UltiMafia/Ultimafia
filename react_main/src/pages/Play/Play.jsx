@@ -11,7 +11,6 @@ import { UserContext } from "../../Contexts";
 
 import "css/play.css";
 
-import CustomAppBar from "components/CustomAppBar";
 import { NewLoading } from "pages/Welcome/NewLoading";
 
 export default function Play(props) {
@@ -25,29 +24,6 @@ export default function Play(props) {
   const [gameType, setGameType] = useState(
     params.get("game") || localStorage.getItem("gameType") || defaultGameType
   );
-
-  const links = [
-    {
-      text: "Play",
-      path: "/play",
-      end: true,
-    },
-    {
-      text: "Host",
-      path: `/play/host`,
-      hide: !user.loggedIn,
-    },
-    {
-      text: "Create Setup",
-      path: `/play/create`,
-      hide: !user.loggedIn,
-    },
-    {
-      text: "Decks",
-      path: `/play/decks`,
-      hide: !user.loggedIn,
-    },
-  ];
 
   useEffect(() => {
     localStorage.setItem("gameType", gameType);
@@ -69,7 +45,6 @@ export default function Play(props) {
 
   return (
     <>
-      <CustomAppBar links={links} />
       <div className="inner-content play">
         <Suspense fallback={<NewLoading />}>
           <Routes>

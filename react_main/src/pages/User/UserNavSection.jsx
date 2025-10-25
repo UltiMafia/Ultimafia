@@ -1,17 +1,67 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Avatar } from "./User";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { NameWithAvatar, Avatar } from "./User";
 import { useNow } from "../../hooks/useNow";
-import { Box, Divider, Stack, Tooltip, Typography } from "@mui/material";
+import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { Divider, Stack, Tooltip, Typography } from "@mui/material";
+import NavDropdown from "../../components/NavDropdown";
 
 import "css/main.css";
+import exitIcon from "../../images/emotes/exit.png";
 
-export default function UserNotifications({
+export default function UserNavSection({
   openAnnouncements,
   user,
   SiteNotifs,
 }) {
   const now = useNow(200);
+  const navigate = useNavigate();
+  const isMobile = useIsPhoneDevice();
+
+  const handleLogout = () => {
+    axios
+      .post("/api/user/logout")
+      .then(() => {
+        user.clear();
+        navigate("/");
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error("Logout failed:", error);
+      });
+  };
+
+  const userMenuItems = [
+    { text: "Profile", path: "/user" },
+    { text: "Settings", path: "/user/settings" },
+    { text: "Shop", path: "/user/shop" },
+    { divider: true },
+    {
+      text: "Log Out",
+      onClick: handleLogout,
+      icon: (
+        <img
+          src={exitIcon}
+          alt="exit"
+          style={{ width: "16px", height: "16px" }}
+        />
+      ),
+    },
+  ];
+
+  const UserMenuTrigger = ({ user }) => {
+    return isMobile ? (
+      <Avatar id={user.id} name={user.name} hasImage={user.avatar} />
+    ) : (
+      <NameWithAvatar
+        id={user.id}
+        name={user.name}
+        avatar={user.avatar}
+        noLink={true}
+      />
+    );
+  };
 
   function timeToGo(timestamp) {
     // Utility to add leading zero
@@ -107,16 +157,11 @@ export default function UserNotifications({
         style={{ fontSize: "14px" }}
       />
       <SiteNotifs />
-      <Box
-        sx={{
-          display: "inline-flex",
-          alignItems: "center",
-        }}
-      >
-        <Link to="/user" className="profile-link">
-          <Avatar id={user.id} name={user.name} hasImage={user.avatar} />
-        </Link>
-      </Box>
+      <NavDropdown
+        items={userMenuItems}
+        customTrigger={UserMenuTrigger}
+        customTriggerProps={{ user }}
+      />
     </Stack>
   );
 }
