@@ -1152,6 +1152,15 @@ const settingsChecks = {
       boardSize,
     };
   },
+  DiceWars: (settings, setup) => {
+    const mapSize = settings.mapSize;
+    const maxDice = settings.maxDice;
+
+    return {
+      mapSize,
+      maxDice,
+    };
+  },
   "Connect Four": (settings, setup) => {
     const boardX = settings.boardX;
     const boardY = settings.boardY;
