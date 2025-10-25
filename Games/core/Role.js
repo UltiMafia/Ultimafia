@@ -406,9 +406,9 @@ module.exports = class Role {
     }
   }
 
-  queueNightActions(){
-    for (let options of this.PassiveActions){
-      if(options.state == this.game.getStateInfo().name){
+  queueNightActions() {
+    for (let options of this.PassiveActions) {
+      if (options.state == this.game.getStateInfo().name) {
         this.game.queueAction(new this.Action(options));
       }
     }
