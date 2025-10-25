@@ -51,12 +51,19 @@ router.get("/inbox", async function (req, res) {
     var globalNotifs = await models.User.findOne({ id: userId })
       .select("globalNotifs")
       .populate("globalNotifs", "-_id -_v");
-    globalNotifs = globalNotifs.globalNotifs || [];
+    globalNotifs = (globalNotifs?.globalNotifs || []).map((notif) => ({
+      ...notif.toObject(),
+      read: notif.read ?? false,
+    }));
 
     var userNotifs = await models.Notification.find({
       user: userId,
       isChat: false,
     }).select("-_id -_v");
+    userNotifs = userNotifs.map((notif) => ({
+      ...notif.toObject(),
+      read: notif.read ?? false,
+    }));
 
     var allNotifs = globalNotifs
       .concat(userNotifs)
@@ -66,7 +73,7 @@ router.get("/inbox", async function (req, res) {
     const totalPages = Math.ceil(totalNotifs / limit);
     const notifs = allNotifs.slice(skip, skip + limit);
 
-    const unreadCount = allNotifs.filter((notif) => !notif.read).length;
+    const unreadCount = allNotifs.filter((notif) => notif.read === false).length;
 
     res.send({
       notifications: notifs,

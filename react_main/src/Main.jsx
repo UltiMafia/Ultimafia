@@ -28,11 +28,6 @@ import {
   UserProvider,
 } from "./Contexts";
 import { AlertList, useErrorAlert } from "./components/Alerts";
-import {
-  NotificationHolder,
-  useOnOutsideClick,
-  Time,
-} from "./components/Basic";
 import { Nav } from "./components/Nav";
 import { Welcome } from "./pages/Welcome/Welcome";
 import UserNavSection from "./pages/User/UserNavSection";
@@ -169,7 +164,7 @@ function Main(props) {
         <InGameWarning />
         <Footer />
         <AlertList />
-        {<Chat SiteNotifs={InboxLink} />}
+        {<Chat SiteNotifs={useUnreadNotifications} />}
       </div>
     </Box>
   );
@@ -279,13 +274,14 @@ function Header({ setShowAnnouncementTemporarily }) {
             sx={{
               justifyContent: "space-between",
               alignItems: "center",
-              px: 1,
-              py: 1,
+              px: 0.5,
+              py: 0.5,
               borderBottom: "1px solid var(--scheme-color-border)",
+              overflow: "hidden",
             }}
           >
             {/* Icon-only navigation */}
-            <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
+            <Stack direction="row" spacing={0.2} sx={{ alignItems: "center", flexShrink: 0 }}>
               <NavDropdown
                 label="Play"
                 icon={flagblueIcon}
@@ -343,12 +339,12 @@ function Header({ setShowAnnouncementTemporarily }) {
               />
             </Stack>
             {/* User section */}
-            <div className="user-wrapper">
+            <div className="user-wrapper" style={{ flexShrink: 0 }}>
               {user.loggedIn ? (
                 <UserNavSection
                   openAnnouncements={openAnnouncements}
                   user={user}
-                  SiteNotifs={InboxLink}
+                  useUnreadNotifications={useUnreadNotifications}
                 />
               ) : (
                 <GuestAuthButtons />
@@ -389,62 +385,62 @@ function Header({ setShowAnnouncementTemporarily }) {
             }}
           >
             <Nav>
-              <NavDropdown
-                label="Play"
-                icon={flagblueIcon}
-                items={[
-                  { text: "Play", path: "/play" },
-                  { text: "Host", path: "/play/host", hide: !user.loggedIn },
-                  {
-                    text: "Create Setup",
-                    path: "/play/create",
-                    hide: !user.loggedIn,
-                  },
-                  { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
-                ]}
-              />
-              <NavDropdown
-                label="Community"
-                icon={messageIcon}
-                items={[
-                  { text: "Forums", path: "/community/forums" },
-                  { text: "Users", path: "/community/users" },
-                  { text: "Moderation", path: "/community/moderation" },
-                ]}
-              />
-              <NavDropdown
-                label="Fame"
-                icon={medalsilverIcon}
-                items={[
-                  { text: "Leaderboard", path: "/fame/leaderboard" },
-                  { text: "Contributors", path: "/fame/contributors" },
-                  { text: "Donors", path: "/fame/donors" },
-                ]}
-              />
-              <NavDropdown
-                label="Learn"
-                icon={loreIcon}
-                items={[
-                  { text: "Games", path: "/learn/games" },
-                  { text: "Terminology", path: "/learn/terminology" },
-                  { text: "Achievements", path: "/learn/achievements" },
-                ]}
-              />
-              <NavDropdown
-                label="Policy"
-                icon={lawIcon}
-                items={[
-                  { text: "Rules", path: "/policy/rules" },
-                  { text: "Terms of Service", path: "/policy/tos" },
-                  { text: "Privacy Policy", path: "/policy/privacy" },
-                ]}
-              />
+            <NavDropdown
+              label="Play"
+              icon={flagblueIcon}
+              items={[
+                { text: "Play", path: "/play" },
+                { text: "Host", path: "/play/host", hide: !user.loggedIn },
+                {
+                  text: "Create Setup",
+                  path: "/play/create",
+                  hide: !user.loggedIn,
+                },
+                { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
+              ]}
+            />
+            <NavDropdown
+              label="Community"
+              icon={messageIcon}
+              items={[
+                { text: "Forums", path: "/community/forums" },
+                { text: "Users", path: "/community/users" },
+                { text: "Moderation", path: "/community/moderation" },
+              ]}
+            />
+            <NavDropdown
+              label="Fame"
+              icon={medalsilverIcon}
+              items={[
+                { text: "Leaderboard", path: "/fame/leaderboard" },
+                { text: "Contributors", path: "/fame/contributors" },
+                { text: "Donors", path: "/fame/donors" },
+              ]}
+            />
+            <NavDropdown
+              label="Learn"
+              icon={loreIcon}
+              items={[
+                { text: "Games", path: "/learn/games" },
+                { text: "Terminology", path: "/learn/terminology" },
+                { text: "Achievements", path: "/learn/achievements" },
+              ]}
+            />
+            <NavDropdown
+              label="Policy"
+              icon={lawIcon}
+              items={[
+                { text: "Rules", path: "/policy/rules" },
+                { text: "Terms of Service", path: "/policy/tos" },
+                { text: "Privacy Policy", path: "/policy/privacy" },
+              ]}
+            />
               <div className="user-wrapper">
                 {user.loggedIn ? (
                   <UserNavSection
                     openAnnouncements={openAnnouncements}
                     user={user}
-                    SiteNotifs={InboxLink}
+                    useUnreadNotifications={useUnreadNotifications}
                   />
                 ) : (
                   <GuestAuthButtons />
@@ -502,11 +498,11 @@ function InGameWarning() {
   );
 }
 
-function InboxLink() {
+// Custom hook to get unread notification count
+function useUnreadNotifications() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [nextRestart, setNextRestart] = useState();
   const siteInfo = useContext(SiteInfoContext);
-  const navigate = useNavigate();
 
   useEffect(() => {
     getNotifs();
@@ -538,13 +534,7 @@ function InboxLink() {
       .catch(() => {});
   }
 
-  return (
-    <Link to="/user/inbox" style={{ textDecoration: "none", color: "inherit" }}>
-      <NotificationHolder lOffset notifCount={unreadCount}>
-        <i className="fas fa-bell" />
-      </NotificationHolder>
-    </Link>
-  );
+  return unreadCount;
 }
 
 function Footer() {

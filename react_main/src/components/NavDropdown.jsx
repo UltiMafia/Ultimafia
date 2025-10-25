@@ -76,7 +76,7 @@ export default function NavDropdown({
       onClick={handleClick}
       className={`nav-dropdown ${isActive ? "active" : ""}`}
       sx={{
-        padding: iconOnly ? "8px" : "8px 16px",
+        padding: iconOnly ? (isMobile ? "4px" : "8px") : "8px 16px",
         display: "inline-flex",
         alignItems: "center",
         cursor: "pointer",
@@ -95,8 +95,8 @@ export default function NavDropdown({
           src={icon}
           alt={label}
           sx={{
-            width: iconOnly ? "20px" : "16px",
-            height: iconOnly ? "20px" : "16px",
+            width: iconOnly ? (isMobile ? "18px" : "20px") : "16px",
+            height: iconOnly ? (isMobile ? "18px" : "20px") : "16px",
             marginRight: iconOnly ? "0" : "6px",
             display: "inline-block",
           }}
@@ -105,7 +105,7 @@ export default function NavDropdown({
       {!iconOnly && <span>{label}</span>}
       <i
         className="fas fa-caret-down"
-        style={{ marginLeft: iconOnly ? "2px" : "6px", fontSize: "12px" }}
+        style={{ marginLeft: iconOnly ? "2px" : "6px", fontSize: isMobile ? "10px" : "12px" }}
       />
     </Box>
   );
@@ -117,6 +117,7 @@ export default function NavDropdown({
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
+        disableScrollLock={true}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: isMobile ? "left" : "center",
