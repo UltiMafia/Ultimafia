@@ -40,12 +40,7 @@ import "css/main.css";
 import { useReducer } from "react";
 import { NewLoading } from "./pages/Welcome/NewLoading";
 
-// Navigation icons
-import flagblueIcon from "./images/emotes/flagblue.webp";
-import messageIcon from "./images/emotes/message.webp";
-import medalsilverIcon from "./images/emotes/medalsilver.webp";
-import loreIcon from "./images/emotes/lore.webp";
-import lawIcon from "./images/emotes/law.webp";
+// Navigation icons removed - now using text-only navigation
 import {
   Box,
   Stack,
@@ -268,7 +263,7 @@ function Header({ setShowAnnouncementTemporarily }) {
       {/* Mobile Header - Icon Navigation Top, Logo Centered Below */}
       {smallWidth && (
         <Stack direction="column" sx={{ width: "100%" }}>
-          {/* Top bar with navigation icons and user section */}
+          {/* Top bar with navigation menu and user section */}
           <Stack
             direction="row"
             sx={{
@@ -280,68 +275,60 @@ function Header({ setShowAnnouncementTemporarily }) {
               overflow: "hidden",
             }}
           >
-            {/* Icon-only navigation */}
-            <Stack
-              direction="row"
-              spacing={0.2}
-              sx={{ alignItems: "center", flexShrink: 0 }}
-            >
+            {/* Unified mobile menu */}
+            <Box sx={{ flexShrink: 0 }}>
               <NavDropdown
-                label="Play"
-                icon={flagblueIcon}
-                iconOnly={true}
-                items={[
-                  { text: "Play", path: "/play" },
-                  { text: "Host", path: "/play/host", hide: !user.loggedIn },
+                label="Menu"
+                isMobileMenu={true}
+                groups={[
                   {
-                    text: "Create Setup",
-                    path: "/play/create",
-                    hide: !user.loggedIn,
+                    label: "Play",
+                    items: [
+                      { text: "Play", path: "/play" },
+                      { text: "Host", path: "/play/host", hide: !user.loggedIn },
+                      {
+                        text: "Create Setup",
+                        path: "/play/create",
+                        hide: !user.loggedIn,
+                      },
+                      { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
+                    ],
                   },
-                  { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
+                  {
+                    label: "Community",
+                    items: [
+                      { text: "Forums", path: "/community/forums" },
+                      { text: "Users", path: "/community/users" },
+                      { text: "Moderation", path: "/community/moderation" },
+                    ],
+                  },
+                  {
+                    label: "Fame",
+                    items: [
+                      { text: "Leaderboard", path: "/fame/leaderboard" },
+                      { text: "Contributors", path: "/fame/contributors" },
+                      { text: "Donors", path: "/fame/donors" },
+                    ],
+                  },
+                  {
+                    label: "Learn",
+                    items: [
+                      { text: "Games", path: "/learn/games" },
+                      { text: "Terminology", path: "/learn/terminology" },
+                      { text: "Achievements", path: "/learn/achievements" },
+                    ],
+                  },
+                  {
+                    label: "Policy",
+                    items: [
+                      { text: "Rules", path: "/policy/rules" },
+                      { text: "Terms of Service", path: "/policy/tos" },
+                      { text: "Privacy Policy", path: "/policy/privacy" },
+                    ],
+                  },
                 ]}
               />
-              <NavDropdown
-                label="Community"
-                icon={messageIcon}
-                iconOnly={true}
-                items={[
-                  { text: "Forums", path: "/community/forums" },
-                  { text: "Users", path: "/community/users" },
-                  { text: "Moderation", path: "/community/moderation" },
-                ]}
-              />
-              <NavDropdown
-                label="Fame"
-                icon={medalsilverIcon}
-                iconOnly={true}
-                items={[
-                  { text: "Leaderboard", path: "/fame/leaderboard" },
-                  { text: "Contributors", path: "/fame/contributors" },
-                  { text: "Donors", path: "/fame/donors" },
-                ]}
-              />
-              <NavDropdown
-                label="Learn"
-                icon={loreIcon}
-                iconOnly={true}
-                items={[
-                  { text: "Games", path: "/learn/games" },
-                  { text: "Terminology", path: "/learn/terminology" },
-                  { text: "Achievements", path: "/learn/achievements" },
-                ]}
-              />
-              <NavDropdown
-                label="Policy"
-                icon={lawIcon}
-                iconOnly={true}
-                items={[
-                  { text: "Rules", path: "/policy/rules" },
-                  { text: "Terms of Service", path: "/policy/tos" },
-                  { text: "Privacy Policy", path: "/policy/privacy" },
-                ]}
-              />
-            </Stack>
+            </Box>
             {/* User section */}
             <div className="user-wrapper" style={{ flexShrink: 0 }}>
               {user.loggedIn ? (
@@ -389,56 +376,51 @@ function Header({ setShowAnnouncementTemporarily }) {
             }}
           >
             <Nav>
-              <NavDropdown
-                label="Play"
-                icon={flagblueIcon}
-                items={[
-                  { text: "Play", path: "/play" },
-                  { text: "Host", path: "/play/host", hide: !user.loggedIn },
-                  {
-                    text: "Create Setup",
-                    path: "/play/create",
-                    hide: !user.loggedIn,
-                  },
-                  { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
-                ]}
-              />
-              <NavDropdown
-                label="Community"
-                icon={messageIcon}
-                items={[
-                  { text: "Forums", path: "/community/forums" },
-                  { text: "Users", path: "/community/users" },
-                  { text: "Moderation", path: "/community/moderation" },
-                ]}
-              />
-              <NavDropdown
-                label="Fame"
-                icon={medalsilverIcon}
-                items={[
-                  { text: "Leaderboard", path: "/fame/leaderboard" },
-                  { text: "Contributors", path: "/fame/contributors" },
-                  { text: "Donors", path: "/fame/donors" },
-                ]}
-              />
-              <NavDropdown
-                label="Learn"
-                icon={loreIcon}
-                items={[
-                  { text: "Games", path: "/learn/games" },
-                  { text: "Terminology", path: "/learn/terminology" },
-                  { text: "Achievements", path: "/learn/achievements" },
-                ]}
-              />
-              <NavDropdown
-                label="Policy"
-                icon={lawIcon}
-                items={[
-                  { text: "Rules", path: "/policy/rules" },
-                  { text: "Terms of Service", path: "/policy/tos" },
-                  { text: "Privacy Policy", path: "/policy/privacy" },
-                ]}
-              />
+            <NavDropdown
+              label="Play"
+              items={[
+                { text: "Play", path: "/play" },
+                { text: "Host", path: "/play/host", hide: !user.loggedIn },
+                {
+                  text: "Create Setup",
+                  path: "/play/create",
+                  hide: !user.loggedIn,
+                },
+                { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
+              ]}
+            />
+            <NavDropdown
+              label="Community"
+              items={[
+                { text: "Forums", path: "/community/forums" },
+                { text: "Users", path: "/community/users" },
+                { text: "Moderation", path: "/community/moderation" },
+              ]}
+            />
+            <NavDropdown
+              label="Fame"
+              items={[
+                { text: "Leaderboard", path: "/fame/leaderboard" },
+                { text: "Contributors", path: "/fame/contributors" },
+                { text: "Donors", path: "/fame/donors" },
+              ]}
+            />
+            <NavDropdown
+              label="Learn"
+              items={[
+                { text: "Games", path: "/learn/games" },
+                { text: "Terminology", path: "/learn/terminology" },
+                { text: "Achievements", path: "/learn/achievements" },
+              ]}
+            />
+            <NavDropdown
+              label="Policy"
+              items={[
+                { text: "Rules", path: "/policy/rules" },
+                { text: "Terms of Service", path: "/policy/tos" },
+                { text: "Privacy Policy", path: "/policy/privacy" },
+              ]}
+            />
               <div className="user-wrapper">
                 {user.loggedIn ? (
                   <UserNavSection
