@@ -32,7 +32,7 @@ import LiarsDiceGame from "./LiarsDiceGame";
 import TexasHoldEmGame from "./TexasHoldEmGame";
 import CheatGame from "./CheatGame";
 import BattlesnakesGame from "./BattlesnakesGame";
-import DiceWarsGame from "./DiceWarsGame";
+//import DiceWarsGame from "./DiceWarsGame";
 import ConnectFourGame from "./ConnectFourGame";
 import { GameContext, SiteInfoContext, UserContext } from "Contexts";
 import Dropdown from "../../components/Dropdown";
