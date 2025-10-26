@@ -5,12 +5,12 @@ import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 
 export default function NavDropdown({
   label,
-  icon,
   items,
   customTrigger,
   customTriggerProps,
   onMenuItemClick: customOnMenuItemClick,
-  iconOnly = false,
+  groups, // For mobile unified menu - array of {label, items}
+  isMobileMenu = false, // Flag to indicate this is the mobile unified menu
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
@@ -18,9 +18,19 @@ export default function NavDropdown({
   const isMobile = useIsPhoneDevice();
   const open = Boolean(anchorEl);
 
+  // Flatten items for mobile menu or use regular items
+  const allItems = groups
+    ? groups.reduce((acc, group, groupIndex) => {
+        if (groupIndex > 0) {
+          acc.push({ divider: true });
+        }
+        return acc.concat(group.items);
+      }, [])
+    : items;
+
   // Check if any of the dropdown items are currently active
-  const isActive = items.some((item) => {
-    if (item.hide) return false;
+  const isActive = allItems.some((item) => {
+    if (item.hide || item.divider) return false;
     return (
       location.pathname === item.path ||
       location.pathname.startsWith(item.path + "/")
@@ -76,9 +86,10 @@ export default function NavDropdown({
       onClick={handleClick}
       className={`nav-dropdown ${isActive ? "active" : ""}`}
       sx={{
-        padding: iconOnly ? "8px" : "8px 16px",
+        padding: "8px 16px",
         display: "inline-flex",
         alignItems: "center",
+        gap: "6px",
         cursor: "pointer",
         position: "relative",
         textTransform: "uppercase",
@@ -89,23 +100,11 @@ export default function NavDropdown({
         },
       }}
     >
-      {icon && (
-        <Box
-          component="img"
-          src={icon}
-          alt={label}
-          sx={{
-            width: iconOnly ? "20px" : "16px",
-            height: iconOnly ? "20px" : "16px",
-            marginRight: iconOnly ? "0" : "6px",
-            display: "inline-block",
-          }}
-        />
-      )}
-      {!iconOnly && <span>{label}</span>}
+      {isMobileMenu && <span style={{ fontSize: "18px" }}>☰</span>}
+      <span>{label}</span>
       <i
         className="fas fa-caret-down"
-        style={{ marginLeft: iconOnly ? "2px" : "6px", fontSize: "12px" }}
+        style={{ fontSize: isMobile ? "10px" : "12px" }}
       />
     </Box>
   );
@@ -117,6 +116,7 @@ export default function NavDropdown({
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
+        disableScrollLock={true}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: isMobile ? "left" : "center",
@@ -134,7 +134,7 @@ export default function NavDropdown({
           },
         }}
       >
-        {items.map((item, index) => {
+        {allItems.map((item, index) => {
           if (item.hide) return null;
 
           // Handle dividers
@@ -161,3 +161,4 @@ export default function NavDropdown({
     </>
   );
 }
+

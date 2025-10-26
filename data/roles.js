@@ -6346,6 +6346,23 @@ const roleData = {
       description: ["Facilitates the game."],
     },
   },
+  DiceWars: {
+    General: {
+      alignment: "Town",
+      tags: ["None"],
+      description: [
+        "Controls territories on a hex grid.",
+        "Attacks adjacent enemy territories with dice.",
+        "Receives bonus dice based on largest connected region.",
+      ],
+    },
+
+    Host: {
+      alignment: "Host",
+      tags: ["None"],
+      description: ["Facilitates the game."],
+    },
+  },
   "Connect Four": {
     Starman: {
       alignment: "Town",
