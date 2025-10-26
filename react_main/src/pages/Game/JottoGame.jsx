@@ -17,6 +17,7 @@ import {
   Notes,
   SettingsMenu,
   MobileLayout,
+  GameTypeContext,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -120,8 +121,10 @@ export default function JottoGame() {
   );
 
   return (
-    <>
-      <TopBar hideStateSwitcher />
+    <GameTypeContext.Provider value={{
+      singleState: true,
+    }}>
+      <TopBar />
       <ThreePanelLayout
         leftPanelContent={
           <>
@@ -132,7 +135,7 @@ export default function JottoGame() {
           </>
         }
         centerPanelContent={
-          <TextMeetingLayout combineMessagesFromAllMeetings />
+          <TextMeetingLayout />
         }
         rightPanelContent={
           <>
@@ -142,7 +145,6 @@ export default function JottoGame() {
         }
       />
       <MobileLayout
-        singleState
         innerRightContent={
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
@@ -156,7 +158,7 @@ export default function JottoGame() {
           </>
         }
       />
-    </>
+    </GameTypeContext.Provider>
   );
 }
 

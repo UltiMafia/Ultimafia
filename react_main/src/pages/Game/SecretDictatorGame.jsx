@@ -13,6 +13,7 @@ import {
   Notes,
   PinnedMessages,
   MobileLayout,
+  GameTypeContext,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -95,8 +96,10 @@ export default function SecretDictatorGame(props) {
   }, game.socket);
 
   return (
-    <>
-      <TopBar hideStateSwitcher />
+    <GameTypeContext.Provider value={{
+      singleState: true,
+    }}>
+      <TopBar />
       <ThreePanelLayout
         leftPanelContent={
           <>
@@ -106,7 +109,7 @@ export default function SecretDictatorGame(props) {
           </>
         }
         centerPanelContent={
-          <TextMeetingLayout combineMessagesFromAllMeetings />
+          <TextMeetingLayout />
         }
         rightPanelContent={
           <>
@@ -118,7 +121,6 @@ export default function SecretDictatorGame(props) {
         }
       />
       <MobileLayout
-        singleState
         outerLeftContent={
           <>
             <PlayerList />
@@ -138,7 +140,7 @@ export default function SecretDictatorGame(props) {
           </>
         }
       />
-    </>
+    </GameTypeContext.Provider>
   );
 }
 
