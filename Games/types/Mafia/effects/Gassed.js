@@ -1,5 +1,6 @@
 const Effect = require("../Effect");
 const Action = require("../Action");
+const { PRIORITY_KILL_DEFAULT } = require("../const/Priority");
 
 module.exports = class Gassed extends Effect {
   constructor(gasser) {
@@ -18,15 +19,16 @@ module.exports = class Gassed extends Effect {
       game: this.gasser.game,
       labels: ["kill", "gas", "hidden", "absolute", "uncontrollable"],
       effect: this,
-      power: 2,
+      delay: 1,
+      priority: PRIORITY_KILL_DEFAULT,
       run: function () {
         if (!this.target.hasEffect("Gassed")) {
           return;
         }
         const visits = this.getVisits(this.target);
-        if (visits.length > 0) this.target.kill("gas", this.actor);
-        if ((visits.length = 0)) return;
-
+        if (visits.length > 0) {
+          this.target.kill("gas", this.actor);
+        }
         this.effect.remove();
       },
     });

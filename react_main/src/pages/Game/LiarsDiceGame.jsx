@@ -13,6 +13,7 @@ import {
   SettingsMenu,
   MobileLayout,
   SpeechFilter,
+  GameTypeContext,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -20,6 +21,7 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/game.css";
 import "css/gameLiarsDice.css";
+import { Box, CircularProgress, Paper, Stack, Typography } from "@mui/material";
 
 export default function LiarsDiceGame(props) {
   const game = useContext(GameContext);
@@ -114,7 +116,9 @@ export default function LiarsDiceGame(props) {
   );
 
   return (
-    <>
+    <GameTypeContext.Provider value={{
+      singleState: true,
+    }}>
       <TopBar hideStateSwitcher />
       <ThreePanelLayout
         leftPanelContent={
@@ -124,10 +128,11 @@ export default function LiarsDiceGame(props) {
           </>
         }
         centerPanelContent={
-          <TextMeetingLayout combineMessagesFromAllMeetings />
+          <TextMeetingLayout />
         }
         rightPanelContent={
           <>
+            <LiarsDiceCurrentGuess />
             <OptionsList />
             {actionList}
             <Notes />
@@ -135,10 +140,10 @@ export default function LiarsDiceGame(props) {
         }
       />
       <MobileLayout
-        singleState
-        outerLeftContent={<>{playerList}</>}
+        outerLeftContent={playerList}
         innerRightContent={
           <>
+            <LiarsDiceCurrentGuess />
             <OptionsList />
             {actionList}
           </>
@@ -149,7 +154,89 @@ export default function LiarsDiceGame(props) {
           </>
         }
       />
-    </>
+    </GameTypeContext.Provider>
+  );
+}
+
+function LiarsDiceCurrentGuess() {
+  const game = useContext(GameContext);
+  const {
+    history,
+    stateViewing,
+  } = game;
+
+  if (stateViewing < 0) return <></>;
+
+  const currentState = history.states[stateViewing];
+
+  const {
+    allDice,
+    lastAmountBid,
+    lastFaceBid,
+    lastBidder,
+    currentBidder,
+  } = currentState.extraInfo.bidInfo;
+
+  const bidPercent = (Math.min(lastAmountBid, allDice) / allDice) * 100;
+  const die = (
+    <div className={`dice dice-${lastFaceBid}`}/>
+  );
+
+  let content = null;
+  if (lastBidder) {
+    content = (
+      <>
+        <Stack direction="row" sx={{
+          position: "relative",
+          alignItems: "center",
+        }}>
+          <CircularProgress
+            variant="determinate"
+            size="2em"
+            thickness={4}
+            enableTrackSlot
+            value={bidPercent}
+          />
+          <Box sx={{
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            position: "absolute",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+            <Typography variant="h3">
+              {lastAmountBid}
+            </Typography>
+          </Box>
+        </Stack>
+        {die}
+        <Typography sx={{ marginLeft: "auto !important" }}>
+          {lastBidder}'s bet
+        </Typography>
+      </>
+    );
+  }
+  else {
+    content = (
+      <Typography sx={{ marginLeft: "auto !important" }}>
+        Initial bet
+      </Typography>
+    );
+  }
+
+  return (
+    <SideMenu title={`${currentBidder}'s turn`} content={
+      <Stack direction="row" spacing={1} sx={{
+        p: 1,
+        alignItems: "center",
+        minHeight: "calc(2*var(--mui-spacing) + 2em)",
+      }}>
+        {content}
+      </Stack>
+    }/>
   );
 }
 

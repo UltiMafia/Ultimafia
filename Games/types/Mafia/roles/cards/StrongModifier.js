@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
+const Player = require("../../Player");
 const { PRIORITY_MODIFY_ACTION_LABELS } = require("../../const/Priority");
 
 module.exports = class StrongModifier extends Card {
@@ -44,7 +45,9 @@ module.exports = class StrongModifier extends Card {
               ) {
                 action.power = Infinity;
                 action.labels = [...action.labels, "absolute", "strong"];
-                action.target.removeEffect("Extra Life", true);
+                if (action.target && action.target instanceof Player) {
+                  action.target.removeEffect("Extra Life", true);
+                }
               }
             }
           },

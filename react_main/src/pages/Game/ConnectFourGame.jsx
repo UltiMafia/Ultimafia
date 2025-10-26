@@ -11,6 +11,7 @@ import {
   Notes,
   SettingsMenu,
   MobileLayout,
+  GameTypeContext,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { Avatar } from "../User/User";
@@ -77,8 +78,10 @@ export default function ConnectFourGame(props) {
   }, game.socket);
 
   return (
-    <>
-      <TopBar hideStateSwitcher />
+    <GameTypeContext.Provider value={{
+      singleState: true,
+    }}>
+      <TopBar />
       <ThreePanelLayout
         leftPanelContent={
           <>
@@ -94,23 +97,22 @@ export default function ConnectFourGame(props) {
         }
         rightPanelContent={
           <>
-            <TextMeetingLayout combineMessagesFromAllMeetings />
+            <TextMeetingLayout />
           </>
         }
       />
       <MobileLayout
-        singleState
         centerContent={<ConnectFourBoardWrapper />}
         innerRightContent={
           <>
             {stateViewing >= 0 && (
-              <TextMeetingLayout combineMessagesFromAllMeetings />
+              <TextMeetingLayout />
             )}
             <ActionList />
           </>
         }
       />
-    </>
+    </GameTypeContext.Provider>
   );
 }
 
@@ -122,7 +124,7 @@ function ConnectFourBoardWrapper() {
   const stateViewing = game.stateViewing;
 
   if (stateViewing < 0)
-    return <TextMeetingLayout combineMessagesFromAllMeetings />;
+    return <TextMeetingLayout />;
 
   return (
     <SideMenu

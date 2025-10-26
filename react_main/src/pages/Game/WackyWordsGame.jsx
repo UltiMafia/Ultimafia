@@ -12,6 +12,7 @@ import {
   SettingsMenu,
   Notes,
   MobileLayout,
+  GameTypeContext,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -87,8 +88,10 @@ export default function WackyWordsGame(props) {
   }, game.socket);
 
   return (
-    <>
-      <TopBar hideStateSwitcher />
+    <GameTypeContext.Provider value={{
+      singleState: true,
+    }}>
+      <TopBar />
       <ThreePanelLayout
         leftPanelContent={
           <>
@@ -99,7 +102,7 @@ export default function WackyWordsGame(props) {
         }
         centerPanelContent={
           <>
-            <TextMeetingLayout combineMessagesFromAllMeetings />
+            <TextMeetingLayout />
           </>
         }
         rightPanelContent={
@@ -111,7 +114,6 @@ export default function WackyWordsGame(props) {
         }
       />
       <MobileLayout
-        singleState
         innerRightContent={
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
@@ -119,7 +121,7 @@ export default function WackyWordsGame(props) {
           </>
         }
       />
-    </>
+    </GameTypeContext.Provider>
   );
 }
 

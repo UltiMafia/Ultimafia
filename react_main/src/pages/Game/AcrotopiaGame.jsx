@@ -12,6 +12,7 @@ import {
   SettingsMenu,
   Notes,
   MobileLayout,
+  GameTypeContext,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -87,7 +88,9 @@ export default function AcrotopiaGame(props) {
   }, game.socket);
 
   return (
-    <>
+    <GameTypeContext.Provider value={{
+      singleState: true,
+    }}>
       <TopBar hideStateSwitcher />
       <ThreePanelLayout
         leftPanelContent={
@@ -98,7 +101,7 @@ export default function AcrotopiaGame(props) {
           </>
         }
         centerPanelContent={
-          <TextMeetingLayout combineMessagesFromAllMeetings />
+          <TextMeetingLayout />
         }
         rightPanelContent={
           <>
@@ -109,7 +112,6 @@ export default function AcrotopiaGame(props) {
         }
       />
       <MobileLayout
-        singleState
         innerRightContent={
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
@@ -117,7 +119,7 @@ export default function AcrotopiaGame(props) {
           </>
         }
       />
-    </>
+    </GameTypeContext.Provider>
   );
 }
 
