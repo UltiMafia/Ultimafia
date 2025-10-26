@@ -10,29 +10,28 @@ module.exports = class EvilPairs extends Card {
 
     this.passiveActions = [
       {
-          actor: role.player,
-          game: role.player.game,
-          role: role,
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
-          labels: ["investigate"],
-          run: function () {
-            if (this.role.hasInfo) return;
-            if (!this.actor.alive) return;
-            let info = this.game.createInformation(
-              "EvilPairsInfo",
-              this.actor,
-              this.game
-            );
-            info.processInfo();
-            this.role.hasInfo = true;
-            var alert = `:invest: ${info.getInfoFormated()}.`;
-            this.actor.queueAlert(alert);
-          },
+        actor: role.player,
+        game: role.player.game,
+        role: role,
+        priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
+        labels: ["investigate"],
+        run: function () {
+          if (this.role.hasInfo) return;
+          if (!this.actor.alive) return;
+          let info = this.game.createInformation(
+            "EvilPairsInfo",
+            this.actor,
+            this.game
+          );
+          info.processInfo();
+          this.role.hasInfo = true;
+          var alert = `:invest: ${info.getInfoFormated()}.`;
+          this.actor.queueAlert(alert);
         },
+      },
     ];
-    
-    
-/*
+
+    /*
     this.listeners = {
       state: function (stateInfo) {
         if (!this.hasAbility(["Information", "OnlyWhenAlive"])) {
