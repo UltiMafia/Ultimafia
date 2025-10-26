@@ -78,9 +78,11 @@ export default function ConnectFourGame(props) {
   }, game.socket);
 
   return (
-    <GameTypeContext.Provider value={{
-      singleState: true,
-    }}>
+    <GameTypeContext.Provider
+      value={{
+        singleState: true,
+      }}
+    >
       <TopBar />
       <ThreePanelLayout
         leftPanelContent={
@@ -105,9 +107,7 @@ export default function ConnectFourGame(props) {
         centerContent={<ConnectFourBoardWrapper />}
         innerRightContent={
           <>
-            {stateViewing >= 0 && (
-              <TextMeetingLayout />
-            )}
+            {stateViewing >= 0 && <TextMeetingLayout />}
             <ActionList />
           </>
         }
@@ -123,8 +123,7 @@ function ConnectFourBoardWrapper() {
   const history = game.history;
   const stateViewing = game.stateViewing;
 
-  if (stateViewing < 0)
-    return <TextMeetingLayout />;
+  if (stateViewing < 0) return <TextMeetingLayout />;
 
   return (
     <SideMenu

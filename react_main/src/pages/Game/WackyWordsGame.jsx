@@ -88,9 +88,11 @@ export default function WackyWordsGame(props) {
   }, game.socket);
 
   return (
-    <GameTypeContext.Provider value={{
-      singleState: true,
-    }}>
+    <GameTypeContext.Provider
+      value={{
+        singleState: true,
+      }}
+    >
       <TopBar />
       <ThreePanelLayout
         leftPanelContent={

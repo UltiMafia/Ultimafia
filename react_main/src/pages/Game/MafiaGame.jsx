@@ -560,9 +560,11 @@ export default function MafiaGame() {
   }, game.socket);
 
   return (
-    <GameTypeContext.Provider value={{
-      singleState: false,
-    }}>
+    <GameTypeContext.Provider
+      value={{
+        singleState: false,
+      }}
+    >
       <TopBar />
       <ThreePanelLayout
         leftPanelContent={

@@ -121,9 +121,11 @@ export default function JottoGame() {
   );
 
   return (
-    <GameTypeContext.Provider value={{
-      singleState: true,
-    }}>
+    <GameTypeContext.Provider
+      value={{
+        singleState: true,
+      }}
+    >
       <TopBar />
       <ThreePanelLayout
         leftPanelContent={
@@ -134,9 +136,7 @@ export default function JottoGame() {
             <SettingsMenu />
           </>
         }
-        centerPanelContent={
-          <TextMeetingLayout />
-        }
+        centerPanelContent={<TextMeetingLayout />}
         rightPanelContent={
           <>
             {jottoCheatSheet}

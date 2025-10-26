@@ -963,7 +963,7 @@ module.exports = class LiarsDiceGame extends Game {
         lastBidder: this.lastBidder ? this.lastBidder.name : null,
         currentBidder:
           this.randomizedPlayersCopy?.[this.currentIndex]?.name ?? "undefined",
-      }
+      },
     };
     return info;
   }

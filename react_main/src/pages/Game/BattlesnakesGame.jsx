@@ -68,9 +68,11 @@ function SnakeGame(props) {
   }
 
   return (
-    <GameTypeContext.Provider value={{
-      singleState: true,
-    }}>
+    <GameTypeContext.Provider
+      value={{
+        singleState: true,
+      }}
+    >
       <TopBar />
       <ThreePanelLayout
         leftPanelContent={

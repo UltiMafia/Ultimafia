@@ -116,9 +116,11 @@ export default function LiarsDiceGame(props) {
   );
 
   return (
-    <GameTypeContext.Provider value={{
-      singleState: true,
-    }}>
+    <GameTypeContext.Provider
+      value={{
+        singleState: true,
+      }}
+    >
       <TopBar hideStateSwitcher />
       <ThreePanelLayout
         leftPanelContent={
@@ -127,9 +129,7 @@ export default function LiarsDiceGame(props) {
             <SettingsMenu />
           </>
         }
-        centerPanelContent={
-          <TextMeetingLayout />
-        }
+        centerPanelContent={<TextMeetingLayout />}
         rightPanelContent={
           <>
             <LiarsDiceCurrentGuess />
@@ -160,36 +160,29 @@ export default function LiarsDiceGame(props) {
 
 function LiarsDiceCurrentGuess() {
   const game = useContext(GameContext);
-  const {
-    history,
-    stateViewing,
-  } = game;
+  const { history, stateViewing } = game;
 
   if (stateViewing < 0) return <></>;
 
   const currentState = history.states[stateViewing];
 
-  const {
-    allDice,
-    lastAmountBid,
-    lastFaceBid,
-    lastBidder,
-    currentBidder,
-  } = currentState.extraInfo.bidInfo;
+  const { allDice, lastAmountBid, lastFaceBid, lastBidder, currentBidder } =
+    currentState.extraInfo.bidInfo;
 
   const bidPercent = (Math.min(lastAmountBid, allDice) / allDice) * 100;
-  const die = (
-    <div className={`dice dice-${lastFaceBid}`}/>
-  );
+  const die = <div className={`dice dice-${lastFaceBid}`} />;
 
   let content = null;
   if (lastBidder) {
     content = (
       <>
-        <Stack direction="row" sx={{
-          position: "relative",
-          alignItems: "center",
-        }}>
+        <Stack
+          direction="row"
+          sx={{
+            position: "relative",
+            alignItems: "center",
+          }}
+        >
           <CircularProgress
             variant="determinate"
             size="2em"
@@ -197,19 +190,19 @@ function LiarsDiceCurrentGuess() {
             enableTrackSlot
             value={bidPercent}
           />
-          <Box sx={{
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
-            position: "absolute",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
-            <Typography variant="h3">
-              {lastAmountBid}
-            </Typography>
+          <Box
+            sx={{
+              top: 0,
+              left: 0,
+              bottom: 0,
+              right: 0,
+              position: "absolute",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Typography variant="h3">{lastAmountBid}</Typography>
           </Box>
         </Stack>
         {die}
@@ -218,8 +211,7 @@ function LiarsDiceCurrentGuess() {
         </Typography>
       </>
     );
-  }
-  else {
+  } else {
     content = (
       <Typography sx={{ marginLeft: "auto !important" }}>
         Initial bet
@@ -228,15 +220,22 @@ function LiarsDiceCurrentGuess() {
   }
 
   return (
-    <SideMenu title={`${currentBidder}'s turn`} content={
-      <Stack direction="row" spacing={1} sx={{
-        p: 1,
-        alignItems: "center",
-        minHeight: "calc(2*var(--mui-spacing) + 2em)",
-      }}>
-        {content}
-      </Stack>
-    }/>
+    <SideMenu
+      title={`${currentBidder}'s turn`}
+      content={
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            p: 1,
+            alignItems: "center",
+            minHeight: "calc(2*var(--mui-spacing) + 2em)",
+          }}
+        >
+          {content}
+        </Stack>
+      }
+    />
   );
 }
 

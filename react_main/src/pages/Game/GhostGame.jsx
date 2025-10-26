@@ -88,9 +88,11 @@ export default function GhostGame(props) {
   }, game.socket);
 
   return (
-    <GameTypeContext.Provider value={{
-      singleState: true,
-    }}>
+    <GameTypeContext.Provider
+      value={{
+        singleState: true,
+      }}
+    >
       <TopBar />
       <ThreePanelLayout
         leftPanelContent={
@@ -100,9 +102,7 @@ export default function GhostGame(props) {
             <SettingsMenu />
           </>
         }
-        centerPanelContent={
-          <TextMeetingLayout />
-        }
+        centerPanelContent={<TextMeetingLayout />}
         rightPanelContent={
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
