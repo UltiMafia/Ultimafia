@@ -10,6 +10,7 @@ export const GameTypes = [
   "Cheat",
   "Battlesnakes",
   "Connect Four",
+  "DiceWars",
 ];
 export const Lobbies = [
   "Main",
@@ -32,6 +33,7 @@ export const Alignments = {
   Cheat: ["Town", "Host"],
   Battlesnakes: ["Town", "Host"],
   "Connect Four": ["Town"],
+  DiceWars: ["Town", "Host"],
 };
 
 export const GameStates = {
@@ -52,6 +54,7 @@ export const GameStates = {
   Cheat: ["Play Cards", "Call Lie"],
   Battlesnakes: ["Day"],
   "Connect Four": ["Turn"],
+  DiceWars: ["Play"],
 };
 
 export const RatingThresholds = {

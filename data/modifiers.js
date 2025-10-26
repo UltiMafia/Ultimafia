@@ -1268,6 +1268,7 @@ const modifierData = {
   Cheat: {},
   Battlesnakes: {},
   "Connect Four": {},
+  DiceWars: {},
 };
 
 module.exports = modifierData;

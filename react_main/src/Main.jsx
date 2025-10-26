@@ -28,11 +28,6 @@ import {
   UserProvider,
 } from "./Contexts";
 import { AlertList, useErrorAlert } from "./components/Alerts";
-import {
-  NotificationHolder,
-  useOnOutsideClick,
-  Time,
-} from "./components/Basic";
 import { Nav } from "./components/Nav";
 import { Welcome } from "./pages/Welcome/Welcome";
 import UserNavSection from "./pages/User/UserNavSection";
@@ -169,7 +164,7 @@ function Main(props) {
         <InGameWarning />
         <Footer />
         <AlertList />
-        {<Chat SiteNotifs={SiteNotifs} />}
+        {<Chat SiteNotifs={useUnreadNotifications} />}
       </div>
     </Box>
   );
@@ -279,13 +274,18 @@ function Header({ setShowAnnouncementTemporarily }) {
             sx={{
               justifyContent: "space-between",
               alignItems: "center",
-              px: 1,
-              py: 1,
+              px: 0.5,
+              py: 0.5,
               borderBottom: "1px solid var(--scheme-color-border)",
+              overflow: "hidden",
             }}
           >
             {/* Icon-only navigation */}
-            <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
+            <Stack
+              direction="row"
+              spacing={0.2}
+              sx={{ alignItems: "center", flexShrink: 0 }}
+            >
               <NavDropdown
                 label="Play"
                 icon={flagblueIcon}
@@ -343,12 +343,12 @@ function Header({ setShowAnnouncementTemporarily }) {
               />
             </Stack>
             {/* User section */}
-            <div className="user-wrapper">
+            <div className="user-wrapper" style={{ flexShrink: 0 }}>
               {user.loggedIn ? (
                 <UserNavSection
                   openAnnouncements={openAnnouncements}
                   user={user}
-                  SiteNotifs={SiteNotifs}
+                  useUnreadNotifications={useUnreadNotifications}
                 />
               ) : (
                 <GuestAuthButtons />
@@ -444,7 +444,7 @@ function Header({ setShowAnnouncementTemporarily }) {
                   <UserNavSection
                     openAnnouncements={openAnnouncements}
                     user={user}
-                    SiteNotifs={SiteNotifs}
+                    useUnreadNotifications={useUnreadNotifications}
                   />
                 ) : (
                   <GuestAuthButtons />
@@ -502,27 +502,17 @@ function InGameWarning() {
   );
 }
 
-function SiteNotifs() {
-  const [showNotifList, setShowNotifList] = useState(false);
-  const [notifInfo, updateNotifInfo] = useNotifInfoReducer();
+// Custom hook to get unread notification count
+function useUnreadNotifications() {
+  const [unreadCount, setUnreadCount] = useState(0);
   const [nextRestart, setNextRestart] = useState();
   const siteInfo = useContext(SiteInfoContext);
-  const navigate = useNavigate();
-
-  const bellRef = useRef();
-  const notifListRef = useRef();
-
-  useOnOutsideClick([bellRef, notifListRef], () => setShowNotifList(false));
 
   useEffect(() => {
     getNotifs();
     var notifGetInterval = setInterval(() => getNotifs(), 10 * 1000);
     return () => clearInterval(notifGetInterval);
   }, []);
-
-  useEffect(() => {
-    if (showNotifList) viewedNotifs();
-  }, [notifInfo.notifs]);
 
   useEffect(() => {
     if (nextRestart && nextRestart > Date.now()) {
@@ -535,18 +525,6 @@ function SiteNotifs() {
     }
   }, [nextRestart]);
 
-  useLayoutEffect(() => {
-    if (!showNotifList) return;
-
-    const listRect = notifListRef.current.getBoundingClientRect();
-    const listRight = listRect.left + listRect.width;
-
-    if (listRight > window.innerWidth)
-      notifListRef.current.style.left = window.innerWidth - listRight + "px";
-
-    notifListRef.current.style.visibility = "visible";
-  });
-
   function getNotifs() {
     axios
       .get("/api/notifs")
@@ -555,110 +533,12 @@ function SiteNotifs() {
         var notifs = res.data.slice(1);
 
         setNextRestart(nextRestart);
-
-        updateNotifInfo({
-          type: "add",
-          notifs: notifs,
-        });
+        setUnreadCount(notifs.length);
       })
       .catch(() => {});
   }
 
-  function viewedNotifs() {
-    axios
-      .post("/api/notifs/viewed")
-      .then(() => {
-        updateNotifInfo({ type: "viewed" });
-      })
-      .catch(() => {});
-  }
-
-  function onShowNotifsClick() {
-    setShowNotifList(!showNotifList);
-
-    if (!showNotifList && notifInfo.unread > 0) viewedNotifs();
-  }
-
-  function onNotifClick(e, notif) {
-    if (!notif.link) e.preventDefault();
-    else if (window.location.pathname === notif.link.split("?")[0])
-      navigate.go(0);
-  }
-
-  const notifs = notifInfo.notifs.map((notif) => (
-    <Link
-      className="notif"
-      key={notif.id}
-      to={notif.link}
-      onClick={(e) => onNotifClick(e, notif)}
-    >
-      {notif.icon && <i className={`fas fa-${notif.icon}`} />}
-      <div className="info">
-        <div className="time">
-          <Time millisec={Date.now() - notif.date} suffix=" ago" />
-        </div>
-        <div className="content">{notif.content}</div>
-      </div>
-    </Link>
-  ));
-
-  return (
-    <div className="notifs-wrapper">
-      <NotificationHolder
-        lOffset
-        notifCount={notifInfo.unread}
-        onClick={onShowNotifsClick}
-        fwdRef={bellRef}
-      >
-        <i className="fas fa-bell" />
-      </NotificationHolder>
-      {showNotifList && (
-        <div className="notif-list" ref={notifListRef}>
-          {notifs}
-          {notifs.length === 0 && "No unread notifications"}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function useNotifInfoReducer() {
-  return useReducer(
-    (notifInfo, action) => {
-      var newNotifInfo;
-
-      switch (action.type) {
-        case "add":
-          var existingNotifIds = notifInfo.notifs.map((notif) => notif.id);
-          var newNotifs = action.notifs.filter(
-            (notif) => existingNotifIds.indexOf(notif.id) === -1
-          );
-
-          newNotifInfo = update(notifInfo, {
-            notifs: {
-              $set: newNotifs.concat(notifInfo.notifs),
-            },
-            unread: {
-              $set: notifInfo.unread + newNotifs.length,
-            },
-          });
-
-          // if (newNotifs.length > 0 && document.hidden && document.title.indexOf("🔴") == -1)
-          //     document.title = document.title + "🔴";
-          break;
-        case "viewed":
-          newNotifInfo = update(notifInfo, {
-            unread: {
-              $set: 0,
-            },
-          });
-          break;
-      }
-
-      return newNotifInfo || notifInfo;
-    },
-    { notifs: [], unread: 0 }
-  );
+  return unreadCount;
 }
 
 function Footer() {

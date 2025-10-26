@@ -32,6 +32,7 @@ import LiarsDiceGame from "./LiarsDiceGame";
 import TexasHoldEmGame from "./TexasHoldEmGame";
 import CheatGame from "./CheatGame";
 import BattlesnakesGame from "./BattlesnakesGame";
+import DiceWarsGame from "./DiceWarsGame";
 import ConnectFourGame from "./ConnectFourGame";
 import { GameContext, SiteInfoContext, UserContext } from "Contexts";
 import Dropdown from "../../components/Dropdown";
@@ -880,6 +881,7 @@ export default function Game() {
             {gameType === "Texas Hold Em" && <TexasHoldEmGame />}
             {gameType === "Cheat" && <CheatGame />}
             {gameType === "Battlesnakes" && <BattlesnakesGame />}
+            {gameType === "DiceWars" && <DiceWarsGame />}
             {gameType === "Connect Four" && <ConnectFourGame />}
           </Box>
         </Stack>

@@ -1,0 +1,100 @@
+import React, { useRef, useEffect, useContext } from "react";
+
+import {
+  useSocketListeners,
+  ThreePanelLayout,
+  TopBar,
+  TextMeetingLayout,
+  ActionList,
+  PlayerList,
+  Timer,
+} from "./Game";
+import { GameContext } from "../../Contexts";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+
+import "css/gameBattlesnakes.css"; // Reuse Battlesnakes CSS as placeholder
+import DiceWarsGameDisplay from "./DiceWarsGameDisplay";
+
+function DiceWarsGame(props) {
+  const game = useContext(GameContext);
+  const isPhoneDevice = useIsPhoneDevice();
+
+  const history = game.history;
+  const updateHistory = game.updateHistory;
+  const stateViewing = game.stateViewing;
+  const updateStateViewing = game.updateStateViewing;
+  const self = game.self;
+  const players = game.players;
+
+  const gameType = "DiceWars";
+  const meetings = history.states[stateViewing]
+    ? history.states[stateViewing].meetings
+    : {};
+
+  const audioFileNames = ["music/14_Minigame"];
+  const audioLoops = [true];
+  const audioOverrides = [true];
+  const audioVolumes = [1];
+
+  // Make player view current state when it changes
+  useEffect(() => {
+    updateStateViewing({ type: "current" });
+  }, [history.currentState]);
+
+  useEffect(() => {
+    game.loadAudioFiles(
+      audioFileNames,
+      audioLoops,
+      audioOverrides,
+      audioVolumes
+    );
+
+    // Make game review start at pregame
+    if (game.review) updateStateViewing({ type: "first" });
+  }, []);
+
+  useSocketListeners((socket) => {
+    socket.on("start", () => {
+      game.playAudio("music/14_Minigame");
+    });
+  }, game.socket);
+
+  if (isPhoneDevice) {
+    // Unsupported
+    game.leaveGame();
+    alert("DiceWars is not presently supported on mobile devices.");
+    return <></>;
+  }
+
+  return (
+    <>
+      <TopBar hideStateSwitcher />
+      <ThreePanelLayout
+        leftPanelContent={
+          <>
+            <PlayerList />
+            <ActionList />
+          </>
+        }
+        centerPanelContent={
+          <>
+            {players && game.socket && (
+              <DiceWarsGameDisplay
+                player={self}
+                players={players}
+                gameSocket={game.socket}
+              />
+            )}
+          </>
+        }
+        rightPanelContent={
+          <>
+            <TextMeetingLayout combineMessagesFromAllMeetings />
+          </>
+        }
+      />
+    </>
+  );
+}
+
+export default React.memo(DiceWarsGame);

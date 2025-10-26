@@ -1,6 +1,6 @@
 # Adding a new Game Mode
 
-We currently have eleven game modes: Mafia, Resistance, Secret Dictator, Acrotopia, Jotto, Wacky Words, Liars Dice, Battlesnakes, Texas Hold Em, Cheat, and Connect Four. To create a new game,
+We currently have twelve game modes: Mafia, Resistance, Secret Dictator, Acrotopia, Jotto, Wacky Words, Liars Dice, Battlesnakes, Texas Hold Em, Cheat, Connect Four, and Dice Wars. To create a new game,
 
 - Make child classes of core
 - Update constants.js and constants.jsx

@@ -426,6 +426,7 @@ var schemas = {
     date: Number,
     icon: String,
     link: String,
+    read: { type: Boolean, default: false, index: true },
   }),
   Friend: new mongoose.Schema(
     {

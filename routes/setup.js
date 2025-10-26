@@ -1224,6 +1224,11 @@ const countChecks = {
     if (total < 2 || total > 10) return "Must have between 2 and 10 players.";
     return true;
   },
+  DiceWars: (roles, count, total, closed, unique) => {
+    if (total < 2) return "Must have at least 2 players.";
+    if (total > 8) return "Must have at most 8 players.";
+    return true;
+  },
   "Connect Four": (roles, count, total, closed, unique) => {
     if (total < 2) return "Must have at least 2 players.";
 
@@ -1284,6 +1289,9 @@ const optionsChecks = {
     return setup;
   },
   Cheat: (setup) => {
+    return setup;
+  },
+  DiceWars: (setup) => {
     return setup;
   },
   "Connect Four": (setup) => {
