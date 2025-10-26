@@ -43,6 +43,7 @@ module.exports = class Role {
     this.hideModifier = {};
     this.oblivious = {};
     this.actions = [];
+    this.passiveActions = [];
     this.startItems = [];
     this.startEffects = [];
     this.immunity = {};
