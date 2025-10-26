@@ -11,6 +11,7 @@ module.exports = class EvilPairs extends Card {
     this.passiveActions = [
       {
         actor: role.player,
+        state: "Night",
         game: role.player.game,
         role: role,
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
