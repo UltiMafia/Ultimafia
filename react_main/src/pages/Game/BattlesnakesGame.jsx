@@ -8,6 +8,7 @@ import {
   ActionList,
   PlayerList,
   Timer,
+  GameTypeContext,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
@@ -67,8 +68,10 @@ function SnakeGame(props) {
   }
 
   return (
-    <>
-      <TopBar hideStateSwitcher />
+    <GameTypeContext.Provider value={{
+      singleState: true,
+    }}>
+      <TopBar />
       <ThreePanelLayout
         leftPanelContent={
           <>
@@ -89,11 +92,11 @@ function SnakeGame(props) {
         }
         rightPanelContent={
           <>
-            <TextMeetingLayout combineMessagesFromAllMeetings />
+            <TextMeetingLayout />
           </>
         }
       />
-    </>
+    </GameTypeContext.Provider>
   );
 }
 

@@ -11,6 +11,7 @@ import {
   TextMeetingLayout,
   Notes,
   MobileLayout,
+  GameTypeContext,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -125,8 +126,10 @@ export default function CheatGame(props) {
   );
 
   return (
-    <>
-      <TopBar hideStateSwitcher />
+    <GameTypeContext.Provider value={{
+      singleState: true,
+    }}>
+      <TopBar />
       <ThreePanelLayout
         leftPanelContent={
           <>
@@ -135,7 +138,7 @@ export default function CheatGame(props) {
           </>
         }
         centerPanelContent={
-          <TextMeetingLayout combineMessagesFromAllMeetings />
+          <TextMeetingLayout />
         }
         rightPanelContent={
           <>
@@ -147,7 +150,6 @@ export default function CheatGame(props) {
         }
       />
       <MobileLayout
-        singleState
         outerLeftContent={playerList}
         innerRightContent={
           <>
@@ -157,7 +159,7 @@ export default function CheatGame(props) {
           </>
         }
       />
-    </>
+    </GameTypeContext.Provider>
   );
 }
 

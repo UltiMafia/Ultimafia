@@ -13,6 +13,7 @@ import {
   Notes,
   PinnedMessages,
   MobileLayout,
+  GameTypeContext,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 
@@ -88,7 +89,9 @@ export default function ResistanceGame(props) {
   }, game.socket);
 
   return (
-    <>
+    <GameTypeContext.Provider value={{
+      singleState: false,
+    }}>
       <TopBar />
       <ThreePanelLayout
         leftPanelContent={
@@ -128,7 +131,7 @@ export default function ResistanceGame(props) {
           </>
         }
       />
-    </>
+    </GameTypeContext.Provider>
   );
 }
 

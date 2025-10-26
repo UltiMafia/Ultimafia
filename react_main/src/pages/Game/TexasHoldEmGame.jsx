@@ -12,6 +12,7 @@ import {
   Notes,
   SettingsMenu,
   MobileLayout,
+  GameTypeContext,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -122,8 +123,10 @@ export default function TexasHoldEmGame(props) {
   );
 
   return (
-    <>
-      <TopBar hideStateSwitcher />
+    <GameTypeContext.Provider value={{
+      singleState: true,
+    }}>
+      <TopBar />
       <ThreePanelLayout
         leftPanelContent={
           <>
@@ -132,7 +135,7 @@ export default function TexasHoldEmGame(props) {
           </>
         }
         centerPanelContent={
-          <TextMeetingLayout combineMessagesFromAllMeetings />
+          <TextMeetingLayout />
         }
         rightPanelContent={
           <>
@@ -145,7 +148,6 @@ export default function TexasHoldEmGame(props) {
         }
       />
       <MobileLayout
-        singleState
         outerLeftContent={playerList}
         innerRightContent={
           <>
@@ -156,7 +158,7 @@ export default function TexasHoldEmGame(props) {
           </>
         }
       />
-    </>
+    </GameTypeContext.Provider>
   );
 }
 

@@ -12,6 +12,7 @@ import {
   SettingsMenu,
   Notes,
   PinnedMessages,
+  GameTypeContext,
 } from "./Game";
 import { GameContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -87,8 +88,10 @@ export default function GhostGame(props) {
   }, game.socket);
 
   return (
-    <>
-      <TopBar hideStateSwitcher />
+    <GameTypeContext.Provider value={{
+      singleState: true,
+    }}>
+      <TopBar />
       <ThreePanelLayout
         leftPanelContent={
           <>
@@ -98,7 +101,7 @@ export default function GhostGame(props) {
           </>
         }
         centerPanelContent={
-          <TextMeetingLayout combineMessagesFromAllMeetings />
+          <TextMeetingLayout />
         }
         rightPanelContent={
           <>
@@ -110,7 +113,6 @@ export default function GhostGame(props) {
         }
       />
       <MobileLayout
-        singleState
         outerLeftContent={
           <>
             <PlayerList />
@@ -130,7 +132,7 @@ export default function GhostGame(props) {
           </>
         }
       />
-    </>
+    </GameTypeContext.Provider>
   );
 }
 
