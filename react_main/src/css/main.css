@@ -58,6 +58,18 @@
   }
 }
 
+/* Prevent scrollbar gaps when MUI menus/modals open */
+body {
+  overflow-y: scroll;
+  width: 100%;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 html,
 body {
   width: 100%;

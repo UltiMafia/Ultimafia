@@ -206,6 +206,7 @@ async function createNotification(info, recipients, sockets) {
         date: !info.isChat ? Date.now() : undefined,
         icon: info.icon,
         link: info.link,
+        read: false,
       });
       await notification.save();
 
@@ -226,6 +227,7 @@ async function createNotification(info, recipients, sockets) {
       date: Date.now(),
       icon: info.icon,
       link: info.link,
+      read: false,
     });
     await notification.save();
 
@@ -234,7 +236,7 @@ async function createNotification(info, recipients, sockets) {
     if (recipients) userFilter = { id: { $in: recipients } };
 
     await models.User.updateMany(userFilter, {
-      $push: { globalNotifs: notif._id },
+      $push: { globalNotifs: notification._id },
     }).exec();
   }
 }

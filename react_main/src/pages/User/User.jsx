@@ -7,6 +7,7 @@ import update from "immutability-helper";
 import Profile, { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "./Profile";
 import Settings from "./Settings";
 import Shop from "./Shop";
+import Inbox from "./Inbox";
 import { UserContext, SiteInfoContext, GameContext } from "Contexts";
 import AvatarUpload from "components/AvatarUpload";
 
@@ -329,6 +330,7 @@ export default function User(props) {
           <Route path="/" element={<Profile />} />
           <Route path="settings" element={<Settings />} />
           <Route path="shop" element={<Shop />} />
+          <Route path="inbox" element={<Inbox />} />
           <Route path=":userId" element={<Profile />} />
         </Routes>
       </Box>
