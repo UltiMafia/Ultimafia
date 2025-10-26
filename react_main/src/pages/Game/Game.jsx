@@ -6,6 +6,7 @@ import React, {
   useRef,
   useMemo,
   useCallback,
+  createContext,
 } from "react";
 import {
   useParams,
@@ -115,6 +116,10 @@ const emoteMap = {
 
 const NO_ONE_NAME = "no one";
 const MAGUS_NAME = "Declare Magus Game";
+
+export const GameTypeContext = createContext({
+  singleState: false,
+});
 
 export default function Game() {
   const user = useContext(UserContext);
@@ -492,6 +497,7 @@ export default function Game() {
       return;
     }
 
+    console.log("[WEBSOCKET] Successfully connected");
     if (token) socket.send("auth", token);
     else
       socket.send("join", {
@@ -507,6 +513,7 @@ export default function Game() {
     });
 
     socket.on("loaded", () => {
+      console.log("[WEBSOCKET] loaded");
       setLoaded(true);
     });
 
@@ -529,6 +536,7 @@ export default function Game() {
     });
 
     socket.on("history", (history) => {
+      console.log("[WEBSOCKET] Retrieved history", history);
       updateHistory({
         type: "set",
         history,
@@ -916,8 +924,9 @@ export function useSocketListeners(listeners, socket) {
   }, [socket]);
 }
 
-export function TopBar({ hideStateSwitcher = false }) {
+export function TopBar() {
   const game = useContext(GameContext);
+  const { singleState } = useContext(GameTypeContext);
 
   const theme = useTheme();
   const isPhoneDevice = useIsPhoneDevice();
@@ -1008,7 +1017,7 @@ export function TopBar({ hideStateSwitcher = false }) {
         flex: "none",
       }}
     >
-      {!hideStateSwitcher && (
+      {!singleState && (
         <Paper>
           <StateSwitcher />
         </Paper>
@@ -1196,7 +1205,6 @@ function MobileMenu() {
 }
 
 export function MobileLayout({
-  singleState = false,
   outerLeftNavigationProps = {
     label: "Players",
     value: "players",
@@ -1217,6 +1225,7 @@ export function MobileLayout({
   additionalInfoContent = <></>,
 }) {
   const game = useContext(GameContext);
+  const { singleState } = useContext(GameTypeContext);
   const isPhoneDevice = useIsPhoneDevice();
 
   if (!isPhoneDevice) {
@@ -1311,8 +1320,9 @@ export function ThreePanelLayout({
   );
 }
 
-export function TextMeetingLayout({ combineMessagesFromAllMeetings = false }) {
+export function TextMeetingLayout() {
   const game = useContext(GameContext);
+  const { singleState } = useContext(GameTypeContext);
   const { isolationEnabled, isolatedPlayers } = game;
   const { history, players, stateViewing, updateHistory, settings, filters } =
     game;
@@ -1436,7 +1446,7 @@ export function TextMeetingLayout({ combineMessagesFromAllMeetings = false }) {
 
   const messages = useMemo(() => {
     var messageData;
-    if (combineMessagesFromAllMeetings) {
+    if (singleState) {
       messageData = getAllMessagesToDisplay(history);
     } else {
       messageData = getMessagesToDisplay(

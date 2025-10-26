@@ -15,6 +15,7 @@ import {
   Notes,
   PinnedMessages,
   MobileLayout,
+  GameTypeContext,
 } from "./Game";
 import { GameContext, SiteInfoContext } from "../../Contexts";
 import { SideMenu } from "./Game";
@@ -559,7 +560,9 @@ export default function MafiaGame() {
   }, game.socket);
 
   return (
-    <>
+    <GameTypeContext.Provider value={{
+      singleState: false,
+    }}>
       <TopBar />
       <ThreePanelLayout
         leftPanelContent={
@@ -601,7 +604,7 @@ export default function MafiaGame() {
           </>
         }
       />
-    </>
+    </GameTypeContext.Provider>
   );
 }
 

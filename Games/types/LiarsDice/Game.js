@@ -956,6 +956,14 @@ module.exports = class LiarsDiceGame extends Game {
         this.chatName == "The Flying Dutchman" ? true : false,
       whoseTurnIsIt:
         this.randomizedPlayersCopy?.[this.currentIndex]?.user.id ?? 0,
+      bidInfo: {
+        allDice: this.allDice,
+        lastAmountBid: this.lastAmountBid,
+        lastFaceBid: this.lastFaceBid,
+        lastBidder: this.lastBidder ? this.lastBidder.name : null,
+        currentBidder:
+          this.randomizedPlayersCopy?.[this.currentIndex]?.name ?? "undefined",
+      }
     };
     return info;
   }
