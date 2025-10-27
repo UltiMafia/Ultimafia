@@ -5020,7 +5020,7 @@ const roleData = {
       alignment: "Independent",
       tags: ["Killing", "Graveyard", "Visiting", "Advanced"],
       description: [
-        "If killed by another player, gains the ability to each night, can choose to visit one player and kill them.",
+        "If killed by another player, gains the ability: Each night, can choose to visit one player and kill them.",
         "Does not gain the ability if condemned by village vote.",
         "Wins if they kill all of their killers.",
       ],
