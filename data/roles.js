@@ -5325,7 +5325,7 @@ const roleData = {
       tags: ["Killing", "Must Act", "Last Two", "Visiting", "Hostile", "Basic"],
       description: [
         "Each night, must choose to visit one player and kill them.",
-        "Wins if among last two alive.",
+        "Wins if among the last two alive.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
     },
@@ -5367,7 +5367,7 @@ const roleData = {
         "Clock goes up by 1 hour for killing Village roles, 2 hours for killing Mafia or Cult roles, and down by 3 hours for killing Independent roles.",
         "If the clock strikes 3 o'clock, the Clockmaker dies.",
         "If the clock strikes 9 o'clock, the Clockmaker gains an extra life.",
-        "Wins when clock strikes 12 o'clock or if among last two alive.",
+        "Wins when clock strikes 12 o'clock or if among the last two alive.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
     },
@@ -5377,7 +5377,7 @@ const roleData = {
       description: [
         `Each night, can choose to visit one player and make them "Doused".`,
         `Each day, can choose to kill all players that are "Doused".`,
-        "Wins if among last two alive.",
+        "Wins if among the last two alive.",
       ],
       nightOrder: [["Douse In Gasoline", PRIORITY_EFFECT_GIVER_DEFAULT - 1]],
     },
@@ -5665,7 +5665,7 @@ const roleData = {
       description: [
         "Each night, can choose to visit one player and challenges them to a game of Rock, Paper, Scissors the following day.",
         "If the Gambler wins, that player dies.",
-        "Wins the game when they have 2 gamble wins, or are among the last two standing.",
+        "Wins the game when they have 2 gamble wins, or are among the last two alive.",
       ],
       nightOrder: [["Gamble", 0]],
     },
@@ -5682,7 +5682,7 @@ const roleData = {
       description: [
         "Each night, can choose to visit one player and kill each player who visits that player.",
         "If no one visits that player, the Grizzly Bear kills them.",
-        "Wins if among last two alive.",
+        "Wins if among the last two alive.",
       ],
       nightOrder: [["Kill Visitors", PRIORITY_KILL_DEFAULT + 1]],
     },
@@ -5765,7 +5765,7 @@ const roleData = {
       description: [
         "Each night, can choose to visit one player and learn their role and attach strings to them.",
         "Each night, can choose to redirect each player they have attached strings to's visits on to other players. (Not a visit)",
-        "Wins among the last two standing.",
+        "Wins among the last two alive.",
       ],
       nightOrder: [
         ["Control Players", PRIORITY_REDIRECT_ACTION],
