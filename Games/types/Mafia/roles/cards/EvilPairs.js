@@ -10,15 +10,15 @@ module.exports = class EvilPairs extends Card {
 
     this.passiveActions = [
       {
+        ability: ["Information"],
         actor: role.player,
         state: "Night",
-        game: role.player.game,
+        game: role.game,
         role: role,
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
         labels: ["investigate"],
         run: function () {
           if (this.role.hasInfo) return;
-          if (!this.actor.alive) return;
           let info = this.game.createInformation(
             "EvilPairsInfo",
             this.actor,

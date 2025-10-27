@@ -408,8 +408,12 @@ module.exports = class Role {
   }
 
   queueNightActions() {
-    for (let options of this.PassiveActions) {
-      if (options.state == this.game.getStateInfo().name) {
+    for (let options of this.passiveActions) {
+      //this.game.queueAlert(options.state + " " + this.game.getStateInfo().name)
+      if (this.game.getStateInfo().name.match(options.state)) {
+        if(options.ability && !this.hasAbility(options.ability)){
+          return;
+        }
         this.game.queueAction(new this.Action(options));
       }
     }

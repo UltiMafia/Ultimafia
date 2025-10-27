@@ -2473,6 +2473,17 @@ const roleData = {
       ],
       nightOrder: [["Die unless visited", PRIORITY_KILL_DEFAULT + 1]],
     },
+    "Trick-Or-Treater": {
+      alignment: "Village",
+      category: "Linked",
+      tags: ["Information", "Visit Interaction", "Advanced"],
+      description: [
+        "Each day, can choose to go trick or treating.",
+        "All evils players will learn if a Trick-Or-Treater goes trick or treating.",
+        "At night if trick or treating, the Trick-Or-Treater  announce who visits their neighbors.",
+      ],
+      nightOrder: [["Announce Visitors", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 3],],
+    },
     Suitress: {
       alignment: "Village",
       category: "Linked",
