@@ -5,8 +5,6 @@ import "css/main.css";
 import "./Welcome.css";
 import { RegisterDialog } from "./RegisterDialog";
 import { LoginDialog } from "./LoginDialog";
-import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "lib/firebaseConfig";
 import { Scenario2 } from "./Scenario2";
 import {
   getAuth,
@@ -41,7 +39,6 @@ export const Welcome = () => {
 
   useEffect(() => {
     document.body.style.backgroundImage = `none`;
-    initializeApp(firebaseConfig);
     const auth = getAuth();
     auth.setPersistence(inMemoryPersistence);
 
