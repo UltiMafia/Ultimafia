@@ -411,7 +411,7 @@ module.exports = class Role {
     for (let options of this.passiveActions) {
       //this.game.queueAlert(options.state + " " + this.game.getStateInfo().name)
       if (this.game.getStateInfo().name.match(options.state)) {
-        if(options.ability && !this.hasAbility(options.ability)){
+        if (options.ability && !this.hasAbility(options.ability)) {
           return;
         }
         this.game.queueAction(new this.Action(options));
