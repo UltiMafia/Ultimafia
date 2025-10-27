@@ -2464,7 +2464,7 @@ const roleData = {
       description: [
         "Each day, can choose to go trick or treating.",
         "All evils players will learn if a Trick-Or-Treater goes trick or treating.",
-        "At night if trick or treating, the Trick-Or-Treater  announce who visits their neighbors.",
+        "At night if trick or treating, the Trick-Or-Treater will announce who visits their neighbors.",
       ],
       nightOrder: [
         ["Announce Visitors", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 3],
