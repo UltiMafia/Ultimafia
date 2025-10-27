@@ -63,8 +63,7 @@ const modifierData = {
       category: "Other",
       internal: ["AddRottenCopy"],
       tags: ["Delirium", "Setup Changes"],
-      description:
-        `In closed setups will add 0 to 2 copies of this role, 1 of the added roles is permanently “Delirious”.`,
+      description: `In closed setups will add 0 to 2 copies of this role, 1 of the added roles is permanently “Delirious”.`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Creamed: {
@@ -517,7 +516,8 @@ const modifierData = {
       category: "Other",
       internal: ["KillAlignedOnDeath"],
       tags: ["Essential", "Selective Revealing", "Vital"],
-      description: "If killed, all all players with the same alignment will die too.",
+      description:
+        "If killed, all all players with the same alignment will die too.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     //Role Share
