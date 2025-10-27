@@ -10,7 +10,7 @@ export const GameTypes = [
   "Cheat",
   "Battlesnakes",
   "Connect Four",
-  "DiceWars",
+  //"DiceWars",
 ];
 export const Lobbies = [
   "Main",

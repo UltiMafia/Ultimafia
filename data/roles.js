@@ -2473,6 +2473,17 @@ const roleData = {
       ],
       nightOrder: [["Die unless visited", PRIORITY_KILL_DEFAULT + 1]],
     },
+    "Trick-Or-Treater": {
+      alignment: "Village",
+      category: "Linked",
+      tags: ["Information", "Visit Interaction", "Advanced"],
+      description: [
+        "Each day, can choose to go trick or treating.",
+        "All evils players will learn if a Trick-Or-Treater goes trick or treating.",
+        "At night if trick or treating, the Trick-Or-Treater  announce who visits their neighbors.",
+      ],
+      nightOrder: [["Announce Visitors", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 3],],
+    },
     Suitress: {
       alignment: "Village",
       category: "Linked",
@@ -3180,7 +3191,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Killing", "Voting", "Vote Kills", "Visiting", "Advanced"],
       description: [
-        `Each night, can choose to visit two players and make first player have "Cold Feet" torwards the second player.`,
+        `Each night, can choose to visit two players and make first player have "Cold Feet" towards the second player.`,
         coldfeetDef,
         //"Chooses a victim and a target each night.",
         //"If the victim votes for the target in the village meeting the following day, the victim will die.",
@@ -3897,7 +3908,7 @@ const roleData = {
       category: "Killing",
       tags: ["Vote Kills", "Killing", "Voting", "Visiting", "Basic"],
       description: [
-        `Each night, can choose to visit two players and make first player have "Cold Feet" torwards the second player.`,
+        `Each night, can choose to visit two players and make first player have "Cold Feet" towards the second player.`,
         coldfeetDef,
       ],
       nightOrder: [["Curse Player", PRIORITY_EFFECT_GIVER_DEFAULT]],

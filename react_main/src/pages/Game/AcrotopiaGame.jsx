@@ -88,9 +88,11 @@ export default function AcrotopiaGame(props) {
   }, game.socket);
 
   return (
-    <GameTypeContext.Provider value={{
-      singleState: true,
-    }}>
+    <GameTypeContext.Provider
+      value={{
+        singleState: true,
+      }}
+    >
       <TopBar hideStateSwitcher />
       <ThreePanelLayout
         leftPanelContent={
@@ -100,9 +102,7 @@ export default function AcrotopiaGame(props) {
             <SettingsMenu />
           </>
         }
-        centerPanelContent={
-          <TextMeetingLayout />
-        }
+        centerPanelContent={<TextMeetingLayout />}
         rightPanelContent={
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />

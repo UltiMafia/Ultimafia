@@ -57,7 +57,7 @@ module.exports = {
     "Texas Hold Em",
     "Cheat",
     "Battlesnakes",
-    "DiceWars",
+    //"DiceWars",
     "Connect Four",
   ],
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],

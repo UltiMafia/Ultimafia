@@ -43,6 +43,7 @@ module.exports = class Role {
     this.hideModifier = {};
     this.oblivious = {};
     this.actions = [];
+    this.passiveActions = [];
     this.startItems = [];
     this.startEffects = [];
     this.immunity = {};
@@ -403,6 +404,18 @@ module.exports = class Role {
       options.actor = this.player;
       options.game = this.game;
       this.game.queueAction(new this.Action(options));
+    }
+  }
+
+  queueNightActions() {
+    for (let options of this.passiveActions) {
+      //this.game.queueAlert(options.state + " " + this.game.getStateInfo().name)
+      if (this.game.getStateInfo().name.match(options.state)) {
+        if(options.ability && !this.hasAbility(options.ability)){
+          return;
+        }
+        this.game.queueAction(new this.Action(options));
+      }
     }
   }
 

@@ -45,6 +45,7 @@ module.exports = class Card {
       "hideModifier",
       "oblivious",
       "actions",
+      "passiveActions",
       "startItems",
       "startEffects",
       "immunity",

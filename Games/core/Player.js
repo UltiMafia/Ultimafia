@@ -1453,11 +1453,15 @@ module.exports = class Player {
   }
 
   queueNonmeetActions() {
-    if (this.role) this.role.queueActions();
+    if (this.role) {
+      this.role.queueActions();
+      this.role.queueNightActions();
+    }
 
     if (this.ExtraRoles) {
       for (let extraRole of this.ExtraRoles) {
         extraRole.queueActions();
+        extraRole.queueNightActions();
       }
     }
 

@@ -89,9 +89,11 @@ export default function ResistanceGame(props) {
   }, game.socket);
 
   return (
-    <GameTypeContext.Provider value={{
-      singleState: false,
-    }}>
+    <GameTypeContext.Provider
+      value={{
+        singleState: false,
+      }}
+    >
       <TopBar />
       <ThreePanelLayout
         leftPanelContent={
