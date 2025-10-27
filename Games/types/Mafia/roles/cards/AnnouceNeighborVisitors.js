@@ -74,6 +74,9 @@ module.exports = class AnnouceNeighborVisitors extends Card {
         ],
         role: role,
         run: function () {
+          if(!this.role){
+            return;
+          }
           if (this.role.neighborsForTrail.length <= 0) {
             return;
           }
