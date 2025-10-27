@@ -64,7 +64,7 @@ const modifierData = {
       internal: ["AddRottenCopy"],
       tags: ["Delirium", "Setup Changes"],
       description:
-        "In closed Setups will add 0 to 2 Copies of This Role, 1 of the added roles is Permanently given Delirium.",
+        `In closed setups will add 0 to 2 copies of this role, 1 of the added roles is permanently “Delirious”.`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Creamed: {
@@ -72,7 +72,7 @@ const modifierData = {
       internal: ["StartWithIceCream"],
       tags: ["Items", "Ice Cream"],
       description:
-        "Starts with a Ice Cream. Ice Cream can be used to become a Vanilla role",
+        "Starts with an Ice Cream. Ice Cream can be used to become a Vanilla role.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Crystalline: {
@@ -87,7 +87,7 @@ const modifierData = {
       category: "Other",
       internal: ["Dead"],
       tags: ["Dead"],
-      description: "Starts game dead",
+      description: "Starts game dead.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Explosive: {
@@ -517,7 +517,7 @@ const modifierData = {
       category: "Other",
       internal: ["KillAlignedOnDeath"],
       tags: ["Essential", "Selective Revealing", "Vital"],
-      description: "If killed, all aligned players will die too.",
+      description: "If killed, all all players with the same alignment will die too.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     //Role Share
