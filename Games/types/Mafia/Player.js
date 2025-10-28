@@ -371,6 +371,10 @@ module.exports = class MafiaPlayer extends Player {
   }
 
   speak(message) {
+    let deadPlayers = this.game.players.filter((p) => (!p.alive || p.hasEffect("CanSeeDead")) && !(p.hasEffect("CanSpeakToLiving") && !p.hasEffect("CanSeeDead")));
+    if(this.hasEffect("CanSpeakToLiving")){
+      return super.speak(message);
+    }
     if (
       !this.alive &&
       this.game.isTalkingDead() != true &&
@@ -381,7 +385,7 @@ module.exports = class MafiaPlayer extends Player {
         message.meeting.name == "Graveyard" ||
         message.meeting.name == "Party!")
     ) {
-      message.recipients = this.game.deadPlayers();
+      message.recipients = deadPlayers;
       message.modified = true;
     }
 
@@ -389,6 +393,10 @@ module.exports = class MafiaPlayer extends Player {
   }
 
   speakQuote(quote) {
+    let deadPlayers = this.game.players.filter((p) => (!p.alive || p.hasEffect("CanSeeDead")) && !(p.hasEffect("CanSpeakToLiving") && !p.hasEffect("CanSeeDead")));
+    if(this.hasEffect("CanSpeakToLiving")){
+      return super.speak(quote);
+    }
     if (
       !this.alive &&
       this.game.isTalkingDead() != true &&
@@ -399,7 +407,7 @@ module.exports = class MafiaPlayer extends Player {
         quote.meeting.name == "Graveyard" ||
         quote.meeting.name == "Party!")
     ) {
-      quote.recipients = this.game.deadPlayers();
+      quote.recipients = deadPlayers;
       quote.modified = true;
     }
 
