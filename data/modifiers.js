@@ -361,49 +361,6 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
-    //Speaking Mods
-    Blind: {
-      category: "Other",
-      internal: ["Blind"],
-      tags: ["Speech", "Blind", "Effect"],
-      description: `Starts the game "Blind". ${blindDef}`,
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Clueless: {
-      category: "Other",
-      internal: ["Clueless"],
-      tags: ["Speech", "Clueless", "Random Messages", "Effect"],
-      description: `Starts the game "Clueless". ${cluelessDef}`,
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Leaky: {
-      category: "Other",
-      internal: ["ModifierLeaky"],
-      tags: ["Whispers", "Effect"],
-      description: `Starts the game "Leaky". ${leakyDef}`,
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Telepathic: {
-      category: "Other",
-      internal: ["ModifierTelepathic"],
-      tags: ["Speaking"],
-      description: "May anonymously contact any player.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Neighborly: {
-      category: "Other",
-      internal: ["MeetWithNeighbors"],
-      tags: ["Meeting"],
-      description: "Attends a Night Meeting with their Neighbors.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Social: {
-      category: "Other",
-      internal: ["MeetWithSocial"],
-      tags: ["Meeting"],
-      description: "Attends a meeting with all other Social players.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
     Lone: {
       category: "Other",
       internal: ["ModifierLone"],
@@ -592,6 +549,22 @@ const modifierData = {
       internal: ["DropOwnItems"],
       tags: ["Items"],
       description: "Will passively drop any items held or received.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Covert: {
+      category: "Items",
+      internal: ["MakeAllGunsHidden"],
+      tags: ["Items"],
+      description:
+        "All Guns, Knives, and Rifles used by this role will not reveal user.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Overt: {
+      category: "Items",
+      internal: ["MakeAllGunsReveal"],
+      tags: ["Items"],
+      description:
+        "All Guns, Knives, and Rifles used by this role will reveal user.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
@@ -1249,6 +1222,65 @@ const modifierData = {
         "One Village-aligned player will have unfavorable results to this role's information abilities.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    //Speaking
+    //Speaking Mods
+    Blind: {
+      category: "Chat",
+      internal: ["Blind"],
+      tags: ["Speech", "Blind", "Effect"],
+      description: `Starts the game "Blind". ${blindDef}`,
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Clueless: {
+      category: "Chat",
+      internal: ["Clueless"],
+      tags: ["Speech", "Clueless", "Random Messages", "Effect"],
+      description: `Starts the game "Clueless". ${cluelessDef}`,
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Leaky: {
+      category: "Chat",
+      internal: ["ModifierLeaky"],
+      tags: ["Whispers", "Effect"],
+      description: `Starts the game "Leaky". ${leakyDef}`,
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Haunting: {
+      category: "Chat",
+      internal: ["CanSpeakWhenDead"],
+      tags: ["Speech", "Effect"],
+      description: `Can talk with alive players when dead.`,
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Paranormal: {
+      category: "Chat",
+      internal: ["CanSeeDeadChat"],
+      tags: ["Speech", "Effect"],
+      description: `Can talk with dead players when alive.`,
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Telepathic: {
+      category: "Chat",
+      internal: ["ModifierTelepathic"],
+      tags: ["Speaking"],
+      description: "May anonymously contact any player.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Neighborly: {
+      category: "Chat",
+      internal: ["MeetWithNeighbors"],
+      tags: ["Meeting"],
+      description: "Attends a Night Meeting with their Neighbors.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Social: {
+      category: "Chat",
+      internal: ["MeetWithSocial"],
+      tags: ["Meeting"],
+      description: "Attends a meeting with all other Social players.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+
     /*
     Red: {
       internal: ["BecomeRedMafia"],
