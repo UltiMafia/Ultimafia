@@ -15,7 +15,7 @@ module.exports = class CanSpeakWhenDead extends Card {
         if (this.hasAbility(["Modifier", "WhenDead"])) {
           if (
             (this.SpeakingDeadEffect == null ||
-            !this.player.effects.includes((this.SpeakingDeadEffect)
+            !this.player.effects.includes((this.SpeakingDeadEffect)))
           ) {
             this.SpeakingDeadEffect = this.player.giveEffect(
               "CanSpeakToLiving",

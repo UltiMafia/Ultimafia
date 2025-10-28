@@ -30,7 +30,18 @@ module.exports = class MakeAllGunsReveal extends Card {
         if (!this.hasAbility(["Item"])) {
           return;
         }
-        for (let item of this.actor.items) {
+        for (let item of this.player.items) {
+          item.reveal = true;
+        }
+      },
+      roleAssigned: function (player){
+        if(player != this.player){
+          return;
+        }
+        if (!this.hasAbility(["Item"])) {
+          return;
+        }
+        for (let item of this.player.items) {
           item.reveal = true;
         }
       },

@@ -1168,7 +1168,7 @@ export function ModifierSearch(props) {
 
   if (!siteInfo.modifiers) return <NewLoading small />;
 
-  const alignButtons = ["Items", "Visits", "Appearance", "Other"].map(
+  const alignButtons = ["Items", "Visits", "Appearance", "Chat", "Other"].map(
     (type) => (
       <Tab
         label={type}
