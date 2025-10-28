@@ -21,7 +21,7 @@ module.exports = class ActAfterNightKilled extends Card {
         if (player != this.player) {
           return;
         }
-        if (this.game.getStateName() != "Night") return;
+        if (this.game.getStateName() != "Night" && this.game.getStateName() != "Dawn") return;
         this.HasBeenNightKilled = true;
       },
       revival: function (player, killer, deathType, instant) {
