@@ -14,8 +14,8 @@ module.exports = class CanSeeDeadChat extends Card {
         }
         if (this.hasAbility(["Modifier", "WhenDead"])) {
           if (
-            (this.SeeingDeadEffect == null ||
-            !this.player.effects.includes((this.SeeingDeadEffect)))
+            this.SeeingDeadEffect == null ||
+            !this.player.effects.includes(this.SeeingDeadEffect)
           ) {
             this.SeeingDeadEffect = this.player.giveEffect(
               "CanSeeDead",
@@ -29,7 +29,7 @@ module.exports = class CanSeeDeadChat extends Card {
             this.passiveEffects.splice(index, 1);
           }
           if (this.SeeingDeadEffect != null) {
-           this.SeeingDeadEffect.remove();
+            this.SeeingDeadEffect.remove();
             this.SeeingDeadEffect = null;
           }
         }

@@ -555,14 +555,16 @@ const modifierData = {
       category: "Items",
       internal: ["MakeAllGunsHidden"],
       tags: ["Items"],
-      description: "All Guns, Knives, and Rifles used by this role will not reveal user.",
+      description:
+        "All Guns, Knives, and Rifles used by this role will not reveal user.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Overt: {
       category: "Items",
       internal: ["MakeAllGunsReveal"],
       tags: ["Items"],
-      description: "All Guns, Knives, and Rifles used by this role will reveal user.",
+      description:
+        "All Guns, Knives, and Rifles used by this role will reveal user.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
@@ -1279,8 +1281,6 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
-
-    
     /*
     Red: {
       internal: ["BecomeRedMafia"],
