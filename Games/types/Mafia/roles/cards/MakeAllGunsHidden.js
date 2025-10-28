@@ -30,9 +30,9 @@ module.exports = class MakeAllGunsHidden extends Card {
         if (!this.hasAbility(["Item"])) {
           return;
         }
-          for (let item of this.actor.items) {
-            item.reveal = false;
-          }
+        for (let item of this.actor.items) {
+          item.reveal = false;
+        }
       },
     };
   }
