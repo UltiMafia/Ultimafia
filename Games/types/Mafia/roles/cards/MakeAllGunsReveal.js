@@ -5,7 +5,7 @@ const {
   PRIORITY_ITEM_TAKER_EARLY,
 } = require("../../const/Priority");
 
-module.exports = class MakeGunsReveal extends Card {
+module.exports = class MakeAllGunsReveal extends Card {
   constructor(role) {
     super(role);
 
