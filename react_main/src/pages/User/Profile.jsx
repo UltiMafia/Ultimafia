@@ -619,7 +619,7 @@ export default function Profile() {
   if (user.loaded && !user.loggedIn && !userId) return <Navigate to="/play" />;
 
   if (user.loaded && user.loggedIn && !userId)
-    return <Navigate to={`/user/${user.id}`} />;
+    return <Navigate to={`/user/${user.id}`} replace />;
 
   if (!profileLoaded || !user.loaded) return <NewLoading small />;
 

@@ -24,7 +24,7 @@ import { usePopoverOpen } from "../hooks/usePopoverOpen";
 import { NewLoading } from "../pages/Welcome/NewLoading";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 import { PopoverContent } from "./Popover";
-import { SmallRoleList } from "./Setup";
+import { getAlignmentColor, SmallRoleList } from "./Setup";
 
 export function RoleDetails({
   gameType,
@@ -478,6 +478,12 @@ export function RoleCount({
       </div>
     );
   } else if (roleGroup) {
+    const roles = Object.keys(roleGroup);
+    let roleGroupAlignment = null;
+    if (roles.length > 0) {
+      const firstRole = siteInfo.rolesRaw[gameType][roles[0].split(":")[0]];
+      roleGroupAlignment = firstRole ? firstRole.alignment : null;
+    }
     popoverTitle = `Role group ${roleName}`;
     popoverContent = (
       <SmallRoleList
@@ -497,6 +503,7 @@ export function RoleCount({
             fontWeight: "bold",
             userSelect: "none",
             textShadow: "0 .04rem 0 #000",
+            color: getAlignmentColor(roleGroupAlignment),
           }}
         >
           {role}

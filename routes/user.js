@@ -947,12 +947,19 @@ router.post("/customEmote/create", async function (req, res) {
 
     /* customEmote name checks
     - must be non-empty
+    - must fit within the constraints for emotify
     - must not be too long
     - must be unique per player
     */
     if (!customEmote.name || !customEmote.name.length) {
       res.status(400);
       res.send("You must give your custom emote a name.");
+      return;
+    }
+
+    if (customEmote.name.match(/( |:)/)) {
+      res.status(400);
+      res.send("Custom emote names may not have spaces or colons in them.");
       return;
     }
 

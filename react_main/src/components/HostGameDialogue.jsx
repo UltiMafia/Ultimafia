@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
@@ -41,10 +41,9 @@ export default function HostGameDialogue({ open, setOpen, setup }) {
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
+  const navigate = useNavigate();
 
   const [initialFormFields, onHostGame] = GameTypeHostForm(setup.gameType);
-
-  const [redirect, setRedirect] = useState(null);
 
   function GameTypeHostForm(gameType) {
     switch (gameType) {
@@ -97,12 +96,10 @@ export default function HostGameDialogue({ open, setOpen, setup }) {
   const onHostGameWrapper = () => {
     onHostGame(setup.id, getFormFieldValue)
       .then((res) => {
-        setRedirect(`/game/${res.data}`);
+        navigate(`/game/${res.data}`);
       })
       .catch(errorAlert);
   };
-
-  if (redirect) return <Navigate to={redirect} />;
 
   const lobby = getFormFieldValue("lobby");
   const isRanked = getFormFieldValue("ranked");
