@@ -11,6 +11,7 @@ import { PageNav } from "components/Nav";
 import { TextEditor } from "components/Form";
 import { UserContext } from "Contexts";
 import { NewLoading } from "../../Welcome/NewLoading";
+import { ThreadPoll } from "components/Poll";
 
 import { VoteWidget } from "./Forums";
 import { NameWithAvatar } from "../../User/User";
@@ -242,6 +243,7 @@ export default function Thread(props) {
         onLockToggled={onLockToggled}
         hasTitle
       />
+      <ThreadPoll threadId={threadId} locked={threadInfo.locked} />
       <div className="reply-form-wrapper" ref={replyFormRef}>
         {showReplyForm && (
           <div className="reply-form span-panel">

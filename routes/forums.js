@@ -504,6 +504,47 @@ router.post("/thread", async function (req, res) {
     });
     await thread.save();
 
+    // Create poll if poll data is provided
+    if (req.body.poll) {
+      const pollData = req.body.poll;
+
+      // Validate poll data
+      if (
+        !pollData.question ||
+        !pollData.options ||
+        !Array.isArray(pollData.options)
+      ) {
+        // Don't fail thread creation, just skip poll
+        logger.warn("Invalid poll data provided for thread", thread.id);
+      } else if (pollData.options.length < 2 || pollData.options.length > 10) {
+        logger.warn("Invalid poll option count for thread", thread.id);
+      } else {
+        // Parse expiration time
+        var expiresAt = null;
+        if (pollData.expiration) {
+          var expirationLength = routeUtils.parseTime(
+            String(pollData.expiration)
+          );
+          if (expirationLength && expirationLength !== Infinity) {
+            expiresAt = Date.now() + expirationLength;
+          }
+        }
+
+        var poll = new models.Poll({
+          id: shortid.generate(),
+          threadId: thread.id,
+          lobby: null, // Thread polls don't have lobbies
+          title: pollData.question,
+          question: pollData.question,
+          options: pollData.options,
+          creator: userId,
+          created: Date.now(),
+          expiresAt: expiresAt,
+        });
+        await poll.save();
+      }
+    }
+
     await models.ForumBoard.updateOne(
       { id: boardId },
       {

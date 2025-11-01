@@ -61,7 +61,7 @@ export function RecentForumReplies() {
 
   return (
     <Paper sx={{ p: 1 }}>
-      <Typography variant="h3" sx={{ mb: 1 }}>
+      <Typography color="primary" gutterBottom>
         Forum Activity
       </Typography>
 

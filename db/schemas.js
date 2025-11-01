@@ -560,6 +560,7 @@ var schemas = {
   Poll: new mongoose.Schema({
     id: { type: String, index: true },
     lobby: { type: String, index: true },
+    threadId: { type: String, index: true },
     title: String,
     question: String,
     options: [String],
@@ -567,6 +568,7 @@ var schemas = {
     created: { type: Number, index: true },
     completed: { type: Boolean, default: false, index: true },
     completedAt: { type: Number, index: true },
+    expiresAt: { type: Number, index: true },
   }),
   PollVote: new mongoose.Schema({
     pollId: { type: String, index: true },
