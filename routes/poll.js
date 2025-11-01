@@ -26,7 +26,7 @@ router.post("/create", async function (req, res) {
     }
 
     var options = req.body.options || [];
-    
+
     if (!Array.isArray(options) || options.length < 2) {
       res.status(400);
       res.send("At least 2 response options are required to create a poll.");
@@ -42,7 +42,7 @@ router.post("/create", async function (req, res) {
     // Convert to strings after validation
     var lobby = String(req.body.lobby).trim();
     var question = String(req.body.question).trim();
-    
+
     // Parse expiration time
     var expiresAt = null;
     if (req.body.expiration) {
@@ -109,7 +109,7 @@ router.get("/list/:lobby", async function (req, res) {
         if (!voterInfo[vote.optionIndex]) {
           voterInfo[vote.optionIndex] = [];
         }
-        
+
         // Get user info from Redis
         var userInfo = await redis.getUserInfo(vote.userId);
         voterInfo[vote.optionIndex].push({
@@ -117,7 +117,7 @@ router.get("/list/:lobby", async function (req, res) {
           name: userInfo ? userInfo.name : "Unknown User",
         });
       }
-      
+
       poll.voteCounts = poll.voteCounts;
       poll.userVote = userVote ? userVote.optionIndex : null;
       poll.voterInfo = voterInfo;

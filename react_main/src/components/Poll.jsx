@@ -24,7 +24,7 @@ export function Poll({ lobby }) {
 
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
-  
+
   const isAllLobbies = lobby === "All";
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export function Poll({ lobby }) {
     if (!user.loggedIn) {
       return;
     }
-    
+
     setLoading(true);
     try {
       const response = await axios.get(
@@ -54,20 +54,20 @@ export function Poll({ lobby }) {
       setCurrentPoll(currentPoll);
       setActivePolls(activePolls || []);
       setPolls(polls);
-      
+
       // Combine active polls with history for display
       let combined = [];
-      
+
       if (pollPage === 1) {
         if (isAllLobbies && activePolls && activePolls.length > 0) {
           // For "All" lobby, show all active polls first
-          const filteredPolls = polls.filter(p => 
-            !activePolls.some(ap => ap.id === p.id)
+          const filteredPolls = polls.filter(
+            (p) => !activePolls.some((ap) => ap.id === p.id)
           );
           combined = [...activePolls, ...filteredPolls];
         } else if (currentPoll) {
           // For specific lobby, show current poll first
-          const filteredPolls = polls.filter(p => p.id !== currentPoll.id);
+          const filteredPolls = polls.filter((p) => p.id !== currentPoll.id);
           combined = [currentPoll, ...filteredPolls];
         } else {
           combined = polls;
@@ -76,7 +76,7 @@ export function Poll({ lobby }) {
         // Pages beyond 1 only show history
         combined = polls;
       }
-      
+
       setAllPolls(combined);
     } catch (error) {
       errorAlert();
@@ -89,13 +89,8 @@ export function Poll({ lobby }) {
     if (!user.loggedIn) {
       return;
     }
-    
-    var filterArg = getPageNavFilterArg(
-      page,
-      pollPage,
-      polls,
-      "created"
-    );
+
+    var filterArg = getPageNavFilterArg(page, pollPage, polls, "created");
 
     if (filterArg == null) return;
 
@@ -104,24 +99,26 @@ export function Poll({ lobby }) {
       .get(`/api/poll/list/${lobby}?${filterArg}`)
       .then((res) => {
         const { currentPoll, activePolls, polls } = res.data;
-        
+
         if (res.data.polls.length || (activePolls && activePolls.length)) {
           setCurrentPoll(currentPoll);
           setActivePolls(activePolls || []);
           setPolls(res.data.polls);
           setPollPage(page);
-          
+
           // Combine for display
           let combined = [];
-          
+
           if (page === 1) {
             if (isAllLobbies && activePolls && activePolls.length > 0) {
-              const filteredPolls = polls.filter(p => 
-                !activePolls.some(ap => ap.id === p.id)
+              const filteredPolls = polls.filter(
+                (p) => !activePolls.some((ap) => ap.id === p.id)
               );
               combined = [...activePolls, ...filteredPolls];
             } else if (currentPoll) {
-              const filteredPolls = polls.filter(p => p.id !== currentPoll.id);
+              const filteredPolls = polls.filter(
+                (p) => p.id !== currentPoll.id
+              );
               combined = [currentPoll, ...filteredPolls];
             } else {
               combined = polls;
@@ -129,7 +126,7 @@ export function Poll({ lobby }) {
           } else {
             combined = polls;
           }
-          
+
           setAllPolls(combined);
         }
         setLoading(false);
@@ -161,13 +158,17 @@ export function Poll({ lobby }) {
 
     const voters = poll.voterInfo[optionIndex];
     return (
-      <Stack direction="row" spacing={0.5} sx={{ mt: 1, flexWrap: "wrap", gap: 0.5 }}>
+      <Stack
+        direction="row"
+        spacing={0.5}
+        sx={{ mt: 1, flexWrap: "wrap", gap: 0.5 }}
+      >
         {voters.map((voter, index) => (
           <Tooltip key={index} title={voter.name || "Unknown User"} arrow>
-            <Box 
-              sx={{ 
-                '& .user-name': { display: 'none' },
-                '& .name-with-avatar': { width: 'auto' }
+            <Box
+              sx={{
+                "& .user-name": { display: "none" },
+                "& .name-with-avatar": { width: "auto" },
               }}
             >
               <NameWithAvatar
@@ -198,12 +199,14 @@ export function Poll({ lobby }) {
         <PageNav page={pollPage} onNav={onPollPageNav} />
         {allPolls.map((poll) => {
           const isActive = !poll.completed;
-          const completedDate = poll.completed && poll.completedAt 
-            ? new Date(poll.completedAt).toLocaleDateString()
-            : null;
-          const expiresDate = poll.expiresAt && !poll.completed
-            ? new Date(poll.expiresAt).toLocaleDateString()
-            : null;
+          const completedDate =
+            poll.completed && poll.completedAt
+              ? new Date(poll.completedAt).toLocaleDateString()
+              : null;
+          const expiresDate =
+            poll.expiresAt && !poll.completed
+              ? new Date(poll.expiresAt).toLocaleDateString()
+              : null;
 
           return (
             <Box
@@ -211,7 +214,11 @@ export function Poll({ lobby }) {
               sx={{ p: 2, border: 1, borderColor: "divider", borderRadius: 1 }}
             >
               {isAllLobbies && (
-                <Typography variant="caption" color="primary" sx={{ fontWeight: 700, mb: 1, display: 'block' }}>
+                <Typography
+                  variant="caption"
+                  color="primary"
+                  sx={{ fontWeight: 700, mb: 1, display: "block" }}
+                >
                   {poll.lobby}
                 </Typography>
               )}
@@ -221,7 +228,9 @@ export function Poll({ lobby }) {
 
               <Stack spacing={1}>
                 {poll.options.map((option, index) => {
-                  const voteCount = poll.voteCounts ? poll.voteCounts[index] : 0;
+                  const voteCount = poll.voteCounts
+                    ? poll.voteCounts[index]
+                    : 0;
                   const totalVotes = poll.voteCounts
                     ? poll.voteCounts.reduce((a, b) => a + b, 0)
                     : 0;
@@ -234,7 +243,9 @@ export function Poll({ lobby }) {
                       <Button
                         variant={isUserVote ? "contained" : "outlined"}
                         fullWidth
-                        onClick={() => !poll.completed && handleVote(index, poll.id)}
+                        onClick={() =>
+                          !poll.completed && handleVote(index, poll.id)
+                        }
                         disabled={poll.completed}
                         sx={{
                           justifyContent: "flex-start",

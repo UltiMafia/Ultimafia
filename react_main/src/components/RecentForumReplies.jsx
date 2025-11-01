@@ -61,9 +61,9 @@ export function RecentForumReplies() {
 
   return (
     <Paper sx={{ p: 1 }}>
-        <Typography color="primary" gutterBottom>
-          Forum Activity
-        </Typography>
+      <Typography color="primary" gutterBottom>
+        Forum Activity
+      </Typography>
 
       <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
         Newest Thread

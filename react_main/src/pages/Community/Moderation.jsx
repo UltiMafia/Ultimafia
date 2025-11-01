@@ -1870,10 +1870,10 @@ export function useModCommands(argValues, commandRan, setResults) {
           name: "lobby",
           type: "select",
           options: lobbies
-            .filter(lobby => !lobby.disabled && lobby.name !== "All")
-            .map(lobby => ({
+            .filter((lobby) => !lobby.disabled && lobby.name !== "All")
+            .map((lobby) => ({
               value: lobby.name,
-              label: lobby.displayName
+              label: lobby.displayName,
             })),
         },
         {
