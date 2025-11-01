@@ -101,17 +101,20 @@ export default function Setup(props) {
     );
 
     for (let alignment of Object.keys(rolesDividedByAlignment[0])) {
-      roleCounts.push(
-        <RoleCount
-          closed
-          alignment={alignment}
-          roleGroup={rolesDividedByAlignment[0][alignment]}
-          count={props.setup.count[alignment]}
-          gameType={props.setup.gameType}
-          key={alignment}
-          otherRoles={props.setup.roles}
-        />
-      );
+      const count = props.setup.count[alignment];
+      if (count > 0) {
+        roleCounts.push(
+          <RoleCount
+            closed
+            alignment={alignment}
+            roleGroup={rolesDividedByAlignment[0][alignment]}
+            count={props.setup.count[alignment]}
+            gameType={props.setup.gameType}
+            key={alignment}
+            otherRoles={props.setup.roles}
+          />
+        );
+      }
     }
   } else if (useRoleGroups) {
     let i = 0;
@@ -488,6 +491,7 @@ export function FullRoleList({ setup }) {
               border: `4px solid ${alignmentColor}`,
               borderRadius: "4px",
               boxSizing: "border-box",
+              alignContent: "flex-start",
             }}
           >
             {roles}

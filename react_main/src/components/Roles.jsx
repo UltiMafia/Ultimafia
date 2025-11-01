@@ -462,7 +462,7 @@ export function RoleCount({
     popoverContent = null,
     popoverPage = null,
     popoverIcon = null;
-  if (closed && count > 0) {
+  if (closed) {
     popoverTitle = `${alignment} roleset`;
     popoverContent = (
       <SmallRoleList
