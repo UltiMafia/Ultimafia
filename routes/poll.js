@@ -26,7 +26,7 @@ router.post("/create", async function (req, res) {
     }
 
     var options = req.body.options || [];
-
+    
     if (!Array.isArray(options) || options.length < 2) {
       res.status(400);
       res.send("At least 2 response options are required to create a poll.");
@@ -42,7 +42,7 @@ router.post("/create", async function (req, res) {
     // Convert to strings after validation
     var lobby = String(req.body.lobby).trim();
     var question = String(req.body.question).trim();
-
+    
     // Parse expiration time
     var expiresAt = null;
     if (req.body.expiration) {
@@ -109,7 +109,7 @@ router.get("/list/:lobby", async function (req, res) {
         if (!voterInfo[vote.optionIndex]) {
           voterInfo[vote.optionIndex] = [];
         }
-
+        
         // Get user info from Redis
         var userInfo = await redis.getUserInfo(vote.userId);
         voterInfo[vote.optionIndex].push({
@@ -117,7 +117,7 @@ router.get("/list/:lobby", async function (req, res) {
           name: userInfo ? userInfo.name : "Unknown User",
         });
       }
-
+      
       poll.voteCounts = poll.voteCounts;
       poll.userVote = userVote ? userVote.optionIndex : null;
       poll.voterInfo = voterInfo;
@@ -257,6 +257,72 @@ router.post("/complete", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Error completing poll.");
+  }
+});
+
+// Get poll for a thread
+router.get("/thread/:threadId", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var threadId = String(req.params.threadId);
+
+    // Auto-complete expired polls
+    const now = Date.now();
+    await models.Poll.updateOne(
+      { 
+        threadId: threadId,
+        completed: false, 
+        expiresAt: { $ne: null, $lte: now }
+      },
+      { completed: true, completedAt: now }
+    ).exec();
+
+    // Get poll for this thread
+    var poll = await models.Poll.findOne({
+      threadId: threadId,
+    })
+      .sort({ created: -1 })
+      .lean();
+
+    if (!poll) {
+      res.json({ poll: null });
+      return;
+    }
+
+    const redis = require("../modules/redis");
+    
+    // Get votes for this poll
+    var votes = await models.PollVote.find({ pollId: poll.id }).lean();
+    var userVote = votes.find((vote) => vote.userId === userId);
+
+    // Count votes per option
+    poll.voteCounts = poll.options.map((_, index) => {
+      return votes.filter((vote) => vote.optionIndex === index).length;
+    });
+
+    // Get voter info (user IDs and names) for each option
+    var voterInfo = {};
+    for (let vote of votes) {
+      if (!voterInfo[vote.optionIndex]) {
+        voterInfo[vote.optionIndex] = [];
+      }
+      
+      // Get user info from Redis
+      var userInfo = await redis.getUserInfo(vote.userId);
+      voterInfo[vote.optionIndex].push({
+        userId: vote.userId,
+        name: userInfo ? userInfo.name : "Unknown User",
+      });
+    }
+
+    poll.userVote = userVote ? userVote.optionIndex : null;
+    poll.voterInfo = voterInfo;
+
+    res.json({ poll });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error fetching thread poll.");
   }
 });
 

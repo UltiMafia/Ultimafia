@@ -560,6 +560,7 @@ var schemas = {
   Poll: new mongoose.Schema({
     id: { type: String, index: true },
     lobby: { type: String, index: true },
+    threadId: { type: String, index: true },
     title: String,
     question: String,
     options: [String],
