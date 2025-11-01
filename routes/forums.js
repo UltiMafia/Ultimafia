@@ -507,9 +507,13 @@ router.post("/thread", async function (req, res) {
     // Create poll if poll data is provided
     if (req.body.poll) {
       const pollData = req.body.poll;
-      
+
       // Validate poll data
-      if (!pollData.question || !pollData.options || !Array.isArray(pollData.options)) {
+      if (
+        !pollData.question ||
+        !pollData.options ||
+        !Array.isArray(pollData.options)
+      ) {
         // Don't fail thread creation, just skip poll
         logger.warn("Invalid poll data provided for thread", thread.id);
       } else if (pollData.options.length < 2 || pollData.options.length > 10) {
@@ -518,12 +522,14 @@ router.post("/thread", async function (req, res) {
         // Parse expiration time
         var expiresAt = null;
         if (pollData.expiration) {
-          var expirationLength = routeUtils.parseTime(String(pollData.expiration));
+          var expirationLength = routeUtils.parseTime(
+            String(pollData.expiration)
+          );
           if (expirationLength && expirationLength !== Infinity) {
             expiresAt = Date.now() + expirationLength;
           }
         }
-        
+
         var poll = new models.Poll({
           id: shortid.generate(),
           threadId: thread.id,

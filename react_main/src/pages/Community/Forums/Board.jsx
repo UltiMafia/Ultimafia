@@ -220,7 +220,7 @@ function CreateThreadModal(props) {
   const [pollQuestion, setPollQuestion] = useState("");
   const [pollOptions, setPollOptions] = useState("");
   const [pollExpiration, setPollExpiration] = useState("");
-  
+
   const errorAlert = useErrorAlert();
   const header = "Create Thread";
 
@@ -306,7 +306,7 @@ function CreateThreadModal(props) {
       title: props.threadTitle,
       content: props.threadContent,
     };
-    
+
     // Add poll data if poll is included
     if (includePoll) {
       threadData.poll = {
@@ -315,13 +315,13 @@ function CreateThreadModal(props) {
         expiration: pollExpiration || null,
       };
     }
-    
+
     axios
       .post("/api/forums/thread", threadData)
       .then((res) => {
         props.setShow(false);
         props.setRedirect(`/community/forums/thread/${res.data}`);
-        
+
         // Reset poll fields
         setIncludePoll(false);
         setPollQuestion("");
