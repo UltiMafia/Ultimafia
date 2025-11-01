@@ -288,7 +288,7 @@ export default function LobbyBrowser() {
             <DailyChallenges />
             <RecentlyPlayedSetups lobby={lobbyName} />
             <RecentForumReplies />
-            {/* <Poll lobby={lobbyName} /> */}
+            <Poll lobby={lobbyName} />
           </Stack>
         </Grid>
       </Grid>

@@ -1861,41 +1861,49 @@ export function useModCommands(argValues, commandRan, setResults) {
         },
       ],
     },
-    // "Create Poll": {
-    //   perm: "createPoll",
-    //   category: "Poll Management",
-    //   args: [
-    //     {
-    //       label: "Lobby",
-    //       name: "lobby",
-    //       type: "select",
-    //       options: lobbies.filter(lobby => !lobby.disabled).map(lobby => ({
-    //         value: lobby.name,
-    //         label: lobby.displayName
-    //       })),
-    //     },
-    //     {
-    //       label: "Question",
-    //       name: "question",
-    //       type: "text",
-    //     },
-    //     {
-    //       label: "Options (comma-separated)",
-    //       name: "options",
-    //       type: "text",
-    //       isArray: true,
-    //     },
-    //   ],
-    //   run: function () {
-    //     axios
-    //       .post("/api/poll/create", argValues)
-    //       .then(() => {
-    //         siteInfo.showAlert("Poll created.", "success");
-    //         commandRan();
-    //       })
-    //       .catch(errorAlert);
-    //   },
-    // },
+    "Create Poll": {
+      perm: "createPoll",
+      category: "Poll Management",
+      args: [
+        {
+          label: "Lobby",
+          name: "lobby",
+          type: "select",
+          options: lobbies
+            .filter(lobby => !lobby.disabled && lobby.name !== "All")
+            .map(lobby => ({
+              value: lobby.name,
+              label: lobby.displayName
+            })),
+        },
+        {
+          label: "Question",
+          name: "question",
+          type: "text",
+        },
+        {
+          label: "Options (comma-separated)",
+          name: "options",
+          type: "text",
+          isArray: true,
+        },
+        {
+          label: "Expires in",
+          name: "expiration",
+          type: "text",
+          optional: true,
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/poll/create", argValues)
+          .then(() => {
+            siteInfo.showAlert("Poll created.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
   };
 }
 
