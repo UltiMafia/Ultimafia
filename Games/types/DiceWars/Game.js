@@ -671,8 +671,10 @@ module.exports = class DiceWarsGame extends Game {
     const defenseTotal = defenseRoll.reduce((a, b) => a + b, 0);
 
     const attacker = this.players.array().find((p) => p.id === playerId);
-    const defender = this.players.array().find((p) => p.id === toTerritory.playerId);
-    
+    const defender = this.players
+      .array()
+      .find((p) => p.id === toTerritory.playerId);
+
     let result;
     if (attackTotal > defenseTotal) {
       // Attacker wins - transfer dice
@@ -700,9 +702,9 @@ module.exports = class DiceWarsGame extends Game {
       // Send chat message for successful attack
       this.sendAlert(
         `${attacker.name} attacked ${defender.name}! ` +
-        `Attacker rolled [${attackRoll.join(", ")}] = ${attackTotal}. ` +
-        `Defender rolled [${defenseRoll.join(", ")}] = ${defenseTotal}. ` +
-        `Attack successful!`
+          `Attacker rolled [${attackRoll.join(", ")}] = ${attackTotal}. ` +
+          `Defender rolled [${defenseRoll.join(", ")}] = ${defenseTotal}. ` +
+          `Attack successful!`
       );
 
       // Check if defender is eliminated
@@ -724,9 +726,9 @@ module.exports = class DiceWarsGame extends Game {
       // Send chat message for failed attack
       this.sendAlert(
         `${attacker.name} attacked ${defender.name}! ` +
-        `Attacker rolled [${attackRoll.join(", ")}] = ${attackTotal}. ` +
-        `Defender rolled [${defenseRoll.join(", ")}] = ${defenseTotal}. ` +
-        `Attack failed!`
+          `Attacker rolled [${attackRoll.join(", ")}] = ${attackTotal}. ` +
+          `Defender rolled [${defenseRoll.join(", ")}] = ${defenseTotal}. ` +
+          `Attack failed!`
       );
     }
 
