@@ -88,7 +88,9 @@ module.exports = class DiceWarsGame extends Game {
     const gridHeight = Math.ceil(Math.sqrt(totalHexes / aspectRatio));
     const gridWidth = Math.ceil(totalHexes / gridHeight);
 
-    console.log(`Generating ${gridWidth}x${gridHeight} hex grid for ${this.mapSize} territories`);
+    console.log(
+      `Generating ${gridWidth}x${gridHeight} hex grid for ${this.mapSize} territories`
+    );
 
     // First, create a full rectangular grid of hexes (offset coordinates)
     const hexGrid = [];
@@ -110,7 +112,11 @@ module.exports = class DiceWarsGame extends Game {
     }
 
     // Generate random territories using flood-fill algorithm
-    const territories = this.generateRandomTerritories(hexGrid, gridWidth, gridHeight);
+    const territories = this.generateRandomTerritories(
+      hexGrid,
+      gridWidth,
+      gridHeight
+    );
 
     // Mark ocean hexes and create neighbor relationships
     for (let hex of hexGrid) {
@@ -137,7 +143,9 @@ module.exports = class DiceWarsGame extends Game {
     // Build final territory list with neighbor IDs
     // Check ALL hexes in each territory to find neighbors
     for (let territory of territories) {
-      const territoryHexes = hexGrid.filter((h) => h.territoryId === territory.id);
+      const territoryHexes = hexGrid.filter(
+        (h) => h.territoryId === territory.id
+      );
       const neighborIds = new Set();
 
       // Check neighbors of all hexes in this territory
@@ -175,22 +183,22 @@ module.exports = class DiceWarsGame extends Game {
     if (isEven) {
       // Even rows
       return [
-        { col: 1, row: 0 },   // E
-        { col: 0, row: -1 },  // NE
+        { col: 1, row: 0 }, // E
+        { col: 0, row: -1 }, // NE
         { col: -1, row: -1 }, // NW
-        { col: -1, row: 0 },  // W
-        { col: -1, row: 1 },  // SW
-        { col: 0, row: 1 },   // SE
+        { col: -1, row: 0 }, // W
+        { col: -1, row: 1 }, // SW
+        { col: 0, row: 1 }, // SE
       ];
     } else {
       // Odd rows
       return [
-        { col: 1, row: 0 },   // E
-        { col: 1, row: -1 },  // NE
-        { col: 0, row: -1 },  // NW
-        { col: -1, row: 0 },  // W
-        { col: 0, row: 1 },   // SW
-        { col: 1, row: 1 },   // SE
+        { col: 1, row: 0 }, // E
+        { col: 1, row: -1 }, // NE
+        { col: 0, row: -1 }, // NW
+        { col: -1, row: 0 }, // W
+        { col: 0, row: 1 }, // SW
+        { col: 1, row: 1 }, // SE
       ];
     }
   }
@@ -308,7 +316,7 @@ module.exports = class DiceWarsGame extends Game {
     // Determine which players get first-round bonus based on player count
     const numPlayers = activePlayers.length;
     const bonusPlayerIds = new Set();
-    
+
     if (numPlayers >= 8) {
       // Last 3 players get bonus for 8+ player games
       for (let i = numPlayers - 3; i < numPlayers; i++) {
@@ -385,7 +393,7 @@ module.exports = class DiceWarsGame extends Game {
    */
   getStateInfo(state) {
     const info = super.getStateInfo(state);
-    
+
     // Add game state to extraInfo so it's stored in history
     if (this.gameStarted) {
       info.extraInfo = {
@@ -403,7 +411,7 @@ module.exports = class DiceWarsGame extends Game {
         maxDicePerTerritory: this.maxDicePerTerritory,
       };
     }
-    
+
     return info;
   }
 
@@ -431,8 +439,13 @@ module.exports = class DiceWarsGame extends Game {
       surplusDice: this.surplusDice,
       maxDicePerTerritory: this.maxDicePerTerritory,
     };
-    
-    console.log("Broadcasting game state - Turn:", this.turnNumber, "Current player:", this.currentTurnPlayerId);
+
+    console.log(
+      "Broadcasting game state - Turn:",
+      this.turnNumber,
+      "Current player:",
+      this.currentTurnPlayerId
+    );
     this.broadcast("gameState", state);
   }
 
@@ -544,11 +557,11 @@ module.exports = class DiceWarsGame extends Game {
     }
 
     this.hasAttacked = true;
-    
+
     // Update history with new game state
     const stateInfo = this.getStateInfo();
     this.addStateExtraInfoToHistories(stateInfo.extraInfo);
-    
+
     this.sendGameState();
     this.broadcast("attackResult", result);
 
@@ -594,7 +607,12 @@ module.exports = class DiceWarsGame extends Game {
    */
   endTurn(playerId) {
     if (playerId !== this.currentTurnPlayerId) {
-      console.log("Not your turn! Current turn:", this.currentTurnPlayerId, "Attempted:", playerId);
+      console.log(
+        "Not your turn! Current turn:",
+        this.currentTurnPlayerId,
+        "Attempted:",
+        playerId
+      );
       return { success: false, message: "Not your turn!" };
     }
 
@@ -612,13 +630,21 @@ module.exports = class DiceWarsGame extends Game {
       return player && player.alive;
     });
 
-    console.log("Turn index:", this.turnIndex, "Alive players:", aliveTurnOrder.length);
+    console.log(
+      "Turn index:",
+      this.turnIndex,
+      "Alive players:",
+      aliveTurnOrder.length
+    );
 
     // Check if round is complete
     if (this.turnIndex >= aliveTurnOrder.length) {
       this.turnIndex = 0;
       this.roundNumber++;
-      console.log("Round complete, resetting to index 0, new round:", this.roundNumber);
+      console.log(
+        "Round complete, resetting to index 0, new round:",
+        this.roundNumber
+      );
     }
 
     // Update turn order if players have been eliminated
@@ -633,13 +659,17 @@ module.exports = class DiceWarsGame extends Game {
     const currentPlayer = this.players.find(
       (p) => p.id === this.currentTurnPlayerId
     );
-    
-    console.log("New current turn player:", this.currentTurnPlayerId, currentPlayer?.name);
-    
+
+    console.log(
+      "New current turn player:",
+      this.currentTurnPlayerId,
+      currentPlayer?.name
+    );
+
     // Update history with new turn state
     const stateInfo = this.getStateInfo();
     this.addStateExtraInfoToHistories(stateInfo.extraInfo);
-    
+
     this.sendGameState();
     this.sendAlert(
       `Round ${this.roundNumber}, Turn ${this.turnNumber}: ${currentPlayer.name}'s turn`
