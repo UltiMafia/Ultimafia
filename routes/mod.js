@@ -1225,7 +1225,10 @@ router.post("/clearUserContent", async (req, res) => {
         break;
 
       case "birthday":
-        updateQuery = { $unset: { birthday: "" }, $set: { bdayChanged: false } };
+        updateQuery = {
+          $unset: { birthday: "" },
+          $set: { bdayChanged: false },
+        };
         modActionName = "Clear Birthday";
         break;
 
