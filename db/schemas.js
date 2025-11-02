@@ -66,6 +66,7 @@ var schemas = {
       hideDeleted: Boolean,
       siteColorScheme: { type: String, default: "dark" },
       disableProTips: { type: Boolean, default: false },
+      expHighDpiCorrection: { type: Boolean, default: false },
       roleSkins: String,
       autoplay: { type: Boolean, default: false },
       youtube: String,

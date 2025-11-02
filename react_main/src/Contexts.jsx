@@ -6,6 +6,7 @@ import MuiLink from "@mui/material/Link";
 import { AlertFadeTimeout, AlertFadeDuration } from "./Constants";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import { GlobalStyles } from "@mui/material";
 
 export const UserContext = React.createContext();
 export const SiteInfoContext = React.createContext();
@@ -15,6 +16,7 @@ export function UserProvider({ children, setUserLoading }) {
   const location = useLocation();
   const siteInfo = useContext(SiteInfoContext);
   const [inGame, setInGame] = useState(null);
+  const [dpiCorrection, setDpiCorrection] = useState(null);
   const [user, setUser] = useState({
     loggedIn: false,
     loaded: false,
@@ -141,8 +143,26 @@ export function UserProvider({ children, setUserLoading }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (user.settings && user.settings.expHighDpiCorrection) {
+      // VERY EXPERIMENTAL: counteract non-integer values of DPI scaling because they make role icons look weird
+      if (window.devicePixelRatio !== undefined) {
+        const dpiScaling = window.devicePixelRatio;
+        const dpiDecimal = dpiScaling % 1
+        if (dpiDecimal > 0) {
+          console.log("Experimental DPI non-integer scaling correction is enabled")
+          const dpiScalingInt = dpiScaling - dpiDecimal;
+          setDpiCorrection(`${16 * dpiScalingInt / dpiScaling}px`);
+        }
+      }
+    }
+  }, [user.settings]);
+
   return (
-    <UserContext.Provider value={userVal}>{children}</UserContext.Provider>
+    <>
+      {dpiCorrection && <GlobalStyles styles={{ html: { fontSize: dpiCorrection } }} />}
+      <UserContext.Provider value={userVal}>{children}</UserContext.Provider>
+    </>
   );
 }
 

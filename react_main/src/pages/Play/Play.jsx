@@ -28,7 +28,7 @@ export default function Play(props) {
   useEffect(() => {
     localStorage.setItem("gameType", gameType);
 
-    if (!inLobby && !params.get("edit") && params.get("game") !== gameType)
+    if (!inLobby && !params.get("edit") && !params.get("copy") && params.get("game") !== gameType)
       navigate(location.pathname + `?game=${gameType}`);
   }, [location.pathname, gameType]);
   // Allow logged-out users to access Play page

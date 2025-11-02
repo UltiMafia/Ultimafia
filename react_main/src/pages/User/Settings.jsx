@@ -104,6 +104,11 @@ export default function Settings() {
       ref: "disableProTips",
       type: "boolean",
     },
+    {
+      label: "Experimental High DPI Correction",
+      ref: "expHighDpiCorrection",
+      type: "boolean",
+    },
   ]);
 
   const [profileFields, updateProfileFields] = useForm(
