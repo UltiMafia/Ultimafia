@@ -4,7 +4,12 @@ module.exports = class DiceWarsPlayer extends Player {
   constructor(user, game, isBot) {
     super(user, game, isBot);
 
-    console.log("DiceWars Player constructor - Player ID:", this.id, "Socket exists:", !!this.socket);
+    console.log(
+      "DiceWars Player constructor - Player ID:",
+      this.id,
+      "Socket exists:",
+      !!this.socket
+    );
 
     // Socket handlers for direct tile clicking interface (like Battlesnakes)
     this.socket.on("attack", (data) => {
@@ -15,7 +20,7 @@ module.exports = class DiceWarsPlayer extends Player {
         console.log("From:", fromId, "To:", toId);
         console.log("Current turn player:", this.game.currentTurnPlayerId);
         console.log("This player:", this.id);
-        
+
         if (this.game.currentTurnPlayerId === this.id) {
           console.log("Executing attack");
           const result = this.game.attack(this.id, fromId, toId);
@@ -35,7 +40,7 @@ module.exports = class DiceWarsPlayer extends Player {
         console.log("Player:", this.id);
         console.log("Current turn player:", this.game.currentTurnPlayerId);
         console.log("Match:", this.game.currentTurnPlayerId === this.id);
-        
+
         if (this.game.currentTurnPlayerId === this.id) {
           console.log("Executing endTurn");
           const result = this.game.endTurn(this.id);

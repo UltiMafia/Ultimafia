@@ -350,7 +350,7 @@ router.get("/:id/review/data", async function (req, res) {
           const vanityUrl = await models.VanityUrl.findOne({
             userId: user.id,
           }).select("url -_id");
-          
+
           return {
             ...user,
             settings: {

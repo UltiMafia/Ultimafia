@@ -22,7 +22,7 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
       console.log("Frontend received gameState update:", {
         turnNumber: state.turnNumber,
         currentTurnPlayerId: state.currentTurnPlayerId,
-        roundNumber: state.roundNumber
+        roundNumber: state.roundNumber,
       });
       setGameState(state);
     });
@@ -101,12 +101,16 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
       for (let i = 0; i < 6; i++) {
         const p1 = corners[i];
         const p2 = corners[(i + 1) % 6];
-        
+
         // Create edge key (normalized so direction doesn't matter)
         const edgeKey =
           p1.x < p2.x || (p1.x === p2.x && p1.y < p2.y)
-            ? `${p1.x.toFixed(2)},${p1.y.toFixed(2)},${p2.x.toFixed(2)},${p2.y.toFixed(2)}`
-            : `${p2.x.toFixed(2)},${p2.y.toFixed(2)},${p1.x.toFixed(2)},${p1.y.toFixed(2)}`;
+            ? `${p1.x.toFixed(2)},${p1.y.toFixed(2)},${p2.x.toFixed(
+                2
+              )},${p2.y.toFixed(2)}`
+            : `${p2.x.toFixed(2)},${p2.y.toFixed(2)},${p1.x.toFixed(
+                2
+              )},${p1.y.toFixed(2)}`;
 
         edges.set(edgeKey, (edges.get(edgeKey) || 0) + 1);
       }
@@ -126,7 +130,7 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
     // Build a continuous path from the perimeter edges
     const path = [];
     const usedEdges = new Set();
-    
+
     // Start with the first edge
     let currentEdge = perimeterEdges[0];
     path.push({ x: currentEdge.x1, y: currentEdge.y1 });
@@ -143,8 +147,12 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
         if (usedEdges.has(i)) continue;
 
         const edge = perimeterEdges[i];
-        const dist1 = Math.abs(edge.x1 - currentPoint.x) + Math.abs(edge.y1 - currentPoint.y);
-        const dist2 = Math.abs(edge.x2 - currentPoint.x) + Math.abs(edge.y2 - currentPoint.y);
+        const dist1 =
+          Math.abs(edge.x1 - currentPoint.x) +
+          Math.abs(edge.y1 - currentPoint.y);
+        const dist2 =
+          Math.abs(edge.x2 - currentPoint.x) +
+          Math.abs(edge.y2 - currentPoint.y);
 
         if (dist1 < 0.1) {
           // Connect via x1->x2
@@ -183,7 +191,9 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
       return;
     }
 
-    const territory = gameState.territories.find((t) => t.id === hex.territoryId);
+    const territory = gameState.territories.find(
+      (t) => t.id === hex.territoryId
+    );
     if (!territory) return;
 
     console.log("Territory clicked:", territory.id);
@@ -217,7 +227,12 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
       fromTerritory.neighbors.includes(territory.id) &&
       territory.playerId !== playerId
     ) {
-      console.log("Sending attack from", selectedTerritoryId, "to", territory.id);
+      console.log(
+        "Sending attack from",
+        selectedTerritoryId,
+        "to",
+        territory.id
+      );
       gameSocket.send("attack", {
         fromId: selectedTerritoryId,
         toId: territory.id,
@@ -236,7 +251,12 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
   // Handle end turn button
   const handleEndTurn = () => {
     console.log("End Turn button clicked");
-    console.log("Current turn player:", gameState?.currentTurnPlayerId, "My ID:", playerId);
+    console.log(
+      "Current turn player:",
+      gameState?.currentTurnPlayerId,
+      "My ID:",
+      playerId
+    );
     if (gameState && gameState.currentTurnPlayerId === playerId) {
       console.log("Sending endTurn message via socket");
       gameSocket.send("endTurn", {});
@@ -369,7 +389,9 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
         .on("click", function (event) {
           event.stopPropagation();
           // Find any hex in this territory for the click handler
-          const territoryHex = hexGrid.find((h) => h.territoryId === territory.id);
+          const territoryHex = hexGrid.find(
+            (h) => h.territoryId === territory.id
+          );
           if (territoryHex) {
             handleHexClick(territoryHex);
           }
