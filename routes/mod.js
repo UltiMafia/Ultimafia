@@ -1224,14 +1224,6 @@ router.post("/clearUserContent", async (req, res) => {
         modActionName = "Clear Bio";
         break;
 
-      case "birthday":
-        updateQuery = {
-          $unset: { birthday: "" },
-          $set: { bdayChanged: false },
-        };
-        modActionName = "Clear Birthday";
-        break;
-
       case "customEmotes":
         updateQuery = { $set: { customEmotes: [] } };
         modActionName = "Clear Custom Emotes";

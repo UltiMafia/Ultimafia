@@ -138,8 +138,10 @@ export default function Settings() {
         saveBtnDiffer: "bdayChanged",
         default: Date.now(),
         saveBtnOnClick: onBirthdaySave,
+        clearBtn: "Clear",
+        clearBtnOnClick: onBirthdayClear,
         confirm:
-          "Are you sure you wish to change your birthday? Your birthday can only be changed ONCE per account.",
+          "Are you sure you wish to change your birthday?",
       },
       {
         label: "Background Color",
@@ -516,6 +518,38 @@ export default function Settings() {
             bdayChanged: { $set: true },
           })
         );
+      })
+      .catch(deps.errorAlert);
+  }
+
+  function onBirthdayClear(deps) {
+    if (
+      !window.confirm(
+        "Are you sure you want to clear your birthday?"
+      )
+    ) {
+      return;
+    }
+
+    axios
+      .delete("/api/user/birthday")
+      .then((res) => {
+        deps.siteInfo.showAlert("Birthday cleared", "success");
+
+        deps.user.set(
+          update(deps.user, {
+            birthday: { $set: undefined },
+            bdayChanged: { $set: false },
+          })
+        );
+
+        // Update the form field to empty
+        updateProfileFields({
+          ref: "birthday",
+          prop: "value",
+          value: undefined,
+          localOnly: true,
+        });
       })
       .catch(deps.errorAlert);
   }

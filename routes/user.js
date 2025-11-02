@@ -359,14 +359,14 @@ router.get("/:id/profile", async function (req, res) {
       var friendRequests = await models.FriendRequest.find({ targetId: userId })
         .select("userId user")
         .populate("user", "id name avatar");
-
+      
       // Add vanity URLs to friend requests
       user.friendRequests = await Promise.all(
         friendRequests.map(async (req) => {
           const vanityUrl = await models.VanityUrl.findOne({
             userId: req.user.id,
           }).select("url -_id");
-
+          
           return {
             ...req.user.toJSON(),
             vanityUrl: vanityUrl?.url,
@@ -1366,6 +1366,28 @@ router.post("/birthday", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Error updating birthday.");
+  }
+});
+
+router.delete("/birthday", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    let userId = await routeUtils.verifyLoggedIn(req);
+
+    await models.User.updateOne(
+      { id: userId },
+      {
+        $unset: { birthday: "" },
+        $set: { bdayChanged: false },
+      }
+    ).exec();
+    await redis.cacheUserInfo(userId, true);
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error clearing birthday.");
   }
 });
 

@@ -1284,7 +1284,6 @@ export function useModCommands(argValues, commandRan, setResults) {
           options: [
             { value: "avatar", label: "Avatar" },
             { value: "bio", label: "Bio" },
-            { value: "birthday", label: "Birthday" },
             { value: "customEmotes", label: "Custom Emotes" },
             { value: "name", label: "Name" },
             { value: "vanityUrl", label: "Vanity URL" },

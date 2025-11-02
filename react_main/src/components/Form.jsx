@@ -1,6 +1,5 @@
 import React, { useState, useReducer, useRef, useEffect } from "react";
 import { ChromePicker } from "react-color";
-import DatePicker from "react-date-picker";
 import ReactMde from "react-mde";
 import axios from "axios";
 
@@ -290,19 +289,25 @@ export default function Form(props) {
           selectedValue = undefined;
         }
 
+        // Convert date to YYYY-MM-DD format for HTML5 date input
+        const formatDateForInput = (date) => {
+          if (!date) return "";
+          const d = new Date(date);
+          if (isNaN(d.getTime())) return "";
+          const year = d.getFullYear();
+          const month = String(d.getMonth() + 1).padStart(2, "0");
+          const day = String(d.getDate()).padStart(2, "0");
+          return `${year}-${month}-${day}`;
+        };
+
         return (
           <div className={fieldWrapperClass} key={field.ref}>
             <div className="label">{field.label}</div>
-            <DatePicker
-              format="MMMM dd"
-              calendarAriaLabel="Toggle calendar"
-              clearAriaLabel="Clear value"
-              dayAriaLabel="Day"
-              monthAriaLabel="Month"
-              nativeInputAriaLabel="Date"
-              onChange={(e) => onDChange(e, field, true)}
-              value={field.value || selectedValue || new Date()}
-              maxDetail="month"
+            <input
+              type="date"
+              value={formatDateForInput(field.value || selectedValue)}
+              disabled={disabled}
+              onChange={(e) => onChange(e, field, true)}
             />
             {field.saveBtn && !props.deps.user[field.saveBtnDiffer] && (
               <div
@@ -316,11 +321,23 @@ export default function Form(props) {
                         field.value || field.default,
                         props.deps
                       );
-                    else onDChange(e, field, true);
+                    else onChange(e, field);
                   }
                 }}
               >
                 {field.saveBtn}
+              </div>
+            )}
+            {field.clearBtn && field.value && (
+              <div
+                className="btn btn-theme-sec extra"
+                onClick={(e) => {
+                  if (field.clearBtnOnClick) {
+                    field.clearBtnOnClick(props.deps);
+                  }
+                }}
+              >
+                {field.clearBtn}
               </div>
             )}
           </div>
