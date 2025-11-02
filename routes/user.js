@@ -236,23 +236,32 @@ router.get("/:id/profile", async function (req, res) {
       }).select("userId -_id");
 
       if (!vanityUrl) {
-        res.status(404);
-        res.send("User not found.");
-        return;
+        // Check if this was a recently deleted vanity URL
+        const deletedVanityUserId = await redis.getDeletedVanityUrlUserId(
+          userId
+        );
+        if (deletedVanityUserId) {
+          // Redirect to the user's ID instead
+          userId = deletedVanityUserId;
+        } else {
+          res.status(404);
+          res.send("User not found.");
+          return;
+        }
+      } else {
+        const userByVanity = await models.User.findOne({
+          id: vanityUrl.userId,
+          deleted: false,
+        }).select("id -_id");
+
+        if (!userByVanity) {
+          res.status(404);
+          res.send("User not found.");
+          return;
+        }
+
+        userId = userByVanity.id;
       }
-
-      const userByVanity = await models.User.findOne({
-        id: vanityUrl.userId,
-        deleted: false,
-      }).select("id -_id");
-
-      if (!userByVanity) {
-        res.status(404);
-        res.send("User not found.");
-        return;
-      }
-
-      userId = userByVanity.id;
     }
 
     var isSelf = reqUserId == userId;

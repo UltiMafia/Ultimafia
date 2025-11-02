@@ -1104,6 +1104,18 @@ async function rateLimit(userId, type) {
   return !exists;
 }
 
+async function cacheDeletedVanityUrl(vanityUrl, userId) {
+  const key = `deletedVanityUrl:${vanityUrl}`;
+  await client.setAsync(key, userId);
+  // Keep the mapping for 7 days to give users time to update bookmarks/links
+  await client.expireAsync(key, 604800);
+}
+
+async function getDeletedVanityUrlUserId(vanityUrl) {
+  const key = `deletedVanityUrl:${vanityUrl}`;
+  return await client.getAsync(key);
+}
+
 module.exports = {
   client,
   getUserDbId,
@@ -1174,4 +1186,6 @@ module.exports = {
   hasPermission,
   clearPermissionCache,
   rateLimit,
+  cacheDeletedVanityUrl,
+  getDeletedVanityUrlUserId,
 };

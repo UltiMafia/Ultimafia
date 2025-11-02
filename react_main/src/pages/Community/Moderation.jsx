@@ -1268,8 +1268,8 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Clear Bio": {
-      perm: "clearBio",
+    "Clear User Content": {
+      perm: "clearUserContent",
       category: "User Management",
       args: [
         {
@@ -1277,209 +1277,27 @@ export function useModCommands(argValues, commandRan, setResults) {
           name: "userId",
           type: "user_search",
         },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/clearBio", argValues)
-          .then(() => {
-            siteInfo.showAlert("Bio cleared.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Clear Pronouns": {
-      perm: "clearPronouns",
-      args: [
         {
-          label: "User",
-          name: "userId",
-          type: "user_search",
+          label: "Content Type",
+          name: "contentType",
+          type: "select",
+          options: [
+            { value: "avatar", label: "Avatar" },
+            { value: "bio", label: "Bio" },
+            { value: "birthday", label: "Birthday" },
+            { value: "customEmotes", label: "Custom Emotes" },
+            { value: "name", label: "Name" },
+            { value: "vanityUrl", label: "Vanity URL" },
+            { value: "video", label: "Video" },
+            { value: "pronouns", label: "Pronouns" },
+            { value: "accountDisplay", label: "Account Display" },
+            { value: "all", label: "All User Content" },
+          ],
         },
       ],
       run: function () {
         axios
-          .post("/api/mod/clearPronouns", argValues)
-          .then(() => {
-            siteInfo.showAlert("Pronouns cleared.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Clear Video": {
-      perm: "clearVideo",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/clearVideo", argValues)
-          .then(() => {
-            siteInfo.showAlert("Video cleared.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Clear Vanity URL": {
-      perm: "clearVanityUrl",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/clearVanityUrl", argValues)
-          .then(() => {
-            siteInfo.showAlert("Vanity URL cleared.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Clear Birthday": {
-      perm: "clearBirthday",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/clearBirthday", argValues)
-          .then(() => {
-            siteInfo.showAlert("Birthday cleared.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Clear Account Display": {
-      perm: "clearAccountDisplay",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/clearAccountDisplay", argValues)
-          .then(() => {
-            siteInfo.showAlert("Account display cleared.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Clear Name": {
-      perm: "clearName",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/clearName", argValues)
-          .then(() => {
-            siteInfo.showAlert("Name cleared.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Clear Vanity URL": {
-      perm: "clearVanityUrl",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/clearVanityUrl", argValues)
-          .then(() => {
-            siteInfo.showAlert("Vanity URL cleared.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Clear Avatar": {
-      perm: "clearAvi",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/clearAvi", argValues)
-          .then(() => {
-            siteInfo.showAlert("Avatar cleared.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Clear Custom Emotes": {
-      perm: "clearCustomEmotes",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/clearCustomEmotes", argValues)
-          .then(() => {
-            siteInfo.showAlert("Custom emotes cleared.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Clear All User Content": {
-      perm: "clearAllUserContent",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/clearAllContent", argValues)
+          .post("/api/mod/clearUserContent", argValues)
           .then(() => {
             siteInfo.showAlert("User content cleared.", "success");
             commandRan();
