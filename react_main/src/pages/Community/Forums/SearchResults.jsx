@@ -275,6 +275,7 @@ export default function SearchResults(props) {
                         small
                         id={result.author.id}
                         name={result.author.name}
+                        vanityUrl={result.author.vanityUrl}
                         avatar={result.author.avatar}
                       />
 

@@ -28,6 +28,21 @@ router.get("/leaderboard", async function (req, res) {
       .sort({ kudos: -1, karma: -1, achievements: -1 })
       .limit(20);
 
+    // Add vanity URLs
+    users = await Promise.all(
+      users.map(async (user) => {
+        const userObj = user.toObject();
+        const vanityUrl = await models.VanityUrl.findOne({
+          userId: userObj.id,
+        }).select("url -_id");
+
+        return {
+          ...userObj,
+          vanityUrl: vanityUrl?.url,
+        };
+      })
+    );
+
     res.send(users);
   } catch (e) {
     logger.error(e);

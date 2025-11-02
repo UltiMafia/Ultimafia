@@ -350,7 +350,20 @@ router.get("/:id/profile", async function (req, res) {
       var friendRequests = await models.FriendRequest.find({ targetId: userId })
         .select("userId user")
         .populate("user", "id name avatar");
-      user.friendRequests = friendRequests.map((req) => req.user);
+
+      // Add vanity URLs to friend requests
+      user.friendRequests = await Promise.all(
+        friendRequests.map(async (req) => {
+          const vanityUrl = await models.VanityUrl.findOne({
+            userId: req.user.id,
+          }).select("url -_id");
+
+          return {
+            ...req.user.toJSON(),
+            vanityUrl: vanityUrl?.url,
+          };
+        })
+      );
     } else user.friendRequests = [];
 
     for (let game of user.games)
@@ -638,14 +651,22 @@ router.get("/:id/friends", async function (req, res) {
       ["friend", "id name avatar -_id"]
     );
 
-    friends = friends.map((friend) => {
-      friend = friend.toJSON();
+    friends = await Promise.all(
+      friends.map(async (friend) => {
+        friend = friend.toJSON();
 
-      return {
-        ...friend.friend,
-        lastActive: friend.lastActive,
-      };
-    });
+        // Get vanity URL for friend
+        const vanityUrl = await models.VanityUrl.findOne({
+          userId: friend.friend.id,
+        }).select("url -_id");
+
+        return {
+          ...friend.friend,
+          lastActive: friend.lastActive,
+          vanityUrl: vanityUrl?.url,
+        };
+      })
+    );
 
     res.send(friends);
   } catch (e) {
@@ -1946,6 +1967,7 @@ router.post("/delete", async function (req, res) {
     await models.InGroup.deleteMany({ user: dbId }).exec();
 
     // Clear vanity URL so it can be claimed by other users
+    await models.VanityUrl.deleteMany({ userId: userId }).exec();
     await models.User.updateOne(
       { id: userId },
       { $unset: { "settings.vanityUrl": "" } }

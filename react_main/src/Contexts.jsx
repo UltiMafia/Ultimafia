@@ -148,11 +148,13 @@ export function UserProvider({ children, setUserLoading }) {
       // VERY EXPERIMENTAL: counteract non-integer values of DPI scaling because they make role icons look weird
       if (window.devicePixelRatio !== undefined) {
         const dpiScaling = window.devicePixelRatio;
-        const dpiDecimal = dpiScaling % 1
+        const dpiDecimal = dpiScaling % 1;
         if (dpiDecimal > 0) {
-          console.log("Experimental DPI non-integer scaling correction is enabled")
+          console.log(
+            "Experimental DPI non-integer scaling correction is enabled"
+          );
           const dpiScalingInt = dpiScaling - dpiDecimal;
-          setDpiCorrection(`${16 * dpiScalingInt / dpiScaling}px`);
+          setDpiCorrection(`${(16 * dpiScalingInt) / dpiScaling}px`);
         }
       }
     }
@@ -160,7 +162,9 @@ export function UserProvider({ children, setUserLoading }) {
 
   return (
     <>
-      {dpiCorrection && <GlobalStyles styles={{ html: { fontSize: dpiCorrection } }} />}
+      {dpiCorrection && (
+        <GlobalStyles styles={{ html: { fontSize: dpiCorrection } }} />
+      )}
       <UserContext.Provider value={userVal}>{children}</UserContext.Provider>
     </>
   );

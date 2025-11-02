@@ -1215,28 +1215,6 @@ router.post("/clearBio", async (req, res) => {
   }
 });
 
-router.post("/clearVanityUrl", async (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToClear = String(req.body.userId);
-    var perm = "clearVanityUrl";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    await models.VanityUrl.deleteOne({
-      userId: userIdToClear,
-    });
-
-    routeUtils.createModAction(userId, "Clear Vanity URL", [userIdToClear]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error clearing vanity URL.");
-  }
-});
-
 router.post("/clearPronouns", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -1426,6 +1404,31 @@ router.post("/clearName", async (req, res) => {
     logger.error(e);
     res.status(500);
     res.send("Error clearing username.");
+  }
+});
+
+router.post("/clearVanityUrl", async (req, res) => {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdToClear = String(req.body.userId);
+    var perm = "clearVanityUrl";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    await models.VanityUrl.deleteMany({ userId: userIdToClear }).exec();
+    await models.User.updateOne(
+      { id: userIdToClear },
+      { $unset: { "settings.vanityUrl": "" } }
+    ).exec();
+
+    await redis.cacheUserInfo(userIdToClear, true);
+
+    routeUtils.createModAction(userId, "Clear Vanity URL", [userIdToClear]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error clearing vanity URL.");
   }
 });
 

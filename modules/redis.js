@@ -301,6 +301,11 @@ async function getUserInfo(userId) {
   info.groups = JSON.parse(await client.getAsync(`user:${userId}:info:groups`));
   info.achievements = await client.getAsync(`user:${userId}:info:achievements`);
 
+  const vanityUrl = await client.getAsync(`user:${userId}:info:vanityUrl`);
+  if (vanityUrl) {
+    info.vanityUrl = vanityUrl;
+  }
+
   return info;
 }
 

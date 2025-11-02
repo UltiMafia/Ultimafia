@@ -117,6 +117,13 @@ var deprecated = false;
             user.socket = socket;
             user.settings = user.settings || {};
             utils.remapCustomEmotes(user, userId);
+
+            // Load vanity URL
+            const vanityUrl = await models.VanityUrl.findOne({
+              userId: userId,
+            }).select("url -_id");
+            user.vanityUrl = vanityUrl?.url;
+
             user = new User(user);
 
             socket.send("authSuccess");

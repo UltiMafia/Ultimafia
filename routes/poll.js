@@ -127,9 +127,10 @@ router.get("/list/:lobby", async function (req, res) {
     let activePolls = [];
 
     if (isAllLobbies) {
-      // For "All" lobby, get all active polls from all lobbies
+      // For "All" lobby, get all active polls from all lobbies (exclude thread polls)
       activePolls = await models.Poll.find({
         completed: false,
+        threadId: { $exists: false },
       })
         .sort({ created: -1 })
         .lean();
@@ -139,10 +140,11 @@ router.get("/list/:lobby", async function (req, res) {
         await populatePollData(poll);
       }
     } else {
-      // Get current poll (most recent non-completed)
+      // Get current poll (most recent non-completed, exclude thread polls)
       currentPoll = await models.Poll.findOne({
         lobby,
         completed: false,
+        threadId: { $exists: false },
       })
         .sort({ created: -1 })
         .lean();
@@ -153,8 +155,10 @@ router.get("/list/:lobby", async function (req, res) {
       }
     }
 
-    // Get polls for history
-    const lobbyQuery = isAllLobbies ? {} : { lobby };
+    // Get polls for history (exclude thread polls)
+    const lobbyQuery = isAllLobbies
+      ? { threadId: { $exists: false } }
+      : { lobby, threadId: { $exists: false } };
     var polls = await models.Poll.find(lobbyQuery)
       .sort({ created: -1 })
       .skip(skip)

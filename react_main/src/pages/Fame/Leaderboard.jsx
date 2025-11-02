@@ -217,6 +217,7 @@ export default function Leaderboard() {
                       id={user.id}
                       name={user.name}
                       avatar={user.avatar}
+                      vanityUrl={user.vanityUrl}
                     />
                   </TableCell>
                   <TableCell>{user.winLossRatio.toFixed(2)}</TableCell>

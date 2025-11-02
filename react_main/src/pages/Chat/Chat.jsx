@@ -527,6 +527,7 @@ function Message(props) {
             avatar={message.sender.avatar}
             color={message.sender.settings && message.sender.settings.nameColor}
             groups={message.sender.groups}
+            vanityUrl={message.sender.vanityUrl}
           />
         )}
         {age > 1000 * 60 && (
@@ -597,6 +598,7 @@ function ChannelName(props) {
             id={m.id}
             name={m.name}
             avatar={m.avatar}
+            vanityUrl={m.vanityUrl}
             key={m.id}
           />
         ));
@@ -610,6 +612,7 @@ function ChannelName(props) {
             id={channel.id}
             name={channel.name}
             avatar={channel.avatar}
+            vanityUrl={channel.vanityUrl}
           />
           <StatusIcon status={channel.status} />
         </>

@@ -148,14 +148,14 @@ const shopItems = [
     limit: 1,
     onBuy: async function (userId) {},
   },
-  // {
-  //   name: "Vanity URL",
-  //   desc: "Set a custom URL for your profile (1-20 characters)",
-  //   key: "vanityUrl",
-  //   price: 100,
-  //   limit: 1,
-  //   onBuy: async function (userId) {},
-  // },
+  {
+    name: "Vanity URL",
+    desc: "Set a custom URL for your profile (1-20 characters)",
+    key: "vanityUrl",
+    price: 100,
+    limit: 1,
+    onBuy: async function (userId) {},
+  },
 ];
 
 router.get("/info", async function (req, res) {
