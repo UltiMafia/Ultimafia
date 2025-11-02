@@ -115,7 +115,6 @@ function DiceWarsBoardWrapper({
   const [gameState, setGameState] = useState(null);
   const [selectedTerritoryId, setSelectedTerritoryId] = useState(null);
   const [playerId, setPlayerId] = useState(player || null);
-  const [attackResult, setAttackResult] = useState(null);
   const svgRef = useRef();
   const hexSize = 30; // radius of each hex
 
@@ -127,13 +126,6 @@ function DiceWarsBoardWrapper({
         roundNumber: state.roundNumber,
       });
       setGameState(state);
-    });
-
-    socket.on("attackResult", (result) => {
-      console.log("Frontend received attackResult:", result);
-      setAttackResult(result);
-      // Clear attack result after 3 seconds
-      setTimeout(() => setAttackResult(null), 3000);
     });
   }, gameSocket);
 
@@ -603,33 +595,6 @@ function DiceWarsBoardWrapper({
         >
           {/* Game board */}
           <svg ref={svgRef} style={{ display: "block", margin: "0 auto" }} />
-
-          {/* Attack result display */}
-          {attackResult && (
-            <div
-              style={{
-                marginTop: "12px",
-                padding: "12px",
-                backgroundColor: attackResult.won ? "#4CAF50" : "#f44336",
-                color: "white",
-                borderRadius: "4px",
-                textAlign: "center",
-                fontWeight: "bold",
-              }}
-            >
-              <div>
-                {attackResult.won ? "Attack Successful! ✓" : "Attack Failed! ✗"}
-              </div>
-              <div style={{ fontSize: "14px", marginTop: "4px" }}>
-                Attacker rolled: {attackResult.attackRoll?.join(", ")} ={" "}
-                {attackResult.attackTotal}
-              </div>
-              <div style={{ fontSize: "14px" }}>
-                Defender rolled: {attackResult.defenseRoll?.join(", ")} ={" "}
-                {attackResult.defenseTotal}
-              </div>
-            </div>
-          )}
         </div>
       }
     />
