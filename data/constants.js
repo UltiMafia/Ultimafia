@@ -72,7 +72,6 @@ module.exports = {
     "Texas Hold Em": ["Town", "Host"],
     Cheat: ["Town", "Host"],
     Battlesnakes: ["Town", "Host"],
-    DiceWars: ["Town", "Host"], // Backward compatibility
     "Dice Wars": ["Town", "Host"],
     "Connect Four": ["Town", "Host"],
   },
@@ -87,7 +86,6 @@ module.exports = {
     "Texas Hold Em": ["Place Bets", "Showdown"],
     Cheat: ["Play Cards", "Call Lie"],
     Battlesnakes: ["Day"],
-    DiceWars: ["Play"], // Backward compatibility
     "Dice Wars": ["Play"],
     "Connect Four": ["Turn"],
   },
@@ -131,14 +129,6 @@ module.exports = {
         min: 1 * 60 * 1000,
         max: 60 * 60 * 1000,
         default: 60 * 60 * 1000,
-      },
-    },
-    DiceWars: {
-      // Backward compatibility
-      Play: {
-        min: 5 * 60 * 1000,
-        max: 60 * 60 * 1000,
-        default: 30 * 60 * 1000,
       },
     },
     "Dice Wars": {

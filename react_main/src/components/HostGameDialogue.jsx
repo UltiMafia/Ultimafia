@@ -67,7 +67,6 @@ export default function HostGameDialogue({ open, setOpen, setup }) {
         return HostCheat();
       case "Battlesnakes":
         return HostBattlesnakes();
-      case "DiceWars": // Backward compatibility
       case "Dice Wars":
         return HostDiceWars();
       case "Connect Four":

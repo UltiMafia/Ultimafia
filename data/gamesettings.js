@@ -258,7 +258,6 @@ const gameSettingData = {
     },
   },
   Battlesnakes: {},
-  DiceWars: {}, // Backward compatibility
   "Dice Wars": {},
   "Connect Four": {
     Whispers: {

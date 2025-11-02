@@ -78,7 +78,6 @@ export default function CreateSetup(props) {
         return <CreateCheatSetup />;
       case "Battlesnakes":
         return <CreateBattlesnakesSetup />;
-      case "DiceWars": // Backward compatibility
       case "Dice Wars":
         return <CreateDiceWarsSetup />;
       case "Connect Four":

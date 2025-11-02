@@ -1162,16 +1162,6 @@ const settingsChecks = {
       boardSize,
     };
   },
-  DiceWars: (settings, setup) => {
-    // Backward compatibility
-    const mapSize = settings.mapSize;
-    const maxDice = settings.maxDice;
-
-    return {
-      mapSize,
-      maxDice,
-    };
-  },
   "Dice Wars": (settings, setup) => {
     const mapSize = settings.mapSize;
     const maxDice = settings.maxDice;

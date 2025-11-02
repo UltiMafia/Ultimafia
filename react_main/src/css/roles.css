@@ -2912,11 +2912,6 @@
 *
 ***********/
 
-/* Backward compatibility for old game type name */
-.role-icon-vivid-DiceWars-General {
-  background-image: url("/src/images/roles/minigame/dicewars/general-vivid.png");
-}
-
 .role-icon-vivid-Dice-Wars-General {
   background-image: url("/src/images/roles/minigame/dicewars/general-vivid.png");
 }

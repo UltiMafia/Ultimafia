@@ -6343,24 +6343,6 @@ const roleData = {
       description: ["Facilitates the game."],
     },
   },
-  DiceWars: {
-    // Backward compatibility
-    General: {
-      alignment: "Town",
-      tags: ["None"],
-      description: [
-        "Controls territories on a hex grid.",
-        "Attacks adjacent enemy territories with dice.",
-        "Receives bonus dice based on largest connected region.",
-      ],
-    },
-
-    Host: {
-      alignment: "Host",
-      tags: ["None"],
-      description: ["Facilitates the game."],
-    },
-  },
   "Dice Wars": {
     General: {
       alignment: "Town",

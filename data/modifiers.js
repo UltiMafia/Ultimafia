@@ -1300,7 +1300,6 @@ const modifierData = {
   Cheat: {},
   Battlesnakes: {},
   "Connect Four": {},
-  DiceWars: {}, // Backward compatibility
   "Dice Wars": {},
 };
 
