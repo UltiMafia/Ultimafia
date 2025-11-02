@@ -236,23 +236,32 @@ router.get("/:id/profile", async function (req, res) {
       }).select("userId -_id");
 
       if (!vanityUrl) {
-        res.status(404);
-        res.send("User not found.");
-        return;
+        // Check if this was a recently deleted vanity URL
+        const deletedVanityUserId = await redis.getDeletedVanityUrlUserId(
+          userId
+        );
+        if (deletedVanityUserId) {
+          // Redirect to the user's ID instead
+          userId = deletedVanityUserId;
+        } else {
+          res.status(404);
+          res.send("User not found.");
+          return;
+        }
+      } else {
+        const userByVanity = await models.User.findOne({
+          id: vanityUrl.userId,
+          deleted: false,
+        }).select("id -_id");
+
+        if (!userByVanity) {
+          res.status(404);
+          res.send("User not found.");
+          return;
+        }
+
+        userId = userByVanity.id;
       }
-
-      const userByVanity = await models.User.findOne({
-        id: vanityUrl.userId,
-        deleted: false,
-      }).select("id -_id");
-
-      if (!userByVanity) {
-        res.status(404);
-        res.send("User not found.");
-        return;
-      }
-
-      userId = userByVanity.id;
     }
 
     var isSelf = reqUserId == userId;
@@ -1357,6 +1366,28 @@ router.post("/birthday", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Error updating birthday.");
+  }
+});
+
+router.delete("/birthday", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    let userId = await routeUtils.verifyLoggedIn(req);
+
+    await models.User.updateOne(
+      { id: userId },
+      {
+        $unset: { birthday: "" },
+        $set: { bdayChanged: false },
+      }
+    ).exec();
+    await redis.cacheUserInfo(userId, true);
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error clearing birthday.");
   }
 });
 

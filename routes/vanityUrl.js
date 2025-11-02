@@ -24,20 +24,34 @@ router.get("/:identifier", async function (req, res) {
       }).select("userId -_id");
 
       if (!vanityUrl) {
-        res.status(404);
-        res.send("User not found.");
-        return;
-      }
+        // Check if this was a recently deleted vanity URL
+        const deletedVanityUserId = await redis.getDeletedVanityUrlUserId(
+          identifier
+        );
+        if (deletedVanityUserId) {
+          // Use the user ID from the deleted vanity URL cache
+          user = await models.User.findOne({
+            id: deletedVanityUserId,
+            deleted: false,
+          }).select("id -_id");
+        }
 
-      user = await models.User.findOne({
-        id: vanityUrl.userId,
-        deleted: false,
-      }).select("id -_id");
+        if (!user) {
+          res.status(404);
+          res.send("User not found.");
+          return;
+        }
+      } else {
+        user = await models.User.findOne({
+          id: vanityUrl.userId,
+          deleted: false,
+        }).select("id -_id");
 
-      if (!user) {
-        res.status(404);
-        res.send("User not found.");
-        return;
+        if (!user) {
+          res.status(404);
+          res.send("User not found.");
+          return;
+        }
       }
     }
 
@@ -94,6 +108,9 @@ router.post("/", async function (req, res) {
       });
     }
 
+    // Update Redis cache to reflect the new vanity URL
+    await redis.cacheUserInfo(userId, true);
+
     res.send("Vanity URL updated successfully");
   } catch (e) {
     if (e.code === 11000) {
@@ -117,6 +134,9 @@ router.delete("/", async function (req, res) {
     await models.VanityUrl.deleteOne({
       userId: userId,
     });
+
+    // Update Redis cache to clear the vanity URL
+    await redis.cacheUserInfo(userId, true);
 
     res.send("Vanity URL deleted successfully");
   } catch (e) {

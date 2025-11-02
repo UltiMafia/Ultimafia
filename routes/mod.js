@@ -1190,139 +1190,14 @@ router.post("/clearSetupName", async (req, res) => {
   }
 });
 
-router.post("/clearBio", async (req, res) => {
+// Unified route for clearing user content
+router.post("/clearUserContent", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var userIdToClear = String(req.body.userId);
-    var perm = "clearBio";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    await models.User.updateOne(
-      { id: userIdToClear },
-      { $set: { bio: "" } }
-    ).exec();
-
-    await redis.cacheUserInfo(userIdToClear, true);
-
-    routeUtils.createModAction(userId, "Clear Bio", [userIdToClear]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error clearing bio.");
-  }
-});
-
-router.post("/clearPronouns", async (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToClear = String(req.body.userId);
-    var perm = "clearPronouns";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    await models.User.updateOne(
-      { id: userIdToClear },
-      { $set: { pronouns: "" } }
-    ).exec();
-
-    await redis.cacheUserInfo(userIdToClear, true);
-
-    routeUtils.createModAction(userId, "Clear Pronouns", [userIdToClear]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error clearing pronouns.");
-  }
-});
-
-router.post("/clearVideo", async (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToClear = String(req.body.userId);
-    var perm = "clearVideo";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    await models.User.updateOne(
-      { id: userIdToClear },
-      { $set: { settings: { youtube: "" } } }
-    ).exec();
-
-    await redis.cacheUserInfo(userIdToClear, true);
-
-    routeUtils.createModAction(userId, "Clear Video", [userIdToClear]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error clearing video.");
-  }
-});
-
-router.post("/clearBirthday", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToClear = String(req.body.userId);
-    var perm = "clearBirthday";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    await models.User.updateOne(
-      { id: userIdToClear },
-      {
-        $unset: { birthday: "" },
-        $set: { bdayChanged: false },
-      }
-    ).exec();
-
-    await redis.cacheUserInfo(userIdToClear, true);
-
-    routeUtils.createModAction(userId, "Clear Birthday", [userIdToClear]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error clearing birthday.");
-  }
-});
-
-router.post("/clearAvi", async (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToClear = String(req.body.userId);
-    var perm = "clearAvi";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    await models.User.updateOne(
-      { id: userIdToClear },
-      { $set: { avatar: false } }
-    ).exec();
-
-    await redis.cacheUserInfo(userIdToClear, true);
-
-    routeUtils.createModAction(userId, "Clear Avatar", [userIdToClear]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error clearing avatar.");
-  }
-});
-
-router.post("/clearCustomEmotes", async (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToClear = String(req.body.userId);
-    var perm = "clearCustomEmotes";
+    var contentType = String(req.body.contentType);
+    var perm = "clearUserContent";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
@@ -1334,168 +1209,133 @@ router.post("/clearCustomEmotes", async (req, res) => {
       return;
     }
 
-    await models.CustomEmote.updateMany(
-      { creator: user._id },
-      { $set: { deleted: true } }
-    ).exec();
+    let modActionName = "";
+    let updateQuery = {};
+    let additionalOperations = [];
 
-    await models.User.updateOne(
-      { id: userIdToClear },
-      { $set: { customEmotes: [] } }
-    ).exec();
+    switch (contentType) {
+      case "avatar":
+        updateQuery = { $set: { avatar: false } };
+        modActionName = "Clear Avatar";
+        break;
 
-    await redis.cacheUserInfo(userIdToClear, true);
+      case "bio":
+        updateQuery = { $set: { bio: "" } };
+        modActionName = "Clear Bio";
+        break;
 
-    routeUtils.createModAction(userId, "Clear Custom Emotes", [userIdToClear]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error clearing custome emotes.");
-  }
-});
+      case "customEmotes":
+        updateQuery = { $set: { customEmotes: [] } };
+        modActionName = "Clear Custom Emotes";
+        additionalOperations.push(
+          models.CustomEmote.updateMany(
+            { creator: user._id },
+            { $set: { deleted: true } }
+          ).exec()
+        );
+        break;
 
-router.post("/clearAccountDisplay", async (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToClear = String(req.body.userId);
-    var perm = "clearAccountDisplay";
+      case "name":
+        updateQuery = {
+          $set: {
+            name: routeUtils.nameGen().slice(0, constants.maxUserNameLength),
+          },
+        };
+        modActionName = "Clear Name";
+        break;
 
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+      case "vanityUrl":
+        updateQuery = { $unset: { "settings.vanityUrl": "" } };
+        modActionName = "Clear Vanity URL";
+        // Store the current vanity URL before deleting it
+        const vanityUrlToDelete = await models.VanityUrl.findOne({
+          userId: userIdToClear,
+        }).select("url -_id");
+        if (vanityUrlToDelete) {
+          // Cache the deleted vanity URL -> user ID mapping for 7 days
+          // This allows old links to still work temporarily
+          await redis.cacheDeletedVanityUrl(
+            vanityUrlToDelete.url,
+            userIdToClear
+          );
+        }
+        additionalOperations.push(
+          models.VanityUrl.deleteMany({ userId: userIdToClear }).exec()
+        );
+        break;
 
-    await models.User.updateOne({ id: userIdToClear }).exec();
+      case "video":
+        updateQuery = { $unset: { "settings.youtube": "" } };
+        modActionName = "Clear Video";
+        break;
 
-    await redis.cacheUserInfo(userIdToClear, true);
+      case "pronouns":
+        updateQuery = { $set: { pronouns: "" } };
+        modActionName = "Clear Pronouns";
+        break;
 
-    routeUtils.createModAction(userId, "Clear Account Display", [
-      userIdToClear,
-    ]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error clearing account display.");
-  }
-});
+      case "accountDisplay":
+        updateQuery = {};
+        modActionName = "Clear Account Display";
+        break;
 
-router.post("/clearName", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToClear = String(req.body.userId);
-    var perm = "clearName";
+      case "all":
+        updateQuery = {
+          $set: {
+            name: routeUtils.nameGen().slice(0, constants.maxUserNameLength),
+            avatar: false,
+            bio: "",
+            customEmotes: [],
+          },
+        };
+        modActionName = "Clear All User Content";
+        additionalOperations.push(
+          models.CustomEmote.updateMany(
+            { creator: user._id },
+            { $set: { deleted: true } }
+          ).exec(),
+          models.Setup.updateMany(
+            { creator: user._id },
+            { $set: { name: "Unnamed setup" } }
+          ).exec(),
+          models.ForumThread.updateMany(
+            { author: user._id },
+            { $set: { deleted: true } }
+          ).exec(),
+          models.ForumReply.updateMany(
+            { author: user._id },
+            { $set: { deleted: true } }
+          ).exec(),
+          models.Comment.updateMany(
+            { author: user._id },
+            { $set: { deleted: true } }
+          ).exec(),
+          models.ChatMessage.deleteMany({ senderId: userIdToClear }).exec()
+        );
+        break;
 
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    await models.User.updateOne(
-      { id: userIdToClear },
-      {
-        $set: {
-          name: routeUtils.nameGen().slice(0, constants.maxUserNameLength),
-        },
-      }
-    ).exec();
-
-    await redis.cacheUserInfo(userIdToClear, true);
-
-    routeUtils.createModAction(userId, "Clear Name", [userIdToClear]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error clearing username.");
-  }
-});
-
-router.post("/clearVanityUrl", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToClear = String(req.body.userId);
-    var perm = "clearVanityUrl";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    await models.VanityUrl.deleteMany({ userId: userIdToClear }).exec();
-    await models.User.updateOne(
-      { id: userIdToClear },
-      { $unset: { "settings.vanityUrl": "" } }
-    ).exec();
-
-    await redis.cacheUserInfo(userIdToClear, true);
-
-    routeUtils.createModAction(userId, "Clear Vanity URL", [userIdToClear]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error clearing vanity URL.");
-  }
-});
-
-router.post("/clearAllContent", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToClear = String(req.body.userId);
-    var perm = "clearAllUserContent";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    var user = await models.User.findOne({ id: userIdToClear }).select("_id");
-
-    if (!user) {
-      res.status(500);
-      res.send("User not found.");
-      return;
+      default:
+        res.status(400);
+        res.send("Invalid content type.");
+        return;
     }
 
-    await models.User.updateOne(
-      { id: userIdToClear },
-      {
-        $set: {
-          name: routeUtils.nameGen().slice(0, constants.maxUserNameLength),
-          avatar: false,
-          bio: "",
-          customEmotes: [],
-        },
-      }
-    ).exec();
+    // Execute the main update query
+    if (Object.keys(updateQuery).length > 0) {
+      await models.User.updateOne({ id: userIdToClear }, updateQuery).exec();
+    }
 
-    await models.CustomEmote.updateMany(
-      { creator: user._id },
-      { $set: { deleted: true } }
-    ).exec();
+    // Execute any additional operations
+    await Promise.all(additionalOperations);
 
-    await models.Setup.updateMany(
-      { creator: user._id },
-      { $set: { name: "Unnamed setup" } }
-    ).exec();
-
-    await models.ForumThread.updateMany(
-      { author: user._id },
-      { $set: { deleted: true } }
-    ).exec();
-
-    await models.ForumReply.updateMany(
-      { author: user._id },
-      { $set: { deleted: true } }
-    ).exec();
-
-    await models.Comment.updateMany(
-      { author: user._id },
-      { $set: { deleted: true } }
-    ).exec();
-
-    await models.ChatMessage.deleteMany({ senderId: userIdToClear }).exec();
     await redis.cacheUserInfo(userIdToClear, true);
 
-    routeUtils.createModAction(userId, "Clear All User Content", [
-      userIdToClear,
-    ]);
+    routeUtils.createModAction(userId, modActionName, [userIdToClear]);
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error clearing user's content.");
+    res.send("Error clearing user content.");
   }
 });
 
