@@ -344,13 +344,23 @@ router.get("/:id/review/data", async function (req, res) {
 
     if (game !== null) {
       game = game.toJSON();
-      game.users = game.users.map((user) => ({
-        ...user,
-        settings: {
-          textColor: user.settings.textColor,
-          nameColor: user.settings.textColor,
-        },
-      }));
+      game.users = await Promise.all(
+        game.users.map(async (user) => {
+          // Get vanity URL for each user
+          const vanityUrl = await models.VanityUrl.findOne({
+            userId: user.id,
+          }).select("url -_id");
+          
+          return {
+            ...user,
+            settings: {
+              textColor: user.settings.textColor,
+              nameColor: user.settings.textColor,
+            },
+            vanityUrl: vanityUrl?.url,
+          };
+        })
+      );
 
       for (let user of game.users) {
         utils.remapCustomEmotes(user, user.id);

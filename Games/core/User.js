@@ -29,6 +29,7 @@ module.exports = class User {
     this.guestId = props.guestId;
     this.settings = props.settings;
     this.isTest = props.isTest;
+    this.vanityUrl = props.vanityUrl;
   }
 
   send(eventName, data) {

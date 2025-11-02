@@ -59,7 +59,7 @@ export default function UserSearch(props) {
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
-          <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
+          <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} vanityUrl={user.vanityUrl} />
           <Box sx={{ width: "8px" }} />
           <StatusIcon status={user.status} />
         </Box>
@@ -142,7 +142,7 @@ function NewestUsers(props) {
       sx={{ marginBottom: 2 }}
     >
       <CardContent sx={{ display: "flex", flexDirection: "column" }}>
-        <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
+        <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} vanityUrl={user.vanityUrl} />
         <Typography variant="caption" sx={{ marginTop: "4px" }}>
           <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
         </Typography>
@@ -198,7 +198,7 @@ function FlaggedUsers(props) {
       sx={{ marginBottom: 2 }}
     >
       <CardContent sx={{ display: "flex", flexDirection: "column" }}>
-        <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
+        <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} vanityUrl={user.vanityUrl} />
         <Typography variant="caption" sx={{ marginTop: "4px" }}>
           <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
         </Typography>

@@ -45,6 +45,7 @@ export default function Donors(props) {
           small
           id={user.id}
           name={user.name}
+          vanityUrl={user.vanityUrl}
           avatar={user.avatar}
         />
       </Box>

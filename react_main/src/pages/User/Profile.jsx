@@ -588,7 +588,7 @@ export default function Profile() {
 
   const friendRequestRows = friendRequests.map((user) => (
     <div className="friend-request" key={user.id}>
-      <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
+      <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} vanityUrl={user.vanityUrl} />
       <div className="btns">
         <i className="fas fa-check" onClick={() => onAcceptFriend(user.id)} />
         <i className="fas fa-times" onClick={() => onRejectFriend(user.id)} />
@@ -603,6 +603,7 @@ export default function Profile() {
           id={friend.id}
           name={friend.name}
           avatar={friend.avatar}
+          vanityUrl={friend.vanityUrl}
         />
         {showDelete && (
           <div className="btns-wrapper">
@@ -618,8 +619,11 @@ export default function Profile() {
 
   if (user.loaded && !user.loggedIn && !userId) return <Navigate to="/play" />;
 
-  if (user.loaded && user.loggedIn && !userId)
-    return <Navigate to={`/user/${user.id}`} replace />;
+  if (user.loaded && user.loggedIn && !userId) {
+    // Use vanity URL if available, otherwise use user ID
+    const profilePath = user.vanityUrl ? `/user/${user.vanityUrl}` : `/user/${user.id}`;
+    return <Navigate to={profilePath} replace />;
+  }
 
   if (!profileLoaded || !user.loaded) return <NewLoading small />;
 

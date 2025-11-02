@@ -46,6 +46,7 @@ export default function Contributors(props) {
           small
           id={user.id}
           name={user.name}
+          vanityUrl={user.vanityUrl}
           avatar={user.avatar}
         />
       </Box>

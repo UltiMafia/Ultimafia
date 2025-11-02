@@ -292,6 +292,7 @@ export function VoteWidget(props) {
               small
               id={e.voter.id}
               name={e.voter.name}
+              vanityUrl={e.voter.vanityUrl}
               avatar={e.voter.avatar}
             />
           ))}
@@ -304,6 +305,7 @@ export function VoteWidget(props) {
               small
               id={e.voter.id}
               name={e.voter.name}
+              vanityUrl={e.voter.vanityUrl}
               avatar={e.voter.avatar}
             />
           ))}

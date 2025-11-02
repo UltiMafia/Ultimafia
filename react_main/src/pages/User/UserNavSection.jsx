@@ -40,8 +40,11 @@ export default function UserNavSection({
       });
   };
 
+  // Use vanity URL for profile link if available
+  const profilePath = user.vanityUrl ? `/user/${user.vanityUrl}` : "/user";
+  
   const userMenuItems = [
-    { text: "Profile", path: "/user" },
+    { text: "Profile", path: profilePath },
     { text: "Inbox", path: "/user/inbox" },
     { text: "Settings", path: "/user/settings" },
     { text: "Shop", path: "/user/shop" },

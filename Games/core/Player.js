@@ -719,6 +719,7 @@ module.exports = class Player {
       nameColor: this.user.nameColor,
       customEmotes: this.user.customEmotes,
       birthday: this.user.birthday,
+      vanityUrl: this.user.vanityUrl,
     };
 
     return info;
