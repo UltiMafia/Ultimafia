@@ -79,6 +79,7 @@ function DiceWarsGame(props) {
         leftPanelContent={
           <>
             <PlayerList />
+            <ActionList />
           </>
         }
         centerPanelContent={
@@ -339,17 +340,6 @@ function DiceWarsBoardWrapper({ player, players, gameSocket, history, stateViewi
     }
   };
 
-  // Handle end turn button
-  const handleEndTurn = () => {
-    console.log("End Turn button clicked");
-    console.log("Current turn player:", gameState?.currentTurnPlayerId, "My ID:", playerId);
-    if (gameState && gameState.currentTurnPlayerId === playerId) {
-      console.log("Sending endTurn message via socket");
-      gameSocket.send("endTurn", {});
-      setSelectedTerritoryId(null);
-    }
-  };
-
   useEffect(() => {
     if (!gameState || !gameState.hexGrid || !gameState.territories) return;
 
@@ -591,26 +581,6 @@ function DiceWarsBoardWrapper({ player, players, gameSocket, history, stateViewi
 
           {/* Controls */}
           <div style={{ marginTop: "12px", textAlign: "center" }}>
-            {gameState?.currentTurnPlayerId === playerId && (
-              <button
-                onClick={handleEndTurn}
-                style={{
-                  padding: "10px 20px",
-                  fontSize: "16px",
-                  fontWeight: "bold",
-                  backgroundColor: "#4CAF50",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  marginRight: "10px",
-                }}
-                onMouseEnter={(e) => (e.target.style.backgroundColor = "#45a049")}
-                onMouseLeave={(e) => (e.target.style.backgroundColor = "#4CAF50")}
-              >
-                End Turn
-              </button>
-            )}
             {selectedTerritoryId !== null && (
               <button
                 onClick={() => setSelectedTerritoryId(null)}

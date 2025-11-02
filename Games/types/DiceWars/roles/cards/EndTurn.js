@@ -6,10 +6,10 @@ module.exports = class EndTurn extends Card {
 
     this.meetings = {
       "End Turn": {
-        actionName: "End Turn",
         states: ["Play"],
-        flags: ["voting"],
-        inputType: "boolean",
+        flags: ["voting", "instant"],
+        inputType: "button",
+        targets: ["End Turn"],
         shouldMeet: function () {
           // Only show this meeting if it's the player's turn
           return this.player.id === this.game.currentTurnPlayerId;
