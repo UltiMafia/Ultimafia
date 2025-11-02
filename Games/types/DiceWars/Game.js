@@ -88,7 +88,9 @@ module.exports = class DiceWarsGame extends Game {
     const gridHeight = Math.ceil(Math.sqrt(totalHexes / aspectRatio));
     const gridWidth = Math.ceil(totalHexes / gridHeight);
 
-    console.log(`Generating ${gridWidth}x${gridHeight} hex grid for ${this.mapSize} territories`);
+    console.log(
+      `Generating ${gridWidth}x${gridHeight} hex grid for ${this.mapSize} territories`
+    );
 
     // First, create a full rectangular grid of hexes (offset coordinates)
     const hexGrid = [];
@@ -110,7 +112,11 @@ module.exports = class DiceWarsGame extends Game {
     }
 
     // Generate random territories using flood-fill algorithm
-    const territories = this.generateRandomTerritories(hexGrid, gridWidth, gridHeight);
+    const territories = this.generateRandomTerritories(
+      hexGrid,
+      gridWidth,
+      gridHeight
+    );
 
     // Mark ocean hexes and create neighbor relationships
     for (let hex of hexGrid) {
@@ -137,7 +143,9 @@ module.exports = class DiceWarsGame extends Game {
     // Build final territory list with neighbor IDs
     // Check ALL hexes in each territory to find neighbors
     for (let territory of territories) {
-      const territoryHexes = hexGrid.filter((h) => h.territoryId === territory.id && !h.isOcean);
+      const territoryHexes = hexGrid.filter(
+        (h) => h.territoryId === territory.id && !h.isOcean
+      );
       const neighborIds = new Set();
 
       // Check neighbors of all hexes in this territory
@@ -176,22 +184,22 @@ module.exports = class DiceWarsGame extends Game {
     if (isEven) {
       // Even rows
       return [
-        { col: 1, row: 0 },   // E
-        { col: 0, row: -1 },  // NE
+        { col: 1, row: 0 }, // E
+        { col: 0, row: -1 }, // NE
         { col: -1, row: -1 }, // NW
-        { col: -1, row: 0 },  // W
-        { col: -1, row: 1 },  // SW
-        { col: 0, row: 1 },   // SE
+        { col: -1, row: 0 }, // W
+        { col: -1, row: 1 }, // SW
+        { col: 0, row: 1 }, // SE
       ];
     } else {
       // Odd rows
       return [
-        { col: 1, row: 0 },   // E
-        { col: 1, row: -1 },  // NE
-        { col: 0, row: -1 },  // NW
-        { col: -1, row: 0 },  // W
-        { col: 0, row: 1 },   // SW
-        { col: 1, row: 1 },   // SE
+        { col: 1, row: 0 }, // E
+        { col: 1, row: -1 }, // NE
+        { col: 0, row: -1 }, // NW
+        { col: -1, row: 0 }, // W
+        { col: 0, row: 1 }, // SW
+        { col: 1, row: 1 }, // SE
       ];
     }
   }
@@ -203,7 +211,7 @@ module.exports = class DiceWarsGame extends Game {
     const territories = [];
     const availableHexes = [...hexGrid];
     let territoryId = 0;
-    
+
     // Track total hexes used to ensure we don't exceed the target
     // We want approximately 70% of hexes to be territories, 30% ocean
     const totalHexes = hexGrid.length;
@@ -211,7 +219,11 @@ module.exports = class DiceWarsGame extends Game {
     let hexesUsed = 0;
 
     // Continue creating territories until we hit mapSize OR run out of hex budget
-    while (territoryId < this.mapSize && availableHexes.length > 0 && hexesUsed < targetTerritoryHexes) {
+    while (
+      territoryId < this.mapSize &&
+      availableHexes.length > 0 &&
+      hexesUsed < targetTerritoryHexes
+    ) {
       // Pick a random starting hex for this territory
       const startIndex = Math.floor(Math.random() * availableHexes.length);
       const startHex = availableHexes[startIndex];
@@ -226,10 +238,10 @@ module.exports = class DiceWarsGame extends Game {
       else if (sizeRoll < 0.85) targetSize = 3;
       else if (sizeRoll < 0.95) targetSize = 4;
       else targetSize = 5;
-      
+
       // Cap the size to remaining budget
       targetSize = Math.min(targetSize, remainingBudget);
-      
+
       // Skip if no budget left
       if (targetSize < 1) break;
 
@@ -247,7 +259,11 @@ module.exports = class DiceWarsGame extends Game {
 
       // Expand territory by adding adjacent hexes
       let attempts = 0;
-      while (territoryHexes.length < targetSize && attempts < targetSize * 10 && hexesUsed < targetTerritoryHexes) {
+      while (
+        territoryHexes.length < targetSize &&
+        attempts < targetSize * 10 &&
+        hexesUsed < targetTerritoryHexes
+      ) {
         attempts++;
 
         // Pick a random hex in current territory to expand from
@@ -279,7 +295,11 @@ module.exports = class DiceWarsGame extends Game {
             );
             availableHexes.splice(neighborIdx, 1);
 
-            if (territoryHexes.length >= targetSize || hexesUsed >= targetTerritoryHexes) break;
+            if (
+              territoryHexes.length >= targetSize ||
+              hexesUsed >= targetTerritoryHexes
+            )
+              break;
           }
         }
       }
@@ -287,10 +307,13 @@ module.exports = class DiceWarsGame extends Game {
       // Create territory object
       // Use the center hex for display coordinates
       // Make sure we pick a hex that's actually part of the territory (not ocean)
-      const validHexes = territoryHexes.filter(h => !h.isOcean && h.territoryId === territoryId);
-      const centerHex = validHexes.length > 0 
-        ? validHexes[Math.floor(validHexes.length / 2)]
-        : startHex;
+      const validHexes = territoryHexes.filter(
+        (h) => !h.isOcean && h.territoryId === territoryId
+      );
+      const centerHex =
+        validHexes.length > 0
+          ? validHexes[Math.floor(validHexes.length / 2)]
+          : startHex;
 
       territories.push({
         id: territoryId,
@@ -308,17 +331,24 @@ module.exports = class DiceWarsGame extends Game {
     }
 
     // Remove island territories (territories with no neighboring territories)
-    const islandsRemoved = this.removeIslandTerritories(territories, hexGrid, gridWidth, gridHeight);
-    
+    const islandsRemoved = this.removeIslandTerritories(
+      territories,
+      hexGrid,
+      gridWidth,
+      gridHeight
+    );
+
     // Validate and clean up any inconsistent hex states
     this.validateHexStates(hexGrid);
-    
+
     // Recalculate hex usage after island removal
-    const finalHexesUsed = hexGrid.filter(h => !h.isOcean).length;
+    const finalHexesUsed = hexGrid.filter((h) => !h.isOcean).length;
     const oceanHexes = totalHexes - finalHexesUsed;
     const percentTerritories = ((finalHexesUsed / totalHexes) * 100).toFixed(1);
     const percentOcean = ((oceanHexes / totalHexes) * 100).toFixed(1);
-    console.log(`Generated ${territories.length} territories using ${finalHexesUsed}/${totalHexes} hexes (${percentTerritories}% territories, ${percentOcean}% ocean)`);
+    console.log(
+      `Generated ${territories.length} territories using ${finalHexesUsed}/${totalHexes} hexes (${percentTerritories}% territories, ${percentOcean}% ocean)`
+    );
     if (islandsRemoved > 0) {
       console.log(`Removed ${islandsRemoved} island territories`);
     }
@@ -339,7 +369,9 @@ module.exports = class DiceWarsGame extends Game {
 
     for (let territory of territories) {
       // Get all hexes for this territory (excluding ocean hexes)
-      const territoryHexes = hexGrid.filter((h) => h.territoryId === territory.id && !h.isOcean);
+      const territoryHexes = hexGrid.filter(
+        (h) => h.territoryId === territory.id && !h.isOcean
+      );
       let hasNeighboringTerritory = false;
 
       // Check if any hex in this territory has a neighbor that belongs to a different territory
@@ -400,7 +432,9 @@ module.exports = class DiceWarsGame extends Game {
     for (let hex of hexGrid) {
       // If a hex has a territoryId, it should NOT be ocean
       if (hex.territoryId !== null && hex.isOcean) {
-        console.warn(`Fixing inconsistent hex at (${hex.col}, ${hex.row}): has territoryId ${hex.territoryId} but isOcean=true`);
+        console.warn(
+          `Fixing inconsistent hex at (${hex.col}, ${hex.row}): has territoryId ${hex.territoryId} but isOcean=true`
+        );
         hex.isOcean = false;
         fixedCount++;
       }
@@ -423,8 +457,8 @@ module.exports = class DiceWarsGame extends Game {
    * - 8+ players: Last 3 players get +1 die
    */
   distributeInitialTerritories() {
-    const activePlayers = this.turnOrder.map(
-      (id) => this.players.array().find((p) => p.id === id)
+    const activePlayers = this.turnOrder.map((id) =>
+      this.players.array().find((p) => p.id === id)
     );
     const shuffledTerritories = [...this.territories].sort(
       () => Math.random() - 0.5
@@ -433,7 +467,7 @@ module.exports = class DiceWarsGame extends Game {
     // Determine which players get first-round bonus based on player count
     const numPlayers = activePlayers.length;
     const bonusPlayerIds = new Set();
-    
+
     if (numPlayers >= 8) {
       // Last 3 players get bonus for 8+ player games
       for (let i = numPlayers - 3; i < numPlayers; i++) {
@@ -475,7 +509,9 @@ module.exports = class DiceWarsGame extends Game {
     this.territories = this.generateHexMap();
 
     // Randomize turn order
-    const activePlayers = this.players.array().filter((p) => p.role.name === "General");
+    const activePlayers = this.players
+      .array()
+      .filter((p) => p.role.name === "General");
     const shuffledPlayers = [...activePlayers].sort(() => Math.random() - 0.5);
     this.turnOrder = shuffledPlayers.map((p) => p.id);
     this.turnIndex = 0;
@@ -489,9 +525,9 @@ module.exports = class DiceWarsGame extends Game {
       this.currentTurnPlayerId = this.turnOrder[0];
       this.hasAttacked = false;
 
-      const firstPlayer = this.players.array().find(
-        (p) => p.id === this.currentTurnPlayerId
-      );
+      const firstPlayer = this.players
+        .array()
+        .find((p) => p.id === this.currentTurnPlayerId);
       //this.sendAlert(`Round 1, Turn 1: ${firstPlayer.name}'s turn!`);
 
       // Show turn order
@@ -510,7 +546,7 @@ module.exports = class DiceWarsGame extends Game {
    */
   getStateInfo(state) {
     const info = super.getStateInfo(state);
-    
+
     // Add game state to extraInfo so it's stored in history
     if (this.gameStarted) {
       info.extraInfo = {
@@ -528,7 +564,7 @@ module.exports = class DiceWarsGame extends Game {
         maxDicePerTerritory: this.maxDicePerTerritory,
       };
     }
-    
+
     return info;
   }
 
@@ -556,8 +592,13 @@ module.exports = class DiceWarsGame extends Game {
       surplusDice: this.surplusDice,
       maxDicePerTerritory: this.maxDicePerTerritory,
     };
-    
-    console.log("Broadcasting game state - Turn:", this.turnNumber, "Current player:", this.currentTurnPlayerId);
+
+    console.log(
+      "Broadcasting game state - Turn:",
+      this.turnNumber,
+      "Current player:",
+      this.currentTurnPlayerId
+    );
     this.broadcast("gameState", state);
   }
 
@@ -575,7 +616,9 @@ module.exports = class DiceWarsGame extends Game {
       "#FFA500",
       "#A020F0",
     ];
-    const activePlayers = this.players.array().filter((p) => p.role.name === "General");
+    const activePlayers = this.players
+      .array()
+      .filter((p) => p.role.name === "General");
     const colorMap = {};
     activePlayers.forEach((player, index) => {
       colorMap[player.id] = colors[index % colors.length];
@@ -669,11 +712,11 @@ module.exports = class DiceWarsGame extends Game {
     }
 
     this.hasAttacked = true;
-    
+
     // Update history with new game state
     const stateInfo = this.getStateInfo();
     this.addStateExtraInfoToHistories(stateInfo.extraInfo);
-    
+
     this.sendGameState();
     this.broadcast("attackResult", result);
 
@@ -716,7 +759,12 @@ module.exports = class DiceWarsGame extends Game {
    */
   endTurn(playerId) {
     if (playerId !== this.currentTurnPlayerId) {
-      console.log("Not your turn! Current turn:", this.currentTurnPlayerId, "Attempted:", playerId);
+      console.log(
+        "Not your turn! Current turn:",
+        this.currentTurnPlayerId,
+        "Attempted:",
+        playerId
+      );
       return { success: false, message: "Not your turn!" };
     }
 
@@ -731,15 +779,23 @@ module.exports = class DiceWarsGame extends Game {
       return player && player.alive;
     });
 
-    console.log("Turn index:", this.turnIndex, "Alive players:", aliveTurnOrder.length);
+    console.log(
+      "Turn index:",
+      this.turnIndex,
+      "Alive players:",
+      aliveTurnOrder.length
+    );
 
     // Check if round is complete
     const isRoundComplete = this.turnIndex >= aliveTurnOrder.length;
     if (isRoundComplete) {
       this.turnIndex = 0;
       this.roundNumber++;
-      console.log("Round complete, resetting to index 0, new round:", this.roundNumber);
-      
+      console.log(
+        "Round complete, resetting to index 0, new round:",
+        this.roundNumber
+      );
+
       // Award bonus dice to all players at the end of the round
       this.awardBonusDiceToAllPlayers();
     }
@@ -753,16 +809,20 @@ module.exports = class DiceWarsGame extends Game {
     this.hasAttacked = false;
     this.turnNumber++;
 
-    const currentPlayer = this.players.array().find(
-      (p) => p.id === this.currentTurnPlayerId
+    const currentPlayer = this.players
+      .array()
+      .find((p) => p.id === this.currentTurnPlayerId);
+
+    console.log(
+      "New current turn player:",
+      this.currentTurnPlayerId,
+      currentPlayer?.name
     );
-    
-    console.log("New current turn player:", this.currentTurnPlayerId, currentPlayer?.name);
-    
+
     // Update history with new turn state
     const stateInfo = this.getStateInfo();
     this.addStateExtraInfoToHistories(stateInfo.extraInfo);
-    
+
     this.sendGameState();
     this.sendAlert(
       `Round ${this.roundNumber}, Turn ${this.turnNumber}: ${currentPlayer.name}'s turn`
@@ -907,7 +967,7 @@ module.exports = class DiceWarsGame extends Game {
       player.kill();
       this.sendAlert(`${player.name} has surrendered!`);
     }
-    
+
     // Transfer player's territories to neutral
     for (let territory of this.territories) {
       if (territory.playerId === player.id) {
@@ -936,9 +996,9 @@ module.exports = class DiceWarsGame extends Game {
     if (this.currentTurnPlayerId === player.id && this.turnOrder.length > 0) {
       this.currentTurnPlayerId =
         this.turnOrder[this.turnIndex % this.turnOrder.length];
-      const nextPlayer = this.players.array().find(
-        (p) => p.id === this.currentTurnPlayerId
-      );
+      const nextPlayer = this.players
+        .array()
+        .find((p) => p.id === this.currentTurnPlayerId);
       if (nextPlayer) {
         this.sendAlert(`${nextPlayer.name}'s turn (after ${player.name} left)`);
       }

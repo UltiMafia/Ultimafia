@@ -14,4 +14,3 @@ module.exports = class WinIfLastAlive extends Card {
     };
   }
 };
-
