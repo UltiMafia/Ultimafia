@@ -142,7 +142,7 @@ var defaultOptions = {
     dayLength: 60,
     nightLength: 0.5,
   },
-  DiceWars: existingHostOptions["DiceWars"] || {
+  "Dice Wars": existingHostOptions["Dice Wars"] || existingHostOptions["DiceWars"] || {
     ...commonHostOptions,
     mapSize: 30,
     maxDice: 8,

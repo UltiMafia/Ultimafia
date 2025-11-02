@@ -10,10 +10,10 @@ import { RoleSearch } from "../../components/Roles";
 
 export default function LearnDiceWars(props) {
   useEffect(() => {
-    document.title = "Learn DiceWars | UltiMafia";
+    document.title = "Learn Dice Wars | UltiMafia";
   }, []);
 
-  const gameType = "DiceWars";
+  const gameType = "Dice Wars";
   const theme = useTheme();
 
   return (

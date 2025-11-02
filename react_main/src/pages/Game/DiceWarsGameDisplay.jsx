@@ -19,10 +19,16 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
 
   useSocketListeners((socket) => {
     socket.on("gameState", (state) => {
+      console.log("Frontend received gameState update:", {
+        turnNumber: state.turnNumber,
+        currentTurnPlayerId: state.currentTurnPlayerId,
+        roundNumber: state.roundNumber
+      });
       setGameState(state);
     });
 
     socket.on("attackResult", (result) => {
+      console.log("Frontend received attackResult:", result);
       setAttackResult(result);
       // Clear attack result after 3 seconds
       setTimeout(() => setAttackResult(null), 3000);
@@ -35,10 +41,10 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
     }
   }, [player]);
 
-  // Convert axial hex coordinates to pixel position (flat-top orientation)
-  const hexToPixel = (q, r) => {
-    const x = hexSize * ((3 / 2) * q);
-    const y = hexSize * ((Math.sqrt(3) / 2) * q + Math.sqrt(3) * r);
+  // Convert offset hex coordinates to pixel position (flat-top orientation)
+  const hexToPixel = (col, row) => {
+    const x = hexSize * (3 / 2) * col;
+    const y = hexSize * Math.sqrt(3) * (row + 0.5 * (col % 2));
     return { x, y };
   };
 
@@ -58,19 +64,131 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
     );
   };
 
-  // Handle territory click
-  const handleTerritoryClick = (territory) => {
-    console.log(
-      "Territory clicked:",
-      territory.id,
-      "Current player:",
-      playerId,
-      "Turn player:",
-      gameState?.currentTurnPlayerId
-    );
+  // Get hex corner points (flat-top orientation)
+  const getHexCorners = (centerX, centerY) => {
+    const corners = [];
+    for (let i = 0; i < 6; i++) {
+      const angle = (Math.PI / 3) * i;
+      corners.push({
+        x: centerX + hexSize * Math.cos(angle),
+        y: centerY + hexSize * Math.sin(angle),
+      });
+    }
+    return corners;
+  };
 
+  // Build a unified polygon path for a multi-hex territory
+  const buildTerritoryPath = (territoryId, hexGrid, offsetX, offsetY) => {
+    const territoryHexes = hexGrid.filter((h) => h.territoryId === territoryId);
+    if (territoryHexes.length === 0) return null;
+
+    // For single-hex territories, just return the hex path
+    if (territoryHexes.length === 1) {
+      const hex = territoryHexes[0];
+      const pos = hexToPixel(hex.col, hex.row);
+      return getHexPath(pos.x + offsetX, pos.y + offsetY);
+    }
+
+    // For multi-hex territories, build the outer perimeter
+    // Find all edges that are on the boundary (not shared with same territory)
+    const edges = new Map(); // key: "x1,y1,x2,y2" -> count
+
+    territoryHexes.forEach((hex) => {
+      const pos = hexToPixel(hex.col, hex.row);
+      const corners = getHexCorners(pos.x + offsetX, pos.y + offsetY);
+
+      // Each hex has 6 edges
+      for (let i = 0; i < 6; i++) {
+        const p1 = corners[i];
+        const p2 = corners[(i + 1) % 6];
+        
+        // Create edge key (normalized so direction doesn't matter)
+        const edgeKey =
+          p1.x < p2.x || (p1.x === p2.x && p1.y < p2.y)
+            ? `${p1.x.toFixed(2)},${p1.y.toFixed(2)},${p2.x.toFixed(2)},${p2.y.toFixed(2)}`
+            : `${p2.x.toFixed(2)},${p2.y.toFixed(2)},${p1.x.toFixed(2)},${p1.y.toFixed(2)}`;
+
+        edges.set(edgeKey, (edges.get(edgeKey) || 0) + 1);
+      }
+    });
+
+    // Perimeter edges appear exactly once (not shared with another hex in territory)
+    const perimeterEdges = [];
+    edges.forEach((count, key) => {
+      if (count === 1) {
+        const [x1, y1, x2, y2] = key.split(",").map(Number);
+        perimeterEdges.push({ x1, y1, x2, y2 });
+      }
+    });
+
+    if (perimeterEdges.length === 0) return null;
+
+    // Build a continuous path from the perimeter edges
+    const path = [];
+    const usedEdges = new Set();
+    
+    // Start with the first edge
+    let currentEdge = perimeterEdges[0];
+    path.push({ x: currentEdge.x1, y: currentEdge.y1 });
+    path.push({ x: currentEdge.x2, y: currentEdge.y2 });
+    usedEdges.add(0);
+
+    let currentPoint = { x: currentEdge.x2, y: currentEdge.y2 };
+
+    // Find connecting edges
+    while (usedEdges.size < perimeterEdges.length) {
+      let foundNext = false;
+
+      for (let i = 0; i < perimeterEdges.length; i++) {
+        if (usedEdges.has(i)) continue;
+
+        const edge = perimeterEdges[i];
+        const dist1 = Math.abs(edge.x1 - currentPoint.x) + Math.abs(edge.y1 - currentPoint.y);
+        const dist2 = Math.abs(edge.x2 - currentPoint.x) + Math.abs(edge.y2 - currentPoint.y);
+
+        if (dist1 < 0.1) {
+          // Connect via x1->x2
+          currentPoint = { x: edge.x2, y: edge.y2 };
+          path.push(currentPoint);
+          usedEdges.add(i);
+          foundNext = true;
+          break;
+        } else if (dist2 < 0.1) {
+          // Connect via x2->x1
+          currentPoint = { x: edge.x1, y: edge.y1 };
+          path.push(currentPoint);
+          usedEdges.add(i);
+          foundNext = true;
+          break;
+        }
+      }
+
+      if (!foundNext) break;
+    }
+
+    // Build SVG path
+    if (path.length < 3) return null;
+
+    return (
+      path
+        .map((p, i) => (i === 0 ? `M${p.x},${p.y}` : `L${p.x},${p.y}`))
+        .join(" ") + "Z"
+    );
+  };
+
+  // Handle hex click (can be territory or ocean)
+  const handleHexClick = (hex) => {
+    // Ocean tiles can't be clicked
+    if (hex.isOcean || hex.territoryId === null) {
+      return;
+    }
+
+    const territory = gameState.territories.find((t) => t.id === hex.territoryId);
+    if (!territory) return;
+
+    console.log("Territory clicked:", territory.id);
     if (!gameState || gameState.currentTurnPlayerId !== playerId) {
-      console.log("Not your turn!");
+      console.log("Not your turn or no game state");
       return;
     }
 
@@ -79,15 +197,13 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
       if (territory.playerId === playerId && territory.dice >= 2) {
         console.log("Selecting territory:", territory.id);
         setSelectedTerritoryId(territory.id);
-      } else {
-        console.log("Cannot select territory - not owned or insufficient dice");
       }
       return;
     }
 
     // If clicking the same territory, deselect
     if (selectedTerritoryId === territory.id) {
-      console.log("Deselecting territory:", territory.id);
+      console.log("Deselecting territory");
       setSelectedTerritoryId(null);
       return;
     }
@@ -101,7 +217,7 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
       fromTerritory.neighbors.includes(territory.id) &&
       territory.playerId !== playerId
     ) {
-      console.log("Attacking from", selectedTerritoryId, "to", territory.id);
+      console.log("Sending attack from", selectedTerritoryId, "to", territory.id);
       gameSocket.send("attack", {
         fromId: selectedTerritoryId,
         toId: territory.id,
@@ -109,35 +225,45 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
       setSelectedTerritoryId(null);
     } else if (territory.playerId === playerId && territory.dice >= 2) {
       // Select a different owned territory
-      console.log("Switching selection to territory:", territory.id);
+      console.log("Switching selection to:", territory.id);
       setSelectedTerritoryId(territory.id);
     } else {
-      console.log("Invalid action - deselecting");
+      console.log("Invalid action, deselecting");
       setSelectedTerritoryId(null);
     }
   };
 
   // Handle end turn button
   const handleEndTurn = () => {
+    console.log("End Turn button clicked");
+    console.log("Current turn player:", gameState?.currentTurnPlayerId, "My ID:", playerId);
     if (gameState && gameState.currentTurnPlayerId === playerId) {
-      gameSocket.send("endTurn");
+      console.log("Sending endTurn message via socket");
+      gameSocket.send("endTurn", {});
       setSelectedTerritoryId(null);
     }
   };
 
   useEffect(() => {
-    if (!gameState || !gameState.territories) return;
+    if (!gameState || !gameState.hexGrid || !gameState.territories) return;
 
+    const hexGrid = gameState.hexGrid;
     const territories = gameState.territories;
     const playerColors = gameState.playerColors || {};
+
+    // Create a map for quick territory lookup
+    const territoryMap = {};
+    territories.forEach((t) => {
+      territoryMap[t.id] = t;
+    });
 
     // Calculate bounds for centering
     let minX = Infinity,
       maxX = -Infinity,
       minY = Infinity,
       maxY = -Infinity;
-    territories.forEach((t) => {
-      const pos = hexToPixel(t.q, t.r);
+    hexGrid.forEach((hex) => {
+      const pos = hexToPixel(hex.col, hex.row);
       minX = Math.min(minX, pos.x);
       maxX = Math.max(maxX, pos.x);
       minY = Math.min(minY, pos.y);
@@ -159,15 +285,43 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
     // Clear previous content
     svg.selectAll("*").remove();
 
-    // Create group for territories
+    // Create groups for rendering
+    const oceanGroup = svg.append("g");
     const territoryGroup = svg.append("g");
+    const textGroup = svg.append("g");
 
-    // Draw territories
+    // First, draw ocean hexes
+    hexGrid.forEach((hex) => {
+      const isOcean = hex.isOcean || hex.territoryId === null;
+      if (isOcean) {
+        const pos = hexToPixel(hex.col, hex.row);
+        const centerX = pos.x + offsetX;
+        const centerY = pos.y + offsetY;
+        const hexPath = getHexPath(centerX, centerY);
+
+        oceanGroup
+          .append("path")
+          .attr("d", hexPath)
+          .attr("fill", "#1a1a2e")
+          .attr("stroke", "#0f0f1e")
+          .attr("stroke-width", 1)
+          .attr("opacity", 0.3);
+      }
+    });
+
+    // Draw territories as unified shapes
+    const drawnTerritories = new Set();
     territories.forEach((territory) => {
-      const pos = hexToPixel(territory.q, territory.r);
-      const centerX = pos.x + offsetX;
-      const centerY = pos.y + offsetY;
-      const hexPath = getHexPath(centerX, centerY);
+      if (drawnTerritories.has(territory.id)) return;
+      drawnTerritories.add(territory.id);
+
+      const territoryPath = buildTerritoryPath(
+        territory.id,
+        hexGrid,
+        offsetX,
+        offsetY
+      );
+      if (!territoryPath) return;
 
       const isSelected = selectedTerritoryId === territory.id;
       const isOwned = territory.playerId === playerId;
@@ -175,41 +329,55 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
       const canSelect = isOwned && territory.dice >= 2 && isCurrentPlayer;
       const isNeighborOfSelected =
         selectedTerritoryId &&
-        gameState.territories
-          .find((t) => t.id === selectedTerritoryId)
-          ?.neighbors.includes(territory.id);
+        territoryMap[selectedTerritoryId]?.neighbors.includes(territory.id);
       const isValidAttackTarget =
         isNeighborOfSelected && !isOwned && isCurrentPlayer;
 
       // Determine territory color
-      let fillColor = "#333"; // neutral
+      let fillColor = "#333";
       if (territory.playerId) {
         fillColor = playerColors[territory.playerId] || "#888";
+      }
+
+      // Determine stroke
+      let strokeColor;
+      let strokeWidth;
+
+      if (isSelected) {
+        strokeColor = "#FFD700";
+        strokeWidth = 5;
+      } else if (isValidAttackTarget) {
+        strokeColor = "#FFA500";
+        strokeWidth = 4;
+      } else {
+        strokeColor = "#222";
+        strokeWidth = 2;
       }
 
       // Determine if this territory is clickable
       const isClickable = isCurrentPlayer && (canSelect || isValidAttackTarget);
 
-      // Draw hex
-      const hex = territoryGroup
+      // Draw unified territory shape
+      const territoryElement = territoryGroup
         .append("path")
-        .attr("d", hexPath)
+        .attr("d", territoryPath)
         .attr("fill", fillColor)
-        .attr(
-          "stroke",
-          isSelected ? "#FFD700" : isValidAttackTarget ? "#FFA500" : "#222"
-        )
-        .attr("stroke-width", isSelected ? 5 : isValidAttackTarget ? 4 : 2)
+        .attr("stroke", strokeColor)
+        .attr("stroke-width", strokeWidth)
         .attr("opacity", territory.playerId ? 0.8 : 0.3)
         .style("cursor", isClickable ? "pointer" : "default")
         .on("click", function (event) {
           event.stopPropagation();
-          handleTerritoryClick(territory);
+          // Find any hex in this territory for the click handler
+          const territoryHex = hexGrid.find((h) => h.territoryId === territory.id);
+          if (territoryHex) {
+            handleHexClick(territoryHex);
+          }
         });
 
-      // Add hover effect for clickable hexes
+      // Add hover effect for clickable territories
       if (isClickable) {
-        hex
+        territoryElement
           .on("mouseenter", function () {
             d3.select(this)
               .attr("opacity", 1)
@@ -225,8 +393,13 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
           });
       }
 
+      // Draw dice count and ID on the center hex
+      const pos = hexToPixel(territory.col, territory.row);
+      const centerX = pos.x + offsetX;
+      const centerY = pos.y + offsetY;
+
       // Draw dice count
-      territoryGroup
+      textGroup
         .append("text")
         .attr("x", centerX)
         .attr("y", centerY)
@@ -240,7 +413,7 @@ export default function DiceWarsGameDisplay({ player, players, gameSocket }) {
         .text(territory.dice || "");
 
       // Draw territory ID (small)
-      territoryGroup
+      textGroup
         .append("text")
         .attr("x", centerX)
         .attr("y", centerY + hexSize * 0.6)

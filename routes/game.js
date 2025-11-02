@@ -350,7 +350,7 @@ router.get("/:id/review/data", async function (req, res) {
           const vanityUrl = await models.VanityUrl.findOne({
             userId: user.id,
           }).select("url -_id");
-
+          
           return {
             ...user,
             settings: {
@@ -1163,6 +1163,16 @@ const settingsChecks = {
     };
   },
   DiceWars: (settings, setup) => {
+    // Backward compatibility
+    const mapSize = settings.mapSize;
+    const maxDice = settings.maxDice;
+
+    return {
+      mapSize,
+      maxDice,
+    };
+  },
+  "Dice Wars": (settings, setup) => {
     const mapSize = settings.mapSize;
     const maxDice = settings.maxDice;
 

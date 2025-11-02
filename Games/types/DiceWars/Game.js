@@ -9,7 +9,7 @@ module.exports = class DiceWarsGame extends Game {
   constructor(options) {
     super(options);
 
-    this.type = "DiceWars";
+    this.type = "Dice Wars";
     this.Player = Player;
     this.mapSize = parseInt(options.settings.mapSize) || 30; // number of territories
     this.maxDicePerTerritory = parseInt(options.settings.maxDice) || 8; // max dice per territory (4, 8, or 16)
@@ -77,67 +77,225 @@ module.exports = class DiceWarsGame extends Game {
   }
 
   /**
-   * Generates a hex grid map with territories
+   * Generates a rectangular hex grid map with territories and ocean tiles
+   * Uses offset coordinates for a rectangular layout
    */
   generateHexMap() {
-    const territories = [];
-    const gridRadius = Math.ceil(Math.sqrt(this.mapSize / 3.5)); // approximate hex grid radius
-    let territoryId = 0;
+    // Determine grid dimensions based on mapSize
+    // Target approximately 40% of hexes to be playable territories, rest are ocean
+    const totalHexes = Math.ceil(this.mapSize / 0.4);
+    const aspectRatio = 1.5; // width to height ratio
+    const gridHeight = Math.ceil(Math.sqrt(totalHexes / aspectRatio));
+    const gridWidth = Math.ceil(totalHexes / gridHeight);
 
-    // Generate hex grid using axial coordinates
-    for (let q = -gridRadius; q <= gridRadius; q++) {
-      for (let r = -gridRadius; r <= gridRadius; r++) {
-        if (Math.abs(q + r) <= gridRadius && territoryId < this.mapSize) {
-          // Convert axial to pixel coordinates for display
-          const x = q * 1.5;
-          const y = (q * Math.sqrt(3)) / 2 + r * Math.sqrt(3);
+    console.log(`Generating ${gridWidth}x${gridHeight} hex grid for ${this.mapSize} territories`);
 
-          territories.push({
-            id: territoryId,
-            playerId: null,
-            dice: 1,
-            x: x,
-            y: y,
-            q: q, // axial coordinate
-            r: r, // axial coordinate
-            neighbors: [],
-          });
-          territoryId++;
-        }
+    // First, create a full rectangular grid of hexes (offset coordinates)
+    const hexGrid = [];
+    for (let row = 0; row < gridHeight; row++) {
+      for (let col = 0; col < gridWidth; col++) {
+        // Convert offset coordinates to axial for consistent neighbor calculation
+        const q = col - Math.floor(row / 2);
+        const r = row;
+
+        hexGrid.push({
+          col: col,
+          row: row,
+          q: q,
+          r: r,
+          territoryId: null, // Will be assigned during territory generation
+          isOcean: true, // Default to ocean, will be set to false for territories
+        });
       }
     }
 
-    // Calculate neighbors based on axial coordinates
-    for (let territory of territories) {
+    // Generate random territories using flood-fill algorithm
+    const territories = this.generateRandomTerritories(hexGrid, gridWidth, gridHeight);
+
+    // Mark ocean hexes and create neighbor relationships
+    for (let hex of hexGrid) {
       const neighbors = [];
-      const directions = [
-        { q: 1, r: 0 },
-        { q: 1, r: -1 },
-        { q: 0, r: -1 },
-        { q: -1, r: 0 },
-        { q: -1, r: 1 },
-        { q: 0, r: 1 },
-      ];
+      const directions = this.getHexDirections(hex.row);
 
       for (let dir of directions) {
-        const neighborQ = territory.q + dir.q;
-        const neighborR = territory.r + dir.r;
-        const neighbor = territories.find(
-          (t) => t.q === neighborQ && t.r === neighborR
+        const neighborCol = hex.col + dir.col;
+        const neighborRow = hex.row + dir.row;
+        const neighbor = hexGrid.find(
+          (h) => h.col === neighborCol && h.row === neighborRow
         );
         if (neighbor) {
-          neighbors.push(neighbor.id);
+          neighbors.push({
+            col: neighbor.col,
+            row: neighbor.row,
+            territoryId: neighbor.territoryId,
+          });
         }
       }
-      territory.neighbors = neighbors;
+      hex.neighbors = neighbors;
     }
+
+    // Build final territory list with neighbor IDs
+    // Check ALL hexes in each territory to find neighbors
+    for (let territory of territories) {
+      const territoryHexes = hexGrid.filter((h) => h.territoryId === territory.id);
+      const neighborIds = new Set();
+
+      // Check neighbors of all hexes in this territory
+      for (let hex of territoryHexes) {
+        for (let neighborInfo of hex.neighbors) {
+          const neighborHex = hexGrid.find(
+            (h) => h.col === neighborInfo.col && h.row === neighborInfo.row
+          );
+          if (
+            neighborHex &&
+            neighborHex.territoryId !== null &&
+            neighborHex.territoryId !== territory.id
+          ) {
+            neighborIds.add(neighborHex.territoryId);
+          }
+        }
+      }
+      territory.neighbors = Array.from(neighborIds);
+    }
+
+    // Store grid info for rendering
+    this.gridWidth = gridWidth;
+    this.gridHeight = gridHeight;
+    this.hexGrid = hexGrid;
 
     return territories;
   }
 
   /**
+   * Get neighbor directions for hex grid using offset coordinates
+   * Even and odd rows have different offset patterns
+   */
+  getHexDirections(row) {
+    const isEven = row % 2 === 0;
+    if (isEven) {
+      // Even rows
+      return [
+        { col: 1, row: 0 },   // E
+        { col: 0, row: -1 },  // NE
+        { col: -1, row: -1 }, // NW
+        { col: -1, row: 0 },  // W
+        { col: -1, row: 1 },  // SW
+        { col: 0, row: 1 },   // SE
+      ];
+    } else {
+      // Odd rows
+      return [
+        { col: 1, row: 0 },   // E
+        { col: 1, row: -1 },  // NE
+        { col: 0, row: -1 },  // NW
+        { col: -1, row: 0 },  // W
+        { col: 0, row: 1 },   // SW
+        { col: 1, row: 1 },   // SE
+      ];
+    }
+  }
+
+  /**
+   * Generates random territories using a region-growing algorithm
+   */
+  generateRandomTerritories(hexGrid, gridWidth, gridHeight) {
+    const territories = [];
+    const availableHexes = [...hexGrid];
+    let territoryId = 0;
+
+    while (territoryId < this.mapSize && availableHexes.length > 0) {
+      // Pick a random starting hex for this territory
+      const startIndex = Math.floor(Math.random() * availableHexes.length);
+      const startHex = availableHexes[startIndex];
+
+      // Determine random territory size (1-5 hexes, weighted toward smaller)
+      const sizeRoll = Math.random();
+      let targetSize;
+      if (sizeRoll < 0.4) targetSize = 1;
+      else if (sizeRoll < 0.7) targetSize = 2;
+      else if (sizeRoll < 0.85) targetSize = 3;
+      else if (sizeRoll < 0.95) targetSize = 4;
+      else targetSize = 5;
+
+      // Grow territory from starting hex
+      const territoryHexes = [startHex];
+      startHex.territoryId = territoryId;
+      startHex.isOcean = false;
+
+      // Remove from available
+      const startIdx = availableHexes.findIndex(
+        (h) => h.col === startHex.col && h.row === startHex.row
+      );
+      availableHexes.splice(startIdx, 1);
+
+      // Expand territory by adding adjacent hexes
+      let attempts = 0;
+      while (territoryHexes.length < targetSize && attempts < targetSize * 10) {
+        attempts++;
+
+        // Pick a random hex in current territory to expand from
+        const expandFrom =
+          territoryHexes[Math.floor(Math.random() * territoryHexes.length)];
+        const directions = this.getHexDirections(expandFrom.row);
+
+        // Shuffle directions for randomness
+        const shuffledDirections = [...directions].sort(
+          () => Math.random() - 0.5
+        );
+
+        for (let dir of shuffledDirections) {
+          const neighborCol = expandFrom.col + dir.col;
+          const neighborRow = expandFrom.row + dir.row;
+
+          const neighbor = availableHexes.find(
+            (h) => h.col === neighborCol && h.row === neighborRow
+          );
+
+          if (neighbor) {
+            neighbor.territoryId = territoryId;
+            neighbor.isOcean = false;
+            territoryHexes.push(neighbor);
+
+            const neighborIdx = availableHexes.findIndex(
+              (h) => h.col === neighbor.col && h.row === neighbor.row
+            );
+            availableHexes.splice(neighborIdx, 1);
+
+            if (territoryHexes.length >= targetSize) break;
+          }
+        }
+      }
+
+      // Create territory object
+      // Use the center hex for display coordinates
+      const centerHex =
+        territoryHexes[Math.floor(territoryHexes.length / 2)] || startHex;
+
+      territories.push({
+        id: territoryId,
+        playerId: null,
+        dice: 1,
+        col: centerHex.col,
+        row: centerHex.row,
+        q: centerHex.q,
+        r: centerHex.r,
+        hexes: territoryHexes.length, // For debugging
+        neighbors: [], // Will be populated later
+      });
+
+      territoryId++;
+    }
+
+    console.log(`Generated ${territories.length} territories`);
+    return territories;
+  }
+
+  /**
    * Distributes territories randomly among players
-   * For first round, last 3 players receive bonus dice
+   * Bonus dice rules:
+   * - 2-4 players: No bonus
+   * - 5-7 players: Last 2 players get +1 die
+   * - 8+ players: Last 3 players get +1 die
    */
   distributeInitialTerritories() {
     const activePlayers = this.turnOrder.map(
@@ -147,15 +305,22 @@ module.exports = class DiceWarsGame extends Game {
       () => Math.random() - 0.5
     );
 
-    // Determine which players get first-round bonus (last 3 in turn order)
+    // Determine which players get first-round bonus based on player count
     const numPlayers = activePlayers.length;
     const bonusPlayerIds = new Set();
-    if (numPlayers >= 4) {
-      // Last 3 players get bonus
+    
+    if (numPlayers >= 8) {
+      // Last 3 players get bonus for 8+ player games
       for (let i = numPlayers - 3; i < numPlayers; i++) {
         bonusPlayerIds.add(activePlayers[i].id);
       }
+    } else if (numPlayers >= 5) {
+      // Last 2 players get bonus for 5-7 player games
+      for (let i = numPlayers - 2; i < numPlayers; i++) {
+        bonusPlayerIds.add(activePlayers[i].id);
+      }
     }
+    // 2-4 players: no bonus
 
     let playerIndex = 0;
     for (let territory of shuffledTerritories) {
@@ -164,9 +329,9 @@ module.exports = class DiceWarsGame extends Game {
 
       // Base random dice: 1-3
       const baseDice = Math.floor(Math.random() * 3) + 1;
-      // Add 1 bonus die for last 3 players in first round
+      // Add 1 bonus die for eligible players based on player count
       const bonusDice = bonusPlayerIds.has(player.id) ? 1 : 0;
-      territory.dice = baseDice + bonusDice;
+      territory.dice = Math.min(baseDice + bonusDice, this.maxDicePerTerritory);
 
       playerIndex++;
     }
@@ -219,10 +384,16 @@ module.exports = class DiceWarsGame extends Game {
    */
   sendGameState() {
     // Don't send game state until game has started
-    if (!this.gameStarted) return;
+    if (!this.gameStarted) {
+      console.log("Not sending game state - game not started");
+      return;
+    }
 
-    this.broadcast("gameState", {
+    const state = {
       territories: this.territories,
+      hexGrid: this.hexGrid,
+      gridWidth: this.gridWidth,
+      gridHeight: this.gridHeight,
       currentTurnPlayerId: this.currentTurnPlayerId,
       turnNumber: this.turnNumber,
       roundNumber: this.roundNumber,
@@ -231,7 +402,10 @@ module.exports = class DiceWarsGame extends Game {
       playerColors: this.getPlayerColors(),
       surplusDice: this.surplusDice,
       maxDicePerTerritory: this.maxDicePerTerritory,
-    });
+    };
+    
+    console.log("Broadcasting game state - Turn:", this.turnNumber, "Current player:", this.currentTurnPlayerId);
+    this.broadcast("gameState", state);
   }
 
   /**
@@ -387,8 +561,11 @@ module.exports = class DiceWarsGame extends Game {
    */
   endTurn(playerId) {
     if (playerId !== this.currentTurnPlayerId) {
+      console.log("Not your turn! Current turn:", this.currentTurnPlayerId, "Attempted:", playerId);
       return { success: false, message: "Not your turn!" };
     }
+
+    console.log("Ending turn for", playerId);
 
     // Award bonus dice based on largest connected region
     this.awardBonusDice(playerId);
@@ -402,10 +579,13 @@ module.exports = class DiceWarsGame extends Game {
       return player && player.alive;
     });
 
+    console.log("Turn index:", this.turnIndex, "Alive players:", aliveTurnOrder.length);
+
     // Check if round is complete
     if (this.turnIndex >= aliveTurnOrder.length) {
       this.turnIndex = 0;
       this.roundNumber++;
+      console.log("Round complete, resetting to index 0, new round:", this.roundNumber);
     }
 
     // Update turn order if players have been eliminated
@@ -420,6 +600,9 @@ module.exports = class DiceWarsGame extends Game {
     const currentPlayer = this.players.find(
       (p) => p.id === this.currentTurnPlayerId
     );
+    
+    console.log("New current turn player:", this.currentTurnPlayerId, currentPlayer?.name);
+    
     this.sendGameState();
     this.sendAlert(
       `Round ${this.roundNumber}, Turn ${this.turnNumber}: ${currentPlayer.name}'s turn`
@@ -544,7 +727,7 @@ module.exports = class DiceWarsGame extends Game {
 
     if (activePlayers.length === 1) {
       const winners = new Winners();
-      winners.addPlayer(activePlayers[0], "DiceWars");
+      winners.addPlayer(activePlayers[0], "Dice Wars");
       this.endGame(winners);
     }
   }

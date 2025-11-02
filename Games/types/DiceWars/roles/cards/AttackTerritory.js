@@ -10,7 +10,8 @@ module.exports = class AttackTerritory extends Card {
         states: ["Play"],
         flags: ["voting"],
         inputType: "custom",
-        targets: function () {
+        targets: [],
+        generateTargets: function () {
           // Generate list of valid attack combinations
           const validAttacks = [];
           const playerTerritories = this.game.territories.filter(
@@ -27,27 +28,12 @@ module.exports = class AttackTerritory extends Card {
                 toTerritory.playerId !== this.player.id &&
                 toTerritory.playerId !== null
               ) {
-                // Format: "Territory X (3 dice) -> Territory Y (2 dice)"
-                const fromPlayer = this.game.players.find(
-                  (p) => p.id === fromTerritory.playerId
-                );
-                const toPlayer = this.game.players.find(
-                  (p) => p.id === toTerritory.playerId
-                );
-                const attackLabel = `Territory ${fromTerritory.id} (${
-                  fromTerritory.dice
-                }🎲) → Territory ${toTerritory.id} (${toTerritory.dice}🎲, ${
-                  toPlayer?.name || "Unknown"
-                })`;
-                validAttacks.push({
-                  label: attackLabel,
-                  value: `${fromTerritory.id}:${toTerritory.id}`,
-                });
+                validAttacks.push(`${fromTerritory.id}:${toTerritory.id}`);
               }
             }
           }
 
-          return validAttacks.map((a) => a.value);
+          this.targets = validAttacks;
         },
         action: {
           labels: function () {

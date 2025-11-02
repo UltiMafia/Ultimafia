@@ -1300,7 +1300,8 @@ const modifierData = {
   Cheat: {},
   Battlesnakes: {},
   "Connect Four": {},
-  DiceWars: {},
+  DiceWars: {}, // Backward compatibility
+  "Dice Wars": {},
 };
 
 module.exports = modifierData;

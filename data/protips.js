@@ -54,6 +54,13 @@ const protips = {
     "Planet Earth is blue and there's nothing I can do.",
   ],
   DiceWars: [
+    // Backward compatibility
+    "Focus on expanding your territory early in the game.",
+    "Try to keep your borders well-defended with higher dice counts.",
+    "Look for opportunities to attack weaker neighboring territories.",
+    "Remember that attacking increases your dice count, so plan your moves accordingly.",
+  ],
+  "Dice Wars": [
     "Focus on expanding your territory early in the game.",
     "Try to keep your borders well-defended with higher dice counts.",
     "Look for opportunities to attack weaker neighboring territories.",

@@ -26,7 +26,7 @@ function DiceWarsGame(props) {
   const self = game.self;
   const players = game.players;
 
-  const gameType = "DiceWars";
+  const gameType = "Dice Wars";
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
@@ -62,7 +62,7 @@ function DiceWarsGame(props) {
   if (isPhoneDevice) {
     // Unsupported
     game.leaveGame();
-    alert("DiceWars is not presently supported on mobile devices.");
+    alert("Dice Wars is not presently supported on mobile devices.");
     return <></>;
   }
 
@@ -73,7 +73,6 @@ function DiceWarsGame(props) {
         leftPanelContent={
           <>
             <PlayerList />
-            <ActionList />
           </>
         }
         centerPanelContent={

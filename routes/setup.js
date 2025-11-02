@@ -1225,6 +1225,12 @@ const countChecks = {
     return true;
   },
   DiceWars: (roles, count, total, closed, unique) => {
+    // Backward compatibility
+    if (total < 2) return "Must have at least 2 players.";
+    if (total > 8) return "Must have at most 8 players.";
+    return true;
+  },
+  "Dice Wars": (roles, count, total, closed, unique) => {
     if (total < 2) return "Must have at least 2 players.";
     if (total > 8) return "Must have at most 8 players.";
     return true;
@@ -1292,6 +1298,10 @@ const optionsChecks = {
     return setup;
   },
   DiceWars: (setup) => {
+    // Backward compatibility
+    return setup;
+  },
+  "Dice Wars": (setup) => {
     return setup;
   },
   "Connect Four": (setup) => {

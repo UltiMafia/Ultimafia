@@ -57,7 +57,7 @@ module.exports = {
     "Texas Hold Em",
     "Cheat",
     "Battlesnakes",
-    //"DiceWars",
+    "Dice Wars",
     "Connect Four",
   ],
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
@@ -72,7 +72,8 @@ module.exports = {
     "Texas Hold Em": ["Town", "Host"],
     Cheat: ["Town", "Host"],
     Battlesnakes: ["Town", "Host"],
-    DiceWars: ["Town", "Host"],
+    DiceWars: ["Town", "Host"], // Backward compatibility
+    "Dice Wars": ["Town", "Host"],
     "Connect Four": ["Town", "Host"],
   },
   startStates: {
@@ -86,7 +87,8 @@ module.exports = {
     "Texas Hold Em": ["Place Bets", "Showdown"],
     Cheat: ["Play Cards", "Call Lie"],
     Battlesnakes: ["Day"],
-    DiceWars: ["Play"],
+    DiceWars: ["Play"], // Backward compatibility
+    "Dice Wars": ["Play"],
     "Connect Four": ["Turn"],
   },
   configurableStates: {
@@ -132,6 +134,14 @@ module.exports = {
       },
     },
     DiceWars: {
+      // Backward compatibility
+      Play: {
+        min: 5 * 60 * 1000,
+        max: 60 * 60 * 1000,
+        default: 30 * 60 * 1000,
+      },
+    },
+    "Dice Wars": {
       Play: {
         min: 5 * 60 * 1000,
         max: 60 * 60 * 1000,
