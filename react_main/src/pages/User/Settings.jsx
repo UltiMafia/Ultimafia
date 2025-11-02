@@ -140,8 +140,7 @@ export default function Settings() {
         saveBtnOnClick: onBirthdaySave,
         clearBtn: "Clear",
         clearBtnOnClick: onBirthdayClear,
-        confirm:
-          "Are you sure you wish to change your birthday?",
+        confirm: "Are you sure you wish to change your birthday?",
       },
       {
         label: "Background Color",
@@ -523,11 +522,7 @@ export default function Settings() {
   }
 
   function onBirthdayClear(deps) {
-    if (
-      !window.confirm(
-        "Are you sure you want to clear your birthday?"
-      )
-    ) {
+    if (!window.confirm("Are you sure you want to clear your birthday?")) {
       return;
     }
 

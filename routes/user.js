@@ -359,14 +359,14 @@ router.get("/:id/profile", async function (req, res) {
       var friendRequests = await models.FriendRequest.find({ targetId: userId })
         .select("userId user")
         .populate("user", "id name avatar");
-      
+
       // Add vanity URLs to friend requests
       user.friendRequests = await Promise.all(
         friendRequests.map(async (req) => {
           const vanityUrl = await models.VanityUrl.findOne({
             userId: req.user.id,
           }).select("url -_id");
-          
+
           return {
             ...req.user.toJSON(),
             vanityUrl: vanityUrl?.url,
