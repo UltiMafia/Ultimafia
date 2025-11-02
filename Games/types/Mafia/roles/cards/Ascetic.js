@@ -6,22 +6,19 @@ module.exports = class Ascetic extends Card {
   constructor(role) {
     super(role);
 
-      this.passiveActions = [
+    this.passiveActions = [
       {
         ability: ["Blocking", "Modifier"],
         state: "Night",
         actor: role.player,
         game: role.player.game,
         priority: PRIORITY_UNTARGETABLE,
-        labels: [
-          "stop", "hidden"
-        ],
+        labels: ["stop", "hidden"],
         role: role,
         run: function () {
           this.makeUntargetable(this.actor, "kill");
         },
       },
     ];
-
   }
 };
