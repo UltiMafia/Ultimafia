@@ -35,7 +35,7 @@ router.get("/leaderboard", async function (req, res) {
         const vanityUrl = await models.VanityUrl.findOne({
           userId: userObj.id,
         }).select("url -_id");
-        
+
         return {
           ...userObj,
           vanityUrl: vanityUrl?.url,
