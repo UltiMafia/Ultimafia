@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 
 module.exports = class MummyReviveAndKill extends Card {
   constructor(role) {
@@ -18,6 +19,7 @@ module.exports = class MummyReviveAndKill extends Card {
         action: {
           role: this.role,
           labels: ["kill"],
+          priority: PRIORITY_KILL_DEFAULT + 2,
           run: function () {
             if (this.target === "No") return;
 
