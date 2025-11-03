@@ -43,7 +43,7 @@ module.exports = class AskDeadQuestion extends Card {
       },
     };
 
-      this.passiveActions = [
+    this.passiveActions = [
       {
         ability: ["Information"],
         state: "Night",
@@ -54,17 +54,17 @@ module.exports = class AskDeadQuestion extends Card {
         role: role,
         run: function () {
           if (!this.actor.role.data.question) {
-              return;
-            }
+            return;
+          }
 
-            let info = this.game.createInformation(
-              "MournerInfo",
-              this.actor,
-              this.game
-            );
-            info.processInfo();
-            var alert = `${info.getInfoFormated()}.`;
-            this.actor.queueAlert(alert);
+          let info = this.game.createInformation(
+            "MournerInfo",
+            this.actor,
+            this.game
+          );
+          info.processInfo();
+          var alert = `${info.getInfoFormated()}.`;
+          this.actor.queueAlert(alert);
         },
       },
     ];
