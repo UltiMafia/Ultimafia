@@ -33,7 +33,7 @@ export const Alignments = {
   Cheat: ["Town", "Host"],
   Battlesnakes: ["Town", "Host"],
   "Connect Four": ["Town"],
-  "Dice Wars": ["Town", "Host"],
+  "Dice Wars": ["Military", "Host"],
 };
 
 export const GameStates = {

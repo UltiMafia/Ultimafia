@@ -4,7 +4,7 @@ module.exports = class General extends Role {
   constructor(player, data) {
     super("General", player, data);
 
-    this.alignment = "Town";
+    this.alignment = "Military";
     this.cards = ["EndTurn", "TownCore", "WinIfLastAlive"];
 
     this.listeners = {

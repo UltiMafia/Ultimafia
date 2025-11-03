@@ -72,7 +72,7 @@ module.exports = {
     "Texas Hold Em": ["Town", "Host"],
     Cheat: ["Town", "Host"],
     Battlesnakes: ["Town", "Host"],
-    "Dice Wars": ["Town", "Host"],
+    "Dice Wars": ["Military", "Host"],
     "Connect Four": ["Town", "Host"],
   },
   startStates: {
