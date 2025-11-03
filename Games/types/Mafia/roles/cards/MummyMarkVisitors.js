@@ -19,7 +19,7 @@ module.exports = class MummyMarkVisitors extends Card {
           let visitors = this.getVisitors();
           for (let visitor of visitors) {
             if (this.dominates(visitor)) {
-              this.role.giveEffect(visitor, "Entombed");
+              this.role.giveEffect(visitor, "Marked", Infinity, [this.role.name]);
             }
           }
         },
