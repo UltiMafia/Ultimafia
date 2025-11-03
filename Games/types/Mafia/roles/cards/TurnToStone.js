@@ -19,22 +19,26 @@ module.exports = class TurnToStone extends Card {
           power: 2,
           run: function () {
             if (this.target === "No") return;
-            
-             this.role.stoned = true;
-              if (!this.role.hasAbility(["Kill"])) {
-                return;
-              }
+
+            this.role.stoned = true;
+            if (!this.role.hasAbility(["Kill"])) {
+              return;
+            }
             this.game.sendAlert(":ghost2: You feel a horrible presence!");
-              for(let player of this.game.alivePlayers()){
-                for(let effect of player.effects){
-                  if(effect.name == "Marked" && effect.role && effect.role.includes(this.role.name)){
-                    effect.remove();
-                    if (this.dominates(player)){
+            for (let player of this.game.alivePlayers()) {
+              for (let effect of player.effects) {
+                if (
+                  effect.name == "Marked" &&
+                  effect.role &&
+                  effect.role.includes(this.role.name)
+                ) {
+                  effect.remove();
+                  if (this.dominates(player)) {
                     player.kill("curse", this.actor, true);
-                    }
                   }
                 }
               }
+            }
           },
         },
       },
