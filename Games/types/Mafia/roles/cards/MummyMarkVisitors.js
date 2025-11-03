@@ -16,13 +16,13 @@ module.exports = class MummyMarkVisitors extends Card {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         labels: ["hidden", "giveEffect"],
         run: function () {
-            let visitors = this.getVisitors();
-            for (let visitor of visitors) {
-              if (this.dominates(visitor)) {
-                this.role.giveEffect(visitor, "Entombed");
-              }
+          let visitors = this.getVisitors();
+          for (let visitor of visitors) {
+            if (this.dominates(visitor)) {
+              this.role.giveEffect(visitor, "Entombed");
             }
-          },
+          }
+        },
       },
     ];
   }
