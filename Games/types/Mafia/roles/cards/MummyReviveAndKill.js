@@ -1,0 +1,61 @@
+const Card = require("../../Card");
+
+module.exports = class MummyReviveAndKill extends Card {
+  constructor(role) {
+    super(role);
+
+    this.meetings = {
+      "Revive": {
+        actionName: "Revive",
+        states: ["Night"],
+        flags: ["voting"],
+        inputType: "boolean",
+        whileDead: true,
+        whileAlive: false,
+        shouldMeet: function () {
+          return !this.stoned && this.HasBeenCondemned;
+        },
+        action: {
+          role: this.role,
+          labels: ["kill"],
+          run: function () {
+            if (this.target === "No") return;
+            
+             this.role.stoned = true;
+              
+              if (!this.role.hasAbility(["Kill", "WhenDead"])) {
+                return;
+              }
+              for(let player of this.game.alivePlayers()){
+                for(let effect of player.effects){
+                  if(effect.name == "Marked" && effect.role && effect.role.includes(this.role.name)){
+                    effect.remove();
+                    if (this.dominates(player)){
+                    player.kill("basic", this.actor, true);
+                    }
+                  }
+                }
+              }
+          },
+        },
+      },
+    };
+
+    this.listeners = {
+      roleAssigned: function (player) {
+        if (player !== this.player) {
+          return;
+        }
+        this.HasBeenCondemned = false;
+      },
+      death: function (player, killer, deathType, instant) {
+        if (player != this.player || deathType != "condemn") {
+          return;
+        }
+        this.HasBeenCondemned = true;
+      },
+    };
+
+    
+  }
+};
