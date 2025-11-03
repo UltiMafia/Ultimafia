@@ -9,8 +9,7 @@ module.exports = class Gorgon extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-
-      "EnqueueVisitors",
+      "GorgonMarkVisitors",
       "CountVisitors",
       "TurnToStone",
     ];
