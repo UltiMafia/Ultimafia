@@ -21,7 +21,7 @@ module.exports = class LearnVisitorsAndArm extends Card {
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          labels: ["giveItem", "gun", "hidden", "absolute"],
+          labels: ["giveItem", "gun", "hidden"],
           run: function () {
             if (!this.actor.alive) return;
 

@@ -1,25 +1,27 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_EFFECT_GIVER_EARLY } = require("../../const/Priority");
 
-module.exports = class MakeVisitorsInsane extends Card {
+module.exports = class MummyMarkVisitors extends Card {
   constructor(role) {
     super(role);
 
     this.passiveActions = [
       {
-        ability: ["Effect"],
+        ability: ["Effect", "WhenDead"],
         actor: role.player,
         state: "Night",
         game: role.game,
         role: role,
-        priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-        labels: ["hidden", "giveEffect", "insanity"],
+        priority: PRIORITY_EFFECT_GIVER_EARLY,
+        labels: ["hidden", "giveEffect"],
         run: function () {
           let visitors = this.getVisitors();
           for (let visitor of visitors) {
             if (this.dominates(visitor)) {
-              this.role.giveEffect(visitor, "Insanity");
+              this.role.giveEffect(visitor, "Marked", Infinity, [
+                this.role.name,
+              ]);
             }
           }
         },

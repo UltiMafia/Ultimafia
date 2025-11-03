@@ -65,13 +65,7 @@ module.exports = class AnnouceNeighborVisitors extends Card {
         actor: role.player,
         game: role.game,
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 3,
-        labels: [
-          "investigate",
-          "alerts",
-          "hidden",
-          "absolute",
-          "uncontrollable",
-        ],
+        labels: ["investigate", "alerts", "hidden", "uncontrollable"],
         role: role,
         run: function () {
           if (

@@ -7,6 +7,9 @@ module.exports = class Scumhunter extends Achievements {
     this.EvilVotesCount = 0;
     this.listeners = {
       vote: function (vote) {
+        if (vote.voter != this.player) {
+          return;
+        }
         let target;
         for (let player of this.game.players) {
           if (vote.target == player.id) {
@@ -14,6 +17,7 @@ module.exports = class Scumhunter extends Achievements {
           }
         }
         if (target == null) {
+          this.isVotingEvil = false;
           return;
         }
         if (vote.meeting.name === "Village" && vote.voter === this.player) {

@@ -48,7 +48,11 @@ module.exports = class MeetWithMasons extends Card {
         labels: ["kill", "hidden", "absolute"],
         role: this.role,
         run: function () {
-          if (this.game.getStateName() != "Night") return;
+          if (
+            this.game.getStateName() != "Night" &&
+            this.game.getStateName() != "Dawn"
+          )
+            return;
 
           let targets = this.role.masonKills;
           if (!targets) {

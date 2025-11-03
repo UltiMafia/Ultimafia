@@ -58,7 +58,7 @@ module.exports = class LearnVisitorsPerson extends Card {
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-          labels: ["investigate", "role", "hidden", "absolute"],
+          labels: ["investigate", "role", "hidden"],
           run: function () {
             let info = this.game.createInformation(
               "WatcherInfo",

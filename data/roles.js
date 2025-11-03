@@ -3110,15 +3110,6 @@ const roleData = {
       nightOrder: [["Revive", PRIORITY_NIGHT_REVIVER]],
       graveyardParticipation: "all",
     },
-    Mummy: {
-      alignment: "Mafia",
-      tags: ["Trash", "Dead", "Killing", "Visits"],
-      description: [
-        "Each night, if the mummy is dead, each player who visits the Mummy will be killed.",
-        //"Everyone who visits the mummy while the mummy is dead will die.",
-      ],
-      nightOrder: [["Kill Visitors", PRIORITY_KILL_DEFAULT]],
-    },
     Illusionist: {
       alignment: "Mafia",
       tags: ["Killing", "Gun", "Items", "Day Actions", "Advanced"],
@@ -5031,6 +5022,20 @@ const roleData = {
           "If an Assassin is Present, a Vengeful Spirit will win at the end of the game if they are dead and no Presidents, Senators, or Vital Village roles are dead.",
         ],
       },
+    },
+    Mummy: {
+      alignment: "Independent",
+      tags: ["Effect", "Killing", "Visit Interaction", "Graveyard", "Advanced"],
+      description: [
+        `Each night, each player who visits the Mummy is "Wrapped".`,
+        `If condemned, will gain the ability: Once per game at night, can choose to revive themselves and kill all "Wrapped" players.`,
+        "Wins if among the last two alive.",
+      ],
+      nightOrder: [
+        ["Revive and Kill ", PRIORITY_KILL_DEFAULT + 2],
+        ["Apply Wrapped", PRIORITY_EFFECT_GIVER_EARLY],
+      ],
+      graveyardParticipation: "self",
     },
     Phantom: {
       alignment: "Independent",
