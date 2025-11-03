@@ -41,7 +41,6 @@ module.exports = class MummyReviveAndKill extends Card {
                 }
               }
             }
-
           },
         },
       },

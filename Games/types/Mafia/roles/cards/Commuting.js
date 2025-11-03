@@ -5,7 +5,7 @@ const { PRIORITY_BLOCK_VISITORS } = require("../../const/Priority");
 module.exports = class Commuting extends Card {
   constructor(role) {
     super(role);
-  
+
     this.listeners = {
       state: function (stateInfo) {
         if (!this.hasAbility(["Blocking"])) {

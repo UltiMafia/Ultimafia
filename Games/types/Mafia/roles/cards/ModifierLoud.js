@@ -89,12 +89,7 @@ module.exports = class ModifierLoud extends Card {
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 3,
-          labels: [
-            "investigate",
-            "alerts",
-            "hidden",
-            "uncontrollable",
-          ],
+          labels: ["investigate", "alerts", "hidden", "uncontrollable"],
           role: this.role,
           run: function () {
             let info = this.game.createInformation(
