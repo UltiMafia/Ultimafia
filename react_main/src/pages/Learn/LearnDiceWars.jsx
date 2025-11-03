@@ -22,10 +22,13 @@ export default function LearnDiceWars(props) {
         Learn Dice Wars
       </Typography>
       <Typography variant="body1" paragraph>
-        Dice Wars is a turn-based strategy game where players compete to conquer territories on a map using dice.
-        Each player starts with a set number of territories and dice, and the objective is to eliminate all other players by attacking their territories and defending your own.
-        The game uses dice rolls to determine the outcomes of attacks, adding an element of chance to the strategic gameplay.
-        The last player to control all territories wins.
+        Dice Wars is a turn-based strategy game where players compete to conquer
+        territories on a map using dice. Each player starts with a set number of
+        territories and dice, and the objective is to eliminate all other
+        players by attacking their territories and defending your own. The game
+        uses dice rolls to determine the outcomes of attacks, adding an element
+        of chance to the strategic gameplay. The last player to control all
+        territories wins.
       </Typography>
       <Accordion>
         <AccordionSummary>
