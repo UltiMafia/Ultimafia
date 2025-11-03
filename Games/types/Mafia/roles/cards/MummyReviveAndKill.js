@@ -5,7 +5,7 @@ module.exports = class MummyReviveAndKill extends Card {
     super(role);
 
     this.meetings = {
-      "Revive": {
+      Revive: {
         actionName: "Revive",
         states: ["Night"],
         flags: ["voting"],
@@ -20,22 +20,26 @@ module.exports = class MummyReviveAndKill extends Card {
           labels: ["kill"],
           run: function () {
             if (this.target === "No") return;
-            
-             this.role.stoned = true;
-              
-              if (!this.role.hasAbility(["Kill", "WhenDead"])) {
-                return;
-              }
-              for(let player of this.game.alivePlayers()){
-                for(let effect of player.effects){
-                  if(effect.name == "Marked" && effect.role && effect.role.includes(this.role.name)){
-                    effect.remove();
-                    if (this.dominates(player)){
+
+            this.role.stoned = true;
+
+            if (!this.role.hasAbility(["Kill", "WhenDead"])) {
+              return;
+            }
+            for (let player of this.game.alivePlayers()) {
+              for (let effect of player.effects) {
+                if (
+                  effect.name == "Marked" &&
+                  effect.role &&
+                  effect.role.includes(this.role.name)
+                ) {
+                  effect.remove();
+                  if (this.dominates(player)) {
                     player.kill("basic", this.actor, true);
-                    }
                   }
                 }
               }
+            }
           },
         },
       },
@@ -55,7 +59,5 @@ module.exports = class MummyReviveAndKill extends Card {
         this.HasBeenCondemned = true;
       },
     };
-
-    
   }
 };
