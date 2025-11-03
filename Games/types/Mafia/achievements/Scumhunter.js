@@ -7,7 +7,7 @@ module.exports = class Scumhunter extends Achievements {
     this.EvilVotesCount = 0;
     this.listeners = {
       vote: function (vote) {
-        if(vote.voter != this.player){
+        if (vote.voter != this.player) {
           return;
         }
         let target;
