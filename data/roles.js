@@ -5031,7 +5031,10 @@ const roleData = {
         `If condemned, will gain the ability: Once per game at night, can choose to revive themselves and kill all "Wrapped" players.`,
         "Wins if among the last two alive.",
       ],
-      nightOrder: [["Revive and Kill ", PRIORITY_KILL_DEFAULT+2], ["Apply Wrapped", PRIORITY_EFFECT_GIVER_EARLY]],
+      nightOrder: [
+        ["Revive and Kill ", PRIORITY_KILL_DEFAULT + 2],
+        ["Apply Wrapped", PRIORITY_EFFECT_GIVER_EARLY],
+      ],
       graveyardParticipation: "self",
     },
     Phantom: {
