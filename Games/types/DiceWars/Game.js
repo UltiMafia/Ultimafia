@@ -3,7 +3,6 @@ const Winners = require("../../core/Winners");
 const Player = require("./Player");
 
 module.exports = class DiceWarsGame extends Game {
-
   constructor(options) {
     super(options);
 
@@ -95,7 +94,7 @@ module.exports = class DiceWarsGame extends Game {
       // Check all hexes in this territory
       for (let hex of territoryHexes) {
         const directions = this.getHexDirections(hex.col, hex.row);
-        
+
         // Check all 6 neighbors of this hex
         for (let dir of directions) {
           const neighborCol = hex.col + dir.col;
@@ -103,7 +102,7 @@ module.exports = class DiceWarsGame extends Game {
           const neighbor = hexGrid.find(
             (h) => h.col === neighborCol && h.row === neighborRow
           );
-          
+
           // If neighbor is land and belongs to a different territory, add it
           if (
             neighbor &&
@@ -115,7 +114,7 @@ module.exports = class DiceWarsGame extends Game {
           }
         }
       }
-      
+
       territory.neighbors = Array.from(neighborIds);
     }
 
@@ -137,22 +136,22 @@ module.exports = class DiceWarsGame extends Game {
     if (isEvenCol) {
       // Even columns (not offset)
       return [
-        { col: 1, row: 0 },   // E
-        { col: 1, row: -1 },  // NE
-        { col: 0, row: -1 },  // NW
-        { col: -1, row: 0 },  // W
-        { col: 0, row: 1 },   // SW
-        { col: 1, row: 1 },   // SE
+        { col: 1, row: 0 }, // E
+        { col: 1, row: -1 }, // NE
+        { col: 0, row: -1 }, // NW
+        { col: -1, row: 0 }, // W
+        { col: 0, row: 1 }, // SW
+        { col: 1, row: 1 }, // SE
       ];
     } else {
       // Odd columns (offset down by 0.5)
       return [
-        { col: 1, row: 0 },   // E
-        { col: 0, row: -1 },  // NE
+        { col: 1, row: 0 }, // E
+        { col: 0, row: -1 }, // NE
         { col: -1, row: -1 }, // NW
-        { col: -1, row: 0 },  // W
-        { col: -1, row: 1 },  // SW
-        { col: 0, row: 1 },   // SE
+        { col: -1, row: 0 }, // W
+        { col: -1, row: 1 }, // SW
+        { col: 0, row: 1 }, // SE
       ];
     }
   }
@@ -164,18 +163,30 @@ module.exports = class DiceWarsGame extends Game {
   generateRandomTerritories(hexGrid, gridWidth, gridHeight) {
     const totalHexes = hexGrid.length;
     const targetLandHexes = Math.floor(totalHexes * 0.6); // 60% land, 40% ocean
-    
+
     // Step 1: Create a connected land mass
     console.log(`Creating connected land mass with ~${targetLandHexes} hexes`);
-    const landHexes = this.createConnectedLandMass(hexGrid, gridWidth, gridHeight, targetLandHexes);
-    
+    const landHexes = this.createConnectedLandMass(
+      hexGrid,
+      gridWidth,
+      gridHeight,
+      targetLandHexes
+    );
+
     // Step 2: Divide land into territories (1-5 hexes each)
     console.log(`Dividing land into ${this.mapSize} territories`);
-    const territories = this.divideLandIntoTerritories(landHexes, hexGrid, this.mapSize);
-    
+    const territories = this.divideLandIntoTerritories(
+      landHexes,
+      hexGrid,
+      this.mapSize
+    );
+
     // Step 3: Validate - ensure no territory is isolated
-    const validTerritories = this.validateAndFixTerritories(territories, hexGrid);
-    
+    const validTerritories = this.validateAndFixTerritories(
+      territories,
+      hexGrid
+    );
+
     // Final stats
     const finalLandHexes = hexGrid.filter((h) => !h.isOcean).length;
     const oceanHexes = totalHexes - finalLandHexes;
@@ -184,7 +195,7 @@ module.exports = class DiceWarsGame extends Game {
     console.log(
       `Generated ${validTerritories.length} territories using ${finalLandHexes}/${totalHexes} hexes (${percentLand}% land, ${percentOcean}% ocean)`
     );
-    
+
     return validTerritories;
   }
 
@@ -195,31 +206,33 @@ module.exports = class DiceWarsGame extends Game {
     // Start from center of grid
     const centerCol = Math.floor(gridWidth / 2);
     const centerRow = Math.floor(gridHeight / 2);
-    const startHex = hexGrid.find((h) => h.col === centerCol && h.row === centerRow);
-    
+    const startHex = hexGrid.find(
+      (h) => h.col === centerCol && h.row === centerRow
+    );
+
     if (!startHex) return [];
-    
+
     const landHexes = [startHex];
     startHex.isOcean = false;
-    
+
     // Grow land mass outward from center
     const frontier = [startHex];
     const visited = new Set([`${startHex.col},${startHex.row}`]);
-    
+
     while (landHexes.length < targetSize && frontier.length > 0) {
       // Pick a random hex from frontier to expand from
       const randomIndex = Math.floor(Math.random() * frontier.length);
       const currentHex = frontier[randomIndex];
-      
+
       // Get neighbors
       const directions = this.getHexDirections(currentHex.col, currentHex.row);
       const neighbors = [];
-      
+
       for (let dir of directions) {
         const neighborCol = currentHex.col + dir.col;
         const neighborRow = currentHex.row + dir.row;
         const key = `${neighborCol},${neighborRow}`;
-        
+
         if (!visited.has(key)) {
           const neighbor = hexGrid.find(
             (h) => h.col === neighborCol && h.row === neighborRow
@@ -230,7 +243,7 @@ module.exports = class DiceWarsGame extends Game {
           }
         }
       }
-      
+
       // Add some neighbors to land (weighted randomness for organic shape)
       if (neighbors.length > 0) {
         // Randomly decide how many neighbors to add (creates irregular coastline)
@@ -238,7 +251,7 @@ module.exports = class DiceWarsGame extends Game {
           neighbors.length,
           Math.floor(Math.random() * 3) + 1
         );
-        
+
         // Shuffle and take first numToAdd
         const shuffled = neighbors.sort(() => Math.random() - 0.5);
         for (let i = 0; i < numToAdd && landHexes.length < targetSize; i++) {
@@ -248,13 +261,13 @@ module.exports = class DiceWarsGame extends Game {
           frontier.push(newLand);
         }
       }
-      
+
       // Remove current from frontier if no more unvisited neighbors
       if (neighbors.length === 0) {
         frontier.splice(randomIndex, 1);
       }
     }
-    
+
     return landHexes;
   }
 
@@ -263,23 +276,23 @@ module.exports = class DiceWarsGame extends Game {
    */
   divideLandIntoTerritories(landHexes, hexGrid, targetCount) {
     const territories = [];
-    const availableLand = new Set(landHexes.map(h => `${h.col},${h.row}`));
+    const availableLand = new Set(landHexes.map((h) => `${h.col},${h.row}`));
     let territoryId = 0;
-    
+
     // Create seed points for territories
     const seeds = [];
     const shuffledLand = [...landHexes].sort(() => Math.random() - 0.5);
-    
+
     for (let i = 0; i < targetCount && i < shuffledLand.length; i++) {
       const seed = shuffledLand[i];
       const key = `${seed.col},${seed.row}`;
-      
+
       if (availableLand.has(key)) {
         seeds.push(seed);
         availableLand.delete(key);
       }
     }
-    
+
     // Grow territories from seeds
     for (let seed of seeds) {
       // Determine territory size (1-5 hexes, weighted toward smaller)
@@ -290,26 +303,30 @@ module.exports = class DiceWarsGame extends Game {
       else if (sizeRoll < 0.85) targetSize = 3;
       else if (sizeRoll < 0.95) targetSize = 4;
       else targetSize = 5;
-      
+
       const territoryHexes = [seed];
       seed.territoryId = territoryId;
-      
+
       // Grow territory
       const frontier = [seed];
-      
+
       while (territoryHexes.length < targetSize && frontier.length > 0) {
-        const currentHex = frontier[Math.floor(Math.random() * frontier.length)];
-        const directions = this.getHexDirections(currentHex.col, currentHex.row);
+        const currentHex =
+          frontier[Math.floor(Math.random() * frontier.length)];
+        const directions = this.getHexDirections(
+          currentHex.col,
+          currentHex.row
+        );
         let foundNeighbor = false;
-        
+
         // Shuffle directions for variety
         const shuffled = [...directions].sort(() => Math.random() - 0.5);
-        
+
         for (let dir of shuffled) {
           const neighborCol = currentHex.col + dir.col;
           const neighborRow = currentHex.row + dir.row;
           const key = `${neighborCol},${neighborRow}`;
-          
+
           if (availableLand.has(key)) {
             const neighbor = hexGrid.find(
               (h) => h.col === neighborCol && h.row === neighborRow
@@ -324,17 +341,19 @@ module.exports = class DiceWarsGame extends Game {
             }
           }
         }
-        
+
         // Remove from frontier if can't expand
         if (!foundNeighbor) {
-          const idx = frontier.findIndex(h => h.col === currentHex.col && h.row === currentHex.row);
+          const idx = frontier.findIndex(
+            (h) => h.col === currentHex.col && h.row === currentHex.row
+          );
           if (idx !== -1) frontier.splice(idx, 1);
         }
       }
-      
+
       // Create territory object
       const centerHex = territoryHexes[Math.floor(territoryHexes.length / 2)];
-      
+
       territories.push({
         id: territoryId,
         playerId: null,
@@ -346,22 +365,22 @@ module.exports = class DiceWarsGame extends Game {
         hexes: territoryHexes.length,
         neighbors: [],
       });
-      
+
       territoryId++;
     }
-    
+
     // Convert any remaining unassigned land hexes to ocean
     // This ensures all territories remain contiguous (no fragmentation)
     const remaining = [...availableLand];
     for (let key of remaining) {
-      const [col, row] = key.split(',').map(Number);
-      const hex = hexGrid.find(h => h.col === col && h.row === row);
-      
+      const [col, row] = key.split(",").map(Number);
+      const hex = hexGrid.find((h) => h.col === col && h.row === row);
+
       if (hex && !hex.isOcean && hex.territoryId === null) {
         hex.isOcean = true;
       }
     }
-    
+
     return territories;
   }
 
@@ -370,25 +389,25 @@ module.exports = class DiceWarsGame extends Game {
    */
   validateAndFixTerritories(territories, hexGrid) {
     const validated = [];
-    
+
     for (let territory of territories) {
       const territoryHexes = hexGrid.filter(
         (h) => h.territoryId === territory.id && !h.isOcean
       );
-      
+
       // Check if territory has at least one neighbor territory
       let hasNeighbor = false;
-      
+
       for (let hex of territoryHexes) {
         const directions = this.getHexDirections(hex.col, hex.row);
-        
+
         for (let dir of directions) {
           const neighborCol = hex.col + dir.col;
           const neighborRow = hex.row + dir.row;
           const neighbor = hexGrid.find(
             (h) => h.col === neighborCol && h.row === neighborRow
           );
-          
+
           if (
             neighbor &&
             !neighbor.isOcean &&
@@ -399,10 +418,10 @@ module.exports = class DiceWarsGame extends Game {
             break;
           }
         }
-        
+
         if (hasNeighbor) break;
       }
-      
+
       if (hasNeighbor) {
         validated.push(territory);
       } else {
@@ -414,7 +433,7 @@ module.exports = class DiceWarsGame extends Game {
         }
       }
     }
-    
+
     return validated;
   }
 
@@ -722,7 +741,7 @@ module.exports = class DiceWarsGame extends Game {
       if (player && player.alive) {
         player.kill();
         this.sendAlert(`${player.name} has been conquered!`);
-        
+
         // Check if game should end
         this.checkGameEnd();
       }
@@ -732,24 +751,24 @@ module.exports = class DiceWarsGame extends Game {
   checkWinConditions() {
     const Queue = require("../../core/Queue");
     const Winners = require("../../core/Winners");
-    
+
     let finished = false;
     const winners = new Winners(this);
     const aliveCount = this.alivePlayers().length;
     const winQueue = new Queue();
-    
+
     // Collect win checks from all player roles
     for (let player of this.players) {
       if (player.role && player.role.winCheck) {
         winQueue.enqueue(player.role.winCheck);
       }
     }
-    
+
     // Execute all win checks
     for (let winCheck of winQueue) {
       winCheck.check({}, winners, aliveCount);
     }
-    
+
     // Game is finished if someone won
     if (winners.groupAmt() > 0) {
       finished = true;
@@ -758,7 +777,7 @@ module.exports = class DiceWarsGame extends Game {
       winners.addGroup("No one");
       finished = true;
     }
-    
+
     winners.determinePlayers();
     return [finished, winners];
   }
