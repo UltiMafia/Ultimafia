@@ -1,6 +1,6 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
-const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_EFFECT_GIVER_EARLY } = require("../../const/Priority");
 
 module.exports = class MummyMarkVisitors extends Card {
   constructor(role) {
@@ -13,7 +13,7 @@ module.exports = class MummyMarkVisitors extends Card {
         state: "Night",
         game: role.game,
         role: role,
-        priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+        priority: PRIORITY_EFFECT_GIVER_EARLY,
         labels: ["hidden", "giveEffect"],
         run: function () {
           let visitors = this.getVisitors();
