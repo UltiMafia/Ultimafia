@@ -1,8 +1,11 @@
 const Player = require("../../core/Player");
+const deathMessages = require("./templates/death");
 
 module.exports = class DiceWarsPlayer extends Player {
   constructor(user, game, isBot) {
     super(user, game, isBot);
+
+    this.deathMessages = deathMessages;
 
     console.log(
       "DiceWars Player constructor - Player ID:",
@@ -11,7 +14,7 @@ module.exports = class DiceWarsPlayer extends Player {
       !!this.socket
     );
 
-    // Socket handlers for direct tile clicking interface (like Battlesnakes)
+    // Socket handlers for direct tile clicking interface
     this.socket.on("attack", (data) => {
       try {
         console.log("=== ATTACK SOCKET EVENT ===");

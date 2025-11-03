@@ -1226,7 +1226,7 @@ const countChecks = {
   },
   "Dice Wars": (roles, count, total, closed, unique) => {
     if (total < 2) return "Must have at least 2 players.";
-    if (total > 8) return "Must have at most 8 players.";
+    if (total > 10) return "Must have at most 10 players.";
     return true;
   },
   "Connect Four": (roles, count, total, closed, unique) => {
