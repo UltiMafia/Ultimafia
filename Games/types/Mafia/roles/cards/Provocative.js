@@ -18,7 +18,7 @@ module.exports = class Provocative extends Card {
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          labels: ["hidden", "absolute"],
+          labels: ["hidden"],
           run: function () {
             // Prevent sockpuppet stacking across multiple days
             for (let item of this.actor.items) {

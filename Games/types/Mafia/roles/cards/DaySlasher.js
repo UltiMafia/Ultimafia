@@ -16,7 +16,7 @@ module.exports = class DaySlasher extends Card {
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          labels: ["hidden", "absolute"],
+          labels: ["hidden"],
           run: function () {
             if (!this.actor.alive) return;
 

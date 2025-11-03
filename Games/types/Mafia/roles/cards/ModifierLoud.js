@@ -93,7 +93,6 @@ module.exports = class ModifierLoud extends Card {
             "investigate",
             "alerts",
             "hidden",
-            "absolute",
             "uncontrollable",
           ],
           role: this.role,

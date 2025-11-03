@@ -35,7 +35,7 @@ module.exports = class KillVisitorsWhileDead extends Card {
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_KILL_DEFAULT,
-          labels: ["kill", "hidden", "absolute"],
+          labels: ["kill", "hidden"],
           run: function () {
             if (this.actor.alive) return;
 

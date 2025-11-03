@@ -69,7 +69,6 @@ module.exports = class AnnouceNeighborVisitors extends Card {
           "investigate",
           "alerts",
           "hidden",
-          "absolute",
           "uncontrollable",
         ],
         role: role,

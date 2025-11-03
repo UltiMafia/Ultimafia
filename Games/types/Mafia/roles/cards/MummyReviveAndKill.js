@@ -25,23 +25,23 @@ module.exports = class MummyReviveAndKill extends Card {
 
             this.role.stoned = true;
 
-            if (!this.role.hasAbility(["Kill", "WhenDead"])) {
-              return;
-            }
+            this.actor.revive("basic", this.actor);
+
             for (let player of this.game.alivePlayers()) {
               for (let effect of player.effects) {
                 if (
                   effect.name == "Marked" &&
-                  effect.role &&
-                  effect.role.includes(this.role.name)
+                  effect.SourceRole &&
+                  effect.SourceRole.includes(this.role.name)
                 ) {
                   effect.remove();
                   if (this.dominates(player)) {
-                    player.kill("basic", this.actor, true);
+                    player.kill("basic", this.actor);
                   }
                 }
               }
             }
+
           },
         },
       },

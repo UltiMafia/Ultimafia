@@ -29,8 +29,8 @@ module.exports = class TurnToStone extends Card {
               for (let effect of player.effects) {
                 if (
                   effect.name == "Marked" &&
-                  effect.role &&
-                  effect.role.includes(this.role.name)
+                  effect.SourceRole &&
+                  effect.SourceRole.includes(this.role.name)
                 ) {
                   effect.remove();
                   if (this.dominates(player)) {

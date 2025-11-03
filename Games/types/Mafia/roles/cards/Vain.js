@@ -74,9 +74,6 @@ module.exports = class Vain extends Card {
             if (!this.actor.alive) return;
 
             for (let action of this.game.actions[0]) {
-              if (action.hasLabel("absolute")) {
-                continue;
-              }
               if (action.hasLabel("mafia")) {
                 continue;
               }

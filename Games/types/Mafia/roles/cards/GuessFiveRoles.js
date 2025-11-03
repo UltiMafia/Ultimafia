@@ -118,7 +118,7 @@ module.exports = class GuessFiveRoles extends Card {
           game: this.player.game,
           role: this,
           priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
-          labels: ["investigate", "role", "hidden", "absolute"],
+          labels: ["investigate", "role", "hidden"],
           run: function () {
             if (!this.actor.alive) return;
             if (

@@ -25,7 +25,7 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
           actor: this.player,
           game: this.player.game,
           priority: PRIORITY_ITEM_GIVER_EARLY,
-          labels: ["hidden", "absolute"],
+          labels: ["hidden"],
           role: this,
           run: function () {
             if (this.role.data.gainedGun) return;

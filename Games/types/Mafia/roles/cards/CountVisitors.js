@@ -6,56 +6,19 @@ const { PRIORITY_INVESTIGATIVE_DEFAULT } = require("../../const/Priority");
 module.exports = class CountVisitors extends Card {
   constructor(role) {
     super(role);
-    /*
-    this.actions = [
+ 
+
+    this.passiveActions = [
       {
+        ability: ["Information"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-        labels: ["hidden", "absolute"],
+        labels: ["hidden"],
         run: function () {
-          if (this.game.getStateName() !== "Night") return;
-
-          let visitors = this.actor.role.data.visitors;
-          if (visitors) {
-            let unique = new Set(visitors);
-
-            if (this.actor.hasEffect("FalseMode")) {
-              let num = 0;
-              if (unique.size == 0) num = 1;
-              else num = 0;
-              this.actor.queueAlert(
-                `:visited: You were visited by ${num} people last night.`
-              );
-              return;
-            }
-
-            this.actor.queueAlert(
-              `:visited: You were visited by ${unique.size} people last night.`
-            );
-          }
-        },
-      },
-    ];
-*/
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Information"])) {
-          return;
-        }
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          role: this,
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-          labels: ["hidden", "absolute"],
-          run: function () {
-            let visitors = this.role.data.visitors;
-            if (visitors) {
-              let unique = new Set(visitors);
-
+            if (this.hasVisitors()) {
               let info = this.game.createInformation(
                 "CountVisitorsInfo",
                 this.actor,
@@ -69,10 +32,8 @@ module.exports = class CountVisitors extends Card {
               );
             }
           },
-        });
-
-        this.game.queueAction(action);
       },
-    };
+    ];
+
   }
 };
