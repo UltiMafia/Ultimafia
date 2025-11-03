@@ -33,33 +33,15 @@ export default function DiceWarsGame(props) {
     ? history.states[stateViewing].meetings
     : {};
 
-  const audioFileNames = ["music/14_Minigame"];
-  const audioLoops = [true];
-  const audioOverrides = [true];
-  const audioVolumes = [1];
-
   // Make player view current state when it changes
   useEffect(() => {
     updateStateViewing({ type: "current" });
   }, [history.currentState]);
 
   useEffect(() => {
-    game.loadAudioFiles(
-      audioFileNames,
-      audioLoops,
-      audioOverrides,
-      audioVolumes
-    );
-
     // Make game review start at pregame
     if (game.review) updateStateViewing({ type: "first" });
   }, []);
-
-  useSocketListeners((socket) => {
-    socket.on("start", () => {
-      game.playAudio("music/14_Minigame");
-    });
-  }, game.socket);
 
   if (isPhoneDevice) {
     // Unsupported
