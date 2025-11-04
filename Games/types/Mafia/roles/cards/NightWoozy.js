@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 
-module.exports = class NightGasser extends Card {
+module.exports = class NightWoozy extends Card {
   constructor(role) {
     super(role);
 
@@ -12,11 +12,11 @@ module.exports = class NightGasser extends Card {
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["dead", "self"] },
         action: {
-          labels: ["effect", "gas"],
+          labels: ["effect", "woozy"],
           priority: PRIORITY_EFFECT_GIVER_DEFAULT,
           run: function () {
             if (this.dominates())
-              this.role.giveEffect(this.target, "Gassed", this.actor);
+              this.role.giveEffect(this.target, "Woozy", this.actor);
           },
         },
       },

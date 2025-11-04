@@ -7,7 +7,7 @@ module.exports = class Dentist extends Role {
     this.alignment = "Mafia";
     this.cards = [
       "VillageCore",
-      "NightGasser",
+      "NightWoozy",
       "WinWithFaction",
       "MeetingFaction",
     ];

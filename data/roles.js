@@ -108,7 +108,7 @@ const plagueDef = `Players who are "Plagued" will make their neighbors "Plagued"
 const madDef = `Players who are "Mad" about a role, must say the role's name or they will become the target of the condemnation.`;
 const insaneDef = `Players who are "Insane" cannot vote and can only speak gibberish.`;
 const infestedDef = `Players who are "Infested" with a role will convert to that role with the Transcendent modifier added if condemned.`;
-const gassedDef = `Players who are "Gassed" will die during the next night if they visit another player.`;
+const woozyDef = `Players who are "Woozy" will die during the next night if they visit another player.`;
 const polarisedDef = `Players who are "Polarised" will die if they visit or get visited by another "Polarised".`;
 const frozenDef = `Players who are "Frozen" cannot vote or will have their night actions blocked. If a "Frozen" player is visited, they will stop being "Frozen".`;
 const foggyDef = `Players who are "Foggy" can only see their neighbors messages.`;
@@ -2617,10 +2617,10 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Killing", "Visits", "Visiting", "Basic"],
       description: [
-        `Each night, can choose to visit one player and make them "Gassed".`,
-        gassedDef,
+        `Each night, can choose to visit one player and make them "Woozy".`,
+        woozyDef,
       ],
-      nightOrder: [["Gas Player", PRIORITY_EFFECT_GIVER_DEFAULT]],
+      nightOrder: [["Make Player Woozy", PRIORITY_EFFECT_GIVER_DEFAULT]],
     },
     Hider: {
       alignment: "Mafia",
