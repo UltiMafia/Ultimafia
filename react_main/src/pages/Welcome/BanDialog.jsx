@@ -82,4 +82,3 @@ export const BanDialog = ({ open, setOpen, banExpires }) => {
     </Dialog>
   );
 };
-

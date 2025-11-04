@@ -53,7 +53,7 @@ export const Welcome = () => {
           })
           .catch((err) => {
             console.log(err);
-            
+
             // Check if this is a site-ban error
             if (err?.response?.status === 403 && err?.response?.data) {
               try {
@@ -70,7 +70,7 @@ export const Welcome = () => {
                 // Not a site-ban error, continue with regular error handling
               }
             }
-            
+
             snackbarHook.popUnexpectedError();
             setIsLoading(false);
           });

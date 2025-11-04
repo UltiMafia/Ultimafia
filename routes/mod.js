@@ -485,12 +485,16 @@ router.post("/ban", async (req, res) => {
         { id: userIdToBan },
         { $set: { banned: true } }
       ).exec();
-      await models.Session.deleteMany({ "session.user.id": userIdToBan }).exec();
+      await models.Session.deleteMany({
+        "session.user.id": userIdToBan,
+      }).exec();
     }
 
     await routeUtils.createNotification(
       {
-        content: `You have received a violation. Your ${banTypeLabels[banType]} ban expires on ${banExpires.toLocaleString()}.`,
+        content: `You have received a violation. Your ${
+          banTypeLabels[banType]
+        } ban expires on ${banExpires.toLocaleString()}.`,
         icon: "ban",
       },
       [userIdToBan]

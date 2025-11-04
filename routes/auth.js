@@ -88,7 +88,12 @@ router.post("/", async function (req, res) {
     } else {
       console.log("Req body: " + req.body);
       if (req.body.discordProfile) {
-        const authResult = await authSuccess(req, null, req.body.email, req.body.discordProfile);
+        const authResult = await authSuccess(
+          req,
+          null,
+          req.body.email,
+          req.body.discordProfile
+        );
         // Check if authSuccess actually created a session
         if (req.session.user) {
           res.sendStatus(200);
