@@ -11,7 +11,10 @@ module.exports = class Woozy extends Effect {
 
   apply(player) {
     super.apply(player);
-    this.player.queueAlert(":poison: You have become Woozy after seeing the Dentist! You will die if you visit someone tonight!", 0);
+    this.player.queueAlert(
+      ":poison: You have become Woozy after seeing the Dentist! You will die if you visit someone tonight!",
+      0
+    );
 
     this.action = new Action({
       actor: this.gasser,
