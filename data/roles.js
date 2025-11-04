@@ -2620,7 +2620,7 @@ const roleData = {
         `Each night, can choose to visit one player and make them "Woozy".`,
         woozyDef,
       ],
-      nightOrder: [["Gas Player", PRIORITY_EFFECT_GIVER_DEFAULT]],
+      nightOrder: [["Make Player Woozy", PRIORITY_EFFECT_GIVER_DEFAULT]],
     },
     Hider: {
       alignment: "Mafia",
