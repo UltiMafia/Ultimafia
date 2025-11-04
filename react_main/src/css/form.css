@@ -18,10 +18,6 @@
   margin-bottom: 10px;
 }
 
-.react-date-picker__wrapper {
-  border: none;
-}
-
 .form .field-wrapper {
   display: flex;
   flex-flow: row nowrap;
@@ -38,25 +34,6 @@
 
 main {
   margin-bottom: 10px;
-}
-
-.react-date-picker {
-  z-index: 10;
-  display: inline;
-}
-
-div .react-date-picker {
-  background-color: var(--scheme-color);
-}
-
-.react-date-picker__button svg {
-  color: var(--scheme-color-text);
-  stroke: var(--scheme-color-text);
-}
-
-.react-calendar {
-  position: absolute;
-  z-index: 100;
 }
 
 .form .label {
