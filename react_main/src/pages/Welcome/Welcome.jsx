@@ -53,6 +53,24 @@ export const Welcome = () => {
           })
           .catch((err) => {
             console.log(err);
+            
+            // Check if this is a site-ban error
+            if (err?.response?.status === 403 && err?.response?.data) {
+              try {
+                const data =
+                  typeof err.response.data === "string"
+                    ? JSON.parse(err.response.data)
+                    : err.response.data;
+                if (data.siteBanned) {
+                  snackbarHook.popSiteBanned(data.banExpires);
+                  setIsLoading(false);
+                  return;
+                }
+              } catch (parseErr) {
+                // Not a site-ban error, continue with regular error handling
+              }
+            }
+            
             snackbarHook.popUnexpectedError();
             setIsLoading(false);
           });

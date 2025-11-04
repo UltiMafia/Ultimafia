@@ -866,14 +866,27 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Forum Ban": {
-      perm: "forumBan",
+    Ban: {
+      perm: "ban",
       category: "User Management",
       args: [
         {
           label: "User",
           name: "userId",
           type: "user_search",
+        },
+        {
+          label: "Ban Type",
+          name: "banType",
+          type: "select",
+          options: [
+            { value: "forum", label: "Forum" },
+            { value: "chat", label: "Chat" },
+            { value: "game", label: "Game" },
+            { value: "ranked", label: "Ranked" },
+            { value: "competitive", label: "Competitive" },
+            { value: "site", label: "Site" },
+          ],
         },
         {
           label: "Length",
@@ -883,134 +896,9 @@ export function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/api/mod/forumBan", argValues)
+          .post("/api/mod/ban", argValues)
           .then(() => {
-            siteInfo.showAlert("User forum banned.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Chat Ban": {
-      perm: "chatBan",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-        {
-          label: "Length",
-          name: "length",
-          type: "text",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/chatBan", argValues)
-          .then(() => {
-            siteInfo.showAlert("User chat banned.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Game Ban": {
-      perm: "gameBan",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-        {
-          label: "Length",
-          name: "length",
-          type: "text",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/gameBan", argValues)
-          .then(() => {
-            siteInfo.showAlert("User game banned.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Ranked Ban": {
-      perm: "rankedBan",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-        {
-          label: "Length",
-          name: "length",
-          type: "text",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/rankedBan", argValues)
-          .then(() => {
-            siteInfo.showAlert("User ranked banned.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Competitive Ban": {
-      perm: "competitiveBan",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-        {
-          label: "Length",
-          name: "length",
-          type: "text",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/competitiveBan", argValues)
-          .then(() => {
-            siteInfo.showAlert("User competitive banned.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Site Ban": {
-      perm: "siteBan",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-        {
-          label: "Length",
-          name: "length",
-          type: "text",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/siteBan", argValues)
-          .then(() => {
-            siteInfo.showAlert("User site banned.", "success");
+            siteInfo.showAlert("User banned.", "success");
             commandRan();
           })
           .catch(errorAlert);
@@ -1036,8 +924,8 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Forum Unban": {
-      perm: "forumUnban",
+    Unban: {
+      perm: "unban",
       category: "User Management",
       args: [
         {
@@ -1045,112 +933,25 @@ export function useModCommands(argValues, commandRan, setResults) {
           name: "userId",
           type: "user_search",
         },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/forumUnban", argValues)
-          .then(() => {
-            siteInfo.showAlert("User forum unbanned.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Chat Unban": {
-      perm: "chatUnban",
-      category: "User Management",
-      args: [
         {
-          label: "User",
-          name: "userId",
-          type: "user_search",
+          label: "Ban Type",
+          name: "banType",
+          type: "select",
+          options: [
+            { value: "forum", label: "Forum" },
+            { value: "chat", label: "Chat" },
+            { value: "game", label: "Game" },
+            { value: "ranked", label: "Ranked" },
+            { value: "competitive", label: "Competitive" },
+            { value: "site", label: "Site" },
+          ],
         },
       ],
       run: function () {
         axios
-          .post("/api/mod/chatUnban", argValues)
+          .post("/api/mod/unban", argValues)
           .then(() => {
-            siteInfo.showAlert("User chat unbanned.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Game Unban": {
-      perm: "gameUnban",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/gameUnban", argValues)
-          .then(() => {
-            siteInfo.showAlert("User game unbanned.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Ranked Unban": {
-      perm: "rankedUnban",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/rankedUnban", argValues)
-          .then(() => {
-            siteInfo.showAlert("User ranked unbanned.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Competitive Unban": {
-      perm: "competitiveUnban",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/competitiveUnban", argValues)
-          .then(() => {
-            siteInfo.showAlert("User competitive unbanned.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Site Unban": {
-      perm: "siteUnban",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/siteUnban", argValues)
-          .then(() => {
-            siteInfo.showAlert("User site unbanned.", "success");
+            siteInfo.showAlert("User unbanned.", "success");
             commandRan();
           })
           .catch(errorAlert);

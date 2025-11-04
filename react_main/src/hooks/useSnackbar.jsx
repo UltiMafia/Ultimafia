@@ -37,6 +37,13 @@ export const useSnackbar = () => {
       "warning"
     );
   };
+  const popSiteBanned = (banExpires) => {
+    const expiresDate = new Date(banExpires);
+    popSnackbar(
+      `You are site-banned. Your ban expires on ${expiresDate.toLocaleString()}.`,
+      "error"
+    );
+  };
 
   const SnackbarWrapped = (
     <Snackbar
@@ -61,6 +68,7 @@ export const useSnackbar = () => {
     popUnexpectedError,
     popTooManyLoginAttempts,
     popLoginFailed,
+    popSiteBanned,
     SnackbarWrapped,
   };
 };
