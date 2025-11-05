@@ -83,6 +83,7 @@ export default function StateIcon({
 
   const icon = (
     <div
+      className="game-state-icon"
       style={{
         position: "relative",
         display: "inline-block",

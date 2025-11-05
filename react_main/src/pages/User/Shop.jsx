@@ -193,6 +193,7 @@ export default function Shop(props) {
             sx={{ display: "flex", alignItems: "center" }}
           >
             <img
+              className="um-coin"
               src={coin}
               style={{ marginRight: "4px", width: "20px", height: "20px" }}
               alt="Coin Icon"
