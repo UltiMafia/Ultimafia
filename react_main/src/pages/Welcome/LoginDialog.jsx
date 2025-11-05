@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Button,
   Dialog,
@@ -22,9 +22,11 @@ import axios from "axios";
 import { verifyRecaptcha } from "utils";
 import { useSnackbar } from "hooks/useSnackbar";
 import { YouAgree } from "./YouAgree";
+import { SiteInfoContext } from "Contexts";
 
 export const LoginDialog = ({ open, setOpen }) => {
   const snackbarHook = useSnackbar();
+  const siteInfo = useContext(SiteInfoContext);
   const [loading, setLoading] = useState(false);
   const [forgotPasswordOn, setForgotPasswordOn] = useState(false);
   const [email, setEmail] = useState("");
@@ -73,6 +75,23 @@ export const LoginDialog = ({ open, setOpen }) => {
         await axios.post("/api/auth", { idToken });
         window.location.reload();
       } catch (err) {
+        // Check if this is a site-ban error
+        if (err?.response?.status === 403 && err?.response?.data) {
+          try {
+            const data =
+              typeof err.response.data === "string"
+                ? JSON.parse(err.response.data)
+                : err.response.data;
+            if (data.siteBanned) {
+              snackbarHook.popSiteBanned(data.banExpires);
+              setLoading(false);
+              return;
+            }
+          } catch (parseErr) {
+            // Not a site-ban error, continue with regular error handling
+          }
+        }
+
         snackbarHook.popUnexpectedError();
         console.error(err);
 
@@ -110,6 +129,23 @@ export const LoginDialog = ({ open, setOpen }) => {
         await axios.post("/api/auth", { idToken });
         window.location.reload();
       } catch (err) {
+        // Check if this is a site-ban error
+        if (err?.response?.status === 403 && err?.response?.data) {
+          try {
+            const data =
+              typeof err.response.data === "string"
+                ? JSON.parse(err.response.data)
+                : err.response.data;
+            if (data.siteBanned) {
+              snackbarHook.popSiteBanned(data.banExpires);
+              setLoading(false);
+              return;
+            }
+          } catch (parseErr) {
+            // Not a site-ban error, continue with regular error handling
+          }
+        }
+
         snackbarHook.popUnexpectedError();
         console.error(err);
       }

@@ -142,12 +142,13 @@ var defaultOptions = {
     dayLength: 60,
     nightLength: 0.5,
   },
-  DiceWars: existingHostOptions["DiceWars"] || {
-    ...commonHostOptions,
-    mapSize: 30,
-    maxDice: 8,
-    playLength: 30,
-  },
+  "Dice Wars": existingHostOptions["Dice Wars"] ||
+    existingHostOptions["DiceWars"] || {
+      ...commonHostOptions,
+      mapSize: 30,
+      maxDice: 8,
+      playLength: 30,
+    },
   "Connect Four": existingHostOptions["Connect Four"] || {
     ...commonHostOptions,
     boardX: 4,

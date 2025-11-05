@@ -8,7 +8,7 @@ import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 
 export default function CreateDiceWarsSetup() {
-  const gameType = "DiceWars";
+  const gameType = "Dice Wars";
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const errorAlert = useErrorAlert();
@@ -18,13 +18,32 @@ export default function CreateDiceWarsSetup() {
       ref: "name",
       type: "text",
     },
+    {
+      label: "Map Size (Territories)",
+      ref: "mapSize",
+      type: "number",
+      value: "30",
+      min: "22",
+      max: "43",
+    },
+    {
+      label: "Max Dice Per Territory",
+      ref: "maxDice",
+      type: "select",
+      value: "8",
+      options: [
+        { label: "4 Dice", value: "4" },
+        { label: "8 Dice", value: "8" },
+        { label: "16 Dice", value: "16" },
+      ],
+    },
   ]);
   const formFieldValueMods = {};
 
   const siteInfo = useContext(SiteInfoContext);
 
   useEffect(() => {
-    document.title = "Create DiceWars Setup | UltiMafia";
+    document.title = "Create Dice Wars Setup | UltiMafia";
   }, []);
 
   function onCreateSetup(roleData, editing, setNavigate, gameSettings) {
@@ -37,6 +56,8 @@ export default function CreateDiceWarsSetup() {
         startState: "Play",
         whispers: false,
         leakPercentage: 100,
+        mapSize: Number(formFields[1].value),
+        maxDice: Number(formFields[2].value),
         editing: editing,
         id: params.get("edit"),
       })

@@ -4,7 +4,7 @@ import { getDefaults, persistDefaults } from "./DefaultValues";
 import { Lobbies } from "Constants";
 
 export default function HostDiceWars() {
-  const gameType = "DiceWars";
+  const gameType = "Dice Wars";
   const defaults = getDefaults(gameType);
 
   let defaultLobby = localStorage.getItem("lobby");

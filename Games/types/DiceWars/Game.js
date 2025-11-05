@@ -3,15 +3,12 @@ const Winners = require("../../core/Winners");
 const Player = require("./Player");
 
 module.exports = class DiceWarsGame extends Game {
-  /**
-   * @param {object} options
-   */
   constructor(options) {
     super(options);
 
-    this.type = "DiceWars";
+    this.type = "Dice Wars";
     this.Player = Player;
-    this.mapSize = parseInt(options.settings.mapSize) || 30; // number of territories
+    this.mapSize = parseInt(options.settings.mapSize) || 45; // number of territories
     this.maxDicePerTerritory = parseInt(options.settings.maxDice) || 8; // max dice per territory (4, 8, or 16)
     this.gameStarted = false;
     this.states = [
@@ -25,44 +22,13 @@ module.exports = class DiceWarsGame extends Game {
       },
     ];
 
-    /**
-     * @type {Array<{id: number, playerId: string, dice: number, x: number, y: number, neighbors: number[]}>}
-     */
     this.territories = [];
-
-    /**
-     * @type {string} - ID of the player whose turn it is
-     */
     this.currentTurnPlayerId = null;
-
-    /**
-     * @type {number} - Current turn number (increments each full round)
-     */
     this.turnNumber = 0;
-
-    /**
-     * @type {number} - Current round number (increments after all players have taken a turn)
-     */
     this.roundNumber = 0;
-
-    /**
-     * @type {boolean} - Whether the current player has attacked this turn
-     */
     this.hasAttacked = false;
-
-    /**
-     * @type {Array<string>} - Ordered list of player IDs for turn order
-     */
     this.turnOrder = [];
-
-    /**
-     * @type {number} - Index in turnOrder for current player
-     */
     this.turnIndex = 0;
-
-    /**
-     * @type {Object<string, number>} - Surplus dice storage for each player (playerId -> surplus count)
-     */
     this.surplusDice = {};
   }
 
@@ -77,85 +43,431 @@ module.exports = class DiceWarsGame extends Game {
   }
 
   /**
-   * Generates a hex grid map with territories
+   * Generates a rectangular hex grid map with territories and ocean tiles
+   * Uses offset coordinates for a rectangular layout
    */
   generateHexMap() {
-    const territories = [];
-    const gridRadius = Math.ceil(Math.sqrt(this.mapSize / 3.5)); // approximate hex grid radius
-    let territoryId = 0;
+    // Determine grid dimensions based on mapSize
+    // Target approximately 40% of hexes to be playable territories, rest are ocean
+    const totalHexes = Math.ceil(this.mapSize / 0.4);
+    const aspectRatio = 1.5; // width to height ratio
+    const gridHeight = Math.ceil(Math.sqrt(totalHexes / aspectRatio));
+    const gridWidth = Math.ceil(totalHexes / gridHeight);
 
-    // Generate hex grid using axial coordinates
-    for (let q = -gridRadius; q <= gridRadius; q++) {
-      for (let r = -gridRadius; r <= gridRadius; r++) {
-        if (Math.abs(q + r) <= gridRadius && territoryId < this.mapSize) {
-          // Convert axial to pixel coordinates for display
-          const x = q * 1.5;
-          const y = (q * Math.sqrt(3)) / 2 + r * Math.sqrt(3);
+    console.log(
+      `Generating ${gridWidth}x${gridHeight} hex grid for ${this.mapSize} territories`
+    );
 
-          territories.push({
-            id: territoryId,
-            playerId: null,
-            dice: 1,
-            x: x,
-            y: y,
-            q: q, // axial coordinate
-            r: r, // axial coordinate
-            neighbors: [],
-          });
-          territoryId++;
-        }
+    // First, create a full rectangular grid of hexes (offset coordinates)
+    const hexGrid = [];
+    for (let row = 0; row < gridHeight; row++) {
+      for (let col = 0; col < gridWidth; col++) {
+        // Convert offset coordinates to axial for consistent neighbor calculation
+        const q = col - Math.floor(row / 2);
+        const r = row;
+
+        hexGrid.push({
+          col: col,
+          row: row,
+          q: q,
+          r: r,
+          territoryId: null, // Will be assigned during territory generation
+          isOcean: true, // Default to ocean, will be set to false for territories
+        });
       }
     }
 
-    // Calculate neighbors based on axial coordinates
-    for (let territory of territories) {
-      const neighbors = [];
-      const directions = [
-        { q: 1, r: 0 },
-        { q: 1, r: -1 },
-        { q: 0, r: -1 },
-        { q: -1, r: 0 },
-        { q: -1, r: 1 },
-        { q: 0, r: 1 },
-      ];
+    // Generate random territories using flood-fill algorithm
+    const territories = this.generateRandomTerritories(
+      hexGrid,
+      gridWidth,
+      gridHeight
+    );
 
-      for (let dir of directions) {
-        const neighborQ = territory.q + dir.q;
-        const neighborR = territory.r + dir.r;
-        const neighbor = territories.find(
-          (t) => t.q === neighborQ && t.r === neighborR
-        );
-        if (neighbor) {
-          neighbors.push(neighbor.id);
+    // Build territory neighbor relationships by checking hex adjacency
+    for (let territory of territories) {
+      const territoryHexes = hexGrid.filter(
+        (h) => h.territoryId === territory.id && !h.isOcean
+      );
+      const neighborIds = new Set();
+
+      // Check all hexes in this territory
+      for (let hex of territoryHexes) {
+        const directions = this.getHexDirections(hex.col, hex.row);
+
+        // Check all 6 neighbors of this hex
+        for (let dir of directions) {
+          const neighborCol = hex.col + dir.col;
+          const neighborRow = hex.row + dir.row;
+          const neighbor = hexGrid.find(
+            (h) => h.col === neighborCol && h.row === neighborRow
+          );
+
+          // If neighbor is land and belongs to a different territory, add it
+          if (
+            neighbor &&
+            !neighbor.isOcean &&
+            neighbor.territoryId !== null &&
+            neighbor.territoryId !== territory.id
+          ) {
+            neighborIds.add(neighbor.territoryId);
+          }
         }
       }
-      territory.neighbors = neighbors;
+
+      territory.neighbors = Array.from(neighborIds);
+    }
+
+    // Store grid info for rendering
+    this.gridWidth = gridWidth;
+    this.gridHeight = gridHeight;
+    this.hexGrid = hexGrid;
+
+    return territories;
+  }
+
+  /**
+   * Get neighbor directions for hex grid using offset coordinates
+   * Uses odd-q vertical layout (flat-top hexes, odd columns offset down)
+   * Even and odd columns have different offset patterns
+   */
+  getHexDirections(col, row) {
+    const isEvenCol = col % 2 === 0;
+    if (isEvenCol) {
+      // Even columns (not offset)
+      return [
+        { col: 1, row: 0 }, // E
+        { col: 1, row: -1 }, // NE
+        { col: 0, row: -1 }, // NW
+        { col: -1, row: 0 }, // W
+        { col: 0, row: 1 }, // SW
+        { col: 1, row: 1 }, // SE
+      ];
+    } else {
+      // Odd columns (offset down by 0.5)
+      return [
+        { col: 1, row: 0 }, // E
+        { col: 0, row: -1 }, // NE
+        { col: -1, row: -1 }, // NW
+        { col: -1, row: 0 }, // W
+        { col: -1, row: 1 }, // SW
+        { col: 0, row: 1 }, // SE
+      ];
+    }
+  }
+
+  /**
+   * Generates random territories using a connected region-growing algorithm
+   * Ensures all land forms a connected mass with no islands
+   */
+  generateRandomTerritories(hexGrid, gridWidth, gridHeight) {
+    const totalHexes = hexGrid.length;
+    const targetLandHexes = Math.floor(totalHexes * 0.7); // 70% land, 30% ocean
+
+    // Step 1: Create a connected land mass
+    console.log(`Creating connected land mass with ~${targetLandHexes} hexes`);
+    const landHexes = this.createConnectedLandMass(
+      hexGrid,
+      gridWidth,
+      gridHeight,
+      targetLandHexes
+    );
+
+    // Step 2: Divide land into territories (1-5 hexes each)
+    console.log(`Dividing land into ${this.mapSize} territories`);
+    const territories = this.divideLandIntoTerritories(
+      landHexes,
+      hexGrid,
+      this.mapSize
+    );
+
+    // Step 3: Validate - ensure no territory is isolated
+    const validTerritories = this.validateAndFixTerritories(
+      territories,
+      hexGrid
+    );
+
+    // Final stats
+    const finalLandHexes = hexGrid.filter((h) => !h.isOcean).length;
+    const oceanHexes = totalHexes - finalLandHexes;
+    const percentLand = ((finalLandHexes / totalHexes) * 100).toFixed(1);
+    const percentOcean = ((oceanHexes / totalHexes) * 100).toFixed(1);
+    console.log(
+      `Generated ${validTerritories.length} territories using ${finalLandHexes}/${totalHexes} hexes (${percentLand}% land, ${percentOcean}% ocean)`
+    );
+
+    return validTerritories;
+  }
+
+  /**
+   * Creates a connected land mass using region growing
+   */
+  createConnectedLandMass(hexGrid, gridWidth, gridHeight, targetSize) {
+    // Start from center of grid
+    const centerCol = Math.floor(gridWidth / 2);
+    const centerRow = Math.floor(gridHeight / 2);
+    const startHex = hexGrid.find(
+      (h) => h.col === centerCol && h.row === centerRow
+    );
+
+    if (!startHex) return [];
+
+    const landHexes = [startHex];
+    startHex.isOcean = false;
+
+    // Grow land mass outward from center
+    const frontier = [startHex];
+    const visited = new Set([`${startHex.col},${startHex.row}`]);
+
+    while (landHexes.length < targetSize && frontier.length > 0) {
+      // Pick a random hex from frontier to expand from
+      const randomIndex = Math.floor(Math.random() * frontier.length);
+      const currentHex = frontier[randomIndex];
+
+      // Get neighbors
+      const directions = this.getHexDirections(currentHex.col, currentHex.row);
+      const neighbors = [];
+
+      for (let dir of directions) {
+        const neighborCol = currentHex.col + dir.col;
+        const neighborRow = currentHex.row + dir.row;
+        const key = `${neighborCol},${neighborRow}`;
+
+        if (!visited.has(key)) {
+          const neighbor = hexGrid.find(
+            (h) => h.col === neighborCol && h.row === neighborRow
+          );
+          if (neighbor) {
+            neighbors.push(neighbor);
+            visited.add(key);
+          }
+        }
+      }
+
+      // Add some neighbors to land (weighted randomness for organic shape)
+      if (neighbors.length > 0) {
+        // Randomly decide how many neighbors to add (creates irregular coastline)
+        const numToAdd = Math.min(
+          neighbors.length,
+          Math.floor(Math.random() * 3) + 1
+        );
+
+        // Shuffle and take first numToAdd
+        const shuffled = neighbors.sort(() => Math.random() - 0.5);
+        for (let i = 0; i < numToAdd && landHexes.length < targetSize; i++) {
+          const newLand = shuffled[i];
+          newLand.isOcean = false;
+          landHexes.push(newLand);
+          frontier.push(newLand);
+        }
+      }
+
+      // Remove current from frontier if no more unvisited neighbors
+      if (neighbors.length === 0) {
+        frontier.splice(randomIndex, 1);
+      }
+    }
+
+    return landHexes;
+  }
+
+  /**
+   * Divides land mass into territories
+   */
+  divideLandIntoTerritories(landHexes, hexGrid, targetCount) {
+    const territories = [];
+    const availableLand = new Set(landHexes.map((h) => `${h.col},${h.row}`));
+    let territoryId = 0;
+
+    // Create seed points for territories
+    const seeds = [];
+    const shuffledLand = [...landHexes].sort(() => Math.random() - 0.5);
+
+    for (let i = 0; i < targetCount && i < shuffledLand.length; i++) {
+      const seed = shuffledLand[i];
+      const key = `${seed.col},${seed.row}`;
+
+      if (availableLand.has(key)) {
+        seeds.push(seed);
+        availableLand.delete(key);
+      }
+    }
+
+    // Grow territories from seeds
+    for (let seed of seeds) {
+      // Determine territory size (1-5 hexes, weighted toward smaller)
+      const sizeRoll = Math.random();
+      let targetSize;
+      if (sizeRoll < 0.4) targetSize = 1;
+      else if (sizeRoll < 0.7) targetSize = 2;
+      else if (sizeRoll < 0.85) targetSize = 3;
+      else if (sizeRoll < 0.95) targetSize = 4;
+      else targetSize = 5;
+
+      const territoryHexes = [seed];
+      seed.territoryId = territoryId;
+
+      // Grow territory
+      const frontier = [seed];
+
+      while (territoryHexes.length < targetSize && frontier.length > 0) {
+        const currentHex =
+          frontier[Math.floor(Math.random() * frontier.length)];
+        const directions = this.getHexDirections(
+          currentHex.col,
+          currentHex.row
+        );
+        let foundNeighbor = false;
+
+        // Shuffle directions for variety
+        const shuffled = [...directions].sort(() => Math.random() - 0.5);
+
+        for (let dir of shuffled) {
+          const neighborCol = currentHex.col + dir.col;
+          const neighborRow = currentHex.row + dir.row;
+          const key = `${neighborCol},${neighborRow}`;
+
+          if (availableLand.has(key)) {
+            const neighbor = hexGrid.find(
+              (h) => h.col === neighborCol && h.row === neighborRow
+            );
+            if (neighbor && !neighbor.isOcean) {
+              neighbor.territoryId = territoryId;
+              territoryHexes.push(neighbor);
+              availableLand.delete(key);
+              frontier.push(neighbor);
+              foundNeighbor = true;
+              break;
+            }
+          }
+        }
+
+        // Remove from frontier if can't expand
+        if (!foundNeighbor) {
+          const idx = frontier.findIndex(
+            (h) => h.col === currentHex.col && h.row === currentHex.row
+          );
+          if (idx !== -1) frontier.splice(idx, 1);
+        }
+      }
+
+      // Create territory object
+      const centerHex = territoryHexes[Math.floor(territoryHexes.length / 2)];
+
+      territories.push({
+        id: territoryId,
+        playerId: null,
+        dice: 1,
+        col: centerHex.col,
+        row: centerHex.row,
+        q: centerHex.q,
+        r: centerHex.r,
+        hexes: territoryHexes.length,
+        neighbors: [],
+      });
+
+      territoryId++;
+    }
+
+    // Convert any remaining unassigned land hexes to ocean
+    // This ensures all territories remain contiguous (no fragmentation)
+    const remaining = [...availableLand];
+    for (let key of remaining) {
+      const [col, row] = key.split(",").map(Number);
+      const hex = hexGrid.find((h) => h.col === col && h.row === row);
+
+      if (hex && !hex.isOcean && hex.territoryId === null) {
+        hex.isOcean = true;
+      }
     }
 
     return territories;
   }
 
   /**
+   * Validates territories and ensures none are isolated
+   */
+  validateAndFixTerritories(territories, hexGrid) {
+    const validated = [];
+
+    for (let territory of territories) {
+      const territoryHexes = hexGrid.filter(
+        (h) => h.territoryId === territory.id && !h.isOcean
+      );
+
+      // Check if territory has at least one neighbor territory
+      let hasNeighbor = false;
+
+      for (let hex of territoryHexes) {
+        const directions = this.getHexDirections(hex.col, hex.row);
+
+        for (let dir of directions) {
+          const neighborCol = hex.col + dir.col;
+          const neighborRow = hex.row + dir.row;
+          const neighbor = hexGrid.find(
+            (h) => h.col === neighborCol && h.row === neighborRow
+          );
+
+          if (
+            neighbor &&
+            !neighbor.isOcean &&
+            neighbor.territoryId !== null &&
+            neighbor.territoryId !== territory.id
+          ) {
+            hasNeighbor = true;
+            break;
+          }
+        }
+
+        if (hasNeighbor) break;
+      }
+
+      if (hasNeighbor) {
+        validated.push(territory);
+      } else {
+        // Convert isolated territory back to ocean
+        console.log(`Removing isolated territory ${territory.id}`);
+        for (let hex of territoryHexes) {
+          hex.territoryId = null;
+          hex.isOcean = true;
+        }
+      }
+    }
+
+    return validated;
+  }
+
+  /**
    * Distributes territories randomly among players
-   * For first round, last 3 players receive bonus dice
+   * Bonus dice rules:
+   * - 2-4 players: No bonus
+   * - 5-7 players: Last 2 players get +1 die
+   * - 8+ players: Last 3 players get +1 die
    */
   distributeInitialTerritories() {
-    const activePlayers = this.turnOrder.map(
-      (id) => this.players.filter((p) => p.id === id)[0]
+    const activePlayers = this.turnOrder.map((id) =>
+      this.players.array().find((p) => p.id === id)
     );
     const shuffledTerritories = [...this.territories].sort(
       () => Math.random() - 0.5
     );
 
-    // Determine which players get first-round bonus (last 3 in turn order)
+    // Determine which players get first-round bonus based on player count
     const numPlayers = activePlayers.length;
     const bonusPlayerIds = new Set();
-    if (numPlayers >= 4) {
-      // Last 3 players get bonus
+
+    if (numPlayers >= 8) {
+      // Last 3 players get bonus for 8+ player games
       for (let i = numPlayers - 3; i < numPlayers; i++) {
         bonusPlayerIds.add(activePlayers[i].id);
       }
+    } else if (numPlayers >= 5) {
+      // Last 2 players get bonus for 5-7 player games
+      for (let i = numPlayers - 2; i < numPlayers; i++) {
+        bonusPlayerIds.add(activePlayers[i].id);
+      }
     }
+    // 2-4 players: no bonus
 
     let playerIndex = 0;
     for (let territory of shuffledTerritories) {
@@ -164,9 +476,9 @@ module.exports = class DiceWarsGame extends Game {
 
       // Base random dice: 1-3
       const baseDice = Math.floor(Math.random() * 3) + 1;
-      // Add 1 bonus die for last 3 players in first round
+      // Add 1 bonus die for eligible players based on player count
       const bonusDice = bonusPlayerIds.has(player.id) ? 1 : 0;
-      territory.dice = baseDice + bonusDice;
+      territory.dice = Math.min(baseDice + bonusDice, this.maxDicePerTerritory);
 
       playerIndex++;
     }
@@ -185,7 +497,9 @@ module.exports = class DiceWarsGame extends Game {
     this.territories = this.generateHexMap();
 
     // Randomize turn order
-    const activePlayers = this.players.filter((p) => p.role.name === "General");
+    const activePlayers = this.players
+      .array()
+      .filter((p) => p.role.name === "General");
     const shuffledPlayers = [...activePlayers].sort(() => Math.random() - 0.5);
     this.turnOrder = shuffledPlayers.map((p) => p.id);
     this.turnIndex = 0;
@@ -199,14 +513,14 @@ module.exports = class DiceWarsGame extends Game {
       this.currentTurnPlayerId = this.turnOrder[0];
       this.hasAttacked = false;
 
-      const firstPlayer = this.players.filter(
-        (p) => p.id === this.currentTurnPlayerId
-      )[0];
+      const firstPlayer = this.players
+        .array()
+        .find((p) => p.id === this.currentTurnPlayerId);
       //this.sendAlert(`Round 1, Turn 1: ${firstPlayer.name}'s turn!`);
 
       // Show turn order
       const playerNames = this.turnOrder.map(
-        (id) => this.players.filter((p) => p.id === id)[0].name
+        (id) => this.players.array().find((p) => p.id === id).name
       );
       //this.sendAlert(`Turn order: ${playerNames.join(" → ")}`);
     }
@@ -215,14 +529,48 @@ module.exports = class DiceWarsGame extends Game {
   }
 
   /**
+   * Override getStateInfo to include game state in extraInfo
+   * This allows the history system to track game progression
+   */
+  getStateInfo(state) {
+    const info = super.getStateInfo(state);
+
+    // Add game state to extraInfo so it's stored in history
+    if (this.gameStarted) {
+      info.extraInfo = {
+        territories: this.territories,
+        hexGrid: this.hexGrid,
+        gridWidth: this.gridWidth,
+        gridHeight: this.gridHeight,
+        currentTurnPlayerId: this.currentTurnPlayerId,
+        turnNumber: this.turnNumber,
+        roundNumber: this.roundNumber,
+        turnOrder: this.turnOrder,
+        hasAttacked: this.hasAttacked,
+        playerColors: this.getPlayerColors(),
+        surplusDice: this.surplusDice,
+        maxDicePerTerritory: this.maxDicePerTerritory,
+      };
+    }
+
+    return info;
+  }
+
+  /**
    * Sends the current game state to all players
    */
   sendGameState() {
     // Don't send game state until game has started
-    if (!this.gameStarted) return;
+    if (!this.gameStarted) {
+      console.log("Not sending game state - game not started");
+      return;
+    }
 
-    this.broadcast("gameState", {
+    const state = {
       territories: this.territories,
+      hexGrid: this.hexGrid,
+      gridWidth: this.gridWidth,
+      gridHeight: this.gridHeight,
       currentTurnPlayerId: this.currentTurnPlayerId,
       turnNumber: this.turnNumber,
       roundNumber: this.roundNumber,
@@ -231,12 +579,17 @@ module.exports = class DiceWarsGame extends Game {
       playerColors: this.getPlayerColors(),
       surplusDice: this.surplusDice,
       maxDicePerTerritory: this.maxDicePerTerritory,
-    });
+    };
+
+    console.log(
+      "Broadcasting game state - Turn:",
+      this.turnNumber,
+      "Current player:",
+      this.currentTurnPlayerId
+    );
+    this.broadcast("gameState", state);
   }
 
-  /**
-   * Gets color mapping for each player
-   */
   getPlayerColors() {
     const colors = [
       "#FF5555",
@@ -247,8 +600,12 @@ module.exports = class DiceWarsGame extends Game {
       "#55FFFF",
       "#FFA500",
       "#A020F0",
+      "#00AA00",
+      "#AA5500",
     ];
-    const activePlayers = this.players.filter((p) => p.role.name === "General");
+    const activePlayers = this.players
+      .array()
+      .filter((p) => p.role.name === "General");
     const colorMap = {};
     activePlayers.forEach((player, index) => {
       colorMap[player.id] = colors[index % colors.length];
@@ -256,12 +613,6 @@ module.exports = class DiceWarsGame extends Game {
     return colorMap;
   }
 
-  /**
-   * Attempts an attack from one territory to another
-   * @param {string} playerId - ID of attacking player
-   * @param {number} fromId - ID of attacking territory
-   * @param {number} toId - ID of defending territory
-   */
   attack(playerId, fromId, toId) {
     // Validate it's the player's turn
     if (playerId !== this.currentTurnPlayerId) {
@@ -300,6 +651,11 @@ module.exports = class DiceWarsGame extends Game {
     const attackTotal = attackRoll.reduce((a, b) => a + b, 0);
     const defenseTotal = defenseRoll.reduce((a, b) => a + b, 0);
 
+    const attacker = this.players.array().find((p) => p.id === playerId);
+    const defender = this.players
+      .array()
+      .find((p) => p.id === toTerritory.playerId);
+
     let result;
     if (attackTotal > defenseTotal) {
       // Attacker wins - transfer dice
@@ -324,6 +680,18 @@ module.exports = class DiceWarsGame extends Game {
         defenderId,
       };
 
+      // Send chat message for successful attack
+      this.sendAlert(
+        `${attacker.name} attacked ${defender.name}! ` +
+          `Attacker rolled ${this.formatDiceRoll(
+            attackRoll
+          )} = ${attackTotal}. ` +
+          `Defender rolled ${this.formatDiceRoll(
+            defenseRoll
+          )} = ${defenseTotal}. ` +
+          `Attack successful!`
+      );
+
       // Check if defender is eliminated
       this.checkElimination(defenderId);
     } else {
@@ -339,23 +707,31 @@ module.exports = class DiceWarsGame extends Game {
         fromId,
         toId,
       };
+
+      // Send chat message for failed attack
+      this.sendAlert(
+        `${attacker.name} attacked ${defender.name}! ` +
+          `Attacker rolled ${this.formatDiceRoll(
+            attackRoll
+          )} = ${attackTotal}. ` +
+          `Defender rolled ${this.formatDiceRoll(
+            defenseRoll
+          )} = ${defenseTotal}. ` +
+          `Attack failed!`
+      );
     }
 
     this.hasAttacked = true;
-    this.sendGameState();
-    this.broadcast("attackResult", result);
 
-    // Check for winner
-    this.checkWinCondition();
+    // Update history with new game state
+    const stateInfo = this.getStateInfo();
+    this.addStateExtraInfoToHistories(stateInfo.extraInfo);
+
+    this.sendGameState();
 
     return result;
   }
 
-  /**
-   * Rolls n six-sided dice
-   * @param {number} n - Number of dice to roll
-   * @returns {number[]} - Array of dice results
-   */
   rollDice(n) {
     const rolls = [];
     for (let i = 0; i < n; i++) {
@@ -364,48 +740,113 @@ module.exports = class DiceWarsGame extends Game {
     return rolls;
   }
 
-  /**
-   * Checks if a player has been eliminated
-   * @param {string} playerId - Player to check
-   */
+  diceToEmote(value) {
+    return `:dice${value}:`;
+  }
+
+  formatDiceRoll(rolls) {
+    return rolls.map((d) => this.diceToEmote(d)).join(" ");
+  }
+
   checkElimination(playerId) {
     const playerTerritories = this.territories.filter(
       (t) => t.playerId === playerId
     );
     if (playerTerritories.length === 0) {
-      const player = this.players.find((p) => p.id === playerId);
-      if (player) {
-        player.kill();
-        this.sendAlert(`${player.name} has been eliminated!`);
+      const player = this.players.array().find((p) => p.id === playerId);
+      if (player && player.alive) {
+        player.kill("conquest");
+
+        // Check if game should end
+        this.checkGameEnd();
       }
     }
   }
 
   /**
-   * Ends the current player's turn
-   * @param {string} playerId - ID of player ending turn
+   * Checks win conditions for Dice Wars
+   * @returns {Array} [finished, winners] - Whether game is finished and Winners object
    */
+  checkWinConditions() {
+    const Queue = require("../../core/Queue");
+    const Winners = require("../../core/Winners");
+
+    let finished = false;
+    const winners = new Winners(this);
+    const aliveCount = this.alivePlayers().length;
+    const winQueue = new Queue();
+
+    // Collect win checks from all player roles
+    for (let player of this.players) {
+      if (player.role && player.role.winCheck) {
+        winQueue.enqueue(player.role.winCheck);
+      }
+    }
+
+    // Execute all win checks
+    for (let winCheck of winQueue) {
+      winCheck.check({}, winners, aliveCount);
+    }
+
+    // Game is finished if someone won
+    if (winners.groupAmt() > 0) {
+      finished = true;
+    } else if (aliveCount === 0) {
+      // No one alive = draw
+      winners.addGroup("No one");
+      finished = true;
+    }
+
+    winners.determinePlayers();
+    return [finished, winners];
+  }
+
   endTurn(playerId) {
     if (playerId !== this.currentTurnPlayerId) {
+      console.log(
+        "Not your turn! Current turn:",
+        this.currentTurnPlayerId,
+        "Attempted:",
+        playerId
+      );
       return { success: false, message: "Not your turn!" };
     }
 
-    // Award bonus dice based on largest connected region
-    this.awardBonusDice(playerId);
+    console.log("Ending turn for", playerId);
+
+    // Check if game should end before advancing turn
+    if (this.checkGameEnd()) {
+      return { success: true };
+    }
 
     // Move to next player in turn order
     this.turnIndex++;
 
     // Filter turn order to only include alive players
     const aliveTurnOrder = this.turnOrder.filter((id) => {
-      const player = this.players.find((p) => p.id === id);
+      const player = this.players.array().find((p) => p.id === id);
       return player && player.alive;
     });
 
+    console.log(
+      "Turn index:",
+      this.turnIndex,
+      "Alive players:",
+      aliveTurnOrder.length
+    );
+
     // Check if round is complete
-    if (this.turnIndex >= aliveTurnOrder.length) {
+    const isRoundComplete = this.turnIndex >= aliveTurnOrder.length;
+    if (isRoundComplete) {
       this.turnIndex = 0;
       this.roundNumber++;
+      console.log(
+        "Round complete, resetting to index 0, new round:",
+        this.roundNumber
+      );
+
+      // Award bonus dice to all players at the end of the round
+      this.awardBonusDiceToAllPlayers();
     }
 
     // Update turn order if players have been eliminated
@@ -413,13 +854,29 @@ module.exports = class DiceWarsGame extends Game {
       this.turnOrder = aliveTurnOrder;
     }
 
+    // Check again if game should end after turn order update
+    if (this.checkGameEnd()) {
+      return { success: true };
+    }
+
     this.currentTurnPlayerId = this.turnOrder[this.turnIndex];
     this.hasAttacked = false;
     this.turnNumber++;
 
-    const currentPlayer = this.players.find(
-      (p) => p.id === this.currentTurnPlayerId
+    const currentPlayer = this.players
+      .array()
+      .find((p) => p.id === this.currentTurnPlayerId);
+
+    console.log(
+      "New current turn player:",
+      this.currentTurnPlayerId,
+      currentPlayer?.name
     );
+
+    // Update history with new turn state
+    const stateInfo = this.getStateInfo();
+    this.addStateExtraInfoToHistories(stateInfo.extraInfo);
+
     this.sendGameState();
     this.sendAlert(
       `Round ${this.roundNumber}, Turn ${this.turnNumber}: ${currentPlayer.name}'s turn`
@@ -428,11 +885,6 @@ module.exports = class DiceWarsGame extends Game {
     return { success: true };
   }
 
-  /**
-   * Awards bonus dice based on largest connected territory region
-   * Implements surplus dice storage system
-   * @param {string} playerId - Player to award dice to
-   */
   awardBonusDice(playerId) {
     const playerTerritories = this.territories.filter(
       (t) => t.playerId === playerId
@@ -472,7 +924,7 @@ module.exports = class DiceWarsGame extends Game {
     this.surplusDice[playerId] = Math.min(surplusDice, maxSurplus);
 
     if (bonusDice > 0) {
-      const player = this.players.find((p) => p.id === playerId);
+      const player = this.players.array().find((p) => p.id === playerId);
       let message = `${player.name} received ${bonusDice} bonus dice`;
       if (distributedDice < bonusDice) {
         message += ` (${distributedDice} placed, ${this.surplusDice[playerId]} stored)`;
@@ -482,10 +934,18 @@ module.exports = class DiceWarsGame extends Game {
   }
 
   /**
-   * Finds the largest connected region of territories for a player
-   * @param {string} playerId - Player ID
-   * @returns {number[]} - Array of territory IDs in largest region
+   * Awards bonus dice to all players at the end of a round
    */
+  awardBonusDiceToAllPlayers() {
+    // Award dice to all alive players
+    for (let playerId of this.turnOrder) {
+      const player = this.players.array().find((p) => p.id === playerId);
+      if (player && player.alive) {
+        this.awardBonusDice(playerId);
+      }
+    }
+  }
+
   findLargestConnectedRegion(playerId) {
     const playerTerritories = this.territories.filter(
       (t) => t.playerId === playerId
@@ -505,13 +965,6 @@ module.exports = class DiceWarsGame extends Game {
     return largestRegion;
   }
 
-  /**
-   * Explores a connected region using BFS
-   * @param {number} startId - Starting territory ID
-   * @param {string} playerId - Player ID
-   * @param {Set} visited - Set of visited territory IDs
-   * @returns {number[]} - Array of territory IDs in this region
-   */
   exploreRegion(startId, playerId, visited) {
     const region = [];
     const queue = [startId];
@@ -535,77 +988,69 @@ module.exports = class DiceWarsGame extends Game {
   }
 
   /**
-   * Checks if there's a winner
-   */
-  checkWinCondition() {
-    const activePlayers = this.players.filter(
-      (p) => p.role.name === "General" && p.alive
-    );
-
-    if (activePlayers.length === 1) {
-      const winners = new Winners();
-      winners.addPlayer(activePlayers[0], "DiceWars");
-      this.endGame(winners);
-    }
-  }
-
-  /**
    * Starts the game; called by main game flow.
    */
   start() {
     super.start();
   }
 
-  /**
-   * Processes when a player leaves the game.
-   * @param {Player} player
-   */
   async playerLeave(player) {
-    // Transfer player's territories to neutral or eliminate them
-    for (let territory of this.territories) {
-      if (territory.playerId === player.id) {
-        territory.playerId = null;
-        territory.dice = 1;
-      }
-    }
-
-    // Remove player from turn order
-    const playerIndex = this.turnOrder.indexOf(player.id);
-    if (playerIndex !== -1) {
-      this.turnOrder.splice(playerIndex, 1);
-
-      // Adjust turn index if needed
-      if (this.turnIndex > playerIndex) {
-        this.turnIndex--;
-      } else if (
-        this.turnIndex >= this.turnOrder.length &&
-        this.turnOrder.length > 0
-      ) {
-        this.turnIndex = 0;
-      }
-    }
-
-    // If it was this player's turn, move to next player
-    if (this.currentTurnPlayerId === player.id && this.turnOrder.length > 0) {
-      this.currentTurnPlayerId =
-        this.turnOrder[this.turnIndex % this.turnOrder.length];
-      const nextPlayer = this.players.filter(
-        (p) => p.id === this.currentTurnPlayerId
-      )[0];
-      if (nextPlayer) {
-        this.sendAlert(`${nextPlayer.name}'s turn (after ${player.name} left)`);
-      }
-    }
-
-    this.sendGameState();
     await super.playerLeave(player);
-    this.checkWinCondition();
+
+    if (this.started && !this.finished) {
+      // Transfer player's territories to neutral
+      for (let territory of this.territories) {
+        if (territory.playerId === player.id) {
+          territory.playerId = null;
+          territory.dice = 1;
+        }
+      }
+
+      // Remove player from turn order
+      const playerIndex = this.turnOrder.indexOf(player.id);
+      if (playerIndex !== -1) {
+        this.turnOrder.splice(playerIndex, 1);
+
+        // Adjust turn index if needed
+        if (this.turnIndex > playerIndex) {
+          this.turnIndex--;
+        } else if (
+          this.turnIndex >= this.turnOrder.length &&
+          this.turnOrder.length > 0
+        ) {
+          this.turnIndex = 0;
+        }
+      }
+
+      // If it was this player's turn, move to next player
+      if (this.currentTurnPlayerId === player.id && this.turnOrder.length > 0) {
+        this.currentTurnPlayerId =
+          this.turnOrder[this.turnIndex % this.turnOrder.length];
+        const nextPlayer = this.players
+          .array()
+          .find((p) => p.id === this.currentTurnPlayerId);
+        if (nextPlayer) {
+          this.sendAlert(
+            `${nextPlayer.name}'s turn (after ${player.name} left)`
+          );
+        }
+      }
+
+      const Action = require("./Action");
+      let action = new Action({
+        actor: player,
+        target: player,
+        game: this,
+        run: function () {
+          this.target.kill("leave", this.actor, true);
+        },
+      });
+
+      this.instantAction(action);
+      this.sendGameState();
+    }
   }
 
-  /**
-   * Ends the game with the given winners.
-   * @param {Winners} winners
-   */
   async endGame(winners) {
     await super.endGame(winners);
   }
