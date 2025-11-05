@@ -17,8 +17,6 @@ import { youtubeRegex } from "components/Basic";
 const soundcloudRegex = /^https?:\/\/(www\.)?soundcloud\.com\/[^\/]+\/[^\/\?]+/;
 const spotifyRegex =
   /^https?:\/\/open\.spotify\.com\/(track|album|playlist|artist)\/[a-zA-Z0-9]+/;
-const bandcampRegex =
-  /^https?:\/\/([^\/]+\.)?bandcamp\.com\/(track|album)\/[^\/\?]+/;
 const vimeoRegex = /^https?:\/\/(www\.)?vimeo\.com\/(\d+)/;
 const invidiousRegex =
   /^https?:\/\/(www\.)?(invidious\.io|yewtu\.be|invidious\.flokinet\.to|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.fdn\.fr|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt)\/watch\?v=([a-zA-Z0-9_-]{11})/;
@@ -98,67 +96,6 @@ export function SpotifyEmbed(props) {
   }
 }
 
-export function BandcampEmbed(props) {
-  const mediaUrl = props.mediaUrl;
-  const [embedHtml, setEmbedHtml] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    if (mediaUrl) {
-      // Use our backend endpoint to get Bandcamp oEmbed data
-      axios
-        .post("/api/user/bandcamp/oembed", { url: mediaUrl })
-        .then((response) => {
-          if (response.data.html) {
-            setEmbedHtml(response.data.html);
-          } else {
-            setError(true);
-          }
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error("Error fetching Bandcamp oEmbed:", err);
-          setError(true);
-          setLoading(false);
-        });
-    }
-  }, [mediaUrl]);
-
-  if (loading) {
-    return (
-      <div id="profile-video" className="video-responsive-generic">
-        <div style={{ padding: "20px", textAlign: "center" }}>
-          Loading Bandcamp player...
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !embedHtml) {
-    // Fallback to simple iframe with embed parameters
-    const embedUrl = `${mediaUrl}?size=small&bgcol=ffffff&linkcol=0687f5&transparent=true`;
-    return (
-      <div id="profile-video" className="video-responsive-generic">
-        <iframe
-          style={{ border: 0, width: "100%", height: "42px" }}
-          src={embedUrl}
-          seamless
-        >
-          <a href={mediaUrl}>View on Bandcamp</a>
-        </iframe>
-      </div>
-    );
-  }
-
-  // Use the HTML returned by Bandcamp's oEmbed API
-  return (
-    <div id="profile-video" className="video-responsive-generic">
-      <div dangerouslySetInnerHTML={{ __html: embedHtml }} />
-    </div>
-  );
-}
-
 export function VimeoEmbed(props) {
   const mediaUrl = props.mediaUrl;
   const autoplay = props.autoplay ? 1 : 0;
@@ -232,9 +169,6 @@ export function MediaEmbed(props) {
     if (mediaUrl.match(spotifyRegex)) {
       return "spotify";
     }
-    if (mediaUrl.match(bandcampRegex)) {
-      return "bandcamp";
-    }
     if (mediaUrl.match(vimeoRegex)) {
       return "vimeo";
     }
@@ -306,8 +240,6 @@ export function MediaEmbed(props) {
       return <SoundCloudEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
     case "spotify":
       return <SpotifyEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
-    case "bandcamp":
-      return <BandcampEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
     case "vimeo":
       return <VimeoEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
     case "invidious":

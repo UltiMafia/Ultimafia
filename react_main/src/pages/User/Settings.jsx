@@ -206,7 +206,7 @@ export default function Settings() {
         saveBtnOnClick: onMediaSave,
         default: "",
         extraInfo:
-          "Supports YouTube, SoundCloud, Spotify, Bandcamp, Vimeo, Invidious, and direct media files (mp3, mp4, webm, ogg)",
+          "Supports YouTube, SoundCloud, Spotify, Vimeo, Invidious, and direct media files (mp3, mp4, webm, ogg)",
       },
       {
         label: "Autoplay Media",
