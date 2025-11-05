@@ -204,7 +204,8 @@ export default function Leaderboard() {
                     }
                     onClick={() => handleSort("dailyChallengesCompleted")}
                   >
-                    <img src={DAILY_ICON} alt="Daily Challenges" /> Daily Challenges
+                    <img src={DAILY_ICON} alt="Daily Challenges" /> Daily
+                    Challenges
                   </TableSortLabel>
                 </TableCell>
               </TableRow>

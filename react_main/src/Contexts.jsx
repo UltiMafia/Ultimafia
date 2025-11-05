@@ -160,39 +160,56 @@ export function UserProvider({ children, setUserLoading }) {
       }
     }
     if (user.settings && user.settings.iconFilter) {
-      const ICON_FILTER_CLASS_LIST = ".role, .collapsIconWrapper, .expandIconWrapper, .game-icon, .gamesetting, .closed-role-count, .game-state-icon, .um-coin, img[alt=Kudos], img[alt=Karma], img[alt=Achievements], img[alt=Achievements], img[alt=\"Daily Challenges\"], img[alt=Fortune], img[alt=Misfortune]";
+      const ICON_FILTER_CLASS_LIST =
+        '.role, .collapsIconWrapper, .expandIconWrapper, .game-icon, .gamesetting, .closed-role-count, .game-state-icon, .um-coin, img[alt=Kudos], img[alt=Karma], img[alt=Achievements], img[alt=Achievements], img[alt="Daily Challenges"], img[alt=Fortune], img[alt=Misfortune]';
       const ICON_FILTER_CLASS_LIST_WITH_FA = `${ICON_FILTER_CLASS_LIST}, .fas`;
-      switch(user.settings.iconFilter) {
+      switch (user.settings.iconFilter) {
         case "none": {
           setIconFilter({});
           break;
         }
         case "highContrast": {
-          setIconFilter({ [ICON_FILTER_CLASS_LIST_WITH_FA]: {filter: "contrast(200%)"} });
+          setIconFilter({
+            [ICON_FILTER_CLASS_LIST_WITH_FA]: { filter: "contrast(200%)" },
+          });
           break;
         }
         case "sepia": {
-          setIconFilter({ [ICON_FILTER_CLASS_LIST_WITH_FA]: {filter: "sepia(60%)"} });
+          setIconFilter({
+            [ICON_FILTER_CLASS_LIST_WITH_FA]: { filter: "sepia(60%)" },
+          });
           break;
         }
         case "inverted": {
-          setIconFilter({ [ICON_FILTER_CLASS_LIST_WITH_FA]: {filter: "invert(100%)"} });
+          setIconFilter({
+            [ICON_FILTER_CLASS_LIST_WITH_FA]: { filter: "invert(100%)" },
+          });
           break;
         }
         case "grayscale": {
-          setIconFilter({ [ICON_FILTER_CLASS_LIST_WITH_FA]: {filter: "grayscale(100%)"} });
+          setIconFilter({
+            [ICON_FILTER_CLASS_LIST_WITH_FA]: { filter: "grayscale(100%)" },
+          });
           break;
         }
         case "colorful": {
-          setIconFilter({ [ICON_FILTER_CLASS_LIST_WITH_FA]: {filter: "saturate(200%)"} });
+          setIconFilter({
+            [ICON_FILTER_CLASS_LIST_WITH_FA]: { filter: "saturate(200%)" },
+          });
           break;
         }
         case "elevated": {
-          setIconFilter({ [ICON_FILTER_CLASS_LIST_WITH_FA]: {filter: "drop-shadow(.04rem .04rem 0 #000)"} });
+          setIconFilter({
+            [ICON_FILTER_CLASS_LIST_WITH_FA]: {
+              filter: "drop-shadow(.04rem .04rem 0 #000)",
+            },
+          });
           break;
         }
         case "upsideDown": {
-          setIconFilter({ [ICON_FILTER_CLASS_LIST_WITH_FA]: {transform: "scaleY(-1)"} });
+          setIconFilter({
+            [ICON_FILTER_CLASS_LIST_WITH_FA]: { transform: "scaleY(-1)" },
+          });
           break;
         }
         case "hallucination": {
@@ -222,12 +239,17 @@ export function UserProvider({ children, setUserLoading }) {
                 filter: "hue-rotate(240deg)",
                 transformOrigin: "bottom right",
               },
-            }
+            },
           });
           break;
         }
         case "green": {
-          setIconFilter({ [ICON_FILTER_CLASS_LIST_WITH_FA]: {filter: "sepia(1) contrast(200%) saturate(400%) hue-rotate(80deg)"} });
+          setIconFilter({
+            [ICON_FILTER_CLASS_LIST_WITH_FA]: {
+              filter:
+                "sepia(1) contrast(200%) saturate(400%) hue-rotate(80deg)",
+            },
+          });
           break;
         }
         default: {
@@ -240,12 +262,14 @@ export function UserProvider({ children, setUserLoading }) {
 
   return (
     <>
-      <GlobalStyles styles={{
-        html: {
-          fontSize: dpiCorrection,
-        },
-        ...iconFilter,
-      }}/>
+      <GlobalStyles
+        styles={{
+          html: {
+            fontSize: dpiCorrection,
+          },
+          ...iconFilter,
+        }}
+      />
       <UserContext.Provider value={userVal}>{children}</UserContext.Provider>
     </>
   );
@@ -412,7 +436,11 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
     });
   }, []);
 
-  const ready = siteInfoVal.roles && siteInfoVal.rolesRaw && siteInfoVal.modifiers && siteInfoVal.gamesettings;
+  const ready =
+    siteInfoVal.roles &&
+    siteInfoVal.rolesRaw &&
+    siteInfoVal.modifiers &&
+    siteInfoVal.gamesettings;
 
   return (
     <SiteInfoContext.Provider value={siteInfoVal}>
