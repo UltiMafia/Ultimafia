@@ -36,7 +36,7 @@ function spoilerify(children) {
   function transform(nodeChildren) {
     return nodeChildren.flatMap((child, idx) => {
       if (typeof child !== "string") return child;
-      
+
       const parts = [];
       const regex = /\|\|(.+?)\|\|/g;
       let lastIndex = 0;
@@ -49,9 +49,7 @@ function spoilerify(children) {
 
         // Add the spoiler component
         parts.push(
-          <Spoiler key={`spoiler-${idx}-${match.index}`}>
-            {match[1]}
-          </Spoiler>
+          <Spoiler key={`spoiler-${idx}-${match.index}`}>{match[1]}</Spoiler>
         );
 
         lastIndex = regex.lastIndex;
@@ -76,7 +74,7 @@ function colorify(children) {
   function transform(nodeChildren) {
     return nodeChildren.flatMap((child, idx) => {
       if (typeof child !== "string") return child;
-      
+
       const parts = [];
       const regex = /\{color:([^}]+)\}(.+?)\{\/color\}/g;
       let lastIndex = 0;
@@ -88,11 +86,15 @@ function colorify(children) {
 
         const colorValue = match[1].trim();
         // Validate hex color code: #RGB, #RRGGBB, or #RRGGBBAA
-        const isValidHex = /^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(colorValue);
+        const isValidHex =
+          /^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/.test(colorValue);
 
         if (isValidHex) {
           parts.push(
-            <span key={`color-${idx}-${match.index}`} style={{ color: colorValue }}>
+            <span
+              key={`color-${idx}-${match.index}`}
+              style={{ color: colorValue }}
+            >
               {match[2]}
             </span>
           );
@@ -122,7 +124,7 @@ function sizeify(children) {
   function transform(nodeChildren) {
     return nodeChildren.flatMap((child, idx) => {
       if (typeof child !== "string") return child;
-      
+
       const parts = [];
       const regex = /\{size:([^}]+)\}(.+?)\{\/size\}/g;
       let lastIndex = 0;
@@ -133,14 +135,17 @@ function sizeify(children) {
         if (before) parts.push(before);
 
         // Parse the size value and remove 'px' if present
-        const sizeValue = match[1].trim().replace('px', '');
+        const sizeValue = match[1].trim().replace("px", "");
         const sizeNum = parseInt(sizeValue, 10);
 
         // Validate and clamp between 8 and 72
         if (!isNaN(sizeNum)) {
           const clampedSize = Math.max(8, Math.min(72, sizeNum));
           parts.push(
-            <span key={`size-${idx}-${match.index}`} style={{ fontSize: `${clampedSize}px` }}>
+            <span
+              key={`size-${idx}-${match.index}`}
+              style={{ fontSize: `${clampedSize}px` }}
+            >
               {match[2]}
             </span>
           );
@@ -169,7 +174,7 @@ function centerify(children) {
   function transform(nodeChildren) {
     return nodeChildren.flatMap((child, idx) => {
       if (typeof child !== "string") return child;
-      
+
       const parts = [];
       const regex = /\{center\}(.+?)\{\/center\}/g;
       let lastIndex = 0;
@@ -180,7 +185,10 @@ function centerify(children) {
         if (before) parts.push(before);
 
         parts.push(
-          <div key={`center-${idx}-${match.index}`} style={{ textAlign: 'center' }}>
+          <div
+            key={`center-${idx}-${match.index}`}
+            style={{ textAlign: "center" }}
+          >
             {match[1]}
           </div>
         );
@@ -270,13 +278,7 @@ export default function CustomMarkdown(props) {
             <p {...rest}>
               {roleifyMarkdown(
                 emotify(
-                  colorify(
-                    sizeify(
-                      centerify(
-                        spoilerify(properties.children)
-                      )
-                    )
-                  )
+                  colorify(sizeify(centerify(spoilerify(properties.children))))
                 ),
                 siteInfo
               )}
