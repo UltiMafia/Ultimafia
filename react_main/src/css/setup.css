@@ -121,3 +121,7 @@
 .game-icon.Connect-Four {
   background-image: url("/src/images/game_icons/ConnectFour.png");
 }
+
+.game-icon.Dice-Wars {
+  background-image: url("/src/images/game_icons/DiceWars.png");
+}
