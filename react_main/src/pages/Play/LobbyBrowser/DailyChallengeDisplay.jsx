@@ -60,6 +60,7 @@ export const DailyChallenges = () => {
             {reward}
           </Typography>
           <img
+            className="um-coin"
             src={umcoin}
             alt="Coin Icon"
             style={{

@@ -20,6 +20,6 @@ export default function GameIcon(props) {
   const size = props.size;
 
   return (
-    <img src={gamesIcons[gameType]} alt={gameType} width={size} height={size} />
+    <img className="game-icon" src={gamesIcons[gameType]} alt={gameType} width={size} height={size} />
   );
 }

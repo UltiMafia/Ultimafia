@@ -156,6 +156,14 @@ const shopItems = [
     limit: 1,
     onBuy: async function (userId) {},
   },
+  {
+    name: "Icon Filter",
+    desc: "Unlock the ability to apply a filter to all icons on the site",
+    key: "iconFilter",
+    price: 20,
+    limit: 1,
+    onBuy: async function (userId) {},
+  },
 ];
 
 router.get("/info", async function (req, res) {

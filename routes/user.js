@@ -665,14 +665,19 @@ router.get("/:id/friends", async function (req, res) {
         friend = friend.toJSON();
 
         // Get vanity URL for friend
-        const vanityUrl = await models.VanityUrl.findOne({
-          userId: friend.friend.id,
+        const vanityUrlObj = await models.VanityUrl.findOne({
+          userId: friend.friendId,
         }).select("url -_id");
+
+        let vanityUrl = null;
+        if (vanityUrlObj) {
+          vanityUrl = vanityUrlObj.url;
+        }
 
         return {
           ...friend.friend,
           lastActive: friend.lastActive,
-          vanityUrl: vanityUrl?.url,
+          vanityUrl: vanityUrl,
         };
       })
     );
@@ -1154,6 +1159,12 @@ router.post("/settings/update", async function (req, res) {
     if (prop == "avatarShape" && !itemsOwned.avatarShape) {
       res.status(500);
       res.send("You must purchase Square with coins from the Shop.");
+      return;
+    }
+
+    if (prop == "iconFilter" && !itemsOwned.iconFilter) {
+      res.status(500);
+      res.send("You must purchase Icon Filter with coins from the Shop.");
       return;
     }
 

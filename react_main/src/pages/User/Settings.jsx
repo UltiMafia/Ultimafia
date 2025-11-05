@@ -109,6 +109,54 @@ export default function Settings() {
       ref: "expHighDpiCorrection",
       type: "boolean",
     },
+    {
+      label: "Icon Filter",
+      ref: "iconFilter",
+      type: "select",
+      options: [
+        {
+          label: "None",
+          value: "none",
+        },
+        {
+          label: "High Contrast",
+          value: "highContrast",
+        },
+        {
+          label: "Elevated",
+          value: "elevated",
+        },
+        {
+          label: "Sepia",
+          value: "sepia",
+        },
+        {
+          label: "Green",
+          value: "green",
+        },
+        {
+          label: "Inverted",
+          value: "inverted",
+        },
+        {
+          label: "Grayscale",
+          value: "grayscale",
+        },
+        {
+          label: "Colorful",
+          value: "colorful",
+        },
+        {
+          label: "Upside Down",
+          value: "upsideDown",
+        },
+        {
+          label: "Hallucination",
+          value: "hallucination",
+        },
+      ],
+      disabled: (deps) => !deps.user.itemsOwned.iconFilter,
+    },
   ]);
 
   const [profileFields, updateProfileFields] = useForm(

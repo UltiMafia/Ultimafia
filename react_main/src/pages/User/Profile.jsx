@@ -985,7 +985,7 @@ export default function Profile() {
                       <img
                         src={KUDOS_ICON}
                         style={{ marginRight: "12px" }}
-                        title="Kudos"
+                        alt="Kudos"
                       />
                       {kudos}
                     </Stack>
@@ -998,7 +998,7 @@ export default function Profile() {
                         <img
                           src={KARMA_ICON}
                           style={{ marginRight: "12px" }}
-                          title="Karma"
+                          alt="Karma"
                         />
                         {karmaInfo.voteCount}
                       </Stack>
@@ -1013,7 +1013,7 @@ export default function Profile() {
                       <img
                         src={POINTS_ICON}
                         style={{ marginRight: "12px" }}
-                        title="Fortune"
+                        alt="Fortune"
                       />
                       {points}
                     </Stack>
@@ -1026,7 +1026,7 @@ export default function Profile() {
                         <img
                           src={POINTS_NEGATIVE_ICON}
                           style={{ marginRight: "12px" }}
-                          title="Misfortune"
+                          alt="Misfortune"
                         />
                         {pointsNegative}
                       </Stack>
