@@ -3277,10 +3277,17 @@ function ActionSelectShowAllOptions(props) {
         {meeting.actionName}
       </Typography>
 
-      <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 0.5 }}>
+      <Box
+        sx={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          gap: 0.5,
+        }}
+      >
         {targetOptions.map((option) => {
           const isSelected = myVoteDisplay.includes(option.label);
-          
+
           return (
             <Box
               key={option.id}
@@ -3290,9 +3297,11 @@ function ActionSelectShowAllOptions(props) {
                 padding: "8px 12px",
                 borderRadius: 1,
                 backgroundColor: "background.default",
-                "&:hover": notClickable ? {} : {
-                  backgroundColor: "action.hover",
-                },
+                "&:hover": notClickable
+                  ? {}
+                  : {
+                      backgroundColor: "action.hover",
+                    },
                 transition: "background-color 0.2s",
               }}
             >
