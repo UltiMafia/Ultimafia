@@ -7,7 +7,4 @@ import Main from "./Main";
 
 initializeApp(firebaseConfig);
 
-ReactDOM.render(
-  <Main />,
-  document.getElementById("root")
-);
+ReactDOM.render(<Main />, document.getElementById("root"));
