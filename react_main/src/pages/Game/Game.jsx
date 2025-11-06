@@ -2952,6 +2952,20 @@ export function ActionList({ title = "Actions", actionStyle = {} }) {
             />
           );
           break;
+        case "showAllOptions":
+          action = (
+            <ActionSelectShowAllOptions
+              key={meeting.id}
+              socket={game.socket}
+              meeting={meeting}
+              players={game.players}
+              self={game.self}
+              history={game.history}
+              stateViewing={game.stateViewing}
+              style={actionStyle}
+            />
+          );
+          break;
       }
 
       actions.push(action);
@@ -3218,6 +3232,78 @@ function ActionSelect(props) {
                   {rowItem.selection.join(", ")}
                 </Typography>
               )}
+            </Box>
+          );
+        })}
+      </Box>
+    </Box>
+  );
+}
+
+function ActionSelectShowAllOptions(props) {
+  const [meeting, history, stateViewing, isCurrentState, notClickable, onVote] =
+    useAction(props);
+
+  const myVote = meeting.votes[props.self];
+  const myVoteDisplay = getTargetDisplay(myVote, meeting, props.players);
+
+  const targetOptions = meeting.targets.map((target) => ({
+    id: target,
+    label: getTargetDisplay(target, meeting, props.players)[0],
+  }));
+
+  function handleOptionClick(target) {
+    if (!notClickable) {
+      onVote(target);
+    }
+  }
+
+  return (
+    <Box
+      className="action"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        gap: 1,
+        p: 2,
+        borderRadius: 2,
+        bgcolor: "background.paper",
+        boxShadow: 3,
+        ...props.style,
+      }}
+    >
+      <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: "bold" }}>
+        {meeting.actionName}
+      </Typography>
+
+      <Box sx={{ width: "100%", display: "flex", flexDirection: "column", gap: 0.5 }}>
+        {targetOptions.map((option) => {
+          const isSelected = myVoteDisplay.includes(option.label);
+          
+          return (
+            <Box
+              key={option.id}
+              onClick={() => handleOptionClick(option.id)}
+              sx={{
+                cursor: notClickable ? "default" : "pointer",
+                padding: "8px 12px",
+                borderRadius: 1,
+                backgroundColor: "background.default",
+                "&:hover": notClickable ? {} : {
+                  backgroundColor: "action.hover",
+                },
+                transition: "background-color 0.2s",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontWeight: isSelected ? "bold" : "normal",
+                  color: isSelected ? "primary.main" : "text.primary",
+                }}
+              >
+                {option.label}
+              </Typography>
             </Box>
           );
         })}
