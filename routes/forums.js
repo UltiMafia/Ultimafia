@@ -11,6 +11,9 @@ const router = express.Router();
 
 router.get("/categories", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
   try {
     var userId = await routeUtils.verifyLoggedIn(req, true);
     var rank = userId ? await redis.getUserRank(userId) : 0;

@@ -18,7 +18,7 @@ export default function HostDiceWars() {
 
   const initialFormFields = [
     {
-      label: "Map Size (Number of Territories)",
+      label: "Number of Hexes",
       ref: "mapSize",
       type: "number",
       min: 15,
@@ -32,7 +32,7 @@ export default function HostDiceWars() {
       value: defaults.maxDice,
       options: [
         { label: "4", value: 4 },
-        { label: "8 (Standard)", value: 8 },
+        { label: "8", value: 8 },
         { label: "16", value: 16 },
       ],
     },

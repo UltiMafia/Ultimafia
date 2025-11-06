@@ -11,7 +11,7 @@ export function RecentForumReplies() {
   const [recentReplies, setRecentReplies] = useState([]);
 
   useEffect(() => {
-    (async () => {
+    const fetchForumActivity = async () => {
       try {
         const res = await axios.get("/api/forums/categories");
         const categories = res.data || [];
@@ -56,7 +56,16 @@ export function RecentForumReplies() {
         setNewestThreads([]);
         setRecentReplies([]);
       }
-    })();
+    };
+
+    // Fetch immediately on mount
+    fetchForumActivity();
+
+    // Poll every 30 seconds for updates
+    const interval = setInterval(fetchForumActivity, 30000);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
   }, []);
 
   return (

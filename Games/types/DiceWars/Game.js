@@ -8,8 +8,8 @@ module.exports = class DiceWarsGame extends Game {
 
     this.type = "Dice Wars";
     this.Player = Player;
-    this.mapSize = parseInt(options.settings.mapSize) || 45; // number of territories
-    this.maxDicePerTerritory = parseInt(options.settings.maxDice) || 8; // max dice per territory (4, 8, or 16)
+    this.mapSize = parseInt(options.settings.mapSize) || 30;
+    this.maxDicePerTerritory = parseInt(options.settings.maxDice) || 8;
     this.gameStarted = false;
     this.states = [
       {

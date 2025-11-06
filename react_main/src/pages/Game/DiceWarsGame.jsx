@@ -98,7 +98,7 @@ function DiceWarsBoardWrapper({
   const [selectedTerritoryId, setSelectedTerritoryId] = useState(null);
   const [playerId, setPlayerId] = useState(player || null);
   const svgRef = useRef();
-  const hexSize = 30; // radius of each hex
+  const hexSize = 25; // radius of each hex
 
   useSocketListeners((socket) => {
     socket.on("gameState", (state) => {
