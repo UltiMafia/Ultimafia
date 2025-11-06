@@ -83,10 +83,25 @@ module.exports = class VillageCore extends Card {
     };
 
     this.stateMods = {
+      "Hosting": {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          if (this.game.HaveHostingState == true) {
+            for (let player of this.game.players) {
+              if (player.role.name == "Host"
+              ) {
+                return false;
+              }
+            }
+            return true;
+          }
+          return true;
+        },
+      },
       "Treasure Chest": {
         type: "shouldSkip",
         shouldSkip: function () {
-          if (this.game.HaveTreasureChestState == true) {
+          if (this.game.HaveTreasureChestState == true && this.game.HaveHostingState != true) {
             for (let player of this.game.players) {
               if (
                 this.game
@@ -117,6 +132,12 @@ module.exports = class VillageCore extends Card {
             if (player.hasItem("Ouija Board")) {
               return true;
             }
+          }
+          if (this.game.HaveTreasureChestState == true) {
+            return true;
+          }
+          if (this.game.AdmiralStateBlock == "Day") {
+            return true;
           }
           this.game.ExtraStates = [];
           this.game.events.emit("extraStateCheck", "Dusk");
@@ -149,6 +170,12 @@ module.exports = class VillageCore extends Card {
             if (player.hasItem("Ouija Board")) {
               return true;
             }
+          }
+          if (this.game.HaveTreasureChestState == true) {
+            return true;
+          }
+          if (this.game.AdmiralStateBlock == "Night") {
+            return true;
           }
           this.game.ExtraStates = [];
           this.game.events.emit("extraStateCheck", "Dawn");
