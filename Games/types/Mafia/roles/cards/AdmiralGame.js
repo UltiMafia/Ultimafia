@@ -129,18 +129,6 @@ module.exports = class AdmiralGame extends Card {
           return false;
         },
       },
-      Dusk: {
-        type: "shouldSkip",
-        shouldSkip: function () {
-          if (this.game.HaveTreasureChestState == true) {
-            return true;
-          }
-          if (this.game.AdmiralStateBlock == "Day") {
-            return true;
-          }
-          return false;
-        },
-      },
       Night: {
         type: "shouldSkip",
         shouldSkip: function () {
@@ -148,18 +136,6 @@ module.exports = class AdmiralGame extends Card {
             return true;
           }
           if (this.game.AdmiralStateBlock == "Day") {
-            return true;
-          }
-          return false;
-        },
-      },
-      Dawn: {
-        type: "shouldSkip",
-        shouldSkip: function () {
-          if (this.game.HaveTreasureChestState == true) {
-            return true;
-          }
-          if (this.game.AdmiralStateBlock == "Night") {
             return true;
           }
           return false;
