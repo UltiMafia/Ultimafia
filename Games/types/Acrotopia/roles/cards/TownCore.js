@@ -15,7 +15,7 @@ module.exports = class TownCore extends Card {
         actionName: "Pick Favorite Acronym",
         states: ["Day"],
         flags: ["voting", "noVeg"],
-        inputType: "custom",
+        inputType: "showAllOptions",
         targets: [],
         action: {
           priority: -1,
