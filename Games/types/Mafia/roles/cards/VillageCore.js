@@ -83,13 +83,12 @@ module.exports = class VillageCore extends Card {
     };
 
     this.stateMods = {
-      "Hosting": {
+      Hosting: {
         type: "shouldSkip",
         shouldSkip: function () {
           if (this.game.HaveHostingState == true) {
             for (let player of this.game.players) {
-              if (player.role.name == "Host"
-              ) {
+              if (player.role.name == "Host") {
                 return false;
               }
             }
@@ -101,7 +100,10 @@ module.exports = class VillageCore extends Card {
       "Treasure Chest": {
         type: "shouldSkip",
         shouldSkip: function () {
-          if (this.game.HaveTreasureChestState == true && this.game.HaveHostingState != true) {
+          if (
+            this.game.HaveTreasureChestState == true &&
+            this.game.HaveHostingState != true
+          ) {
             for (let player of this.game.players) {
               if (
                 this.game
