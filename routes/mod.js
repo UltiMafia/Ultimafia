@@ -399,18 +399,24 @@ router.post("/removeFromGroup", async function (req, res) {
   }
 });
 
-router.post("/forumBan", async (req, res) => {
+// Unified ban endpoint
+router.post("/ban", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var userIdToBan = String(req.body.userId);
     var lengthStr = String(req.body.length);
-    var perm = "forumBan";
+    var banType = String(req.body.banType);
+    var perm = "ban";
     var banRank = await redis.getUserRank(userIdToBan);
 
-    if (banRank == null) {
+    if (banRank == null && banType !== "site") {
       res.status(500);
       res.send("User does not exist.");
       return;
+    }
+
+    if (banType === "site") {
+      banRank = banRank || 0;
     }
 
     if (!(await routeUtils.verifyPermission(res, userId, perm, banRank + 1)))
@@ -432,259 +438,78 @@ router.post("/forumBan", async (req, res) => {
       return;
     }
 
-    await routeUtils.banUser(
-      userIdToBan,
-      length,
-      ["vote", "createThread", "postReply", "deleteOwnPost", "editPost"],
-      "forum",
-      userId
-    );
+    const banExpires = new Date(Date.now() + length);
+    const banTypeLabels = {
+      forum: "forum",
+      chat: "chat",
+      game: "game",
+      ranked: "ranked",
+      competitive: "competitive",
+      site: "site",
+    };
 
-    await routeUtils.createNotification(
-      {
-        content: `You have been banned from the forums for ${routeUtils.timeDisplay(
-          length
-        )}.`,
-        icon: "ban",
-      },
-      [userIdToBan]
-    );
+    const banPermissions = {
+      forum: ["vote", "createThread", "postReply", "deleteOwnPost", "editPost"],
+      chat: ["publicChat", "privateChat"],
+      game: ["playGame"],
+      ranked: ["playRanked"],
+      competitive: ["playCompetitive"],
+      site: ["signIn"],
+    };
 
-    routeUtils.createModAction(userId, "Forum Ban", [userIdToBan, lengthStr]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error forum banning user.");
-  }
-});
+    const banDbTypes = {
+      forum: "forum",
+      chat: "chat",
+      game: "game",
+      ranked: "playRanked",
+      competitive: "playCompetitive",
+      site: "site",
+    };
 
-router.post("/chatBan", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToBan = String(req.body.userId);
-    var lengthStr = String(req.body.length);
-    var perm = "chatBan";
-    var banRank = await redis.getUserRank(userIdToBan);
-
-    if (banRank == null) {
-      res.status(500);
-      res.send("User does not exist.");
-      return;
-    }
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm, banRank + 1)))
-      return;
-
-    length = routeUtils.parseTime(lengthStr);
-
-    if (length == null) {
-      res.status(500);
-      res.send(
-        "Invalid time string. Must have the format 'length unit', e.g. '1 hour'."
-      );
-      return;
-    }
-
-    if (length < 1000 * 60 * 60) {
-      res.status(500);
-      res.send("Minimum ban time is 1 hour.");
+    if (!banPermissions[banType]) {
+      res.status(400);
+      res.send("Invalid ban type.");
       return;
     }
 
     await routeUtils.banUser(
       userIdToBan,
       length,
-      ["publicChat", "privateChat"],
-      "chat",
+      banPermissions[banType],
+      banDbTypes[banType],
       userId
     );
 
+    if (banType === "site") {
+      await models.User.updateOne(
+        { id: userIdToBan },
+        { $set: { banned: true } }
+      ).exec();
+      await models.Session.deleteMany({
+        "session.user.id": userIdToBan,
+      }).exec();
+    }
+
     await routeUtils.createNotification(
       {
-        content: `You have been banned from chat for ${routeUtils.timeDisplay(
-          length
-        )}.`,
+        content: `You have received a violation. Your ${
+          banTypeLabels[banType]
+        } ban expires on ${banExpires.toLocaleString()}.`,
         icon: "ban",
       },
       [userIdToBan]
     );
 
-    routeUtils.createModAction(userId, "Chat Ban", [userIdToBan, lengthStr]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error chat banning user.");
-  }
-});
+    const modActionNames = {
+      forum: "Forum Ban",
+      chat: "Chat Ban",
+      game: "Game Ban",
+      ranked: "Ranked Ban",
+      competitive: "Competitive Ban",
+      site: "Site Ban",
+    };
 
-router.post("/gameBan", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToBan = String(req.body.userId);
-    var lengthStr = String(req.body.length);
-    var perm = "gameBan";
-    var banRank = await redis.getUserRank(userIdToBan);
-
-    if (banRank == null) {
-      res.status(500);
-      res.send("User does not exist.");
-      return;
-    }
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm, banRank + 1)))
-      return;
-
-    length = routeUtils.parseTime(lengthStr);
-
-    if (length == null) {
-      res.status(500);
-      res.send(
-        "Invalid time string. Must have the format 'length unit', e.g. '1 hour'."
-      );
-      return;
-    }
-
-    if (length < 1000 * 60 * 60) {
-      res.status(500);
-      res.send("Minimum ban time is 1 hour.");
-      return;
-    }
-
-    await routeUtils.banUser(userIdToBan, length, ["playGame"], "game", userId);
-
-    await routeUtils.createNotification(
-      {
-        content: `You have been banned from games for ${routeUtils.timeDisplay(
-          length
-        )}.`,
-        icon: "ban",
-      },
-      [userIdToBan]
-    );
-
-    routeUtils.createModAction(userId, "Game Ban", [userIdToBan, lengthStr]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error game banning user.");
-  }
-});
-
-router.post("/rankedBan", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToBan = String(req.body.userId);
-    var lengthStr = String(req.body.length);
-    var perm = "rankedBan";
-    var banRank = await redis.getUserRank(userIdToBan);
-
-    if (banRank == null) {
-      res.status(500);
-      res.send("User does not exist.");
-      return;
-    }
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm, banRank + 1)))
-      return;
-
-    length = routeUtils.parseTime(lengthStr);
-
-    if (length == null) {
-      res.status(500);
-      res.send(
-        "Invalid time string. Must have the format 'length unit', e.g. '1 hour'."
-      );
-      return;
-    }
-
-    if (length < 1000 * 60 * 60) {
-      res.status(500);
-      res.send("Minimum ban time is 1 hour.");
-      return;
-    }
-
-    await routeUtils.banUser(
-      userIdToBan,
-      length,
-      ["playRanked"],
-      "playRanked",
-      userId
-    );
-
-    await routeUtils.createNotification(
-      {
-        content: `You have been banned from playing ranked games for ${routeUtils.timeDisplay(
-          length
-        )}.`,
-        icon: "ban",
-      },
-      [userIdToBan]
-    );
-
-    routeUtils.createModAction(userId, "Ranked Ban", [userIdToBan, lengthStr]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error ranked banning user.");
-  }
-});
-
-router.post("/competitiveBan", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToBan = String(req.body.userId);
-    var lengthStr = String(req.body.length);
-    var perm = "competitiveBan";
-    var banRank = await redis.getUserRank(userIdToBan);
-
-    if (banRank == null) {
-      res.status(500);
-      res.send("User does not exist.");
-      return;
-    }
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm, banRank + 1)))
-      return;
-
-    length = routeUtils.parseTime(lengthStr);
-
-    if (length == null) {
-      res.status(500);
-      res.send(
-        "Invalid time string. Must have the format 'length unit', e.g. '1 hour'."
-      );
-      return;
-    }
-
-    if (length < 1000 * 60 * 60) {
-      res.status(500);
-      res.send("Minimum ban time is 1 hour.");
-      return;
-    }
-
-    await routeUtils.banUser(
-      userIdToBan,
-      length,
-      ["playCompetitive"],
-      "playCompetitive",
-      userId
-    );
-
-    await routeUtils.createNotification(
-      {
-        content: `You have been banned from playing competitive games for ${routeUtils.timeDisplay(
-          length
-        )}.`,
-        icon: "ban",
-      },
-      [userIdToBan]
-    );
-
-    routeUtils.createModAction(userId, "Competitive Ban", [
+    routeUtils.createModAction(userId, modActionNames[banType], [
       userIdToBan,
       lengthStr,
     ]);
@@ -692,51 +517,7 @@ router.post("/competitiveBan", async (req, res) => {
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error competitive banning user.");
-  }
-});
-
-router.post("/siteBan", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToBan = String(req.body.userId);
-    var lengthStr = String(req.body.length);
-    var perm = "siteBan";
-    var banRank = (await redis.getUserRank(userIdToBan)) || 0;
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm, banRank + 1)))
-      return;
-
-    length = routeUtils.parseTime(lengthStr);
-
-    if (length == null) {
-      res.status(500);
-      res.send(
-        "Invalid time string. Must have the format 'length unit', e.g. '1 hour'."
-      );
-      return;
-    }
-
-    if (length < 1000 * 60 * 60) {
-      res.status(500);
-      res.send("Minimum ban time is 1 hour.");
-      return;
-    }
-
-    await routeUtils.banUser(userIdToBan, length, ["signIn"], "site", userId);
-
-    await models.User.updateOne(
-      { id: userIdToBan },
-      { $set: { banned: true } }
-    ).exec();
-    await models.Session.deleteMany({ "session.user.id": userIdToBan }).exec();
-
-    routeUtils.createModAction(userId, "Site Ban", [userIdToBan, lengthStr]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error site banning user.");
+    res.send("Error banning user.");
   }
 });
 
@@ -769,11 +550,13 @@ router.post("/logout", async (req, res) => {
   }
 });
 
-router.post("/forumUnban", async (req, res) => {
+// Unified unban endpoint
+router.post("/unban", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var userIdToActOn = String(req.body.userId);
-    var perm = "forumUnban";
+    var banType = String(req.body.banType);
+    var perm = "unban";
     var rank = await redis.getUserRank(userIdToActOn);
 
     if (rank == null) {
@@ -785,183 +568,53 @@ router.post("/forumUnban", async (req, res) => {
     if (!(await routeUtils.verifyPermission(res, userId, perm, rank + 1)))
       return;
 
-    await models.Ban.deleteMany({
-      userId: userIdToActOn,
-      type: "forum",
-      auto: false,
-    }).exec();
-    await redis.cacheUserPermissions(userIdToActOn);
+    const banDbTypes = {
+      forum: "forum",
+      chat: "chat",
+      game: "game",
+      ranked: "playRanked",
+      competitive: "playCompetitive",
+      site: "site",
+    };
 
-    routeUtils.createModAction(userId, "Forum Unban", [userIdToActOn]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error forum unbanning user.");
-  }
-});
-
-router.post("/chatUnban", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.body.userId);
-    var perm = "chatUnban";
-    var rank = await redis.getUserRank(userIdToActOn);
-
-    if (rank == null) {
-      res.status(500);
-      res.send("User does not exist.");
+    if (!banDbTypes[banType]) {
+      res.status(400);
+      res.send("Invalid ban type.");
       return;
     }
 
-    if (!(await routeUtils.verifyPermission(res, userId, perm, rank + 1)))
-      return;
-
     await models.Ban.deleteMany({
       userId: userIdToActOn,
-      type: "chat",
+      type: banDbTypes[banType],
       auto: false,
     }).exec();
-    await redis.cacheUserPermissions(userIdToActOn);
 
-    routeUtils.createModAction(userId, "Chat Unban", [userIdToActOn]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error chat unbanning user.");
-  }
-});
-
-router.post("/gameUnban", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.body.userId);
-    var perm = "gameUnban";
-    var rank = await redis.getUserRank(userIdToActOn);
-
-    if (rank == null) {
-      res.status(500);
-      res.send("User does not exist.");
-      return;
+    if (banType === "site") {
+      await models.User.updateOne(
+        { id: userIdToActOn },
+        { $set: { banned: false } }
+      ).exec();
     }
 
-    if (!(await routeUtils.verifyPermission(res, userId, perm, rank + 1)))
-      return;
-
-    await models.Ban.deleteMany({
-      userId: userIdToActOn,
-      type: "game",
-      auto: false,
-    }).exec();
     await redis.cacheUserPermissions(userIdToActOn);
 
-    routeUtils.createModAction(userId, "Game Unban", [userIdToActOn]);
+    const modActionNames = {
+      forum: "Forum Unban",
+      chat: "Chat Unban",
+      game: "Game Unban",
+      ranked: "Ranked Unban",
+      competitive: "Competitive Unban",
+      site: "Site Unban",
+    };
+
+    routeUtils.createModAction(userId, modActionNames[banType], [
+      userIdToActOn,
+    ]);
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error game unbanning user.");
-  }
-});
-
-router.post("/rankedUnban", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.body.userId);
-    var perm = "rankedUnban";
-    var rank = await redis.getUserRank(userIdToActOn);
-
-    if (rank == null) {
-      res.status(500);
-      res.send("User does not exist.");
-      return;
-    }
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm, rank + 1)))
-      return;
-
-    await models.Ban.deleteMany({
-      userId: userIdToActOn,
-      type: "playRanked",
-      auto: false,
-    }).exec();
-    await redis.cacheUserPermissions(userIdToActOn);
-
-    routeUtils.createModAction(userId, "Ranked Unban", [userIdToActOn]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error ranked unbanning user.");
-  }
-});
-
-router.post("/competitiveUnban", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.body.userId);
-    var perm = "competitiveUnban";
-    var rank = await redis.getUserRank(userIdToActOn);
-
-    if (rank == null) {
-      res.status(500);
-      res.send("User does not exist.");
-      return;
-    }
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm, rank + 1)))
-      return;
-
-    await models.Ban.deleteMany({
-      userId: userIdToActOn,
-      type: "playCompetitive",
-      auto: false,
-    }).exec();
-    await redis.cacheUserPermissions(userIdToActOn);
-
-    routeUtils.createModAction(userId, "Competitive Unban", [userIdToActOn]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error competitive unbanning user.");
-  }
-});
-
-router.post("/siteUnban", async (req, res) => {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.body.userId);
-    var perm = "siteUnban";
-    var rank = await redis.getUserRank(userIdToActOn);
-
-    if (rank == null) {
-      res.status(500);
-      res.send("User does not exist.");
-      return;
-    }
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm, rank + 1)))
-      return;
-
-    await models.Ban.deleteMany({
-      userId: userIdToActOn,
-      type: "site",
-      auto: false,
-    }).exec();
-    await models.User.updateOne(
-      { id: userIdToActOn },
-      { $set: { banned: false } }
-    ).exec();
-    await redis.cacheUserPermissions(userIdToActOn);
-
-    routeUtils.createModAction(userId, "Site Unban", [userIdToActOn]);
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error site unbanning user.");
+    res.send("Error unbanning user.");
   }
 });
 

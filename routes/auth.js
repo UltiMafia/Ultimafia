@@ -72,27 +72,55 @@ router.post("/", async function (req, res) {
       var verified = userData.email_verified;
 
       if (verified) {
-        await authSuccess(req, userData.uid, userData.email);
-        res.sendStatus(200);
+        const authResult = await authSuccess(req, userData.uid, userData.email);
+        // Check if authSuccess actually created a session
+        if (req.session.user) {
+          res.sendStatus(200);
+        } else {
+          // authSuccess silently failed (banned IP, invalid domain, etc.)
+          res.status(403);
+          res.send("Authentication failed.");
+        }
       } else {
         res.status(403);
-        res.send(
-          "Please verify your email address before logging in. Be sure to check your spam folder."
-        );
+        res.send("Authentication failed.");
       }
     } else {
       console.log("Req body: " + req.body);
       if (req.body.discordProfile) {
-        await authSuccess(req, null, req.body.email, req.body.discordProfile);
-        res.sendStatus(200);
+        const authResult = await authSuccess(
+          req,
+          null,
+          req.body.email,
+          req.body.discordProfile
+        );
+        // Check if authSuccess actually created a session
+        if (req.session.user) {
+          res.sendStatus(200);
+        } else {
+          // authSuccess silently failed (banned IP, invalid domain, etc.)
+          res.status(403);
+          res.send("Authentication failed.");
+        }
       } else {
-        res.sendStatus(403);
+        res.status(403);
+        res.send("Authentication failed.");
       }
     }
   } catch (e) {
+    if (e.siteBanned) {
+      res.status(403);
+      res.send(
+        JSON.stringify({
+          siteBanned: true,
+          banExpires: e.banExpires,
+        })
+      );
+      return;
+    }
     logger.error(e);
     res.status(500);
-    res.send("Error authenticating.");
+    res.send("Authentication failed.");
   }
 });
 
@@ -294,6 +322,19 @@ async function authSuccess(req, uid, email, discordProfile) {
         }
       );
 
+      // Get site ban information to return to frontend
+      var siteBan = await models.Ban.findOne({
+        userId: bannedUser.id,
+        type: "site",
+      }).select("expires");
+
+      if (siteBan) {
+        throw {
+          siteBanned: true,
+          banExpires: siteBan.expires,
+        };
+      }
+
       return;
     } else if (id && bannedUser) {
       //(3)
@@ -340,6 +381,7 @@ async function authSuccess(req, uid, email, discordProfile) {
     return id;
   } catch (e) {
     logger.error(e);
+    throw e;
   }
 }
 

@@ -12,7 +12,7 @@ export const gamesIcons = {
   Cheat: require("images/game_icons/Cheat.png"),
   Battlesnakes: require("images/game_icons/Battlesnakes.png"),
   "Connect Four": require("images/game_icons/ConnectFour.png"),
-  Battlesnakes: require("images/game_icons/Battlesnakes.png"),
+  "Dice Wars": require("images/game_icons/DiceWars.png"),
 };
 
 export default function GameIcon(props) {

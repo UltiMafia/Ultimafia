@@ -1,3 +1,9 @@
-module.exports = function (game, player) {
-  return ":rip: You have been eliminated from the game.";
+module.exports = function (type, name) {
+  const templates = {
+    basic: `${name} was killed.`,
+    conquest: `${name} has been conquered!`,
+    leave: `${name} has surrendered!`,
+  };
+
+  return templates[type];
 };

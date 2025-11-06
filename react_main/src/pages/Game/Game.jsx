@@ -881,7 +881,9 @@ export default function Game() {
             {gameType === "Texas Hold Em" && <TexasHoldEmGame />}
             {gameType === "Cheat" && <CheatGame />}
             {gameType === "Battlesnakes" && <BattlesnakesGame />}
-            {gameType === "DiceWars" && <DiceWarsGame />}
+            {(gameType === "Dice Wars" || gameType === "DiceWars") && (
+              <DiceWarsGame />
+            )}
             {gameType === "Connect Four" && <ConnectFourGame />}
           </Box>
         </Stack>

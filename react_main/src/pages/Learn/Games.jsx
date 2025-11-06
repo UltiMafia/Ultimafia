@@ -77,7 +77,7 @@ export default function Games(props) {
         return <LearnCheat />;
       case "Battlesnakes":
         return <LearnBattlesnakes />;
-      case "DiceWars":
+      case "Dice Wars":
         return <LearnDiceWars />;
       case "Connect Four":
         return <LearnConnectFour />;

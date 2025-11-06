@@ -1162,7 +1162,7 @@ const settingsChecks = {
       boardSize,
     };
   },
-  DiceWars: (settings, setup) => {
+  "Dice Wars": (settings, setup) => {
     const mapSize = settings.mapSize;
     const maxDice = settings.maxDice;
 
