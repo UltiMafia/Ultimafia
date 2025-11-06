@@ -134,6 +134,7 @@ module.exports = class Game {
     this.pointsEarnedByPlayers = {};
 
     this.numHostInGame = 0;
+    this.originalHostId = options.hostId; // Track the original host for reassignment
   }
 
   async init() {
@@ -412,6 +413,22 @@ module.exports = class Game {
       // Reconnect to game if user is already in it
       if (player && !player.left) {
         player = player.setUser(user);
+        
+        // If the original host is reconnecting and host status was reassigned, restore it
+        if (user.id === this.originalHostId && this.hostId !== this.originalHostId && !this.started) {
+          const oldHostId = this.hostId;
+          this.hostId = this.originalHostId;
+          await redis.setGameHost(this.id, this.hostId);
+          this.sendAlert(
+            `${player.name} has reconnected and is now the host.`,
+            undefined,
+            undefined,
+            ["info"]
+          );
+          this.broadcast("hostId", this.hostId);
+          logger.info(`Game ${this.id}: Original host ${this.hostId} reconnected, host restored from ${oldHostId}`);
+        }
+        
         this.sendAllGameInfo(player);
         player.send("loaded");
         return;
@@ -432,6 +449,7 @@ module.exports = class Game {
 
         if (this.playersGone[user.id]) {
           player.id = this.playersGone[user.id].id;
+          player.joinTime = this.playersGone[user.id].joinTime || player.joinTime;
           delete this.playersGone[user.id];
         }
 
@@ -439,6 +457,22 @@ module.exports = class Game {
           this.getTimeLeft("pregameWait") / 1000 / 60
         );
         this.players.push(player);
+        
+        // If the original host is rejoining, restore their host status
+        if (user.id === this.originalHostId && this.hostId !== this.originalHostId) {
+          const oldHostId = this.hostId;
+          this.hostId = this.originalHostId;
+          await redis.setGameHost(this.id, this.hostId);
+          this.sendAlert(
+            `${player.name} has returned and is now the host.`,
+            undefined,
+            undefined,
+            ["info"]
+          );
+          this.broadcast("hostId", this.hostId);
+          logger.info(`Game ${this.id}: Original host ${this.hostId} returned, host restored from ${oldHostId}`);
+        }
+        
         this.joinMutexUnlock();
         this.sendPlayerJoin(player);
         this.pregame.join(player);
@@ -565,12 +599,19 @@ module.exports = class Game {
       this.pregame.leave(player);
       this.broadcast("playerLeave", player.id);
 
+      const wasHost = player.user.id === this.hostId;
+
       delete this.players[player.id];
       this.playersGone[player.user.id] = this.createPlayerGoneObj(player);
 
       if (this.players.length == 0) {
         await this.cancel();
         return;
+      }
+
+      // Reassign host if the current host left during pregame
+      if (wasHost) {
+        await this.reassignHost();
       }
     } else {
       if (this.started && !this.finished && player.alive) {
@@ -706,6 +747,7 @@ module.exports = class Game {
       customEmotes: player.user.customEmotes,
       alive: player.alive,
       left: true,
+      joinTime: player.joinTime, // Preserve join time for host reassignment
     };
   }
 
@@ -721,6 +763,44 @@ module.exports = class Game {
     if (permanent) this.banned[player.user.id] = true;
 
     await this.playerLeave(player);
+  }
+
+  async reassignHost() {
+    // Find the player who has been in the game the longest (earliest joinTime)
+    let nextHost = null;
+    let earliestJoinTime = Infinity;
+
+    for (let player of this.players) {
+      if (player.joinTime < earliestJoinTime) {
+        earliestJoinTime = player.joinTime;
+        nextHost = player;
+      }
+    }
+
+    if (nextHost) {
+      const oldHostId = this.hostId;
+      this.hostId = nextHost.user.id;
+      
+      // Update host in Redis
+      await redis.setGameHost(this.id, this.hostId);
+      
+      // Notify all players of the host change
+      this.sendAlert(
+        `${nextHost.name} is now the host.`,
+        undefined,
+        undefined,
+        ["info"]
+      );
+      
+      // Broadcast updated host info to all players
+      this.broadcast("hostId", this.hostId);
+      
+      logger.info(`Game ${this.id}: Host reassigned from ${oldHostId} to ${this.hostId}`);
+      
+      return true;
+    }
+    
+    return false;
   }
 
   alivePlayers() {
@@ -1172,7 +1252,7 @@ module.exports = class Game {
       this.PossibleRoles = this.PossibleRoles.concat(AllRoles);
     }
     */
-    // force assign "Host"
+    // force assign "Host" role to the current game host
     let hostCount = 0;
     let toDelete = [];
     for (let roleName in roleset) {
@@ -1190,9 +1270,24 @@ module.exports = class Game {
         continue;
       }
 
+      // Assign Host role(s) to the current game host first
       for (let j = 0; j < roleset[roleName]; j++) {
-        players[hostCount].setRole(roleName);
-        hostCount += 1;
+        if (j === 0) {
+          // Find the current host player
+          let hostPlayer = players.find(p => p.user.id === this.hostId);
+          if (hostPlayer) {
+            hostPlayer.setRole(roleName);
+            hostCount += 1;
+          } else {
+            // Fallback to first player if host not found
+            players[hostCount].setRole(roleName);
+            hostCount += 1;
+          }
+        } else {
+          // Additional Host roles go to subsequent players
+          players[hostCount].setRole(roleName);
+          hostCount += 1;
+        }
       }
 
       toDelete.push(roleName);
