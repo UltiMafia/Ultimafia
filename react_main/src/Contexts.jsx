@@ -11,7 +11,11 @@ export const UserContext = React.createContext();
 export const SiteInfoContext = React.createContext();
 export const GameContext = React.createContext();
 
-export function UserProvider({ children, setUserLoading, setCustomPrimaryColor }) {
+export function UserProvider({
+  children,
+  setUserLoading,
+  setCustomPrimaryColor,
+}) {
   const siteInfo = useContext(SiteInfoContext);
   const [inGame, setInGame] = useState(null);
   const [dpiCorrection, setDpiCorrection] = useState(undefined);
@@ -263,12 +267,14 @@ export function UserProvider({ children, setUserLoading, setCustomPrimaryColor }
         case "vaporwave": {
           setIconFilter({
             [ICON_FILTER_CLASS_LIST_ALL]: {
-              filter: "drop-shadow(0px 0px .15em rgba(255, 0, 255, 0.7)) drop-shadow(0px 0px .2em rgba(0, 255, 255, 0.7))",
+              filter:
+                "drop-shadow(0px 0px .15em rgba(255, 0, 255, 0.7)) drop-shadow(0px 0px .2em rgba(0, 255, 255, 0.7))",
             },
             ".site-wrapper, #root": {
               position: "relative",
               zIndex: "0",
-              textShadow: "0px 0px .1em rgba(255, 0, 255, 0.7), 0px 0px .2em rgba(0, 255, 255, 0.7)"
+              textShadow:
+                "0px 0px .1em rgba(255, 0, 255, 0.7), 0px 0px .2em rgba(0, 255, 255, 0.7)",
             },
             ".site-wrapper:before": {
               content: "''",
@@ -277,7 +283,8 @@ export function UserProvider({ children, setUserLoading, setCustomPrimaryColor }
               left: "0",
               right: "0",
               bottom: "0",
-              background: "repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 2px)",
+              background:
+                "repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 2px)",
               pointerEvents: "none",
               zIndex: "99999",
             },
@@ -288,7 +295,11 @@ export function UserProvider({ children, setUserLoading, setCustomPrimaryColor }
           break;
         }
       }
-      if (user.settings && user.settings.customPrimaryColor && user.settings.customPrimaryColor !== "none") {
+      if (
+        user.settings &&
+        user.settings.customPrimaryColor &&
+        user.settings.customPrimaryColor !== "none"
+      ) {
         setCustomPrimaryColor(user.settings.customPrimaryColor);
       }
     }
@@ -311,9 +322,7 @@ export function UserProvider({ children, setUserLoading, setCustomPrimaryColor }
           ...iconFilter,
         }}
       />
-      <UserContext.Provider value={userVal}>
-        {children}
-      </UserContext.Provider>
+      <UserContext.Provider value={userVal}>{children}</UserContext.Provider>
     </>
   );
 }

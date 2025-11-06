@@ -36,10 +36,18 @@ export function getSiteTheme(customPrimaryColor) {
 
   const commonPalette = {
     primary: {
-      main: customPrimaryColor ? customPrimaryColor : isHalloween ? "#FF8C00" : "#AC2222",
+      main: customPrimaryColor
+        ? customPrimaryColor
+        : isHalloween
+        ? "#FF8C00"
+        : "#AC2222",
     },
     secondary: {
-      main: customPrimaryColor ? customPrimaryColor : isHalloween ? "#FF8C00" : "#D42A2A",
+      main: customPrimaryColor
+        ? customPrimaryColor
+        : isHalloween
+        ? "#FF8C00"
+        : "#D42A2A",
     },
     info: {
       main: "#DAA520",

@@ -56,6 +56,7 @@ module.exports = class Player {
     this.docImmunity = [];
     this.ExtraRoles = [];
     this.passiveExtraRoles = [];
+    this.joinTime = Date.now(); // Track when player joined for host reassignment
   }
 
   init() {

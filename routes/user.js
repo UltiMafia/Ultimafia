@@ -1133,7 +1133,9 @@ router.post("/settings/update", async function (req, res) {
 
     if (prop == "customPrimaryColor" && !itemsOwned.customPrimaryColor) {
       res.status(500);
-      res.send("You must purchase Custom Site Primary Color with coins from the Shop.");
+      res.send(
+        "You must purchase Custom Site Primary Color with coins from the Shop."
+      );
       return;
     }
 

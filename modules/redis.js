@@ -628,6 +628,10 @@ async function setGameStatus(gameId, status) {
     await client.setAsync(`game:${gameId}:startTime`, Date.now());
 }
 
+async function setGameHost(gameId, hostId) {
+  await client.setAsync(`game:${gameId}:hostId`, hostId);
+}
+
 async function setGameSetup(gameId, setupID) {
   let info = JSON.parse(
     (await client.getAsync(`game:${gameId}:settings`)) || "{}"
@@ -1152,6 +1156,7 @@ module.exports = {
   getGameType,
   getGameReservations,
   setGameStatus,
+  setGameHost,
   setGameSetup,
   getOpenGames,
   getOpenPublicGames,

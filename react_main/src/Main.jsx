@@ -106,8 +106,8 @@ function Main(props) {
     useState(false);
 
   useEffect(() => {
-    setSiteTheme(getSiteTheme(customPrimaryColor))
-  }, [customPrimaryColor])
+    setSiteTheme(getSiteTheme(customPrimaryColor));
+  }, [customPrimaryColor]);
 
   const isPhoneDevice = useIsPhoneDevice();
 
@@ -191,22 +191,25 @@ function Main(props) {
       <ThemeProvider theme={siteTheme} noSsr defaultMode="dark">
         <CssBaseline enableColorScheme />
         <Suspense fallback={<NewLoading />}>
-        <ErrorBoundary
-          FallbackComponent={
-            errorContent !== undefined ? ErrorFallbackNoMain : ErrorFallback
-          }
-          onReset={() =>
-            (window.location.href =
-              window.location.origin + window.location.pathname)
-          }
-        >
-          <UserProvider setUserLoading={setUserLoading} setCustomPrimaryColor={setCustomPrimaryColor}>
-            <Routes>
-              <Route path="/" element={<Welcome />} />
-              <Route path="/*" element={mainContent} />
-            </Routes>
-          </UserProvider>
-        </ErrorBoundary>
+          <ErrorBoundary
+            FallbackComponent={
+              errorContent !== undefined ? ErrorFallbackNoMain : ErrorFallback
+            }
+            onReset={() =>
+              (window.location.href =
+                window.location.origin + window.location.pathname)
+            }
+          >
+            <UserProvider
+              setUserLoading={setUserLoading}
+              setCustomPrimaryColor={setCustomPrimaryColor}
+            >
+              <Routes>
+                <Route path="/" element={<Welcome />} />
+                <Route path="/*" element={mainContent} />
+              </Routes>
+            </UserProvider>
+          </ErrorBoundary>
         </Suspense>
       </ThemeProvider>
     </BrowserRouter>
