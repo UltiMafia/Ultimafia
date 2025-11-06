@@ -413,9 +413,13 @@ module.exports = class Game {
       // Reconnect to game if user is already in it
       if (player && !player.left) {
         player = player.setUser(user);
-        
+
         // If the original host is reconnecting and host status was reassigned, restore it
-        if (user.id === this.originalHostId && this.hostId !== this.originalHostId && !this.started) {
+        if (
+          user.id === this.originalHostId &&
+          this.hostId !== this.originalHostId &&
+          !this.started
+        ) {
           const oldHostId = this.hostId;
           this.hostId = this.originalHostId;
           await redis.setGameHost(this.id, this.hostId);
@@ -426,9 +430,11 @@ module.exports = class Game {
             ["info"]
           );
           this.broadcast("hostId", this.hostId);
-          logger.info(`Game ${this.id}: Original host ${this.hostId} reconnected, host restored from ${oldHostId}`);
+          logger.info(
+            `Game ${this.id}: Original host ${this.hostId} reconnected, host restored from ${oldHostId}`
+          );
         }
-        
+
         this.sendAllGameInfo(player);
         player.send("loaded");
         return;
@@ -449,7 +455,8 @@ module.exports = class Game {
 
         if (this.playersGone[user.id]) {
           player.id = this.playersGone[user.id].id;
-          player.joinTime = this.playersGone[user.id].joinTime || player.joinTime;
+          player.joinTime =
+            this.playersGone[user.id].joinTime || player.joinTime;
           delete this.playersGone[user.id];
         }
 
@@ -457,9 +464,12 @@ module.exports = class Game {
           this.getTimeLeft("pregameWait") / 1000 / 60
         );
         this.players.push(player);
-        
+
         // If the original host is rejoining, restore their host status
-        if (user.id === this.originalHostId && this.hostId !== this.originalHostId) {
+        if (
+          user.id === this.originalHostId &&
+          this.hostId !== this.originalHostId
+        ) {
           const oldHostId = this.hostId;
           this.hostId = this.originalHostId;
           await redis.setGameHost(this.id, this.hostId);
@@ -470,9 +480,11 @@ module.exports = class Game {
             ["info"]
           );
           this.broadcast("hostId", this.hostId);
-          logger.info(`Game ${this.id}: Original host ${this.hostId} returned, host restored from ${oldHostId}`);
+          logger.info(
+            `Game ${this.id}: Original host ${this.hostId} returned, host restored from ${oldHostId}`
+          );
         }
-        
+
         this.joinMutexUnlock();
         this.sendPlayerJoin(player);
         this.pregame.join(player);
@@ -780,10 +792,10 @@ module.exports = class Game {
     if (nextHost) {
       const oldHostId = this.hostId;
       this.hostId = nextHost.user.id;
-      
+
       // Update host in Redis
       await redis.setGameHost(this.id, this.hostId);
-      
+
       // Notify all players of the host change
       this.sendAlert(
         `${nextHost.name} is now the host.`,
@@ -791,15 +803,17 @@ module.exports = class Game {
         undefined,
         ["info"]
       );
-      
+
       // Broadcast updated host info to all players
       this.broadcast("hostId", this.hostId);
-      
-      logger.info(`Game ${this.id}: Host reassigned from ${oldHostId} to ${this.hostId}`);
-      
+
+      logger.info(
+        `Game ${this.id}: Host reassigned from ${oldHostId} to ${this.hostId}`
+      );
+
       return true;
     }
-    
+
     return false;
   }
 
@@ -1274,7 +1288,7 @@ module.exports = class Game {
       for (let j = 0; j < roleset[roleName]; j++) {
         if (j === 0) {
           // Find the current host player
-          let hostPlayer = players.find(p => p.user.id === this.hostId);
+          let hostPlayer = players.find((p) => p.user.id === this.hostId);
           if (hostPlayer) {
             hostPlayer.setRole(roleName);
             hostCount += 1;
