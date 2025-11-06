@@ -8,6 +8,7 @@ import React, {
   Suspense,
 } from "react";
 import {
+  BrowserRouter,
   Route,
   Link,
   NavLink,
@@ -18,8 +19,8 @@ import {
 } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import axios from "axios";
-import update from "immutability-helper";
 import { Icon } from "@iconify/react";
+import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
 
 import {
   UserContext,
@@ -27,6 +28,7 @@ import {
   SiteInfoProvider,
   UserProvider,
 } from "./Contexts";
+import { getSiteTheme } from "./constants/themes";
 import { AlertList, useErrorAlert } from "./components/Alerts";
 import { Nav } from "./components/Nav";
 import { Welcome } from "./pages/Welcome/Welcome";
@@ -37,7 +39,6 @@ import Chat from "./pages/Chat/Chat";
 import NavDropdown from "./components/NavDropdown";
 
 import "css/main.css";
-import { useReducer } from "react";
 import { NewLoading } from "./pages/Welcome/NewLoading";
 
 // Navigation icons removed - now using text-only navigation
@@ -98,18 +99,17 @@ function Main(props) {
   const errorContent = props.errorContent;
 
   const [isUserLoading, setUserLoading] = useState(true);
+  const [siteTheme, setSiteTheme] = useState(getSiteTheme());
+  const [customPrimaryColor, setCustomPrimaryColor] = useState(null);
   const [isSiteInfoLoading, setSiteInfoLoading] = useState(true);
   const [showAnnouncementTemporarily, setShowAnnouncementTemporarily] =
     useState(false);
 
-  const isPhoneDevice = useIsPhoneDevice();
-
-  const { mode, systemMode } = useColorScheme();
   useEffect(() => {
-    const colorScheme = mode === "system" ? systemMode : mode;
-    document.documentElement.classList.remove("dark-mode", "light-mode");
-    document.documentElement.classList.add(`${colorScheme}-mode`);
-  }, [mode]);
+    setSiteTheme(getSiteTheme(customPrimaryColor))
+  }, [customPrimaryColor])
+
+  const isPhoneDevice = useIsPhoneDevice();
 
   const loading = isUserLoading || isSiteInfoLoading;
 
@@ -187,22 +187,29 @@ function Main(props) {
   );
 
   return (
-    <ErrorBoundary
-      FallbackComponent={
-        errorContent !== undefined ? ErrorFallbackNoMain : ErrorFallback
-      }
-      onReset={() =>
-        (window.location.href =
-          window.location.origin + window.location.pathname)
-      }
-    >
-      <UserProvider setUserLoading={setUserLoading}>
-        <Routes>
-          <Route path="/" element={<Welcome />} />
-          <Route path="/*" element={mainContent} />
-        </Routes>
-      </UserProvider>
-    </ErrorBoundary>
+    <BrowserRouter>
+      <ThemeProvider theme={siteTheme} noSsr defaultMode="dark">
+        <CssBaseline enableColorScheme />
+        <Suspense fallback={<NewLoading />}>
+        <ErrorBoundary
+          FallbackComponent={
+            errorContent !== undefined ? ErrorFallbackNoMain : ErrorFallback
+          }
+          onReset={() =>
+            (window.location.href =
+              window.location.origin + window.location.pathname)
+          }
+        >
+          <UserProvider setUserLoading={setUserLoading} setCustomPrimaryColor={setCustomPrimaryColor}>
+            <Routes>
+              <Route path="/" element={<Welcome />} />
+              <Route path="/*" element={mainContent} />
+            </Routes>
+          </UserProvider>
+        </ErrorBoundary>
+        </Suspense>
+      </ThemeProvider>
+    </BrowserRouter>
   );
 }
 
