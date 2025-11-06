@@ -110,6 +110,13 @@ export default function Settings() {
       type: "boolean",
     },
     {
+      label: "Custom Site Primary Color",
+      ref: "customPrimaryColor",
+      type: "color",
+      default: "none",
+      disabled: (deps) => !deps.user.itemsOwned.customPrimaryColor,
+    },
+    {
       label: "Icon Filter",
       ref: "iconFilter",
       type: "select",
@@ -153,6 +160,14 @@ export default function Settings() {
         {
           label: "Hallucination",
           value: "hallucination",
+        },
+        {
+          label: "Chromatic Aberration",
+          value: "chromaticAberration",
+        },
+        {
+          label: "Vaporwave",
+          value: "vaporwave",
         },
       ],
       disabled: (deps) => !deps.user.itemsOwned.iconFilter,
