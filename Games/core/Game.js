@@ -797,12 +797,9 @@ module.exports = class Game {
       await redis.setGameHost(this.id, this.hostId);
 
       // Notify all players of the host change
-      this.sendAlert(
-        `${nextHost.name} is now hosting.`,
-        undefined,
-        undefined,
-        ["info"]
-      );
+      this.sendAlert(`${nextHost.name} is now hosting.`, undefined, undefined, [
+        "info",
+      ]);
 
       // Broadcast updated host info to all players
       this.broadcast("hostId", this.hostId);

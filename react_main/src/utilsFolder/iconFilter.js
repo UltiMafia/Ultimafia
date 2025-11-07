@@ -77,8 +77,7 @@ export function getIconFilter(iconFilter) {
     case "green": {
       return {
         [ICON_FILTER_CLASS_LIST_ALL]: {
-          filter:
-            "sepia(1) contrast(200%) saturate(400%) hue-rotate(80deg)",
+          filter: "sepia(1) contrast(200%) saturate(400%) hue-rotate(80deg)",
         },
       };
     }
@@ -93,12 +92,14 @@ export function getIconFilter(iconFilter) {
     case "vaporwave": {
       return {
         [ICON_FILTER_CLASS_LIST_ALL]: {
-          filter: "drop-shadow(0px 0px .15em rgba(255, 0, 255, 0.7)) drop-shadow(0px 0px .2em rgba(0, 255, 255, 0.7))",
+          filter:
+            "drop-shadow(0px 0px .15em rgba(255, 0, 255, 0.7)) drop-shadow(0px 0px .2em rgba(0, 255, 255, 0.7))",
         },
         ".site-wrapper, #root": {
           position: "relative",
           zIndex: "0",
-          textShadow: "0px 0px .1em rgba(255, 0, 255, 0.7), 0px 0px .2em rgba(0, 255, 255, 0.7)"
+          textShadow:
+            "0px 0px .1em rgba(255, 0, 255, 0.7), 0px 0px .2em rgba(0, 255, 255, 0.7)",
         },
         ".site-wrapper:before": {
           content: "''",
@@ -107,14 +108,17 @@ export function getIconFilter(iconFilter) {
           left: "0",
           right: "0",
           bottom: "0",
-          background: "repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 2px)",
+          background:
+            "repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 2px)",
           pointerEvents: "none",
           zIndex: "99999",
         },
       };
     }
     default: {
-      console.error(`Invalid icon filter ${iconFilter}, this should never happen`);
+      console.error(
+        `Invalid icon filter ${iconFilter}, this should never happen`
+      );
       return {};
     }
   }
