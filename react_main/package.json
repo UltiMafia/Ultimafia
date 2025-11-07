@@ -15,7 +15,6 @@
     "immutability-helper": "^3.0.2",
     "react": "^17.0.0",
     "react-color": "^2.18.0",
-    "react-date-picker": "^9.2.0",
     "react-dom": "^17.0.1",
     "react-dropdown": "^1.7.0",
     "react-error-boundary": "^6.0.0",
