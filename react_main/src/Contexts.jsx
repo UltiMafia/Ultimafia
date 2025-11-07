@@ -6,6 +6,7 @@ import MuiLink from "@mui/material/Link";
 import { AlertFadeTimeout, AlertFadeDuration } from "./Constants";
 import axios from "axios";
 import { GlobalStyles, useColorScheme } from "@mui/material";
+import { getIconFilter } from "utilsFolder/iconFilter";
 
 export const UserContext = React.createContext();
 export const SiteInfoContext = React.createContext();
@@ -162,146 +163,10 @@ export function UserProvider({
       }
     }
     if (user.settings && user.settings.iconFilter) {
-      const ICON_FILTER_CLASS_LIST =
-        '.role, .collapsIconWrapper, .expandIconWrapper, .game-icon, .gamesetting, .closed-role-count, .game-state-icon, .um-coin, img[alt=Kudos], img[alt=Karma], img[alt=Achievements], img[alt=Achievements], img[alt="Daily Challenges"], img[alt=Fortune], img[alt=Misfortune]';
-      const ICON_FILTER_CLASS_LIST_ALL = `${ICON_FILTER_CLASS_LIST}, .fas, .avatar, .banner, img, .video-responsive-content`;
-      switch (user.settings.iconFilter) {
-        case "none": {
-          setIconFilter({});
-          break;
-        }
-        case "highContrast": {
-          setIconFilter({
-            [ICON_FILTER_CLASS_LIST_ALL]: { filter: "contrast(200%)" },
-          });
-          break;
-        }
-        case "sepia": {
-          setIconFilter({
-            [ICON_FILTER_CLASS_LIST_ALL]: { filter: "sepia(60%)" },
-          });
-          break;
-        }
-        case "inverted": {
-          setIconFilter({
-            [ICON_FILTER_CLASS_LIST_ALL]: { filter: "invert(100%)" },
-          });
-          break;
-        }
-        case "grayscale": {
-          setIconFilter({
-            [ICON_FILTER_CLASS_LIST_ALL]: { filter: "grayscale(100%)" },
-          });
-          break;
-        }
-        case "colorful": {
-          setIconFilter({
-            [ICON_FILTER_CLASS_LIST_ALL]: { filter: "saturate(200%)" },
-          });
-          break;
-        }
-        case "elevated": {
-          setIconFilter({
-            [ICON_FILTER_CLASS_LIST_ALL]: {
-              filter: "drop-shadow(.04rem .04rem 0 #000)",
-            },
-          });
-          break;
-        }
-        case "upsideDown": {
-          setIconFilter({
-            [ICON_FILTER_CLASS_LIST_ALL]: { transform: "scaleY(-1)" },
-          });
-          break;
-        }
-        case "hallucination": {
-          setIconFilter({
-            [ICON_FILTER_CLASS_LIST]: {
-              position: "relative",
-
-              "&:before, &:after": {
-                display: "block",
-                content: "''",
-                position: "absolute",
-                top: "0",
-                left: "0",
-                right: "0",
-                bottom: "0",
-                background: "inherit",
-                backgroundBlendMode: "multiply",
-                transform: "scale(1.1)",
-              },
-
-              "&:before": {
-                filter: "hue-rotate(120deg)",
-                transformOrigin: "top left",
-              },
-
-              "&:after": {
-                filter: "hue-rotate(240deg)",
-                transformOrigin: "bottom right",
-              },
-            },
-          });
-          break;
-        }
-        case "green": {
-          setIconFilter({
-            [ICON_FILTER_CLASS_LIST_ALL]: {
-              filter:
-                "sepia(1) contrast(200%) saturate(400%) hue-rotate(80deg)",
-            },
-          });
-          setCustomPrimaryColor("#00ff00");
-          break;
-        }
-        case "chromaticAberration": {
-          setIconFilter({
-            [ICON_FILTER_CLASS_LIST_ALL]: {
-              filter:
-                "drop-shadow(3px 0px 0px rgba(255, 0, 0, 0.7)) drop-shadow(-3px 0px 0px rgba(0, 255, 0, 0.7)) drop-shadow(0px 3px 0px rgba(0, 0, 255, 0.7))",
-            },
-          });
-          break;
-        }
-        case "vaporwave": {
-          setIconFilter({
-            [ICON_FILTER_CLASS_LIST_ALL]: {
-              filter:
-                "drop-shadow(0px 0px .15em rgba(255, 0, 255, 0.7)) drop-shadow(0px 0px .2em rgba(0, 255, 255, 0.7))",
-            },
-            ".site-wrapper, #root": {
-              position: "relative",
-              zIndex: "0",
-              textShadow:
-                "0px 0px .1em rgba(255, 0, 255, 0.7), 0px 0px .2em rgba(0, 255, 255, 0.7)",
-            },
-            ".site-wrapper:before": {
-              content: "''",
-              position: "absolute",
-              top: "0",
-              left: "0",
-              right: "0",
-              bottom: "0",
-              background:
-                "repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 2px)",
-              pointerEvents: "none",
-              zIndex: "99999",
-            },
-          });
-        }
-        default: {
-          console.error("Invalid icon filter, this should never happen");
-          break;
-        }
-      }
-      if (
-        user.settings &&
-        user.settings.customPrimaryColor &&
-        user.settings.customPrimaryColor !== "none"
-      ) {
-        setCustomPrimaryColor(user.settings.customPrimaryColor);
-      }
+      setIconFilter(getIconFilter(user.settings.iconFilter));
+    }
+    if (user.settings && user.settings.customPrimaryColor && user.settings.customPrimaryColor !== "none") {
+      setCustomPrimaryColor(user.settings.customPrimaryColor);
     }
   }, [user.settings]);
 

@@ -424,7 +424,7 @@ module.exports = class Game {
           this.hostId = this.originalHostId;
           await redis.setGameHost(this.id, this.hostId);
           this.sendAlert(
-            `${player.name} has reconnected and is now the host.`,
+            `${player.name} has reconnected and is now hosting.`,
             undefined,
             undefined,
             ["info"]
@@ -474,7 +474,7 @@ module.exports = class Game {
           this.hostId = this.originalHostId;
           await redis.setGameHost(this.id, this.hostId);
           this.sendAlert(
-            `${player.name} has returned and is now the host.`,
+            `${player.name} has returned and is now hosting.`,
             undefined,
             undefined,
             ["info"]
@@ -798,7 +798,7 @@ module.exports = class Game {
 
       // Notify all players of the host change
       this.sendAlert(
-        `${nextHost.name} is now the host.`,
+        `${nextHost.name} is now hosting.`,
         undefined,
         undefined,
         ["info"]

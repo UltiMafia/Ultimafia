@@ -160,7 +160,7 @@ const shopItems = [
     name: "Custom Site Primary Color",
     desc: "Change the primary color of the site to whatever you'd like",
     key: "customPrimaryColor",
-    price: 40,
+    price: 100,
     limit: 1,
     onBuy: async function (userId) {},
   },

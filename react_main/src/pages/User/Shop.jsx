@@ -8,19 +8,22 @@ import { UserContext, SiteInfoContext } from "../../Contexts";
 
 import {
   Box,
-  Grid,
   Button,
   Typography,
   Card,
   CardContent,
-  CardActions,
   TextField,
+  Stack,
+  Paper,
+  Grid2,
+  CardActionArea,
+  Divider,
 } from "@mui/material";
 
-import "css/shop.css";
 import { NewLoading } from "pages/Welcome/NewLoading";
 
 import coin from "images/umcoin.png";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 export default function Shop(props) {
   const [shopInfo, setShopInfo] = useState({ shopItems: [], balance: 0 });
@@ -32,6 +35,7 @@ export default function Shop(props) {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+  const isPhoneDevice = useIsPhoneDevice();
 
   useEffect(() => {
     document.title = "Shop | UltiMafia";
@@ -123,106 +127,155 @@ export default function Shop(props) {
       .catch(errorAlert);
   }
 
-  const shopItems = shopInfo.shopItems.map((item, i) => (
-    <Grid
-      item
-      xs={12}
-      sm={6}
-      md={4}
-      key={i}
-      sx={{
-        display: "flex",
+  const shopItems = shopInfo.shopItems.map((item, i) => {
+    const numOwned = user.itemsOwned[item.key];
+    const disabled = item.disabled || (numOwned === item.limit);
+
+    const price = (
+      <Stack direction="row" spacing={1} sx={{
         alignItems: "center",
         justifyContent: "center",
-      }}
-    >
-      <Card className="shop-item">
-        <CardContent sx={{ textAlign: "left" }}>
-          <Typography variant="h4" className="name">
-            {item.name}
-          </Typography>
-          <Typography variant="body2" className="desc">
-            {item.desc}
-          </Typography>
-        </CardContent>
-        <CardActions
-          className="bottom"
-          sx={{ justifyContent: "space-between", textAlign: "left" }}
-        >
-          <Typography
-            variant="body1"
-            className="price"
-            sx={{ display: "flex", alignItems: "center" }}
-          >
-            <img
-              src={coin}
-              style={{ marginRight: "4px", width: "20px", height: "20px" }}
-            />{" "}
-            {item.price} coins
-          </Typography>
-          <Typography variant="body1" className="owned">
-            Owned: {user.itemsOwned[item.key]}
-            {item.limit != null && ` / ${item.limit}`}
-          </Typography>
-          <Button disabled={item.disabled} onClick={() => onBuyItem(i)}>
-            Buy
-          </Button>
-        </CardActions>
-      </Card>
-    </Grid>
-  ));
+      }}>
+        <Typography>
+          {item.price}
+        </Typography>
+        <img
+          src={coin}
+          style={{ width: "20px", height: "20px" }}
+        />
+      </Stack>
+    );
+
+    return (
+      <Grid2
+        size={{
+          xs: 12,
+          sm: 6,
+          md: 3,
+        }}
+        key={i}
+      >
+        <Card variant="outlined" sx={{
+          height: "100%",
+          width: "100%",
+          opacity: disabled ? "50%" : undefined,
+          minHeight: isPhoneDevice ? undefined : "15em",
+        }}>
+          <CardActionArea disabled={disabled} onClick={() => onBuyItem(i)} sx={{
+            height: "100%",
+            width: "100%",
+          }}>
+            <CardContent sx={{
+              height: "100%",
+              width: "100%",
+            }}>
+              <Stack direction={isPhoneDevice ? "row" : "column"} spacing={1} sx={{
+                height: "100%",
+                width: "100%",
+              }}>
+                <Stack direction="column" spacing={1} sx={{
+                  height: "100%",
+                  flex: "1",
+                  marginBottom: isPhoneDevice ? undefined : 1,
+                }}>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Typography variant="h3" sx={{ flex: isPhoneDevice ? "1" : undefined, }}>
+                      {item.name}
+                    </Typography>
+                    {isPhoneDevice && price}
+                  </Stack>
+                  <Typography variant="caption">
+                    Owned: {user.itemsOwned[item.key]}
+                    {item.limit != null && ` / ${item.limit}`}
+                  </Typography>
+                  <Paper sx={{
+                    p: 1,
+                    flex: isPhoneDevice ? undefined : "1",
+                  }}>
+                    <Typography variant="body2">
+                      {item.desc}
+                    </Typography>
+                  </Paper>
+                </Stack>
+                {!isPhoneDevice && (
+                  <Box sx={{ pt: 1, }}>
+                    {price}
+                  </Box>
+                )}
+              </Stack>
+            </CardContent>
+          </CardActionArea>
+        </Card>
+      </Grid2>
+    );
+  });
 
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
 
   if (!loaded) return <NewLoading small />;
 
   return (
-    <Box className="span-panel main shop">
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          p: 2,
-        }}
-      >
-        <Box sx={{ display: "flex", alignItems: "center" }}>
+    <Stack direction="column" spacing={1}>
+      <Paper sx={{ p: 2 }}>
+        <Stack direction="row" spacing={1} sx={{
+          justifyContent: "center",
+        }}>
           <Typography
             variant="h3"
             className="balance"
-            sx={{ display: "flex", alignItems: "center" }}
           >
-            <img
-              className="um-coin"
-              src={coin}
-              style={{ marginRight: "4px", width: "20px", height: "20px" }}
-              alt="Coin Icon"
-            />
-            {shopInfo.balance}
+            You have: {shopInfo.balance}
           </Typography>
-        </Box>
+          <img
+            className="um-coin"
+            src={coin}
+            style={{ width: "20px", height: "20px" }}
+            alt="Coin Icon"
+          />
+        </Stack>
+      </Paper>
 
-        <Box sx={{ display: "flex", gap: 2 }}>
+      <Divider flexItem orientation="horizontal" />
+
+      <Grid2 container spacing={1}>
+        {shopItems}
+      </Grid2>
+
+      <Divider flexItem orientation="horizontal" />
+
+      <Paper sx={{ p: 2 }}>
+        <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1} sx={{
+          alignItems: isPhoneDevice ? "stretch" : "center",
+          width: "100%",
+        }}>
+          <Typography variant="h3">
+            Transfer coins
+          </Typography>
+          <Divider flexItem orientation={isPhoneDevice ? "horizontal" : "vertical"} />
           <TextField
             label="Recipient Username"
             value={recipient}
             onChange={(e) => setRecipient(e.target.value)}
+            sx={{
+              flex: "1",
+            }}
           />
           <TextField
             label="Amount to Transfer"
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
+            sx={{
+              flex: "1",
+            }}
           />
-          <Button onClick={handleTransferCoins} sx={{ height: "100%" }}>
+          <Button onClick={handleTransferCoins} sx={{
+            alignSelf: "stretch",
+          }}>
             Transfer
           </Button>
-        </Box>
-      </Box>
-
-      <Grid container spacing={2} className="shop-items">
-        {shopItems}
-      </Grid>
-    </Box>
+        </Stack>
+      </Paper>
+    </Stack>
   );
 }
