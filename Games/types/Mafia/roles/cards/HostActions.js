@@ -1,9 +1,24 @@
 const Card = require("../../Card");
-const { PRIORITY_DAY_EFFECT_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_DAY_EFFECT_DEFAULT, PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
 
 module.exports = class HostActions extends Card {
   constructor(role) {
     super(role);
+
+
+    this.winCheckSpecial = {
+      priority: PRIORITY_WIN_CHECK_DEFAULT + 1,
+      againOnFinished: true,
+      check: function (counts, winners, aliveCount, confirmedFinished) {
+        if (this.game.HostSelectedWinners) {
+          for (let player of this.game.HostSelectedWinners) {
+            if (EVIL_FACTIONS.includes(player.faction)) {
+              winners.addPlayer(player, "Contestant");
+            }
+          }
+        }
+      },
+    };
 
     this.meetings = {
       "Do Host Action": {
