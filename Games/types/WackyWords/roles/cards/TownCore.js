@@ -15,7 +15,7 @@ module.exports = class TownCore extends Card {
         actionName: "Pick Favorite Response",
         states: ["Day"],
         flags: ["voting", "noVeg"],
-        inputType: "custom",
+        inputType: "showAllOptions",
         targets: [],
         action: {
           priority: -3,
@@ -62,7 +62,7 @@ module.exports = class TownCore extends Card {
         actionName: "Pick 2nd Favorite Response",
         states: ["Day"],
         flags: ["voting", "noVeg"],
-        inputType: "custom",
+        inputType: "showAllOptions",
         targets: [],
         action: {
           priority: -2,
@@ -87,7 +87,7 @@ module.exports = class TownCore extends Card {
         actionName: "Pick 3rd Favorite Response",
         states: ["Day"],
         flags: ["voting", "noVeg"],
-        inputType: "custom",
+        inputType: "showAllOptions",
         targets: [],
         action: {
           priority: -1,

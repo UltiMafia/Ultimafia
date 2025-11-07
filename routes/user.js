@@ -1131,6 +1131,14 @@ router.post("/settings/update", async function (req, res) {
       return;
     }
 
+    if (prop == "customPrimaryColor" && !itemsOwned.customPrimaryColor) {
+      res.status(500);
+      res.send(
+        "You must purchase Custom Site Primary Color with coins from the Shop."
+      );
+      return;
+    }
+
     if (prop == "iconFilter" && !itemsOwned.iconFilter) {
       res.status(500);
       res.send("You must purchase Icon Filter with coins from the Shop.");
