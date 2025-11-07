@@ -22,6 +22,24 @@ module.exports = class HostChooseRoles extends Card {
       },
     };
 
+    this.passiveActions = [
+      {
+        actor: role.player,
+        state: "Hosting",
+        game: role.game,
+        role: role,
+        priority: PRIORITY_CONVERT_DEFAULT+2,
+        labels: ["investigate"],
+        run: function () {
+          if(this.game.HostRolesChanges){
+            for(let player of this.game.HostRolesChanges){
+              this.game.events.emit("roleAssigned", player));
+            }
+          }
+        },
+      },
+    ];
+
     this.listeners = {
       state: function (stateInfo) {
         if (stateInfo.name.match(/Hosting/) || stateInfo.name.match(/Night/)) {
