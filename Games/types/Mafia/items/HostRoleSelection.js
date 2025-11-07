@@ -11,7 +11,7 @@ module.exports = class HostRoleSelection extends Item {
 
     this.meetings = {
       "Host Pick Role": {
-        actionName: "Choose "+this.Contestant.name+"’s role ",
+        actionName: "Choose " + this.Contestant.name + "’s role ",
         states: ["Hosting"],
         flags: ["voting", "noVeg"],
         inputType: "custom",
@@ -26,8 +26,9 @@ module.exports = class HostRoleSelection extends Item {
               undefined,
               false,
               true,
-              true);
-            
+              true
+            );
+
             this.item.drop();
           },
         },
