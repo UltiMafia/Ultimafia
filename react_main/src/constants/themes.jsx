@@ -5,30 +5,28 @@ import { Box } from "@mui/material";
 import surprised from "images/emotes/surprised.webp";
 import sad from "images/emotes/sad.webp";
 
-const CustomExpandIcon = () => {
-  return (
-    <Box
-      sx={{
-        ".Mui-expanded & > .collapsIconWrapper": {
-          display: "none",
-        },
-        ".expandIconWrapper": {
-          display: "none",
-        },
-        ".Mui-expanded & > .expandIconWrapper": {
-          display: "block",
-        },
-      }}
-    >
-      <div className="expandIconWrapper">
-        <img src={surprised} />
-      </div>
-      <div className="collapsIconWrapper">
-        <img src={sad} />
-      </div>
-    </Box>
-  );
-};
+const CUSTOM_EXPAND_ICON = (
+  <Box
+    sx={{
+      ".Mui-expanded & > .collapsIconWrapper": {
+        display: "none",
+      },
+      ".expandIconWrapper": {
+        display: "none",
+      },
+      ".Mui-expanded & > .expandIconWrapper": {
+        display: "block",
+      },
+    }}
+  >
+    <div className="expandIconWrapper">
+      <img src={surprised} />
+    </div>
+    <div className="collapsIconWrapper">
+      <img src={sad} />
+    </div>
+  </Box>
+);
 
 export function getSiteTheme(customPrimaryColor) {
   const currentMonth = new Date().getMonth();
@@ -70,7 +68,7 @@ export function getSiteTheme(customPrimaryColor) {
     },
     MuiAccordionSummary: {
       defaultProps: {
-        expandIcon: CustomExpandIcon,
+        expandIcon: CUSTOM_EXPAND_ICON,
       },
       styleOverrides: {
         expandIconWrapper: {
