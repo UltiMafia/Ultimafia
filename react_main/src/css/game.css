@@ -98,6 +98,7 @@
 
   border-top-left-radius: var(--mui-shape-borderRadius);
   border-top-right-radius: var(--mui-shape-borderRadius);
+  border-bottom: 1px solid var(--mui-palette-divider);
 }
 
 .game .meeting-tabs {

@@ -1526,8 +1526,6 @@ export function TextMeetingLayout() {
           alignItems: "center",
           justifyContent: "space-between",
           overflow: "hidden",
-          borderBottom: 1,
-          borderColor: "divider",
         }}
       >
         <Tabs
