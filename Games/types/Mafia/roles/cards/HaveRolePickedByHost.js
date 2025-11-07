@@ -5,11 +5,10 @@ module.exports = class HaveRolePickedByHost extends Card {
   constructor(role) {
     super(role);
 
-    for(let player of this.game.players){
-      if(player.role && player.role.name == "Host"){
+    for (let player of this.game.players) {
+      if (player.role && player.role.name == "Host") {
         player.giveItem("HostRoleSelection", role.player);
       }
     }
-
   }
 };
