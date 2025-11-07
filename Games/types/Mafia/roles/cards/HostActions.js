@@ -23,6 +23,8 @@ module.exports = class HostActions extends Card {
           "Run Poll",
           "Reveal Poll Results",
           "Gain Gun",
+          "Silence Players",
+          "Unsilence Players",
         ],
         action: {
           run: function () {
@@ -90,6 +92,26 @@ module.exports = class HostActions extends Card {
                   )} has received the most Votes with ${max}.`
                 );
               }
+            }
+            else if(this.target === "Silence Players"){
+               this.game.queueAlert("The Host has called for silence only they may speak!");
+              for(let player of this.game.players){
+                this.role.giveEffect(player, "Silenced", -1);
+              }
+            }
+            else if(this.target === "Unsilence Players"){
+               this.game.queueAlert("The Host has ended the silence all players may speak again!");
+              for(let player of this.game.players){
+                player.removeEffect("Silenced", true);
+              }
+            }
+            else if(this.target === "Declare Winners"){
+               this.actor.queueAlert("Choose the players you want to win then hit confirm!");
+              let temp = this.actor.holdItem(
+                "HostDeclareWinner",
+                this.actor.role.data.Count
+              );
+              this.game.instantMeeting(temp.meetings, [this.actor]);
             }
           },
         },
