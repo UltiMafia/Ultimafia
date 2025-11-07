@@ -226,7 +226,7 @@ module.exports = class MafiaPlayer extends Player {
                   `${this.actor.name} Private Reveals to you.`
                 );
                 this.actor.queueAlert(
-                  `You Privatly Reveal to ${this.target.name}.`
+                  `You Private Reveal to ${this.target.name}.`
                 );
                 this.actor.role.revealToPlayer(
                   this.target,
