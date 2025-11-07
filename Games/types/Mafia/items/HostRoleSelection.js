@@ -28,6 +28,10 @@ module.exports = class HostRoleSelection extends Item {
               true,
               true
             );
+            if(this.game.HostRolesChanges == null){
+              this.game.HostRolesChanges = [];
+            }
+            this.game.HostRolesChanges.push(this.item.Contestant);
 
             this.item.drop();
           },
