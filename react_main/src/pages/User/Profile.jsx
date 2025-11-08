@@ -107,8 +107,7 @@ export default function Profile() {
 
   const profileUserId = canonicalUserId || userId;
   const isSelf = profileUserId === user.id;
-  const isBlocked =
-    !isSelf && user.blockedUsers.indexOf(profileUserId) !== -1;
+  const isBlocked = !isSelf && user.blockedUsers.indexOf(profileUserId) !== -1;
 
   // userId is the id of the current profile
   // user.id is the id of the current user
