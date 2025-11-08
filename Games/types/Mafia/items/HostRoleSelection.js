@@ -8,9 +8,9 @@ module.exports = class HostRoleSelection extends Item {
     this.lifespan = 1;
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
+    let meetingName = "Choose " + this.Contestant.name + "’s role ";
 
-    this.meetings = {
-      "Host Pick Role": {
+    this.meetings[meetingName] = {
         actionName: "Choose " + this.Contestant.name + "’s role ",
         states: ["Hosting"],
         flags: ["voting", "noVeg"],
@@ -21,6 +21,9 @@ module.exports = class HostRoleSelection extends Item {
           priority: PRIORITY_CONVERT_DEFAULT,
           item: this,
           run: function () {
+            if(this.target == "None"){
+              return;
+            }
             this.item.Contestant.setRole(
               `${this.target}`,
               undefined,
@@ -36,7 +39,6 @@ module.exports = class HostRoleSelection extends Item {
             this.item.drop();
           },
         },
-      },
-    };
+      };
   }
 };

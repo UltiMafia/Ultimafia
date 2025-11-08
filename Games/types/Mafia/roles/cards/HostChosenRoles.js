@@ -1,7 +1,7 @@
 const Card = require("../../Card");
 const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
 const { addArticle } = require("../../../../core/Utils");
-module.exports = class HostChooseRoles extends Card {
+module.exports = class HostChosenRoles extends Card {
   constructor(role) {
     super(role);
     //const targetOptions = this.game.PossibleRoles.filter((r) => r);
@@ -33,7 +33,7 @@ module.exports = class HostChooseRoles extends Card {
         run: function () {
           if(this.game.HostRolesChanges){
             for(let player of this.game.HostRolesChanges){
-              this.game.events.emit("roleAssigned", player));
+              this.game.events.emit("roleAssigned", player);
             }
           }
         },
@@ -42,10 +42,51 @@ module.exports = class HostChooseRoles extends Card {
 
     this.listeners = {
       state: function (stateInfo) {
-        if (stateInfo.name.match(/Hosting/) || stateInfo.name.match(/Night/)) {
+        if (stateInfo.name.match(/Hosting/)) {
           this.game.HaveHostingState = false;
+          if (this.game.isDayStart()){
+            this.game.HaveHostingStateBlock = "Day";
+          }
+          else{
+            this.game.HaveHostingStateBlock = "Night";
+          }
+        }
+        if(stateInfo.name.match(/Night/) && this.game.HaveHostingStateBlock == "Night"){
+          this.game.HaveHostingStateBlock = null;
+        }
+        if(stateInfo.name.match(/Day/) && this.game.HaveHostingStateBlock == "Day"){
+          this.game.HaveHostingStateBlock = null;
         }
       },
     };
+
+    this.stateMods = {
+      Day: {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          if (this.game.HaveHostingState == true) {
+            return true;
+          }
+          if (this.game.HaveHostingStateBlock == "Night") {
+            return true;
+          }
+          return false;
+        },
+      },
+      Night: {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          if (this.game.HaveHostingState == true) {
+            return true;
+          }
+          if (this.game.HaveHostingStateBlock == "Day") {
+            return true;
+          }
+          return false;
+        },
+      },
+    };
+
+
   }
 };

@@ -48,7 +48,9 @@ module.exports = class RoleSharing extends Item {
 
     this.listeners = {
       state: function (stateInfo) {
-        this.hasSharedWith = [];
+        this.hasSharedWithRole = [];
+        this.hasSharedWithAlignment = [];
+        this.hasSharedWithPrivate = [];
         //var currentFungusList = this.shareTypes.filter((h));
 
         //this.meetings["Choose Share Method"].targets = currentFungusList;
@@ -78,9 +80,20 @@ module.exports = class RoleSharing extends Item {
           )
             return;
 
-          if (this.hasSharedWith.includes(targetPlayer)) return;
+          if (this.hasSharedWithRole.includes(targetPlayer) && this.currentShareMethod == "Role Share") return;
+          if (this.hasSharedWithAlignment.includes(targetPlayer) && this.currentShareMethod == "Alignment Share") return;
+          if (this.hasSharedWithPrivate.includes(targetPlayer) && this.currentShareMethod == "Private Reveal") return;
           if (this.holder.hasEffect("CannotRoleShare")) return;
-          this.hasSharedWith.push(targetPlayer);
+          if(this.currentShareMethod == "Role Share"){
+            this.hasSharedWithRole.push(targetPlayer);
+          }
+          if(this.currentShareMethod == "Alignment Share"){
+            this.hasSharedWithAlignment.push(targetPlayer);
+          }
+          if(this.currentShareMethod == "Private Reveal"){
+            this.hasSharedWithPrivate.push(targetPlayer);
+          }
+          
           if (
             this.currentShareMethod == "Role Share" ||
             this.currentShareMethod == "Alignment Share"
@@ -137,10 +150,14 @@ module.exports = class RoleSharing extends Item {
               item: this,
               labels: ["hidden"],
               run: function () {
-                this.game.queueAlert(
-                  `${this.actor.name} ${this.item.currentShareMethod}s to everyone.`
+              for (let player of this.game.alivePlayers()) {
+              if (this.actor.isInSameRoom(player)) {
+                player.queueAlert(
+                  `${this.actor.name} Public Reveals to Everyone.`
                 );
-                this.actor.role.revealToAll();
+                this.actor.role.revealToPlayer(player, null, "investigate");
+              }
+            }
               },
             });
             this.game.instantAction(action);

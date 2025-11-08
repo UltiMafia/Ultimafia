@@ -3161,6 +3161,10 @@ Game Settings
   background-image: url("/src/images/modifiers/brutish.png");
 }
 
+.gamesetting-Broadcast-Closed-Roles {
+  background-image: url("/src/images/modifiers/loud.png");
+}
+
 /***********
 *
 * Pride icons; not for game

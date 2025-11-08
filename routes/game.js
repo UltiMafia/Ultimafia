@@ -1058,9 +1058,9 @@ const settingsChecks = {
       return "Pregame wait length must be between 1 and 6 hours.";
     }
 
-    var broadcastClosedRoles = Boolean(settings.broadcastClosedRoles);
+    var advancedHosting = Boolean(settings.advancedHosting);
 
-    return { extendLength, pregameWaitLength, broadcastClosedRoles };
+    return { extendLength, pregameWaitLength, advancedHosting };
   },
   Resistance: (settings, setup) => {
     return {};

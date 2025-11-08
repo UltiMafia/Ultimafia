@@ -12,9 +12,7 @@ module.exports = class HostActions extends Card {
       check: function (counts, winners, aliveCount, confirmedFinished) {
         if (this.game.HostSelectedWinners) {
           for (let player of this.game.HostSelectedWinners) {
-            if (EVIL_FACTIONS.includes(player.faction)) {
               winners.addPlayer(player, "Contestant");
-            }
           }
         }
       },
@@ -40,6 +38,7 @@ module.exports = class HostActions extends Card {
           "Gain Gun",
           "Silence Players",
           "Unsilence Players",
+          "Declare Winners",
         ],
         action: {
           run: function () {
@@ -111,6 +110,9 @@ module.exports = class HostActions extends Card {
             else if(this.target === "Silence Players"){
                this.game.queueAlert("The Host has called for silence only they may speak!");
               for(let player of this.game.players){
+                if(player == this.actor){
+                  continue;
+                }
                 this.role.giveEffect(player, "Silenced", -1);
               }
             }

@@ -59,7 +59,7 @@ module.exports = class MafiaGame extends Game {
     this.useObituaries = true;
     this.pregameWaitLength = options.settings.pregameWaitLength;
     this.extendLength = options.settings.extendLength;
-    this.broadcastClosedRoles = options.settings.broadcastClosedRoles;
+    this.advancedHosting = options.settings.advancedHosting;
     this.dayCount = 0;
     this.spectatorMeetFilter = {
       Village: true,
@@ -98,7 +98,7 @@ module.exports = class MafiaGame extends Game {
   }
 
   rebroadcastSetup() {
-    if (this.setup.closed && this.broadcastClosedRoles) {
+    if (this.setup.closed && this.isBroadcastClosedRoles()) {
       this.setup.closed = false;
       this.setup.closedRoles = this.setup.roles;
       this.setup.roles = [
@@ -217,6 +217,24 @@ module.exports = class MafiaGame extends Game {
       });
 
       this.queueAction(actionVisitDay);
+      if (this.isRoleSharing() ||
+        this.isAlignmentSharing() ||
+        this.isPrivateRevealing() ||
+        this.PublicRevealing()){
+        for (let player of this.alivePlayers()) {
+        if (player.items.filter((i) => i.name == "RoleSharing").length <= 0) {
+          player.holdItem(
+            "RoleSharing",
+            1,
+            this.isRoleSharing(),
+            this.isAlignmentSharing(),
+            this.isPrivateRevealing(),
+            this.isPublicRevealing()
+          );
+        }
+      }
+    }
+
     }
     if (this.getStateName() == "Night") {
       var actionVisit = new Action({
@@ -524,7 +542,7 @@ module.exports = class MafiaGame extends Game {
     return {
       extendLength: this.extendLength,
       pregameWaitLength: this.pregameWaitLength,
-      broadcastClosedRoles: this.broadcastClosedRoles,
+      advancedHosting: this.advancedHosting,
     };
   }
 

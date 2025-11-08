@@ -5116,6 +5116,16 @@ const roleData = {
         "Cannot be added to ranked or competitive games",
       ],
     },
+    Contestant: {
+      alignment: "Independent",
+      tags: [
+        "Pregame Actions",
+      ],
+      description: [
+        "Before the game starts the Host can assign them a role.",
+        "Wins if the Host chooses for them to win.",
+      ],
+    },
     Siren: {
       alignment: "Independent",
       tags: ["Killing", "Visits", "Reflexive", "Advanced"],

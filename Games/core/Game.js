@@ -1283,7 +1283,7 @@ module.exports = class Game {
       if (role != "Host") {
         continue;
       }
-
+      this.HaveHostingState = true;
       // Assign Host role(s) to the current game host first
       for (let j = 0; j < roleset[roleName]; j++) {
         if (j === 0) {
@@ -1315,6 +1315,12 @@ module.exports = class Game {
     var i = 0;
     this.originalRoles = {};
 
+    if(this.HaveHostingState && this.type == "Mafia" && this.advancedHosting == true){
+      for(let player of randomPlayers){
+        player.setRole("Contestant", undefined, false, true, true);
+      }
+    }
+    else{
     for (let roleName in roleset) {
       for (let j = 0; j < roleset[roleName]; j++) {
         let player = randomPlayers[i];
@@ -1324,6 +1330,7 @@ module.exports = class Game {
         i++;
       }
     }
+  }
     this.SpecialInteractionRoles = [];
     this.AddedRoles = [];
     this.AddedEvents = [];
@@ -1586,9 +1593,13 @@ module.exports = class Game {
     } else {
       start = "Night";
     }
-    if (this.HaveTreasureChestState == true) {
+    if (this.HaveHostingState == true) {
+      start = "Hosting";
+    }
+    else if (this.HaveTreasureChestState == true) {
       start = "Treasure Chest";
-    } else if (this.HaveDuskOrDawn == true && start == "Day") {
+    }
+     else if (this.HaveDuskOrDawn == true && start == "Day") {
       start = "Dawn";
     } else if (this.HaveDuskOrDawn == true && start == "Night") {
       start = "Dusk";
@@ -1879,7 +1890,7 @@ module.exports = class Game {
     if (this.isRoleSharing() && this.currentState == 0) {
       [
         this.sendAlert(
-          `:message: ${this.setup.name}: This Setup is has Role Sharing Enabled! Do /roleshare to role share with other players.`,
+          `:message: ${this.setup.name}: This Setup is has Role Sharing Enabled! During the day select Role Share and a player to offer a role share to them`,
           undefined,
           { color: "#F1F1F1" }
         ),
@@ -1888,7 +1899,7 @@ module.exports = class Game {
     if (this.isAlignmentSharing() && this.currentState == 0) {
       [
         this.sendAlert(
-          `:message: ${this.setup.name}: This Setup is has Alignment Sharing Enabled! Do /alignmentshare to alignment share with other players.`,
+          `:message: ${this.setup.name}: This Setup is has Alignment Sharing Enabled! During the day select Alignment Share and a player to offer an alignment share to them.`,
           undefined,
           { color: "#F1F1F1" }
         ),
@@ -1897,7 +1908,7 @@ module.exports = class Game {
     if (this.isPrivateRevealing() && this.currentState == 0) {
       [
         this.sendAlert(
-          `:message: ${this.setup.name}: This Setup has Private Revealing enabled! Do /privatereveal to privatly reveal your role to a player.`,
+          `:message: ${this.setup.name}: This Setup has Private Revealing enabled! During the day select Private Reveal and a player to reveal your role to them.`,
           undefined,
           { color: "#F1F1F1" }
         ),
@@ -1906,7 +1917,7 @@ module.exports = class Game {
     if (this.isPublicRevealing() && this.currentState == 0) {
       [
         this.sendAlert(
-          `:message: ${this.setup.name}: This Setup has Public Revealing enabled! Do /publicreveal to publicly reveal your role.`,
+          `:message: ${this.setup.name}: This Setup has Public Revealing enabled! During the day select Public Reveal and a player to publicly reveal your role.`,
           undefined,
           { color: "#F1F1F1" }
         ),
@@ -2428,6 +2439,13 @@ module.exports = class Game {
 
   isNoReveal() {
     if (this.getGameSetting("No Reveal")) {
+      return true;
+    }
+    return false;
+  }
+
+  isBroadcastClosedRoles() {
+    if (this.getGameSetting("Broadcast Closed Roles")) {
       return true;
     }
     return false;

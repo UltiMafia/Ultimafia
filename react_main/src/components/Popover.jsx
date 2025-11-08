@@ -745,8 +745,8 @@ export function parseGamePopover(game) {
       var extendLength = game.settings.gameTypeOptions.extendLength || 3;
       var pregameWaitLength =
         game.settings.gameTypeOptions.pregameWaitLength || 1;
-      var broadcastClosedRoles =
-        game.settings.gameTypeOptions.broadcastClosedRoles;
+      var advancedHosting =
+        game.settings.gameTypeOptions.advancedHosting;
       result.push(
         <InfoSection title="Mafia specific settings">
           <InfoRow
@@ -760,9 +760,9 @@ export function parseGamePopover(game) {
             key="pregameWaitLength"
           />
           <InfoRow
-            title="Broadcast Closed Roles"
-            content={broadcastClosedRoles}
-            key="broadcastClosedRoles"
+            title="Advanced Hosting"
+            content={advancedHosting}
+            key="advancedHosting"
           />
         </InfoSection>
       );
