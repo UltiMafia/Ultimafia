@@ -221,7 +221,7 @@ module.exports = class MafiaGame extends Game {
         this.isRoleSharing() ||
         this.isAlignmentSharing() ||
         this.isPrivateRevealing() ||
-        this.PublicRevealing()
+        this.isPublicRevealing()
       ) {
         for (let player of this.alivePlayers()) {
           if (player.items.filter((i) => i.name == "RoleSharing").length <= 0) {
