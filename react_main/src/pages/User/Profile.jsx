@@ -96,6 +96,7 @@ export default function Profile() {
   const [currentUserLove, setCurrentUserLove] = useState({});
   const [status, setStatus] = useState("offline");
   const [lastActive, setLastActive] = useState(null);
+  const [canonicalUserId, setCanonicalUserId] = useState(null);
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -104,12 +105,14 @@ export default function Profile() {
   const { userId } = useParams();
   const isPhoneDevice = useIsPhoneDevice();
 
-  const isSelf = userId === user.id;
-  const isBlocked = !isSelf && user.blockedUsers.indexOf(userId) !== -1;
+  const profileUserId = canonicalUserId || userId;
+  const isSelf = profileUserId === user.id;
+  const isBlocked =
+    !isSelf && user.blockedUsers.indexOf(profileUserId) !== -1;
 
   // userId is the id of the current profile
   // user.id is the id of the current user
-  const showDelete = userId === user.id;
+  const showDelete = profileUserId === user.id;
 
   const showDeleteArchivedGame = showDelete && editingArchivedGames;
 
@@ -123,10 +126,13 @@ export default function Profile() {
 
     if (userId) {
       setProfileLoaded(false);
+      setCanonicalUserId(null);
 
       axios
         .get(`/api/user/${userId}/profile`)
         .then((res) => {
+          const resolvedId = res.data.id;
+          setCanonicalUserId(resolvedId);
           setProfileLoaded(true);
           setName(res.data.name);
           setAvatar(res.data.avatar);
@@ -159,6 +165,8 @@ export default function Profile() {
           setLove(res.data.love);
           setCurrentUserLove(res.data.currentLove);
           setAchievements(res.data.achievements);
+          setFriendsPage(1);
+          loadFriends(resolvedId, "", 1);
 
           if (res.data.settings.youtube) {
             setMediaUrl(res.data.settings.youtube);
@@ -170,13 +178,6 @@ export default function Profile() {
           errorAlert(e);
           navigate("/play");
         });
-
-      axios
-        .get(`/api/user/${userId}/friends`)
-        .then((res) => {
-          setFriends(res.data);
-        })
-        .catch(errorAlert);
     }
   }, [userId]);
 
@@ -230,7 +231,7 @@ export default function Profile() {
     }
 
     axios
-      .post("/api/user/friend", { user: userId })
+      .post("/api/user/friend", { user: profileUserId })
       .then((res) => {
         setIsFriend(!isFriend);
         siteInfo.showAlert(res.data, "success");
@@ -302,7 +303,7 @@ export default function Profile() {
 
     axios
       .post("/api/user/love", {
-        user: userId,
+        user: profileUserId,
         type: love.type,
         reqType: "Love",
       })
@@ -344,7 +345,7 @@ export default function Profile() {
 
     axios
       .post("/api/user/love", {
-        user: userId,
+        user: profileUserId,
         type: love.type,
         reqType: "Marry",
       })
@@ -378,9 +379,9 @@ export default function Profile() {
     }
 
     axios
-      .post("/api/user/block", { user: userId })
+      .post("/api/user/block", { user: profileUserId })
       .then(() => {
-        user.blockUserToggle(userId);
+        user.blockUserToggle(profileUserId);
 
         if (isBlocked) siteInfo.showAlert("User unblocked.", "success");
         else siteInfo.showAlert("User blocked.", "success");
@@ -460,6 +461,23 @@ export default function Profile() {
       .catch(errorAlert);
   }
 
+  function loadFriends(id, filterArg = "", pageToSet) {
+    if (!id) return;
+    const query = filterArg ? `?${filterArg}` : "";
+
+    axios
+      .get(`/api/user/${id}/friends${query}`)
+      .then((res) => {
+        if (res.data.length || pageToSet === 1) {
+          setFriends(res.data);
+          if (pageToSet != null) {
+            setFriendsPage(pageToSet);
+          }
+        }
+      })
+      .catch(errorAlert);
+  }
+
   function onFriendsPageNav(page) {
     var filterArg = getPageNavFilterArg(
       page,
@@ -470,15 +488,7 @@ export default function Profile() {
 
     if (filterArg == null) return;
 
-    axios
-      .get(`/api/user/${userId}/friends?${filterArg}`)
-      .then((res) => {
-        if (res.data.length) {
-          setFriends(res.data);
-          setFriendsPage(page);
-        }
-      })
-      .catch(errorAlert);
+    loadFriends(profileUserId, filterArg, page);
   }
 
   const panelStyle = {};
@@ -497,7 +507,7 @@ export default function Profile() {
   }
 
   if (banner) {
-    bannerStyle.backgroundImage = `url(/uploads/${userId}_banner.webp?t=${siteInfo.cacheVal})`;
+    bannerStyle.backgroundImage = `url(/uploads/${profileUserId}_banner.webp?t=${siteInfo.cacheVal})`;
   }
 
   if (settings.bannerFormat === "stretch") {
@@ -685,7 +695,7 @@ export default function Profile() {
             <ReportDialog
               open={reportDialogOpen}
               onClose={() => setReportDialogOpen(false)}
-              prefilledArgs={{ user: userId }}
+              prefilledArgs={{ user: profileUserId }}
             />
           </>
         )}
@@ -734,7 +744,7 @@ export default function Profile() {
             <Avatar
               mediumlarge={isPhoneDevice}
               large={!isPhoneDevice}
-              id={userId}
+              id={profileUserId}
               hasImage={avatar}
               bustCache={bustCache}
               name={name}
@@ -874,7 +884,7 @@ export default function Profile() {
       <ModerationSideDrawer
         open={moderationDrawerOpen}
         setOpen={setModerationDrawerOpen}
-        prefilledArgs={{ userId }}
+        prefilledArgs={{ userId: profileUserId }}
       />
       <Grid container rowSpacing={1} columnSpacing={1} className="profile">
         <Grid item xs={12}>
@@ -945,7 +955,7 @@ export default function Profile() {
                   px: 2,
                 }}
               >
-                <Comments fullWidth location={userId} />
+                <Comments fullWidth location={profileUserId} />
               </Box>
             )}
           </Stack>
@@ -972,7 +982,7 @@ export default function Profile() {
                       <KarmaVoteWidget
                         item={karmaInfo}
                         setItem={setKarmaInfo}
-                        userId={userId}
+                        userId={profileUserId}
                       />
                     </Stack>
                   )}
@@ -1160,7 +1170,7 @@ export default function Profile() {
         </Grid>
         {isPhoneDevice && (
           <Grid item xs={12} sx={{ mt: 1 }}>
-            <Comments fullWidth location={userId} />
+            <Comments fullWidth location={profileUserId} />
           </Grid>
         )}
       </Grid>

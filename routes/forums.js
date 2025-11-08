@@ -25,7 +25,7 @@ router.get("/categories", async function (req, res) {
         populate: [
           {
             path: "newestThreads",
-            select: "id author title viewCount replyCount deleted -_id",
+            select: "id author title postDate viewCount replyCount deleted -_id",
             match: { deleted: false },
             populate: {
               path: "author",

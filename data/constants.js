@@ -72,7 +72,7 @@ module.exports = {
     "Texas Hold Em": ["Town", "Host"],
     Cheat: ["Town", "Host"],
     Battlesnakes: ["Town", "Host"],
-    "Dice Wars": ["Military", "Host"],
+    "Dice Wars": ["Army", "Host"],
     "Connect Four": ["Town", "Host"],
   },
   startStates: {
@@ -135,7 +135,7 @@ module.exports = {
       Play: {
         min: 5 * 60 * 1000,
         max: 60 * 60 * 1000,
-        default: 30 * 60 * 1000,
+        default: 5 * 60 * 1000,
       },
     },
     Jotto: {
