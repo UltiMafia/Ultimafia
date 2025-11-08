@@ -166,8 +166,7 @@ const gameSettingData = {
       category: "Other",
       internal: ["BroadcastClosedRoles"],
       tags: ["Information"],
-      description:
-        "Players can see what roles generated in closed setups.",
+      description: "Players can see what roles generated in closed setups.",
     },
     /*
     Austere: {

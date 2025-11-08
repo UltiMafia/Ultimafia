@@ -12,8 +12,15 @@ module.exports = class HostDeclareWinner extends Item {
     this.meetings[meetingName] = {
       actionName: "Choose Winners",
       states: ["Day"],
-      flags: ["voting", "mustAct", "instant", "multi", "instantButChangeable",
-          "repeatable", "noVeg"],
+      flags: [
+        "voting",
+        "mustAct",
+        "instant",
+        "multi",
+        "instantButChangeable",
+        "repeatable",
+        "noVeg",
+      ],
       targets: { include: ["alive", "dead"] },
       multiMin: 1,
       multiMax: 10,
@@ -34,7 +41,7 @@ module.exports = class HostDeclareWinner extends Item {
         labels: ["hidden", "absolute"],
         item: this,
         run: function () {
-          if(this.target == "No"){
+          if (this.target == "No") {
             return;
           }
           this.game.HostSelectedWinners = this.item.SelectedPlayers;

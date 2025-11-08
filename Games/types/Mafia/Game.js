@@ -217,24 +217,25 @@ module.exports = class MafiaGame extends Game {
       });
 
       this.queueAction(actionVisitDay);
-      if (this.isRoleSharing() ||
+      if (
+        this.isRoleSharing() ||
         this.isAlignmentSharing() ||
         this.isPrivateRevealing() ||
-        this.PublicRevealing()){
+        this.PublicRevealing()
+      ) {
         for (let player of this.alivePlayers()) {
-        if (player.items.filter((i) => i.name == "RoleSharing").length <= 0) {
-          player.holdItem(
-            "RoleSharing",
-            1,
-            this.isRoleSharing(),
-            this.isAlignmentSharing(),
-            this.isPrivateRevealing(),
-            this.isPublicRevealing()
-          );
+          if (player.items.filter((i) => i.name == "RoleSharing").length <= 0) {
+            player.holdItem(
+              "RoleSharing",
+              1,
+              this.isRoleSharing(),
+              this.isAlignmentSharing(),
+              this.isPrivateRevealing(),
+              this.isPublicRevealing()
+            );
+          }
         }
       }
-    }
-
     }
     if (this.getStateName() == "Night") {
       var actionVisit = new Action({

@@ -5,9 +5,6 @@ module.exports = class Contestant extends Role {
     super("Contestant", player, data);
 
     this.alignment = "Independent";
-    this.cards = [
-      "VillageCore",
-      "HaveRolePickedByHost",
-    ];
+    this.cards = ["VillageCore", "HaveRolePickedByHost"];
   }
 };

@@ -47,7 +47,10 @@ module.exports = class BlockedFearful extends Card {
 
             if (this.actor.hasEffect("Scary")) {
               for (let player of this.game.players) {
-                if (player.role.modifier && player.role.modifier.split("/").includes("Fearful")) {
+                if (
+                  player.role.modifier &&
+                  player.role.modifier.split("/").includes("Fearful")
+                ) {
                   this.blockActions(player);
                 }
               }

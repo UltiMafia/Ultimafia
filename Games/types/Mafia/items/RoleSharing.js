@@ -80,20 +80,32 @@ module.exports = class RoleSharing extends Item {
           )
             return;
 
-          if (this.hasSharedWithRole.includes(targetPlayer) && this.currentShareMethod == "Role Share") return;
-          if (this.hasSharedWithAlignment.includes(targetPlayer) && this.currentShareMethod == "Alignment Share") return;
-          if (this.hasSharedWithPrivate.includes(targetPlayer) && this.currentShareMethod == "Private Reveal") return;
+          if (
+            this.hasSharedWithRole.includes(targetPlayer) &&
+            this.currentShareMethod == "Role Share"
+          )
+            return;
+          if (
+            this.hasSharedWithAlignment.includes(targetPlayer) &&
+            this.currentShareMethod == "Alignment Share"
+          )
+            return;
+          if (
+            this.hasSharedWithPrivate.includes(targetPlayer) &&
+            this.currentShareMethod == "Private Reveal"
+          )
+            return;
           if (this.holder.hasEffect("CannotRoleShare")) return;
-          if(this.currentShareMethod == "Role Share"){
+          if (this.currentShareMethod == "Role Share") {
             this.hasSharedWithRole.push(targetPlayer);
           }
-          if(this.currentShareMethod == "Alignment Share"){
+          if (this.currentShareMethod == "Alignment Share") {
             this.hasSharedWithAlignment.push(targetPlayer);
           }
-          if(this.currentShareMethod == "Private Reveal"){
+          if (this.currentShareMethod == "Private Reveal") {
             this.hasSharedWithPrivate.push(targetPlayer);
           }
-          
+
           if (
             this.currentShareMethod == "Role Share" ||
             this.currentShareMethod == "Alignment Share"
@@ -150,14 +162,14 @@ module.exports = class RoleSharing extends Item {
               item: this,
               labels: ["hidden"],
               run: function () {
-              for (let player of this.game.alivePlayers()) {
-              if (this.actor.isInSameRoom(player)) {
-                player.queueAlert(
-                  `${this.actor.name} Public Reveals to Everyone.`
-                );
-                this.actor.role.revealToPlayer(player, null, "investigate");
-              }
-            }
+                for (let player of this.game.alivePlayers()) {
+                  if (this.actor.isInSameRoom(player)) {
+                    player.queueAlert(
+                      `${this.actor.name} Public Reveals to Everyone.`
+                    );
+                    this.actor.role.revealToPlayer(player, null, "investigate");
+                  }
+                }
               },
             });
             this.game.instantAction(action);

@@ -1,10 +1,12 @@
 const Card = require("../../Card");
-const { PRIORITY_DAY_EFFECT_DEFAULT, PRIORITY_WIN_CHECK_DEFAULT } = require("../../const/Priority");
+const {
+  PRIORITY_DAY_EFFECT_DEFAULT,
+  PRIORITY_WIN_CHECK_DEFAULT,
+} = require("../../const/Priority");
 
 module.exports = class HostActions extends Card {
   constructor(role) {
     super(role);
-
 
     this.winCheckSpecial = {
       priority: PRIORITY_WIN_CHECK_DEFAULT + 1,
@@ -12,7 +14,7 @@ module.exports = class HostActions extends Card {
       check: function (counts, winners, aliveCount, confirmedFinished) {
         if (this.game.HostSelectedWinners) {
           for (let player of this.game.HostSelectedWinners) {
-              winners.addPlayer(player, "Contestant");
+            winners.addPlayer(player, "Contestant");
           }
         }
       },
@@ -106,24 +108,27 @@ module.exports = class HostActions extends Card {
                   )} has received the most Votes with ${max}.`
                 );
               }
-            }
-            else if(this.target === "Silence Players"){
-               this.game.queueAlert("The Host has called for silence only they may speak!");
-              for(let player of this.game.players){
-                if(player == this.actor){
+            } else if (this.target === "Silence Players") {
+              this.game.queueAlert(
+                "The Host has called for silence only they may speak!"
+              );
+              for (let player of this.game.players) {
+                if (player == this.actor) {
                   continue;
                 }
                 this.role.giveEffect(player, "Silenced", -1);
               }
-            }
-            else if(this.target === "Unsilence Players"){
-               this.game.queueAlert("The Host has ended the silence all players may speak again!");
-              for(let player of this.game.players){
+            } else if (this.target === "Unsilence Players") {
+              this.game.queueAlert(
+                "The Host has ended the silence all players may speak again!"
+              );
+              for (let player of this.game.players) {
                 player.removeEffect("Silenced", true);
               }
-            }
-            else if(this.target === "Declare Winners"){
-               this.actor.queueAlert("Choose the players you want to win then hit confirm!");
+            } else if (this.target === "Declare Winners") {
+              this.actor.queueAlert(
+                "Choose the players you want to win then hit confirm!"
+              );
               let temp = this.actor.holdItem(
                 "HostDeclareWinner",
                 this.actor.role.data.Count

@@ -797,12 +797,9 @@ module.exports = class Game {
       await redis.setGameHost(this.id, this.hostId);
 
       // Notify all players of the host change
-      this.sendAlert(
-        `${nextHost.name} is now hosting.`,
-        undefined,
-        undefined,
-        ["info"]
-      );
+      this.sendAlert(`${nextHost.name} is now hosting.`, undefined, undefined, [
+        "info",
+      ]);
 
       // Broadcast updated host info to all players
       this.broadcast("hostId", this.hostId);
@@ -1315,22 +1312,25 @@ module.exports = class Game {
     var i = 0;
     this.originalRoles = {};
 
-    if(this.HaveHostingState && this.type == "Mafia" && this.advancedHosting == true){
-      for(let player of randomPlayers){
+    if (
+      this.HaveHostingState &&
+      this.type == "Mafia" &&
+      this.advancedHosting == true
+    ) {
+      for (let player of randomPlayers) {
         player.setRole("Contestant", undefined, false, true, true);
       }
-    }
-    else{
-    for (let roleName in roleset) {
-      for (let j = 0; j < roleset[roleName]; j++) {
-        let player = randomPlayers[i];
-        //player.setRole(roleName);
-        player.setRole(roleName, undefined, false, true, true);
-        this.originalRoles[player.id] = roleName;
-        i++;
+    } else {
+      for (let roleName in roleset) {
+        for (let j = 0; j < roleset[roleName]; j++) {
+          let player = randomPlayers[i];
+          //player.setRole(roleName);
+          player.setRole(roleName, undefined, false, true, true);
+          this.originalRoles[player.id] = roleName;
+          i++;
+        }
       }
     }
-  }
     this.SpecialInteractionRoles = [];
     this.AddedRoles = [];
     this.AddedEvents = [];
@@ -1595,11 +1595,9 @@ module.exports = class Game {
     }
     if (this.HaveHostingState == true) {
       start = "Hosting";
-    }
-    else if (this.HaveTreasureChestState == true) {
+    } else if (this.HaveTreasureChestState == true) {
       start = "Treasure Chest";
-    }
-     else if (this.HaveDuskOrDawn == true && start == "Day") {
+    } else if (this.HaveDuskOrDawn == true && start == "Day") {
       start = "Dawn";
     } else if (this.HaveDuskOrDawn == true && start == "Night") {
       start = "Dusk";

@@ -129,20 +129,19 @@ export default function Shop(props) {
 
   const shopItems = shopInfo.shopItems.map((item, i) => {
     const numOwned = user.itemsOwned[item.key];
-    const disabled = item.disabled || (numOwned === item.limit);
+    const disabled = item.disabled || numOwned === item.limit;
 
     const price = (
-      <Stack direction="row" spacing={1} sx={{
-        alignItems: "center",
-        justifyContent: "center",
-      }}>
-        <Typography>
-          {item.price}
-        </Typography>
-        <img
-          src={coin}
-          style={{ width: "20px", height: "20px" }}
-        />
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography>{item.price}</Typography>
+        <img src={coin} style={{ width: "20px", height: "20px" }} />
       </Stack>
     );
 
@@ -155,31 +154,51 @@ export default function Shop(props) {
         }}
         key={i}
       >
-        <Card variant="outlined" sx={{
-          height: "100%",
-          width: "100%",
-          opacity: disabled ? "50%" : undefined,
-          minHeight: isPhoneDevice ? undefined : "15em",
-        }}>
-          <CardActionArea disabled={disabled} onClick={() => onBuyItem(i)} sx={{
+        <Card
+          variant="outlined"
+          sx={{
             height: "100%",
             width: "100%",
-          }}>
-            <CardContent sx={{
+            opacity: disabled ? "50%" : undefined,
+            minHeight: isPhoneDevice ? undefined : "15em",
+          }}
+        >
+          <CardActionArea
+            disabled={disabled}
+            onClick={() => onBuyItem(i)}
+            sx={{
               height: "100%",
               width: "100%",
-            }}>
-              <Stack direction={isPhoneDevice ? "row" : "column"} spacing={1} sx={{
+            }}
+          >
+            <CardContent
+              sx={{
                 height: "100%",
                 width: "100%",
-              }}>
-                <Stack direction="column" spacing={1} sx={{
+              }}
+            >
+              <Stack
+                direction={isPhoneDevice ? "row" : "column"}
+                spacing={1}
+                sx={{
                   height: "100%",
-                  flex: "1",
-                  marginBottom: isPhoneDevice ? undefined : 1,
-                }}>
+                  width: "100%",
+                }}
+              >
+                <Stack
+                  direction="column"
+                  spacing={1}
+                  sx={{
+                    height: "100%",
+                    flex: "1",
+                    marginBottom: isPhoneDevice ? undefined : 1,
+                  }}
+                >
                   <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography variant="h3" sx={{ flex: isPhoneDevice ? "1" : undefined, }}>
+                    <Typography
+                      variant="h3"
+                      sx={{ flex: isPhoneDevice ? "1" : undefined }}
+                    >
                       {item.name}
                     </Typography>
                     {isPhoneDevice && price}
@@ -188,20 +207,16 @@ export default function Shop(props) {
                     Owned: {user.itemsOwned[item.key]}
                     {item.limit != null && ` / ${item.limit}`}
                   </Typography>
-                  <Paper sx={{
-                    p: 1,
-                    flex: isPhoneDevice ? undefined : "1",
-                  }}>
-                    <Typography variant="body2">
-                      {item.desc}
-                    </Typography>
+                  <Paper
+                    sx={{
+                      p: 1,
+                      flex: isPhoneDevice ? undefined : "1",
+                    }}
+                  >
+                    <Typography variant="body2">{item.desc}</Typography>
                   </Paper>
                 </Stack>
-                {!isPhoneDevice && (
-                  <Box sx={{ pt: 1, }}>
-                    {price}
-                  </Box>
-                )}
+                {!isPhoneDevice && <Box sx={{ pt: 1 }}>{price}</Box>}
               </Stack>
             </CardContent>
           </CardActionArea>
@@ -217,13 +232,14 @@ export default function Shop(props) {
   return (
     <Stack direction="column" spacing={1}>
       <Paper sx={{ p: 2 }}>
-        <Stack direction="row" spacing={1} sx={{
-          justifyContent: "center",
-        }}>
-          <Typography
-            variant="h3"
-            className="balance"
-          >
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            justifyContent: "center",
+          }}
+        >
+          <Typography variant="h3" className="balance">
             You have: {shopInfo.balance}
           </Typography>
           <img
@@ -244,14 +260,19 @@ export default function Shop(props) {
       <Divider flexItem orientation="horizontal" />
 
       <Paper sx={{ p: 2 }}>
-        <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1} sx={{
-          alignItems: isPhoneDevice ? "stretch" : "center",
-          width: "100%",
-        }}>
-          <Typography variant="h3">
-            Transfer coins
-          </Typography>
-          <Divider flexItem orientation={isPhoneDevice ? "horizontal" : "vertical"} />
+        <Stack
+          direction={isPhoneDevice ? "column" : "row"}
+          spacing={1}
+          sx={{
+            alignItems: isPhoneDevice ? "stretch" : "center",
+            width: "100%",
+          }}
+        >
+          <Typography variant="h3">Transfer coins</Typography>
+          <Divider
+            flexItem
+            orientation={isPhoneDevice ? "horizontal" : "vertical"}
+          />
           <TextField
             label="Recipient Username"
             value={recipient}
@@ -269,9 +290,12 @@ export default function Shop(props) {
               flex: "1",
             }}
           />
-          <Button onClick={handleTransferCoins} sx={{
-            alignSelf: "stretch",
-          }}>
+          <Button
+            onClick={handleTransferCoins}
+            sx={{
+              alignSelf: "stretch",
+            }}
+          >
             Transfer
           </Button>
         </Stack>

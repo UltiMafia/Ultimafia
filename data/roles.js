@@ -5118,9 +5118,7 @@ const roleData = {
     },
     Contestant: {
       alignment: "Independent",
-      tags: [
-        "Pregame Actions",
-      ],
+      tags: ["Pregame Actions"],
       description: [
         "Before the game starts the Host can assign them a role.",
         "Wins if the Host chooses for them to win.",

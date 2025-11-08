@@ -28,11 +28,11 @@ module.exports = class HostChosenRoles extends Card {
         state: "Hosting",
         game: role.game,
         role: role,
-        priority: PRIORITY_CONVERT_DEFAULT+2,
+        priority: PRIORITY_CONVERT_DEFAULT + 2,
         labels: ["investigate"],
         run: function () {
-          if(this.game.HostRolesChanges){
-            for(let player of this.game.HostRolesChanges){
+          if (this.game.HostRolesChanges) {
+            for (let player of this.game.HostRolesChanges) {
               this.game.events.emit("roleAssigned", player);
             }
           }
@@ -44,17 +44,22 @@ module.exports = class HostChosenRoles extends Card {
       state: function (stateInfo) {
         if (stateInfo.name.match(/Hosting/)) {
           this.game.HaveHostingState = false;
-          if (this.game.isDayStart()){
+          if (this.game.isDayStart()) {
             this.game.HaveHostingStateBlock = "Day";
-          }
-          else{
+          } else {
             this.game.HaveHostingStateBlock = "Night";
           }
         }
-        if(stateInfo.name.match(/Night/) && this.game.HaveHostingStateBlock == "Night"){
+        if (
+          stateInfo.name.match(/Night/) &&
+          this.game.HaveHostingStateBlock == "Night"
+        ) {
           this.game.HaveHostingStateBlock = null;
         }
-        if(stateInfo.name.match(/Day/) && this.game.HaveHostingStateBlock == "Day"){
+        if (
+          stateInfo.name.match(/Day/) &&
+          this.game.HaveHostingStateBlock == "Day"
+        ) {
           this.game.HaveHostingStateBlock = null;
         }
       },
@@ -86,7 +91,5 @@ module.exports = class HostChosenRoles extends Card {
         },
       },
     };
-
-
   }
 };

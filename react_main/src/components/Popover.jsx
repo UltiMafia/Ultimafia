@@ -745,8 +745,7 @@ export function parseGamePopover(game) {
       var extendLength = game.settings.gameTypeOptions.extendLength || 3;
       var pregameWaitLength =
         game.settings.gameTypeOptions.pregameWaitLength || 1;
-      var advancedHosting =
-        game.settings.gameTypeOptions.advancedHosting;
+      var advancedHosting = game.settings.gameTypeOptions.advancedHosting;
       result.push(
         <InfoSection title="Mafia specific settings">
           <InfoRow
