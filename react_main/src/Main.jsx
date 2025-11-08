@@ -35,7 +35,6 @@ import { Welcome } from "./pages/Welcome/Welcome";
 import UserNavSection from "./pages/User/UserNavSection";
 import { GuestAuthButtons } from "./components/GuestAuthButtons";
 import CookieBanner from "./components/CookieBanner";
-import Chat from "./pages/Chat/Chat";
 import NavDropdown from "./components/NavDropdown";
 
 import "css/main.css";
@@ -159,7 +158,6 @@ function Main(props) {
         <InGameWarning />
         <Footer />
         <AlertList />
-        {<Chat SiteNotifs={useUnreadNotifications} />}
       </div>
     </Box>
   );

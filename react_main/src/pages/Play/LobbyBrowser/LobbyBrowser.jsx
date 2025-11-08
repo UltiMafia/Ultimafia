@@ -30,6 +30,7 @@ import { useIsPhoneDevice } from "../../../hooks/useIsPhoneDevice";
 import { RecentlyPlayedSetups } from "./RecentlyPlayedSetups";
 import { RecentForumReplies } from "components/RecentForumReplies";
 import { Poll } from "components/Poll";
+import Chat from "../../Chat/Chat";
 import { FeaturedSetup } from "./FeaturedSetup";
 import { DailyChallenges } from "./DailyChallengeDisplay";
 import { getRowStubColor } from "./gameRowColors.js";
@@ -289,6 +290,7 @@ export default function LobbyBrowser() {
             <RecentlyPlayedSetups lobby={lobbyName} />
             <RecentForumReplies />
             <Poll lobby={lobbyName} />
+            <Chat />
           </Stack>
         </Grid>
       </Grid>
