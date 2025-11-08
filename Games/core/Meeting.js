@@ -1047,7 +1047,7 @@ module.exports = class Meeting {
         leakChance = 0;
       }
 
-      if(message.recipients.find((e) => e.role && e.role.name == "Host")){
+      if (message.recipients.find((e) => e.role && e.role.name == "Host")) {
         leakChance = 0;
       }
 
