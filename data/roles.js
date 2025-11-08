@@ -6358,7 +6358,7 @@ const roleData = {
   },
   "Dice Wars": {
     General: {
-      alignment: "Military",
+      alignment: "Army",
       tags: ["None"],
       description: [
         "Controls territories on a hex grid.",

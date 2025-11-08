@@ -87,7 +87,7 @@ export function RoleDetails({
     Liberals: "Liberals 🇺🇸",
     Fascists: "Fascists 🛠️",
     Liars: "Liars 🤥",
-    Military: "Military ⚔️",
+    Army: "Army ⚔️",
   };
   const roleAlignment = mapAlignmentToText[roleData?.alignment];
   const roleTags = roleData?.tags ? roleData.tags.sort().join(", ") : "";
@@ -336,7 +336,7 @@ export function RoleCount({
     Liberals: "Liberals 🇺🇸",
     Fascists: "Fascists 🛠️",
     Liars: "Liars 🤥",
-    Military: "Military ⚔️",
+    Army: "Army ⚔️",
   };
   const roleAlignment = mapAlignmentToText[roleData?.alignment];
   const roleTags = roleData?.tags ? roleData.tags.sort().join(", ") : "";
