@@ -165,7 +165,11 @@ export function UserProvider({
     if (user.settings && user.settings.iconFilter) {
       setIconFilter(getIconFilter(user.settings.iconFilter));
     }
-    if (user.settings && user.settings.customPrimaryColor && user.settings.customPrimaryColor !== "none") {
+    if (
+      user.settings &&
+      user.settings.customPrimaryColor &&
+      user.settings.customPrimaryColor !== "none"
+    ) {
       setCustomPrimaryColor(user.settings.customPrimaryColor);
     }
   }, [user.settings]);

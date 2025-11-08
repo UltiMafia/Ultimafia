@@ -158,9 +158,15 @@ const gameSettingData = {
     "Competing Evil Factions": {
       category: "Other",
       internal: ["MafiaVsCult"],
-      tags: ["Information", "Death"],
+      tags: ["Win-con"],
       description:
         "Mafia and Cult cannot win if a member another Evil faction is alive.",
+    },
+    "Broadcast Closed Roles": {
+      category: "Other",
+      internal: ["BroadcastClosedRoles"],
+      tags: ["Information"],
+      description: "Players can see what roles generated in closed setups.",
     },
     /*
     Austere: {

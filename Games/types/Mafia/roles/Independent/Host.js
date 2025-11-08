@@ -11,7 +11,7 @@ module.exports = class Host extends Role {
       "EndGameWhenOnlyOneOtherAlive",
       "EndGameAtAnyTime",
       "UnReplaceable",
-      //"HostChosenRoles",
+      "HostChosenRoles",
       "HostActions",
       "ChooseWordsForGhost",
       "AddDusk",

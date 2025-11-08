@@ -56,7 +56,7 @@ var defaultOptions = {
     ...commonHostOptions,
     ranked: false,
     competitive: false,
-    broadcastClosedRoles: false,
+    advancedHosting: false,
     noVeg: false,
     pregameWaitLength: 1,
     extendLength: 3,

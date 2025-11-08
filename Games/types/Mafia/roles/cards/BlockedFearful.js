@@ -14,7 +14,7 @@ module.exports = class BlockedFearful extends Card {
         if (player != this.player) {
           return;
         }
-        if (this.hasAbility(["Modifier", "Blocking"])) {
+        if (this.hasAbility(["Modifier", "Blocking", "OnlyWhenAlive"])) {
           if (
             this.ScaryEffect == null ||
             !this.player.effects.includes(this.ScaryEffect)
@@ -43,15 +43,17 @@ module.exports = class BlockedFearful extends Card {
           priority: PRIORITY_BLOCK_EARLY,
           labels: ["block", "hidden"],
           run: function () {
-            this.actor.hasEffect("Scary");
+            //this.actor.hasEffect("Scary");
 
             if (this.actor.hasEffect("Scary")) {
               for (let player of this.game.players) {
-                if (player.role.modifier.split("/").includes("Fearful")) {
+                if (
+                  player.role.modifier &&
+                  player.role.modifier.split("/").includes("Fearful")
+                ) {
                   this.blockActions(player);
                 }
               }
-              this.blockActions(this.actor);
             }
           },
         });

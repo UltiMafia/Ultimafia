@@ -92,6 +92,7 @@ module.exports = class MafiaPlayer extends Player {
 
         this.game.sendAlert("Day extended.");
         return;
+      /*
       case "roleshare":
         if (this.game.getStateName() != "Day" || !this.alive) {
           return;
@@ -226,7 +227,7 @@ module.exports = class MafiaPlayer extends Player {
                   `${this.actor.name} Private Reveals to you.`
                 );
                 this.actor.queueAlert(
-                  `You Privatly Reveal to ${this.target.name}.`
+                  `You Private Reveal to ${this.target.name}.`
                 );
                 this.actor.role.revealToPlayer(
                   this.target,
@@ -269,6 +270,7 @@ module.exports = class MafiaPlayer extends Player {
         });
         this.game.instantAction(action);
         return;
+        */
     }
   }
 

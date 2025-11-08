@@ -7,6 +7,7 @@ module.exports = class RoleShareAccept extends Item {
     this.proposer = proposer;
     this.type = type;
     this.cannotBeStolen = true;
+    this.lifespan = -1;
     this.cannotBeSnooped = true;
     let meetingName;
     if (this.type == "Role Share") {

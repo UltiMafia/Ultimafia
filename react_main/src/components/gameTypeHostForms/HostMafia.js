@@ -53,14 +53,14 @@ export default function HostMafia() {
       ref: "ranked",
       type: "boolean",
       value: defaults.ranked,
-      showIf: ["!private", "!guests", "!competitive"],
+      showIf: ["!private", "!guests", "!competitive", "!advancedHosting"],
     },
     {
       label: "Competitive",
       ref: "competitive",
       type: "boolean",
       value: defaults.competitive,
-      showIf: ["!private", "!guests", "!ranked"],
+      showIf: ["!private", "!guests", "!ranked", "!advancedHosting"],
     },
     {
       label: "Spectating",
@@ -69,10 +69,11 @@ export default function HostMafia() {
       value: defaults.spectating,
     },
     {
-      label: "Broadcast Closed Roles",
-      ref: "broadcastClosedRoles",
+      label: "Advanced Hosting",
+      ref: "advancedHosting",
       type: "boolean",
-      value: defaults.broadcastClosedRoles,
+      value: defaults.advancedHosting,
+      showIf: ["!ranked", "!competitive"],
     },
     // {
     //     label: "Scheduled",
@@ -173,7 +174,7 @@ export default function HostMafia() {
         extendLength: getFormFieldValue("extendLength"),
         anonymousGame: getFormFieldValue("anonymousGame"),
         anonymousDeckId: getFormFieldValue("anonymousDeckId"),
-        broadcastClosedRoles: getFormFieldValue("broadcastClosedRoles"),
+        advancedHosting: getFormFieldValue("advancedHosting"),
       });
 
       defaults.private = getFormFieldValue("private");
@@ -189,7 +190,7 @@ export default function HostMafia() {
       defaults.extendLength = getFormFieldValue("extendLength");
       defaults.anonymousGame = getFormFieldValue("anonymousGame");
       defaults.anonymousDeckId = getFormFieldValue("anonymousDeckId");
-      defaults.broadcastClosedRoles = getFormFieldValue("broadcastClosedRoles");
+      defaults.advancedHosting = getFormFieldValue("advancedHosting");
       persistDefaults(gameType, defaults);
       return hostPromise;
     } else {

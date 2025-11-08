@@ -45,6 +45,14 @@ module.exports = class GlobalModifier extends Card {
           }
         }
       },
+      extraStateCheck: function (stateName) {
+        if (this.game.ExtraStates == null) {
+          this.game.ExtraStates = [];
+        }
+        if (stateName == "Dawn" && !this.game.ExtraStates.includes("Dawn")) {
+          this.game.ExtraStates.push("Dawn");
+        }
+      },
     };
   }
 };
