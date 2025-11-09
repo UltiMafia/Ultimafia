@@ -6,7 +6,7 @@ module.exports = class BlockIfVisited extends Card {
   constructor(role) {
     super(role);
 
-      this.passiveActions = [
+    this.passiveActions = [
       {
         ability: ["Modifier", "WhenDead"],
         state: "Night",
@@ -16,12 +16,11 @@ module.exports = class BlockIfVisited extends Card {
         labels: ["block", "hidden"],
         role: role,
         run: function () {
-            if (this.hasVisitors() === true) {
-              this.blockActions(this.actor);
-            }
+          if (this.hasVisitors() === true) {
+            this.blockActions(this.actor);
+          }
         },
       },
     ];
-    
   }
 };
