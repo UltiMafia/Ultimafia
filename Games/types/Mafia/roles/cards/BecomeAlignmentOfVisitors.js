@@ -19,25 +19,25 @@ module.exports = class BecomeAlignmentOfVisitors extends Card {
         labels: ["block", "hidden"],
         role: role,
         run: function () {
-            for (let visit of this.getVisitors(this.actor)) {
-              if (this.dominates(visit)) {
-                this.blockWithDelirium(visit);
-              }
-              if (visit.faction == "Independent") {
-                this.actor.queueAlert(
-                  `After Hitchhiking with a player you feel like Supporting a ${visit.role.name}.`
-                );
-                this.actor.faction = visit.role.name;
-                return;
-              } else {
-                this.actor.queueAlert(
-                  `After Hitchhiking with a player you feel like Supporting the ${visit.faction}.`
-                );
-                this.actor.faction = visit.faction;
-                return;
-              }
+          for (let visit of this.getVisitors(this.actor)) {
+            if (this.dominates(visit)) {
+              this.blockWithDelirium(visit);
             }
-          },
+            if (visit.faction == "Independent") {
+              this.actor.queueAlert(
+                `After Hitchhiking with a player you feel like Supporting a ${visit.role.name}.`
+              );
+              this.actor.faction = visit.role.name;
+              return;
+            } else {
+              this.actor.queueAlert(
+                `After Hitchhiking with a player you feel like Supporting the ${visit.faction}.`
+              );
+              this.actor.faction = visit.faction;
+              return;
+            }
+          }
+        },
       },
     ];
 
@@ -46,7 +46,7 @@ module.exports = class BecomeAlignmentOfVisitors extends Card {
         if (player !== this.player) {
           return;
         }
-        if(this.player.faction == "Independent"){
+        if (this.player.faction == "Independent") {
           this.player.faction = "Village";
         }
       },
