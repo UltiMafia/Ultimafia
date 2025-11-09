@@ -147,6 +147,7 @@ export function UserProvider({
     };
   }, []);
 
+  const fontSize = user.settings && user.settings.fontSize && user.settings.fontSize !== "system" && Number.parseInt(user.settings.fontSize) || 16;
   useEffect(() => {
     if (user.settings && user.settings.expHighDpiCorrection) {
       // VERY EXPERIMENTAL: counteract non-integer values of DPI scaling because they make role icons look weird
@@ -158,7 +159,7 @@ export function UserProvider({
             "Experimental DPI non-integer scaling correction is enabled"
           );
           const dpiScalingInt = dpiScaling - dpiDecimal;
-          setDpiCorrection(`${(16 * dpiScalingInt) / dpiScaling}px`);
+          setDpiCorrection(`${(fontSize * dpiScalingInt) / dpiScaling}px`);
         }
       }
     }
@@ -185,8 +186,11 @@ export function UserProvider({
     <>
       <GlobalStyles
         styles={{
-          html: {
+          ".role, .modifier, .gamesetting, .game-icon": {
             fontSize: dpiCorrection,
+          },
+          html: {
+            fontSize: fontSize,
           },
           ...iconFilter,
         }}
