@@ -147,7 +147,12 @@ export function UserProvider({
     };
   }, []);
 
-  const fontSize = user.settings && user.settings.fontSize && user.settings.fontSize !== "system" && Number.parseInt(user.settings.fontSize) || 16;
+  const fontSize =
+    (user.settings &&
+      user.settings.fontSize &&
+      user.settings.fontSize !== "system" &&
+      Number.parseInt(user.settings.fontSize)) ||
+    16;
   useEffect(() => {
     if (user.settings && user.settings.expHighDpiCorrection) {
       // VERY EXPERIMENTAL: counteract non-integer values of DPI scaling because they make role icons look weird
