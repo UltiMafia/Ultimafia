@@ -75,9 +75,15 @@ export default function Profile() {
   const [karmaInfo, setKarmaInfo] = useState({});
   const [settings, setSettings] = useState({});
   const [recentGames, setRecentGames] = useState([]);
+  const [recentGamesPage, setRecentGamesPage] = useState(1);
+  const [recentGamesMaxPage, setRecentGamesMaxPage] = useState(1);
+  const [recentGamesLoading, setRecentGamesLoading] = useState(false);
   const [archivedGames, setArchivedGames] = useState([]);
   const [editingArchivedGames, setEditingArchivedGames] = useState(false);
   const [createdSetups, setCreatedSetups] = useState([]);
+  const [setupsPage, setSetupsPage] = useState(1);
+  const [setupsMaxPage, setSetupsMaxPage] = useState(1);
+  const [setupsLoading, setSetupsLoading] = useState(false);
   const [bustCache, setBustCache] = useState(false);
   const [friendsPage, setFriendsPage] = useState(1);
   // const [maxFriendsPage, setMaxFriendsPage] = useState(1);
@@ -107,7 +113,8 @@ export default function Profile() {
 
   const profileUserId = canonicalUserId || userId;
   const isSelf = profileUserId === user.id;
-  const isBlocked = !isSelf && user.blockedUsers.indexOf(profileUserId) !== -1;
+  const isBlocked =
+    !isSelf && user.blockedUsers.indexOf(profileUserId) !== -1;
 
   // userId is the id of the current profile
   // user.id is the id of the current user
@@ -145,8 +152,12 @@ export default function Profile() {
           setIsMarried(res.data.isMarried);
           setSettings(res.data.settings);
           setRecentGames(res.data.games);
+          setRecentGamesPage(1);
+          setRecentGamesMaxPage(res.data.maxGamesPage || 1);
           setArchivedGames(res.data.archivedGames);
           setCreatedSetups(res.data.setups);
+          setSetupsPage(1);
+          setSetupsMaxPage(res.data.maxSetupsPage || 1);
           // setMaxFriendsPage(res.data.maxFriendsPage);
           setFriendRequests(res.data.friendRequests);
           setFriendsPage(1);
@@ -477,6 +488,60 @@ export default function Profile() {
       .catch(errorAlert);
   }
 
+  function loadRecentGames(id, pageToLoad = 1) {
+    if (!id) return;
+    setRecentGamesLoading(true);
+
+    axios
+      .get(`/api/user/${id}/games`, {
+        params: {
+          page: pageToLoad,
+        },
+      })
+      .then((res) => {
+        setRecentGames(res.data.games || []);
+        if (res.data.pages != null) {
+          setRecentGamesMaxPage(res.data.pages || 1);
+        }
+        if (res.data.page != null) {
+          setRecentGamesPage(res.data.page || pageToLoad);
+        } else {
+          setRecentGamesPage(pageToLoad);
+        }
+      })
+      .catch(errorAlert)
+      .finally(() => {
+        setRecentGamesLoading(false);
+      });
+  }
+
+  function loadSetups(id, pageToLoad = 1) {
+    if (!id) return;
+    setSetupsLoading(true);
+
+    axios
+      .get(`/api/user/${id}/setups`, {
+        params: {
+          page: pageToLoad,
+        },
+      })
+      .then((res) => {
+        setCreatedSetups(res.data.setups || []);
+        if (res.data.pages != null) {
+          setSetupsMaxPage(res.data.pages || 1);
+        }
+        if (res.data.page != null) {
+          setSetupsPage(res.data.page || pageToLoad);
+        } else {
+          setSetupsPage(pageToLoad);
+        }
+      })
+      .catch(errorAlert)
+      .finally(() => {
+        setSetupsLoading(false);
+      });
+  }
+
   function onFriendsPageNav(page) {
     var filterArg = getPageNavFilterArg(
       page,
@@ -488,6 +553,26 @@ export default function Profile() {
     if (filterArg == null) return;
 
     loadFriends(profileUserId, filterArg, page);
+  }
+
+  function onRecentGamesPageNav(page) {
+    if (page === recentGamesPage) return;
+    if (!profileUserId) return;
+
+    const maxPage = recentGamesMaxPage || 1;
+    const targetPage = Math.min(Math.max(page, 1), maxPage);
+
+    loadRecentGames(profileUserId, targetPage);
+  }
+
+  function onSetupsPageNav(page) {
+    if (page === setupsPage) return;
+    if (!profileUserId) return;
+
+    const maxPage = setupsMaxPage || 1;
+    const targetPage = Math.min(Math.max(page, 1), maxPage);
+
+    loadSetups(profileUserId, targetPage);
   }
 
   const panelStyle = {};
@@ -1076,8 +1161,25 @@ export default function Profile() {
                 Recent Games
               </Typography>
               <div className="content" style={{ padding: "0px" }}>
+                {recentGamesMaxPage > 1 && (
+                  <PageNav
+                    inverted
+                    page={recentGamesPage}
+                    maxPage={recentGamesMaxPage}
+                    onNav={onRecentGamesPageNav}
+                  />
+                )}
+                {recentGamesLoading && (
+                  <Typography
+                    sx={{
+                      p: 1,
+                    }}
+                  >
+                    Loading...
+                  </Typography>
+                )}
                 {recentGamesRows}
-                {recentGames.length === 0 && (
+                {!recentGamesLoading && recentGames.length === 0 && (
                   <Typography
                     sx={{
                       p: 1,
@@ -1085,6 +1187,14 @@ export default function Profile() {
                   >
                     No games
                   </Typography>
+                )}
+                {recentGamesMaxPage > 1 && (
+                  <PageNav
+                    inverted
+                    page={recentGamesPage}
+                    maxPage={recentGamesMaxPage}
+                    onNav={onRecentGamesPageNav}
+                  />
                 )}
               </div>
             </div>
@@ -1120,8 +1230,33 @@ export default function Profile() {
                 Setups Created
               </Typography>
               <div className="content">
+                {setupsMaxPage > 1 && (
+                  <PageNav
+                    inverted
+                    page={setupsPage}
+                    maxPage={setupsMaxPage}
+                    onNav={onSetupsPageNav}
+                  />
+                )}
+                {setupsLoading && (
+                  <Typography
+                    sx={{
+                      p: 1,
+                    }}
+                  >
+                    Loading...
+                  </Typography>
+                )}
                 {createdSetupRows}
-                {createdSetups.length === 0 && "No setups"}
+                {!setupsLoading && createdSetups.length === 0 && "No setups"}
+                {setupsMaxPage > 1 && (
+                  <PageNav
+                    inverted
+                    page={setupsPage}
+                    maxPage={setupsMaxPage}
+                    onNav={onSetupsPageNav}
+                  />
+                )}
               </div>
             </div>
             <div className="box-panel achievements" style={panelStyle}>
