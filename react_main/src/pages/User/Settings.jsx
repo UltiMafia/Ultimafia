@@ -71,6 +71,34 @@ export default function Settings() {
       showIf: (deps) => deps.user.perms.disableAllCensors,
     },
     {
+      label: "Font size",
+      ref: "fontSize",
+      type: "select",
+      options: [
+        {
+          label: "System",
+          value: "system",
+        },
+        {
+          label: "16 pixels",
+          value: "16",
+        },
+        {
+          label: "18 pixels",
+          value: "18",
+        },
+        {
+          label: "20 pixels",
+          value: "20",
+        },
+        {
+          label: "24 pixels",
+          value: "24",
+        },
+      ],
+      value: mode,
+    },
+    {
       label: "Hide Deleted Posts",
       ref: "hideDeleted",
       type: "boolean",
