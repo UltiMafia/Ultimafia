@@ -272,7 +272,7 @@ router.get("/:id/profile", async function (req, res) {
         select:
           "id gameType name closed useRoleGroups roleGroupSizes count roles total -_id",
         options: {
-          limit: 5,
+          limit: constants.userSetupsPerPage,
         },
       })
       .populate({
@@ -286,7 +286,7 @@ router.get("/:id/profile", async function (req, res) {
         },
         options: {
           sort: "-endTime",
-          limit: 5,
+          limit: constants.userGamesPerPage,
         },
       });
 
@@ -303,6 +303,26 @@ router.get("/:id/profile", async function (req, res) {
 
     var userMongoId = user._id;
     delete user._id;
+
+    const totalSetups = await models.Setup.countDocuments({
+      creator: userMongoId,
+    });
+    user.maxSetupsPage =
+      Math.max(
+        Math.ceil(totalSetups / (constants.userSetupsPerPage || 1)),
+        1
+      ) || 1;
+    user.totalSetups = totalSetups;
+
+    const totalGames = await models.Game.countDocuments({
+      users: userMongoId,
+    });
+    user.maxGamesPage =
+      Math.max(
+        Math.ceil(totalGames / (constants.userGamesPerPage || 1)),
+        1
+      ) || 1;
+    user.totalGames = totalGames;
 
     var allStats = dbStats.allStats();
     user.stats = user.stats || allStats;
@@ -685,6 +705,150 @@ router.get("/:id/friends", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Unable to load friends.");
+  }
+});
+
+router.get("/:id/setups", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const identifier = String(req.params.id);
+    const userId = await resolveUserId(identifier);
+
+    if (!userId) {
+      res.status(404);
+      res.send("User not found.");
+      return;
+    }
+
+    const pageSize = constants.userSetupsPerPage || 5;
+    const requestedPage = Number(req.query.page) || 1;
+
+    const userDoc = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("setups");
+
+    if (!userDoc) {
+      res.status(404);
+      res.send("User not found.");
+      return;
+    }
+
+    const total = userDoc.setups?.length || 0;
+    const maxPage = Math.max(Math.ceil(total / pageSize), 1);
+    const sanitizedPage = Math.min(Math.max(requestedPage, 1), maxPage);
+    const startIdx = (sanitizedPage - 1) * pageSize;
+    const endIdx = startIdx + pageSize;
+    const subsetIds = (userDoc.setups || []).slice(startIdx, endIdx);
+
+    let setups = [];
+
+    if (subsetIds.length > 0) {
+      const fetchedSetups = await models.Setup.find({
+        _id: { $in: subsetIds },
+      })
+        .select(
+          "id gameType name closed useRoleGroups roleGroupSizes count roles total"
+        )
+        .lean();
+
+      const setupMap = new Map(
+        fetchedSetups.map((setup) => [String(setup._id), setup])
+      );
+
+      setups = subsetIds
+        .map((id) => setupMap.get(String(id)))
+        .filter(Boolean)
+        .map((setup) => {
+          const { _id, ...rest } = setup;
+          return rest;
+        });
+    }
+
+    res.send({
+      setups,
+      page: sanitizedPage,
+      pages: maxPage,
+      total,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Unable to load setups.");
+  }
+});
+
+router.get("/:id/games", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const identifier = String(req.params.id);
+    const userId = await resolveUserId(identifier);
+
+    if (!userId) {
+      res.status(404);
+      res.send("User not found.");
+      return;
+    }
+
+    const pageSize = constants.userGamesPerPage || 5;
+    const requestedPage = Number(req.query.page) || 1;
+
+    const userDoc = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("_id");
+
+    if (!userDoc) {
+      res.status(404);
+      res.send("User not found.");
+      return;
+    }
+
+    const userMongoId = userDoc._id;
+
+    const total = await models.Game.countDocuments({
+      users: userMongoId,
+    });
+
+    const maxPage = Math.max(Math.ceil(total / pageSize), 1);
+    const sanitizedPage = Math.min(Math.max(requestedPage, 1), maxPage);
+    const skip = (sanitizedPage - 1) * pageSize;
+
+    let games = [];
+
+    if (total > 0) {
+      games = await models.Game.find({
+        users: userMongoId,
+      })
+        .sort("-endTime")
+        .skip(skip)
+        .limit(pageSize)
+        .select(
+          "id setup lobby endTime private broken ranked competitive spectating anonymousGame status"
+        )
+        .populate({
+          path: "setup",
+          select:
+            "id gameType name closed useRoleGroups roleGroupSizes count roles total -_id",
+        })
+        .lean();
+
+      games = games.map((game) => ({
+        ...game,
+        status: game.status || "Finished",
+      }));
+    }
+
+    res.send({
+      games,
+      page: sanitizedPage,
+      pages: maxPage,
+      total,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Unable to load games.");
   }
 });
 
