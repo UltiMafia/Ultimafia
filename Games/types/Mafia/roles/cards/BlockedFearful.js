@@ -19,19 +19,19 @@ module.exports = class BlockedFearful extends Card {
         labels: ["block", "hidden"],
         role: role,
         run: function () {
-            //this.actor.hasEffect("Scary");
+          //this.actor.hasEffect("Scary");
 
-            if (this.actor.hasEffect("Scary")) {
-              for (let player of this.game.players) {
-                if (
-                  player.role.modifier &&
-                  player.role.modifier.split("/").includes("Fearful")
-                ) {
-                  this.blockActions(player);
-                }
+          if (this.actor.hasEffect("Scary")) {
+            for (let player of this.game.players) {
+              if (
+                player.role.modifier &&
+                player.role.modifier.split("/").includes("Fearful")
+              ) {
+                this.blockActions(player);
               }
             }
-          },
+          }
+        },
       },
     ];
 
