@@ -318,10 +318,8 @@ router.get("/:id/profile", async function (req, res) {
       users: userMongoId,
     });
     user.maxGamesPage =
-      Math.max(
-        Math.ceil(totalGames / (constants.userGamesPerPage || 1)),
-        1
-      ) || 1;
+      Math.max(Math.ceil(totalGames / (constants.userGamesPerPage || 1)), 1) ||
+      1;
     user.totalGames = totalGames;
 
     var allStats = dbStats.allStats();

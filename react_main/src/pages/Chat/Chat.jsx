@@ -363,12 +363,7 @@ export default function Chat() {
           spacing={1.5}
           sx={{ flexGrow: 1, minWidth: 0 }}
         >
-          <ChannelName
-            short
-            channelType={type}
-            channel={channel}
-            user={user}
-          />
+          <ChannelName short channelType={type} channel={channel} user={user} />
         </Stack>
         {notifCount > 0 && (
           <Badge
@@ -468,8 +463,7 @@ export default function Chat() {
                 : chatInfo.notifs.all
               : null
           }
-        >
-        </Badge>
+        ></Badge>
         <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
           Chat
         </Typography>
@@ -710,9 +704,7 @@ function Message(props) {
           id={message.sender.id}
           name={message.sender.name}
           avatar={message.sender.avatar}
-          color={
-            message.sender.settings && message.sender.settings.nameColor
-          }
+          color={message.sender.settings && message.sender.settings.nameColor}
           groups={message.sender.groups}
           vanityUrl={message.sender.vanityUrl}
           noLink={isSelf}
