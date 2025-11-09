@@ -16,11 +16,10 @@ module.exports = class BlockTargets extends Card {
         labels: ["block", "hidden"],
         role: role,
         run: function () {
-            let visits = this.getVisits(this.actor);
-            visits.map((v) => this.blockActions(v));
+          let visits = this.getVisits(this.actor);
+          visits.map((v) => this.blockActions(v));
         },
       },
     ];
-    
   }
 };
