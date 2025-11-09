@@ -16,12 +16,11 @@ module.exports = class BlockedIfKilled extends Card {
         labels: ["block", "hidden"],
         role: role,
         run: function () {
-            if (this.actor.alive) {
-              this.blockActions(this.actor);
-            }
+          if (this.actor.alive) {
+            this.blockActions(this.actor);
+          }
         },
       },
     ];
-
   }
 };
