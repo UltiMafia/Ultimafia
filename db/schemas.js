@@ -66,6 +66,7 @@ var schemas = {
       disablePg13Censor: { type: Boolean, default: false },
       disableAllCensors: { type: Boolean, default: false },
       hideDeleted: Boolean,
+      fontSize: { type: String, default: "system" },
       siteColorScheme: { type: String, default: "dark" },
       disableProTips: { type: Boolean, default: false },
       expHighDpiCorrection: { type: Boolean, default: false },
