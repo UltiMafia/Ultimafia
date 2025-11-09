@@ -8,23 +8,16 @@ module.exports = class BecomeExcessRole extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Convert", "Modifier"])) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          role: this,
-          priority: PRIORITY_BECOME_DEAD_ROLE,
-          labels: ["convert"],
-          run: function () {
+    this.passiveActions = [
+      {
+        ability: ["Convert", "Modifier"],
+        state: "Night",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_BECOME_DEAD_ROLE,
+        labels: ["convert"],
+        role: role,
+        run: function () {
             let roles = this.role.getAllRoles().filter((r) => r);
             let players = this.game.players.filter((p) => p.role);
             let currentRoles = [];
@@ -63,10 +56,8 @@ module.exports = class BecomeExcessRole extends Card {
               "No Change"
             );
           },
-        });
-
-        this.game.queueAction(action);
       },
-    };
+    ];
+
   }
 };
