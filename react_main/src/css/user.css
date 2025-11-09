@@ -589,3 +589,24 @@ iframe {
 .profile .stats-modal .stats .stats-row .stats-list .stat-data {
   opacity: 0.6;
 }
+
+.profile .trophy-case .content {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile .trophy-case .trophy-item {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.profile .trophy-case .trophy-icon {
+  width: 30px;
+  height: 30px;
+  image-rendering: auto;
+}

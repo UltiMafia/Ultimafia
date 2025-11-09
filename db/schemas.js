@@ -487,6 +487,24 @@ var schemas = {
       toJSON: { virtuals: true },
     }
   ),
+  Trophy: new mongoose.Schema(
+    {
+      id: { type: String, index: true },
+      name: { type: String, required: true },
+      ownerId: { type: String, index: true, required: true },
+      owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        index: true,
+      },
+      createdAt: { type: Date, default: Date.now, index: true },
+      createdBy: { type: String },
+    },
+    {
+      toObject: { virtuals: true },
+      toJSON: { virtuals: true },
+    }
+  ),
   Group: new mongoose.Schema({
     id: { type: String, index: true },
     name: { type: String, index: true },

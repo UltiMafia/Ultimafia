@@ -1130,6 +1130,31 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    // "Award Trophy": {
+    //   perm: "awardTrophy",
+    //   category: "User Management",
+    //   args: [
+    //     {
+    //       label: "User",
+    //       name: "userId",
+    //       type: "user_search",
+    //     },
+    //     {
+    //       label: "Trophy Name",
+    //       name: "name",
+    //       type: "text",
+    //     },
+    //   ],
+    //   run: function () {
+    //     axios
+    //       .post("/api/mod/awardTrophy", argValues)
+    //       .then(() => {
+    //         siteInfo.showAlert("Trophy awarded.", "success");
+    //         commandRan();
+    //       })
+    //       .catch(errorAlert);
+    //   },
+    // },
     "Refund Game": {
       perm: "refundGame",
       category: "Game Management",
