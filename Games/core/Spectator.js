@@ -54,13 +54,6 @@ module.exports = class Spectator extends Player {
   hear(message) {
     message = message.getMessageInfo("spectator");
 
-    let isRanked = this.game.ranked;
-    let isTalkingDead = this.game.isTalkingDead();
-
-    if (message.sender && !message.sender.alive && isRanked && !isTalkingDead) {
-      return;
-    }
-
     if (message) this.send("message", message);
   }
 
