@@ -272,6 +272,7 @@ module.exports = {
   minDeckSize: 5, // minMafiaSetupTotal
   maxDeckSize: 50, // maxPlayers
   maxNameLengthInDeck: 20, // maxUserNameLength
+  maxTrophyNameLength: 40,
   maxBonusRedHearts: 5,
 
   maxGameMessageLength: 240,
@@ -454,6 +455,7 @@ module.exports = {
     viewVotes: true,
     editAnySetup: true,
     createPoll: true,
+    awardTrophy: true,
   },
   defaultGroups: {
     Owner: {
@@ -510,6 +512,7 @@ module.exports = {
         "playCompetitive",
         "editAnySetup",
         "createPoll",
+        "awardTrophy",
       ],
     },
     Liaison: {
