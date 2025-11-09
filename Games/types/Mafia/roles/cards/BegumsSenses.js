@@ -38,7 +38,6 @@ module.exports = class BegumsSenses extends Card {
       },
     };
 
-
     this.passiveActions = [
       {
         ability: ["Information"],
@@ -49,47 +48,47 @@ module.exports = class BegumsSenses extends Card {
         labels: ["investigate"],
         role: role,
         run: function () {
-            if (this.game.getStateName() != "Night") return;
-            if (!this.actor.role.begumTarget) return;
+          if (this.game.getStateName() != "Night") return;
+          if (!this.actor.role.begumTarget) return;
 
-            let begumTarget = this.actor.role.begumTarget;
+          let begumTarget = this.actor.role.begumTarget;
 
-            let info = this.game.createInformation(
-              "WatcherInfo",
-              this.actor,
-              this.game,
-              begumTarget
-            );
-            info.processInfo();
-            let info2 = this.game.createInformation(
-              "TrackerInfo",
-              this.actor,
-              this.game,
-              begumTarget
-            );
-            info2.processInfo();
-            let visitorNames = info.getInfoRaw();
-            let visitNames = info2.getInfoRaw();
-            visitorNames = visitorNames.map((p) => p.name);
-            visitNames = visitNames.map((p) => p.name);
-            if (visitNames.length == 0) visitNames.push("no one");
-            if (visitorNames.length == 0) visitorNames.push("no one");
+          let info = this.game.createInformation(
+            "WatcherInfo",
+            this.actor,
+            this.game,
+            begumTarget
+          );
+          info.processInfo();
+          let info2 = this.game.createInformation(
+            "TrackerInfo",
+            this.actor,
+            this.game,
+            begumTarget
+          );
+          info2.processInfo();
+          let visitorNames = info.getInfoRaw();
+          let visitNames = info2.getInfoRaw();
+          visitorNames = visitorNames.map((p) => p.name);
+          visitNames = visitNames.map((p) => p.name);
+          if (visitNames.length == 0) visitNames.push("no one");
+          if (visitorNames.length == 0) visitorNames.push("no one");
 
-            this.actor.queueAlert(
-              `:watch: Your target was visited by ${visitorNames.join(
-                ", "
-              )} during the night.`
-            );
+          this.actor.queueAlert(
+            `:watch: Your target was visited by ${visitorNames.join(
+              ", "
+            )} during the night.`
+          );
 
-            this.actor.queueAlert(
-              `:track: Your target visited ${visitNames.join(
-                ", "
-              )} during the night.`
-            );
-          },
+          this.actor.queueAlert(
+            `:track: Your target visited ${visitNames.join(
+              ", "
+            )} during the night.`
+          );
+        },
       },
     ];
-    
+
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) return;
