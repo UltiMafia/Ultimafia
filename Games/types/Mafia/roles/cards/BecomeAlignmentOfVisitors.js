@@ -9,27 +9,16 @@ module.exports = class BecomeAlignmentOfVisitors extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      roleAssigned: function (player) {
-        if (player !== this.player) {
-          return;
-        }
-        this.player.faction = "Village";
-      },
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Delirium"])) {
-          return;
-        }
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_BLOCK_VISITORS - 1,
-          labels: ["block", "hidden"],
-          role: this,
-          run: function () {
+    this.passiveActions = [
+      {
+        ability: ["Delirium"],
+        state: "Night",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_BLOCK_VISITORS - 1,
+        labels: ["block", "hidden"],
+        role: role,
+        run: function () {
             for (let visit of this.getVisitors(this.actor)) {
               if (this.dominates(visit)) {
                 this.blockWithDelirium(visit);
@@ -49,9 +38,17 @@ module.exports = class BecomeAlignmentOfVisitors extends Card {
               }
             }
           },
-        });
+      },
+    ];
 
-        this.game.queueAction(action);
+    this.listeners = {
+      roleAssigned: function (player) {
+        if (player !== this.player) {
+          return;
+        }
+        if(this.player.faction == "Independent"){
+          this.player.faction = "Village";
+        }
       },
     };
   }
