@@ -9,6 +9,32 @@ module.exports = class BlockedFearful extends Card {
 
     //this.startEffects = ["Blind"];
 
+    this.passiveActions = [
+      {
+        ability: ["Modifier", "Blocking", "OnlyWhenAlive"],
+        state: "Night",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_BLOCK_EARLY,
+        labels: ["block", "hidden"],
+        role: role,
+        run: function () {
+            //this.actor.hasEffect("Scary");
+
+            if (this.actor.hasEffect("Scary")) {
+              for (let player of this.game.players) {
+                if (
+                  player.role.modifier &&
+                  player.role.modifier.split("/").includes("Fearful")
+                ) {
+                  this.blockActions(player);
+                }
+              }
+            }
+          },
+      },
+    ];
+
     this.listeners = {
       AbilityToggle: function (player) {
         if (player != this.player) {
@@ -32,33 +58,6 @@ module.exports = class BlockedFearful extends Card {
             this.ScaryEffect = null;
           }
         }
-      },
-      state: function (stateInfo) {
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_BLOCK_EARLY,
-          labels: ["block", "hidden"],
-          run: function () {
-            //this.actor.hasEffect("Scary");
-
-            if (this.actor.hasEffect("Scary")) {
-              for (let player of this.game.players) {
-                if (
-                  player.role.modifier &&
-                  player.role.modifier.split("/").includes("Fearful")
-                ) {
-                  this.blockActions(player);
-                }
-              }
-            }
-          },
-        });
-
-        this.game.queueAction(action);
       },
     };
   }
