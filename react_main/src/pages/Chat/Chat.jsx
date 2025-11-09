@@ -5,6 +5,7 @@ import React, {
   useRef,
   useReducer,
   useContext,
+  useMemo,
 } from "react";
 import axios from "axios";
 import update from "immutability-helper";
@@ -12,13 +13,17 @@ import {
   Badge,
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   IconButton,
   List,
   ListItemButton,
+  MenuItem,
   Paper,
+  Select,
   Stack,
-  Tab,
-  Tabs,
   TextField,
   Typography,
 } from "@mui/material";
@@ -38,13 +43,13 @@ export default function Chat() {
   const [token, setToken] = useState("");
   const [socket, setSocket] = useState({});
   const [chatInfo, updateChatInfo] = useChatInfoReducer();
-  const [currentTab, setCurrentTab] = useState("chat");
   const [currentChannelId, setCurrentChannelId] = useState();
   const [channel, updateChannel] = useChannelReducer();
   const [newDMUsers, setNewDMUsers] = useState({});
   const [textInput, setTextInput] = useState("");
   const [autoScroll, setAutoScroll] = useState(true);
   const [userSearchVal, setUserSearchVal] = useState("");
+  const [newChatDialogOpen, setNewChatDialogOpen] = useState(false);
 
   const messageListRef = useRef();
   const oldScrollHeight = useRef();
@@ -204,19 +209,23 @@ export default function Chat() {
       .catch(errorAlert);
   }
 
-  function onTabChange(event, type) {
-    setCurrentTab(type);
-
-    if (type === "make") socket.send("getUsers", userSearchVal);
+  function onOpenNewChatDialog() {
+    setNewChatDialogOpen(true);
+    setUserSearchVal("");
+    socket.send("getUsers", "");
   }
 
-  function onChannelClick(id, type) {
+  function onCloseNewChatDialog() {
+    setNewChatDialogOpen(false);
+    setNewDMUsers({});
+  }
+
+  function onChannelSelect(id, type) {
     if (type !== "users") {
       socket.send("getChannel", id);
 
       setCurrentChannelId(id);
       setAutoScroll(true);
-      setCurrentTab("chat");
     } else {
       if (!newDMUsers[id]) {
         setNewDMUsers(
@@ -311,13 +320,24 @@ export default function Chat() {
   const directs = (chatInfo.directs || []).slice();
   const usersList = chatInfo.users || [];
 
-  const navEntries = [
-    ...rooms.map((channel) => ({ channel, type: "rooms" })),
-    ...directs.sort(sortDMs).map((channel) => ({
-      channel,
-      type: "directs",
-    })),
-  ];
+  const navEntries = useMemo(
+    () => [
+      ...rooms.map((channel) => ({ channel, type: "rooms" })),
+      ...directs.sort(sortDMs).map((channel) => ({
+        channel,
+        type: "directs",
+      })),
+    ],
+    [rooms, directs]
+  );
+
+  useEffect(() => {
+    if (!currentChannelId && navEntries.length > 0) {
+      const first = navEntries[0];
+      onChannelSelect(first.channel.id, first.type);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentChannelId, navEntries]);
 
   const navChannelItems = navEntries.reduce((items, entry) => {
     const { channel, type } = entry;
@@ -326,17 +346,15 @@ export default function Chat() {
     const isSelected = channel.id === currentChannelId;
 
     items.push(
-      <ListItemButton
+      <MenuItem
         key={`${type}-${channel.id}`}
         selected={isSelected}
-        onClick={() => onChannelClick(channel.id, type)}
+        onClick={() => onChannelSelect(channel.id, type)}
         sx={{
-          borderRadius: 1,
-          mb: 1,
-          px: 1.5,
+          display: "flex",
+          alignItems: "center",
+          gap: 1.5,
           py: 1,
-          bgcolor: isSelected ? "action.selected" : "transparent",
-          "&.Mui-selected:hover": { bgcolor: "action.selected" },
         }}
       >
         <Stack
@@ -360,7 +378,7 @@ export default function Chat() {
             }}
           />
         )}
-      </ListItemButton>
+      </MenuItem>
     );
 
     return items;
@@ -375,7 +393,7 @@ export default function Chat() {
       <ListItemButton
         key={`user-${channel.id}`}
         selected={isSelected}
-        onClick={() => onChannelClick(channel.id, "users")}
+        onClick={() => onChannelSelect(channel.id, "users")}
         sx={{
           borderRadius: 1,
           mb: 1,
@@ -413,26 +431,6 @@ export default function Chat() {
   //   localStorage.setItem("showChatTab", false);
   // }; // TODO: Remove comments
 
-  const tabConfig = [
-    {
-      value: "nav",
-      label: "Index",
-      notif:
-        (chatInfo.notifs.byChannelType["rooms"] || 0) +
-        (chatInfo.notifs.byChannelType["directs"] || 0),
-    },
-    {
-      value: "chat",
-      label: "Chat",
-      notif: chatInfo.notifs.all || 0,
-    },
-    {
-      value: "make",
-      label: "New",
-      notif: chatInfo.notifs.byChannelType["users"] || 0,
-    },
-  ];
-
   if (!token) return null;
 
   return (
@@ -440,7 +438,6 @@ export default function Chat() {
       elevation={4}
       sx={{
         width: "100%",
-        borderRadius: 3,
         overflow: "hidden",
         bgcolor:
           theme.palette.mode === "dark"
@@ -453,8 +450,6 @@ export default function Chat() {
         alignItems="center"
         spacing={1.5}
         sx={{
-          px: 2,
-          py: 1.5,
           color: theme.palette.primary.contrastText,
         }}
       >
@@ -468,15 +463,55 @@ export default function Chat() {
                 : chatInfo.notifs.all
               : null
           }
-        >
-          <Box component="span" sx={{ display: "inline-flex" }}>
-            <i className="fas fa-comment" />
-          </Box>
-        </Badge>
-        <Typography color="primary" gutterBottom>
+        ></Badge>
+        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
           Chat
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
+        <Select
+          size="small"
+          value={currentChannelId || (navEntries[0]?.channel.id ?? "")}
+          onChange={(event) => {
+            const value = event.target.value;
+            const entry = navEntries.find((item) => item.channel.id === value);
+            if (entry) onChannelSelect(value, entry.type);
+          }}
+          renderValue={(value) => {
+            const entry = navEntries.find((item) => item.channel.id === value);
+            if (!entry) {
+              return (
+                <Typography variant="body2" color="text.secondary">
+                  No chats available
+                </Typography>
+              );
+            }
+            return (
+              <ChannelName
+                short
+                channelType={entry.type}
+                channel={entry.channel}
+                user={user}
+              />
+            );
+          }}
+          sx={{
+            minWidth: 160,
+            bgcolor: theme.palette.background.paper,
+            borderRadius: 1,
+            "& .MuiSelect-select": { display: "flex", alignItems: "center" },
+          }}
+          disabled={navEntries.length === 0}
+        >
+          {navChannelItems}
+        </Select>
+        <Button
+          size="small"
+          variant="contained"
+          color="secondary"
+          onClick={onOpenNewChatDialog}
+        >
+          New
+        </Button>
       </Stack>
 
       <Box
@@ -488,231 +523,103 @@ export default function Chat() {
           backgroundColor: theme.palette.background.paper,
         }}
       >
-        <Tabs
-          value={currentTab}
-          onChange={onTabChange}
-          variant="fullWidth"
-          sx={{
-            borderBottom: `1px solid ${theme.palette.divider}`,
-            "& .MuiTab-root": {
-              minHeight: 48,
-              fontWeight: 600,
-            },
-          }}
-        >
-          {tabConfig.map((tab) => (
-            <Tab
-              key={tab.value}
-              value={tab.value}
-              label={
-                <Badge
-                  color="error"
-                  badgeContent={tab.notif || null}
-                  invisible={!tab.notif}
-                >
-                  <Typography variant="button">{tab.label}</Typography>
-                </Badge>
-              }
-            />
-          ))}
-        </Tabs>
-
         <Box
           sx={{
             flexGrow: 1,
             minHeight: 0,
             display: "flex",
             flexDirection: "column",
-            p: currentTab === "chat" ? 0 : 2,
           }}
         >
-          {currentTab === "chat" && (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                flexGrow: 1,
-                minHeight: 0,
-                backgroundColor: theme.palette.background.default,
-              }}
-            >
-              {channel.id ? (
-                <>
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    spacing={2}
-                    sx={{
-                      px: 3,
-                      py: 2,
-                      borderBottom: `1px solid ${theme.palette.divider}`,
-                      bgcolor: theme.palette.background.paper,
-                    }}
-                  >
-                    <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                      <ChannelName
-                        channelType={channel.public ? "rooms" : "directs"}
-                        channel={channel}
-                        user={user}
-                      />
-                    </Box>
-                    {!channel.public && (
-                      <IconButton
-                        size="small"
-                        onClick={() => onCloseDM(channel.id)}
-                        sx={{ color: "text.secondary" }}
-                      >
-                        <i className="fas fa-times" />
-                      </IconButton>
-                    )}
-                  </Stack>
-
-                  <Box
-                    className="channel-messages"
-                    ref={messageListRef}
-                    onScroll={onMessagesScroll}
-                    sx={{
-                      flexGrow: 1,
-                      overflowY: "auto",
-                      px: 2,
-                      py: 1,
-                      backgroundColor: theme.palette.background.default,
-                    }}
-                  >
-                    {messages}
-                  </Box>
-
-                  <Box
-                    sx={{
-                      px: 2,
-                      py: 1.5,
-                      borderTop: `1px solid ${theme.palette.divider}`,
-                      bgcolor: theme.palette.background.paper,
-                    }}
-                  >
-                    <TextField
-                      value={textInput}
-                      onChange={(e) => setTextInput(e.target.value)}
-                      onKeyPress={onSendMessage}
-                      placeholder="Type a message"
-                      fullWidth
-                      size="small"
-                      inputProps={{ maxLength: MaxChatMessageLength }}
-                    />
-                  </Box>
-                </>
-              ) : (
-                <Box
-                  sx={{
-                    flexGrow: 1,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "text.secondary",
-                  }}
-                >
-                  <Typography variant="body2">
-                    Select a conversation from the Index to get started.
-                  </Typography>
-                </Box>
-              )}
-            </Box>
-          )}
-
-          {currentTab === "nav" && (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                flexGrow: 1,
-                minHeight: 0,
-              }}
-            >
-              <List
-                disablePadding
+          {channel.id && (
+            <>
+              <Box
+                className="channel-messages"
+                ref={messageListRef}
+                onScroll={onMessagesScroll}
                 sx={{
                   flexGrow: 1,
                   overflowY: "auto",
+                  px: 2,
+                  py: 1,
+                  backgroundColor: theme.palette.background.default,
                 }}
               >
-                {navChannelItems.length ? (
-                  navChannelItems
-                ) : (
-                  <Box
-                    sx={{
-                      py: 6,
-                      textAlign: "center",
-                      color: "text.secondary",
-                    }}
-                  >
-                    <Typography variant="body2">
-                      You are not in any chats yet.
-                    </Typography>
-                  </Box>
-                )}
-              </List>
-            </Box>
-          )}
+                {messages}
+              </Box>
 
-          {currentTab === "make" && (
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                flexGrow: 1,
-                minHeight: 0,
-              }}
-            >
-              <Box sx={{ pb: 2 }}>
+              <Box
+                sx={{
+                  px: 2,
+                  py: 1.5,
+                  borderTop: `1px solid ${theme.palette.divider}`,
+                  bgcolor: theme.palette.background.paper,
+                }}
+              >
                 <TextField
-                  value={userSearchVal}
-                  onChange={onUserSearch}
-                  placeholder="Search users"
-                  size="small"
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  onKeyPress={onSendMessage}
+                  placeholder="Send message"
                   fullWidth
+                  size="small"
+                  inputProps={{ maxLength: MaxChatMessageLength }}
                 />
               </Box>
-              <List
-                disablePadding
-                sx={{
-                  flexGrow: 1,
-                  overflowY: "auto",
-                }}
-              >
-                {makeRoomItems.length ? (
-                  makeRoomItems
-                ) : (
-                  <Box
-                    sx={{
-                      py: 6,
-                      textAlign: "center",
-                      color: "text.secondary",
-                    }}
-                  >
-                    <Typography variant="body2">
-                      No users found. Try another search.
-                    </Typography>
-                  </Box>
-                )}
-              </List>
-
-              {Object.keys(newDMUsers).length > 0 && (
-                <Box sx={{ pt: 2 }}>
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    startIcon={<i className="fas fa-plus" />}
-                    onClick={onCreateDM}
-                  >
-                    Create DM ({Object.keys(newDMUsers).length})
-                  </Button>
-                </Box>
-              )}
-            </Box>
+            </>
           )}
         </Box>
       </Box>
+
+      <Dialog open={newChatDialogOpen} onClose={onCloseNewChatDialog} fullWidth>
+        <DialogTitle>Start New Chat</DialogTitle>
+        <DialogContent dividers>
+          <TextField
+            value={userSearchVal}
+            onChange={onUserSearch}
+            placeholder="Search users"
+            fullWidth
+            size="small"
+            sx={{ mb: 2 }}
+          />
+          <List
+            disablePadding
+            sx={{
+              maxHeight: 300,
+              overflowY: "auto",
+            }}
+          >
+            {makeRoomItems.length ? (
+              makeRoomItems
+            ) : (
+              <Box
+                sx={{
+                  py: 6,
+                  textAlign: "center",
+                  color: "text.secondary",
+                }}
+              >
+                <Typography variant="body2">
+                  No users found. Try another search.
+                </Typography>
+              </Box>
+            )}
+          </List>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onCloseNewChatDialog}>Cancel</Button>
+          <Button
+            variant="contained"
+            onClick={() => {
+              onCreateDM();
+              onCloseNewChatDialog();
+            }}
+            disabled={Object.keys(newDMUsers).length === 0}
+          >
+            Create DM ({Object.keys(newDMUsers).length})
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 }
