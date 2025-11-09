@@ -57,7 +57,7 @@ module.exports = class Spectator extends Player {
     let isRanked = this.game.ranked;
     let isTalkingDead = this.game.isTalkingDead();
 
-    if(message.sender && !message.sender.alive && isRanked && !isTalkingDead){
+    if (message.sender && !message.sender.alive && isRanked && !isTalkingDead) {
       return;
     }
 
