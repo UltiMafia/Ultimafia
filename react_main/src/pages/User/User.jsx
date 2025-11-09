@@ -1,792 +1,711 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
-import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+import React, { useState, useContext, useRef, useEffect } from "react";
 import axios from "axios";
-import update from "immutability-helper";
-import colorContrast from "color-contrast";
 
-import { UserContext, SiteInfoContext } from "Contexts";
-import {
-  Avatar,
-  Badge,
-  MediaEmbed,
-  LoveIcon,
-  MarriedIcon,
-  getLoveTitle,
-  NameWithAvatar,
-  OnlineStatus,
-} from "./User";
-import { HiddenUpload, TextEditor } from "components/Form";
-import Setup from "components/Setup";
-import { Time, filterProfanity } from "components/Basic";
-import { useErrorAlert } from "components/Alerts";
-import { getPageNavFilterArg, PageNav } from "components/Nav";
-import { RatingThresholds, RequiredTotalForStats } from "Constants";
-import { AchievementData } from "constants/Achievements";
-import { capitalize } from "utils";
-import Comments from "../Community/Comments";
+import { Link, Route, Routes, Navigate } from "react-router-dom";
+import update from "immutability-helper";
+
+import Profile, { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "./Profile";
+import Settings from "./Settings";
+import Shop from "./Shop";
+import Inbox from "./Inbox";
+import { UserContext, SiteInfoContext, GameContext } from "Contexts";
+import AvatarUpload from "components/AvatarUpload";
 
 import "css/user.css";
-import { Modal } from "components/Modal";
-import CustomMarkdown from "components/CustomMarkdown";
-import ModerationSideDrawer from "components/ModerationSideDrawer";
-import ReportDialog from "../../components/ReportDialog";
-import { PieChart } from "./PieChart";
-import { NewLoading } from "../Welcome/NewLoading";
-import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
-import {
-  Box,
-  Grid,
-  IconButton,
-  Stack,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { youtubeRegex } from "components/Basic";
+
+const soundcloudRegex = /^https?:\/\/(www\.)?soundcloud\.com\/[^\/]+\/[^\/\?]+/;
+const spotifyRegex =
+  /^https?:\/\/open\.spotify\.com\/(track|album|playlist|artist)\/[a-zA-Z0-9]+/;
+const vimeoRegex = /^https?:\/\/(www\.)?vimeo\.com\/(\d+)/;
+const invidiousRegex =
+  /^https?:\/\/(www\.)?(invidious\.io|yewtu\.be|invidious\.flokinet\.to|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.fdn\.fr|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt)\/watch\?v=([a-zA-Z0-9_-]{11})/;
 import { useTheme } from "@mui/material/styles";
+import { Popover } from "@mui/material";
+import { Box, IconButton, Stack, Typography } from "@mui/material";
+import { PieChart } from "./PieChart";
+import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
-import system from "images/emotes/system.webp";
+import santaDir from "images/holiday/santahat.png";
 
-export const KUDOS_ICON = require(`images/kudos.png`);
-export const KARMA_ICON = require(`images/karma.png`);
-export const POINTS_ICON = require(`images/points.png`);
-export const POINTS_NEGATIVE_ICON = require(`images/pointsNegative.png`);
-export const ACHIEVEMENTS_ICON = require(`images/achievements.png`);
-export const DAILY_ICON = require(`images/dailyChallenges.png`);
-
-export default function Profile() {
-  const [profileLoaded, setProfileLoaded] = useState(false);
-  const [name, setName] = useState();
-  const [avatar, setAvatar] = useState();
-  const [banner, setBanner] = useState();
-  const [bio, setBio] = useState("");
-  const [oldBio, setOldBio] = useState();
-  const [editingBio, setEditingBio] = useState(false);
-  const [pronouns, setPronouns] = useState("");
-  const [oldPronouns, setOldPronouns] = useState();
-  const [editingPronouns, setEditingPronouns] = useState(false);
-  const [isFriend, setIsFriend] = useState(false);
-  const [isLove, setIsLove] = useState(false);
-  const [isMarried, setIsMarried] = useState(false);
-  const [kudos, setKudos] = useState(0);
-  const [points, setPoints] = useState(0);
-  const [pointsNegative, setPointsNegative] = useState(0);
-  const [achievements, setAchievements] = useState([]);
-  const [karmaInfo, setKarmaInfo] = useState({});
-  const [settings, setSettings] = useState({});
-  const [recentGames, setRecentGames] = useState([]);
-  const [recentGamesPage, setRecentGamesPage] = useState(1);
-  const [recentGamesMaxPage, setRecentGamesMaxPage] = useState(1);
-  const [recentGamesLoading, setRecentGamesLoading] = useState(false);
-  const [archivedGames, setArchivedGames] = useState([]);
-  const [editingArchivedGames, setEditingArchivedGames] = useState(false);
-  const [createdSetups, setCreatedSetups] = useState([]);
-  const [setupsPage, setSetupsPage] = useState(1);
-  const [setupsMaxPage, setSetupsMaxPage] = useState(1);
-  const [setupsLoading, setSetupsLoading] = useState(false);
-  const [bustCache, setBustCache] = useState(false);
-  const [friendsPage, setFriendsPage] = useState(1);
-  // const [maxFriendsPage, setMaxFriendsPage] = useState(1);
-  const [friends, setFriends] = useState([]);
-  const [love, setLove] = useState({});
-  const [married, setMarried] = useState({});
-  const [friendRequests, setFriendRequests] = useState([]);
-  const [stats, setStats] = useState();
-  const [groups, setGroups] = useState([]);
-  const [showStatsModal, setShowStatsModal] = useState(false);
-  const [mediaUrl, setMediaUrl] = useState("");
-  const [autoplay, setAutoplay] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [moderationDrawerOpen, setModerationDrawerOpen] = useState(false);
-  const [reportDialogOpen, setReportDialogOpen] = useState(false);
-  const [currentUserLove, setCurrentUserLove] = useState({});
-  const [status, setStatus] = useState("offline");
-  const [lastActive, setLastActive] = useState(null);
-  const [canonicalUserId, setCanonicalUserId] = useState(null);
-
-  const user = useContext(UserContext);
-  const siteInfo = useContext(SiteInfoContext);
-  const navigate = useNavigate();
-  const errorAlert = useErrorAlert();
-  const { userId } = useParams();
-  const isPhoneDevice = useIsPhoneDevice();
-
-  const profileUserId = canonicalUserId || userId;
-  const isSelf = profileUserId === user.id;
-  const isBlocked = !isSelf && user.blockedUsers.indexOf(profileUserId) !== -1;
-
-  // userId is the id of the current profile
-  // user.id is the id of the current user
-  const showDelete = profileUserId === user.id;
-
-  const showDeleteArchivedGame = showDelete && editingArchivedGames;
-
-  useEffect(() => {
-    if (bustCache) setBustCache(false);
-  }, [bustCache]);
-
-  useEffect(() => {
-    setEditingBio(false);
-    setEditingPronouns(false);
-
-    if (userId) {
-      setProfileLoaded(false);
-      setCanonicalUserId(null);
-
-      axios
-        .get(`/api/user/${userId}/profile`)
-        .then((res) => {
-          const resolvedId = res.data.id;
-          setCanonicalUserId(resolvedId);
-          setProfileLoaded(true);
-          setName(res.data.name);
-          setAvatar(res.data.avatar);
-          setBanner(res.data.banner);
-          setBio(filterProfanity(res.data.bio, user.settings, "\\*") || "");
-          setPronouns(
-            filterProfanity(res.data.pronouns, user.settings, "\\*") || ""
-          );
-          setIsFriend(res.data.isFriend);
-          setIsLove(res.data.isLove);
-          setIsMarried(res.data.isMarried);
-          setSettings(res.data.settings);
-          setRecentGames(res.data.games);
-          setRecentGamesPage(1);
-          setRecentGamesMaxPage(res.data.maxGamesPage || 1);
-          setArchivedGames(res.data.archivedGames);
-          setCreatedSetups(res.data.setups);
-          setSetupsPage(1);
-          setSetupsMaxPage(res.data.maxSetupsPage || 1);
-          // setMaxFriendsPage(res.data.maxFriendsPage);
-          setFriendRequests(res.data.friendRequests);
-          setFriendsPage(1);
-          setStats(res.data.stats);
-          setKudos(res.data.kudos);
-          setPoints(res.data.points);
-          setPointsNegative(res.data.pointsNegative);
-          setKarmaInfo(res.data.karmaInfo);
-          setGroups(res.data.groups);
-          setStatus(res.data.status || "offline");
-          setLastActive(res.data.lastActive);
-          setMediaUrl("");
-          setAutoplay(false);
-          setSaved(res.data.saved);
-          setLove(res.data.love);
-          setCurrentUserLove(res.data.currentLove);
-          setAchievements(res.data.achievements);
-          setFriendsPage(1);
-          loadFriends(resolvedId, "", 1);
-
-          if (res.data.settings.youtube) {
-            setMediaUrl(res.data.settings.youtube);
-            setAutoplay(res.data.settings.autoplay);
-          }
-          document.title = `${res.data.name}'s Profile | UltiMafia`;
-        })
-        .catch((e) => {
-          errorAlert(e);
-          navigate("/play");
-        });
-    }
-  }, [userId]);
-
-  function onEditBanner(files, type) {
-    if (!user.itemsOwned.customProfile) {
-      errorAlert(
-        "You must purchase profile customization with coins from the Shop."
-      );
-      return false;
-    }
-
-    return true;
-  }
-
-  function onFileUpload(files, type) {
-    if (files.length) {
-      const formData = new FormData();
-      formData.append("image", files[0]);
-
-      for (let el of document.getElementsByClassName("hidden-upload"))
-        el.value = "";
-
-      axios
-        .post(`/api/user/${type}`, formData)
-        .then((res) => {
-          switch (type) {
-            case "avatar":
-              setAvatar(true);
-              siteInfo.clearCache();
-              break;
-            case "banner":
-              setBanner(true);
-              siteInfo.clearCache();
-              break;
-          }
-        })
-        .catch((e) => {
-          if (e.response == null || e.response.status === 413)
-            errorAlert("File too large, must be less than 1 MB.");
-          else errorAlert(e);
-        });
-    }
-  }
-
-  function onFriendUserClick() {
-    if (isFriend) {
-      var shouldUnfriend = window.confirm(
-        "Are you sure you wish to unfriend or cancel your friend request?"
-      );
-      if (!shouldUnfriend) return;
-    }
-
-    axios
-      .post("/api/user/friend", { user: profileUserId })
-      .then((res) => {
-        setIsFriend(!isFriend);
-        siteInfo.showAlert(res.data, "success");
-      })
-      .catch(errorAlert);
-  }
-
-  function onDeleteFriend(friendId) {
-    return () => {
-      var shouldUnfriend = window.confirm(
-        "Are you sure you wish to delete this friend?"
-      );
-      if (!shouldUnfriend) return;
-
-      axios
-        .post("/api/user/friend", { user: friendId })
-        .then((res) => {
-          setIsFriend(false);
-          siteInfo.showAlert(res.data, "success");
-        })
-        .catch(errorAlert);
-    };
-  }
-
-  function onUnarchiveGame(gameId, description) {
-    return () => {
-      var shouldDelete = window.confirm(
-        `Are you sure you wish to unarchive ${description}? If the game is old enough to be expired then it will eventually be deleted.`
-      );
-      if (!shouldDelete) return;
-
-      axios
-        .delete(`/api/game/${gameId}/archive`)
-        .then((res) => {
-          siteInfo.showAlert(res.data, "success");
-        })
-        .catch(errorAlert);
-    };
-  }
-
-  function onEditArchivedGamesClick() {
-    return () => {
-      setEditingArchivedGames(editingArchivedGames ? false : true);
-    };
-  }
-
-  function onLoveUserClick() {
-    if (isLove) {
-      if (love === null || love === undefined) {
-        var shouldCancel = window.confirm(
-          "Are you sure you want to cancel your love?"
-        );
-        if (!shouldCancel) {
-          return;
-        }
-      } else if (love.type === "Lover") {
-        var shouldBreakup = window.confirm(
-          "Are you sure you want to break up?"
-        );
-        if (!shouldBreakup) {
-          return;
-        }
-      }
-    } else {
-      if (!window.confirm("Are you sure you wish to send a love request?")) {
-        return;
-      }
-    }
-
-    axios
-      .post("/api/user/love", {
-        user: profileUserId,
-        type: love.type,
-        reqType: "Love",
-      })
-      .then((res) => {
-        setIsLove(!isLove);
-        siteInfo.showAlert(res.data.message, "success");
-        if (res.data.love != undefined) {
-          setLove(res.data.love);
-        } else {
-          if (res.data.requestType != undefined) {
-            if (res.data.requestType === "Married") {
-              setIsMarried(true);
-              setIsLove(false);
-            } else if (res.data.requestType === "Lover") {
-              setIsLove(true);
-              setIsMarried(false);
-            }
-          }
-        }
-      })
-      .catch(errorAlert);
-  }
-
-  function onMarryUserClick() {
-    if (isMarried && love.type === "Lover") {
-      var shouldCancel = window.confirm(
-        "Are you sure you want to stop proposing?"
-      );
-      if (!shouldCancel) {
-        return;
-      }
-    }
-    if (isMarried && love.type === "Married") {
-      var shouldDivorce = window.confirm("Are you sure you want to divorce?");
-      if (!shouldDivorce) {
-        return;
-      }
-    }
-
-    axios
-      .post("/api/user/love", {
-        user: profileUserId,
-        type: love.type,
-        reqType: "Marry",
-      })
-      .then((res) => {
-        setIsMarried(!isMarried);
-        setIsLove(!isLove);
-        siteInfo.showAlert(res.data.message, "success");
-        if (res.data.love != undefined) {
-          setLove(res.data.love);
-        } else {
-          if (res.data.requestType != undefined) {
-            if (res.data.requestType === "Married") {
-              setIsMarried(true);
-              setIsLove(false);
-            } else if (res.data.requestType === "Lover") {
-              setIsLove(true);
-              setIsMarried(false);
-            }
-          }
-        }
-      })
-      .catch(errorAlert);
-  }
-
-  function onBlockUserClick() {
-    if (!isBlocked) {
-      var shouldBlock = window.confirm(
-        "Are you sure you wish to block this user?"
-      );
-      if (!shouldBlock) return;
-    }
-
-    axios
-      .post("/api/user/block", { user: profileUserId })
-      .then(() => {
-        user.blockUserToggle(profileUserId);
-
-        if (isBlocked) siteInfo.showAlert("User unblocked.", "success");
-        else siteInfo.showAlert("User blocked.", "success");
-      })
-      .catch(errorAlert);
-  }
-
-  function onReportClick() {
-    setReportDialogOpen(true);
-  }
-
-  function onBioClick() {
-    setEditingBio(isSelf);
-    setOldBio(bio);
-  }
-
-  function onPronounsClick() {
-    setEditingPronouns(isSelf);
-    setOldPronouns(pronouns);
-  }
-
-  function onEditBio(e) {
-    axios
-      .post(`/api/user/bio`, { bio: bio })
-      .then(() => {
-        setEditingBio(false);
-        setBio(filterProfanity(bio, user.settings, "\\*"));
-      })
-      .catch(errorAlert);
-  }
-
-  function onEditPronouns(e) {
-    axios
-      .post(`/api/user/pronouns`, { pronouns: pronouns })
-      .then(() => {
-        setEditingPronouns(false);
-        setPronouns(filterProfanity(pronouns, user.settings, "\\*"));
-      })
-      .catch(errorAlert);
-  }
-
-  function onCancelEditBio(e) {
-    e.stopPropagation();
-    setEditingBio(false);
-    setBio(oldBio);
-  }
-
-  function onCancelEditPronouns(e) {
-    e.stopPropagation();
-    setEditingPronouns(false);
-    setPronouns(oldPronouns);
-  }
-
-  function onAcceptFriend(_userId) {
-    axios
-      .post("/api/user/friend", { user: _userId })
-      .then((res) => {
-        var newFriendRequests = friendRequests
-          .slice()
-          .filter((u) => u.id !== _userId);
-        setFriendRequests(newFriendRequests);
-        siteInfo.showAlert(res.data, "success");
-      })
-      .catch(errorAlert);
-  }
-
-  function onRejectFriend(_userId) {
-    axios
-      .post("/api/user/friend/reject", { user: _userId })
-      .then((res) => {
-        var newFriendRequests = friendRequests
-          .slice()
-          .filter((u) => u.id !== _userId);
-        setFriendRequests(newFriendRequests);
-        siteInfo.showAlert(res.data, "success");
-      })
-      .catch(errorAlert);
-  }
-
-  function loadFriends(id, filterArg = "", pageToSet) {
-    if (!id) return;
-    const query = filterArg ? `?${filterArg}` : "";
-
-    axios
-      .get(`/api/user/${id}/friends${query}`)
-      .then((res) => {
-        if (res.data.length || pageToSet === 1) {
-          setFriends(res.data);
-          if (pageToSet != null) {
-            setFriendsPage(pageToSet);
-          }
-        }
-      })
-      .catch(errorAlert);
-  }
-
-  function loadRecentGames(id, pageToLoad = 1) {
-    if (!id) return;
-    setRecentGamesLoading(true);
-
-    axios
-      .get(`/api/user/${id}/games`, {
-        params: {
-          page: pageToLoad,
-        },
-      })
-      .then((res) => {
-        setRecentGames(res.data.games || []);
-        if (res.data.pages != null) {
-          setRecentGamesMaxPage(res.data.pages || 1);
-        }
-        if (res.data.page != null) {
-          setRecentGamesPage(res.data.page || pageToLoad);
-        } else {
-          setRecentGamesPage(pageToLoad);
-        }
-      })
-      .catch(errorAlert)
-      .finally(() => {
-        setRecentGamesLoading(false);
-      });
-  }
-
-  function loadSetups(id, pageToLoad = 1) {
-    if (!id) return;
-    setSetupsLoading(true);
-
-    axios
-      .get(`/api/user/${id}/setups`, {
-        params: {
-          page: pageToLoad,
-        },
-      })
-      .then((res) => {
-        setCreatedSetups(res.data.setups || []);
-        if (res.data.pages != null) {
-          setSetupsMaxPage(res.data.pages || 1);
-        }
-        if (res.data.page != null) {
-          setSetupsPage(res.data.page || pageToLoad);
-        } else {
-          setSetupsPage(pageToLoad);
-        }
-      })
-      .catch(errorAlert)
-      .finally(() => {
-        setSetupsLoading(false);
-      });
-  }
-
-  function onFriendsPageNav(page) {
-    var filterArg = getPageNavFilterArg(
-      page,
-      friendsPage,
-      friends,
-      "lastActive"
-    );
-
-    if (filterArg == null) return;
-
-    loadFriends(profileUserId, filterArg, page);
-  }
-
-  function onRecentGamesPageNav(page) {
-    if (page === recentGamesPage) return;
-    if (!profileUserId) return;
-
-    const maxPage = recentGamesMaxPage || 1;
-    const targetPage = Math.min(Math.max(page, 1), maxPage);
-
-    loadRecentGames(profileUserId, targetPage);
-  }
-
-  function onSetupsPageNav(page) {
-    if (page === setupsPage) return;
-    if (!profileUserId) return;
-
-    const maxPage = setupsMaxPage || 1;
-    const targetPage = Math.min(Math.max(page, 1), maxPage);
-
-    loadSetups(profileUserId, targetPage);
-  }
-
-  const panelStyle = {};
-  const headingStyle = {};
-  const bannerStyle = {};
-
-  if (settings.backgroundColor) {
-    panelStyle.backgroundColor = settings.backgroundColor;
-
-    // ensure good color contrast for headings
-    if (colorContrast(settings.backgroundColor, "#000") > 7) {
-      headingStyle.color = "#000";
-    } else {
-      headingStyle.color = "#fff";
-    }
-  }
-
-  if (banner) {
-    bannerStyle.backgroundImage = `url(/uploads/${profileUserId}_banner.webp?t=${siteInfo.cacheVal})`;
-  }
-
-  if (settings.bannerFormat === "stretch") {
-    bannerStyle.backgroundSize = "100% 100%";
+export function YouTubeEmbed(props) {
+  const embedId = props.embedId;
+  var autoplay = "";
+  if (props.autoplay) {
+    autoplay = 1;
   } else {
-    bannerStyle.backgroundSize = "contain";
+    autoplay = 0;
   }
+  if (embedId !== null && embedId !== "") {
+    return (
+      <div id="profile-video" className="video-responsive-generic">
+        <iframe
+          className="video-responsive-content"
+          src={`https://www.youtube.com/embed/${embedId}?autoplay=${autoplay}&mute=0`}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media;"
+          allowFullScreen
+        ></iframe>
+      </div>
+    );
+  } else {
+    return null;
+  }
+}
 
-  var ratings = [];
-  var totalGames = 0;
+export function SoundCloudEmbed(props) {
+  const mediaUrl = props.mediaUrl;
+  if (mediaUrl) {
+    return (
+      <div id="profile-video" className="video-responsive-generic">
+        <iframe
+          className="video-responsive-content"
+          src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(
+            mediaUrl
+          )}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true`}
+          allow="autoplay"
+          allowFullScreen
+        ></iframe>
+      </div>
+    );
+  } else {
+    return null;
+  }
+}
 
-  if (stats && stats["Mafia"] && stats["Mafia"].all) {
-    var mafiaStats = stats["Mafia"].all;
-    totalGames = mafiaStats?.wins?.total + mafiaStats?.abandons?.total || 0;
+export function SpotifyEmbed(props) {
+  const mediaUrl = props.mediaUrl;
+  if (mediaUrl) {
+    // Convert Spotify URL to embed format
+    const embedUrl = mediaUrl.replace(
+      "open.spotify.com",
+      "open.spotify.com/embed"
+    );
+    return (
+      <div id="profile-video" className="video-responsive-generic">
+        <iframe
+          className="video-responsive-content"
+          src={embedUrl}
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
+    );
+  } else {
+    return null;
+  }
+}
 
-    ratings = Object.keys(RatingThresholds).map((statName) => {
-      var stat = mafiaStats[statName];
-
-      if (RatingThresholds[statName] == null) return <></>;
-      else if (totalGames < RequiredTotalForStats) stat = "-";
-      else if (statName === "wins")
-        stat = `${Math.round((stat.count / totalGames) * 100)}%`;
-      else if (statName === "abandons")
-        stat = `${Math.round((mafiaStats.abandons.total / totalGames) * 100)}%`;
-      else if (statName === "losses")
-        stat = `${Math.round(
-          ((totalGames - mafiaStats.wins.count - mafiaStats.abandons.total) /
-            totalGames) *
-            100
-        )}%`;
-
+export function VimeoEmbed(props) {
+  const mediaUrl = props.mediaUrl;
+  const autoplay = props.autoplay ? 1 : 0;
+  if (mediaUrl) {
+    // Extract video ID from Vimeo URL
+    const vimeoMatches = mediaUrl.match(vimeoRegex);
+    if (vimeoMatches && vimeoMatches[2]) {
+      const videoId = vimeoMatches[2];
       return (
-        <div className="rating" key={statName}>
-          <div className="name">{capitalize(statName)}</div>
-          <div className="score">{stat}</div>
+        <div id="profile-video" className="video-responsive-generic">
+          <iframe
+            className="video-responsive-content"
+            src={`https://player.vimeo.com/video/${videoId}?autoplay=${autoplay}&muted=0`}
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+          ></iframe>
         </div>
       );
-    });
+    }
   }
+  return null;
+}
 
-  const recentGamesRows = recentGames.map((game) => {
-    return (
-      <GameRow
-        game={game}
-        type={game.status || "Finished"}
-        key={game.id}
-        odd={recentGames.indexOf(game) % 2 === 1}
-        small
-      />
-    );
-  });
+export function InvidiousEmbed(props) {
+  const mediaUrl = props.mediaUrl;
+  const autoplay = props.autoplay ? 1 : 0;
+  if (mediaUrl) {
+    // Extract video ID from Invidious URL
+    const invidiousMatches = mediaUrl.match(invidiousRegex);
+    if (invidiousMatches && invidiousMatches[3]) {
+      const videoId = invidiousMatches[3];
+      return (
+        <div id="profile-video" className="video-responsive-generic">
+          <iframe
+            className="video-responsive-content"
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=${autoplay}&mute=0`}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media;"
+            allowFullScreen
+          ></iframe>
+        </div>
+      );
+    }
+  }
+  return null;
+}
+export function MediaEmbed(props) {
+  const mediaUrl = props.mediaUrl;
+  const autoplay = !!props.autoplay;
+  const loop = !!props.loop;
+  const mediaRef = useRef();
 
-  const archivedGamesRows = archivedGames.map((game) => {
-    return (
-      <div className="archived-game" key={game.id}>
-        {showDeleteArchivedGame && (
-          <div className="btns-wrapper">
-            <i
-              className="fas fa-trash"
-              onClick={onUnarchiveGame(game.id, game.description)}
-            />
-          </div>
-        )}
-        <GameRow game={game} type={game.status || "Finished"} small />
-      </div>
-    );
-  });
+  const mediaOptions = JSON.parse(
+    window.localStorage.getItem("mediaOptions") || "{}"
+  );
+  const volume = mediaOptions.volume || 1;
+  const muted = mediaOptions.muted || false;
+  let embedId;
 
-  const AchievementRows = achievements
-    .map((achID) => {
-      for (let item of Object.entries(AchievementData.Mafia).filter(
-        (achievementData) => achID == achievementData[1].ID
-      )) {
-        if (achID == item[1].ID) {
-          return item[0];
-        }
+  const getMediaType = (mediaUrl) => {
+    if (!mediaUrl) {
+      return null;
+    }
+    const ytMatches = mediaUrl.match(youtubeRegex) ?? "";
+    if (ytMatches && ytMatches.length >= 7) {
+      embedId = ytMatches[7];
+      return "youtube";
+    }
+    if (mediaUrl.match(soundcloudRegex)) {
+      return "soundcloud";
+    }
+    if (mediaUrl.match(spotifyRegex)) {
+      return "spotify";
+    }
+    if (mediaUrl.match(vimeoRegex)) {
+      return "vimeo";
+    }
+    if (mediaUrl.match(invidiousRegex)) {
+      return "invidious";
+    }
+    const extension = mediaUrl.split(".").slice("-1")[0];
+    switch (extension) {
+      case "webm":
+      case "mp4":
+        return "video";
+      case "mp3":
+      case "ogg":
+        return "audio";
+      default:
+        return "image";
+    }
+  };
+  const mediaType = props.mediaType || getMediaType(mediaUrl);
+
+  const trackVolume = (e) => {
+    mediaOptions.volume = e.target.volume;
+    mediaOptions.muted = e.target.muted;
+    window.localStorage.setItem("mediaOptions", JSON.stringify(mediaOptions));
+  };
+
+  useEffect(() => {
+    if (mediaRef && mediaRef.current) {
+      mediaRef.current.volume = volume;
+      mediaRef.current.muted = muted;
+      mediaRef.current.addEventListener("volumechange", trackVolume);
+    }
+    return () => {
+      if (mediaRef && mediaRef.current) {
+        mediaRef.current.removeEventListener("volumechange", trackVolume);
       }
-    })
-    .map((formatAch) => (
-      <div className="Achievement" key={formatAch}>
-        {formatAch}
-      </div>
-    ));
+    };
+  }, [mediaRef]);
 
-  const createdSetupRows = createdSetups.map((setup) => (
-    <Setup setup={setup} key={setup.id} />
-  ));
+  switch (mediaType) {
+    case "image":
+      return <img ref={mediaRef} src={mediaUrl}></img>;
+    case "audio":
+      return (
+        <audio
+          ref={mediaRef}
+          controls
+          src={mediaUrl}
+          autoPlay={autoplay}
+          loop={loop}
+        ></audio>
+      );
+    case "video":
+      return (
+        <div id="profile-video" className="video-responsive-generic">
+          <video
+            ref={mediaRef}
+            className="video-responsive-content"
+            controls
+            src={mediaUrl}
+            autoPlay={autoplay}
+            loop={loop}
+          ></video>
+        </div>
+      );
+    case "youtube":
+      return <YouTubeEmbed embedId={embedId} autoplay={autoplay} />;
+    case "soundcloud":
+      return <SoundCloudEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+    case "spotify":
+      return <SpotifyEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+    case "vimeo":
+      return <VimeoEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+    case "invidious":
+      return <InvidiousEmbed mediaUrl={mediaUrl} autoplay={autoplay} />;
+    default:
+      return null;
+  }
+}
+export default function User(props) {
+  const theme = useTheme();
+  const user = useContext(UserContext);
+  const isPhoneDevice = useIsPhoneDevice();
 
-  const friendRequestRows = friendRequests.map((user) => (
-    <div className="friend-request" key={user.id}>
-      <NameWithAvatar
-        id={user.id}
-        name={user.name}
-        avatar={user.avatar}
-        vanityUrl={user.vanityUrl}
-      />
-      <div className="btns">
-        <i className="fas fa-check" onClick={() => onAcceptFriend(user.id)} />
-        <i className="fas fa-times" onClick={() => onRejectFriend(user.id)} />
-      </div>
-    </div>
-  ));
+  if (user.loaded && !user.loggedIn) return <Navigate to="/" />;
 
-  const friendRows = friends.map((friend) => (
-    <div className="friend" key={friend.id}>
-      <div className="friend-avatar">
-        <NameWithAvatar
-          id={friend.id}
-          name={friend.name}
-          avatar={friend.avatar}
-          vanityUrl={friend.vanityUrl}
-        />
-        {showDelete && (
-          <div className="btns-wrapper">
-            <i className="fas fa-trash" onClick={onDeleteFriend(friend.id)} />
-          </div>
-        )}
-      </div>
-      <div className="last-active">
-        <Time minSec millisec={Date.now() - friend.lastActive} suffix=" ago" />
-      </div>
-    </div>
-  ));
+  return (
+    <>
+      <Box maxWidth="1080px" sx={{ mt: 1 }}>
+        <Routes>
+          <Route path="/" element={<Profile />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="shop" element={<Shop />} />
+          <Route path="inbox" element={<Inbox />} />
+          <Route path=":userId" element={<Profile />} />
+        </Routes>
+      </Box>
+    </>
+  );
+}
 
-  if (user.loaded && !user.loggedIn && !userId) return <Navigate to="/play" />;
+export function Avatar(props) {
+  const small = props.small;
+  const mediumlarge = props.mediumlarge;
+  const large = props.large;
+  const id = props.id;
+  const name = props.name;
+  const hasImage = props.hasImage;
+  const imageUrl = props.imageUrl;
+  const edit = props.edit;
+  const onUpload = props.onUpload;
+  const active = props.active;
+  const dead = props.dead;
+  const avatarId = props.avatarId;
+  const deckProfile = props.deckProfile;
+  const absoluteLeftAvatarPx = props.absoluteLeftAvatarPx;
+  const ConnectFour = props.ConnectFour;
+  const isSquare = props.isSquare || false;
+  const border = props.border || undefined;
 
-  if (user.loaded && user.loggedIn && !userId) {
-    // Use vanity URL if available, otherwise use user ID
-    const profilePath = user.vanityUrl
-      ? `/user/${user.vanityUrl}`
-      : `/user/${user.id}`;
-    return <Navigate to={profilePath} replace />;
+  const siteInfo = useContext(SiteInfoContext);
+  const style = {};
+  const colors = [
+    "#fff59d",
+    "#ef9a9a",
+    "#9fa8da",
+    "#ce93d8",
+    "#a5d6a7",
+    "#f48fb1",
+    "#ffcc80",
+    "#90deea",
+    "#80cbc4",
+  ]; //yellow, red, blue, purple, green, pink, orange, cyan, teal
+  var size;
+
+  if (small) size = "small";
+  else if (mediumlarge) size = "mediumlarge";
+  else if (large) size = "large";
+  else size = "";
+
+  if (absoluteLeftAvatarPx) {
+    style.position = "absolute";
+    style.left = absoluteLeftAvatarPx;
+
+    if (!small && !ConnectFour) {
+      style.transform = "translateY(12px)";
+    }
   }
 
-  if (!profileLoaded || !user.loaded) return <NewLoading small />;
+  if (ConnectFour) {
+    style.transform = "translateX(5px) translateY(5px)";
+  }
 
-  const buttonsBox = (
-    <Grid
-      item
-      xs={12}
-      md={3}
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+  if (hasImage && !imageUrl && id && avatarId) {
+    if (id === avatarId) {
+      if (!deckProfile) {
+        style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
+      } else {
+        style.backgroundImage = `url(/uploads/decks/${avatarId}.webp?t=${siteInfo.cacheVal})`;
+      }
+    }
+  } else if (hasImage && !imageUrl && id) {
+    style.backgroundImage = `url(/uploads/${id}_avatar.webp?t=${siteInfo.cacheVal})`;
+  } else if (hasImage && imageUrl) {
+    style.backgroundImage = `url(${imageUrl})`;
+  } else if (name) {
+    var rand = 0;
+
+    for (let i = 0; i < name.length; i++) rand ^= name.charCodeAt(i);
+
+    rand ^= name.charCodeAt(1);
+    rand ^= rand << 13;
+    rand ^= rand >> 7;
+    rand ^= rand << 17;
+    rand = Math.abs(rand) / Math.pow(2, 31);
+
+    style.backgroundColor = colors[Math.floor(rand * colors.length)];
+  }
+  if (typeof hasImage == "string") {
+    if (hasImage.includes("decks")) {
+      style.backgroundImage = `url(/uploads${hasImage}?t=${siteInfo.cacheVal})`;
+      style.backgroundColor = "#00000000";
+    }
+  }
+
+  {
+    /*SANTA CHANGES: In December, uncomment the below lines*/
+  }
+  {
+    /*var santaWidth;
+  var santaHorizAdjust;
+  var santaVertAdjust;
+
+  if (large) {
+    santaWidth = "100px";
+    santaHorizAdjust = -25;
+    santaVertAdjust = -40;
+  } else if (small) {
+    santaWidth = "20px;";
+    santaHorizAdjust = -5;
+    santaVertAdjust = -8;
+  } else {
+    santaWidth = "40px";
+    santaHorizAdjust = -12;
+    santaVertAdjust = -15;
+  }
+var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/
+  }
+  {
+    /*SANTA CHANGES*/
+  }
+
+  return (
+    <div
+      className={`avatar ${size} ${dead ? "dead" : ""} ${
+        active ? "active" : ""
+      }`}
+      style={{
+        ...style,
+        display: "inline-block",
+        borderRadius: isSquare ? "0px" : "50%",
+        border: border,
       }}
     >
-      <Stack direction="row" className="options">
-        {!isSelf && user.loggedIn && (
-          <>
-            <IconButton aria-label="friend user">
-              <i
-                className={`fas fa-user-plus ${isFriend ? "sel" : ""}`}
-                onClick={onFriendUserClick}
-              />
-            </IconButton>
-            <LoveIcon
-              isLove={isLove}
-              userId={user.id}
-              isMarried={isMarried}
-              love={love}
-              currentUserLove={currentUserLove}
-              onClick={onLoveUserClick}
-            />
-            <MarriedIcon
-              isLove={isLove}
-              saved={saved}
-              userId={user.id}
-              love={love}
-              isMarried={isMarried}
-              onClick={onMarryUserClick}
-            />
-            <IconButton aria-label="block user">
-              <i
-                className={`fas fa-ban ${isBlocked ? "sel" : ""}`}
-                onClick={onBlockUserClick}
-                title="Block user"
-              />
-            </IconButton>
-            <Tooltip title="File Report">
-              <IconButton size="large" onClick={onReportClick}>
-                <img src={system} alt="Report" />
-              </IconButton>
-            </Tooltip>
-            <ReportDialog
-              open={reportDialogOpen}
-              onClose={() => setReportDialogOpen(false)}
-              prefilledArgs={{ user: profileUserId }}
-            />
-          </>
-        )}
-      </Stack>
-    </Grid>
+      {edit && (
+        <AvatarUpload className="edit" name="avatar" onFileUpload={onUpload}>
+          <i className="far fa-file-image" />
+        </AvatarUpload>
+      )}
+
+      {/*SANTA CHANGES: In December, uncomment the below lines*/}
+      {/*<div>
+        <img
+          className="santa"
+          width={santaWidth}
+          style={{ position: "absolute", transform: santaAdjust }}
+          src={santaDir}
+        ></img>
+      </div>*/}
+      {/*SANTA CHANGES*/}
+    </div>
+  );
+}
+
+export function NameWithAvatar(props) {
+  const id = props.id;
+  const name = props.name || "[deleted]";
+  const avatar = props.avatar;
+  const noLink = props.name ? props.noLink : true;
+  const color = props.color;
+  const newTab = props.newTab;
+  const small = props.small;
+  const active = props.active;
+  const groups = props.groups;
+  const dead = props.dead;
+  const avatarId = props.avatarId;
+  const deckProfile = props.deckProfile;
+  const includeMiniprofile = props.includeMiniprofile;
+  const absoluteLeftAvatarPx = props.absoluteLeftAvatarPx;
+  const vanityUrl = props.vanityUrl;
+
+  const game = useContext(GameContext);
+  const [userProfile, setUserProfile] = useState(null);
+  const [isClicked, setIsClicked] = useState(false);
+
+  const {
+    popoverOpen: canOpenPopover,
+    popoverClasses,
+    anchorEl,
+    handleClick: handlePopoverClick,
+    handleMouseEnter,
+    handleMouseLeave,
+    closePopover,
+  } = usePopoverOpen();
+
+  const popoverOpen = includeMiniprofile && canOpenPopover;
+
+  useEffect(() => {
+    if (includeMiniprofile && id) {
+      axios
+        .get(`/api/user/${id}/profile`)
+        .then((res) => {
+          res.data.props = props;
+          setUserProfile(res.data);
+        })
+        .catch((error) => {
+          console.warn(
+            `Couldn't retrieve profile for ${id} (this error is harmless if they're a bot)`
+          );
+        });
+    }
+  }, []);
+
+  var contents = (
+    <Stack
+      direction="row"
+      spacing={absoluteLeftAvatarPx ? 0 : small ? 0.5 : 1}
+      sx={{
+        alignItems: "center",
+      }}
+    >
+      <Avatar
+        hasImage={avatar}
+        id={id}
+        avatarId={avatarId}
+        name={name}
+        small={small}
+        dead={dead}
+        active={active}
+        deckProfile={deckProfile}
+        absoluteLeftAvatarPx={absoluteLeftAvatarPx}
+      />
+      <div
+        className={`user-name ${props.dead ? "dead" : color}`}
+        style={{ ...(color ? { color } : {}), display: "inline" }}
+      >
+        {name}
+      </div>
+      {groups && <Badges groups={groups} small={small} />}
+    </Stack>
   );
 
-  const badges = groups
+  // noLink should take precedence over includeMiniprofile
+  if (noLink) {
+    return (
+      <div
+        className={`name-with-avatar no-link`}
+        target={newTab ? "_blank" : ""}
+      >
+        {contents}
+      </div>
+    );
+  } else if (includeMiniprofile) {
+    const handlePlayerClick = (e) => {
+      if (props.onClick) return props.onClick();
+
+      if (!props.name || !includeMiniprofile) return;
+
+      handlePopoverClick(e);
+
+      setIsClicked(popoverOpen);
+    };
+
+    const handleMiniprofileClose = (e) => {
+      setIsClicked(false);
+      closePopover();
+    };
+
+    return (
+      <>
+        <div
+          className={`name-with-avatar no-link${
+            isClicked ? " name-with-avatar-clicked" : ""
+          }`}
+          onClick={handlePlayerClick}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {contents}
+        </div>
+        <div>
+          <Popover
+            open={props.showPopover !== false && popoverOpen}
+            sx={popoverClasses}
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: "center",
+              horizontal: "right",
+            }}
+            transformOrigin={{
+              vertical: "center",
+              horizontal: "left",
+            }}
+            onClose={handleMiniprofileClose}
+            disableScrollLock
+          >
+            {userProfile && (
+              <>
+                <Miniprofile
+                  user={userProfile}
+                  game={game}
+                  key={userProfile.id}
+                />
+              </>
+            )}
+          </Popover>
+        </div>
+      </>
+    );
+  } else {
+    const profileLink = vanityUrl ? `/user/${vanityUrl}` : `/user/${id}`;
+    return (
+      <Link
+        className={`name-with-avatar`}
+        to={profileLink}
+        target={newTab ? "_blank" : ""}
+      >
+        {contents}
+      </Link>
+    );
+  }
+}
+
+export function Miniprofile(props) {
+  const user = props.user;
+  const game = props.game;
+  const inheritedProps = user.props;
+
+  const id = user.id;
+  const name = user.name || "[deleted]";
+  const pronouns = user.pronouns || "";
+  const avatar = user.avatar;
+  const color = inheritedProps.color;
+  const avatarId = inheritedProps.avatarId;
+  const hasDefaultPronouns = pronouns === "";
+  const vanityUrl = user.vanityUrl;
+
+  var mafiaStats = user.stats["Mafia"].all;
+
+  const profileLink = vanityUrl ? `/user/${vanityUrl}` : `/user/${id}`;
+
+  return (
+    <div className="miniprofile">
+      <div className="mui-popover-title">
+        <Link className={`name-with-avatar`} to={profileLink} target="_blank">
+          <Stack direction="row" spacing={1}>
+            <Avatar hasImage={avatar} id={id} avatarId={avatarId} name={name} />
+            <div
+              className={`user-name`}
+              style={{
+                ...(color ? { color } : {}),
+                display: "inline",
+                alignSelf: "center",
+              }}
+            >
+              {name}
+            </div>
+          </Stack>
+        </Link>
+      </div>
+      {!hasDefaultPronouns && <div className="pronouns">({pronouns})</div>}
+      <PieChart
+        wins={mafiaStats.wins.count}
+        losses={mafiaStats.wins.total - mafiaStats.wins.count}
+        abandons={mafiaStats.abandons.total}
+      />
+      <div className="score-info">
+        <div className="score-info-column">
+          <div className="score-info-row score-info-smallicon">
+            <img src={KUDOS_ICON} />
+          </div>
+          <div className="score-info-row">{user.kudos}</div>
+        </div>
+        <div className="score-info-column">
+          <div className="score-info-row score-info-smallicon">
+            <img src={KARMA_ICON} />
+          </div>
+          <div className="score-info-row">{user.karma}</div>
+        </div>
+        <div className="score-info-column">
+          <div className="score-info-row score-info-smallicon">
+            <img src={ACHIEVEMENTS_ICON} />
+          </div>
+          <div className="score-info-row">{user.achievements.length}/40</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function getLoveTitle(loveType) {
+  if (loveType === "Lover") {
+    return "In Love With";
+  } else if (loveType === "Married") {
+    return "Married To";
+  } else return "";
+}
+
+export function StatusIcon(props) {
+  return <div className={`status-icon ${props.status}`} />;
+}
+
+export function OnlineStatus(props) {
+  const { status, lastActive } = props;
+
+  if (status === "online") {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 0.5,
+        }}
+      >
+        <Typography
+          variant="caption"
+          sx={{
+            filter: "opacity(.75)",
+            fontSize: "0.75rem",
+          }}
+        >
+          Online
+        </Typography>
+        <div className="status-icon online" />
+      </Box>
+    );
+  }
+
+  if (lastActive) {
+    const lastActiveDate = new Date(lastActive);
+    const formattedDate = lastActiveDate.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+
+    return (
+      <Typography
+        variant="caption"
+        sx={{
+          filter: "opacity(.75)",
+          fontSize: "0.75rem",
+        }}
+      >
+        Last online {formattedDate}
+      </Typography>
+    );
+  }
+
+  return null;
+}
+
+export function Badges(props) {
+  if (props.groups[0] === null) {
+    return <></>;
+  }
+  const badges = props.groups
     .filter((g) => g.badge)
     .sort((a, b) => a.rank - b.rank)
     .map((g) => (
@@ -798,709 +717,67 @@ export default function Profile() {
       />
     ));
 
-  const avatarUpliftPx = !banner ? 0 : isPhoneDevice ? 38 : 58;
-  const avatarPaddingPx = !banner
-    ? isPhoneDevice
-      ? 60
-      : 100
-    : isPhoneDevice
-    ? 22
-    : 50;
-
-  const nameBox = (
-    <Grid item xs={12} md={6} className="avi-name">
-      <Box
-        sx={{
-          display: "flex",
-          position: "relative",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Box
-          sx={{
-            position: "absolute",
-            top: `-${avatarUpliftPx}px`,
-          }}
-        >
-          {!bustCache && (
-            <Avatar
-              mediumlarge={isPhoneDevice}
-              large={!isPhoneDevice}
-              id={profileUserId}
-              hasImage={avatar}
-              bustCache={bustCache}
-              name={name}
-              edit={isSelf}
-              onUpload={onFileUpload}
-              border={`4px var(--scheme-color) solid`}
-              isSquare={settings.avatarShape === "square"}
-            />
-          )}
-        </Box>
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{
-            alignItems: "center",
-            justifyContent: "center",
-            mt: `${avatarPaddingPx}px`,
-            p: 1,
-            width: "100%",
-          }}
-        >
-          {badges}
-          <Typography
-            variant="h2"
-            sx={{
-              flexShrink: "2",
-              fontWeight: "600",
-            }}
-          >
-            {name}
-          </Typography>
-          {pronouns && (
-            <Typography
-              variant="caption"
-              sx={{
-                flexShrink: "1",
-                filter: "opacity(.75)",
-                minWidth: "40px",
-                wordBreak: pronouns.includes("/") ? "normal" : "break-word",
-              }}
-            >
-              ({pronouns})
-            </Typography>
-          )}
-        </Stack>
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          mt: 0.5,
-        }}
-      >
-        <OnlineStatus status={status} lastActive={lastActive} />
-      </Box>
-    </Grid>
-  );
-
-  const inLoveBox = (
-    <Grid item xs={12} md={3}>
-      {love.id != null && (isLove || isMarried) && (
-        <Link
-          className={`name-with-avatar`}
-          to={`/user/${love.id}`}
-          target={""}
-          style={{ height: "100%" }}
-        >
-          <Stack
-            direction="row"
-            sx={{
-              width: "100%",
-              position: "relative",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Stack
-              direction={isPhoneDevice ? "row" : "column"}
-              spacing={isPhoneDevice ? 1 : 0}
-              sx={{
-                mb: 1,
-                height: "100%",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Typography variant="italicRelation">
-                {getLoveTitle(love.type)}
-              </Typography>
-              <Avatar hasImage={love.avatar} id={love.id} name={love.name} />
-              <Typography>{love.name}</Typography>
-            </Stack>
-          </Stack>
-        </Link>
-      )}
-    </Grid>
-  );
-
-  const aviGridItems = isPhoneDevice ? (
-    <>
-      {nameBox}
-      {inLoveBox}
-      {buttonsBox}
-    </>
-  ) : (
-    <>
-      {buttonsBox}
-      {nameBox}
-      {inLoveBox}
-    </>
-  );
-
-  const bannerUpload = (
-    <>
-      {isSelf && (
-        <HiddenUpload
-          className="edit"
-          name="banner"
-          onClick={onEditBanner}
-          onFileUpload={onFileUpload}
-        >
-          <i className="far fa-file-image" />
-        </HiddenUpload>
-      )}
-    </>
-  );
-
   return (
-    <>
-      {stats && (
-        <StatsModal
-          stats={stats}
-          show={showStatsModal}
-          setShow={setShowStatsModal}
-        />
-      )}
-      <ModerationSideDrawer
-        open={moderationDrawerOpen}
-        setOpen={setModerationDrawerOpen}
-        prefilledArgs={{ userId: profileUserId }}
-      />
-      <Grid container rowSpacing={1} columnSpacing={1} className="profile">
-        <Grid item xs={12}>
-          <Stack
-            direction="row"
-            sx={{
-              justifyContent: "center",
-            }}
-          >
-            {/* 900px max banner size + 16px padding on box-panel + 8px padding on content = 924px */}
-            <div
-              className="box-panel"
-              style={{ ...panelStyle, width: "100%", maxWidth: "924px" }}
-            >
-              <div className="content" style={{ gap: "8px" }}>
-                {banner && (
-                  <div className="banner" style={bannerStyle}>
-                    {bannerUpload}
-                  </div>
-                )}
-                {!banner && (
-                  <Box
-                    className="banner"
-                    sx={{ width: "100%", height: "24px !important" }}
-                  >
-                    {bannerUpload}
-                  </Box>
-                )}
-                <Grid container>{aviGridItems}</Grid>
-              </div>
-            </div>
-          </Stack>
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <Stack direction="column" spacing={1}>
-            <div className="box-panel" style={panelStyle}>
-              <div
-                className={`bio${isSelf && !editingBio ? " edit" : ""}`}
-                onClick={onBioClick}
-              >
-                {!editingBio && (
-                  <div className="md-content">
-                    <CustomMarkdown>{bio}</CustomMarkdown>
-                  </div>
-                )}
-                {editingBio && (
-                  <>
-                    <TextEditor value={bio} onChange={setBio} />
-                    <div className="buttons">
-                      <div className="btn btn-theme" onClick={onEditBio}>
-                        Submit
-                      </div>
-                      <div
-                        className="btn btn-theme-sec"
-                        onClick={onCancelEditBio}
-                      >
-                        Cancel
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-            {!isPhoneDevice && (
-              <Box
-                sx={{
-                  mt: "16px !important",
-                  px: 2,
-                }}
-              >
-                <Comments fullWidth location={profileUserId} />
-              </Box>
-            )}
-          </Stack>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Stack direction="column" spacing={1}>
-            {mediaUrl && (
-              <div className="box-panel" style={panelStyle}>
-                <MediaEmbed
-                  mediaUrl={mediaUrl}
-                  autoplay={autoplay}
-                ></MediaEmbed>
-              </div>
-            )}
-            <div className="box-panel" style={panelStyle}>
-              <div className="content">
-                <Stack
-                  direction="row"
-                  spacing={2}
-                  sx={{ alignItems: "stretch" }}
-                >
-                  {karmaInfo && (
-                    <Stack direction="column" spacing={1}>
-                      <KarmaVoteWidget
-                        item={karmaInfo}
-                        setItem={setKarmaInfo}
-                        userId={profileUserId}
-                      />
-                    </Stack>
-                  )}
-                  <Stack direction="column" spacing={1}>
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      sx={{ alignItems: "center" }}
-                    >
-                      <img
-                        src={KUDOS_ICON}
-                        style={{ marginRight: "12px" }}
-                        alt="Kudos"
-                      />
-                      {kudos}
-                    </Stack>
-                    {karmaInfo && (
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        sx={{ alignItems: "center" }}
-                      >
-                        <img
-                          src={KARMA_ICON}
-                          style={{ marginRight: "12px" }}
-                          alt="Karma"
-                        />
-                        {karmaInfo.voteCount}
-                      </Stack>
-                    )}
-                  </Stack>
-                  <Stack direction="column" spacing={1}>
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      sx={{ alignItems: "center" }}
-                    >
-                      <img
-                        src={POINTS_ICON}
-                        style={{ marginRight: "12px" }}
-                        alt="Fortune"
-                      />
-                      {points}
-                    </Stack>
-                    {pointsNegative !== undefined && (
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        sx={{ alignItems: "center" }}
-                      >
-                        <img
-                          src={POINTS_NEGATIVE_ICON}
-                          style={{ marginRight: "12px" }}
-                          alt="Misfortune"
-                        />
-                        {pointsNegative}
-                      </Stack>
-                    )}
-                  </Stack>
-                </Stack>
-              </div>
-            </div>
-            {totalGames >= RequiredTotalForStats &&
-              !settings.hideStatistics && (
-                <div className="box-panel ratings" style={panelStyle}>
-                  <Typography variant="h3" sx={headingStyle}>
-                    Mafia Ratings
-                  </Typography>
-                  <div className="content">
-                    {ratings}
-                    <div
-                      className="expand-icon-wrapper"
-                      onClick={() => setShowStatsModal(true)}
-                    >
-                      <i className="fas fa-expand-arrows-alt" />
-                    </div>
-                  </div>
-                  <div
-                    className="content"
-                    style={{ padding: "0", justifyContent: "center" }}
-                  >
-                    <PieChart
-                      wins={mafiaStats.wins.count}
-                      losses={mafiaStats.wins.total - mafiaStats.wins.count}
-                      abandons={mafiaStats.abandons.total}
-                    />
-                  </div>
-                </div>
-              )}
-            <div className="box-panel recent-games" style={panelStyle}>
-              <Typography variant="h3" style={headingStyle}>
-                Recent Games
-              </Typography>
-              <div className="content" style={{ padding: "0px" }}>
-                {recentGamesMaxPage > 1 && (
-                  <PageNav
-                    inverted
-                    page={recentGamesPage}
-                    maxPage={recentGamesMaxPage}
-                    onNav={onRecentGamesPageNav}
-                  />
-                )}
-                {recentGamesLoading && (
-                  <Typography
-                    sx={{
-                      p: 1,
-                    }}
-                  >
-                    Loading...
-                  </Typography>
-                )}
-                {recentGamesRows}
-                {!recentGamesLoading && recentGames.length === 0 && (
-                  <Typography
-                    sx={{
-                      p: 1,
-                    }}
-                  >
-                    No games
-                  </Typography>
-                )}
-                {recentGamesMaxPage > 1 && (
-                  <PageNav
-                    inverted
-                    page={recentGamesPage}
-                    maxPage={recentGamesMaxPage}
-                    onNav={onRecentGamesPageNav}
-                  />
-                )}
-              </div>
-            </div>
-            {friendRequests.length > 0 && (
-              <div className="box-panel" style={panelStyle}>
-                <Typography variant="h3" style={headingStyle}>
-                  Friend Requests
-                </Typography>
-                <div className="content">{friendRequestRows}</div>
-              </div>
-            )}
-            <div className="box-panel" style={panelStyle}>
-              <Typography variant="h3" style={headingStyle}>
-                Friends
-              </Typography>
-              <div className="content">
-                <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
-                {friendRows}
-                {friends.length === 0 && (
-                  <Typography
-                    sx={{
-                      p: 1,
-                    }}
-                  >
-                    No friends yet
-                  </Typography>
-                )}
-                <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
-              </div>
-            </div>
-            <div className="box-panel" style={panelStyle}>
-              <Typography variant="h3" style={headingStyle}>
-                Setups Created
-              </Typography>
-              <div className="content">
-                {setupsMaxPage > 1 && (
-                  <PageNav
-                    inverted
-                    page={setupsPage}
-                    maxPage={setupsMaxPage}
-                    onNav={onSetupsPageNav}
-                  />
-                )}
-                {setupsLoading && (
-                  <Typography
-                    sx={{
-                      p: 1,
-                    }}
-                  >
-                    Loading...
-                  </Typography>
-                )}
-                {createdSetupRows}
-                {!setupsLoading && createdSetups.length === 0 && "No setups"}
-                {setupsMaxPage > 1 && (
-                  <PageNav
-                    inverted
-                    page={setupsPage}
-                    maxPage={setupsMaxPage}
-                    onNav={onSetupsPageNav}
-                  />
-                )}
-              </div>
-            </div>
-            <div className="box-panel achievements" style={panelStyle}>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <img
-                  src={ACHIEVEMENTS_ICON}
-                  style={{
-                    marginRight: "8px",
-                    marginBottom: "8px",
-                    maxWidth: "30px",
-                    maxHeight: "30px",
-                    backgroundColor: "rgba()",
-                    borderRadius: "0px",
-                  }}
-                  title="achievements"
-                />
-                <Typography variant="h3" sx={headingStyle}>
-                  Achievements
-                </Typography>
-              </div>
-              <div className="content">
-                {AchievementRows}
-                {achievements.length === 0 && "No achievements yet"}
-              </div>
-            </div>
-            {archivedGamesRows.length !== 0 && (
-              <div className="box-panel archived-games" style={panelStyle}>
-                <Typography variant="h3" sx={headingStyle}>
-                  Archived Games{" "}
-                  {showDelete && (
-                    <i
-                      className="fas fa-edit"
-                      onClick={onEditArchivedGamesClick()}
-                    />
-                  )}
-                </Typography>
-                <div className="content" style={{ padding: "0px" }}>
-                  <Stack direction="column" spacing={0}>
-                    {archivedGamesRows}
-                  </Stack>
-                </div>
-              </div>
-            )}
-          </Stack>
-        </Grid>
-        {isPhoneDevice && (
-          <Grid item xs={12} sx={{ mt: 1 }}>
-            <Comments fullWidth location={profileUserId} />
-          </Grid>
-        )}
-      </Grid>
-    </>
+    <div className={`badge-list ${props.small ? "small" : ""}`}>{badges}</div>
   );
 }
 
-export function KarmaVoteWidget(props) {
-  const theme = useTheme();
-  const item = props.item;
-  const setItem = props.setItem;
+export function LoveIcon(props) {
+  const isLove = props.isLove;
+  const love = props.love;
   const userId = props.userId;
+  const loveType = love.type;
+  const onLoveClick = props.onClick;
+  const isMarried = props.isMarried;
+  const currentUserLove = props.currentUserLove;
 
-  const user = useContext(UserContext);
-  const errorAlert = useErrorAlert();
-  const widgetRef = useRef();
-
-  function updateItemVoteCount(direction, newDirection) {
-    var voteCount = item.voteCount;
-
-    if (item.vote === 0) voteCount += direction;
-    else if (item.vote === direction) voteCount += -1 * direction;
-    else voteCount += 2 * direction;
-
-    return update(item, {
-      vote: {
-        $set: newDirection,
-      },
-      voteCount: {
-        $set: voteCount,
-      },
-    });
+  if (
+    (!isLove && !isMarried && !currentUserLove) ||
+    (isLove && loveType !== "Married" && love.id === userId)
+  ) {
+    return (
+      <IconButton aria-label="love user">
+        <i
+          className={`fas fa-heart  ${isLove ? "sel-love" : ""}`}
+          onClick={onLoveClick}
+        />
+      </IconButton>
+    );
   }
-
-  function onVote(direction) {
-    if (!user.perms.vote) return;
-
-    axios
-      .post("/api/user/karma", {
-        targetId: userId,
-        direction,
-      })
-      .then((res) => {
-        var newDirection = Number(res.data);
-        var newItem = updateItemVoteCount(direction, newDirection);
-        setItem(newItem);
-      })
-      .catch(errorAlert);
-  }
-
-  return (
-    <Stack direction="column" spacing={1}>
-      <IconButton
-        className={`fas fa-arrow-up`}
-        style={{
-          fontSize: "16px",
-          ...(item.vote === 1 ? { color: theme.palette.info.main } : {}),
-        }}
-        onClick={() => onVote(1)}
-      />
-      <IconButton
-        className={`fas fa-arrow-down`}
-        style={{
-          fontSize: "16px",
-          ...(item.vote === -1 ? { color: theme.palette.info.main } : {}),
-        }}
-        onClick={() => onVote(-1)}
-      />
-    </Stack>
-  );
+  return null;
 }
 
-function StatsModal(props) {
-  const [statsFilter, setStatsFilter] = useState("all");
-  const [statsFilterQuery, setStatsFilterQuery] = useState("");
-
-  const statsFilters = ["all", "bySetup", "byRole", "byAlignment"];
-  const statsFilterNames = {
-    all: "All",
-    bySetup: "Setup",
-    byRole: "Role",
-    byAlignment: "Alignment",
-  };
-  const statsKeyNames = {
-    totalGames: "Total Games",
-    wins: "Wins",
-    abandons: "Abandons",
-  };
-
-  var statsRowNames;
-  var stats = props.stats["Mafia"][statsFilter];
-
-  if (stats == null) {
-    stats = [];
-    statsRowNames = [];
-  }
-  if (statsFilter === "all") {
-    stats = [stats];
-    statsRowNames = ["All"];
-  } else {
-    statsRowNames = Object.keys(stats).filter((key) =>
-      key.toLowerCase().includes(statsFilterQuery)
-    );
-    stats = statsRowNames.map((key) => stats[key]);
-    statsRowNames = statsRowNames.map(
-      (key) => `${statsFilterNames[statsFilter]}: ${key}`
-    );
-  }
-
-  const filterDropdownOptions = statsFilters.map((filter) => (
-    <option key={filter} value={filter}>
-      {statsFilterNames[filter]}
-    </option>
-  ));
-
-  const statsRows = stats.map((statsObj, i) => {
-    // let totalGames = statsObj.totalGames;
-    let totalGamesUnabandoned =
-      statsObj.wins?.total + statsObj?.abandons?.total;
-    let statsList = Object.keys(statsObj).map((statKey) => {
-      let statData = statsObj[statKey];
-
-      switch (statKey) {
-        case "totalGames":
-          statData = <div className="stat-data">{statData}</div>;
-          break;
-        case "wins":
-        case "abandons":
-          statData = (
-            <div className="stat-data">
-              {statData.count}/{totalGamesUnabandoned}
-            </div>
-          );
-          break;
-        case "reads":
-        case "survival":
-          statData = <div></div>;
-          break;
-      }
-
+export function MarriedIcon(props) {
+  const isMarried = props.isMarried;
+  const userId = props.userId;
+  const love = props.love;
+  const saved = props.saved;
+  const isLove = props.isLove;
+  const loveType = love.type;
+  const onMarryClick = props.onClick;
+  if (userId === love.id) {
+    if ((saved && isLove && loveType === "Lover") || isMarried) {
       return (
-        <div className="stat" key={statKey}>
-          <div className="stat-name">{statsKeyNames[statKey]}</div>
-          {statData}
-        </div>
+        <IconButton aria-label="marry user">
+          <i
+            className={`fas fa-ring ${isMarried ? "sel-married" : ""}`}
+            onClick={onMarryClick}
+          />
+        </IconButton>
       );
-    });
-
-    return (
-      <div className="stats-row" key={statsRowNames[i]}>
-        <div className="stats-row-name">{statsRowNames[i]}</div>
-        <div className="stats-list">{statsList}</div>
-      </div>
-    );
-  });
-
-  const header = "Ranked Stats";
-
-  const content = (
-    <div className="stats-wrapper">
-      <div className="filter">
-        <select
-          value={statsFilter}
-          onChange={(e) => setStatsFilter(e.target.value)}
-        >
-          {filterDropdownOptions}
-        </select>
-        <input
-          type="text"
-          placeholder="Query"
-          onChange={(e) => setStatsFilterQuery(e.target.value.toLowerCase())}
-        />
-      </div>
-      <div className="stats">{statsRows}</div>
-    </div>
-  );
-
-  const footer = (
-    <div className="control">
-      <div className="post btn btn-theme" onClick={() => props.setShow(false)}>
-        Close
-      </div>
-    </div>
-  );
-
-  function onCancel() {
-    props.setShow(false);
+    }
   }
+  return null;
+}
 
+export function Badge(props) {
   return (
-    <Modal
-      className="stats-modal"
-      show={props.show}
-      onBgClick={onCancel}
-      header={header}
-      content={content}
-      footer={footer}
-    />
+    <div className="badge">
+      <i
+        className={`fas fa-${props.icon}`}
+        style={{ color: props.color }}
+        title={props.name}
+      />
+    </div>
   );
 }
