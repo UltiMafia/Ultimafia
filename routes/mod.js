@@ -992,6 +992,84 @@ router.post("/clearUserContent", async (req, res) => {
   }
 });
 
+router.post("/awardTrophy", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var perm = "awardTrophy";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    var userIdToAward = String(req.body.userId || "").trim();
+    var trophyName = String(req.body.name || "").trim();
+
+    if (!userIdToAward) {
+      res.status(400);
+      res.send("User is required.");
+      return;
+    }
+
+    if (!trophyName) {
+      res.status(400);
+      res.send("Trophy name is required.");
+      return;
+    }
+
+    if (trophyName.length > constants.maxTrophyNameLength) {
+      res.status(400);
+      res.send(
+        `Trophy name must be ${constants.maxTrophyNameLength} characters or fewer.`
+      );
+      return;
+    }
+
+    const userToAward = await models.User.findOne({
+      id: userIdToAward,
+      deleted: false,
+    }).select("_id id name");
+
+    if (!userToAward) {
+      res.status(404);
+      res.send("User does not exist.");
+      return;
+    }
+
+    const trophy = new models.Trophy({
+      id: shortid.generate(),
+      name: trophyName,
+      ownerId: userIdToAward,
+      owner: userToAward._id,
+      createdBy: userId,
+    });
+    await trophy.save();
+
+    await routeUtils.createNotification(
+      {
+        content: `You have been awarded the "${trophyName}" trophy!`,
+        icon: "fas fa-trophy",
+        link: `/user/${userIdToAward}`,
+      },
+      [userIdToAward]
+    );
+
+    routeUtils.createModAction(userId, "Award Trophy", [
+      userIdToAward,
+      trophyName,
+    ]);
+
+    res.send({
+      id: trophy.id,
+      name: trophy.name,
+      ownerId: trophy.ownerId,
+      createdAt: trophy.createdAt,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error awarding trophy.");
+  }
+});
+
 router.post("/breakGame", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);

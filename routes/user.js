@@ -371,6 +371,11 @@ router.get("/:id/profile", async function (req, res) {
     }
     user.karmaInfo = karmaInfo;
     user.achievements = user.achievements;
+    const trophies = await models.Trophy.find({ ownerId: userId })
+      .select("id name createdAt -_id")
+      .sort("-createdAt")
+      .lean();
+    user.trophies = trophies || [];
     if (isSelf) {
       var friendRequests = await models.FriendRequest.find({ targetId: userId })
         .select("userId user")
