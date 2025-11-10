@@ -2309,6 +2309,11 @@ module.exports = class Game {
   }
 
   spectatorsHear(message) {
+    let isTalkingDead = this.isTalkingDead();
+
+    if (message.sender && !message.sender.alive && !isTalkingDead) {
+      return;
+    }
     if (message.abilityName != "Whisper") {
       for (let spectator of this.spectators) spectator.hear(message);
     }

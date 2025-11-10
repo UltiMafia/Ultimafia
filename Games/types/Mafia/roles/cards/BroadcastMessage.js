@@ -27,18 +27,8 @@ module.exports = class BroadcastMessage extends Card {
               },
             ];
           }
-          if (item.name == "Room" && this.game.RoomOne.includes(this.player)) {
-            item.meetings["Room 1"].speechAbilities = [
-              {
-                name: "Cry",
-                targets: ["out"],
-                targetType: "out",
-                verb: "",
-              },
-            ];
-          }
-          if (item.name == "Room" && this.game.RoomTwo.includes(this.player)) {
-            item.meetings["Room 2"].speechAbilities = [
+          if (item.name == "Room" && item.Room && item.Room.name) {
+            item.meetings[item.Room.name].speechAbilities = [
               {
                 name: "Cry",
                 targets: ["out"],
