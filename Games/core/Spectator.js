@@ -52,7 +52,7 @@ module.exports = class Spectator extends Player {
   }
 
   hear(message) {
-    message = message.getMessageInfo("spectator");
+    //message = message.getMessageInfo("spectator");
 
     if (message) this.send("message", message);
   }
