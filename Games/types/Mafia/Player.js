@@ -459,88 +459,67 @@ module.exports = class MafiaPlayer extends Player {
     let alert = "";
     switch (itemName) {
       case "Gun":
-        alert =
-          ":gun2: You have received a gun!";
+        alert = ":gun2: You have received a gun!";
         break;
       case "Rifle":
-        alert =
-          ":gun2: You have received a rifle!";
+        alert = ":gun2: You have received a rifle!";
         break;
       case "Armor":
-        alert =
-          ":armor: You have received armor!";
+        alert = ":armor: You have received armor!";
         break;
       case "Knife":
-        alert =
-          ":knife: You have received a knife!";
+        alert = ":knife: You have received a knife!";
         break;
       case "Whiskey":
-        alert =
-          ":beer: You have received a bottle of whiskey!";
+        alert = ":beer: You have received a bottle of whiskey!";
         break;
       case "Crystal":
-        alert =
-          ":crystal: You have received a crystal ball!";
+        alert = ":crystal: You have received a crystal ball!";
         break;
       case "Bread":
-        alert =
-          ":bread: You have received a piece of bread!";
+        alert = ":bread: You have received a piece of bread!";
         break;
       case "Key":
-        alert =
-          ":key: You have received a key!";
+        alert = ":key: You have received a key!";
         break;
       case "Candle":
-        alert =
-          ":candle: You have received a candle!";
+        alert = ":candle: You have received a candle!";
         break;
       case "Falcon":
-        alert =
-          ":track: You have received a falcon!";
+        alert = ":track: You have received a falcon!";
         break;
       case "Tract":
-        alert =
-          ":bible: You have received a tract!";
+        alert = ":bible: You have received a tract!";
         break;
       case "Syringe":
-        alert =
-          ":poison: You have received a syringe!";
+        alert = ":poison: You have received a syringe!";
         break;
       case "Envelope":
-        alert =
-          ":message: You have received an envelope!";
+        alert = ":message: You have received an envelope!";
         break;
       case "Sceptre":
-        alert =
-          "You have received a sceptre!";
+        alert = "You have received a sceptre!";
         break;
       case "Snowball":
-        alert =
-          ":snowball: You have received a snowball!";
+        alert = ":snowball: You have received a snowball!";
         break;
       case "Notebook":
-        alert =
-          ":journ: You have received a mysterious notebook...";
+        alert = ":journ: You have received a mysterious notebook...";
         break;
       case "Doll":
-        alert =
-          ":doll: You have received a doll...";
+        alert = ":doll: You have received a doll...";
         break;
       case "Timebomb":
-        alert =
-          ":timebomb: You have received a timebomb.";
+        alert = ":timebomb: You have received a timebomb.";
         break;
       case "Sockpuppet":
-        alert =
-          "You have received a sockpuppet!";
+        alert = "You have received a sockpuppet!";
         break;
       case "Cat":
-        alert =
-          ":cat2: You have received a cat!";
+        alert = ":cat2: You have received a cat!";
         break;
       case "Stake":
-        alert =
-          ":bats: You have received a stake!";
+        alert = ":bats: You have received a stake!";
         break;
       default:
         alert = `You have received a ${itemName}!`;
