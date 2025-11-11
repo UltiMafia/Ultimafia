@@ -55,8 +55,6 @@ var schemas = {
       backgroundColor: String,
       bannerFormat: String,
       avatarShape: { type: String, default: "circle" },
-      iconFilter: { type: String, default: "none" },
-      customPrimaryColor: { type: String, default: "none" },
       textColor: String,
       warnTextColor: String,
       ignoreTextColor: { type: Boolean, default: false },
@@ -66,10 +64,8 @@ var schemas = {
       disablePg13Censor: { type: Boolean, default: false },
       disableAllCensors: { type: Boolean, default: false },
       hideDeleted: Boolean,
-      fontSize: { type: String, default: "system" },
       siteColorScheme: { type: String, default: "dark" },
       disableProTips: { type: Boolean, default: false },
-      expHighDpiCorrection: { type: Boolean, default: false },
       roleSkins: String,
       autoplay: { type: Boolean, default: false },
       youtube: String,
@@ -77,7 +73,6 @@ var schemas = {
       hideKarma: { type: Boolean, default: false },
       hidePointsNegative: { type: Boolean, default: true },
       deathMessage: String,
-      vanityUrl: { type: String, default: "" },
     },
     accounts: {
       discord: String,
@@ -107,8 +102,6 @@ var schemas = {
     itemsOwned: {
       customProfile: { type: Number, default: 0 },
       avatarShape: { type: Number, default: 0 },
-      iconFilter: { type: Number, default: 0 },
-      customPrimaryColor: { type: Number, default: 0 },
       nameChange: { type: Number, default: 1 },
       emotes: { type: Number, default: 0 },
       threeCharName: { type: Number, default: 0 },
@@ -123,7 +116,6 @@ var schemas = {
       archivedGames: { type: Number, default: 0 },
       archivedGamesMax: { type: Number, default: 0 },
       bonusRedHearts: { type: Number, default: 0 },
-      vanityUrl: { type: Number, default: 0 },
     },
     stats: {},
     winRate: { type: Number, default: 0 },
@@ -331,7 +323,6 @@ var schemas = {
     pinned: { type: Boolean, default: false, index: true },
     locked: { type: Boolean, default: false },
     replyNotify: { type: Boolean, default: true },
-    subscribers: [String], // Array of user IDs subscribed to this thread
     deleted: { type: Boolean, default: false },
     pending: { type: Boolean, default: false },
   }),
@@ -448,7 +439,6 @@ var schemas = {
     date: Number,
     icon: String,
     link: String,
-    read: { type: Boolean, default: false, index: true },
   }),
   Friend: new mongoose.Schema(
     {
@@ -503,24 +493,6 @@ var schemas = {
       toJSON: { virtuals: true },
     }
   ),
-  Trophy: new mongoose.Schema(
-    {
-      id: { type: String, index: true },
-      name: { type: String, required: true },
-      ownerId: { type: String, index: true, required: true },
-      owner: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        index: true,
-      },
-      createdAt: { type: Date, default: Date.now, index: true },
-      createdBy: { type: String },
-    },
-    {
-      toObject: { virtuals: true },
-      toJSON: { virtuals: true },
-    }
-  ),
   Group: new mongoose.Schema({
     id: { type: String, index: true },
     name: { type: String, index: true },
@@ -569,6 +541,28 @@ var schemas = {
       permissions: [String],
       type: String,
       auto: { type: Boolean, index: true },
+      violationTicketId: { type: String, index: true },
+      violationType: { type: String, index: true },
+    },
+    {
+      toObject: { virtuals: true },
+      toJSON: { virtuals: true },
+    }
+  ),
+  ViolationTicket: new mongoose.Schema(
+    {
+      id: { type: String, index: true },
+      userId: { type: String, index: true },
+      modId: { type: String, index: true },
+      banType: { type: String, index: true },
+      violationId: { type: String, index: true },
+      violationName: String,
+      violationCategory: String,
+      notes: String,
+      length: Number,
+      createdAt: { type: Number, index: true },
+      expiresAt: { type: Number, index: true },
+      linkedBanId: { type: String, index: true },
     },
     {
       toObject: { virtuals: true },
@@ -596,25 +590,6 @@ var schemas = {
     expiresOn: { type: Number, index: true },
     canPlayAfter: { type: Number },
     level: { type: Number, default: 0 },
-  }),
-  Poll: new mongoose.Schema({
-    id: { type: String, index: true },
-    lobby: { type: String, index: true },
-    threadId: { type: String, index: true },
-    title: String,
-    question: String,
-    options: [String],
-    creator: { type: String, index: true },
-    created: { type: Number, index: true },
-    completed: { type: Boolean, default: false, index: true },
-    completedAt: { type: Number, index: true },
-    expiresAt: { type: Number, index: true },
-  }),
-  PollVote: new mongoose.Schema({
-    pollId: { type: String, index: true },
-    userId: { type: String, index: true },
-    optionIndex: { type: Number, index: true },
-    votedAt: { type: Number, index: true },
   }),
 };
 
@@ -760,46 +735,6 @@ schemas.Ban.virtual("user", {
 schemas.Ban.virtual("mod", {
   ref: "User",
   localField: "modId",
-  foreignField: "id",
-  justOne: true,
-});
-
-// VanityUrl schema for custom user URLs
-schemas.VanityUrl = new mongoose.Schema({
-  url: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true,
-    minlength: 1,
-    maxlength: 20,
-    match: /^[a-zA-Z0-9-]+$/,
-  },
-  userId: {
-    type: String,
-    required: true,
-    index: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
-// Update the updatedAt field on save
-schemas.VanityUrl.pre("save", function (next) {
-  this.updatedAt = Date.now();
-  next();
-});
-
-// Virtual to populate user data
-schemas.VanityUrl.virtual("user", {
-  ref: "User",
-  localField: "userId",
   foreignField: "id",
   justOne: true,
 });

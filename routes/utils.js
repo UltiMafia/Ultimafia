@@ -206,7 +206,6 @@ async function createNotification(info, recipients, sockets) {
         date: !info.isChat ? Date.now() : undefined,
         icon: info.icon,
         link: info.link,
-        read: false,
       });
       await notification.save();
 
@@ -227,7 +226,6 @@ async function createNotification(info, recipients, sockets) {
       date: Date.now(),
       icon: info.icon,
       link: info.link,
-      read: false,
     });
     await notification.save();
 
@@ -236,7 +234,7 @@ async function createNotification(info, recipients, sockets) {
     if (recipients) userFilter = { id: { $in: recipients } };
 
     await models.User.updateMany(userFilter, {
-      $push: { globalNotifs: notification._id },
+      $push: { globalNotifs: notif._id },
     }).exec();
   }
 }
@@ -253,6 +251,46 @@ async function banUser(userId, length, permissions, type, modId) {
   });
   await ban.save();
   await redis.cacheUserPermissions(userId);
+  return ban;
+}
+
+async function createViolationTicket({
+  userId,
+  modId,
+  banType,
+  violationId,
+  violationName,
+  violationCategory,
+  notes,
+  length,
+  expiresAt,
+  linkedBanId,
+}) {
+  const ticket = new models.ViolationTicket({
+    id: shortid.generate(),
+    userId,
+    modId,
+    banType,
+    violationId,
+    violationName,
+    violationCategory,
+    notes,
+    length,
+    createdAt: Date.now(),
+    expiresAt,
+    linkedBanId,
+  });
+
+  await ticket.save();
+
+  if (linkedBanId) {
+    await models.Ban.updateOne(
+      { id: linkedBanId },
+      { $set: { violationTicketId: ticket.id, violationType: violationId } }
+    ).exec();
+  }
+
+  return ticket;
 }
 
 function nameGen() {
@@ -365,6 +403,7 @@ module.exports = {
   verifyGameType,
   createNotification,
   banUser,
+  createViolationTicket,
   nameGen,
   rateLimit,
   getModIds,

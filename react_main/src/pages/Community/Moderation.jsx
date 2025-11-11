@@ -10,10 +10,6 @@ import {
   TextField,
   Box,
   Button,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
 } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
@@ -35,7 +31,10 @@ import { NewLoading } from "pages/Welcome/NewLoading";
 import "css/main.css";
 import "css/moderation.css";
 import { useParams } from "react-router-dom";
-import { lobbies } from "../../constants/lobbies";
+import {
+  communityViolations,
+  gameViolations,
+} from "constants/violations";
 
 const COMMAND_GROUP_ORDER = {
   "User Management": 1, // the lower the number, the higher it appears
@@ -43,12 +42,21 @@ const COMMAND_GROUP_ORDER = {
   "Game Management": 3,
   "Site Management": 4,
   "Group Management": 5,
-  "Poll Management": 6,
   "Deck Management": 9,
   "Forum Management": 99,
   "Chat Window Management": 999,
   Ungrouped: 9999,
 };
+
+const communityViolationOptions = communityViolations.map((violation) => ({
+  value: violation.id,
+  label: violation.name,
+}));
+
+const gameViolationOptions = gameViolations.map((violation) => ({
+  value: violation.id,
+  label: violation.name,
+}));
 
 export const COMMAND_COLOR = "#8A2BE2";
 
@@ -326,28 +334,6 @@ export function ModCommands(props) {
             />
           );
         }
-      }
-
-      if (arg.type === "select") {
-        return (
-          <FormControl key={arg.name} sx={{ width: "100%" }}>
-            <InputLabel>{arg.label}</InputLabel>
-            <Select
-              value={argValue || ""}
-              label={arg.label}
-              onChange={(e) =>
-                updateArgValue(arg.name, e.target.value, arg.isArray)
-              }
-              disabled={isPrefilled}
-            >
-              {arg.options.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        );
       }
 
       return (
@@ -866,27 +852,14 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    Ban: {
-      perm: "ban",
+    "Forum Ban": {
+      perm: "forumBan",
       category: "User Management",
       args: [
         {
           label: "User",
           name: "userId",
           type: "user_search",
-        },
-        {
-          label: "Ban Type",
-          name: "banType",
-          type: "select",
-          options: [
-            { value: "forum", label: "Forum" },
-            { value: "chat", label: "Chat" },
-            { value: "game", label: "Game" },
-            { value: "ranked", label: "Ranked" },
-            { value: "competitive", label: "Competitive" },
-            { value: "site", label: "Site" },
-          ],
         },
         {
           label: "Length",
@@ -896,9 +869,158 @@ export function useModCommands(argValues, commandRan, setResults) {
       ],
       run: function () {
         axios
-          .post("/api/mod/ban", argValues)
+          .post("/api/mod/forumBan", argValues)
           .then(() => {
-            siteInfo.showAlert("User banned.", "success");
+            siteInfo.showAlert("User forum banned.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Chat Ban": {
+      perm: "chatBan",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Length",
+          name: "length",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/chatBan", argValues)
+          .then(() => {
+            siteInfo.showAlert("User chat banned.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Game Ban": {
+      perm: "gameBan",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Length",
+          name: "length",
+          type: "text",
+        },
+        {
+          label: "Violation Type",
+          name: "violationType",
+          type: "select",
+          options: gameViolationOptions,
+        },
+        {
+          label: "Notes (optional)",
+          name: "violationNotes",
+          type: "text",
+          optional: true,
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/gameBan", argValues)
+          .then(() => {
+            siteInfo.showAlert("User game banned.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Ranked Ban": {
+      perm: "rankedBan",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Length",
+          name: "length",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/rankedBan", argValues)
+          .then(() => {
+            siteInfo.showAlert("User ranked banned.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Competitive Ban": {
+      perm: "competitiveBan",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Length",
+          name: "length",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/competitiveBan", argValues)
+          .then(() => {
+            siteInfo.showAlert("User competitive banned.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Site Ban": {
+      perm: "siteBan",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Length",
+          name: "length",
+          type: "text",
+        },
+        {
+          label: "Violation Type",
+          name: "violationType",
+          type: "select",
+          options: communityViolationOptions,
+        },
+        {
+          label: "Notes (optional)",
+          name: "violationNotes",
+          type: "text",
+          optional: true,
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/siteBan", argValues)
+          .then(() => {
+            siteInfo.showAlert("User site banned.", "success");
             commandRan();
           })
           .catch(errorAlert);
@@ -950,8 +1072,8 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    Unban: {
-      perm: "unban",
+    "Forum Unban": {
+      perm: "forumUnban",
       category: "User Management",
       args: [
         {
@@ -959,25 +1081,112 @@ export function useModCommands(argValues, commandRan, setResults) {
           name: "userId",
           type: "user_search",
         },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/forumUnban", argValues)
+          .then(() => {
+            siteInfo.showAlert("User forum unbanned.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Chat Unban": {
+      perm: "chatUnban",
+      category: "User Management",
+      args: [
         {
-          label: "Ban Type",
-          name: "banType",
-          type: "select",
-          options: [
-            { value: "forum", label: "Forum" },
-            { value: "chat", label: "Chat" },
-            { value: "game", label: "Game" },
-            { value: "ranked", label: "Ranked" },
-            { value: "competitive", label: "Competitive" },
-            { value: "site", label: "Site" },
-          ],
+          label: "User",
+          name: "userId",
+          type: "user_search",
         },
       ],
       run: function () {
         axios
-          .post("/api/mod/unban", argValues)
+          .post("/api/mod/chatUnban", argValues)
           .then(() => {
-            siteInfo.showAlert("User unbanned.", "success");
+            siteInfo.showAlert("User chat unbanned.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Game Unban": {
+      perm: "gameUnban",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/gameUnban", argValues)
+          .then(() => {
+            siteInfo.showAlert("User game unbanned.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Ranked Unban": {
+      perm: "rankedUnban",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/rankedUnban", argValues)
+          .then(() => {
+            siteInfo.showAlert("User ranked unbanned.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Competitive Unban": {
+      perm: "competitiveUnban",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/competitiveUnban", argValues)
+          .then(() => {
+            siteInfo.showAlert("User competitive unbanned.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Site Unban": {
+      perm: "siteUnban",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/siteUnban", argValues)
+          .then(() => {
+            siteInfo.showAlert("User site unbanned.", "success");
             commandRan();
           })
           .catch(errorAlert);
@@ -1095,8 +1304,8 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Clear User Content": {
-      perm: "clearUserContent",
+    "Clear Bio": {
+      perm: "clearBio",
       category: "User Management",
       args: [
         {
@@ -1104,26 +1313,169 @@ export function useModCommands(argValues, commandRan, setResults) {
           name: "userId",
           type: "user_search",
         },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/clearBio", argValues)
+          .then(() => {
+            siteInfo.showAlert("Bio cleared.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Clear Pronouns": {
+      perm: "clearPronouns",
+      args: [
         {
-          label: "Content Type",
-          name: "contentType",
-          type: "select",
-          options: [
-            { value: "avatar", label: "Avatar" },
-            { value: "bio", label: "Bio" },
-            { value: "customEmotes", label: "Custom Emotes" },
-            { value: "name", label: "Name" },
-            { value: "vanityUrl", label: "Vanity URL" },
-            { value: "video", label: "Video" },
-            { value: "pronouns", label: "Pronouns" },
-            { value: "accountDisplay", label: "Account Display" },
-            { value: "all", label: "All User Content" },
-          ],
+          label: "User",
+          name: "userId",
+          type: "user_search",
         },
       ],
       run: function () {
         axios
-          .post("/api/mod/clearUserContent", argValues)
+          .post("/api/mod/clearPronouns", argValues)
+          .then(() => {
+            siteInfo.showAlert("Pronouns cleared.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Clear Video": {
+      perm: "clearVideo",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/clearVideo", argValues)
+          .then(() => {
+            siteInfo.showAlert("Video cleared.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Clear Birthday": {
+      perm: "clearBirthday",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/clearBirthday", argValues)
+          .then(() => {
+            siteInfo.showAlert("Birthday cleared.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Clear Account Display": {
+      perm: "clearAccountDisplay",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/clearAccountDisplay", argValues)
+          .then(() => {
+            siteInfo.showAlert("Account display cleared.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Clear Name": {
+      perm: "clearName",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/clearName", argValues)
+          .then(() => {
+            siteInfo.showAlert("Name cleared.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Clear Avatar": {
+      perm: "clearAvi",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/clearAvi", argValues)
+          .then(() => {
+            siteInfo.showAlert("Avatar cleared.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Clear Custom Emotes": {
+      perm: "clearCustomEmotes",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/clearCustomEmotes", argValues)
+          .then(() => {
+            siteInfo.showAlert("Custom emotes cleared.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Clear All User Content": {
+      perm: "clearAllUserContent",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/clearAllContent", argValues)
           .then(() => {
             siteInfo.showAlert("User content cleared.", "success");
             commandRan();
@@ -1209,46 +1561,51 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    // "Award Trophy": {
-    //   perm: "awardTrophy",
-    //   category: "User Management",
-    //   args: [
-    //     {
-    //       label: "User",
-    //       name: "userId",
-    //       type: "user_search",
-    //     },
-    //     {
-    //       label: "Trophy Name",
-    //       name: "name",
-    //       type: "text",
-    //     },
-    //   ],
-    //   run: function () {
-    //     axios
-    //       .post("/api/mod/awardTrophy", argValues)
-    //       .then(() => {
-    //         siteInfo.showAlert("Trophy awarded.", "success");
-    //         commandRan();
-    //       })
-    //       .catch(errorAlert);
-    //   },
-    // },
-    "Refund Game": {
-      perm: "refundGame",
-      category: "Game Management",
+    "Refund Red Hearts": {
+      perm: "refundRedHearts",
+      category: "User Management",
       args: [
         {
-          label: "Game ID",
-          name: "gameId",
-          type: "text",
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Amount",
+          name: "amount",
+          type: "number",
         },
       ],
       run: function () {
         axios
-          .post("/api/mod/refundGame", argValues)
-          .then((res) => {
-            siteInfo.showAlert(res.data || "Game refunded.", "success");
+          .post("/api/mod/refundRedHearts", argValues)
+          .then(() => {
+            siteInfo.showAlert("Red Hearts refunded.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Refund Gold Hearts": {
+      perm: "refundGoldHearts",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Amount",
+          name: "amount",
+          type: "number",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/refundGoldHearts", argValues)
+          .then(() => {
+            siteInfo.showAlert("Gold Hearts refunded.", "success");
             commandRan();
           })
           .catch(errorAlert);
@@ -1603,49 +1960,6 @@ export function useModCommands(argValues, commandRan, setResults) {
         },
       ],
     },
-    "Create Poll": {
-      perm: "createPoll",
-      category: "Poll Management",
-      args: [
-        {
-          label: "Lobby",
-          name: "lobby",
-          type: "select",
-          options: lobbies
-            .filter((lobby) => !lobby.disabled && lobby.name !== "All")
-            .map((lobby) => ({
-              value: lobby.name,
-              label: lobby.displayName,
-            })),
-        },
-        {
-          label: "Question",
-          name: "question",
-          type: "text",
-        },
-        {
-          label: "Options (comma-separated)",
-          name: "options",
-          type: "text",
-          isArray: true,
-        },
-        {
-          label: "Expires in",
-          name: "expiration",
-          type: "text",
-          optional: true,
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/poll/create", argValues)
-          .then(() => {
-            siteInfo.showAlert("Poll created.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
   };
 
   const banActionNames = [
@@ -1789,7 +2103,7 @@ function ModActions(props) {
   }
 
   const actionRows = actions.map((action) => {
-    if (!(action.name in modCommands)) {
+    if (!action.name in modCommands) {
       console.error(
         `Not displaying action ${action.name} because it isn't listed in modCommands. Please report this error.`
       );
@@ -1798,11 +2112,7 @@ function ModActions(props) {
 
     let command = modCommands[action.name];
     let actionArgs = action.args.map((arg, i) => (
-      <ModActionArg
-        label={command.args[i]?.label || "Unknown"}
-        arg={arg}
-        key={i}
-      />
+      <ModActionArg label={command.args[i].label} arg={arg} key={i} />
     ));
 
     return (

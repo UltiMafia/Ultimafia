@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useCallback,
+} from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
@@ -13,7 +19,6 @@ import {
   MarriedIcon,
   getLoveTitle,
   NameWithAvatar,
-  OnlineStatus,
 } from "./User";
 import { HiddenUpload, TextEditor } from "components/Form";
 import Setup from "components/Setup";
@@ -34,16 +39,37 @@ import { PieChart } from "./PieChart";
 import { NewLoading } from "../Welcome/NewLoading";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
 import {
+  violationMapById,
+  communityViolations,
+  gameViolations,
+} from "constants/violations";
+import {
   Box,
+  Button,
+  Collapse,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
   Grid,
   IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
   Stack,
+  TextField,
   Tooltip,
   Typography,
   useMediaQuery,
+  CircularProgress,
+  Divider,
+  Chip,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import system from "images/emotes/system.webp";
 
@@ -53,7 +79,6 @@ export const POINTS_ICON = require(`images/points.png`);
 export const POINTS_NEGATIVE_ICON = require(`images/pointsNegative.png`);
 export const ACHIEVEMENTS_ICON = require(`images/achievements.png`);
 export const DAILY_ICON = require(`images/dailyChallenges.png`);
-export const TROPHY_ICON = require(`images/roles/village/villager-vivid.png`);
 
 export default function Profile() {
   const [profileLoaded, setProfileLoaded] = useState(false);
@@ -73,19 +98,12 @@ export default function Profile() {
   const [points, setPoints] = useState(0);
   const [pointsNegative, setPointsNegative] = useState(0);
   const [achievements, setAchievements] = useState([]);
-  const [trophies, setTrophies] = useState([]);
   const [karmaInfo, setKarmaInfo] = useState({});
   const [settings, setSettings] = useState({});
   const [recentGames, setRecentGames] = useState([]);
-  const [recentGamesPage, setRecentGamesPage] = useState(1);
-  const [recentGamesMaxPage, setRecentGamesMaxPage] = useState(1);
-  const [recentGamesLoading, setRecentGamesLoading] = useState(false);
   const [archivedGames, setArchivedGames] = useState([]);
   const [editingArchivedGames, setEditingArchivedGames] = useState(false);
   const [createdSetups, setCreatedSetups] = useState([]);
-  const [setupsPage, setSetupsPage] = useState(1);
-  const [setupsMaxPage, setSetupsMaxPage] = useState(1);
-  const [setupsLoading, setSetupsLoading] = useState(false);
   const [bustCache, setBustCache] = useState(false);
   const [friendsPage, setFriendsPage] = useState(1);
   // const [maxFriendsPage, setMaxFriendsPage] = useState(1);
@@ -102,9 +120,13 @@ export default function Profile() {
   const [moderationDrawerOpen, setModerationDrawerOpen] = useState(false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [currentUserLove, setCurrentUserLove] = useState({});
-  const [status, setStatus] = useState("offline");
-  const [lastActive, setLastActive] = useState(null);
-  const [canonicalUserId, setCanonicalUserId] = useState(null);
+  const [modViolationsLoading, setModViolationsLoading] = useState(false);
+  const [modViolations, setModViolations] = useState(null);
+  const [banDialogState, setBanDialogState] = useState({
+    open: false,
+    action: null,
+  });
+  const [banDialogSubmitting, setBanDialogSubmitting] = useState(false);
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -113,13 +135,104 @@ export default function Profile() {
   const { userId } = useParams();
   const isPhoneDevice = useIsPhoneDevice();
 
-  const profileUserId = canonicalUserId || userId;
-  const isSelf = profileUserId === user.id;
-  const isBlocked = !isSelf && user.blockedUsers.indexOf(profileUserId) !== -1;
+  const isSelf = userId === user.id;
+  const isBlocked = !isSelf && user.blockedUsers.indexOf(userId) !== -1;
+  const canViewModViolations = Boolean(user.perms?.viewBans);
+  const canIssueGameBan = Boolean(user.perms?.gameBan);
+  const canIssueSiteBan = Boolean(user.perms?.siteBan);
+  const communityViolationSelectOptions = communityViolations.map(
+    (violation) => ({
+      value: violation.id,
+      label: violation.name,
+    })
+  );
+  const gameViolationSelectOptions = gameViolations.map((violation) => ({
+    value: violation.id,
+    label: violation.name,
+  }));
+
+  const fetchModViolations = useCallback(() => {
+    if (!userId || !canViewModViolations) {
+      setModViolations(null);
+      return;
+    }
+
+    setModViolationsLoading(true);
+    axios
+      .get(`/api/mod/violations?userId=${userId}`)
+      .then((res) => {
+        setModViolations(res.data);
+      })
+      .catch((e) => {
+        if (e?.response?.status === 404) {
+          setModViolations(null);
+        } else {
+          errorAlert(e);
+        }
+      })
+      .finally(() => {
+        setModViolationsLoading(false);
+      });
+  }, [userId, canViewModViolations, errorAlert]);
+
+  const openBanDialog = (action) => {
+    setBanDialogState({ open: true, action });
+  };
+
+  const closeBanDialog = () => {
+    if (banDialogSubmitting) return;
+
+    setBanDialogState({ open: false, action: null });
+  };
+
+  const handleBanSubmit = (payload) => {
+    if (!banDialogState.action) return;
+
+    setBanDialogSubmitting(true);
+    axios
+      .post(banDialogState.action.endpoint, {
+        userId,
+        ...payload,
+      })
+      .then(() => {
+        siteInfo.showAlert(
+          `${banDialogState.action.label} issued.`,
+          "success"
+        );
+        setBanDialogState({ open: false, action: null });
+        fetchModViolations();
+      })
+      .catch(errorAlert)
+      .finally(() => {
+        setBanDialogSubmitting(false);
+      });
+  };
+
+  const modActionOptions = [];
+
+  if (!isSelf && canIssueGameBan) {
+    modActionOptions.push({
+      id: "gameBan",
+      label: "Game Ban",
+      endpoint: "/api/mod/gameBan",
+      violationOptions: gameViolationSelectOptions,
+      description: "Temporarily ban this user from joining games.",
+    });
+  }
+
+  if (!isSelf && canIssueSiteBan) {
+    modActionOptions.push({
+      id: "siteBan",
+      label: "Site Ban",
+      endpoint: "/api/mod/siteBan",
+      violationOptions: communityViolationSelectOptions,
+      description: "Prevent this user from accessing the site.",
+    });
+  }
 
   // userId is the id of the current profile
   // user.id is the id of the current user
-  const showDelete = profileUserId === user.id;
+  const showDelete = userId === user.id;
 
   const showDeleteArchivedGame = showDelete && editingArchivedGames;
 
@@ -133,13 +246,10 @@ export default function Profile() {
 
     if (userId) {
       setProfileLoaded(false);
-      setCanonicalUserId(null);
 
       axios
         .get(`/api/user/${userId}/profile`)
         .then((res) => {
-          const resolvedId = res.data.id;
-          setCanonicalUserId(resolvedId);
           setProfileLoaded(true);
           setName(res.data.name);
           setAvatar(res.data.avatar);
@@ -153,12 +263,8 @@ export default function Profile() {
           setIsMarried(res.data.isMarried);
           setSettings(res.data.settings);
           setRecentGames(res.data.games);
-          setRecentGamesPage(1);
-          setRecentGamesMaxPage(res.data.maxGamesPage || 1);
           setArchivedGames(res.data.archivedGames);
           setCreatedSetups(res.data.setups);
-          setSetupsPage(1);
-          setSetupsMaxPage(res.data.maxSetupsPage || 1);
           // setMaxFriendsPage(res.data.maxFriendsPage);
           setFriendRequests(res.data.friendRequests);
           setFriendsPage(1);
@@ -168,17 +274,12 @@ export default function Profile() {
           setPointsNegative(res.data.pointsNegative);
           setKarmaInfo(res.data.karmaInfo);
           setGroups(res.data.groups);
-          setStatus(res.data.status || "offline");
-          setLastActive(res.data.lastActive);
           setMediaUrl("");
           setAutoplay(false);
           setSaved(res.data.saved);
           setLove(res.data.love);
           setCurrentUserLove(res.data.currentLove);
           setAchievements(res.data.achievements);
-          setTrophies(res.data.trophies || []);
-          setFriendsPage(1);
-          loadFriends(resolvedId, "", 1);
 
           if (res.data.settings.youtube) {
             setMediaUrl(res.data.settings.youtube);
@@ -190,8 +291,20 @@ export default function Profile() {
           errorAlert(e);
           navigate("/play");
         });
+
+      axios
+        .get(`/api/user/${userId}/friends`)
+        .then((res) => {
+          setFriends(res.data);
+        })
+        .catch(errorAlert);
     }
   }, [userId]);
+
+  useEffect(() => {
+    if (!user.loaded) return;
+    fetchModViolations();
+  }, [user.loaded, fetchModViolations]);
 
   function onEditBanner(files, type) {
     if (!user.itemsOwned.customProfile) {
@@ -243,7 +356,7 @@ export default function Profile() {
     }
 
     axios
-      .post("/api/user/friend", { user: profileUserId })
+      .post("/api/user/friend", { user: userId })
       .then((res) => {
         setIsFriend(!isFriend);
         siteInfo.showAlert(res.data, "success");
@@ -315,7 +428,7 @@ export default function Profile() {
 
     axios
       .post("/api/user/love", {
-        user: profileUserId,
+        user: userId,
         type: love.type,
         reqType: "Love",
       })
@@ -357,7 +470,7 @@ export default function Profile() {
 
     axios
       .post("/api/user/love", {
-        user: profileUserId,
+        user: userId,
         type: love.type,
         reqType: "Marry",
       })
@@ -391,9 +504,9 @@ export default function Profile() {
     }
 
     axios
-      .post("/api/user/block", { user: profileUserId })
+      .post("/api/user/block", { user: userId })
       .then(() => {
-        user.blockUserToggle(profileUserId);
+        user.blockUserToggle(userId);
 
         if (isBlocked) siteInfo.showAlert("User unblocked.", "success");
         else siteInfo.showAlert("User blocked.", "success");
@@ -473,77 +586,6 @@ export default function Profile() {
       .catch(errorAlert);
   }
 
-  function loadFriends(id, filterArg = "", pageToSet) {
-    if (!id) return;
-    const query = filterArg ? `?${filterArg}` : "";
-
-    axios
-      .get(`/api/user/${id}/friends${query}`)
-      .then((res) => {
-        if (res.data.length || pageToSet === 1) {
-          setFriends(res.data);
-          if (pageToSet != null) {
-            setFriendsPage(pageToSet);
-          }
-        }
-      })
-      .catch(errorAlert);
-  }
-
-  function loadRecentGames(id, pageToLoad = 1) {
-    if (!id) return;
-    setRecentGamesLoading(true);
-
-    axios
-      .get(`/api/user/${id}/games`, {
-        params: {
-          page: pageToLoad,
-        },
-      })
-      .then((res) => {
-        setRecentGames(res.data.games || []);
-        if (res.data.pages != null) {
-          setRecentGamesMaxPage(res.data.pages || 1);
-        }
-        if (res.data.page != null) {
-          setRecentGamesPage(res.data.page || pageToLoad);
-        } else {
-          setRecentGamesPage(pageToLoad);
-        }
-      })
-      .catch(errorAlert)
-      .finally(() => {
-        setRecentGamesLoading(false);
-      });
-  }
-
-  function loadSetups(id, pageToLoad = 1) {
-    if (!id) return;
-    setSetupsLoading(true);
-
-    axios
-      .get(`/api/user/${id}/setups`, {
-        params: {
-          page: pageToLoad,
-        },
-      })
-      .then((res) => {
-        setCreatedSetups(res.data.setups || []);
-        if (res.data.pages != null) {
-          setSetupsMaxPage(res.data.pages || 1);
-        }
-        if (res.data.page != null) {
-          setSetupsPage(res.data.page || pageToLoad);
-        } else {
-          setSetupsPage(pageToLoad);
-        }
-      })
-      .catch(errorAlert)
-      .finally(() => {
-        setSetupsLoading(false);
-      });
-  }
-
   function onFriendsPageNav(page) {
     var filterArg = getPageNavFilterArg(
       page,
@@ -554,27 +596,15 @@ export default function Profile() {
 
     if (filterArg == null) return;
 
-    loadFriends(profileUserId, filterArg, page);
-  }
-
-  function onRecentGamesPageNav(page) {
-    if (page === recentGamesPage) return;
-    if (!profileUserId) return;
-
-    const maxPage = recentGamesMaxPage || 1;
-    const targetPage = Math.min(Math.max(page, 1), maxPage);
-
-    loadRecentGames(profileUserId, targetPage);
-  }
-
-  function onSetupsPageNav(page) {
-    if (page === setupsPage) return;
-    if (!profileUserId) return;
-
-    const maxPage = setupsMaxPage || 1;
-    const targetPage = Math.min(Math.max(page, 1), maxPage);
-
-    loadSetups(profileUserId, targetPage);
+    axios
+      .get(`/api/user/${userId}/friends?${filterArg}`)
+      .then((res) => {
+        if (res.data.length) {
+          setFriends(res.data);
+          setFriendsPage(page);
+        }
+      })
+      .catch(errorAlert);
   }
 
   const panelStyle = {};
@@ -593,7 +623,7 @@ export default function Profile() {
   }
 
   if (banner) {
-    bannerStyle.backgroundImage = `url(/uploads/${profileUserId}_banner.webp?t=${siteInfo.cacheVal})`;
+    bannerStyle.backgroundImage = `url(/uploads/${userId}_banner.webp?t=${siteInfo.cacheVal})`;
   }
 
   if (settings.bannerFormat === "stretch") {
@@ -684,12 +714,7 @@ export default function Profile() {
 
   const friendRequestRows = friendRequests.map((user) => (
     <div className="friend-request" key={user.id}>
-      <NameWithAvatar
-        id={user.id}
-        name={user.name}
-        avatar={user.avatar}
-        vanityUrl={user.vanityUrl}
-      />
+      <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
       <div className="btns">
         <i className="fas fa-check" onClick={() => onAcceptFriend(user.id)} />
         <i className="fas fa-times" onClick={() => onRejectFriend(user.id)} />
@@ -704,7 +729,6 @@ export default function Profile() {
           id={friend.id}
           name={friend.name}
           avatar={friend.avatar}
-          vanityUrl={friend.vanityUrl}
         />
         {showDelete && (
           <div className="btns-wrapper">
@@ -720,13 +744,8 @@ export default function Profile() {
 
   if (user.loaded && !user.loggedIn && !userId) return <Navigate to="/play" />;
 
-  if (user.loaded && user.loggedIn && !userId) {
-    // Use vanity URL if available, otherwise use user ID
-    const profilePath = user.vanityUrl
-      ? `/user/${user.vanityUrl}`
-      : `/user/${user.id}`;
-    return <Navigate to={profilePath} replace />;
-  }
+  if (user.loaded && user.loggedIn && !userId)
+    return <Navigate to={`/user/${user.id}`} />;
 
   if (!profileLoaded || !user.loaded) return <NewLoading small />;
 
@@ -781,7 +800,7 @@ export default function Profile() {
             <ReportDialog
               open={reportDialogOpen}
               onClose={() => setReportDialogOpen(false)}
-              prefilledArgs={{ user: profileUserId }}
+              prefilledArgs={{ user: userId }}
             />
           </>
         )}
@@ -800,57 +819,6 @@ export default function Profile() {
         key={g.name}
       />
     ));
-
-  const trophyCase =
-    trophies.length > 0 ? (
-      <div className="box-panel trophy-case" style={panelStyle}>
-        <Typography variant="h3" style={headingStyle}>
-          Trophy Case
-        </Typography>
-        <div className="content">
-          <Box
-            sx={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 1,
-            }}
-          >
-            {trophies.map((trophy) => {
-              const createdAt = trophy.createdAt
-                ? new Date(trophy.createdAt)
-                : null;
-              const formattedDate = createdAt
-                ? createdAt.toLocaleDateString()
-                : "Date unknown";
-
-              return (
-                <Tooltip
-                  arrow
-                  placement="top"
-                  title={
-                    <Stack spacing={0.5}>
-                      <Typography variant="subtitle2">{trophy.name}</Typography>
-                      <Typography variant="caption">
-                        Awarded {formattedDate}
-                      </Typography>
-                    </Stack>
-                  }
-                  key={trophy.id}
-                >
-                  <Box className="trophy-item">
-                    <img
-                      src={TROPHY_ICON}
-                      alt={`${trophy.name} trophy`}
-                      className="trophy-icon"
-                    />
-                  </Box>
-                </Tooltip>
-              );
-            })}
-          </Box>
-        </div>
-      </div>
-    ) : null;
 
   const avatarUpliftPx = !banner ? 0 : isPhoneDevice ? 38 : 58;
   const avatarPaddingPx = !banner
@@ -881,7 +849,7 @@ export default function Profile() {
             <Avatar
               mediumlarge={isPhoneDevice}
               large={!isPhoneDevice}
-              id={profileUserId}
+              id={userId}
               hasImage={avatar}
               bustCache={bustCache}
               name={name}
@@ -927,15 +895,6 @@ export default function Profile() {
             </Typography>
           )}
         </Stack>
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          mt: 0.5,
-        }}
-      >
-        <OnlineStatus status={status} lastActive={lastActive} />
       </Box>
     </Grid>
   );
@@ -1018,10 +977,17 @@ export default function Profile() {
           setShow={setShowStatsModal}
         />
       )}
+      <ModBanDialog
+        open={banDialogState.open}
+        onClose={closeBanDialog}
+        action={banDialogState.action}
+        submitting={banDialogSubmitting}
+        onSubmit={handleBanSubmit}
+      />
       <ModerationSideDrawer
         open={moderationDrawerOpen}
         setOpen={setModerationDrawerOpen}
-        prefilledArgs={{ userId: profileUserId }}
+        prefilledArgs={{ userId }}
       />
       <Grid container rowSpacing={1} columnSpacing={1} className="profile">
         <Grid item xs={12}>
@@ -1092,13 +1058,37 @@ export default function Profile() {
                   px: 2,
                 }}
               >
-                <Comments fullWidth location={profileUserId} />
+                <Comments fullWidth location={userId} />
               </Box>
             )}
           </Stack>
         </Grid>
         <Grid item xs={12} md={4}>
           <Stack direction="column" spacing={1}>
+            {canViewModViolations && (
+              <ModCollapsiblePanel
+                panelStyle={panelStyle}
+                title="Moderation: Violations"
+                defaultOpen
+              >
+                <ModViolationsPanel
+                  loading={modViolationsLoading}
+                  data={modViolations}
+                  violationMap={violationMapById}
+                />
+              </ModCollapsiblePanel>
+            )}
+            {modActionOptions.length > 0 && (
+              <ModCollapsiblePanel
+                panelStyle={panelStyle}
+                title="Moderation: Quick Actions"
+              >
+                <ModQuickActionsPanel
+                  actions={modActionOptions}
+                  onActionSelect={openBanDialog}
+                />
+              </ModCollapsiblePanel>
+            )}
             {mediaUrl && (
               <div className="box-panel" style={panelStyle}>
                 <MediaEmbed
@@ -1119,7 +1109,7 @@ export default function Profile() {
                       <KarmaVoteWidget
                         item={karmaInfo}
                         setItem={setKarmaInfo}
-                        userId={profileUserId}
+                        userId={userId}
                       />
                     </Stack>
                   )}
@@ -1132,7 +1122,7 @@ export default function Profile() {
                       <img
                         src={KUDOS_ICON}
                         style={{ marginRight: "12px" }}
-                        alt="Kudos"
+                        title="Kudos"
                       />
                       {kudos}
                     </Stack>
@@ -1145,7 +1135,7 @@ export default function Profile() {
                         <img
                           src={KARMA_ICON}
                           style={{ marginRight: "12px" }}
-                          alt="Karma"
+                          title="Karma"
                         />
                         {karmaInfo.voteCount}
                       </Stack>
@@ -1160,7 +1150,7 @@ export default function Profile() {
                       <img
                         src={POINTS_ICON}
                         style={{ marginRight: "12px" }}
-                        alt="Fortune"
+                        title="Fortune"
                       />
                       {points}
                     </Stack>
@@ -1173,7 +1163,7 @@ export default function Profile() {
                         <img
                           src={POINTS_NEGATIVE_ICON}
                           style={{ marginRight: "12px" }}
-                          alt="Misfortune"
+                          title="Misfortune"
                         />
                         {pointsNegative}
                       </Stack>
@@ -1182,7 +1172,6 @@ export default function Profile() {
                 </Stack>
               </div>
             </div>
-            {trophyCase}
             {totalGames >= RequiredTotalForStats &&
               !settings.hideStatistics && (
                 <div className="box-panel ratings" style={panelStyle}>
@@ -1215,25 +1204,8 @@ export default function Profile() {
                 Recent Games
               </Typography>
               <div className="content" style={{ padding: "0px" }}>
-                {recentGamesMaxPage > 1 && (
-                  <PageNav
-                    inverted
-                    page={recentGamesPage}
-                    maxPage={recentGamesMaxPage}
-                    onNav={onRecentGamesPageNav}
-                  />
-                )}
-                {recentGamesLoading && (
-                  <Typography
-                    sx={{
-                      p: 1,
-                    }}
-                  >
-                    Loading...
-                  </Typography>
-                )}
                 {recentGamesRows}
-                {!recentGamesLoading && recentGames.length === 0 && (
+                {recentGames.length === 0 && (
                   <Typography
                     sx={{
                       p: 1,
@@ -1241,14 +1213,6 @@ export default function Profile() {
                   >
                     No games
                   </Typography>
-                )}
-                {recentGamesMaxPage > 1 && (
-                  <PageNav
-                    inverted
-                    page={recentGamesPage}
-                    maxPage={recentGamesMaxPage}
-                    onNav={onRecentGamesPageNav}
-                  />
                 )}
               </div>
             </div>
@@ -1284,33 +1248,8 @@ export default function Profile() {
                 Setups Created
               </Typography>
               <div className="content">
-                {setupsMaxPage > 1 && (
-                  <PageNav
-                    inverted
-                    page={setupsPage}
-                    maxPage={setupsMaxPage}
-                    onNav={onSetupsPageNav}
-                  />
-                )}
-                {setupsLoading && (
-                  <Typography
-                    sx={{
-                      p: 1,
-                    }}
-                  >
-                    Loading...
-                  </Typography>
-                )}
                 {createdSetupRows}
-                {!setupsLoading && createdSetups.length === 0 && "No setups"}
-                {setupsMaxPage > 1 && (
-                  <PageNav
-                    inverted
-                    page={setupsPage}
-                    maxPage={setupsMaxPage}
-                    onNav={onSetupsPageNav}
-                  />
-                )}
+                {createdSetups.length === 0 && "No setups"}
               </div>
             </div>
             <div className="box-panel achievements" style={panelStyle}>
@@ -1358,11 +1297,422 @@ export default function Profile() {
         </Grid>
         {isPhoneDevice && (
           <Grid item xs={12} sx={{ mt: 1 }}>
-            <Comments fullWidth location={profileUserId} />
+            <Comments fullWidth location={userId} />
           </Grid>
         )}
       </Grid>
     </>
+  );
+}
+
+const BAN_TYPE_LABELS = {
+  site: "Site",
+  game: "Game",
+  chat: "Chat",
+  forum: "Forum",
+  playRanked: "Ranked",
+  playCompetitive: "Competitive",
+  ipFlag: "IP Flag",
+};
+
+function formatBanType(type) {
+  return BAN_TYPE_LABELS[type] || type;
+}
+
+function formatDuration(ms) {
+  if (!ms) return "Permanent";
+  const seconds = Math.round(ms / 1000);
+
+  if (seconds < 60) return `${seconds}s`;
+  const minutes = Math.round(seconds / 60);
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 48) return `${hours}h`;
+  const days = Math.round(hours / 24);
+  if (days < 14) return `${days}d`;
+  const weeks = Math.round(days / 7);
+  if (weeks < 8) return `${weeks}w`;
+  const months = Math.round(days / 30);
+  if (months < 18) return `${months}mo`;
+  const years = Math.round(days / 365);
+  return `${years}y`;
+}
+
+function ModCollapsiblePanel({
+  title,
+  children,
+  panelStyle,
+  defaultOpen = false,
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  const onToggle = (event) => {
+    if (event) event.stopPropagation();
+    setOpen((prev) => !prev);
+  };
+
+  return (
+    <div className="box-panel" style={panelStyle}>
+      <Stack
+        direction="row"
+        spacing={1}
+        alignItems="center"
+        sx={{ cursor: "pointer" }}
+        onClick={onToggle}
+      >
+        <Typography variant="h3">{title}</Typography>
+        <IconButton
+          size="small"
+          sx={{ marginLeft: "auto !important" }}
+          onClick={onToggle}
+        >
+          {open ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
+        </IconButton>
+      </Stack>
+      <Collapse in={open} timeout="auto" unmountOnExit>
+        <Box sx={{ pt: 1 }}>{children}</Box>
+      </Collapse>
+    </div>
+  );
+}
+
+function ModViolationsPanel({ loading, data, violationMap }) {
+  if (loading) {
+    return (
+      <Stack direction="row" spacing={1} alignItems="center">
+        <CircularProgress size={18} />
+        <Typography variant="body2">Loading moderation data…</Typography>
+      </Stack>
+    );
+  }
+
+  if (!data) {
+    return (
+      <Typography variant="body2" sx={{ fontStyle: "italic" }}>
+        No moderation data available.
+      </Typography>
+    );
+  }
+
+  const { target, linkedAccounts = [], permissions = {} } = data;
+  const tickets = target?.tickets || [];
+  const activeBans = target?.activeBans || [];
+
+  const renderModReference = (mod) => {
+    if (!mod) return null;
+
+    return (
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Typography variant="caption">By</Typography>
+        <NameWithAvatar
+          id={mod.id}
+          name={mod.name}
+          avatar={mod.avatar}
+          small
+        />
+      </Stack>
+    );
+  };
+
+  const renderTicket = (ticket) => {
+    const violationName =
+      ticket.violationName ||
+      violationMap[ticket.violationId]?.name ||
+      ticket.violationId;
+
+    return (
+      <Stack
+        key={ticket.id}
+        spacing={0.5}
+        sx={{
+          backgroundColor: "var(--scheme-color-sec)",
+          borderRadius: "4px",
+          p: 1,
+        }}
+      >
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+            {violationName}
+          </Typography>
+          <Chip
+            size="small"
+            label={`${formatBanType(ticket.banType)} ban`}
+            variant="outlined"
+          />
+        </Stack>
+        <Typography variant="caption">
+          Issued{" "}
+          <Time
+            minSec
+            millisec={Date.now() - ticket.createdAt}
+            suffix=" ago"
+          />
+        </Typography>
+        <Typography variant="caption">
+          Length: {formatDuration(ticket.length)}
+        </Typography>
+        {ticket.expiresAt ? (
+          <Typography variant="caption">
+            Expires on {new Date(ticket.expiresAt).toLocaleString()}
+          </Typography>
+        ) : (
+          <Typography variant="caption">Permanent</Typography>
+        )}
+        {ticket.notes && (
+          <Typography variant="caption">Notes: {ticket.notes}</Typography>
+        )}
+        {renderModReference(ticket.mod)}
+      </Stack>
+    );
+  };
+
+  const renderBan = (ban) => {
+    const violationName = ban.violationType
+      ? violationMap[ban.violationType]?.name || ban.violationType
+      : null;
+
+    return (
+      <Stack
+        key={ban.id}
+        spacing={0.5}
+        sx={{
+          backgroundColor: "var(--scheme-color-sec)",
+          borderRadius: "4px",
+          p: 1,
+        }}
+      >
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+            {formatBanType(ban.type)} ban
+          </Typography>
+          <Chip
+            size="small"
+            color="warning"
+            label={ban.expires === 0 ? "Permanent" : "Active"}
+          />
+        </Stack>
+        {ban.expires ? (
+          <Typography variant="caption">
+            Expires on {new Date(ban.expires).toLocaleString()}
+          </Typography>
+        ) : (
+          <Typography variant="caption">Permanent</Typography>
+        )}
+        {violationName && (
+          <Typography variant="caption">Violation: {violationName}</Typography>
+        )}
+        {renderModReference(ban.mod)}
+      </Stack>
+    );
+  };
+
+  const hasModData = tickets.length > 0 || activeBans.length > 0;
+  const linkedPermDenied =
+    permissions &&
+    permissions.canViewLinkedAccounts === false &&
+    !linkedAccounts.length;
+
+  return (
+    <Stack spacing={1}>
+      {activeBans.length > 0 && (
+        <>
+          <Typography variant="subtitle2">Active bans</Typography>
+          <Stack spacing={1}>{activeBans.map(renderBan)}</Stack>
+          <Divider />
+        </>
+      )}
+      {tickets.length > 0 && (
+        <>
+          <Typography variant="subtitle2">Violation tickets</Typography>
+          <Stack spacing={1}>{tickets.map(renderTicket)}</Stack>
+        </>
+      )}
+      {!hasModData && (
+        <Typography variant="body2" sx={{ fontStyle: "italic" }}>
+          No current bans or recorded violations.
+        </Typography>
+      )}
+      <Divider />
+      <Typography variant="subtitle2">Linked accounts</Typography>
+      {linkedAccounts.length > 0 ? (
+        <Stack spacing={1}>
+          {linkedAccounts.map((account) => (
+            <Stack
+              key={account.userId}
+              spacing={0.5}
+              sx={{
+                backgroundColor: "var(--scheme-color-sec)",
+                borderRadius: "4px",
+                p: 1,
+              }}
+            >
+              <Stack direction="row" spacing={1} alignItems="center">
+                <NameWithAvatar
+                  id={account.userId}
+                  name={account.name}
+                  avatar={account.avatar}
+                />
+                {account.sharedIpCount > 0 && (
+                  <Chip
+                    size="small"
+                    label={`Shared IPs: ${account.sharedIpCount}`}
+                  />
+                )}
+              </Stack>
+              {account.sharedIps && account.sharedIps.length > 0 && (
+                <Typography variant="caption">
+                  IPs: {account.sharedIps.join(", ")}
+                </Typography>
+              )}
+              {account.activeBans?.length > 0 && (
+                <Stack spacing={0.5} sx={{ mt: 0.5 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                    Active bans
+                  </Typography>
+                  {account.activeBans.map((ban) => renderBan(ban))}
+                </Stack>
+              )}
+              {account.tickets?.length > 0 && (
+                <Stack spacing={0.5} sx={{ mt: 0.5 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                    Violation tickets
+                  </Typography>
+                  {account.tickets.map((ticket) => renderTicket(ticket))}
+                </Stack>
+              )}
+              {account.activeBans?.length === 0 &&
+                account.tickets?.length === 0 && (
+                  <Typography variant="caption" sx={{ fontStyle: "italic" }}>
+                    No violations recorded.
+                  </Typography>
+                )}
+            </Stack>
+          ))}
+        </Stack>
+      ) : linkedPermDenied ? (
+        <Typography variant="body2" sx={{ fontStyle: "italic" }}>
+          Linked account details require the viewAlts permission.
+        </Typography>
+      ) : (
+        <Typography variant="body2" sx={{ fontStyle: "italic" }}>
+          No linked accounts with recorded violations.
+        </Typography>
+      )}
+    </Stack>
+  );
+}
+
+function ModQuickActionsPanel({ actions, onActionSelect }) {
+  if (!actions.length) {
+    return (
+      <Typography variant="body2" sx={{ fontStyle: "italic" }}>
+        No moderation actions available.
+      </Typography>
+    );
+  }
+
+  return (
+    <Stack spacing={1}>
+      <Typography variant="body2">
+        Issue a ban and associate it with a violation ticket.
+      </Typography>
+      {actions.map((action) => (
+        <Stack key={action.id} spacing={0.5}>
+          <Typography variant="caption" sx={{ fontWeight: 600 }}>
+            {action.label}
+          </Typography>
+          {action.description && (
+            <Typography variant="caption">{action.description}</Typography>
+          )}
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => onActionSelect(action)}
+            sx={{ alignSelf: "flex-start" }}
+          >
+            Open {action.label} dialog
+          </Button>
+        </Stack>
+      ))}
+    </Stack>
+  );
+}
+
+function ModBanDialog({ open, onClose, action, submitting, onSubmit }) {
+  const [length, setLength] = useState("");
+  const [violationType, setViolationType] = useState("");
+  const [notes, setNotes] = useState("");
+
+  useEffect(() => {
+    if (open && action) {
+      setLength("");
+      setNotes("");
+      const defaultViolation = action.violationOptions?.[0]?.value || "";
+      setViolationType(defaultViolation);
+    }
+  }, [open, action]);
+
+  const violationOptions = action?.violationOptions || [];
+  const disableSubmit = submitting || !length || !violationType;
+
+  return (
+    <Dialog open={open} onClose={submitting ? undefined : onClose} fullWidth>
+      <DialogTitle>
+        {action ? `Issue ${action.label}` : "Issue ban"}
+      </DialogTitle>
+      <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <TextField
+          label="Length"
+          value={length}
+          onChange={(e) => setLength(e.target.value)}
+          placeholder="e.g. 3 days"
+          disabled={submitting}
+          autoFocus
+        />
+        <FormControl fullWidth disabled={submitting || !violationOptions.length}>
+          <InputLabel id="violation-type-label">Violation Type</InputLabel>
+          <Select
+            labelId="violation-type-label"
+            value={violationType}
+            label="Violation Type"
+            onChange={(e) => setViolationType(e.target.value)}
+          >
+            {violationOptions.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <TextField
+          label="Notes (optional)"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          multiline
+          minRows={2}
+          disabled={submitting}
+          helperText="This will be stored with the violation ticket (max 500 characters)."
+          inputProps={{ maxLength: 500 }}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} disabled={submitting}>
+          Cancel
+        </Button>
+        <Button
+          onClick={() =>
+            onSubmit({
+              length,
+              violationType,
+              violationNotes: notes.trim(),
+            })
+          }
+          disabled={disableSubmit}
+        >
+          {submitting ? "Issuing…" : "Submit"}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
 
@@ -1410,7 +1760,7 @@ export function KarmaVoteWidget(props) {
   }
 
   return (
-    <Stack direction="column" spacing={1}>
+    <div ref={widgetRef} className="vote-widget">
       <IconButton
         className={`fas fa-arrow-up`}
         style={{
@@ -1427,7 +1777,7 @@ export function KarmaVoteWidget(props) {
         }}
         onClick={() => onVote(-1)}
       />
-    </Stack>
+    </div>
   );
 }
 
