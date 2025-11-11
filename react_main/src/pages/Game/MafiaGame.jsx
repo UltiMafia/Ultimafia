@@ -56,13 +56,7 @@ export default function MafiaGame() {
       history: game.history,
       stateViewing: game.stateViewing,
     }),
-    [
-      game.socket,
-      game.players,
-      game.self,
-      game.history,
-      game.stateViewing,
-    ]
+    [game.socket, game.players, game.self, game.history, game.stateViewing]
   );
 
   const actionDescriptorData = useMemo(

@@ -361,9 +361,11 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
           value: res.data,
         })
       ),
-      axios.get("/api/items").then((res) =>
-        updateSiteInfo({ type: "setProp", prop: "items", value: res.data })
-      ),
+      axios
+        .get("/api/items")
+        .then((res) =>
+          updateSiteInfo({ type: "setProp", prop: "items", value: res.data })
+        ),
     ]).then(() => {
       setSiteInfoLoading(false);
     });
