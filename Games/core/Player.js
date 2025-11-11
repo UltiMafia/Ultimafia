@@ -723,6 +723,20 @@ module.exports = class Player {
       vanityUrl: this.user.vanityUrl,
     };
 
+    if (recipient && recipient.id === this.id) {
+      const visibleItems = this.items.filter(
+        (item) => !item.cannotBeSnooped && !item.noShow
+      );
+
+      info.inventory = visibleItems.map((item) => ({
+        id: item.id,
+        name: item.name,
+        hasAction: Object.values(item.meetings || {}).some(
+          (meeting) => meeting && meeting.action
+        ),
+      }));
+    }
+
     return info;
   }
 

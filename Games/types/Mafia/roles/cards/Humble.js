@@ -28,5 +28,14 @@ module.exports = class Humble extends Card {
       reveal: appearance,
     };
     this.editAppearance(tempApp);
+
+    this.listeners = {
+      roleAssigned: function (player) {
+        if (player !== this.player) return;
+        for (let item of this.player.items) {
+          item.noShow = true;
+        }
+      },
+    };
   }
 };

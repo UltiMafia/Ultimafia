@@ -33,18 +33,26 @@ module.exports = class Item {
     }
 
     this.game.events.emit("holdItem", this, player);
+
+    this.notifyHolderInventoryChange(player);
   }
 
   drop() {
-    let itemArr = this.holder.items;
+    const holder = this.holder;
+
+    if (!holder) return;
+
+    let itemArr = holder.items;
     itemArr.splice(itemArr.indexOf(this), 1);
 
     this.game.events.removeListener("state", this.ageListener);
 
     for (let eventName in this.listeners)
-      this.holder.events.removeListener(eventName, this.listeners[eventName]);
+      holder.events.removeListener(eventName, this.listeners[eventName]);
 
     this.removeEffects();
+
+    this.notifyHolderInventoryChange(holder);
   }
 
   shouldDisableMeeting(name, options) {
@@ -69,6 +77,12 @@ module.exports = class Item {
     for (let effect of this.effects) effect.remove();
 
     this.effects = this.effectNames;
+  }
+
+  notifyHolderInventoryChange(holder = this.holder) {
+    if (holder && holder.send) {
+      holder.send("players", holder.game.getAllPlayerInfo(holder));
+    }
   }
 
   queueActions() {

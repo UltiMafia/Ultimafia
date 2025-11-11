@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useMemo } from "react";
 import {
   Accordion,
   AccordionSummary,
@@ -23,103 +23,20 @@ export default function LearnMafia(props) {
   const theme = useTheme();
   const siteInfo = useContext(SiteInfoContext);
 
-  const items = [
-    {
-      name: "Gun",
-      text: "Can be shot once during the day to kill a specific player.",
-      icon: <div className="icon item item-Mafia-Gun" />,
-    },
-    {
-      name: "Rifle",
-      text: "Can be shot once during the day to kill a specific player. If target shares alignment with shooter, shooter will die too. If target is of an opposing alignment, shooter gains another rifle. Otherwise, nothing happens.",
-      icon: <div className="icon item item-Mafia-Rifle" />,
-    },
-    {
-      name: "Armor",
-      text: "Saves a player from being killed one time, not including being condemned.",
-      icon: <div className="icon item item-Mafia-Armor" />,
-    },
-    {
-      name: "Shield",
-      text: "Can be used at night to redirect kills targeting the holder on to a random player of the same alignment, if possible.",
-      icon: <div className="icon item item-Mafia-Armor" />,
-    },
-    {
-      name: "Bomb",
-      text: "When a player is killed while holding a bomb, the player who killed them will also die.",
-      icon: <div className="icon item item-Mafia-Bomb" />,
-    },
-    {
-      name: "Timebomb",
-      text: "Players pass the timebomb around during the day. The timebomb will randomly explode between 10 and 30 seconds and kill the person holding the bomb.",
-      icon: <div className="icon item item-Mafia-Timebomb" />,
-    },
-    {
-      name: "Crystal Ball",
-      text: "The holder of the crystal can choose a person each night and if they die, their target's role will be revealed.",
-      icon: <div className="icon item item-Mafia-Crystal" />,
-    },
-    {
-      name: "Knife",
-      text: "Can be used once during the day to stab a specific player, who will bleed out and die the following night.",
-      icon: <div className="icon item item-Mafia-Knife" />,
-    },
-    {
-      name: "Whiskey",
-      text: "Can be used once during the day on a specific player, who will be roleblocked the following night.",
-      icon: <div className="icon item item-Mafia-Whiskey" />,
-    },
-    {
-      name: "Key",
-      text: "Can be used once during the night to make the player untargetable. All actions on the player are cancelled",
-      icon: <div className="icon item item-Mafia-Key" />,
-    },
-    {
-      name: "Bread",
-      text: "Given out by the baker. Counts as 1 ration for each phase in a famine.",
-      icon: <div className="icon item item-Mafia-Bread" />,
-    },
-    {
-      name: "Yuzu Orange",
-      text: "Given out by the Capybara to invite players to relax at the hot springs. Counts as 1 ration for each phase in a famine.",
-      icon: <div className="icon item item-Mafia-Yuzu-Orange" />,
-    },
-    {
-      name: "Suit",
-      text: "Given by the tailor, a suit determines what role a user will appear as once dead.",
-      icon: <div className="icon item item-Mafia-Suit" />,
-    },
-    {
-      name: "Match",
-      text: "Used by the arsonist to ignite everyone doused with gasoline.",
-      icon: <div className="icon item item-Mafia-Match" />,
-    },
-    {
-      name: "Candle",
-      text: "Allows the holder to see all their visitors at night.",
-      icon: <div className="icon item item-Mafia-Candle" />,
-    },
-    {
-      name: "Falcon",
-      text: "Can be used to track another player during the night.",
-      icon: <div className="icon item item-Mafia-Falcon" />,
-    },
-    {
-      name: "Tract",
-      text: "Saves a player from being converted one time.",
-      icon: <div className="icon item item-Mafia-Tract" />,
-    },
-    {
-      name: "Syringe",
-      text: "Can be shot once during the day to resurrect a specific player.",
-      icon: <div className="icon item item-Mafia-Syringe" />,
-    },
-    {
-      name: "Envelope",
-      text: "Can be used at night to send an anonymous letter to another player.",
-      icon: <div className="icon item item-Mafia-Envelope" />,
-    },
-  ];
+  const items = useMemo(() => {
+    const gameItems = siteInfo.items?.[gameType] || [];
+
+    return gameItems.map((entry) => {
+      const iconName = entry.icon || entry.name;
+      const iconClass = `icon item item-${gameType}-${hyphenDelimit(iconName)}`;
+
+      return {
+        name: entry.name,
+        text: entry.description,
+        icon: <div className={iconClass} />,
+      };
+    });
+  }, [siteInfo.items, gameType]);
 
   const mechanics = [
     {
