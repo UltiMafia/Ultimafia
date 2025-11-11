@@ -2967,7 +2967,13 @@ export function ActionList({
       history: game.history,
       stateViewing: game.stateViewing,
     }),
-    [game.socket, game.players, game.self, game.history, game.stateViewing]
+    [
+      game.socket,
+      game.players,
+      game.self,
+      game.history,
+      game.stateViewing,
+    ]
   );
 
   let regularActionDescriptors = descriptors;
@@ -3001,17 +3007,23 @@ export function ActionList({
       title={
         <UnresolvedActionCount>{title || "Actions"}</UnresolvedActionCount>
       }
-      content={<div className="action-list">{actionElements}</div>}
+      content={
+        <div className="action-list">
+          {actionElements}
+        </div>
+      }
     />
   );
 }
 
 function Inventory({ items, actionsByItemId, gameType, metadataByName }) {
   const columns = 5;
-  const minimumSlots = 25;
+  const minimumRows = 5;
   const safeItems = Array.isArray(items) ? items : [];
-  const totalSlots = Math.max(safeItems.length, minimumSlots);
-  const slotsCount = Math.ceil(totalSlots / columns) * columns;
+  const itemCount = safeItems.length;
+  const rowsNeeded = itemCount > 0 ? Math.ceil(itemCount / columns) : 0;
+  const totalRows = Math.max(minimumRows, rowsNeeded);
+  const slotsCount = totalRows * columns;
 
   const slots = [];
 

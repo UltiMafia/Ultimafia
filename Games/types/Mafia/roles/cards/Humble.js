@@ -8,6 +8,7 @@ module.exports = class Humble extends Card {
       self: true,
       reveal: true,
     };
+    this.hideStartItems = true;
 
     var appearance;
     if (this.role.alignment === "Village" || this.role.winCount === "Village") {
@@ -32,7 +33,7 @@ module.exports = class Humble extends Card {
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) return;
-        for (let item of this.player.items) {
+        for (let item of this.player.startingItems) {
           item.noShow = true;
         }
       },
