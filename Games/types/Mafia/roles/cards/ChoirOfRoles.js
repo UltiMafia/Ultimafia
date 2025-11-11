@@ -67,22 +67,17 @@ module.exports = class ChoirOfRoles extends Card {
       },
     };
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Effect"])) {
-          return;
-        }
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
 
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          role: this,
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-          labels: ["effect"],
-          run: function () {
+    this.passiveActions = [
+      {
+        ability: ["Effect"],
+        state: "Night",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+        labels: ["effect"],
+        role: role,
+        run: function () {
             let roles = this.role.getAllRoles().filter((r) => r);
             let players = this.game
               .alivePlayers()
@@ -100,11 +95,10 @@ module.exports = class ChoirOfRoles extends Card {
             this.role.data.singer = victim;
             this.role.data.singAbout = role;
           },
-        });
-
-        this.game.queueAction(action);
       },
-    };
+    ];
+
+    
   }
 };
 
