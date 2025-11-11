@@ -67,7 +67,6 @@ module.exports = class ChoirOfRoles extends Card {
       },
     };
 
-
     this.passiveActions = [
       {
         ability: ["Effect"],
@@ -78,27 +77,25 @@ module.exports = class ChoirOfRoles extends Card {
         labels: ["effect"],
         role: role,
         run: function () {
-            let roles = this.role.getAllRoles().filter((r) => r);
-            let players = this.game
-              .alivePlayers()
-              .filter((p) => p.role.alignment != "Cult");
+          let roles = this.role.getAllRoles().filter((r) => r);
+          let players = this.game
+            .alivePlayers()
+            .filter((p) => p.role.alignment != "Cult");
 
-            let role = Random.randArrayVal(roles, true)
-              .split(":")[0]
-              .toLowerCase();
-            let victim = Random.randArrayVal(players, true);
+          let role = Random.randArrayVal(roles, true)
+            .split(":")[0]
+            .toLowerCase();
+          let victim = Random.randArrayVal(players, true);
 
-            victim.queueAlert(
-              `From your bedroom window you heard the Banshee's wailing about the ${role}. You must say ${role} today or you will be condenmed! If the Banshee guesses your name as their target you will be condenmed anyway so be sneaky!`
-            );
-            this.role.giveEffect(victim, "ChoirSong", this.actor, role, 1); //,this.actor,role,1
-            this.role.data.singer = victim;
-            this.role.data.singAbout = role;
-          },
+          victim.queueAlert(
+            `From your bedroom window you heard the Banshee's wailing about the ${role}. You must say ${role} today or you will be condenmed! If the Banshee guesses your name as their target you will be condenmed anyway so be sneaky!`
+          );
+          this.role.giveEffect(victim, "ChoirSong", this.actor, role, 1); //,this.actor,role,1
+          this.role.data.singer = victim;
+          this.role.data.singAbout = role;
+        },
       },
     ];
-
-    
   }
 };
 
