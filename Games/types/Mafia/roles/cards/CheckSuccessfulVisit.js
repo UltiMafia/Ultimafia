@@ -6,7 +6,6 @@ module.exports = class CheckSuccessfulVisit extends Card {
   constructor(role) {
     super(role);
 
-
     this.passiveActions = [
       {
         ability: ["WhenDead", "Information"],
@@ -17,18 +16,17 @@ module.exports = class CheckSuccessfulVisit extends Card {
         labels: ["investigate", "hidden"],
         role: role,
         run: function () {
-            let targets = this.getVisits(this.actor);
-            let targetNames = targets.map((t) => t.name);
-            if (targetNames.length >= 1) {
-              this.actor.queueAlert(
-                `:invest: You learn that your visit to ${targetNames.join(
-                  ", "
-                )} was successful.`
-              );
-            }
-          },
+          let targets = this.getVisits(this.actor);
+          let targetNames = targets.map((t) => t.name);
+          if (targetNames.length >= 1) {
+            this.actor.queueAlert(
+              `:invest: You learn that your visit to ${targetNames.join(
+                ", "
+              )} was successful.`
+            );
+          }
+        },
       },
     ];
-    
   }
 };
