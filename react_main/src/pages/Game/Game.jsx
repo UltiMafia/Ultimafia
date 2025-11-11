@@ -82,6 +82,7 @@ import {
   BottomNavigation,
   BottomNavigationAction,
   Paper,
+  Popover,
   useMediaQuery,
 } from "@mui/material";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
@@ -2846,130 +2847,153 @@ export function OptionsList() {
   );
 }
 
-export function ActionList({ title = "Actions", actionStyle = {} }) {
+function createActionDescriptor(meeting, baseProps, style) {
+  if (!meeting) return null;
+
+  const props = { ...baseProps, meeting };
+
+  if (style && Object.keys(style).length > 0) props.style = style;
+
+  switch (meeting.inputType) {
+    case "player":
+    case "boolean":
+    case "role":
+    case "alignment":
+    case "custom":
+    case "customBoolean":
+    case "AllRoles":
+    case "select":
+      return {
+        key: meeting.id,
+        Component: ActionSelect,
+        props,
+      };
+    case "button":
+      return {
+        key: meeting.id,
+        Component: ActionButton,
+        props,
+      };
+    case "text":
+      return {
+        key: meeting.id,
+        Component: ActionText,
+        props,
+      };
+    case "imageButtons":
+      return {
+        key: meeting.id,
+        Component: ActionImageButtons,
+        props,
+      };
+    case "playingCardButtons":
+      return {
+        key: meeting.id,
+        Component: PlayingCardButtons,
+        props,
+      };
+    case "actionSeparatingText":
+      return {
+        key: meeting.id,
+        Component: ActionSeparatingText,
+        props,
+      };
+    case "showAllOptions":
+      return {
+        key: meeting.id,
+        Component: ActionSelectShowAllOptions,
+        props,
+      };
+    default:
+      return {
+        key: meeting.id,
+        Component: ActionSelect,
+        props,
+      };
+  }
+}
+
+export function buildActionDescriptors({
+  meetings = {},
+  baseActionProps,
+  actionStyle = {},
+  inventoryActionStyle = {},
+}) {
+  const regularActionDescriptors = [];
+  const inventoryActionDescriptors = {};
+
+  Object.values(meetings).forEach((meeting) => {
+    if (!meeting.voting) return;
+
+    const descriptor = createActionDescriptor(
+      meeting,
+      baseActionProps,
+      meeting.itemId ? inventoryActionStyle : actionStyle
+    );
+
+    if (!descriptor) return;
+
+    if (meeting.itemId) {
+      if (!inventoryActionDescriptors[meeting.itemId]) {
+        inventoryActionDescriptors[meeting.itemId] = [];
+      }
+      inventoryActionDescriptors[meeting.itemId].push(descriptor);
+    } else {
+      regularActionDescriptors.push(descriptor);
+    }
+  });
+
+  return {
+    regularActionDescriptors,
+    inventoryActionDescriptors,
+  };
+}
+
+export function ActionList({
+  title = "Actions",
+  actionStyle = {},
+  descriptors,
+}) {
   const game = useContext(GameContext);
 
   const currentlyViewedState = game.history.states[game.stateViewing];
   const meetings = currentlyViewedState ? currentlyViewedState.meetings : {};
 
-  const isParticipant = game.isParticipant;
+  const baseActionProps = useMemo(
+    () => ({
+      socket: game.socket,
+      players: game.players,
+      self: game.self,
+      history: game.history,
+      stateViewing: game.stateViewing,
+    }),
+    [game.socket, game.players, game.self, game.history, game.stateViewing]
+  );
 
-  const actions = Object.values(meetings).reduce((actions, meeting) => {
-    if (meeting.voting) {
-      var action;
+  let regularActionDescriptors = descriptors;
 
-      switch (meeting.inputType) {
-        case "player":
-        case "boolean":
-        case "role":
-        case "alignment":
-        case "custom":
-        case "customBoolean":
-        case "AllRoles":
-        case "select":
-          action = (
-            <ActionSelect
-              key={meeting.id}
-              socket={game.socket}
-              meeting={meeting}
-              players={game.players}
-              self={game.self}
-              history={game.history}
-              stateViewing={game.stateViewing}
-              style={actionStyle}
-            />
-          );
-          break;
-        case "button":
-          action = (
-            <ActionButton
-              key={meeting.id}
-              socket={game.socket}
-              meeting={meeting}
-              players={game.players}
-              self={game.self}
-              history={game.history}
-              stateViewing={game.stateViewing}
-              style={actionStyle}
-            />
-          );
-          break;
-        case "text":
-          action = (
-            <ActionText
-              key={meeting.id}
-              socket={game.socket}
-              meeting={meeting}
-              players={game.players}
-              self={game.self}
-              history={game.history}
-              stateViewing={game.stateViewing}
-              style={actionStyle}
-            />
-          );
-          break;
-        case "imageButtons":
-          action = (
-            <ActionImageButtons
-              key={meeting.id}
-              socket={game.socket}
-              meeting={meeting}
-              players={game.players}
-              self={game.self}
-              history={game.history}
-              stateViewing={game.stateViewing}
-              style={actionStyle}
-            />
-          );
-          break;
-        case "playingCardButtons":
-          action = (
-            <PlayingCardButtons
-              key={meeting.id}
-              socket={game.socket}
-              meeting={meeting}
-              players={game.players}
-              self={game.self}
-              history={game.history}
-              stateViewing={game.stateViewing}
-              style={actionStyle}
-            />
-          );
-          break;
-        case "actionSeparatingText":
-          action = (
-            <ActionSeparatingText
-              key={meeting.id}
-              socket={game.socket}
-              meeting={meeting}
-              players={game.players}
-              self={game.self}
-              history={game.history}
-              stateViewing={game.stateViewing}
-              style={actionStyle}
-            />
-          );
-          break;
-        case "showAllOptions":
-          action = (
-            <ActionSelectShowAllOptions
-              key={meeting.id}
-              socket={game.socket}
-              meeting={meeting}
-              players={game.players}
-              self={game.self}
-              history={game.history}
-              stateViewing={game.stateViewing}
-              style={actionStyle}
-            />
-          );
-          break;
-      }
+  if (!regularActionDescriptors) {
+    const descriptorResult = buildActionDescriptors({
+      meetings,
+      baseActionProps,
+      actionStyle,
+      inventoryActionStyle: actionStyle,
+    });
 
-      actions.push(action);
+    regularActionDescriptors = descriptorResult.regularActionDescriptors;
+    const inventoryDescriptors = Object.values(
+      descriptorResult.inventoryActionDescriptors || {}
+    );
+    if (inventoryDescriptors.length > 0) {
+      regularActionDescriptors = regularActionDescriptors.concat(
+        inventoryDescriptors.flat()
+      );
     }
-    return actions;
-  }, []);
+  }
+
+  const actionElements = (regularActionDescriptors || []).map(
+    ({ Component, props, key }) => <Component key={key} {...props} />
+  );
 
   return (
     <SideMenu
@@ -2977,8 +3001,260 @@ export function ActionList({ title = "Actions", actionStyle = {} }) {
       title={
         <UnresolvedActionCount>{title || "Actions"}</UnresolvedActionCount>
       }
-      content={<div className="action-list">{actions}</div>}
+      content={<div className="action-list">{actionElements}</div>}
     />
+  );
+}
+
+function Inventory({ items, actionsByItemId, gameType, metadataByName }) {
+  const columns = 5;
+  const minimumRows = 5;
+  const safeItems = Array.isArray(items) ? items : [];
+  const itemCount = safeItems.length;
+  const rowsNeeded = itemCount > 0 ? Math.ceil(itemCount / columns) : 0;
+  const totalRows = Math.max(minimumRows, rowsNeeded);
+  const slotsCount = totalRows * columns;
+
+  const slots = [];
+
+  for (let i = 0; i < slotsCount; i++) {
+    const item = safeItems[i];
+    const itemId = item?.id;
+    const metadata = item ? metadataByName?.[item.name] : null;
+    slots.push(
+      <InventorySlot
+        key={item ? itemId : `inventory-slot-${i}`}
+        item={item}
+        metadata={metadata}
+        gameType={gameType}
+        actionDescriptors={itemId ? actionsByItemId[itemId] || [] : []}
+      />
+    );
+  }
+
+  return <div className="inventory-grid">{slots}</div>;
+}
+
+export function InventoryPanel({
+  show,
+  items,
+  actionsByItemId,
+  gameType,
+  accordion = true,
+}) {
+  const siteInfo = useContext(SiteInfoContext);
+
+  const metadataByName = useMemo(() => {
+    const map = {};
+    const gameItems = siteInfo?.items?.[gameType] || [];
+
+    for (const entry of gameItems) {
+      const value = {
+        name: entry.name,
+        description: entry.description,
+        tags: entry.tags,
+        internal: entry.internal,
+        icon: entry.icon,
+      };
+
+      map[entry.name] = value;
+
+      if (Array.isArray(entry.internal)) {
+        for (const alias of entry.internal) {
+          map[alias] = value;
+        }
+      }
+    }
+
+    return map;
+  }, [siteInfo?.items, gameType]);
+
+  if (!show) return null;
+
+  const itemCount = Array.isArray(items) ? items.length : 0;
+
+  const title = (
+    <InventoryCountBadge count={itemCount}>Inventory</InventoryCountBadge>
+  );
+
+  return (
+    <SideMenu
+      title={title}
+      isAccordionMenu={accordion}
+      content={
+        <div className="inventory-section">
+          <Inventory
+            items={items}
+            actionsByItemId={actionsByItemId}
+            gameType={gameType}
+            metadataByName={metadataByName}
+          />
+        </div>
+      }
+    />
+  );
+}
+
+function InventorySlot({ item, metadata, actionDescriptors, gameType }) {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const hasActions = actionDescriptors && actionDescriptors.length > 0;
+
+  useEffect(() => {
+    if (!hasActions) {
+      setAnchorEl(null);
+    }
+    setTooltipOpen(false);
+  }, [hasActions, item?.id]);
+
+  const handleClick = (event) => {
+    if (!hasActions) return;
+    setTooltipOpen(false);
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => setAnchorEl(null);
+  const handleTooltipOpen = () => {
+    if (item) setTooltipOpen(true);
+  };
+  const handleTooltipClose = () => setTooltipOpen(false);
+
+  const open = Boolean(anchorEl);
+  const iconTargetName = metadata?.icon || metadata?.name || item?.name;
+  const iconClass =
+    iconTargetName && gameType
+      ? `inventory-icon item ${getInventoryItemClass(gameType, iconTargetName)}`
+      : "inventory-icon";
+
+  const tooltipName = metadata?.name || item?.name;
+  const tooltipDescription = metadata?.description;
+
+  const tooltipTitle =
+    item != null ? (
+      <InventoryTooltipContent
+        name={tooltipName}
+        description={tooltipDescription}
+      />
+    ) : (
+      ""
+    );
+
+  const cell = (
+    <div
+      className={`inventory-cell ${
+        item ? "inventory-cell--filled" : "inventory-cell--empty"
+      } ${hasActions ? "inventory-cell--interactive" : ""}`}
+    >
+      <button
+        type="button"
+        className="inventory-cell-button"
+        onClick={handleClick}
+        disabled={!hasActions}
+        title={tooltipName || item?.name || undefined}
+      >
+        {item && <div className={iconClass} />}
+      </button>
+    </div>
+  );
+
+  return (
+    <>
+      {item ? (
+        <Tooltip
+          arrow
+          placement="top"
+          title={tooltipTitle}
+          open={tooltipOpen}
+          onOpen={handleTooltipOpen}
+          onClose={handleTooltipClose}
+          disableFocusListener
+          disableTouchListener
+          enterDelay={150}
+        >
+          <span style={{ display: "inline-flex" }}>{cell}</span>
+        </Tooltip>
+      ) : (
+        cell
+      )}
+      {hasActions && (
+        <Popover
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}
+          disableRestoreFocus
+          slotProps={{
+            paper: {
+              sx: {
+                p: 1,
+                maxWidth: 320,
+                backgroundColor: "background.paper",
+                boxShadow: 3,
+              },
+            },
+          }}
+        >
+          <Stack spacing={1}>
+            {actionDescriptors.map(({ Component, props, key }) => (
+              <Component key={key} {...props} />
+            ))}
+          </Stack>
+        </Popover>
+      )}
+    </>
+  );
+}
+
+function getInventoryItemClass(gameType, itemName) {
+  if (!itemName) return "";
+
+  const sanitizedName = itemName
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return `item-${gameType}-${sanitizedName}`;
+}
+
+function InventoryCountBadge({ count, children }) {
+  const hideBadge = count === 0;
+
+  return (
+    <Badge
+      badgeContent={count}
+      color="primary"
+      invisible={hideBadge}
+      sx={{
+        "& .MuiBadge-badge": {
+          transform: "scale(1) translate(100%, -50%)",
+        },
+      }}
+    >
+      {children}
+    </Badge>
+  );
+}
+
+function InventoryTooltipContent({ name, description }) {
+  if (!name) return <></>;
+
+  return (
+    <Stack spacing={0.5}>
+      <Typography variant="subtitle2" fontWeight="bold">
+        {name}
+      </Typography>
+      {description ? (
+        <Typography variant="body2" sx={{ whiteSpace: "normal" }}>
+          {description}
+        </Typography>
+      ) : null}
+    </Stack>
   );
 }
 

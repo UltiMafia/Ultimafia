@@ -17,6 +17,7 @@ module.exports = class Card {
     this.copyableListeners = {};
     this.stateMods = {};
     this.meetingMods = {};
+    this.hideStartItems = false;
     this.overwrites = {
       /* 
             winCount, 
@@ -56,6 +57,7 @@ module.exports = class Card {
       "copyableListeners",
       "stateMods",
       "meetingMods",
+      "hideStartItems",
     ];
 
     if (this.role.isExtraRole) {

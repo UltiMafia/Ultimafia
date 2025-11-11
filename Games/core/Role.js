@@ -65,6 +65,7 @@ module.exports = class Role {
         */
     };
     this.meetingMods = {};
+    this.hideStartItems = false;
     this.priorityOffset = 0;
     this.Action = Action;
   }
@@ -158,11 +159,36 @@ module.exports = class Role {
     for (let item of this.startItems) {
       let StartingItem;
       if (typeof item == "string") {
-        StartingItem = this.player.holdItem(item);
+        if (this.hideStartItems) {
+          const ItemClass = Utils.importGameClass(
+            this.game.type,
+            "items",
+            item
+          );
+          StartingItem = new ItemClass();
+          StartingItem.noShow = true;
+          StartingItem.hold(this.player);
+        } else {
+          StartingItem = this.player.holdItem(item);
+        }
       } else {
-        StartingItem = this.player.holdItem(item.type, ...item.args);
+        const args = Array.isArray(item.args) ? item.args : [];
+        if (this.hideStartItems) {
+          const ItemClass = Utils.importGameClass(
+            this.game.type,
+            "items",
+            item.type
+          );
+          StartingItem = new ItemClass(...args);
+          StartingItem.noShow = true;
+          StartingItem.hold(this.player);
+        } else {
+          StartingItem = this.player.holdItem(item.type, ...args);
+        }
       }
-      this.player.startingItems.push(StartingItem);
+      if (StartingItem) {
+        this.player.startingItems.push(StartingItem);
+      }
     }
 
     // Give intial effects

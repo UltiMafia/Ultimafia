@@ -118,6 +118,7 @@ module.exports = class Meeting {
     if (options.inputType) this.inputType = options.inputType;
     this.textOptions = options.textOptions;
     this.displayOptions = options.displayOptions;
+    if (options.item) this.item = options.item;
 
     if (options.displayVoteCounter !== undefined) {
       this.displayVoteCounter = options.displayVoteCounter;
@@ -324,6 +325,8 @@ module.exports = class Meeting {
       speechAbilities: this.getSpeechAbilityInfo(member),
       amMember: member.id != null,
       playerHasVoted: playerHasVoted,
+      itemId: this.item ? this.item.id : null,
+      itemName: this.item ? this.item.name : null,
     };
   }
 
