@@ -7,20 +7,16 @@ module.exports = class ChangeRandomAlignment extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Win-Con"])) {
-          return;
-        }
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_PREKILL_ACTION,
-          labels: ["hidden"],
-          run: function () {
+        this.passiveActions = [
+      {
+        ability: ["Win-Con"],
+        state: "Night",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_PREKILL_ACTION,
+        labels: ["hidden"],
+        role: role,
+        run: function () {
             let factions = [];
             let players = this.game
               .alivePlayers()
@@ -44,9 +40,8 @@ module.exports = class ChangeRandomAlignment extends Card {
               `:anon: You believe that siding with the ${this.actor.faction} will help your career!`
             );
           },
-        });
-        this.game.queueAction(action);
       },
-    };
+    ];
+
   }
 };
