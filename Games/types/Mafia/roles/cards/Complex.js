@@ -10,7 +10,6 @@ module.exports = class Complex extends Card {
   constructor(role) {
     super(role);
 
-
     this.passiveActions = [
       {
         ability: ["Blocking", "Modifier"],
@@ -21,11 +20,11 @@ module.exports = class Complex extends Card {
         labels: ["block", "hidden", "absolute"],
         role: role,
         run: function () {
-            if (!this.isSelfBlock()) {
-              return;
-            }
-            this.blockingMods(this.role);
-          },
+          if (!this.isSelfBlock()) {
+            return;
+          }
+          this.blockingMods(this.role);
+        },
       },
       {
         ability: ["Blocking", "Modifier"],
@@ -36,10 +35,9 @@ module.exports = class Complex extends Card {
         labels: ["block", "hidden", "absolute"],
         role: role,
         run: function () {
-            this.blockingMods(this.role);
-          },
+          this.blockingMods(this.role);
+        },
       },
     ];
-
   }
 };
