@@ -39,7 +39,6 @@ module.exports = class CultWinsIfNoCondemn extends Card {
       },
     };
 
-
     this.passiveActions = [
       {
         ability: ["Win-Con"],
@@ -50,30 +49,29 @@ module.exports = class CultWinsIfNoCondemn extends Card {
         labels: ["hidden", "absolute"],
         role: role,
         run: function () {
-            if (!this.role.hasAbility(["Win-Con"])) return;
-            let alivePlayers = this.game.players.filter((p) => p.role);
+          if (!this.role.hasAbility(["Win-Con"])) return;
+          let alivePlayers = this.game.players.filter((p) => p.role);
 
-            for (let x = 0; x < alivePlayers.length; x++) {
-              for (let action of this.game.actions[0]) {
-                if (
-                  action.target == alivePlayers[x] &&
-                  action.hasLabel("condemn")
-                ) {
-                  this.actor.role.data.NyarlathotepWin = false;
-                  return;
-                }
+          for (let x = 0; x < alivePlayers.length; x++) {
+            for (let action of this.game.actions[0]) {
+              if (
+                action.target == alivePlayers[x] &&
+                action.hasLabel("condemn")
+              ) {
+                this.actor.role.data.NyarlathotepWin = false;
+                return;
               }
             }
-            /*
+          }
+          /*
             this.actor.queueAlert(
               `Now that only 3 players are alive today, Town will win if no one is executed Today!`
             );
             */
-            this.actor.role.data.NyarlathotepWin = true;
-            return;
-          },
+          this.actor.role.data.NyarlathotepWin = true;
+          return;
+        },
       },
     ];
-
   }
 };
