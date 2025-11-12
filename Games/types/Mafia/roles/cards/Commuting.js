@@ -16,21 +16,20 @@ module.exports = class Commuting extends Card {
         labels: ["block", "hidden"],
         role: role,
         run: function () {
-            for (let action of this.game.actions[0]) {
-              if (action.target == this.actor && !action.hasLabel("hidden")) {
-                for (let _action of this.game.actions[0]) {
-                  if (
-                    _action.priority > this.priority &&
-                    !_action.hasLabel("absolute")
-                  ) {
-                    _action.cancelActor(action.actor);
-                  }
+          for (let action of this.game.actions[0]) {
+            if (action.target == this.actor && !action.hasLabel("hidden")) {
+              for (let _action of this.game.actions[0]) {
+                if (
+                  _action.priority > this.priority &&
+                  !_action.hasLabel("absolute")
+                ) {
+                  _action.cancelActor(action.actor);
                 }
               }
             }
-          },
+          }
+        },
       },
     ];
-
   }
 };
