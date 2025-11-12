@@ -410,6 +410,22 @@ var schemas = {
       toJSON: { virtuals: true },
     }
   ),
+  Strategy: new mongoose.Schema({
+    id: { type: String, index: true },
+    setup: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Setup",
+      index: true,
+    },
+    setupId: { type: String, index: true },
+    author: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
+    title: { type: String },
+    content: String,
+    createdAt: { type: Number, index: true },
+    updatedAt: { type: Number, index: true },
+    voteCount: { type: Number, default: 0, index: true },
+    deleted: { type: Boolean, default: false },
+  }),
   Comment: new mongoose.Schema({
     id: { type: String, index: true },
     author: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

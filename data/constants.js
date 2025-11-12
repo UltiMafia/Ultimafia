@@ -28,6 +28,7 @@ if (process.env.NODE_ENV.includes("development")) {
     sendChatMessage: 500,
     deleteAccount: 60 * 60 * 100,
     postComment: 30 * 100,
+    postStrategy: 30 * 100,
     favSetup: 500,
   };
 } else {
@@ -40,6 +41,7 @@ if (process.env.NODE_ENV.includes("development")) {
     sendChatMessage: 500,
     deleteAccount: 24 * 60 * 60 * 1000,
     postComment: 30 * 1000,
+    postStrategy: 30 * 1000,
     favSetup: 500,
   };
 }
@@ -314,6 +316,8 @@ module.exports = {
   maxLargeCommentLength: 2000,
   maxCommentLocationLength: 20,
   commentsPerPage: 10,
+  maxStrategyTitleLength: 80,
+  maxStrategyContentLength: 4000,
 
   lobbyPageSize: 10,
   modActionPageSize: 7,
@@ -456,6 +460,7 @@ module.exports = {
     editAnySetup: true,
     createPoll: true,
     awardTrophy: true,
+    deleteStrategy: true,
   },
   defaultGroups: {
     Owner: {
@@ -513,6 +518,7 @@ module.exports = {
         "editAnySetup",
         "createPoll",
         "awardTrophy",
+        "deleteStrategy",
       ],
     },
     Liaison: {
@@ -569,6 +575,7 @@ module.exports = {
         "approveCompetitive",
         "playRanked",
         "playCompetitive",
+        "deleteStrategy",
       ],
     },
     Dev: {

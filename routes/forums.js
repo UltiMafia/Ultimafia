@@ -1250,34 +1250,54 @@ router.post("/vote", async function (req, res) {
       case "comment":
         itemModel = models.Comment;
         break;
+      case "strategy":
+        itemModel = models.Strategy;
+        break;
       default:
         res.status(500);
         res.send("Invalid item type.");
         return;
     }
 
-    var item = await itemModel
-      .findOne({ id: itemId })
-      .select("board thread")
-      .populate("board", "rank")
-      .populate({
-        path: "thread",
-        select: "board",
-        populate: {
-          path: "board",
-          select: "rank",
-        },
-      });
+    let itemQuery = itemModel.findOne({ id: itemId });
+
+    if (itemType === "strategy") {
+      itemQuery = itemQuery.select("deleted");
+    } else {
+      itemQuery = itemQuery
+        .select("board thread")
+        .populate("board", "rank")
+        .populate({
+          path: "thread",
+          select: "board",
+          populate: {
+            path: "board",
+            select: "rank",
+          },
+        });
+    }
+
+    var item = await itemQuery;
 
     if (!item) {
       res.status(500);
       res.send("Item does not exist.");
     }
 
-    var requiredRank =
-      (item.board && item.board.rank) ||
-      (item.thread && item.thread.board && item.thread.board.rank) ||
-      0;
+    if (itemType === "strategy" && item.deleted) {
+      res.status(500);
+      res.send("Cannot vote on a deleted strategy.");
+      return;
+    }
+
+    var requiredRank = 0;
+
+    if (itemType !== "strategy") {
+      requiredRank =
+        (item.board && item.board.rank) ||
+        (item.thread && item.thread.board && item.thread.board.rank) ||
+        0;
+    }
 
     if (!(await routeUtils.verifyPermission(res, userId, perm, requiredRank)))
       return;
