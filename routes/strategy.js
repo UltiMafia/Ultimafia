@@ -235,7 +235,9 @@ router.put("/:strategyId", async function (req, res) {
     }
 
     const strategy = await models.Strategy.findOne({ id: strategyId })
-      .select("author deleted setupId title content voteCount updatedAt createdAt")
+      .select(
+        "author deleted setupId title content voteCount updatedAt createdAt"
+      )
       .populate("author", "id");
 
     if (!strategy) {
@@ -303,4 +305,3 @@ router.put("/:strategyId", async function (req, res) {
 });
 
 module.exports = router;
-

@@ -33,17 +33,15 @@ import sadFace from "images/emotes/sad.webp";
 function sortStrategies(strategies) {
   if (!Array.isArray(strategies)) return [];
 
-  return strategies
-    .slice()
-    .sort((a, b) => {
-      const voteDiff = (b.voteCount || 0) - (a.voteCount || 0);
-      if (voteDiff !== 0) return voteDiff;
+  return strategies.slice().sort((a, b) => {
+    const voteDiff = (b.voteCount || 0) - (a.voteCount || 0);
+    if (voteDiff !== 0) return voteDiff;
 
-      const updatedDiff = (b.updatedAt || 0) - (a.updatedAt || 0);
-      if (updatedDiff !== 0) return updatedDiff;
+    const updatedDiff = (b.updatedAt || 0) - (a.updatedAt || 0);
+    if (updatedDiff !== 0) return updatedDiff;
 
-      return (b.createdAt || 0) - (a.createdAt || 0);
-    });
+    return (b.createdAt || 0) - (a.createdAt || 0);
+  });
 }
 
 function StrategiesBase({
@@ -188,9 +186,7 @@ function StrategiesBase({
       spacing={1}
       sx={{ alignItems: "center", width: "100%" }}
     >
-      <Typography sx={{ flexGrow: 1 }}>
-        Strategies
-      </Typography>
+      <Typography sx={{ flexGrow: 1 }}>Strategies</Typography>
       {canCreate && (
         <IconButton size="small" onClick={openCreateDialog}>
           <i className="fas fa-plus" />
@@ -350,8 +346,15 @@ function StrategiesBase({
   );
 
   const dialog = (
-    <Dialog open={dialogOpen} onClose={handleDialogClose} fullWidth maxWidth="md">
-      <DialogTitle>{editingStrategy ? "Edit Strategy" : "New Strategy"}</DialogTitle>
+    <Dialog
+      open={dialogOpen}
+      onClose={handleDialogClose}
+      fullWidth
+      maxWidth="md"
+    >
+      <DialogTitle>
+        {editingStrategy ? "Edit Strategy" : "New Strategy"}
+      </DialogTitle>
       <DialogContent dividers>
         <Stack spacing={2}>
           <TextField
@@ -453,4 +456,3 @@ export function StrategiesSection(props) {
 }
 
 export const SetupStrategiesSection = StrategiesSection;
-

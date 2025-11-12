@@ -57,13 +57,7 @@ export default function MafiaGame() {
       history: game.history,
       stateViewing: game.stateViewing,
     }),
-    [
-      game.socket,
-      game.players,
-      game.self,
-      game.history,
-      game.stateViewing,
-    ]
+    [game.socket, game.players, game.self, game.history, game.stateViewing]
   );
 
   const actionDescriptorData = useMemo(
@@ -649,10 +643,7 @@ export default function MafiaGame() {
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
             {isViewingPregame ? (
-              <StrategiesSection
-                setupId={setupId}
-                visible={Boolean(setupId)}
-              />
+              <StrategiesSection setupId={setupId} visible={Boolean(setupId)} />
             ) : (
               <ActionList
                 descriptors={actionDescriptorData.regularActionDescriptors}
