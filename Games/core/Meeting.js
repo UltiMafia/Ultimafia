@@ -291,7 +291,7 @@ module.exports = class Meeting {
     }
 
     let messagesToSend = this.getPlayerMessages(member.player);
-    if(player == "spectator"){
+    if (player == "spectator") {
       messagesToSend = this.getPlayerMessages("spectator");
     }
 
@@ -336,14 +336,15 @@ module.exports = class Meeting {
   }
 
   getPlayerMessages(player) {
-
-    if(player == "spectator"){
-    let messageTemp = this.messages.filter((m) => m.recipients.length >= this.members.length);
-    return messageTemp.reduce((msgs, m) => {
-      m = m.getMessageInfo(player);
-      if (m) msgs.push(m);
-      return msgs;
-    }, []);
+    if (player == "spectator") {
+      let messageTemp = this.messages.filter(
+        (m) => m.recipients.length >= this.members.length
+      );
+      return messageTemp.reduce((msgs, m) => {
+        m = m.getMessageInfo(player);
+        if (m) msgs.push(m);
+        return msgs;
+      }, []);
     }
 
     return this.messages.reduce((msgs, m) => {

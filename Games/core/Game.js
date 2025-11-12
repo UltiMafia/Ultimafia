@@ -2309,8 +2309,11 @@ module.exports = class Game {
   }
 
   spectatorsHear(message) {
-
-    if (message.meeting && message.meeting.members && message.recipients.length < message.meeting.members.length) {
+    if (
+      message.meeting &&
+      message.meeting.members &&
+      message.recipients.length < message.meeting.members.length
+    ) {
       return;
     }
     if (message.abilityName != "Whisper") {

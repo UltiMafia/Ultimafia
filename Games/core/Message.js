@@ -81,10 +81,9 @@ module.exports = class Message {
         !version.meeting &&
         version.recipients &&
         !version.globalAlert
-      ){
+      ) {
         return;
       }
-
     } else if (player) {
       playerId = player.id;
       version = this.versions[playerId];
