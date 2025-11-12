@@ -6,7 +6,6 @@ module.exports = class ConvertVisitors extends Card {
   constructor(role) {
     super(role);
 
-
     this.passiveActions = [
       {
         ability: ["Convert"],
@@ -17,12 +16,11 @@ module.exports = class ConvertVisitors extends Card {
         labels: ["convert", "hidden"],
         role: role,
         run: function () {
-            let visitors = this.getVisitors();
-            for (let visitor of visitors)
-              if (this.dominates(visitor)) visitor.setRole("Cultist");
-          },
+          let visitors = this.getVisitors();
+          for (let visitor of visitors)
+            if (this.dominates(visitor)) visitor.setRole("Cultist");
+        },
       },
     ];
-    
   }
 };
