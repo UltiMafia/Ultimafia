@@ -12,7 +12,7 @@ module.exports = class Commuting extends Card {
         state: "Night",
         actor: role.player,
         game: role.player.game,
-        priority: PRIORITY_PREKILL_ACTION,
+        priority: PRIORITY_BLOCK_VISITORS,
         labels: ["block", "hidden"],
         role: role,
         run: function () {

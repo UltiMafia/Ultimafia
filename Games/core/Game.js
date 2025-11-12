@@ -2309,9 +2309,8 @@ module.exports = class Game {
   }
 
   spectatorsHear(message) {
-    let isTalkingDead = this.isTalkingDead();
 
-    if (message.sender && !message.sender.alive && !isTalkingDead) {
+    if (message.meeting && message.meeting.members && message.recipients.length < message.meeting.members.length) {
       return;
     }
     if (message.abilityName != "Whisper") {
