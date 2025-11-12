@@ -46,6 +46,10 @@ module.exports = class Spectator extends Player {
     this.send("isSpectator");
   }
 
+  sendMeeting(meeting) {
+    this.send("meeting", meeting.getMeetingInfo("spectator"));
+  }
+
   leaveGame() {
     this.game.removeSpectator(this);
     this.send("left");

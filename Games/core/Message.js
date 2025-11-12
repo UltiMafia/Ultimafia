@@ -67,14 +67,23 @@ module.exports = class Message {
     if (player == "spectator") {
       playerId = "spectator";
       version = this.versions["*"];
+      /*
+      for(let type of Object.entries(this.versions)){
+        if(type.meeting && type.meeting.members && type.recipients.length >= type.meeting.members.length){
+          version = type;
+          break;
+        }
+      }
+      */
 
       if (
         version &&
         !version.meeting &&
         version.recipients &&
         !version.globalAlert
-      )
+      ) {
         return;
+      }
     } else if (player) {
       playerId = player.id;
       version = this.versions[playerId];

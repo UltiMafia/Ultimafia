@@ -39,78 +39,39 @@ module.exports = class CultWinsIfNoCondemn extends Card {
       },
     };
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Win-Con"])) {
-          return;
-        }
-        if (!stateInfo.name.match(/Day/)) {
-          return;
-        }
+    this.passiveActions = [
+      {
+        ability: ["Win-Con"],
+        state: "Day",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_DAY_EFFECT_DEFAULT + 1,
+        labels: ["hidden", "absolute"],
+        role: role,
+        run: function () {
+          if (!this.role.hasAbility(["Win-Con"])) return;
+          let alivePlayers = this.game.players.filter((p) => p.role);
 
-        var action = new Action({
-          role: this,
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_DAY_EFFECT_DEFAULT + 1,
-          labels: ["hidden", "absolute"],
-          run: function () {
-            if (!this.role.hasAbility(["Win-Con"])) return;
-            let alivePlayers = this.game.players.filter((p) => p.role);
-
-            for (let x = 0; x < alivePlayers.length; x++) {
-              for (let action of this.game.actions[0]) {
-                if (
-                  action.target == alivePlayers[x] &&
-                  action.hasLabel("condemn")
-                ) {
-                  this.actor.role.data.NyarlathotepWin = false;
-                  return;
-                }
+          for (let x = 0; x < alivePlayers.length; x++) {
+            for (let action of this.game.actions[0]) {
+              if (
+                action.target == alivePlayers[x] &&
+                action.hasLabel("condemn")
+              ) {
+                this.actor.role.data.NyarlathotepWin = false;
+                return;
               }
             }
-            /*
+          }
+          /*
             this.actor.queueAlert(
               `Now that only 3 players are alive today, Town will win if no one is executed Today!`
             );
             */
-            this.actor.role.data.NyarlathotepWin = true;
-            return;
-          },
-        });
-
-        this.game.queueAction(action);
-      },
-    };
-    /*
-    this.actions = [
-      {
-        priority: PRIORITY_DAY_EFFECT_DEFAULT + 1,
-        run: function () {
-          if (!this.actor.alive) return;
-          if (
-            this.game.getStateName() == "Day" ||
-            this.game.getStateName() == "Dusk"
-          ) {
-            let alivePlayers = this.game.players.filter((p) => p.role);
-
-            for (let x = 0; x < alivePlayers.length; x++) {
-              for (let action of this.game.actions[0]) {
-                if (
-                  action.target == alivePlayers[x] &&
-                  action.hasLabel("condemn")
-                ) {
-                  this.actor.role.data.NyarlathotepWin = false;
-                  return;
-                }
-              }
-            }
-            this.actor.role.data.NyarlathotepWin = true;
-            return;
-          }
+          this.actor.role.data.NyarlathotepWin = true;
+          return;
         },
       },
     ];
-    */
   }
 };

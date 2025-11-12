@@ -290,6 +290,11 @@ module.exports = class Meeting {
       personalizedTargets = this.targets;
     }
 
+    let messagesToSend = this.getPlayerMessages(member.player);
+    if (player == "spectator") {
+      messagesToSend = this.getPlayerMessages("spectator");
+    }
+
     return {
       id: this.id,
       name: this.getName(member),
@@ -316,7 +321,7 @@ module.exports = class Meeting {
       displayOptions: this.displayOptions || {},
       votes: votes,
       voteRecord: voteRecord,
-      messages: this.getPlayerMessages(member.player),
+      messages: messagesToSend,
       canVote: member.canVote,
       canUpdateVote: member.canUpdateVote,
       canUnvote: member.canUnvote,
@@ -331,6 +336,17 @@ module.exports = class Meeting {
   }
 
   getPlayerMessages(player) {
+    if (player == "spectator") {
+      let messageTemp = this.messages.filter(
+        (m) => m.recipients.length >= this.members.length
+      );
+      return messageTemp.reduce((msgs, m) => {
+        m = m.getMessageInfo(player);
+        if (m) msgs.push(m);
+        return msgs;
+      }, []);
+    }
+
     return this.messages.reduce((msgs, m) => {
       m = m.getMessageInfo(player);
       if (m) msgs.push(m);
