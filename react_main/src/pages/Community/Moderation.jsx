@@ -1130,6 +1130,59 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Restore Deleted User": {
+      perm: "restoreDeletedUser",
+      category: "User Management",
+      args: [
+        {
+          label: "Email",
+          name: "email",
+          type: "text",
+        },
+      ],
+      run: function () {
+        const email = (argValues.email || "").trim();
+
+        if (!email) {
+          siteInfo.showAlert("Email is required.", "warning");
+          return;
+        }
+
+        axios
+          .post("/api/mod/restoreDeletedUser", { email })
+          .then((res) => {
+            const {
+              message,
+              userId,
+              fbUid,
+              temporaryPassword,
+              passwordResetLink,
+            } = res.data || {};
+
+            const details = [
+              message || "User restored.",
+              userId ? `User ID: ${userId}` : null,
+              fbUid ? `Firebase UID: ${fbUid}` : null,
+              temporaryPassword
+                ? `Temporary Password: ${temporaryPassword}`
+                : null,
+              passwordResetLink
+                ? `Password Reset Link: ${passwordResetLink}`
+                : null,
+            ]
+              .filter(Boolean)
+              .join(" | ");
+
+            if (typeof setResults === "function") {
+              setResults(details);
+            }
+
+            siteInfo.showAlert("Restore command executed.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Change Name": {
       perm: "changeUsersName",
       category: "User Management",
