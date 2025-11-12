@@ -18,17 +18,16 @@ module.exports = class CountWrongReveals extends Card {
         labels: ["investigate", "Forensicist"],
         role: role,
         run: function () {
-            let info = this.game.createInformation(
-              "CountFalseInfoInfo",
-              this.actor,
-              this.game
-            );
-            info.processInfo();
+          let info = this.game.createInformation(
+            "CountFalseInfoInfo",
+            this.actor,
+            this.game
+          );
+          info.processInfo();
 
-            this.actor.queueAlert(`:journ: ${info.getInfoFormated()}`);
-          },
+          this.actor.queueAlert(`:journ: ${info.getInfoFormated()}`);
+        },
       },
     ];
-    
   }
 };
