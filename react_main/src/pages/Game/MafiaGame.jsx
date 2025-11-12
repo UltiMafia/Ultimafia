@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useContext } from "react";
+import React, { useRef, useEffect, useContext, useMemo } from "react";
 
 import {
   useSocketListeners,
@@ -16,10 +16,13 @@ import {
   PinnedMessages,
   MobileLayout,
   GameTypeContext,
+  InventoryPanel,
+  buildActionDescriptors,
 } from "./Game";
 import { GameContext, SiteInfoContext } from "../../Contexts";
 import { SideMenu } from "./Game";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { StrategiesPanel, StrategiesSection } from "components/Strategies";
 
 export default function MafiaGame() {
   const game = useContext(GameContext);
@@ -45,6 +48,38 @@ export default function MafiaGame() {
   const audioLoops = [];
   const audioOverrides = [];
   const audioVolumes = [];
+
+  const baseActionProps = useMemo(
+    () => ({
+      socket: game.socket,
+      players: game.players,
+      self: game.self,
+      history: game.history,
+      stateViewing: game.stateViewing,
+    }),
+    [game.socket, game.players, game.self, game.history, game.stateViewing]
+  );
+
+  const actionDescriptorData = useMemo(
+    () =>
+      buildActionDescriptors({
+        meetings,
+        baseActionProps,
+        actionStyle: {},
+        inventoryActionStyle: { width: "100%" },
+      }),
+    [meetings, baseActionProps]
+  );
+
+  const isLiveState = history.currentState >= 0;
+  const isViewingPregame = game.stateViewing === -1;
+  const setupId = game.setup?.id;
+  const showInventory =
+    game.gameType === gameType && Boolean(game.self) && isLiveState;
+  const inventoryItems =
+    showInventory && game.players[game.self]
+      ? game.players[game.self].inventory || []
+      : [];
 
   const customAudios = [
     { fileName: "gunshot", loops: false, overrides: false, volumes: 1 },
@@ -578,7 +613,19 @@ export default function MafiaGame() {
         rightPanelContent={
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
-            <ActionList />
+            {isViewingPregame ? (
+              <StrategiesPanel setupId={setupId} visible={Boolean(setupId)} />
+            ) : (
+              <ActionList
+                descriptors={actionDescriptorData.regularActionDescriptors}
+              />
+            )}
+            <InventoryPanel
+              show={showInventory}
+              items={inventoryItems}
+              actionsByItemId={actionDescriptorData.inventoryActionDescriptors}
+              gameType={gameType}
+            />
             <LastWillEntry />
             <PinnedMessages />
             <Notes />
@@ -595,7 +642,19 @@ export default function MafiaGame() {
         innerRightContent={
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
-            <ActionList />
+            {isViewingPregame ? (
+              <StrategiesSection setupId={setupId} visible={Boolean(setupId)} />
+            ) : (
+              <ActionList
+                descriptors={actionDescriptorData.regularActionDescriptors}
+              />
+            )}
+            <InventoryPanel
+              show={showInventory}
+              items={inventoryItems}
+              actionsByItemId={actionDescriptorData.inventoryActionDescriptors}
+              gameType={gameType}
+            />
             <LastWillEntry />
           </>
         }

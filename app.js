@@ -16,6 +16,7 @@ const roleRouter = require("./routes/roles");
 const userRouter = require("./routes/user");
 const forumsRouter = require("./routes/forums");
 const commentRouter = require("./routes/comment");
+const strategyRouter = require("./routes/strategy");
 const modRouter = require("./routes/mod");
 const chatRouter = require("./routes/chat");
 const notifsRouter = require("./routes/notifs");
@@ -26,6 +27,7 @@ const pollRouter = require("./routes/poll");
 const vanityUrlRouter = require("./routes/vanityUrl");
 const compression = require("compression");
 const cors = require("cors");
+const itemsRouter = require("./routes/items");
 
 const session = require("./modules/session");
 const csrf = require("./modules/csrf");
@@ -69,6 +71,7 @@ apiRouter.use("/roles", roleRouter);
 apiRouter.use("/user", userRouter);
 apiRouter.use("/forums", forumsRouter);
 apiRouter.use("/comment", commentRouter);
+apiRouter.use("/strategy", strategyRouter);
 apiRouter.use("/mod", modRouter);
 apiRouter.use("/chat", chatRouter);
 apiRouter.use("/notifs", notifsRouter);
@@ -77,6 +80,7 @@ apiRouter.use("/report", reportRouter);
 apiRouter.use("/site", siteRouter);
 apiRouter.use("/poll", pollRouter);
 apiRouter.use("/vanityUrl", vanityUrlRouter);
+apiRouter.use("/items", itemsRouter);
 
 app.use("/api", apiRouter);
 

@@ -49,8 +49,8 @@ const modifierData = {
         "When a player is killed while holding a bomb, the player who killed them will also die.",
     },
     Shield: {
-      internal: ["Armor"],
-      tags: ["Armor"],
+      internal: ["Shield"],
+      tags: ["Shield"],
       description:
         "Can be used at night to redirect kill targeting the holder on to a random player of the same alignment if possible",
     },
