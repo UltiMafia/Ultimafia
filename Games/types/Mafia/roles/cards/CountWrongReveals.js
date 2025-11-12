@@ -8,20 +8,16 @@ module.exports = class CountWrongReveals extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Information"])) {
-          return;
-        }
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1,
-          labels: ["investigate", "Forensicist"],
-          run: function () {
+    this.passiveActions = [
+      {
+        ability: ["Information"],
+        state: "Night",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1,
+        labels: ["investigate", "Forensicist"],
+        role: role,
+        run: function () {
             let info = this.game.createInformation(
               "CountFalseInfoInfo",
               this.actor,
@@ -31,10 +27,8 @@ module.exports = class CountWrongReveals extends Card {
 
             this.actor.queueAlert(`:journ: ${info.getInfoFormated()}`);
           },
-        });
-
-        this.game.queueAction(action);
       },
-    };
+    ];
+    
   }
 };
