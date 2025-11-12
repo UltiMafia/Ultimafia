@@ -389,6 +389,7 @@ module.exports = {
     "clearAllIPs",
     "giveCoins",
     "changeUsersName",
+    "restoreDeletedUser",
   ],
   // The list of all enabled perms
   allPerms: {
@@ -420,6 +421,7 @@ module.exports = {
     viewPerms: true,
     viewDeleted: true,
     restoreDeleted: true,
+    restoreDeletedUser: true,
     createBoard: true,
     deleteBoard: true,
     updateBoard: true,

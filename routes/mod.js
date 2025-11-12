@@ -4,6 +4,8 @@ const constants = require("../data/constants");
 const DailyChallengeData = require("../data/DailyChallenge");
 const roleData = require("../data/roles");
 const Random = require("../lib/Random");
+const fbAdmin = require("firebase-admin");
+const crypto = require("crypto");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
@@ -1034,6 +1036,203 @@ router.post("/clearUserContent", async (req, res) => {
     logger.error(e);
     res.status(500);
     res.send("Error clearing user content.");
+  }
+});
+
+router.post("/restoreDeletedUser", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const requesterId = await routeUtils.verifyLoggedIn(req);
+
+    if (!(await routeUtils.verifyPermission(res, requesterId, null, Infinity)))
+      return;
+
+    const rawEmail = String(req.body.email || "").trim();
+
+    if (!rawEmail) {
+      res.status(400);
+      res.send("Email is required.");
+      return;
+    }
+
+    const emailPattern = new RegExp(
+      `^${rawEmail.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\$&")}$`,
+      "i"
+    );
+
+    const existingActiveUser = await models.User.findOne({
+      email: { $elemMatch: { $regex: emailPattern } },
+      deleted: false,
+    })
+      .select("id")
+      .lean();
+
+    if (existingActiveUser) {
+      res.status(409);
+      res.send("A non-deleted account already exists for this email.");
+      return;
+    }
+
+    const userDoc = await models.User.findOne({
+      email: { $elemMatch: { $regex: emailPattern } },
+      deleted: true,
+    });
+
+    if (!userDoc) {
+      res.status(404);
+      res.send("No deleted account found for that email.");
+      return;
+    }
+
+    if (userDoc.deleted === false) {
+      res.status(409);
+      res.send("Account is already active.");
+      return;
+    }
+
+    let firebaseUser = null;
+    let temporaryPassword = null;
+    let passwordResetLink = null;
+
+    try {
+      firebaseUser = await fbAdmin.auth().getUserByEmail(rawEmail);
+      if (firebaseUser.disabled) {
+        firebaseUser = await fbAdmin
+          .auth()
+          .updateUser(firebaseUser.uid, { disabled: false });
+      }
+    } catch (err) {
+      if (err.code === "auth/user-not-found") {
+        temporaryPassword = crypto
+          .randomBytes(18)
+          .toString("base64")
+          .replace(/[^a-zA-Z0-9]/g, "")
+          .slice(0, 24);
+
+        firebaseUser = await fbAdmin.auth().createUser({
+          email: rawEmail,
+          password: temporaryPassword,
+          emailVerified: true,
+          disabled: false,
+        });
+
+        try {
+          passwordResetLink = await fbAdmin
+            .auth()
+            .generatePasswordResetLink(rawEmail);
+        } catch (linkErr) {
+          logger.warn(
+            `Unable to generate password reset link for ${rawEmail}: ${linkErr}`
+          );
+        }
+      } else {
+        throw err;
+      }
+    }
+
+    if (!firebaseUser) {
+      res.status(500);
+      res.send("Unable to provision Firebase account.");
+      return;
+    }
+
+    const defaultBio =
+      "Click to edit your bio (ex. age, gender, location, interests, experience playing mafia)";
+    const defaultItemsOwned = {
+      customProfile: 0,
+      avatarShape: 0,
+      iconFilter: 0,
+      customPrimaryColor: 0,
+      nameChange: 1,
+      emotes: 0,
+      threeCharName: 0,
+      twoCharName: 0,
+      oneCharName: 0,
+      textColors: 0,
+      deathMessageEnabled: 0,
+      deathMessageChange: 0,
+      anonymousDeck: 0,
+      customEmotes: 0,
+      customEmotesExtra: 0,
+      archivedGames: 0,
+      archivedGamesMax: 0,
+      bonusRedHearts: 0,
+      vanityUrl: 0,
+    };
+
+    userDoc.deleted = false;
+    userDoc.fbUid = firebaseUser.uid;
+    userDoc.lastActive = Date.now();
+    userDoc.bio = userDoc.bio || defaultBio;
+    userDoc.pronouns = userDoc.pronouns || "";
+    if (!Array.isArray(userDoc.email) || userDoc.email.length === 0) {
+      userDoc.email = [rawEmail.toLowerCase()];
+    } else if (
+      !userDoc.email.some((value) => emailPattern.test(String(value || "")))
+    ) {
+      userDoc.email.push(rawEmail.toLowerCase());
+    }
+    userDoc.avatar = false;
+    userDoc.banner = false;
+    userDoc.settings = userDoc.settings || {};
+    userDoc.permissions = userDoc.permissions || [];
+    userDoc.rank = userDoc.rank || 0;
+    userDoc.numFriends = userDoc.numFriends || 0;
+    userDoc.coins = userDoc.coins || 0;
+    userDoc.points = userDoc.points || 0;
+    userDoc.pointsNegative = userDoc.pointsNegative || 0;
+    userDoc.itemsOwned = {
+      ...defaultItemsOwned,
+      ...(userDoc.itemsOwned || {}),
+    };
+    userDoc.stats = userDoc.stats || {};
+    userDoc.achievements = userDoc.achievements || [];
+    userDoc.dailyChallenges = userDoc.dailyChallenges || [];
+    userDoc.dailyChallengesCompleted = userDoc.dailyChallengesCompleted || 0;
+    userDoc.globalNotifs = userDoc.globalNotifs || [];
+    userDoc.games = userDoc.games || [];
+    userDoc.setups = userDoc.setups || [];
+    userDoc.favSetups = userDoc.favSetups || [];
+    userDoc.blockedUsers = userDoc.blockedUsers || [];
+
+    await userDoc.save();
+
+    const rankedPlayerGroup = await models.Group.findOne({
+      name: "Ranked Player",
+    })
+      .select("_id")
+      .lean();
+
+    if (rankedPlayerGroup) {
+      await models.InGroup.updateOne(
+        { user: userDoc._id, group: rankedPlayerGroup._id },
+        { user: userDoc._id, group: rankedPlayerGroup._id },
+        { upsert: true }
+      ).exec();
+    }
+
+    await models.Ban.deleteMany({ userId: userDoc.id }).exec();
+
+    await redis.deleteUserInfo(userDoc.id);
+    await redis.cacheUserPermissions(userDoc.id);
+    await redis.cacheUserInfo(userDoc.id, true);
+
+    await routeUtils.createModAction(requesterId, "Restore Deleted User", [
+      userDoc.id,
+      rawEmail,
+    ]);
+
+    res.send({
+      message: "User restored.",
+      userId: userDoc.id,
+      fbUid: firebaseUser.uid,
+      temporaryPassword,
+      passwordResetLink,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error restoring deleted user.");
   }
 });
 
