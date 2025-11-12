@@ -1069,6 +1069,31 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Delete Strategy": {
+      perm: "deleteStrategy",
+      category: "Setup Management",
+      args: [
+        {
+          label: "Strategy Id",
+          name: "strategyId",
+          type: "text",
+        },
+        {
+          label: "Reason (optional)",
+          name: "reason",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/deleteStrategy", argValues)
+          .then(() => {
+            siteInfo.showAlert("Strategy deleted.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Clear User Content": {
       perm: "clearUserContent",
       category: "User Management",

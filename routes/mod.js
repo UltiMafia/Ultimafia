@@ -843,6 +843,51 @@ router.post("/clearSetupName", async (req, res) => {
   }
 });
 
+router.post("/deleteStrategy", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var strategyId = String(req.body.strategyId || "").trim();
+    var reason = String(req.body.reason || "").trim();
+    var perm = "deleteStrategy";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    if (!strategyId) {
+      res.status(400);
+      res.send("Strategy ID is required.");
+      return;
+    }
+
+    var strategy = await models.Strategy.findOne({ id: strategyId }).select(
+      "deleted"
+    );
+
+    if (!strategy) {
+      res.status(404);
+      res.send("Strategy not found.");
+      return;
+    }
+
+    if (!strategy.deleted) {
+      await models.Strategy.updateOne(
+        { id: strategyId },
+        { $set: { deleted: true } }
+      ).exec();
+    }
+
+    const modArgs = [strategyId];
+    if (reason) modArgs.push(reason);
+    routeUtils.createModAction(userId, "Delete Strategy", modArgs);
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error deleting strategy.");
+  }
+});
+
 // Unified route for clearing user content
 router.post("/clearUserContent", async (req, res) => {
   res.setHeader("Content-Type", "application/json");

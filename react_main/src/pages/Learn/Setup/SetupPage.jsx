@@ -34,6 +34,7 @@ import HostGameDialogue from "components/HostGameDialogue";
 import { UserContext, SiteInfoContext } from "Contexts";
 
 import Comments from "pages/Community/Comments";
+import { SetupStrategiesSection } from "components/Strategies";
 import { NameWithAvatar } from "pages/User/User";
 import { NewLoading } from "pages/Welcome/NewLoading";
 import {
@@ -455,6 +456,7 @@ export function SetupPage() {
         </Grid>
       </Box>
       <Comments location={commentLocation} />
+      <SetupStrategiesSection setupId={setupId} />
     </Stack>
   );
 }

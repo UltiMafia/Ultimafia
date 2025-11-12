@@ -22,6 +22,7 @@ import {
 import { GameContext, SiteInfoContext } from "../../Contexts";
 import { SideMenu } from "./Game";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { StrategiesPanel, StrategiesSection } from "components/Strategies";
 
 export default function MafiaGame() {
   const game = useContext(GameContext);
@@ -56,7 +57,13 @@ export default function MafiaGame() {
       history: game.history,
       stateViewing: game.stateViewing,
     }),
-    [game.socket, game.players, game.self, game.history, game.stateViewing]
+    [
+      game.socket,
+      game.players,
+      game.self,
+      game.history,
+      game.stateViewing,
+    ]
   );
 
   const actionDescriptorData = useMemo(
@@ -71,6 +78,8 @@ export default function MafiaGame() {
   );
 
   const isLiveState = history.currentState >= 0;
+  const isViewingPregame = game.stateViewing === -1;
+  const setupId = game.setup?.id;
   const showInventory =
     game.gameType === gameType && Boolean(game.self) && isLiveState;
   const inventoryItems =
@@ -610,9 +619,13 @@ export default function MafiaGame() {
         rightPanelContent={
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
-            <ActionList
-              descriptors={actionDescriptorData.regularActionDescriptors}
-            />
+            {isViewingPregame ? (
+              <StrategiesPanel setupId={setupId} visible={Boolean(setupId)} />
+            ) : (
+              <ActionList
+                descriptors={actionDescriptorData.regularActionDescriptors}
+              />
+            )}
             <InventoryPanel
               show={showInventory}
               items={inventoryItems}
@@ -635,9 +648,16 @@ export default function MafiaGame() {
         innerRightContent={
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
-            <ActionList
-              descriptors={actionDescriptorData.regularActionDescriptors}
-            />
+            {isViewingPregame ? (
+              <StrategiesSection
+                setupId={setupId}
+                visible={Boolean(setupId)}
+              />
+            ) : (
+              <ActionList
+                descriptors={actionDescriptorData.regularActionDescriptors}
+              />
+            )}
             <InventoryPanel
               show={showInventory}
               items={inventoryItems}
