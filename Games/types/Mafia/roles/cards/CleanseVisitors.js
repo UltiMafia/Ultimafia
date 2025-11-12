@@ -12,7 +12,7 @@ module.exports = class CleanseVisitors extends Card {
   constructor(role) {
     super(role);
 
-      this.passiveActions = [
+    this.passiveActions = [
       {
         ability: ["Effect"],
         state: "Night",
@@ -22,18 +22,18 @@ module.exports = class CleanseVisitors extends Card {
         labels: ["cleanse", "hidden"],
         role: role,
         run: function () {
-            let visitors = this.getVisitors();
+          let visitors = this.getVisitors();
 
-            for (let visitor of visitors) {
-              this.heal(1, visitor);
-            }
+          for (let visitor of visitors) {
+            this.heal(1, visitor);
+          }
 
-            for (let action of this.game.actions[0]) {
-              if (action.target == this.actor && !action.hasLabel("hidden")) {
-                this.cleanse(1, action.actor);
-              }
+          for (let action of this.game.actions[0]) {
+            if (action.target == this.actor && !action.hasLabel("hidden")) {
+              this.cleanse(1, action.actor);
             }
-          },
+          }
+        },
       },
       {
         ability: ["Effect"],
@@ -44,20 +44,19 @@ module.exports = class CleanseVisitors extends Card {
         labels: ["cleanse", "hidden"],
         role: role,
         run: function () {
-            let visitors = this.getVisitors();
+          let visitors = this.getVisitors();
 
-            for (let visitor of visitors) {
-              this.heal(1, visitor);
-            }
+          for (let visitor of visitors) {
+            this.heal(1, visitor);
+          }
 
-            for (let action of this.game.actions[0]) {
-              if (action.target == this.actor && !action.hasLabel("hidden")) {
-                this.cleanse(1, action.actor);
-              }
+          for (let action of this.game.actions[0]) {
+            if (action.target == this.actor && !action.hasLabel("hidden")) {
+              this.cleanse(1, action.actor);
             }
-          },
+          }
+        },
       },
     ];
-
   }
 };
