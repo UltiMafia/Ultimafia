@@ -647,6 +647,95 @@ router.post("/whitelist", async (req, res) => {
   }
 });
 
+router.post("/givePerms", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var perm = "givePermissions";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    var userIdToActOn = String(req.body.userId || "").trim();
+    var permissionsInput = req.body.permissions;
+
+    if (!userIdToActOn) {
+      res.status(400);
+      res.send("User is required.");
+      return;
+    }
+
+    if (
+      permissionsInput == null ||
+      (typeof permissionsInput === "string" &&
+        permissionsInput.trim().length === 0)
+    ) {
+      res.status(400);
+      res.send("At least one permission is required.");
+      return;
+    }
+
+    var permissionsList = [];
+
+    if (Array.isArray(permissionsInput)) {
+      permissionsList = permissionsInput
+        .map((value) => String(value || "").trim())
+        .filter((value) => value.length > 0);
+    } else if (typeof permissionsInput === "string") {
+      permissionsList = permissionsInput
+        .split(",")
+        .map((value) => value.trim())
+        .filter((value) => value.length > 0);
+    } else {
+      res.status(400);
+      res.send("Permissions must be a string or array.");
+      return;
+    }
+
+    if (permissionsList.length === 0) {
+      res.status(400);
+      res.send("At least one permission is required.");
+      return;
+    }
+
+    for (let permission of permissionsList) {
+      if (!constants.allPerms[permission]) {
+        res.status(400);
+        res.send(`"${permission}" is not a valid permission.`);
+        return;
+      }
+    }
+
+    var userToActOn = await models.User.findOne({
+      id: userIdToActOn,
+      deleted: false,
+    }).select("_id id");
+
+    if (!userToActOn) {
+      res.status(404);
+      res.send("User does not exist.");
+      return;
+    }
+
+    await models.User.updateOne(
+      { _id: userToActOn._id },
+      {
+        $addToSet: {
+          permissions: { $each: permissionsList },
+        },
+      }
+    ).exec();
+
+    await redis.cacheUserPermissions(userIdToActOn);
+    await redis.cacheUserInfo(userIdToActOn, true);
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error giving permissions.");
+  }
+});
+
 router.post("/blacklist", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
@@ -1216,11 +1305,6 @@ router.post("/restoreDeletedUser", async (req, res) => {
     await redis.deleteUserInfo(userDoc.id);
     await redis.cacheUserPermissions(userDoc.id);
     await redis.cacheUserInfo(userDoc.id, true);
-
-    await routeUtils.createModAction(requesterId, "Restore Deleted User", [
-      userDoc.id,
-      rawEmail,
-    ]);
 
     res.send({
       message: "User restored.",

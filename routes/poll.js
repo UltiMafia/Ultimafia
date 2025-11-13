@@ -3,7 +3,11 @@ const router = express.Router();
 const shortid = require("shortid");
 const models = require("../db/models");
 const routeUtils = require("./utils");
+const constants = require("../data/constants");
 const logger = require("../modules/logging")("(poll)");
+
+const LOBBY_POLL_MAX_AGE_MS =
+  constants.lobbyPollMaxAge || 28 * 24 * 60 * 60 * 1000;
 
 // Create a new poll
 router.post("/create", async function (req, res) {
@@ -43,13 +47,19 @@ router.post("/create", async function (req, res) {
     var lobby = String(req.body.lobby).trim();
     var question = String(req.body.question).trim();
 
+    const now = Date.now();
+
     // Parse expiration time
     var expiresAt = null;
     if (req.body.expiration) {
       var expirationLength = routeUtils.parseTime(String(req.body.expiration));
       if (expirationLength && expirationLength !== Infinity) {
-        expiresAt = Date.now() + expirationLength;
+        expiresAt = now + expirationLength;
       }
+    }
+
+    if (expiresAt === null && lobby) {
+      expiresAt = now + LOBBY_POLL_MAX_AGE_MS;
     }
 
     // Create the poll
@@ -60,11 +70,23 @@ router.post("/create", async function (req, res) {
       question,
       options,
       creator: userId,
-      created: Date.now(),
+      created: now,
       expiresAt: expiresAt,
     });
 
     await poll.save();
+
+    if (lobby) {
+      await models.Poll.updateMany(
+        {
+          lobby,
+          completed: false,
+          id: { $ne: poll.id },
+          threadId: { $exists: false },
+        },
+        { completed: true, completedAt: now }
+      ).exec();
+    }
 
     // Create mod action
     routeUtils.createModAction(userId, "Create Poll", [
@@ -92,6 +114,26 @@ router.get("/list/:lobby", async function (req, res) {
 
     const isAllLobbies = lobby === "All";
     const redis = require("../modules/redis");
+    const now = Date.now();
+
+    await models.Poll.updateMany(
+      {
+        completed: false,
+        threadId: { $exists: false },
+        expiresAt: { $ne: null, $lte: now },
+      },
+      { completed: true, completedAt: now }
+    ).exec();
+
+    await models.Poll.updateMany(
+      {
+        completed: false,
+        threadId: { $exists: false },
+        expiresAt: null,
+        created: { $lte: now - LOBBY_POLL_MAX_AGE_MS },
+      },
+      { completed: true, completedAt: now }
+    ).exec();
 
     // Helper function to populate poll data
     async function populatePollData(poll) {

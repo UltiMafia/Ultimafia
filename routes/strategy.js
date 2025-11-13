@@ -18,6 +18,69 @@ function stringify(value) {
   return String(value);
 }
 
+const strategyProjection =
+  "id author title content createdAt updatedAt voteCount deleted setupId";
+
+function formatAuthor(authorDoc) {
+  if (!authorDoc) return null;
+  return {
+    id: authorDoc.id,
+    name: authorDoc.name,
+    avatar: authorDoc.avatar,
+    groups: authorDoc.groups,
+    vanityUrl: authorDoc.vanityUrl,
+    deleted: Boolean(authorDoc.deleted),
+  };
+}
+
+function buildStrategyResponse(
+  strategy,
+  { vote = 0, userId, hasDeletePerm } = {}
+) {
+  const author = formatAuthor(strategy.author);
+  const authorId = author?.id;
+  const isAuthor = Boolean(userId && authorId && authorId === userId);
+  const canDelete = Boolean(hasDeletePerm || isAuthor);
+  const isDeleted = Boolean(strategy.deleted);
+
+  return {
+    id: strategy.id,
+    setupId: strategy.setupId,
+    title: strategy.title,
+    content: strategy.content,
+    createdAt: strategy.createdAt,
+    updatedAt: strategy.updatedAt,
+    voteCount: strategy.voteCount || 0,
+    vote: vote || 0,
+    author,
+    deleted: isDeleted,
+    canEdit: Boolean(isAuthor && !isDeleted),
+    canDelete,
+    canRestore: Boolean(isDeleted && canDelete),
+  };
+}
+
+async function getStrategyWithAuthor(strategyId) {
+  if (!strategyId) return null;
+  return models.Strategy.findOne({ id: strategyId })
+    .select(strategyProjection)
+    .populate("author", "id name avatar groups vanityUrl deleted")
+    .lean();
+}
+
+async function getUserVote(userId, strategyId) {
+  if (!userId || !strategyId) return 0;
+
+  const voteDoc = await models.ForumVote.findOne({
+    voter: userId,
+    item: strategyId,
+  })
+    .select("direction")
+    .lean();
+
+  return voteDoc ? voteDoc.direction : 0;
+}
+
 router.get("/", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req, true);
@@ -29,18 +92,28 @@ router.get("/", async function (req, res) {
       return;
     }
 
-    const canViewDeleted = await routeUtils.verifyPermission(
-      userId,
-      "viewDeleted"
-    );
+    const canViewDeleted =
+      Boolean(userId) &&
+      (await routeUtils.verifyPermission(userId, "viewDeleted"));
+    const hasDeletePerm =
+      Boolean(userId) &&
+      (await routeUtils.verifyPermission(userId, "deleteStrategy"));
 
     const strategyFilter = { setupId };
-    if (!canViewDeleted) strategyFilter.deleted = false;
+    if (!canViewDeleted) {
+      const authorObjectId = req.session?.user?._id;
+      if (authorObjectId) {
+        strategyFilter.$or = [
+          { deleted: false },
+          { deleted: true, author: authorObjectId },
+        ];
+      } else {
+        strategyFilter.deleted = false;
+      }
+    }
 
     const strategies = await models.Strategy.find(strategyFilter)
-      .select(
-        "id author title content createdAt updatedAt voteCount deleted setupId"
-      )
+      .select(strategyProjection)
       .populate("author", "id name avatar groups vanityUrl deleted")
       .sort({ voteCount: -1, updatedAt: -1, createdAt: -1 })
       .lean();
@@ -59,37 +132,13 @@ router.get("/", async function (req, res) {
       }
     }
 
-    const serialized = strategies.map((strategy) => {
-      const authorDoc = strategy.author;
-      const author = authorDoc
-        ? {
-            id: authorDoc.id,
-            name: authorDoc.name,
-            avatar: authorDoc.avatar,
-            groups: authorDoc.groups,
-            vanityUrl: authorDoc.vanityUrl,
-            deleted: authorDoc.deleted || false,
-          }
-        : null;
-
-      const vote = voteMap[strategy.id] || 0;
-
-      return {
-        id: strategy.id,
-        setupId: strategy.setupId,
-        title: strategy.title,
-        content: strategy.content,
-        createdAt: strategy.createdAt,
-        updatedAt: strategy.updatedAt,
-        voteCount: strategy.voteCount || 0,
-        vote,
-        author,
-        deleted: Boolean(strategy.deleted),
-        canEdit: Boolean(
-          author && userId && author.id === userId && !strategy.deleted
-        ),
-      };
-    });
+    const serialized = strategies.map((strategy) =>
+      buildStrategyResponse(strategy, {
+        vote: voteMap[strategy.id] || 0,
+        userId,
+        hasDeletePerm,
+      })
+    );
 
     res.send(serialized);
   } catch (e) {
@@ -171,34 +220,19 @@ router.post("/", async function (req, res) {
 
     await strategy.save();
 
-    const authorDoc = await models.User.findById(req.session.user._id)
-      .select("id name avatar groups vanityUrl deleted")
-      .lean();
-    const author = authorDoc
-      ? {
-          id: authorDoc.id,
-          name: authorDoc.name,
-          avatar: authorDoc.avatar,
-          groups: authorDoc.groups,
-          vanityUrl: authorDoc.vanityUrl,
-          deleted: authorDoc.deleted || false,
-        }
-      : null;
+    const createdStrategy = await getStrategyWithAuthor(strategy.id);
+    const hasDeletePerm =
+      Boolean(userId) &&
+      (await routeUtils.verifyPermission(userId, "deleteStrategy"));
 
     res.status(201);
-    res.send({
-      id: strategy.id,
-      setupId,
-      title,
-      content,
-      createdAt: strategy.createdAt,
-      updatedAt: strategy.updatedAt,
-      voteCount: 0,
-      vote: 0,
-      author,
-      deleted: false,
-      canEdit: true,
-    });
+    res.send(
+      buildStrategyResponse(createdStrategy, {
+        vote: 0,
+        userId,
+        hasDeletePerm,
+      })
+    );
   } catch (e) {
     logger.error(e);
     res.status(500);
@@ -266,41 +300,143 @@ router.put("/:strategyId", async function (req, res) {
 
     await strategy.save();
 
-    const authorDoc = await models.User.findOne({ id: userId })
-      .select("id name avatar groups vanityUrl deleted")
-      .lean();
-    const author = authorDoc
-      ? {
-          id: authorDoc.id,
-          name: authorDoc.name,
-          avatar: authorDoc.avatar,
-          groups: authorDoc.groups,
-          vanityUrl: authorDoc.vanityUrl,
-          deleted: authorDoc.deleted || false,
-        }
-      : null;
-    const voteDoc = await models.ForumVote.findOne({
-      voter: userId,
-      item: strategyId,
-    }).select("direction");
+    const updatedStrategy = await getStrategyWithAuthor(strategyId);
+    const hasDeletePerm =
+      Boolean(userId) &&
+      (await routeUtils.verifyPermission(userId, "deleteStrategy"));
+    const vote = await getUserVote(userId, strategyId);
 
-    res.send({
-      id: strategy.id,
-      setupId: strategy.setupId,
-      title: strategy.title,
-      content: strategy.content,
-      createdAt: strategy.createdAt,
-      updatedAt: strategy.updatedAt,
-      voteCount: strategy.voteCount || 0,
-      vote: voteDoc ? voteDoc.direction : 0,
-      author,
-      deleted: false,
-      canEdit: true,
-    });
+    res.send(
+      buildStrategyResponse(updatedStrategy, {
+        vote,
+        userId,
+        hasDeletePerm,
+      })
+    );
   } catch (e) {
     logger.error(e);
     res.status(500);
     res.send("Error updating strategy.");
+  }
+});
+
+router.post("/:strategyId/delete", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const strategyId = sanitizeString(req.params.strategyId);
+
+    if (!strategyId) {
+      res.status(400);
+      res.send("Strategy ID is required.");
+      return;
+    }
+
+    const strategy = await getStrategyWithAuthor(strategyId);
+
+    if (!strategy) {
+      res.status(404);
+      res.send("Strategy not found.");
+      return;
+    }
+
+    const authorId = strategy.author ? strategy.author.id : null;
+    const hasDeletePerm =
+      Boolean(userId) &&
+      (await routeUtils.verifyPermission(userId, "deleteStrategy"));
+    const isAuthor = Boolean(authorId && authorId === userId);
+
+    if (!isAuthor && !hasDeletePerm) {
+      res.status(403);
+      res.send("You cannot delete this strategy.");
+      return;
+    }
+
+    if (!strategy.deleted) {
+      await models.Strategy.updateOne(
+        { id: strategyId },
+        { $set: { deleted: true } }
+      ).exec();
+      strategy.deleted = true;
+    }
+
+    if (hasDeletePerm && !isAuthor) {
+      await routeUtils.createModAction(userId, "Delete Strategy", [strategyId]);
+    }
+
+    const vote = await getUserVote(userId, strategyId);
+
+    res.send(
+      buildStrategyResponse(strategy, {
+        vote,
+        userId,
+        hasDeletePerm,
+      })
+    );
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error deleting strategy.");
+  }
+});
+
+router.post("/:strategyId/restore", async function (req, res) {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const strategyId = sanitizeString(req.params.strategyId);
+
+    if (!strategyId) {
+      res.status(400);
+      res.send("Strategy ID is required.");
+      return;
+    }
+
+    const strategy = await getStrategyWithAuthor(strategyId);
+
+    if (!strategy) {
+      res.status(404);
+      res.send("Strategy not found.");
+      return;
+    }
+
+    const authorId = strategy.author ? strategy.author.id : null;
+    const hasDeletePerm =
+      Boolean(userId) &&
+      (await routeUtils.verifyPermission(userId, "deleteStrategy"));
+    const isAuthor = Boolean(authorId && authorId === userId);
+
+    if (!isAuthor && !hasDeletePerm) {
+      res.status(403);
+      res.send("You cannot restore this strategy.");
+      return;
+    }
+
+    if (strategy.deleted) {
+      await models.Strategy.updateOne(
+        { id: strategyId },
+        { $set: { deleted: false } }
+      ).exec();
+      strategy.deleted = false;
+    }
+
+    if (hasDeletePerm && !isAuthor) {
+      await routeUtils.createModAction(userId, "Restore Strategy", [
+        strategyId,
+      ]);
+    }
+
+    const vote = await getUserVote(userId, strategyId);
+
+    res.send(
+      buildStrategyResponse(strategy, {
+        vote,
+        userId,
+        hasDeletePerm,
+      })
+    );
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error restoring strategy.");
   }
 });
 

@@ -64,6 +64,9 @@ function StrategiesBase({
   const [submitting, setSubmitting] = useState(false);
   const [expandedIds, setExpandedIds] = useState(() => new Set());
 
+  const hasUser = Boolean(user && user.id);
+  const allowDeleted = Boolean(user.perms?.viewDeleted);
+
   const canCreate = Boolean(
     visible && setupId && user.loggedIn && user.perms.postReply
   );
@@ -87,8 +90,13 @@ function StrategiesBase({
         .then((res) => {
           if (!mounted) return;
           const data = Array.isArray(res.data) ? res.data : [];
-          const allowDeleted = Boolean(user.perms.viewDeleted);
-          const filtered = allowDeleted ? data : data.filter((s) => !s.deleted);
+          const filtered = allowDeleted
+            ? data
+            : data.filter((s) => {
+                if (!s.deleted) return true;
+                if (!hasUser) return false;
+                return s.author && s.author.id === user.id;
+              });
           setStrategies(sortStrategies(filtered));
         })
         .catch((err) => {
@@ -105,7 +113,7 @@ function StrategiesBase({
     return () => {
       mounted = false;
     };
-  }, [setupId, visible, user.loaded, user.perms?.viewDeleted]);
+  }, [setupId, visible, user.loaded, user.id, allowDeleted]);
 
   const handleDialogClose = () => {
     if (submitting) return;
@@ -203,6 +211,59 @@ function StrategiesBase({
     }
   };
 
+  const handleDeleteToggle = (strategy, shouldDelete) => {
+    if (!strategy?.id) return;
+
+    if (
+      shouldDelete &&
+      !window.confirm("Are you sure you wish to delete this strategy?")
+    ) {
+      return;
+    }
+
+    const endpoint = shouldDelete
+      ? `/api/strategy/${strategy.id}/delete`
+      : `/api/strategy/${strategy.id}/restore`;
+
+    axios
+      .post(endpoint)
+      .then((res) => {
+        const updated = res.data;
+        if (!updated?.id) return;
+
+        let removedStrategy = false;
+
+        setStrategies((prev) => {
+          const list = Array.isArray(prev) ? prev.slice() : [];
+          const index = list.findIndex((item) => item.id === updated.id);
+          if (index === -1) {
+            if (!updated.deleted || allowDeleted || updated.canDelete) {
+              list.push(updated);
+            }
+          } else if (
+            updated.deleted &&
+            !allowDeleted &&
+            (!updated.author || updated.author.id !== user.id)
+          ) {
+            list.splice(index, 1);
+            removedStrategy = true;
+          } else {
+            list[index] = updated;
+          }
+          return sortStrategies(list);
+        });
+
+        if (removedStrategy) {
+          setExpandedIds((prev) => {
+            if (!prev.has(updated.id)) return prev;
+            const next = new Set(prev);
+            next.delete(updated.id);
+            return next;
+          });
+        }
+      })
+      .catch(errorAlert);
+  };
   const renderStrategy = (strategy) => {
     const createdLabel =
       strategy.createdAt != null
@@ -216,6 +277,13 @@ function StrategiesBase({
         : null;
 
     const isExpanded = expandedIds.has(strategy.id);
+
+    const canShowEdit = Boolean(
+      isExpanded && strategy.canEdit && !strategy.deleted
+    );
+
+    const canShowDelete = Boolean(isExpanded && strategy.canDelete);
+    const canShowRestore = Boolean(isExpanded && strategy.canRestore);
 
     return (
       <Accordion
@@ -296,7 +364,7 @@ function StrategiesBase({
                 </Typography>
               )}
             </Stack>
-            {strategy.canEdit && (
+            {canShowEdit && (
               <IconButton
                 size="small"
                 onClick={(event) => {
@@ -306,6 +374,32 @@ function StrategiesBase({
               >
                 <i className="fas fa-edit" />
               </IconButton>
+            )}
+            {canShowDelete && !strategy.deleted && (
+              <Tooltip title="Delete strategy">
+                <IconButton
+                  size="small"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleDeleteToggle(strategy, true);
+                  }}
+                >
+                  <i className="fas fa-trash" />
+                </IconButton>
+              </Tooltip>
+            )}
+            {canShowRestore && (
+              <Tooltip title="Restore strategy">
+                <IconButton
+                  size="small"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleDeleteToggle(strategy, false);
+                  }}
+                >
+                  <i className="fas fa-trash-restore" />
+                </IconButton>
+              </Tooltip>
             )}
           </Stack>
         </AccordionSummary>
@@ -336,8 +430,8 @@ function StrategiesBase({
   const listContent = loading ? (
     <NewLoading small />
   ) : strategies.length === 0 ? (
-    <Typography variant="body2" sx={{ opacity: 0.7 }}>
-      No strategies yet.
+    <Typography variant="body2" align="center" sx={{ opacity: 0.7 }}>
+      No strategies yet. Write one!
     </Typography>
   ) : (
     <Stack direction="column" spacing={1}>
@@ -398,50 +492,30 @@ function StrategiesBase({
     return null;
   }
 
-  if (variant === "panel") {
-    return (
-      <>
-        <div className="side-menu scrollable">
-          <Stack
-            direction="row"
-            spacing={1}
-            className="title-box"
-            sx={{
-              alignItems: "center",
-              p: 1,
-              bgcolor: "var(--scheme-color-background)",
-            }}
-          >
-            {header}
-          </Stack>
-          <div className="side-menu-content">{listContent}</div>
-        </div>
-        {dialog}
-      </>
-    );
-  }
+  const sideMenu = (
+    <div
+      className="side-menu scrollable"
+      style={variant === "section" ? { width: "100%" } : undefined}
+    >
+      <Stack
+        direction="row"
+        spacing={1}
+        className="title-box"
+        sx={{
+          alignItems: "center",
+          p: 1,
+          bgcolor: "var(--scheme-color-background)",
+        }}
+      >
+        {header}
+      </Stack>
+      <div className="side-menu-content">{listContent}</div>
+    </div>
+  );
 
   return (
     <>
-      <Stack spacing={1} sx={{ width: "100%" }}>
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <Typography variant="h5">Strategies</Typography>
-          {canCreate && (
-            <Button variant="outlined" size="small" onClick={openCreateDialog}>
-              <i className="fas fa-plus" style={{ marginRight: 8 }} />
-              Add Strategy
-            </Button>
-          )}
-        </Stack>
-        {listContent}
-      </Stack>
+      {sideMenu}
       {dialog}
     </>
   );
