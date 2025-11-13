@@ -33,7 +33,10 @@ function formatAuthor(authorDoc) {
   };
 }
 
-function buildStrategyResponse(strategy, { vote = 0, userId, hasDeletePerm } = {}) {
+function buildStrategyResponse(
+  strategy,
+  { vote = 0, userId, hasDeletePerm } = {}
+) {
   const author = formatAuthor(strategy.author);
   const authorId = author?.id;
   const isAuthor = Boolean(userId && authorId && authorId === userId);
@@ -266,7 +269,9 @@ router.put("/:strategyId", async function (req, res) {
     }
 
     const strategy = await models.Strategy.findOne({ id: strategyId })
-      .select("author deleted setupId title content voteCount updatedAt createdAt")
+      .select(
+        "author deleted setupId title content voteCount updatedAt createdAt"
+      )
       .populate("author", "id");
 
     if (!strategy) {
@@ -414,7 +419,9 @@ router.post("/:strategyId/restore", async function (req, res) {
     }
 
     if (hasDeletePerm && !isAuthor) {
-      await routeUtils.createModAction(userId, "Restore Strategy", [strategyId]);
+      await routeUtils.createModAction(userId, "Restore Strategy", [
+        strategyId,
+      ]);
     }
 
     const vote = await getUserVote(userId, strategyId);

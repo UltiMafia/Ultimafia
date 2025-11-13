@@ -666,7 +666,8 @@ router.post("/givePerms", async (req, res) => {
 
     if (
       permissionsInput == null ||
-      (typeof permissionsInput === "string" && permissionsInput.trim().length === 0)
+      (typeof permissionsInput === "string" &&
+        permissionsInput.trim().length === 0)
     ) {
       res.status(400);
       res.send("At least one permission is required.");
@@ -1132,9 +1133,7 @@ router.post("/restoreDeletedUser", async (req, res) => {
   try {
     const requesterId = await routeUtils.verifyLoggedIn(req);
 
-    if (
-      !(await routeUtils.verifyPermission(res, requesterId, null, Infinity))
-    )
+    if (!(await routeUtils.verifyPermission(res, requesterId, null, Infinity)))
       return;
 
     const rawEmail = String(req.body.email || "").trim();
@@ -1278,8 +1277,7 @@ router.post("/restoreDeletedUser", async (req, res) => {
     userDoc.stats = userDoc.stats || {};
     userDoc.achievements = userDoc.achievements || [];
     userDoc.dailyChallenges = userDoc.dailyChallenges || [];
-    userDoc.dailyChallengesCompleted =
-      userDoc.dailyChallengesCompleted || 0;
+    userDoc.dailyChallengesCompleted = userDoc.dailyChallengesCompleted || 0;
     userDoc.globalNotifs = userDoc.globalNotifs || [];
     userDoc.games = userDoc.games || [];
     userDoc.setups = userDoc.setups || [];

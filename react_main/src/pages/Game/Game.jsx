@@ -2968,13 +2968,7 @@ export function ActionList({
       history: game.history,
       stateViewing: game.stateViewing,
     }),
-    [
-      game.socket,
-      game.players,
-      game.self,
-      game.history,
-      game.stateViewing,
-    ]
+    [game.socket, game.players, game.self, game.history, game.stateViewing]
   );
 
   let regularActionDescriptors = descriptors;
@@ -3008,11 +3002,7 @@ export function ActionList({
       title={
         <UnresolvedActionCount>{title || "Actions"}</UnresolvedActionCount>
       }
-      content={
-        <div className="action-list">
-          {actionElements}
-        </div>
-      }
+      content={<div className="action-list">{actionElements}</div>}
     />
   );
 }
@@ -3344,8 +3334,7 @@ function ActionSelect(props) {
         return labelText;
       }
 
-      const skin =
-        roleSkinByRole[iconRoleName] || meetingRoleSkin || "vivid";
+      const skin = roleSkinByRole[iconRoleName] || meetingRoleSkin || "vivid";
 
       const roleClass = `${hyphenatedGameType}-${hyphenDelimit(iconRoleName)}`;
 
