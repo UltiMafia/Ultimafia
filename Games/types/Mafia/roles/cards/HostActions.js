@@ -79,7 +79,7 @@ module.exports = class HostActions extends Card {
                 this.actor.role.data.PollVotes == null ||
                 this.actor.role.data.PollVotes.length <= 0
               ) {
-                this.actor.queueAlert("Their are no votes.");
+                this.actor.queueAlert("There are no votes.");
               } else {
                 let players = [];
                 let counts = [];
@@ -110,7 +110,7 @@ module.exports = class HostActions extends Card {
               }
             } else if (this.target === "Silence Players") {
               this.game.queueAlert(
-                "The Host has called for silence only they may speak!"
+                "The Host has called for silence. Only they may speak."
               );
               for (let player of this.game.players) {
                 if (player == this.actor) {
@@ -120,14 +120,14 @@ module.exports = class HostActions extends Card {
               }
             } else if (this.target === "Unsilence Players") {
               this.game.queueAlert(
-                "The Host has ended the silence all players may speak again!"
+                "The Host has ended the silence. All players may speak again!"
               );
               for (let player of this.game.players) {
                 player.removeEffect("Silenced", true);
               }
             } else if (this.target === "Declare Winners") {
               this.actor.queueAlert(
-                "Choose the players you want to win then hit confirm!"
+                "Choose the players you want to win. Then, hit confirm!"
               );
               let temp = this.actor.holdItem(
                 "HostDeclareWinner",
