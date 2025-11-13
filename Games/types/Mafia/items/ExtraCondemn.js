@@ -18,6 +18,7 @@ module.exports = class ExtraCondemn extends Item {
     //this.reveal = reveal;
     this.lifespan = 1;
     this.cannotBeStolen = true;
+    this.cannotBeSnooped = true;
     this.meetings[meetingName] = {
       actionName: "Vote to Condemn",
       states: ["Day"],

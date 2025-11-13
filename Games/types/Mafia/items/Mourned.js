@@ -11,6 +11,7 @@ module.exports = class Mourned extends Item {
 
     this.lifespan = 1;
     this.cannotBeStolen = true;
+    this.cannotBeSnooped = true;
 
     this.meetings[this.meetingName] = {
       actionName: this.meetingName,

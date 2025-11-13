@@ -20,6 +20,7 @@ module.exports = class LiveOrDie extends Item {
     //this.reveal = reveal;
     this.lifespan = 1;
     this.cannotBeStolen = true;
+    this.cannotBeSnooped = true;
     this.Applier = Applier;
     this.victims = players;
     this.meetings["Live or Die"] = {

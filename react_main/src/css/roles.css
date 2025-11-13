@@ -2178,6 +2178,10 @@
   background-image: url("/src/images/modifiers/rifled.png");
 }
 
+.item-Mafia-Revolver {
+  background-image: url("/src/images/modifiers/rifled.png");
+}
+
 .item-Mafia-Armor {
   background-image: url("/src/images/items/armor.png");
 }
@@ -2244,6 +2248,18 @@
 
 .item-Mafia-Envelope {
   background-image: url("/src/images/items/envelope.png");
+}
+
+.item-Mafia-Poll-Ballot {
+  background-image: url("/src/images/items/envelope.png");
+}
+
+.item-Mafia-Coffee {
+  background-image: url("/src/images/modifiers/caffeinated.png");
+}
+
+.item-Mafia-Ice-Cream {
+  background-image: url("/src/images/modifiers/creamed.png");
 }
 
 /*

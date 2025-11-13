@@ -15,6 +15,8 @@ module.exports = class WackyJoinFactionMeeting extends Item {
   constructor(meetingName) {
     super("WackyJoinFactionMeeting");
 
+    this.cannotBeSnooped = true;
+
     //this.reveal = reveal;
     this.lifespan = 1;
     this.cannotBeStolen = true;

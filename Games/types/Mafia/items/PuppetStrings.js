@@ -8,6 +8,7 @@ module.exports = class PuppetStrings extends Item {
     this.meetingName = meetingName;
     this.puppeteedPlayer = puppeteedPlayer;
     this.cannotBeStolen = true;
+    this.cannotBeSnooped = true;
 
     this.meetings[meetingName] = {
       actionName: this.meetingName,

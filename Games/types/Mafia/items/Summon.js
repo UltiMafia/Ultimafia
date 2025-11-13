@@ -8,6 +8,7 @@ module.exports = class Summon extends Item {
     this.lifespan = 1;
     this.meetingName = meetingName;
     this.cannotBeStolen = true;
+    this.cannotBeSnooped = true;
     this.meetings[meetingName] = {
       meetingName: "Seance",
       actionName: "End Seance Meeting?",

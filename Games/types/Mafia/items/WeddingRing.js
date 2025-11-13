@@ -6,6 +6,8 @@ module.exports = class WeddingRing extends Item {
 
     this.proposer = proposer;
 
+    this.cannotBeSnooped = true;
+
     let meetingName = "Accept Proposal from " + this.proposer.name;
     this.meetings[meetingName] = {
       meetingName: "Accept Proposal",

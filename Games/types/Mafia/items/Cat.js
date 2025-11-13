@@ -6,6 +6,7 @@ module.exports = class Cat extends Item {
     super("Cat");
     this.owner = owner;
     this.lifespan = 1;
+    this.cannotBeSnooped = true;
 
     this.meetings = {
       "Permit Cat": {
