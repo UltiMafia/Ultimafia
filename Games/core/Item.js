@@ -37,7 +37,7 @@ module.exports = class Item {
     this.notifyHolderInventoryChange(player);
   }
 
-  drop() {
+  drop(nope) {
     const holder = this.holder;
 
     if (!holder) return;
@@ -51,7 +51,9 @@ module.exports = class Item {
       holder.events.removeListener(eventName, this.listeners[eventName]);
 
     this.removeEffects();
-
+  if(nope == "No"){
+    return;
+  }
     this.notifyHolderInventoryChange(holder);
   }
 

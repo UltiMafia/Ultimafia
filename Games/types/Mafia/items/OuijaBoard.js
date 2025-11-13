@@ -4,6 +4,9 @@ module.exports = class OuijaBoard extends Item {
   constructor() {
     super("Ouija Board");
 
+    this.cannotBeSnooped = true;
+    this.cannotBeStolen = true;
+
     this.meetings = {
       "Give Clue": {
         actionName: "Give Clue (1-50)",

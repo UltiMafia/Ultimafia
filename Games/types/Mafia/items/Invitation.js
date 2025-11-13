@@ -8,6 +8,7 @@ module.exports = class Invitation extends Item {
 
     this.lifespan = 1;
     this.cannotBeStolen = true;
+    this.cannotBeSnooped = true;
 
     this.meetings = {
       Banquet: {

@@ -902,17 +902,9 @@ module.exports = class Player {
       newRole.startItems = [];
     }
     newRole.isExtraRole = true;
-    newRole.init(modifiers);
+    newRole.init(modifiers, items);
     if (items == "NoStartingItems") {
-      for (let item of newRole.startItems) {
-        for (let item2 of this.items) {
-          if (item2.name == item) {
-            item2.drop();
-            break;
-          }
-        }
-      }
-      this.startingItems = [];
+      //this.startingItems = [];
     }
 
     if (this.game.started && !noEmit) {

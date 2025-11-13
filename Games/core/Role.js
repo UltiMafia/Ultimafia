@@ -65,12 +65,11 @@ module.exports = class Role {
         */
     };
     this.meetingMods = {};
-    this.hideStartItems = false;
     this.priorityOffset = 0;
     this.Action = Action;
   }
 
-  init(modifiers) {
+  init(modifiers, itemStatus) {
     this.modifier = modifiers || "";
 
     if (modifiers) {
@@ -155,32 +154,48 @@ module.exports = class Role {
       }
     }
 
+    //Initialize appearances
+    for (let key in this.appearance) {
+      if (this.appearance[key] == "real") this.appearance[key] = this.name;
+    }
+    for (let key in this.appearanceMods) {
+      if (this.appearanceMods[key] == "real")
+        this.appearanceMods[key] = this.modifier;
+    }
+
     // Hold starting items
+    if(itemStatus == "NoStartingItems"){
+      this.startItems = [];
+    }
     for (let item of this.startItems) {
       let StartingItem;
       if (typeof item == "string") {
-        if (this.hideStartItems) {
+        if (this.appearance["self"] != this.name || this.appearanceMods["self"] != this.modifier || this.hideModifier["self"] == true) {
           const ItemClass = Utils.importGameClass(
             this.game.type,
             "items",
             item
           );
           StartingItem = new ItemClass();
-          StartingItem.noShow = true;
+          if(Object.entries(StartingItem.meetings).length <= 0){
+            StartingItem.noShow = true;
+          }
           StartingItem.hold(this.player);
         } else {
           StartingItem = this.player.holdItem(item);
         }
       } else {
         const args = Array.isArray(item.args) ? item.args : [];
-        if (this.hideStartItems) {
+        if (this.appearance["self"] != this.name || this.appearanceMods["self"] != this.modifier || this.hideModifier["self"] == true) {
           const ItemClass = Utils.importGameClass(
             this.game.type,
             "items",
             item.type
           );
           StartingItem = new ItemClass(...args);
-          StartingItem.noShow = true;
+          if(Object.entries(StartingItem.meetings).length <= 0){
+            StartingItem.noShow = true;
+          }
           StartingItem.hold(this.player);
         } else {
           StartingItem = this.player.holdItem(item.type, ...args);
@@ -195,15 +210,6 @@ module.exports = class Role {
     for (let effect of this.startEffects) {
       if (typeof effect == "string") this.player.giveEffect(effect);
       else this.player.giveEffect(effect.type, ...effect.args);
-    }
-
-    //Initialize appearances
-    for (let key in this.appearance) {
-      if (this.appearance[key] == "real") this.appearance[key] = this.name;
-    }
-    for (let key in this.appearanceMods) {
-      if (this.appearanceMods[key] == "real")
-        this.appearanceMods[key] = this.modifier;
     }
 
     // Bind role to winCheck

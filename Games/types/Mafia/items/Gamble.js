@@ -15,6 +15,7 @@ module.exports = class Gamble extends Item {
     this.gambler = gambler;
     this.challenger = challenger;
     this.cannotBeStolen = true;
+    this.cannotBeSnooped = true;
 
     this.meetings[meetingName] = {
       actionName: "Rock, Paper, Scissors",

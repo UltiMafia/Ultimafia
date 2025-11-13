@@ -3,17 +3,17 @@ const Random = require("../../../../lib/Random");
 
 module.exports = class HostPlayerPoll extends Item {
   constructor(host, player, count) {
-    super("HostPlayerPoll");
+    super("Poll Ballot");
     this.Host = host;
-
+    this.lifespan = -1;
     let meetingName = player.name + "Voting" + count;
 
     this.cannotBeStolen = true;
-    this.cannotBeSnooped = true;
+    //this.cannotBeSnooped = true;
     this.meetings[meetingName] = {
       actionName: "Vote for Player",
       states: ["Day"],
-      flags: ["voting", "mustAct", "instant", "Important"],
+      flags: ["voting", "mustAct", "instant"],
       targets: { include: ["alive"], exclude: [cannotBeVoted, "self"] },
       item: this,
       action: {

@@ -7,6 +7,7 @@ module.exports = class Match extends Item {
     this.reusable = options?.reusable;
 
     this.cannotBeStolen = true;
+    this.cannotBeSnooped = true;
     this.meetings = {
       "Light Match": {
         actionName: "Light your match?",

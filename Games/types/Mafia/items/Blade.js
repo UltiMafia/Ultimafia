@@ -6,6 +6,7 @@ module.exports = class Blade extends Item {
   constructor(user, target, charge, turn) {
     super("Blade");
     this.reveal = true;
+    this.cannotBeSnooped = true;
     this.Turn = turn || 0;
     this.User = user;
     this.Enemy = target;

@@ -8,6 +8,8 @@ module.exports = class WackyFactionRoleReveal extends Item {
   constructor(meetingName) {
     super("WackyFactionRoleReveal");
 
+    this.cannotBeSnooped = true;
+
     //this.reveal = reveal;
     this.lifespan = 1;
     this.meetingName = meetingName;

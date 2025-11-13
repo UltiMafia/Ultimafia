@@ -14,10 +14,14 @@ module.exports = class Coffee extends Item {
     this.magicCult = options?.magicCult;
     this.broken = options?.broken;
 
+    this.baseMeetingName = "Drink Coffee";
+    this.currentMeetingIndex = 0;
+
     this.meetings = {
-      "Coffee Actions": {
+      [this.baseMeetingName]: {
         states: ["Night"],
-        flags: ["voting", "instant"],
+        actionName: "Drink Coffee",
+        flags: ["voting", "instant", "noVeg"],
         inputType: "boolean",
         item: this,
         action: {
@@ -25,7 +29,7 @@ module.exports = class Coffee extends Item {
           item: this,
           run: function () {
             if (this.target != "Yes") return;
-            this.item.drop();
+            this.item.drop("No");
             let effect = this.actor.giveEffect(
               "ExtraRoleEffect",
               this.game.formatRoleInternal(
@@ -39,6 +43,18 @@ module.exports = class Coffee extends Item {
               meeting.generateTargets();
             }
             this.actor.sendMeetings();
+
+            var actionCopy = new Action({
+                actor: null,
+                target: this.actor,
+                game: this.game,
+                priority: PRIORITY_CONVERT_DEFAULT,
+                labels: ["hidden", "absolute"],
+                run: function () {
+                  this.target.send("players", this.target.game.getAllPlayerInfo(this.target));
+                },
+              });
+              this.game.queueAction(actionCopy);
 
             /*
             let actions = [];
@@ -113,4 +129,26 @@ module.exports = class Coffee extends Item {
       },
     };
   }
+
+ getMeetingName(idx) {
+    return `${this.id} ${idx}`;
+  }
+
+  getCurrentMeetingName() {
+    if (this.currentMeetingIndex === 0) {
+      return this.baseMeetingName;
+    }
+
+    return this.getMeetingName(this.currentMeetingIndex);
+  }
+
+  // increase meeting name index to ensure each meeting name is unique
+  incrementMeetingName() {
+    let mtg = this.meetings[this.getCurrentMeetingName()];
+    delete this.meetings[this.getCurrentMeetingName()];
+    this.currentMeetingIndex += 1;
+    this.meetings[this.getCurrentMeetingName()] = mtg;
+  }
+
+
 };

@@ -166,6 +166,19 @@ const modifierData = {
       description:
         "Can be used once during the day on a specific player, who will be roleblocked and unable to vote until visited.",
     },
+    "Ice Cream": {
+      internal: ["IceCream"],
+      tags: ["Vanilla"],
+      description: "Can be used to become the Vanilla role from their alignment.",
+    },
+
+    //Host Items?
+    "Poll Ballot": {
+      internal: ["PollBallot"],
+      tags: ["Conversion"],
+      description:
+        "Can be used to vote in poll hosted by the Host.",
+    },
 
     //Win Con Items
     "Four-leaf Clover": {

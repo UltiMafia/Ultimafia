@@ -9,6 +9,7 @@ module.exports = class Drama extends Item {
     this.dramaQueen = dramaQueen;
     this.dramaTarget = dramaTarget;
     this.cannotBeStolen = true;
+    this.cannotBeSnooped = true;
 
     this.meetings[meetingName] = {
       actionName: "Drama",
