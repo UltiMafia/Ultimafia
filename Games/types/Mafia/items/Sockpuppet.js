@@ -32,10 +32,10 @@ module.exports = class Sockpuppet extends Item {
 
             let villageMeeting = this.game.getMeetingByName("Village");
             for (let item of this.actor.items) {
-                    if (item.name == "Room") {
-                      villageMeeting = this.game.getMeetingByName(item.Room.name);
-                    }
-                  }
+              if (item.name == "Room") {
+                villageMeeting = this.game.getMeetingByName(item.Room.name);
+              }
+            }
 
             if (!villageMeeting || !puppet) {
               return;
@@ -82,14 +82,12 @@ module.exports = class Sockpuppet extends Item {
             this.item.trollboxTarget = this.target;
             const trollboxMessage = this.item.trollboxMessage;
 
-
-            
-          let villageMeeting = this.game.getMeetingByName("Village");
+            let villageMeeting = this.game.getMeetingByName("Village");
             for (let item of this.actor.items) {
-                    if (item.name == "Room") {
-                      villageMeeting = this.game.getMeetingByName(item.Room.name);
-                    }
-                  }
+              if (item.name == "Room") {
+                villageMeeting = this.game.getMeetingByName(item.Room.name);
+              }
+            }
 
             if (!villageMeeting || !trollboxMessage) {
               return;
@@ -100,7 +98,7 @@ module.exports = class Sockpuppet extends Item {
               return;
             }
 
-              if (this.target != undefined) {
+            if (this.target != undefined) {
               let message = new Message({
                 sender: this.target,
                 content: trollboxMessage,
@@ -116,9 +114,6 @@ module.exports = class Sockpuppet extends Item {
             }
 
             this.item.drop();
-
-
-
           },
         },
       },

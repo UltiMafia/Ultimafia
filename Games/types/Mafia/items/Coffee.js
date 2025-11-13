@@ -45,16 +45,19 @@ module.exports = class Coffee extends Item {
             this.actor.sendMeetings();
 
             var actionCopy = new Action({
-                actor: null,
-                target: this.actor,
-                game: this.game,
-                priority: PRIORITY_CONVERT_DEFAULT,
-                labels: ["hidden", "absolute"],
-                run: function () {
-                  this.target.send("players", this.target.game.getAllPlayerInfo(this.target));
-                },
-              });
-              this.game.queueAction(actionCopy);
+              actor: null,
+              target: this.actor,
+              game: this.game,
+              priority: PRIORITY_CONVERT_DEFAULT,
+              labels: ["hidden", "absolute"],
+              run: function () {
+                this.target.send(
+                  "players",
+                  this.target.game.getAllPlayerInfo(this.target)
+                );
+              },
+            });
+            this.game.queueAction(actionCopy);
 
             /*
             let actions = [];
@@ -130,7 +133,7 @@ module.exports = class Coffee extends Item {
     };
   }
 
- getMeetingName(idx) {
+  getMeetingName(idx) {
     return `${this.id} ${idx}`;
   }
 
@@ -149,6 +152,4 @@ module.exports = class Coffee extends Item {
     this.currentMeetingIndex += 1;
     this.meetings[this.getCurrentMeetingName()] = mtg;
   }
-
-
 };

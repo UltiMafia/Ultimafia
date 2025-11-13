@@ -8,7 +8,6 @@ module.exports = class Humble extends Card {
       self: true,
       reveal: true,
     };
-    
 
     var appearance;
     if (this.role.alignment === "Village" || this.role.winCount === "Village") {
@@ -29,6 +28,5 @@ module.exports = class Humble extends Card {
       reveal: appearance,
     };
     this.editAppearance(tempApp);
-
   }
 };

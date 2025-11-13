@@ -51,9 +51,9 @@ module.exports = class Item {
       holder.events.removeListener(eventName, this.listeners[eventName]);
 
     this.removeEffects();
-  if(nope == "No"){
-    return;
-  }
+    if (nope == "No") {
+      return;
+    }
     this.notifyHolderInventoryChange(holder);
   }
 

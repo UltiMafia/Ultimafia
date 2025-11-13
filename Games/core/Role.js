@@ -164,20 +164,24 @@ module.exports = class Role {
     }
 
     // Hold starting items
-    if(itemStatus == "NoStartingItems"){
+    if (itemStatus == "NoStartingItems") {
       this.startItems = [];
     }
     for (let item of this.startItems) {
       let StartingItem;
       if (typeof item == "string") {
-        if (this.appearance["self"] != this.name || this.appearanceMods["self"] != this.modifier || this.hideModifier["self"] == true) {
+        if (
+          this.appearance["self"] != this.name ||
+          this.appearanceMods["self"] != this.modifier ||
+          this.hideModifier["self"] == true
+        ) {
           const ItemClass = Utils.importGameClass(
             this.game.type,
             "items",
             item
           );
           StartingItem = new ItemClass();
-          if(Object.entries(StartingItem.meetings).length <= 0){
+          if (Object.entries(StartingItem.meetings).length <= 0) {
             StartingItem.noShow = true;
           }
           StartingItem.hold(this.player);
@@ -186,14 +190,18 @@ module.exports = class Role {
         }
       } else {
         const args = Array.isArray(item.args) ? item.args : [];
-        if (this.appearance["self"] != this.name || this.appearanceMods["self"] != this.modifier || this.hideModifier["self"] == true) {
+        if (
+          this.appearance["self"] != this.name ||
+          this.appearanceMods["self"] != this.modifier ||
+          this.hideModifier["self"] == true
+        ) {
           const ItemClass = Utils.importGameClass(
             this.game.type,
             "items",
             item.type
           );
           StartingItem = new ItemClass(...args);
-          if(Object.entries(StartingItem.meetings).length <= 0){
+          if (Object.entries(StartingItem.meetings).length <= 0) {
             StartingItem.noShow = true;
           }
           StartingItem.hold(this.player);

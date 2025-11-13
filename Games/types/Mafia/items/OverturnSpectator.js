@@ -8,7 +8,7 @@ module.exports = class OverturnSpectator extends Item {
     this.lifespan = 1;
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
-    
+
     this.meetings = {
       "Overturn Vote": {
         meetingName: "Overturn",
