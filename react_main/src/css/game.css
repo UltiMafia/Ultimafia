@@ -529,6 +529,16 @@
   cursor: pointer;
 }
 
+.action-select-role-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-select-role-option .role {
+  flex-shrink: 0;
+}
+
 .game .side-menu {
   flex-grow: 0;
   flex-shrink: 0;

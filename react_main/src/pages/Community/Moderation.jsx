@@ -486,7 +486,7 @@ export function useModCommands(argValues, commandRan, setResults) {
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
 
-  return {
+  const commands = {
     "Create Group": {
       perm: "createGroup",
       category: "Group Management",
@@ -904,6 +904,32 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Give Permissions": {
+      perm: "givePermissions",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Permissions (comma-separated)",
+          name: "permissions",
+          type: "text",
+          isArray: true,
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/givePerms", argValues)
+          .then(() => {
+            siteInfo.showAlert("Permissions updated.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Force Sign Out": {
       perm: "forceSignOut",
       category: "User Management",
@@ -1064,31 +1090,6 @@ export function useModCommands(argValues, commandRan, setResults) {
           .post("/api/mod/clearSetupName", argValues)
           .then(() => {
             siteInfo.showAlert("Setup name cleared.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Delete Strategy": {
-      perm: "deleteStrategy",
-      category: "Setup Management",
-      args: [
-        {
-          label: "Strategy Id",
-          name: "strategyId",
-          type: "text",
-        },
-        {
-          label: "Reason (optional)",
-          name: "reason",
-          type: "text",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/deleteStrategy", argValues)
-          .then(() => {
-            siteInfo.showAlert("Strategy deleted.", "success");
             commandRan();
           })
           .catch(errorAlert);
@@ -1646,6 +1647,51 @@ export function useModCommands(argValues, commandRan, setResults) {
       },
     },
   };
+
+  const banActionNames = [
+    "Forum Ban",
+    "Chat Ban",
+    "Game Ban",
+    "Ranked Ban",
+    "Competitive Ban",
+    "Site Ban",
+  ];
+  const banActionArgs = [
+    { label: "User", name: "userId", type: "user_search" },
+    { label: "Length", name: "length", type: "text" },
+  ];
+  banActionNames.forEach((actionName) => {
+    commands[actionName] = {
+      perm: "ban",
+      category: "User Management",
+      hidden: true,
+      args: banActionArgs.map((arg) => ({ ...arg })),
+      run: () => {},
+    };
+  });
+
+  const unbanActionNames = [
+    "Forum Unban",
+    "Chat Unban",
+    "Game Unban",
+    "Ranked Unban",
+    "Competitive Unban",
+    "Site Unban",
+  ];
+  const unbanActionArgs = [
+    { label: "User", name: "userId", type: "user_search" },
+  ];
+  unbanActionNames.forEach((actionName) => {
+    commands[actionName] = {
+      perm: "unban",
+      category: "User Management",
+      hidden: true,
+      args: unbanActionArgs.map((arg) => ({ ...arg })),
+      run: () => {},
+    };
+  });
+
+  return commands;
 }
 
 function ModActionArg({ label, arg }) {

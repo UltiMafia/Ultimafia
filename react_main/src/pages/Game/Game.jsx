@@ -60,6 +60,7 @@ import { NewLoading } from "../Welcome/NewLoading";
 import StateSwitcher from "../../components/gameComponents/StateSwitcher";
 
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
+import { hyphenDelimit } from "../../utils";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { useLongPress } from "../../hooks/useLongPress.jsx";
 import {
@@ -2967,7 +2968,13 @@ export function ActionList({
       history: game.history,
       stateViewing: game.stateViewing,
     }),
-    [game.socket, game.players, game.self, game.history, game.stateViewing]
+    [
+      game.socket,
+      game.players,
+      game.self,
+      game.history,
+      game.stateViewing,
+    ]
   );
 
   let regularActionDescriptors = descriptors;
@@ -3001,7 +3008,11 @@ export function ActionList({
       title={
         <UnresolvedActionCount>{title || "Actions"}</UnresolvedActionCount>
       }
-      content={<div className="action-list">{actionElements}</div>}
+      content={
+        <div className="action-list">
+          {actionElements}
+        </div>
+      }
     />
   );
 }
@@ -3262,15 +3273,112 @@ function ActionSelect(props) {
   const [meeting, history, stateViewing, isCurrentState, notClickable, onVote] =
     useAction(props);
   const [selectVisible, setSelectVisible] = useState(true);
+  const game = useContext(GameContext);
+  const user = useContext(UserContext);
+
+  const currentGameType = game?.gameType || meeting?.gameType || "Mafia";
+  const hyphenatedGameType = useMemo(
+    () => hyphenDelimit(currentGameType),
+    [currentGameType]
+  );
+
+  const showRoleIcons =
+    meeting.inputType === "role" || meeting.inputType === "AllRoles";
+  const meetingRoleSkin =
+    meeting?.displayOptions?.roleSkin || meeting?.roleSkin || null;
+
+  const roleSkinByRole = useMemo(() => {
+    if (!showRoleIcons) return {};
+    const rawSkins = user?.settings?.roleSkins;
+
+    if (typeof rawSkins !== "string") return {};
+
+    return rawSkins.split(",").reduce((acc, entry) => {
+      const [roleName, skin] = entry.split(":");
+
+      if (roleName && skin) {
+        acc[roleName] = skin;
+      }
+
+      return acc;
+    }, {});
+  }, [showRoleIcons, user?.settings?.roleSkins]);
+
+  const buildRoleOptionLabel = useCallback(
+    (displayValue, rawTarget) => {
+      if (!showRoleIcons) {
+        return displayValue;
+      }
+
+      const labelText = Array.isArray(displayValue)
+        ? displayValue.join(", ")
+        : displayValue;
+
+      const candidateRole =
+        typeof rawTarget === "string" && rawTarget.length > 0
+          ? rawTarget
+          : Array.isArray(displayValue)
+          ? displayValue[0]
+          : displayValue;
+
+      if (
+        typeof candidateRole !== "string" ||
+        candidateRole.trim().length === 0
+      ) {
+        return labelText;
+      }
+
+      const trimmedRoleName = candidateRole.trim();
+
+      if (
+        trimmedRoleName === "*" ||
+        trimmedRoleName === "*magus" ||
+        trimmedRoleName.toLowerCase() === "none"
+      ) {
+        return labelText;
+      }
+
+      const iconRoleName = trimmedRoleName.split(":")[0];
+
+      if (!iconRoleName) {
+        return labelText;
+      }
+
+      const skin =
+        roleSkinByRole[iconRoleName] || meetingRoleSkin || "vivid";
+
+      const roleClass = `${hyphenatedGameType}-${hyphenDelimit(iconRoleName)}`;
+
+      return (
+        <Stack
+          direction="row"
+          spacing={1}
+          alignItems="center"
+          className="action-select-role-option"
+        >
+          <span
+            className={`role role-icon-${skin}-${roleClass}`}
+            style={{ flexShrink: 0 }}
+          />
+          <span>{labelText}</span>
+        </Stack>
+      );
+    },
+    [showRoleIcons, roleSkinByRole, hyphenatedGameType, meetingRoleSkin]
+  );
 
   const targetOptions = randomizeMeetingTargetsWithSeed({
     targets: meeting.targets,
     seed: meeting.id,
     playerIds: Object.values(props?.players).map((player) => player.id),
-  }).map((target) => ({
-    id: target,
-    label: getTargetDisplay(target, meeting, props.players),
-  }));
+  }).map((target) => {
+    const displayValue = getTargetDisplay(target, meeting, props.players);
+
+    return {
+      id: target,
+      label: buildRoleOptionLabel(displayValue, target),
+    };
+  });
 
   function onSelectVote(sel) {
     onVote(sel);

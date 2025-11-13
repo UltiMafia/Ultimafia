@@ -385,7 +385,7 @@ module.exports = {
     "giveGroup",
     "removeFromGroup",
     "updateGroupPerms",
-    "givePermToAll",
+    "givePermissions",
     "clearAllIPs",
     "giveCoins",
     "changeUsersName",
