@@ -39,17 +39,16 @@ export default function CheatGame(props) {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
-  const audioFileNames = [
-    "cardShuffle",
-    "gunshot",
-    "chips_large1",
-    "chips_large2",
-    "chips_small1",
-    "chips_small2",
-  ];
-  const audioLoops = [];
-  const audioOverrides = [];
-  const audioVolumes = [];
+  const audioConfig = {
+    sfx: [
+      { fileName: "cardShuffle" },
+      { fileName: "gunshot" },
+      { fileName: "chips_large1" },
+      { fileName: "chips_large2" },
+      { fileName: "chips_small1" },
+      { fileName: "chips_small2" },
+    ],
+  };
 
   // Make player view current state when it changes
   useEffect(() => {
@@ -57,12 +56,7 @@ export default function CheatGame(props) {
   }, [history.currentState]);
 
   useEffect(() => {
-    game.loadAudioFiles(
-      audioFileNames,
-      audioLoops,
-      audioOverrides,
-      audioVolumes
-    );
+    game.loadAudioFiles(audioConfig);
 
     // Make game review start at pregame
     if (game.review) updateStateViewing({ type: "first" });

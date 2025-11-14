@@ -42,10 +42,7 @@ export default function JottoGame() {
 
   const playBellRef = useRef(false);
 
-  const audioFileNames = [];
-  const audioLoops = [];
-  const audioOverrides = [];
-  const audioVolumes = [];
+  const audioConfig = [];
 
   // Make player view current state when it changes
   useEffect(() => {
@@ -75,12 +72,7 @@ export default function JottoGame() {
   }, {});
 
   useEffect(() => {
-    game.loadAudioFiles(
-      audioFileNames,
-      audioLoops,
-      audioOverrides,
-      audioVolumes
-    );
+    game.loadAudioFiles(audioConfig);
   }, []);
 
   useSocketListeners((socket) => {

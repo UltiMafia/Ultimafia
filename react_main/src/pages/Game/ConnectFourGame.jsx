@@ -39,10 +39,7 @@ export default function ConnectFourGame(props) {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
-  const audioFileNames = [];
-  const audioLoops = [];
-  const audioOverrides = [];
-  const audioVolumes = [];
+  const audioConfig = [];
 
   // Make player view current state when it changes
   useEffect(() => {
@@ -50,12 +47,7 @@ export default function ConnectFourGame(props) {
   }, [history.currentState]);
 
   useEffect(() => {
-    game.loadAudioFiles(
-      audioFileNames,
-      audioLoops,
-      audioOverrides,
-      audioVolumes
-    );
+    game.loadAudioFiles(audioConfig);
 
     // Make game review start at pregame
     if (game.review) updateStateViewing({ type: "first" });
