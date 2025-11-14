@@ -5055,10 +5055,7 @@ export function useSettingsReducer() {
 
     if (rawSettings && typeof rawSettings === "object") {
       const copy = { ...rawSettings };
-      const baseSfxVolume = clampVolume(
-        copy.volume,
-        defaultSettings.sfxVolume
-      );
+      const baseSfxVolume = clampVolume(copy.volume, defaultSettings.sfxVolume);
       const baseMusicVolume = clampVolume(
         copy.volume,
         defaultSettings.musicVolume
@@ -5258,17 +5255,16 @@ export function useAudio(settings) {
               audioRef.current[fileName].load();
               audioRef.current[fileName].loop = resolvedLoop;
             } else {
-              audioRef
-                .current[fileName]
-                .pause(); /* ensure loop changes apply on reload */
+              audioRef.current[
+                fileName
+              ].pause(); /* ensure loop changes apply on reload */
               audioRef.current[fileName].loop = resolvedLoop;
             }
 
             newAudioInfo.overrides[fileName] = overrides;
             newAudioInfo.volumes[fileName] = resolvedVolume;
             newAudioInfo.channels[fileName] =
-              channel ||
-              (fileName.includes("music") ? "music" : "sfx");
+              channel || (fileName.includes("music") ? "music" : "sfx");
           }
           break;
         }
