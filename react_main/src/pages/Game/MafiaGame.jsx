@@ -44,10 +44,6 @@ export default function MafiaGame() {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
-  const audioFileNames = [];
-  const audioLoops = [];
-  const audioOverrides = [];
-  const audioVolumes = [];
 
   const baseActionProps = useMemo(
     () => ({
@@ -81,12 +77,15 @@ export default function MafiaGame() {
       ? game.players[game.self].inventory || []
       : [];
 
-  const customAudios = [
+  const sfxAudios = [
     { fileName: "gunshot", loops: false, overrides: false, volumes: 1 },
     { fileName: "ghostAsk", loops: false, overrides: false, volumes: 1 },
     { fileName: "condemn", loops: false, overrides: false, volumes: 1 },
     { fileName: "explosion", loops: false, overrides: false, volumes: 0.5 },
     { fileName: "snowball", loops: false, overrides: false, volumes: 0.5 },
+  ].map((audio) => ({ channel: "sfx", ...audio }));
+
+  const musicAudios = [
     {
       fileName: "music/NightCrafter",
       loops: true,
@@ -288,14 +287,9 @@ export default function MafiaGame() {
       overrides: false,
       volumes: 1,
     },
-  ];
+  ].map((audio) => ({ channel: "music", ...audio }));
 
-  customAudios.forEach((e) => {
-    audioFileNames.push(e.fileName);
-    audioLoops.push(e.loops);
-    audioOverrides.push(e.overrides);
-    audioVolumes.push(e.volumes);
-  });
+  const customAudios = [...sfxAudios, ...musicAudios];
 
   // Make player view current state when it changes
   useEffect(() => {
@@ -303,12 +297,7 @@ export default function MafiaGame() {
   }, [history.currentState]);
 
   useEffect(() => {
-    game.loadAudioFiles(
-      audioFileNames,
-      audioLoops,
-      audioOverrides,
-      audioVolumes
-    );
+    game.loadAudioFiles(customAudios);
 
     // Make game review start at pregame
     if (game.review) updateStateViewing({ type: "first" });

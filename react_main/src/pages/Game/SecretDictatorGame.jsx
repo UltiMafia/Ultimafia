@@ -53,10 +53,7 @@ export default function SecretDictatorGame(props) {
     "Special Nomination",
   ];
   */
-  const audioFileNames = [];
-  const audioLoops = [];
-  const audioOverrides = [];
-  const audioVolumes = [];
+  const audioConfig = [];
 
   // Make player view current state when it changes
   useEffect(() => {
@@ -64,12 +61,7 @@ export default function SecretDictatorGame(props) {
   }, [history.currentState]);
 
   useEffect(() => {
-    game.loadAudioFiles(
-      audioFileNames,
-      audioLoops,
-      audioOverrides,
-      audioVolumes
-    );
+    game.loadAudioFiles(audioConfig);
 
     // Make game review start at pregame
     if (game.review) updateStateViewing({ type: "first" });

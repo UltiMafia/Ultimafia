@@ -45,10 +45,7 @@ export default function GhostGame(props) {
     : [];
   const stateNames = ["Night", "Give Clue", "Day", "Guess Word"];
   */
-  const audioFileNames = [];
-  const audioLoops = [];
-  const audioOverrides = [];
-  const audioVolumes = [];
+  const audioConfig = [];
 
   // Make player view current state when it changes
   useEffect(() => {
@@ -56,12 +53,7 @@ export default function GhostGame(props) {
   }, [history.currentState]);
 
   useEffect(() => {
-    game.loadAudioFiles(
-      audioFileNames,
-      audioLoops,
-      audioOverrides,
-      audioVolumes
-    );
+    game.loadAudioFiles(audioConfig);
 
     // Make game review start at pregame
     if (game.review) updateStateViewing({ type: "first" });
