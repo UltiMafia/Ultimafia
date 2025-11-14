@@ -32,10 +32,16 @@ function SnakeGame(props) {
     ? history.states[stateViewing].meetings
     : {};
 
-  const audioFileNames = ["music/14_Minigame"];
-  const audioLoops = [true];
-  const audioOverrides = [true];
-  const audioVolumes = [1];
+  const audioConfig = {
+    music: [
+      {
+        fileName: "music/14_Minigame",
+        loop: true,
+        overrides: true,
+        volume: 1,
+      },
+    ],
+  };
 
   // Make player view current state when it changes
   useEffect(() => {
@@ -43,12 +49,7 @@ function SnakeGame(props) {
   }, [history.currentState]);
 
   useEffect(() => {
-    game.loadAudioFiles(
-      audioFileNames,
-      audioLoops,
-      audioOverrides,
-      audioVolumes
-    );
+    game.loadAudioFiles(audioConfig);
 
     // Make game review start at pregame
     if (game.review) updateStateViewing({ type: "first" });

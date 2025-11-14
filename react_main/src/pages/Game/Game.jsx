@@ -167,8 +167,7 @@ export default function Game() {
   const selfRef = useRef();
   const noLeaveRef = useRef();
 
-  const [playAudio, loadAudioFiles, stopAudio, stopAudios, setVolume] =
-    useAudio(settings);
+  const [playAudio, loadAudioFiles, stopAudio, stopAudios] = useAudio(settings);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
@@ -330,10 +329,14 @@ export default function Game() {
     }
   }
 
-  const audioFileNames = ["bell", "ping", "tick", "vegPing"];
-  const audioLoops = [false, false, false];
-  const audioOverrides = [false, false, false];
-  const audioVolumes = [1, 1, 1];
+  const coreAudioConfig = {
+    sfx: [
+      { fileName: "bell", loops: false, overrides: false, volumes: 1 },
+      { fileName: "ping", loops: false, overrides: false, volumes: 1 },
+      { fileName: "tick", loops: false, overrides: false, volumes: 1 },
+      { fileName: "vegPing", loops: false, overrides: false, volumes: 1 },
+    ],
+  };
 
   const togglePlayerIsolation = (playerId) => {
     const newIsolatedPlayers = new Set(isolatedPlayers);
@@ -389,7 +392,7 @@ export default function Game() {
     updateSettings({ type: "load" });
 
     if (!review) {
-      loadAudioFiles(audioFileNames, audioLoops, audioOverrides, audioVolumes);
+      loadAudioFiles(coreAudioConfig);
       requestNotificationAccess();
 
       function onKeydown() {
@@ -4162,25 +4165,22 @@ function SettingsForm({ handleClose = null }) {
       value: settings.timestamps,
     },
     {
-      label: "Sounds",
-      ref: "sounds",
-      type: "boolean",
-      value: settings.sounds,
-    },
-    {
-      label: "Music",
-      ref: "music",
-      type: "boolean",
-      value: settings.music,
-    },
-    {
-      label: "Volume",
-      ref: "volume",
+      label: "SFX Volume",
+      ref: "sfxVolume",
       type: "range",
       min: 0,
       max: 1,
       step: 0.1,
-      value: settings.volume,
+      value: settings.sfxVolume,
+    },
+    {
+      label: "Music Volume",
+      ref: "musicVolume",
+      type: "range",
+      min: 0,
+      max: 1,
+      step: 0.1,
+      value: settings.musicVolume,
     },
     {
       label: "Display Terminology Emoticons",
@@ -5033,13 +5033,65 @@ export function useSettingsReducer() {
   const defaultSettings = {
     votingLog: true,
     timestamps: true,
-    sounds: true,
-    music: true,
-    volume: 1,
+    sfxVolume: 1,
+    musicVolume: 1,
     terminologyEmoticons: true,
     roleMentions: true,
     messageLayout: "default",
   };
+
+  function clampVolume(value, fallback = 1) {
+    const parsed = Number(value);
+
+    if (!Number.isFinite(parsed)) return fallback;
+
+    if (parsed < 0) return 0;
+    if (parsed > 1) return 1;
+    return parsed;
+  }
+
+  function normalizeSettings(rawSettings) {
+    const normalized = { ...defaultSettings };
+
+    if (rawSettings && typeof rawSettings === "object") {
+      const copy = { ...rawSettings };
+      const baseSfxVolume = clampVolume(copy.volume, defaultSettings.sfxVolume);
+      const baseMusicVolume = clampVolume(
+        copy.volume,
+        defaultSettings.musicVolume
+      );
+
+      const derivedSfx = clampVolume(
+        copy.sfxVolume,
+        typeof copy.sounds === "boolean"
+          ? copy.sounds
+            ? baseSfxVolume
+            : 0
+          : baseSfxVolume
+      );
+
+      const derivedMusic = clampVolume(
+        copy.musicVolume,
+        typeof copy.music === "boolean"
+          ? copy.music
+            ? baseMusicVolume
+            : 0
+          : baseMusicVolume
+      );
+
+      for (const key of Object.keys(normalized)) {
+        if (key === "sfxVolume" || key === "musicVolume") continue;
+        if (copy[key] !== undefined) {
+          normalized[key] = copy[key];
+        }
+      }
+
+      normalized.sfxVolume = derivedSfx;
+      normalized.musicVolume = derivedMusic;
+    }
+
+    return normalized;
+  }
 
   return useReducer((settings, action) => {
     var newSettings;
@@ -5048,30 +5100,34 @@ export function useSettingsReducer() {
       case "load":
         try {
           newSettings = window.localStorage.getItem("gameSettings");
-          newSettings = JSON.parse(newSettings);
+          newSettings = normalizeSettings(JSON.parse(newSettings));
         } catch (e) {
           newSettings = settings;
         }
         break;
       case "set":
-        newSettings = action.settings;
+        newSettings = normalizeSettings(action.settings);
         window.localStorage.setItem(
           "gameSettings",
           JSON.stringify(newSettings)
         );
         break;
       case "setProp":
-        newSettings = update(settings, {
-          [action.propName]: {
-            $set: action.propval,
-          },
-        });
+        newSettings = normalizeSettings(
+          update(settings, {
+            [action.propName]: {
+              $set: action.propval,
+            },
+          })
+        );
 
         window.localStorage.setItem(
           "gameSettings",
           JSON.stringify(newSettings)
         );
         break;
+      default:
+        newSettings = settings;
     }
 
     return newSettings || settings;
@@ -5119,66 +5175,137 @@ export function useActivity() {
 export function useAudio(settings) {
   const audioRef = useRef({});
 
+  const clampSlider = (value, fallback = 1) => {
+    const parsed = Number(value);
+
+    if (!Number.isFinite(parsed)) return fallback;
+
+    if (parsed < 0) return 0;
+    if (parsed > 1) return 1;
+    return parsed;
+  };
+
+  const normalizeEntries = (payload) => {
+    const entries = [];
+
+    if (!payload) return entries;
+
+    if (Array.isArray(payload)) {
+      for (const item of payload) {
+        if (!item || typeof item !== "object") continue;
+        entries.push({ ...item });
+      }
+    } else if (typeof payload === "object") {
+      for (const [defaultChannel, list] of Object.entries(payload)) {
+        if (!Array.isArray(list)) continue;
+        for (const item of list) {
+          if (!item || typeof item !== "object") continue;
+          entries.push({ channel: defaultChannel, ...item });
+        }
+      }
+    }
+
+    return entries;
+  };
+
   const [audioInfo, updateAudio] = useReducer(
     (audioInfo, action) => {
       var newAudioInfo;
 
       switch (action.type) {
-        case "play":
-          const unmuteable = action.audioName === "vegPing";
-          if (!unmuteable && !settings.sounds) return audioInfo;
-          if (!settings.music && action.audioName.includes("music")) {
-            return audioInfo;
-          }
+        case "play": {
+          const audioElement = audioRef.current[action.audioName];
+          if (!audioElement) return audioInfo;
+
           if (audioInfo.overrides[action.audioName])
             for (let audioName in audioInfo.overrides)
               if (audioInfo.overrides[audioName] && audioRef.current[audioName])
                 audioRef.current[audioName].pause();
 
-          if (audioRef.current[action.audioName]) {
-            audioRef.current[action.audioName].currentTime = 0;
-            audioRef.current[action.audioName].play().catch((e) => {});
-          }
+          audioElement.currentTime = 0;
+          audioElement.play().catch(() => {});
           break;
-        case "load":
+        }
+        case "load": {
           newAudioInfo = {
             overrides: { ...audioInfo.overrides },
             volumes: { ...audioInfo.volumes },
+            channels: { ...audioInfo.channels },
           };
 
-          for (let i in action.files) {
-            let fileName = action.files[i];
+          const entries = normalizeEntries(action.entries);
+
+          for (const entry of entries) {
+            const {
+              fileName,
+              loop,
+              loops,
+              overrides = false,
+              volume,
+              volumes,
+              channel,
+            } = entry;
+            const resolvedLoop = loop ?? loops ?? false;
+            const resolvedVolume = volume ?? volumes ?? 1;
+
+            if (!fileName) continue;
 
             if (!audioRef.current[fileName]) {
               audioRef.current[fileName] = new Audio(`/audio/${fileName}.mp3`);
               audioRef.current[fileName].load();
-              audioRef.current[fileName].loop = action.loops[i];
+              audioRef.current[fileName].loop = resolvedLoop;
+            } else {
+              audioRef.current[
+                fileName
+              ].pause(); /* ensure loop changes apply on reload */
+              audioRef.current[fileName].loop = resolvedLoop;
             }
 
-            newAudioInfo.overrides[fileName] = action.overrides[i];
-            newAudioInfo.volumes[fileName] = action.volumes[i];
+            newAudioInfo.overrides[fileName] = overrides;
+            newAudioInfo.volumes[fileName] = resolvedVolume;
+            newAudioInfo.channels[fileName] =
+              channel || (fileName.includes("music") ? "music" : "sfx");
           }
           break;
+        }
         case "volume":
           for (let audioName in audioRef.current) {
-            if (audioInfo.volumes[audioName])
-              audioRef.current[audioName].volume =
-                audioInfo.volumes[audioName] * action.volume;
+            const audioElement = audioRef.current[audioName];
+            const baseVolume =
+              audioInfo.volumes[audioName] != null
+                ? audioInfo.volumes[audioName]
+                : 1;
+
+            if (audioName === "vegPing") {
+              audioElement.volume = baseVolume;
+              continue;
+            }
+
+            const channel =
+              (audioInfo.channels && audioInfo.channels[audioName]) ||
+              (audioName.includes("music") ? "music" : "sfx");
+            const slider =
+              channel === "music"
+                ? clampSlider(action.musicVolume, settings.musicVolume)
+                : clampSlider(action.sfxVolume, settings.sfxVolume);
+
+            audioElement.volume = baseVolume * slider;
           }
           break;
       }
 
       return newAudioInfo || audioInfo;
     },
-    { overrides: {}, volumes: {} }
+    { overrides: {}, volumes: {}, channels: {} }
   );
 
   useEffect(() => {
     updateAudio({
       type: "volume",
-      volume: settings.volume,
+      sfxVolume: settings.sfxVolume,
+      musicVolume: settings.musicVolume,
     });
-  }, [settings.volume, audioInfo]);
+  }, [settings.sfxVolume, settings.musicVolume, audioInfo]);
 
   function playAudio(audioName) {
     updateAudio({
@@ -5187,13 +5314,41 @@ export function useAudio(settings) {
     });
   }
 
-  function loadAudioFiles(files, loops, overrides, volumes) {
+  function loadAudioFiles(config, loops, overrides, volumes) {
+    let entries = [];
+
+    if (Array.isArray(config)) {
+      if (config.length && typeof config[0] === "string") {
+        entries = config.map((fileName, index) => ({
+          fileName,
+          loop: Array.isArray(loops) ? loops[index] : false,
+          overrides: Array.isArray(overrides) ? overrides[index] : false,
+          volume:
+            Array.isArray(volumes) && volumes[index] != null
+              ? volumes[index]
+              : 1,
+        }));
+      } else {
+        entries = config;
+      }
+    } else if (config && typeof config === "object") {
+      entries = Object.entries(config).reduce((allEntries, [channel, list]) => {
+        if (!Array.isArray(list)) return allEntries;
+
+        list.forEach((item) => {
+          if (!item || typeof item !== "object") return;
+          allEntries.push({ channel, ...item });
+        });
+
+        return allEntries;
+      }, []);
+    }
+
+    if (!entries.length) return;
+
     updateAudio({
       type: "load",
-      files,
-      loops,
-      overrides,
-      volumes,
+      entries,
     });
   }
 
@@ -5205,14 +5360,7 @@ export function useAudio(settings) {
     for (let audioName of audios) audioRef.current[audioName].pause();
   }
 
-  function setVolume(volume) {
-    updateAudio({
-      type: "volume",
-      volume,
-    });
-  }
-
-  return [playAudio, loadAudioFiles, stopAudio, stopAudios, setVolume];
+  return [playAudio, loadAudioFiles, stopAudio, stopAudios];
 }
 
 async function requestNotificationAccess() {
