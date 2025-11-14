@@ -12,7 +12,7 @@ module.exports = class BlockIfVisitingThingModifiers extends Card {
 
     this.passiveActions = [
       {
-        ability: ["Blocking", "Modifier"],
+        ability: ["Blocking", "Modifier", "WhenDead"],
         state: "Night",
         actor: role.player,
         game: role.player.game,
@@ -27,7 +27,7 @@ module.exports = class BlockIfVisitingThingModifiers extends Card {
         },
       },
       {
-        ability: ["Blocking", "Modifier"],
+        ability: ["Blocking", "Modifier", "WhenDead"],
         state: "Night",
         actor: role.player,
         game: role.player.game,
