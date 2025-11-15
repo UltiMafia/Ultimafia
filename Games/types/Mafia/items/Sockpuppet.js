@@ -21,6 +21,7 @@ module.exports = class Sockpuppet extends Item {
           toLowerCase: false,
           submit: "Send message",
         },
+        item: this,
         action: {
           labels: ["hidden", "absolute"],
           item: this,

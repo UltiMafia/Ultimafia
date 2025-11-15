@@ -6,13 +6,13 @@ const {
   PRIORITY_SELF_BLOCK_LATER,
 } = require("../../const/Priority");
 
-module.exports = class Complex extends Card {
+module.exports = class BlockIfVisitingThingModifiers extends Card {
   constructor(role) {
     super(role);
 
     this.passiveActions = [
       {
-        ability: ["Blocking", "Modifier"],
+        ability: ["Blocking", "Modifier", "WhenDead"],
         state: "Night",
         actor: role.player,
         game: role.player.game,
@@ -27,7 +27,7 @@ module.exports = class Complex extends Card {
         },
       },
       {
-        ability: ["Blocking", "Modifier"],
+        ability: ["Blocking", "Modifier", "WhenDead"],
         state: "Night",
         actor: role.player,
         game: role.player.game,

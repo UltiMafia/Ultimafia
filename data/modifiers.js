@@ -891,7 +891,7 @@ const modifierData = {
     //Self Block
     Loyal: {
       category: "Visits",
-      internal: ["Loyal"],
+      internal: ["BlockIfVisitingThingModifiers"],
       tags: ["Visits", "Block Self", "Alignments", "Loyal"],
       description:
         "If this player visits a player of the opposite alignment, their secondary actions will be blocked.",
@@ -900,7 +900,7 @@ const modifierData = {
     },
     Disloyal: {
       category: "Visits",
-      internal: ["Disloyal"],
+      internal: ["BlockIfVisitingThingModifiers"],
       tags: ["Visits", "Block Self", "Alignments", "Disloyal"],
       description:
         "If this player visits a player of the same alignment, their secondary actions will be blocked.",
@@ -909,8 +909,8 @@ const modifierData = {
     },
     Complex: {
       category: "Visits",
-      internal: ["Complex"],
-      tags: ["Visits", "Block Self", "Vanilla", "Complex"],
+      internal: ["BlockIfVisitingThingModifiers"],
+      tags: ["Visits", "Block Self", "Vanilla Interaction", "Complex"],
       description:
         "If this player visits a player with a vanilla role, all their actions will be blocked.",
       eventDescription:
@@ -919,8 +919,8 @@ const modifierData = {
     },
     Simple: {
       category: "Visits",
-      internal: ["Simple"],
-      tags: ["Visits", "Block Self", "Vanilla", "Simple"],
+      internal: ["BlockIfVisitingThingModifiers"],
+      tags: ["Visits", "Block Self", "Vanilla Interaction", "Simple"],
       description:
         "If this player visits a player with a power role, all their actions will be blocked.",
       eventDescription: "This Event will not apply to non-Vanilla players.",
@@ -928,7 +928,7 @@ const modifierData = {
     },
     Holy: {
       category: "Visits",
-      internal: ["Holy"],
+      internal: ["BlockIfVisitingThingModifiers"],
       tags: ["Visits", "Block Self", "Modifiers", "Holy"],
       description:
         "If this player visits a player with a Demonic role, their secondary actions will be blocked.",
@@ -937,7 +937,7 @@ const modifierData = {
     },
     Unholy: {
       category: "Visits",
-      internal: ["Unholy"],
+      internal: ["BlockIfVisitingThingModifiers"],
       tags: ["Visits", "Block Self", "Modifiers", "Unholy"],
       description:
         "If this player visits a player with a non-Demonic role, their secondary actions will be blocked.",
@@ -946,7 +946,7 @@ const modifierData = {
     },
     Refined: {
       category: "Visits",
-      internal: ["Refined"],
+      internal: ["BlockIfVisitingThingModifiers"],
       tags: [
         "Visits",
         "Block Self",
@@ -961,7 +961,7 @@ const modifierData = {
     },
     Unrefined: {
       category: "Visits",
-      internal: ["Unrefined"],
+      internal: ["BlockIfVisitingThingModifiers"],
       tags: [
         "Visits",
         "Block Self",

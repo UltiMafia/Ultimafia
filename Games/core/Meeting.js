@@ -332,6 +332,11 @@ module.exports = class Meeting {
       playerHasVoted: playerHasVoted,
       itemId: this.item ? this.item.id : null,
       itemName: this.item ? this.item.name : null,
+      itemIsTrueItem: this.item
+        ? this.item.cannotBeSnooped
+          ? false
+          : true
+        : null,
     };
   }
 

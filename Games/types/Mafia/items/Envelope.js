@@ -21,6 +21,7 @@ module.exports = class Envelope extends Item {
           toLowerCase: false,
           submit: "Write",
         },
+        item: this,
         action: {
           labels: ["hidden", "absolute"],
           priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,

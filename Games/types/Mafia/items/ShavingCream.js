@@ -16,6 +16,7 @@ module.exports = class ShavingCream extends Item {
         targets: { include: ["alive", "self"] },
         multiMin: 2,
         multiMax: 2,
+        item: this,
         action: {
           labels: ["hidden", "convert"],
           priority: PRIORITY_SWAP_ROLES,

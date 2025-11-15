@@ -13,6 +13,7 @@ module.exports = class Key extends Item {
         states: ["Day"],
         flags: ["voting"],
         inputType: "boolean",
+        item: this,
         action: {
           labels: ["block"],
           priority: PRIORITY_DAY_DEFAULT,

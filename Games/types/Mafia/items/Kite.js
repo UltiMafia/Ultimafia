@@ -20,6 +20,7 @@ module.exports = class Kite extends Item {
         states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
         inputType: "boolean",
+        item: this,
         action: {
           labels: ["kill"],
           item: this,
