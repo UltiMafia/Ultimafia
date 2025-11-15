@@ -12,6 +12,7 @@ module.exports = class Snowball extends Item {
         actionName: "Throw",
         states: ["Day"],
         flags: ["voting", "instant", "noVeg"],
+        item: this,
         action: {
           labels: ["throw"],
           item: this,

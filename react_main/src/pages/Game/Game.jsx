@@ -2937,7 +2937,7 @@ export function buildActionDescriptors({
 
     if (!descriptor) return;
 
-    if (meeting.itemId) {
+    if (meeting.itemId && meeting.itemIsTrueItem) {
       if (!inventoryActionDescriptors[meeting.itemId]) {
         inventoryActionDescriptors[meeting.itemId] = [];
       }

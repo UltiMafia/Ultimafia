@@ -20,6 +20,7 @@ module.exports = class Shield extends Item {
         states: ["Night"],
         flags: ["voting"],
         inputType: "boolean",
+        item: this,
         action: {
           labels: ["hidden"],
           priority: PRIORITY_MODIFY_ACTION,

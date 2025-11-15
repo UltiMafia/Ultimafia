@@ -21,6 +21,7 @@ module.exports = class Revolver extends Item {
         flags: ["voting", "instant", "hideAfterVote", "mustAct", "Important"],
         inputType: "custom",
         targets: ["Shoot", "Spin and Shoot"],
+        item: this,
         action: {
           labels: ["kill"],
           item: this,
