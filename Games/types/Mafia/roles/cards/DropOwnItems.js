@@ -42,9 +42,9 @@ module.exports = class DropOwnItems extends Card {
         labels: ["dropItems", "hidden"],
         role: role,
         run: function () {
-            for (let item of this.actor.items) {
-              item.drop();
-            }
+          for (let item of this.actor.items) {
+            item.drop();
+          }
         },
       },
       {
@@ -56,12 +56,11 @@ module.exports = class DropOwnItems extends Card {
         labels: ["dropItems", "hidden"],
         role: role,
         run: function () {
-            for (let item of this.actor.items) {
-              item.drop();
-            }
+          for (let item of this.actor.items) {
+            item.drop();
+          }
         },
       },
     ];
-
   }
 };
