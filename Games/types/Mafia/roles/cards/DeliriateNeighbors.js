@@ -7,11 +7,9 @@ module.exports = class DeliriateNeighbors extends Card {
   constructor(role) {
     super(role);
 
-
-    
     this.passiveActions = [
       {
-        ability: ["Effect", "Delirium",],
+        ability: ["Effect", "Delirium"],
         state: "Night",
         actor: role.player,
         game: role.player.game,
@@ -19,26 +17,26 @@ module.exports = class DeliriateNeighbors extends Card {
         labels: ["block", "delirium"],
         role: role,
         run: function () {
-            for (let player of this.role.startingNeighbors) {
-              if (
-                player.effects.filter(
-                  (e) => e.name == "Delirious" && e.source == this.role
-                ).length <= 0
-              ) {
-                if (this.dominates(player)) {
-                  let effect = this.role.giveEffect(
-                    player,
-                    "Delirious",
-                    this.actor,
-                    Infinity,
-                    null,
-                    this.role
-                  );
-                  this.blockWithDelirium(player, true);
-                }
+          for (let player of this.role.startingNeighbors) {
+            if (
+              player.effects.filter(
+                (e) => e.name == "Delirious" && e.source == this.role
+              ).length <= 0
+            ) {
+              if (this.dominates(player)) {
+                let effect = this.role.giveEffect(
+                  player,
+                  "Delirious",
+                  this.actor,
+                  Infinity,
+                  null,
+                  this.role
+                );
+                this.blockWithDelirium(player, true);
               }
             }
-          },
+          }
+        },
       },
     ];
 
