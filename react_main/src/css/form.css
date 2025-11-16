@@ -1,6 +1,6 @@
 :root {
   /* derived from mui input height */
-  --min-input-height: calc(1.4375rem + 17px)
+  --min-input-height: calc(1.4375rem + 17px);
 }
 
 .form {
@@ -43,7 +43,8 @@
   border-color: rgb(var(--mui-palette-common-onBackgroundChannel));
 }
 
-.form input[type="date"], .form input[type="datetime-local"] {
+.form input[type="date"],
+.form input[type="datetime-local"] {
   padding: 0 14px;
   min-height: var(--min-input-height);
   font-family: "Roboto";

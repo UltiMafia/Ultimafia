@@ -11,5 +11,6 @@ initializeApp(firebaseConfig);
 ReactDOM.render(
   <BrowserRouter>
     <Main />
-  </BrowserRouter>
-, document.getElementById("root"));
+  </BrowserRouter>,
+  document.getElementById("root")
+);

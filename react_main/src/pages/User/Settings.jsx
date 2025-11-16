@@ -36,12 +36,16 @@ function SettingsSection({ sections, activeSection }) {
   const isPhoneDevice = useIsPhoneDevice();
   return (
     <Stack direction="column" spacing={2}>
-      <Stack direction="row" spacing={1} sx={{
-        borderBottom: 1,
-        borderColor: "divider",
-      }}>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          borderBottom: 1,
+          borderColor: "divider",
+        }}
+      >
         <Tabs value={activeSection.path} aria-label="Settings Sections">
-          {sections.map(section => (
+          {sections.map((section) => (
             <Tab
               label={section.title}
               key={section.path}
@@ -57,13 +61,15 @@ function SettingsSection({ sections, activeSection }) {
           ))}
         </Tabs>
       </Stack>
-      <Box sx={{
-        maxWidth: isPhoneDevice ? undefined : "50%",
-      }}>
+      <Box
+        sx={{
+          maxWidth: isPhoneDevice ? undefined : "50%",
+        }}
+      >
         {activeSection.content}
       </Box>
     </Stack>
-  )
+  );
 }
 
 export default function Settings() {
@@ -270,7 +276,8 @@ export default function Settings() {
         clearBtn: "Clear",
         clearBtnOnClick: onBirthdayClear,
         confirm: "Are you sure you wish to change your birthday?",
-        extraInfo: "Other users will know when it's your birthday because your text will be rainbow colored.",
+        extraInfo:
+          "Other users will know when it's your birthday because your text will be rainbow colored.",
       },
       {
         label: "Background Color",
@@ -487,7 +494,7 @@ export default function Settings() {
           deps={{ user }}
           onChange={(action) => onSettingChange(action, updateSiteFields)}
         />
-      )
+      ),
     },
     {
       title: "User",
@@ -505,11 +512,9 @@ export default function Settings() {
             siteInfo,
             errorAlert,
           }}
-          onChange={(action) =>
-            onSettingChange(action, updateProfileFields)
-          }
+          onChange={(action) => onSettingChange(action, updateProfileFields)}
         />
-      )
+      ),
     },
     {
       title: "Game",
@@ -521,11 +526,11 @@ export default function Settings() {
             deathMessage: user.settings.deathMessage,
             user,
             siteInfo,
-            errorAlert
+            errorAlert,
           }}
           onChange={(action) => onSettingChange(action, updateGameFields)}
         />
-      )
+      ),
     },
     {
       title: "Account",
@@ -550,21 +555,31 @@ export default function Settings() {
             variant="outlined"
             sx={{ minWidth: "120px" }}
             onClick={onDeleteClick}
-            startIcon={<i className="fas fa-exclamation-triangle" aria-hidden="true" />}
-            endIcon={<i className="fas fa-exclamation-triangle" aria-hidden="true" />}
+            startIcon={
+              <i className="fas fa-exclamation-triangle" aria-hidden="true" />
+            }
+            endIcon={
+              <i className="fas fa-exclamation-triangle" aria-hidden="true" />
+            }
           >
             Delete Account
           </Button>
         </Stack>
-      )
-    }
+      ),
+    },
   ];
 
   return (
     <Paper sx={{ p: 2 }}>
       <Routes>
-        {sections.map(section => (
-          <Route key={section.path} path={section.path} element={<SettingsSection sections={sections} activeSection={section} />} />
+        {sections.map((section) => (
+          <Route
+            key={section.path}
+            path={section.path}
+            element={
+              <SettingsSection sections={sections} activeSection={section} />
+            }
+          />
         ))}
         <Route path="*" element={<Navigate to={sections[0].path} />} />
       </Routes>

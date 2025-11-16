@@ -1,16 +1,5 @@
-import React, {
-  lazy,
-  useState,
-  useContext,
-  useEffect,
-  Suspense,
-} from "react";
-import {
-  Route,
-  Link,
-  Navigate,
-  Routes,
-} from "react-router-dom";
+import React, { lazy, useState, useContext, useEffect, Suspense } from "react";
+import { Route, Link, Navigate, Routes } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import axios from "axios";
 import { Icon } from "@iconify/react";
@@ -120,12 +109,16 @@ function Main(props) {
       }}
     >
       <CookieBanner />
-      <Stack direction="column" spacing={1} sx={{
-        flexWrap: "nowrap",
-        px: isPhoneDevice ? 1 : 3,
-        width: "1080px",
-        maxWidth: "100%",
-      }}>
+      <Stack
+        direction="column"
+        spacing={1}
+        sx={{
+          flexWrap: "nowrap",
+          px: isPhoneDevice ? 1 : 3,
+          width: "1080px",
+          maxWidth: "100%",
+        }}
+      >
         <Header
           setShowAnnouncementTemporarily={setShowAnnouncementTemporarily}
         />

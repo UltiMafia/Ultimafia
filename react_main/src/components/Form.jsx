@@ -42,19 +42,24 @@ function FormField({
   children,
   field,
   deps,
-  compact=false,
-  forceSeparateLabel=false,
-  useFormControl=false,
-  additionalButtons=<></>
+  compact = false,
+  forceSeparateLabel = false,
+  useFormControl = false,
+  additionalButtons = <></>,
 }) {
-  const separateLabel = forceSeparateLabel || (field.type !== "boolean" && !compact);
-  const isUnsaved = deps !== undefined && deps[field.saveBtnDiffer] !== field.value;
+  const separateLabel =
+    forceSeparateLabel || (field.type !== "boolean" && !compact);
+  const isUnsaved =
+    deps !== undefined && deps[field.saveBtnDiffer] !== field.value;
 
   const unsavedIndicator = (
     <>
       {field.saveBtn && isUnsaved && (
         <Tooltip title="You have unsaved changes">
-          <i className="fas fa-dot-circle" style={{ color: "var(--mui-palette-primary-main)" }} />
+          <i
+            className="fas fa-dot-circle"
+            style={{ color: "var(--mui-palette-primary-main)" }}
+          />
         </Tooltip>
       )}
     </>
@@ -74,14 +79,13 @@ function FormField({
       )}
       {additionalButtons}
     </>
-  )
+  );
 
   function saveBtnOnClick(e) {
     let conf = !field.confirm || window.confirm(field.confirm);
 
     if (conf) {
-      if (field.saveBtnOnClick)
-        field.saveBtnOnClick(field.value, deps);
+      if (field.saveBtnOnClick) field.saveBtnOnClick(field.value, deps);
       else onChange(e, field);
     }
   }
@@ -95,34 +99,43 @@ function FormField({
   return (
     <Stack direction="column" spacing={0.5}>
       {separateLabel && !useFormControl && (
-        <Stack direction="row" spacing={1} sx={{
-          alignItems: "center",
-          "& .MuiButton-root": {
-            p: 0,
-          }
-        }}>
-          <Typography sx={{
-            fontWeight: "bold",
-            lineHeight: 1,
-            mt: "var(--mui-spacing) !important",
-          }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            alignItems: "center",
+            "& .MuiButton-root": {
+              p: 0,
+            },
+          }}
+        >
+          <Typography
+            sx={{
+              fontWeight: "bold",
+              lineHeight: 1,
+              mt: "var(--mui-spacing) !important",
+            }}
+          >
             {field.label}
           </Typography>
           {unsavedIndicator}
           {buttons}
         </Stack>
       )}
-      <Stack direction="column" sx={{
-        position: "relative",
-      }}>
+      <Stack
+        direction="column"
+        sx={{
+          position: "relative",
+        }}
+      >
         {!useFormControl && children}
         {useFormControl && (
           <FormControl>
-            {separateLabel && (<InputLabel htmlFor={field.ref}>{field.label}</InputLabel>)}
+            {separateLabel && (
+              <InputLabel htmlFor={field.ref}>{field.label}</InputLabel>
+            )}
             {children}
-            <FormHelperText>
-              {field.extraInfo}
-            </FormHelperText>
+            <FormHelperText>{field.extraInfo}</FormHelperText>
           </FormControl>
         )}
       </Stack>
@@ -137,10 +150,11 @@ export default function Form({
   submitText,
   onSubmit,
   sx,
-  compact=false,
+  compact = false,
 }) {
   function onFieldChange(event, field, localOnly) {
-    let value = field.type === "boolean" ? event.target.checked : event.target.value;
+    let value =
+      field.type === "boolean" ? event.target.checked : event.target.value;
 
     if (field.onChange) {
       field.onChange(event);
@@ -157,7 +171,7 @@ export default function Form({
   // Group fields together
   const formFieldGroups = fields.reduce((accumulator, field) => {
     const groupName = field.groupName || UNGROUPED_NAME;
-    if(accumulator[groupName] === undefined) {
+    if (accumulator[groupName] === undefined) {
       accumulator[groupName] = [];
     }
     accumulator[groupName].push(field);
@@ -199,7 +213,12 @@ export default function Form({
       switch (field.type) {
         case "text":
           return (
-            <FormField field={field} deps={deps} compact={compact} key={field.ref}>
+            <FormField
+              field={field}
+              deps={deps}
+              compact={compact}
+              key={field.ref}
+            >
               {field.type === "text" && field.textStyle === "large" ? (
                 <TextField
                   multiline
@@ -231,9 +250,13 @@ export default function Form({
           );
         case "emoteUpload":
           const yourEmotes = Object.keys(value).map((key) => (
-            <Paper variant="outlined" key={key} sx={{
-              p: 0.5,
-            }}>
+            <Paper
+              variant="outlined"
+              key={key}
+              sx={{
+                p: 0.5,
+              }}
+            >
               <Stack direction="row" spacing={1} alignItems="center">
                 <div
                   className="emote"
@@ -242,13 +265,9 @@ export default function Form({
                     backgroundImage: `url('/${value[key].path}')`,
                   }}
                 />
-                <Typography sx={{ flex: "1" }}>
-                  {key}
-                </Typography>
+                <Typography sx={{ flex: "1" }}>{key}</Typography>
                 <IconButton
-                  onClick={() =>
-                    field.onCustomEmoteDelete(value[key].id, deps)
-                  }
+                  onClick={() => field.onCustomEmoteDelete(value[key].id, deps)}
                 >
                   <i className="fas fa-trash" />
                 </IconButton>
@@ -256,7 +275,12 @@ export default function Form({
             </Paper>
           ));
           return (
-            <FormField field={field} deps={deps} compact={compact} key={field.ref}>
+            <FormField
+              field={field}
+              deps={deps}
+              compact={compact}
+              key={field.ref}
+            >
               <Stack direction="column" spacing={1}>
                 <EmoteUpload
                   id="emote-upload"
@@ -265,9 +289,7 @@ export default function Form({
                   field={field}
                 />
                 <Stack direction="column">
-                  <Typography variant="caption">
-                    Your Custom Emotes
-                  </Typography>
+                  <Typography variant="caption">Your Custom Emotes</Typography>
                   <Stack direction="column" spacing={1}>
                     {yourEmotes}
                   </Stack>
@@ -277,7 +299,12 @@ export default function Form({
           );
         case "number":
           return (
-            <FormField field={field} deps={deps} compact={compact} key={field.ref}>
+            <FormField
+              field={field}
+              deps={deps}
+              compact={compact}
+              key={field.ref}
+            >
               <TextField
                 type="number"
                 defaultValue={field.value || "0"}
@@ -290,25 +317,39 @@ export default function Form({
                   htmlInput: {
                     min: field.min,
                     max: field.max,
-                  }
+                  },
                 }}
               />
             </FormField>
           );
         case "boolean":
           return (
-            <FormField field={field} deps={deps} compact={compact} key={field.ref}>
-              <FormControlLabel label={field.label} control={<Checkbox
-                defaultChecked={field.value || false}
-                disabled={disabled}
-                onChange={(e) => onFieldChange(e, field)}
-                />}
+            <FormField
+              field={field}
+              deps={deps}
+              compact={compact}
+              key={field.ref}
+            >
+              <FormControlLabel
+                label={field.label}
+                control={
+                  <Checkbox
+                    defaultChecked={field.value || false}
+                    disabled={disabled}
+                    onChange={(e) => onFieldChange(e, field)}
+                  />
+                }
               />
             </FormField>
           );
         case "select":
           return (
-            <FormField field={field} deps={deps} compact={compact} key={field.ref}>
+            <FormField
+              field={field}
+              deps={deps}
+              compact={compact}
+              key={field.ref}
+            >
               <TextField
                 select
                 defaultValue={field.value || field.options[0].ref}
@@ -327,12 +368,21 @@ export default function Form({
           );
         case "range":
           return (
-            <FormField field={field} deps={deps} compact={compact} key={field.ref} forceSeparateLabel>
-              <Paper sx={{ px: 2, }}>
-                <Stack direction="column" sx={{
-                  width: "100%",
-                  justifyContent: "center",
-                }}>
+            <FormField
+              field={field}
+              deps={deps}
+              compact={compact}
+              key={field.ref}
+              forceSeparateLabel
+            >
+              <Paper sx={{ px: 2 }}>
+                <Stack
+                  direction="column"
+                  sx={{
+                    width: "100%",
+                    justifyContent: "center",
+                  }}
+                >
                   <Slider
                     min={field.min}
                     max={field.max}
@@ -349,15 +399,31 @@ export default function Form({
           );
         case "color":
           return (
-            <FormField field={field} deps={deps} compact={compact} key={field.ref} additionalButtons={
-              <>
-                {!field.noReset && field.value !== field.default && field.value && (
-                  <Button variant="text" onClick={() => onFieldChange({ target: { value: field.default } }, field)}>
-                    Reset
-                  </Button>
-                )}
-              </>
-            }>
+            <FormField
+              field={field}
+              deps={deps}
+              compact={compact}
+              key={field.ref}
+              additionalButtons={
+                <>
+                  {!field.noReset &&
+                    field.value !== field.default &&
+                    field.value && (
+                      <Button
+                        variant="text"
+                        onClick={() =>
+                          onFieldChange(
+                            { target: { value: field.default } },
+                            field
+                          )
+                        }
+                      >
+                        Reset
+                      </Button>
+                    )}
+                </>
+              }
+            >
               <ColorPicker
                 value={field.value}
                 default={field.default}
@@ -366,7 +432,7 @@ export default function Form({
                 onChange={(e) => onFieldChange(e, field)}
                 fieldRef={field.ref}
               />
-              </FormField>
+            </FormField>
           );
         case "date":
           if (field.value === "undefined") {
@@ -390,7 +456,12 @@ export default function Form({
           };
 
           return (
-            <FormField field={field} deps={deps} compact={compact} key={field.ref}>
+            <FormField
+              field={field}
+              deps={deps}
+              compact={compact}
+              key={field.ref}
+            >
               <input
                 type="date"
                 value={formatDateForInput(field.value || selectedValue)}
@@ -401,7 +472,13 @@ export default function Form({
           );
         case "datetime-local": {
           return (
-            <FormField field={field} deps={deps} compact={compact} key={field.ref} useFormControl>
+            <FormField
+              field={field}
+              deps={deps}
+              compact={compact}
+              key={field.ref}
+              useFormControl
+            >
               <input
                 type="datetime-local"
                 min={dateToHTMLString(field.min)}
@@ -422,11 +499,14 @@ export default function Form({
     return (
       <Stack direction="column" spacing={1}>
         {group !== UNGROUPED_NAME && (
-          <Typography variant="h1" sx={{
-            borderBottom: 1,
-            borderColor: "divider",
-            pt: 1,
-          }}>
+          <Typography
+            variant="h1"
+            sx={{
+              borderBottom: 1,
+              borderColor: "divider",
+              pt: 1,
+            }}
+          >
             {group}
           </Typography>
         )}
@@ -436,17 +516,20 @@ export default function Form({
   });
 
   return (
-    <Stack className="form" direction="column" spacing={1} sx={{
-      ...sx,
-      "& .MuiCheckbox-root": {
-        p: compact ? 0 : undefined,
-        mx: compact ? 1 : undefined,
-      }
-    }}>
+    <Stack
+      className="form"
+      direction="column"
+      spacing={1}
+      sx={{
+        ...sx,
+        "& .MuiCheckbox-root": {
+          p: compact ? 0 : undefined,
+          mx: compact ? 1 : undefined,
+        },
+      }}
+    >
       {groupedFormFields}
-      {submitText && (
-        <Button onClick={onSubmit}>{submitText}</Button>
-      )}
+      {submitText && <Button onClick={onSubmit}>{submitText}</Button>}
     </Stack>
   );
 }
@@ -520,15 +603,20 @@ class EmoteUpload extends React.Component {
     if (this.state.imageURI !== null && this.state.emoteText) {
       return (
         <Stack direction="column">
-          <Typography variant="caption">
-            Preview
-          </Typography>
-          <Paper variant="outlined" sx={{
-            p: 0.5,
-          }}>
-            <Stack direction="row" spacing={1} sx={{
-              alignItems: "center",
-            }}>
+          <Typography variant="caption">Preview</Typography>
+          <Paper
+            variant="outlined"
+            sx={{
+              p: 0.5,
+            }}
+          >
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                alignItems: "center",
+              }}
+            >
               <div
                 className="emote"
                 title={this.state.emoteText}
@@ -536,10 +624,10 @@ class EmoteUpload extends React.Component {
                   backgroundImage: `url('${this.state.imageURI}')`,
                 }}
               />
-              <Typography>
-                :{this.state.emoteText}:
-              </Typography>
-              <Button size="small" sx={{
+              <Typography>:{this.state.emoteText}:</Typography>
+              <Button
+                size="small"
+                sx={{
                   alignSelf: "center",
                   marginLeft: "auto !important",
                 }}
@@ -607,21 +695,28 @@ class EmoteUpload extends React.Component {
             disabled={this.props.disabled}
             onChange={this.updateEmoteText.bind(this)}
             sx={{
-              flex: "1"
+              flex: "1",
             }}
           />
-          <Stack direction="column" sx={{
-            flex: "1",
-            minWidth: 0,
-          }}>
-            <Button component="label" htmlFor={this.state.id}  sx={{
+          <Stack
+            direction="column"
+            sx={{
               flex: "1",
-            }}>
+              minWidth: 0,
+            }}
+          >
+            <Button
+              component="label"
+              htmlFor={this.state.id}
+              sx={{
+                flex: "1",
+              }}
+            >
               Upload
             </Button>
             <input
               id={this.state.id}
-              style={{ visibility: "hidden", height: "0", }}
+              style={{ visibility: "hidden", height: "0" }}
               type="file"
               onChange={this.handleChange.bind(this)}
             />

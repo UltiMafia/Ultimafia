@@ -262,7 +262,7 @@ export default function LobbyBrowser() {
     <Stack direction="column" spacing={1}>
       {lobbyTabs}
       <Grid2 container rowSpacing={2} columnSpacing={2}>
-        <Grid2 size={{ xs: 12, md: 8, }}>
+        <Grid2 size={{ xs: 12, md: 8 }}>
           <Stack spacing={2}>
             <Box>
               {buttons}
@@ -278,7 +278,7 @@ export default function LobbyBrowser() {
             />
           </Stack>
         </Grid2>
-        <Grid2 size={{ xs: 12, md: 4, }}>
+        <Grid2 size={{ xs: 12, md: 4 }}>
           <Stack spacing={1}>
             <FeaturedSetup
               lobby={lobbyName}

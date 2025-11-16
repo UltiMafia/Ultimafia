@@ -4250,21 +4250,31 @@ function SettingsForm({ handleClose = null }) {
     }
   }
 
-  const menuContent = <Form compact fields={formFields} onChange={updateFormFields} />;
+  const menuContent = (
+    <Form compact fields={formFields} onChange={updateFormFields} />
+  );
 
   const menuFooter = (
     <Stack direction="row" spacing={1}>
       {handleClose && (
-        <Button variant="outlined" onClick={cancel} sx={{
-          flex: "1",
-        }}>
+        <Button
+          variant="outlined"
+          onClick={cancel}
+          sx={{
+            flex: "1",
+          }}
+        >
           Cancel
         </Button>
       )}
-      <div style={{ flex: 1, }} />
-      <Button color="primary" onClick={saveSettings} sx={{
-        flex: "1",
-      }}>
+      <div style={{ flex: 1 }} />
+      <Button
+        color="primary"
+        onClick={saveSettings}
+        sx={{
+          flex: "1",
+        }}
+      >
         Save
       </Button>
     </Stack>

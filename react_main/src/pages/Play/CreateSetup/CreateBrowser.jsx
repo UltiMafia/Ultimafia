@@ -785,11 +785,13 @@ export default function CreateSetup(props) {
           })}
         </Stack>
       </Stack>
-      <Paper sx={{
-        p: 1,
-        width: isPhoneDevice ? undefined : "50%",
-        alignSelf: isPhoneDevice ? undefined : "center",
-      }}>
+      <Paper
+        sx={{
+          p: 1,
+          width: isPhoneDevice ? undefined : "50%",
+          alignSelf: isPhoneDevice ? undefined : "center",
+        }}
+      >
         {user.loggedIn && (
           <Stack direction={isPhoneDevice ? "column" : "row"}>
             <Form
