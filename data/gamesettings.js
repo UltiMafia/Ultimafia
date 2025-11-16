@@ -31,6 +31,7 @@ const gameSettingData = {
       description:
         "Whispers will have 1% chance to leak (Add this additional times to increase the leak chance). If a whisper leaks then everyone will see it.",
       allowDuplicate: true,
+      maxCount: 100,
       requires: ["Whispers"],
     },
     "Whisper Leak Chance x10": {
@@ -40,6 +41,7 @@ const gameSettingData = {
       description:
         "Whispers will have 10% chance to leak (Add this additional times to increase the leak chance). If a whisper leaks then everyone will see it.",
       allowDuplicate: true,
+      maxCount: 100,
       requires: ["Whispers"],
     },
     "Must Act": {

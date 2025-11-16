@@ -25,12 +25,8 @@ module.exports = class BackUpModifier extends Card {
         let newRole = "Sidekick";
         let currRole = this.player.role.name;
 
-        if (this.player.role.alignment == "Village") {
-          newRole = "Student";
-        } else if (this.player.role.alignment == "Mafia") {
-          newRole = "Understudy";
-        } else if (this.player.role.alignment == "Cult") {
-          newRole = "Devotee";
+        if (this.player.role.alignment != "Independent") {
+          newRole = null;
         }
 
         this.player.queueAlert(
@@ -67,12 +63,8 @@ module.exports = class BackUpModifier extends Card {
         let newRole = "Sidekick";
         let currRole = this.player.role.name;
 
-        if (this.player.role.alignment == "Village") {
-          newRole = "Student";
-        } else if (this.player.role.alignment == "Mafia") {
-          newRole = "Understudy";
-        } else if (this.player.role.alignment == "Cult") {
-          newRole = "Devotee";
+        if (this.player.role.alignment != "Independent") {
+          newRole = null;
         }
 
         this.player.queueAlert(

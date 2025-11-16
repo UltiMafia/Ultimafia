@@ -6,28 +6,23 @@ module.exports = class DieIfVisited extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Modifier", "Kill"])) {
-          return;
-        }
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_KILL_DEFAULT,
-          labels: ["kill", "hidden"],
-          run: function () {
-            if (this.hasVisitors() === true) {
+    this.passiveActions = [
+      {
+        ability: ["Modifier", "Kill"],
+        state: "Night",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_KILL_DEFAULT,
+        labels: ["kill", "hidden"],
+        role: role,
+        run: function () {
+          if (this.hasVisitors() === true) {
+            if (this.dominates(this.actor)) {
               this.actor.kill("basic", this.actor);
             }
-          },
-        });
-
-        this.game.queueAction(action);
+          }
+        },
       },
-    };
+    ];
   }
 };

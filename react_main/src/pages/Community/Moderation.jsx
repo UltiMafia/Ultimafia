@@ -100,9 +100,7 @@ export default function Moderation() {
     return (
       <div className="box-panel group-panel" key={group.name}>
         <Stack direction="row" spacing={1}>
-          <Typography variant="h4">
-            {group.name + "s"}
-          </Typography>
+          <Typography variant="h4">{group.name + "s"}</Typography>
           {group.badge && (
             <Badge
               icon={group.badge}

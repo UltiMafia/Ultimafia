@@ -32,44 +32,35 @@ module.exports = class DropOwnItems extends Card {
       },
     ];
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Item"])) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          role: this,
-          priority: PRIORITY_ITEM_TAKER_DEFAULT + 1,
-          labels: ["dropItems", "hidden"],
-          run: function () {
-            for (let item of this.actor.items) {
-              item.drop();
-            }
-          },
-        });
-
-        this.game.queueAction(action);
-        var action2 = new Action({
-          actor: this.player,
-          game: this.player.game,
-          role: this,
-          priority: PRIORITY_ITEM_TAKER_EARLY + 1,
-          labels: ["dropItems", "hidden"],
-          run: function () {
-            for (let item of this.actor.items) {
-              item.drop();
-            }
-          },
-        });
-        this.game.queueAction(action2);
+    this.passiveActions = [
+      {
+        ability: ["Item", "Modifier"],
+        state: "Night",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_ITEM_TAKER_DEFAULT + 1,
+        labels: ["dropItems", "hidden"],
+        role: role,
+        run: function () {
+          for (let item of this.actor.items) {
+            item.drop();
+          }
+        },
       },
-    };
+      {
+        ability: ["Item", "Modifier"],
+        state: "Night",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_ITEM_TAKER_EARLY + 1,
+        labels: ["dropItems", "hidden"],
+        role: role,
+        run: function () {
+          for (let item of this.actor.items) {
+            item.drop();
+          }
+        },
+      },
+    ];
   }
 };

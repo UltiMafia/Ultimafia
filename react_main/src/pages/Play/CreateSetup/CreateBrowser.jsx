@@ -296,6 +296,15 @@ export default function CreateSetup(props) {
             intitialCount = gameSettings[actualKey];
           }
 
+          if (
+            intitialCount + increment >= action.gameSetting.maxCount &&
+            action.gameSetting.allowDuplicate
+          ) {
+            return update(gameSettings, {
+              [actualKey]: { $set: action.gameSetting.maxCount },
+            });
+          }
+
           return update(gameSettings, {
             [actualKey]: { $set: intitialCount + increment },
           });
@@ -785,11 +794,13 @@ export default function CreateSetup(props) {
           })}
         </Stack>
       </Stack>
-      <Paper sx={{
-        p: 1,
-        width: isPhoneDevice ? undefined : "50%",
-        alignSelf: isPhoneDevice ? undefined : "center",
-      }}>
+      <Paper
+        sx={{
+          p: 1,
+          width: isPhoneDevice ? undefined : "50%",
+          alignSelf: isPhoneDevice ? undefined : "center",
+        }}
+      >
         {user.loggedIn && (
           <Stack direction={isPhoneDevice ? "column" : "row"}>
             <Form

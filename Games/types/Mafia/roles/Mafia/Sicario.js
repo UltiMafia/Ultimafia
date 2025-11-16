@@ -9,7 +9,7 @@ module.exports = class Sicario extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "DaySlasher",
+      "DaySicario",
     ];
   }
 };

@@ -104,7 +104,7 @@ export function getSiteTheme(customPrimaryColor) {
     MuiModal: {
       defaultProps: {
         disableScrollLock: true,
-      }
+      },
     },
     MuiTextField: {
       defaultProps: {

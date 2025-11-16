@@ -14,5 +14,3 @@ module.exports = class Mastermind extends Role {
     ];
   }
 };
-
-//"WinInsteadOfCult",
