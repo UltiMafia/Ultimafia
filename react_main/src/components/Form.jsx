@@ -19,28 +19,134 @@ import { colorHasGoodBackgroundContrast } from "../shared/colors";
 import {
   Autocomplete,
   TextField,
-  Select,
   MenuItem,
-  Slider,
   Button,
-  Box,
-  Grid,
   IconButton,
+  Stack,
+  FormControlLabel,
   Typography,
+  Checkbox,
+  Box,
+  FormControl,
+  InputLabel,
+  FormHelperText,
+  Paper,
+  Tooltip,
+  Slider,
 } from "@mui/material";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
-export default function Form(props) {
-  function onChange(event, field, localOnly) {
-    var value = event.target.value;
+const UNGROUPED_NAME = "__UNGROUPED__";
 
-    if (field.min != null && Number(value) < field.min) value = field.min;
-    else if (field.max != null && Number(value) > field.max) value = field.max;
+function FormField({
+  children,
+  field,
+  deps,
+  compact=false,
+  forceSeparateLabel=false,
+  useFormControl=false,
+  additionalButtons=<></>
+}) {
+  const separateLabel = forceSeparateLabel || (field.type !== "boolean" && !compact);
+  const isUnsaved = deps !== undefined && deps[field.saveBtnDiffer] !== field.value;
+
+  const unsavedIndicator = (
+    <>
+      {field.saveBtn && isUnsaved && (
+        <Tooltip title="You have unsaved changes">
+          <i className="fas fa-dot-circle" style={{ color: "var(--mui-palette-primary-main)" }} />
+        </Tooltip>
+      )}
+    </>
+  );
+
+  const buttons = (
+    <>
+      {field.saveBtn && isUnsaved && (
+        <Button variant="text" onClick={saveBtnOnClick}>
+          {field.saveBtn}
+        </Button>
+      )}
+      {field.clearBtn && field.value && (
+        <Button variant="text" onClick={clearBtnOnClick}>
+          {field.clearBtn}
+        </Button>
+      )}
+      {additionalButtons}
+    </>
+  )
+
+  function saveBtnOnClick(e) {
+    let conf = !field.confirm || window.confirm(field.confirm);
+
+    if (conf) {
+      if (field.saveBtnOnClick)
+        field.saveBtnOnClick(field.value, deps);
+      else onChange(e, field);
+    }
+  }
+
+  function clearBtnOnClick(e) {
+    if (field.clearBtnOnClick) {
+      field.clearBtnOnClick(deps);
+    }
+  }
+
+  return (
+    <Stack direction="column" spacing={0.5}>
+      {separateLabel && !useFormControl && (
+        <Stack direction="row" spacing={1} sx={{
+          alignItems: "center",
+          "& .MuiButton-root": {
+            p: 0,
+          }
+        }}>
+          <Typography sx={{
+            fontWeight: "bold",
+            lineHeight: 1,
+            mt: "var(--mui-spacing) !important",
+          }}>
+            {field.label}
+          </Typography>
+          {unsavedIndicator}
+          {buttons}
+        </Stack>
+      )}
+      <Stack direction="column" sx={{
+        position: "relative",
+      }}>
+        {!useFormControl && children}
+        {useFormControl && (
+          <FormControl>
+            {separateLabel && (<InputLabel htmlFor={field.ref}>{field.label}</InputLabel>)}
+            {children}
+            <FormHelperText>
+              {field.extraInfo}
+            </FormHelperText>
+          </FormControl>
+        )}
+      </Stack>
+    </Stack>
+  );
+}
+
+export default function Form({
+  onChange,
+  fields,
+  deps,
+  submitText,
+  onSubmit,
+  sx,
+  compact=false,
+}) {
+  function onFieldChange(event, field, localOnly) {
+    let value = field.type === "boolean" ? event.target.checked : event.target.value;
 
     if (field.onChange) {
       field.onChange(event);
     }
 
-    props.onChange({
+    onChange({
       ref: field.ref,
       prop: "value",
       value: value,
@@ -48,381 +154,325 @@ export default function Form(props) {
     });
   }
 
-  function onDChange(date, field, localOnly) {
-    var value = new Date(date);
+  // Group fields together
+  const formFieldGroups = fields.reduce((accumulator, field) => {
+    const groupName = field.groupName || UNGROUPED_NAME;
+    if(accumulator[groupName] === undefined) {
+      accumulator[groupName] = [];
+    }
+    accumulator[groupName].push(field);
+    return accumulator;
+  }, {});
 
-    props.onChange({
-      ref: field.ref,
-      prop: "value",
-      value: value,
-      localOnly,
-    });
-  }
+  const groupedFormFields = Object.keys(formFieldGroups).map((group) => {
+    const formFields = formFieldGroups[group].map((field) => {
+      const disabled =
+        typeof field.disabled == "function"
+          ? field.disabled(deps)
+          : field.disabled;
+      var showIf;
 
-  const formFields = props.fields.map((field, i) => {
-    const disabled =
-      typeof field.disabled == "function"
-        ? field.disabled(props.deps)
-        : field.disabled;
-    const fieldWrapperClass = `field-wrapper ${disabled ? "disabled" : ""}`;
-    var showIf;
+      if (typeof field.showIf == "string") showIf = [field.showIf];
+      else showIf = field.showIf;
 
-    if (typeof field.showIf == "string") showIf = [field.showIf];
-    else showIf = field.showIf;
+      if (Array.isArray(showIf)) {
+        for (let ref of showIf) {
+          let inverted = ref[0] === "!";
 
-    if (Array.isArray(showIf)) {
-      for (let ref of showIf) {
-        let inverted = ref[0] === "!";
+          if (inverted) ref = ref.slice(1);
 
-        if (inverted) ref = ref.slice(1);
+          for (let field of fields) {
+            if (field.ref === ref && field.type === "boolean") {
+              let value = field.value === true;
 
-        for (let field of props.fields) {
-          if (field.ref === ref && field.type === "boolean") {
-            let value = field.value === true;
+              if ((value ^ inverted) === 0) return;
 
-            if ((value ^ inverted) === 0) return;
-
-            break;
+              break;
+            }
           }
         }
-      }
-    } else if (typeof showIf == "function") if (!showIf(props.deps)) return;
+      } else if (typeof showIf == "function") if (!showIf(deps)) return;
 
-    const value =
-      typeof field.value == "function" ? field.value(props.deps) : field.value;
+      const value =
+        typeof field.value == "function" ? field.value(deps) : field.value;
 
-    const ExtraInfo = !field?.extraInfo ? null : (
-      <Typography variant="caption" sx={{ p: 0.5 }}>
-        {field?.extraInfo}
-      </Typography>
-    );
-    switch (field.type) {
-      case "text":
-        return (
-          <div className={fieldWrapperClass} key={field.ref}>
-            <div className="label">{field.label}</div>
-            {field.type === "text" && field.textStyle === "large" ? (
-              <textarea
-                value={value || ""}
-                placeholder={field.placeholder}
-                disabled={disabled}
-                onChange={(e) =>
-                  !field.fixed && onChange(e, field, field.saveBtn)
-                }
-                onClick={(e) => field.highlight && e.target.select()}
-              />
-            ) : (
-              <input
-                type={field.type}
-                value={value || ""}
-                placeholder={field.placeholder}
-                disabled={disabled}
-                onChange={(e) =>
-                  !field.fixed && onChange(e, field, field.saveBtn)
-                }
-                onClick={(e) => field.highlight && e.target.select()}
-              />
-            )}
-            {field.saveBtn &&
-              props.deps[field.saveBtnDiffer] !== field.value && (
-                <div
-                  className="btn btn-theme extra"
-                  onClick={(e) => {
-                    let conf = !field.confirm || window.confirm(field.confirm);
-
-                    if (conf) {
-                      if (field.saveBtnOnClick)
-                        field.saveBtnOnClick(field.value, props.deps);
-                      else onChange(e, field);
-                    }
-                  }}
-                >
-                  {field.saveBtn}
-                </div>
+      switch (field.type) {
+        case "text":
+          return (
+            <FormField field={field} deps={deps} compact={compact} key={field.ref}>
+              {field.type === "text" && field.textStyle === "large" ? (
+                <TextField
+                  multiline
+                  rows={3}
+                  defaultValue={value || ""}
+                  placeholder={field.placeholder}
+                  disabled={disabled}
+                  onChange={(e) =>
+                    !field.fixed && onFieldChange(e, field, field.saveBtn)
+                  }
+                  onClick={(e) => field.highlight && e.target.select()}
+                  helperText={field.extraInfo}
+                  label={compact ? field.label : undefined}
+                />
+              ) : (
+                <TextField
+                  defaultValue={value || ""}
+                  placeholder={field.placeholder}
+                  disabled={disabled}
+                  onChange={(e) =>
+                    !field.fixed && onFieldChange(e, field, field.saveBtn)
+                  }
+                  onClick={(e) => field.highlight && e.target.select()}
+                  helperText={field.extraInfo}
+                  label={compact ? field.label : undefined}
+                />
               )}
-            {field.clearBtn && field.value && (
-              <div
-                className="btn btn-theme-sec extra"
-                onClick={(e) => {
-                  if (field.clearBtnOnClick) {
-                    field.clearBtnOnClick(props.deps);
+            </FormField>
+          );
+        case "emoteUpload":
+          const yourEmotes = Object.keys(value).map((key) => (
+            <Paper variant="outlined" key={key} sx={{
+              p: 0.5,
+            }}>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <div
+                  className="emote"
+                  title={key}
+                  style={{
+                    backgroundImage: `url('/${value[key].path}')`,
+                  }}
+                />
+                <Typography sx={{ flex: "1" }}>
+                  {key}
+                </Typography>
+                <IconButton
+                  onClick={() =>
+                    field.onCustomEmoteDelete(value[key].id, deps)
+                  }
+                >
+                  <i className="fas fa-trash" />
+                </IconButton>
+              </Stack>
+            </Paper>
+          ));
+          return (
+            <FormField field={field} deps={deps} compact={compact} key={field.ref}>
+              <Stack direction="column" spacing={1}>
+                <EmoteUpload
+                  id="emote-upload"
+                  disabled={disabled}
+                  deps={deps}
+                  field={field}
+                />
+                <Stack direction="column">
+                  <Typography variant="caption">
+                    Your Custom Emotes
+                  </Typography>
+                  <Stack direction="column" spacing={1}>
+                    {yourEmotes}
+                  </Stack>
+                </Stack>
+              </Stack>
+            </FormField>
+          );
+        case "number":
+          return (
+            <FormField field={field} deps={deps} compact={compact} key={field.ref}>
+              <TextField
+                type="number"
+                defaultValue={field.value || "0"}
+                step={field.step}
+                disabled={disabled}
+                onChange={(e) => onFieldChange(e, field)}
+                helperText={field.extraInfo}
+                label={compact ? field.label : undefined}
+                slotProps={{
+                  htmlInput: {
+                    min: field.min,
+                    max: field.max,
                   }
                 }}
+              />
+            </FormField>
+          );
+        case "boolean":
+          return (
+            <FormField field={field} deps={deps} compact={compact} key={field.ref}>
+              <FormControlLabel label={field.label} control={<Checkbox
+                defaultChecked={field.value || false}
+                disabled={disabled}
+                onChange={(e) => onFieldChange(e, field)}
+                />}
+              />
+            </FormField>
+          );
+        case "select":
+          return (
+            <FormField field={field} deps={deps} compact={compact} key={field.ref}>
+              <TextField
+                select
+                defaultValue={field.value || field.options[0].ref}
+                disabled={disabled}
+                onChange={(e) => onFieldChange(e, field)}
+                helperText={field.extraInfo}
+                label={compact ? field.label : undefined}
               >
-                {field.clearBtn}
-              </div>
-            )}
-            {ExtraInfo}
-          </div>
-        );
-      case "emoteUpload":
-        const yourEmotes = Object.keys(value).map((key) => (
-          <div className="existing-custom-emote">
-            <div>{key}</div>
-            <div
-              className="emote"
-              title={key}
-              style={{
-                backgroundImage: `url('/${value[key].path}')`,
-              }}
-            />
-            <IconButton
-              onClick={() =>
-                field.onCustomEmoteDelete(value[key].id, props.deps)
-              }
-            >
-              <i className="fas fa-trash" />
-            </IconButton>
-          </div>
-        ));
-        return (
-          <>
-            <EmoteUpload
-              id="emote-upload"
-              disabled={disabled}
-              deps={props.deps}
-              field={field}
-              fieldWrapperClass={fieldWrapperClass}
-            />
-            <div>Your Custom Emotes:</div>
-            <div className="your-emotes">{yourEmotes}</div>
-          </>
-        );
-      case "number":
-        return (
-          <div className={fieldWrapperClass} key={field.ref}>
-            <div className="label">{field.label}</div>
-            <input
-              type="number"
-              value={field.value || "0"}
-              min={field.min}
-              max={field.max}
-              step={field.step}
-              disabled={disabled}
-              onChange={(e) => onChange(e, field)}
-            />
-          </div>
-        );
-      case "boolean":
-        return (
-          <div className={fieldWrapperClass} key={field.ref}>
-            <div className="label">{field.label}</div>
-            <div className="switch-wrapper">
-              <Switch
-                value={field.value || false}
-                disabled={disabled}
-                onChange={(e) => onChange(e, field)}
-              />
-            </div>
-          </div>
-        );
-      case "select":
-        return (
-          <div className={fieldWrapperClass} key={field.ref}>
-            <div className="label">{field.label}</div>
-            <select
-              value={field.value || field.options[0].ref}
-              disabled={disabled}
-              onChange={(e) => onChange(e, field)}
-            >
-              {field.options.map((option) => (
-                <option value={option.value} key={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        );
-      case "range":
-        return (
-          <div className={fieldWrapperClass} key={field.ref}>
-            <div className="label">{field.label}</div>
-            <div className="range-wrapper">
-              <input
-                type="range"
-                min={field.min}
-                max={field.max}
-                step={field.step}
-                value={field.value}
-                disabled={disabled}
-                onChange={(e) => onChange(e, field)}
-              />
-            </div>
-          </div>
-        );
-      case "color":
-        return (
-          <>
-            {ExtraInfo}
-            <div className={fieldWrapperClass} key={field.ref}>
-              <div className="label">{field.label}</div>
+                {field.options.map((option) => (
+                  <MenuItem value={option.value} key={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </FormField>
+          );
+        case "range":
+          return (
+            <FormField field={field} deps={deps} compact={compact} key={field.ref} forceSeparateLabel>
+              <Paper sx={{ px: 2, }}>
+                <Stack direction="column" sx={{
+                  width: "100%",
+                  justifyContent: "center",
+                }}>
+                  <Slider
+                    min={field.min}
+                    max={field.max}
+                    step={field.step}
+                    value={field.value}
+                    disabled={disabled}
+                    onChange={(e) => onFieldChange(e, field)}
+                    helperText={field.extraInfo}
+                    label={compact ? field.label : undefined}
+                  />
+                </Stack>
+              </Paper>
+            </FormField>
+          );
+        case "color":
+          return (
+            <FormField field={field} deps={deps} compact={compact} key={field.ref} additionalButtons={
+              <>
+                {!field.noReset && field.value !== field.default && field.value && (
+                  <Button variant="text" onClick={() => onFieldChange({ target: { value: field.default } }, field)}>
+                    Reset
+                  </Button>
+                )}
+              </>
+            }>
               <ColorPicker
                 value={field.value}
                 default={field.default}
                 alpha={field.alpha}
                 disabled={disabled}
-                onChange={(e) => onChange(e, field)}
+                onChange={(e) => onFieldChange(e, field)}
                 fieldRef={field.ref}
               />
-              {!field.noReset &&
-                field.value !== field.default &&
-                field.value && (
-                  <div
-                    className="btn btn-theme extra"
-                    onClick={() =>
-                      onChange({ target: { value: field.default } }, field)
-                    }
-                  >
-                    Reset
-                  </div>
-                )}
-            </div>
-          </>
-        );
-      case "date":
-        if (field.value === "undefined") {
-          field.value = undefined;
-        }
+              </FormField>
+          );
+        case "date":
+          if (field.value === "undefined") {
+            field.value = undefined;
+          }
 
-        let selectedValue = props.deps.user[field.ref];
-        if (selectedValue === "undefined") {
-          selectedValue = undefined;
-        }
+          let selectedValue = deps.user[field.ref];
+          if (selectedValue === "undefined") {
+            selectedValue = undefined;
+          }
 
-        // Convert date to YYYY-MM-DD format for HTML5 date input
-        const formatDateForInput = (date) => {
-          if (!date) return "";
-          const d = new Date(date);
-          if (isNaN(d.getTime())) return "";
-          const year = d.getFullYear();
-          const month = String(d.getMonth() + 1).padStart(2, "0");
-          const day = String(d.getDate()).padStart(2, "0");
-          return `${year}-${month}-${day}`;
-        };
+          // Convert date to YYYY-MM-DD format for HTML5 date input
+          const formatDateForInput = (date) => {
+            if (!date) return "";
+            const d = new Date(date);
+            if (isNaN(d.getTime())) return "";
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, "0");
+            const day = String(d.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`;
+          };
 
-        return (
-          <div className={fieldWrapperClass} key={field.ref}>
-            <div className="label">{field.label}</div>
-            <input
-              type="date"
-              value={formatDateForInput(field.value || selectedValue)}
-              disabled={disabled}
-              onChange={(e) => onChange(e, field, true)}
-            />
-            {field.saveBtn && !props.deps.user[field.saveBtnDiffer] && (
-              <div
-                className="btn btn-theme extra"
-                onClick={(e) => {
-                  let conf = !field.confirm || window.confirm(field.confirm);
-
-                  if (conf) {
-                    if (field.saveBtnOnClick)
-                      field.saveBtnOnClick(
-                        field.value || field.default,
-                        props.deps
-                      );
-                    else onChange(e, field);
-                  }
-                }}
-              >
-                {field.saveBtn}
-              </div>
-            )}
-            {field.clearBtn && field.value && (
-              <div
-                className="btn btn-theme-sec extra"
-                onClick={(e) => {
-                  if (field.clearBtnOnClick) {
-                    field.clearBtnOnClick(props.deps);
-                  }
-                }}
-              >
-                {field.clearBtn}
-              </div>
-            )}
-          </div>
-        );
-      case "datetime-local":
-        return (
-          <div className={fieldWrapperClass} key={field.ref}>
-            <div className="label">{field.label}</div>
-            <div className="datetime-wrapper">
+          return (
+            <FormField field={field} deps={deps} compact={compact} key={field.ref}>
+              <input
+                type="date"
+                value={formatDateForInput(field.value || selectedValue)}
+                disabled={disabled}
+                onChange={(e) => onFieldChange(e, field, true)}
+              />
+            </FormField>
+          );
+        case "datetime-local": {
+          return (
+            <FormField field={field} deps={deps} compact={compact} key={field.ref} useFormControl>
               <input
                 type="datetime-local"
                 min={dateToHTMLString(field.min)}
                 max={dateToHTMLString(field.max)}
                 value={dateToHTMLString(field.value)}
                 disabled={disabled}
-                onChange={(e) => onChange(e, field)}
+                onChange={(e) => onFieldChange(e, field)}
               />
-            </div>
-          </div>
-        );
-    }
+            </FormField>
+          );
+        }
+        default: {
+          throw Error(`Unknown Form.jsx input type ${field.type}`);
+        }
+      }
+    });
+
+    return (
+      <Stack direction="column" spacing={1}>
+        {group !== UNGROUPED_NAME && (
+          <Typography variant="h1" sx={{
+            borderBottom: 1,
+            borderColor: "divider",
+            pt: 1,
+          }}>
+            {group}
+          </Typography>
+        )}
+        {formFields}
+      </Stack>
+    );
   });
 
   return (
-    <div className="form">
-      {formFields}
-      {props.submitText && (
-        <Button onClick={props.onSubmit}>{props.submitText}</Button>
-      )}
-    </div>
-  );
-}
-
-function Switch(props) {
-  return (
-    <div
-      className={`switch ${props.value ? "on" : ""}`}
-      onClick={() =>
-        !props.disabled && props.onChange({ target: { value: !props.value } })
+    <Stack className="form" direction="column" spacing={1} sx={{
+      ...sx,
+      "& .MuiCheckbox-root": {
+        p: compact ? 0 : undefined,
+        mx: compact ? 1 : undefined,
       }
-    >
-      <div className="track" />
-      <div className="thumb" />
-      <input type="hidden" value={props.value} />
-    </div>
+    }}>
+      {groupedFormFields}
+      {submitText && (
+        <Button onClick={onSubmit}>{submitText}</Button>
+      )}
+    </Stack>
   );
 }
 
 function ColorPicker(props) {
-  const [picking, setPicking] = useState(false);
-  const pickerRef = useRef();
   const value = props.value || props.default;
   const disabled = props.disabled;
 
-  function onClick(e) {
-    if (!disabled && e.target === pickerRef.current) setPicking(!picking);
-  }
-
-  function onChangeComplete(color, event) {
+  function onChangeComplete(event) {
+    const color = event.target.value;
     if (props.fieldRef === "nameColor" || props.fieldRef === "textColor") {
-      if (colorHasGoodBackgroundContrast(color.hex)) {
-        props.onChange({ target: { value: color.hex } });
+      if (colorHasGoodBackgroundContrast(color)) {
+        props.onChange({ target: { value: color } });
       }
     } else {
-      props.onChange({ target: { value: color.hex } });
+      props.onChange({ target: { value: color } });
     }
   }
 
-  useOnOutsideClick(pickerRef, () => setPicking(false));
-
   return (
-    <div
-      className={`color-picker ${disabled ? "disabled" : ""}`}
-      style={{ backgroundColor: value }}
-      onClick={onClick}
-      ref={pickerRef}
-    >
-      {picking && (
-        <ChromePicker
-          color={value}
-          disableAlpha={!props.alpha}
-          onChangeComplete={onChangeComplete}
-        />
-      )}
-    </div>
+    <input
+      type="color"
+      value={value}
+      disabled={disabled}
+      onChange={onChangeComplete}
+    />
   );
 }
 
@@ -469,35 +519,54 @@ class EmoteUpload extends React.Component {
   buildPreview() {
     if (this.state.imageURI !== null && this.state.emoteText) {
       return (
-        <>
-          <div className="emote-preview">
-            <div>Preview of :{this.state.emoteText}:</div>
-            <div
-              className="emote"
-              title={this.state.emoteText}
-              style={{
-                backgroundImage: `url('${this.state.imageURI}')`,
-              }}
-            />
-            <div
-              className="btn btn-theme"
-              onClick={(e) => {
-                this.props.field.onCustomEmoteUpload(
-                  this.state.emoteText,
-                  this.state.imageFilename,
-                  this.state.imageMimeType,
-                  this.state.imageURI,
-                  this.props.deps
-                );
-              }}
-            >
-              Submit
-            </div>
-          </div>
-        </>
+        <Stack direction="column">
+          <Typography variant="caption">
+            Preview
+          </Typography>
+          <Paper variant="outlined" sx={{
+            p: 0.5,
+          }}>
+            <Stack direction="row" spacing={1} sx={{
+              alignItems: "center",
+            }}>
+              <div
+                className="emote"
+                title={this.state.emoteText}
+                style={{
+                  backgroundImage: `url('${this.state.imageURI}')`,
+                }}
+              />
+              <Typography>
+                :{this.state.emoteText}:
+              </Typography>
+              <Button size="small" sx={{
+                  alignSelf: "center",
+                  marginLeft: "auto !important",
+                }}
+                onClick={(e) => {
+                  this.setState({
+                    emoteText: "",
+                    imageURI: null,
+                    imageFilename: null,
+                    imageMimeType: null,
+                  });
+                  this.props.field.onCustomEmoteUpload(
+                    this.state.emoteText,
+                    this.state.imageFilename,
+                    this.state.imageMimeType,
+                    this.state.imageURI,
+                    this.props.deps
+                  );
+                }}
+              >
+                Submit
+              </Button>
+            </Stack>
+          </Paper>
+        </Stack>
       );
     } else {
-      return null;
+      return <></>;
     }
   }
 
@@ -530,33 +599,36 @@ class EmoteUpload extends React.Component {
     const preview = this.buildPreview();
 
     return (
-      <>
-        <div
-          className={this.props.fieldWrapperClass}
-          key={this.props.field.ref}
-        >
-          <div className="label">{this.props.field.label}</div>
-          <input
-            type="text"
+      <Stack direction="column" spacing={1}>
+        <Stack direction="row" spacing={1}>
+          <TextField
             placeholder="your emote name here"
             maxlength={25}
             disabled={this.props.disabled}
             onChange={this.updateEmoteText.bind(this)}
+            sx={{
+              flex: "1"
+            }}
           />
-        </div>
-        <div className="emote-upload">
-          <label htmlFor={this.state.id} className="btn btn-theme">
-            Upload an image
-          </label>
-          <input
-            id={this.state.id}
-            style={{ visibility: "hidden" }}
-            type="file"
-            onChange={this.handleChange.bind(this)}
-          />
-          {preview}
-        </div>
-      </>
+          <Stack direction="column" sx={{
+            flex: "1",
+            minWidth: 0,
+          }}>
+            <Button component="label" htmlFor={this.state.id}  sx={{
+              flex: "1",
+            }}>
+              Upload
+            </Button>
+            <input
+              id={this.state.id}
+              style={{ visibility: "hidden", height: "0", }}
+              type="file"
+              onChange={this.handleChange.bind(this)}
+            />
+          </Stack>
+        </Stack>
+        {preview}
+      </Stack>
     );
   }
 }

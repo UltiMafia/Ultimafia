@@ -4250,28 +4250,31 @@ function SettingsForm({ handleClose = null }) {
     }
   }
 
-  const menuContent = <Form fields={formFields} onChange={updateFormFields} />;
+  const menuContent = <Form compact fields={formFields} onChange={updateFormFields} />;
 
   const menuFooter = (
-    <div className="settings-control">
-      <ButtonGroup variant="contained">
-        <Button color="primary" onClick={saveSettings}>
-          Save
+    <Stack direction="row" spacing={1}>
+      {handleClose && (
+        <Button variant="outlined" onClick={cancel} sx={{
+          flex: "1",
+        }}>
+          Cancel
         </Button>
-        {handleClose && (
-          <Button color="secondary" onClick={cancel}>
-            Cancel
-          </Button>
-        )}
-      </ButtonGroup>
-    </div>
+      )}
+      <div style={{ flex: 1, }} />
+      <Button color="primary" onClick={saveSettings} sx={{
+        flex: "1",
+      }}>
+        Save
+      </Button>
+    </Stack>
   );
 
   return (
-    <>
+    <Stack direction="column" spacing={1}>
       {menuContent}
       {menuFooter}
-    </>
+    </Stack>
   );
 }
 

@@ -99,7 +99,10 @@ export default function Moderation() {
 
     return (
       <div className="box-panel group-panel" key={group.name}>
-        <Typography variant="h4">
+        <Stack direction="row" spacing={1}>
+          <Typography variant="h4">
+            {group.name + "s"}
+          </Typography>
           {group.badge && (
             <Badge
               icon={group.badge}
@@ -107,8 +110,7 @@ export default function Moderation() {
               name={group.name}
             />
           )}
-          {group.name + "s"}
-        </Typography>
+        </Stack>
         <Grid container rowSpacing={1} columnSpacing={1}>
           {members}
         </Grid>

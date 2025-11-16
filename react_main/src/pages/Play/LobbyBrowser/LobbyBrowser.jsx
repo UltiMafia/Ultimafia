@@ -15,6 +15,7 @@ import {
   Box,
   Divider,
   Grid,
+  Grid2,
   List,
   ListItem,
   Paper,
@@ -159,43 +160,45 @@ export default function LobbyBrowser() {
   // Allow logged-out users to access LobbyBrowser
 
   const lobbyTabs = (
-    <Box sx={{ display: "flex" }}>
-      <Tabs
-        value={lobbyName}
-        onChange={(_, newValue) => setLobbyName(newValue)}
-        variant="scrollable"
-        scrollButtons="auto"
-        allowScrollButtonsMobile
-      >
-        {lobbies
-          .filter((lobby) => !lobby.hidden)
-          .map((lobby) => (
-            <Tab
-              key={`lobby-tab-${lobby.name}`}
-              label={
-                <div>
-                  {lobby.displayName}
-                  {openGamesCounts[lobby.name] && (
-                    <span
-                      style={{
-                        marginLeft: "5px",
-                        borderRadius: "50%",
-                        backgroundColor: theme.palette.secondary.main,
-                        color: "white",
-                        padding: "0 5px",
-                      }}
-                    >
-                      {openGamesCounts[lobby.name]}
-                    </span>
-                  )}
-                </div>
-              }
-              value={lobby.name}
-              disabled={lobby?.disabled}
-            />
-          ))}
-      </Tabs>
-    </Box>
+    <Tabs
+      value={lobbyName}
+      onChange={(_, newValue) => setLobbyName(newValue)}
+      variant="scrollable"
+      scrollButtons="auto"
+      allowScrollButtonsMobile
+      sx={{
+        borderBottom: 1,
+        borderColor: "divider",
+      }}
+    >
+      {lobbies
+        .filter((lobby) => !lobby.hidden)
+        .map((lobby) => (
+          <Tab
+            key={`lobby-tab-${lobby.name}`}
+            label={
+              <div>
+                {lobby.displayName}
+                {openGamesCounts[lobby.name] && (
+                  <span
+                    style={{
+                      marginLeft: "5px",
+                      borderRadius: "50%",
+                      backgroundColor: theme.palette.secondary.main,
+                      color: "white",
+                      padding: "0 5px",
+                    }}
+                  >
+                    {openGamesCounts[lobby.name]}
+                  </span>
+                )}
+              </div>
+            }
+            value={lobby.name}
+            disabled={lobby?.disabled}
+          />
+        ))}
+    </Tabs>
   );
 
   const gameList = loading ? (
@@ -256,15 +259,10 @@ export default function LobbyBrowser() {
   );
 
   return (
-    <Box
-      sx={{
-        mt: 1,
-      }}
-    >
+    <Stack direction="column" spacing={1}>
       {lobbyTabs}
-      <Divider sx={{ mb: 1 }} />
-      <Grid container rowSpacing={2} columnSpacing={2}>
-        <Grid item xs={12} md={8}>
+      <Grid2 container rowSpacing={2} columnSpacing={2}>
+        <Grid2 size={{ xs: 12, md: 8, }}>
           <Stack spacing={2}>
             <Box>
               {buttons}
@@ -279,8 +277,8 @@ export default function LobbyBrowser() {
               }
             />
           </Stack>
-        </Grid>
-        <Grid item xs={12} md={4}>
+        </Grid2>
+        <Grid2 size={{ xs: 12, md: 4, }}>
           <Stack spacing={1}>
             <FeaturedSetup
               lobby={lobbyName}
@@ -292,8 +290,8 @@ export default function LobbyBrowser() {
             <Poll lobby={lobbyName} />
             <Chat />
           </Stack>
-        </Grid>
-      </Grid>
-    </Box>
+        </Grid2>
+      </Grid2>
+    </Stack>
   );
 }
