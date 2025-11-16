@@ -3328,22 +3328,6 @@ const roleData = {
       ],
       nightOrder: [["Become Dead Role", PRIORITY_BECOME_DEAD_ROLE]],
     },
-    Understudy: {
-      alignment: "Mafia",
-      disabled: true,
-      category: "Manipulative",
-      tags: ["Conversion"],
-      description: [
-        "Is Assigned a Mafia Aligned Role that is currently in the game.",
-        "If that role is killed or Converted, The Understudy becomes that role.",
-        "Mafia Roles with the (BackUp) Modifier become this role with Original Role as the Target.",
-      ],
-      SpecialInteractions: {
-        Assassin: [
-          "If an Assassin is Present, Understudies with an Assassin Target will not become Assassin If the Assassin dies to their Ability.",
-        ],
-      },
-    },
     Ventriloquist: {
       alignment: "Mafia",
       tags: ["Speaking", "Deception", "Expert"],

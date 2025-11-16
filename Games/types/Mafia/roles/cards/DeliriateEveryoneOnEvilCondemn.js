@@ -39,10 +39,10 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
         }
       },
       death: function (player, killer, deathType) {
-        if (!this.canTargetPlayer(leader)) {
+        if (deathType != "condemn") return;
+        if (!this.canTargetPlayer(player)) {
           return;
         }
-        if (deathType != "condemn") return;
 
         this.evilDied = true;
       },

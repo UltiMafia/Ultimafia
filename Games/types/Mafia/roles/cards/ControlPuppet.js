@@ -5,36 +5,23 @@ module.exports = class ControlPuppet extends Card {
     super(role);
     this.listeners = {
       state: function (stateInfo) {
-        for (let item of this.player.items) {
-          if (item.name == "OverturnSpectator") {
-            item.meetings["Overturn Vote"].speechAbilities = [
-              {
+
+        let ability = {
                 name: "Control Puppet",
                 targetsDescription: { include: ["all"], exclude: ["self"] },
                 targetType: "player",
                 verb: "",
-              },
-            ];
+              };
+
+          for (let item of this.player.items) {
+          if (item.name == "OverturnSpectator") {
+            item.meetings["Overturn Vote"].speechAbilities = [ability];
           }
           if (item.name == "Room" && this.game.RoomOne.includes(this.player)) {
-            item.meetings["Room 1"].speechAbilities = [
-              {
-                name: "Control Puppet",
-                targetsDescription: { include: ["all"], exclude: ["self"] },
-                targetType: "player",
-                verb: "",
-              },
-            ];
+            item.meetings["Room 1"].speechAbilities = [ability];
           }
           if (item.name == "Room" && this.game.RoomTwo.includes(this.player)) {
-            item.meetings["Room 2"].speechAbilities = [
-              {
-                name: "Control Puppet",
-                targetsDescription: { include: ["all"], exclude: ["self"] },
-                targetType: "player",
-                verb: "",
-              },
-            ];
+            item.meetings["Room 2"].speechAbilities = [ability];
           }
         }
       },

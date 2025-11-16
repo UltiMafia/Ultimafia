@@ -296,6 +296,14 @@ export default function CreateSetup(props) {
             intitialCount = gameSettings[actualKey];
           }
 
+          if(intitialCount + increment >= action.gameSetting.maxCount && action.gameSetting.allowDuplicate){
+            return update(gameSettings, {
+            [actualKey]: { $set: action.gameSetting.maxCount },
+          });
+          }
+
+          
+
           return update(gameSettings, {
             [actualKey]: { $set: intitialCount + increment },
           });
