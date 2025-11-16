@@ -33,7 +33,10 @@ module.exports = class GuessWord extends Card {
               return;
             }
 
-            let score = getWordScore(this.actor.getWordMapToGuess(), this.target);
+            let score = getWordScore(
+              this.actor.getWordMapToGuess(),
+              this.target
+            );
 
             if (score == this.game.wordLength) {
               this.actor.addGuessedAnagram(this.target);
