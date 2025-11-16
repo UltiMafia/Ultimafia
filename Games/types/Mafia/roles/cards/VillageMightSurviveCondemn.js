@@ -6,7 +6,7 @@ const Random = require("../../../../../lib/Random");
 module.exports = class VillageMightSurviveCondemn extends Card {
   constructor(role) {
     super(role);
- 
+
     this.listeners = {
       state: function (stateInfo) {
         if (!this.hasAbility(["Protection", "Modifier"])) {

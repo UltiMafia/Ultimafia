@@ -27,7 +27,7 @@ module.exports = class BackUpModifier extends Card {
 
         if (this.player.role.alignment != "Independent") {
           newRole = null;
-        } 
+        }
 
         this.player.queueAlert(
           `Backup: You are the Backup for ${currRole}. If a ${currRole} is killed you will gain your abilities.`
@@ -65,7 +65,7 @@ module.exports = class BackUpModifier extends Card {
 
         if (this.player.role.alignment != "Independent") {
           newRole = null;
-        } 
+        }
 
         this.player.queueAlert(
           `Backup: You are the Backup for ${currRole}. If a ${currRole} is killed you will gain your abilities.`
