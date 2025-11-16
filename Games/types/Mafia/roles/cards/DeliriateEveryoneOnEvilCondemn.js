@@ -6,25 +6,17 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (stateInfo.name.match(/Day/)) {
-          this.player.role.evilDied = false;
-          return;
-        }
-
-        if (!this.hasAbility(["Delirium"])) {
-          return;
-        }
-
-        if (stateInfo.name.match(/Night/)) {
-          var action = new Action({
-            actor: this.player,
-            role: this.role,
-            game: this.player.game,
-            priority: PRIORITY_BLOCK_EARLY,
-            labels: ["block"],
-            run: function () {
+    
+    this.passiveActions = [
+      {
+        ability: ["Effect", "Delirium"],
+        state: "Night",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_BLOCK_EARLY,
+        labels: ["block"],
+        role: role,
+        run: function () {
               if (!this.role.evilDied) return;
 
               let players = this.game.players.filter((p) => p != this.actor);
@@ -36,26 +28,21 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
                   this.blockWithDelirium(victims[x]);
                 }
               }
-            },
-          });
+        },
+      },
+    ];
 
-          this.game.queueAction(action);
+    this.listeners = {
+      state: function (stateInfo) {
+        if (stateInfo.name.match(/Day/)) {
+          this.player.role.evilDied = false;
+          return;
         }
       },
       death: function (player, killer, deathType) {
         if (!this.canTargetPlayer(leader)) {
           return;
         }
-        /*
-        if (
-          this.game.getRoleAlignment(
-            player.getRoleAppearance().split(" (")[0]
-          ) == "Cult" ||
-          this.game.getRoleAlignment(
-            player.getRoleAppearance().split(" (")[0]
-          ) == "Mafia"
-        ) {
-          */
         if (deathType != "condemn") return;
 
         this.evilDied = true;
@@ -70,16 +57,6 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
         if (!this.canTargetPlayer(leader)) {
           return;
         }
-        /*
-        if (
-          this.game.getRoleAlignment(
-            leader.getRoleAppearance().split(" (")[0]
-          ) == "Cult" ||
-          this.game.getRoleAlignment(
-            leader.getRoleAppearance().split(" (")[0]
-          ) == "Mafia"
-        ) {
-          */
         this.evilDied = true;
       },
     };
