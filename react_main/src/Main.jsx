@@ -2,20 +2,14 @@ import React, {
   lazy,
   useState,
   useContext,
-  useRef,
   useEffect,
-  useLayoutEffect,
   Suspense,
 } from "react";
 import {
-  BrowserRouter,
   Route,
   Link,
-  NavLink,
   Navigate,
   Routes,
-  useLocation,
-  useNavigate,
 } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import axios from "axios";
@@ -51,11 +45,9 @@ import {
   Alert,
   AlertTitle,
 } from "@mui/material";
-import { useColorScheme } from "@mui/material/styles";
 
 import { Announcement } from "./components/alerts/Announcement";
 import SiteLogo from "./components/SiteLogo";
-import { BadTextContrast } from "./components/alerts/BadTextContrast";
 import { useIsPhoneDevice } from "./hooks/useIsPhoneDevice";
 
 import spiderweb from "images/holiday/spiderweb.gif";
@@ -112,8 +104,6 @@ function Main(props) {
 
   const loading = isUserLoading || isSiteInfoLoading;
 
-  const style = isPhoneDevice ? { padding: "8px" } : { padding: "24px" };
-
   const Game = lazy(() => import("pages/Game/Game"));
   const Play = lazy(() => import("pages/Play/Play"));
   const Community = lazy(() => import("pages/Community/Community"));
@@ -130,7 +120,12 @@ function Main(props) {
       }}
     >
       <CookieBanner />
-      <div className="main-container" style={style}>
+      <Stack direction="column" spacing={1} sx={{
+        flexWrap: "nowrap",
+        px: isPhoneDevice ? 1 : 3,
+        width: "1080px",
+        maxWidth: "100%",
+      }}>
         <Header
           setShowAnnouncementTemporarily={setShowAnnouncementTemporarily}
         />
@@ -158,7 +153,7 @@ function Main(props) {
         <InGameWarning />
         <Footer />
         <AlertList />
-      </div>
+      </Stack>
     </Box>
   );
 
@@ -185,54 +180,40 @@ function Main(props) {
   );
 
   return (
-    <BrowserRouter>
-      <ThemeProvider theme={siteTheme} noSsr defaultMode="dark">
-        <CssBaseline enableColorScheme />
-        <Suspense fallback={<NewLoading />}>
-          <ErrorBoundary
-            FallbackComponent={
-              errorContent !== undefined ? ErrorFallbackNoMain : ErrorFallback
-            }
-            onReset={() =>
-              (window.location.href =
-                window.location.origin + window.location.pathname)
-            }
+    <ThemeProvider theme={siteTheme} noSsr defaultMode="dark">
+      <CssBaseline enableColorScheme />
+      <Suspense fallback={<NewLoading />}>
+        <ErrorBoundary
+          FallbackComponent={
+            errorContent !== undefined ? ErrorFallbackNoMain : ErrorFallback
+          }
+          onReset={() =>
+            (window.location.href =
+              window.location.origin + window.location.pathname)
+          }
+        >
+          <UserProvider
+            setUserLoading={setUserLoading}
+            setCustomPrimaryColor={setCustomPrimaryColor}
           >
-            <UserProvider
-              setUserLoading={setUserLoading}
-              setCustomPrimaryColor={setCustomPrimaryColor}
-            >
-              <Routes>
-                <Route path="/" element={<Welcome />} />
-                <Route path="/*" element={mainContent} />
-              </Routes>
-            </UserProvider>
-          </ErrorBoundary>
-        </Suspense>
-      </ThemeProvider>
-    </BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Welcome />} />
+              <Route path="/*" element={mainContent} />
+            </Routes>
+          </UserProvider>
+        </ErrorBoundary>
+      </Suspense>
+    </ThemeProvider>
   );
 }
 
 function Header({ setShowAnnouncementTemporarily }) {
   const user = useContext(UserContext);
+  const isPhoneDevice = useIsPhoneDevice();
 
   const openAnnouncements = () => {
     setShowAnnouncementTemporarily(true);
   };
-
-  const [smallWidth, setSmallWidth] = useState(window.innerWidth <= 700);
-
-  const handleResize = () => {
-    setSmallWidth(window.innerWidth <= 700);
-  };
-
-  useEffect(() => {
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
 
   return (
     <div className="header">
@@ -253,7 +234,7 @@ function Header({ setShowAnnouncementTemporarily }) {
       )}
 
       {/* Desktop Logo - Top Center */}
-      {!smallWidth && (
+      {!isPhoneDevice && (
         <Box
           sx={{
             display: "flex",
@@ -262,15 +243,15 @@ function Header({ setShowAnnouncementTemporarily }) {
             py: 2,
           }}
         >
-          <Link to="/play" className="logo-wrapper">
+          <Link to="/play">
             <SiteLogo />
           </Link>
         </Box>
       )}
 
       {/* Mobile Header - Icon Navigation Top, Logo Centered Below */}
-      {smallWidth && (
-        <Stack direction="column" sx={{ width: "100%" }}>
+      {isPhoneDevice && (
+        <Stack direction="column" spacing={1} sx={{ width: "100%" }}>
           {/* Top bar with navigation menu and user section */}
           <Stack
             direction="row"
@@ -364,17 +345,17 @@ function Header({ setShowAnnouncementTemporarily }) {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              py: 1.5,
+              py: 1,
             }}
           >
-            <Link to="/play" className="logo-wrapper">
+            <Link to="/play">
               <SiteLogo />
             </Link>
           </Box>
         </Stack>
       )}
       {/* Desktop Navigation Bar */}
-      {!smallWidth && (
+      {!isPhoneDevice && (
         <Box
           sx={{
             backgroundColor: "var(--scheme-color-background)",

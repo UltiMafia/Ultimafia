@@ -901,15 +901,6 @@
   overflow-y: auto;
 }
 
-.game .modal.settings .settings-control {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: flex-start;
-
-  width: 100%;
-  height: 100%;
-}
-
 .game .modal .modal-footer {
   display: flex;
   flex-flow: row nowrap;

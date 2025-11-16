@@ -256,17 +256,13 @@ export default function User(props) {
   if (user.loaded && !user.loggedIn) return <Navigate to="/" />;
 
   return (
-    <>
-      <Box maxWidth="1080px" sx={{ mt: 1 }}>
-        <Routes>
-          <Route path="/" element={<Profile />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="shop" element={<Shop />} />
-          <Route path="inbox" element={<Inbox />} />
-          <Route path=":userId" element={<Profile />} />
-        </Routes>
-      </Box>
-    </>
+    <Routes>
+      <Route path="/" element={<Profile />} />
+      <Route path="settings/*" element={<Settings />} />
+      <Route path="shop" element={<Shop />} />
+      <Route path="inbox" element={<Inbox />} />
+      <Route path=":userId" element={<Profile />} />
+    </Routes>
   );
 }
 

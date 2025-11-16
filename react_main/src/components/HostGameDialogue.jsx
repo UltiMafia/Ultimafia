@@ -114,25 +114,24 @@ export default function HostGameDialogue({ open, setOpen, setup }) {
 
   return (
     <>
-      <Dialog open={open} onClose={() => setOpen(false)}>
+      <Dialog open={open} onClose={() => setOpen(false)} scroll="body" fullScreen={isPhoneDevice}>
         <DialogContent
           sx={{
-            px: 1,
-            paddingBottom: 0,
+            px: 2,
           }}
         >
           <Stack direction="column" spacing={1}>
             <Stack direction="row">
-              <Button className="glow-slightly" onClick={onHostGameWrapper}>
-                Host Game
-              </Button>
-              <Button
-                onClick={() => setOpen(false)}
-                sx={{
-                  marginLeft: "auto",
-                }}
-              >
+              <Button variant="outlined" onClick={() => setOpen(false)} sx={{
+                flex : "1",
+              }}>
                 Cancel
+              </Button>
+              <div style={{ flex : "1" }} />
+              <Button onClick={onHostGameWrapper} sx={{
+                flex : "1",
+              }}>
+                Host
               </Button>
             </Stack>
             <Setup
@@ -147,7 +146,7 @@ export default function HostGameDialogue({ open, setOpen, setup }) {
               )}
             />
             {alertText && <Alert severity="warning">{alertText}</Alert>}
-            <Form fields={formFields} onChange={updateFormFields} />
+            <Form compact fields={formFields} onChange={updateFormFields}/>
           </Stack>
         </DialogContent>
       </Dialog>

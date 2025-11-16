@@ -1,64 +1,11 @@
+:root {
+  /* derived from mui input height */
+  --min-input-height: calc(1.4375rem + 17px)
+}
+
 .form {
-  /* align-self: flex-start; */
-
-  display: flex;
-  flex-flow: column;
-  align-items: stretch;
-  justify-content: flex-start;
-  flex-shrink: 0;
-}
-
-.form input[type="number"] {
-  box-sizing: inherit;
-
-  border: none;
-  background-color: var(--scheme-color);
-  color: var(--scheme-color-text);
-  font-size: 17px;
-  margin-bottom: 10px;
-}
-
-.form .field-wrapper {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: stretch;
-
-  position: relative;
-
-  margin-bottom: 10px;
-}
-
-.feedback-form .field-wrapper {
-  margin-top: 10px;
-}
-
-main {
-  margin-bottom: 10px;
-}
-
-.form .label {
-  flex-grow: 1;
-
-  box-sizing: border-box;
-  padding: 5px 8px;
-  border-right: 1px solid var(--scheme-color-border);
-
-  background-color: var(--scheme-color-sec);
-  color: var(--scheme-color-text);
-}
-
-.form input[type="text"],
-.form input[type="password"],
-.form select,
-.form .switch-wrapper {
-  box-sizing: border-box;
-
-  padding: 5px 8px;
-  border: none;
-
-  background-color: var(--scheme-color);
-  color: var(--scheme-color-text);
-  font-size: 17px;
+  flex: 1 0;
+  width: 100%;
 }
 
 .form .range-wrapper {
@@ -76,132 +23,36 @@ main {
   font-size: 17px;
 }
 
-.form input:disabled {
-  background-color: var(--scheme-color);
-}
-
-.form input[type="text"],
-.form input[type="password"] {
-  width: 200px;
-  font-size: 15px;
-}
-
-.form input[type="number"],
-.form select {
-  width: 100px;
-}
-
-.form .btn {
-  align-self: flex-start;
-}
-
-.field-wrapper .btn {
-  line-height: 0px;
-}
-
 .hidden-upload {
   display: none !important;
 }
 
-.switch {
-  display: flex;
-  flex-flow: row;
-  align-items: center;
-
-  position: relative;
-
+.form input[type="color"] {
+  min-height: var(--min-input-height);
+  width: 100%;
+  background-color: unset;
+  border-width: 1px;
+  border-radius: var(--mui-shape-borderRadius);
+  border-color: rgba(var(--mui-palette-common-onBackgroundChannel) / 0.23);
   cursor: pointer;
 }
 
-.form .switch-wrapper {
-  display: flex;
-  flex-flow: row nowrap;
+.form input[type="color"]:hover,
+.form input[type="date"]:hover,
+.form input[type="datetime-local"]:hover {
+  border-color: rgb(var(--mui-palette-common-onBackgroundChannel));
 }
 
-.switch .track {
-  width: 30px;
-  height: 12px;
-
-  border-radius: 10px;
-
-  background-color: #888888;
-  opacity: 0.6;
-}
-
-.switch .thumb {
-  position: absolute;
-  z-index: 1;
-
-  width: 18px;
-  height: 18px;
-  border-radius: 50px;
-
-  background-color: #888888;
-}
-
-.switch.on .track {
-  background-color: var(--theme-color-light);
-}
-
-.switch.on .thumb {
-  right: 0px;
-
-  background-color: var(--theme-color-light);
-}
-
-.form .color-picker {
-  width: 50px;
-  border: 1px solid var(--scheme-color-border);
-  border-left: none;
-
-  cursor: pointer;
-}
-
-.form input:disabled,
-.form select:disabled,
-.form .color-picker.disabled {
-  cursor: not-allowed;
-}
-
-.form .chrome-picker > div:last-child {
-  background-color: var(--scheme-color-sec);
-}
-
-.form .chrome-picker > div:last-child .flexbox-fix:last-child label {
-  display: none !important;
-}
-
-.form .chrome-picker > div:last-child .flexbox-fix:last-child > div:last-child {
-  display: none !important;
-  color: var(--scheme-color-text);
-  background-color: var(--scheme-color);
-}
-
-.form .chrome-picker {
-  position: absolute;
-  right: -225px;
-  z-index: 8;
-
-  cursor: pointer;
-}
-
-.flexbox-fix input {
-  color: var(--scheme-color-text) !important;
-  background-color: var(--scheme-color-sec) !important;
-}
-
-.form .extra {
-  display: flex;
-  flex-flow: row;
-  align-items: center;
-
-  position: absolute;
-  right: 0px;
-  transform: translateX(100%) translateX(5px);
-
-  height: 30px;
-
-  padding: 0px 8px;
+.form input[type="date"], .form input[type="datetime-local"] {
+  padding: 0 14px;
+  min-height: var(--min-input-height);
+  font-family: "Roboto";
+  font-size: 1em;
+  width: 100%;
+  background-color: unset;
+  border-width: 1px;
+  border-radius: var(--mui-shape-borderRadius);
+  border-color: rgba(var(--mui-palette-common-onBackgroundChannel) / 0.23);
 }
 
 .form input[type="range"] {

@@ -3,28 +3,6 @@
   flex-flow: column;
 }
 
-.settings .heading {
-  margin-bottom: 5px;
-
-  font-weight: bold;
-}
-
-.settings .accounts-row {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: stretch;
-  justify-content: flex-start;
-}
-
-.settings .accounts-column {
-  display: flex;
-  flex-flow: column;
-  align-items: stretch;
-  justify-content: flex-start;
-
-  margin-right: 10px;
-}
-
 .settings .logout,
 .settings .delete-account {
   margin-bottom: 10px;
@@ -42,56 +20,4 @@
 .settings .field-wrapper.disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-.settings .emote-preview {
-  display: flex;
-  flex-flow: row;
-  justify-content: center;
-
-  gap: 8px;
-  padding-left: 8px;
-  margin-bottom: 10px;
-
-  background-color: var(--theme-color-sec);
-}
-
-.settings .emote-preview * {
-  display: flex;
-  flex-flow: column;
-  justify-content: center;
-  align-self: center;
-}
-
-.settings .emote-preview .btn {
-  margin-left: auto;
-  transform: translateX(100%) translateX(5px);
-}
-
-.settings .your-emotes {
-  display: flex;
-  flex-flow: row;
-  flex-wrap: wrap;
-
-  gap: 16px;
-}
-
-.settings .your-emotes .existing-custom-emote {
-  display: flex;
-  flex-flow: row;
-  justify-content: center;
-
-  background-color: var(--scheme-color-sec);
-}
-
-.settings .your-emotes .existing-custom-emote * {
-  display: flex;
-  flex-flow: column;
-  justify-content: center;
-
-  padding: 8px;
-}
-
-.settings .your-emotes .emote {
-  align-self: center;
 }
