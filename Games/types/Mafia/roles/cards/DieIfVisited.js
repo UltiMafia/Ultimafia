@@ -6,8 +6,6 @@ module.exports = class DieIfVisited extends Card {
   constructor(role) {
     super(role);
 
-
-    
     this.passiveActions = [
       {
         ability: ["Modifier", "Kill"],
@@ -18,14 +16,13 @@ module.exports = class DieIfVisited extends Card {
         labels: ["kill", "hidden"],
         role: role,
         run: function () {
-            if (this.hasVisitors() === true) {
-              if(this.dominates(this.actor)){
-                this.actor.kill("basic", this.actor);
-              }
+          if (this.hasVisitors() === true) {
+            if (this.dominates(this.actor)) {
+              this.actor.kill("basic", this.actor);
             }
-          },
+          }
+        },
       },
     ];
-
   }
 };
