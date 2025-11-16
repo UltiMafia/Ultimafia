@@ -6,7 +6,6 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
   constructor(role) {
     super(role);
 
-    
     this.passiveActions = [
       {
         ability: ["Effect", "Delirium"],
@@ -17,17 +16,17 @@ module.exports = class DeliriateEveryoneOnEvilCondemn extends Card {
         labels: ["block"],
         role: role,
         run: function () {
-              if (!this.role.evilDied) return;
+          if (!this.role.evilDied) return;
 
-              let players = this.game.players.filter((p) => p != this.actor);
+          let players = this.game.players.filter((p) => p != this.actor);
 
-              let victims = players;
+          let victims = players;
 
-              for (let x = 0; x < victims.length; x++) {
-                if (this.dominates(victims[x])) {
-                  this.blockWithDelirium(victims[x]);
-                }
-              }
+          for (let x = 0; x < victims.length; x++) {
+            if (this.dominates(victims[x])) {
+              this.blockWithDelirium(victims[x]);
+            }
+          }
         },
       },
     ];
