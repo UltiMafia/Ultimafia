@@ -7,23 +7,18 @@ module.exports = class DeliriateNeighbors extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Effect"])) {
-          return;
-        }
 
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          role: this,
-          priority: PRIORITY_NIGHT_ROLE_BLOCKER + 1,
-          labels: ["block", "delirium"],
-          run: function () {
+    
+    this.passiveActions = [
+      {
+        ability: ["Effect", "Delirium",],
+        state: "Night",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_NIGHT_ROLE_BLOCKER + 1,
+        labels: ["block", "delirium"],
+        role: role,
+        run: function () {
             for (let player of this.role.startingNeighbors) {
               if (
                 player.effects.filter(
@@ -44,10 +39,10 @@ module.exports = class DeliriateNeighbors extends Card {
               }
             }
           },
-        });
-
-        this.game.queueAction(action);
       },
+    ];
+
+    this.listeners = {
       AbilityToggle: function (player) {
         if (this.startingNeighbors) {
           return;
