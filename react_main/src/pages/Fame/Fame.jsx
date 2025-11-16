@@ -12,7 +12,7 @@ export default function Fame(props) {
 
   return (
     <>
-      <Box maxWidth="1080px" sx={{ mt: 1, flexGrow: 1 }}>
+      <Box maxWidth="1080px" sx={{ flexGrow: 1 }}>
         <Card sx={{ padding: theme.spacing(3), textAlign: "justify" }}>
           <Routes>
             <Route path="leaderboard" element={<Leaderboard />} />

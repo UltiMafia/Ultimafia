@@ -76,6 +76,7 @@ var defaultOptions = {
     wordLength: 5,
     duplicateLetters: false,
     competitiveMode: false,
+    forbiddenMode: false,
     winOnAnagrams: true,
     numAnagramsRequired: 3,
     selectWordLength: 1,

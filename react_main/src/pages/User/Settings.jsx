@@ -1,12 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
 
 import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Box,
   Button,
   Typography,
@@ -17,6 +14,11 @@ import {
   TextField,
   LinearProgress,
   Paper,
+  ButtonGroup,
+  Stack,
+  Divider,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
 
@@ -28,12 +30,46 @@ import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import "css/settings.css";
 import { setCaptchaVisible } from "utils";
 import { NewLoading } from "../Welcome/NewLoading";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+
+function SettingsSection({ sections, activeSection }) {
+  const isPhoneDevice = useIsPhoneDevice();
+  return (
+    <Stack direction="column" spacing={2}>
+      <Stack direction="row" spacing={1} sx={{
+        borderBottom: 1,
+        borderColor: "divider",
+      }}>
+        <Tabs value={activeSection.path} aria-label="Settings Sections">
+          {sections.map(section => (
+            <Tab
+              label={section.title}
+              key={section.path}
+              value={section.path}
+              color="inherit"
+              component={Link}
+              to={`../${section.path}`}
+              endIcon={<i className="fas fa-chevron-right" />}
+              sx={{
+                minWidth: isPhoneDevice ? 0 : undefined,
+              }}
+            />
+          ))}
+        </Tabs>
+      </Stack>
+      <Box sx={{
+        maxWidth: isPhoneDevice ? undefined : "50%",
+      }}>
+        {activeSection.content}
+      </Box>
+    </Stack>
+  )
+}
 
 export default function Settings() {
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [accountsLoaded, setAccountsLoaded] = useState(false);
   const [accounts, setAccounts] = useState({});
-  const [accessibilityTheme, setAccessibilityTheme] = useState("");
   const [emailForPasswordReset, setEmailForPasswordReset] = useState("");
   const [loading, setLoading] = useState(false);
   const { mode, setMode } = useColorScheme();
@@ -62,18 +98,51 @@ export default function Settings() {
       label: "Disable PG-13 Censor",
       ref: "disablePg13Censor",
       type: "boolean",
+      groupName: "Censors",
       showIf: "!disableAllCensors",
     },
     {
       label: "Disable All Censors",
       ref: "disableAllCensors",
       type: "boolean",
+      groupName: "Censors",
       showIf: (deps) => deps.user.perms.disableAllCensors,
+    },
+    {
+      label: "Hide Deleted Posts",
+      ref: "hideDeleted",
+      type: "boolean",
+      showIf: (deps) => deps.user.perms.viewDeleted,
+    },
+    {
+      label: "Site Color Scheme",
+      ref: "siteColorScheme",
+      type: "select",
+      groupName: "Appearance",
+      onChange: (event) => {
+        setMode(event.target.value);
+      },
+      options: [
+        {
+          label: "System",
+          value: "system",
+        },
+        {
+          label: "Light",
+          value: "light",
+        },
+        {
+          label: "Dark",
+          value: "dark",
+        },
+      ],
+      value: mode,
     },
     {
       label: "Font size",
       ref: "fontSize",
       type: "select",
+      groupName: "Appearance",
       options: [
         {
           label: "System",
@@ -99,48 +168,10 @@ export default function Settings() {
       value: mode,
     },
     {
-      label: "Hide Deleted Posts",
-      ref: "hideDeleted",
-      type: "boolean",
-      showIf: (deps) => deps.user.perms.viewDeleted,
-    },
-    {
-      label: "Site Color Scheme",
-      ref: "siteColorScheme",
-      type: "select",
-      onChange: (event) => {
-        setMode(event.target.value);
-      },
-      options: [
-        {
-          label: "System",
-          value: "system",
-        },
-        {
-          label: "Light",
-          value: "light",
-        },
-        {
-          label: "Dark",
-          value: "dark",
-        },
-      ],
-      value: mode,
-    },
-    {
-      label: "Disable Protips",
-      ref: "disableProTips",
-      type: "boolean",
-    },
-    {
-      label: "Experimental High DPI Correction",
-      ref: "expHighDpiCorrection",
-      type: "boolean",
-    },
-    {
       label: "Custom Site Primary Color",
       ref: "customPrimaryColor",
       type: "color",
+      groupName: "Appearance",
       default: "none",
       disabled: (deps) => !deps.user.itemsOwned.customPrimaryColor,
     },
@@ -148,6 +179,7 @@ export default function Settings() {
       label: "Icon Filter",
       ref: "iconFilter",
       type: "select",
+      groupName: "Appearance",
       options: [
         {
           label: "None",
@@ -200,6 +232,12 @@ export default function Settings() {
       ],
       disabled: (deps) => !deps.user.itemsOwned.iconFilter,
     },
+    {
+      label: "Experimental High DPI Correction",
+      ref: "expHighDpiCorrection",
+      type: "boolean",
+      groupName: "Appearance",
+    },
   ]);
 
   const [profileFields, updateProfileFields] = useForm(
@@ -208,7 +246,7 @@ export default function Settings() {
         label: "Name",
         ref: "username",
         type: "text",
-        saveBtn: "Change",
+        saveBtn: "Save",
         saveBtnDiffer: "name",
         saveBtnOnClick: onUsernameSave,
         confirm: "Are you sure you wish to change your username?",
@@ -217,7 +255,7 @@ export default function Settings() {
         label: "Pronouns",
         ref: "pronouns",
         type: "text",
-        saveBtn: "Change",
+        saveBtn: "Save",
         saveBtnDiffer: "pronouns",
         saveBtnOnClick: onPronounsSave,
       },
@@ -225,18 +263,20 @@ export default function Settings() {
         label: "Birthday",
         ref: "birthday",
         type: "date",
-        saveBtn: "Change",
+        saveBtn: "Save",
         saveBtnDiffer: "bdayChanged",
         default: Date.now(),
         saveBtnOnClick: onBirthdaySave,
         clearBtn: "Clear",
         clearBtnOnClick: onBirthdayClear,
         confirm: "Are you sure you wish to change your birthday?",
+        extraInfo: "Other users will know when it's your birthday because your text will be rainbow colored.",
       },
       {
         label: "Background Color",
         ref: "backgroundColor",
         type: "color",
+        groupName: "Profile",
         default: "#535353",
         disabled: (deps) => !deps.user.itemsOwned.customProfile,
       },
@@ -244,7 +284,8 @@ export default function Settings() {
         label: "Media URL",
         ref: "youtube",
         type: "text",
-        saveBtn: "Change",
+        groupName: "Profile",
+        saveBtn: "Save",
         saveBtnDiffer: "youtube",
         saveBtnOnClick: onMediaSave,
         default: "",
@@ -255,12 +296,14 @@ export default function Settings() {
         label: "Autoplay Media",
         ref: "autoplay",
         type: "boolean",
+        groupName: "Profile",
         showIf: (deps) => deps.user.settings.youtube != null,
       },
       {
         label: "Banner Format",
         ref: "bannerFormat",
         type: "select",
+        groupName: "Profile",
         options: [
           {
             label: "Tile",
@@ -277,6 +320,7 @@ export default function Settings() {
         label: "Avatar shape",
         ref: "avatarShape",
         type: "select",
+        groupName: "Profile",
         options: [
           {
             label: "Circle",
@@ -290,25 +334,11 @@ export default function Settings() {
         disabled: (deps) => !deps.user.itemsOwned.avatarShape,
       },
       {
-        label: "Hide Statistics",
-        ref: "hideStatistics",
-        type: "boolean",
-      },
-      {
-        label: "Hide Karma",
-        ref: "hideKarma",
-        type: "boolean",
-      },
-      {
-        label: "Hide Misfortune",
-        ref: "hidePointsNegative",
-        type: "boolean",
-      },
-      {
         label: "Vanity URL",
         ref: "vanityUrl",
         type: "text",
-        saveBtn: "Change",
+        groupName: "Profile",
+        saveBtn: "Save",
         saveBtnDiffer: "vanityUrl",
         saveBtnOnClick: onVanityUrlSave,
         clearBtn: "Clear",
@@ -316,6 +346,24 @@ export default function Settings() {
         disabled: (deps) => !deps.user.itemsOwned.vanityUrl,
         extraInfo:
           "Set a custom URL for your profile (1-20 characters, letters, numbers, and hyphens only)",
+      },
+      {
+        label: "Hide Statistics",
+        ref: "hideStatistics",
+        type: "boolean",
+        groupName: "Stat Hiding",
+      },
+      {
+        label: "Hide Karma",
+        ref: "hideKarma",
+        type: "boolean",
+        groupName: "Stat Hiding",
+      },
+      {
+        label: "Hide Misfortune",
+        ref: "hidePointsNegative",
+        type: "boolean",
+        groupName: "Stat Hiding",
       },
     ],
     [accounts]
@@ -346,11 +394,16 @@ export default function Settings() {
       type: "boolean",
     },
     {
+      label: "Disable Protips",
+      ref: "disableProTips",
+      type: "boolean",
+    },
+    {
       label: "Death Message (max 150 chars)",
       ref: "deathMessage",
       type: "text",
       textStyle: "large",
-      saveBtn: "Change",
+      saveBtn: "Save",
       saveBtnDiffer: "deathMessage",
       saveBtnOnClick: onCustomDeathMessageSave,
       disabled: (deps) => !deps.user.itemsOwned.deathMessageEnabled,
@@ -406,20 +459,6 @@ export default function Settings() {
     updateGameFields(changes);
   };
 
-  const handleAccessibilityThemeChange = async (e) => {
-    const value = e.target.value;
-    try {
-      await axios.post("/api/user/settings/update", {
-        prop: "accessibilityTheme",
-        value,
-      });
-      user.updateSetting("accessibilityTheme", value);
-      setAccessibilityTheme(value);
-    } catch (err) {
-      errorAlert();
-    }
-  };
-
   const handlePasswordReset = async () => {
     setLoading(true);
     try {
@@ -438,148 +477,97 @@ export default function Settings() {
   if (!settingsLoaded || !accountsLoaded || !user.loaded)
     return <NewLoading small />;
 
+  const sections = [
+    {
+      title: "Site",
+      path: "site",
+      content: (
+        <Form
+          fields={siteFields}
+          deps={{ user }}
+          onChange={(action) => onSettingChange(action, updateSiteFields)}
+        />
+      )
+    },
+    {
+      title: "User",
+      path: "profile",
+      content: (
+        <Form
+          fields={profileFields}
+          deps={{
+            name: user.name,
+            pronouns: user.pronouns,
+            youtube: user.settings.youtube,
+            vanityUrl: user.settings.vanityUrl,
+            user,
+            accounts,
+            siteInfo,
+            errorAlert,
+          }}
+          onChange={(action) =>
+            onSettingChange(action, updateProfileFields)
+          }
+        />
+      )
+    },
+    {
+      title: "Game",
+      path: "game",
+      content: (
+        <Form
+          fields={gameFields}
+          deps={{
+            deathMessage: user.settings.deathMessage,
+            user,
+            siteInfo,
+            errorAlert
+          }}
+          onChange={(action) => onSettingChange(action, updateGameFields)}
+        />
+      )
+    },
+    {
+      title: "Account",
+      path: "account",
+      content: (
+        <Stack direction="column" spacing={1}>
+          <TextField
+            sx={{ minWidth: "240px" }}
+            label="Email Address"
+            value={emailForPasswordReset}
+            onChange={(e) => setEmailForPasswordReset(e.target.value)}
+            disabled={loading}
+          />
+          <Button
+            sx={{ minWidth: "240px" }}
+            onClick={handlePasswordReset}
+            disabled={loading || !emailForPasswordReset}
+          >
+            Reset Password
+          </Button>
+          <Button
+            variant="outlined"
+            sx={{ minWidth: "120px" }}
+            onClick={onDeleteClick}
+            startIcon={<i className="fas fa-exclamation-triangle" aria-hidden="true" />}
+            endIcon={<i className="fas fa-exclamation-triangle" aria-hidden="true" />}
+          >
+            Delete Account
+          </Button>
+        </Stack>
+      )
+    }
+  ];
+
   return (
-    <Paper
-      className="settings"
-      sx={{
-        p: 1,
-      }}
-    >
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Accessibility</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Box sx={{ width: 1 / 2 }}>
-            <FormControl variant="standard" sx={{ minWidth: 240 }} size="small">
-              <InputLabel>Accessibility Theme</InputLabel>
-              <Select
-                value={accessibilityTheme}
-                onChange={handleAccessibilityThemeChange}
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                <MenuItem value={"Higher Contrast"}>Higher Contrast</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
-        </AccordionDetails>
-      </Accordion>
-
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Site</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Box sx={{ width: 1 / 2 }}>
-            <Form
-              fields={siteFields}
-              deps={{ user }}
-              onChange={(action) => onSettingChange(action, updateSiteFields)}
-            />
-          </Box>
-        </AccordionDetails>
-      </Accordion>
-
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Profile</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Box sx={{ width: 1 / 2 }}>
-            <Form
-              fields={profileFields}
-              deps={{
-                name: user.name,
-                pronouns: user.pronouns,
-                user,
-                accounts,
-                siteInfo,
-                errorAlert,
-              }}
-              onChange={(action) =>
-                onSettingChange(action, updateProfileFields)
-              }
-            />
-          </Box>
-        </AccordionDetails>
-      </Accordion>
-
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Game</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Box sx={{ width: 1 / 2 }}>
-            <Form
-              fields={gameFields}
-              deps={{ user, siteInfo, errorAlert }}
-              onChange={(action) => onSettingChange(action, updateGameFields)}
-            />
-          </Box>
-        </AccordionDetails>
-      </Accordion>
-
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Account</Typography>
-        </AccordionSummary>
-        <Box sx={{ width: "50%", mx: "auto" }}>
-          <AccordionDetails>
-            <div className="accounts-row">
-              <div className="accounts-column">
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 1,
-                    alignItems: "center",
-                  }}
-                >
-                  <TextField
-                    sx={{ minWidth: "240px" }}
-                    label="Email Address"
-                    value={emailForPasswordReset}
-                    onChange={(e) => setEmailForPasswordReset(e.target.value)}
-                    disabled={loading}
-                  />
-                  <Button
-                    sx={{ minWidth: "240px" }}
-                    onClick={handlePasswordReset}
-                    disabled={loading || !emailForPasswordReset}
-                  >
-                    Reset Password
-                  </Button>
-                </Box>
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-evenly",
-                    mt: 2,
-                  }}
-                >
-                  <Button
-                    variant="outlined"
-                    sx={{ minWidth: "120px" }}
-                    onClick={onLogoutClick}
-                  >
-                    Sign Out
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    sx={{ minWidth: "120px" }}
-                    onClick={onDeleteClick}
-                  >
-                    Delete Account
-                  </Button>
-                </Box>
-              </div>
-            </div>
-          </AccordionDetails>
-        </Box>
-      </Accordion>
+    <Paper sx={{ p: 2 }}>
+      <Routes>
+        {sections.map(section => (
+          <Route key={section.path} path={section.path} element={<SettingsSection sections={sections} activeSection={section} />} />
+        ))}
+        <Route path="*" element={<Navigate to={sections[0].path} />} />
+      </Routes>
     </Paper>
   );
 

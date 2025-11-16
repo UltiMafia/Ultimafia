@@ -20,7 +20,7 @@ export default function Learn(props) {
 
   return (
     <>
-      <Box maxWidth="1080px" sx={{ mt: 1, flexGrow: 1 }}>
+      <Box sx={{ flexGrow: 1 }}>
         <Card sx={{ padding: theme.spacing(3), textAlign: "justify" }}>
           <Routes>
             <Route path="games" element={<Games />} />

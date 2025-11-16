@@ -36,6 +36,7 @@ module.exports = class JottoGame extends Game {
     this.duplicateLetters = options.settings.duplicateLetters;
     this.winOnAnagrams = options.settings.winOnAnagrams;
     this.numAnagramsRequired = options.settings.numAnagramsRequired;
+    this.forbiddenMode = options.settings.forbiddenMode;
 
     this.competitiveMode = options.settings.competitiveMode;
     this.sharedWord = "";
@@ -181,6 +182,7 @@ module.exports = class JottoGame extends Game {
       wordLength: this.wordLength,
       duplicateLetters: this.duplicateLetters,
       competitiveMode: this.competitiveMode,
+      forbiddenMode: this.forbiddenMode,
       winOnAnagrams: this.winOnAnagrams,
       numAnagramsRequired: this.numAnagramsRequired,
     };
