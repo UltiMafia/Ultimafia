@@ -37,6 +37,12 @@ export default function HostJotto() {
       value: defaults.competitiveMode,
     },
     {
+      label: "Forbidden Mode",
+      ref: "forbiddenMode",
+      type: "boolean",
+      value: defaults.forbiddenMode,
+    },
+    {
       label: "Win With Anagrams",
       ref: "winOnAnagrams",
       type: "boolean",
@@ -165,6 +171,7 @@ export default function HostJotto() {
         wordLength: getFormFieldValue("wordLength"),
         duplicateLetters: getFormFieldValue("duplicateLetters"),
         competitiveMode: getFormFieldValue("competitiveMode"),
+        forbiddenMode: getFormFieldValue("forbiddenMode"),
         winOnAnagrams: getFormFieldValue("winOnAnagrams"),
         numAnagramsRequired: getFormFieldValue("numAnagramsRequired"),
         anonymousGame: getFormFieldValue("anonymousGame"),

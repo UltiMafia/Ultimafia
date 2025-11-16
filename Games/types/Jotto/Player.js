@@ -6,11 +6,16 @@ module.exports = class JottoPlayer extends Player {
     super(user, game, isBot);
 
     this.guessedAnagrams = new Set();
+    this.forbiddenWord = undefined;
   }
 
   selectWord(word) {
     this.word = word;
     this.wordMap = getWordMap(word);
+  }
+
+  selectForbiddenWord(word) {
+    this.forbiddenWord = word;
   }
 
   getOwnWord() {
@@ -36,6 +41,10 @@ module.exports = class JottoPlayer extends Player {
 
   getWordMapToGuess() {
     return this.opponent?.wordMap;
+  }
+
+  getForbiddenWordToGuess() {
+    return this.opponent?.forbiddenWord;
   }
 
   addGuessedAnagram(word) {

@@ -61,3 +61,8 @@
 .game .jotto-guess-word.done {
   color: grey;
 }
+
+.game .jotto-guess-score.forbidden {
+  background-color: #6b6b6b;
+  color: white;
+}

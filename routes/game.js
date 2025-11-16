@@ -1073,6 +1073,7 @@ const settingsChecks = {
 
     let duplicateLetters = Boolean(settings.duplicateLetters);
     let competitiveMode = Boolean(settings.competitiveMode);
+    let forbiddenMode = Boolean(settings.forbiddenMode);
     let winOnAnagrams = Boolean(settings.winOnAnagrams);
     let numAnagramsRequired = Number(settings.numAnagramsRequired);
 
@@ -1084,6 +1085,7 @@ const settingsChecks = {
       wordLength,
       duplicateLetters,
       competitiveMode,
+      forbiddenMode,
       winOnAnagrams,
       numAnagramsRequired,
     };

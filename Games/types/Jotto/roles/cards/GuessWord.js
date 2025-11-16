@@ -20,10 +20,20 @@ module.exports = class GuessWord extends Card {
         },
         action: {
           run: function () {
-            let score = getWordScore(
-              this.actor.getWordMapToGuess(),
-              this.target
-            );
+            // Check forbidden word first
+            if (
+              this.game.forbiddenMode &&
+              this.target == this.actor.getForbiddenWordToGuess()
+            ) {
+              this.actor.lastGuess = this.target;
+              this.game.queueAlert(
+                `${this.actor.name} has guessed the forbidden word!`
+              );
+              this.game.recordGuess(this.actor, this.target, null);
+              return;
+            }
+
+            let score = getWordScore(this.actor.getWordMapToGuess(), this.target);
 
             if (score == this.game.wordLength) {
               this.actor.addGuessedAnagram(this.target);
