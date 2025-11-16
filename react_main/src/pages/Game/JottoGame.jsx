@@ -297,7 +297,13 @@ function JottoGuess(props) {
   return (
     <>
       <div className="jotto-guess">
-        <div className={`jotto-guess-score guess-score-${score}`}>{score}</div>
+        {score === null ? (
+          <div className={"jotto-guess-score forbidden"}>!</div>
+        ) : (
+          <div className={`jotto-guess-score guess-score-${score}`}>
+            {score}
+          </div>
+        )}
         <div
           className={`jotto-guess-word ${checkedClass}`}
           onClick={toggleChecked}
