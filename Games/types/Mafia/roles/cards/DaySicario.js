@@ -16,14 +16,12 @@ module.exports = class DaySicario extends Card {
         labels: ["hidden"],
         role: role,
         run: function () {
-            if (!this.hasVisitors()) {
-              this.actor.holdItem("Knife", { reveal: false });
-              this.actor.queueGetItemAlert("Knife");
-            }
-          },
+          if (!this.hasVisitors()) {
+            this.actor.holdItem("Knife", { reveal: false });
+            this.actor.queueGetItemAlert("Knife");
+          }
+        },
       },
     ];
-
-
   }
 };
