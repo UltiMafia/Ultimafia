@@ -70,6 +70,12 @@ import { useTheme } from "@mui/material/styles";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import WarningIcon from "@mui/icons-material/Warning";
+import GavelIcon from "@mui/icons-material/Gavel";
+import BlockIcon from "@mui/icons-material/Block";
+import InfoIcon from "@mui/icons-material/Info";
+import LinkIcon from "@mui/icons-material/Link";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 import system from "images/emotes/system.webp";
 
@@ -1402,8 +1408,10 @@ function ModViolationsPanel({ loading, data, violationMap }) {
     if (!mod) return null;
 
     return (
-      <Stack direction="row" spacing={1} alignItems="center">
-        <Typography variant="caption">By</Typography>
+      <Stack direction="row" spacing={0.5} alignItems="center">
+        <Typography variant="caption" sx={{ color: "text.secondary" }}>
+          By
+        </Typography>
         <NameWithAvatar
           id={mod.id}
           name={mod.name}
@@ -1414,53 +1422,128 @@ function ModViolationsPanel({ loading, data, violationMap }) {
     );
   };
 
+  const getViolationColor = (banType) => {
+    switch (banType) {
+      case "site":
+        return "error";
+      case "game":
+        return "warning";
+      case "chat":
+      case "forum":
+        return "info";
+      default:
+        return "default";
+    }
+  };
+
+  const getBanStatusColor = (ban) => {
+    if (ban.expires === 0) return "error";
+    const now = Date.now();
+    if (ban.expires && ban.expires > now) {
+      const timeLeft = ban.expires - now;
+      const daysLeft = timeLeft / (1000 * 60 * 60 * 24);
+      if (daysLeft < 1) return "warning";
+      return "info";
+    }
+    return "success";
+  };
+
   const renderTicket = (ticket) => {
     const violationName =
       ticket.violationName ||
       violationMap[ticket.violationId]?.name ||
       ticket.violationId;
+    const violation = violationMap[ticket.violationId];
+    const isExpired = ticket.expiresAt && ticket.expiresAt < Date.now();
+    const banColor = getViolationColor(ticket.banType);
 
     return (
       <Stack
         key={ticket.id}
-        spacing={0.5}
+        spacing={0.75}
         sx={{
-          backgroundColor: "var(--scheme-color-sec)",
-          borderRadius: "4px",
-          p: 1,
+          backgroundColor: isExpired
+            ? "action.disabledBackground"
+            : "var(--scheme-color-sec)",
+          borderRadius: "6px",
+          p: 1.5,
+          borderLeft: `3px solid`,
+          borderColor: `${banColor}.main`,
+          opacity: isExpired ? 0.7 : 1,
         }}
       >
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+        <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+          <WarningIcon fontSize="small" color={banColor} />
+          <Typography variant="body2" sx={{ fontWeight: 600, flex: 1 }}>
             {violationName}
           </Typography>
           <Chip
             size="small"
-            label={`${formatBanType(ticket.banType)} ban`}
+            label={formatBanType(ticket.banType)}
+            color={banColor}
             variant="outlined"
+            sx={{ fontSize: "0.7rem" }}
           />
+          {isExpired && (
+            <Chip
+              size="small"
+              label="Expired"
+              color="default"
+              variant="outlined"
+              sx={{ fontSize: "0.7rem" }}
+            />
+          )}
         </Stack>
-        <Typography variant="caption">
-          Issued{" "}
-          <Time
-            minSec
-            millisec={Date.now() - ticket.createdAt}
-            suffix=" ago"
+        {violation?.category && (
+          <Chip
+            size="small"
+            label={violation.category}
+            variant="outlined"
+            sx={{ width: "fit-content", fontSize: "0.65rem", height: "20px" }}
           />
-        </Typography>
-        <Typography variant="caption">
-          Length: {formatDuration(ticket.length)}
-        </Typography>
-        {ticket.expiresAt ? (
-          <Typography variant="caption">
-            Expires on {new Date(ticket.expiresAt).toLocaleString()}
+        )}
+        <Stack spacing={0.25} sx={{ pl: 0.5 }}>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <AccessTimeIcon fontSize="inherit" sx={{ fontSize: "0.875rem" }} />
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
+              Issued{" "}
+              <Time
+                minSec
+                millisec={Date.now() - ticket.createdAt}
+                suffix=" ago"
+              />
+            </Typography>
+          </Stack>
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
+            Duration: {formatDuration(ticket.length)}
+            {ticket.expiresAt && (
+              <>
+                {" • "}
+                {isExpired ? "Expired" : "Expires"}{" "}
+                {new Date(ticket.expiresAt).toLocaleDateString()}
+              </>
+            )}
           </Typography>
-        ) : (
-          <Typography variant="caption">Permanent</Typography>
-        )}
-        {ticket.notes && (
-          <Typography variant="caption">Notes: {ticket.notes}</Typography>
-        )}
+          {ticket.notes && (
+            <Box
+              sx={{
+                mt: 0.5,
+                p: 0.75,
+                backgroundColor: "action.hover",
+                borderRadius: "4px",
+                borderLeft: "2px solid",
+                borderColor: "divider",
+              }}
+            >
+              <Stack direction="row" spacing={0.5} alignItems="flex-start">
+                <InfoIcon fontSize="inherit" sx={{ fontSize: "0.875rem", mt: 0.25 }} />
+                <Typography variant="caption" sx={{ flex: 1 }}>
+                  {ticket.notes}
+                </Typography>
+              </Stack>
+            </Box>
+          )}
+        </Stack>
         {renderModReference(ticket.mod)}
       </Stack>
     );
@@ -1470,37 +1553,89 @@ function ModViolationsPanel({ loading, data, violationMap }) {
     const violationName = ban.violationType
       ? violationMap[ban.violationType]?.name || ban.violationType
       : null;
+    const violation = ban.violationType ? violationMap[ban.violationType] : null;
+    const isPermanent = ban.expires === 0;
+    const isExpired = ban.expires && ban.expires < Date.now();
+    const banColor = getViolationColor(ban.type);
+    const statusColor = getBanStatusColor(ban);
 
     return (
       <Stack
         key={ban.id}
-        spacing={0.5}
+        spacing={0.75}
         sx={{
-          backgroundColor: "var(--scheme-color-sec)",
-          borderRadius: "4px",
-          p: 1,
+          backgroundColor: isExpired
+            ? "action.disabledBackground"
+            : "var(--scheme-color-sec)",
+          borderRadius: "6px",
+          p: 1.5,
+          borderLeft: `3px solid`,
+          borderColor: `${banColor}.main`,
+          opacity: isExpired ? 0.7 : 1,
         }}
       >
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Typography variant="body2" sx={{ fontWeight: 600 }}>
-            {formatBanType(ban.type)} ban
+        <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+          <BlockIcon fontSize="small" color={banColor} />
+          <Typography variant="body2" sx={{ fontWeight: 600, flex: 1 }}>
+            {formatBanType(ban.type)} Ban
           </Typography>
           <Chip
             size="small"
-            color="warning"
-            label={ban.expires === 0 ? "Permanent" : "Active"}
+            color={statusColor}
+            label={
+              isPermanent
+                ? "Permanent"
+                : isExpired
+                ? "Expired"
+                : "Active"
+            }
+            sx={{ fontSize: "0.7rem" }}
           />
         </Stack>
-        {ban.expires ? (
-          <Typography variant="caption">
-            Expires on {new Date(ban.expires).toLocaleString()}
-          </Typography>
-        ) : (
-          <Typography variant="caption">Permanent</Typography>
-        )}
         {violationName && (
-          <Typography variant="caption">Violation: {violationName}</Typography>
+          <Stack direction="row" spacing={0.5} alignItems="center">
+            <WarningIcon fontSize="inherit" sx={{ fontSize: "0.875rem" }} />
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
+              {violationName}
+            </Typography>
+          </Stack>
         )}
+        {violation?.category && (
+          <Chip
+            size="small"
+            label={violation.category}
+            variant="outlined"
+            sx={{ width: "fit-content", fontSize: "0.65rem", height: "20px" }}
+          />
+        )}
+        <Stack spacing={0.25} sx={{ pl: 0.5 }}>
+          {isPermanent ? (
+            <Typography variant="caption" sx={{ color: "text.secondary" }}>
+              This ban does not expire
+            </Typography>
+          ) : ban.expires ? (
+            <Stack direction="row" spacing={1} alignItems="center">
+              <AccessTimeIcon
+                fontSize="inherit"
+                sx={{ fontSize: "0.875rem" }}
+              />
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                {isExpired ? "Expired" : "Expires"}{" "}
+                {new Date(ban.expires).toLocaleString()}
+                {!isExpired && (
+                  <>
+                    {" • "}
+                    <Time
+                      minSec
+                      millisec={ban.expires - Date.now()}
+                      suffix=" remaining"
+                    />
+                  </>
+                )}
+              </Typography>
+            </Stack>
+          ) : null}
+        </Stack>
         {renderModReference(ban.mod)}
       </Stack>
     );
@@ -1513,91 +1648,157 @@ function ModViolationsPanel({ loading, data, violationMap }) {
     !linkedAccounts.length;
 
   return (
-    <Stack spacing={1}>
+    <Stack spacing={2}>
       {activeBans.length > 0 && (
-        <>
-          <Typography variant="subtitle2">Active bans</Typography>
-          <Stack spacing={1}>{activeBans.map(renderBan)}</Stack>
-          <Divider />
-        </>
+        <Stack spacing={1}>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <GavelIcon fontSize="small" color="error" />
+            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+              Active Bans ({activeBans.length})
+            </Typography>
+          </Stack>
+          <Stack spacing={1.5}>{activeBans.map(renderBan)}</Stack>
+          <Divider sx={{ my: 1 }} />
+        </Stack>
       )}
       {tickets.length > 0 && (
-        <>
-          <Typography variant="subtitle2">Violation tickets</Typography>
-          <Stack spacing={1}>{tickets.map(renderTicket)}</Stack>
-        </>
+        <Stack spacing={1}>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <WarningIcon fontSize="small" color="warning" />
+            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+              Violation Tickets ({tickets.length})
+            </Typography>
+          </Stack>
+          <Stack spacing={1.5}>{tickets.map(renderTicket)}</Stack>
+        </Stack>
       )}
       {!hasModData && (
-        <Typography variant="body2" sx={{ fontStyle: "italic" }}>
-          No current bans or recorded violations.
-        </Typography>
+        <Box
+          sx={{
+            p: 2,
+            textAlign: "center",
+            backgroundColor: "action.hover",
+            borderRadius: "4px",
+          }}
+        >
+          <Typography variant="body2" sx={{ fontStyle: "italic" }}>
+            No current bans or recorded violations.
+          </Typography>
+        </Box>
       )}
-      <Divider />
-      <Typography variant="subtitle2">Linked accounts</Typography>
-      {linkedAccounts.length > 0 ? (
-        <Stack spacing={1}>
+      <Divider sx={{ my: 1 }} />
+      <Stack spacing={1}>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <LinkIcon fontSize="small" color="primary" />
+          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+            Linked Accounts
+            {linkedAccounts.length > 0 && ` (${linkedAccounts.length})`}
+          </Typography>
+        </Stack>
+        {linkedAccounts.length > 0 ? (
+        <Stack spacing={1.5}>
           {linkedAccounts.map((account) => (
             <Stack
               key={account.userId}
-              spacing={0.5}
+              spacing={1}
               sx={{
                 backgroundColor: "var(--scheme-color-sec)",
-                borderRadius: "4px",
-                p: 1,
+                borderRadius: "6px",
+                p: 1.5,
+                border: "1px solid",
+                borderColor: "divider",
               }}
             >
-              <Stack direction="row" spacing={1} alignItems="center">
-                <NameWithAvatar
-                  id={account.userId}
-                  name={account.name}
-                  avatar={account.avatar}
-                />
+              <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+                <Link
+                  to={`/user/${account.userId}`}
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <NameWithAvatar
+                    id={account.userId}
+                    name={account.name}
+                    avatar={account.avatar}
+                  />
+                </Link>
                 {account.sharedIpCount > 0 && (
                   <Chip
                     size="small"
-                    label={`Shared IPs: ${account.sharedIpCount}`}
+                    label={`${account.sharedIpCount} shared IP${account.sharedIpCount > 1 ? "s" : ""}`}
+                    color="info"
+                    variant="outlined"
+                    sx={{ fontSize: "0.7rem" }}
                   />
                 )}
               </Stack>
               {account.sharedIps && account.sharedIps.length > 0 && (
-                <Typography variant="caption">
-                  IPs: {account.sharedIps.join(", ")}
-                </Typography>
+                <Box
+                  sx={{
+                    p: 0.75,
+                    backgroundColor: "action.hover",
+                    borderRadius: "4px",
+                  }}
+                >
+                  <Typography variant="caption" sx={{ fontFamily: "monospace" }}>
+                    {account.sharedIps.join(", ")}
+                  </Typography>
+                </Box>
               )}
               {account.activeBans?.length > 0 && (
-                <Stack spacing={0.5} sx={{ mt: 0.5 }}>
-                  <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                    Active bans
+                <Stack spacing={1} sx={{ mt: 0.5 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 600, fontSize: "0.75rem" }}>
+                    Active Bans ({account.activeBans.length})
                   </Typography>
-                  {account.activeBans.map((ban) => renderBan(ban))}
+                  <Stack spacing={1}>{account.activeBans.map((ban) => renderBan(ban))}</Stack>
                 </Stack>
               )}
               {account.tickets?.length > 0 && (
-                <Stack spacing={0.5} sx={{ mt: 0.5 }}>
-                  <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                    Violation tickets
+                <Stack spacing={1} sx={{ mt: 0.5 }}>
+                  <Typography variant="caption" sx={{ fontWeight: 600, fontSize: "0.75rem" }}>
+                    Violation Tickets ({account.tickets.length})
                   </Typography>
-                  {account.tickets.map((ticket) => renderTicket(ticket))}
+                  <Stack spacing={1}>{account.tickets.map((ticket) => renderTicket(ticket))}</Stack>
                 </Stack>
               )}
               {account.activeBans?.length === 0 &&
                 account.tickets?.length === 0 && (
-                  <Typography variant="caption" sx={{ fontStyle: "italic" }}>
-                    No violations recorded.
+                  <Typography
+                    variant="caption"
+                    sx={{ fontStyle: "italic", color: "text.secondary" }}
+                  >
+                    No violations recorded for this account.
                   </Typography>
                 )}
             </Stack>
           ))}
         </Stack>
       ) : linkedPermDenied ? (
-        <Typography variant="body2" sx={{ fontStyle: "italic" }}>
-          Linked account details require the viewAlts permission.
-        </Typography>
+        <Box
+          sx={{
+            p: 1.5,
+            backgroundColor: "action.hover",
+            borderRadius: "4px",
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="body2" sx={{ fontStyle: "italic", color: "text.secondary" }}>
+            Linked account details require the viewAlts permission.
+          </Typography>
+        </Box>
       ) : (
-        <Typography variant="body2" sx={{ fontStyle: "italic" }}>
-          No linked accounts with recorded violations.
-        </Typography>
-      )}
+        <Box
+          sx={{
+            p: 1.5,
+            backgroundColor: "action.hover",
+            borderRadius: "4px",
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="body2" sx={{ fontStyle: "italic", color: "text.secondary" }}>
+            No linked accounts with recorded violations.
+          </Typography>
+        </Box>
+        )}
+      </Stack>
     </Stack>
   );
 }
@@ -1642,39 +1843,107 @@ function ModBanDialog({ open, onClose, action, submitting, onSubmit }) {
   const [length, setLength] = useState("");
   const [violationType, setViolationType] = useState("");
   const [notes, setNotes] = useState("");
+  const [lengthError, setLengthError] = useState("");
+  const [previewLength, setPreviewLength] = useState(null);
+
+  const violationOptions = action?.violationOptions || [];
+  const selectedViolation = violationType
+    ? violationMapById[violationType]
+    : null;
 
   useEffect(() => {
     if (open && action) {
       setLength("");
       setNotes("");
+      setLengthError("");
+      setPreviewLength(null);
       const defaultViolation = action.violationOptions?.[0]?.value || "";
       setViolationType(defaultViolation);
     }
   }, [open, action]);
 
-  const violationOptions = action?.violationOptions || [];
-  const disableSubmit = submitting || !length || !violationType;
+  useEffect(() => {
+    if (length && open) {
+      // Validate length format
+      const testLength = length.trim();
+      if (testLength) {
+        // Try to parse it (we'll use a simple regex check)
+        const timePattern = /^\d+\s*(second|minute|hour|day|week|month|year|seconds|minutes|hours|days|weeks|months|years)$/i;
+        if (timePattern.test(testLength)) {
+          setLengthError("");
+          // Calculate preview (approximate)
+          const match = testLength.match(/^(\d+)\s*(\w+)/i);
+          if (match) {
+            const value = parseInt(match[1]);
+            const unit = match[2].toLowerCase();
+            const multipliers = {
+              second: 1000,
+              seconds: 1000,
+              minute: 60 * 1000,
+              minutes: 60 * 1000,
+              hour: 60 * 60 * 1000,
+              hours: 60 * 60 * 1000,
+              day: 24 * 60 * 60 * 1000,
+              days: 24 * 60 * 60 * 1000,
+              week: 7 * 24 * 60 * 60 * 1000,
+              weeks: 7 * 24 * 60 * 60 * 1000,
+              month: 30 * 24 * 60 * 60 * 1000,
+              months: 30 * 24 * 60 * 60 * 1000,
+              year: 365 * 24 * 60 * 60 * 1000,
+              years: 365 * 24 * 60 * 60 * 1000,
+            };
+            const ms = value * (multipliers[unit] || 0);
+            if (ms >= 60 * 60 * 1000) {
+              // Minimum 1 hour
+              const expiresAt = Date.now() + ms;
+              setPreviewLength({
+                duration: formatDuration(ms),
+                expiresAt: new Date(expiresAt).toLocaleString(),
+              });
+            } else {
+              setLengthError("Minimum ban time is 1 hour");
+              setPreviewLength(null);
+            }
+          }
+        } else {
+          setLengthError("Invalid format. Use: '3 days', '2 weeks', etc.");
+          setPreviewLength(null);
+        }
+      } else {
+        setLengthError("");
+        setPreviewLength(null);
+      }
+    } else {
+      setLengthError("");
+      setPreviewLength(null);
+    }
+  }, [length, open]);
+
+  const disableSubmit =
+    submitting || !length || !violationType || !!lengthError || !previewLength;
 
   return (
-    <Dialog open={open} onClose={submitting ? undefined : onClose} fullWidth>
+    <Dialog
+      open={open}
+      onClose={submitting ? undefined : onClose}
+      fullWidth
+      maxWidth="sm"
+    >
       <DialogTitle>
-        {action ? `Issue ${action.label}` : "Issue ban"}
+        <Stack direction="row" spacing={1} alignItems="center">
+          <BlockIcon color="error" />
+          <Typography variant="h6">
+            {action ? `Issue ${action.label}` : "Issue ban"}
+          </Typography>
+        </Stack>
       </DialogTitle>
-      <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <TextField
-          label="Length"
-          value={length}
-          onChange={(e) => setLength(e.target.value)}
-          placeholder="e.g. 3 days"
-          disabled={submitting}
-          autoFocus
-        />
+      <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2.5, pt: 2 }}>
         <FormControl fullWidth disabled={submitting || !violationOptions.length}>
-          <InputLabel id="violation-type-label">Violation Type</InputLabel>
+          <InputLabel id="violation-type-label">Violation Type *</InputLabel>
           <Select
             labelId="violation-type-label"
             value={violationType}
-            label="Violation Type"
+            label="Violation Type *"
             onChange={(e) => setViolationType(e.target.value)}
           >
             {violationOptions.map((option) => (
@@ -1683,19 +1952,80 @@ function ModBanDialog({ open, onClose, action, submitting, onSubmit }) {
               </MenuItem>
             ))}
           </Select>
+          {selectedViolation && (
+            <Box sx={{ mt: 1, p: 1, backgroundColor: "action.hover", borderRadius: 1 }}>
+              <Stack spacing={0.5}>
+                {selectedViolation.category && (
+                  <Chip
+                    size="small"
+                    label={selectedViolation.category}
+                    variant="outlined"
+                    sx={{ width: "fit-content" }}
+                  />
+                )}
+                {selectedViolation.description && (
+                  <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                    {selectedViolation.description}
+                  </Typography>
+                )}
+              </Stack>
+            </Box>
+          )}
         </FormControl>
+
+        <TextField
+          label="Ban Length *"
+          value={length}
+          onChange={(e) => setLength(e.target.value)}
+          placeholder="e.g. 3 days, 2 weeks, 1 month"
+          disabled={submitting}
+          autoFocus
+          error={!!lengthError}
+          helperText={
+            lengthError ||
+            (length && previewLength
+              ? `Preview: ${previewLength.duration} (expires ${previewLength.expiresAt})`
+              : "Format: '3 days', '2 weeks', '1 month', etc. Minimum: 1 hour")
+          }
+        />
+
         <TextField
           label="Notes (optional)"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           multiline
-          minRows={2}
+          minRows={3}
           disabled={submitting}
-          helperText="This will be stored with the violation ticket (max 500 characters)."
+          helperText={`${notes.length}/500 characters. This will be stored with the violation ticket.`}
           inputProps={{ maxLength: 500 }}
         />
+
+        {previewLength && (
+          <Box
+            sx={{
+              p: 1.5,
+              backgroundColor: "warning.light",
+              borderRadius: 1,
+              border: "1px solid",
+              borderColor: "warning.main",
+            }}
+          >
+            <Stack spacing={0.5}>
+              <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                Ban Preview:
+              </Typography>
+              <Typography variant="body2">
+                This will issue a {action?.label?.toLowerCase() || "ban"} for{" "}
+                <strong>{previewLength.duration}</strong>
+              </Typography>
+              <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                Expires: {previewLength.expiresAt}
+              </Typography>
+            </Stack>
+          </Box>
+        )}
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ p: 2, pt: 1 }}>
         <Button onClick={onClose} disabled={submitting}>
           Cancel
         </Button>
@@ -1708,8 +2038,11 @@ function ModBanDialog({ open, onClose, action, submitting, onSubmit }) {
             })
           }
           disabled={disableSubmit}
+          variant="contained"
+          color="error"
+          startIcon={submitting ? <CircularProgress size={16} /> : <GavelIcon />}
         >
-          {submitting ? "Issuing…" : "Submit"}
+          {submitting ? "Issuing…" : "Issue Ban"}
         </Button>
       </DialogActions>
     </Dialog>
