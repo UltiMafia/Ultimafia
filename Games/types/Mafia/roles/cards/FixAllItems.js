@@ -28,23 +28,16 @@ module.exports = class FixAllItems extends Card {
       },
     };
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Item"])) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          role: this,
-          priority: PRIORITY_ITEM_TAKER_DEFAULT + 2,
-          labels: ["fixItems"],
-          run: function () {
+    this.passiveActions = [
+      {
+        ability: ["Item"],
+        state: "Night",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_ITEM_TAKER_DEFAULT + 2,
+        labels: ["fixItems"],
+        role: role,
+        run: function () {
             if (this.role.PlayerToFixItems != null) {
               for (let item of this.role.PlayerToFixItems.items) {
                 item.broken = false;
@@ -54,10 +47,9 @@ module.exports = class FixAllItems extends Card {
             }
             this.role.PlayerToFixItems = null;
           },
-        });
-
-        this.game.queueAction(action);
       },
-    };
+    ];
+
+
   }
 };
