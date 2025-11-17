@@ -7,7 +7,7 @@ module.exports = class ForageItem extends Card {
   constructor(role) {
     super(role);
 
-      this.passiveActions = [
+    this.passiveActions = [
       {
         ability: ["Item", "Modifier"],
         state: "Night",
@@ -17,32 +17,32 @@ module.exports = class ForageItem extends Card {
         labels: ["giveItem"],
         role: role,
         run: function () {
-            //if (this.game.getStateName() != "Night") return;
+          //if (this.game.getStateName() != "Night") return;
 
-            if (this.getVisitors().length > 0) {
-              return;
-            }
+          if (this.getVisitors().length > 0) {
+            return;
+          }
 
-            var items = [
-              "Gun",
-              "Armor",
-              "Bomb",
-              "Knife",
-              "Whiskey",
-              "Crystal",
-              "Key",
-              "Candle",
-              "Falcon",
-              "Tract",
-              "Syringe",
-              "Envelope",
-              "Shield",
-            ];
-            var itemToGet = Random.randArrayVal(items);
+          var items = [
+            "Gun",
+            "Armor",
+            "Bomb",
+            "Knife",
+            "Whiskey",
+            "Crystal",
+            "Key",
+            "Candle",
+            "Falcon",
+            "Tract",
+            "Syringe",
+            "Envelope",
+            "Shield",
+          ];
+          var itemToGet = Random.randArrayVal(items);
 
-            this.actor.holdItem(itemToGet);
-            this.actor.queueGetItemAlert(itemToGet);
-          },
+          this.actor.holdItem(itemToGet);
+          this.actor.queueGetItemAlert(itemToGet);
+        },
       },
     ];
 
