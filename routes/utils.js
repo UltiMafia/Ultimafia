@@ -206,6 +206,7 @@ async function createNotification(info, recipients, sockets) {
         date: !info.isChat ? Date.now() : undefined,
         icon: info.icon,
         link: info.link,
+        read: false,
       });
       await notification.save();
 
@@ -226,6 +227,7 @@ async function createNotification(info, recipients, sockets) {
       date: Date.now(),
       icon: info.icon,
       link: info.link,
+      read: false,
     });
     await notification.save();
 

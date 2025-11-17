@@ -10,6 +10,10 @@ import {
   TextField,
   Box,
   Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
@@ -35,6 +39,7 @@ import {
   communityViolations,
   gameViolations,
 } from "constants/violations";
+import { lobbies } from "../../constants/lobbies";
 
 const COMMAND_GROUP_ORDER = {
   "User Management": 1, // the lower the number, the higher it appears
@@ -42,6 +47,7 @@ const COMMAND_GROUP_ORDER = {
   "Game Management": 3,
   "Site Management": 4,
   "Group Management": 5,
+  "Poll Management": 6,
   "Deck Management": 9,
   "Forum Management": 99,
   "Chat Window Management": 999,
@@ -334,6 +340,28 @@ export function ModCommands(props) {
             />
           );
         }
+      }
+
+      if (arg.type === "select") {
+        return (
+          <FormControl key={arg.name} sx={{ width: "100%" }}>
+            <InputLabel>{arg.label}</InputLabel>
+            <Select
+              value={argValue || ""}
+              label={arg.label}
+              onChange={(e) =>
+                updateArgValue(arg.name, e.target.value, arg.isArray)
+              }
+              disabled={isPrefilled}
+            >
+              {arg.options.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        );
       }
 
       return (
@@ -852,6 +880,44 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    Ban: {
+      perm: "ban",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Ban Type",
+          name: "banType",
+          type: "select",
+          options: [
+            { value: "forum", label: "Forum" },
+            { value: "chat", label: "Chat" },
+            { value: "game", label: "Game" },
+            { value: "ranked", label: "Ranked" },
+            { value: "competitive", label: "Competitive" },
+            { value: "site", label: "Site" },
+          ],
+        },
+        {
+          label: "Length",
+          name: "length",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/ban", argValues)
+          .then(() => {
+            siteInfo.showAlert("User banned.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Forum Ban": {
       perm: "forumBan",
       category: "User Management",
@@ -1067,6 +1133,39 @@ export function useModCommands(argValues, commandRan, setResults) {
           .post("/api/mod/logout", argValues)
           .then(() => {
             siteInfo.showAlert("User logged out.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    Unban: {
+      perm: "unban",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Ban Type",
+          name: "banType",
+          type: "select",
+          options: [
+            { value: "forum", label: "Forum" },
+            { value: "chat", label: "Chat" },
+            { value: "game", label: "Game" },
+            { value: "ranked", label: "Ranked" },
+            { value: "competitive", label: "Competitive" },
+            { value: "site", label: "Site" },
+          ],
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/unban", argValues)
+          .then(() => {
+            siteInfo.showAlert("User unbanned.", "success");
             commandRan();
           })
           .catch(errorAlert);
@@ -1299,6 +1398,42 @@ export function useModCommands(argValues, commandRan, setResults) {
           .post("/api/mod/clearSetupName", argValues)
           .then(() => {
             siteInfo.showAlert("Setup name cleared.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Clear User Content": {
+      perm: "clearUserContent",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Content Type",
+          name: "contentType",
+          type: "select",
+          options: [
+            { value: "avatar", label: "Avatar" },
+            { value: "bio", label: "Bio" },
+            { value: "customEmotes", label: "Custom Emotes" },
+            { value: "name", label: "Name" },
+            { value: "vanityUrl", label: "Vanity URL" },
+            { value: "video", label: "Video" },
+            { value: "pronouns", label: "Pronouns" },
+            { value: "accountDisplay", label: "Account Display" },
+            { value: "all", label: "All User Content" },
+          ],
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/clearUserContent", argValues)
+          .then(() => {
+            siteInfo.showAlert("User content cleared.", "success");
             commandRan();
           })
           .catch(errorAlert);
@@ -1556,6 +1691,51 @@ export function useModCommands(argValues, commandRan, setResults) {
           .post("/api/mod/changeName", argValues)
           .then(() => {
             siteInfo.showAlert("Name changed.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    // "Award Trophy": {
+    //   perm: "awardTrophy",
+    //   category: "User Management",
+    //   args: [
+    //     {
+    //       label: "User",
+    //       name: "userId",
+    //       type: "user_search",
+    //     },
+    //     {
+    //       label: "Trophy Name",
+    //       name: "name",
+    //       type: "text",
+    //     },
+    //   ],
+    //   run: function () {
+    //     axios
+    //       .post("/api/mod/awardTrophy", argValues)
+    //       .then(() => {
+    //         siteInfo.showAlert("Trophy awarded.", "success");
+    //         commandRan();
+    //       })
+    //       .catch(errorAlert);
+    //   },
+    // },
+    "Refund Game": {
+      perm: "refundGame",
+      category: "Game Management",
+      args: [
+        {
+          label: "Game ID",
+          name: "gameId",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/refundGame", argValues)
+          .then((res) => {
+            siteInfo.showAlert(res.data || "Game refunded.", "success");
             commandRan();
           })
           .catch(errorAlert);
@@ -1960,6 +2140,49 @@ export function useModCommands(argValues, commandRan, setResults) {
         },
       ],
     },
+    "Create Poll": {
+      perm: "createPoll",
+      category: "Poll Management",
+      args: [
+        {
+          label: "Lobby",
+          name: "lobby",
+          type: "select",
+          options: lobbies
+            .filter((lobby) => !lobby.disabled && lobby.name !== "All")
+            .map((lobby) => ({
+              value: lobby.name,
+              label: lobby.displayName,
+            })),
+        },
+        {
+          label: "Question",
+          name: "question",
+          type: "text",
+        },
+        {
+          label: "Options (comma-separated)",
+          name: "options",
+          type: "text",
+          isArray: true,
+        },
+        {
+          label: "Expires in",
+          name: "expiration",
+          type: "text",
+          optional: true,
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/poll/create", argValues)
+          .then(() => {
+            siteInfo.showAlert("Poll created.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
   };
 
   const banActionNames = [
@@ -2103,7 +2326,7 @@ function ModActions(props) {
   }
 
   const actionRows = actions.map((action) => {
-    if (!action.name in modCommands) {
+    if (!(action.name in modCommands)) {
       console.error(
         `Not displaying action ${action.name} because it isn't listed in modCommands. Please report this error.`
       );
@@ -2112,7 +2335,11 @@ function ModActions(props) {
 
     let command = modCommands[action.name];
     let actionArgs = action.args.map((arg, i) => (
-      <ModActionArg label={command.args[i].label} arg={arg} key={i} />
+      <ModActionArg
+        label={command.args[i]?.label || "Unknown"}
+        arg={arg}
+        key={i}
+      />
     ));
 
     return (

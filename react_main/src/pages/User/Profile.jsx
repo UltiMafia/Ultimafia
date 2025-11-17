@@ -19,6 +19,7 @@ import {
   MarriedIcon,
   getLoveTitle,
   NameWithAvatar,
+  OnlineStatus,
 } from "./User";
 import { HiddenUpload, TextEditor } from "components/Form";
 import Setup from "components/Setup";
@@ -85,6 +86,7 @@ export const POINTS_ICON = require(`images/points.png`);
 export const POINTS_NEGATIVE_ICON = require(`images/pointsNegative.png`);
 export const ACHIEVEMENTS_ICON = require(`images/achievements.png`);
 export const DAILY_ICON = require(`images/dailyChallenges.png`);
+export const TROPHY_ICON = require(`images/roles/village/villager-vivid.png`);
 
 export default function Profile() {
   const [profileLoaded, setProfileLoaded] = useState(false);
@@ -104,12 +106,19 @@ export default function Profile() {
   const [points, setPoints] = useState(0);
   const [pointsNegative, setPointsNegative] = useState(0);
   const [achievements, setAchievements] = useState([]);
+  const [trophies, setTrophies] = useState([]);
   const [karmaInfo, setKarmaInfo] = useState({});
   const [settings, setSettings] = useState({});
   const [recentGames, setRecentGames] = useState([]);
+  const [recentGamesPage, setRecentGamesPage] = useState(1);
+  const [recentGamesMaxPage, setRecentGamesMaxPage] = useState(1);
+  const [recentGamesLoading, setRecentGamesLoading] = useState(false);
   const [archivedGames, setArchivedGames] = useState([]);
   const [editingArchivedGames, setEditingArchivedGames] = useState(false);
   const [createdSetups, setCreatedSetups] = useState([]);
+  const [setupsPage, setSetupsPage] = useState(1);
+  const [setupsMaxPage, setSetupsMaxPage] = useState(1);
+  const [setupsLoading, setSetupsLoading] = useState(false);
   const [bustCache, setBustCache] = useState(false);
   const [friendsPage, setFriendsPage] = useState(1);
   // const [maxFriendsPage, setMaxFriendsPage] = useState(1);
@@ -133,6 +142,9 @@ export default function Profile() {
     action: null,
   });
   const [banDialogSubmitting, setBanDialogSubmitting] = useState(false);
+  const [status, setStatus] = useState("offline");
+  const [lastActive, setLastActive] = useState(null);
+  const [canonicalUserId, setCanonicalUserId] = useState(null);
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -141,8 +153,9 @@ export default function Profile() {
   const { userId } = useParams();
   const isPhoneDevice = useIsPhoneDevice();
 
-  const isSelf = userId === user.id;
-  const isBlocked = !isSelf && user.blockedUsers.indexOf(userId) !== -1;
+  const profileUserId = canonicalUserId || userId;
+  const isSelf = profileUserId === user.id;
+  const isBlocked = !isSelf && user.blockedUsers.indexOf(profileUserId) !== -1;
   const canViewModViolations = Boolean(user.perms?.viewBans);
   const canIssueGameBan = Boolean(user.perms?.gameBan);
   const canIssueSiteBan = Boolean(user.perms?.siteBan);
@@ -238,7 +251,7 @@ export default function Profile() {
 
   // userId is the id of the current profile
   // user.id is the id of the current user
-  const showDelete = userId === user.id;
+  const showDelete = profileUserId === user.id;
 
   const showDeleteArchivedGame = showDelete && editingArchivedGames;
 
@@ -252,10 +265,13 @@ export default function Profile() {
 
     if (userId) {
       setProfileLoaded(false);
+      setCanonicalUserId(null);
 
       axios
         .get(`/api/user/${userId}/profile`)
         .then((res) => {
+          const resolvedId = res.data.id;
+          setCanonicalUserId(resolvedId);
           setProfileLoaded(true);
           setName(res.data.name);
           setAvatar(res.data.avatar);
@@ -269,8 +285,12 @@ export default function Profile() {
           setIsMarried(res.data.isMarried);
           setSettings(res.data.settings);
           setRecentGames(res.data.games);
+          setRecentGamesPage(1);
+          setRecentGamesMaxPage(res.data.maxGamesPage || 1);
           setArchivedGames(res.data.archivedGames);
           setCreatedSetups(res.data.setups);
+          setSetupsPage(1);
+          setSetupsMaxPage(res.data.maxSetupsPage || 1);
           // setMaxFriendsPage(res.data.maxFriendsPage);
           setFriendRequests(res.data.friendRequests);
           setFriendsPage(1);
@@ -280,12 +300,17 @@ export default function Profile() {
           setPointsNegative(res.data.pointsNegative);
           setKarmaInfo(res.data.karmaInfo);
           setGroups(res.data.groups);
+          setStatus(res.data.status || "offline");
+          setLastActive(res.data.lastActive);
           setMediaUrl("");
           setAutoplay(false);
           setSaved(res.data.saved);
           setLove(res.data.love);
           setCurrentUserLove(res.data.currentLove);
           setAchievements(res.data.achievements);
+          setTrophies(res.data.trophies || []);
+          setFriendsPage(1);
+          loadFriends(resolvedId, "", 1);
 
           if (res.data.settings.youtube) {
             setMediaUrl(res.data.settings.youtube);
@@ -297,13 +322,6 @@ export default function Profile() {
           errorAlert(e);
           navigate("/play");
         });
-
-      axios
-        .get(`/api/user/${userId}/friends`)
-        .then((res) => {
-          setFriends(res.data);
-        })
-        .catch(errorAlert);
     }
   }, [userId]);
 
@@ -362,7 +380,7 @@ export default function Profile() {
     }
 
     axios
-      .post("/api/user/friend", { user: userId })
+      .post("/api/user/friend", { user: profileUserId })
       .then((res) => {
         setIsFriend(!isFriend);
         siteInfo.showAlert(res.data, "success");
@@ -434,7 +452,7 @@ export default function Profile() {
 
     axios
       .post("/api/user/love", {
-        user: userId,
+        user: profileUserId,
         type: love.type,
         reqType: "Love",
       })
@@ -476,7 +494,7 @@ export default function Profile() {
 
     axios
       .post("/api/user/love", {
-        user: userId,
+        user: profileUserId,
         type: love.type,
         reqType: "Marry",
       })
@@ -510,9 +528,9 @@ export default function Profile() {
     }
 
     axios
-      .post("/api/user/block", { user: userId })
+      .post("/api/user/block", { user: profileUserId })
       .then(() => {
-        user.blockUserToggle(userId);
+        user.blockUserToggle(profileUserId);
 
         if (isBlocked) siteInfo.showAlert("User unblocked.", "success");
         else siteInfo.showAlert("User blocked.", "success");
@@ -592,6 +610,77 @@ export default function Profile() {
       .catch(errorAlert);
   }
 
+  function loadFriends(id, filterArg = "", pageToSet) {
+    if (!id) return;
+    const query = filterArg ? `?${filterArg}` : "";
+
+    axios
+      .get(`/api/user/${id}/friends${query}`)
+      .then((res) => {
+        if (res.data.length || pageToSet === 1) {
+          setFriends(res.data);
+          if (pageToSet != null) {
+            setFriendsPage(pageToSet);
+          }
+        }
+      })
+      .catch(errorAlert);
+  }
+
+  function loadRecentGames(id, pageToLoad = 1) {
+    if (!id) return;
+    setRecentGamesLoading(true);
+
+    axios
+      .get(`/api/user/${id}/games`, {
+        params: {
+          page: pageToLoad,
+        },
+      })
+      .then((res) => {
+        setRecentGames(res.data.games || []);
+        if (res.data.pages != null) {
+          setRecentGamesMaxPage(res.data.pages || 1);
+        }
+        if (res.data.page != null) {
+          setRecentGamesPage(res.data.page || pageToLoad);
+        } else {
+          setRecentGamesPage(pageToLoad);
+        }
+      })
+      .catch(errorAlert)
+      .finally(() => {
+        setRecentGamesLoading(false);
+      });
+  }
+
+  function loadSetups(id, pageToLoad = 1) {
+    if (!id) return;
+    setSetupsLoading(true);
+
+    axios
+      .get(`/api/user/${id}/setups`, {
+        params: {
+          page: pageToLoad,
+        },
+      })
+      .then((res) => {
+        setCreatedSetups(res.data.setups || []);
+        if (res.data.pages != null) {
+          setSetupsMaxPage(res.data.pages || 1);
+        }
+        if (res.data.page != null) {
+          setSetupsPage(res.data.page || pageToLoad);
+        } else {
+          setSetupsPage(pageToLoad);
+        }
+      })
+      .catch(errorAlert)
+      .finally(() => {
+        setSetupsLoading(false);
+      });
+  }
+
   function onFriendsPageNav(page) {
     var filterArg = getPageNavFilterArg(
       page,
@@ -602,15 +691,27 @@ export default function Profile() {
 
     if (filterArg == null) return;
 
-    axios
-      .get(`/api/user/${userId}/friends?${filterArg}`)
-      .then((res) => {
-        if (res.data.length) {
-          setFriends(res.data);
-          setFriendsPage(page);
-        }
-      })
-      .catch(errorAlert);
+    loadFriends(profileUserId, filterArg, page);
+  }
+
+  function onRecentGamesPageNav(page) {
+    if (page === recentGamesPage) return;
+    if (!profileUserId) return;
+
+    const maxPage = recentGamesMaxPage || 1;
+    const targetPage = Math.min(Math.max(page, 1), maxPage);
+
+    loadRecentGames(profileUserId, targetPage);
+  }
+
+  function onSetupsPageNav(page) {
+    if (page === setupsPage) return;
+    if (!profileUserId) return;
+
+    const maxPage = setupsMaxPage || 1;
+    const targetPage = Math.min(Math.max(page, 1), maxPage);
+
+    loadSetups(profileUserId, targetPage);
   }
 
   const panelStyle = {};
@@ -629,7 +730,7 @@ export default function Profile() {
   }
 
   if (banner) {
-    bannerStyle.backgroundImage = `url(/uploads/${userId}_banner.webp?t=${siteInfo.cacheVal})`;
+    bannerStyle.backgroundImage = `url(/uploads/${profileUserId}_banner.webp?t=${siteInfo.cacheVal})`;
   }
 
   if (settings.bannerFormat === "stretch") {
@@ -720,7 +821,12 @@ export default function Profile() {
 
   const friendRequestRows = friendRequests.map((user) => (
     <div className="friend-request" key={user.id}>
-      <NameWithAvatar id={user.id} name={user.name} avatar={user.avatar} />
+      <NameWithAvatar
+        id={user.id}
+        name={user.name}
+        avatar={user.avatar}
+        vanityUrl={user.vanityUrl}
+      />
       <div className="btns">
         <i className="fas fa-check" onClick={() => onAcceptFriend(user.id)} />
         <i className="fas fa-times" onClick={() => onRejectFriend(user.id)} />
@@ -735,6 +841,7 @@ export default function Profile() {
           id={friend.id}
           name={friend.name}
           avatar={friend.avatar}
+          vanityUrl={friend.vanityUrl}
         />
         {showDelete && (
           <div className="btns-wrapper">
@@ -750,8 +857,13 @@ export default function Profile() {
 
   if (user.loaded && !user.loggedIn && !userId) return <Navigate to="/play" />;
 
-  if (user.loaded && user.loggedIn && !userId)
-    return <Navigate to={`/user/${user.id}`} />;
+  if (user.loaded && user.loggedIn && !userId) {
+    // Use vanity URL if available, otherwise use user ID
+    const profilePath = user.vanityUrl
+      ? `/user/${user.vanityUrl}`
+      : `/user/${user.id}`;
+    return <Navigate to={profilePath} replace />;
+  }
 
   if (!profileLoaded || !user.loaded) return <NewLoading small />;
 
@@ -806,7 +918,7 @@ export default function Profile() {
             <ReportDialog
               open={reportDialogOpen}
               onClose={() => setReportDialogOpen(false)}
-              prefilledArgs={{ user: userId }}
+              prefilledArgs={{ user: profileUserId }}
             />
           </>
         )}
@@ -825,6 +937,57 @@ export default function Profile() {
         key={g.name}
       />
     ));
+
+  const trophyCase =
+    trophies.length > 0 ? (
+      <div className="box-panel trophy-case" style={panelStyle}>
+        <Typography variant="h3" style={headingStyle}>
+          Trophy Case
+        </Typography>
+        <div className="content">
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 1,
+            }}
+          >
+            {trophies.map((trophy) => {
+              const createdAt = trophy.createdAt
+                ? new Date(trophy.createdAt)
+                : null;
+              const formattedDate = createdAt
+                ? createdAt.toLocaleDateString()
+                : "Date unknown";
+
+              return (
+                <Tooltip
+                  arrow
+                  placement="top"
+                  title={
+                    <Stack spacing={0.5}>
+                      <Typography variant="subtitle2">{trophy.name}</Typography>
+                      <Typography variant="caption">
+                        Awarded {formattedDate}
+                      </Typography>
+                    </Stack>
+                  }
+                  key={trophy.id}
+                >
+                  <Box className="trophy-item">
+                    <img
+                      src={TROPHY_ICON}
+                      alt={`${trophy.name} trophy`}
+                      className="trophy-icon"
+                    />
+                  </Box>
+                </Tooltip>
+              );
+            })}
+          </Box>
+        </div>
+      </div>
+    ) : null;
 
   const avatarUpliftPx = !banner ? 0 : isPhoneDevice ? 38 : 58;
   const avatarPaddingPx = !banner
@@ -855,7 +1018,7 @@ export default function Profile() {
             <Avatar
               mediumlarge={isPhoneDevice}
               large={!isPhoneDevice}
-              id={userId}
+              id={profileUserId}
               hasImage={avatar}
               bustCache={bustCache}
               name={name}
@@ -901,6 +1064,15 @@ export default function Profile() {
             </Typography>
           )}
         </Stack>
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          mt: 0.5,
+        }}
+      >
+        <OnlineStatus status={status} lastActive={lastActive} />
       </Box>
     </Grid>
   );
@@ -993,7 +1165,7 @@ export default function Profile() {
       <ModerationSideDrawer
         open={moderationDrawerOpen}
         setOpen={setModerationDrawerOpen}
-        prefilledArgs={{ userId }}
+        prefilledArgs={{ userId: profileUserId }}
       />
       <Grid container rowSpacing={1} columnSpacing={1} className="profile">
         <Grid item xs={12}>
@@ -1064,7 +1236,7 @@ export default function Profile() {
                   px: 2,
                 }}
               >
-                <Comments fullWidth location={userId} />
+                <Comments fullWidth location={profileUserId} />
               </Box>
             )}
           </Stack>
@@ -1115,7 +1287,7 @@ export default function Profile() {
                       <KarmaVoteWidget
                         item={karmaInfo}
                         setItem={setKarmaInfo}
-                        userId={userId}
+                        userId={profileUserId}
                       />
                     </Stack>
                   )}
@@ -1128,7 +1300,7 @@ export default function Profile() {
                       <img
                         src={KUDOS_ICON}
                         style={{ marginRight: "12px" }}
-                        title="Kudos"
+                        alt="Kudos"
                       />
                       {kudos}
                     </Stack>
@@ -1141,7 +1313,7 @@ export default function Profile() {
                         <img
                           src={KARMA_ICON}
                           style={{ marginRight: "12px" }}
-                          title="Karma"
+                          alt="Karma"
                         />
                         {karmaInfo.voteCount}
                       </Stack>
@@ -1156,7 +1328,7 @@ export default function Profile() {
                       <img
                         src={POINTS_ICON}
                         style={{ marginRight: "12px" }}
-                        title="Fortune"
+                        alt="Fortune"
                       />
                       {points}
                     </Stack>
@@ -1169,7 +1341,7 @@ export default function Profile() {
                         <img
                           src={POINTS_NEGATIVE_ICON}
                           style={{ marginRight: "12px" }}
-                          title="Misfortune"
+                          alt="Misfortune"
                         />
                         {pointsNegative}
                       </Stack>
@@ -1178,6 +1350,7 @@ export default function Profile() {
                 </Stack>
               </div>
             </div>
+            {trophyCase}
             {totalGames >= RequiredTotalForStats &&
               !settings.hideStatistics && (
                 <div className="box-panel ratings" style={panelStyle}>
@@ -1210,8 +1383,25 @@ export default function Profile() {
                 Recent Games
               </Typography>
               <div className="content" style={{ padding: "0px" }}>
+                {recentGamesMaxPage > 1 && (
+                  <PageNav
+                    inverted
+                    page={recentGamesPage}
+                    maxPage={recentGamesMaxPage}
+                    onNav={onRecentGamesPageNav}
+                  />
+                )}
+                {recentGamesLoading && (
+                  <Typography
+                    sx={{
+                      p: 1,
+                    }}
+                  >
+                    Loading...
+                  </Typography>
+                )}
                 {recentGamesRows}
-                {recentGames.length === 0 && (
+                {!recentGamesLoading && recentGames.length === 0 && (
                   <Typography
                     sx={{
                       p: 1,
@@ -1219,6 +1409,14 @@ export default function Profile() {
                   >
                     No games
                   </Typography>
+                )}
+                {recentGamesMaxPage > 1 && (
+                  <PageNav
+                    inverted
+                    page={recentGamesPage}
+                    maxPage={recentGamesMaxPage}
+                    onNav={onRecentGamesPageNav}
+                  />
                 )}
               </div>
             </div>
@@ -1254,8 +1452,33 @@ export default function Profile() {
                 Setups Created
               </Typography>
               <div className="content">
+                {setupsMaxPage > 1 && (
+                  <PageNav
+                    inverted
+                    page={setupsPage}
+                    maxPage={setupsMaxPage}
+                    onNav={onSetupsPageNav}
+                  />
+                )}
+                {setupsLoading && (
+                  <Typography
+                    sx={{
+                      p: 1,
+                    }}
+                  >
+                    Loading...
+                  </Typography>
+                )}
                 {createdSetupRows}
-                {createdSetups.length === 0 && "No setups"}
+                {!setupsLoading && createdSetups.length === 0 && "No setups"}
+                {setupsMaxPage > 1 && (
+                  <PageNav
+                    inverted
+                    page={setupsPage}
+                    maxPage={setupsMaxPage}
+                    onNav={onSetupsPageNav}
+                  />
+                )}
               </div>
             </div>
             <div className="box-panel achievements" style={panelStyle}>
