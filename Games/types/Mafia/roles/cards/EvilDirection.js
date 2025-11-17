@@ -9,7 +9,7 @@ module.exports = class EvilDirection extends Card {
   constructor(role) {
     super(role);
 
-      this.passiveActions = [
+    this.passiveActions = [
       {
         ability: ["Information", "OnlyWhenAlive"],
         state: "Night",
@@ -19,28 +19,27 @@ module.exports = class EvilDirection extends Card {
         labels: ["investigate"],
         role: role,
         run: function () {
-            if (this.role.hasInfo) return;
-            if (!this.actor.alive) return;
-            let info = this.game.createInformation(
-              "DirectionToEvilInfo",
-              this.actor,
-              this.game,
-              this.actor
+          if (this.role.hasInfo) return;
+          if (!this.actor.alive) return;
+          let info = this.game.createInformation(
+            "DirectionToEvilInfo",
+            this.actor,
+            this.game,
+            this.actor
+          );
+          info.processInfo();
+          if (info.mainInfo == "Not Applicable") {
+            this.role.hasInfo = false;
+            this.actor.queueAlert(
+              `There wasn't enough evil players for your abilty to work!`
             );
-            info.processInfo();
-            if (info.mainInfo == "Not Applicable") {
-              this.role.hasInfo = false;
-              this.actor.queueAlert(
-                `There wasn't enough evil players for your abilty to work!`
-              );
-              return;
-            }
-            this.role.hasInfo = true;
-            var alert = `:invest: ${info.getInfoFormated()}.`;
-            this.actor.queueAlert(alert);
-          },
+            return;
+          }
+          this.role.hasInfo = true;
+          var alert = `:invest: ${info.getInfoFormated()}.`;
+          this.actor.queueAlert(alert);
+        },
       },
     ];
-
   }
 };
