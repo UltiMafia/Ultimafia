@@ -16,24 +16,23 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
         labels: ["hidden"],
         role: role,
         run: function () {
-            if (this.role.data.gainedGun) return;
+          if (this.role.data.gainedGun) return;
 
-            let mafiaKilled = false;
-            for (let action of this.game.actions[0]) {
-              if (action.hasLabels(["kill", "mafia"])) {
-                mafiaKilled = true;
-                break;
-              }
+          let mafiaKilled = false;
+          for (let action of this.game.actions[0]) {
+            if (action.hasLabels(["kill", "mafia"])) {
+              mafiaKilled = true;
+              break;
             }
+          }
 
-            if (!mafiaKilled) {
-              this.actor.holdItem("Gun", { reveal: true, modifiers: true });
-              this.actor.queueGetItemAlert("Gun");
-              this.role.data.gainedGun = true;
-            }
-          },
+          if (!mafiaKilled) {
+            this.actor.holdItem("Gun", { reveal: true, modifiers: true });
+            this.actor.queueGetItemAlert("Gun");
+            this.role.data.gainedGun = true;
+          }
+        },
       },
     ];
-
   }
 };
