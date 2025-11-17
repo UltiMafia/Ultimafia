@@ -15,16 +15,14 @@ module.exports = class EclipseOnDeath extends Card {
         labels: ["dream", "hidden", "investigate"],
         role: role,
         run: function () {
-          if(this.role.data.causeEclipse != true){
+          if (this.role.data.causeEclipse != true) {
             return;
           }
-           for (let p of this.game.players) {
-              this.role.giveEffect(p, "Blind", 1);
-            }
+          for (let p of this.game.players) {
+            this.role.giveEffect(p, "Blind", 1);
+          }
 
-            this.game.queueAlert(
-              `Everything goes dark as an eclipse begins.`
-            );
+          this.game.queueAlert(`Everything goes dark as an eclipse begins.`);
           this.role.data.causeEclipse = false;
         },
       },
