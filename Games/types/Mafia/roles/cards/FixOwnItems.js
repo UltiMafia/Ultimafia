@@ -33,11 +33,11 @@ module.exports = class FixOwnItems extends Card {
         labels: ["fixItems", "hidden"],
         role: role,
         run: function () {
-            for (let item of this.actor.items) {
-              item.broken = false;
-              item.magicCult = false;
-              item.mafiaImmune = false;
-            }
+          for (let item of this.actor.items) {
+            item.broken = false;
+            item.magicCult = false;
+            item.mafiaImmune = false;
+          }
         },
       },
       {
@@ -49,14 +49,13 @@ module.exports = class FixOwnItems extends Card {
         labels: ["fixItems", "hidden"],
         role: role,
         run: function () {
-            for (let item of this.actor.items) {
-              item.broken = false;
-              item.magicCult = false;
-              item.mafiaImmune = false;
-            }
+          for (let item of this.actor.items) {
+            item.broken = false;
+            item.magicCult = false;
+            item.mafiaImmune = false;
+          }
         },
       },
     ];
-    
   }
 };
