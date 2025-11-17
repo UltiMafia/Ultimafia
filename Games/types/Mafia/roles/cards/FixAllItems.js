@@ -38,18 +38,16 @@ module.exports = class FixAllItems extends Card {
         labels: ["fixItems"],
         role: role,
         run: function () {
-            if (this.role.PlayerToFixItems != null) {
-              for (let item of this.role.PlayerToFixItems.items) {
-                item.broken = false;
-                item.mafiaImmune = false;
-                item.magicCult = false;
-              }
+          if (this.role.PlayerToFixItems != null) {
+            for (let item of this.role.PlayerToFixItems.items) {
+              item.broken = false;
+              item.mafiaImmune = false;
+              item.magicCult = false;
             }
-            this.role.PlayerToFixItems = null;
-          },
+          }
+          this.role.PlayerToFixItems = null;
+        },
       },
     ];
-
-
   }
 };
