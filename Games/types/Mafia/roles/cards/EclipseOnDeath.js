@@ -12,7 +12,11 @@ module.exports = class EclipseOnDeath extends Card {
         actor: role.player,
         game: role.player.game,
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-        labels: ["dream", "hidden", "investigate"],
+        labels: [
+          "effect",
+          "hidden",
+          "absolute",
+        ],
         role: role,
         run: function () {
           if (this.role.data.causeEclipse != true) {
