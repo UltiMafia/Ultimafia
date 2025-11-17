@@ -16,7 +16,7 @@ import { NameWithAvatar } from "pages/User/User";
 import { Box, Divider, Link, Popover, Stack, Typography } from "@mui/material";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { GameSettingCount } from "./Roles";
-import { KUDOS_ICON } from "pages/User/Profile";
+import { KUDOS_ICON } from "../pages/User/Profile";
 
 export function PopoverContent({ title, content, page = null, icon = <></> }) {
   let wrappedTitle = (

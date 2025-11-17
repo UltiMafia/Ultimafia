@@ -69,14 +69,6 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import WarningIcon from "@mui/icons-material/Warning";
-import GavelIcon from "@mui/icons-material/Gavel";
-import BlockIcon from "@mui/icons-material/Block";
-import InfoIcon from "@mui/icons-material/Info";
-import LinkIcon from "@mui/icons-material/Link";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 import system from "images/emotes/system.webp";
 
@@ -1595,7 +1587,7 @@ function ModCollapsiblePanel({
           sx={{ marginLeft: "auto !important" }}
           onClick={onToggle}
         >
-          {open ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
+          <i className={open ? "fas fa-chevron-up" : "fas fa-chevron-down"} style={{ fontSize: "1rem" }} />
         </IconButton>
       </Stack>
       <Collapse in={open} timeout="auto" unmountOnExit>
@@ -1606,6 +1598,8 @@ function ModCollapsiblePanel({
 }
 
 function ModViolationsPanel({ loading, data, violationMap }) {
+  const theme = useTheme();
+  
   if (loading) {
     return (
       <Stack direction="row" spacing={1} alignItems="center">
@@ -1626,6 +1620,11 @@ function ModViolationsPanel({ loading, data, violationMap }) {
   const { target, linkedAccounts = [], permissions = {} } = data;
   const tickets = target?.tickets || [];
   const activeBans = target?.activeBans || [];
+  
+  const getColorFromTheme = (colorName) => {
+    if (!colorName || colorName === "default") return undefined;
+    return theme.palette[colorName]?.main || undefined;
+  };
 
   const renderModReference = (mod) => {
     if (!mod) return null;
@@ -1696,7 +1695,7 @@ function ModViolationsPanel({ loading, data, violationMap }) {
         }}
       >
         <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-          <WarningIcon fontSize="small" color={banColor} />
+          <i className="fas fa-exclamation-triangle" style={{ fontSize: "1rem", color: getColorFromTheme(banColor) }} />
           <Typography variant="body2" sx={{ fontWeight: 600, flex: 1 }}>
             {violationName}
           </Typography>
@@ -1727,7 +1726,7 @@ function ModViolationsPanel({ loading, data, violationMap }) {
         )}
         <Stack spacing={0.25} sx={{ pl: 0.5 }}>
           <Stack direction="row" spacing={1} alignItems="center">
-            <AccessTimeIcon fontSize="inherit" sx={{ fontSize: "0.875rem" }} />
+            <i className="fas fa-clock" style={{ fontSize: "0.875rem" }} />
             <Typography variant="caption" sx={{ color: "text.secondary" }}>
               Issued{" "}
               <Time
@@ -1759,7 +1758,7 @@ function ModViolationsPanel({ loading, data, violationMap }) {
               }}
             >
               <Stack direction="row" spacing={0.5} alignItems="flex-start">
-                <InfoIcon fontSize="inherit" sx={{ fontSize: "0.875rem", mt: 0.25 }} />
+                <i className="fas fa-info-circle" style={{ fontSize: "0.875rem", marginTop: "0.25rem" }} />
                 <Typography variant="caption" sx={{ flex: 1 }}>
                   {ticket.notes}
                 </Typography>
@@ -1798,7 +1797,7 @@ function ModViolationsPanel({ loading, data, violationMap }) {
         }}
       >
         <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-          <BlockIcon fontSize="small" color={banColor} />
+          <i className="fas fa-ban" style={{ fontSize: "1rem", color: getColorFromTheme(banColor) }} />
           <Typography variant="body2" sx={{ fontWeight: 600, flex: 1 }}>
             {formatBanType(ban.type)} Ban
           </Typography>
@@ -1817,7 +1816,7 @@ function ModViolationsPanel({ loading, data, violationMap }) {
         </Stack>
         {violationName && (
           <Stack direction="row" spacing={0.5} alignItems="center">
-            <WarningIcon fontSize="inherit" sx={{ fontSize: "0.875rem" }} />
+            <i className="fas fa-exclamation-triangle" style={{ fontSize: "0.875rem" }} />
             <Typography variant="caption" sx={{ color: "text.secondary" }}>
               {violationName}
             </Typography>
@@ -1838,10 +1837,7 @@ function ModViolationsPanel({ loading, data, violationMap }) {
             </Typography>
           ) : ban.expires ? (
             <Stack direction="row" spacing={1} alignItems="center">
-              <AccessTimeIcon
-                fontSize="inherit"
-                sx={{ fontSize: "0.875rem" }}
-              />
+              <i className="fas fa-clock" style={{ fontSize: "0.875rem" }} />
               <Typography variant="caption" sx={{ color: "text.secondary" }}>
                 {isExpired ? "Expired" : "Expires"}{" "}
                 {new Date(ban.expires).toLocaleString()}
@@ -1875,7 +1871,7 @@ function ModViolationsPanel({ loading, data, violationMap }) {
       {activeBans.length > 0 && (
         <Stack spacing={1}>
           <Stack direction="row" spacing={1} alignItems="center">
-            <GavelIcon fontSize="small" color="error" />
+            <i className="fas fa-gavel" style={{ fontSize: "1rem", color: "var(--mui-palette-error-main)" }} />
             <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
               Active Bans ({activeBans.length})
             </Typography>
@@ -1887,7 +1883,7 @@ function ModViolationsPanel({ loading, data, violationMap }) {
       {tickets.length > 0 && (
         <Stack spacing={1}>
           <Stack direction="row" spacing={1} alignItems="center">
-            <WarningIcon fontSize="small" color="warning" />
+            <i className="fas fa-exclamation-triangle" style={{ fontSize: "1rem", color: "var(--mui-palette-warning-main)" }} />
             <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
               Violation Tickets ({tickets.length})
             </Typography>
@@ -1912,7 +1908,7 @@ function ModViolationsPanel({ loading, data, violationMap }) {
       <Divider sx={{ my: 1 }} />
       <Stack spacing={1}>
         <Stack direction="row" spacing={1} alignItems="center">
-          <LinkIcon fontSize="small" color="primary" />
+          <i className="fas fa-link" style={{ fontSize: "1rem", color: "var(--mui-palette-primary-main)" }} />
           <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
             Linked Accounts
             {linkedAccounts.length > 0 && ` (${linkedAccounts.length})`}
@@ -2154,7 +2150,7 @@ function ModBanDialog({ open, onClose, action, submitting, onSubmit }) {
     >
       <DialogTitle>
         <Stack direction="row" spacing={1} alignItems="center">
-          <BlockIcon color="error" />
+          <i className="fas fa-ban" style={{ color: "var(--mui-palette-error-main)" }} />
           <Typography variant="h6">
             {action ? `Issue ${action.label}` : "Issue ban"}
           </Typography>
@@ -2263,7 +2259,7 @@ function ModBanDialog({ open, onClose, action, submitting, onSubmit }) {
           disabled={disableSubmit}
           variant="contained"
           color="error"
-          startIcon={submitting ? <CircularProgress size={16} /> : <GavelIcon />}
+          startIcon={submitting ? <CircularProgress size={16} /> : <i className="fas fa-gavel" />}
         >
           {submitting ? "Issuing…" : "Issue Ban"}
         </Button>
