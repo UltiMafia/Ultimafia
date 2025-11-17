@@ -11,23 +11,19 @@ module.exports = class VotesAnonymousOnDeath extends Card {
         actor: role.player,
         game: role.player.game,
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-        labels: [
-          "effect",
-          "hidden",
-          "absolute",
-        ],
+        labels: ["effect", "hidden", "absolute"],
         role: role,
         run: function () {
-          if(this.role.data.causeVoteAnonymous != true){
+          if (this.role.data.causeVoteAnonymous != true) {
             return;
           }
-           for (let p of this.game.players) {
-              this.role.giveEffect(p, "VoteBlind", 1);
-            }
+          for (let p of this.game.players) {
+            this.role.giveEffect(p, "VoteBlind", 1);
+          }
 
-            this.game.queueAlert(
-              `The Typist has died! Nobody can publicly record the votes…`
-            );
+          this.game.queueAlert(
+            `The Typist has died! Nobody can publicly record the votes…`
+          );
           this.role.data.causeVoteAnonymous = false;
         },
       },
