@@ -6,28 +6,16 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      roleAssigned: function (player) {
-        if (player !== this.player) {
-          return;
-        }
-
-        this.data.gainedGun = false;
-      },
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Item"])) {
-          return;
-        }
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_ITEM_GIVER_EARLY,
-          labels: ["hidden"],
-          role: this,
-          run: function () {
+    this.passiveActions = [
+      {
+        ability: ["Item"],
+        state: "Night",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_ITEM_GIVER_EARLY,
+        labels: ["hidden"],
+        role: role,
+        run: function () {
             if (this.role.data.gainedGun) return;
 
             let mafiaKilled = false;
@@ -44,10 +32,8 @@ module.exports = class GainGunIfMafiaAbstained extends Card {
               this.role.data.gainedGun = true;
             }
           },
-        });
-
-        this.game.queueAction(action);
       },
-    };
+    ];
+
   }
 };
