@@ -66,6 +66,11 @@ export const Welcome = () => {
                   setIsLoading(false);
                   return;
                 }
+                if (data.deleted) {
+                  snackbarHook.popUserDeleted();
+                  setLoading(false);
+                  return;
+                }
               } catch (parseErr) {
                 // Not a site-ban error, continue with regular error handling
               }

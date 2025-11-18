@@ -87,6 +87,11 @@ export const LoginDialog = ({ open, setOpen }) => {
               setLoading(false);
               return;
             }
+            if (data.deleted) {
+              snackbarHook.popUserDeleted();
+              setLoading(false);
+              return;
+            }
           } catch (parseErr) {
             // Not a site-ban error, continue with regular error handling
           }
@@ -138,6 +143,11 @@ export const LoginDialog = ({ open, setOpen }) => {
                 : err.response.data;
             if (data.siteBanned) {
               snackbarHook.popSiteBanned(data.banExpires);
+              setLoading(false);
+              return;
+            }
+            if (data.deleted) {
+              snackbarHook.popUserDeleted();
               setLoading(false);
               return;
             }
