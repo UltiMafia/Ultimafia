@@ -485,6 +485,7 @@ const modifierData = {
       description:
         "Players who role-share with a Brutish player become skittish. Skittish players must accept all incoming role-shares.",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Reclusive"],
     },
     Reclusive: {
       category: "Other",
@@ -493,6 +494,7 @@ const modifierData = {
       description:
         "Players who role-share with a Reclusive player become shy. Shy players cannot accept incoming role-shares and cannot Private/Public Reveal.",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Brutish"],
     },
     Pneumatic: {
       category: "Other",
@@ -558,6 +560,7 @@ const modifierData = {
       description:
         "All Guns, Knives, and Rifles used by this role will not reveal user.",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Overt"],
     },
     Overt: {
       category: "Items",
@@ -566,6 +569,7 @@ const modifierData = {
       description:
         "All Guns, Knives, and Rifles used by this role will reveal user.",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Covert"],
     },
 
     //Visit Immunies
@@ -575,6 +579,7 @@ const modifierData = {
       tags: ["Role Blocker", "Kill Interaction", "Reflexive"],
       description: "Is untargetable from all non-killing actions.",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Commuting"],
     },
     Commuting: {
       category: "Visits",
@@ -582,6 +587,7 @@ const modifierData = {
       tags: ["Role Blocker", "Reflexive"],
       description: "Is untargetable from all actions.",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Ascetic"],
     },
     Astral: {
       category: "Visits",
@@ -645,7 +651,6 @@ const modifierData = {
       tags: ["Information", "Visits"],
       description: "Learns if their visit was successful or if it was blocked.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Peeking"],
     },
     Peeking: {
       category: "Visits",
@@ -654,7 +659,6 @@ const modifierData = {
       description:
         "Learns if their visit target was visited by another player.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Checking"],
     },
     Clumsy: {
       category: "Visits",
@@ -1230,6 +1234,7 @@ const modifierData = {
       tags: ["Speech", "Blind", "Effect"],
       description: `Starts the game "Blind". ${blindDef}`,
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Clueless"],
     },
     Clueless: {
       category: "Chat",
@@ -1237,6 +1242,7 @@ const modifierData = {
       tags: ["Speech", "Clueless", "Random Messages", "Effect"],
       description: `Starts the game "Clueless". ${cluelessDef}`,
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Blind"],
     },
     Leaky: {
       category: "Chat",
