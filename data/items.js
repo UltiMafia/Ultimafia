@@ -18,12 +18,6 @@ const modifierData = {
       description:
         "Can be used once during the day to stab a specific player, who will bleed out and die the following night.",
     },
-    Stake: {
-      internal: ["Stake"],
-      tags: ["Day Killer", "alignment"],
-      description:
-        "Can be used once during the day to stab a specific player, That player will die if evil",
-    },
     //Reflexive/Protective
     Armor: {
       internal: ["Armor"],

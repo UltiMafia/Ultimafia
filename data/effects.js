@@ -18,7 +18,7 @@ const effectData = {
       description: "Doused players will die if a Match is thrown.",
     },
     Jinxed: {
-      internal: ["Stake"],
+      internal: ["Jinxed"],
       tags: ["Day Killer", "alignment"],
       description: "Jinxed players will die if they say a Jinxed word.",
     },

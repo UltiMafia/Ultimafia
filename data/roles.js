@@ -1561,6 +1561,7 @@ const roleData = {
         blindDef,
         //"Following their death, causes an eclipse during the day. During an eclipse, all speech and votes are anonymous.",
       ],
+      nightOrder: [["Blind", PRIORITY_EFFECT_GIVER_DEFAULT]],
     },
     Schoolmarm: {
       alignment: "Village",
@@ -1616,6 +1617,7 @@ const roleData = {
         purblindDef,
         //"On the day following their death, all votes will be anonymous.",
       ],
+      nightOrder: [["Purblind", PRIORITY_EFFECT_GIVER_DEFAULT]],
     },
     Virgin: {
       alignment: "Village",

@@ -518,9 +518,6 @@ module.exports = class MafiaPlayer extends Player {
       case "Cat":
         alert = ":cat2: You have received a cat!";
         break;
-      case "Stake":
-        alert = ":bats: You have received a stake!";
-        break;
       default:
         alert = `You have received a ${itemName}!`;
     }
