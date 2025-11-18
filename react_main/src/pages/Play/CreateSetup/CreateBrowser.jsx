@@ -183,10 +183,8 @@ export default function CreateSetup(props) {
             newRoleData = update(newRoleData, {
               roles: { [selRoleSet]: { $merge: { [action.role]: 1 } } },
             });
-          } else if(newRoleData.roles[selRoleSet][action.role] >= 99){
-            
-          }
-           else {
+          } else if (newRoleData.roles[selRoleSet][action.role] >= 99) {
+          } else {
             newRoleData = update(newRoleData, {
               roles: {
                 [selRoleSet]: {
@@ -419,7 +417,7 @@ export default function CreateSetup(props) {
     }
     let tmpModifiers = modifiers.filter((m) => m);
     tmpModifiers.push(mod);
-    tmpModifiers = tmpModifiers.sort((a,b) => a.name.localeCompare(b.name));
+    tmpModifiers = tmpModifiers.sort((a, b) => a.name.localeCompare(b.name));
     tmpModifiers = setModifiers(tmpModifiers);
     /*
     const tmpModifiers = [...modifiers];
@@ -440,7 +438,7 @@ export default function CreateSetup(props) {
     }
     let tmpModifiers = modifiers.filter((m) => m);
     tmpModifiers.splice(index, 1);
-    tmpModifiers = tmpModifiers.sort((a,b) => a.name.localeCompare(b.name));
+    tmpModifiers = tmpModifiers.sort((a, b) => a.name.localeCompare(b.name));
     setModifiers(tmpModifiers);
     /*
     const tmpModifiers = [...modifiers];
