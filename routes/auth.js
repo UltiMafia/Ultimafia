@@ -116,11 +116,20 @@ router.post("/", async function (req, res) {
           banExpires: e.banExpires,
         })
       );
-      return;
     }
-    logger.error(e);
-    res.status(500);
-    res.send("Authentication failed.");
+    else if (e.deleted) {
+      res.status(403);
+      res.send(
+        JSON.stringify({
+          deleted: true,
+        })
+      );
+    }
+    else {
+      logger.error(e);
+      res.status(500);
+      res.send("5Authentication failed.");
+    }
   }
 });
 
@@ -181,8 +190,8 @@ async function authSuccess(req, uid, email, discordProfile) {
 
     var id = routeUtils.getUserId(req);
     var ip = routeUtils.getIP(req);
-    var user = await models.User.findOne({ email, deleted: false }).select(
-      "id discordId"
+    var user = await models.User.findOne({ email }).select(
+      "id deleted discordId"
     );
     var bannedUser = await models.User.findOne({ email, banned: true }).select(
       "id discordId"
@@ -347,6 +356,8 @@ async function authSuccess(req, uid, email, discordProfile) {
       await models.Session.deleteMany({ "session.user.id": id }).exec();
 
       return;
+    } else if (user.deleted) {
+      throw { deleted: true, };
     } else {
       //Link or refresh account (1) (2) (7)
       id = user.id;

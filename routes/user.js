@@ -2128,7 +2128,6 @@ router.post("/logout", async function (req, res) {
 router.post("/delete", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
-    var fbUid = req.session.user.fbUid;
     var dbId = req.session.user._id;
     var ip = routeUtils.getIP(req);
 
@@ -2139,14 +2138,18 @@ router.post("/delete", async function (req, res) {
 
     await models.ChannelOpen.deleteMany({ user: userId }).exec();
     await models.Notification.deleteMany({ user: userId }).exec();
-    await models.Love.deleteMany({ userId }).exec();
+    await models.Love.deleteMany({
+      $or: [{ userId: userId }, { loveId: userId }]
+    }).exec();
     await models.LoveRequest.deleteMany({
       $or: [{ userId: userId }, { loveId: userId }],
     }).exec();
     await models.DocSave.deleteMany({
       $or: [{ userIrd: userId }, { loveId: userId }],
     }).exec();
-    await models.Friend.deleteMany({ userId }).exec();
+    await models.Friend.deleteMany({
+      $or: [{ userId: userId }, { friendId: userId }]
+    }).exec();
     await models.FriendRequest.deleteMany({
       $or: [{ userId: userId }, { friendId: userId }],
     }).exec();
@@ -2165,34 +2168,11 @@ router.post("/delete", async function (req, res) {
         $set: {
           lastActive: 0,
           deleted: true,
-        },
-        $unset: {
-          fbUid: "",
-          avatar: "",
-          banner: "",
-          bio: "",
-          pronouns: "",
-          settings: "",
-          numFriends: "",
-          dev: "",
-          rank: "",
-          permissions: "",
-          setups: "",
-          favSetups: "",
-          games: "",
-          globalNotifs: "",
-          blockedUsers: "",
-          coins: "",
-          itemsOwned: "",
-          stats: "",
-          achievements: "",
-          dailyChallenges: "",
-          dailyChallengesCompleted: "",
+          numFriends: 0,
         },
       }
     ).exec();
 
-    await fbAdmin.auth().deleteUser(fbUid);
     await redis.setUserOffline(userId);
     await redis.deleteUserInfo(userId);
 

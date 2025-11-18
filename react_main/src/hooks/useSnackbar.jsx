@@ -44,6 +44,12 @@ export const useSnackbar = () => {
       "error"
     );
   };
+  const popUserDeleted = () => {
+    popSnackbar(
+      "Your user is deleted. To restore your account, contact a site administrator.",
+      "error"
+    );
+  };
 
   const SnackbarWrapped = (
     <Snackbar
@@ -69,6 +75,7 @@ export const useSnackbar = () => {
     popTooManyLoginAttempts,
     popLoginFailed,
     popSiteBanned,
+    popUserDeleted,
     SnackbarWrapped,
   };
 };
