@@ -116,16 +116,14 @@ router.post("/", async function (req, res) {
           banExpires: e.banExpires,
         })
       );
-    }
-    else if (e.deleted) {
+    } else if (e.deleted) {
       res.status(403);
       res.send(
         JSON.stringify({
           deleted: true,
         })
       );
-    }
-    else {
+    } else {
       logger.error(e);
       res.status(500);
       res.send("5Authentication failed.");
@@ -357,7 +355,7 @@ async function authSuccess(req, uid, email, discordProfile) {
 
       return;
     } else if (user.deleted) {
-      throw { deleted: true, };
+      throw { deleted: true };
     } else {
       //Link or refresh account (1) (2) (7)
       id = user.id;
