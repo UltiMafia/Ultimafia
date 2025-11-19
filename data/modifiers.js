@@ -1178,7 +1178,7 @@ const modifierData = {
       internal: ["TrueModifier"],
       tags: ["Information", "Sanity"],
       description:
-        "All Information created by this role is true. Hides other modifiers.",
+        "All information created by this role is true. Hides other modifiers.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Confused", "Insane", "Naive", "Paranoid"],
     },
