@@ -1195,6 +1195,7 @@ function MobileMenu() {
       sx={{
         flex: "1",
         p: 1,
+        paddingBottom: 0,
       }}
     >
       <SettingsForm />
@@ -1254,12 +1255,22 @@ export function MobileLayout({
 
   return (
     <>
-      {selectedPanel === outerLeftNavigationProps.value && outerLeftContent}
-      {/* The additionalInfoContent displays after the mobile version of TopBar */}
-      {selectedPanel === "info" && <>{additionalInfoContent}</>}
-      {selectedPanel === "chat" && centerContent}
-      {selectedPanel === innerRightNavigationProps.value && innerRightContent}
-      {selectedPanel === "menu" && <MobileMenu />}
+      <Stack sx={{ flex: "1", display: selectedPanel === outerLeftNavigationProps.value ? undefined : "none" }}>
+        {outerLeftContent}
+      </Stack>
+      <Box sx={{ display: selectedPanel === "info" ? undefined : "none" }}>
+        {/* The additionalInfoContent displays after the mobile version of TopBar */}
+        {additionalInfoContent}
+      </Box>
+      <Stack sx={{ flex: "1", display: selectedPanel === "chat" ? undefined : "none" }}>
+        {centerContent}
+      </Stack>
+      <Stack sx={{ flex: "1", display: selectedPanel === innerRightNavigationProps.value ? undefined : "none" }}>
+        {innerRightContent}
+      </Stack>
+      <Stack sx={{ flex: "1", display: selectedPanel === "menu" ? undefined : "none" }}>
+        <MobileMenu />
+      </Stack>
       <Paper elevation={3}>
         <Divider orientation="horizontal" />
         <BottomNavigation
@@ -4153,48 +4164,6 @@ function SettingsForm({ handleClose = null }) {
 
   const [formFields, updateFormFields] = useForm([
     {
-      label: "Voting Log",
-      ref: "votingLog",
-      type: "boolean",
-      value: settings.votingLog,
-    },
-    {
-      label: "Timestamps",
-      ref: "timestamps",
-      type: "boolean",
-      value: settings.timestamps,
-    },
-    {
-      label: "SFX Volume",
-      ref: "sfxVolume",
-      type: "range",
-      min: 0,
-      max: 1,
-      step: 0.1,
-      value: settings.sfxVolume,
-    },
-    {
-      label: "Music Volume",
-      ref: "musicVolume",
-      type: "range",
-      min: 0,
-      max: 1,
-      step: 0.1,
-      value: settings.musicVolume,
-    },
-    {
-      label: "Display Terminology Emoticons",
-      ref: "terminologyEmoticons",
-      type: "boolean",
-      value: settings.terminologyEmoticons,
-    },
-    {
-      label: "Highlight role names",
-      ref: "roleMentions",
-      type: "boolean",
-      value: settings.roleMentions,
-    },
-    {
       label: "Message Layout",
       ref: "messageLayout",
       type: "select",
@@ -4217,6 +4186,48 @@ function SettingsForm({ handleClose = null }) {
         },
       ],
       value: settings.messageLayout,
+    },
+    {
+      label: "Voting Log",
+      ref: "votingLog",
+      type: "boolean",
+      value: settings.votingLog,
+    },
+    {
+      label: "Timestamps",
+      ref: "timestamps",
+      type: "boolean",
+      value: settings.timestamps,
+    },
+    {
+      label: "Display Terminology Emoticons",
+      ref: "terminologyEmoticons",
+      type: "boolean",
+      value: settings.terminologyEmoticons,
+    },
+    {
+      label: "Highlight role names",
+      ref: "roleMentions",
+      type: "boolean",
+      value: settings.roleMentions,
+    },
+    {
+      label: "SFX Volume",
+      ref: "sfxVolume",
+      type: "range",
+      min: 0,
+      max: 1,
+      step: 0.1,
+      value: settings.sfxVolume,
+    },
+    {
+      label: "Music Volume",
+      ref: "musicVolume",
+      type: "range",
+      min: 0,
+      max: 1,
+      step: 0.1,
+      value: settings.musicVolume,
     },
   ]);
 
