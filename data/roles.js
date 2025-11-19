@@ -2924,7 +2924,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Deception", "Alignment", "Visiting", "Basic"],
       description: [
-        "Chooses a player each night and flips their alignment to investigative roles.",
+        "Chooses a player each night and makes them appear as an opposing vanilla role.",
       ],
       nightOrder: [
         ["Flip Alignment", PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT],
