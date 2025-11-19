@@ -1255,20 +1255,46 @@ export function MobileLayout({
 
   return (
     <>
-      <Stack sx={{ flex: "1", display: selectedPanel === outerLeftNavigationProps.value ? undefined : "none" }}>
+      <Stack
+        sx={{
+          flex: "1",
+          display:
+            selectedPanel === outerLeftNavigationProps.value
+              ? undefined
+              : "none",
+        }}
+      >
         {outerLeftContent}
       </Stack>
       <Box sx={{ display: selectedPanel === "info" ? undefined : "none" }}>
         {/* The additionalInfoContent displays after the mobile version of TopBar */}
         {additionalInfoContent}
       </Box>
-      <Stack sx={{ flex: "1", display: selectedPanel === "chat" ? undefined : "none" }}>
+      <Stack
+        sx={{
+          flex: "1",
+          display: selectedPanel === "chat" ? undefined : "none",
+        }}
+      >
         {centerContent}
       </Stack>
-      <Stack sx={{ flex: "1", display: selectedPanel === innerRightNavigationProps.value ? undefined : "none" }}>
+      <Stack
+        sx={{
+          flex: "1",
+          display:
+            selectedPanel === innerRightNavigationProps.value
+              ? undefined
+              : "none",
+        }}
+      >
         {innerRightContent}
       </Stack>
-      <Stack sx={{ flex: "1", display: selectedPanel === "menu" ? undefined : "none" }}>
+      <Stack
+        sx={{
+          flex: "1",
+          display: selectedPanel === "menu" ? undefined : "none",
+        }}
+      >
         <MobileMenu />
       </Stack>
       <Paper elevation={3}>
