@@ -2139,7 +2139,7 @@ router.post("/delete", async function (req, res) {
     await models.ChannelOpen.deleteMany({ user: userId }).exec();
     await models.Notification.deleteMany({ user: userId }).exec();
     await models.Love.deleteMany({
-      $or: [{ userId: userId }, { loveId: userId }]
+      $or: [{ userId: userId }, { loveId: userId }],
     }).exec();
     await models.LoveRequest.deleteMany({
       $or: [{ userId: userId }, { loveId: userId }],
@@ -2148,7 +2148,7 @@ router.post("/delete", async function (req, res) {
       $or: [{ userIrd: userId }, { loveId: userId }],
     }).exec();
     await models.Friend.deleteMany({
-      $or: [{ userId: userId }, { friendId: userId }]
+      $or: [{ userId: userId }, { friendId: userId }],
     }).exec();
     await models.FriendRequest.deleteMany({
       $or: [{ userId: userId }, { friendId: userId }],
