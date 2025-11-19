@@ -2343,12 +2343,12 @@ const roleData = {
       category: "Essential",
       tags: ["Essential", "Selective Revealing", "Exposed", "Advanced"],
       description: [
-        "All villagers will know who the President is.",
+        "All village aligned players will know who the President is.",
         "When the President dies, the Mafia/Cult will win.",
       ],
       SpecialInteractions: {
         Assassin: [
-          "If an Assassin is Present, Village Aligned Players will not learn who the President is.",
+          "If an Assassin is Present, village aligned Players will not learn who the President is.",
         ],
       },
     },
