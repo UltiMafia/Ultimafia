@@ -1234,11 +1234,11 @@ router.post("/reply/edit", async function (req, res) {
 
 router.post("/vote", async function (req, res) {
   try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var itemId = String(req.body.item);
-    var itemType = String(req.body.itemType);
-    var perm = "vote";
-    var itemModel;
+    const userId = await routeUtils.verifyLoggedIn(req);
+    const itemId = String(req.body.item);
+    const itemType = String(req.body.itemType);
+    const perm = "vote";
+    let itemModel;
 
     switch (itemType) {
       case "thread":
@@ -1264,20 +1264,31 @@ router.post("/vote", async function (req, res) {
     if (itemType === "strategy") {
       itemQuery = itemQuery.select("deleted");
     } else {
-      itemQuery = itemQuery
-        .select("board thread")
-        .populate("board", "rank")
-        .populate({
-          path: "thread",
-          select: "board",
-          populate: {
-            path: "board",
-            select: "rank",
-          },
+      let populates = [];
+      if (itemModel.schema.paths.board) {
+        populates.push({
+          path: "board",
+          select: "rank",
         });
+      }
+      
+      if (itemModel.schema.paths.thread) {
+        populates.push({
+            path: "thread",
+            select: "board",
+            populate: {
+              path: "board",
+              select: "rank",
+            },
+          });
+      }
+
+      itemQuery = itemQuery
+        .select("board thread rank")
+        .populate(populates);
     }
 
-    var item = await itemQuery;
+    const item = await itemQuery;
 
     if (!item) {
       res.status(500);
