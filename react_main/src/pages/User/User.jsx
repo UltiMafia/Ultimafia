@@ -320,6 +320,9 @@ export function Avatar(props) {
       style.transform = "translateY(12px)";
     }
   }
+  else {
+    style.position = "relative";
+  }
 
   if (ConnectFour) {
     style.transform = "translateX(5px) translateY(5px)";
@@ -391,7 +394,6 @@ var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/
       }`}
       style={{
         ...style,
-        position: "relative",
         display: "inline-block",
         width: `${avatarSize}px`,
         height: `${avatarSize}px`,
