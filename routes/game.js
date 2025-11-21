@@ -231,71 +231,76 @@ router.get("/:id/connect", async function (req, res) {
       return;
     }
 
-    if (userId && game.settings.ranked && !isSpectating) {
-      const user = await redis.getUserInfo(userId);
+    // If the user is in this game, then ignore all checks so that they can finish out the game
+    const userInThisGame = userId && await redis.inGame(userId) === gameId;
 
-      if (!user || user.gamesPlayed < constants.minimumGamesForRanked) {
-        res.status(400);
+    if (!userInThisGame) {
+      if (userId && game.settings.ranked && !isSpectating) {
+        const user = await redis.getUserInfo(userId);
+
+        if (!user || user.gamesPlayed < constants.minimumGamesForRanked) {
+          res.status(400);
+          res.send(
+            `You cannot play ranked games until you've played ${constants.minimumGamesForRanked} games.`
+          );
+          return;
+        }
+
+        if (!user || user.redHearts <= 0) {
+          res.status(400);
+          res.send(
+            "You cannot play ranked games because your Red Hearts are depleted."
+          );
+          return;
+        }
+      }
+
+      if (userId && !isSpectating) {
+        const leavePentalty = await models.LeavePenalty.findOne({
+          userId: userId,
+        }).select("canPlayAfter");
+
+        if (leavePentalty && now < leavePentalty.canPlayAfter) {
+          const minutesUntilCanPlayAgain = Math.trunc(
+            (leavePentalty.canPlayAfter - now) / 60000
+          );
+          res.status(400);
+          res.send(
+            `You are unable to play games for another ${minutesUntilCanPlayAgain} minutes due to leaving game(s).`
+          );
+          return;
+        }
+      }
+
+      if (userId && !(await routeUtils.verifyPermission(userId, "playGame"))) {
+        res.status(500);
+        res.send("You are unable to play games.");
+        return;
+      }
+
+      if (
+        userId &&
+        game.settings.ranked &&
+        !(await routeUtils.verifyPermission(userId, "playRanked"))
+      ) {
+        res.status(500);
         res.send(
-          `You cannot play ranked games until you've played ${constants.minimumGamesForRanked} games.`
+          "You are unable to play ranked games. Please contact an admin if this is in error."
         );
         return;
       }
 
-      if (!user || user.redHearts <= 0) {
-        res.status(400);
+      if (
+        userId &&
+        game.settings.competitive &&
+        !(await routeUtils.verifyPermission(userId, "playCompetitive"))
+      ) {
+        res.status(500);
         res.send(
-          "You cannot play ranked games because your Red Hearts are depleted."
+          "You have not been approved for competitive games. Please message an admin for assistance."
         );
         return;
       }
-    }
-
-    if (userId && !isSpectating) {
-      const leavePentalty = await models.LeavePenalty.findOne({
-        userId: userId,
-      }).select("canPlayAfter");
-
-      if (leavePentalty && now < leavePentalty.canPlayAfter) {
-        const minutesUntilCanPlayAgain = Math.trunc(
-          (leavePentalty.canPlayAfter - now) / 60000
-        );
-        res.status(400);
-        res.send(
-          `You are unable to play games for another ${minutesUntilCanPlayAgain} minutes due to leaving game(s).`
-        );
-        return;
-      }
-    }
-
-    if (userId && !(await routeUtils.verifyPermission(userId, "playGame"))) {
-      res.status(500);
-      res.send("You are unable to play games.");
-      return;
-    }
-
-    if (
-      userId &&
-      game.settings.ranked &&
-      !(await routeUtils.verifyPermission(userId, "playRanked"))
-    ) {
-      res.status(500);
-      res.send(
-        "You are unable to play ranked games. Please contact an admin if this is in error."
-      );
-      return;
-    }
-
-    if (
-      userId &&
-      game.settings.competitive &&
-      !(await routeUtils.verifyPermission(userId, "playCompetitive"))
-    ) {
-      res.status(500);
-      res.send(
-        "You have not been approved for competitive games. Please message an admin for assistance."
-      );
-      return;
     }
 
     var type = game.type;
@@ -607,7 +612,7 @@ router.post("/host", async function (req, res) {
 
     const user = await redis.getUserInfo(userId);
     if (req.body.ranked) {
-      if (user && user.gamesPlayed <= constants.minimumGamesForRanked) {
+      if (user && user.gamesPlayed < constants.minimumGamesForRanked) {
         res.status(400);
         res.send(
           `You cannot play ranked games until you've played ${constants.minimumGamesForRanked} games.`
