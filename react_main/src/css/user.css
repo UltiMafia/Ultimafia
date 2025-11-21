@@ -1,3 +1,7 @@
+:root {
+  --online-status-icon-size: 16px;
+}
+
 .avatar {
   flex-shrink: 0;
 
@@ -9,23 +13,6 @@
   background-image: url("/src/images/avatar.webp");
   background-size: 100%;
   background-color: var(--scheme-color);
-}
-
-.avatar.small {
-  width: 20px !important;
-  height: 20px !important;
-}
-
-/* default avatar to 40px */
-
-.avatar.mediumlarge {
-  width: 60px !important;
-  height: 60px !important;
-}
-
-.avatar.large {
-  width: 100px !important;
-  height: 100px !important;
 }
 
 /*SANTA CHANGES: In December, uncomment the below lines*/
@@ -152,6 +139,10 @@ iframe {
 
 .status-icon.online {
   background-color: #59ad72;
+}
+
+.status-icon.ingame {
+  background-color: #a4ad59;
 }
 
 .status-icon.offline {
