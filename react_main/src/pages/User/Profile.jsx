@@ -104,6 +104,7 @@ export default function Profile() {
   const [currentUserLove, setCurrentUserLove] = useState({});
   const [status, setStatus] = useState("offline");
   const [lastActive, setLastActive] = useState(null);
+  const [inGame, setInGame] = useState(null);
   const [canonicalUserId, setCanonicalUserId] = useState(null);
 
   const user = useContext(UserContext);
@@ -170,6 +171,7 @@ export default function Profile() {
           setGroups(res.data.groups);
           setStatus(res.data.status || "offline");
           setLastActive(res.data.lastActive);
+          setInGame(res.data.inGame);
           setMediaUrl("");
           setAutoplay(false);
           setSaved(res.data.saved);
@@ -889,6 +891,9 @@ export default function Profile() {
               onUpload={onFileUpload}
               border={`4px var(--scheme-color) solid`}
               isSquare={settings.avatarShape === "square"}
+              onlineStatus={status}
+              lastActive={lastActive}
+              inGame={inGame}
             />
           )}
         </Box>
@@ -927,15 +932,6 @@ export default function Profile() {
             </Typography>
           )}
         </Stack>
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          mt: 0.5,
-        }}
-      >
-        <OnlineStatus status={status} lastActive={lastActive} />
       </Box>
     </Grid>
   );

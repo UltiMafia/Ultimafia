@@ -2,7 +2,6 @@ import React, { useState, useContext, useRef, useEffect } from "react";
 import axios from "axios";
 
 import { Link, Route, Routes, Navigate } from "react-router-dom";
-import update from "immutability-helper";
 
 import Profile, { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "./Profile";
 import Settings from "./Settings";
@@ -12,7 +11,7 @@ import { UserContext, SiteInfoContext, GameContext } from "Contexts";
 import AvatarUpload from "components/AvatarUpload";
 
 import "css/user.css";
-import { youtubeRegex } from "components/Basic";
+import { Time, youtubeRegex } from "components/Basic";
 
 const soundcloudRegex = /^https?:\/\/(www\.)?soundcloud\.com\/[^\/]+\/[^\/\?]+/;
 const spotifyRegex =
@@ -284,6 +283,9 @@ export function Avatar(props) {
   const ConnectFour = props.ConnectFour;
   const isSquare = props.isSquare || false;
   const border = props.border || undefined;
+  const onlineStatus = props.onlineStatus || null;
+  const lastActive = props.lastActive;
+  const inGame = props.inGame;
 
   const siteInfo = useContext(SiteInfoContext);
   const style = {};
@@ -298,12 +300,17 @@ export function Avatar(props) {
     "#90deea",
     "#80cbc4",
   ]; //yellow, red, blue, purple, green, pink, orange, cyan, teal
-  var size;
 
-  if (small) size = "small";
-  else if (mediumlarge) size = "mediumlarge";
-  else if (large) size = "large";
-  else size = "";
+  let avatarSize = 40;
+  if (small) {
+    avatarSize = 20;
+  }
+  else if (mediumlarge) {
+    avatarSize = 60;
+  }
+  else if (large) {
+    avatarSize = 100;
+  }
 
   if (absoluteLeftAvatarPx) {
     style.position = "absolute";
@@ -379,12 +386,15 @@ var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/
 
   return (
     <div
-      className={`avatar ${size} ${dead ? "dead" : ""} ${
+      className={`avatar ${dead ? "dead" : ""} ${
         active ? "active" : ""
       }`}
       style={{
         ...style,
+        position: "relative",
         display: "inline-block",
+        width: `${avatarSize}px`,
+        height: `${avatarSize}px`,
         borderRadius: isSquare ? "0px" : "50%",
         border: border,
       }}
@@ -393,6 +403,18 @@ var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/
         <AvatarUpload className="edit" name="avatar" onFileUpload={onUpload}>
           <i className="far fa-file-image" />
         </AvatarUpload>
+      )}
+
+      {onlineStatus !== null && (
+        <Box sx={{
+          position: "absolute",
+          content: "''",
+          bottom: isSquare ? 0 : 0.112 * avatarSize,
+          right: isSquare ? 0 : 0.112 * avatarSize,
+          transform: `translateX(50%) translateY(50%)`,
+        }}>
+          <OnlineStatus status={onlineStatus} lastActive={lastActive} inGame={inGame} />
+        </Box>
       )}
 
       {/*SANTA CHANGES: In December, uncomment the below lines*/}
@@ -647,54 +669,56 @@ export function StatusIcon(props) {
   return <div className={`status-icon ${props.status}`} />;
 }
 
-export function OnlineStatus(props) {
-  const { status, lastActive } = props;
+export function OnlineStatus({ status, lastActive, inGame }) {
+  const isPhoneDevice = useIsPhoneDevice();
 
-  if (status === "online") {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 0.5,
-        }}
-      >
-        <Typography
-          variant="caption"
-          sx={{
-            filter: "opacity(.75)",
-            fontSize: "0.75rem",
-          }}
-        >
-          Online
-        </Typography>
-        <div className="status-icon online" />
-      </Box>
+  const onlineStatusIconSize = isPhoneDevice ? "16px" : "24px";
+
+  let caption = null;
+  let displayedStatus = status;
+  if (inGame) {
+    displayedStatus = "ingame";
+    caption = "In game";
+  }
+  else if(status !== "online") {
+    caption = (
+      <>
+        {"Last online "}
+        <Time
+          abbreviate={isPhoneDevice}
+          minSec
+          millisec={Date.now() - lastActive}
+          suffix={" ago"}
+        />
+      </>
     );
   }
 
-  if (lastActive) {
-    const lastActiveDate = new Date(lastActive);
-    const formattedDate = lastActiveDate.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-
-    return (
-      <Typography
+  return (
+    <Box className={`status-icon ${displayedStatus}`} aria-hidden="true" sx={{
+      position: "relative",
+      width: onlineStatusIconSize,
+      height: onlineStatusIconSize,
+      borderRadius: "50%",
+      border: "4px var(--scheme-color) solid",
+    }}>
+      {caption && (<Typography
         variant="caption"
         sx={{
+          position: "absolute",
+          left: `calc(${onlineStatusIconSize}/2 + 4px + var(--mui-spacing)/2)`,
+          bottom: `calc(${onlineStatusIconSize}/2 - 1em + 2px)`,
           filter: "opacity(.75)",
           fontSize: "0.75rem",
+          textWrap: "nowrap",
+          lineHeight: "1",
+          pointerEvents: "none",
         }}
       >
-        Last online {formattedDate}
-      </Typography>
-    );
-  }
-
-  return null;
+        {caption}
+      </Typography>)}
+    </Box>
+  );
 }
 
 export function Badges(props) {

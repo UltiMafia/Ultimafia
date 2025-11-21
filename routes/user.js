@@ -519,9 +519,10 @@ router.get("/:id/profile", async function (req, res) {
       }
     }
 
-    // Add online status and last active time
+    // Add online status, last active time, and inGame status
     user.status = await redis.getUserStatus(userId);
     user.lastActive = user.lastActive;
+    user.inGame = inGame;
 
     // Add vanity URL if exists
     const vanityUrl = await models.VanityUrl.findOne({

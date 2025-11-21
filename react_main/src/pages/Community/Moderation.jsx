@@ -280,7 +280,7 @@ export function ModCommands(props) {
     if (groupOptions.length == 0) return <></>;
 
     return (
-      <Stack direction="column">
+      <Stack direction="column" key={category}>
         <Typography
           sx={{
             my: 1,
