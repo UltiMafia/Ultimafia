@@ -6,6 +6,7 @@ const roleData = require("../data/roles");
 const Random = require("../lib/Random");
 const fbAdmin = require("firebase-admin");
 const crypto = require("crypto");
+const fs = require("fs");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
@@ -1068,6 +1069,23 @@ router.post("/clearUserContent", async (req, res) => {
         modActionName = "Clear Account Display";
         break;
 
+      case "profileBackground":
+        updateQuery = { $set: { profileBackground: false } };
+        modActionName = "Clear Profile Background";
+        // Delete the profile background file if it exists
+        const profileBackgroundPath = `${process.env.UPLOAD_PATH}/${userIdToClear}_profileBackground.webp`;
+        if (fs.existsSync(profileBackgroundPath)) {
+          additionalOperations.push(
+            new Promise((resolve, reject) => {
+              fs.unlink(profileBackgroundPath, (err) => {
+                if (err) reject(err);
+                else resolve();
+              });
+            })
+          );
+        }
+        break;
+
       case "all":
         updateQuery = {
           $set: {
@@ -1075,9 +1093,22 @@ router.post("/clearUserContent", async (req, res) => {
             avatar: false,
             bio: "",
             customEmotes: [],
+            profileBackground: false,
           },
         };
         modActionName = "Clear All User Content";
+        // Delete the profile background file if it exists when clearing all
+        const profileBackgroundPathAll = `${process.env.UPLOAD_PATH}/${userIdToClear}_profileBackground.webp`;
+        if (fs.existsSync(profileBackgroundPathAll)) {
+          additionalOperations.push(
+            new Promise((resolve, reject) => {
+              fs.unlink(profileBackgroundPathAll, (err) => {
+                if (err) reject(err);
+                else resolve();
+              });
+            })
+          );
+        }
         additionalOperations.push(
           models.CustomEmote.updateMany(
             { creator: user._id },
