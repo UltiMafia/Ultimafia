@@ -6,12 +6,14 @@ import { GameContext } from "Contexts";
 
 import "css/newspaper.css";
 
-function Newspaper(props) {
+export default function Newspaper(props) {
   const title = props.title || "Obituary";
   const timestamp = props.timestamp || Date.now();
   const deaths = props.deaths || [];
   const dayCount = props.dayCount || 0;
   const isAlignmentReveal = props.isAlignmentReveal || false;
+  const isWin = props.isWin || false; // Flag for win newspapers
+  const wins = props.wins || []; // Array of win groups with their data
 
   // Example props.deaths input data:
   /* [{
@@ -36,6 +38,106 @@ function Newspaper(props) {
   const gameDate = new Date(timestamp + dayCount * 24 * 60 * 60 * 1000);
   gameDate.setFullYear(gameDate.getFullYear() - 100);
 
+  // Handle win newspapers (Mafia games)
+  if (isWin && wins.length > 0) {
+    const winEntries = wins.map((win, index) => {
+      const groupName = win.group;
+      const winMessage = win.message || "";
+      const players = win.players || [];
+      const plural = groupName[groupName.length - 1] === "s";
+      const winTitle = `${groupName} Win${plural ? "" : "s"}!`;
+
+      // Calculate dynamic avatar size based on number of players
+      // Grid is 2 columns, with 8px gap, max width ~176px
+      // Formula: (gridWidth - gap) / 2 = max cell size per column
+      const gridGap = 8;
+      const maxGridWidth = 176;
+      const numColumns = 2;
+      
+      // Calculate cell size and avatar size based on number of players
+      // More players = smaller avatars to prevent overlap
+      let cellSize;
+      let avatarSize;
+      let avatarSizeProp = null; // large, mediumlarge, or small
+      
+      if (players.length <= 2) {
+        cellSize = 84; // Larger cells for fewer players
+        avatarSize = 80; // Slightly smaller than cell for padding
+        avatarSizeProp = "large"; // 100px default, will be constrained
+      } else if (players.length <= 4) {
+        cellSize = 80; // Standard size for 3-4 players
+        avatarSize = 75; // Slightly smaller than cell for padding
+        avatarSizeProp = "large"; // 100px default, will be constrained
+      } else if (players.length <= 6) {
+        cellSize = 72; // Smaller for 5-6 players
+        avatarSize = 60;
+        avatarSizeProp = "mediumlarge"; // 60px matches perfectly
+      } else {
+        cellSize = 64; // Smallest for 7+ players
+        avatarSize = 50;
+        avatarSizeProp = "mediumlarge"; // 60px, will be constrained
+      }
+      
+      // Calculate actual grid width based on cell size
+      const gridWidth = numColumns * cellSize + gridGap;
+
+      return (
+        <div className="obituary win-entry" key={groupName || index}>
+          <div className="obituary-header">
+            <div>{winTitle}</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: "16px", flexWrap: "nowrap" }}>
+            {players.length > 0 && (
+              <div 
+                className="obituary-avatar win-avatar-grid"
+                style={{
+                  gridTemplateColumns: `repeat(${numColumns}, ${cellSize}px)`,
+                  width: `${gridWidth}px`,
+                  "--avatar-size": `${avatarSize}px`,
+                }}
+              >
+                {players.map((player) => (
+                  <div
+                    key={player.id}
+                    className="win-avatar-cell"
+                    style={{
+                      width: `${cellSize}px`,
+                      height: `${cellSize}px`,
+                      "--target-avatar-size": `${avatarSize}px`,
+                    }}
+                  >
+                    <Avatar
+                      id={player.id}
+                      hasImage={player.avatar}
+                      avatarId={player.avatarId}
+                      name={player.name}
+                      isSquare
+                      mediumlarge={avatarSizeProp === "mediumlarge"}
+                      small={avatarSizeProp === "small"}
+                      large={avatarSizeProp === "large" || avatarSizeProp === null}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="newspaper-paragraph win-message-text" style={{ flex: "1", minWidth: 0 }}>
+              {emotify(winMessage)}
+            </div>
+          </div>
+        </div>
+      );
+    });
+
+    return (
+      <div className="newspaper">
+        <div className="newspaper-title">{title}</div>
+        <div className="newspaper-subheader">{gameDate.toDateString()}</div>
+        {winEntries}
+      </div>
+    );
+  }
+
+  // Handle death/obituary newspapers (original behavior)
   const obituaries = deaths.map((death) => (
     <div className="obituary" key={death.id}>
       <div className="obituary-header">

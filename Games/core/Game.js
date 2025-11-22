@@ -2738,7 +2738,10 @@ module.exports = class Game {
       this.history.recordAllDead();
       this.history.recordWinners();
 
-      winners.queueAlerts();
+      // Mafia games display win messages in newspapers instead of alerts
+      if (this.type !== "Mafia") {
+        winners.queueAlerts();
+      }
       this.processObituaryQueue("Postgame");
       this.processDeathQueue();
       this.processExorciseQueue();

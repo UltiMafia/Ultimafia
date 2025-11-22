@@ -42,7 +42,7 @@ module.exports = class MafiaWinners extends Winners {
   getGroupWinMessage(group, plural) {
     switch (group) {
       case "Village":
-        return ":flagblue: The Village has successfully driven out the scum and villainy from their home!";
+        return ":flagblue: The Village has driven out the scum and villainy from their home!";
       case "Mafia":
         return ":flagblack: The Mafia has deceived its way into victory. Make sure you've paid your protection money.";
       case "Cult":
@@ -162,5 +162,28 @@ module.exports = class MafiaWinners extends Winners {
       default:
         return super.getGroupWinMessage(group, plural);
     }
+  }
+
+  getWinnersInfo() {
+    const baseInfo = super.getWinnersInfo();
+    const messages = [];
+
+    // Get win messages for each group
+    for (let group of baseInfo.groups) {
+      let plural = group[group.length - 1] == "s";
+      messages.push(this.getGroupWinMessage(group, plural));
+    }
+
+    // Organize players by group
+    const playersByGroup = {};
+    for (let group in this.groups) {
+      playersByGroup[group] = this.groups[group].map((p) => p.id);
+    }
+
+    return {
+      ...baseInfo,
+      messages: messages,
+      playersByGroup: playersByGroup,
+    };
   }
 };
