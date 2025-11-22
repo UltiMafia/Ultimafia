@@ -6,7 +6,6 @@ const roleData = require("../data/roles");
 const Random = require("../lib/Random");
 const fbAdmin = require("firebase-admin");
 const crypto = require("crypto");
-const fs = require("fs");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
@@ -399,6 +398,69 @@ router.post("/removeFromGroup", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Error adding user to group.");
+  }
+});
+
+router.post("/assignCredit", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdToCredit = String(req.body.userId);
+    var contributorTypes = req.body.contributorTypes || [];
+    var perm = "changeUsersName";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    if (!Array.isArray(contributorTypes)) {
+      res.status(500);
+      res.send("contributorTypes must be an array.");
+      return;
+    }
+
+    if (contributorTypes.length === 0) {
+      res.status(500);
+      res.send("At least one contributor type must be assigned.");
+      return;
+    }
+
+    // Validate contributor types
+    const validTypes = ["code", "art", "music", "design"];
+    for (let type of contributorTypes) {
+      if (!validTypes.includes(type)) {
+        res.status(500);
+        res.send(`"${type}" is not a valid contributor type. Valid types: ${validTypes.join(", ")}`);
+        return;
+      }
+    }
+
+    var userToUpdate = await models.User.findOne({
+      id: userIdToCredit,
+      deleted: false,
+    });
+
+    if (!userToUpdate) {
+      res.status(500);
+      res.send("User does not exist.");
+      return;
+    }
+
+    // Update contributor types
+    userToUpdate.contributorTypes = contributorTypes;
+    await userToUpdate.save();
+
+    await redis.cacheUserInfo(userIdToCredit, true);
+
+    var typesStr = contributorTypes.join(", ");
+    
+    routeUtils.createModAction(userId, "Assign Credit", [
+      userIdToCredit,
+      userToUpdate.name,
+      typesStr,
+    ]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error assigning credit.");
   }
 });
 
@@ -1069,23 +1131,6 @@ router.post("/clearUserContent", async (req, res) => {
         modActionName = "Clear Account Display";
         break;
 
-      case "profileBackground":
-        updateQuery = { $set: { profileBackground: false } };
-        modActionName = "Clear Profile Background";
-        // Delete the profile background file if it exists
-        const profileBackgroundPath = `${process.env.UPLOAD_PATH}/${userIdToClear}_profileBackground.webp`;
-        if (fs.existsSync(profileBackgroundPath)) {
-          additionalOperations.push(
-            new Promise((resolve, reject) => {
-              fs.unlink(profileBackgroundPath, (err) => {
-                if (err) reject(err);
-                else resolve();
-              });
-            })
-          );
-        }
-        break;
-
       case "all":
         updateQuery = {
           $set: {
@@ -1093,22 +1138,9 @@ router.post("/clearUserContent", async (req, res) => {
             avatar: false,
             bio: "",
             customEmotes: [],
-            profileBackground: false,
           },
         };
         modActionName = "Clear All User Content";
-        // Delete the profile background file if it exists when clearing all
-        const profileBackgroundPathAll = `${process.env.UPLOAD_PATH}/${userIdToClear}_profileBackground.webp`;
-        if (fs.existsSync(profileBackgroundPathAll)) {
-          additionalOperations.push(
-            new Promise((resolve, reject) => {
-              fs.unlink(profileBackgroundPathAll, (err) => {
-                if (err) reject(err);
-                else resolve();
-              });
-            })
-          );
-        }
         additionalOperations.push(
           models.CustomEmote.updateMany(
             { creator: user._id },

@@ -359,6 +359,8 @@ export function ModCommands(props) {
             updateArgValue(arg.name, e.target.value, arg.isArray)
           }
           key={arg.name}
+          multiline={arg.multiline || false}
+          rows={arg.multiline ? 4 : 1}
           sx={{
             borderRadius: "4px",
             backgroundColor: "var(--scheme-color)",
@@ -1116,7 +1118,6 @@ export function useModCommands(argValues, commandRan, setResults) {
             { value: "vanityUrl", label: "Vanity URL" },
             { value: "video", label: "Video" },
             { value: "pronouns", label: "Pronouns" },
-            { value: "profileBackground", label: "Profile Background" },
             { value: "accountDisplay", label: "Account Display" },
             { value: "all", label: "All User Content" },
           ],
@@ -1642,6 +1643,37 @@ export function useModCommands(argValues, commandRan, setResults) {
           .post("/api/poll/create", argValues)
           .then(() => {
             siteInfo.showAlert("Poll created.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Assign Credit": {
+      perm: "changeUsersName",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Contributor Types (comma-separated: code, art, music, design)",
+          name: "contributorTypes",
+          type: "text",
+          isArray: true,
+        },
+      ],
+      run: function () {
+        var contributorTypes = argValues.contributorTypes || [];
+
+        axios
+          .post("/api/mod/assignCredit", {
+            userId: argValues.userId,
+            contributorTypes: contributorTypes,
+          })
+          .then(() => {
+            siteInfo.showAlert("Credit assigned.", "success");
             commandRan();
           })
           .catch(errorAlert);

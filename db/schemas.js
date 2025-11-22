@@ -35,7 +35,6 @@ var schemas = {
     discordUsername: String,
     avatar: Boolean,
     banner: Boolean,
-    profileBackground: Boolean,
     bio: {
       type: String,
       default:
@@ -79,7 +78,6 @@ var schemas = {
       hidePointsNegative: { type: Boolean, default: true },
       deathMessage: String,
       vanityUrl: { type: String, default: "" },
-      backgroundRepeatMode: { type: String, default: "repeat" },
     },
     accounts: {
       discord: String,
@@ -90,6 +88,16 @@ var schemas = {
     lastActive: Number,
     numFriends: { type: Number, default: 0 },
     dev: Boolean,
+    contributorTypes: {
+      type: [String],
+      enum: ["code", "art", "music", "design"],
+      default: [],
+    },
+    contributorBio: {
+      type: String,
+      maxlength: 140,
+      default: "",
+    },
     rank: Number,
     permissions: [String],
     setups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Setup" }],
@@ -126,7 +134,6 @@ var schemas = {
       archivedGamesMax: { type: Number, default: 0 },
       bonusRedHearts: { type: Number, default: 0 },
       vanityUrl: { type: Number, default: 0 },
-      profileBackground: { type: Number, default: 0 },
     },
     stats: {},
     winRate: { type: Number, default: 0 },
