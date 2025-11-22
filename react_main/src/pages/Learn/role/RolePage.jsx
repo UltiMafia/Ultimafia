@@ -132,7 +132,7 @@ export function RoleThings() {
     document.title = "Contributors | UltiMafia";
 
     axios
-      .get("/api/site/contributors")
+      .get("/api/site/contributors/art")
       .then((res) => {
         setContributors(res.data);
         setLoaded(true);
@@ -157,17 +157,14 @@ export function RoleThings() {
   }
 
   const roleSkins = temproleSkins;
-  let artArrays = contributors["art"]?.map((artist) => [
-    artist.user,
-    artist.roles,
-  ]);
+  let artArrays = contributors?.map((artist) => [artist.user, artist.roles]);
   let tempArtists = artArrays?.filter(
     (item) =>
-      item[1]["Mafia"].filter((r) => r.split(":")[0] == RoleName).length > 0
+      item[1]["Mafia"]?.filter((r) => r.split(":")[0] == RoleName).length > 0
   );
   const artists = tempArtists?.map((item, index) => {
     return (
-      <div>
+      <div key={index}>
         {
           <NameWithAvatar
             small
@@ -179,10 +176,10 @@ export function RoleThings() {
         {
           <Box display="flex" flexWrap="wrap" justifyContent="left" mt={1}>
             {item[1]["Mafia"]
-              .filter((r) => r.split(":")[0] == RoleName)
-              .map((roleToUse) => (
+              ?.filter((r) => r.split(":")[0] == RoleName)
+              .map((roleToUse, i) => (
                 <RoleCount
-                  key={0}
+                  key={i}
                   scheme={roleToUse.split(":")[1]}
                   role={roleToUse.split(":")[0]}
                   gameType={"Mafia"}

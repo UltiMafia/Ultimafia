@@ -450,6 +450,8 @@ export function NameWithAvatar(props) {
   const includeMiniprofile = props.includeMiniprofile;
   const absoluteLeftAvatarPx = props.absoluteLeftAvatarPx;
   const vanityUrl = props.vanityUrl;
+  const large = props.large;
+  const isSquare = props.isSquare;
 
   const game = useContext(GameContext);
   const [userProfile, setUserProfile] = useState(null);
@@ -497,6 +499,8 @@ export function NameWithAvatar(props) {
         avatarId={avatarId}
         name={name}
         small={small}
+        large={large}
+        isSquare={isSquare}
         dead={dead}
         active={active}
         deckProfile={deckProfile}
