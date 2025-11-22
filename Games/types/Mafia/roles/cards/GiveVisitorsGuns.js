@@ -6,7 +6,7 @@ module.exports = class GiveVisitorsGuns extends Card {
   constructor(role) {
     super(role);
 
-      this.passiveActions = [
+    this.passiveActions = [
       {
         ability: ["Item"],
         state: "Night",
@@ -16,14 +16,13 @@ module.exports = class GiveVisitorsGuns extends Card {
         labels: ["giveItem", "gun"],
         role: role,
         run: function () {
-            let visitors = this.getVisitors();
-            visitors.map((p) => {
-              p.holdItem("Gun");
-              p.queueGetItemAlert("Gun");
-            });
-          },
+          let visitors = this.getVisitors();
+          visitors.map((p) => {
+            p.holdItem("Gun");
+            p.queueGetItemAlert("Gun");
+          });
+        },
       },
     ];
-
   }
 };
