@@ -1501,8 +1501,8 @@ router.post("/avatar", async function (req, res) {
       .webp({ quality: 100 })
       .resize(100, 100, {
         kernel: sharp.kernel.lanczos3,
-        fit: 'cover',
-        position: 'center'
+        fit: "cover",
+        position: "center",
       })
       .toFile(`${process.env.UPLOAD_PATH}/${userId}_avatar.webp`);
     await models.User.updateOne({ id: userId }, { $set: { avatar: true } });

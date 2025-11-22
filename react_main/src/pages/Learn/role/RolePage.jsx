@@ -157,10 +157,7 @@ export function RoleThings() {
   }
 
   const roleSkins = temproleSkins;
-  let artArrays = contributors?.map((artist) => [
-    artist.user,
-    artist.roles,
-  ]);
+  let artArrays = contributors?.map((artist) => [artist.user, artist.roles]);
   let tempArtists = artArrays?.filter(
     (item) =>
       item[1]["Mafia"]?.filter((r) => r.split(":")[0] == RoleName).length > 0

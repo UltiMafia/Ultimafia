@@ -427,7 +427,11 @@ router.post("/assignCredit", async function (req, res) {
     for (let type of contributorTypes) {
       if (!validTypes.includes(type)) {
         res.status(500);
-        res.send(`"${type}" is not a valid contributor type. Valid types: ${validTypes.join(", ")}`);
+        res.send(
+          `"${type}" is not a valid contributor type. Valid types: ${validTypes.join(
+            ", "
+          )}`
+        );
         return;
       }
     }
@@ -450,7 +454,7 @@ router.post("/assignCredit", async function (req, res) {
     await redis.cacheUserInfo(userIdToCredit, true);
 
     var typesStr = contributorTypes.join(", ");
-    
+
     routeUtils.createModAction(userId, "Assign Credit", [
       userIdToCredit,
       userToUpdate.name,

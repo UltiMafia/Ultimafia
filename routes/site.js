@@ -15,7 +15,7 @@ router.get("/contributors", async function (req, res) {
       contributorTypes: { $exists: true },
       deleted: false,
     }).select("id name avatar vanityUrl contributorTypes contributorBio -_id");
-    
+
     // Filter to only include users with non-empty contributorTypes array
     const allContributors = allContributorsRaw.filter(
       (user) => user.contributorTypes && user.contributorTypes.length > 0

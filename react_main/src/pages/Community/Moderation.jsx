@@ -1658,7 +1658,8 @@ export function useModCommands(argValues, commandRan, setResults) {
           type: "user_search",
         },
         {
-          label: "Contributor Types (comma-separated: code, art, music, design)",
+          label:
+            "Contributor Types (comma-separated: code, art, music, design)",
           name: "contributorTypes",
           type: "text",
           isArray: true,
