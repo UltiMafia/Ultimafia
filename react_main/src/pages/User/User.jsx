@@ -304,11 +304,9 @@ export function Avatar(props) {
   let avatarSize = 40;
   if (small) {
     avatarSize = 20;
-  }
-  else if (mediumlarge) {
+  } else if (mediumlarge) {
     avatarSize = 60;
-  }
-  else if (large) {
+  } else if (large) {
     avatarSize = 100;
   }
 
@@ -319,8 +317,7 @@ export function Avatar(props) {
     if (!small && !ConnectFour) {
       style.transform = "translateY(12px)";
     }
-  }
-  else {
+  } else {
     style.position = "relative";
   }
 
@@ -389,9 +386,7 @@ var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/
 
   return (
     <div
-      className={`avatar ${dead ? "dead" : ""} ${
-        active ? "active" : ""
-      }`}
+      className={`avatar ${dead ? "dead" : ""} ${active ? "active" : ""}`}
       style={{
         ...style,
         display: "inline-block",
@@ -408,14 +403,20 @@ var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/
       )}
 
       {onlineStatus !== null && (
-        <Box sx={{
-          position: "absolute",
-          content: "''",
-          bottom: isSquare ? 0 : 0.112 * avatarSize,
-          right: isSquare ? 0 : 0.112 * avatarSize,
-          transform: `translateX(50%) translateY(50%)`,
-        }}>
-          <OnlineStatus status={onlineStatus} lastActive={lastActive} inGame={inGame} />
+        <Box
+          sx={{
+            position: "absolute",
+            content: "''",
+            bottom: isSquare ? 0 : 0.112 * avatarSize,
+            right: isSquare ? 0 : 0.112 * avatarSize,
+            transform: `translateX(50%) translateY(50%)`,
+          }}
+        >
+          <OnlineStatus
+            status={onlineStatus}
+            lastActive={lastActive}
+            inGame={inGame}
+          />
         </Box>
       )}
 
@@ -681,8 +682,7 @@ export function OnlineStatus({ status, lastActive, inGame }) {
   if (inGame) {
     displayedStatus = "ingame";
     caption = "In game";
-  }
-  else if(status !== "online") {
+  } else if (status !== "online") {
     caption = (
       <>
         {"Last online "}
@@ -697,28 +697,34 @@ export function OnlineStatus({ status, lastActive, inGame }) {
   }
 
   return (
-    <Box className={`status-icon ${displayedStatus}`} aria-hidden="true" sx={{
-      position: "relative",
-      width: onlineStatusIconSize,
-      height: onlineStatusIconSize,
-      borderRadius: "50%",
-      border: "4px var(--scheme-color) solid",
-    }}>
-      {caption && (<Typography
-        variant="caption"
-        sx={{
-          position: "absolute",
-          left: `calc(${onlineStatusIconSize}/2 + 4px + var(--mui-spacing)/2)`,
-          bottom: `calc(${onlineStatusIconSize}/2 - 1em + 2px)`,
-          filter: "opacity(.75)",
-          fontSize: "0.75rem",
-          textWrap: "nowrap",
-          lineHeight: "1",
-          pointerEvents: "none",
-        }}
-      >
-        {caption}
-      </Typography>)}
+    <Box
+      className={`status-icon ${displayedStatus}`}
+      aria-hidden="true"
+      sx={{
+        position: "relative",
+        width: onlineStatusIconSize,
+        height: onlineStatusIconSize,
+        borderRadius: "50%",
+        border: "4px var(--scheme-color) solid",
+      }}
+    >
+      {caption && (
+        <Typography
+          variant="caption"
+          sx={{
+            position: "absolute",
+            left: `calc(${onlineStatusIconSize}/2 + 4px + var(--mui-spacing)/2)`,
+            bottom: `calc(${onlineStatusIconSize}/2 - 1em + 2px)`,
+            filter: "opacity(.75)",
+            fontSize: "0.75rem",
+            textWrap: "nowrap",
+            lineHeight: "1",
+            pointerEvents: "none",
+          }}
+        >
+          {caption}
+        </Typography>
+      )}
     </Box>
   );
 }

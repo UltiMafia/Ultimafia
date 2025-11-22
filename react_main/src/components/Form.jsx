@@ -490,6 +490,21 @@ export default function Form({
             </FormField>
           );
         }
+        case "custom":
+          // Custom field type - render children if provided, otherwise nothing
+          if (field.render) {
+            return (
+              <FormField
+                field={field}
+                deps={deps}
+                compact={compact}
+                key={field.ref}
+              >
+                {field.render(deps)}
+              </FormField>
+            );
+          }
+          return null;
         default: {
           throw Error(`Unknown Form.jsx input type ${field.type}`);
         }

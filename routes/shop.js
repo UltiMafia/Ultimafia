@@ -172,6 +172,14 @@ const shopItems = [
     limit: 1,
     onBuy: async function (userId) {},
   },
+  {
+    name: "Profile Background",
+    desc: "Upload a custom background image to replace the default pattern on all pages",
+    key: "profileBackground",
+    price: 20,
+    limit: 1,
+    onBuy: async function (userId) {},
+  },
 ];
 
 router.get("/info", async function (req, res) {

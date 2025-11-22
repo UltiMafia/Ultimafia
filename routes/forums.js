@@ -1271,21 +1271,19 @@ router.post("/vote", async function (req, res) {
           select: "rank",
         });
       }
-      
+
       if (itemModel.schema.paths.thread) {
         populates.push({
-            path: "thread",
-            select: "board",
-            populate: {
-              path: "board",
-              select: "rank",
-            },
-          });
+          path: "thread",
+          select: "board",
+          populate: {
+            path: "board",
+            select: "rank",
+          },
+        });
       }
 
-      itemQuery = itemQuery
-        .select("board thread rank")
-        .populate(populates);
+      itemQuery = itemQuery.select("board thread rank").populate(populates);
     }
 
     const item = await itemQuery;

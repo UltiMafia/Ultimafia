@@ -1116,6 +1116,7 @@ export function useModCommands(argValues, commandRan, setResults) {
             { value: "vanityUrl", label: "Vanity URL" },
             { value: "video", label: "Video" },
             { value: "pronouns", label: "Pronouns" },
+            { value: "profileBackground", label: "Profile Background" },
             { value: "accountDisplay", label: "Account Display" },
             { value: "all", label: "All User Content" },
           ],

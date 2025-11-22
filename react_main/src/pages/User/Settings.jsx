@@ -23,7 +23,7 @@ import {
 import { useColorScheme } from "@mui/material/styles";
 
 import { UserContext, SiteInfoContext } from "Contexts";
-import Form, { useForm } from "components/Form";
+import Form, { useForm, HiddenUpload } from "components/Form";
 import { useErrorAlert } from "components/Alerts";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 
@@ -355,6 +355,63 @@ export default function Settings() {
           "Set a custom URL for your profile (1-20 characters, letters, numbers, and hyphens only)",
       },
       {
+        label: "Upload Profile Background",
+        ref: "profileBackgroundUpload",
+        type: "custom",
+        groupName: "Profile",
+        showIf: (deps) =>
+          deps.user.itemsOwned && deps.user.itemsOwned.profileBackground,
+        extraInfo:
+          "Upload a custom background image to replace the default diamond pattern on your profile page (max 5 MB)",
+        render: (deps) => (
+          <Stack direction="row" spacing={1} alignItems="center">
+            <HiddenUpload
+              name="profileBackground"
+              onClick={deps.onProfileBackgroundEdit}
+              onFileUpload={deps.onProfileBackgroundUpload}
+            >
+              <Button variant="outlined">Upload Background Image</Button>
+            </HiddenUpload>
+            {deps.user.profileBackground && (
+              <>
+                <Typography variant="caption" sx={{ color: "success.main" }}>
+                  Background uploaded
+                </Typography>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  size="small"
+                  onClick={deps.onProfileBackgroundRemove}
+                >
+                  Remove
+                </Button>
+              </>
+            )}
+          </Stack>
+        ),
+      },
+      {
+        label: "Background Display Mode",
+        ref: "backgroundRepeatMode",
+        type: "select",
+        groupName: "Profile",
+        options: [
+          {
+            label: "Checker",
+            value: "checker",
+          },
+          {
+            label: "Stretch",
+            value: "stretch",
+          },
+        ],
+        showIf: (deps) =>
+          deps.user.itemsOwned && deps.user.itemsOwned.profileBackground,
+        default: "checker",
+        extraInfo:
+          "Choose how the background image should be displayed: Checker (pattern) or Stretch (full screen)",
+      },
+      {
         label: "Hide Statistics",
         ref: "hideStatistics",
         type: "boolean",
@@ -500,20 +557,27 @@ export default function Settings() {
       title: "User",
       path: "profile",
       content: (
-        <Form
-          fields={profileFields}
-          deps={{
-            name: user.name,
-            pronouns: user.pronouns,
-            youtube: user.settings.youtube,
-            vanityUrl: user.settings.vanityUrl,
-            user,
-            accounts,
-            siteInfo,
-            errorAlert,
-          }}
-          onChange={(action) => onSettingChange(action, updateProfileFields)}
-        />
+        <>
+          <Form
+            fields={profileFields}
+            deps={{
+              name: user.name,
+              pronouns: user.pronouns,
+              youtube: user.settings.youtube,
+              vanityUrl: user.settings.vanityUrl,
+              backgroundRepeatMode:
+                user.settings.backgroundRepeatMode || "repeat",
+              user,
+              accounts,
+              siteInfo,
+              errorAlert,
+              onProfileBackgroundEdit,
+              onProfileBackgroundUpload,
+              onProfileBackgroundRemove,
+            }}
+            onChange={(action) => onSettingChange(action, updateProfileFields)}
+          />
+        </>
       ),
     },
     {
@@ -782,6 +846,75 @@ export default function Settings() {
         deps.siteInfo.showAlert("Deleted custom emote", "success");
       })
       .catch(deps.errorAlert);
+  }
+
+  function onProfileBackgroundEdit(files, type) {
+    if (!user.itemsOwned || !user.itemsOwned.profileBackground) {
+      errorAlert(
+        "You must purchase Profile Background with coins from the Shop."
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  function onProfileBackgroundRemove() {
+    if (
+      !window.confirm(
+        "Are you sure you wish to remove your profile background?"
+      )
+    ) {
+      return;
+    }
+
+    axios
+      .delete("/api/user/profileBackground")
+      .then(() => {
+        siteInfo.showAlert("Profile background removed", "success");
+        siteInfo.clearCache();
+        window.location.reload();
+      })
+      .catch(errorAlert);
+  }
+
+  function onProfileBackgroundUpload(files, type) {
+    if (!files.length) return;
+
+    if (!user.itemsOwned || !user.itemsOwned.profileBackground) {
+      errorAlert(
+        "You must purchase Profile Background with coins from the Shop."
+      );
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", files[0]);
+
+    for (let el of document.getElementsByClassName("hidden-upload"))
+      el.value = "";
+
+    axios
+      .post(`/api/user/${type}`, formData)
+      .then((res) => {
+        siteInfo.showAlert("Profile background uploaded", "success");
+
+        // Update user state to reflect the uploaded background
+        user.set(
+          update(user.state, {
+            profileBackground: { $set: true },
+          })
+        );
+
+        siteInfo.clearCache();
+        // Refresh the page to show the new background
+        window.location.reload();
+      })
+      .catch((e) => {
+        if (e.response == null || e.response.status === 413)
+          errorAlert("File too large, must be less than 5 MB.");
+        else errorAlert(e);
+      });
   }
 
   function onLogoutClick() {
