@@ -6,8 +6,6 @@ module.exports = class GainKnifeIfVisitedNonCult extends Card {
   constructor(role) {
     super(role);
 
-
-    
     this.passiveActions = [
       {
         ability: ["Item"],
@@ -18,17 +16,17 @@ module.exports = class GainKnifeIfVisitedNonCult extends Card {
         labels: ["hidden", "absolute"],
         role: role,
         run: function () {
-            let visitors = this.getVisitors(this.actor);
-            let hasNonCultVisitors =
-              visitors.filter((v) => v.role.alignment !== "Cult")?.length > 0;
+          let visitors = this.getVisitors(this.actor);
+          let hasNonCultVisitors =
+            visitors.filter((v) => v.role.alignment !== "Cult")?.length > 0;
 
-            if (!hasNonCultVisitors) {
-              return;
-            }
+          if (!hasNonCultVisitors) {
+            return;
+          }
 
-            this.actor.holdItem("Knife");
-            this.actor.queueGetItemAlert("Knife");
-          },
+          this.actor.holdItem("Knife");
+          this.actor.queueGetItemAlert("Knife");
+        },
       },
     ];
   }
