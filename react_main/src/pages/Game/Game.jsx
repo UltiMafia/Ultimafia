@@ -21,7 +21,9 @@ import axios from "axios";
 import ReactLoading from "react-loading";
 
 import { UserText } from "../../components/Basic";
-import Newspaper, { ObituariesMessage } from "../../components/gameComponents/Newspaper";
+import Newspaper, {
+  ObituariesMessage,
+} from "../../components/gameComponents/Newspaper";
 import MafiaGame from "./MafiaGame";
 import ResistanceGame from "./ResistanceGame";
 import JottoGame from "./JottoGame";
@@ -1669,14 +1671,14 @@ function getAllMessagesToDisplay(history) {
     }
     const stateAlerts = stateData.alerts;
     stateMessages.push(...stateAlerts);
-    
+
     // Add obituaries
     if (stateData.obituaries) {
       for (let source in stateData.obituaries) {
         stateMessages.push(stateData.obituaries[source]);
       }
     }
-    
+
     // Add winners
     if (stateData.winners) {
       const winnersMessage = {
@@ -1687,7 +1689,7 @@ function getAllMessagesToDisplay(history) {
       };
       stateMessages.push(winnersMessage);
     }
-    
+
     stateMessages.sort((a, b) => a.time - b.time);
 
     messages.push(...stateMessages);
@@ -1761,7 +1763,7 @@ function getMessagesToDisplay(
       dayCount: stateInfo ? stateInfo.dayCount || 0 : 0,
       senderId: "server",
     };
-    
+
     for (let i = 0; i <= messages.length; i++) {
       if (i === messages.length) {
         messages.push(winnersMessage);
@@ -2227,13 +2229,14 @@ function WinnersMessage(props) {
 
   const winnersInfo = message.winners || {};
   const winnerGroups = winnersInfo.groups || [];
-  const winnerPlayersByGroup = winnersInfo.playersByGroup || winnersInfo.players || {};
+  const winnerPlayersByGroup =
+    winnersInfo.playersByGroup || winnersInfo.players || {};
   const winnerMessages = winnersInfo.messages || [];
   const isMafiaGame = game.gameType === "Mafia";
 
   const stateInfo = history?.states?.[stateViewing];
   const stateName = stateInfo?.name || "Postgame";
-  
+
   var newspaperTitle = "The Miller Times"; // Default for Postgame
   if (stateName === "Day") {
     newspaperTitle = "Evening News";

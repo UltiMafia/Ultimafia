@@ -53,13 +53,13 @@ export default function Newspaper(props) {
       const gridGap = 8;
       const maxGridWidth = 176;
       const numColumns = 2;
-      
+
       // Calculate cell size and avatar size based on number of players
       // More players = smaller avatars to prevent overlap
       let cellSize;
       let avatarSize;
       let avatarSizeProp = null; // large, mediumlarge, or small
-      
+
       if (players.length <= 2) {
         cellSize = 84; // Larger cells for fewer players
         avatarSize = 80; // Slightly smaller than cell for padding
@@ -77,7 +77,7 @@ export default function Newspaper(props) {
         avatarSize = 50;
         avatarSizeProp = "mediumlarge"; // 60px, will be constrained
       }
-      
+
       // Calculate actual grid width based on cell size
       const gridWidth = numColumns * cellSize + gridGap;
 
@@ -86,9 +86,16 @@ export default function Newspaper(props) {
           <div className="obituary-header">
             <div>{winTitle}</div>
           </div>
-          <div style={{ display: "flex", alignItems: "flex-start", gap: "16px", flexWrap: "nowrap" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "16px",
+              flexWrap: "nowrap",
+            }}
+          >
             {players.length > 0 && (
-              <div 
+              <div
                 className="obituary-avatar win-avatar-grid"
                 style={{
                   gridTemplateColumns: `repeat(${numColumns}, ${cellSize}px)`,
@@ -114,13 +121,18 @@ export default function Newspaper(props) {
                       isSquare
                       mediumlarge={avatarSizeProp === "mediumlarge"}
                       small={avatarSizeProp === "small"}
-                      large={avatarSizeProp === "large" || avatarSizeProp === null}
+                      large={
+                        avatarSizeProp === "large" || avatarSizeProp === null
+                      }
                     />
                   </div>
                 ))}
               </div>
             )}
-            <div className="newspaper-paragraph win-message-text" style={{ flex: "1", minWidth: 0 }}>
+            <div
+              className="newspaper-paragraph win-message-text"
+              style={{ flex: "1", minWidth: 0 }}
+            >
               {emotify(winMessage)}
             </div>
           </div>
