@@ -6,22 +6,18 @@ module.exports = class GainKnifeIfVisitedNonCult extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Item"])) {
-          return;
-        }
 
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          labels: ["hidden", "absolute"],
-          run: function () {
+    
+    this.passiveActions = [
+      {
+        ability: ["Item"],
+        state: "Night",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_ITEM_GIVER_DEFAULT,
+        labels: ["hidden", "absolute"],
+        role: role,
+        run: function () {
             let visitors = this.getVisitors(this.actor);
             let hasNonCultVisitors =
               visitors.filter((v) => v.role.alignment !== "Cult")?.length > 0;
@@ -33,10 +29,7 @@ module.exports = class GainKnifeIfVisitedNonCult extends Card {
             this.actor.holdItem("Knife");
             this.actor.queueGetItemAlert("Knife");
           },
-        });
-
-        this.game.queueAction(action);
       },
-    };
+    ];
   }
 };
