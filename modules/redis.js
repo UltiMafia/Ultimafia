@@ -173,7 +173,10 @@ async function cacheUserInfo(userId, reset) {
     await client.setAsync(`user:${userId}:info:id`, userId);
     await client.setAsync(`user:${userId}:info:name`, user.name);
     await client.setAsync(`user:${userId}:info:avatar`, user.avatar || false);
-    await client.setAsync(`user:${userId}:info:profileBackground`, user.profileBackground || false);
+    await client.setAsync(
+      `user:${userId}:info:profileBackground`,
+      user.profileBackground || false
+    );
     await client.setAsync(
       `user:${userId}:info:vanityUrl`,
       vanityUrl ? vanityUrl.url : ""
@@ -272,7 +275,8 @@ async function getUserInfo(userId) {
   info.id = await client.getAsync(`user:${userId}:info:id`);
   info.name = await client.getAsync(`user:${userId}:info:name`);
   info.avatar = (await client.getAsync(`user:${userId}:info:avatar`)) == "true";
-  info.profileBackground = (await client.getAsync(`user:${userId}:info:profileBackground`)) == "true";
+  info.profileBackground =
+    (await client.getAsync(`user:${userId}:info:profileBackground`)) == "true";
   info.nameChanged =
     (await client.getAsync(`user:${userId}:info:nameChanged`)) == "true";
   info.bdayChanged =

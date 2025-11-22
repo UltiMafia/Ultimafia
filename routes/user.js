@@ -1313,10 +1313,7 @@ router.post("/settings/update", async function (req, res) {
       return;
     }
 
-    if (
-      prop == "backgroundRepeatMode" &&
-      !itemsOwned.profileBackground
-    ) {
+    if (prop == "backgroundRepeatMode" && !itemsOwned.profileBackground) {
       res.status(500);
       res.send(
         "You must purchase Profile Background with coins from the Shop."
@@ -1527,7 +1524,7 @@ router.post("/profileBackground", async function (req, res) {
     await sharp(files.image.path)
       .webp({ quality: 85 })
       .toFile(`${process.env.UPLOAD_PATH}/${userId}_profileBackground.webp`);
-    
+
     await models.User.updateOne(
       { id: userId },
       { $set: { profileBackground: true } }
@@ -1565,7 +1562,7 @@ router.delete("/profileBackground", async function (req, res) {
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
-    
+
     // Update database to mark profileBackground as false
     await models.User.updateOne(
       { id: userId },

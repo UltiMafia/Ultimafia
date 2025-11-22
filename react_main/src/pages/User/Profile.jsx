@@ -136,11 +136,13 @@ export default function Profile() {
     if (!siteWrapper) return;
 
     if (profileBackground && settings?.backgroundRepeatMode) {
-      const backgroundUrl = `/uploads/${profileUserId}_profileBackground.webp?t=${siteInfo?.cacheVal || Date.now()}`;
+      const backgroundUrl = `/uploads/${profileUserId}_profileBackground.webp?t=${
+        siteInfo?.cacheVal || Date.now()
+      }`;
       const repeatMode = settings.backgroundRepeatMode || "checker";
-      
+
       let backgroundSize, backgroundRepeat, backgroundPosition;
-      
+
       if (repeatMode === "stretch") {
         backgroundSize = "cover";
         backgroundRepeat = "no-repeat";
@@ -150,7 +152,7 @@ export default function Profile() {
         backgroundSize = "auto";
         backgroundRepeat = "repeat";
       }
-      
+
       // Apply custom background to site-wrapper, replacing the default diamond pattern
       siteWrapper.style.backgroundImage = `url(${backgroundUrl})`;
       siteWrapper.style.backgroundSize = backgroundSize;
@@ -177,7 +179,12 @@ export default function Profile() {
         siteWrapper.style.backgroundAttachment = "";
       }
     };
-  }, [profileBackground, settings?.backgroundRepeatMode, profileUserId, siteInfo?.cacheVal]);
+  }, [
+    profileBackground,
+    settings?.backgroundRepeatMode,
+    profileUserId,
+    siteInfo?.cacheVal,
+  ]);
 
   useEffect(() => {
     setEditingBio(false);

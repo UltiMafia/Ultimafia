@@ -359,7 +359,8 @@ export default function Settings() {
         ref: "profileBackgroundUpload",
         type: "custom",
         groupName: "Profile",
-        showIf: (deps) => deps.user.itemsOwned && deps.user.itemsOwned.profileBackground,
+        showIf: (deps) =>
+          deps.user.itemsOwned && deps.user.itemsOwned.profileBackground,
         extraInfo:
           "Upload a custom background image to replace the default diamond pattern on your profile page (max 5 MB)",
         render: (deps) => (
@@ -369,9 +370,7 @@ export default function Settings() {
               onClick={deps.onProfileBackgroundEdit}
               onFileUpload={deps.onProfileBackgroundUpload}
             >
-              <Button variant="outlined">
-                Upload Background Image
-              </Button>
+              <Button variant="outlined">Upload Background Image</Button>
             </HiddenUpload>
             {deps.user.profileBackground && (
               <>
@@ -406,7 +405,8 @@ export default function Settings() {
             value: "stretch",
           },
         ],
-        showIf: (deps) => deps.user.itemsOwned && deps.user.itemsOwned.profileBackground,
+        showIf: (deps) =>
+          deps.user.itemsOwned && deps.user.itemsOwned.profileBackground,
         default: "checker",
         extraInfo:
           "Choose how the background image should be displayed: Checker (pattern) or Stretch (full screen)",
@@ -565,7 +565,8 @@ export default function Settings() {
               pronouns: user.pronouns,
               youtube: user.settings.youtube,
               vanityUrl: user.settings.vanityUrl,
-              backgroundRepeatMode: user.settings.backgroundRepeatMode || "repeat",
+              backgroundRepeatMode:
+                user.settings.backgroundRepeatMode || "repeat",
               user,
               accounts,
               siteInfo,
@@ -859,7 +860,11 @@ export default function Settings() {
   }
 
   function onProfileBackgroundRemove() {
-    if (!window.confirm("Are you sure you wish to remove your profile background?")) {
+    if (
+      !window.confirm(
+        "Are you sure you wish to remove your profile background?"
+      )
+    ) {
       return;
     }
 
@@ -875,7 +880,7 @@ export default function Settings() {
 
   function onProfileBackgroundUpload(files, type) {
     if (!files.length) return;
-    
+
     if (!user.itemsOwned || !user.itemsOwned.profileBackground) {
       errorAlert(
         "You must purchase Profile Background with coins from the Shop."
@@ -893,14 +898,14 @@ export default function Settings() {
       .post(`/api/user/${type}`, formData)
       .then((res) => {
         siteInfo.showAlert("Profile background uploaded", "success");
-        
+
         // Update user state to reflect the uploaded background
         user.set(
           update(user.state, {
             profileBackground: { $set: true },
           })
         );
-        
+
         siteInfo.clearCache();
         // Refresh the page to show the new background
         window.location.reload();
