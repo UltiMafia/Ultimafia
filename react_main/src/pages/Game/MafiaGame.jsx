@@ -645,7 +645,10 @@ export default function MafiaGame() {
                     descriptors={actionDescriptorData.regularActionDescriptors}
                   />
                 )}
-                <StrategiesSection setupId={setupId} visible={Boolean(setupId)} />
+                <StrategiesSection
+                  setupId={setupId}
+                  visible={Boolean(setupId)}
+                />
               </>
             ) : (
               <ActionList
