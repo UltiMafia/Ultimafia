@@ -232,7 +232,7 @@ router.get("/:id/connect", async function (req, res) {
     }
 
     // If the user is in this game, then ignore all checks so that they can finish out the game
-    const userInThisGame = userId && await redis.inGame(userId) === gameId;
+    const userInThisGame = userId && (await redis.inGame(userId)) === gameId;
 
     if (!userInThisGame) {
       if (userId && game.settings.ranked && !isSpectating) {
