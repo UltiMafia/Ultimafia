@@ -21,7 +21,9 @@ import axios from "axios";
 import ReactLoading from "react-loading";
 
 import { UserText } from "../../components/Basic";
-import { ObituariesMessage } from "../../components/gameComponents/Newspaper";
+import Newspaper, {
+  ObituariesMessage,
+} from "../../components/gameComponents/Newspaper";
 import MafiaGame from "./MafiaGame";
 import ResistanceGame from "./ResistanceGame";
 import JottoGame from "./JottoGame";
@@ -585,12 +587,12 @@ export default function Game() {
       });
     });
 
-    // socket.on("winners", (info) => {
-    //   updateHistory({
-    //     type: "winners",
-    //     winnersMessage: info,
-    //   });
-    // });
+    socket.on("winners", (info) => {
+      updateHistory({
+        type: "winners",
+        winnersInfo: info,
+      });
+    });
 
     socket.on("reveal", (info) => {
       toggleRolePrediction(info.playerId, null);
@@ -1377,6 +1379,7 @@ export function TextMeetingLayout() {
   const meetings = stateInfo ? stateInfo.meetings : {};
   const alerts = stateInfo ? stateInfo.alerts : [];
   const obituaries = stateInfo ? stateInfo.obituaries : {};
+  const winners = stateInfo ? stateInfo.winners : null;
   const selTab = stateInfo && stateInfo.selTab;
 
   const [speechInput, setSpeechInput] = useState("");
@@ -1499,6 +1502,9 @@ export function TextMeetingLayout() {
         meetings,
         alerts,
         obituaries,
+        winners,
+        stateViewing,
+        history,
         selTab,
         players,
         settings,
@@ -1646,7 +1652,8 @@ function getAllMessagesToDisplay(history) {
   }
 
   for (let state of states) {
-    const stateMeetings = history.states[state].meetings;
+    const stateData = history.states[state];
+    const stateMeetings = stateData.meetings;
     if (!stateMeetings) {
       return;
     }
@@ -1662,8 +1669,27 @@ function getAllMessagesToDisplay(history) {
 
       stateMessages.push(...meetingData.messages);
     }
-    const stateAlerts = history.states[state].alerts;
+    const stateAlerts = stateData.alerts;
     stateMessages.push(...stateAlerts);
+
+    // Add obituaries
+    if (stateData.obituaries) {
+      for (let source in stateData.obituaries) {
+        stateMessages.push(stateData.obituaries[source]);
+      }
+    }
+
+    // Add winners
+    if (stateData.winners) {
+      const winnersMessage = {
+        winners: stateData.winners,
+        time: stateData.time || Date.now(),
+        dayCount: stateData.dayCount || 0,
+        senderId: "server",
+      };
+      stateMessages.push(winnersMessage);
+    }
+
     stateMessages.sort((a, b) => a.time - b.time);
 
     messages.push(...stateMessages);
@@ -1676,6 +1702,9 @@ function getMessagesToDisplay(
   meetings,
   alerts,
   obituaries,
+  winners,
+  stateViewing,
+  history,
   selTab,
   players,
   settings,
@@ -1725,18 +1754,26 @@ function getMessagesToDisplay(
     }
   }
 
-  //   for (let source in winners) {
-  //   const winnersMessage = winners[source];
-  //   for (let i = 0; i <= messages.length; i++) {
-  //     if (i === messages.length) {
-  //       messages.push(winnersMessage);
-  //       break;
-  //     } else if (winnersMessage.time < messages[i].time) {
-  //       messages.splice(i, 0, winnersMessage);
-  //       break;
-  //     }
-  //   }
-  // }
+  // Add winners message to the message stream if winners exist
+  if (winners) {
+    const stateInfo = history.states[stateViewing];
+    const winnersMessage = {
+      winners: winners,
+      time: stateInfo ? stateInfo.time || Date.now() : Date.now(),
+      dayCount: stateInfo ? stateInfo.dayCount || 0 : 0,
+      senderId: "server",
+    };
+
+    for (let i = 0; i <= messages.length; i++) {
+      if (i === messages.length) {
+        messages.push(winnersMessage);
+        break;
+      } else if (winnersMessage.time < messages[i].time) {
+        messages.splice(i, 0, winnersMessage);
+        break;
+      }
+    }
+  }
 
   if (!settings.votingLog) return messages;
 
@@ -1891,16 +1928,16 @@ function Message(props) {
   }
 
   // If message is winners, render the WinnersMessage instead
-  // if (message.winners) {
-  //   return (
-  //     <WinnersMessage
-  //       message={message}
-  //       stateViewing={props.stateViewing}
-  //       settings={props.settings}
-  //       history={history}
-  //     />
-  //   );
-  // }
+  if (message.winners) {
+    return (
+      <WinnersMessage
+        message={message}
+        stateViewing={props.stateViewing}
+        settings={props.settings}
+        history={history}
+      />
+    );
+  }
 
   if (isPlayerMessage) {
     player = players[message.senderId];
@@ -2184,78 +2221,80 @@ function Message(props) {
   );
 }
 
-// function WinnersMessage(props) {
-//   const game = useContext(GameContext);
-//   const message = props.message;
-
-//   const winnersInfo = message.winners || {};
-//   const winnerGroups = winnersInfo.groups || [];
-//   const winnerPlayersByGroup = winnersInfo.players || {};
-//   const winnerMessages = winnersInfo.messages || [];
-
-//   let title = "Postgame Results";
-//   if (winnerGroups.length === 1) {
-//     title = `${winnerGroups[0]} Wins!`;
-//   } else if (winnerGroups.length > 1) {
-//     title = `${winnerGroups.join(" & ")} Win!`;
-//   }
-
-//   // didn't mess with deathMessage stuff
-//   const wins = winnerGroups.map((group, index) => {
-//     const groupPlayers = winnerPlayersByGroup[group] || [];
-//     const groupMessage = winnerMessages[index] || `${group} has won.`;
-
-//     return groupPlayers.length > 0
-//       ? groupPlayers.map((player) => ({
-//           id: player.userId || player.id,
-//           name: player.name,
-//           avatar: player.avatar,
-//           avatarId: player.avatarId,
-//           deathMessage: groupMessage,
-//           revealMessage: `${player.name} was a member of the ${group}.`,
-//           lastWill: "",
-//         }))
-//       : [
-//           {
-//             id: group,
-//             name: group,
-//             deathMessage: groupMessage,
-//             revealMessage: "",
-//             lastWill: "",
-//           },
-//         ];
-//   });
-
-//   const flattenedWins = wins.flat();
-
-//   return (
-//     <Newspaper
-//       title={title}
-//       timestamp={message.time}
-//       dayCount={message.dayCount || 0}
-//       deaths={flattenedWins}
-//       isAlignmentReveal={false}
-//     />
-//   );
-// }
-
 function WinnersMessage(props) {
   const game = useContext(GameContext);
   const message = props.message;
+  const history = props.history;
+  const stateViewing = props.stateViewing;
 
   const winnersInfo = message.winners || {};
   const winnerGroups = winnersInfo.groups || [];
-  const winnerPlayersByGroup = winnersInfo.players || {};
+  const winnerPlayersByGroup =
+    winnersInfo.playersByGroup || winnersInfo.players || {};
   const winnerMessages = winnersInfo.messages || [];
+  const isMafiaGame = game.gameType === "Mafia";
 
-  let title = "Postgame Results";
-  if (winnerGroups.length === 1) {
-    title = `${winnerGroups[0]} Wins!`;
-  } else if (winnerGroups.length > 1) {
-    title = `${winnerGroups.join(" & ")} Win!`;
+  const stateInfo = history?.states?.[stateViewing];
+  const stateName = stateInfo?.name || "Postgame";
+
+  var newspaperTitle = "The Miller Times"; // Default for Postgame
+  if (stateName === "Day") {
+    newspaperTitle = "Evening News";
+  } else if (stateName === "Night") {
+    newspaperTitle = "Obituaries";
+  } else if (stateName === "Postgame") {
+    newspaperTitle = "The Miller Times";
+  } else {
+    newspaperTitle = "Breaking News";
   }
 
-  // didn't mess with deathMessage stuff
+  // For Mafia games, use the win newspaper format
+  if (isMafiaGame && winnerMessages.length > 0) {
+    const wins = winnerGroups.map((group, index) => {
+      const playerIds = Array.isArray(winnerPlayersByGroup[group])
+        ? winnerPlayersByGroup[group]
+        : [];
+      const groupMessage = winnerMessages[index] || `${group} has won.`;
+
+      // Expand player IDs to full player objects
+      const players = playerIds
+        .map((playerId) => {
+          // Handle both string IDs and player objects
+          if (typeof playerId === "string") {
+            return game.players[playerId];
+          } else {
+            // If it's already an object, check if we need to look it up
+            const id = playerId.userId || playerId.id;
+            return game.players[id] || playerId;
+          }
+        })
+        .filter(Boolean) // Remove undefined/null players
+        .map((player) => ({
+          id: player.userId || player.id,
+          name: player.name,
+          avatar: player.avatar !== undefined ? player.avatar : true,
+          avatarId: player.avatarId || player.id,
+        }));
+
+      return {
+        group: group,
+        message: groupMessage,
+        players: players,
+      };
+    });
+
+    return (
+      <Newspaper
+        title={newspaperTitle}
+        timestamp={message.time}
+        dayCount={message.dayCount || 0}
+        isWin={true}
+        wins={wins}
+      />
+    );
+  }
+
+  // For non-Mafia games, use the old format (death message style)
   const wins = winnerGroups.map((group, index) => {
     const groupPlayers = winnerPlayersByGroup[group] || [];
     const groupMessage = winnerMessages[index] || `${group} has won.`;
@@ -4652,11 +4691,25 @@ function useHistoryReducer() {
                     alerts: [],
                     stateEvents: [],
                     obituaries: {},
-                    // winners: action.state.winners ? action.state.winners : null,
+                    winners: action.state.winners ? action.state.winners : null,
                     roles: { ...history.states[prevState].roles },
                     dead: { ...history.states[prevState].dead },
                     exorcised: { ...history.states[prevState].exorcised },
                     extraInfo: { ...action.state.extraInfo },
+                  },
+                },
+              },
+              currentState: {
+                $set: Number.parseInt(action.state.id),
+              },
+            });
+          } else if (action.state.winners && history.states[action.state.id]) {
+            // Update winners if state already exists (for live games entering Postgame)
+            return update(history, {
+              states: {
+                [action.state.id]: {
+                  winners: {
+                    $set: action.state.winners,
                   },
                 },
               },
@@ -4927,21 +4980,20 @@ function useHistoryReducer() {
           }
           break;
         }
-        // case "winners":
-        //   if (history.states[history.currentState]) {
-        //     return update(history, {
-        //       states: {
-        //         [history.currentState]: {
-        //           winners: {
-        //             [action.winnersMessage.source]: {
-        //               $set: action.winnersMessage,
-        //             },
-        //           },
-        //         },
-        //       },
-        //     });
-        //   }
-        //   break;
+        case "winners": {
+          if (history.states[history.currentState]) {
+            return update(history, {
+              states: {
+                [history.currentState]: {
+                  winners: {
+                    $set: action.winnersInfo,
+                  },
+                },
+              },
+            });
+          }
+          break;
+        }
         case "reveal": {
           if (history.states[history.currentState]) {
             return update(history, {

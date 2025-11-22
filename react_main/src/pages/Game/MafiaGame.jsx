@@ -603,7 +603,14 @@ export default function MafiaGame() {
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
             {isViewingPregame ? (
-              <StrategiesPanel setupId={setupId} visible={Boolean(setupId)} />
+              <>
+                {actionDescriptorData.regularActionDescriptors.length > 0 && (
+                  <ActionList
+                    descriptors={actionDescriptorData.regularActionDescriptors}
+                  />
+                )}
+                <StrategiesPanel setupId={setupId} visible={Boolean(setupId)} />
+              </>
             ) : (
               <ActionList
                 descriptors={actionDescriptorData.regularActionDescriptors}
@@ -632,7 +639,17 @@ export default function MafiaGame() {
           <>
             <HistoryKeeper history={history} stateViewing={stateViewing} />
             {isViewingPregame ? (
-              <StrategiesSection setupId={setupId} visible={Boolean(setupId)} />
+              <>
+                {actionDescriptorData.regularActionDescriptors.length > 0 && (
+                  <ActionList
+                    descriptors={actionDescriptorData.regularActionDescriptors}
+                  />
+                )}
+                <StrategiesSection
+                  setupId={setupId}
+                  visible={Boolean(setupId)}
+                />
+              </>
             ) : (
               <ActionList
                 descriptors={actionDescriptorData.regularActionDescriptors}
