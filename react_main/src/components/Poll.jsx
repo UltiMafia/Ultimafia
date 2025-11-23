@@ -99,9 +99,7 @@ function Polls({
 
             <Stack spacing={1}>
               {poll.options.map((option, index) => {
-                const voteCount = poll.voteCounts
-                  ? poll.voteCounts[index]
-                  : 0;
+                const voteCount = poll.voteCounts ? poll.voteCounts[index] : 0;
                 const totalVotes = poll.voteCounts
                   ? poll.voteCounts.reduce((a, b) => a + b, 0)
                   : 0;
