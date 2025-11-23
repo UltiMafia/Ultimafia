@@ -8,7 +8,7 @@ module.exports = class GuessTheOgre extends Card {
   constructor(role) {
     super(role);
 
-      this.passiveActions = [
+    this.passiveActions = [
       {
         ability: ["Effect"],
         state: "Night",
@@ -19,21 +19,20 @@ module.exports = class GuessTheOgre extends Card {
         role: role,
         run: function () {
           if (this.role.OgreGuessUsedYesterday == true) {
-          this.role.OgreGuessUsedYesterday = false;
-          return;
-        }
-            let players = this.game.alivePlayers().filter((p) => p.isEvil());
+            this.role.OgreGuessUsedYesterday = false;
+            return;
+          }
+          let players = this.game.alivePlayers().filter((p) => p.isEvil());
 
-            let victim = Random.randArrayVal(players, true);
+          let victim = Random.randArrayVal(players, true);
 
-            victim.queueAlert(
-              `You learn there is an Ogre in Town! If you guess who they are they will get condemned.`
-            );
-            victim.holdItem("GuessPlayer", this.actor);
-          },
+          victim.queueAlert(
+            `You learn there is an Ogre in Town! If you guess who they are they will get condemned.`
+          );
+          victim.holdItem("GuessPlayer", this.actor);
+        },
       },
     ];
-
   }
 };
 
