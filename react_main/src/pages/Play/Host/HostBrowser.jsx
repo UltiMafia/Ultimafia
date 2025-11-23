@@ -104,8 +104,8 @@ export default function HostBrowser(props) {
     navigate({
       pathname: location.pathname,
       search: new URLSearchParams({
-        game: newValue
-      }).toString()
+        game: newValue,
+      }).toString(),
     });
     setDrawerOpen(false);
   };
