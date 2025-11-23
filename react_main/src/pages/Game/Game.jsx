@@ -3510,17 +3510,17 @@ function ActionSelect(props) {
   const rowItems = Object.values(meeting.members).map((member) => {
     const player = props.players[member.id];
     const voteValue = meeting.votes[member.id];
-    
+
     // Check if vote exists but target is hidden (null means hidden target)
     // undefined means no vote, null means vote exists but target is hidden
     const hasVoted = voteValue !== undefined;
     const isVoteHidden = voteValue === null;
-    
+
     let selection = [];
     if (!isVoteHidden && voteValue !== undefined && voteValue !== null) {
       selection = getTargetDisplay(voteValue, meeting, props.players);
     }
-    
+
     // Determine display name
     // When vote target is hidden (VoteBlind scenario), show "User X" instead of real name
     let name = null;
@@ -3702,11 +3702,16 @@ function ActionSelect(props) {
                   {rowItem.selection.join(", ")}
                 </Typography>
               )}
-              {rowItem.canVote && rowItem.isVoteHidden && rowItem.selection.length === 0 && (
-                <Typography className="selection" sx={{ fontStyle: "italic", opacity: 0.7 }}>
-                  (hidden)
-                </Typography>
-              )}
+              {rowItem.canVote &&
+                rowItem.isVoteHidden &&
+                rowItem.selection.length === 0 && (
+                  <Typography
+                    className="selection"
+                    sx={{ fontStyle: "italic", opacity: 0.7 }}
+                  >
+                    (hidden)
+                  </Typography>
+                )}
             </Box>
           );
         })}
