@@ -474,7 +474,7 @@ const modifierData = {
       internal: ["KillAlignedOnDeath"],
       tags: ["Essential", "Selective Revealing", "Vital"],
       description:
-        "If killed, all all players with the same alignment will die too.",
+        "If killed, all players with the same alignment will die too.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     //Role Share
