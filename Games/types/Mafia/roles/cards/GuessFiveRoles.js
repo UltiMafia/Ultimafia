@@ -19,33 +19,33 @@ module.exports = class GuessFiveRoles extends Card {
         labels: ["investigate", "role", "hidden"],
         role: role,
         run: function () {
-            if (
-              this.role.data.GuessingPlayers == null ||
-              this.role.data.GuessingPlayers.length <= 0
-            )
-              return;
-            if (
-              this.role.data.GuessingRoles == null ||
-              this.role.data.GuessingRoles.length <= 0
-            )
-              return;
-            if (this.role.data.HasInformation == true) return;
-            this.role.data.HasInformation = true;
+          if (
+            this.role.data.GuessingPlayers == null ||
+            this.role.data.GuessingPlayers.length <= 0
+          )
+            return;
+          if (
+            this.role.data.GuessingRoles == null ||
+            this.role.data.GuessingRoles.length <= 0
+          )
+            return;
+          if (this.role.data.HasInformation == true) return;
+          this.role.data.HasInformation = true;
 
-            let info = this.game.createInformation(
-              "GuessRoleInfo",
-              this.actor,
-              this.game,
-              this.role.data.GuessingPlayers,
-              this.role.data.GuessingRoles,
-              true
-            );
+          let info = this.game.createInformation(
+            "GuessRoleInfo",
+            this.actor,
+            this.game,
+            this.role.data.GuessingPlayers,
+            this.role.data.GuessingRoles,
+            true
+          );
 
-            info.processInfo();
+          info.processInfo();
 
-            info.getGuessMessages();
-            this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
-          },
+          info.getGuessMessages();
+          this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
+        },
       },
     ];
 
