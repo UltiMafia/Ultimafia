@@ -3499,20 +3499,49 @@ function ActionSelect(props) {
     }
   }
 
+  // Create a mapping from member IDs to "User X" format for consistent display
+  // when votes are hidden (VoteBlind scenario)
+  const memberIdToUserNumber = new Map();
+  const membersArray = Object.values(meeting.members);
+  membersArray.forEach((member, index) => {
+    memberIdToUserNumber.set(member.id, index + 1);
+  });
+
   const rowItems = Object.values(meeting.members).map((member) => {
     const player = props.players[member.id];
-    const selection = getTargetDisplay(
-      meeting.votes[member.id],
-      meeting,
-      props.players
-    );
-    const name = player ? player.name : null;
+    const voteValue = meeting.votes[member.id];
+
+    // Check if vote exists but target is hidden (null means hidden target)
+    // undefined means no vote, null means vote exists but target is hidden
+    const hasVoted = voteValue !== undefined;
+    const isVoteHidden = voteValue === null;
+
+    let selection = [];
+    if (!isVoteHidden && voteValue !== undefined && voteValue !== null) {
+      selection = getTargetDisplay(voteValue, meeting, props.players);
+    }
+
+    // Determine display name
+    // When vote target is hidden (VoteBlind scenario), show "User X" instead of real name
+    let name = null;
+    if (isVoteHidden) {
+      // When vote is hidden, show "User X" format
+      name = `User ${memberIdToUserNumber.get(member.id)}`;
+    } else if (player) {
+      // Normal case: show player's real name
+      name = player.name;
+    } else {
+      // Fallback for anonymous members without hidden votes
+      name = "Anonymous";
+    }
 
     return {
       id: member.id,
-      name: name || "Anonymous",
+      name: name,
       canVote: member.canVote,
       selection: selection,
+      isVoteHidden: isVoteHidden,
+      hasVoted: hasVoted,
     };
   });
 
@@ -3665,14 +3694,24 @@ function ActionSelect(props) {
               {!rowItem.canVote && !rowIsSpecial && (
                 <Typography className="selection">does not vote</Typography>
               )}
-              {rowItem.canVote && rowItem.selection.length > 0 && (
+              {rowItem.canVote && rowItem.hasVoted && (
                 <Typography>votes</Typography>
               )}
-              {rowItem.canVote && (
+              {rowItem.canVote && rowItem.selection.length > 0 && (
                 <Typography className="selection">
                   {rowItem.selection.join(", ")}
                 </Typography>
               )}
+              {rowItem.canVote &&
+                rowItem.isVoteHidden &&
+                rowItem.selection.length === 0 && (
+                  <Typography
+                    className="selection"
+                    sx={{ fontStyle: "italic", opacity: 0.7 }}
+                  >
+                    (hidden)
+                  </Typography>
+                )}
             </Box>
           );
         })}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { NameWithAvatar, Avatar } from "./User";
@@ -13,6 +13,7 @@ import {
   Badge,
 } from "@mui/material";
 import NavDropdown from "../../components/NavDropdown";
+import { SiteInfoContext } from "../../Contexts";
 
 import "css/main.css";
 import exitIcon from "../../images/emotes/exit.png";
@@ -26,6 +27,21 @@ export default function UserNavSection({
   const navigate = useNavigate();
   const isMobile = useIsPhoneDevice();
   const unreadCount = useUnreadNotifications();
+  const [userFamily, setUserFamily] = useState(null);
+  const { cacheVal } = useContext(SiteInfoContext);
+
+  useEffect(() => {
+    if (user.loggedIn) {
+      axios
+        .get("/api/family/user/family")
+        .then((res) => {
+          setUserFamily(res.data.family);
+        })
+        .catch(() => {
+          // Ignore errors, user might not have a family
+        });
+    }
+  }, [user.loggedIn]);
 
   const handleLogout = () => {
     axios
@@ -43,8 +59,32 @@ export default function UserNavSection({
   // Use vanity URL for profile link if available
   const profilePath = user.vanityUrl ? `/user/${user.vanityUrl}` : "/user";
 
+  // Create family avatar icon if family exists and has avatar
+  const familyIcon = userFamily?.avatar ? (
+    <div
+      style={{
+        width: "20px",
+        height: "20px",
+        borderRadius: "50%",
+        backgroundImage: `url(/uploads/${userFamily.id}_family_avatar.webp?t=${cacheVal})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        flexShrink: 0,
+      }}
+    />
+  ) : null;
+
   const userMenuItems = [
     { text: "Profile", path: profilePath },
+    ...(userFamily
+      ? [
+          {
+            text: userFamily.name,
+            path: `/user/family/${userFamily.id}`,
+            icon: familyIcon,
+          },
+        ]
+      : []),
     { text: "Inbox", path: "/user/inbox" },
     { text: "Settings", path: "/user/settings" },
     { text: "Shop", path: "/user/shop" },
