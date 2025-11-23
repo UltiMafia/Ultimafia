@@ -52,31 +52,46 @@ function StickyStateViewer(props) {
   const isPhoneDevice = useIsPhoneDevice();
 
   return (
-    <Stack direction="row" sx={{
-      position: isSticky ? "sticky" : "relative",
-      bottom: isSticky ? "var(--mui-spacing)" : undefined,
-      mt: 1,
-    }}>
-      <Paper sx={{
-        p: 1,
-        maxWidth: "80%",
-        flex: "1",
-        mx: "auto",
-      }}>
-        <Stack direction={isVertical ? "column" : "row"} spacing={isPhoneDevice ? 0.5 : 1} sx={{
-          justifyContent: isVertical ? "stretch" : "center",
-          alignItems: "stretch",
-          width: "100%",
-        }}>
-          <Stack direction="column" sx={{
-            justifyContent: "center",
-            flex: "0 0",
-          }}>
-            <Paper variant="outlined" sx={{
-              p: 1,
-              flex: "1",
-              borderColor: isSticky ? "primary.main" : undefined,
-            }}>
+    <Stack
+      direction="row"
+      sx={{
+        position: isSticky ? "sticky" : "relative",
+        bottom: isSticky ? "var(--mui-spacing)" : undefined,
+        mt: 1,
+      }}
+    >
+      <Paper
+        sx={{
+          p: 1,
+          maxWidth: "80%",
+          flex: "1",
+          mx: "auto",
+        }}
+      >
+        <Stack
+          direction={isVertical ? "column" : "row"}
+          spacing={isPhoneDevice ? 0.5 : 1}
+          sx={{
+            justifyContent: isVertical ? "stretch" : "center",
+            alignItems: "stretch",
+            width: "100%",
+          }}
+        >
+          <Stack
+            direction="column"
+            sx={{
+              justifyContent: "center",
+              flex: "0 0",
+            }}
+          >
+            <Paper
+              variant="outlined"
+              sx={{
+                p: 1,
+                flex: "1",
+                borderColor: isSticky ? "primary.main" : undefined,
+              }}
+            >
               <Typography variant="h4" textAlign="center">
                 {title}
               </Typography>
@@ -470,7 +485,8 @@ export default function CreateSetup(props) {
         title={`Roleset ${i}`}
         key={i}
       >
-        <Paper variant="outlined"
+        <Paper
+          variant="outlined"
           onClick={() => setSelRoleSet(i)}
           className="roleset"
           sx={{
@@ -729,22 +745,25 @@ export default function CreateSetup(props) {
         gameType={gameType}
         curMods={gameSettings}
       />
-      <Paper sx={{
-        p: 1
-      }}>
+      <Paper
+        sx={{
+          p: 1,
+        }}
+      >
         <Stack direction="column" spacing={1}>
-          <Typography variant="h3">
-            Enabled Game Settings
-          </Typography>
+          <Typography variant="h3">Enabled Game Settings</Typography>
           {Object.keys(gameSettings).length === 0 && (
-            <Typography>
-              No game settings enabled
-            </Typography>
+            <Typography>No game settings enabled</Typography>
           )}
           {Object.keys(gameSettings).length > 0 && (
-            <Grid2 container columns={4} spacing={1} sx={{
-              width: "100%",
-            }}>
+            <Grid2
+              container
+              columns={4}
+              spacing={1}
+              sx={{
+                width: "100%",
+              }}
+            >
               {Object.keys(gameSettings).map((gameSetting) => {
                 const value = gameSettings[gameSetting];
                 const count = typeof value === "number" ? value : 1;
