@@ -246,11 +246,12 @@ export default function LobbyBrowser() {
           width: "100%",
           alignItems: "center",
           justifyContent: "space-between",
-          mb: 1,
         }}
       >
         <PageNav page={page} onNav={(page) => getGameList(listType, page)} />
-        <Typography color="primary">Games</Typography>
+        <Typography variant="h3" color="primary">
+          Games
+        </Typography>
         <div onClick={refreshGames}>
           <RefreshButton isSpinning={refreshButtonIsSpinning} />
         </div>
@@ -264,10 +265,10 @@ export default function LobbyBrowser() {
       <Grid2 container rowSpacing={2} columnSpacing={2}>
         <Grid2 size={{ xs: 12, md: 8 }}>
           <Stack spacing={2}>
-            <Box>
+            <Stack direction="column" spacing={1}>
               {buttons}
               {gameList}
-            </Box>
+            </Stack>
             <Comments
               fullWidth
               location={
@@ -287,8 +288,8 @@ export default function LobbyBrowser() {
             <DailyChallenges />
             <RecentlyPlayedSetups lobby={lobbyName} />
             <RecentForumReplies />
-            <Poll lobby={lobbyName} />
             <Chat />
+            <Poll lobby={lobbyName} />
           </Stack>
         </Grid2>
       </Grid2>

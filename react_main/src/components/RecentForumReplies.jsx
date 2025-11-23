@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Paper, Stack, Typography, Box } from "@mui/material";
 import { Avatar } from "pages/User/User";
 import { Time } from "components/Basic";
+import LobbySidebarPanel from "pages/Play/LobbyBrowser/LobbySidebarPanel";
 
 export function RecentForumReplies() {
   const [newestThreads, setNewestThreads] = useState([]);
@@ -69,11 +70,7 @@ export function RecentForumReplies() {
   }, []);
 
   return (
-    <Paper sx={{ p: 1 }}>
-      <Typography color="primary" gutterBottom>
-        Forum Activity
-      </Typography>
-
+    <LobbySidebarPanel title="Forum Activity">
       <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>
         Newest Thread
       </Typography>
@@ -141,6 +138,6 @@ export function RecentForumReplies() {
           })}
         </Stack>
       )}
-    </Paper>
+    </LobbySidebarPanel>
   );
 }

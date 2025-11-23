@@ -228,7 +228,7 @@ export const GameRow = (props) => {
                       className="fas fa-heart"
                       style={{
                         fontSize: "1rem",
-                        color: "rgb(237, 179, 52)",
+                        color: "var(--gold-heart-color)",
                       }}
                     />
                   </Tooltip>

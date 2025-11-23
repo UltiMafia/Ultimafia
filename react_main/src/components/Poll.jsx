@@ -13,6 +13,7 @@ import { UserContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { getPageNavFilterArg, PageNav } from "components/Nav";
 import { NameWithAvatar } from "pages/User/User";
+import LobbySidebarPanel from "pages/Play/LobbyBrowser/LobbySidebarPanel";
 
 export function Poll({ lobby, threadId, locked }) {
   const [currentPoll, setCurrentPoll] = useState(null);
@@ -348,12 +349,9 @@ export function Poll({ lobby, threadId, locked }) {
   }
 
   return (
-    <Paper sx={{ p: 2, ...(isThreadPoll && { mt: 2 }) }}>
-      <Typography color="primary" gutterBottom>
-        Poll
-      </Typography>
+    <LobbySidebarPanel title="Poll">
       {renderPolls()}
-    </Paper>
+    </LobbySidebarPanel>
   );
 }
 

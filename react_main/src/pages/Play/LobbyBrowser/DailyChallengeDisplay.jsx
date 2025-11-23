@@ -5,6 +5,7 @@ import { DailyChallengeData } from "constants/DailyChallenge";
 import { RoleCount } from "components/Roles";
 
 import umcoin from "images/umcoin.png";
+import LobbySidebarPanel from "./LobbySidebarPanel";
 
 export const DailyChallenges = () => {
   const user = useContext(UserContext);
@@ -76,19 +77,13 @@ export const DailyChallenges = () => {
   });
 
   return (
-    <Paper>
-      <Box sx={{ p: 2 }}>
-        <Typography color="primary" gutterBottom>
-          Daily Challenges - No Vegs
-        </Typography>
-        <Divider orientation="horizontal" flexItem />
-        <Stack
-          spacing={1}
-          divider={<Divider orientation="horizontal" flexItem />}
-        >
-          {dailyRows}
-        </Stack>
-      </Box>
-    </Paper>
+    <LobbySidebarPanel title="Daily Challenges">
+      <Stack
+        spacing={1}
+        divider={<Divider orientation="horizontal" flexItem />}
+      >
+        {dailyRows}
+      </Stack>
+    </LobbySidebarPanel>
   );
 };

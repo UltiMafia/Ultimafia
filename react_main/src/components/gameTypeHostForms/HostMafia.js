@@ -12,7 +12,7 @@ export default function HostMafia() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: localStorage.getItem("lobby") || "Main",
+      value: defaults.lobby,
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {
