@@ -23,9 +23,10 @@ import {
 import { useColorScheme } from "@mui/material/styles";
 
 import { UserContext, SiteInfoContext } from "Contexts";
-import Form, { useForm, HiddenUpload } from "components/Form";
+import Form, { useForm, HiddenUpload, UserSearchSelect } from "components/Form";
 import { useErrorAlert } from "components/Alerts";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import AvatarUpload from "components/AvatarUpload";
 
 import "css/settings.css";
 import { setCaptchaVisible } from "utils";
@@ -78,6 +79,11 @@ export default function Settings() {
   const [accounts, setAccounts] = useState({});
   const [emailForPasswordReset, setEmailForPasswordReset] = useState("");
   const [loading, setLoading] = useState(false);
+  const [familyName, setFamilyName] = useState("");
+  const [familyAvatarUploaded, setFamilyAvatarUploaded] = useState(false);
+  const [userFamily, setUserFamily] = useState(null);
+  const [familyLoaded, setFamilyLoaded] = useState(false);
+  const [transferLeaderUserId, setTransferLeaderUserId] = useState("");
   const { mode, setMode } = useColorScheme();
 
   const user = useContext(UserContext);
@@ -489,6 +495,7 @@ export default function Settings() {
     if (user.loaded && user.loggedIn) {
       if (!settingsLoaded) loadSettings();
       if (!accountsLoaded) loadAccounts();
+      if (user.itemsOwned?.createFamily && !familyLoaded) loadFamily();
     }
   }, [user]);
 
@@ -510,6 +517,24 @@ export default function Settings() {
         setAccountsLoaded(true);
       })
       .catch(errorAlert);
+  };
+
+  const loadFamily = () => {
+    axios
+      .get("/api/family/user/family")
+      .then((res) => {
+        if (res.data.family) {
+          setUserFamily(res.data.family);
+          setFamilyLoaded(true);
+        } else {
+          setUserFamily(null);
+          setFamilyLoaded(true);
+        }
+      })
+      .catch(() => {
+        setUserFamily(null);
+        setFamilyLoaded(true);
+      });
   };
 
   const updateFieldsFromData = (data) => {
@@ -538,7 +563,12 @@ export default function Settings() {
   };
 
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
-  if (!settingsLoaded || !accountsLoaded || !user.loaded)
+  if (
+    !settingsLoaded ||
+    !accountsLoaded ||
+    !user.loaded ||
+    (user.itemsOwned?.createFamily && !familyLoaded)
+  )
     return <NewLoading small />;
 
   const sections = [
@@ -631,6 +661,293 @@ export default function Settings() {
         </Stack>
       ),
     },
+    ...(user.itemsOwned?.createFamily
+      ? [
+          {
+            title: "Family",
+            path: "family",
+            content: (
+              <Stack direction="column" spacing={3}>
+                {/* Create Family Section */}
+                <Box>
+                  <Typography variant="h4" sx={{ mb: 2 }}>
+                    Create Family
+                  </Typography>
+                  <Stack
+                    direction="column"
+                    spacing={2}
+                    sx={{
+                      opacity: userFamily ? 0.5 : 1,
+                      pointerEvents: userFamily ? "none" : "auto",
+                    }}
+                  >
+                    <TextField
+                      label="Family Name"
+                      value={familyName}
+                      onChange={(e) => setFamilyName(e.target.value)}
+                      placeholder="Enter family name"
+                      sx={{ minWidth: "240px" }}
+                      disabled={!!userFamily}
+                      inputProps={{ maxLength: 20 }}
+                      helperText={`${familyName.length}/20 characters`}
+                    />
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <Typography>Family Avatar:</Typography>
+                      <AvatarUpload
+                        onFileUpload={onFamilyAvatarUpload}
+                        name="familyAvatar"
+                      >
+                        <Button variant="outlined" disabled={!!userFamily}>
+                          Upload Avatar
+                        </Button>
+                      </AvatarUpload>
+                      {familyAvatarUploaded && (
+                        <Typography
+                          variant="caption"
+                          sx={{ color: "success.main" }}
+                        >
+                          Avatar uploaded
+                        </Typography>
+                      )}
+                    </Stack>
+                    <Button
+                      variant="contained"
+                      onClick={onCreateFamily}
+                      disabled={!familyName.trim() || !!userFamily}
+                      sx={{ minWidth: "240px" }}
+                    >
+                      Create Family
+                    </Button>
+                  </Stack>
+                </Box>
+
+                {/* Manage Family Section - Leader */}
+                {userFamily && userFamily.isLeader && (
+                  <Box>
+                    <Divider sx={{ my: 2 }} />
+                    <Typography variant="h4" sx={{ mb: 2 }}>
+                      Manage Family
+                    </Typography>
+                    <Stack direction="column" spacing={3}>
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <Typography>
+                          You are the leader of{" "}
+                        </Typography>
+                        {userFamily.avatar && (
+                          <div
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              borderRadius: "50%",
+                              backgroundImage: `url(/uploads/${userFamily.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
+                              backgroundSize: "cover",
+                              backgroundPosition: "center",
+                              flexShrink: 0,
+                            }}
+                          />
+                        )}
+                        <Link
+                          to={`/user/family/${userFamily.id}`}
+                          style={{ textDecoration: "none" }}
+                        >
+                          <Typography
+                            component="span"
+                            sx={{
+                              fontWeight: "bold",
+                              color: "primary.main",
+                              "&:hover": {
+                                textDecoration: "underline",
+                              },
+                            }}
+                          >
+                            {userFamily.name}
+                          </Typography>
+                        </Link>
+                      </Stack>
+
+                      {/* Upload Family Avatar */}
+                      <Box>
+                        <Typography variant="h6" sx={{ mb: 1 }}>
+                          Family Avatar
+                        </Typography>
+                        <Stack direction="row" spacing={2} alignItems="center">
+                          <AvatarUpload
+                            onFileUpload={onFamilyAvatarUploadExisting}
+                            name="familyAvatarExisting"
+                          >
+                            <Button variant="outlined">Upload New Avatar</Button>
+                          </AvatarUpload>
+                          {userFamily.avatar && (
+                            <Typography variant="caption" sx={{ color: "success.main" }}>
+                              Avatar uploaded
+                            </Typography>
+                          )}
+                        </Stack>
+                      </Box>
+
+                      {/* Upload Family Background */}
+                      <Box>
+                        <Typography variant="h6" sx={{ mb: 1 }}>
+                          Family Background
+                        </Typography>
+                        <Typography variant="caption" sx={{ mb: 1, display: "block" }}>
+                          Upload a custom background image to replace the default pattern on the family page (max 5 MB)
+                        </Typography>
+                        <Stack direction="row" spacing={2} alignItems="center">
+                          <HiddenUpload
+                            name="familyBackground"
+                            onClick={onFamilyBackgroundEdit}
+                            onFileUpload={onFamilyBackgroundUpload}
+                          >
+                            <Button variant="outlined">Upload Background Image</Button>
+                          </HiddenUpload>
+                          {userFamily.background && (
+                            <>
+                              <Typography variant="caption" sx={{ color: "success.main" }}>
+                                Background uploaded
+                              </Typography>
+                              <Button
+                                variant="outlined"
+                                color="error"
+                                size="small"
+                                onClick={onFamilyBackgroundRemove}
+                              >
+                                Remove
+                              </Button>
+                            </>
+                          )}
+                        </Stack>
+                      </Box>
+
+                      {/* Background Display Mode */}
+                      {userFamily.background && (
+                        <Box>
+                          <Typography variant="h6" sx={{ mb: 1 }}>
+                            Background Display Mode
+                          </Typography>
+                          <FormControl sx={{ minWidth: "240px" }}>
+                            <InputLabel>Display Mode</InputLabel>
+                            <Select
+                              value={userFamily.backgroundRepeatMode || "checker"}
+                              label="Display Mode"
+                              onChange={(e) => onFamilyBackgroundRepeatModeChange(e.target.value)}
+                            >
+                              <MenuItem value="checker">Checker</MenuItem>
+                              <MenuItem value="stretch">Stretch</MenuItem>
+                            </Select>
+                          </FormControl>
+                          <Typography variant="caption" sx={{ mt: 1, display: "block" }}>
+                            Choose how the background image should be displayed: Checker (pattern) or Stretch (full screen)
+                          </Typography>
+                        </Box>
+                      )}
+
+                      {/* Transfer Leadership */}
+                      <Box>
+                        <Typography variant="h6" sx={{ mb: 1 }}>
+                          Transfer Leadership
+                        </Typography>
+                        <Stack direction="column" spacing={2}>
+                          <UserSearchSelect
+                            placeholder="Search for a family member..."
+                            onChange={(userId) => setTransferLeaderUserId(userId)}
+                          />
+                          <Button
+                            variant="outlined"
+                            onClick={onTransferLeadership}
+                            disabled={!transferLeaderUserId}
+                            sx={{ minWidth: "240px" }}
+                          >
+                            Transfer Leadership
+                          </Button>
+                        </Stack>
+                      </Box>
+
+                      {/* Delete Family */}
+                      <Box>
+                        <Divider sx={{ my: 2 }} />
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          onClick={onDeleteFamily}
+                          sx={{ minWidth: "240px" }}
+                          startIcon={
+                            <i
+                              className="fas fa-exclamation-triangle"
+                              aria-hidden="true"
+                            />
+                          }
+                        >
+                          Delete Family
+                        </Button>
+                      </Box>
+                    </Stack>
+                  </Box>
+                )}
+
+                {/* Manage Family Section - Member */}
+                {userFamily && !userFamily.isLeader && (
+                  <Box>
+                    <Divider sx={{ my: 2 }} />
+                    <Typography variant="h4" sx={{ mb: 2 }}>
+                      Manage Family
+                    </Typography>
+                    <Stack direction="column" spacing={3}>
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <Typography>
+                          You are a member of{" "}
+                        </Typography>
+                        {userFamily.avatar && (
+                          <div
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              borderRadius: "50%",
+                              backgroundImage: `url(/uploads/${userFamily.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
+                              backgroundSize: "cover",
+                              backgroundPosition: "center",
+                              flexShrink: 0,
+                            }}
+                          />
+                        )}
+                        <Link
+                          to={`/user/family/${userFamily.id}`}
+                          style={{ textDecoration: "none" }}
+                        >
+                          <Typography
+                            component="span"
+                            sx={{
+                              fontWeight: "bold",
+                              color: "primary.main",
+                              "&:hover": {
+                                textDecoration: "underline",
+                              },
+                            }}
+                          >
+                            {userFamily.name}
+                          </Typography>
+                        </Link>
+                      </Stack>
+
+                      {/* Leave Family */}
+                      <Box>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          onClick={onLeaveFamily}
+                          sx={{ minWidth: "240px" }}
+                        >
+                          Leave Family
+                        </Button>
+                      </Box>
+                    </Stack>
+                  </Box>
+                )}
+              </Stack>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -939,5 +1256,191 @@ export default function Settings() {
         })
         .catch(errorAlert);
     }
+  }
+
+  function onFamilyAvatarUpload(files, type) {
+    if (files.length) {
+      const formData = new FormData();
+      formData.append("image", files[0]);
+
+      axios
+        .post("/api/family/avatar", formData)
+        .then(() => {
+          setFamilyAvatarUploaded(true);
+          siteInfo.showAlert("Family avatar uploaded", "success");
+        })
+        .catch((e) => {
+          if (e.response == null || e.response.status === 413)
+            errorAlert("File too large, must be less than 1 MB.");
+          else errorAlert(e);
+        });
+    }
+  }
+
+  function onFamilyAvatarUploadExisting(files, type) {
+    if (files.length) {
+      const formData = new FormData();
+      formData.append("image", files[0]);
+
+      axios
+        .post("/api/family/avatar", formData)
+        .then(() => {
+          siteInfo.showAlert("Family avatar uploaded", "success");
+          loadFamily(); // Reload to update avatar status
+        })
+        .catch((e) => {
+          if (e.response == null || e.response.status === 413)
+            errorAlert("File too large, must be less than 1 MB.");
+          else errorAlert(e);
+        });
+    }
+  }
+
+  function onCreateFamily() {
+    if (!familyName.trim()) {
+      siteInfo.showAlert("Please enter a family name", "error");
+      return;
+    }
+
+    if (familyName.trim().length > 20) {
+      siteInfo.showAlert("Family name must be 20 characters or less.", "error");
+      return;
+    }
+
+    axios
+      .post("/api/family/create", { name: familyName.trim() })
+      .then((res) => {
+        siteInfo.showAlert("Family created successfully!", "success");
+        loadFamily(); // Reload family info
+        navigate(`/user/family/${res.data.familyId}`);
+      })
+      .catch(errorAlert);
+  }
+
+  function onTransferLeadership() {
+    if (!transferLeaderUserId) {
+      siteInfo.showAlert("Please select a family member", "error");
+      return;
+    }
+
+    if (
+      !window.confirm(
+        "Are you sure you want to transfer leadership? You will lose the ability to manage the family."
+      )
+    ) {
+      return;
+    }
+
+    axios
+      .post(`/api/family/${userFamily.id}/transferLeadership`, {
+        newLeaderId: transferLeaderUserId,
+      })
+      .then(() => {
+        siteInfo.showAlert("Leadership transferred successfully", "success");
+        setTransferLeaderUserId("");
+        loadFamily(); // Reload to update family info
+      })
+      .catch(errorAlert);
+  }
+
+  function onDeleteFamily() {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete your family? This will remove all members and cannot be undone."
+      )
+    ) {
+      return;
+    }
+
+    axios
+      .delete(`/api/family/${userFamily.id}`)
+      .then(() => {
+        siteInfo.showAlert("Family deleted successfully", "success");
+        setUserFamily(null);
+        setFamilyName("");
+        setFamilyAvatarUploaded(false);
+        loadFamily(); // Reload to clear family info
+      })
+      .catch(errorAlert);
+  }
+
+  function onLeaveFamily() {
+    if (
+      !window.confirm(
+        "Are you sure you want to leave this family? You will need to be re-invited to rejoin."
+      )
+    ) {
+      return;
+    }
+
+    axios
+      .post(`/api/family/${userFamily.id}/leave`)
+      .then(() => {
+        siteInfo.showAlert("You have left the family", "success");
+        setUserFamily(null);
+        setFamilyName("");
+        setFamilyAvatarUploaded(false);
+        loadFamily(); // Reload to clear family info
+      })
+      .catch(errorAlert);
+  }
+
+  function onFamilyBackgroundEdit(files, type) {
+    // Always allow editing if user is a leader
+    return true;
+  }
+
+  function onFamilyBackgroundRemove() {
+    if (
+      !window.confirm(
+        "Are you sure you wish to remove the family background?"
+      )
+    ) {
+      return;
+    }
+
+    axios
+      .delete(`/api/family/${userFamily.id}/background`)
+      .then(() => {
+        siteInfo.showAlert("Family background removed", "success");
+        siteInfo.clearCache();
+        loadFamily(); // Reload to update background status
+      })
+      .catch(errorAlert);
+  }
+
+  function onFamilyBackgroundUpload(files, type) {
+    if (!files.length) return;
+
+    const formData = new FormData();
+    formData.append("image", files[0]);
+
+    for (let el of document.getElementsByClassName("hidden-upload"))
+      el.value = "";
+
+    axios
+      .post(`/api/family/${userFamily.id}/background`, formData)
+      .then(() => {
+        siteInfo.showAlert("Family background uploaded", "success");
+        siteInfo.clearCache();
+        loadFamily(); // Reload to update background status
+      })
+      .catch((e) => {
+        if (e.response == null || e.response.status === 413)
+          errorAlert("File too large, must be less than 5 MB.");
+        else errorAlert(e);
+      });
+  }
+
+  function onFamilyBackgroundRepeatModeChange(mode) {
+    axios
+      .post(`/api/family/${userFamily.id}/backgroundRepeatMode`, {
+        backgroundRepeatMode: mode,
+      })
+      .then(() => {
+        siteInfo.showAlert("Background display mode updated", "success");
+        loadFamily(); // Reload to update background repeat mode
+      })
+      .catch(errorAlert);
   }
 }

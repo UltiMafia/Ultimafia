@@ -7,6 +7,7 @@ import Profile, { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "./Profile";
 import Settings from "./Settings";
 import Shop from "./Shop";
 import Inbox from "./Inbox";
+import Family from "./Family";
 import { UserContext, SiteInfoContext, GameContext } from "Contexts";
 import AvatarUpload from "components/AvatarUpload";
 
@@ -260,6 +261,7 @@ export default function User(props) {
       <Route path="settings/*" element={<Settings />} />
       <Route path="shop" element={<Shop />} />
       <Route path="inbox" element={<Inbox />} />
+      <Route path="family/:familyId" element={<Family />} />
       <Route path=":userId" element={<Profile />} />
     </Routes>
   );

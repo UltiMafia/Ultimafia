@@ -105,6 +105,7 @@ export default function Profile() {
   const [currentUserLove, setCurrentUserLove] = useState({});
   const [status, setStatus] = useState("offline");
   const [lastActive, setLastActive] = useState(null);
+  const [userFamily, setUserFamily] = useState(null);
   const [inGame, setInGame] = useState(null);
   const [canonicalUserId, setCanonicalUserId] = useState(null);
 
@@ -189,6 +190,7 @@ export default function Profile() {
   useEffect(() => {
     setEditingBio(false);
     setEditingPronouns(false);
+    setUserFamily(null);
 
     if (userId) {
       setProfileLoaded(false);
@@ -240,6 +242,12 @@ export default function Profile() {
           setTrophies(res.data.trophies || []);
           setFriendsPage(1);
           loadFriends(resolvedId, "", 1);
+
+          // Load current user's family info if viewing another user's profile
+          const isSelf = user.loggedIn && resolvedId === user.id;
+          if (!isSelf && user.loggedIn) {
+            loadUserFamily();
+          }
 
           if (res.data.settings.youtube) {
             setMediaUrl(res.data.settings.youtube);
@@ -462,6 +470,27 @@ export default function Profile() {
       .catch(errorAlert);
   }
 
+  function onFamilyJoinRequestClick() {
+    if (!userFamily) return;
+
+    if (
+      !window.confirm(
+        `Are you sure you want to invite ${name} to join ${userFamily.name}?`
+      )
+    ) {
+      return;
+    }
+
+    axios
+      .post(`/api/family/${userFamily.id}/requestJoin`, {
+        targetUserId: profileUserId,
+      })
+      .then(() => {
+        siteInfo.showAlert("Family join request sent!", "success");
+      })
+      .catch(errorAlert);
+  }
+
   function onReportClick() {
     setReportDialogOpen(true);
   }
@@ -549,6 +578,19 @@ export default function Profile() {
         }
       })
       .catch(errorAlert);
+  }
+
+  function loadUserFamily() {
+    axios
+      .get("/api/family/user/family")
+      .then((res) => {
+        if (res.data.family && res.data.family.isLeader) {
+          setUserFamily(res.data.family);
+        }
+      })
+      .catch(() => {
+        // Ignore errors
+      });
   }
 
   function loadRecentGames(id, pageToLoad = 1) {
@@ -815,6 +857,17 @@ export default function Profile() {
                 onClick={onFriendUserClick}
               />
             </IconButton>
+            {userFamily && userFamily.isLeader && userFamily.memberCount < 20 && (
+              <IconButton
+                aria-label="request to join family"
+                title={`Invite to ${userFamily.name}`}
+              >
+                <i
+                  className="fas fa-users"
+                  onClick={onFamilyJoinRequestClick}
+                />
+              </IconButton>
+            )}
             <LoveIcon
               isLove={isLove}
               userId={user.id}
@@ -895,6 +948,11 @@ export default function Profile() {
                   title={
                     <Stack spacing={0.5}>
                       <Typography variant="subtitle2">{trophy.name}</Typography>
+                      {trophy.owner && (
+                        <Typography variant="caption">
+                          Owner: {trophy.owner.name}
+                        </Typography>
+                      )}
                       <Typography variant="caption">
                         Awarded {formattedDate}
                       </Typography>

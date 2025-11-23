@@ -43,7 +43,8 @@ const COMMAND_GROUP_ORDER = {
   "Game Management": 3,
   "Site Management": 4,
   "Group Management": 5,
-  "Poll Management": 6,
+  "Family Management": 6,
+  "Poll Management": 7,
   "Deck Management": 9,
   "Forum Management": 99,
   "Chat Window Management": 999,
@@ -1675,6 +1676,26 @@ export function useModCommands(argValues, commandRan, setResults) {
           })
           .then(() => {
             siteInfo.showAlert("Credit assigned.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Clear Family Content": {
+      perm: "clearFamilyContent",
+      category: "Family Management",
+      args: [
+        {
+          label: "Family Id",
+          name: "familyId",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/clearFamilyContent", argValues)
+          .then(() => {
+            siteInfo.showAlert("Family content cleared.", "success");
             commandRan();
           })
           .catch(errorAlert);

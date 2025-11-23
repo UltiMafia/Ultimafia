@@ -6,6 +6,7 @@ const roleData = require("../data/roles");
 const Random = require("../lib/Random");
 const fbAdmin = require("firebase-admin");
 const crypto = require("crypto");
+const fs = require("fs");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
@@ -1192,6 +1193,62 @@ router.post("/clearUserContent", async (req, res) => {
     logger.error(e);
     res.status(500);
     res.send("Error clearing user content.");
+  }
+});
+
+router.post("/clearFamilyContent", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var familyId = String(req.body.familyId);
+    var perm = "clearFamilyContent";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    var family = await models.Family.findOne({ id: familyId })
+      .populate("leader", "id name");
+
+    if (!family) {
+      res.status(500);
+      res.send("Family not found.");
+      return;
+    }
+
+    // Get leader name for default family name
+    var leaderName = family.leader ? family.leader.name : "Unknown";
+    var defaultName = `${leaderName}'s Family`;
+
+    // Delete avatar file if it exists
+    const avatarPath = `${process.env.UPLOAD_PATH}/${familyId}_family_avatar.webp`;
+    if (fs.existsSync(avatarPath)) {
+      fs.unlinkSync(avatarPath);
+    }
+
+    // Delete background file if it exists
+    const backgroundPath = `${process.env.UPLOAD_PATH}/${familyId}_familyBackground.webp`;
+    if (fs.existsSync(backgroundPath)) {
+      fs.unlinkSync(backgroundPath);
+    }
+
+    // Update family: clear name, bio, and avatar
+    await models.Family.updateOne(
+      { id: familyId },
+      {
+        $set: {
+          name: defaultName,
+          bio: "",
+          avatar: false,
+          background: false,
+        },
+      }
+    );
+
+    routeUtils.createModAction(userId, "Clear Family Content", [familyId]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error clearing family content.");
   }
 });
 

@@ -180,6 +180,14 @@ const shopItems = [
     limit: 1,
     onBuy: async function (userId) {},
   },
+  {
+    name: "Create Family",
+    desc: "Create a Crime Family and top the leaderboard",
+    key: "createFamily",
+    price: 1000,
+    limit: 1,
+    onBuy: async function (userId) {},
+  },
 ];
 
 router.get("/info", async function (req, res) {

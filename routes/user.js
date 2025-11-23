@@ -372,10 +372,24 @@ router.get("/:id/profile", async function (req, res) {
     user.karmaInfo = karmaInfo;
     user.achievements = user.achievements;
     const trophies = await models.Trophy.find({ ownerId: userId })
-      .select("id name createdAt -_id")
+      .populate("owner", "id name avatar vanityUrl")
+      .select("id name ownerId owner createdAt -_id")
       .sort("-createdAt")
       .lean();
-    user.trophies = trophies || [];
+    user.trophies = (trophies || []).map((trophy) => ({
+      id: trophy.id,
+      name: trophy.name,
+      ownerId: trophy.ownerId,
+      owner: trophy.owner
+        ? {
+            id: trophy.owner.id,
+            name: trophy.owner.name,
+            avatar: trophy.owner.avatar,
+            vanityUrl: trophy.owner.vanityUrl,
+          }
+        : null,
+      createdAt: trophy.createdAt,
+    }));
     if (isSelf) {
       var friendRequests = await models.FriendRequest.find({ targetId: userId })
         .select("userId user")

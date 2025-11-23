@@ -25,6 +25,7 @@ const reportRouter = require("./routes/report");
 const siteRouter = require("./routes/site");
 const pollRouter = require("./routes/poll");
 const vanityUrlRouter = require("./routes/vanityUrl");
+const familyRouter = require("./routes/family");
 const compression = require("compression");
 const cors = require("cors");
 const itemsRouter = require("./routes/items");
@@ -80,6 +81,7 @@ apiRouter.use("/report", reportRouter);
 apiRouter.use("/site", siteRouter);
 apiRouter.use("/poll", pollRouter);
 apiRouter.use("/vanityUrl", vanityUrlRouter);
+apiRouter.use("/family", familyRouter);
 apiRouter.use("/items", itemsRouter);
 
 app.use("/api", apiRouter);
