@@ -188,14 +188,17 @@ async function authSuccess(req, uid, email, discordProfile) {
 
     var id = routeUtils.getUserId(req);
     var ip = routeUtils.getIP(req);
-    var user = await models.User.findOne({ email }).select(
+    var user = await models.User.findOne({ email, deleted: false }).select(
       "id deleted discordId"
     );
     var bannedUser = await models.User.findOne({ email, banned: true }).select(
       "id discordId"
     );
+    var deletedUser = await models.User.findOne({ email, deleted: true }).select(
+      "id discordId"
+    );
 
-    if (!user && !bannedUser) {
+    if (!user && !bannedUser && !deletedUser) {
       //Create new account (5) (6)
       var bannedSameIP = await models.User.find({
         ip: ip,
@@ -354,7 +357,7 @@ async function authSuccess(req, uid, email, discordProfile) {
       await models.Session.deleteMany({ "session.user.id": id }).exec();
 
       return;
-    } else if (user.deleted) {
+    } else if (!user && deletedUser) {
       throw { deleted: true };
     } else {
       //Link or refresh account (1) (2) (7)

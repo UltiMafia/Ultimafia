@@ -265,7 +265,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative achievements bio pronouns banner setups games numFriends stats lastActive _id"
+        "id name avatar settings accounts wins losses kudos karma points pointsNegative achievements bio pronouns banner setups games numFriends stats lastActive _id"
       )
       .populate({
         path: "setups",
@@ -1313,14 +1313,6 @@ router.post("/settings/update", async function (req, res) {
       return;
     }
 
-    if (prop == "backgroundRepeatMode" && !itemsOwned.profileBackground) {
-      res.status(500);
-      res.send(
-        "You must purchase Profile Background with coins from the Shop."
-      );
-      return;
-    }
-
     if (
       (prop == "textColor" || prop == "nameColor") &&
       !itemsOwned.textColors
@@ -1389,6 +1381,33 @@ router.post("/bio", async function (req, res) {
   }
 });
 
+router.post("/contributorBio", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var bio = String(req.body.bio || "");
+
+    // Limit to 140 characters
+    if (bio.length > 140) {
+      res.status(500);
+      res.send("Contributor bio must be 140 characters or less.");
+      return;
+    }
+
+    await models.User.updateOne(
+      { id: userId },
+      { $set: { contributorBio: bio } }
+    );
+    await redis.cacheUserInfo(userId, true);
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error updating contributor bio.");
+  }
+});
+
 router.post("/pronouns", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -1443,11 +1462,12 @@ router.post("/banner", async function (req, res) {
       fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
 
     await sharp(files.image.path)
-      .webp()
+      .webp({ quality: 100 })
       .resize({
         width: 900,
         height: 300,
         withoutEnlargement: true,
+        kernel: sharp.kernel.lanczos3,
       })
       .toFile(`${process.env.UPLOAD_PATH}/${userId}_banner.webp`);
     await models.User.updateOne({ id: userId }, { $set: { banner: true } });
@@ -1478,8 +1498,12 @@ router.post("/avatar", async function (req, res) {
       fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
 
     await sharp(files.image.path)
-      .webp()
-      .resize(100, 100)
+      .webp({ quality: 100 })
+      .resize(100, 100, {
+        kernel: sharp.kernel.lanczos3,
+        fit: "cover",
+        position: "center",
+      })
       .toFile(`${process.env.UPLOAD_PATH}/${userId}_avatar.webp`);
     await models.User.updateOne({ id: userId }, { $set: { avatar: true } });
     await redis.cacheUserInfo(userId, true);
@@ -1494,87 +1518,6 @@ router.post("/avatar", async function (req, res) {
       logger.error(e);
       res.send("Error uploading avatar image.");
     }
-  }
-});
-
-router.post("/profileBackground", async function (req, res) {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var itemsOwned = await redis.getUserItemsOwned(userId);
-
-    if (!itemsOwned.profileBackground) {
-      res.status(500);
-      res.send(
-        "You must purchase Profile Background with coins from the Shop."
-      );
-      return;
-    }
-
-    var form = new formidable();
-    form.maxFileSize = 5 * 1024 * 1024; // 5MB max for background images
-    form.maxFields = 1;
-
-    var [fields, files] = await form.parseAsync(req);
-
-    if (!fs.existsSync(`${process.env.UPLOAD_PATH}`))
-      fs.mkdirSync(`${process.env.UPLOAD_PATH}`);
-
-    // Convert and optimize the background image
-    // No specific resize - allow user to upload their preferred size
-    await sharp(files.image.path)
-      .webp({ quality: 85 })
-      .toFile(`${process.env.UPLOAD_PATH}/${userId}_profileBackground.webp`);
-
-    await models.User.updateOne(
-      { id: userId },
-      { $set: { profileBackground: true } }
-    );
-    await redis.cacheUserInfo(userId, true);
-
-    res.sendStatus(200);
-  } catch (e) {
-    res.status(500);
-
-    if (e.message.indexOf("maxFileSize exceeded") == 0)
-      res.send("Image is too large, background must be less than 5 MB.");
-    else {
-      logger.error(e);
-      res.send("Error uploading profile background image.");
-    }
-  }
-});
-
-router.delete("/profileBackground", async function (req, res) {
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var itemsOwned = await redis.getUserItemsOwned(userId);
-
-    if (!itemsOwned.profileBackground) {
-      res.status(500);
-      res.send(
-        "You must purchase Profile Background with coins from the Shop."
-      );
-      return;
-    }
-
-    // Delete the profile background file if it exists
-    const filePath = `${process.env.UPLOAD_PATH}/${userId}_profileBackground.webp`;
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
-
-    // Update database to mark profileBackground as false
-    await models.User.updateOne(
-      { id: userId },
-      { $set: { profileBackground: false } }
-    );
-    await redis.cacheUserInfo(userId, true);
-
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error removing profile background image.");
   }
 });
 
