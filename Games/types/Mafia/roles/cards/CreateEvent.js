@@ -30,19 +30,12 @@ module.exports = class CreateEvent extends Card {
           return;
         }
 
-        this.data.ConvertOptions = this.game.CurrentEvents.filter((r) => r);
-        for (let event of this.game.BanishedEvents.filter((r) => r)) {
-          this.data.ConvertOptions.push(event);
-        }
-        this.data.ConvertOptions = this.game.CurrentEvents.filter((r) => r);
-        for (let event of this.game.BanishedEvents.filter((r) => r)) {
-          this.data.ConvertOptions.push(event);
-        }
-        if (this.data.ConvertOptions.length <= 0) {
-          this.data.ConvertOptions.push(this.game.GameEndEvent);
-        }
+        this.data.ConvertOptions = this.getEvents();
         var ConvertOptions = this.data.ConvertOptions;
         if (this.meetings["Select Event"]) {
+          if(!this.meetings["Select Event"].mustAct){
+            ConvertOptions.push("None");
+          }
           this.meetings["Select Event"].targets = ConvertOptions;
         }
       },
@@ -51,16 +44,15 @@ module.exports = class CreateEvent extends Card {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-        this.data.ConvertOptions = this.game.CurrentEvents.filter((r) => r);
-        for (let event of this.game.BanishedEvents.filter((r) => r)) {
-          this.data.ConvertOptions.push(event);
-        }
-        if (this.data.ConvertOptions.length <= 0) {
-          this.data.ConvertOptions.push(this.game.GameEndEvent);
-        }
+        this.data.ConvertOptions =  this.getEvents();
         var ConvertOptions = this.data.ConvertOptions;
+        if (this.meetings["Select Event"]){
+        if(!this.meetings["Select Event"].mustAct){
+            ConvertOptions.push("None");
+        }
 
         this.meetings["Select Event"].targets = ConvertOptions;
+      }
       },
     };
   }
