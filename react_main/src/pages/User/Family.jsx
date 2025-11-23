@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import axios from "axios";
-import { Grid, Stack, Typography, Box, Paper, Button, IconButton, Tooltip } from "@mui/material";
+import {
+  Grid,
+  Stack,
+  Typography,
+  Box,
+  Paper,
+  Button,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
@@ -114,7 +123,12 @@ export default function Family() {
         siteWrapper.style.backgroundAttachment = "";
       }
     };
-  }, [family?.background, family?.backgroundRepeatMode, familyId, siteInfo?.cacheVal]);
+  }, [
+    family?.background,
+    family?.backgroundRepeatMode,
+    familyId,
+    siteInfo?.cacheVal,
+  ]);
 
   function onBioClick() {
     if (!family.isLeader) return;
@@ -124,7 +138,10 @@ export default function Family() {
 
   function onEditBio() {
     if (bio.length > 20000) {
-      siteInfo.showAlert("Family bio must be 20,000 characters or less.", "error");
+      siteInfo.showAlert(
+        "Family bio must be 20,000 characters or less.",
+        "error"
+      );
       return;
     }
 
@@ -169,7 +186,11 @@ export default function Family() {
   }
 
   function onRemoveMember(memberId, memberName) {
-    if (!window.confirm(`Are you sure you want to remove ${memberName} from the family?`)) {
+    if (
+      !window.confirm(
+        `Are you sure you want to remove ${memberName} from the family?`
+      )
+    ) {
       return;
     }
 
@@ -250,7 +271,12 @@ export default function Family() {
         <Grid item xs={12} md={8}>
           <Stack direction="column" spacing={1}>
             <Paper sx={panelStyle}>
-              <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+              <Stack
+                direction="row"
+                spacing={2}
+                alignItems="center"
+                sx={{ mb: 2 }}
+              >
                 {family.avatar && (
                   <div
                     style={{
@@ -266,7 +292,7 @@ export default function Family() {
                 <Box>
                   <Typography variant="h2">{family.name}</Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Founded by {" "}
+                    Founded by{" "}
                     <NameWithAvatar
                       id={family.founder.id}
                       name={family.founder.name}
@@ -277,12 +303,16 @@ export default function Family() {
                 </Box>
               </Stack>
               <div
-                className={`bio${family.isLeader && !editingBio ? " edit" : ""}`}
+                className={`bio${
+                  family.isLeader && !editingBio ? " edit" : ""
+                }`}
                 onClick={onBioClick}
               >
                 {!editingBio && (
                   <div className="md-content">
-                    <CustomMarkdown>{bio || "Click to edit your family's bio"}</CustomMarkdown>
+                    <CustomMarkdown>
+                      {bio || "Click to edit your family's bio"}
+                    </CustomMarkdown>
                   </div>
                 )}
                 {editingBio && (
@@ -293,7 +323,8 @@ export default function Family() {
                       sx={{
                         mt: 1,
                         alignSelf: "flex-end",
-                        color: bio.length > 20000 ? "error.main" : "text.secondary",
+                        color:
+                          bio.length > 20000 ? "error.main" : "text.secondary",
                       }}
                     >
                       {bio.length}/20,000 characters
@@ -304,7 +335,8 @@ export default function Family() {
                         onClick={onEditBio}
                         style={{
                           opacity: bio.length > 20000 ? 0.5 : 1,
-                          cursor: bio.length > 20000 ? "not-allowed" : "pointer",
+                          cursor:
+                            bio.length > 20000 ? "not-allowed" : "pointer",
                         }}
                       >
                         Submit
@@ -346,7 +378,9 @@ export default function Family() {
                         placement="top"
                         title={
                           <Stack spacing={0.5}>
-                            <Typography variant="subtitle2">{trophy.name}</Typography>
+                            <Typography variant="subtitle2">
+                              {trophy.name}
+                            </Typography>
                             {trophy.owner && (
                               <Typography variant="caption">
                                 Owner: {trophy.owner.name}
@@ -397,7 +431,9 @@ export default function Family() {
                       variant="contained"
                       color="success"
                       onClick={onAcceptJoin}
-                      disabled={family && family.members && family.members.length >= 20}
+                      disabled={
+                        family && family.members && family.members.length >= 20
+                      }
                       sx={{ flex: 1 }}
                       title={
                         family && family.members && family.members.length >= 20

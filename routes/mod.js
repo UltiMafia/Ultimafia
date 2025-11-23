@@ -1205,8 +1205,10 @@ router.post("/clearFamilyContent", async (req, res) => {
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    var family = await models.Family.findOne({ id: familyId })
-      .populate("leader", "id name");
+    var family = await models.Family.findOne({ id: familyId }).populate(
+      "leader",
+      "id name"
+    );
 
     if (!family) {
       res.status(500);

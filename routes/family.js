@@ -15,7 +15,7 @@ const fs = require("fs");
 router.get("/user/family", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req, true);
-    
+
     if (!userId) {
       res.send({ family: null });
       return;
@@ -37,7 +37,8 @@ router.get("/user/family", async function (req, res) {
     }
 
     const family = inFamily.family;
-    const isLeader = family.leader && family.leader.toString() === user._id.toString();
+    const isLeader =
+      family.leader && family.leader.toString() === user._id.toString();
     const memberCount = family.members ? family.members.length : 0;
 
     res.send({
@@ -60,9 +61,7 @@ router.get("/user/family", async function (req, res) {
 router.post("/create", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
-    var user = await models.User.findOne({ id: userId }).select(
-      "itemsOwned"
-    );
+    var user = await models.User.findOne({ id: userId }).select("itemsOwned");
 
     if (!user.itemsOwned.createFamily) {
       res.status(500);
@@ -97,11 +96,11 @@ router.post("/create", async function (req, res) {
     }
 
     const familyId = shortid.generate();
-    
+
     // Check if user has a pending avatar upload
     const pendingAvatarPath = `${process.env.UPLOAD_PATH}/pending_${userId}_family_avatar.webp`;
     let hasAvatar = false;
-    
+
     if (fs.existsSync(pendingAvatarPath)) {
       // Move the pending avatar to the family ID
       const familyAvatarPath = `${process.env.UPLOAD_PATH}/${familyId}_family_avatar.webp`;
@@ -266,7 +265,7 @@ router.get("/:familyId/profile", async function (req, res) {
         .filter((member) => member && member.id) // Filter out any null/undefined members
         .map((member) => member.id);
     }
-    
+
     // If no members, return empty trophies array
     var allTrophies = [];
     if (memberIds.length > 0) {
@@ -355,7 +354,10 @@ router.post("/:familyId/bio", async function (req, res) {
       return;
     }
 
-    await models.Family.updateOne({ id: familyId }, { $set: { bio: bio || "" } });
+    await models.Family.updateOne(
+      { id: familyId },
+      { $set: { bio: bio || "" } }
+    );
 
     res.sendStatus(200);
   } catch (e) {
@@ -377,8 +379,10 @@ router.post("/:familyId/transferLeadership", async function (req, res) {
       return;
     }
 
-    var family = await models.Family.findOne({ id: familyId })
-      .populate("members", "id");
+    var family = await models.Family.findOne({ id: familyId }).populate(
+      "members",
+      "id"
+    );
 
     if (!family) {
       res.status(404);
@@ -401,9 +405,7 @@ router.post("/:familyId/transferLeadership", async function (req, res) {
     }
 
     // Check if new leader is a member of the family
-    var isMember = family.members.some(
-      (member) => member.id === newLeaderId
-    );
+    var isMember = family.members.some((member) => member.id === newLeaderId);
     if (!isMember) {
       res.status(500);
       res.send("The new leader must be a member of the family.");
@@ -716,7 +718,9 @@ router.post("/:familyId/leave", async function (req, res) {
     // Cannot leave if you are the leader
     if (family.leader.toString() === user._id.toString()) {
       res.status(500);
-      res.send("The family leader cannot leave. Transfer leadership or delete the family instead.");
+      res.send(
+        "The family leader cannot leave. Transfer leadership or delete the family instead."
+      );
       return;
     }
 
@@ -912,13 +916,20 @@ router.post("/:familyId/backgroundRepeatMode", async function (req, res) {
     // Check if user is the leader
     if (family.leader.toString() !== user._id.toString()) {
       res.status(500);
-      res.send("Only the family leader can change the background display mode.");
+      res.send(
+        "Only the family leader can change the background display mode."
+      );
       return;
     }
 
-    if (backgroundRepeatMode !== "checker" && backgroundRepeatMode !== "stretch") {
+    if (
+      backgroundRepeatMode !== "checker" &&
+      backgroundRepeatMode !== "stretch"
+    ) {
       res.status(500);
-      res.send("Invalid background repeat mode. Must be 'checker' or 'stretch'.");
+      res.send(
+        "Invalid background repeat mode. Must be 'checker' or 'stretch'."
+      );
       return;
     }
 
@@ -936,4 +947,3 @@ router.post("/:familyId/backgroundRepeatMode", async function (req, res) {
 });
 
 module.exports = router;
-

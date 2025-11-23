@@ -730,9 +730,7 @@ export default function Settings() {
                     </Typography>
                     <Stack direction="column" spacing={3}>
                       <Stack direction="row" spacing={2} alignItems="center">
-                        <Typography>
-                          You are the leader of{" "}
-                        </Typography>
+                        <Typography>You are the leader of </Typography>
                         {userFamily.avatar && (
                           <div
                             style={{
@@ -775,10 +773,15 @@ export default function Settings() {
                             onFileUpload={onFamilyAvatarUploadExisting}
                             name="familyAvatarExisting"
                           >
-                            <Button variant="outlined">Upload New Avatar</Button>
+                            <Button variant="outlined">
+                              Upload New Avatar
+                            </Button>
                           </AvatarUpload>
                           {userFamily.avatar && (
-                            <Typography variant="caption" sx={{ color: "success.main" }}>
+                            <Typography
+                              variant="caption"
+                              sx={{ color: "success.main" }}
+                            >
                               Avatar uploaded
                             </Typography>
                           )}
@@ -790,8 +793,12 @@ export default function Settings() {
                         <Typography variant="h6" sx={{ mb: 1 }}>
                           Family Background
                         </Typography>
-                        <Typography variant="caption" sx={{ mb: 1, display: "block" }}>
-                          Upload a custom background image to replace the default pattern on the family page (max 5 MB)
+                        <Typography
+                          variant="caption"
+                          sx={{ mb: 1, display: "block" }}
+                        >
+                          Upload a custom background image to replace the
+                          default pattern on the family page (max 5 MB)
                         </Typography>
                         <Stack direction="row" spacing={2} alignItems="center">
                           <HiddenUpload
@@ -799,11 +806,16 @@ export default function Settings() {
                             onClick={onFamilyBackgroundEdit}
                             onFileUpload={onFamilyBackgroundUpload}
                           >
-                            <Button variant="outlined">Upload Background Image</Button>
+                            <Button variant="outlined">
+                              Upload Background Image
+                            </Button>
                           </HiddenUpload>
                           {userFamily.background && (
                             <>
-                              <Typography variant="caption" sx={{ color: "success.main" }}>
+                              <Typography
+                                variant="caption"
+                                sx={{ color: "success.main" }}
+                              >
                                 Background uploaded
                               </Typography>
                               <Button
@@ -828,16 +840,26 @@ export default function Settings() {
                           <FormControl sx={{ minWidth: "240px" }}>
                             <InputLabel>Display Mode</InputLabel>
                             <Select
-                              value={userFamily.backgroundRepeatMode || "checker"}
+                              value={
+                                userFamily.backgroundRepeatMode || "checker"
+                              }
                               label="Display Mode"
-                              onChange={(e) => onFamilyBackgroundRepeatModeChange(e.target.value)}
+                              onChange={(e) =>
+                                onFamilyBackgroundRepeatModeChange(
+                                  e.target.value
+                                )
+                              }
                             >
                               <MenuItem value="checker">Checker</MenuItem>
                               <MenuItem value="stretch">Stretch</MenuItem>
                             </Select>
                           </FormControl>
-                          <Typography variant="caption" sx={{ mt: 1, display: "block" }}>
-                            Choose how the background image should be displayed: Checker (pattern) or Stretch (full screen)
+                          <Typography
+                            variant="caption"
+                            sx={{ mt: 1, display: "block" }}
+                          >
+                            Choose how the background image should be displayed:
+                            Checker (pattern) or Stretch (full screen)
                           </Typography>
                         </Box>
                       )}
@@ -850,7 +872,9 @@ export default function Settings() {
                         <Stack direction="column" spacing={2}>
                           <UserSearchSelect
                             placeholder="Search for a family member..."
-                            onChange={(userId) => setTransferLeaderUserId(userId)}
+                            onChange={(userId) =>
+                              setTransferLeaderUserId(userId)
+                            }
                           />
                           <Button
                             variant="outlined"
@@ -894,9 +918,7 @@ export default function Settings() {
                     </Typography>
                     <Stack direction="column" spacing={3}>
                       <Stack direction="row" spacing={2} alignItems="center">
-                        <Typography>
-                          You are a member of{" "}
-                        </Typography>
+                        <Typography>You are a member of </Typography>
                         {userFamily.avatar && (
                           <div
                             style={{
@@ -1392,9 +1414,7 @@ export default function Settings() {
 
   function onFamilyBackgroundRemove() {
     if (
-      !window.confirm(
-        "Are you sure you wish to remove the family background?"
-      )
+      !window.confirm("Are you sure you wish to remove the family background?")
     ) {
       return;
     }

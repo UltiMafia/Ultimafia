@@ -857,17 +857,19 @@ export default function Profile() {
                 onClick={onFriendUserClick}
               />
             </IconButton>
-            {userFamily && userFamily.isLeader && userFamily.memberCount < 20 && (
-              <IconButton
-                aria-label="request to join family"
-                title={`Invite to ${userFamily.name}`}
-              >
-                <i
-                  className="fas fa-users"
-                  onClick={onFamilyJoinRequestClick}
-                />
-              </IconButton>
-            )}
+            {userFamily &&
+              userFamily.isLeader &&
+              userFamily.memberCount < 20 && (
+                <IconButton
+                  aria-label="request to join family"
+                  title={`Invite to ${userFamily.name}`}
+                >
+                  <i
+                    className="fas fa-users"
+                    onClick={onFamilyJoinRequestClick}
+                  />
+                </IconButton>
+              )}
             <LoveIcon
               isLove={isLove}
               userId={user.id}
