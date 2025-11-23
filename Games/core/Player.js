@@ -1090,9 +1090,12 @@ module.exports = class Player {
     if (vote.meeting.anonymous || vote.meeting.anonymousVotes)
       voterId = vote.meeting.members[voterId].anonId;
 
+    // If target is hidden (e.g., by VoteBlind effect), send null
+    var targetToSend = vote.hideTarget ? null : vote.target;
+
     this.send("vote", {
       voterId: voterId,
-      target: vote.target,
+      target: targetToSend,
       meetingId: vote.meeting.id,
       noLog,
     });
@@ -1126,10 +1129,13 @@ module.exports = class Player {
     if (info.meeting.anonymous || info.meeting.anonymousVotes)
       voterId = info.meeting.members[voterId].anonId;
 
+    // If target is hidden (e.g., by VoteBlind effect), send null
+    var targetToSend = info.hideTarget ? null : info.target;
+
     this.send("unvote", {
       voterId: info.voter.id,
       meetingId: info.meeting.id,
-      target: info.target,
+      target: targetToSend,
     });
 
     return info;
