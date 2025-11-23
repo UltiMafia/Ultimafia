@@ -101,6 +101,12 @@ export default function HostBrowser(props) {
   const handleListItemClick = (newValue) => {
     setGameType(newValue);
     localStorage.setItem("gameType", newValue);
+    navigate({
+      pathname: location.pathname,
+      search: new URLSearchParams({
+        game: newValue
+      }).toString()
+    });
     setDrawerOpen(false);
   };
 
