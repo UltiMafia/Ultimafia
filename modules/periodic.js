@@ -163,7 +163,7 @@ module.exports = function () {
           $or: [
             { redHearts: { $exists: false } },
             { redHearts: { $lt: constants.initialRedHeartCapacity } },
-          ]
+          ],
         }).select("id");
         users = users.map((user) => user.toJSON());
         for (let user of users) {

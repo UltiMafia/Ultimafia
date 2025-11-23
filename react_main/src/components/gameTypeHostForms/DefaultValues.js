@@ -39,8 +39,9 @@ Object.keys(HOST_OPTIONS_VERSIONS).forEach(function (gameType) {
   }
 });
 
-const existingLobby = localStorage.getItem("lobby")
-const defaultLobby = (!existingLobby || existingLobby === "All") ?  "Main" : existingLobby;
+const existingLobby = localStorage.getItem("lobby");
+const defaultLobby =
+  !existingLobby || existingLobby === "All" ? "Main" : existingLobby;
 
 // These options are common to all
 const commonHostOptions = {

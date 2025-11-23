@@ -348,11 +348,7 @@ export function Poll({ lobby, threadId, locked }) {
     );
   }
 
-  return (
-    <LobbySidebarPanel title="Poll">
-      {renderPolls()}
-    </LobbySidebarPanel>
-  );
+  return <LobbySidebarPanel title="Poll">{renderPolls()}</LobbySidebarPanel>;
 }
 
 // Export an alias for thread polls

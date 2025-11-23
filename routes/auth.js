@@ -194,9 +194,10 @@ async function authSuccess(req, uid, email, discordProfile) {
     var bannedUser = await models.User.findOne({ email, banned: true }).select(
       "id discordId"
     );
-    var deletedUser = await models.User.findOne({ email, deleted: true }).select(
-      "id discordId"
-    );
+    var deletedUser = await models.User.findOne({
+      email,
+      deleted: true,
+    }).select("id discordId");
 
     if (!user && !bannedUser && !deletedUser) {
       //Create new account (5) (6)

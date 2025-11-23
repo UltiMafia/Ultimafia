@@ -8,12 +8,7 @@ import React, {
   useCallback,
   createContext,
 } from "react";
-import {
-  useParams,
-  Navigate,
-  Link,
-  useNavigate,
-} from "react-router-dom";
+import { useParams, Navigate, Link, useNavigate } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
 import ReactLoading from "react-loading";
