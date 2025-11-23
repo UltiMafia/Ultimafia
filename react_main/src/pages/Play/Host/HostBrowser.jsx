@@ -204,11 +204,11 @@ export default function HostBrowser(props) {
   }
 
   function onEditSetup(setup) {
-    navigate(`/play/create?edit=${setup.id}`);
+    navigate(`/play/create?edit=${setup.id}&game=${setup.gameType}`);
   }
 
   function onCopySetup(setup) {
-    navigate(`/play/create?copy=${setup.id}`);
+    navigate(`/play/create?copy=${setup.id}&game=${setup.gameType}`);
   }
 
   function onDelSetup(setup) {

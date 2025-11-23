@@ -13,6 +13,8 @@
   --game-row: #41434d;
   --game-row-odd-h: #2e313b;
   --game-row-h: #4f525e;
+
+  --gold-heart-color: rgb(237, 179, 52);
 }
 
 .light-mode {

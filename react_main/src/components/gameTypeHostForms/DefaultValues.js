@@ -6,7 +6,7 @@ function getStorageKey(gameType) {
 
 // increment a number here to force people's hosting preferences to be reset one time only for that game type
 const HOST_OPTIONS_VERSIONS = {
-  Mafia: 1,
+  Mafia: 2,
   Acrotopia: 1,
   Jotto: 1,
   "Liars Dice": 1,
@@ -39,6 +39,9 @@ Object.keys(HOST_OPTIONS_VERSIONS).forEach(function (gameType) {
   }
 });
 
+const existingLobby = localStorage.getItem("lobby")
+const defaultLobby = (!existingLobby || existingLobby === "All") ?  "Main" : existingLobby;
+
 // These options are common to all
 const commonHostOptions = {
   private: false,
@@ -48,6 +51,7 @@ const commonHostOptions = {
   configureDuration: false,
   anonymousGame: false,
   anonymousDeckId: PreferredDeckId,
+  lobby: defaultLobby,
   lobbyName: "",
 };
 
@@ -65,6 +69,7 @@ var defaultOptions = {
   },
   Acrotopia: existingHostOptions["Acrotopia"] || {
     ...commonHostOptions,
+    lobby: "Games",
     roundAmt: 5,
     acronymSize: 5,
     enablePunctuation: true,
@@ -84,6 +89,7 @@ var defaultOptions = {
   },
   "Liars Dice": existingHostOptions["Liars Dice"] || {
     ...commonHostOptions,
+    lobby: "Games",
     startingDice: 5,
     wildOnes: true,
     spotOn: false,

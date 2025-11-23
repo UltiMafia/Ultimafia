@@ -142,7 +142,7 @@ iframe {
 }
 
 .status-icon.ingame {
-  background-color: rgb(237, 179, 52);
+  background-color: var(--gold-heart-color);
 }
 
 .status-icon.offline {
