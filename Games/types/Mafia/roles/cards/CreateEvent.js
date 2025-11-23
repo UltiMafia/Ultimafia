@@ -33,7 +33,7 @@ module.exports = class CreateEvent extends Card {
         this.data.ConvertOptions = this.getEvents();
         var ConvertOptions = this.data.ConvertOptions;
         if (this.meetings["Select Event"]) {
-          if(!this.meetings["Select Event"].mustAct){
+          if (!this.meetings["Select Event"].mustAct) {
             ConvertOptions.push("None");
           }
           this.meetings["Select Event"].targets = ConvertOptions;
@@ -44,15 +44,15 @@ module.exports = class CreateEvent extends Card {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-        this.data.ConvertOptions =  this.getEvents();
+        this.data.ConvertOptions = this.getEvents();
         var ConvertOptions = this.data.ConvertOptions;
-        if (this.meetings["Select Event"]){
-        if(!this.meetings["Select Event"].mustAct){
+        if (this.meetings["Select Event"]) {
+          if (!this.meetings["Select Event"].mustAct) {
             ConvertOptions.push("None");
-        }
+          }
 
-        this.meetings["Select Event"].targets = ConvertOptions;
-      }
+          this.meetings["Select Event"].targets = ConvertOptions;
+        }
       },
     };
   }
