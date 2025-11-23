@@ -176,7 +176,7 @@ export default function UserNavSection({
             <Tooltip title="Not implemented yet.">
               <i
                 className="fas fa-heart"
-                style={{ color: "#edb334", marginLeft: "auto" }}
+                style={{ color: "var(--gold-heart-color)", marginLeft: "auto" }}
               ></i>
             </Tooltip>
           </Stack>

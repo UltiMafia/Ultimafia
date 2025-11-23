@@ -10,9 +10,7 @@ import React, {
 } from "react";
 import {
   useParams,
-  Route,
   Navigate,
-  Routes,
   Link,
   useNavigate,
 } from "react-router-dom";
@@ -156,7 +154,6 @@ export default function Game() {
   });
   const [isolationEnabled, setIsolationEnabled] = useState(false);
   const [isolatedPlayers, setIsolatedPlayers] = useState(new Set());
-  const [rehostId, setRehostId] = useState();
   const [dev, setDev] = useState(false);
   const [pingInfo, setPingInfo] = useState(null);
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
@@ -174,7 +171,6 @@ export default function Game() {
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
   const { gameId } = useParams();
-  const nagivate = useNavigate();
   const [selectedPanel, setSelectedPanel] = useState("chat");
 
   const isParticipant = !isSpectator && !review;
@@ -797,7 +793,6 @@ export default function Game() {
   }
 
   if (leave) return <Navigate to="/play" />;
-  else if (rehostId) return <Navigate to={`/game/${rehostId}`} />;
   else if (!loaded || stateViewing == null)
     return (
       <div className="game">
@@ -851,7 +846,6 @@ export default function Game() {
       playAudio: playAudio,
       stopAudio: stopAudio,
       stopAudios: stopAudios,
-      setRehostId: setRehostId,
       noLeaveRef,
       dev: dev,
       hostId: hostId,
@@ -980,7 +974,9 @@ export function TopBar() {
           stateLengths: stateLengths,
           ...game.options.gameTypeOptions,
         })
-        .then((res) => game.setRehostId(res.data))
+        .then((res) => {
+          window.location.href = window.location.origin + `/game/${res.data}`;
+        })
         .catch((e) => {
           game.noLeaveRef.current = false;
           errorAlert(e);
@@ -2324,7 +2320,7 @@ function WinnersMessage(props) {
 
   return (
     <Newspaper
-      title={title}
+      title={newspaperTitle}
       timestamp={message.time}
       dayCount={message.dayCount || 0}
       deaths={flattenedWins}

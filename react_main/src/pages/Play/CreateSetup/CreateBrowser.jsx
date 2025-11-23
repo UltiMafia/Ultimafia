@@ -52,54 +52,36 @@ function StickyStateViewer(props) {
   const isPhoneDevice = useIsPhoneDevice();
 
   return (
-    <Stack
-      direction="row"
-      sx={{
-        position: isSticky ? "sticky" : "relative",
-        bottom: isSticky ? "var(--mui-spacing)" : undefined,
-        mt: 1,
-      }}
-    >
-      <Paper
-        variant="outline"
-        sx={{
-          p: 1,
-          maxWidth: "80%",
-          flex: "1",
-          mx: "auto",
-        }}
-      >
-        <Stack
-          direction={isVertical ? "column" : "row"}
-          spacing={isPhoneDevice ? 0.5 : 1}
-          sx={{
-            justifyContent: isVertical ? "stretch" : "center",
-            alignItems: "stretch",
-            width: "100%",
-          }}
-        >
-          <Stack
-            direction="column"
-            sx={{
-              justifyContent: "center",
-              flex: "0 0",
-              bgcolor: "var(--scheme-color-background)",
-              borderRadius: "var(--mui-shape-borderRadius)",
+    <Stack direction="row" sx={{
+      position: isSticky ? "sticky" : "relative",
+      bottom: isSticky ? "var(--mui-spacing)" : undefined,
+      mt: 1,
+    }}>
+      <Paper sx={{
+        p: 1,
+        maxWidth: "80%",
+        flex: "1",
+        mx: "auto",
+      }}>
+        <Stack direction={isVertical ? "column" : "row"} spacing={isPhoneDevice ? 0.5 : 1} sx={{
+          justifyContent: isVertical ? "stretch" : "center",
+          alignItems: "stretch",
+          width: "100%",
+        }}>
+          <Stack direction="column" sx={{
+            justifyContent: "center",
+            flex: "0 0",
+          }}>
+            <Paper variant="outlined" sx={{
               p: 1,
-            }}
-          >
-            <Typography variant="h4" textAlign="center">
-              {title}
-            </Typography>
+              flex: "1",
+              borderColor: isSticky ? "primary.main" : undefined,
+            }}>
+              <Typography variant="h4" textAlign="center">
+                {title}
+              </Typography>
+            </Paper>
           </Stack>
-          <Divider
-            orientation={isVertical ? "horizontal" : "vertical"}
-            flexItem
-            sx={{
-              borderWidth: "2px",
-              backgroundColor: isSticky ? "primary.main" : undefined,
-            }}
-          />
           {props.children}
         </Stack>
       </Paper>
@@ -458,9 +440,7 @@ export default function CreateSetup(props) {
   let showAddRoleSet =
     (!roleData.closed && roleData.roles.length < 10) || usingRoleGroups;
 
-  var roleSets;
-
-  roleSets = roleData.roles.map((roleSet, i) => {
+  const roleSets = roleData.roles.map((roleSet, i) => {
     let roles = [];
 
     for (let role in roleSet) {
@@ -490,15 +470,15 @@ export default function CreateSetup(props) {
         title={`Roleset ${i}`}
         key={i}
       >
-        <Box
+        <Paper variant="outlined"
           onClick={() => setSelRoleSet(i)}
           className="roleset"
           sx={{
             p: 1,
             width: "100%",
-            bgcolor: "var(--scheme-color-background)",
             maxHeight: "calc(8em + 4 * var(--mui-spacing))", // 8em = max 4 rows of icons before scrolling
             overflowY: "auto",
+            borderColor: isSelected ? "primary.main" : undefined,
           }}
         >
           <Stack
@@ -582,7 +562,7 @@ export default function CreateSetup(props) {
               </Button>
             )}
           </Stack>
-        </Box>
+        </Paper>
       </StickyStateViewer>
     );
   });
@@ -653,7 +633,7 @@ export default function CreateSetup(props) {
   });
 
   return (
-    <Stack direction="column" spacing={1} sx={{ mt: 1 }}>
+    <Stack direction="column" spacing={1}>
       <RoleSearch onAddClick={onAddRole} gameType={gameType} />
       {siteInfo.modifiers[props.gameType].length > 0 && (
         <Paper sx={{ p: 1 }}>
@@ -688,11 +668,6 @@ export default function CreateSetup(props) {
           </Grid2>
         </StickyStateViewer>
       )}
-      <Divider
-        orientation="horizontal"
-        flexItem
-        sx={{ width: "80%", mx: "auto !important" }}
-      />
       {roleSets}
       <Paper
         sx={{
@@ -754,49 +729,55 @@ export default function CreateSetup(props) {
         gameType={gameType}
         curMods={gameSettings}
       />
-      <Stack direction="column" spacing={1}>
-        <Typography>Selected Game Settings</Typography>
-        <Stack
-          display="flex"
-          direction="row"
-          spacing={2}
-          sx={{
-            alignItems: "center",
-            width: "100%",
-            overflowY: "auto",
-            flexWrap: "wrap",
-          }}
-        >
-          {Object.keys(gameSettings).map((gameSetting) => {
-            const value = gameSettings[gameSetting];
-            const count = typeof value === "number" ? value : 1;
+      <Paper sx={{
+        p: 1
+      }}>
+        <Stack direction="column" spacing={1}>
+          <Typography variant="h3">
+            Enabled Game Settings
+          </Typography>
+          {Object.keys(gameSettings).length === 0 && (
+            <Typography>
+              No game settings enabled
+            </Typography>
+          )}
+          {Object.keys(gameSettings).length > 0 && (
+            <Grid2 container columns={4} spacing={1} sx={{
+              width: "100%",
+            }}>
+              {Object.keys(gameSettings).map((gameSetting) => {
+                const value = gameSettings[gameSetting];
+                const count = typeof value === "number" ? value : 1;
 
-            return (
-              <div>
-                <RoleCell
-                  iconLength={iconLength}
-                  role={gameSetting}
-                  onDelClick={() =>
-                    updateGameSettings({ type: "remove", key: gameSetting })
-                  }
-                  icon={
-                    <GameSettingCount
+                return (
+                  <Grid2
+                    size={1}
+                    sx={{ width: isPhoneDevice ? "100%" : undefined }}
+                    key={gameSetting}
+                  >
+                    <RoleCell
                       iconLength={iconLength}
-                      role={gameSetting}
-                      count={count}
-                      gameType={gameType}
-                      sx={{ fontSize: "14px" }}
+                      role={{ name: gameSetting }}
+                      onDelClick={() =>
+                        updateGameSettings({ type: "remove", key: gameSetting })
+                      }
+                      icon={
+                        <GameSettingCount
+                          iconLength={iconLength}
+                          role={gameSetting}
+                          count={count}
+                          gameType={gameType}
+                          sx={{ fontSize: "14px" }}
+                        />
+                      }
                     />
-                  }
-                />
-                <Typography>
-                  {count > 1 ? `${gameSetting} x${count}` : gameSetting}
-                </Typography>
-              </div>
-            );
-          })}
+                  </Grid2>
+                );
+              })}
+            </Grid2>
+          )}
         </Stack>
-      </Stack>
+      </Paper>
       <Paper
         sx={{
           p: 1,

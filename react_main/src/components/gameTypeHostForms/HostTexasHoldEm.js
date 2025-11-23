@@ -7,15 +7,6 @@ export default function HostTexasHoldEm() {
   const gameType = "Texas Hold Em";
   const defaults = getDefaults(gameType);
 
-  let defaultLobby = localStorage.getItem("lobby");
-  if (
-    defaultLobby === "All" ||
-    defaultLobby === "Main" ||
-    defaultLobby === "Competitive"
-  ) {
-    defaultLobby = "Games";
-  }
-
   const initialFormFields = [
     {
       label: "Minimum Bet",
@@ -45,7 +36,7 @@ export default function HostTexasHoldEm() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: defaultLobby,
+      value: "Games",
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {
