@@ -266,23 +266,13 @@ module.exports = class GhostGame extends Card {
       Day: {
         type: "shouldSkip",
         shouldSkip: function () {
-          for (let player of this.game.alivePlayers()) {
-            if (player.hasItem("Ouija Board")) {
-              return true;
-            }
-          }
-          return false;
+          return this.game.shouldSkipState("Day");
         },
       },
       Night: {
         type: "shouldSkip",
         shouldSkip: function () {
-          for (let player of this.game.alivePlayers()) {
-            if (player.hasItem("Ouija Board")) {
-              return true;
-            }
-          }
-          return false;
+          return this.game.shouldSkipState("Night");
         },
       },
     };

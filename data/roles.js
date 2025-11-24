@@ -3397,6 +3397,10 @@ const roleData = {
         //"At Night can Choose an Event.",
         //"That Event will Occur in addition to any other Events.",
       ],
+      SpecialInteractionsModifiers: {
+        Refined: ["Cannot use Banished Events."],
+        Unrefined: ["Cannot use non-Banished Events."],
+      },
       skins: [
         {
           label: "Vivid",
@@ -3451,8 +3455,8 @@ const roleData = {
       category: "Reflexive",
       tags: ["Reflexive", "Malicious Effects", "Role Share", "Advanced"],
       description: [
-        "Each night, each player who visits the Apothecary will have any malicious effects they have removed and will be protected from death.",
-        "Players who Role Share with an Apothecary will have any malicious effects they have removed.",
+        "Each night, each player who visits the Dealer will have any malicious effects they have removed and will be protected from death.",
+        "Players who Role Share with an Dealer will have any malicious effects they have removed.",
         MalEffects,
       ],
       nightOrder: [

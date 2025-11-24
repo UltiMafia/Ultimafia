@@ -8,39 +8,31 @@ module.exports = class GuessTheOgre extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Effect"])) {
-          return;
-        }
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-        if (this.OgreGuessUsedYesterday == true) {
-          this.OgreGuessUsedYesterday = false;
-          return;
-        }
+    this.passiveActions = [
+      {
+        ability: ["Effect"],
+        state: "Night",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_BECOME_DEAD_ROLE + 10,
+        labels: ["effect"],
+        role: role,
+        run: function () {
+          if (this.role.OgreGuessUsedYesterday == true) {
+            this.role.OgreGuessUsedYesterday = false;
+            return;
+          }
+          let players = this.game.alivePlayers().filter((p) => p.isEvil());
 
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_BECOME_DEAD_ROLE + 10,
-          labels: ["effect"],
-          run: function () {
-            let players = this.game.alivePlayers().filter((p) => p.isEvil());
+          let victim = Random.randArrayVal(players, true);
 
-            let victim = Random.randArrayVal(players, true);
-
-            victim.queueAlert(
-              `You learn there is an Ogre in Town! If you guess who they are they will get condemned.`
-            );
-            victim.holdItem("GuessPlayer", this.actor);
-          },
-        });
-
-        this.game.queueAction(action);
+          victim.queueAlert(
+            `You learn there is an Ogre in Town! If you guess who they are they will get condemned.`
+          );
+          victim.holdItem("GuessPlayer", this.actor);
+        },
       },
-    };
+    ];
   }
 };
 

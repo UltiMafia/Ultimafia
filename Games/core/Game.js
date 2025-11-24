@@ -1350,7 +1350,7 @@ module.exports = class Game {
         this.HaveTreasureChestState = true;
       }
       if (this.getRoleTags(this.PossibleRoles[z]).includes("Pregame Actions")) {
-        this.HaveDuskOrDawn = true;
+        this.HavePrologueState = true;
       }
       if (this.getSpecialInteractions(this.PossibleRoles[z]) != null) {
         this.SpecialInteractionRoles.push(this.PossibleRoles[z]);
@@ -1391,7 +1391,7 @@ module.exports = class Game {
       if (
         this.getRoleTags(this.PossibleEvents[z]).includes("Pregame Actions")
       ) {
-        this.HaveDuskOrDawn = true;
+        this.HavePrologueState = true;
       }
       if (this.getSpecialInteractions(this.PossibleEvents[z]) != null) {
         this.SpecialInteractionRoles.push(this.PossibleEvents[z]);
@@ -1597,10 +1597,8 @@ module.exports = class Game {
       start = "Hosting";
     } else if (this.HaveTreasureChestState == true) {
       start = "Treasure Chest";
-    } else if (this.HaveDuskOrDawn == true && start == "Day") {
-      start = "Dawn";
-    } else if (this.HaveDuskOrDawn == true && start == "Night") {
-      start = "Dusk";
+    } else if (this.HavePrologueState == true) {
+      start = "Prologue";
     }
 
     if (!start) return;

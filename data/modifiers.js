@@ -97,6 +97,14 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
+    Keyed: {
+      category: "Items",
+      internal: ["StartWithKey"],
+      tags: ["Items", "Key"],
+      description: "Starts with a Key.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      allowDuplicate: true,
+    },
     Luminous: {
       category: "Items",
       internal: ["StartWithCandle"],
@@ -377,7 +385,7 @@ const modifierData = {
       tags: ["Voting"],
       description: "Player's vote is worth 1 more.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Felonious"],
+      incompatible: ["Felonious", "Voteless"],
       allowDuplicate: true,
     },
     Inverse: {
@@ -386,7 +394,7 @@ const modifierData = {
       tags: ["Voting"],
       description: "Player's vote is Negative.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Felonious"],
+      incompatible: ["Felonious", "Voteless"],
     },
     Felonious: {
       category: "Other",
@@ -394,7 +402,15 @@ const modifierData = {
       tags: ["Voting"],
       description: "Player's vote is worth 0.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Trustworthy", "Inverse"],
+      incompatible: ["Trustworthy", "Inverse", "Voteless"],
+    },
+    Voteless: {
+      category: "Other",
+      internal: ["CannotVoteModifier"],
+      tags: ["Voting"],
+      description: "Player cannot vote.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Trustworthy", "Inverse", "Felonious"],
     },
     Frustrated: {
       category: "Other",
@@ -474,7 +490,7 @@ const modifierData = {
       internal: ["KillAlignedOnDeath"],
       tags: ["Essential", "Selective Revealing", "Vital"],
       description:
-        "If killed, all all players with the same alignment will die too.",
+        "If killed, all players with the same alignment will die too.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     //Role Share
