@@ -1595,11 +1595,9 @@ module.exports = class Game {
     }
     if (this.HaveHostingState == true) {
       start = "Hosting";
-    } 
-    else if (this.HaveTreasureChestState == true) {
+    } else if (this.HaveTreasureChestState == true) {
       start = "Treasure Chest";
-    } 
-    else if (this.HavePrologueState == true) {
+    } else if (this.HavePrologueState == true) {
       start = "Prologue";
     }
 

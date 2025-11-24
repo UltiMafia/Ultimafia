@@ -49,8 +49,8 @@ module.exports = class HostChosenRoles extends Card {
           } else {
             this.game.HaveHostingStateBlock = "Night";
           }
-          if(this.game.HavePrologueState == true){
-           this.game.HaveHostingStateBlock = null; 
+          if (this.game.HavePrologueState == true) {
+            this.game.HaveHostingStateBlock = null;
           }
         }
         if (

@@ -17,7 +17,7 @@ module.exports = class Add1Banished extends Card {
             !p.role.data.reroll
         );
         let shuffledPlayers = Random.randomizeArray(players);
-        if(shuffledPlayers.length <= 0){
+        if (shuffledPlayers.length <= 0) {
           return;
         }
         let roles = this.game.banishedRoles;

@@ -100,8 +100,11 @@ module.exports = class VillageCore extends Card {
       Prologue: {
         type: "shouldSkip",
         shouldSkip: function () {
-          if (this.game.HavePrologueState == true && this.game.HaveTreasureChestState != true &&
-            this.game.HaveHostingState != true) {
+          if (
+            this.game.HavePrologueState == true &&
+            this.game.HaveTreasureChestState != true &&
+            this.game.HaveHostingState != true
+          ) {
             for (let player of this.game.players) {
               if (player.role.name == "Host") {
                 return false;

@@ -5,7 +5,7 @@ module.exports = class AddPrologue extends Card {
   constructor(role) {
     super(role);
     this.listeners = {
-    state: function (stateInfo) {
+      state: function (stateInfo) {
         if (stateInfo.name.match(/Prologue/)) {
           this.game.HavePrologueState = false;
           if (this.game.isDayStart()) {
@@ -43,7 +43,5 @@ module.exports = class AddPrologue extends Card {
         },
       },
     };
-    
-
   }
 };

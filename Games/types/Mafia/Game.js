@@ -582,55 +582,54 @@ module.exports = class MafiaGame extends Game {
     action.do();
   }
 
-  shouldSkipState(state){
-     if (this.HaveHostingState == true) {
-            return true;
+  shouldSkipState(state) {
+    if (this.HaveHostingState == true) {
+      return true;
+    }
+    if (this.HaveTreasureChestState == true) {
+      return true;
+    }
+    if (this.HavePrologueState == true) {
+      return true;
+    }
+    if (state == "Day") {
+      if (this.HaveHostingStateBlock == "Night") {
+        return true;
       }
-      if (this.HaveTreasureChestState == true) {
-            return true;
+      if (this.HavePrologueStateBlock == "Night") {
+        return true;
       }
-      if (this.HavePrologueState == true) {
-            return true;
+      if (this.AdmiralStateBlock == "Night") {
+        return true;
       }
-      if(state == "Day"){
-          if (this.HaveHostingStateBlock == "Night") {
-            return true;
-          }
-          if (this.HavePrologueStateBlock == "Night") {
-            return true;
-          }
-          if (this.AdmiralStateBlock == "Night") {
-            return true;
-          }
+    }
+    if (state == "Night") {
+      if (this.HaveHostingStateBlock == "Day") {
+        return true;
       }
-      if(state == "Night"){
-          if (this.HaveHostingStateBlock == "Day") {
-            return true;
-          }
-          if (this.HavePrologueStateBlock == "Day") {
-            return true;
-          }
-          if (this.AdmiralStateBlock == "Day") {
-            return true;
-          }
-          
+      if (this.HavePrologueStateBlock == "Day") {
+        return true;
       }
-      if(state == "Dawn" || state == "Dusk"){
-        if (this.HaveHostingStateBlock != null) {
-            return true;
-          }
-        if (this.HavePrologueStateBlock != null) {
-            return true;
-        }
-        if (this.AdmiralStateBlock != null) {
-            return true;
-        }
+      if (this.AdmiralStateBlock == "Day") {
+        return true;
       }
-      for (let player of this.alivePlayers()) {
-        if (player.hasItem("Ouija Board")) {
-            return true;
-        }
+    }
+    if (state == "Dawn" || state == "Dusk") {
+      if (this.HaveHostingStateBlock != null) {
+        return true;
       }
+      if (this.HavePrologueStateBlock != null) {
+        return true;
+      }
+      if (this.AdmiralStateBlock != null) {
+        return true;
+      }
+    }
+    for (let player of this.alivePlayers()) {
+      if (player.hasItem("Ouija Board")) {
+        return true;
+      }
+    }
 
     return false;
   }
