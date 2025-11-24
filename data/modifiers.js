@@ -100,7 +100,7 @@ const modifierData = {
     Key: {
       category: "Items",
       internal: ["StartWithKey"],
-      tags: ["Items","Key"],
+      tags: ["Items", "Key"],
       description: "Starts with a Key.",
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
