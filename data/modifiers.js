@@ -97,6 +97,14 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
+    Key: {
+      category: "Items",
+      internal: ["StartWithKey"],
+      tags: ["Items","Key"],
+      description: "Starts with a Key.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      allowDuplicate: true,
+    },
     Luminous: {
       category: "Items",
       internal: ["StartWithCandle"],
