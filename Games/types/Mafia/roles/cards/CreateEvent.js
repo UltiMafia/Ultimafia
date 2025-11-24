@@ -21,6 +21,15 @@ module.exports = class CreateEvent extends Card {
             event.doEvent();
           },
         },
+        shouldMeet: function () {
+          if(this.name != "Host"){
+            return true;
+          }
+          if(this.getEvents().length > 1){
+            return true;
+          }
+          return false;
+        },
       },
     };
 

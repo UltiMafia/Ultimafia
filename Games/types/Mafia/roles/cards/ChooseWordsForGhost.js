@@ -9,7 +9,7 @@ module.exports = class ChooseWordsForGhost extends Card {
 
     this.meetings = {
       "Choose Village Word": {
-        states: ["Dusk", "Dawn"],
+        states: ["Prologue"],
         flags: ["voting"],
         inputType: "text",
         textOptions: {
@@ -77,7 +77,7 @@ module.exports = class ChooseWordsForGhost extends Card {
         },
       },
       "Choose Fake Word": {
-        states: ["Dusk", "Dawn"],
+        states: ["Prologue"],
         flags: ["voting"],
         inputType: "text",
         textOptions: {

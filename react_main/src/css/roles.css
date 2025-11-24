@@ -2218,6 +2218,10 @@
   background-image: url("/src/images/items/bread.png");
 }
 
+.item-Mafia-Food {
+  background-image: url("/src/images/items/bread.png");
+}
+
 .item-Mafia-Yuzu-Orange {
   background-image: url("/src/images/items/yuzu-orange.png");
 }

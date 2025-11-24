@@ -37,7 +37,7 @@ module.exports = class NightBlobber extends Card {
         cleanedPlayer.lastWill = this.lastCleanedWill;
         this.lastCleanedAppearance = null;
       },
-      death: function (player, killer, deathType) {
+      death: function (player, killer, deathType, instant) {
         if (player === this.player) {
           for (let person of this.game.players) {
             if (
@@ -45,7 +45,7 @@ module.exports = class NightBlobber extends Card {
               !person.alive &&
               person.role != "Blob"
             ) {
-              person.revive("regurgitate", this.actor);
+              person.revive("regurgitate", this.actor, instant);
             }
           }
         }

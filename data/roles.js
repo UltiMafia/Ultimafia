@@ -3397,6 +3397,14 @@ const roleData = {
         //"At Night can Choose an Event.",
         //"That Event will Occur in addition to any other Events.",
       ],
+      SpecialInteractionsModifiers: {
+        Refined: [
+          "Cannot use Banished Events.",
+        ],
+        Unrefined: [
+          "Cannot use non-Banished Events.",
+        ],
+      },
       skins: [
         {
           label: "Vivid",

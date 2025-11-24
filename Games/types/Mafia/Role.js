@@ -70,7 +70,7 @@ module.exports = class MafiaRole extends Role {
       let AllRoles = Object.entries(roleData.Mafia)
         .filter((m) => m[1].alignment == "Event")
         .map((r) => r[0]);
-      events.concat();
+      events = events.concat(AllRoles);
     }
     if (this.modifier && this.modifier.split("/").includes("Unrefined")) {
       events = banishedEvents;

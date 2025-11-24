@@ -49,6 +49,9 @@ module.exports = class HostChosenRoles extends Card {
           } else {
             this.game.HaveHostingStateBlock = "Night";
           }
+          if(this.game.HavePrologueState == true){
+           this.game.HaveHostingStateBlock = null; 
+          }
         }
         if (
           stateInfo.name.match(/Night/) &&
@@ -64,7 +67,7 @@ module.exports = class HostChosenRoles extends Card {
         }
       },
     };
-
+    /*
     this.stateMods = {
       Day: {
         type: "shouldSkip",
@@ -91,5 +94,6 @@ module.exports = class HostChosenRoles extends Card {
         },
       },
     };
+    */
   }
 };
