@@ -97,7 +97,7 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
-    Key: {
+    Keyed: {
       category: "Items",
       internal: ["StartWithKey"],
       tags: ["Items", "Key"],
