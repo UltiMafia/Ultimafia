@@ -94,11 +94,8 @@ export default function Setup(props) {
   }, [iconContainerRef]);
 
   // Extract events from all setup types
-  const { rolesDividedByAlignment, events, eventsPerRoleset } = getRolesByAlignment(
-    siteInfo,
-    props.setup.gameType,
-    props.setup.roles
-  );
+  const { rolesDividedByAlignment, events, eventsPerRoleset } =
+    getRolesByAlignment(siteInfo, props.setup.gameType, props.setup.roles);
 
   var roleCounts = [];
   var overSize = false;
@@ -480,16 +477,10 @@ function EventPool({ events, gameType, otherRoles, small = false }) {
 
   const popoverTitle = "Event Pool";
   const popoverContent = (
-    <SmallRoleList
-      roles={events}
-      gameType={gameType}
-      otherRoles={otherRoles}
-    />
+    <SmallRoleList roles={events} gameType={gameType} otherRoles={otherRoles} />
   );
   const popoverIcon = (
-    <div
-      className={`role role-icon-event-pool ${small ? "small" : ""}`}
-    />
+    <div className={`role role-icon-event-pool ${small ? "small" : ""}`} />
   );
 
   return (
@@ -502,9 +493,7 @@ function EventPool({ events, gameType, otherRoles, small = false }) {
           cursor: "pointer",
         }}
       >
-        <div
-          className={`role role-icon-event-pool ${small ? "small" : ""}`}
-        />
+        <div className={`role role-icon-event-pool ${small ? "small" : ""}`} />
       </div>
       <Popover
         open={popoverOpen}
@@ -552,7 +541,7 @@ function getRolesByAlignment(siteInfo, gameType, roles) {
               eventsPerRoleset[i][role] = 0;
             }
             eventsPerRoleset[i][role] += roles[i][role];
-            
+
             // Also aggregate events across all rolesets
             if (!events[role]) {
               events[role] = 0;

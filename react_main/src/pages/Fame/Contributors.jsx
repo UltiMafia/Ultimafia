@@ -94,9 +94,7 @@ export default function Contributors(props) {
       .then(() => {
         // Update the contributor in the list
         setContributors((prev) =>
-          prev.map((c) =>
-            c.id === contributorId ? { ...c, bio: editBio } : c
-          )
+          prev.map((c) => (c.id === contributorId ? { ...c, bio: editBio } : c))
         );
         setEditingContributor(null);
         setEditBio("");
@@ -149,7 +147,10 @@ export default function Contributors(props) {
                 zIndex: 1,
               }}
             >
-              <i className="fas fa-pencil-alt" style={{ fontSize: "16px", opacity: 0.7 }} />
+              <i
+                className="fas fa-pencil-alt"
+                style={{ fontSize: "16px", opacity: 0.7 }}
+              />
             </Box>
           )}
           <CardContent>
