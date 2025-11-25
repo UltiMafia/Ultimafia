@@ -95,7 +95,7 @@ var schemas = {
     },
     contributorBio: {
       type: String,
-      maxlength: 140,
+      maxlength: 240,
       default: "",
     },
     rank: Number,

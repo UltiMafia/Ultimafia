@@ -16,12 +16,15 @@ import {
   Stack,
   Typography,
   useMediaQuery,
+  Popover,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 import "css/setup.css";
 import "css/roles.css";
 import { usePopover } from "./Popover";
+import { usePopoverOpen } from "hooks/usePopoverOpen";
+import { PopoverContent } from "./Popover";
 
 export default function Setup(props) {
   const user = useContext(UserContext);
@@ -90,16 +93,17 @@ export default function Setup(props) {
     }
   }, [iconContainerRef]);
 
+  // Extract events from all setup types
+  const { rolesDividedByAlignment, events, eventsPerRoleset } = getRolesByAlignment(
+    siteInfo,
+    props.setup.gameType,
+    props.setup.roles
+  );
+
   var roleCounts = [];
   var overSize = false;
 
   if (props.setup.closed && !useRoleGroups) {
-    const { rolesDividedByAlignment, events } = getRolesByAlignment(
-      siteInfo,
-      props.setup.gameType,
-      props.setup.roles
-    );
-
     for (let alignment of Object.keys(rolesDividedByAlignment[0])) {
       const count = props.setup.count[alignment];
       if (count > 0) {
@@ -124,6 +128,15 @@ export default function Setup(props) {
         break;
       }
       const roleGroupData = props.setup.roles[roleGroup];
+      // Filter out events from role group display
+      const filteredRoleGroup = {};
+      for (let role in roleGroupData) {
+        const roleName = role.split(":")[0];
+        const roleObj = siteInfo.rolesRaw?.[props.setup.gameType]?.[roleName];
+        if (roleObj && roleObj.alignment !== "Event") {
+          filteredRoleGroup[role] = roleGroupData[role];
+        }
+      }
       roleCounts.push(
         <RoleCount
           key={JSON.stringify(props.setup.roles[roleGroup])}
@@ -131,7 +144,7 @@ export default function Setup(props) {
           showPopover
           small={small}
           role={INDEXED_ROLE_GROUP_LABELS[i]}
-          roleGroup={roleGroupData}
+          roleGroup={filteredRoleGroup}
           gameType={props.setup.gameType}
           otherRoles={props.setup.roles}
         />
@@ -144,7 +157,13 @@ export default function Setup(props) {
 
   function selectSetup(index) {
     let roleNames = Object.keys(props.setup.roles[index]);
-    roleCounts = roleNames.map((role) => (
+    // Filter out events from role display
+    const filteredRoleNames = roleNames.filter((role) => {
+      const roleName = role.split(":")[0];
+      const roleObj = siteInfo.rolesRaw?.[props.setup.gameType]?.[roleName];
+      return roleObj && roleObj.alignment !== "Event";
+    });
+    roleCounts = filteredRoleNames.map((role) => (
       <RoleCount
         small={small}
         role={role}
@@ -162,6 +181,30 @@ export default function Setup(props) {
     } else {
       setSetupIndex(0);
     }
+  }
+
+  // Determine which events to display
+  let eventsToDisplay = {};
+  if (multi) {
+    // For multi-setup, only show events for the currently selected roleset
+    eventsToDisplay = eventsPerRoleset[setupIndex] || {};
+  } else {
+    // For closed setups or single setups, show all events
+    eventsToDisplay = events || {};
+  }
+
+  // Add Event Pool icon if there are events
+  const eventKeys = Object.keys(eventsToDisplay);
+  if (eventKeys.length > 0) {
+    roleCounts.push(
+      <EventPool
+        key="event-pool"
+        events={eventsToDisplay}
+        gameType={props.setup.gameType}
+        otherRoles={props.setup.roles}
+        small={small}
+      />
+    );
   }
 
   if (multi) {
@@ -408,11 +451,94 @@ const INDEXED_ROLE_GROUP_LABELS = [
   "AX",
 ];
 
+function EventPool({ events, gameType, otherRoles, small = false }) {
+  const {
+    popoverOpen,
+    popoverClasses,
+    anchorEl,
+    handleClick,
+    handleMouseEnter,
+    handleMouseLeave,
+    closePopover,
+  } = usePopoverOpen();
+
+  const eventIconRef = useRef();
+  const eventKeys = Object.keys(events);
+  const hasEvents = eventKeys.length > 0;
+
+  if (!hasEvents) {
+    return null;
+  }
+
+  const popoverProps = {
+    "aria-owns": popoverOpen ? "mouse-over-popover" : undefined,
+    "aria-haspopup": "true",
+    onClick: handleClick,
+    onMouseEnter: handleMouseEnter,
+    onMouseLeave: handleMouseLeave,
+  };
+
+  const popoverTitle = "Event Pool";
+  const popoverContent = (
+    <SmallRoleList
+      roles={events}
+      gameType={gameType}
+      otherRoles={otherRoles}
+    />
+  );
+  const popoverIcon = (
+    <div
+      className={`role role-icon-event-pool ${small ? "small" : ""}`}
+    />
+  );
+
+  return (
+    <>
+      <div
+        className="role-count-wrap event-pool-wrap"
+        ref={eventIconRef}
+        {...popoverProps}
+        style={{
+          cursor: "pointer",
+        }}
+      >
+        <div
+          className={`role role-icon-event-pool ${small ? "small" : ""}`}
+        />
+      </div>
+      <Popover
+        open={popoverOpen}
+        sx={popoverClasses}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        onClose={closePopover}
+        disableScrollLock
+        disableRestoreFocus
+      >
+        <PopoverContent
+          title={popoverTitle}
+          content={popoverContent}
+          icon={popoverIcon}
+        />
+      </Popover>
+    </>
+  );
+}
+
 function getRolesByAlignment(siteInfo, gameType, roles) {
   let rolesDividedByAlignment = {};
-  const events = [];
+  const events = {};
+  const eventsPerRoleset = {};
 
   for (let i in roles) {
+    eventsPerRoleset[i] = {};
     for (let role in roles[i]) {
       let roleName = role.split(":")[0];
 
@@ -421,7 +547,17 @@ function getRolesByAlignment(siteInfo, gameType, roles) {
           const alignment = roleObj.alignment;
 
           if (alignment === "Event") {
-            events[role] = roles[i][role];
+            // Track events per roleset
+            if (!eventsPerRoleset[i][role]) {
+              eventsPerRoleset[i][role] = 0;
+            }
+            eventsPerRoleset[i][role] += roles[i][role];
+            
+            // Also aggregate events across all rolesets
+            if (!events[role]) {
+              events[role] = 0;
+            }
+            events[role] += roles[i][role];
             continue;
           }
 
@@ -438,6 +574,7 @@ function getRolesByAlignment(siteInfo, gameType, roles) {
   return {
     rolesDividedByAlignment: rolesDividedByAlignment,
     events: events,
+    eventsPerRoleset: eventsPerRoleset,
   };
 }
 
@@ -513,7 +650,18 @@ export function FullRoleList({ setup }) {
             count={setup.roleGroupSizes[i]}
             showPopover={false}
             role={INDEXED_ROLE_GROUP_LABELS[i]}
-            roleGroup={setup.roles[i]}
+            roleGroup={(() => {
+              // Filter out events from role group display
+              const filteredRoleGroup = {};
+              for (let role in setup.roles[i]) {
+                const roleName = role.split(":")[0];
+                const roleObj = siteInfo.rolesRaw?.[gameType]?.[roleName];
+                if (roleObj && roleObj.alignment !== "Event") {
+                  filteredRoleGroup[role] = setup.roles[i][role];
+                }
+              }
+              return filteredRoleGroup;
+            })()}
             gameType={gameType}
           />
         )}
@@ -524,18 +672,7 @@ export function FullRoleList({ setup }) {
     );
   });
 
-  const eventRoles = Object.keys(events).map((role) => (
-    <RoleCount
-      role={role}
-      count={events[role]}
-      small={true}
-      gameType={gameType}
-      showSecondaryHover
-      key={role}
-      otherRoles={setup.roles}
-    />
-  ));
-
+  // Events are now displayed in Event Pool, not here
   return (
     <Stack
       direction="column"
@@ -543,22 +680,6 @@ export function FullRoleList({ setup }) {
       divider={<Divider orientation="horizontal" flexItem />}
     >
       {rolesetAlignments}
-      {eventRoles.length > 0 && (
-        <Stack
-          direction="row"
-          spacing={0}
-          sx={{
-            p: 1,
-            height: "100%",
-            flexWrap: "wrap",
-            border: `4px solid #ff481aff`,
-            borderRadius: "4px",
-            boxSizing: "border-box",
-          }}
-        >
-          {eventRoles}
-        </Stack>
-      )}
     </Stack>
   );
 }

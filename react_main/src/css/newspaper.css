@@ -106,6 +106,13 @@
   mix-blend-mode: multiply;
 }
 
+.newspaper .obituary-avatar.win-avatar-single {
+  /* No greyscale for win avatars */
+  -webkit-filter: none !important;
+  filter: none !important;
+  mix-blend-mode: normal;
+}
+
 .newspaper .obituary-avatar.win-avatar-grid {
   display: grid;
   gap: 8px; /* Space between grid items */

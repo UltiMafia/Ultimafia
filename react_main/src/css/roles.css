@@ -264,6 +264,10 @@
   background-image: url("/src/images/roles/independent-vivid.png");
 }
 
+.role-icon-event-pool {
+  background-image: url("/src/images/roles/event-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Banished-Village {
   background-image: url("/src/images/roles/village-vivid.png");
 }
@@ -2215,10 +2219,6 @@
 }
 
 .item-Mafia-Bread {
-  background-image: url("/src/images/items/bread.png");
-}
-
-.item-Mafia-Food {
   background-image: url("/src/images/items/bread.png");
 }
 
