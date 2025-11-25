@@ -1401,10 +1401,10 @@ router.post("/contributorBio", async function (req, res) {
     var userId = await routeUtils.verifyLoggedIn(req);
     var bio = String(req.body.bio || "");
 
-    // Limit to 140 characters
-    if (bio.length > 140) {
+    // Limit to 240 characters
+    if (bio.length > 240) {
       res.status(500);
-      res.send("Contributor bio must be 140 characters or less.");
+      res.send("Contributor bio must be 240 characters or less.");
       return;
     }
 

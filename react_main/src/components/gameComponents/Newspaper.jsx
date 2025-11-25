@@ -47,6 +47,32 @@ export default function Newspaper(props) {
       const plural = groupName[groupName.length - 1] === "s";
       const winTitle = `${groupName} Win${plural ? "" : "s"}!`;
 
+      // For single player wins, use the same avatar size and positioning as death newspapers (100px)
+      if (players.length === 1) {
+        return (
+          <div className="obituary win-entry" key={groupName || index}>
+            <div className="obituary-header">
+              <div>{winTitle}</div>
+            </div>
+            <div style={{ display: "flex", alignItems: "left", gap: "10px" }}>
+              {players.length > 0 && (
+                <div className="obituary-avatar win-avatar-single">
+                  <Avatar
+                    id={players[0].id}
+                    hasImage={players[0].avatar}
+                    avatarId={players[0].avatarId}
+                    name={players[0].name}
+                    large
+                    isSquare
+                  />
+                </div>
+              )}
+              <div className="newspaper-paragraph">{emotify(winMessage)}</div>
+            </div>
+          </div>
+        );
+      }
+
       // Calculate dynamic avatar size based on number of players
       // Grid is 2 columns, with 8px gap, max width ~176px
       // Formula: (gridWidth - gap) / 2 = max cell size per column

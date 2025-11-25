@@ -8,24 +8,24 @@ import {
   CardContent,
   Chip,
   Stack,
-  // Button,
+  Button,
   // TextField,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useErrorAlert } from "../../components/Alerts";
-// import { UserContext, SiteInfoContext } from "../../Contexts";
+import { UserContext, SiteInfoContext } from "../../Contexts";
 import { Avatar } from "../User/User";
-// import { TextEditor } from "../../components/Form";
-// import CustomMarkdown from "../../components/CustomMarkdown";
+import { TextEditor } from "../../components/Form";
+import CustomMarkdown from "../../components/CustomMarkdown";
 
 export default function Contributors(props) {
   const theme = useTheme();
-  // const user = useContext(UserContext);
-  // const siteInfo = useContext(SiteInfoContext);
+  const user = useContext(UserContext);
+  const siteInfo = useContext(SiteInfoContext);
   const [contributors, setContributors] = useState([]);
   const [loaded, setLoaded] = useState(false);
-  // const [editingContributor, setEditingContributor] = useState(null);
-  // const [editBio, setEditBio] = useState("");
+  const [editingContributor, setEditingContributor] = useState(null);
+  const [editBio, setEditBio] = useState("");
 
   const errorAlert = useErrorAlert();
 
@@ -72,49 +72,47 @@ export default function Contributors(props) {
     design: "primary",
   };
 
-  // const isOwnCard = (contributorId) => {
-  //   return user.loaded && user.loggedIn && user.id === contributorId;
-  // };
+  const isOwnCard = (contributorId) => {
+    return user.loaded && user.loggedIn && user.id === contributorId;
+  };
 
-  // const handleCardClick = (contributor) => {
-  //   if (isOwnCard(contributor.id)) {
-  //     setEditingContributor(contributor.id);
-  //     setEditBio(contributor.bio || "");
-  //   }
-  // };
+  const handleCardClick = (contributor) => {
+    if (isOwnCard(contributor.id)) {
+      setEditingContributor(contributor.id);
+      setEditBio(contributor.bio || "");
+    }
+  };
 
-  // const handleSaveBio = (contributorId) => {
-  //   if (editBio.length > 140) {
-  //     siteInfo.showAlert("Bio must be 140 characters or less.", "error");
-  //     return;
-  //   }
+  const handleSaveBio = (contributorId) => {
+    if (editBio.length > 240) {
+      siteInfo.showAlert("Bio must be 240 characters or less.", "error");
+      return;
+    }
 
-  //   axios
-  //     .post("/api/user/contributorBio", { bio: editBio })
-  //     .then(() => {
-  //       // Update the contributor in the list
-  //       setContributors((prev) =>
-  //         prev.map((c) =>
-  //           c.id === contributorId ? { ...c, bio: editBio } : c
-  //         )
-  //       );
-  //       setEditingContributor(null);
-  //       setEditBio("");
-  //       siteInfo.showAlert("Bio updated.", "success");
-  //     })
-  //     .catch((e) => {
-  //       errorAlert(e);
-  //     });
-  // };
+    axios
+      .post("/api/user/contributorBio", { bio: editBio })
+      .then(() => {
+        // Update the contributor in the list
+        setContributors((prev) =>
+          prev.map((c) => (c.id === contributorId ? { ...c, bio: editBio } : c))
+        );
+        setEditingContributor(null);
+        setEditBio("");
+        siteInfo.showAlert("Bio updated.", "success");
+      })
+      .catch((e) => {
+        errorAlert(e);
+      });
+  };
 
-  // const handleCancelEdit = () => {
-  //   setEditingContributor(null);
-  //   setEditBio("");
-  // };
+  const handleCancelEdit = () => {
+    setEditingContributor(null);
+    setEditBio("");
+  };
 
   const contributorCards = contributors.map((contributor) => {
-    // const isOwn = isOwnCard(contributor.id);
-    // const isEditing = editingContributor === contributor.id;
+    const isOwn = isOwnCard(contributor.id);
+    const isEditing = editingContributor === contributor.id;
 
     return (
       <Grid2
@@ -130,15 +128,31 @@ export default function Contributors(props) {
           sx={{
             height: "100%",
             width: "100%",
-            // cursor: isOwn ? "pointer" : "default",
-            // "&:hover": isOwn
-            //   ? {
-            //       boxShadow: 2,
-            //     }
-            //   : {},
+            position: "relative",
+            cursor: isOwn ? "pointer" : "default",
+            "&:hover": isOwn
+              ? {
+                  boxShadow: 2,
+                }
+              : {},
           }}
-          // onClick={() => handleCardClick(contributor)}
+          onClick={() => handleCardClick(contributor)}
         >
+          {isOwn && !isEditing && (
+            <Box
+              sx={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                zIndex: 1,
+              }}
+            >
+              <i
+                className="fas fa-pencil-alt"
+                style={{ fontSize: "16px", opacity: 0.7 }}
+              />
+            </Box>
+          )}
           <CardContent>
             <Stack
               direction="column"
@@ -167,7 +181,7 @@ export default function Contributors(props) {
                       ? `/user/${contributor.vanityUrl}`
                       : `/user/${contributor.id}`
                   }
-                  // onClick={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
                   sx={{
                     textAlign: "center",
                     textDecoration: "none",
@@ -196,8 +210,7 @@ export default function Contributors(props) {
                   />
                 ))}
               </Box>
-              {/* Bio editing functionality commented out temporarily */}
-              {/* {isEditing ? (
+              {isEditing ? (
                 <Stack spacing={1} sx={{ width: "100%" }}>
                   <Box onClick={(e) => e.stopPropagation()}>
                     <TextEditor value={editBio} onChange={setEditBio} />
@@ -206,7 +219,7 @@ export default function Contributors(props) {
                     variant="caption"
                     sx={{ textAlign: "right", opacity: 0.7 }}
                   >
-                    {editBio.length}/140
+                    {editBio.length}/240
                   </Typography>
                   <Stack direction="row" spacing={1} justifyContent="center">
                     <Button
@@ -216,7 +229,7 @@ export default function Contributors(props) {
                         e.stopPropagation();
                         handleSaveBio(contributor.id);
                       }}
-                      disabled={editBio.length > 140}
+                      disabled={editBio.length > 240}
                     >
                       Save
                     </Button>
@@ -245,7 +258,7 @@ export default function Contributors(props) {
                     <CustomMarkdown>{contributor.bio}</CustomMarkdown>
                   </Typography>
                 )
-              )} */}
+              )}
             </Stack>
           </CardContent>
         </Card>
