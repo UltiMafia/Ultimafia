@@ -21,12 +21,14 @@ const vimeoRegex = /^https?:\/\/(www\.)?vimeo\.com\/(\d+)/;
 const invidiousRegex =
   /^https?:\/\/(www\.)?(invidious\.io|yewtu\.be|invidious\.flokinet\.to|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.fdn\.fr|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt)\/watch\?v=([a-zA-Z0-9_-]{11})/;
 import { useTheme } from "@mui/material/styles";
-import { Popover } from "@mui/material";
+import { Popover, Tooltip } from "@mui/material";
 import { Box, IconButton, Stack, Typography } from "@mui/material";
 import { PieChart } from "./PieChart";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
-import { ImageViewer } from "components/ImageViewer";
+import ImageViewer from "components/ImageViewer";
+import ReportDialog from "components/ReportDialog";
+import { useErrorAlert } from "components/Alerts";
 
 import santaDir from "images/holiday/santahat.png";
 
@@ -386,7 +388,7 @@ export function Avatar(props) {
 
   // Santa hat: Only show during December (turns off on January 1)
   const isDecember = new Date().getMonth() + 1 === 12; // getMonth() returns 0-11
-
+  
   let santaProps = null;
   if (isDecember) {
     let santaWidth, santaHorizAdjust, santaVertAdjust;
@@ -628,6 +630,9 @@ export function Miniprofile(props) {
   const user = props.user;
   const game = props.game;
   const inheritedProps = user.props;
+  const currentUser = useContext(UserContext);
+  const siteInfo = useContext(SiteInfoContext);
+  const errorAlert = useErrorAlert();
 
   const id = user.id;
   const name = user.name || "[deleted]";
@@ -642,25 +647,105 @@ export function Miniprofile(props) {
 
   const profileLink = vanityUrl ? `/user/${vanityUrl}` : `/user/${id}`;
 
+  const isSelf = currentUser.loggedIn && currentUser.id === id;
+  const [isFriend, setIsFriend] = useState(user.isFriend || false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const gameId = game?.gameId || null;
+
+  // Update friend status when user prop changes
+  useEffect(() => {
+    setIsFriend(user.isFriend || false);
+  }, [user.isFriend]);
+
+  function onFriendUserClick() {
+    if (isFriend) {
+      var shouldUnfriend = window.confirm(
+        "Are you sure you wish to unfriend or cancel your friend request?"
+      );
+      if (!shouldUnfriend) return;
+    }
+
+    axios
+      .post("/api/user/friend", { user: id })
+      .then((res) => {
+        setIsFriend(!isFriend);
+        siteInfo.showAlert(res.data, "success");
+      })
+      .catch(errorAlert);
+  }
+
+  function onReportClick() {
+    setReportDialogOpen(true);
+  }
+
   return (
     <div className="miniprofile">
       <div className="mui-popover-title">
-        <Link className={`name-with-avatar`} to={profileLink} target="_blank">
-          <Stack direction="row" spacing={1}>
-            <Avatar hasImage={avatar} id={id} avatarId={avatarId} name={name} />
-            <div
-              className={`user-name`}
-              style={{
-                ...(color ? { color } : {}),
-                display: "inline",
-                alignSelf: "center",
-              }}
-            >
-              {name}
-            </div>
-          </Stack>
-        </Link>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            alignItems: "center",
+            width: "100%",
+            justifyContent: "space-between",
+          }}
+        >
+          <Link
+            className={`name-with-avatar`}
+            to={profileLink}
+            target="_blank"
+            style={{ flex: 1, minWidth: 0 }}
+          >
+            <Stack direction="row" spacing={1}>
+              <Avatar
+                hasImage={avatar}
+                id={id}
+                avatarId={avatarId}
+                name={name}
+              />
+              <div
+                className={`user-name`}
+                style={{
+                  ...(color ? { color } : {}),
+                  display: "inline",
+                  alignSelf: "center",
+                }}
+              >
+                {name}
+              </div>
+            </Stack>
+          </Link>
+          {!isSelf && currentUser.loggedIn && (
+            <Stack direction="row" spacing={0.5}>
+              <Tooltip title={isFriend ? "Unfriend" : "Send Friend Request"}>
+                <IconButton
+                  size="small"
+                  onClick={onFriendUserClick}
+                  sx={{
+                    color: isFriend ? "primary.main" : "text.secondary",
+                  }}
+                >
+                  <i className={`fas fa-user-plus ${isFriend ? "sel" : ""}`} />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="File Report">
+                <IconButton size="small" onClick={onReportClick}>
+                  <i className="fas fa-flag" />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          )}
+        </Stack>
       </div>
+      <ReportDialog
+        open={reportDialogOpen}
+        onClose={() => setReportDialogOpen(false)}
+        prefilledArgs={{
+          userId: id,
+          userName: name,
+          game: gameId,
+        }}
+      />
       {!hasDefaultPronouns && <div className="pronouns">({pronouns})</div>}
       <PieChart
         wins={mafiaStats.wins.count}

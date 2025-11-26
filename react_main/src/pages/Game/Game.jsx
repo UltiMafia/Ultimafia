@@ -39,7 +39,6 @@ import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
 import SiteLogo from "../../components/SiteLogo";
 import LeaveGameDialog from "../../components/LeaveGameDialog";
-import ReportDialog from "../../components/ReportDialog";
 import { useErrorAlert } from "../../components/Alerts";
 import {
   MaxGameMessageLength,
@@ -89,7 +88,6 @@ import poison from "images/emotes/poison.webp";
 import unicorn from "images/emotes/unicorn.webp";
 import exit from "images/emotes/exit.png";
 import veg from "images/emotes/veg.webp";
-import system from "images/emotes/system.webp";
 import { usePopover } from "components/Popover";
 
 import dice1 from "images/emotes/dice1.webp";
@@ -933,15 +931,10 @@ export function TopBar() {
   const { gameId } = useParams();
   const errorAlert = useErrorAlert();
   const siteInfo = useContext(SiteInfoContext);
-  const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   function onTestClick() {
     for (let i = 0; i < game.setup.total - 1; i++)
       window.open(window.location + "?bot");
-  }
-
-  function onReportClick() {
-    setReportDialogOpen(true);
   }
 
   function onRehostGameClick() {
@@ -1084,16 +1077,6 @@ export function TopBar() {
         </Tooltip>
       )}
 
-      <Tooltip title="File Report">
-        <IconButton size="large" onClick={onReportClick}>
-          <img src={system} alt="Report" />
-        </IconButton>
-      </Tooltip>
-      <ReportDialog
-        open={reportDialogOpen}
-        onClose={() => setReportDialogOpen(false)}
-        prefilledArgs={{ game: gameId }}
-      />
 
       {!isPhoneDevice && (
         <Button
@@ -3510,17 +3493,17 @@ function ActionSelect(props) {
   const rowItems = Object.values(meeting.members).map((member) => {
     const player = props.players[member.id];
     const voteValue = meeting.votes[member.id];
-
+    
     // Check if vote exists but target is hidden (null means hidden target)
     // undefined means no vote, null means vote exists but target is hidden
     const hasVoted = voteValue !== undefined;
     const isVoteHidden = voteValue === null;
-
+    
     let selection = [];
     if (!isVoteHidden && voteValue !== undefined && voteValue !== null) {
       selection = getTargetDisplay(voteValue, meeting, props.players);
     }
-
+    
     // Determine display name
     // When vote target is hidden (VoteBlind scenario), show "User X" instead of real name
     let name = null;
@@ -3702,16 +3685,11 @@ function ActionSelect(props) {
                   {rowItem.selection.join(", ")}
                 </Typography>
               )}
-              {rowItem.canVote &&
-                rowItem.isVoteHidden &&
-                rowItem.selection.length === 0 && (
-                  <Typography
-                    className="selection"
-                    sx={{ fontStyle: "italic", opacity: 0.7 }}
-                  >
-                    (hidden)
-                  </Typography>
-                )}
+              {rowItem.canVote && rowItem.isVoteHidden && rowItem.selection.length === 0 && (
+                <Typography className="selection" sx={{ fontStyle: "italic", opacity: 0.7 }}>
+                  (target hidden)
+                </Typography>
+              )}
             </Box>
           );
         })}
