@@ -38,6 +38,7 @@ import {
 import { Announcement } from "./components/alerts/Announcement";
 import SiteLogo from "./components/SiteLogo";
 import { useIsPhoneDevice } from "./hooks/useIsPhoneDevice";
+import { useSnowstorm } from "./hooks/useSnowstorm";
 
 import spiderweb from "images/holiday/spiderweb.gif";
 
@@ -88,6 +89,9 @@ function Main(props) {
   useEffect(() => {
     setSiteTheme(getSiteTheme(customPrimaryColor));
   }, [customPrimaryColor]);
+
+  // Load snowstorm during December 1 - January 1
+  useSnowstorm();
 
   const isPhoneDevice = useIsPhoneDevice();
 

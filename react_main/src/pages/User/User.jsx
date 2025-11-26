@@ -26,7 +26,7 @@ import { Box, IconButton, Stack, Typography } from "@mui/material";
 import { PieChart } from "./PieChart";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
-import ImageViewer from "components/ImageViewer";
+import { ImageViewer } from "components/ImageViewer";
 
 import santaDir from "images/holiday/santahat.png";
 
@@ -384,31 +384,29 @@ export function Avatar(props) {
     }
   }
 
-  {
-    /*SANTA CHANGES: In December, uncomment the below lines*/
-  }
-  {
-    /*var santaWidth;
-  var santaHorizAdjust;
-  var santaVertAdjust;
-
-  if (large) {
-    santaWidth = "100px";
-    santaHorizAdjust = -25;
-    santaVertAdjust = -40;
-  } else if (small) {
-    santaWidth = "20px;";
-    santaHorizAdjust = -5;
-    santaVertAdjust = -8;
-  } else {
-    santaWidth = "40px";
-    santaHorizAdjust = -12;
-    santaVertAdjust = -15;
-  }
-var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/
-  }
-  {
-    /*SANTA CHANGES*/
+  // Santa hat: Only show during December (turns off on January 1)
+  const isDecember = new Date().getMonth() + 1 === 12; // getMonth() returns 0-11
+  
+  let santaProps = null;
+  if (isDecember) {
+    let santaWidth, santaHorizAdjust, santaVertAdjust;
+    if (large) {
+      santaWidth = "100px";
+      santaHorizAdjust = -25;
+      santaVertAdjust = -40;
+    } else if (small) {
+      santaWidth = "20px";
+      santaHorizAdjust = -5;
+      santaVertAdjust = -8;
+    } else {
+      santaWidth = "40px";
+      santaHorizAdjust = -12;
+      santaVertAdjust = -15;
+    }
+    santaProps = {
+      width: santaWidth,
+      transform: `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`,
+    };
   }
 
   return (
@@ -447,16 +445,18 @@ var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/
         </Box>
       )}
 
-      {/*SANTA CHANGES: In December, uncomment the below lines*/}
-      {/*<div>
-        <img
-          className="santa"
-          width={santaWidth}
-          style={{ position: "absolute", transform: santaAdjust }}
-          src={santaDir}
-        ></img>
-      </div>*/}
-      {/*SANTA CHANGES*/}
+      {/* Santa hat: Only shows during December (turns off on January 1) */}
+      {isDecember && santaProps && (
+        <div>
+          <img
+            className="santa"
+            width={santaProps.width}
+            style={{ position: "absolute", transform: santaProps.transform }}
+            src={santaDir}
+            alt="Santa hat"
+          />
+        </div>
+      )}
     </div>
   );
 }
