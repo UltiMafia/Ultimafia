@@ -643,7 +643,17 @@ export function Miniprofile(props) {
   const hasDefaultPronouns = pronouns === "";
   const vanityUrl = user.vanityUrl;
 
-  var mafiaStats = user.stats["Mafia"].all;
+  let pieChart = <></>;
+  if (user.stats) {
+    const mafiaStats = user.stats["Mafia"].all;
+    pieChart = (
+      <PieChart
+        wins={mafiaStats.wins.count}
+        losses={mafiaStats.wins.total - mafiaStats.wins.count}
+        abandons={mafiaStats.abandons.total}
+      />
+    );
+  }
 
   const profileLink = vanityUrl ? `/user/${vanityUrl}` : `/user/${id}`;
 
@@ -747,11 +757,7 @@ export function Miniprofile(props) {
         }}
       />
       {!hasDefaultPronouns && <div className="pronouns">({pronouns})</div>}
-      <PieChart
-        wins={mafiaStats.wins.count}
-        losses={mafiaStats.wins.total - mafiaStats.wins.count}
-        abandons={mafiaStats.abandons.total}
-      />
+      {pieChart}
       <div className="score-info">
         <div className="score-info-column">
           <div className="score-info-row score-info-smallicon">
