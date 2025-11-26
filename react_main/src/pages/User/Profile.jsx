@@ -45,8 +45,6 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
-import system from "images/emotes/system.webp";
-
 export const KUDOS_ICON = require(`images/kudos.png`);
 export const KARMA_ICON = require(`images/karma.png`);
 export const POINTS_ICON = require(`images/points.png`);
@@ -893,15 +891,13 @@ export default function Profile() {
                 title="Block user"
               />
             </IconButton>
-            <Tooltip title="File Report">
-              <IconButton size="large" onClick={onReportClick}>
-                <img src={system} alt="Report" />
-              </IconButton>
-            </Tooltip>
+            <IconButton size="small" onClick={onReportClick}>
+              <i className="fas fa-flag" />
+            </IconButton>
             <ReportDialog
               open={reportDialogOpen}
               onClose={() => setReportDialogOpen(false)}
-              prefilledArgs={{ user: profileUserId }}
+              prefilledArgs={{ userId: profileUserId, userName: name }}
             />
           </>
         )}
