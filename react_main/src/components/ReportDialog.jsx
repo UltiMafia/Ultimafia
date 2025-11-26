@@ -23,7 +23,9 @@ import janitor from "images/roles/mafia/janitor-vivid.png";
 
 export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
   const [game, setGame] = useState(prefilledArgs.game || "");
-  const [userReported, setUserReported] = useState(prefilledArgs.userId || prefilledArgs.user || "");
+  const [userReported, setUserReported] = useState(
+    prefilledArgs.userId || prefilledArgs.user || ""
+  );
   const [ruleBroken, setRuleBroken] = useState("");
   const [description, setDescription] = useState("");
 
@@ -40,7 +42,12 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
   }, [open, prefilledArgs]);
 
   // Get display value for user (prefer userName, fall back to userId)
-  const userDisplayValue = prefilledArgs.userName || userReported || prefilledArgs.userId || prefilledArgs.user || "";
+  const userDisplayValue =
+    prefilledArgs.userName ||
+    userReported ||
+    prefilledArgs.userId ||
+    prefilledArgs.user ||
+    "";
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -139,7 +146,7 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
               disabled={!!prefilledArgs.game}
             />
 
-            {(prefilledArgs.userId || prefilledArgs.user) ? (
+            {prefilledArgs.userId || prefilledArgs.user ? (
               <TextField
                 label="User Reported"
                 value={userDisplayValue}

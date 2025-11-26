@@ -388,7 +388,7 @@ export function Avatar(props) {
 
   // Santa hat: Only show during December (turns off on January 1)
   const isDecember = new Date().getMonth() + 1 === 12; // getMonth() returns 0-11
-  
+
   let santaProps = null;
   if (isDecember) {
     let santaWidth, santaHorizAdjust, santaVertAdjust;
