@@ -26,6 +26,7 @@ import { Box, IconButton, Stack, Typography } from "@mui/material";
 import { PieChart } from "./PieChart";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import ImageViewer from "components/ImageViewer";
 
 import santaDir from "images/holiday/santahat.png";
 
@@ -141,6 +142,30 @@ export function InvidiousEmbed(props) {
   }
   return null;
 }
+
+function ImageWithViewer({ imageUrl }) {
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const mediaRef = useRef();
+
+  return (
+    <>
+      <img
+        ref={mediaRef}
+        src={imageUrl}
+        alt=""
+        onClick={() => setViewerOpen(true)}
+        style={{
+          cursor: "pointer",
+          maxWidth: "100%",
+        }}
+      />
+      {viewerOpen && (
+        <ImageViewer imageUrl={imageUrl} onClose={() => setViewerOpen(false)} />
+      )}
+    </>
+  );
+}
+
 export function MediaEmbed(props) {
   const mediaUrl = props.mediaUrl;
   const autoplay = !!props.autoplay;
@@ -210,7 +235,7 @@ export function MediaEmbed(props) {
 
   switch (mediaType) {
     case "image":
-      return <img ref={mediaRef} src={mediaUrl}></img>;
+      return <ImageWithViewer imageUrl={mediaUrl} />;
     case "audio":
       return (
         <audio
