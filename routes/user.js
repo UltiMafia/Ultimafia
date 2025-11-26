@@ -484,6 +484,9 @@ router.get("/:id/profile", async function (req, res) {
 
     if (!user.settings) user.settings = {};
 
+    if (user.settings.hideStatistics) {
+      delete user.stats;
+    }
     if (user.settings.hideKarma) {
       delete user.karmaInfo;
     }
