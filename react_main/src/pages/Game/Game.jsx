@@ -1616,6 +1616,7 @@ export function TextMeetingLayout() {
 
 function getAllMessagesToDisplay(history) {
   var messages = [];
+  var postgameWinnersMessages = [];
   const states = Object.keys(history.states).sort(
     (a, b) => parseInt(a) - parseInt(b)
   );
@@ -1660,12 +1661,19 @@ function getAllMessagesToDisplay(history) {
         dayCount: stateData.dayCount || 0,
         senderId: "server",
       };
-      stateMessages.push(winnersMessage);
+      if (state === "-2") {
+        postgameWinnersMessages.push(winnersMessage);
+      } else {
+        stateMessages.push(winnersMessage);
+      }
     }
 
     stateMessages.sort((a, b) => a.time - b.time);
-
     messages.push(...stateMessages);
+  }
+
+  if (postgameWinnersMessages.length > 0) {
+    messages = [...postgameWinnersMessages, ...messages];
   }
 
   return messages;
@@ -1737,13 +1745,17 @@ function getMessagesToDisplay(
       senderId: "server",
     };
 
-    for (let i = 0; i <= messages.length; i++) {
-      if (i === messages.length) {
-        messages.push(winnersMessage);
-        break;
-      } else if (winnersMessage.time < messages[i].time) {
-        messages.splice(i, 0, winnersMessage);
-        break;
+    if (stateViewing === -2) {
+      messages.unshift(winnersMessage);
+    } else {
+      for (let i = 0; i <= messages.length; i++) {
+        if (i === messages.length) {
+          messages.push(winnersMessage);
+          break;
+        } else if (winnersMessage.time < messages[i].time) {
+          messages.splice(i, 0, winnersMessage);
+          break;
+        }
       }
     }
   }
