@@ -134,6 +134,7 @@ var schemas = {
       archivedGamesMax: { type: Number, default: 0 },
       bonusRedHearts: { type: Number, default: 0 },
       vanityUrl: { type: Number, default: 0 },
+      profileBackground: { type: Number, default: 0 },
       createFamily: { type: Number, default: 0 },
     },
     stats: {},

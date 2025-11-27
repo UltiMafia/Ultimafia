@@ -128,7 +128,7 @@ export default function Shop(props) {
   }
 
   const shopItems = shopInfo.shopItems.map((item, i) => {
-    const numOwned = user.itemsOwned[item.key];
+    const numOwned = user.itemsOwned[item.key] || 0;
     const disabled = item.disabled || numOwned === item.limit;
 
     const price = (
@@ -204,7 +204,7 @@ export default function Shop(props) {
                     {isPhoneDevice && price}
                   </Stack>
                   <Typography variant="caption">
-                    Owned: {user.itemsOwned[item.key]}
+                    Owned: {user.itemsOwned[item.key] || 0}
                     {item.limit != null && ` / ${item.limit}`}
                   </Typography>
                   <Paper
