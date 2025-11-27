@@ -35,6 +35,7 @@ var schemas = {
     discordUsername: String,
     avatar: Boolean,
     banner: Boolean,
+    profileBackground: Boolean,
     bio: {
       type: String,
       default:
@@ -78,6 +79,7 @@ var schemas = {
       hidePointsNegative: { type: Boolean, default: true },
       deathMessage: String,
       vanityUrl: { type: String, default: "" },
+      backgroundRepeatMode: { type: String, default: "repeat" },
     },
     accounts: {
       discord: String,
@@ -134,6 +136,7 @@ var schemas = {
       archivedGamesMax: { type: Number, default: 0 },
       bonusRedHearts: { type: Number, default: 0 },
       vanityUrl: { type: Number, default: 0 },
+      profileBackground: { type: Number, default: 0 },
       createFamily: { type: Number, default: 0 },
     },
     stats: {},

@@ -4,7 +4,6 @@ export const usePopoverOpen = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openByHover, setOpenByHover] = useState(false);
   const [openByClick, setOpenByClick] = useState(false);
-  const popoverClasses = { pointerEvents: openByClick ? "auto" : "none" };
   const popoverOpen = Boolean(anchorEl);
 
   const handleMouseEnter = (e) => {
@@ -34,7 +33,7 @@ export const usePopoverOpen = () => {
 
   return {
     popoverOpen,
-    popoverClasses,
+    openByClick,
     anchorEl,
     handleMouseEnter,
     handleMouseLeave,

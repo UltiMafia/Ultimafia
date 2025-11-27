@@ -493,7 +493,7 @@ export function NameWithAvatar(props) {
 
   const {
     popoverOpen: canOpenPopover,
-    popoverClasses,
+    openByClick,
     anchorEl,
     handleClick: handlePopoverClick,
     handleMouseEnter,
@@ -591,7 +591,7 @@ export function NameWithAvatar(props) {
         <div>
           <Popover
             open={props.showPopover !== false && popoverOpen}
-            sx={popoverClasses}
+            sx={{ pointerEvents: openByClick ? "auto" : "none" }}
             anchorEl={anchorEl}
             anchorOrigin={{
               vertical: "center",

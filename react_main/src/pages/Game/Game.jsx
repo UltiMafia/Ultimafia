@@ -88,7 +88,7 @@ import poison from "images/emotes/poison.webp";
 import unicorn from "images/emotes/unicorn.webp";
 import exit from "images/emotes/exit.png";
 import veg from "images/emotes/veg.webp";
-import { usePopover } from "components/Popover";
+import { usePopover, InfoPopover } from "components/Popover";
 
 import dice1 from "images/emotes/dice1.webp";
 import dice2 from "images/emotes/dice2.webp";
@@ -1616,6 +1616,7 @@ export function TextMeetingLayout() {
 
 function getAllMessagesToDisplay(history) {
   var messages = [];
+  var postgameWinnersMessages = [];
   const states = Object.keys(history.states).sort(
     (a, b) => parseInt(a) - parseInt(b)
   );
@@ -1660,12 +1661,19 @@ function getAllMessagesToDisplay(history) {
         dayCount: stateData.dayCount || 0,
         senderId: "server",
       };
-      stateMessages.push(winnersMessage);
+      if (state === "-2") {
+        postgameWinnersMessages.push(winnersMessage);
+      } else {
+        stateMessages.push(winnersMessage);
+      }
     }
 
     stateMessages.sort((a, b) => a.time - b.time);
-
     messages.push(...stateMessages);
+  }
+
+  if (postgameWinnersMessages.length > 0) {
+    messages = [...postgameWinnersMessages, ...messages];
   }
 
   return messages;
@@ -1737,13 +1745,17 @@ function getMessagesToDisplay(
       senderId: "server",
     };
 
-    for (let i = 0; i <= messages.length; i++) {
-      if (i === messages.length) {
-        messages.push(winnersMessage);
-        break;
-      } else if (winnersMessage.time < messages[i].time) {
-        messages.splice(i, 0, winnersMessage);
-        break;
+    if (stateViewing === -2) {
+      messages.unshift(winnersMessage);
+    } else {
+      for (let i = 0; i <= messages.length; i++) {
+        if (i === messages.length) {
+          messages.push(winnersMessage);
+          break;
+        } else if (winnersMessage.time < messages[i].time) {
+          messages.splice(i, 0, winnersMessage);
+          break;
+        }
       }
     }
   }
@@ -2615,11 +2627,10 @@ export function SideMenu({
 function RoleMarkerToggle({ playerId, setup, toggleRolePrediction }) {
   const roleMarkerRef = useRef();
 
-  const { InfoPopover, popoverOpen, handleClick, closePopover } = usePopover({
+  const popoverProps = usePopover({
     path: `/api/setup/${setup.id}`,
     type: "rolePrediction",
     boundingEl: roleMarkerRef.current,
-    title: "Mark Role as",
     postprocessData: (data) => {
       let roles = {};
       for (let r of JSON.parse(data.roles)) {
@@ -2630,6 +2641,7 @@ function RoleMarkerToggle({ playerId, setup, toggleRolePrediction }) {
       data.makeRolePrediction = makeRolePrediction;
     },
   });
+  const { handleClick, closePopover } = popoverProps;
 
   const makeRolePrediction = useCallback(
     (prediction) => {
@@ -2641,7 +2653,7 @@ function RoleMarkerToggle({ playerId, setup, toggleRolePrediction }) {
 
   return (
     <>
-      {popoverOpen && <InfoPopover />}
+      <InfoPopover {...popoverProps} title={"Mark Role as"} />
       <div
         className="role-marker"
         onClick={handleClick}
