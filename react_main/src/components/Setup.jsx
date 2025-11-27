@@ -22,7 +22,7 @@ import { useTheme } from "@mui/material/styles";
 
 import "css/setup.css";
 import "css/roles.css";
-import { usePopover } from "./Popover";
+import { usePopover, InfoPopover } from "components/Popover";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { PopoverContent } from "./Popover";
 
@@ -30,14 +30,13 @@ export default function Setup(props) {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const setupRef = useRef();
-  const { InfoPopover, popoverOpen, handleClick } = usePopover({
+  const popoverProps = usePopover({
     path: `/api/setup/${props.setup.id}`,
-    page: `/learn/setup/${props.setup.id}`,
     type: "setup",
     boundingEl: setupRef.current,
-    title: filterProfanity(props.setup.name, user.settings),
     postprocessData: (data) => (data.roles = JSON.parse(data.roles)),
   });
+  const { popoverOpen, handleClick } = popoverProps;
 
   const iconContainerRef = useRef();
   const [maxIconsPerRow, setMaxIconsPerRow] = useState(null);
@@ -241,7 +240,7 @@ export default function Setup(props) {
 
   return (
     <>
-      {popoverOpen && <InfoPopover />}
+      <InfoPopover {...popoverProps} page={`/learn/setup/${props.setup.id}`} title={filterProfanity(props.setup.name, user.settings)} />
       <Card
         variant="outlined"
         className={"setup " + classList}
@@ -451,7 +450,7 @@ const INDEXED_ROLE_GROUP_LABELS = [
 function EventPool({ events, gameType, otherRoles, small = false }) {
   const {
     popoverOpen,
-    popoverClasses,
+    openByClick,
     anchorEl,
     handleClick,
     handleMouseEnter,
@@ -497,7 +496,7 @@ function EventPool({ events, gameType, otherRoles, small = false }) {
       </div>
       <Popover
         open={popoverOpen}
-        sx={popoverClasses}
+        sx={{ pointerEvents: openByClick ? "auto" : "none" }}
         anchorEl={anchorEl}
         anchorOrigin={{
           vertical: "bottom",

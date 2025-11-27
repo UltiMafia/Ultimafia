@@ -1,6 +1,6 @@
 import React, { useContext, useRef } from "react";
 import { Box, Popover, Stack, Typography } from "@mui/material";
-import { usePopover } from "components/Popover";
+import { usePopover, InfoPopover } from "components/Popover";
 
 import "css/join.css";
 import { Time } from "components/Basic";
@@ -17,16 +17,16 @@ export const PlayerCount = (props) => {
   const gameNotFinished = ["Open", "In Progress"].includes(status);
 
   const infoRef = useRef();
-  const { InfoPopover, popoverOpen, handleClick } = usePopover({
+  const popoverProps = usePopover({
     path: `/api/game/${gameId}/info`,
     type: "game",
     boundingEl: infoRef.current,
-    title: `Game ${gameId}`,
   });
+  const { popoverOpen, handleClick } = popoverProps;
 
   return (
     <>
-      <InfoPopover />
+      <InfoPopover {...popoverProps} title={`Game ${gameId}`} />
       <Box
         className="player-count"
         aria-owns={popoverOpen ? "mouse-over-popover" : undefined}

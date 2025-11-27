@@ -284,7 +284,7 @@ export function RoleCount({
 
   const {
     popoverOpen: canOpenPopover,
-    popoverClasses,
+    openByClick,
     anchorEl,
     handleClick: handlePopoverClick,
     handleMouseEnter,
@@ -570,7 +570,7 @@ export function RoleCount({
       {layoutContent}
       <Popover
         open={popoverOpen}
-        sx={popoverClasses}
+        sx={{ pointerEvents: openByClick ? "auto" : "none" }}
         anchorEl={anchorEl}
         anchorOrigin={{
           vertical: "bottom",
@@ -605,7 +605,7 @@ export function ModifierCount(props) {
 
   const {
     popoverOpen: canOpenPopover,
-    popoverClasses,
+    openByClick,
     anchorEl,
     handleClick: handlePopoverClick,
     handleMouseEnter,
@@ -703,7 +703,7 @@ export function ModifierCount(props) {
       <div>
         <Popover
           open={props.showPopover !== false && popoverOpen}
-          sx={popoverClasses}
+          sx={{ pointerEvents: openByClick ? "auto" : "none" }}
           anchorEl={anchorEl}
           anchorOrigin={{
             vertical: "bottom",
@@ -747,7 +747,7 @@ export function GameSettingCount(props) {
 
   const {
     popoverOpen: canOpenPopover,
-    popoverClasses,
+    openByClick,
     anchorEl,
     handleClick: handlePopoverClick,
     handleMouseEnter,
@@ -843,7 +843,7 @@ export function GameSettingCount(props) {
       <div>
         <Popover
           open={props.showPopover !== false && popoverOpen}
-          sx={popoverClasses}
+          sx={{ pointerEvents: openByClick ? "auto" : "none" }}
           anchorEl={anchorEl}
           anchorOrigin={{
             vertical: "bottom",
@@ -1451,7 +1451,7 @@ export function InlineRoleMention({
   const siteInfo = useContext(SiteInfoContext);
   const {
     popoverOpen: canOpenPopover,
-    popoverClasses,
+    openByClick,
     anchorEl,
     handleClick: handlePopoverClick,
     handleMouseEnter,
@@ -1532,7 +1532,7 @@ export function InlineRoleMention({
 
       <Popover
         open={popoverOpen}
-        sx={popoverClasses}
+        sx={{ pointerEvents: openByClick ? "auto" : "none" }}
         anchorEl={anchorEl}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         transformOrigin={{ vertical: "top", horizontal: "center" }}
