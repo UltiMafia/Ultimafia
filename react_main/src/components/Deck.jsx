@@ -16,11 +16,15 @@ export default function AnonymousDeck(props) {
   let displayName = `${props.deck.name} (${props.deck.id})`;
   return (
     <div className="deck">
-      <InfoPopover {...popoverProps} title={filterProfanity(props.deck.name, user.settings)} />
-      <Typography className="deck-name"
+      <InfoPopover
+        {...popoverProps}
+        title={filterProfanity(props.deck.name, user.settings)}
+      />
+      <Typography
+        className="deck-name"
         onClick={handleClick}
-        style={{ cursor: "pointer" }
-      }>
+        style={{ cursor: "pointer" }}
+      >
         {displayName}
       </Typography>
     </div>

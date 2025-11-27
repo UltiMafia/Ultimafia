@@ -240,7 +240,11 @@ export default function Setup(props) {
 
   return (
     <>
-      <InfoPopover {...popoverProps} page={`/learn/setup/${props.setup.id}`} title={filterProfanity(props.setup.name, user.settings)} />
+      <InfoPopover
+        {...popoverProps}
+        page={`/learn/setup/${props.setup.id}`}
+        title={filterProfanity(props.setup.name, user.settings)}
+      />
       <Card
         variant="outlined"
         className={"setup " + classList}

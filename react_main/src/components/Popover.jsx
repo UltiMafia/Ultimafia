@@ -69,40 +69,39 @@ export const InfoPopover = function ({
     return <></>;
   }
 
-  return useMemo(() => (
-    <Popover
-      open={showPopover !== false && popoverOpen}
-      sx={{ pointerEvents: openByClick ? "auto" : "none" }}
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: "center",
-        horizontal: "right",
-      }}
-      transformOrigin={{
-        vertical: "center",
-        horizontal: "left",
-      }}
-      onClose={closePopover}
-      disableScrollLock
-      disableRestoreFocus
-      slotProps={{
-        paper: {
-          sx: {
-            width: "320px",
+  return useMemo(
+    () => (
+      <Popover
+        open={showPopover !== false && popoverOpen}
+        sx={{ pointerEvents: openByClick ? "auto" : "none" }}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "center",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "center",
+          horizontal: "left",
+        }}
+        onClose={closePopover}
+        disableScrollLock
+        disableRestoreFocus
+        slotProps={{
+          paper: {
+            sx: {
+              width: "320px",
+            },
           },
-        },
-      }}
-    >
-      <PopoverContent page={page} title={title} content={content} />
-    </Popover>
-  ), [openByClick, showPopover, Boolean(content !== null)]);
+        }}
+      >
+        <PopoverContent page={page} title={title} content={content} />
+      </Popover>
+    ),
+    [openByClick, showPopover, Boolean(content !== null)]
+  );
 };
 
-export function usePopover({
-  path,
-  type,
-  postprocessData,
-}) {
+export function usePopover({ path, type, postprocessData }) {
   const siteInfo = useContext(SiteInfoContext);
   const [content, setContent] = useState(null);
 
