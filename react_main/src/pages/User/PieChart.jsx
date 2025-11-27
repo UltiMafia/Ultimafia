@@ -5,11 +5,10 @@ import { useContext } from "react";
 import { UserContext } from "../../Contexts";
 
 export const PieChart = ({ wins, losses, abandons }) => {
-  const user = useContext(UserContext);
   const svgRef = useRef();
   const totalGames = wins + losses + abandons;
 
-  const displayPieChart = totalGames >= 1 && !user.settings.hideStatistics;
+  const displayPieChart = totalGames >= 1;
   const noPieChartMsg = !displayPieChart && (
     <div style={{ marginBottom: "5px" }}>No pie chart.</div>
   );

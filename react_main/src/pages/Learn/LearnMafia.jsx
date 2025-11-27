@@ -11,6 +11,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Stack,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
@@ -110,9 +111,21 @@ export default function LearnMafia(props) {
           {data.map((entry, index) => (
             <TableRow key={index}>
               <TableCell>
-                {entry.icon} {entry.name}
+                <Stack direction="row" spacing={1} sx={{
+                  alignItems: "center",
+                  textAlign: "left",
+                }}>
+                  {entry.icon}
+                  <Typography>
+                    {entry.name}
+                  </Typography>
+                </Stack>
               </TableCell>
-              <TableCell>{entry.text}</TableCell>
+              <TableCell>
+                <Typography variant="body2">
+                  {entry.text}
+                </Typography>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

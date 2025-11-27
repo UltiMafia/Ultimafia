@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import {
   Box,
@@ -23,9 +23,31 @@ import janitor from "images/roles/mafia/janitor-vivid.png";
 
 export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
   const [game, setGame] = useState(prefilledArgs.game || "");
-  const [userReported, setUserReported] = useState(prefilledArgs.userId || "");
+  const [userReported, setUserReported] = useState(
+    prefilledArgs.userId || prefilledArgs.user || ""
+  );
   const [ruleBroken, setRuleBroken] = useState("");
   const [description, setDescription] = useState("");
+
+  // Update state when prefilledArgs changes or dialog opens
+  useEffect(() => {
+    if (open) {
+      // Support both 'userId' and 'user' for backward compatibility
+      const userId = prefilledArgs.userId || prefilledArgs.user || "";
+      setGame(prefilledArgs.game || "");
+      setUserReported(userId);
+      setRuleBroken("");
+      setDescription("");
+    }
+  }, [open, prefilledArgs]);
+
+  // Get display value for user (prefer userName, fall back to userId)
+  const userDisplayValue =
+    prefilledArgs.userName ||
+    userReported ||
+    prefilledArgs.userId ||
+    prefilledArgs.user ||
+    "";
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -124,10 +146,10 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
               disabled={!!prefilledArgs.game}
             />
 
-            {prefilledArgs.userId ? (
+            {prefilledArgs.userId || prefilledArgs.user ? (
               <TextField
                 label="User Reported"
-                value={userReported}
+                value={userDisplayValue}
                 disabled
                 fullWidth
               />
@@ -135,6 +157,7 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
               <UserSearchSelect
                 onChange={(value) => setUserReported(value)}
                 placeholder="User Reported"
+                value={userReported}
               />
             )}
 

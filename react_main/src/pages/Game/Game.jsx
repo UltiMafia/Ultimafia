@@ -39,7 +39,6 @@ import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
 import SiteLogo from "../../components/SiteLogo";
 import LeaveGameDialog from "../../components/LeaveGameDialog";
-import ReportDialog from "../../components/ReportDialog";
 import { useErrorAlert } from "../../components/Alerts";
 import {
   MaxGameMessageLength,
@@ -89,7 +88,6 @@ import poison from "images/emotes/poison.webp";
 import unicorn from "images/emotes/unicorn.webp";
 import exit from "images/emotes/exit.png";
 import veg from "images/emotes/veg.webp";
-import system from "images/emotes/system.webp";
 import { usePopover } from "components/Popover";
 
 import dice1 from "images/emotes/dice1.webp";
@@ -933,15 +931,10 @@ export function TopBar() {
   const { gameId } = useParams();
   const errorAlert = useErrorAlert();
   const siteInfo = useContext(SiteInfoContext);
-  const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   function onTestClick() {
     for (let i = 0; i < game.setup.total - 1; i++)
       window.open(window.location + "?bot");
-  }
-
-  function onReportClick() {
-    setReportDialogOpen(true);
   }
 
   function onRehostGameClick() {
@@ -1083,17 +1076,6 @@ export function TopBar() {
           </IconButton>
         </Tooltip>
       )}
-
-      <Tooltip title="File Report">
-        <IconButton size="large" onClick={onReportClick}>
-          <img src={system} alt="Report" />
-        </IconButton>
-      </Tooltip>
-      <ReportDialog
-        open={reportDialogOpen}
-        onClose={() => setReportDialogOpen(false)}
-        prefilledArgs={{ game: gameId }}
-      />
 
       {!isPhoneDevice && (
         <Button
@@ -3709,7 +3691,7 @@ function ActionSelect(props) {
                     className="selection"
                     sx={{ fontStyle: "italic", opacity: 0.7 }}
                   >
-                    (hidden)
+                    (target hidden)
                   </Typography>
                 )}
             </Box>

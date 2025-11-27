@@ -118,7 +118,7 @@ export default function AvatarUpload(props) {
 
     // Output size is directly controlled by zoom: zoom * 100
     // zoom = 0.5 → 50px, zoom = 1.0 → 100px, zoom = 2.0 → 200px
-    const outputSize = Math.round(100 * zoom);
+    const outputSize = Math.round(previewSize * zoom);
 
     canvas.width = outputSize;
     canvas.height = outputSize;
@@ -299,7 +299,7 @@ export default function AvatarUpload(props) {
                 overflow: "hidden",
                 border: "2px solid",
                 borderColor: "divider",
-                borderRadius: "50%",
+                borderRadius: props.isSquare ? undefined : "50%",
                 cursor: isDragging ? "grabbing" : "grab",
                 backgroundColor: "background.paper",
               }}
