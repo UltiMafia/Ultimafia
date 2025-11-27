@@ -1,35 +1,28 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { filterProfanity } from "./Basic";
 import { UserContext } from "../Contexts";
 import "css/deck.css";
-import { usePopover } from "./Popover";
+import { usePopover, InfoPopover } from "components/Popover";
+import { Typography } from "@mui/material";
 
 export default function AnonymousDeck(props) {
   const user = useContext(UserContext);
-  const deckRef = useRef();
-  const {
-    InfoPopover,
-    popoverOpen,
-    handleClick,
-    handleMouseEnter,
-    handleMouseLeave,
-  } = usePopover({
+  const popoverProps = usePopover({
     path: `/api/deck/${props.deck.id}`,
     type: "deck",
-    boundingEl: deckRef.current,
-    title: filterProfanity(props.deck.name, user.settings),
   });
+  const { handleClick } = popoverProps;
 
   let displayName = `${props.deck.name} (${props.deck.id})`;
   return (
-    <div
-      className="deck"
-      ref={deckRef}
-      onClick={handleClick}
-      style={{ cursor: "pointer" }}
-    >
-      <InfoPopover />
-      <div className="deck-name">{displayName}</div>
+    <div className="deck">
+      <InfoPopover {...popoverProps} title={filterProfanity(props.deck.name, user.settings)} />
+      <Typography className="deck-name"
+        onClick={handleClick}
+        style={{ cursor: "pointer" }
+      }>
+        {displayName}
+      </Typography>
     </div>
   );
 }

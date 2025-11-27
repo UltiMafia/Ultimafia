@@ -23,7 +23,7 @@ export default function EmotePicker(props) {
   }
   */
 
-  const { popoverOpen, popoverClasses, anchorEl, handleClick, closePopover } =
+  const { popoverOpen, openByClick, anchorEl, handleClick, closePopover } =
     usePopoverOpen();
 
   const userCustomEmotes = emotesToUse || {};
@@ -77,7 +77,7 @@ export default function EmotePicker(props) {
       </Tooltip>
       <Popover
         open={popoverOpen}
-        sx={popoverClasses}
+        sx={{ pointerEvents: openByClick ? "auto" : "none" }}
         anchorEl={anchorEl}
         anchorOrigin={{
           vertical: "top",

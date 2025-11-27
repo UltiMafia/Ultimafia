@@ -9,11 +9,6 @@
   overflow-x: hidden;
 
   color: var(--scheme-color-text);
-  cursor: pointer;
-
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
 }
 
 .deck .fa-lg {
@@ -101,24 +96,6 @@
   display: flex;
   flex-wrap: nowrap;
   flex-flow: column;
-}
-
-.deck::-webkit-scrollbar {
-  height: 5px;
-}
-
-.deck::-webkit-scrollbar-track {
-  background: #1d1d1d;
-  border-radius: 3px;
-}
-
-.deck::-webkit-scrollbar-thumb {
-  background: #121212;
-  border-radius: 5px;
-}
-
-.deck::-webkit-scrollbar-thumb:hover {
-  background: black;
 }
 
 .row .fa,

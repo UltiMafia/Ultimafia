@@ -156,7 +156,7 @@ export function VoteWidget(props) {
   const upvoters = userVotes.slice().filter((vote) => vote.direction === 1);
   const downvoters = userVotes.slice().filter((vote) => vote.direction === -1);
 
-  const { popoverOpen, popoverClasses, anchorEl, handleClick, closePopover } =
+  const { popoverOpen, openByClick, anchorEl, handleClick, closePopover } =
     usePopoverOpen();
 
   function updateItemVoteCount(direction, newDirection) {
@@ -265,7 +265,7 @@ export function VoteWidget(props) {
       />
       <Popover
         open={popoverOpen}
-        sx={popoverClasses}
+        sx={{ pointerEvents: openByClick ? "auto" : "none" }}
         anchorEl={anchorEl}
         anchorOrigin={{
           vertical: "center",
