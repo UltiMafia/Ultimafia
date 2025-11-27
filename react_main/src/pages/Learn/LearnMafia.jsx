@@ -111,20 +111,20 @@ export default function LearnMafia(props) {
           {data.map((entry, index) => (
             <TableRow key={index}>
               <TableCell>
-                <Stack direction="row" spacing={1} sx={{
-                  alignItems: "center",
-                  textAlign: "left",
-                }}>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  sx={{
+                    alignItems: "center",
+                    textAlign: "left",
+                  }}
+                >
                   {entry.icon}
-                  <Typography>
-                    {entry.name}
-                  </Typography>
+                  <Typography>{entry.name}</Typography>
                 </Stack>
               </TableCell>
               <TableCell>
-                <Typography variant="body2">
-                  {entry.text}
-                </Typography>
+                <Typography variant="body2">{entry.text}</Typography>
               </TableCell>
             </TableRow>
           ))}

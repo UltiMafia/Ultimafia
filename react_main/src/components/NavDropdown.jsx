@@ -150,7 +150,7 @@ export default function NavDropdown({
               )}
               {item.text}
             </MenuItem>
-          )
+          );
 
           if (item.path) {
             return (
@@ -164,8 +164,7 @@ export default function NavDropdown({
                 {menuItem}
               </NavLink>
             );
-          }
-          else {
+          } else {
             return menuItem;
           }
         })}
