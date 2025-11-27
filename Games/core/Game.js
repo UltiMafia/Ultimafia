@@ -2524,6 +2524,34 @@ module.exports = class Game {
     return false;
   }
 
+  isSilentMafia() {
+    if (this.getGameSetting("Silent Mafia")) {
+      return true;
+    }
+    return false;
+  }
+
+  isSilentCult() {
+    if (this.getGameSetting("Silent Cult")) {
+      return true;
+    }
+    return false;
+  }
+
+  isDisorganizedMafia() {
+    if (this.getGameSetting("Disorganized Mafia")) {
+      return true;
+    }
+    return false;
+  }
+
+  isDisorganizedCult() {
+    if (this.getGameSetting("Disorganized Cult")) {
+      return true;
+    }
+    return false;
+  }
+
   isCleansingDeaths() {
     if (this.getGameSetting("Cleansing Deaths")) {
       return true;
