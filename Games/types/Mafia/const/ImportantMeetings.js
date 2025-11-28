@@ -21,6 +21,8 @@ const STARTS_WITH_MEETINGS = [
   "Seance with",
   "Sidekick with",
   "Neighbors with",
+  "Fake Cult Meeting with",
+  "Fake Cult Action with",
 ];
 const IMPORTANT_MEETINGS_DAY = [
   "Village",
