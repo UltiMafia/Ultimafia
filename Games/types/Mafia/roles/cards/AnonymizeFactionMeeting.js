@@ -17,30 +17,19 @@ module.exports = class AnonymizeFactionMeeting extends Card {
     for (let faction of FACTION_WITH_MEETING) {
       this.meetingMods[`${faction} Meeting`] = {
         flags: [
-          "group",
-          "speech",
-          "voting",
-          "multiActor",
+          "group", "speech","noVeg",
           "anonymous",
-          "Important",
         ],
-        targets: { include: ["alive"], exclude: [] },
       };
-      this.meetingMods[`Fake ${faction}`] = {
+      this.meetingMods[`${faction} Action`] = {
         flags: [
-          "group",
-          "speech",
-          "voting",
-          "multiActor",
+          "group", "voting", "mustAct", "noVeg", "Important",
           "anonymous",
-          "Important",
         ],
-        targets: { include: ["alive"], exclude: [] },
       };
       this.meetingMods[`${faction} Kill`] = {
         flags: [
           "group",
-          "speech",
           "voting",
           "multiActor",
           "anonymous",
@@ -49,43 +38,6 @@ module.exports = class AnonymizeFactionMeeting extends Card {
         targets: { include: ["alive"], exclude: [] },
       };
     }
-    /*
-    this.meetingMods = {
-      Faction: {
-        flags: [
-          "group",
-          "speech",
-          "voting",
-          "multiActor",
-          "anonymous",
-          "Important",
-        ],
-        targets: { include: ["alive"], exclude: [] },
-      },
-      "Fake Faction": {
-        flags: [
-          "group",
-          "speech",
-          "voting",
-          "multiActor",
-          "anonymous",
-          "Important",
-        ],
-        targets: { include: ["alive"], exclude: [] },
-      },
-      "Faction Kill": {
-        flags: [
-          "group",
-          "speech",
-          "voting",
-          "multiActor",
-          "anonymous",
-          "Important",
-        ],
-        targets: { include: ["alive"], exclude: [] },
-      },
-    };
-    */
 
     role.makeAnonymousFaction = true;
     role.toRevertAnonymousFaction = [];
