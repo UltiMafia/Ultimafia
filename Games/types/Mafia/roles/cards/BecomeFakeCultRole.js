@@ -71,31 +71,49 @@ module.exports = class BecomeFakeCultRole extends Card {
         if (player != this.player) return;
         switchRoleBefore(this.player.role);
         this.player.role.data.reroll = true;
-        this.player.holdItem("IsTheTelevangelist", this.player.role.modifier);
+        //this.player.holdItem("IsTheTelevangelist", this.player.role.modifier);
 
-        let tempModifier = this.player.role.modifier;
-        this.player.setRole(
-          this.player.role.newRole,
-          undefined,
-          false,
-          true,
-          false,
-          "No Change"
-        );
-        this.player.role.name = "Televangelist";
-        let tempApp = {
-          self: this.newRole,
-        };
-        this.player.role.editAppearance(tempApp);
-
-        let role = this.player.addExtraRole(`${"Villager"}:${tempModifier}`);
+        let role = this.player.addExtraRole(this.player.role.newRole);
+        this.giveEffect(player, "Delirious", Infinity, this);
         this.player.passiveExtraRoles.push(role);
+        role.isTelevangelistExtra = true;
       },
       roleAssigned: function (player) {
         if (player !== this.player) {
           return;
         }
-        this.player.holdItem("IsTheTelevangelist", this.player.role.modifier);
+        let meetingName = `Fake Cult Meeting with ${player.name}`;
+        let meetAction = `Fake Cult Action with ${player.name}`;
+          this.player.holdItem(
+                "FakeCultMeeting",
+                meetingName,
+                meetAction
+              );
+          
+        for(let player of this.game.alivePlayers()){
+          if(player.faction == "Cult" && player.role.alignment != "Independent" && !player.role.modifier.split("/").includes("Demonic")){
+            player.holdItem(
+                "FakeCultMeeting",
+                meetingName,
+                meetAction
+              );
+          }
+          else if(this.game.getRoleTags(player.role.name).includes("Faction Meeting Interaction")){
+            player.holdItem(
+                "FakeCultMeeting",
+                meetingName,
+                meetAction
+              );
+          }
+        }
+
+    let role = this.player.addExtraRole(this.player.role.newRole);
+    //this.giveEffect(player, "Delirious", Infinity, this);
+    this.player.passiveExtraRoles.push(role);
+        role.isTelevangelistExtra = true;
+
+        /*
+        //this.player.holdItem("IsTheTelevangelist", this.player.role.modifier);
         let tempModifier = this.player.role.modifier;
         this.player.setRole(
           this.newRole,
@@ -114,6 +132,29 @@ module.exports = class BecomeFakeCultRole extends Card {
 
         let role = this.player.addExtraRole(`${"Villager"}:${tempModifier}`);
         this.player.passiveExtraRoles.push(role);
+    */
+      },
+      state: function (stateInfo) {
+        if (!stateInfo.name.match(/Night/)) {
+          return;
+        }
+        for(let player of this.game.alivePlayers()){
+          if(player.faction == "Cult" && player.role.alignment != "Independent" && !player.role.modifier.split("/").includes("Demonic")){
+            player.holdItem(
+                "FakeCultMeeting",
+                meetingName,
+                meetAction
+              );
+          }
+          else if(this.game.getRoleTags(player.role.name).includes("Faction Meeting Interaction")){
+            player.holdItem(
+                "FakeCultMeeting",
+                meetingName,
+                meetAction
+              );
+          }
+        }
+      
       },
     };
   }
