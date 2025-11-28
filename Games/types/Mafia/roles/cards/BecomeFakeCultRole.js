@@ -157,7 +157,7 @@ module.exports = class BecomeFakeCultRole extends Card {
         }
       },
     };
-
+/*
     this.passiveActions = [
       {
         ability: ["WhenDead", "Block"],
@@ -172,7 +172,7 @@ module.exports = class BecomeFakeCultRole extends Card {
         },
       },
     ];
-
+*/
 
     
   }
