@@ -63,10 +63,21 @@ module.exports = class ModifierLone extends Card {
       this.meetingMods[`${faction} Meeting`] = {
         disabled: true,
       };
+      this.meetingMods[`${faction} Action`] = {
+        disabled: true,
+      };
       this.meetingMods[`Fake ${faction}`] = {
         disabled: true,
       };
       this.meetingMods[`${faction} Kill`] = {
+        disabled: true,
+      };
+    }
+    for(let player of this.game.players){
+       this.meetingMods[`Fake Cult Meeting with ${player.name}`] = {
+        disabled: true,
+      };
+      this.meetingMods[`Fake Cult Action with ${player.name}`] = {
         disabled: true,
       };
     }
