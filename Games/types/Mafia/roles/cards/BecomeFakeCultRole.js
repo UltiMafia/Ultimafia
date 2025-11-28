@@ -1,6 +1,7 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 const { CULT_FACTIONS } = require("../../const/FactionList");
+const { PRIORITY_FULL_DISABLE } = require("../../const/Priority");
 
 module.exports = class BecomeFakeCultRole extends Card {
   constructor(role) {
@@ -154,9 +155,26 @@ module.exports = class BecomeFakeCultRole extends Card {
               );
           }
         }
-      
       },
     };
+
+    this.passiveActions = [
+      {
+        ability: ["WhenDead", "Block"],
+        state: "Night",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_FULL_DISABLE,
+        labels: ["block", "hidden"],
+        role: role,
+        run: function () {
+            this.blockWithDelirium(this.actor, true);
+        },
+      },
+    ];
+
+
+    
   }
 };
 
