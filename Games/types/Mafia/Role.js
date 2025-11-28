@@ -211,6 +211,9 @@ module.exports = class MafiaRole extends Role {
     if (this.player.isDelirious() && types.includes("Information") != true) {
       return false;
     }
+    if(this.isTelevangelistExtra == true && types.includes("Information") != true){
+      return false;
+    }
     if (
       this.player.alive == false &&
       types.includes("OnlyWhenDead") != true &&
