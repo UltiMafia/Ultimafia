@@ -590,7 +590,13 @@ module.exports = class MafiaGame extends Game {
       return true;
     }
     if (this.HavePrologueState == true) {
-      return true;
+      this.events.emit("extraStateCheck", "Prologue");
+          if (!this.ExtraStates.includes("Prologue")) {
+            this.HavePrologueStateBlock = null;
+          }
+          else{
+        return true;
+          }
     }
     if (state == "Day") {
       if (this.HaveHostingStateBlock == "Night") {

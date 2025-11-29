@@ -70,20 +70,20 @@ module.exports = class Card {
       for (let tempMeet of tempMeetings) {
         if (
           tempMeet[1].flags.includes("group") ||
-          tempMeet[1].flags.includes("speech")
+          tempMeet[1].flags.includes("speech") 
         ) {
           this.meetings[tempMeet[0]] = tempMeet[1];
           continue;
         }
         for (let prop in this["meetingMods"]) {
-          if (prop != "*") {
+          if (prop != "*" && prop != "Village") {
             if (tempMeet[0] == prop) {
               prop = tempMeet[0] + " " + this.role.game.DumbMeetingNumber;
             }
           }
         }
         for (let prop in this.role["meetingMods"]) {
-          if (prop != "*") {
+          if (prop != "*" && prop != "Village") {
             if (tempMeet[0] == prop) {
               this.meetingMods[
                 tempMeet[0] + " " + this.role.game.DumbMeetingNumber

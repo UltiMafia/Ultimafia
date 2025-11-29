@@ -5,6 +5,14 @@ module.exports = class AddPrologue extends Card {
   constructor(role) {
     super(role);
     this.listeners = {
+      extraStateCheck: function (stateName) {
+        if (this.game.ExtraStates == null) {
+          this.game.ExtraStates = [];
+        }
+        if (stateName == "Prologue" && !this.game.ExtraStates.includes("Prologue")) {
+          this.game.ExtraStates.push("Prologue");
+        }
+      },
       state: function (stateInfo) {
         if (stateInfo.name.match(/Prologue/)) {
           this.game.HavePrologueState = false;

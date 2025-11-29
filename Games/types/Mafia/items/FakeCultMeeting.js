@@ -12,7 +12,7 @@ const {
 const { PRIORITY_MAFIA_KILL } = require("../const/Priority");
 
 module.exports = class FakeCultMeeting extends Item {
-  constructor(meetingName, actionName) {
+  constructor(meetingName, actionName, game) {
     super("FakeCultMeeting");
 
     this.cannotBeSnooped = true;
@@ -20,7 +20,7 @@ module.exports = class FakeCultMeeting extends Item {
     let flagsMeeting = ["group", "speech","noVeg"];
     let flagsAction = ["group", "voting", "mustAct", "noVeg", "Important"];
 
-    for (let p of this.game.alivePlayers()){
+    for (let p of game.alivePlayers()){
       if(p.role.makeAnonymousFaction){
         flagsMeeting.push("anonymous");
         flagsAction.push("anonymous");
@@ -35,58 +35,66 @@ module.exports = class FakeCultMeeting extends Item {
       states: ["Night"],
       flags: ["group", "speech","noVeg"],
       shouldMeet: function (meetingName) {
-        //let lunatics = this.game.players.filter((p) => p.hasItem("IsTheLunatic"));
-         if((this.game.isSilentCult() && CULT_FACTIONS.includes(this.holder.faction)) )){
-          return false;
-        }
-        
-        let meetingPlayers = this.game.players.filter((p) =>
-          FACTION_WITH_MEETING.includes(p.faction) && ((this.game.isSilentCult() && CULT_FACTIONS.includes(p.faction)) || 
-          (this.game.isSilentMafia() && MAFIA_FACTIONS.includes(p.faction)))
-        );
+            //let lunatics = this.game.players.filter((p) => p.hasItem("IsTheLunatic"));
+            if (this.game.isSilentCult()) {
+              return false;
+            }
+            if (
+              (this.game.isSilentCult() &&
+                CULT_FACTIONS.includes(meetingName.split(" Meeting")[0])) ||
+              (this.game.isSilentMafia() &&
+                MAFIA_FACTIONS.includes(meetingName.split(" Meeting")[0]))
+            ) {
+              return false;
+            }
 
-        if (
-          this.game
-            .getRoleTags(this.holder.role.name)
-            .join("")
-            .includes("Faction Meeting Interaction") &&
-          meetingPlayers.length > 0
-        ) {
-          return true;
-        }
+            let meetingPlayers = this.game.players.filter(
+              (p) =>
+                "Cult" == p.faction || p.hasEffect("TelevangelistEffect")
+            );
 
-        return (
-          FACTION_WITH_MEETING.includes(this.holder.faction)
-        );
-      },
+            if (
+              this.game
+                .getRoleTags(this.player.role.name)
+                .join("")
+                .includes("Faction Meeting Interaction") &&
+              meetingPlayers.length > 0
+            ) {
+              return true;
+            }
+
+            return "Cult" == this.player.faction || this.player.hasEffect("TelevangelistEffect");
+          },
     };
 
-    this.meetings[meetingAction] = {
+    this.meetings[actionName] = {
       actionName: "End Meeting?",
       states: ["Night"],
       flags: ["group", "voting", "mustAct", "noVeg", "Important"],
       inputType: "boolean",
       shouldMeet: function (meetingName) {
-        //let lunatics = this.game.players.filter((p) => p.hasItem("IsTheLunatic"));
-        let meetingPlayers = this.game.players.filter((p) =>
-          FACTION_WITH_MEETING.includes(p.faction)
-            && ((this.game.isSilentCult() && CULT_FACTIONS.includes(p.faction)))
-        );
-
-        if (
-          this.game
-            .getRoleTags(this.holder.role.name)
-            .join("")
-            .includes("Faction Meeting Interaction") &&
-          meetingPlayers.length > 0
-        ) {
-          return true;
-        }
-
-        return (
-          FACTION_WITH_MEETING.includes(this.holder.faction) &&
-          !FACTION_KILL.includes(this.holder.faction)
-        );
+                  //let lunatics = this.game.players.filter((p) => p.hasItem("IsTheLunatic"));
+              if (this.game.isSilentCult()) {
+              return false;
+            }
+                  let meetingPlayers = this.game.players.filter(
+                    (p) =>
+                      "Cult" == p.faction || p.hasEffect("TelevangelistEffect")
+                  );
+      
+                  if (
+                    this.game
+                      .getRoleTags(this.player.role.name)
+                      .join("")
+                      .includes("Faction Meeting Interaction") &&
+                    meetingPlayers.length > 0
+                  ) {
+                    return true;
+                  }
+      
+                  return (
+                    "Cult" == this.player.faction || this.player.hasEffect("TelevangelistEffect")
+                  );
       },
     };
 

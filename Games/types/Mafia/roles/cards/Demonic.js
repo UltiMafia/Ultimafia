@@ -12,8 +12,7 @@ module.exports = class Demonic extends Card {
         }
 
         if (
-          this.player.hasItem("IsTheTelevangelist") ||
-          this.player.role.name == "Televangelist" ||
+          this.player.hasEffect("TelevangelistEffect") ||
           CULT_FACTIONS.includes(this.player.faction)
         ) {
           this.player.queueAlert(
@@ -33,8 +32,7 @@ module.exports = class Demonic extends Card {
           );
         }
         if (
-          this.player.hasItem("IsTheTelevangelist") ||
-          this.player.role.name == "Televangelist"
+          this.player.hasEffect("TelevangelistEffect")
         ) {
           return;
         }
@@ -47,22 +45,6 @@ module.exports = class Demonic extends Card {
         );
       },
       death: function (player, killer, killType, instant) {
-        /*
-        var aliveRoles = this.game
-          .alivePlayers()
-          .filter(
-            (p) =>
-              this.game
-                .getRoleTags(
-                  this.game.formatRoleInternal(p.role.name, p.role.modifier)
-                )
-                .includes("Demonic") &&
-              !(
-                p.hasItem("IsTheTelevangelist") ||
-                p.role.name == "Televangelist"
-              )
-          );
-          */
         var aliveRoles = this.game
           .alivePlayers()
           .filter((p) => p.isDemonic(true));
@@ -71,8 +53,7 @@ module.exports = class Demonic extends Card {
         }
 
         if (
-          this.player.hasItem("IsTheTelevangelist") ||
-          this.player.role.name == "Televangelist"
+          this.player.hasEffect("TelevangelistEffect")
         ) {
           return;
         }

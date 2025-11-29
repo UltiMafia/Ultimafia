@@ -12,6 +12,7 @@ module.exports = class Poet extends Role {
       "WinWithFaction",
       "AddDusk",
       "AddEpilogue",
+      "AddPrologue",
       "ModifierLone",
     ];
 

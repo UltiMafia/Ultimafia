@@ -96,28 +96,28 @@ const gameSettingData = {
 
     //Team
     "Silent Mafia": {
-      category: "Team",
+      category: "Other",
       internal: ["NoChatMafia"],
       tags: ["Information"],
       description: "Mafia cannot speak at night.",
     },
     "Silent Cult": {
-      category: "Team",
+      category: "Other",
       internal: ["NoChatCult"],
       tags: ["Information"],
       description: "Cult cannot speak at night.",
     },
     "Disorganized Mafia": {
-      category: "Team",
+      category: "Other",
       internal: ["MafiaNotLearningRoles"],
       tags: ["Information"],
-      description: "Mafia will not learn their members until the first night.",
+      description: "Mafia will not learn their members until the first night and will not learn each others roles.",
     },
     "Disorganized Cult": {
-      category: "Team",
+      category: "Other",
       internal: ["CultNotLearningRoles"],
       tags: ["Information"],
-      description: "Cult will not learn their members until the first night.",
+      description: "Cult will not learn their members until the first night and will not learn each others roles.",
     },
 
     //Other

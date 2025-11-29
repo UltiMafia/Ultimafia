@@ -442,7 +442,7 @@ module.exports = class MafiaPlayer extends Player {
     return;
   }
 
-  joinMeetings(meetings) {
+  joinMeetings(meetings, extraRole) {
     for (let meetingName in meetings) {
       let options = meetings[meetingName];
 
@@ -452,7 +452,7 @@ module.exports = class MafiaPlayer extends Player {
       }
     }
 
-    super.joinMeetings(meetings);
+    super.joinMeetings(meetings, extraRole);
   }
 
   queueGetItemAlert(itemName) {
@@ -540,7 +540,7 @@ module.exports = class MafiaPlayer extends Player {
           this.game.formatRoleInternal(this.role.name, this.role.modifier)
         )
         .includes("Demonic") &&
-      !(this.hasItem("IsTheTelevangelist") || this.role.name == "Televangelist")
+      !(this.hasEffect("TelevangelistEffect") || this.role.name == "Televangelist")
     ) {
       return true;
     }

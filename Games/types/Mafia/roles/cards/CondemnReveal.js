@@ -12,8 +12,16 @@ module.exports = class CondemnReveal extends Card {
         flags: ["voting"],
         shouldMeet: function () {
           for (let action of this.game.actions[0])
-            if (action.target == this.player && action.hasLabel("condemn"))
-              return true;
+            if (action.target == this.player && action.hasLabel("condemn")){
+              if(action.dominates(action.target, false)){
+                return true;
+              }
+            }
+            else if(action.target == this.player && action.hasLabel("frustration")){
+              if(action.dominates(action.target, false)){
+                return true;
+              }
+            }
 
           return false;
         },
