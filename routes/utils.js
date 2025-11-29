@@ -346,6 +346,37 @@ async function createModAction(modId, name, args) {
   await modAction.save();
 }
 
+async function createViolationTicket({
+  userId,
+  modId,
+  banType,
+  violationId,
+  violationName,
+  violationCategory,
+  notes,
+  length,
+  expiresAt,
+  linkedBanId,
+}) {
+  const violationTicket = new models.ViolationTicket({
+    id: shortid.generate(),
+    userId,
+    modId,
+    banType,
+    violationId,
+    violationName,
+    violationCategory,
+    notes: notes || "",
+    length: length || 0,
+    createdAt: Date.now(),
+    expiresAt: expiresAt || null,
+    linkedBanId: linkedBanId || null,
+  });
+
+  await violationTicket.save();
+  return violationTicket;
+}
+
 module.exports = {
   alphaNumRegex,
   nonAlphaNumRegex,
@@ -370,4 +401,5 @@ module.exports = {
   getModIds,
   modelPageQuery,
   createModAction,
+  createViolationTicket,
 };

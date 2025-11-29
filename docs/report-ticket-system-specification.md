@@ -20,18 +20,24 @@ This document outlines the implementation of an on-site report ticket system tha
 - Rule selection uses `rulesData` from `react_main/src/constants/rules`
 - Success message: "Thank you — your report was delivered to moderators."
 
-### Existing Violation System
+### Existing Ban System
 
-**ViolationTicket Schema** (`db/schemas.js` lines 580-599):
-- Stores completed violations linked to bans
-- Fields: `id`, `userId`, `modId`, `banType`, `violationId`, `violationName`, `violationCategory`, `notes`, `length`, `createdAt`, `expiresAt`, `linkedBanId`
-- Created via `routeUtils.createViolationTicket()` when bans are issued
+**Current Ban Implementation** (`routes/mod.js`):
+- Unified `/api/mod/ban` endpoint handles all ban types (site, game, chat, forum, ranked, competitive)
+- Ban types map to permission arrays:
+  - `site`: `["signIn"]`
+  - `game`: `["playGame"]`
+  - `ranked`: `["playRanked"]`
+  - `competitive`: `["playCompetitive"]`
+  - `chat`: `["publicChat", "privateChat"]`
+  - `forum`: `["vote", "createThread", "postReply", "deleteOwnPost", "editPost"]`
+- Uses `routeUtils.banUser()` to create Ban documents
+- Site bans also update `User.banned` flag and delete sessions
+- **No ViolationTicket system exists yet** - this needs to be built
 
-**Violation Creation Flow** (`routes/mod.js`):
-- `siteBan` and `gameBan` endpoints create ViolationTickets
-- Uses `getValidatedViolation()` to validate violation type against ban type
-- **IMPORTANT**: Offense numbers are NOT automatically calculated - admins manually determine which offense number based on previous violations
-- Violations are created from `data/violations.js` which defines violation types and their offense penalty structures
+**Ban Schema** (`db/schemas.js`):
+- Fields: `id`, `userId`, `modId`, `expires` (0 = permanent), `permissions` (array), `type`, `auto` (boolean)
+- Currently no link to violation tracking or offense numbers
 
 ### Permission System
 
@@ -66,11 +72,66 @@ This document outlines the implementation of an on-site report ticket system tha
 ### Violation Creation
 
 When a report is resolved with a violation:
-- Create a `ViolationTicket` object using existing `routeUtils.createViolationTicket()`
+- Create a `ViolationTicket` object using `routeUtils.createViolationTicket()` (to be implemented)
 - Link the report to the created violation ticket
-- Create appropriate ban if violation warrants it (using existing ban creation flow)
+- Create appropriate ban using existing `routeUtils.banUser()` function
+- **IMPORTANT**: Violation names, categories, and offense structures are manually entered by admins - there is no violations.js file or automatic violation type system
 
 ## Schema Changes
+
+### New ViolationTicket Schema
+
+**Location**: `db/schemas.js` (to be added)
+
+```javascript
+ViolationTicket: new mongoose.Schema({
+  id: { type: String, index: true, unique: true },  // Unique violation ticket ID (shortid)
+  userId: { type: String, index: true },  // User who received the violation
+  modId: { type: String, index: true },  // Admin/mod who issued the violation
+  banType: { type: String, index: true },  // "site", "game", "chat", "forum", "ranked", "competitive"
+  violationId: { type: String, index: true },  // Violation type identifier (admin-defined, e.g., "harassment", "cheating")
+  violationName: { type: String },  // Display name of violation (e.g., "Harassment", "Cheating")
+  violationCategory: { type: String },  // "Community" or "Game"
+  notes: String,  // Admin's notes/explanation
+  length: { type: Number },  // Ban length in milliseconds (Infinity for permanent)
+  createdAt: { type: Number, index: true },  // Timestamp when violation was created
+  expiresAt: { type: Number, index: true },  // When ban expires (null if permanent, matches Ban.expires)
+  linkedBanId: { type: String, index: true },  // Link to Ban document if ban was created
+}, {
+  toObject: { virtuals: true },
+  toJSON: { virtuals: true },
+})
+```
+
+**Indexes Required**:
+- Primary: `id` (unique)
+- Single: `userId`, `modId`, `banType`, `violationId`, `createdAt`, `expiresAt`, `linkedBanId`
+- Compound: `{ userId: 1, createdAt: -1 }` for finding user's violation history
+- Compound: `{ userId: 1, violationId: 1 }` for counting violations by type
+
+**Virtual Populates** (for convenience):
+```javascript
+schemas.ViolationTicket.virtual("user", {
+  ref: "User",
+  localField: "userId",
+  foreignField: "id",
+  justOne: true,
+});
+
+schemas.ViolationTicket.virtual("mod", {
+  ref: "User",
+  localField: "modId",
+  foreignField: "id",
+  justOne: true,
+});
+
+schemas.ViolationTicket.virtual("ban", {
+  ref: "Ban",
+  localField: "linkedBanId",
+  foreignField: "id",
+  justOne: true,
+});
+```
 
 ### New Report Schema
 
@@ -97,13 +158,12 @@ Report: new mongoose.Schema({
   completedBy: { type: String, index: true },  // Admin who completed it (userId)
   // Final ruling when complete (null if dismissed/not actionable):
   finalRuling: {
-    violationId: String,  // Violation type ID from data/violations.js
-    violationName: String,  // Violation display name
+    violationId: String,  // Violation type identifier (admin-defined, e.g., "harassment", "cheating")
+    violationName: String,  // Violation display name (e.g., "Harassment", "Cheating")
     violationCategory: String,  // "Community" or "Game"
-    banType: String,  // "site", "game", "chat", "forum", etc.
-    offenseNumber: Number,  // Which offense (1, 2, 3, etc.) - admin determines
+    banType: String,  // "site", "game", "chat", "forum", "ranked", "competitive"
     banLength: String,  // Ban length string (e.g., "1 day", "3 weeks", "Permaban")
-    banLengthMs: Number,  // Ban length in milliseconds for calculations
+    banLengthMs: Number,  // Ban length in milliseconds for calculations (Infinity for permanent)
     notes: String,  // Admin's notes/explanation
   },
   linkedViolationTicketId: { type: String, index: true },  // Link to ViolationTicket if created
@@ -196,7 +256,54 @@ defaultGroups: {
 }
 ```
 
-### 2. Report Creation - Modify `routes/report.js`
+### 2. Create ViolationTicket Utility Function
+
+**File: `routes/utils.js`**
+
+Add new function to create violation tickets:
+
+```javascript
+async function createViolationTicket({
+  userId,
+  modId,
+  banType,
+  violationId,
+  violationName,
+  violationCategory,
+  notes,
+  length,
+  expiresAt,
+  linkedBanId,
+}) {
+  const violationTicket = new models.ViolationTicket({
+    id: shortid.generate(),
+    userId,
+    modId,
+    banType,
+    violationId,
+    violationName,
+    violationCategory,
+    notes: notes || "",
+    length: length || 0,
+    createdAt: Date.now(),
+    expiresAt: expiresAt || null,
+    linkedBanId: linkedBanId || null,
+  });
+
+  await violationTicket.save();
+  return violationTicket;
+}
+```
+
+Add to module exports:
+```javascript
+module.exports = {
+  // ... existing exports ...
+  createViolationTicket,
+};
+```
+
+### 3. Report Creation - Modify `routes/report.js`
 
 **Current**: Sends to Discord webhook only
 **New**: Create Report document in database
@@ -288,7 +395,7 @@ rateLimits: {
 }
 ```
 
-### 3. New Report Management Routes
+### 4. New Report Management Routes
 
 **File: `routes/mod.js`** (or create `routes/reports.js`)
 
@@ -563,51 +670,59 @@ router.post("/reports/:id/complete", async (req, res) => {
 
     // If not dismissed, create violation ticket and ban
     if (!dismissed && finalRuling) {
-      const { violationDefinitions, violationMapById } = require("../data/violations");
-      const violation = violationMapById[finalRuling.violationId];
-
-      if (!violation) {
-        res.status(400).send("Invalid violation type.");
+      // Validate required fields
+      if (!finalRuling.violationId || !finalRuling.violationName || !finalRuling.banType) {
+        res.status(400).send("Violation ID, name, and ban type are required.");
         return;
       }
 
-      // Validate violation applies to ban type
-      if (!violation.appliesTo.includes(finalRuling.banType)) {
-        res.status(400).send("Violation type is not applicable for this ban type.");
-        return;
+      // Parse ban length from finalRuling
+      let banLengthMs = finalRuling.banLengthMs;
+      if (banLengthMs === undefined || banLengthMs === null) {
+        // Try to parse from banLength string if banLengthMs not provided
+        if (finalRuling.banLength) {
+          banLengthMs = routeUtils.parseTime(finalRuling.banLength);
+          if (finalRuling.banLength.toLowerCase() === "permaban" || 
+              finalRuling.banLength.toLowerCase() === "permanent" ||
+              finalRuling.banLength.toLowerCase() === "loss of privilege") {
+            banLengthMs = Infinity;
+          }
+        } else {
+          res.status(400).send("Ban length is required.");
+          return;
+        }
       }
-
-      // Validate offense number (1-based index into offenses array)
-      if (finalRuling.offenseNumber < 1 || finalRuling.offenseNumber > violation.offenses.length) {
-        res.status(400).send(`Offense number must be between 1 and ${violation.offenses.length}.`);
-        return;
-      }
-
-      // Get ban length from violation offenses array
-      const banLengthStr = violation.offenses[finalRuling.offenseNumber - 1];
       
-      // Parse ban length
-      let banLengthMs = routeUtils.parseTime(banLengthStr);
-      if (banLengthStr.toLowerCase() === "permaban" || banLengthStr.toLowerCase() === "loss of privilege") {
-        banLengthMs = Infinity;
-      } else if (banLengthStr === "-") {
-        banLengthMs = 0;  // No ban for this offense
+      // Handle permanent bans
+      if (banLengthMs === Infinity || banLengthMs === 0) {
+        banLengthMs = 0;  // 0 means permanent in banUser function
       }
 
-      // Determine permissions to ban based on banType
-      let permissions = [];
-      if (finalRuling.banType === "site") {
-        permissions = ["signIn"];
-      } else if (finalRuling.banType === "game") {
-        permissions = ["playGame"];
-      } else if (finalRuling.banType === "playRanked") {
-        permissions = ["playRanked"];
-      } else if (finalRuling.banType === "playCompetitive") {
-        permissions = ["playCompetitive"];
-      } else if (finalRuling.banType === "chat") {
-        permissions = ["publicChat", "privateChat"];
-      } else if (finalRuling.banType === "forum") {
-        permissions = ["createThread", "postReply"];
+      // Determine permissions to ban based on banType (matching existing /ban endpoint)
+      const banPermissions = {
+        forum: ["vote", "createThread", "postReply", "deleteOwnPost", "editPost"],
+        chat: ["publicChat", "privateChat"],
+        game: ["playGame"],
+        ranked: ["playRanked"],
+        competitive: ["playCompetitive"],
+        site: ["signIn"],
+      };
+
+      const banDbTypes = {
+        forum: "forum",
+        chat: "chat",
+        game: "game",
+        ranked: "playRanked",
+        competitive: "playCompetitive",
+        site: "site",
+      };
+
+      const permissions = banPermissions[finalRuling.banType];
+      const banDbType = banDbTypes[finalRuling.banType];
+
+      if (!permissions) {
+        res.status(400).send("Invalid ban type.");
+        return;
       }
 
       // Check if admin has permission to ban this user
@@ -623,13 +738,13 @@ router.post("/reports/:id/complete", async (req, res) => {
         return;
       }
 
-      // Create ban if ban length > 0
-      if (banLengthMs > 0 && permissions.length > 0) {
+      // Create ban if ban length > 0 (or permanent)
+      if (banLengthMs >= 0 && permissions.length > 0) {
         ban = await routeUtils.banUser(
           report.reportedUserId,
-          banLengthMs === Infinity ? 0 : banLengthMs,  // 0 = permanent
+          banLengthMs,  // 0 = permanent, > 0 = temporary
           permissions,
-          finalRuling.banType,
+          banDbType,
           userId
         );
 
@@ -643,25 +758,30 @@ router.post("/reports/:id/complete", async (req, res) => {
         }
       }
 
-      // Create violation ticket
+      // Create violation ticket (even if no ban was created)
       violationTicket = await routeUtils.createViolationTicket({
         userId: report.reportedUserId,
         modId: userId,
         banType: finalRuling.banType,
-        violationId: violation.id,
-        violationName: violation.name,
-        violationCategory: violation.category,
+        violationId: finalRuling.violationId,
+        violationName: finalRuling.violationName,
+        violationCategory: finalRuling.violationCategory || "Community",
         notes: finalRuling.notes || "",
-        length: banLengthMs,
+        length: banLengthMs === 0 ? Infinity : banLengthMs,  // Store Infinity for permanent
         expiresAt: ban ? ban.expires : null,
         linkedBanId: ban ? ban.id : null,
       });
 
       // Send notification to reported user
-      if (banLengthMs > 0) {
+      if (banLengthMs >= 0) {
+        const banExpires = ban && ban.expires > 0 ? new Date(ban.expires) : null;
+        const banMessage = banLengthMs === 0 || banLengthMs === Infinity
+          ? "You have been permanently banned."
+          : `Ban expires on ${banExpires ? banExpires.toLocaleString() : "N/A"}.`;
+        
         await routeUtils.createNotification(
           {
-            content: `You have received a ${violation.name} violation. ${banLengthMs === Infinity ? "You have been permanently banned." : `Ban duration: ${routeUtils.timeDisplay(banLengthMs)}.`}`,
+            content: `You have received a ${finalRuling.violationName} violation. ${banMessage}`,
             icon: "ban",
             link: `/user/${report.reportedUserId}`,
           },
@@ -677,15 +797,13 @@ router.post("/reports/:id/complete", async (req, res) => {
     report.updatedAt = Date.now();
     
     if (!dismissed && finalRuling) {
-      const violation = violationMapById[finalRuling.violationId];
       report.finalRuling = {
-        violationId: violation.id,
-        violationName: violation.name,
-        violationCategory: violation.category,
+        violationId: finalRuling.violationId,
+        violationName: finalRuling.violationName,
+        violationCategory: finalRuling.violationCategory || "Community",
         banType: finalRuling.banType,
-        offenseNumber: finalRuling.offenseNumber,
-        banLength: violation.offenses[finalRuling.offenseNumber - 1],
-        banLengthMs: banLengthMs,
+        banLength: finalRuling.banLength || routeUtils.timeDisplay(banLengthMs === 0 ? Infinity : banLengthMs),
+        banLengthMs: banLengthMs === 0 ? Infinity : banLengthMs,  // Store Infinity for permanent
         notes: finalRuling.notes || "",
       };
       report.linkedViolationTicketId = violationTicket ? violationTicket.id : null;
@@ -802,7 +920,7 @@ router.post("/reports/:id/reopen", async (req, res) => {
 });
 ```
 
-### 4. Frontend Components
+### 5. Frontend Components
 
 **New Page: `react_main/src/pages/Community/Reports.jsx`**
 
@@ -831,12 +949,11 @@ Report detail view with:
 Display final ruling with:
 - Violation name and category
 - Ban type
-- Offense number
 - Ban length
 - Admin notes
 - Links to related ViolationTicket and Ban
 
-### 5. Route Registration
+### 6. Route Registration
 
 **File: `app.js`** (or wherever routes are registered)
 
@@ -869,9 +986,9 @@ app.use("/api/mod", modRouter);  // Should already exist
 
 ### 4. Ban Creation Security
 - Verify admin has sufficient rank to ban target user (current system uses `banRank + 1`)
-- Validate violation type applies to ban type
-- Validate offense number is within valid range
-- Ensure ban length parsing is safe (handle "Permaban", "Loss of privilege", etc.)
+- Validate ban type is one of the supported types (site, game, chat, forum, ranked, competitive)
+- Ensure ban length parsing is safe (handle "Permaban", "Permanent", "Loss of privilege", etc.)
+- Validate violation fields (violationId, violationName, banType) are provided
 
 ### 5. Input Sanitization
 - Limit description length (5000 chars recommended)
@@ -898,18 +1015,26 @@ app.use("/api/mod", modRouter);  // Should already exist
 
 ## Limitations & Considerations
 
-### 1. Offense Number Calculation
-**CRITICAL**: The current system does NOT automatically calculate offense numbers. Admins manually determine which offense number (1st, 2nd, 3rd, etc.) based on their review of previous violations. The report system should:
-- Display previous violations for the reported user (by violation type)
-- Allow admins to manually select offense number
-- Show what ban length each offense number would result in
-- **DO NOT** automatically count violations - this is intentional design
+### 1. Violation Tracking
+**IMPORTANT**: The system does NOT have a predefined violations.js file or automatic violation type system. Admins manually enter:
+- Violation ID (identifier like "harassment", "cheating", etc.)
+- Violation name (display name like "Harassment", "Cheating")
+- Violation category ("Community" or "Game")
+- Ban type and length
 
-### 2. Violation Ticket Linking
-- ViolationTickets are created when bans are issued, not when reports are completed
+The report system should:
+- Display previous ViolationTickets for the reported user (filterable by violationId)
+- Allow admins to manually enter violation details when completing reports
+- Show violation history to help admins determine appropriate ban lengths
+- **DO NOT** automatically calculate offense numbers or ban lengths - admins determine these manually
+
+### 2. Violation Ticket Creation
+- ViolationTickets are created when reports are completed with a violation ruling
+- ViolationTickets can be created even if no ban is issued (if banLengthMs is 0 or ban is not warranted)
 - Reports can be completed without creating violations (if dismissed)
 - Reports can be dismissed even if they seem valid (admin discretion)
-- A single report might result in multiple violations if behavior warrants it (future enhancement)
+- ViolationTickets link to Ban documents when bans are created
+- A single report typically results in one ViolationTicket, but admins can create multiple if needed (future enhancement)
 
 ### 3. Ban Type Complexity
 - Different ban types require different permission arrays
@@ -940,10 +1065,20 @@ app.use("/api/mod", modRouter);  // Should already exist
 - Could send notifications for new reports to Discord mod channel
 - Link Discord messages to report IDs for reference
 
-### 8. Migration
+### 8. Migration & Initial Implementation
+
+**Amnesty Policy**:
+- When the new report system is implemented, an amnesty will be given for all existing violations
+- **All existing violations will be cleared/forgiven EXCEPT permabans**
+- This effectively starts the violation tracking system from scratch
+- Permabans will remain in effect and their ViolationTickets will be preserved for historical reference
+- This allows for a clean slate while maintaining permanent bans for serious offenses
+
+**Data Migration**:
 - No existing report data to migrate (Discord-only currently)
-- Consider importing recent Discord reports if possible
-- Violation history from ViolationTickets can inform offense numbers
+- Consider importing recent Discord reports if possible (optional)
+- Existing Ban documents will remain but ViolationTickets will only be created going forward
+- Historical violation data (if any exists) will not be migrated except for permabans
 
 ### 9. Typology Component
 - Typology component exists in frontend (`react_main/src/pages/User/Profile.jsx` uses it)

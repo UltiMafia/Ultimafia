@@ -6,6 +6,7 @@ import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
 import Forums from "./Forums/Forums";
 import UserSearch from "./UserSearch";
 import Moderation from "./Moderation";
+import Reports from "./Reports";
 import { UserContext } from "../../Contexts";
 
 export default function Community() {
@@ -21,6 +22,8 @@ export default function Community() {
             <Route path="forums/*" element={<Forums />} />
             <Route path="users" element={<UserSearch />} />
             <Route path="moderation" element={<Moderation />} />
+            <Route path="reports/:reportId" element={<Reports />} />
+            <Route path="reports" element={<Reports />} />
             <Route path="*" element={<Navigate to="forums" />} />
           </Routes>
         </Card>
