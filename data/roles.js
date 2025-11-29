@@ -420,7 +420,7 @@ const roleData = {
       tags: ["Kill Interaction", "Extra Lives", "Visiting", "Advanced"],
       description: [
         "Each night, can choose to visit two players.",
-        `If the first player the Medic visits dies, the second player the Medic visits will become gain an extra life.`,
+        `If the first player the Medic visits dies, the second player the Medic visits will gain an extra life.`,
       ],
       nightOrder: [["Give Extra Life", PRIORITY_NIGHT_SAVER]],
     },
@@ -4869,7 +4869,7 @@ const roleData = {
     },
     Clown: {
       alignment: "Independent",
-      tags: ["Condmen", "Mafia", "Win Con", "Visiting", "Expert"],
+      tags: ["Condemn", "Mafia", "Win Con", "Visiting", "Expert"],
       description: [
         "Each night, can choose to visit one player.",
         "All Mafia-aligned players will learn if a Clown is present.",
