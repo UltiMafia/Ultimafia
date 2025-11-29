@@ -1,7 +1,10 @@
 const IMPORTANT_MEETINGS_NIGHT = [
   "Cult",
   "Mafia",
+  "Cult Action",
   "Cult Meeting",
+  "Mafia Meeting",
+  "Red Mafia Meeting",
   "Fake Cult",
   "Mafia Kill",
   "Red Mafia Kill",
@@ -18,6 +21,8 @@ const STARTS_WITH_MEETINGS = [
   "Seance with",
   "Sidekick with",
   "Neighbors with",
+  "Fake Cult Meeting with",
+  "Fake Cult Action with",
 ];
 const IMPORTANT_MEETINGS_DAY = [
   "Village",

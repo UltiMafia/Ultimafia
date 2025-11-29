@@ -12,8 +12,7 @@ module.exports = class Demonic extends Card {
         }
 
         if (
-          this.player.hasItem("IsTheTelevangelist") ||
-          this.player.role.name == "Televangelist" ||
+          this.player.hasEffect("TelevangelistEffect") ||
           CULT_FACTIONS.includes(this.player.faction)
         ) {
           this.player.queueAlert(
@@ -32,10 +31,7 @@ module.exports = class Demonic extends Card {
             `The Cult has Choosen you to perform the Demonic Ritual! Cult dies if no Demonic Players are alive so you must die to Stop them!`
           );
         }
-        if (
-          this.player.hasItem("IsTheTelevangelist") ||
-          this.player.role.name == "Televangelist"
-        ) {
+        if (this.player.hasEffect("TelevangelistEffect")) {
           return;
         }
         this.game.queueAlert(
@@ -47,22 +43,6 @@ module.exports = class Demonic extends Card {
         );
       },
       death: function (player, killer, killType, instant) {
-        /*
-        var aliveRoles = this.game
-          .alivePlayers()
-          .filter(
-            (p) =>
-              this.game
-                .getRoleTags(
-                  this.game.formatRoleInternal(p.role.name, p.role.modifier)
-                )
-                .includes("Demonic") &&
-              !(
-                p.hasItem("IsTheTelevangelist") ||
-                p.role.name == "Televangelist"
-              )
-          );
-          */
         var aliveRoles = this.game
           .alivePlayers()
           .filter((p) => p.isDemonic(true));
@@ -70,10 +50,7 @@ module.exports = class Demonic extends Card {
           return;
         }
 
-        if (
-          this.player.hasItem("IsTheTelevangelist") ||
-          this.player.role.name == "Televangelist"
-        ) {
+        if (this.player.hasEffect("TelevangelistEffect")) {
           return;
         }
 

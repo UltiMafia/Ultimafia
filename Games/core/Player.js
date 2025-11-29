@@ -1171,7 +1171,6 @@ module.exports = class Player {
 
   meet() {
     if (this.role) this.joinMeetings(this.role.meetings);
-
     if (this.ExtraRoles) {
       for (let extraRole of this.ExtraRoles) {
         this.joinMeetings(extraRole.meetings, extraRole);
@@ -1185,7 +1184,6 @@ module.exports = class Player {
     if (extraRole == null) {
       extraRole = this.role;
     }
-
     var currentStateName = this.game.getStateName();
     var [inExclusive, maxPriority] = this.getMeetingsExclusivity();
 

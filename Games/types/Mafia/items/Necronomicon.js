@@ -46,10 +46,7 @@ module.exports = class Necronomicon extends Item {
           return;
         }
 
-        if (
-          this.holder.hasItem("IsTheTelevangelist") ||
-          this.holder.role.name == "Televangelist"
-        ) {
+        if (this.holder.hasEffect("TelevangelistEffect")) {
           return;
         }
 

@@ -619,6 +619,11 @@ module.exports = class Meeting {
             case "members":
               if (this.members[player.id]) includePlayer[player.id] = include;
               break;
+            case "membersIfOpen":
+              if (!this.anonymous) {
+                if (this.members[player.id]) includePlayer[player.id] = include;
+              }
+              break;
             case "alive":
               if (player.alive) includePlayer[player.id] = include;
               break;

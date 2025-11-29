@@ -68,9 +68,6 @@ module.exports = class WinWithFaction extends Card {
             .filter((p) => p.role.name === "Mastermind");
           factionCount += aliveMastermind.length;
         }
-        let lunatics = this.game.players.filter((p) =>
-          p.hasItem("IsTheTelevangelist")
-        );
 
         const hasMajority = factionCount >= aliveCount / 2 && aliveCount > 0;
         const assassinInGame = this.game
@@ -245,12 +242,7 @@ module.exports = class WinWithFaction extends Card {
           let demonicPlayers = this.game
             .alivePlayers()
             .filter(
-              (p) =>
-                p.isDemonic(true) &&
-                !(
-                  p.hasItem("IsTheTelevangelist") ||
-                  p.role.name == "Televangelist"
-                )
+              (p) => p.isDemonic(true) && !p.hasEffect("TelevangelistEffect")
             );
           if (demonicPlayers.length > 0) {
             let demonicAndCult = this.game
@@ -277,12 +269,7 @@ module.exports = class WinWithFaction extends Card {
           let demonicPlayers = this.game
             .alivePlayers()
             .filter(
-              (p) =>
-                p.isDemonic(true) &&
-                !(
-                  p.hasItem("IsTheTelevangelist") ||
-                  p.role.name == "Televangelist"
-                )
+              (p) => p.isDemonic(true) && !p.hasEffect("TelevangelistEffect")
             );
           let deadCult = this.game
             .deadPlayers()
@@ -511,11 +498,19 @@ module.exports = class WinWithFaction extends Card {
 
         if (
           !FACTION_LEARN_TEAM.includes(this.player.faction) &&
-          !this.player.hasItem("IsTheTelevangelist")
+          !this.player.hasEffect("TelevangelistEffect")
         )
           return;
 
         if (this.oblivious["Faction"]) return;
+        if (
+          (this.game.isDisorganizedCult() &&
+            CULT_FACTIONS.includes(this.player.faction)) ||
+          (this.game.isDisorganizedMafia() &&
+            MAFIA_FACTIONS.includes(this.player.faction))
+        ) {
+          return;
+        }
 
         const assassinInGame = this.game
           .alivePlayers()
@@ -526,7 +521,7 @@ module.exports = class WinWithFaction extends Card {
           return;
         }
 
-        if (this.player.hasItem("IsTheTelevangelist")) {
+        if (this.player.hasEffect("TelevangelistEffect")) {
           this.player.role.appearance.reveal = "Televangelist";
           for (let player of this.game.players) {
             if (
@@ -535,7 +530,7 @@ module.exports = class WinWithFaction extends Card {
               player.role.name !== "Politician" &&
               player.role.name !== "Hitchhiker" &&
               !player.role.oblivious["self"] &&
-              !player.hasItem("IsTheTelevangelist")
+              !player.hasEffect("TelevangelistEffect")
             ) {
               this.revealToPlayer(player);
             }
@@ -550,11 +545,11 @@ module.exports = class WinWithFaction extends Card {
             player.role.name !== "Politician" &&
             player.role.name !== "Hitchhiker" &&
             !player.role.oblivious["self"] &&
-            !player.hasItem("IsTheTelevangelist")
+            !player.hasEffect("TelevangelistEffect")
           ) {
             this.revealToPlayer(player);
           } else if (
-            player.hasItem("IsTheTelevangelist") &&
+            player.hasEffect("TelevangelistEffect") &&
             !this.game
               .getRoleTags(this.player.role.name)
               .join("")
@@ -591,6 +586,108 @@ module.exports = class WinWithFaction extends Card {
         }
       },
       state: function (stateInfo) {
+        if (
+          stateInfo.name.match(/Night/) &&
+          this.game.HasGivenTeamInfo != true
+        ) {
+          this.game.HasGivenTeamInfo = true;
+          const assassinInGame = this.game
+            .alivePlayers()
+            .filter((p) => p.hasEffect("AssassinEffect"));
+          if (assassinInGame.length <= 0) {
+            if (this.game.isDisorganizedMafia()) {
+              for (let player of this.game.players) {
+                if (player.role.oblivious["Faction"]) continue;
+
+                if (MAFIA_FACTIONS.includes(player.faction)) {
+                  for (let player2 of this.game.players) {
+                    if (player2.role.oblivious["self"]) {
+                      continue;
+                    }
+                    if (player2.role.alignment == "Independent") {
+                      continue;
+                    }
+                    if (
+                      player2 != player &&
+                      player.faction == player2.faction
+                    ) {
+                      let tempTempAppearanceMods =
+                        player.tempAppearanceMods["reveal"];
+                      let tempTempAppearance = player.tempAppearance["reveal"];
+                      player.setTempAppearance(
+                        "reveal",
+                        this.game.formatRoleInternal("Mafia", "")
+                      );
+                      player.role.revealToPlayer(player2);
+                      player.tempAppearanceMods["reveal"] =
+                        tempTempAppearanceMods;
+                      player.tempAppearance["reveal"] = tempTempAppearance;
+                    }
+                  }
+                }
+              }
+            } //Disorg Maf
+            if (this.game.isDisorganizedCult()) {
+              for (let player of this.game.players) {
+                if (player.role.oblivious["Faction"]) continue;
+
+                if (
+                  CULT_FACTIONS.includes(player.faction) ||
+                  player.name == "Televangelist"
+                ) {
+                  for (let player2 of this.game.players) {
+                    if (player2.role.oblivious["self"]) {
+                      continue;
+                    }
+                    if (player2.role.alignment == "Independent") {
+                      continue;
+                    }
+                    if (
+                      player.role.name == "Televangelist" &&
+                      player2.faction == "Cult"
+                    ) {
+                      player.role.revealToPlayer(player2);
+                    } else if (
+                      player2 != player &&
+                      (player.faction == player2.faction ||
+                        player2.role.name == "Televangelist") &&
+                      !player.role.modifier.split("/").includes("Demonic")
+                    ) {
+                      let tempTempAppearanceMods =
+                        player.tempAppearanceMods["reveal"];
+                      let tempTempAppearance = player.tempAppearance["reveal"];
+                      player.setTempAppearance(
+                        "reveal",
+                        this.game.formatRoleInternal("Cult", "")
+                      );
+                      player.role.revealToPlayer(player2);
+                      player.tempAppearanceMods["reveal"] =
+                        tempTempAppearanceMods;
+                      player.tempAppearance["reveal"] = tempTempAppearance;
+                    } else if (
+                      player2 != player &&
+                      player.faction == player2.faction &&
+                      player.role.modifier.split("/").includes("Demonic")
+                    ) {
+                      let tempTempAppearanceMods =
+                        player.tempAppearanceMods["reveal"];
+                      let tempTempAppearance = player.tempAppearance["reveal"];
+                      player.setTempAppearance(
+                        "reveal",
+                        this.game.formatRoleInternal("Cult", "Demonic")
+                      );
+                      player.role.revealToPlayer(player2);
+                      player.tempAppearanceMods["reveal"] =
+                        tempTempAppearanceMods;
+                      player.tempAppearance["reveal"] = tempTempAppearance;
+                    }
+                  }
+                }
+              }
+            } //Disorg Cult
+          } //Assassin
+        } //night
+
         if (stateInfo.name.match(/Dawn/) || stateInfo.name.match(/Dusk/)) {
           for (let z = 0; z < this.game.PossibleRoles.length; z++) {
             if (

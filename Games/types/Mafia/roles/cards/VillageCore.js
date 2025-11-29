@@ -4,10 +4,11 @@ const { PRIORITY_VILLAGE } = require("../../const/Priority");
 module.exports = class VillageCore extends Card {
   constructor(role) {
     super(role);
-
+    /*
     if (role.isExtraRole == true) {
       return;
     }
+    */
 
     this.meetings = {
       Village: {
@@ -106,7 +107,7 @@ module.exports = class VillageCore extends Card {
             this.game.HaveHostingState != true
           ) {
             for (let player of this.game.players) {
-              if (player.role.name == "Host") {
+              if (player.role.name == "Host" || player.role.name == "Poet") {
                 return false;
               }
             }

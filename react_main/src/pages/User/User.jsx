@@ -424,7 +424,12 @@ export function Avatar(props) {
       }}
     >
       {edit && (
-        <AvatarUpload className="edit" name="avatar" onFileUpload={onUpload} isSquare={isSquare}>
+        <AvatarUpload
+          className="edit"
+          name="avatar"
+          onFileUpload={onUpload}
+          isSquare={isSquare}
+        >
           <i className="far fa-file-image" />
         </AvatarUpload>
       )}

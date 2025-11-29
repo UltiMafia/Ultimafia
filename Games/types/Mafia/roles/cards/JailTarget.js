@@ -18,15 +18,17 @@ module.exports = class JailTarget extends Card {
         this.data.meetingName = "Jail with " + this.player.name;
         this.meetings[this.data.meetingName] = this.meetings["JailPlaceholder"];
         delete this.meetings["JailPlaceholder"];
-      },
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Meeting", "Kill"])) {
-          return;
-        }
 
-        if (stateInfo.name.match(/Day/)) {
-          this.hasBeenDay = true;
-          return;
+        //this.meetings[this.data.meetingName] = this.meetings["JailPlaceholder"];
+        //delete this.meetings["JailPlaceholder"];
+      },
+      state: function () {
+        if (!this.data.meetingName) {
+          this.data.meetingName = "Jail with " + this.player.name;
+          this.data.meetingName = "Jail with " + this.player.name;
+          this.meetings[this.data.meetingName] =
+            this.meetings["JailPlaceholder"];
+          delete this.meetings["JailPlaceholder"];
         }
       },
       meetingsMade: function () {
@@ -40,52 +42,17 @@ module.exports = class JailTarget extends Card {
       },
     };
 
-    this.stateMods = {
-      Day: {
-        type: "delayActions",
-        delayActions: true,
-      },
-      /*
-      Overturn: {
-        type: "delayActions",
-        delayActions: true,
-      },
-      Court: {
-        type: "delayActions",
-        delayActions: true,
-      },
-      Jailing: {
-        type: "add",
-        index: 5,
-        length: 1000 * 30,
-        shouldSkip: function () {
-          if (!this.player.alive) {
-            return true;
-          }
-          for (let action of this.game.actions[0]) {
-            if (action.hasLabel("condemn")) {
-              return true;
-            }
-          }
-          return false;
-        },
-      },
-      */
-    };
-
     this.meetings = {
       "Jail Target": {
         states: ["Dusk"],
         flags: ["voting"],
         shouldMeet: function () {
-          if (
-            !this.hasAbility(["Meeting", "Kill"]) ||
-            this.hasBeenDay != true
-          ) {
+          if (!this.hasAbility(["Meeting", "Kill"])) {
             return false;
           }
           for (let action of this.game.actions[0]) {
             if (action.hasLabel("condemn")) {
+              this.player.sendAlert("condemn is true");
               return false;
             }
           }
@@ -99,13 +66,16 @@ module.exports = class JailTarget extends Card {
             if (!this.role.hasAbility(["Meeting", "Jail"])) {
               return;
             }
+            this.actor.sendAlert(
+              "JailPlaceholder Found " + this.role.data.meetingName
+            );
             if (this.dominates()) {
               this.target.holdItem(
                 "Handcuffs",
-                this.actor.role.data.meetingName,
+                this.role.data.meetingName,
                 this.actor
               );
-              this.actor.role.data.prisoner = this.target;
+              this.role.data.prisoner = this.target;
             }
           },
         },
@@ -140,14 +110,15 @@ module.exports = class JailTarget extends Card {
         action: {
           labels: ["kill", "jail"],
           priority: PRIORITY_KILL_DEFAULT,
+          role: this.role,
           run: function () {
-            var prisoner = this.actor.role.data.prisoner;
+            var prisoner = this.role.data.prisoner;
 
             if (!prisoner) return;
 
             //let jailMeeting = this.actor.role.data.jailMeeting;
             //if (!jailMeeting.hasJoined(prisoner)) return;
-            if (this.actor.role.data.jailSuccess == false) return;
+            if (this.role.data.jailSuccess == false) return;
 
             if (this.target === "Yes" && this.dominates(prisoner)) {
               prisoner.kill("basic", this.actor);
