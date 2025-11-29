@@ -81,38 +81,48 @@ module.exports = class BecomeFakeCultRole extends Card {
         role.isTelevangelistExtra = true;
       },
       roleAssigned: function (player) {
-        if (player !== this.player ) {
+        if (player !== this.player) {
           return;
         }
         let meetingName = `Fake Cult Meeting with ${player.name}`;
         let meetAction = `Fake Cult Action with ${player.name}`;
-          this.player.holdItem(
-                "FakeCultMeeting",
-                meetingName,
-                meetAction, this.game
-              );
-        for(let player2 of this.game.alivePlayers()){
-          if(player2.faction == "Cult" && player2.role.alignment != "Independent" && !player2.role.modifier.split("/").includes("Demonic")){
+        this.player.holdItem(
+          "FakeCultMeeting",
+          meetingName,
+          meetAction,
+          this.game
+        );
+        for (let player2 of this.game.alivePlayers()) {
+          if (
+            player2.faction == "Cult" &&
+            player2.role.alignment != "Independent" &&
+            !player2.role.modifier.split("/").includes("Demonic")
+          ) {
             player2.holdItem(
-                "FakeCultMeeting",
-                meetingName,
-                meetAction, this.game
-              );
-          }
-          else if(this.game.getRoleTags(player2.role.name).includes("Faction Meeting Interaction")){
+              "FakeCultMeeting",
+              meetingName,
+              meetAction,
+              this.game
+            );
+          } else if (
+            this.game
+              .getRoleTags(player2.role.name)
+              .includes("Faction Meeting Interaction")
+          ) {
             player2.holdItem(
-                "FakeCultMeeting",
-                meetingName,
-                meetAction, this.game
-              );
+              "FakeCultMeeting",
+              meetingName,
+              meetAction,
+              this.game
+            );
           }
         }
-        if(this.data.reroll){
+        if (this.data.reroll) {
           return;
         }
-    let role = this.player.addExtraRole(this.player.role.newRole);
-    //this.giveEffect(player, "Delirious", Infinity, this);
-    this.player.passiveExtraRoles.push(role);
+        let role = this.player.addExtraRole(this.player.role.newRole);
+        //this.giveEffect(player, "Delirious", Infinity, this);
+        this.player.passiveExtraRoles.push(role);
         role.isTelevangelistExtra = true;
 
         /*
@@ -145,24 +155,34 @@ module.exports = class BecomeFakeCultRole extends Card {
         let meetAction = `Fake Cult Action with ${this.player.name}`;
 
         this.player.holdItem(
-                "FakeCultMeeting",
-                meetingName,
-                meetAction, this.game
-              );
-        for(let player of this.game.alivePlayers()){
-          if(player.faction == "Cult" && player.role.alignment != "Independent" && !player.role.modifier.split("/").includes("Demonic")){
+          "FakeCultMeeting",
+          meetingName,
+          meetAction,
+          this.game
+        );
+        for (let player of this.game.alivePlayers()) {
+          if (
+            player.faction == "Cult" &&
+            player.role.alignment != "Independent" &&
+            !player.role.modifier.split("/").includes("Demonic")
+          ) {
             player.holdItem(
-                "FakeCultMeeting",
-                meetingName,
-                meetAction, this.game
-              );
-          }
-          else if(this.game.getRoleTags(player.role.name).includes("Faction Meeting Interaction")){
+              "FakeCultMeeting",
+              meetingName,
+              meetAction,
+              this.game
+            );
+          } else if (
+            this.game
+              .getRoleTags(player.role.name)
+              .includes("Faction Meeting Interaction")
+          ) {
             player.holdItem(
-                "FakeCultMeeting",
-                meetingName,
-                meetAction, this.game
-              );
+              "FakeCultMeeting",
+              meetingName,
+              meetAction,
+              this.game
+            );
           }
         }
       },
@@ -195,29 +215,29 @@ module.exports = class BecomeFakeCultRole extends Card {
         }
       },
       vote: function (vote) {
-        if(vote.voter == this.player){
-          for(let player of this.game.players){
-            if(player.id == vote.target){
-            var action = new Action({
-            actor: this.player,
-            target: player,
-            game: this.player.game,
-            priority: 0,
-            role: this.role,
-            labels: ["hidden", "absolute", "condemn", "overthrow"],
-            run: function () {
-             for(let player of this.game.players){
-              if(player.faction != "Cult"){
-                continue;
-              }
-              player.queueAlert(
-                  `${this.actor.name} has selected ${this.target.name}.`
-                );
-             }
-            },
-          });
-          this.game.instantAction(action);
-          return;
+        if (vote.voter == this.player) {
+          for (let player of this.game.players) {
+            if (player.id == vote.target) {
+              var action = new Action({
+                actor: this.player,
+                target: player,
+                game: this.player.game,
+                priority: 0,
+                role: this.role,
+                labels: ["hidden", "absolute", "condemn", "overthrow"],
+                run: function () {
+                  for (let player of this.game.players) {
+                    if (player.faction != "Cult") {
+                      continue;
+                    }
+                    player.queueAlert(
+                      `${this.actor.name} has selected ${this.target.name}.`
+                    );
+                  }
+                },
+              });
+              this.game.instantAction(action);
+              return;
             }
           }
           var action2 = new Action({
@@ -228,18 +248,17 @@ module.exports = class BecomeFakeCultRole extends Card {
             role: this.role,
             labels: ["hidden", "absolute", "condemn", "overthrow"],
             run: function () {
-             for(let player of this.game.players){
-              if(player.faction != "Cult"){
-                continue;
-              }
-              player.queueAlert(
+              for (let player of this.game.players) {
+                if (player.faction != "Cult") {
+                  continue;
+                }
+                player.queueAlert(
                   `${this.actor.name} has selected ${this.target}.`
                 );
-             }
+              }
             },
           });
           this.game.instantAction(action2);
-
         }
       },
     };
@@ -254,31 +273,29 @@ module.exports = class BecomeFakeCultRole extends Card {
         labels: ["block", "hidden"],
         role: role,
         run: function () {
-            for(let action of this.game.actions[0]){
-              if(action.actor == this.actor){
-                if(action.role.isTelevangelistExtra == true){
-                if(action.labels.includes("investigate") || action.labels.includes("charge")){
+          for (let action of this.game.actions[0]) {
+            if (action.actor == this.actor) {
+              if (action.role.isTelevangelistExtra == true) {
+                if (
+                  action.labels.includes("investigate") ||
+                  action.labels.includes("charge")
+                ) {
                   continue;
-                }
-                else if(action.labels.includes("Uncharge")){
-                 let tempRun = function () {
-                  this.role.revived = false;
-                 };
-                  action.run = tempRun.bind(action); 
-                }
-                else{
+                } else if (action.labels.includes("Uncharge")) {
+                  let tempRun = function () {
+                    this.role.revived = false;
+                  };
+                  action.run = tempRun.bind(action);
+                } else {
                   let tempRun = function () {};
                   action.run = tempRun.bind(action);
                 }
               }
-              }
             }
+          }
         },
       },
     ];
-
-
-    
   }
 };
 

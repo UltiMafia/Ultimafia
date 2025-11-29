@@ -5,7 +5,7 @@ const { PRIORITY_MODIFY_ACTION_DELAY } = require("../../const/Priority");
 module.exports = class ModifierLazy extends Card {
   constructor(role) {
     super(role);
-        this.passiveActions = [
+    this.passiveActions = [
       {
         ability: ["Blocking", "Modifier", "WhenDead"],
         state: "Night",
@@ -15,28 +15,28 @@ module.exports = class ModifierLazy extends Card {
         labels: ["delayAction"],
         role: role,
         run: function () {
-            if (this.dominates(this.actor)) {
-              for (let action of this.game.actions[0]) {
-                if (action.hasLabel("mafia")) {
-                  continue;
-                }
-                if (action.hasLabel("delayAction")) {
-                  continue;
-                }
-                if(action.priority <= this.priority){
-                  continue;
-                }
-                if (action.delay >= 1) {
-                  continue;
-                }
-                if (action.actor == this.actor) {
-                  this.game.dequeueAction(action, true);
-                  action.delay = 1;
-                  this.game.queueAction(action);
-                }
+          if (this.dominates(this.actor)) {
+            for (let action of this.game.actions[0]) {
+              if (action.hasLabel("mafia")) {
+                continue;
+              }
+              if (action.hasLabel("delayAction")) {
+                continue;
+              }
+              if (action.priority <= this.priority) {
+                continue;
+              }
+              if (action.delay >= 1) {
+                continue;
+              }
+              if (action.actor == this.actor) {
+                this.game.dequeueAction(action, true);
+                action.delay = 1;
+                this.game.queueAction(action);
               }
             }
-            /*
+          }
+          /*
             for (let action of this.game.actions[0]) {
               if (
                 action.actors.includes(this.actor) &&
@@ -54,7 +54,7 @@ module.exports = class ModifierLazy extends Card {
               }
             }
             */
-          },
+        },
       },
     ];
     /*

@@ -16,19 +16,19 @@ module.exports = class JailTarget extends Card {
         }
 
         this.data.meetingName = "Jail with " + this.player.name;
-          this.meetings[this.data.meetingName] = this.meetings["JailPlaceholder"];
-          delete this.meetings["JailPlaceholder"];
-          
-        
+        this.meetings[this.data.meetingName] = this.meetings["JailPlaceholder"];
+        delete this.meetings["JailPlaceholder"];
+
         //this.meetings[this.data.meetingName] = this.meetings["JailPlaceholder"];
         //delete this.meetings["JailPlaceholder"];
       },
       state: function () {
-        if(!this.data.meetingName){
-        this.data.meetingName = "Jail with " + this.player.name;
-        this.data.meetingName = "Jail with " + this.player.name;
-        this.meetings[this.data.meetingName] = this.meetings["JailPlaceholder"];
-        delete this.meetings["JailPlaceholder"];
+        if (!this.data.meetingName) {
+          this.data.meetingName = "Jail with " + this.player.name;
+          this.data.meetingName = "Jail with " + this.player.name;
+          this.meetings[this.data.meetingName] =
+            this.meetings["JailPlaceholder"];
+          delete this.meetings["JailPlaceholder"];
         }
       },
       meetingsMade: function () {
@@ -42,15 +42,12 @@ module.exports = class JailTarget extends Card {
       },
     };
 
-
     this.meetings = {
       "Jail Target": {
         states: ["Dusk"],
         flags: ["voting"],
         shouldMeet: function () {
-          if (
-            !this.hasAbility(["Meeting", "Kill"])
-          ) {
+          if (!this.hasAbility(["Meeting", "Kill"])) {
             return false;
           }
           for (let action of this.game.actions[0]) {
@@ -69,7 +66,9 @@ module.exports = class JailTarget extends Card {
             if (!this.role.hasAbility(["Meeting", "Jail"])) {
               return;
             }
-            this.actor.sendAlert("JailPlaceholder Found "+this.role.data.meetingName);
+            this.actor.sendAlert(
+              "JailPlaceholder Found " + this.role.data.meetingName
+            );
             if (this.dominates()) {
               this.target.holdItem(
                 "Handcuffs",

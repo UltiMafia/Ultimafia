@@ -11,7 +11,7 @@ module.exports = class Towncrier extends Role {
       "MeetingFaction",
       "BroadcastMessage",
     ];
-    
+
     this.meetingMods = {
       Village: {
         speechAbilities: [

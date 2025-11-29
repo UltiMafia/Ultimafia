@@ -540,7 +540,10 @@ module.exports = class MafiaPlayer extends Player {
           this.game.formatRoleInternal(this.role.name, this.role.modifier)
         )
         .includes("Demonic") &&
-      !(this.hasEffect("TelevangelistEffect") || this.role.name == "Televangelist")
+      !(
+        this.hasEffect("TelevangelistEffect") ||
+        this.role.name == "Televangelist"
+      )
     ) {
       return true;
     }

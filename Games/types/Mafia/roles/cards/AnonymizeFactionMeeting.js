@@ -16,25 +16,20 @@ module.exports = class AnonymizeFactionMeeting extends Card {
 
     for (let faction of FACTION_WITH_MEETING) {
       this.meetingMods[`${faction} Meeting`] = {
-        flags: [
-          "group", "speech","noVeg",
-          "anonymous",
-        ],
+        flags: ["group", "speech", "noVeg", "anonymous"],
       };
       this.meetingMods[`${faction} Action`] = {
         flags: [
-          "group", "voting", "mustAct", "noVeg", "Important",
+          "group",
+          "voting",
+          "mustAct",
+          "noVeg",
+          "Important",
           "anonymous",
         ],
       };
       this.meetingMods[`${faction} Kill`] = {
-        flags: [
-          "group",
-          "voting",
-          "multiActor",
-          "anonymous",
-          "Important",
-        ],
+        flags: ["group", "voting", "multiActor", "anonymous", "Important"],
         targets: { include: ["alive"], exclude: [] },
       };
     }

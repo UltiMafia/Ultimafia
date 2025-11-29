@@ -6,7 +6,6 @@ module.exports = class FrustratedCondemnation extends Card {
   constructor(role) {
     super(role);
 
-
     this.listeners = {
       AbilityToggle: function (player) {
         if (player != this.player) {

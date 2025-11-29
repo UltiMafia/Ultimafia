@@ -31,9 +31,7 @@ module.exports = class Demonic extends Card {
             `The Cult has Choosen you to perform the Demonic Ritual! Cult dies if no Demonic Players are alive so you must die to Stop them!`
           );
         }
-        if (
-          this.player.hasEffect("TelevangelistEffect")
-        ) {
+        if (this.player.hasEffect("TelevangelistEffect")) {
           return;
         }
         this.game.queueAlert(
@@ -52,9 +50,7 @@ module.exports = class Demonic extends Card {
           return;
         }
 
-        if (
-          this.player.hasEffect("TelevangelistEffect")
-        ) {
+        if (this.player.hasEffect("TelevangelistEffect")) {
           return;
         }
 

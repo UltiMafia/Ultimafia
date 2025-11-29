@@ -9,7 +9,10 @@ module.exports = class AddPrologue extends Card {
         if (this.game.ExtraStates == null) {
           this.game.ExtraStates = [];
         }
-        if (stateName == "Prologue" && !this.game.ExtraStates.includes("Prologue")) {
+        if (
+          stateName == "Prologue" &&
+          !this.game.ExtraStates.includes("Prologue")
+        ) {
           this.game.ExtraStates.push("Prologue");
         }
       },

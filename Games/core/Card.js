@@ -70,7 +70,7 @@ module.exports = class Card {
       for (let tempMeet of tempMeetings) {
         if (
           tempMeet[1].flags.includes("group") ||
-          tempMeet[1].flags.includes("speech") 
+          tempMeet[1].flags.includes("speech")
         ) {
           this.meetings[tempMeet[0]] = tempMeet[1];
           continue;

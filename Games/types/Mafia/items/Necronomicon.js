@@ -46,9 +46,7 @@ module.exports = class Necronomicon extends Item {
           return;
         }
 
-        if (
-          this.holder.hasEffect("TelevangelistEffect")
-        ) {
+        if (this.holder.hasEffect("TelevangelistEffect")) {
           return;
         }
 

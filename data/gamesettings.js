@@ -111,13 +111,15 @@ const gameSettingData = {
       category: "Other",
       internal: ["MafiaNotLearningRoles"],
       tags: ["Information"],
-      description: "Mafia will not learn their members until the first night and will not learn each others roles.",
+      description:
+        "Mafia will not learn their members until the first night and will not learn each others roles.",
     },
     "Disorganized Cult": {
       category: "Other",
       internal: ["CultNotLearningRoles"],
       tags: ["Information"],
-      description: "Cult will not learn their members until the first night and will not learn each others roles.",
+      description:
+        "Cult will not learn their members until the first night and will not learn each others roles.",
     },
 
     //Other

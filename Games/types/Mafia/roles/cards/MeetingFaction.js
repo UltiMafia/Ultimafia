@@ -24,83 +24,82 @@ module.exports = class MeetingFaction extends Card {
     let meetingNameKill = `${role.player.faction} Kill`;
 
     let chatShouldMeet = function (meetingName) {
-            //let lunatics = this.game.players.filter((p) => p.hasItem("IsTheLunatic"));
+      //let lunatics = this.game.players.filter((p) => p.hasItem("IsTheLunatic"));
 
-            if (
-              (this.game.isSilentCult() &&
-                CULT_FACTIONS.includes(meetingName.split(" Meeting")[0])) ||
-              (this.game.isSilentMafia() &&
-                MAFIA_FACTIONS.includes(meetingName.split(" Meeting")[0]))
-            ) {
-              return false;
-            }
+      if (
+        (this.game.isSilentCult() &&
+          CULT_FACTIONS.includes(meetingName.split(" Meeting")[0])) ||
+        (this.game.isSilentMafia() &&
+          MAFIA_FACTIONS.includes(meetingName.split(" Meeting")[0]))
+      ) {
+        return false;
+      }
 
-            let meetingPlayers = this.game.players.filter(
-              (p) =>
-                meetingName.split(" Meeting")[0] == p.faction
-            );
+      let meetingPlayers = this.game.players.filter(
+        (p) => meetingName.split(" Meeting")[0] == p.faction
+      );
 
-            if (
-              this.game
-                .getRoleTags(this.player.role.name)
-                .join("")
-                .includes("Faction Meeting Interaction") &&
-              meetingPlayers.length > 0
-            ) {
-              return true;
-            }
+      if (
+        this.game
+          .getRoleTags(this.player.role.name)
+          .join("")
+          .includes("Faction Meeting Interaction") &&
+        meetingPlayers.length > 0
+      ) {
+        return true;
+      }
 
-            return FACTION_WITH_MEETING.includes(this.player.faction);
-          };
+      return FACTION_WITH_MEETING.includes(this.player.faction);
+    };
     let killShouldMeet = function (meetingName) {
-            //let lunatics = this.game.players.filter((p) => p.hasItem("IsTheLunatic"));
-            let meetingPlayers = this.game.players.filter((p) =>
-              meetingName.split(" Kill")[0] == p.faction
-            );
-            if (
-              this.game
-                .getRoleTags(this.player.role.name)
-                .join("")
-                .includes("Faction Meeting Interaction") &&
-              meetingPlayers.length > 0
-            ) {
-              return true;
-            }
+      //let lunatics = this.game.players.filter((p) => p.hasItem("IsTheLunatic"));
+      let meetingPlayers = this.game.players.filter(
+        (p) => meetingName.split(" Kill")[0] == p.faction
+      );
+      if (
+        this.game
+          .getRoleTags(this.player.role.name)
+          .join("")
+          .includes("Faction Meeting Interaction") &&
+        meetingPlayers.length > 0
+      ) {
+        return true;
+      }
 
-            return FACTION_KILL.includes(this.player.faction);
-          };
-      let actionShouldMeet = function (meetingName) {
-            //let lunatics = this.game.players.filter((p) => p.hasItem("IsTheLunatic"));
-             if (
-              (this.game.isSilentCult() &&
-                CULT_FACTIONS.includes(meetingName.split(" Action")[0])) ||
-              (this.game.isSilentMafia() &&
-                MAFIA_FACTIONS.includes(meetingName.split(" Action")[0]))
-            ) {
-              return false;
-            }
-            let meetingPlayers = this.game.players.filter(
-              (p) =>
-                meetingName.split(" Action")[0] == p.faction &&
-                FACTION_WITH_MEETING.includes(p.faction) &&
-                !FACTION_KILL.includes(p.faction)
-            );
+      return FACTION_KILL.includes(this.player.faction);
+    };
+    let actionShouldMeet = function (meetingName) {
+      //let lunatics = this.game.players.filter((p) => p.hasItem("IsTheLunatic"));
+      if (
+        (this.game.isSilentCult() &&
+          CULT_FACTIONS.includes(meetingName.split(" Action")[0])) ||
+        (this.game.isSilentMafia() &&
+          MAFIA_FACTIONS.includes(meetingName.split(" Action")[0]))
+      ) {
+        return false;
+      }
+      let meetingPlayers = this.game.players.filter(
+        (p) =>
+          meetingName.split(" Action")[0] == p.faction &&
+          FACTION_WITH_MEETING.includes(p.faction) &&
+          !FACTION_KILL.includes(p.faction)
+      );
 
-            if (
-              this.game
-                .getRoleTags(this.player.role.name)
-                .join("")
-                .includes("Faction Meeting Interaction") &&
-              meetingPlayers.length > 0
-            ) {
-              return true;
-            }
+      if (
+        this.game
+          .getRoleTags(this.player.role.name)
+          .join("")
+          .includes("Faction Meeting Interaction") &&
+        meetingPlayers.length > 0
+      ) {
+        return true;
+      }
 
-            return (
-              FACTION_WITH_MEETING.includes(this.player.faction) &&
-              !FACTION_KILL.includes(this.player.faction)
-            );
-          };
+      return (
+        FACTION_WITH_MEETING.includes(this.player.faction) &&
+        !FACTION_KILL.includes(this.player.faction)
+      );
+    };
 
     if (role.player.factionFake == null) {
       role.player.factionFake = role.player.faction;

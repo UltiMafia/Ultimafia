@@ -26,7 +26,7 @@ module.exports = class ContactByRole extends Card {
             item.meetings["Overturn Vote"].speechAbilities = [ability];
           }
           if (item.name == "Room" && item.Room && item.Room.name) {
-            item.meetings[item.Room.name].speechAbilities = [ability]
+            item.meetings[item.Room.name].speechAbilities = [ability];
           }
         }
       },
