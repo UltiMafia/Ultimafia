@@ -15,7 +15,7 @@ module.exports = class EndangeredGraveyard extends Card {
           return;
         }
 
-        if (this.player.hasItem("IsTheTelevangelist")) {
+        if (this.player.hasEffect("TelevangelistEffect")) {
           return;
         }
 
@@ -39,7 +39,7 @@ module.exports = class EndangeredGraveyard extends Card {
           return;
         }
 
-        if (this.player.hasItem("IsTheTelevangelist")) {
+        if (this.player.hasEffect("TelevangelistEffect")) {
           return;
         }
 

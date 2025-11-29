@@ -71,7 +71,8 @@
   height: 1rem;
 
   background-size: 100% 100%;
-  background-image: url("/src/images/items.png");
+  background-image: url("/src/images/modifiers/unknown-modifier.png");
+  image-rendering: crisp-edges;
 }
 
 .modifier {
@@ -262,6 +263,10 @@
 
 .role-icon-vivid-Mafia-Independent {
   background-image: url("/src/images/roles/independent-vivid.png");
+}
+
+.role-icon-event-pool {
+  background-image: url("/src/images/roles/event-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Banished-Village {
@@ -3179,6 +3184,22 @@ Game Settings
 
 .gamesetting-Broadcast-Closed-Roles {
   background-image: url("/src/images/modifiers/loud.png");
+}
+
+.gamesetting-Silent-Mafia {
+  background-image: url("/src/images/modifiers/lone.png");
+}
+
+.gamesetting-Silent-Cult {
+  background-image: url("/src/images/modifiers/lone.png");
+}
+
+.gamesetting-Disorganized-Cult {
+  background-image: url("/src/images/modifiers/clueless.png");
+}
+
+.gamesetting-Disorganized-Mafia {
+  background-image: url("/src/images/modifiers/clueless.png");
 }
 
 /***********

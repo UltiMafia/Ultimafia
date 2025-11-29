@@ -129,7 +129,7 @@ async function cacheUserInfo(userId, reset) {
 
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "_id id name avatar blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday pronouns achievements redHearts goldHearts dailyChallengesCompleted dailyChallenges"
+        "_id id name avatar banner profileBackground blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday pronouns achievements redHearts goldHearts dailyChallengesCompleted dailyChallenges"
       )
       .populate({
         path: "customEmotes",
@@ -173,6 +173,10 @@ async function cacheUserInfo(userId, reset) {
     await client.setAsync(`user:${userId}:info:id`, userId);
     await client.setAsync(`user:${userId}:info:name`, user.name);
     await client.setAsync(`user:${userId}:info:avatar`, user.avatar || false);
+    await client.setAsync(
+      `user:${userId}:info:profileBackground`,
+      user.profileBackground || false
+    );
     await client.setAsync(
       `user:${userId}:info:vanityUrl`,
       vanityUrl ? vanityUrl.url : ""
@@ -220,6 +224,7 @@ async function cacheUserInfo(userId, reset) {
   client.expire(`user:${userId}:info:id`, 3600);
   client.expire(`user:${userId}:info:name`, 3600);
   client.expire(`user:${userId}:info:avatar`, 3600);
+  client.expire(`user:${userId}:info:profileBackground`, 3600);
   client.expire(`user:${userId}:info:vanityUrl`, 3600);
   client.expire(`user:${userId}:info:nameChanged`, 3600);
   client.expire(`user:${userId}:info:bdayChanged`, 3600);
@@ -270,6 +275,8 @@ async function getUserInfo(userId) {
   info.id = await client.getAsync(`user:${userId}:info:id`);
   info.name = await client.getAsync(`user:${userId}:info:name`);
   info.avatar = (await client.getAsync(`user:${userId}:info:avatar`)) == "true";
+  info.profileBackground =
+    (await client.getAsync(`user:${userId}:info:profileBackground`)) == "true";
   info.nameChanged =
     (await client.getAsync(`user:${userId}:info:nameChanged`)) == "true";
   info.bdayChanged =

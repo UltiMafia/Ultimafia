@@ -40,7 +40,7 @@ module.exports = class KillorCharge extends Card {
         },
         action: {
           role: this.role,
-          labels: ["revive"],
+          labels: ["charge"],
           priority: PRIORITY_KILL_DEFAULT - 1,
           run: function () {
             if (this.target == "No") return;
@@ -60,7 +60,7 @@ module.exports = class KillorCharge extends Card {
           return this.revived;
         },
         action: {
-          labels: ["kill"],
+          labels: ["kill", "Uncharge"],
           role: this.role,
           priority: PRIORITY_KILL_DEFAULT + 1,
           run: function () {

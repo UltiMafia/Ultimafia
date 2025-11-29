@@ -116,16 +116,14 @@ router.post("/", async function (req, res) {
           banExpires: e.banExpires,
         })
       );
-    }
-    else if (e.deleted) {
+    } else if (e.deleted) {
       res.status(403);
       res.send(
         JSON.stringify({
           deleted: true,
         })
       );
-    }
-    else {
+    } else {
       logger.error(e);
       res.status(500);
       res.send("5Authentication failed.");
@@ -190,14 +188,18 @@ async function authSuccess(req, uid, email, discordProfile) {
 
     var id = routeUtils.getUserId(req);
     var ip = routeUtils.getIP(req);
-    var user = await models.User.findOne({ email }).select(
+    var user = await models.User.findOne({ email, deleted: false }).select(
       "id deleted discordId"
     );
     var bannedUser = await models.User.findOne({ email, banned: true }).select(
       "id discordId"
     );
+    var deletedUser = await models.User.findOne({
+      email,
+      deleted: true,
+    }).select("id discordId");
 
-    if (!user && !bannedUser) {
+    if (!user && !bannedUser && !deletedUser) {
       //Create new account (5) (6)
       var bannedSameIP = await models.User.find({
         ip: ip,
@@ -356,8 +358,8 @@ async function authSuccess(req, uid, email, discordProfile) {
       await models.Session.deleteMany({ "session.user.id": id }).exec();
 
       return;
-    } else if (user.deleted) {
-      throw { deleted: true, };
+    } else if (!user && deletedUser) {
+      throw { deleted: true };
     } else {
       //Link or refresh account (1) (2) (7)
       id = user.id;

@@ -63,6 +63,30 @@ module.exports = class MafiaRole extends Role {
     }
   }
 
+  getEvents() {
+    let events = this.game.CurrentEvents.filter((r) => r);
+    let banishedEvents = this.game.BanishedEvents.filter((r) => r);
+    if (this.modifier && this.modifier.split("/").includes("Excessive")) {
+      let AllRoles = Object.entries(roleData.Mafia)
+        .filter((m) => m[1].alignment == "Event")
+        .map((r) => r[0]);
+      events = events.concat(AllRoles);
+    }
+    if (this.modifier && this.modifier.split("/").includes("Unrefined")) {
+      events = banishedEvents;
+    } else if (this.modifier && this.modifier.split("/").includes("Refined")) {
+    } else {
+      events;
+      for (let event of banishedEvents) {
+        events.push(event);
+      }
+    }
+    if (events.length <= 0) {
+      events.push(this.game.GameEndEvent);
+    }
+    return events;
+  }
+
   editAppearance(newAppearance, newAppearanceMods) {
     let oldAppearance = {
       self: this.appearance["self"],
@@ -185,6 +209,12 @@ module.exports = class MafiaRole extends Role {
       return false;
     }
     if (this.player.isDelirious() && types.includes("Information") != true) {
+      return false;
+    }
+    if (
+      this.isTelevangelistExtra == true &&
+      types.includes("Information") != true
+    ) {
       return false;
     }
     if (

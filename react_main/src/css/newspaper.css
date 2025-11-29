@@ -106,6 +106,54 @@
   mix-blend-mode: multiply;
 }
 
+.newspaper .obituary-avatar.win-avatar-single {
+  /* No greyscale for win avatars */
+  -webkit-filter: none !important;
+  filter: none !important;
+  mix-blend-mode: normal;
+}
+
+.newspaper .obituary-avatar.win-avatar-grid {
+  display: grid;
+  gap: 8px; /* Space between grid items */
+  flex-shrink: 0;
+
+  /* No greyscale for win avatars */
+  -webkit-filter: none !important;
+  filter: none !important;
+  mix-blend-mode: normal;
+}
+
+/* Ensure avatars within win grid don't overflow their cells */
+.newspaper .obituary-avatar.win-avatar-grid > .win-avatar-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Constrain avatar size within win grid cells */
+.newspaper .obituary-avatar.win-avatar-grid .win-avatar-cell > .avatar {
+  width: var(--target-avatar-size, 80px) !important;
+  height: var(--target-avatar-size, 80px) !important;
+  max-width: 100%;
+  max-height: 100%;
+  flex-shrink: 0;
+}
+
+/* Ensure win message text has proper spacing and doesn't overlap */
+.newspaper .win-message-text {
+  padding-left: 0; /* Remove any default padding that might cause issues */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.newspaper .obituary-avatar.win-avatar-grid > * {
+  /* Ensure child avatars don't have filters */
+  -webkit-filter: none !important;
+  filter: none !important;
+}
+
 .newspaper .obituary-role {
   display: inline-block;
 
@@ -121,6 +169,6 @@
 
 .newspaper .emote {
   -webkit-filter: sepia(80%) contrast(1);
-  filter: sepia(80%) grayscale(1) contrast(1) brightness(80%);
+  filter: contrast(1) brightness(80%);
   mix-blend-mode: multiply;
 }

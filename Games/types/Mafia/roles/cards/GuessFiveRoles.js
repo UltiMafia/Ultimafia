@@ -8,89 +8,46 @@ const {
 module.exports = class GuessFiveRoles extends Card {
   constructor(role) {
     super(role);
-    /*
-    this.meetings = {
-      "Select Players": {
-        actionName: "Select Players (0-5)",
-        states: ["Night"],
-        flags: ["voting", "multi"],
-        targets: { include: ["alive"], exclude: ["", "self"] },
-        multiMin: 0,
-        multiMax: 5,
-        action: {
-          labels: ["investigate", "role"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT - 2,
-          run: function () {
-            this.actor.role.data.targetPlayer = this.target;
-          },
+
+    this.passiveActions = [
+      {
+        ability: ["Information"],
+        state: "Night",
+        actor: role.player,
+        game: role.player.game,
+        priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
+        labels: ["investigate", "role", "hidden"],
+        role: role,
+        run: function () {
+          if (
+            this.role.data.GuessingPlayers == null ||
+            this.role.data.GuessingPlayers.length <= 0
+          )
+            return;
+          if (
+            this.role.data.GuessingRoles == null ||
+            this.role.data.GuessingRoles.length <= 0
+          )
+            return;
+          if (this.role.data.HasInformation == true) return;
+          this.role.data.HasInformation = true;
+
+          let info = this.game.createInformation(
+            "GuessRoleInfo",
+            this.actor,
+            this.game,
+            this.role.data.GuessingPlayers,
+            this.role.data.GuessingRoles,
+            true
+          );
+
+          info.processInfo();
+
+          info.getGuessMessages();
+          this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
         },
       },
-      "Select Roles": {
-        actionName: "Select Roles (0-5)",
-        states: ["Night"],
-        flags: ["voting", "multi"],
-        inputType: "role",
-        targets: { include: ["all"] },
-        multiMin: 0,
-        multiMax: 5,
-        action: {
-          labels: ["investigate", "role"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT - 1,
-          run: function () {
-            this.actor.role.data.targetRole = this.target;
-          },
-        },
-      },
-      "Confirm Guesses": {
-        states: ["Night"],
-        flags: ["voting"],
-        inputType: "boolean",
-        action: {
-          labels: ["investigate"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-          run: function () {
-            if (this.target === "No") return;
-
-            let correctCount = 0;
-
-            let playerSize = this.actor.role.data.targetPlayer.length;
-            let roleSize = this.actor.role.data.targetRole.length;
-            let validSize;
-            if (roleSize > playerSize) {
-              validSize = playerSize;
-            } else {
-              validSize = roleSize;
-            }
-
-            let targetPlayer;
-            let targetRole;
-            for (let x = 0; x < validSize; x++) {
-              targetPlayer = this.actor.role.data.targetPlayer[x];
-              targetRole = this.actor.role.data.targetRole[x];
-              if (targetPlayer && targetRole) {
-                if (targetRole === targetPlayer.role.name) {
-                  correctCount = correctCount + 1;
-                }
-                this.actor.queueAlert(
-                  `:invest: You guessed ${targetPlayer.name} as ${targetRole}.`
-                );
-              }
-            }
-
-            if (this.actor.hasEffect("FalseMode")) {
-              correctCount = validSize - correctCount;
-            }
-
-            this.actor.queueAlert(
-              `:invest: After a long night of investigations, you learn that ${correctCount} of your guesses were correct.`
-            );
-            delete this.actor.role.data.targetPlayer;
-            delete this.actor.role.data.targetRole;
-          },
-        },
-      },
-    };
-*/
+    ];
 
     this.listeners = {
       roleAssigned: function (player) {
@@ -98,59 +55,10 @@ module.exports = class GuessFiveRoles extends Card {
           return;
         }
 
-        this.data.ConvertOptions = this.game.PossibleRoles.filter((r) => r);
         this.data.GuessingPlayers = [];
         this.data.GuessingRoles = [];
         this.data.GuessingCount = 0;
         this.data.HasInformation = false;
-      },
-      // refresh cooldown
-      state: function (stateInfo) {
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-        let guessOptions = this.player.role.data.ConvertOptions;
-        //ConvertOptions.push("None");
-        //this.meetings["Guess Role"].targets = guessOptions;
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          role: this,
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
-          labels: ["investigate", "role", "hidden"],
-          run: function () {
-            if (!this.actor.alive) return;
-            if (
-              this.role.data.GuessingPlayers == null ||
-              this.role.data.GuessingPlayers.length <= 0
-            )
-              return;
-            if (
-              this.role.data.GuessingRoles == null ||
-              this.role.data.GuessingRoles.length <= 0
-            )
-              return;
-            if (this.role.data.HasInformation == true) return;
-            this.role.data.HasInformation = true;
-
-            let info = this.game.createInformation(
-              "GuessRoleInfo",
-              this.actor,
-              this.game,
-              this.role.data.GuessingPlayers,
-              this.role.data.GuessingRoles,
-              true
-            );
-
-            info.processInfo();
-
-            info.getGuessMessages();
-            this.actor.queueAlert(`:invest: ${info.getInfoFormated()}`);
-          },
-        });
-
-        this.game.queueAction(action);
       },
     };
   }

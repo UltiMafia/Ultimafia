@@ -45,8 +45,6 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
-import system from "images/emotes/system.webp";
-
 export const KUDOS_ICON = require(`images/kudos.png`);
 export const KARMA_ICON = require(`images/karma.png`);
 export const POINTS_ICON = require(`images/points.png`);
@@ -60,6 +58,7 @@ export default function Profile() {
   const [name, setName] = useState();
   const [avatar, setAvatar] = useState();
   const [banner, setBanner] = useState();
+  const [profileBackground, setProfileBackground] = useState(false);
   const [bio, setBio] = useState("");
   const [oldBio, setOldBio] = useState();
   const [editingBio, setEditingBio] = useState(false);
@@ -104,6 +103,8 @@ export default function Profile() {
   const [currentUserLove, setCurrentUserLove] = useState({});
   const [status, setStatus] = useState("offline");
   const [lastActive, setLastActive] = useState(null);
+  const [userFamily, setUserFamily] = useState(null);
+  const [inGame, setInGame] = useState(null);
   const [canonicalUserId, setCanonicalUserId] = useState(null);
 
   const user = useContext(UserContext);
@@ -127,9 +128,67 @@ export default function Profile() {
     if (bustCache) setBustCache(false);
   }, [bustCache]);
 
+  // Apply profile background to site-wrapper when viewing a profile with custom background
+  // This replaces the default diamond pattern background ONLY on the Profile page
+  useEffect(() => {
+    const siteWrapper = document.querySelector(".site-wrapper");
+    if (!siteWrapper) return;
+
+    if (profileBackground && settings?.backgroundRepeatMode) {
+      const backgroundUrl = `/uploads/${profileUserId}_profileBackground.webp?t=${
+        siteInfo?.cacheVal || Date.now()
+      }`;
+      const repeatMode = settings.backgroundRepeatMode || "checker";
+
+      let backgroundSize, backgroundRepeat, backgroundPosition;
+
+      if (repeatMode === "stretch") {
+        backgroundSize = "cover";
+        backgroundRepeat = "no-repeat";
+        backgroundPosition = "center";
+      } else {
+        // Default: checker (tiled pattern)
+        backgroundSize = "auto";
+        backgroundRepeat = "repeat";
+      }
+
+      // Apply custom background to site-wrapper, replacing the default diamond pattern
+      siteWrapper.style.backgroundImage = `url(${backgroundUrl})`;
+      siteWrapper.style.backgroundSize = backgroundSize;
+      siteWrapper.style.backgroundRepeat = backgroundRepeat;
+      siteWrapper.style.backgroundPosition = backgroundPosition || "top left";
+      siteWrapper.style.backgroundAttachment = "fixed";
+    } else {
+      // Remove inline styles to restore CSS default (white-diamond-dark.png)
+      siteWrapper.style.backgroundImage = "";
+      siteWrapper.style.backgroundSize = "";
+      siteWrapper.style.backgroundRepeat = "";
+      siteWrapper.style.backgroundPosition = "";
+      siteWrapper.style.backgroundAttachment = "";
+    }
+
+    // Cleanup: restore original background when component unmounts
+    return () => {
+      if (siteWrapper) {
+        // Remove inline styles to restore CSS default (white-diamond-dark.png)
+        siteWrapper.style.backgroundImage = "";
+        siteWrapper.style.backgroundSize = "";
+        siteWrapper.style.backgroundRepeat = "";
+        siteWrapper.style.backgroundPosition = "";
+        siteWrapper.style.backgroundAttachment = "";
+      }
+    };
+  }, [
+    profileBackground,
+    settings?.backgroundRepeatMode,
+    profileUserId,
+    siteInfo?.cacheVal,
+  ]);
+
   useEffect(() => {
     setEditingBio(false);
     setEditingPronouns(false);
+    setUserFamily(null);
 
     if (userId) {
       setProfileLoaded(false);
@@ -144,6 +203,7 @@ export default function Profile() {
           setName(res.data.name);
           setAvatar(res.data.avatar);
           setBanner(res.data.banner);
+          setProfileBackground(res.data.profileBackground || false);
           setBio(filterProfanity(res.data.bio, user.settings, "\\*") || "");
           setPronouns(
             filterProfanity(res.data.pronouns, user.settings, "\\*") || ""
@@ -170,6 +230,7 @@ export default function Profile() {
           setGroups(res.data.groups);
           setStatus(res.data.status || "offline");
           setLastActive(res.data.lastActive);
+          setInGame(res.data.inGame);
           setMediaUrl("");
           setAutoplay(false);
           setSaved(res.data.saved);
@@ -179,6 +240,12 @@ export default function Profile() {
           setTrophies(res.data.trophies || []);
           setFriendsPage(1);
           loadFriends(resolvedId, "", 1);
+
+          // Load current user's family info if viewing another user's profile
+          const isSelf = user.loggedIn && resolvedId === user.id;
+          if (!isSelf && user.loggedIn) {
+            loadUserFamily();
+          }
 
           if (res.data.settings.youtube) {
             setMediaUrl(res.data.settings.youtube);
@@ -401,6 +468,27 @@ export default function Profile() {
       .catch(errorAlert);
   }
 
+  function onFamilyJoinRequestClick() {
+    if (!userFamily) return;
+
+    if (
+      !window.confirm(
+        `Are you sure you want to invite ${name} to join ${userFamily.name}?`
+      )
+    ) {
+      return;
+    }
+
+    axios
+      .post(`/api/family/${userFamily.id}/requestJoin`, {
+        targetUserId: profileUserId,
+      })
+      .then(() => {
+        siteInfo.showAlert("Family join request sent!", "success");
+      })
+      .catch(errorAlert);
+  }
+
   function onReportClick() {
     setReportDialogOpen(true);
   }
@@ -490,6 +578,19 @@ export default function Profile() {
       .catch(errorAlert);
   }
 
+  function loadUserFamily() {
+    axios
+      .get("/api/family/user/family")
+      .then((res) => {
+        if (res.data.family && res.data.family.isLeader) {
+          setUserFamily(res.data.family);
+        }
+      })
+      .catch(() => {
+        // Ignore errors
+      });
+  }
+
   function loadRecentGames(id, pageToLoad = 1) {
     if (!id) return;
     setRecentGamesLoading(true);
@@ -577,7 +678,11 @@ export default function Profile() {
     loadSetups(profileUserId, targetPage);
   }
 
-  const panelStyle = {};
+  const panelStyle = {
+    // Ensure panels always have explicit background to prevent site-wrapper background from showing through
+    position: "relative",
+    zIndex: 1,
+  };
   const headingStyle = {};
   const bannerStyle = {};
 
@@ -750,6 +855,19 @@ export default function Profile() {
                 onClick={onFriendUserClick}
               />
             </IconButton>
+            {userFamily &&
+              userFamily.isLeader &&
+              userFamily.memberCount < 20 && (
+                <IconButton
+                  aria-label="request to join family"
+                  title={`Invite to ${userFamily.name}`}
+                >
+                  <i
+                    className="fas fa-users"
+                    onClick={onFamilyJoinRequestClick}
+                  />
+                </IconButton>
+              )}
             <LoveIcon
               isLove={isLove}
               userId={user.id}
@@ -773,15 +891,13 @@ export default function Profile() {
                 title="Block user"
               />
             </IconButton>
-            <Tooltip title="File Report">
-              <IconButton size="large" onClick={onReportClick}>
-                <img src={system} alt="Report" />
-              </IconButton>
-            </Tooltip>
+            <IconButton size="small" onClick={onReportClick}>
+              <i className="fas fa-flag" />
+            </IconButton>
             <ReportDialog
               open={reportDialogOpen}
               onClose={() => setReportDialogOpen(false)}
-              prefilledArgs={{ user: profileUserId }}
+              prefilledArgs={{ userId: profileUserId, userName: name }}
             />
           </>
         )}
@@ -830,6 +946,11 @@ export default function Profile() {
                   title={
                     <Stack spacing={0.5}>
                       <Typography variant="subtitle2">{trophy.name}</Typography>
+                      {trophy.owner && (
+                        <Typography variant="caption">
+                          Owner: {trophy.owner.name}
+                        </Typography>
+                      )}
                       <Typography variant="caption">
                         Awarded {formattedDate}
                       </Typography>
@@ -889,6 +1010,9 @@ export default function Profile() {
               onUpload={onFileUpload}
               border={`4px var(--scheme-color) solid`}
               isSquare={settings.avatarShape === "square"}
+              onlineStatus={status}
+              lastActive={lastActive}
+              inGame={inGame}
             />
           )}
         </Box>
@@ -927,15 +1051,6 @@ export default function Profile() {
             </Typography>
           )}
         </Stack>
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          mt: 0.5,
-        }}
-      >
-        <OnlineStatus status={status} lastActive={lastActive} />
       </Box>
     </Grid>
   );

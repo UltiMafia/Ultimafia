@@ -8,20 +8,15 @@ import React, {
   useCallback,
   createContext,
 } from "react";
-import {
-  useParams,
-  Route,
-  Navigate,
-  Routes,
-  Link,
-  useNavigate,
-} from "react-router-dom";
+import { useParams, Navigate, Link, useNavigate } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
 import ReactLoading from "react-loading";
 
 import { UserText } from "../../components/Basic";
-import { ObituariesMessage } from "../../components/gameComponents/Newspaper";
+import Newspaper, {
+  ObituariesMessage,
+} from "../../components/gameComponents/Newspaper";
 import MafiaGame from "./MafiaGame";
 import ResistanceGame from "./ResistanceGame";
 import JottoGame from "./JottoGame";
@@ -44,7 +39,6 @@ import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
 import SiteLogo from "../../components/SiteLogo";
 import LeaveGameDialog from "../../components/LeaveGameDialog";
-import ReportDialog from "../../components/ReportDialog";
 import { useErrorAlert } from "../../components/Alerts";
 import {
   MaxGameMessageLength,
@@ -94,8 +88,7 @@ import poison from "images/emotes/poison.webp";
 import unicorn from "images/emotes/unicorn.webp";
 import exit from "images/emotes/exit.png";
 import veg from "images/emotes/veg.webp";
-import system from "images/emotes/system.webp";
-import { usePopover } from "components/Popover";
+import { usePopover, InfoPopover } from "components/Popover";
 
 import dice1 from "images/emotes/dice1.webp";
 import dice2 from "images/emotes/dice2.webp";
@@ -154,7 +147,6 @@ export default function Game() {
   });
   const [isolationEnabled, setIsolationEnabled] = useState(false);
   const [isolatedPlayers, setIsolatedPlayers] = useState(new Set());
-  const [rehostId, setRehostId] = useState();
   const [dev, setDev] = useState(false);
   const [pingInfo, setPingInfo] = useState(null);
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
@@ -172,7 +164,6 @@ export default function Game() {
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
   const { gameId } = useParams();
-  const nagivate = useNavigate();
   const [selectedPanel, setSelectedPanel] = useState("chat");
 
   const isParticipant = !isSpectator && !review;
@@ -585,12 +576,12 @@ export default function Game() {
       });
     });
 
-    // socket.on("winners", (info) => {
-    //   updateHistory({
-    //     type: "winners",
-    //     winnersMessage: info,
-    //   });
-    // });
+    socket.on("winners", (info) => {
+      updateHistory({
+        type: "winners",
+        winnersInfo: info,
+      });
+    });
 
     socket.on("reveal", (info) => {
       toggleRolePrediction(info.playerId, null);
@@ -795,7 +786,6 @@ export default function Game() {
   }
 
   if (leave) return <Navigate to="/play" />;
-  else if (rehostId) return <Navigate to={`/game/${rehostId}`} />;
   else if (!loaded || stateViewing == null)
     return (
       <div className="game">
@@ -849,7 +839,6 @@ export default function Game() {
       playAudio: playAudio,
       stopAudio: stopAudio,
       stopAudios: stopAudios,
-      setRehostId: setRehostId,
       noLeaveRef,
       dev: dev,
       hostId: hostId,
@@ -942,15 +931,10 @@ export function TopBar() {
   const { gameId } = useParams();
   const errorAlert = useErrorAlert();
   const siteInfo = useContext(SiteInfoContext);
-  const [reportDialogOpen, setReportDialogOpen] = useState(false);
 
   function onTestClick() {
     for (let i = 0; i < game.setup.total - 1; i++)
       window.open(window.location + "?bot");
-  }
-
-  function onReportClick() {
-    setReportDialogOpen(true);
   }
 
   function onRehostGameClick() {
@@ -978,7 +962,9 @@ export function TopBar() {
           stateLengths: stateLengths,
           ...game.options.gameTypeOptions,
         })
-        .then((res) => game.setRehostId(res.data))
+        .then((res) => {
+          window.location.href = window.location.origin + `/game/${res.data}`;
+        })
         .catch((e) => {
           game.noLeaveRef.current = false;
           errorAlert(e);
@@ -1091,17 +1077,6 @@ export function TopBar() {
         </Tooltip>
       )}
 
-      <Tooltip title="File Report">
-        <IconButton size="large" onClick={onReportClick}>
-          <img src={system} alt="Report" />
-        </IconButton>
-      </Tooltip>
-      <ReportDialog
-        open={reportDialogOpen}
-        onClose={() => setReportDialogOpen(false)}
-        prefilledArgs={{ game: gameId }}
-      />
-
       {!isPhoneDevice && (
         <Button
           onClick={game.onLeaveGameClick}
@@ -1195,6 +1170,7 @@ function MobileMenu() {
       sx={{
         flex: "1",
         p: 1,
+        paddingBottom: 0,
       }}
     >
       <SettingsForm />
@@ -1254,12 +1230,48 @@ export function MobileLayout({
 
   return (
     <>
-      {selectedPanel === outerLeftNavigationProps.value && outerLeftContent}
-      {/* The additionalInfoContent displays after the mobile version of TopBar */}
-      {selectedPanel === "info" && <>{additionalInfoContent}</>}
-      {selectedPanel === "chat" && centerContent}
-      {selectedPanel === innerRightNavigationProps.value && innerRightContent}
-      {selectedPanel === "menu" && <MobileMenu />}
+      <Stack
+        sx={{
+          flex: "1",
+          display:
+            selectedPanel === outerLeftNavigationProps.value
+              ? undefined
+              : "none",
+        }}
+      >
+        {outerLeftContent}
+      </Stack>
+      <Box sx={{ display: selectedPanel === "info" ? undefined : "none" }}>
+        {/* The additionalInfoContent displays after the mobile version of TopBar */}
+        {additionalInfoContent}
+      </Box>
+      <Stack
+        sx={{
+          flex: "1",
+          display: selectedPanel === "chat" ? undefined : "none",
+        }}
+      >
+        {centerContent}
+      </Stack>
+      <Stack
+        sx={{
+          flex: "1",
+          display:
+            selectedPanel === innerRightNavigationProps.value
+              ? undefined
+              : "none",
+        }}
+      >
+        {innerRightContent}
+      </Stack>
+      <Stack
+        sx={{
+          flex: "1",
+          display: selectedPanel === "menu" ? undefined : "none",
+        }}
+      >
+        <MobileMenu />
+      </Stack>
       <Paper elevation={3}>
         <Divider orientation="horizontal" />
         <BottomNavigation
@@ -1340,6 +1352,7 @@ export function TextMeetingLayout() {
   const meetings = stateInfo ? stateInfo.meetings : {};
   const alerts = stateInfo ? stateInfo.alerts : [];
   const obituaries = stateInfo ? stateInfo.obituaries : {};
+  const winners = stateInfo ? stateInfo.winners : null;
   const selTab = stateInfo && stateInfo.selTab;
 
   const [speechInput, setSpeechInput] = useState("");
@@ -1462,6 +1475,9 @@ export function TextMeetingLayout() {
         meetings,
         alerts,
         obituaries,
+        winners,
+        stateViewing,
+        history,
         selTab,
         players,
         settings,
@@ -1600,6 +1616,7 @@ export function TextMeetingLayout() {
 
 function getAllMessagesToDisplay(history) {
   var messages = [];
+  var postgameWinnersMessages = [];
   const states = Object.keys(history.states).sort(
     (a, b) => parseInt(a) - parseInt(b)
   );
@@ -1609,7 +1626,8 @@ function getAllMessagesToDisplay(history) {
   }
 
   for (let state of states) {
-    const stateMeetings = history.states[state].meetings;
+    const stateData = history.states[state];
+    const stateMeetings = stateData.meetings;
     if (!stateMeetings) {
       return;
     }
@@ -1625,11 +1643,37 @@ function getAllMessagesToDisplay(history) {
 
       stateMessages.push(...meetingData.messages);
     }
-    const stateAlerts = history.states[state].alerts;
+    const stateAlerts = stateData.alerts;
     stateMessages.push(...stateAlerts);
-    stateMessages.sort((a, b) => a.time - b.time);
 
+    // Add obituaries
+    if (stateData.obituaries) {
+      for (let source in stateData.obituaries) {
+        stateMessages.push(stateData.obituaries[source]);
+      }
+    }
+
+    // Add winners
+    if (stateData.winners) {
+      const winnersMessage = {
+        winners: stateData.winners,
+        time: stateData.time || Date.now(),
+        dayCount: stateData.dayCount || 0,
+        senderId: "server",
+      };
+      if (state === "-2") {
+        postgameWinnersMessages.push(winnersMessage);
+      } else {
+        stateMessages.push(winnersMessage);
+      }
+    }
+
+    stateMessages.sort((a, b) => a.time - b.time);
     messages.push(...stateMessages);
+  }
+
+  if (postgameWinnersMessages.length > 0) {
+    messages = [...postgameWinnersMessages, ...messages];
   }
 
   return messages;
@@ -1639,6 +1683,9 @@ function getMessagesToDisplay(
   meetings,
   alerts,
   obituaries,
+  winners,
+  stateViewing,
+  history,
   selTab,
   players,
   settings,
@@ -1688,18 +1735,30 @@ function getMessagesToDisplay(
     }
   }
 
-  //   for (let source in winners) {
-  //   const winnersMessage = winners[source];
-  //   for (let i = 0; i <= messages.length; i++) {
-  //     if (i === messages.length) {
-  //       messages.push(winnersMessage);
-  //       break;
-  //     } else if (winnersMessage.time < messages[i].time) {
-  //       messages.splice(i, 0, winnersMessage);
-  //       break;
-  //     }
-  //   }
-  // }
+  // Add winners message to the message stream if winners exist
+  if (winners) {
+    const stateInfo = history.states[stateViewing];
+    const winnersMessage = {
+      winners: winners,
+      time: stateInfo ? stateInfo.time || Date.now() : Date.now(),
+      dayCount: stateInfo ? stateInfo.dayCount || 0 : 0,
+      senderId: "server",
+    };
+
+    if (stateViewing === -2) {
+      messages.unshift(winnersMessage);
+    } else {
+      for (let i = 0; i <= messages.length; i++) {
+        if (i === messages.length) {
+          messages.push(winnersMessage);
+          break;
+        } else if (winnersMessage.time < messages[i].time) {
+          messages.splice(i, 0, winnersMessage);
+          break;
+        }
+      }
+    }
+  }
 
   if (!settings.votingLog) return messages;
 
@@ -1854,16 +1913,16 @@ function Message(props) {
   }
 
   // If message is winners, render the WinnersMessage instead
-  // if (message.winners) {
-  //   return (
-  //     <WinnersMessage
-  //       message={message}
-  //       stateViewing={props.stateViewing}
-  //       settings={props.settings}
-  //       history={history}
-  //     />
-  //   );
-  // }
+  if (message.winners) {
+    return (
+      <WinnersMessage
+        message={message}
+        stateViewing={props.stateViewing}
+        settings={props.settings}
+        history={history}
+      />
+    );
+  }
 
   if (isPlayerMessage) {
     player = players[message.senderId];
@@ -2147,78 +2206,80 @@ function Message(props) {
   );
 }
 
-// function WinnersMessage(props) {
-//   const game = useContext(GameContext);
-//   const message = props.message;
-
-//   const winnersInfo = message.winners || {};
-//   const winnerGroups = winnersInfo.groups || [];
-//   const winnerPlayersByGroup = winnersInfo.players || {};
-//   const winnerMessages = winnersInfo.messages || [];
-
-//   let title = "Postgame Results";
-//   if (winnerGroups.length === 1) {
-//     title = `${winnerGroups[0]} Wins!`;
-//   } else if (winnerGroups.length > 1) {
-//     title = `${winnerGroups.join(" & ")} Win!`;
-//   }
-
-//   // didn't mess with deathMessage stuff
-//   const wins = winnerGroups.map((group, index) => {
-//     const groupPlayers = winnerPlayersByGroup[group] || [];
-//     const groupMessage = winnerMessages[index] || `${group} has won.`;
-
-//     return groupPlayers.length > 0
-//       ? groupPlayers.map((player) => ({
-//           id: player.userId || player.id,
-//           name: player.name,
-//           avatar: player.avatar,
-//           avatarId: player.avatarId,
-//           deathMessage: groupMessage,
-//           revealMessage: `${player.name} was a member of the ${group}.`,
-//           lastWill: "",
-//         }))
-//       : [
-//           {
-//             id: group,
-//             name: group,
-//             deathMessage: groupMessage,
-//             revealMessage: "",
-//             lastWill: "",
-//           },
-//         ];
-//   });
-
-//   const flattenedWins = wins.flat();
-
-//   return (
-//     <Newspaper
-//       title={title}
-//       timestamp={message.time}
-//       dayCount={message.dayCount || 0}
-//       deaths={flattenedWins}
-//       isAlignmentReveal={false}
-//     />
-//   );
-// }
-
 function WinnersMessage(props) {
   const game = useContext(GameContext);
   const message = props.message;
+  const history = props.history;
+  const stateViewing = props.stateViewing;
 
   const winnersInfo = message.winners || {};
   const winnerGroups = winnersInfo.groups || [];
-  const winnerPlayersByGroup = winnersInfo.players || {};
+  const winnerPlayersByGroup =
+    winnersInfo.playersByGroup || winnersInfo.players || {};
   const winnerMessages = winnersInfo.messages || [];
+  const isMafiaGame = game.gameType === "Mafia";
 
-  let title = "Postgame Results";
-  if (winnerGroups.length === 1) {
-    title = `${winnerGroups[0]} Wins!`;
-  } else if (winnerGroups.length > 1) {
-    title = `${winnerGroups.join(" & ")} Win!`;
+  const stateInfo = history?.states?.[stateViewing];
+  const stateName = stateInfo?.name || "Postgame";
+
+  var newspaperTitle = "The Miller Times"; // Default for Postgame
+  if (stateName === "Day") {
+    newspaperTitle = "Evening News";
+  } else if (stateName === "Night") {
+    newspaperTitle = "Obituaries";
+  } else if (stateName === "Postgame") {
+    newspaperTitle = "The Miller Times";
+  } else {
+    newspaperTitle = "Breaking News";
   }
 
-  // didn't mess with deathMessage stuff
+  // For Mafia games, use the win newspaper format
+  if (isMafiaGame && winnerMessages.length > 0) {
+    const wins = winnerGroups.map((group, index) => {
+      const playerIds = Array.isArray(winnerPlayersByGroup[group])
+        ? winnerPlayersByGroup[group]
+        : [];
+      const groupMessage = winnerMessages[index] || `${group} has won.`;
+
+      // Expand player IDs to full player objects
+      const players = playerIds
+        .map((playerId) => {
+          // Handle both string IDs and player objects
+          if (typeof playerId === "string") {
+            return game.players[playerId];
+          } else {
+            // If it's already an object, check if we need to look it up
+            const id = playerId.userId || playerId.id;
+            return game.players[id] || playerId;
+          }
+        })
+        .filter(Boolean) // Remove undefined/null players
+        .map((player) => ({
+          id: player.userId || player.id,
+          name: player.name,
+          avatar: player.avatar !== undefined ? player.avatar : true,
+          avatarId: player.avatarId || player.id,
+        }));
+
+      return {
+        group: group,
+        message: groupMessage,
+        players: players,
+      };
+    });
+
+    return (
+      <Newspaper
+        title={newspaperTitle}
+        timestamp={message.time}
+        dayCount={message.dayCount || 0}
+        isWin={true}
+        wins={wins}
+      />
+    );
+  }
+
+  // For non-Mafia games, use the old format (death message style)
   const wins = winnerGroups.map((group, index) => {
     const groupPlayers = winnerPlayersByGroup[group] || [];
     const groupMessage = winnerMessages[index] || `${group} has won.`;
@@ -2248,7 +2309,7 @@ function WinnersMessage(props) {
 
   return (
     <Newspaper
-      title={title}
+      title={newspaperTitle}
       timestamp={message.time}
       dayCount={message.dayCount || 0}
       deaths={flattenedWins}
@@ -2566,11 +2627,10 @@ export function SideMenu({
 function RoleMarkerToggle({ playerId, setup, toggleRolePrediction }) {
   const roleMarkerRef = useRef();
 
-  const { InfoPopover, popoverOpen, handleClick, closePopover } = usePopover({
+  const popoverProps = usePopover({
     path: `/api/setup/${setup.id}`,
     type: "rolePrediction",
     boundingEl: roleMarkerRef.current,
-    title: "Mark Role as",
     postprocessData: (data) => {
       let roles = {};
       for (let r of JSON.parse(data.roles)) {
@@ -2581,6 +2641,7 @@ function RoleMarkerToggle({ playerId, setup, toggleRolePrediction }) {
       data.makeRolePrediction = makeRolePrediction;
     },
   });
+  const { handleClick, closePopover } = popoverProps;
 
   const makeRolePrediction = useCallback(
     (prediction) => {
@@ -2592,7 +2653,7 @@ function RoleMarkerToggle({ playerId, setup, toggleRolePrediction }) {
 
   return (
     <>
-      {popoverOpen && <InfoPopover />}
+      <InfoPopover {...popoverProps} title={"Mark Role as"} />
       <div
         className="role-marker"
         onClick={handleClick}
@@ -3432,20 +3493,49 @@ function ActionSelect(props) {
     }
   }
 
+  // Create a mapping from member IDs to "User X" format for consistent display
+  // when votes are hidden (VoteBlind scenario)
+  const memberIdToUserNumber = new Map();
+  const membersArray = Object.values(meeting.members);
+  membersArray.forEach((member, index) => {
+    memberIdToUserNumber.set(member.id, index + 1);
+  });
+
   const rowItems = Object.values(meeting.members).map((member) => {
     const player = props.players[member.id];
-    const selection = getTargetDisplay(
-      meeting.votes[member.id],
-      meeting,
-      props.players
-    );
-    const name = player ? player.name : null;
+    const voteValue = meeting.votes[member.id];
+
+    // Check if vote exists but target is hidden (null means hidden target)
+    // undefined means no vote, null means vote exists but target is hidden
+    const hasVoted = voteValue !== undefined;
+    const isVoteHidden = voteValue === null;
+
+    let selection = [];
+    if (!isVoteHidden && voteValue !== undefined && voteValue !== null) {
+      selection = getTargetDisplay(voteValue, meeting, props.players);
+    }
+
+    // Determine display name
+    // When vote target is hidden (VoteBlind scenario), show "User X" instead of real name
+    let name = null;
+    if (isVoteHidden) {
+      // When vote is hidden, show "User X" format
+      name = `User ${memberIdToUserNumber.get(member.id)}`;
+    } else if (player) {
+      // Normal case: show player's real name
+      name = player.name;
+    } else {
+      // Fallback for anonymous members without hidden votes
+      name = "Anonymous";
+    }
 
     return {
       id: member.id,
-      name: name || "Anonymous",
+      name: name,
       canVote: member.canVote,
       selection: selection,
+      isVoteHidden: isVoteHidden,
+      hasVoted: hasVoted,
     };
   });
 
@@ -3598,14 +3688,24 @@ function ActionSelect(props) {
               {!rowItem.canVote && !rowIsSpecial && (
                 <Typography className="selection">does not vote</Typography>
               )}
-              {rowItem.canVote && rowItem.selection.length > 0 && (
+              {rowItem.canVote && rowItem.hasVoted && (
                 <Typography>votes</Typography>
               )}
-              {rowItem.canVote && (
+              {rowItem.canVote && rowItem.selection.length > 0 && (
                 <Typography className="selection">
                   {rowItem.selection.join(", ")}
                 </Typography>
               )}
+              {rowItem.canVote &&
+                rowItem.isVoteHidden &&
+                rowItem.selection.length === 0 && (
+                  <Typography
+                    className="selection"
+                    sx={{ fontStyle: "italic", opacity: 0.7 }}
+                  >
+                    (target hidden)
+                  </Typography>
+                )}
             </Box>
           );
         })}
@@ -4153,48 +4253,6 @@ function SettingsForm({ handleClose = null }) {
 
   const [formFields, updateFormFields] = useForm([
     {
-      label: "Voting Log",
-      ref: "votingLog",
-      type: "boolean",
-      value: settings.votingLog,
-    },
-    {
-      label: "Timestamps",
-      ref: "timestamps",
-      type: "boolean",
-      value: settings.timestamps,
-    },
-    {
-      label: "SFX Volume",
-      ref: "sfxVolume",
-      type: "range",
-      min: 0,
-      max: 1,
-      step: 0.1,
-      value: settings.sfxVolume,
-    },
-    {
-      label: "Music Volume",
-      ref: "musicVolume",
-      type: "range",
-      min: 0,
-      max: 1,
-      step: 0.1,
-      value: settings.musicVolume,
-    },
-    {
-      label: "Display Terminology Emoticons",
-      ref: "terminologyEmoticons",
-      type: "boolean",
-      value: settings.terminologyEmoticons,
-    },
-    {
-      label: "Highlight role names",
-      ref: "roleMentions",
-      type: "boolean",
-      value: settings.roleMentions,
-    },
-    {
       label: "Message Layout",
       ref: "messageLayout",
       type: "select",
@@ -4217,6 +4275,48 @@ function SettingsForm({ handleClose = null }) {
         },
       ],
       value: settings.messageLayout,
+    },
+    {
+      label: "Voting Log",
+      ref: "votingLog",
+      type: "boolean",
+      value: settings.votingLog,
+    },
+    {
+      label: "Timestamps",
+      ref: "timestamps",
+      type: "boolean",
+      value: settings.timestamps,
+    },
+    {
+      label: "Display Terminology Emoticons",
+      ref: "terminologyEmoticons",
+      type: "boolean",
+      value: settings.terminologyEmoticons,
+    },
+    {
+      label: "Highlight role names",
+      ref: "roleMentions",
+      type: "boolean",
+      value: settings.roleMentions,
+    },
+    {
+      label: "SFX Volume",
+      ref: "sfxVolume",
+      type: "range",
+      min: 0,
+      max: 1,
+      step: 0.1,
+      value: settings.sfxVolume,
+    },
+    {
+      label: "Music Volume",
+      ref: "musicVolume",
+      type: "range",
+      min: 0,
+      max: 1,
+      step: 0.1,
+      value: settings.musicVolume,
     },
   ]);
 
@@ -4615,11 +4715,25 @@ function useHistoryReducer() {
                     alerts: [],
                     stateEvents: [],
                     obituaries: {},
-                    // winners: action.state.winners ? action.state.winners : null,
+                    winners: action.state.winners ? action.state.winners : null,
                     roles: { ...history.states[prevState].roles },
                     dead: { ...history.states[prevState].dead },
                     exorcised: { ...history.states[prevState].exorcised },
                     extraInfo: { ...action.state.extraInfo },
+                  },
+                },
+              },
+              currentState: {
+                $set: Number.parseInt(action.state.id),
+              },
+            });
+          } else if (action.state.winners && history.states[action.state.id]) {
+            // Update winners if state already exists (for live games entering Postgame)
+            return update(history, {
+              states: {
+                [action.state.id]: {
+                  winners: {
+                    $set: action.state.winners,
                   },
                 },
               },
@@ -4890,21 +5004,20 @@ function useHistoryReducer() {
           }
           break;
         }
-        // case "winners":
-        //   if (history.states[history.currentState]) {
-        //     return update(history, {
-        //       states: {
-        //         [history.currentState]: {
-        //           winners: {
-        //             [action.winnersMessage.source]: {
-        //               $set: action.winnersMessage,
-        //             },
-        //           },
-        //         },
-        //       },
-        //     });
-        //   }
-        //   break;
+        case "winners": {
+          if (history.states[history.currentState]) {
+            return update(history, {
+              states: {
+                [history.currentState]: {
+                  winners: {
+                    $set: action.winnersInfo,
+                  },
+                },
+              },
+            });
+          }
+          break;
+        }
         case "reveal": {
           if (history.states[history.currentState]) {
             return update(history, {

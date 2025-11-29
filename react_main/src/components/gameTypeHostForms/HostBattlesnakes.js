@@ -7,15 +7,6 @@ export default function HostBattlesnakes() {
   const gameType = "Battlesnakes";
   const defaults = getDefaults(gameType);
 
-  let defaultLobby = localStorage.getItem("lobby");
-  if (
-    defaultLobby === "All" ||
-    defaultLobby === "Main" ||
-    defaultLobby === "Competitive"
-  ) {
-    defaultLobby = "Games";
-  }
-
   const initialFormFields = [
     {
       label: "Board Size",
@@ -29,7 +20,7 @@ export default function HostBattlesnakes() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: defaultLobby,
+      value: "Games",
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {

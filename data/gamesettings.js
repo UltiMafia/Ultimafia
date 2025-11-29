@@ -94,6 +94,34 @@ const gameSettingData = {
       description: "Dead players can vote in the village meeting.",
     },
 
+    //Team
+    "Silent Mafia": {
+      category: "Other",
+      internal: ["NoChatMafia"],
+      tags: ["Information"],
+      description: "Mafia cannot speak at night.",
+    },
+    "Silent Cult": {
+      category: "Other",
+      internal: ["NoChatCult"],
+      tags: ["Information"],
+      description: "Cult cannot speak at night.",
+    },
+    "Disorganized Mafia": {
+      category: "Other",
+      internal: ["MafiaNotLearningRoles"],
+      tags: ["Information"],
+      description:
+        "Mafia will not learn their members until the first night and will not learn each others roles.",
+    },
+    "Disorganized Cult": {
+      category: "Other",
+      internal: ["CultNotLearningRoles"],
+      tags: ["Information"],
+      description:
+        "Cult will not learn their members until the first night and will not learn each others roles.",
+    },
+
     //Other
     "Role Sharing": {
       category: "Other",

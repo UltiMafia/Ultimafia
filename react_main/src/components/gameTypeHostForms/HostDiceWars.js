@@ -7,15 +7,6 @@ export default function HostDiceWars() {
   const gameType = "Dice Wars";
   const defaults = getDefaults(gameType);
 
-  let defaultLobby = localStorage.getItem("lobby");
-  if (
-    defaultLobby === "All" ||
-    defaultLobby === "Main" ||
-    defaultLobby === "Competitive"
-  ) {
-    defaultLobby = "Games";
-  }
-
   const initialFormFields = [
     {
       label: "Number of Hexes",
@@ -40,7 +31,7 @@ export default function HostDiceWars() {
       label: "Lobby",
       ref: "lobby",
       type: "select",
-      value: defaultLobby,
+      value: "Games",
       options: Lobbies.map((lobby) => ({ label: lobby, value: lobby })),
     },
     {

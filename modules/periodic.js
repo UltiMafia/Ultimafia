@@ -160,7 +160,10 @@ module.exports = function () {
       // This shouldn't be necessary but just in case it would suck if someone got to 0 and couldn't refresh their hearts
       run: async function () {
         var users = await models.User.find({
-          redHearts: { $lt: constants.initialRedHeartCapacity },
+          $or: [
+            { redHearts: { $exists: false } },
+            { redHearts: { $lt: constants.initialRedHeartCapacity } },
+          ],
         }).select("id");
         users = users.map((user) => user.toJSON());
         for (let user of users) {

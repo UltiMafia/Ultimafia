@@ -2,17 +2,17 @@ import React, { useState, useContext, useRef, useEffect } from "react";
 import axios from "axios";
 
 import { Link, Route, Routes, Navigate } from "react-router-dom";
-import update from "immutability-helper";
 
 import Profile, { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "./Profile";
 import Settings from "./Settings";
 import Shop from "./Shop";
 import Inbox from "./Inbox";
+import Family from "./Family";
 import { UserContext, SiteInfoContext, GameContext } from "Contexts";
 import AvatarUpload from "components/AvatarUpload";
 
 import "css/user.css";
-import { youtubeRegex } from "components/Basic";
+import { Time, youtubeRegex } from "components/Basic";
 
 const soundcloudRegex = /^https?:\/\/(www\.)?soundcloud\.com\/[^\/]+\/[^\/\?]+/;
 const spotifyRegex =
@@ -21,11 +21,14 @@ const vimeoRegex = /^https?:\/\/(www\.)?vimeo\.com\/(\d+)/;
 const invidiousRegex =
   /^https?:\/\/(www\.)?(invidious\.io|yewtu\.be|invidious\.flokinet\.to|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.fdn\.fr|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt)\/watch\?v=([a-zA-Z0-9_-]{11})/;
 import { useTheme } from "@mui/material/styles";
-import { Popover } from "@mui/material";
+import { Popover, Tooltip } from "@mui/material";
 import { Box, IconButton, Stack, Typography } from "@mui/material";
 import { PieChart } from "./PieChart";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import ImageViewer from "components/ImageViewer";
+import ReportDialog from "components/ReportDialog";
+import { useErrorAlert } from "components/Alerts";
 
 import santaDir from "images/holiday/santahat.png";
 
@@ -141,6 +144,30 @@ export function InvidiousEmbed(props) {
   }
   return null;
 }
+
+function ImageWithViewer({ imageUrl }) {
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const mediaRef = useRef();
+
+  return (
+    <>
+      <img
+        ref={mediaRef}
+        src={imageUrl}
+        alt=""
+        onClick={() => setViewerOpen(true)}
+        style={{
+          cursor: "pointer",
+          maxWidth: "100%",
+        }}
+      />
+      {viewerOpen && (
+        <ImageViewer imageUrl={imageUrl} onClose={() => setViewerOpen(false)} />
+      )}
+    </>
+  );
+}
+
 export function MediaEmbed(props) {
   const mediaUrl = props.mediaUrl;
   const autoplay = !!props.autoplay;
@@ -210,7 +237,7 @@ export function MediaEmbed(props) {
 
   switch (mediaType) {
     case "image":
-      return <img ref={mediaRef} src={mediaUrl}></img>;
+      return <ImageWithViewer imageUrl={mediaUrl} />;
     case "audio":
       return (
         <audio
@@ -261,6 +288,7 @@ export default function User(props) {
       <Route path="settings/*" element={<Settings />} />
       <Route path="shop" element={<Shop />} />
       <Route path="inbox" element={<Inbox />} />
+      <Route path="family/:familyId" element={<Family />} />
       <Route path=":userId" element={<Profile />} />
     </Routes>
   );
@@ -284,6 +312,9 @@ export function Avatar(props) {
   const ConnectFour = props.ConnectFour;
   const isSquare = props.isSquare || false;
   const border = props.border || undefined;
+  const onlineStatus = props.onlineStatus || null;
+  const lastActive = props.lastActive;
+  const inGame = props.inGame;
 
   const siteInfo = useContext(SiteInfoContext);
   const style = {};
@@ -298,12 +329,15 @@ export function Avatar(props) {
     "#90deea",
     "#80cbc4",
   ]; //yellow, red, blue, purple, green, pink, orange, cyan, teal
-  var size;
 
-  if (small) size = "small";
-  else if (mediumlarge) size = "mediumlarge";
-  else if (large) size = "large";
-  else size = "";
+  let avatarSize = 40;
+  if (small) {
+    avatarSize = 20;
+  } else if (mediumlarge) {
+    avatarSize = 60;
+  } else if (large) {
+    avatarSize = 100;
+  }
 
   if (absoluteLeftAvatarPx) {
     style.position = "absolute";
@@ -312,6 +346,8 @@ export function Avatar(props) {
     if (!small && !ConnectFour) {
       style.transform = "translateY(12px)";
     }
+  } else {
+    style.position = "relative";
   }
 
   if (ConnectFour) {
@@ -350,61 +386,84 @@ export function Avatar(props) {
     }
   }
 
-  {
-    /*SANTA CHANGES: In December, uncomment the below lines*/
-  }
-  {
-    /*var santaWidth;
-  var santaHorizAdjust;
-  var santaVertAdjust;
+  // Santa hat: Only show during December (turns off on January 1)
+  const isDecember = new Date().getMonth() + 1 === 12; // getMonth() returns 0-11
 
-  if (large) {
-    santaWidth = "100px";
-    santaHorizAdjust = -25;
-    santaVertAdjust = -40;
-  } else if (small) {
-    santaWidth = "20px;";
-    santaHorizAdjust = -5;
-    santaVertAdjust = -8;
-  } else {
-    santaWidth = "40px";
-    santaHorizAdjust = -12;
-    santaVertAdjust = -15;
-  }
-var santaAdjust = `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`;*/
-  }
-  {
-    /*SANTA CHANGES*/
+  let santaProps = null;
+  if (isDecember) {
+    let santaWidth, santaHorizAdjust, santaVertAdjust;
+    if (large) {
+      santaWidth = "100px";
+      santaHorizAdjust = -25;
+      santaVertAdjust = -40;
+    } else if (small) {
+      santaWidth = "20px";
+      santaHorizAdjust = -5;
+      santaVertAdjust = -8;
+    } else {
+      santaWidth = "40px";
+      santaHorizAdjust = -12;
+      santaVertAdjust = -15;
+    }
+    santaProps = {
+      width: santaWidth,
+      transform: `translate(${santaHorizAdjust}px, ${santaVertAdjust}px)`,
+    };
   }
 
   return (
     <div
-      className={`avatar ${size} ${dead ? "dead" : ""} ${
-        active ? "active" : ""
-      }`}
+      className={`avatar ${dead ? "dead" : ""} ${active ? "active" : ""}`}
       style={{
         ...style,
         display: "inline-block",
+        width: `${avatarSize}px`,
+        height: `${avatarSize}px`,
         borderRadius: isSquare ? "0px" : "50%",
         border: border,
       }}
     >
       {edit && (
-        <AvatarUpload className="edit" name="avatar" onFileUpload={onUpload}>
+        <AvatarUpload
+          className="edit"
+          name="avatar"
+          onFileUpload={onUpload}
+          isSquare={isSquare}
+        >
           <i className="far fa-file-image" />
         </AvatarUpload>
       )}
 
-      {/*SANTA CHANGES: In December, uncomment the below lines*/}
-      {/*<div>
-        <img
-          className="santa"
-          width={santaWidth}
-          style={{ position: "absolute", transform: santaAdjust }}
-          src={santaDir}
-        ></img>
-      </div>*/}
-      {/*SANTA CHANGES*/}
+      {onlineStatus !== null && (
+        <Box
+          sx={{
+            position: "absolute",
+            content: "''",
+            bottom: isSquare ? 0 : 0.112 * avatarSize,
+            right: isSquare ? 0 : 0.112 * avatarSize,
+            transform: `translateX(50%) translateY(50%)`,
+          }}
+        >
+          <OnlineStatus
+            status={onlineStatus}
+            lastActive={lastActive}
+            inGame={inGame}
+          />
+        </Box>
+      )}
+
+      {/* Santa hat: Only shows during December (turns off on January 1) */}
+      {isDecember && santaProps && (
+        <div>
+          <img
+            className="santa"
+            width={santaProps.width}
+            style={{ position: "absolute", transform: santaProps.transform }}
+            src={santaDir}
+            alt="Santa hat"
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -425,6 +484,8 @@ export function NameWithAvatar(props) {
   const includeMiniprofile = props.includeMiniprofile;
   const absoluteLeftAvatarPx = props.absoluteLeftAvatarPx;
   const vanityUrl = props.vanityUrl;
+  const large = props.large;
+  const isSquare = props.isSquare;
 
   const game = useContext(GameContext);
   const [userProfile, setUserProfile] = useState(null);
@@ -432,7 +493,7 @@ export function NameWithAvatar(props) {
 
   const {
     popoverOpen: canOpenPopover,
-    popoverClasses,
+    openByClick,
     anchorEl,
     handleClick: handlePopoverClick,
     handleMouseEnter,
@@ -472,6 +533,8 @@ export function NameWithAvatar(props) {
         avatarId={avatarId}
         name={name}
         small={small}
+        large={large}
+        isSquare={isSquare}
         dead={dead}
         active={active}
         deckProfile={deckProfile}
@@ -528,7 +591,7 @@ export function NameWithAvatar(props) {
         <div>
           <Popover
             open={props.showPopover !== false && popoverOpen}
-            sx={popoverClasses}
+            sx={{ pointerEvents: openByClick ? "auto" : "none" }}
             anchorEl={anchorEl}
             anchorOrigin={{
               vertical: "center",
@@ -572,6 +635,9 @@ export function Miniprofile(props) {
   const user = props.user;
   const game = props.game;
   const inheritedProps = user.props;
+  const currentUser = useContext(UserContext);
+  const siteInfo = useContext(SiteInfoContext);
+  const errorAlert = useErrorAlert();
 
   const id = user.id;
   const name = user.name || "[deleted]";
@@ -582,35 +648,121 @@ export function Miniprofile(props) {
   const hasDefaultPronouns = pronouns === "";
   const vanityUrl = user.vanityUrl;
 
-  var mafiaStats = user.stats["Mafia"].all;
-
-  const profileLink = vanityUrl ? `/user/${vanityUrl}` : `/user/${id}`;
-
-  return (
-    <div className="miniprofile">
-      <div className="mui-popover-title">
-        <Link className={`name-with-avatar`} to={profileLink} target="_blank">
-          <Stack direction="row" spacing={1}>
-            <Avatar hasImage={avatar} id={id} avatarId={avatarId} name={name} />
-            <div
-              className={`user-name`}
-              style={{
-                ...(color ? { color } : {}),
-                display: "inline",
-                alignSelf: "center",
-              }}
-            >
-              {name}
-            </div>
-          </Stack>
-        </Link>
-      </div>
-      {!hasDefaultPronouns && <div className="pronouns">({pronouns})</div>}
+  let pieChart = <></>;
+  if (user.stats) {
+    const mafiaStats = user.stats["Mafia"].all;
+    pieChart = (
       <PieChart
         wins={mafiaStats.wins.count}
         losses={mafiaStats.wins.total - mafiaStats.wins.count}
         abandons={mafiaStats.abandons.total}
       />
+    );
+  }
+
+  const profileLink = vanityUrl ? `/user/${vanityUrl}` : `/user/${id}`;
+
+  const isSelf = currentUser.loggedIn && currentUser.id === id;
+  const [isFriend, setIsFriend] = useState(user.isFriend || false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const gameId = game?.gameId || null;
+
+  // Update friend status when user prop changes
+  useEffect(() => {
+    setIsFriend(user.isFriend || false);
+  }, [user.isFriend]);
+
+  function onFriendUserClick() {
+    if (isFriend) {
+      var shouldUnfriend = window.confirm(
+        "Are you sure you wish to unfriend or cancel your friend request?"
+      );
+      if (!shouldUnfriend) return;
+    }
+
+    axios
+      .post("/api/user/friend", { user: id })
+      .then((res) => {
+        setIsFriend(!isFriend);
+        siteInfo.showAlert(res.data, "success");
+      })
+      .catch(errorAlert);
+  }
+
+  function onReportClick() {
+    setReportDialogOpen(true);
+  }
+
+  return (
+    <div className="miniprofile">
+      <div className="mui-popover-title">
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            alignItems: "center",
+            width: "100%",
+            justifyContent: "space-between",
+          }}
+        >
+          <Link
+            className={`name-with-avatar`}
+            to={profileLink}
+            target="_blank"
+            style={{ flex: 1, minWidth: 0 }}
+          >
+            <Stack direction="row" spacing={1}>
+              <Avatar
+                hasImage={avatar}
+                id={id}
+                avatarId={avatarId}
+                name={name}
+              />
+              <div
+                className={`user-name`}
+                style={{
+                  ...(color ? { color } : {}),
+                  display: "inline",
+                  alignSelf: "center",
+                }}
+              >
+                {name}
+              </div>
+            </Stack>
+          </Link>
+          {!isSelf && currentUser.loggedIn && (
+            <Stack direction="row" spacing={0.5}>
+              <Tooltip title={isFriend ? "Unfriend" : "Send Friend Request"}>
+                <IconButton
+                  size="small"
+                  onClick={onFriendUserClick}
+                  sx={{
+                    color: isFriend ? "primary.main" : "text.secondary",
+                  }}
+                >
+                  <i className={`fas fa-user-plus ${isFriend ? "sel" : ""}`} />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="File Report">
+                <IconButton size="small" onClick={onReportClick}>
+                  <i className="fas fa-flag" />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          )}
+        </Stack>
+      </div>
+      <ReportDialog
+        open={reportDialogOpen}
+        onClose={() => setReportDialogOpen(false)}
+        prefilledArgs={{
+          userId: id,
+          userName: name,
+          game: gameId,
+        }}
+      />
+      {!hasDefaultPronouns && <div className="pronouns">({pronouns})</div>}
+      {pieChart}
       <div className="score-info">
         <div className="score-info-column">
           <div className="score-info-row score-info-smallicon">
@@ -647,54 +799,61 @@ export function StatusIcon(props) {
   return <div className={`status-icon ${props.status}`} />;
 }
 
-export function OnlineStatus(props) {
-  const { status, lastActive } = props;
+export function OnlineStatus({ status, lastActive, inGame }) {
+  const isPhoneDevice = useIsPhoneDevice();
 
-  if (status === "online") {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 0.5,
-        }}
-      >
+  const onlineStatusIconSize = isPhoneDevice ? "16px" : "24px";
+
+  let caption = null;
+  let displayedStatus = status;
+  if (inGame) {
+    displayedStatus = "ingame";
+    caption = "In game";
+  } else if (status !== "online") {
+    caption = (
+      <>
+        {"Last online "}
+        <Time
+          abbreviate={isPhoneDevice}
+          minSec
+          millisec={Date.now() - lastActive}
+          suffix={" ago"}
+        />
+      </>
+    );
+  }
+
+  return (
+    <Box
+      className={`status-icon ${displayedStatus}`}
+      aria-hidden="true"
+      sx={{
+        position: "relative",
+        width: onlineStatusIconSize,
+        height: onlineStatusIconSize,
+        borderRadius: "50%",
+        border: "4px var(--scheme-color) solid",
+      }}
+    >
+      {caption && (
         <Typography
           variant="caption"
           sx={{
+            position: "absolute",
+            left: `calc(${onlineStatusIconSize}/2 + 4px + var(--mui-spacing)/2)`,
+            bottom: `calc(${onlineStatusIconSize}/2 - 1em + 2px)`,
             filter: "opacity(.75)",
             fontSize: "0.75rem",
+            textWrap: "nowrap",
+            lineHeight: "1",
+            pointerEvents: "none",
           }}
         >
-          Online
+          {caption}
         </Typography>
-        <div className="status-icon online" />
-      </Box>
-    );
-  }
-
-  if (lastActive) {
-    const lastActiveDate = new Date(lastActive);
-    const formattedDate = lastActiveDate.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-
-    return (
-      <Typography
-        variant="caption"
-        sx={{
-          filter: "opacity(.75)",
-          fontSize: "0.75rem",
-        }}
-      >
-        Last online {formattedDate}
-      </Typography>
-    );
-  }
-
-  return null;
+      )}
+    </Box>
+  );
 }
 
 export function Badges(props) {

@@ -66,6 +66,9 @@ module.exports = class NoVillageMeeting extends Item {
       if (name == `${FACTION_WITH_MEETING[x]} Kill`) {
         return true;
       }
+      if (name == `${FACTION_WITH_MEETING[x]} Action`) {
+        return true;
+      }
     }
 
     if (name == "Village") {

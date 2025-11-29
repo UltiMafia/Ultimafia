@@ -95,6 +95,11 @@ const modifierData = {
       tags: ["Famine"],
       description: "Counts as 1 ration for each phase in a famine.",
     },
+    Food: {
+      internal: ["Food"],
+      tags: ["Famine"],
+      description: "Counts as 1 ration for each phase in a famine.",
+    },
     "Yuzu Orange": {
       internal: ["Orange"],
       tags: ["Famine", "Meeting"],

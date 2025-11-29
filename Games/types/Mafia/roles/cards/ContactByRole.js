@@ -12,7 +12,7 @@ module.exports = class ContactByRole extends Card {
           verb: "",
         };
 
-        if (this.player.role.name == "Agent") {
+        if (this.name == "Agent") {
           ability = {
             name: "Contact",
             targetsDescription: { include: ["all"], exclude: ["Village"] },
@@ -25,11 +25,8 @@ module.exports = class ContactByRole extends Card {
           if (item.name == "OverturnSpectator") {
             item.meetings["Overturn Vote"].speechAbilities = [ability];
           }
-          if (item.name == "Room" && this.game.RoomOne.includes(this.player)) {
-            item.meetings["Room 1"].speechAbilities = [ability];
-          }
-          if (item.name == "Room" && this.game.RoomTwo.includes(this.player)) {
-            item.meetings["Room 2"].speechAbilities = [ability];
+          if (item.name == "Room" && item.Room && item.Room.name) {
+            item.meetings[item.Room.name].speechAbilities = [ability];
           }
         }
       },

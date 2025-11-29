@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import axios from "axios";
 
 import { GameStates } from "Constants";
@@ -55,20 +55,59 @@ export function PopoverContent({ title, content, page = null, icon = <></> }) {
   );
 }
 
-export function usePopover({
-  path,
+export const InfoPopover = function ({
+  showPopover,
+  popoverOpen,
+  openByClick,
+  anchorEl,
+  closePopover,
   page,
-  type,
-  boundingEl,
   title,
-  postprocessData,
+  content,
 }) {
+  if (content === null) {
+    return <></>;
+  }
+
+  return useMemo(
+    () => (
+      <Popover
+        open={showPopover !== false && popoverOpen}
+        sx={{ pointerEvents: openByClick ? "auto" : "none" }}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "center",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "center",
+          horizontal: "left",
+        }}
+        onClose={closePopover}
+        disableScrollLock
+        disableRestoreFocus
+        slotProps={{
+          paper: {
+            sx: {
+              width: "320px",
+            },
+          },
+        }}
+      >
+        <PopoverContent page={page} title={title} content={content} />
+      </Popover>
+    ),
+    [openByClick, showPopover, Boolean(content !== null)]
+  );
+};
+
+export function usePopover({ path, type, postprocessData }) {
   const siteInfo = useContext(SiteInfoContext);
   const [content, setContent] = useState(null);
 
   const {
     popoverOpen,
-    popoverClasses,
+    openByClick,
     anchorEl,
     handleClick,
     handleMouseEnter,
@@ -129,50 +168,15 @@ export function usePopover({
     [popoverOpen]
   );
 
-  const InfoPopover = function ({ showPopover }) {
-    if (content === null) {
-      return <></>;
-    }
-
-    return (
-      <Popover
-        open={showPopover !== false && popoverOpen}
-        sx={popoverClasses}
-        anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: "center",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "center",
-          horizontal: "left",
-        }}
-        onClose={closePopover}
-        disableScrollLock
-        disableRestoreFocus
-        slotProps={{
-          paper: {
-            sx: {
-              width: "320px",
-            },
-          },
-        }}
-        transitionDuration={0}
-      >
-        <PopoverContent page={page} title={title} content={content} />
-      </Popover>
-    );
-  };
-
   return {
-    InfoPopover,
     popoverOpen,
-    popoverClasses,
+    openByClick,
     anchorEl,
     handleClick,
     handleMouseEnter,
     handleMouseLeave,
     closePopover,
+    content,
   };
 }
 

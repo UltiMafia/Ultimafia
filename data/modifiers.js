@@ -97,6 +97,14 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
+    Keyed: {
+      category: "Items",
+      internal: ["StartWithKey"],
+      tags: ["Items", "Key"],
+      description: "Starts with a Key.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      allowDuplicate: true,
+    },
     Luminous: {
       category: "Items",
       internal: ["StartWithCandle"],
@@ -377,7 +385,7 @@ const modifierData = {
       tags: ["Voting"],
       description: "Player's vote is worth 1 more.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Felonious"],
+      incompatible: ["Felonious", "Voteless"],
       allowDuplicate: true,
     },
     Inverse: {
@@ -386,7 +394,7 @@ const modifierData = {
       tags: ["Voting"],
       description: "Player's vote is Negative.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Felonious"],
+      incompatible: ["Felonious", "Voteless"],
     },
     Felonious: {
       category: "Other",
@@ -394,7 +402,15 @@ const modifierData = {
       tags: ["Voting"],
       description: "Player's vote is worth 0.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Trustworthy", "Inverse"],
+      incompatible: ["Trustworthy", "Inverse", "Voteless"],
+    },
+    Voteless: {
+      category: "Other",
+      internal: ["CannotVoteModifier"],
+      tags: ["Voting"],
+      description: "Player cannot vote.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Trustworthy", "Inverse", "Felonious"],
     },
     Frustrated: {
       category: "Other",
@@ -474,7 +490,7 @@ const modifierData = {
       internal: ["KillAlignedOnDeath"],
       tags: ["Essential", "Selective Revealing", "Vital"],
       description:
-        "If killed, all all players with the same alignment will die too.",
+        "If killed, all players with the same alignment will die too.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     //Role Share
@@ -1178,7 +1194,7 @@ const modifierData = {
       internal: ["TrueModifier"],
       tags: ["Information", "Sanity"],
       description:
-        "All Information received by this role is true. Hides other modifiers.",
+        "All information created by this role is true. Hides other modifiers.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Confused", "Insane", "Naive", "Paranoid"],
     },
@@ -1187,7 +1203,7 @@ const modifierData = {
       internal: ["FalseModifier"],
       tags: ["Information", "Sanity"],
       description:
-        "All Information received by this role is false. Hides other modifiers.",
+        "All information created by this role is false. Hides other modifiers.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Sane", "Confused", "Naive", "Paranoid"],
     },
@@ -1196,7 +1212,7 @@ const modifierData = {
       internal: ["UnfavorableModifier"],
       tags: ["Information", "Sanity"],
       description:
-        "All Information received by this role will be unfavorable to the player being checked. Hides other modifiers.",
+        "All information created by this role will be unfavorable to the player being checked. Hides other modifiers.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Sane", "Insane", "Confused", "Naive"],
     },
@@ -1205,7 +1221,7 @@ const modifierData = {
       internal: ["FavorableModifier"],
       tags: ["Information", "Sanity"],
       description:
-        "All Information received by this role will be favorable to the player being checked. Hides other modifiers.",
+        "All information created by this role will be favorable to the player being checked. Hides other modifiers.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Sane", "Insane", "Confused", "Paranoid"],
     },
@@ -1214,7 +1230,7 @@ const modifierData = {
       internal: ["ModifierConfused"],
       tags: ["Information", "Sanity", "RNG"],
       description:
-        "Investigative reports appear incorrect 50% of the time. Hides other modifiers.",
+        "Information created by this role has a 50% chance to be made false. Hides other modifiers.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Sane", "Insane", "Naive", "Paranoid"],
     },

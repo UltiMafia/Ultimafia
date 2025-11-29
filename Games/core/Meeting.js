@@ -619,6 +619,11 @@ module.exports = class Meeting {
             case "members":
               if (this.members[player.id]) includePlayer[player.id] = include;
               break;
+            case "membersIfOpen":
+              if (!this.anonymous) {
+                if (this.members[player.id]) includePlayer[player.id] = include;
+              }
+              break;
             case "alive":
               if (player.alive) includePlayer[player.id] = include;
               break;
@@ -1129,13 +1134,17 @@ module.exports = class Meeting {
 
   typing(playerId, isTyping) {
     var member = this.members[playerId];
+    const isSilenced = member.player.hasEffect("Silenced");
 
     if (member && this.speech && !this.anonymous && member.canTalk) {
       for (let _playerId in this.members) {
-        this.members[_playerId].player.seeTyping({
-          playerId,
-          meetingId: isTyping ? this.id : null,
-        });
+        // Let silenced players see their own typing activity, but prevent others from seeing it
+        if (!isSilenced || _playerId === playerId) {
+          this.members[_playerId].player.seeTyping({
+            playerId,
+            meetingId: isTyping ? this.id : null,
+          });
+        }
       }
     }
   }

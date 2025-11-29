@@ -101,6 +101,12 @@ export default function HostBrowser(props) {
   const handleListItemClick = (newValue) => {
     setGameType(newValue);
     localStorage.setItem("gameType", newValue);
+    navigate({
+      pathname: location.pathname,
+      search: new URLSearchParams({
+        game: newValue,
+      }).toString(),
+    });
     setDrawerOpen(false);
   };
 
@@ -204,11 +210,11 @@ export default function HostBrowser(props) {
   }
 
   function onEditSetup(setup) {
-    navigate(`/play/create?edit=${setup.id}`);
+    navigate(`/play/create?edit=${setup.id}&game=${setup.gameType}`);
   }
 
   function onCopySetup(setup) {
-    navigate(`/play/create?copy=${setup.id}`);
+    navigate(`/play/create?copy=${setup.id}&game=${setup.gameType}`);
   }
 
   function onDelSetup(setup) {

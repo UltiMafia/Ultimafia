@@ -120,25 +120,13 @@ module.exports = class AdmiralGame extends Card {
       Day: {
         type: "shouldSkip",
         shouldSkip: function () {
-          if (this.game.HaveTreasureChestState == true) {
-            return true;
-          }
-          if (this.game.AdmiralStateBlock == "Night") {
-            return true;
-          }
-          return false;
+          return this.game.shouldSkipState("Day");
         },
       },
       Night: {
         type: "shouldSkip",
         shouldSkip: function () {
-          if (this.game.HaveTreasureChestState == true) {
-            return true;
-          }
-          if (this.game.AdmiralStateBlock == "Day") {
-            return true;
-          }
-          return false;
+          return this.game.shouldSkipState("Night");
         },
       },
     };

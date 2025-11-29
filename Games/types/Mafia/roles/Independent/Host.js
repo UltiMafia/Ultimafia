@@ -16,6 +16,8 @@ module.exports = class Host extends Role {
       "ChooseWordsForGhost",
       "AddDusk",
       "AddDawn",
+      "AddPrologue",
+      "CreateEvent",
     ];
   }
 };

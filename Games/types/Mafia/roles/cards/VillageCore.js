@@ -4,10 +4,11 @@ const { PRIORITY_VILLAGE } = require("../../const/Priority");
 module.exports = class VillageCore extends Card {
   constructor(role) {
     super(role);
-
+    /*
     if (role.isExtraRole == true) {
       return;
     }
+    */
 
     this.meetings = {
       Village: {
@@ -97,6 +98,24 @@ module.exports = class VillageCore extends Card {
           return true;
         },
       },
+      Prologue: {
+        type: "shouldSkip",
+        shouldSkip: function () {
+          if (
+            this.game.HavePrologueState == true &&
+            this.game.HaveTreasureChestState != true &&
+            this.game.HaveHostingState != true
+          ) {
+            for (let player of this.game.players) {
+              if (player.role.name == "Host" || player.role.name == "Poet") {
+                return false;
+              }
+            }
+            return true;
+          }
+          return true;
+        },
+      },
       "Treasure Chest": {
         type: "shouldSkip",
         shouldSkip: function () {
@@ -130,15 +149,7 @@ module.exports = class VillageCore extends Card {
       Dusk: {
         type: "shouldSkip",
         shouldSkip: function () {
-          for (let player of this.game.alivePlayers()) {
-            if (player.hasItem("Ouija Board")) {
-              return true;
-            }
-          }
-          if (this.game.HaveTreasureChestState == true) {
-            return true;
-          }
-          if (this.game.AdmiralStateBlock == "Day") {
+          if (this.game.shouldSkipState("Dusk")) {
             return true;
           }
           this.game.ExtraStates = [];
@@ -168,15 +179,7 @@ module.exports = class VillageCore extends Card {
       Dawn: {
         type: "shouldSkip",
         shouldSkip: function () {
-          for (let player of this.game.alivePlayers()) {
-            if (player.hasItem("Ouija Board")) {
-              return true;
-            }
-          }
-          if (this.game.HaveTreasureChestState == true) {
-            return true;
-          }
-          if (this.game.AdmiralStateBlock == "Night") {
+          if (this.game.shouldSkipState("Dawn")) {
             return true;
           }
           this.game.ExtraStates = [];

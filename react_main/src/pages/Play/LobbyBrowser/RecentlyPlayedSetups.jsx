@@ -16,10 +16,9 @@ import Setup from "components/Setup";
 import { getRecentlyPlayedSetupsChart } from "./getRecentlyPlayedSetupsChart";
 import { useTheme } from "@mui/material/styles";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import LobbySidebarPanel from "./LobbySidebarPanel";
 
 export const RecentlyPlayedSetups = ({ lobby }) => {
-  const theme = useTheme();
-  const svgRef = useRef();
   const [setups, setSetups] = useState([]);
   const [selSetup, setSelSetup] = useState(null);
   const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
@@ -33,16 +32,6 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
       setSetups(playedSetups);
     })();
   }, [lobby]);
-
-  useEffect(() => {
-    if (setups?.length) {
-      const setupsInfo = setups.map((setup) => ({
-        value: setup.percentage,
-        name: setup.setupDetails.name,
-      }));
-      getRecentlyPlayedSetupsChart({ svgRef, setupsInfo, theme });
-    }
-  }, [setups, theme]);
 
   if (!setups?.length) {
     return "";
@@ -83,7 +72,7 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
   });
 
   return (
-    <Paper>
+    <LobbySidebarPanel title="Most Popular Setups">
       {selSetup && (
         <HostGameDialogue
           open={ishostGameDialogueOpen}
@@ -91,16 +80,7 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
           setup={selSetup}
         />
       )}
-      <Box sx={{ p: 2 }}>
-        <Typography color="primary" gutterBottom>
-          Most popular setups
-        </Typography>
-        <Divider orientation="horizontal" flexItem sx={{ mb: 1 }} />
-        <Stack spacing={1}>{setupRows}</Stack>
-        <Box sx={{ mt: 2 }}>
-          <svg ref={svgRef} />
-        </Box>
-      </Box>
-    </Paper>
+      <Stack spacing={1}>{setupRows}</Stack>
+    </LobbySidebarPanel>
   );
 };

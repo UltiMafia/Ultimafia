@@ -35,6 +35,7 @@ var schemas = {
     discordUsername: String,
     avatar: Boolean,
     banner: Boolean,
+    profileBackground: Boolean,
     bio: {
       type: String,
       default:
@@ -78,6 +79,7 @@ var schemas = {
       hidePointsNegative: { type: Boolean, default: true },
       deathMessage: String,
       vanityUrl: { type: String, default: "" },
+      backgroundRepeatMode: { type: String, default: "repeat" },
     },
     accounts: {
       discord: String,
@@ -88,6 +90,16 @@ var schemas = {
     lastActive: Number,
     numFriends: { type: Number, default: 0 },
     dev: Boolean,
+    contributorTypes: {
+      type: [String],
+      enum: ["code", "art", "music", "design"],
+      default: [],
+    },
+    contributorBio: {
+      type: String,
+      maxlength: 240,
+      default: "",
+    },
     rank: Number,
     permissions: [String],
     setups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Setup" }],
@@ -124,6 +136,8 @@ var schemas = {
       archivedGamesMax: { type: Number, default: 0 },
       bonusRedHearts: { type: Number, default: 0 },
       vanityUrl: { type: Number, default: 0 },
+      profileBackground: { type: Number, default: 0 },
+      createFamily: { type: Number, default: 0 },
     },
     stats: {},
     winRate: { type: Number, default: 0 },
@@ -615,6 +629,64 @@ var schemas = {
     userId: { type: String, index: true },
     optionIndex: { type: Number, index: true },
     votedAt: { type: Number, index: true },
+  }),
+  Family: new mongoose.Schema({
+    id: { type: String, index: true, unique: true },
+    name: { type: String, required: true, maxlength: 20 },
+    avatar: { type: Boolean, default: false },
+    background: { type: Boolean, default: false },
+    backgroundRepeatMode: {
+      type: String,
+      default: "checker",
+      enum: ["checker", "stretch"],
+    },
+    bio: {
+      type: String,
+      default: "",
+      maxlength: 20000,
+    },
+    founder: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      index: true,
+      required: true,
+    },
+    leader: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      index: true,
+      required: true,
+    },
+    members: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    createdAt: { type: Number, index: true, default: Date.now },
+  }),
+  InFamily: new mongoose.Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
+    family: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Family",
+      index: true,
+    },
+  }),
+  FamilyJoinRequest: new mongoose.Schema({
+    familyId: { type: String, index: true },
+    family: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Family",
+      index: true,
+    },
+    requesterId: { type: String, index: true },
+    requester: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      index: true,
+    },
+    createdAt: { type: Number, index: true, default: Date.now },
   }),
 };
 

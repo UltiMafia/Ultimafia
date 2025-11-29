@@ -420,7 +420,7 @@ const roleData = {
       tags: ["Kill Interaction", "Extra Lives", "Visiting", "Advanced"],
       description: [
         "Each night, can choose to visit two players.",
-        `If the first player the Medic visits dies, the second player the Medic visits will become gain an extra life.`,
+        `If the first player the Medic visits dies, the second player the Medic visits will gain an extra life.`,
       ],
       nightOrder: [["Give Extra Life", PRIORITY_NIGHT_SAVER]],
     },
@@ -2343,12 +2343,12 @@ const roleData = {
       category: "Essential",
       tags: ["Essential", "Selective Revealing", "Exposed", "Advanced"],
       description: [
-        "All villagers will know who the President is.",
+        "All village aligned players will know who the President is.",
         "When the President dies, the Mafia/Cult will win.",
       ],
       SpecialInteractions: {
         Assassin: [
-          "If an Assassin is Present, Village Aligned Players will not learn who the President is.",
+          "If an Assassin is Present, village aligned Players will not learn who the President is.",
         ],
       },
     },
@@ -2924,7 +2924,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Deception", "Alignment", "Visiting", "Basic"],
       description: [
-        "Chooses a player each night and flips their alignment to investigative roles.",
+        "Chooses a player each night and makes them appear as an opposing vanilla role to information roles.",
       ],
       nightOrder: [
         ["Flip Alignment", PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT],
@@ -3397,6 +3397,10 @@ const roleData = {
         //"At Night can Choose an Event.",
         //"That Event will Occur in addition to any other Events.",
       ],
+      SpecialInteractionsModifiers: {
+        Refined: ["Cannot use Banished Events."],
+        Unrefined: ["Cannot use non-Banished Events."],
+      },
       skins: [
         {
           label: "Vivid",
@@ -3451,8 +3455,8 @@ const roleData = {
       category: "Reflexive",
       tags: ["Reflexive", "Malicious Effects", "Role Share", "Advanced"],
       description: [
-        "Each night, each player who visits the Apothecary will have any malicious effects they have removed and will be protected from death.",
-        "Players who Role Share with an Apothecary will have any malicious effects they have removed.",
+        "Each night, each player who visits the Dealer will have any malicious effects they have removed and will be protected from death.",
+        "Players who Role Share with an Dealer will have any malicious effects they have removed.",
         MalEffects,
       ],
       nightOrder: [
@@ -4865,7 +4869,7 @@ const roleData = {
     },
     Clown: {
       alignment: "Independent",
-      tags: ["Condmen", "Mafia", "Win Con", "Visiting", "Expert"],
+      tags: ["Condemn", "Mafia", "Win Con", "Visiting", "Expert"],
       description: [
         "Each night, can choose to visit one player.",
         "All Mafia-aligned players will learn if a Clown is present.",
@@ -5496,7 +5500,7 @@ const roleData = {
         "Mafia",
         "Cult",
         "Meeting",
-        "AnonymizeMeeting",
+        "Faction Meeting Interaction",
         "Hostile",
         "Advanced",
       ],
@@ -5512,7 +5516,7 @@ const roleData = {
         "Mafia",
         "Mafioso",
         "Meeting",
-        "AnonymizeMeeting",
+        "Faction Meeting Interaction",
         "Cultist",
         "Visiting",
         "Hostile",
@@ -5535,7 +5539,7 @@ const roleData = {
         "Meeting",
         "Killing",
         "Last Two",
-        "AnonymizeMeeting",
+        "Faction Meeting Interaction",
         "Visiting",
         "Hostile",
         "Advanced",

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, NavLink } from "react-router-dom";
 import { Menu, MenuItem, Box, Divider } from "@mui/material";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 
@@ -59,11 +59,6 @@ export default function NavDropdown({
     if (customOnMenuItemClick) {
       customOnMenuItemClick(item.path);
       return;
-    }
-
-    // Default navigation
-    if (item.path) {
-      navigate(item.path);
     }
   };
 
@@ -142,7 +137,7 @@ export default function NavDropdown({
             return <Divider key={`divider-${index}`} />;
           }
 
-          return (
+          const menuItem = (
             <MenuItem
               key={item.path || item.text || index}
               onClick={() => handleMenuItemClick(item)}
@@ -156,6 +151,22 @@ export default function NavDropdown({
               {item.text}
             </MenuItem>
           );
+
+          if (item.path) {
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                style={{
+                  color: "inherit",
+                }}
+              >
+                {menuItem}
+              </NavLink>
+            );
+          } else {
+            return menuItem;
+          }
         })}
       </Menu>
     </>

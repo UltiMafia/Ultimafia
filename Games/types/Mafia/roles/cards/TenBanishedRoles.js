@@ -8,7 +8,7 @@ module.exports = class TenBanishedRoles extends Card {
 
     this.listeners = {
       roleAssigned: function (player) {
-        if (player !== this.player) {
+        if (player != this.player) {
           return;
         }
         if (this.HasGainedAbilites == true) {
@@ -26,6 +26,7 @@ module.exports = class TenBanishedRoles extends Card {
               this.game.getRoleAlignment(r) == this.alignment
           )
         );
+        //this.game.queueAlert(`roles length is ${roles.length}`);
         for (let x = 0; x < 5 && x < roles.length; x++) {
           if (roles[x]) {
             let role = this.player.addExtraRole(roles[x]);

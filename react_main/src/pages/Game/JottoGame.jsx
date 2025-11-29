@@ -30,8 +30,8 @@ const ENGLISH_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const CHEATSHEET_STATES = [
   undefined,
   "success.main",
-  "var(--mui-palette-error-main)",
-  "var(--mui-palette-warning-main)",
+  "error.main",
+  "info.main",
 ];
 export default function JottoGame() {
   const game = useContext(GameContext);
@@ -161,8 +161,8 @@ function JottoCheatSheet({ cheatSheet, updateCheatSheet }) {
       sx={{
         flexWrap: "wrap",
         p: 1,
-        rowGap: 1,
-        columnGap: 1,
+        rowGap: 0.5,
+        columnGap: 0.5,
         alignContent: "center",
         justifyContent: "center",
       }}
