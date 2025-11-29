@@ -3186,6 +3186,22 @@ Game Settings
   background-image: url("/src/images/modifiers/loud.png");
 }
 
+.gamesetting-Silent-Mafia {
+  background-image: url("/src/images/modifiers/lone.png");
+}
+
+.gamesetting-Silent-Cult {
+  background-image: url("/src/images/modifiers/lone.png");
+}
+
+.gamesetting-Disorganized-Cult {
+  background-image: url("/src/images/modifiers/clueless.png");
+}
+
+.gamesetting-Disorganized-Mafia {
+  background-image: url("/src/images/modifiers/clueless.png");
+}
+
 /***********
 *
 * Pride icons; not for game
