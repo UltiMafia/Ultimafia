@@ -81,7 +81,7 @@ module.exports = class GuessStatue extends Card {
           item.drop();
         }
         shuffledPlayers[0].setRole(
-          "Damsal",
+          "Statue",
           undefined,
           false,
           true,
