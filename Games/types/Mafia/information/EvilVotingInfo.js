@@ -16,16 +16,42 @@ module.exports = class EvilVotingInfo extends Information {
     super("Evil Voting Info", creator, game);
     let evilCount = 0;
     let trueEvilCount = 0;
+    var count = {};
+    var highest = { targets: [], votes: 1 };
+    var finalTarget;
+        for (let voterId in meeting.votes) {
+        let member = meeting.members[voterId];
+        let target = meeting.votes[voterId] || "*";
+
+        if (!target) continue;
+
+        // Workaround for being unable to properly exclude self from group meetings
+        if (isExcludeSelf && voterId === target) continue;
+
+        if (!count[target]) count[target] = 0;
+          count[target] += 1;
+          totalVoteCount += 1;
+      }
+      // Determine target with the most votes (ignores zero votes)
+      for (let target in count) {
+        if (count[target] > highest.votes)
+          highest = { targets: [target], votes: count[target] };
+        else if (count[target] == highest.votes) highest.targets.push(target);
+      }
+    if (highest.targets.length == 1){
+    
     for (let voterId in meeting.votes) {
       let member = meeting.members[voterId];
       let target = meeting.votes[voterId] || "*";
       if (!target) continue;
+      if (target == highest.targets[0]){
       if (this.isAppearanceEvil(member.player)) {
         evilCount++;
       }
       if (this.isEvil(member.player)) {
         trueEvilCount++;
       }
+    }
     }
     if (trueEvilCount > 0) {
       this.trueInfo = "Yes";
@@ -38,6 +64,10 @@ module.exports = class EvilVotingInfo extends Information {
     } else {
       this.mainInfo = "No";
     }
+    }
+    else{
+      this.mainInfo = "No majority vote";
+    }
   }
 
   getInfoRaw() {
@@ -47,6 +77,9 @@ module.exports = class EvilVotingInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
+    if(this.mainInfo == "No majority vote"){
+      return `:invest: Their was no majority yesterday!`;
+    }
     if (this.mainInfo == "Yes") {
       return `:invest: You ran the numbers... the forces of Evil did vote with the majority yesterday!`;
     } else {
@@ -59,6 +92,9 @@ module.exports = class EvilVotingInfo extends Information {
   }
 
   isTrue() {
+    if(this.mainInfo == "No majority vote"){
+      return true;
+    }
     if (this.mainInfo == this.trueInfo) {
       return true;
     }
@@ -66,6 +102,9 @@ module.exports = class EvilVotingInfo extends Information {
     return false;
   }
   isFalse() {
+    if(this.mainInfo == "No majority vote"){
+      return true;
+    }
     if (this.isTrue()) {
       return false;
     } else {
@@ -73,6 +112,9 @@ module.exports = class EvilVotingInfo extends Information {
     }
   }
   isFavorable() {
+    if(this.mainInfo == "No majority vote"){
+      return true;
+    }
     if (this.mainInfo != "No") {
       return false;
     } else {
@@ -80,6 +122,9 @@ module.exports = class EvilVotingInfo extends Information {
     }
   }
   isUnfavorable() {
+    if(this.mainInfo == "No majority vote"){
+      return true;
+    }
     if (this.mainInfo == "No") {
       return false;
     } else {
