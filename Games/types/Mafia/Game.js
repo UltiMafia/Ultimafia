@@ -94,6 +94,8 @@ module.exports = class MafiaGame extends Game {
     this.AdmiralGoodRoles = [];
     this.AdmiralEvilRoles = [];
     this.AdmiralGold = 15;
+    //Voting Log
+    this.MafiaVotingLog = [];
     //Other
     this.EventsPerNight = this.setup.EventsPerNight;
     this.GameEndEvent = this.setup.GameEndEvent || "Meteor";
