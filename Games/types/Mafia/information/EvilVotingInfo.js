@@ -17,28 +17,26 @@ module.exports = class EvilVotingInfo extends Information {
     let evilCount = 0;
     let trueEvilCount = 0;
     for (let voterId in meeting.votes) {
-          let member = meeting.members[voterId];
-          let target = meeting.votes[voterId] || "*";
-          if (!target) continue;
-          if (this.isAppearanceEvil(member.player)) {
-            evilCount++;
-          }
-          if(this.isEvil(member.player)){
-            trueEvilCount++;
-          }
-        }
-    if(trueEvilCount > 0){
-      this.trueInfo = "Yes";
+      let member = meeting.members[voterId];
+      let target = meeting.votes[voterId] || "*";
+      if (!target) continue;
+      if (this.isAppearanceEvil(member.player)) {
+        evilCount++;
+      }
+      if (this.isEvil(member.player)) {
+        trueEvilCount++;
+      }
     }
-    else{
+    if (trueEvilCount > 0) {
+      this.trueInfo = "Yes";
+    } else {
       this.trueInfo = "No";
     }
 
-    if(evilCount > 0){
+    if (evilCount > 0) {
       this.mainInfo = "Yes";
-    }
-    else{
-     this.mainInfo = "No";
+    } else {
+      this.mainInfo = "No";
     }
   }
 
@@ -57,10 +55,10 @@ module.exports = class EvilVotingInfo extends Information {
   }
 
   isTrue() {
-      if (this.mainInfo == this.trueInfo) {
-        return true;
-      }
-    
+    if (this.mainInfo == this.trueInfo) {
+      return true;
+    }
+
     return false;
   }
   isFalse() {
@@ -86,7 +84,7 @@ module.exports = class EvilVotingInfo extends Information {
   }
 
   makeTrue() {
-      this.mainInfo = this.trueInfo;
+    this.mainInfo = this.trueInfo;
   }
   makeFalse() {
     if (this.trueInfo == "Yes") {
