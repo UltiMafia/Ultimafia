@@ -17,26 +17,28 @@ module.exports = class EvilVotingInfo extends Information {
     let evilCount = 0;
     let trueEvilCount = 0;
     for (let voterId in meeting.votes) {
-      let member = meeting.members[voterId];
-      let target = meeting.votes[voterId] || "*";
-      if (!target) continue;
-      if (this.isAppearanceEvil(member.player)) {
-        evilCount++;
-      }
-      if (this.isEvil(member.player)) {
-        trueEvilCount++;
-      }
-    }
-    if (trueEvilCount > 0) {
+          let member = meeting.members[voterId];
+          let target = meeting.votes[voterId] || "*";
+          if (!target) continue;
+          if (this.isAppearanceEvil(member.player)) {
+            evilCount++;
+          }
+          if(this.isEvil(member.player)){
+            trueEvilCount++;
+          }
+        }
+    if(trueEvilCount > 0){
       this.trueInfo = "Yes";
-    } else {
+    }
+    else{
       this.trueInfo = "No";
     }
 
-    if (evilCount > 0) {
+    if(evilCount > 0){
       this.mainInfo = "Yes";
-    } else {
-      this.mainInfo = "No";
+    }
+    else{
+     this.mainInfo = "No";
     }
   }
 
@@ -47,18 +49,23 @@ module.exports = class EvilVotingInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-
-    return `Your investigation shows that ${this.target.name} is ${this.mainInfo}`;
+  if(this.mainInfo == "Yes"){
+    return `:invest: You ran the numbers... the forces of Evil did vote with the majority yesterday!`;
+  }
+    else{
+     return `:invest: You ran the numbers... the forces of Evil did NOT vote with the Majority yesterday!`;
+    }
+    //return `You learn that ${this.target.name} is ${this.mainInfo}`;
   }
   getInfoSpecial() {
     return `${this.target.name} is ${this.mainInfo}`;
   }
 
   isTrue() {
-    if (this.mainInfo == this.trueInfo) {
-      return true;
-    }
-
+      if (this.mainInfo == this.trueInfo) {
+        return true;
+      }
+    
     return false;
   }
   isFalse() {
@@ -84,7 +91,7 @@ module.exports = class EvilVotingInfo extends Information {
   }
 
   makeTrue() {
-    this.mainInfo = this.trueInfo;
+      this.mainInfo = this.trueInfo;
   }
   makeFalse() {
     if (this.trueInfo == "Yes") {
