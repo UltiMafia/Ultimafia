@@ -18,10 +18,10 @@ module.exports = class CountEvilVotes extends Card {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
         labels: ["investigate"],
         run: function () {
-          if (!this.role.data.VotingLog) return;
+          if (this.role.data.VotingLog == null) return;
           for (let info of this.role.data.VotingLog) {
             info.processInfo();
-            this.actor.queueAlert(info);
+            this.actor.queueAlert(info.getInfoFormated());
           }
           this.role.data.VotingLog = [];
         },
@@ -33,11 +33,14 @@ module.exports = class CountEvilVotes extends Card {
         let isValid = false;
 
         for (let member of meeting.members) {
-          if (member.player == this.player) {
+          if (member.player.name == this.player.name) {
             isValid = true;
           }
         }
-        if (!this.data.VotingLog) {
+        if(!isValid){
+          return;
+        }
+        if (this.data.VotingLog == null) {
           this.data.VotingLog = [];
         }
 

@@ -40,23 +40,16 @@ module.exports = class HauntDreams extends Card {
       },
     };
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Effect"])) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          role: this,
-          priority: PRIORITY_BLOCK_EARLY - 1,
-          labels: ["block", "delirium"],
-          run: function () {
+    this.passiveActions = [
+      {
+        ability: ["Effect"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
+        priority: PRIORITY_BLOCK_EARLY - 1,
+        labels: ["block", "delirium"],
+        run: function () {
             if (
               this.role.data.DreamHost &&
               this.role.data.DreamHost.effects.filter(
@@ -76,10 +69,12 @@ module.exports = class HauntDreams extends Card {
               }
             }
           },
-        });
-
-        this.game.queueAction(action);
       },
+    ];
+
+
+
+    this.listeners = {
       AbilityToggle: function (player) {
         if (
           this.hasAbility(["OnlyWhenAlive"]) &&

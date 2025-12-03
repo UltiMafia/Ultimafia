@@ -7,6 +7,7 @@ const {
   PRIORITY_WIN_SWAP,
 
   // NIGHT PRIORITY
+  PRIORITY_WIN_CON_SET,
   PRIORITY_IDENTITY_STEALER_BLOCK,
   PRIORITY_FULL_DISABLE,
 
@@ -4969,6 +4970,7 @@ const roleData = {
         "Once per game, predicts which day/night cycle the game will end on.",
         "Wins if guess is correct.",
       ],
+      nightOrder: [["Make Guess", PRIORITY_WIN_CON_SET]],
     },
     Fatalist: {
       alignment: "Independent",
@@ -4977,6 +4979,7 @@ const roleData = {
         "Once per game, predicts which day/night cycle they will be killed on.",
         "Wins if guess is correct.",
       ],
+      nightOrder: [["Make Guess", PRIORITY_WIN_CON_SET]],
     },
     Fumigator: {
       alignment: "Independent",

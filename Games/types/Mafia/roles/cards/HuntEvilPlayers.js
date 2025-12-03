@@ -9,32 +9,16 @@ module.exports = class HuntEvilPlayers extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      roleAssigned: function (player) {
-        if (player !== this.player) {
-          return;
-        }
-      },
-      death: function (player, killer, deathType) {
-        if (player === this.data.EvilTarget) {
-          this.data.EvilTarget = null;
-        }
-      },
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Information"])) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 20,
-          labels: ["investigate"],
-          role: this.role,
-          run: function () {
+    this.passiveActions = [
+      {
+        ability: ["Information"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
+        priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 20,
+        labels: ["investigate"],
+        run: function () {
             if (this.role.data.EvilTarget != null) return;
             let learnPlayer;
             let info = this.game.createInformation(
@@ -52,9 +36,19 @@ module.exports = class HuntEvilPlayers extends Card {
               this.actor.queueAlert(`You learn ${learnPlayer.name} is Evil!`);
             }
           },
-        });
+      },
+    ];
 
-        this.game.queueAction(action);
+    this.listeners = {
+      roleAssigned: function (player) {
+        if (player !== this.player) {
+          return;
+        }
+      },
+      death: function (player, killer, deathType) {
+        if (player === this.data.EvilTarget) {
+          this.data.EvilTarget = null;
+        }
       },
     };
   }

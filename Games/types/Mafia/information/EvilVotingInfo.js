@@ -19,14 +19,12 @@ module.exports = class EvilVotingInfo extends Information {
     var count = {};
     var highest = { targets: [], votes: 1 };
     var finalTarget;
+    let totalVoteCount = 0;
     for (let voterId in meeting.votes) {
       let member = meeting.members[voterId];
       let target = meeting.votes[voterId] || "*";
 
       if (!target) continue;
-
-      // Workaround for being unable to properly exclude self from group meetings
-      if (isExcludeSelf && voterId === target) continue;
 
       if (!count[target]) count[target] = 0;
       count[target] += 1;

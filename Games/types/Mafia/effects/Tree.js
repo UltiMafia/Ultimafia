@@ -12,11 +12,8 @@ module.exports = class Tree extends Effect {
     this.listeners = {
       state: function (stateInfo) {
         for (let item of this.player.items) {
-          if (item.name == "Room" && this.game.RoomOne.includes(this.player)) {
-            item.meetings["Room 1"].canVote = false;
-          }
-          if (item.name == "Room" && this.game.RoomTwo.includes(this.player)) {
-            item.meetings["Room 2"].canVote = false;
+          if (item.name == "Room" && item.Room && item.Room.name){
+             item.meetings[item.Room.name].canVote = false;
           }
         }
       },
