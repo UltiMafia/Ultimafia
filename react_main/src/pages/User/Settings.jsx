@@ -563,12 +563,7 @@ export default function Settings() {
   };
 
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
-  if (
-    !settingsLoaded ||
-    !accountsLoaded ||
-    !user.loaded ||
-    !familyLoaded
-  )
+  if (!settingsLoaded || !accountsLoaded || !user.loaded || !familyLoaded)
     return <NewLoading small />;
 
   const sections = [
@@ -731,253 +726,245 @@ export default function Settings() {
             </Box>
           )}
 
-                {/* Manage Family Section - Leader */}
-                {userFamily && userFamily.isLeader && (
-                  <Box>
-                    <Divider sx={{ my: 2 }} />
-                    <Typography variant="h4" sx={{ mb: 2 }}>
-                      Manage Family
+          {/* Manage Family Section - Leader */}
+          {userFamily && userFamily.isLeader && (
+            <Box>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h4" sx={{ mb: 2 }}>
+                Manage Family
+              </Typography>
+              <Stack direction="column" spacing={3}>
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <Typography>You are the leader of </Typography>
+                  {userFamily.avatar && (
+                    <div
+                      style={{
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "50%",
+                        backgroundImage: `url(/uploads/${userFamily.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        flexShrink: 0,
+                      }}
+                    />
+                  )}
+                  <Link
+                    to={`/user/family/${userFamily.id}`}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <Typography
+                      component="span"
+                      sx={{
+                        fontWeight: "bold",
+                        color: "primary.main",
+                        "&:hover": {
+                          textDecoration: "underline",
+                        },
+                      }}
+                    >
+                      {userFamily.name}
                     </Typography>
-                    <Stack direction="column" spacing={3}>
-                      <Stack direction="row" spacing={2} alignItems="center">
-                        <Typography>You are the leader of </Typography>
-                        {userFamily.avatar && (
-                          <div
-                            style={{
-                              width: "40px",
-                              height: "40px",
-                              borderRadius: "50%",
-                              backgroundImage: `url(/uploads/${userFamily.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
-                              backgroundSize: "cover",
-                              backgroundPosition: "center",
-                              flexShrink: 0,
-                            }}
-                          />
-                        )}
-                        <Link
-                          to={`/user/family/${userFamily.id}`}
-                          style={{ textDecoration: "none" }}
-                        >
-                          <Typography
-                            component="span"
-                            sx={{
-                              fontWeight: "bold",
-                              color: "primary.main",
-                              "&:hover": {
-                                textDecoration: "underline",
-                              },
-                            }}
-                          >
-                            {userFamily.name}
-                          </Typography>
-                        </Link>
-                      </Stack>
+                  </Link>
+                </Stack>
 
-                      {/* Upload Family Avatar */}
-                      <Box>
-                        <Typography variant="h6" sx={{ mb: 1 }}>
-                          Family Avatar
-                        </Typography>
-                        <Stack direction="row" spacing={2} alignItems="center">
-                          <AvatarUpload
-                            onFileUpload={onFamilyAvatarUploadExisting}
-                            name="familyAvatarExisting"
-                          >
-                            <Button variant="outlined">
-                              Upload New Avatar
-                            </Button>
-                          </AvatarUpload>
-                          {userFamily.avatar && (
-                            <Typography
-                              variant="caption"
-                              sx={{ color: "success.main" }}
-                            >
-                              Avatar uploaded
-                            </Typography>
-                          )}
-                        </Stack>
-                      </Box>
+                {/* Upload Family Avatar */}
+                <Box>
+                  <Typography variant="h6" sx={{ mb: 1 }}>
+                    Family Avatar
+                  </Typography>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <AvatarUpload
+                      onFileUpload={onFamilyAvatarUploadExisting}
+                      name="familyAvatarExisting"
+                    >
+                      <Button variant="outlined">Upload New Avatar</Button>
+                    </AvatarUpload>
+                    {userFamily.avatar && (
+                      <Typography
+                        variant="caption"
+                        sx={{ color: "success.main" }}
+                      >
+                        Avatar uploaded
+                      </Typography>
+                    )}
+                  </Stack>
+                </Box>
 
-                      {/* Upload Family Background */}
-                      <Box>
-                        <Typography variant="h6" sx={{ mb: 1 }}>
-                          Family Background
-                        </Typography>
+                {/* Upload Family Background */}
+                <Box>
+                  <Typography variant="h6" sx={{ mb: 1 }}>
+                    Family Background
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ mb: 1, display: "block" }}
+                  >
+                    Upload a custom background image to replace the default
+                    pattern on the family page (max 5 MB)
+                  </Typography>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <HiddenUpload
+                      name="familyBackground"
+                      onClick={onFamilyBackgroundEdit}
+                      onFileUpload={onFamilyBackgroundUpload}
+                    >
+                      <Button variant="outlined">
+                        Upload Background Image
+                      </Button>
+                    </HiddenUpload>
+                    {userFamily.background && (
+                      <>
                         <Typography
                           variant="caption"
-                          sx={{ mb: 1, display: "block" }}
+                          sx={{ color: "success.main" }}
                         >
-                          Upload a custom background image to replace the
-                          default pattern on the family page (max 5 MB)
+                          Background uploaded
                         </Typography>
-                        <Stack direction="row" spacing={2} alignItems="center">
-                          <HiddenUpload
-                            name="familyBackground"
-                            onClick={onFamilyBackgroundEdit}
-                            onFileUpload={onFamilyBackgroundUpload}
-                          >
-                            <Button variant="outlined">
-                              Upload Background Image
-                            </Button>
-                          </HiddenUpload>
-                          {userFamily.background && (
-                            <>
-                              <Typography
-                                variant="caption"
-                                sx={{ color: "success.main" }}
-                              >
-                                Background uploaded
-                              </Typography>
-                              <Button
-                                variant="outlined"
-                                color="error"
-                                size="small"
-                                onClick={onFamilyBackgroundRemove}
-                              >
-                                Remove
-                              </Button>
-                            </>
-                          )}
-                        </Stack>
-                      </Box>
-
-                      {/* Background Display Mode */}
-                      {userFamily.background && (
-                        <Box>
-                          <Typography variant="h6" sx={{ mb: 1 }}>
-                            Background Display Mode
-                          </Typography>
-                          <FormControl sx={{ minWidth: "240px" }}>
-                            <InputLabel>Display Mode</InputLabel>
-                            <Select
-                              value={
-                                userFamily.backgroundRepeatMode || "checker"
-                              }
-                              label="Display Mode"
-                              onChange={(e) =>
-                                onFamilyBackgroundRepeatModeChange(
-                                  e.target.value
-                                )
-                              }
-                            >
-                              <MenuItem value="checker">Checker</MenuItem>
-                              <MenuItem value="stretch">Stretch</MenuItem>
-                            </Select>
-                          </FormControl>
-                          <Typography
-                            variant="caption"
-                            sx={{ mt: 1, display: "block" }}
-                          >
-                            Choose how the background image should be displayed:
-                            Checker (pattern) or Stretch (full screen)
-                          </Typography>
-                        </Box>
-                      )}
-
-                      {/* Transfer Leadership */}
-                      <Box>
-                        <Typography variant="h6" sx={{ mb: 1 }}>
-                          Transfer Leadership
-                        </Typography>
-                        <Stack direction="column" spacing={2}>
-                          <UserSearchSelect
-                            placeholder="Search for a family member..."
-                            onChange={(userId) =>
-                              setTransferLeaderUserId(userId)
-                            }
-                          />
-                          <Button
-                            variant="outlined"
-                            onClick={onTransferLeadership}
-                            disabled={!transferLeaderUserId}
-                            sx={{ minWidth: "240px" }}
-                          >
-                            Transfer Leadership
-                          </Button>
-                        </Stack>
-                      </Box>
-
-                      {/* Delete Family */}
-                      <Box>
-                        <Divider sx={{ my: 2 }} />
                         <Button
                           variant="outlined"
                           color="error"
-                          onClick={onDeleteFamily}
-                          sx={{ minWidth: "240px" }}
-                          startIcon={
-                            <i
-                              className="fas fa-exclamation-triangle"
-                              aria-hidden="true"
-                            />
-                          }
+                          size="small"
+                          onClick={onFamilyBackgroundRemove}
                         >
-                          Delete Family
+                          Remove
                         </Button>
-                      </Box>
-                    </Stack>
-                  </Box>
-                )}
+                      </>
+                    )}
+                  </Stack>
+                </Box>
 
-                {/* Manage Family Section - Member */}
-                {userFamily && !userFamily.isLeader && (
+                {/* Background Display Mode */}
+                {userFamily.background && (
                   <Box>
-                    <Divider sx={{ my: 2 }} />
-                    <Typography variant="h4" sx={{ mb: 2 }}>
-                      Manage Family
+                    <Typography variant="h6" sx={{ mb: 1 }}>
+                      Background Display Mode
                     </Typography>
-                    <Stack direction="column" spacing={3}>
-                      <Stack direction="row" spacing={2} alignItems="center">
-                        <Typography>You are a member of </Typography>
-                        {userFamily.avatar && (
-                          <div
-                            style={{
-                              width: "40px",
-                              height: "40px",
-                              borderRadius: "50%",
-                              backgroundImage: `url(/uploads/${userFamily.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
-                              backgroundSize: "cover",
-                              backgroundPosition: "center",
-                              flexShrink: 0,
-                            }}
-                          />
-                        )}
-                        <Link
-                          to={`/user/family/${userFamily.id}`}
-                          style={{ textDecoration: "none" }}
-                        >
-                          <Typography
-                            component="span"
-                            sx={{
-                              fontWeight: "bold",
-                              color: "primary.main",
-                              "&:hover": {
-                                textDecoration: "underline",
-                              },
-                            }}
-                          >
-                            {userFamily.name}
-                          </Typography>
-                        </Link>
-                      </Stack>
-
-                      {/* Leave Family */}
-                      <Box>
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          onClick={onLeaveFamily}
-                          sx={{ minWidth: "240px" }}
-                        >
-                          Leave Family
-                        </Button>
-                      </Box>
-                    </Stack>
+                    <FormControl sx={{ minWidth: "240px" }}>
+                      <InputLabel>Display Mode</InputLabel>
+                      <Select
+                        value={userFamily.backgroundRepeatMode || "checker"}
+                        label="Display Mode"
+                        onChange={(e) =>
+                          onFamilyBackgroundRepeatModeChange(e.target.value)
+                        }
+                      >
+                        <MenuItem value="checker">Checker</MenuItem>
+                        <MenuItem value="stretch">Stretch</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <Typography
+                      variant="caption"
+                      sx={{ mt: 1, display: "block" }}
+                    >
+                      Choose how the background image should be displayed:
+                      Checker (pattern) or Stretch (full screen)
+                    </Typography>
                   </Box>
                 )}
+
+                {/* Transfer Leadership */}
+                <Box>
+                  <Typography variant="h6" sx={{ mb: 1 }}>
+                    Transfer Leadership
+                  </Typography>
+                  <Stack direction="column" spacing={2}>
+                    <UserSearchSelect
+                      placeholder="Search for a family member..."
+                      onChange={(userId) => setTransferLeaderUserId(userId)}
+                    />
+                    <Button
+                      variant="outlined"
+                      onClick={onTransferLeadership}
+                      disabled={!transferLeaderUserId}
+                      sx={{ minWidth: "240px" }}
+                    >
+                      Transfer Leadership
+                    </Button>
+                  </Stack>
+                </Box>
+
+                {/* Delete Family */}
+                <Box>
+                  <Divider sx={{ my: 2 }} />
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={onDeleteFamily}
+                    sx={{ minWidth: "240px" }}
+                    startIcon={
+                      <i
+                        className="fas fa-exclamation-triangle"
+                        aria-hidden="true"
+                      />
+                    }
+                  >
+                    Delete Family
+                  </Button>
+                </Box>
               </Stack>
-            ),
-          },
+            </Box>
+          )}
+
+          {/* Manage Family Section - Member */}
+          {userFamily && !userFamily.isLeader && (
+            <Box>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h4" sx={{ mb: 2 }}>
+                Manage Family
+              </Typography>
+              <Stack direction="column" spacing={3}>
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <Typography>You are a member of </Typography>
+                  {userFamily.avatar && (
+                    <div
+                      style={{
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "50%",
+                        backgroundImage: `url(/uploads/${userFamily.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        flexShrink: 0,
+                      }}
+                    />
+                  )}
+                  <Link
+                    to={`/user/family/${userFamily.id}`}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <Typography
+                      component="span"
+                      sx={{
+                        fontWeight: "bold",
+                        color: "primary.main",
+                        "&:hover": {
+                          textDecoration: "underline",
+                        },
+                      }}
+                    >
+                      {userFamily.name}
+                    </Typography>
+                  </Link>
+                </Stack>
+
+                {/* Leave Family */}
+                <Box>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={onLeaveFamily}
+                    sx={{ minWidth: "240px" }}
+                  >
+                    Leave Family
+                  </Button>
+                </Box>
+              </Stack>
+            </Box>
+          )}
+        </Stack>
+      ),
+    },
   ];
 
   return (
@@ -1126,8 +1113,7 @@ export default function Settings() {
         deps.user.refresh();
       })
       .catch((err) => {
-        const errorMessage =
-          err.response?.data || "Error redeeming stamp.";
+        const errorMessage = err.response?.data || "Error redeeming stamp.";
         deps.errorAlert(err);
       });
   }
