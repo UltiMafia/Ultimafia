@@ -8,7 +8,7 @@ module.exports = class CountEvilVotes extends Card {
   constructor(role) {
     super(role);
 
-      this.passiveActions = [
+    this.passiveActions = [
       {
         ability: ["Information"],
         actor: role.player,
@@ -19,37 +19,36 @@ module.exports = class CountEvilVotes extends Card {
         labels: ["investigate"],
         run: function () {
           if (!this.role.data.VotingLog) return;
-          for(let info of this.role.data.VotingLog){
-          info.processInfo();
-          this.actor.queueAlert(info);
+          for (let info of this.role.data.VotingLog) {
+            info.processInfo();
+            this.actor.queueAlert(info);
           }
           this.role.data.VotingLog = [];
         },
       },
     ];
-    
+
     this.listeners = {
-      PreVotingPowers: function (meeting){
+      PreVotingPowers: function (meeting) {
         let isValid = false;
-        
-        for(let member of meeting.members){
-          if(member.player == this.player){
+
+        for (let member of meeting.members) {
+          if (member.player == this.player) {
             isValid = true;
           }
         }
-        if(!this.data.VotingLog){
-         this.data.VotingLog = []; 
+        if (!this.data.VotingLog) {
+          this.data.VotingLog = [];
         }
-    
+
         let info = this.game.createInformation(
-                "EvilVotingInfo",
-                this.actor,
-                this.game,
-                meeting
-              );
-        
+          "EvilVotingInfo",
+          this.actor,
+          this.game,
+          meeting
+        );
+
         this.data.VotingLog.push(info);
-        
       },
       state: function (stateInfo) {
         if (stateInfo.name.match(/Day/)) {
