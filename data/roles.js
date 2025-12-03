@@ -4557,7 +4557,7 @@ const roleData = {
       category: "Demon",
       tags: ["Killing", "Delirium", "Poison", "Visiting", "Advanced"],
       description: [
-        `Each night, can choose to visit one player and make "Delirious" and "Poison" them.`,
+        `Each night, can choose to visit one player and make them "Delirious" and "Poison" them.`,
         deliriumDef,
         poisonDef,
         "Player's Poisoned by a Puca will not be told they were poisoned.",
