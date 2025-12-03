@@ -495,7 +495,7 @@ export default function Settings() {
     if (user.loaded && user.loggedIn) {
       if (!settingsLoaded) loadSettings();
       if (!accountsLoaded) loadAccounts();
-      if (user.itemsOwned?.createFamily && !familyLoaded) loadFamily();
+      if (!familyLoaded) loadFamily();
     }
   }, [user]);
 
@@ -567,7 +567,7 @@ export default function Settings() {
     !settingsLoaded ||
     !accountsLoaded ||
     !user.loaded ||
-    (user.itemsOwned?.createFamily && !familyLoaded)
+    !familyLoaded
   )
     return <NewLoading small />;
 
@@ -661,65 +661,75 @@ export default function Settings() {
         </Stack>
       ),
     },
-    ...(user.itemsOwned?.createFamily
-      ? [
-          {
-            title: "Family",
-            path: "family",
-            content: (
-              <Stack direction="column" spacing={3}>
-                {/* Create Family Section */}
-                <Box>
-                  <Typography variant="h4" sx={{ mb: 2 }}>
-                    Create Family
-                  </Typography>
-                  <Stack
-                    direction="column"
-                    spacing={2}
-                    sx={{
-                      opacity: userFamily ? 0.5 : 1,
-                      pointerEvents: userFamily ? "none" : "auto",
-                    }}
+    {
+      title: "Family",
+      path: "family",
+      content: (
+        <Stack direction="column" spacing={3}>
+          {/* No Family Section */}
+          {!userFamily && !user.itemsOwned?.createFamily && (
+            <Box>
+              <Typography variant="h4" sx={{ mb: 2 }}>
+                Family
+              </Typography>
+              <Typography>No family.</Typography>
+            </Box>
+          )}
+
+          {/* Create Family Section */}
+          {user.itemsOwned?.createFamily && (
+            <Box>
+              <Typography variant="h4" sx={{ mb: 2 }}>
+                Create Family
+              </Typography>
+              <Stack
+                direction="column"
+                spacing={2}
+                sx={{
+                  opacity: userFamily ? 0.5 : 1,
+                  pointerEvents: userFamily ? "none" : "auto",
+                }}
+              >
+                <TextField
+                  label="Family Name"
+                  value={familyName}
+                  onChange={(e) => setFamilyName(e.target.value)}
+                  placeholder="Enter family name"
+                  sx={{ minWidth: "240px" }}
+                  disabled={!!userFamily}
+                  inputProps={{ maxLength: 20 }}
+                  helperText={`${familyName.length}/20 characters`}
+                />
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <Typography>Family Avatar:</Typography>
+                  <AvatarUpload
+                    onFileUpload={onFamilyAvatarUpload}
+                    name="familyAvatar"
                   >
-                    <TextField
-                      label="Family Name"
-                      value={familyName}
-                      onChange={(e) => setFamilyName(e.target.value)}
-                      placeholder="Enter family name"
-                      sx={{ minWidth: "240px" }}
-                      disabled={!!userFamily}
-                      inputProps={{ maxLength: 20 }}
-                      helperText={`${familyName.length}/20 characters`}
-                    />
-                    <Stack direction="row" spacing={2} alignItems="center">
-                      <Typography>Family Avatar:</Typography>
-                      <AvatarUpload
-                        onFileUpload={onFamilyAvatarUpload}
-                        name="familyAvatar"
-                      >
-                        <Button variant="outlined" disabled={!!userFamily}>
-                          Upload Avatar
-                        </Button>
-                      </AvatarUpload>
-                      {familyAvatarUploaded && (
-                        <Typography
-                          variant="caption"
-                          sx={{ color: "success.main" }}
-                        >
-                          Avatar uploaded
-                        </Typography>
-                      )}
-                    </Stack>
-                    <Button
-                      variant="contained"
-                      onClick={onCreateFamily}
-                      disabled={!familyName.trim() || !!userFamily}
-                      sx={{ minWidth: "240px" }}
-                    >
-                      Create Family
+                    <Button variant="outlined" disabled={!!userFamily}>
+                      Upload Avatar
                     </Button>
-                  </Stack>
-                </Box>
+                  </AvatarUpload>
+                  {familyAvatarUploaded && (
+                    <Typography
+                      variant="caption"
+                      sx={{ color: "success.main" }}
+                    >
+                      Avatar uploaded
+                    </Typography>
+                  )}
+                </Stack>
+                <Button
+                  variant="contained"
+                  onClick={onCreateFamily}
+                  disabled={!familyName.trim() || !!userFamily}
+                  sx={{ minWidth: "240px" }}
+                >
+                  Create Family
+                </Button>
+              </Stack>
+            </Box>
+          )}
 
                 {/* Manage Family Section - Leader */}
                 {userFamily && userFamily.isLeader && (
@@ -968,8 +978,6 @@ export default function Settings() {
               </Stack>
             ),
           },
-        ]
-      : []),
   ];
 
   return (
@@ -1096,6 +1104,32 @@ export default function Settings() {
         );
       })
       .catch(deps.errorAlert);
+  }
+
+  function onRedeemStamp(gameId, deps) {
+    if (!gameId || !gameId.trim()) {
+      deps.siteInfo.showAlert("Please enter a game ID.", "error");
+      return;
+    }
+
+    axios
+      .post("/api/user/stamps/redeem", { gameId: gameId.trim() })
+      .then((res) => {
+        deps.siteInfo.showAlert("Stamp redeemed successfully!", "success");
+        // Clear the input
+        updateGameFields({
+          ref: "redeemStamp",
+          prop: "value",
+          value: "",
+        });
+        // Refresh user data to update coins
+        deps.user.refresh();
+      })
+      .catch((err) => {
+        const errorMessage =
+          err.response?.data || "Error redeeming stamp.";
+        deps.errorAlert(err);
+      });
   }
 
   function onCustomDeathMessageSave(deathMessage, deps) {

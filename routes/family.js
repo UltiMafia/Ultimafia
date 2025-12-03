@@ -29,16 +29,27 @@ router.get("/user/family", async function (req, res) {
 
     const inFamily = await models.InFamily.findOne({
       user: user._id,
-    }).populate("family", "id name avatar leader members");
+    });
 
     if (!inFamily || !inFamily.family) {
       res.send({ family: null });
       return;
     }
 
-    const family = inFamily.family;
+    // Query family directly and populate leader properly
+    const family = await models.Family.findById(inFamily.family._id)
+      .select("id name avatar leader members background backgroundRepeatMode")
+      .populate("leader", "_id");
+
+    if (!family) {
+      res.send({ family: null });
+      return;
+    }
+
     const isLeader =
-      family.leader && family.leader.toString() === user._id.toString();
+      family.leader &&
+      family.leader._id &&
+      family.leader._id.toString() === user._id.toString();
     const memberCount = family.members ? family.members.length : 0;
 
     res.send({
@@ -589,6 +600,17 @@ router.post("/:familyId/requestJoin", async function (req, res) {
       return;
     }
 
+    // Check if target user already belongs to another family
+    var existingFamily = await models.InFamily.findOne({
+      user: targetUser._id,
+    });
+
+    if (existingFamily) {
+      res.status(500);
+      res.send("User already belongs to a family.");
+      return;
+    }
+
     // Check if there's already a pending request
     var existingRequest = await models.FamilyJoinRequest.findOne({
       familyId: familyId,
@@ -662,6 +684,17 @@ router.post("/:familyId/acceptJoin", async function (req, res) {
     if (currentMemberCount >= 20) {
       res.status(500);
       res.send("This family has reached the maximum of 20 members.");
+      return;
+    }
+
+    // Check if user already belongs to another family
+    var existingFamily = await models.InFamily.findOne({
+      user: user._id,
+    });
+
+    if (existingFamily) {
+      res.status(500);
+      res.send("You already belong to a family.");
       return;
     }
 
