@@ -42,6 +42,14 @@ import { useSnowstorm } from "./hooks/useSnowstorm";
 
 import spiderweb from "images/holiday/spiderweb.gif";
 
+// Component to handle snowstorm with user settings
+function SnowstormController() {
+  const user = useContext(UserContext);
+  const disableSnowstorm = user?.settings?.disableSnowstorm || false;
+  useSnowstorm(disableSnowstorm);
+  return null;
+}
+
 function ErrorBox({ error, resetErrorBoundary }) {
   console.log(error);
 
@@ -89,9 +97,6 @@ function Main(props) {
   useEffect(() => {
     setSiteTheme(getSiteTheme(customPrimaryColor));
   }, [customPrimaryColor]);
-
-  // Load snowstorm during December 1 - January 1
-  useSnowstorm();
 
   const isPhoneDevice = useIsPhoneDevice();
 
@@ -193,6 +198,7 @@ function Main(props) {
             setUserLoading={setUserLoading}
             setCustomPrimaryColor={setCustomPrimaryColor}
           >
+            <SnowstormController />
             <Routes>
               <Route path="/" element={<Welcome />} />
               <Route path="/*" element={mainContent} />

@@ -36,8 +36,11 @@ router.get("/user/family", async function (req, res) {
       return;
     }
 
+    // Get family ID - handle both populated and unpopulated references
+    const familyId = inFamily.family._id || inFamily.family;
+
     // Query family directly and populate leader properly
-    const family = await models.Family.findById(inFamily.family._id)
+    const family = await models.Family.findById(familyId)
       .select("id name avatar leader members background backgroundRepeatMode")
       .populate("leader", "_id");
 
