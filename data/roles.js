@@ -7,6 +7,7 @@ const {
   PRIORITY_WIN_SWAP,
 
   // NIGHT PRIORITY
+  PRIORITY_WIN_CON_SET,
   PRIORITY_IDENTITY_STEALER_BLOCK,
   PRIORITY_FULL_DISABLE,
 
@@ -4556,7 +4557,7 @@ const roleData = {
       category: "Demon",
       tags: ["Killing", "Delirium", "Poison", "Visiting", "Advanced"],
       description: [
-        `Each night, can choose to visit one player and make "Delirious" and "Poison" them.`,
+        `Each night, can choose to visit one player and make them "Delirious" and "Poison" them.`,
         deliriumDef,
         poisonDef,
         "Player's Poisoned by a Puca will not be told they were poisoned.",
@@ -4969,6 +4970,7 @@ const roleData = {
         "Once per game, predicts which day/night cycle the game will end on.",
         "Wins if guess is correct.",
       ],
+      nightOrder: [["Make Guess", PRIORITY_WIN_CON_SET]],
     },
     Fatalist: {
       alignment: "Independent",
@@ -4977,6 +4979,7 @@ const roleData = {
         "Once per game, predicts which day/night cycle they will be killed on.",
         "Wins if guess is correct.",
       ],
+      nightOrder: [["Make Guess", PRIORITY_WIN_CON_SET]],
     },
     Fumigator: {
       alignment: "Independent",

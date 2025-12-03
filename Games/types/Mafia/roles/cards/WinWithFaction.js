@@ -169,9 +169,9 @@ module.exports = class WinWithFaction extends Card {
 
         //soldier conditional
         if (this.player.faction != "Village" && !ONE_NIGHT) {
-          const soldiersInGame = this.game.players.filter((p) =>
-            p.hasEffect("SoldierEffect")
-          );
+          const soldiersInGame = this.game
+            .alivePlayers()
+            .filter((p) => p.hasEffect("SoldierEffect"));
 
           if (soldiersInGame.length > 0) {
             if (soldiersInGame.length == aliveCount / 2 && aliveCount > 0) {

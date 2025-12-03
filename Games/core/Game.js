@@ -1325,6 +1325,7 @@ module.exports = class Game {
         for (let j = 0; j < roleset[roleName]; j++) {
           let player = randomPlayers[i];
           //player.setRole(roleName);
+          if (!player) continue;
           player.setRole(roleName, undefined, false, true, true);
           this.originalRoles[player.id] = roleName;
           i++;
