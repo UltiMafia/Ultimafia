@@ -16,7 +16,7 @@ module.exports = class ControlPuppet extends Card {
           if (item.name == "OverturnSpectator") {
             item.meetings["Overturn Vote"].speechAbilities = [ability];
           }
-           if (item.name == "Room" && item.Room && item.Room.name) {
+          if (item.name == "Room" && item.Room && item.Room.name) {
             item.meetings[item.Room.name].speechAbilities = [ability];
           }
         }
