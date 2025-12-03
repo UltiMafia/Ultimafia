@@ -25,8 +25,7 @@ module.exports = class HideBehindPlayer extends Card {
       },
     };
 
-
-        this.passiveActions = [
+    this.passiveActions = [
       {
         ability: ["Kill", "OnlyWhenAlive"],
         actor: role.player,
@@ -36,20 +35,20 @@ module.exports = class HideBehindPlayer extends Card {
         priority: PRIORITY_KILL_DEFAULT,
         labels: ["kill", "hidden", "absolute"],
         run: function () {
-              if (!this.actor.alive) return;
+          if (!this.actor.alive) return;
 
-              let visitors = this.getVisitors();
-              for (let v of visitors) {
-                if (v == this.role.hideBehind) {
-                  // skip the dominates check, this kill is absolute
-                  this.actor.kill("eaten", v);
-                  this.actor.giveEffect("ExtraLife", this.actor);
-                  this.actor.queueAlert(
-                    "You gained an extra life from hiding correctly."
-                  );
-                }
-              }
-            },
+          let visitors = this.getVisitors();
+          for (let v of visitors) {
+            if (v == this.role.hideBehind) {
+              // skip the dominates check, this kill is absolute
+              this.actor.kill("eaten", v);
+              this.actor.giveEffect("ExtraLife", this.actor);
+              this.actor.queueAlert(
+                "You gained an extra life from hiding correctly."
+              );
+            }
+          }
+        },
       },
     ];
 

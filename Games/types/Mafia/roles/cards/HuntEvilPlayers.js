@@ -19,23 +19,23 @@ module.exports = class HuntEvilPlayers extends Card {
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 20,
         labels: ["investigate"],
         run: function () {
-            if (this.role.data.EvilTarget != null) return;
-            let learnPlayer;
-            let info = this.game.createInformation(
-              "EvilPlayerInfo",
-              this.actor,
-              this.game
-            );
-            info.processInfo();
-            learnPlayer = info.getInfoRaw();
+          if (this.role.data.EvilTarget != null) return;
+          let learnPlayer;
+          let info = this.game.createInformation(
+            "EvilPlayerInfo",
+            this.actor,
+            this.game
+          );
+          info.processInfo();
+          learnPlayer = info.getInfoRaw();
 
-            if (learnPlayer == "No Evil Players Exist") {
-              this.actor.queueAlert(`You could not Find any Evil Players.`);
-            } else {
-              this.role.data.EvilTarget = learnPlayer;
-              this.actor.queueAlert(`You learn ${learnPlayer.name} is Evil!`);
-            }
-          },
+          if (learnPlayer == "No Evil Players Exist") {
+            this.actor.queueAlert(`You could not Find any Evil Players.`);
+          } else {
+            this.role.data.EvilTarget = learnPlayer;
+            this.actor.queueAlert(`You learn ${learnPlayer.name} is Evil!`);
+          }
+        },
       },
     ];
 

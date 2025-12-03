@@ -12,7 +12,7 @@ module.exports = class Prognosticate extends Card {
         inputType: "custom",
         targets: ["1", "2", "3", "4", "5", "6", "7", "8"],
         action: {
-          priority: PRIORITY_WIN_CON_SET-100,
+          priority: PRIORITY_WIN_CON_SET - 100,
           role: this.role,
           run: function () {
             this.role.prediction = this.target;

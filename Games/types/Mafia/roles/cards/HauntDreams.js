@@ -50,29 +50,27 @@ module.exports = class HauntDreams extends Card {
         priority: PRIORITY_BLOCK_EARLY - 1,
         labels: ["block", "delirium"],
         run: function () {
-            if (
-              this.role.data.DreamHost &&
-              this.role.data.DreamHost.effects.filter(
-                (e) => e.name == "Delirious" && e.source == this.role
-              ).length <= 0
-            ) {
-              if (this.dominates(this.role.data.DreamHost)) {
-                let effect = this.role.giveEffect(
-                  this.role.data.DreamHost,
-                  "Delirious",
-                  this.actor,
-                  Infinity,
-                  null,
-                  this.role
-                );
-                this.blockWithDelirium(this.role.data.DreamHost, true);
-              }
+          if (
+            this.role.data.DreamHost &&
+            this.role.data.DreamHost.effects.filter(
+              (e) => e.name == "Delirious" && e.source == this.role
+            ).length <= 0
+          ) {
+            if (this.dominates(this.role.data.DreamHost)) {
+              let effect = this.role.giveEffect(
+                this.role.data.DreamHost,
+                "Delirious",
+                this.actor,
+                Infinity,
+                null,
+                this.role
+              );
+              this.blockWithDelirium(this.role.data.DreamHost, true);
             }
-          },
+          }
+        },
       },
     ];
-
-
 
     this.listeners = {
       AbilityToggle: function (player) {

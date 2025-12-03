@@ -37,7 +37,7 @@ module.exports = class CountEvilVotes extends Card {
             isValid = true;
           }
         }
-        if(!isValid){
+        if (!isValid) {
           return;
         }
         if (this.data.VotingLog == null) {
