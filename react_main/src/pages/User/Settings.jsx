@@ -469,6 +469,12 @@ export default function Settings() {
       type: "boolean",
     },
     {
+      label: "Disable Snowstorm",
+      ref: "disableSnowstorm",
+      type: "boolean",
+      extraInfo: "Turn off the snow effect during December (holiday season)",
+    },
+    {
       label: "Death Message (max 150 chars)",
       ref: "deathMessage",
       type: "text",
@@ -1104,32 +1110,6 @@ export default function Settings() {
         );
       })
       .catch(deps.errorAlert);
-  }
-
-  function onRedeemStamp(gameId, deps) {
-    if (!gameId || !gameId.trim()) {
-      deps.siteInfo.showAlert("Please enter a game ID.", "error");
-      return;
-    }
-
-    axios
-      .post("/api/user/stamps/redeem", { gameId: gameId.trim() })
-      .then((res) => {
-        deps.siteInfo.showAlert("Stamp redeemed successfully!", "success");
-        // Clear the input
-        updateGameFields({
-          ref: "redeemStamp",
-          prop: "value",
-          value: "",
-        });
-        // Refresh user data to update coins
-        deps.user.refresh();
-      })
-      .catch((err) => {
-        const errorMessage =
-          err.response?.data || "Error redeeming stamp.";
-        deps.errorAlert(err);
-      });
   }
 
   function onCustomDeathMessageSave(deathMessage, deps) {
