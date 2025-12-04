@@ -7,21 +7,16 @@ module.exports = class Magnetic extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["OnlyWhenAlive"])) {
-          return;
-        }
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          labels: ["redirect"],
-          priority: PRIORITY_MODIFY_ACTION - 1,
-          run: function () {
+    this.passiveActions = [
+      {
+        ability: ["OnlyWhenAlive"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
+        priority: PRIORITY_MODIFY_ACTION - 1,
+        labels: ["redirect"],
+        run: function () {
             var alive = this.game.players.filter(
               (p) =>
                 p.alive &&
@@ -40,10 +35,8 @@ module.exports = class Magnetic extends Card {
               }
             }
           },
-        });
-
-        this.game.queueAction(action);
       },
-    };
+    ];
+
   }
 };
