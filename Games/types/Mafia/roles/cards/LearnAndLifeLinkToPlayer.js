@@ -7,8 +7,6 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
   constructor(role) {
     super(role);
 
-
-    
     this.passiveActions = [
       {
         ability: ["Information"],
@@ -19,28 +17,28 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
         labels: ["investigate", "role"],
         run: function () {
-            if (this.role.hasInfo) return;
+          if (this.role.hasInfo) return;
 
-            if (this.actor.role.targetPlayer) {
-              let learnPlayer = this.role.targetPlayer;
-              let learnRole;
+          if (this.actor.role.targetPlayer) {
+            let learnPlayer = this.role.targetPlayer;
+            let learnRole;
 
-              let info = this.game.createInformation(
-                "RoleInfo",
-                this.actor,
-                this.game,
-                learnPlayer
-              );
-              info.processInfo();
-              learnRole = info.getInfoRaw();
+            let info = this.game.createInformation(
+              "RoleInfo",
+              this.actor,
+              this.game,
+              learnPlayer
+            );
+            info.processInfo();
+            learnRole = info.getInfoRaw();
 
-              this.actor.queueAlert(
-                `You are Married to ${learnPlayer.name} who is a ${learnRole}. If they are killed by the Mafia or a Demonic role you will die.`
-              );
-            }
+            this.actor.queueAlert(
+              `You are Married to ${learnPlayer.name} who is a ${learnRole}. If they are killed by the Mafia or a Demonic role you will die.`
+            );
+          }
 
-            this.role.hasInfo = true;
-          },
+          this.role.hasInfo = true;
+        },
       },
     ];
 
