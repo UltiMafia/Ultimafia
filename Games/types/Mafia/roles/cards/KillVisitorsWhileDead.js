@@ -15,14 +15,13 @@ module.exports = class KillVisitorsWhileDead extends Card {
         role: role,
         priority: PRIORITY_KILL_DEFAULT,
         labels: ["kill", "hidden"],
-          run: function () {
-            let visitors = this.getVisitors();
+        run: function () {
+          let visitors = this.getVisitors();
 
-            for (let visitor of visitors)
-              if (this.dominates(visitor)) visitor.kill("basic", this.actor);
-          },
+          for (let visitor of visitors)
+            if (this.dominates(visitor)) visitor.kill("basic", this.actor);
+        },
       },
     ];
-    
   }
 };
