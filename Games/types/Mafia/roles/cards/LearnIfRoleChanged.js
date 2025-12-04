@@ -9,7 +9,7 @@ module.exports = class LearnIfRoleChanged extends Card {
   constructor(role) {
     super(role);
 
-        this.passiveActions = [
+    this.passiveActions = [
       {
         ability: ["Information"],
         actor: role.player,
@@ -19,16 +19,16 @@ module.exports = class LearnIfRoleChanged extends Card {
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5,
         labels: ["investigate"],
         run: function () {
-            let info = this.game.createInformation(
-              "RoleInfo",
-              this.actor,
-              this.game,
-              this.actor
-            );
-            info.processInfo();
-            var alert = `:invest: Your role is ${info.getInfoRaw()}.`;
-            this.actor.queueAlert(alert);
-          },
+          let info = this.game.createInformation(
+            "RoleInfo",
+            this.actor,
+            this.game,
+            this.actor
+          );
+          info.processInfo();
+          var alert = `:invest: Your role is ${info.getInfoRaw()}.`;
+          this.actor.queueAlert(alert);
+        },
       },
     ];
   }
