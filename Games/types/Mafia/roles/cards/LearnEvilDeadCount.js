@@ -18,23 +18,23 @@ module.exports = class LearnEvilDeadCount extends Card {
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5,
         labels: ["investigate"],
         run: function () {
-            let evilCount;
-            let players = this.game.deadPlayers();
+          let evilCount;
+          let players = this.game.deadPlayers();
 
-            if (players.length <= 0) {
-              return;
-            }
+          if (players.length <= 0) {
+            return;
+          }
 
-            let info = this.game.createInformation(
-              "EvilDeadCountInfo",
-              this.actor,
-              this.game
-            );
-            info.processInfo();
-            this.actor.role.hasInfo = true;
-            var alert = `:invest: ${info.getInfoFormated()}`;
-            this.actor.queueAlert(alert);
-          },
+          let info = this.game.createInformation(
+            "EvilDeadCountInfo",
+            this.actor,
+            this.game
+          );
+          info.processInfo();
+          this.actor.role.hasInfo = true;
+          var alert = `:invest: ${info.getInfoFormated()}`;
+          this.actor.queueAlert(alert);
+        },
       },
     ];
   }
