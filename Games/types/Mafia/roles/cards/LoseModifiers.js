@@ -8,22 +8,16 @@ module.exports = class LoseModifiers extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Convert", "Modifier"])) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_BECOME_DEAD_ROLE,
-          labels: ["convert", "absolute"],
-          run: function () {
+    this.passiveActions = [
+      {
+        ability: ["Convert", "Modifier"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
+        priority: PRIORITY_BECOME_DEAD_ROLE,
+        labels: ["convert", "absolute"],
+        run: function () {
             if (this.game.getStateName() != "Night") return;
 
             this.actor.setRole(
@@ -36,10 +30,8 @@ module.exports = class LoseModifiers extends Card {
               "NoStartingItems"
             );
           },
-        });
-
-        this.game.queueAction(action);
       },
-    };
+    ];
+
   }
 };
