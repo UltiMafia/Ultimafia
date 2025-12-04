@@ -7,24 +7,17 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Information"])) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-          role: this,
-          labels: ["investigate"],
-          run: function () {
-            if (this.role.hasInfo) return;
+    this.passiveActions = [
+      {
+        ability: ["Information"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
+        priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+        labels: ["investigate"],
+        run: function () {
+        if (this.role.hasInfo) return;
 
             var alive = this.game.players.filter(
               (p) => p.alive && p != this.actor
@@ -46,10 +39,8 @@ module.exports = class LearnOneOfTwoPlayers extends Card {
             var alert = `:invest: ${info.getInfoFormated()}.`;
             this.actor.queueAlert(alert);
           },
-        });
-
-        this.game.queueAction(action);
       },
-    };
+    ];
+    
   }
 };
