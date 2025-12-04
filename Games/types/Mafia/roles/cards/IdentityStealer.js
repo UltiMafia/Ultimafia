@@ -38,52 +38,16 @@ module.exports = class IdentityStealer extends Card {
         },
       },
     };
-    /*
-    this.actions = [
+
+    this.passiveActions = [
       {
+        ability: ["OnlyWhenAlive"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
         priority: PRIORITY_IDENTITY_STEALER_BLOCK,
         run: function () {
-          if (this.game.getStateName() != "Night") return;
-
-          var stealing = false;
-          var killing = false;
-
-          for (let action of this.game.actions[0]) {
-            if (action.hasLabel("stealIdentity") && action.target == "Yes")
-              stealing = true;
-            else if (action.hasLabels(["kill", "mafia"])) killing = true;
-          }
-
-          if (stealing && killing)
-            for (let action of this.game.actions[0])
-              if (action.target == this.actor) action.cancel(true);
-        },
-      },
-    ];
-    */
-    this.listeners = {
-      death: function (player, killer, deathType) {
-        let swappedPlayers = this.game
-          .alivePlayers()
-          .filter((p) => p.user.swapped);
-        if (swappedPlayers.length <= 0) {
-          this.game.resetIdentities();
-        }
-      },
-      state: function (stateInfo) {
-        if (!this.player.alive) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_IDENTITY_STEALER_BLOCK,
-          run: function () {
             var stealing = false;
             var killing = false;
 
@@ -97,9 +61,17 @@ module.exports = class IdentityStealer extends Card {
               for (let action of this.game.actions[0])
                 if (action.target == this.actor) action.cancel(true);
           },
-        });
-
-        this.game.queueAction(action);
+      },
+    ];
+    
+    this.listeners = {
+      death: function (player, killer, deathType) {
+        let swappedPlayers = this.game
+          .alivePlayers()
+          .filter((p) => p.user.swapped);
+        if (swappedPlayers.length <= 0) {
+          this.game.resetIdentities();
+        }
       },
     };
   }
