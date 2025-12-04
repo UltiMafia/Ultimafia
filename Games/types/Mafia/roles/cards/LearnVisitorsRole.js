@@ -17,23 +17,23 @@ module.exports = class LearnVisitorsRole extends Card {
         role: role,
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
         labels: ["investigate", "role", "hidden"],
-          run: function () {
-            let info = this.game.createInformation(
-              "WatcherRoleInfo",
-              this.actor,
-              this.game,
-              this.actor
+        run: function () {
+          let info = this.game.createInformation(
+            "WatcherRoleInfo",
+            this.actor,
+            this.game,
+            this.actor
+          );
+          info.processInfo();
+          let visitors = info.getInfoRaw();
+          for (let visitor of visitors) {
+            this.actor.queueAlert(
+              `Last night, ${addArticle(
+                visitor
+              )} visited you and confessed their sins.`
             );
-            info.processInfo();
-            let visitors = info.getInfoRaw();
-            for (let visitor of visitors) {
-              this.actor.queueAlert(
-                `Last night, ${addArticle(
-                  visitor
-                )} visited you and confessed their sins.`
-              );
-            }
-          },
+          }
+        },
       },
     ];
   }
