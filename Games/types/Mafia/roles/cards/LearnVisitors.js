@@ -8,7 +8,7 @@ module.exports = class LearnVisitors extends Card {
   constructor(role) {
     super(role);
 
-      this.passiveActions = [
+    this.passiveActions = [
       {
         ability: ["Information"],
         actor: role.player,
@@ -18,16 +18,16 @@ module.exports = class LearnVisitors extends Card {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
         labels: ["investigate", "role", "hidden"],
         run: function () {
-            let info = this.game.createInformation(
-              "WatcherRoleInfo",
-              this.actor,
-              this.game,
-              this.actor
-            );
-            info.processInfo();
+          let info = this.game.createInformation(
+            "WatcherRoleInfo",
+            this.actor,
+            this.game,
+            this.actor
+          );
+          info.processInfo();
 
-            this.actor.queueAlert(`:watch: ${info.getInfoWithPlayerNames()}`);
-          },
+          this.actor.queueAlert(`:watch: ${info.getInfoWithPlayerNames()}`);
+        },
       },
     ];
   }
