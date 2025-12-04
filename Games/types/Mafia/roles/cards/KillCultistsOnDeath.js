@@ -6,7 +6,6 @@ module.exports = class KillCultistsOnDeath extends Card {
   constructor(role) {
     super(role);
 
-    
     this.passiveActions = [
       {
         ability: ["OnlyWhenAlive"],
@@ -17,15 +16,15 @@ module.exports = class KillCultistsOnDeath extends Card {
         priority: PRIORITY_CONVERT_DEFAULT + 1,
         labels: ["kill", "hidden"],
         run: function () {
-            if (this.actor.alive) {
-              return;
+          if (this.actor.alive) {
+            return;
+          }
+          for (const player of this.game.players) {
+            if (player.alive && player.role.name === "Cultist") {
+              player.kill("basic", this.actor);
             }
-            for (const player of this.game.players) {
-              if (player.alive && player.role.name === "Cultist") {
-                player.kill("basic", this.actor);
-              }
-            }
-          },
+          }
+        },
       },
     ];
 
