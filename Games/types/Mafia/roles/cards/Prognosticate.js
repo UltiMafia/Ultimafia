@@ -1,5 +1,5 @@
 const Card = require("../../Card");
-const { PRIORITY_SUPPORT_VISIT_DEFAULT } = require("../../const/Priority");
+const { PRIORITY_WIN_CON_SET } = require("../../const/Priority");
 
 module.exports = class Prognosticate extends Card {
   constructor(role) {
@@ -12,7 +12,7 @@ module.exports = class Prognosticate extends Card {
         inputType: "custom",
         targets: ["1", "2", "3", "4", "5", "6", "7", "8"],
         action: {
-          priority: PRIORITY_SUPPORT_VISIT_DEFAULT,
+          priority: PRIORITY_WIN_CON_SET - 100,
           role: this.role,
           run: function () {
             this.role.prediction = this.target;

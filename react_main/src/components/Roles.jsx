@@ -1246,7 +1246,7 @@ export function ModifierSearch(props) {
         <Box sx={{ ml: isPhoneDevice ? undefined : "auto !important" }}>
           <SearchBar
             value={searchVal}
-            placeholder="🔎 Role Name"
+            placeholder="🔎 Modifier Name"
             onInput={onSearchInput}
           />
         </Box>
