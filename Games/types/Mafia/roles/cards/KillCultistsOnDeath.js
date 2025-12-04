@@ -6,20 +6,30 @@ module.exports = class KillCultistsOnDeath extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      /*
-      start: function () {
-        if (this.player.hasItem("IsTheTelevangelist")) {
-          return;
-        }
-        const hasCultLeader =
-          this.game.players.filter((p) => p.role.data.cultLeader).length > 0;
-        if (!hasCultLeader) {
-          this.data.cultLeader = true;
-          this.player.queueAlert("You are the Cult Leader.");
-        }
+    
+    this.passiveActions = [
+      {
+        ability: ["OnlyWhenAlive"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
+        priority: PRIORITY_CONVERT_DEFAULT + 1,
+        labels: ["kill", "hidden"],
+        run: function () {
+            if (this.actor.alive) {
+              return;
+            }
+            for (const player of this.game.players) {
+              if (player.alive && player.role.name === "Cultist") {
+                player.kill("basic", this.actor);
+              }
+            }
+          },
       },
-      */
+    ];
+
+    this.listeners = {
       death: function (player, killer, deathType, instant) {
         if (player != this.player) {
           return;
@@ -28,11 +38,6 @@ module.exports = class KillCultistsOnDeath extends Card {
         if (this.player.hasEffect("TelevangelistEffect")) {
           return;
         }
-        /*
-        if (!this.data.cultLeader) {
-          return;
-        }
-        */
         var devotion = this.game.players.filter((p) =>
           p.hasEffect("DevotionEffect")
         );
@@ -60,34 +65,6 @@ module.exports = class KillCultistsOnDeath extends Card {
             player.kill("basic", this.player, instant);
           }
         }
-      },
-      state: function (stateInfo) {
-        if (!this.player.alive) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_CONVERT_DEFAULT + 1,
-          labels: ["kill", "hidden"],
-          run: function () {
-            if (this.actor.alive) {
-              return;
-            }
-            for (const player of this.game.players) {
-              if (player.alive && player.role.name === "Cultist") {
-                player.kill("basic", this.actor);
-              }
-            }
-          },
-        });
-
-        this.game.queueAction(action);
       },
     };
   }
