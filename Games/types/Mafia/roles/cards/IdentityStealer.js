@@ -48,22 +48,22 @@ module.exports = class IdentityStealer extends Card {
         role: role,
         priority: PRIORITY_IDENTITY_STEALER_BLOCK,
         run: function () {
-            var stealing = false;
-            var killing = false;
+          var stealing = false;
+          var killing = false;
 
-            for (let action of this.game.actions[0]) {
-              if (action.hasLabel("stealIdentity") && action.target == "Yes")
-                stealing = true;
-              else if (action.hasLabels(["kill", "mafia"])) killing = true;
-            }
+          for (let action of this.game.actions[0]) {
+            if (action.hasLabel("stealIdentity") && action.target == "Yes")
+              stealing = true;
+            else if (action.hasLabels(["kill", "mafia"])) killing = true;
+          }
 
-            if (stealing && killing)
-              for (let action of this.game.actions[0])
-                if (action.target == this.actor) action.cancel(true);
-          },
+          if (stealing && killing)
+            for (let action of this.game.actions[0])
+              if (action.target == this.actor) action.cancel(true);
+        },
       },
     ];
-    
+
     this.listeners = {
       death: function (player, killer, deathType) {
         let swappedPlayers = this.game
