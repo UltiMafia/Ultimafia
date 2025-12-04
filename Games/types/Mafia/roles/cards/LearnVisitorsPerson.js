@@ -17,18 +17,18 @@ module.exports = class LearnVisitorsPerson extends Card {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
         labels: ["investigate", "role", "hidden"],
         run: function () {
-            let info = this.game.createInformation(
-              "WatcherInfo",
-              this.actor,
-              this.game,
-              this.actor,
-              false,
-              true
-            );
-            info.processInfo();
+          let info = this.game.createInformation(
+            "WatcherInfo",
+            this.actor,
+            this.game,
+            this.actor,
+            false,
+            true
+          );
+          info.processInfo();
 
-            this.actor.queueAlert(`:watch: ${info.getInfoFormated()}`);
-          },
+          this.actor.queueAlert(`:watch: ${info.getInfoFormated()}`);
+        },
       },
     ];
   }
