@@ -18,20 +18,19 @@ module.exports = class LoseModifiers extends Card {
         priority: PRIORITY_BECOME_DEAD_ROLE,
         labels: ["convert", "absolute"],
         run: function () {
-            if (this.game.getStateName() != "Night") return;
+          if (this.game.getStateName() != "Night") return;
 
-            this.actor.setRole(
-              this.actor.role.name,
-              this.actor.role.data,
-              false,
-              false,
-              false,
-              "No Change",
-              "NoStartingItems"
-            );
-          },
+          this.actor.setRole(
+            this.actor.role.name,
+            this.actor.role.data,
+            false,
+            false,
+            false,
+            "No Change",
+            "NoStartingItems"
+          );
+        },
       },
     ];
-
   }
 };
