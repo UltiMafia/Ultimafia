@@ -746,7 +746,14 @@ const roleData = {
     Toymaker: {
       alignment: "Village",
       category: "Gifting",
-      tags: ["Killing", "Items", "Banished Interaction", "Visiting", "Jack-in-the-box", "Advanced"],
+      tags: [
+        "Killing",
+        "Items",
+        "Banished Interaction",
+        "Visiting",
+        "Jack-in-the-box",
+        "Advanced",
+      ],
       description: [
         `Each night, can choose to visit one player and give them a Jack-In-The-Box.`,
         jackBoxDef,
