@@ -10,7 +10,7 @@ module.exports = class ModifierBoastful extends Card {
   constructor(role) {
     super(role);
 
-      this.passiveActions = [
+    this.passiveActions = [
       {
         ability: ["Information"],
         actor: role.player,
@@ -19,32 +19,31 @@ module.exports = class ModifierBoastful extends Card {
         role: role,
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 3,
         labels: [
-            "investigate",
-            "alerts",
-            "hidden",
-            "absolute",
-            "uncontrollable",
-          ],
-          run: function () {
-            let info2 = this.game.createInformation(
-              "ReportsInfo",
-              this.actor,
-              this.game,
-              this.actor
-            );
-            info2.processInfo();
-            let reports = info2.getInfoRaw();
+          "investigate",
+          "alerts",
+          "hidden",
+          "absolute",
+          "uncontrollable",
+        ],
+        run: function () {
+          let info2 = this.game.createInformation(
+            "ReportsInfo",
+            this.actor,
+            this.game,
+            this.actor
+          );
+          info2.processInfo();
+          let reports = info2.getInfoRaw();
 
-            for (let report of reports) {
-              this.game.queueAlert(
-                `:loud: ${addArticle(
-                  this.actor.getRoleAppearance()
-                )} is overheard reading: ${report}`
-              );
-            }
-          },
+          for (let report of reports) {
+            this.game.queueAlert(
+              `:loud: ${addArticle(
+                this.actor.getRoleAppearance()
+              )} is overheard reading: ${report}`
+            );
+          }
+        },
       },
     ];
-    
   }
 };
