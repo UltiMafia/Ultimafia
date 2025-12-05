@@ -241,9 +241,7 @@ module.exports = class WinWithFaction extends Card {
         if (CULT_FACTIONS.includes(this.player.faction) && !ONE_NIGHT) {
           let demonicPlayers = this.game
             .alivePlayers()
-            .filter(
-              (p) => p.isDemonic(true)
-            );
+            .filter((p) => p.isDemonic(true));
           if (demonicPlayers.length > 0) {
             let demonicAndCult = this.game
               .alivePlayers()
@@ -266,11 +264,11 @@ module.exports = class WinWithFaction extends Card {
         }
         //Demonic Modifier Village
         if (this.player.faction == "Village" && !ONE_NIGHT) {
-          let demonicPlayers = this.game
-            .players
-            .filter(
-              (p) => p.isDemonic(true) && (p.alive || (p.role.data.CountForMajWhenDead && !p.exorcised))
-            );
+          let demonicPlayers = this.game.players.filter(
+            (p) =>
+              p.isDemonic(true) &&
+              (p.alive || (p.role.data.CountForMajWhenDead && !p.exorcised))
+          );
           if (demonicPlayers.length > 0) {
             return;
           }
@@ -422,7 +420,11 @@ module.exports = class WinWithFaction extends Card {
         }
 
         //Village Win Demonic
-        if (this.player.faction == "Village" && !ONE_NIGHT && this.game.AllDemonsDead == true){
+        if (
+          this.player.faction == "Village" &&
+          !ONE_NIGHT &&
+          this.game.AllDemonsDead == true
+        ) {
           factionWin(this);
           return;
         }

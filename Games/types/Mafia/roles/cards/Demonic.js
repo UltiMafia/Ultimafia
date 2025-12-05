@@ -5,7 +5,7 @@ module.exports = class Demonic extends Card {
   constructor(role) {
     super(role);
 
-     if (role.isExtraRole == true) {
+    if (role.isExtraRole == true) {
       return;
     }
 
@@ -20,7 +20,6 @@ module.exports = class Demonic extends Card {
         if (this.player.hasEffect("TelevangelistEffect")) {
           return;
         }
-       
       },
       death: function (player, killer, killType, instant) {
         var aliveRoles = this.game
@@ -30,12 +29,13 @@ module.exports = class Demonic extends Card {
           return;
         }
         const deadEvilPoltergeist = this.game
-            .deadPlayers()
-            .filter(
-              (p) =>
-                p.role.data.CountForMajWhenDead &&
-                !p.exorcised && p.isDemonic(true)
-            );
+          .deadPlayers()
+          .filter(
+            (p) =>
+              p.role.data.CountForMajWhenDead &&
+              !p.exorcised &&
+              p.isDemonic(true)
+          );
         if (deadEvilPoltergeist.length > 0) {
           return;
         }
@@ -67,7 +67,7 @@ module.exports = class Demonic extends Card {
         }
         //this.game.queueAlert(`We Got here ${aliveRoles.length}`);
         this.game.AllDemonsDead = true;
-        
+
         /*
         for (let p of this.game.alivePlayers()) {
           if (CULT_FACTIONS.includes(p.faction) || p.faction == "Evil") {
