@@ -23,9 +23,9 @@ module.exports = class ModifierConfused extends Card {
         priority: PRIORITY_NIGHT_ROLE_BLOCKER,
         labels: ["block", "hidden", "absolute"],
         run: function () {
-            if (Random.randInt(0, 1) == 0) {
-              this.actor.giveEffect("FalseMode", 1);
-            }
+          if (Random.randInt(0, 1) == 0) {
+            this.actor.giveEffect("FalseMode", 1);
+          }
         },
       },
     ];
