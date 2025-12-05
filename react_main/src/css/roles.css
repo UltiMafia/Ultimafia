@@ -67,8 +67,8 @@
 }
 
 .item {
-  width: 1rem;
-  height: 1rem;
+  width: 1.875rem;
+  height: 1.875rem;
 
   background-size: 100% 100%;
   background-image: url("/src/images/modifiers/unknown-modifier.png");
@@ -2207,8 +2207,16 @@
   background-image: url("/src/images/items/timebomb.png");
 }
 
-.item-Mafia-Crystal {
-  background-image: url("/src/images/items/crystal.png");
+.item-Mafia-Crystal-Ball {
+  background-image: url("/src/images/items/crystal-ball.png");
+}
+
+.item-Mafia-Revolver {
+  background-image: url("/src/images/items/revolver.png");
+}
+
+.item-Mafia-Four-leaf-Clover {
+  background-image: url("/src/images/items/clover.png");
 }
 
 .item-Mafia-Whiskey {
@@ -2220,6 +2228,10 @@
 }
 
 .item-Mafia-Bread {
+  background-image: url("/src/images/items/bread.png");
+}
+
+.item-Mafia-Food {
   background-image: url("/src/images/items/bread.png");
 }
 
