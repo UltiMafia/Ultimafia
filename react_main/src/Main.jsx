@@ -300,6 +300,11 @@ function Header({ setShowAnnouncementTemporarily }) {
                       { text: "Forums", path: "/community/forums" },
                       { text: "Users", path: "/community/users" },
                       { text: "Moderation", path: "/community/moderation" },
+                      {
+                        text: "Reports",
+                        path: "/community/reports",
+                        hide: !user.perms.seeModPanel,
+                      },
                     ],
                   },
                   {
@@ -395,6 +400,11 @@ function Header({ setShowAnnouncementTemporarily }) {
                   { text: "Forums", path: "/community/forums" },
                   { text: "Users", path: "/community/users" },
                   { text: "Moderation", path: "/community/moderation" },
+                  {
+                    text: "Reports",
+                    path: "/community/reports",
+                    hide: !user.perms.seeModPanel,
+                  },
                 ]}
               />
               <NavDropdown

@@ -700,6 +700,7 @@ var schemas = {
       length: { type: Number },
       createdAt: { type: Number, index: true },
       expiresAt: { type: Number, index: true },
+      activeUntil: { type: Number, index: true },
       linkedBanId: { type: String, index: true },
     },
     {
@@ -987,6 +988,13 @@ schemas.Report.index({ reportedUserId: 1, status: 1 });
 
 // Compound indexes for ViolationTicket schema
 schemas.ViolationTicket.index({ userId: 1, createdAt: -1 });
+schemas.ViolationTicket.index({ userId: 1, activeUntil: 1 });
+schemas.ViolationTicket.index({ userId: 1, violationName: 1, activeUntil: 1 });
+
+// Compound indexes for ViolationTicket schema
+schemas.ViolationTicket.index({ userId: 1, createdAt: -1 });
 schemas.ViolationTicket.index({ userId: 1, violationId: 1 });
+schemas.ViolationTicket.index({ userId: 1, activeUntil: 1 });
+schemas.ViolationTicket.index({ userId: 1, violationName: 1, activeUntil: 1 });
 
 module.exports = schemas;

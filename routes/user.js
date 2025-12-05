@@ -873,6 +873,90 @@ router.get("/:id/games", async function (req, res) {
   }
 });
 
+router.get("/:id/reports", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const reqUserId = await routeUtils.verifyLoggedIn(req, true);
+    const identifier = String(req.params.id);
+    const profileUserId = await resolveUserId(identifier);
+
+    if (!profileUserId) {
+      res.status(404).send("User not found.");
+      return;
+    }
+
+    // Check permissions: user must be viewing their own profile OR have seeModPanel permission
+    if (reqUserId !== profileUserId) {
+      if (!reqUserId) {
+        res.status(401).send("You must be logged in to view reports.");
+        return;
+      }
+      if (!(await routeUtils.verifyPermission(res, reqUserId, "seeModPanel"))) {
+        return;
+      }
+    }
+
+    // Fetch all completed reports for this user (including dismissed)
+    const reports = await models.Report.find({
+      reportedUserId: profileUserId,
+      status: "complete",
+    })
+      .sort({ completedAt: -1 })
+      .lean()
+      .select(
+        "id status completedAt finalRuling rule description createdAt reporterId gameId linkedViolationTicketId"
+      );
+
+    // Fetch all violation tickets for this user
+    const violationTickets = await models.ViolationTicket.find({
+      userId: profileUserId,
+    })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Create a map of violation ticket ID to violation ticket
+    const violationMap = {};
+    const now = Date.now();
+    for (const ticket of violationTickets) {
+      violationMap[ticket.id] = {
+        ...ticket,
+        status:
+          !ticket.activeUntil || ticket.activeUntil === 0
+            ? "permanent"
+            : ticket.activeUntil > now
+            ? "active"
+            : "expired",
+      };
+    }
+
+    // Populate reporter names and add violation ticket info to reports
+    const { getBasicUserInfo } = require("../modules/redis");
+    for (const report of reports) {
+      try {
+        const reporterInfo = await getBasicUserInfo(report.reporterId);
+        if (reporterInfo) {
+          report.reporterName = reporterInfo.name;
+        }
+
+        // Add violation ticket info if linked
+        if (
+          report.linkedViolationTicketId &&
+          violationMap[report.linkedViolationTicketId]
+        ) {
+          report.violationTicket = violationMap[report.linkedViolationTicketId];
+        }
+      } catch (e) {
+        // Ignore errors fetching reporter info
+      }
+    }
+
+    res.send({ reports });
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error loading reports.");
+  }
+});
+
 router.get("/:id/info", async function (req, res) {
   try {
     const identifier = String(req.params.id);
