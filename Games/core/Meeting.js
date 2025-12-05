@@ -521,24 +521,21 @@ module.exports = class Meeting {
           case "village":
             if (self) {
               temp = temp.filter(
-                (r) =>
-                  this.game.getRoleAlignment(r) == "Village"
+                (r) => this.game.getRoleAlignment(r) == "Village"
               );
             }
             break;
           case "mafia":
             if (self) {
               temp = temp.filter(
-                (r) =>
-                  this.game.getRoleAlignment(r) == "Mafia"
+                (r) => this.game.getRoleAlignment(r) == "Mafia"
               );
             }
             break;
           case "cult":
             if (self) {
               temp = temp.filter(
-                (r) =>
-                  this.game.getRoleAlignment(r) == "Cult"
+                (r) => this.game.getRoleAlignment(r) == "Cult"
               );
             }
             break;
