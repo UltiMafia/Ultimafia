@@ -6,7 +6,7 @@ module.exports = class JackGiver extends Card {
     super(role);
 
     this.meetings = {
-      "Give Bomb": {
+      "Give Jack-In-The-Box": {
         states: ["Night"],
         flags: ["voting"],
         action: {
