@@ -22,6 +22,12 @@ var schemas = {
   User: new mongoose.Schema({
     id: { type: String, index: true },
     name: { type: String, index: true },
+    previousNames: [
+      {
+        name: { type: String },
+        changedAt: { type: Number },
+      },
+    ],
     ip: [{ type: String, index: true }],
     email: [{ type: String, index: true }],
     birthday: Date,

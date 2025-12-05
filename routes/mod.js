@@ -543,21 +543,28 @@ router.post("/ban", async (req, res) => {
       return;
     }
 
-    await routeUtils.banUser(
-      userIdToBan,
-      length,
-      banPermissions[banType],
-      banDbTypes[banType],
-      userId
+    // Get all alt account IDs (accounts sharing IPs)
+    const altAccountIds = await routeUtils.getAltAccountIds(userIdToBan);
+
+    // Apply ban to all alt accounts
+    const banPromises = altAccountIds.map((altUserId) =>
+      routeUtils.banUser(
+        altUserId,
+        length,
+        banPermissions[banType],
+        banDbTypes[banType],
+        userId
+      )
     );
+    await Promise.all(banPromises);
 
     if (banType === "site") {
-      await models.User.updateOne(
-        { id: userIdToBan },
+      await models.User.updateMany(
+        { id: { $in: altAccountIds } },
         { $set: { banned: true } }
       ).exec();
       await models.Session.deleteMany({
-        "session.user.id": userIdToBan,
+        "session.user.id": { $in: altAccountIds },
       }).exec();
     }
 
@@ -568,7 +575,7 @@ router.post("/ban", async (req, res) => {
         } ban expires on ${banExpires.toLocaleString()}.`,
         icon: "ban",
       },
-      [userIdToBan]
+      altAccountIds // Notify all alt accounts
     );
 
     const modActionNames = {
@@ -1094,11 +1101,29 @@ router.post("/clearUserContent", async (req, res) => {
         break;
 
       case "name":
+        // Get current user to record previous name
+        const currentUserForClear = await models.User.findOne({
+          id: userIdToClear,
+        }).select("name");
+        const oldNameForClear = currentUserForClear ? currentUserForClear.name : null;
+        const newGeneratedName = routeUtils.nameGen().slice(0, constants.maxUserNameLength);
+
         updateQuery = {
           $set: {
-            name: routeUtils.nameGen().slice(0, constants.maxUserNameLength),
+            name: newGeneratedName,
           },
         };
+
+        // Add previous name to history if it exists and is different
+        if (oldNameForClear && oldNameForClear !== newGeneratedName) {
+          updateQuery.$push = {
+            previousNames: {
+              name: oldNameForClear,
+              changedAt: Date.now(),
+            },
+          };
+        }
+
         modActionName = "Clear Name";
         break;
 
@@ -2019,10 +2044,24 @@ router.post("/changeName", async (req, res) => {
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    await models.User.updateOne(
-      { id: userIdToChange },
-      { $set: { name: name } }
-    ).exec();
+    // Get current user to record previous name
+    const currentUser = await models.User.findOne({ id: userIdToChange }).select("name");
+    const oldName = currentUser ? currentUser.name : null;
+
+    // Update name and record previous name
+    const updateQuery = { $set: { name: name } };
+
+    // Add previous name to history if it exists and is different
+    if (oldName && oldName !== name) {
+      updateQuery.$push = {
+        previousNames: {
+          name: oldName,
+          changedAt: Date.now(),
+        },
+      };
+    }
+
+    await models.User.updateOne({ id: userIdToChange }, updateQuery).exec();
 
     await redis.cacheUserInfo(userIdToChange, true);
     res.sendStatus(200);
@@ -2559,6 +2598,7 @@ router.post("/reports/:id/complete", async (req, res) => {
 
     let violationTicket = null;
     let ban = null;
+    let bans = null; // Array of bans for all alt accounts
     let violationId = null;
     let violationName = null;
     let banLengthStr = null;
@@ -2573,26 +2613,25 @@ router.post("/reports/:id/complete", async (req, res) => {
       }
 
       // Get violation definition from report's rule
-      const {
-        violationDefinitions,
-      } = require("../react_main/src/constants/violations");
-      violationDef = violationDefinitions.find((v) => v.name === report.rule);
+      const { violationDefinitions } = require("../react_main/src/constants/violations");
+      violationDef = violationDefinitions.find(
+        (v) => v.name === report.rule
+      );
 
       if (!violationDef) {
         res.status(400).send("Invalid rule - violation definition not found.");
         return;
       }
 
-      // Count previous ACTIVE violations for this rule
+      // Get all alt account IDs (accounts sharing IPs)
+      const altAccountIds = await routeUtils.getAltAccountIds(report.reportedUserId);
+
+      // Count previous ACTIVE violations for this rule across all alt accounts
       // Only count violations that are still active (activeUntil > now)
       const now = Date.now();
       const previousViolations = await models.ViolationTicket.countDocuments({
-        userId: report.reportedUserId,
-        violationName: {
-          $regex: new RegExp(
-            `^${report.rule.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`
-          ),
-        },
+        userId: { $in: altAccountIds },
+        violationName: { $regex: new RegExp(`^${report.rule.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`) },
         activeUntil: { $gt: now },
       });
 
@@ -2602,12 +2641,7 @@ router.post("/reports/:id/complete", async (req, res) => {
       const ordinalSuffixes = ["th", "st", "nd", "rd"];
       const getOrdinal = (n) => {
         const v = n % 100;
-        return (
-          n +
-          (ordinalSuffixes[(v - 20) % 10] ||
-            ordinalSuffixes[v] ||
-            ordinalSuffixes[0])
-        );
+        return n + (ordinalSuffixes[(v - 20) % 10] || ordinalSuffixes[v] || ordinalSuffixes[0]);
       };
       violationName = `${report.rule} (${getOrdinal(offenseNumber)} Offense)`;
 
@@ -2615,10 +2649,7 @@ router.post("/reports/:id/complete", async (req, res) => {
       violationId = shortid.generate();
 
       // Get ban length from violations.js based on offense number
-      const offenseIndex = Math.min(
-        offenseNumber - 1,
-        violationDef.offenses.length - 1
-      );
+      const offenseIndex = Math.min(offenseNumber - 1, violationDef.offenses.length - 1);
       banLengthStr = violationDef.offenses[offenseIndex];
 
       // Parse ban length
@@ -2691,24 +2722,30 @@ router.post("/reports/:id/complete", async (req, res) => {
         return;
       }
 
-      // Create ban if ban length > 0 (or permanent)
+      // Get all alt account IDs (accounts sharing IPs) - already fetched above
+      // Create ban for all alt accounts if ban length > 0 (or permanent)
       if (banLengthMs >= 0 && permissions.length > 0) {
-        ban = await routeUtils.banUser(
-          report.reportedUserId,
-          banLengthMs,
-          permissions,
-          banDbType,
-          userId
+        // Apply ban to all alt accounts
+        const banPromises = altAccountIds.map((altUserId) =>
+          routeUtils.banUser(
+            altUserId,
+            banLengthMs,
+            permissions,
+            banDbType,
+            userId
+          )
         );
+        bans = await Promise.all(banPromises);
+        ban = bans[0]; // Use the first ban as the primary ban for linking
 
-        // Update user banned flag for site bans
+        // Update user banned flag for site bans on all alt accounts
         if (finalRuling.banType === "site") {
-          await models.User.updateOne(
-            { id: report.reportedUserId },
+          await models.User.updateMany(
+            { id: { $in: altAccountIds } },
             { $set: { banned: true } }
           ).exec();
           await models.Session.deleteMany({
-            "session.user.id": report.reportedUserId,
+            "session.user.id": { $in: altAccountIds },
           }).exec();
         }
       }
@@ -2722,22 +2759,29 @@ router.post("/reports/:id/complete", async (req, res) => {
           : 6 * 30 * 24 * 60 * 60 * 1000; // 6 months
       const activeUntil = Date.now() + activityPeriodMs;
 
-      // Create violation ticket (even if no ban was created)
-      violationTicket = await routeUtils.createViolationTicket({
-        userId: report.reportedUserId,
-        modId: userId,
-        banType: finalRuling.banType,
-        violationId: violationId,
-        violationName: violationName,
-        violationCategory: category,
-        notes: finalRuling.notes || "",
-        length: banLengthMs === 0 ? Infinity : banLengthMs,
-        expiresAt: ban ? ban.expires : null,
-        activeUntil: activeUntil,
-        linkedBanId: ban ? ban.id : null,
+      // Get all alt account IDs (accounts sharing IPs) - already fetched above
+      // Create violation tickets for all alt accounts (even if no ban was created)
+      const violationTicketPromises = altAccountIds.map((altUserId, index) => {
+        // Link to the corresponding ban if it exists
+        const linkedBan = bans && index < bans.length ? bans[index] : ban;
+        return routeUtils.createViolationTicket({
+          userId: altUserId,
+          modId: userId,
+          banType: finalRuling.banType,
+          violationId: violationId, // Same violation ID for all alt accounts
+          violationName: violationName,
+          violationCategory: category,
+          notes: finalRuling.notes || "",
+          length: banLengthMs === 0 ? Infinity : banLengthMs,
+          expiresAt: linkedBan ? linkedBan.expires : null,
+          activeUntil: activeUntil,
+          linkedBanId: linkedBan ? linkedBan.id : null,
+        });
       });
+      const violationTickets = await Promise.all(violationTicketPromises);
+      violationTicket = violationTickets[0]; // Use the first violation ticket as the primary one
 
-      // Send notification to reported user
+      // Send notification to all alt accounts
       if (banLengthMs >= 0) {
         const banExpires =
           ban && ban.expires > 0 ? new Date(ban.expires) : null;
@@ -2754,7 +2798,7 @@ router.post("/reports/:id/complete", async (req, res) => {
             icon: "ban",
             link: `/user/${report.reportedUserId}`,
           },
-          [report.reportedUserId]
+          altAccountIds // Notify all alt accounts
         );
       }
     }
