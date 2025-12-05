@@ -28,7 +28,11 @@ import { NameWithAvatar } from "pages/User/User";
 import { UserContext, SiteInfoContext } from "../Contexts";
 import ReportTypology from "./ReportTypology";
 
-export default function ReportDetail({ report: initialReport, onBack, onUpdate }) {
+export default function ReportDetail({
+  report: initialReport,
+  onBack,
+  onUpdate,
+}) {
   const [report, setReport] = useState(initialReport);
   const [assignees, setAssignees] = useState(report.assignees || []);
   const [status, setStatus] = useState(report.status);
@@ -80,8 +84,16 @@ export default function ReportDetail({ report: initialReport, onBack, onUpdate }
   };
 
   const handleComplete = async () => {
-    if (!dismissed && (!finalRuling.violationId || !finalRuling.violationName || !finalRuling.banType)) {
-      siteInfo.showAlert("Please fill in all required violation fields", "error");
+    if (
+      !dismissed &&
+      (!finalRuling.violationId ||
+        !finalRuling.violationName ||
+        !finalRuling.banType)
+    ) {
+      siteInfo.showAlert(
+        "Please fill in all required violation fields",
+        "error"
+      );
       return;
     }
 
@@ -174,7 +186,11 @@ export default function ReportDetail({ report: initialReport, onBack, onUpdate }
                     Game
                   </Typography>
                   <Typography>
-                    <a href={`/game/${report.gameId}`} target="_blank" rel="noopener noreferrer">
+                    <a
+                      href={`/game/${report.gameId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       {report.gameId}
                     </a>
                   </Typography>
@@ -328,7 +344,8 @@ export default function ReportDetail({ report: initialReport, onBack, onUpdate }
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
             <Typography variant="body2" color="textSecondary">
-              Select users to assign to this report. You can assign multiple users.
+              Select users to assign to this report. You can assign multiple
+              users.
             </Typography>
             <Stack spacing={1}>
               <UserSearchSelect
@@ -348,13 +365,19 @@ export default function ReportDetail({ report: initialReport, onBack, onUpdate }
                       direction="row"
                       spacing={1}
                       alignItems="center"
-                      sx={{ p: 1, bgcolor: "background.paper", borderRadius: 1 }}
+                      sx={{
+                        p: 1,
+                        bgcolor: "background.paper",
+                        borderRadius: 1,
+                      }}
                     >
                       <NameWithAvatar id={assigneeId} name={assigneeId} />
                       <Button
                         size="small"
                         onClick={() =>
-                          setAssignees(assignees.filter((id) => id !== assigneeId))
+                          setAssignees(
+                            assignees.filter((id) => id !== assigneeId)
+                          )
                         }
                       >
                         Remove
@@ -409,7 +432,10 @@ export default function ReportDetail({ report: initialReport, onBack, onUpdate }
               label="Violation Name"
               value={finalRuling.violationName}
               onChange={(e) =>
-                setFinalRuling({ ...finalRuling, violationName: e.target.value })
+                setFinalRuling({
+                  ...finalRuling,
+                  violationName: e.target.value,
+                })
               }
               fullWidth
               required
@@ -493,4 +519,3 @@ export default function ReportDetail({ report: initialReport, onBack, onUpdate }
     </Box>
   );
 }
-

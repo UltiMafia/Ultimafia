@@ -2223,7 +2223,8 @@ router.get("/reports", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
     const status = req.query.status;
     const assignee = req.query.assignee;
@@ -2266,7 +2267,8 @@ router.get("/reports/:id", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
     const report = await models.Report.findOne({ id: req.params.id }).lean();
 
@@ -2292,7 +2294,8 @@ router.get("/reports/:id", async (req, res) => {
 router.post("/reports/:id/assign", async (req, res) => {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
     const reportId = req.params.id;
     const { assignees } = req.body;
@@ -2333,7 +2336,9 @@ router.post("/reports/:id/assign", async (req, res) => {
           res
             .status(403)
             .send(
-              `You cannot assign users with rank ${assigneeRank || 0} or higher.`
+              `You cannot assign users with rank ${
+                assigneeRank || 0
+              } or higher.`
             );
           return;
         }
@@ -2347,9 +2352,7 @@ router.post("/reports/:id/assign", async (req, res) => {
       if (!hasPermission) {
         res
           .status(400)
-          .send(
-            `User ${assigneeId} does not have permission to view reports.`
-          );
+          .send(`User ${assigneeId} does not have permission to view reports.`);
         return;
       }
     }
@@ -2401,7 +2404,8 @@ router.post("/reports/:id/assign", async (req, res) => {
 router.post("/reports/:id/status", async (req, res) => {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
     const reportId = req.params.id;
     const { status } = req.body;
@@ -2419,9 +2423,7 @@ router.post("/reports/:id/status", async (req, res) => {
 
     // Validate status transitions
     if (status === "complete" && report.status !== "complete") {
-      res
-        .status(400)
-        .send("Use /complete endpoint to mark as complete.");
+      res.status(400).send("Use /complete endpoint to mark as complete.");
       return;
     }
 
@@ -2455,7 +2457,8 @@ router.post("/reports/:id/status", async (req, res) => {
 router.post("/reports/:id/complete", async (req, res) => {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
     const reportId = req.params.id;
     const { finalRuling, dismissed } = req.body;
@@ -2601,7 +2604,9 @@ router.post("/reports/:id/complete", async (req, res) => {
         const banMessage =
           banLengthMs === 0 || banLengthMs === Infinity
             ? "You have been permanently banned."
-            : `Ban expires on ${banExpires ? banExpires.toLocaleString() : "N/A"}.`;
+            : `Ban expires on ${
+                banExpires ? banExpires.toLocaleString() : "N/A"
+              }.`;
 
         await routeUtils.createNotification(
           {
@@ -2628,9 +2633,7 @@ router.post("/reports/:id/complete", async (req, res) => {
         banType: finalRuling.banType,
         banLength:
           finalRuling.banLength ||
-          routeUtils.timeDisplay(
-            banLengthMs === 0 ? Infinity : banLengthMs
-          ),
+          routeUtils.timeDisplay(banLengthMs === 0 ? Infinity : banLengthMs),
         banLengthMs: banLengthMs === 0 ? Infinity : banLengthMs,
         notes: finalRuling.notes || "",
       };
@@ -2679,7 +2682,8 @@ router.post("/reports/:id/complete", async (req, res) => {
 router.post("/reports/:id/reopen", async (req, res) => {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
     const reportId = req.params.id;
     const { newStatus } = req.body;

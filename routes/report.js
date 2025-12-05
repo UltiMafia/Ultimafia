@@ -102,7 +102,8 @@ router.post("/send", async function (req, res) {
       const whId = "MTMyODgwNjY5OTcxNjMxNzE5NQ==";
       const base = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3Mv";
 
-      const decodeBase64 = (str) => Buffer.from(str, "base64").toString("utf-8");
+      const decodeBase64 = (str) =>
+        Buffer.from(str, "base64").toString("utf-8");
       const webhookURL =
         decodeBase64(base) + decodeBase64(whId) + "/" + decodeBase64(wht);
 

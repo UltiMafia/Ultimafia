@@ -37,7 +37,7 @@ export const useSnowstorm = (disableSnowstorm = false) => {
         if (window.snowStorm.disabled) {
           window.snowStorm.disabled = false;
         }
-        
+
         // If it's not active, start it
         if (!window.snowStorm.active) {
           // Try to resume first if it was frozen
@@ -64,7 +64,7 @@ export const useSnowstorm = (disableSnowstorm = false) => {
     if (disableSnowstorm) {
       // If script is already loaded, stop it
       stopSnowstorm();
-      
+
       // Also check periodically in case script loads later
       const checkInterval = setInterval(() => {
         if (window.snowStorm) {
@@ -81,8 +81,10 @@ export const useSnowstorm = (disableSnowstorm = false) => {
 
     if (isHolidaySeason) {
       // Check if script is already loaded
-      const existingScript = document.querySelector('script[src="/snowstorm.js"]');
-      
+      const existingScript = document.querySelector(
+        'script[src="/snowstorm.js"]'
+      );
+
       if (existingScript) {
         // Script already loaded, start it
         // Try immediately
@@ -106,7 +108,7 @@ export const useSnowstorm = (disableSnowstorm = false) => {
       const script = document.createElement("script");
       script.src = "/snowstorm.js";
       script.async = true;
-      
+
       // Wait for script to load before trying to control it
       script.onload = () => {
         // Give it a moment to initialize
@@ -120,13 +122,15 @@ export const useSnowstorm = (disableSnowstorm = false) => {
           }
         }, 50);
       };
-      
+
       document.head.appendChild(script);
 
       // Cleanup function to remove script if component unmounts
       return () => {
         stopSnowstorm();
-        const scriptToRemove = document.querySelector('script[src="/snowstorm.js"]');
+        const scriptToRemove = document.querySelector(
+          'script[src="/snowstorm.js"]'
+        );
         if (scriptToRemove) {
           scriptToRemove.remove();
         }

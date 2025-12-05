@@ -211,7 +211,10 @@ export default function Reports() {
                   sx={{ cursor: "pointer" }}
                 >
                   <TableCell>
-                    <Typography variant="body2" sx={{ fontFamily: "monospace" }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontFamily: "monospace" }}
+                    >
                       {report.id}
                     </Typography>
                   </TableCell>
@@ -280,4 +283,3 @@ export default function Reports() {
     </Box>
   );
 }
-

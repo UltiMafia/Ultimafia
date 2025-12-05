@@ -9,6 +9,7 @@ This document outlines the implementation of an on-site report ticket system tha
 ### Existing Report Flow
 
 **File: `routes/report.js`**
+
 - Reports are currently sent via Discord webhook only
 - No database storage of reports
 - Reports contain: `game`, `user` (reported), `rule`, `description`
@@ -16,6 +17,7 @@ This document outlines the implementation of an on-site report ticket system tha
 - No tracking or resolution mechanism
 
 **Frontend: `react_main/src/components/ReportDialog.jsx`**
+
 - Users submit reports with: game (optional), user reported, rule broken, description (optional)
 - Rule selection uses `rulesData` from `react_main/src/constants/rules`
 - Success message: "Thank you — your report was delivered to moderators."
@@ -23,6 +25,7 @@ This document outlines the implementation of an on-site report ticket system tha
 ### Existing Ban System
 
 **Current Ban Implementation** (`routes/mod.js`):
+
 - Unified `/api/mod/ban` endpoint handles all ban types (site, game, chat, forum, ranked, competitive)
 - Ban types map to permission arrays:
   - `site`: `["signIn"]`
@@ -36,12 +39,14 @@ This document outlines the implementation of an on-site report ticket system tha
 - **No ViolationTicket system exists yet** - this needs to be built
 
 **Ban Schema** (`db/schemas.js`):
+
 - Fields: `id`, `userId`, `modId`, `expires` (0 = permanent), `permissions` (array), `type`, `auto` (boolean)
 - Currently no link to violation tracking or offense numbers
 
 ### Permission System
 
 **Rank-based Hierarchy** (`modules/redis.js`, `data/constants.js`):
+
 - Users have a `rank` field (Number) - higher rank = higher authority
 - Groups also have ranks that contribute to user's effective rank
 - Rank hierarchy: Owner (Infinity) > Admin (10) > Liaison (9) > Mod (5) > others (0-1)
@@ -49,6 +54,7 @@ This document outlines the implementation of an on-site report ticket system tha
 - Rank comparison used for actions like banning: `banRank + 1` means you need rank higher than target
 
 **Current Mod Panel Access**:
+
 - Uses `viewModActions` permission to access mod panel (`react_main/src/pages/Community/Moderation.jsx`)
 - No specific `seeModPanel` permission exists yet
 
@@ -58,7 +64,7 @@ This document outlines the implementation of an on-site report ticket system tha
 
 1. **Report Storage**: All reports from `routes/report.js` should create database entries instead of (or in addition to) Discord webhooks
 2. **Access Control**: Reports visible only to users with `seeModPanel` permission (or similar)
-3. **Assignment System**: 
+3. **Assignment System**:
    - Multiple assignees allowed (unlimited)
    - Self-assignment enabled
    - Higher-rank admins can assign lower-rank admins
@@ -72,6 +78,7 @@ This document outlines the implementation of an on-site report ticket system tha
 ### Violation Creation
 
 When a report is resolved with a violation:
+
 - Create a `ViolationTicket` object using `routeUtils.createViolationTicket()` (to be implemented)
 - Link the report to the created violation ticket
 - Create appropriate ban using existing `routeUtils.banUser()` function
@@ -84,32 +91,37 @@ When a report is resolved with a violation:
 **Location**: `db/schemas.js` (to be added)
 
 ```javascript
-ViolationTicket: new mongoose.Schema({
-  id: { type: String, index: true, unique: true },  // Unique violation ticket ID (shortid)
-  userId: { type: String, index: true },  // User who received the violation
-  modId: { type: String, index: true },  // Admin/mod who issued the violation
-  banType: { type: String, index: true },  // "site", "game", "chat", "forum", "ranked", "competitive"
-  violationId: { type: String, index: true },  // Violation type identifier (admin-defined, e.g., "harassment", "cheating")
-  violationName: { type: String },  // Display name of violation (e.g., "Harassment", "Cheating")
-  violationCategory: { type: String },  // "Community" or "Game"
-  notes: String,  // Admin's notes/explanation
-  length: { type: Number },  // Ban length in milliseconds (Infinity for permanent)
-  createdAt: { type: Number, index: true },  // Timestamp when violation was created
-  expiresAt: { type: Number, index: true },  // When ban expires (null if permanent, matches Ban.expires)
-  linkedBanId: { type: String, index: true },  // Link to Ban document if ban was created
-}, {
-  toObject: { virtuals: true },
-  toJSON: { virtuals: true },
-})
+ViolationTicket: new mongoose.Schema(
+  {
+    id: { type: String, index: true, unique: true }, // Unique violation ticket ID (shortid)
+    userId: { type: String, index: true }, // User who received the violation
+    modId: { type: String, index: true }, // Admin/mod who issued the violation
+    banType: { type: String, index: true }, // "site", "game", "chat", "forum", "ranked", "competitive"
+    violationId: { type: String, index: true }, // Violation type identifier (admin-defined, e.g., "harassment", "cheating")
+    violationName: { type: String }, // Display name of violation (e.g., "Harassment", "Cheating")
+    violationCategory: { type: String }, // "Community" or "Game"
+    notes: String, // Admin's notes/explanation
+    length: { type: Number }, // Ban length in milliseconds (Infinity for permanent)
+    createdAt: { type: Number, index: true }, // Timestamp when violation was created
+    expiresAt: { type: Number, index: true }, // When ban expires (null if permanent, matches Ban.expires)
+    linkedBanId: { type: String, index: true }, // Link to Ban document if ban was created
+  },
+  {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+  }
+);
 ```
 
 **Indexes Required**:
+
 - Primary: `id` (unique)
 - Single: `userId`, `modId`, `banType`, `violationId`, `createdAt`, `expiresAt`, `linkedBanId`
 - Compound: `{ userId: 1, createdAt: -1 }` for finding user's violation history
 - Compound: `{ userId: 1, violationId: 1 }` for counting violations by type
 
 **Virtual Populates** (for convenience):
+
 ```javascript
 schemas.ViolationTicket.virtual("user", {
   ref: "User",
@@ -138,55 +150,62 @@ schemas.ViolationTicket.virtual("ban", {
 **Location**: `db/schemas.js`
 
 ```javascript
-Report: new mongoose.Schema({
-  id: { type: String, index: true, unique: true },  // Unique report ID (shortid)
-  reporterId: { type: String, index: true },  // User who filed the report
-  reportedUserId: { type: String, index: true },  // User being reported
-  gameId: { type: String, index: true },  // Optional game ID if report is game-related
-  rule: { type: String, index: true },  // Rule broken (from rulesData - matches current system)
-  description: String,  // User-provided description (optional)
-  status: { 
-    type: String, 
-    enum: ["open", "in-progress", "complete"],
-    default: "open",
-    index: true 
+Report: new mongoose.Schema(
+  {
+    id: { type: String, index: true, unique: true }, // Unique report ID (shortid)
+    reporterId: { type: String, index: true }, // User who filed the report
+    reportedUserId: { type: String, index: true }, // User being reported
+    gameId: { type: String, index: true }, // Optional game ID if report is game-related
+    rule: { type: String, index: true }, // Rule broken (from rulesData - matches current system)
+    description: String, // User-provided description (optional)
+    status: {
+      type: String,
+      enum: ["open", "in-progress", "complete"],
+      default: "open",
+      index: true,
+    },
+    assignees: [{ type: String, index: true }], // Array of user IDs assigned to report (no limit)
+    createdAt: { type: Number, index: true }, // Timestamp when report was created
+    updatedAt: { type: Number, index: true }, // Last update timestamp
+    completedAt: { type: Number, index: true }, // When marked complete
+    completedBy: { type: String, index: true }, // Admin who completed it (userId)
+    // Final ruling when complete (null if dismissed/not actionable):
+    finalRuling: {
+      violationId: String, // Violation type identifier (admin-defined, e.g., "harassment", "cheating")
+      violationName: String, // Violation display name (e.g., "Harassment", "Cheating")
+      violationCategory: String, // "Community" or "Game"
+      banType: String, // "site", "game", "chat", "forum", "ranked", "competitive"
+      banLength: String, // Ban length string (e.g., "1 day", "3 weeks", "Permaban")
+      banLengthMs: Number, // Ban length in milliseconds for calculations (Infinity for permanent)
+      notes: String, // Admin's notes/explanation
+    },
+    linkedViolationTicketId: { type: String, index: true }, // Link to ViolationTicket if created
+    linkedBanId: { type: String, index: true }, // Link to Ban if created
+    reopenedAt: { type: Number }, // Timestamp if reopened from complete
+    reopenedBy: { type: String }, // Admin who reopened it (userId)
+    reopenedCount: { type: Number, default: 0 }, // Track how many times reopened
+    history: [
+      {
+        // Track all status changes and assignments
+        status: String,
+        changedBy: String, // userId
+        timestamp: Number,
+        action: String, // "status_change", "assignment", "reopened", "completed"
+        note: String, // Optional note about the change
+        assigneesAdded: [String], // userIds added
+        assigneesRemoved: [String], // userIds removed
+      },
+    ],
   },
-  assignees: [{ type: String, index: true }],  // Array of user IDs assigned to report (no limit)
-  createdAt: { type: Number, index: true },  // Timestamp when report was created
-  updatedAt: { type: Number, index: true },  // Last update timestamp
-  completedAt: { type: Number, index: true },  // When marked complete
-  completedBy: { type: String, index: true },  // Admin who completed it (userId)
-  // Final ruling when complete (null if dismissed/not actionable):
-  finalRuling: {
-    violationId: String,  // Violation type identifier (admin-defined, e.g., "harassment", "cheating")
-    violationName: String,  // Violation display name (e.g., "Harassment", "Cheating")
-    violationCategory: String,  // "Community" or "Game"
-    banType: String,  // "site", "game", "chat", "forum", "ranked", "competitive"
-    banLength: String,  // Ban length string (e.g., "1 day", "3 weeks", "Permaban")
-    banLengthMs: Number,  // Ban length in milliseconds for calculations (Infinity for permanent)
-    notes: String,  // Admin's notes/explanation
-  },
-  linkedViolationTicketId: { type: String, index: true },  // Link to ViolationTicket if created
-  linkedBanId: { type: String, index: true },  // Link to Ban if created
-  reopenedAt: { type: Number },  // Timestamp if reopened from complete
-  reopenedBy: { type: String },  // Admin who reopened it (userId)
-  reopenedCount: { type: Number, default: 0 },  // Track how many times reopened
-  history: [{  // Track all status changes and assignments
-    status: String,
-    changedBy: String,  // userId
-    timestamp: Number,
-    action: String,  // "status_change", "assignment", "reopened", "completed"
-    note: String,  // Optional note about the change
-    assigneesAdded: [String],  // userIds added
-    assigneesRemoved: [String],  // userIds removed
-  }]
-}, {
-  toObject: { virtuals: true },
-  toJSON: { virtuals: true },
-})
+  {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+  }
+);
 ```
 
 **Indexes Required**:
+
 - Primary: `id` (unique)
 - Single: `status`, `reporterId`, `reportedUserId`, `gameId`, `completedBy`, `linkedViolationTicketId`, `createdAt`
 - Compound: `{ status: 1, createdAt: -1 }` for common queries (open reports, newest first)
@@ -194,6 +213,7 @@ Report: new mongoose.Schema({
 - Compound: `{ reportedUserId: 1, status: 1 }` for finding reports against a user
 
 **Virtual Populates** (for convenience):
+
 ```javascript
 schemas.Report.virtual("reporter", {
   ref: "User",
@@ -217,6 +237,7 @@ schemas.Report.virtual("reportedUser", {
 **File: `data/constants.js`**
 
 Add new permission:
+
 ```javascript
 allPerms: {
   // ... existing perms ...
@@ -226,6 +247,7 @@ allPerms: {
 ```
 
 Add to default groups that should have access:
+
 ```javascript
 defaultGroups: {
   Owner: {
@@ -296,6 +318,7 @@ async function createViolationTicket({
 ```
 
 Add to module exports:
+
 ```javascript
 module.exports = {
   // ... existing exports ...
@@ -345,7 +368,7 @@ router.post("/send", async function (req, res) {
 
     // Validate rule exists in rulesData
     const { rulesData } = require("../react_main/src/constants/rules");
-    const validRule = rulesData.find(r => r.name === rule);
+    const validRule = rulesData.find((r) => r.name === rule);
     if (!validRule) {
       return res.status(400).send("Invalid rule selected.");
     }
@@ -360,18 +383,20 @@ router.post("/send", async function (req, res) {
       reportedUserId: reportedUser,
       gameId: game || null,
       rule: rule,
-      description: description ? String(description).trim().slice(0, 5000) : "",  // Limit length
+      description: description ? String(description).trim().slice(0, 5000) : "", // Limit length
       status: "open",
       assignees: [],
       createdAt: Date.now(),
       updatedAt: Date.now(),
-      history: [{
-        status: "open",
-        changedBy: userId,
-        timestamp: Date.now(),
-        action: "created",
-        note: "Report created",
-      }],
+      history: [
+        {
+          status: "open",
+          changedBy: userId,
+          timestamp: Date.now(),
+          action: "created",
+          note: "Report created",
+        },
+      ],
     });
 
     await report.save();
@@ -388,6 +413,7 @@ router.post("/send", async function (req, res) {
 ```
 
 **Add rate limit** to `data/constants.js`:
+
 ```javascript
 rateLimits: {
   // ... existing ...
@@ -400,16 +426,18 @@ rateLimits: {
 **File: `routes/mod.js`** (or create `routes/reports.js`)
 
 #### GET `/api/mod/reports` - List Reports
+
 ```javascript
 router.get("/reports", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
-    const status = req.query.status;  // Optional filter: "open", "in-progress", "complete"
-    const assignee = req.query.assignee;  // Optional: userId
-    const reportedUser = req.query.reportedUser;  // Optional: userId
+    const status = req.query.status; // Optional filter: "open", "in-progress", "complete"
+    const assignee = req.query.assignee; // Optional: userId
+    const reportedUser = req.query.reportedUser; // Optional: userId
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 50;
 
@@ -446,12 +474,14 @@ router.get("/reports", async (req, res) => {
 ```
 
 #### GET `/api/mod/reports/:id` - Get Single Report
+
 ```javascript
 router.get("/reports/:id", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
     const report = await models.Report.findOne({ id: req.params.id }).lean();
 
@@ -476,14 +506,16 @@ router.get("/reports/:id", async (req, res) => {
 ```
 
 #### POST `/api/mod/reports/:id/assign` - Assign Report
+
 ```javascript
 router.post("/reports/:id/assign", async (req, res) => {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
     const reportId = req.params.id;
-    const { assignees } = req.body;  // Array of userIds to assign
+    const { assignees } = req.body; // Array of userIds to assign
 
     if (!Array.isArray(assignees)) {
       res.status(400).send("Assignees must be an array.");
@@ -498,7 +530,7 @@ router.post("/reports/:id/assign", async (req, res) => {
 
     // Validate all assignees exist and have seeModPanel permission
     const currentRank = await redis.getUserRank(userId);
-    
+
     for (const assigneeId of assignees) {
       const assigneeExists = await models.User.findOne({
         id: assigneeId,
@@ -511,10 +543,21 @@ router.post("/reports/:id/assign", async (req, res) => {
       }
 
       // Check if assigner can assign to this user (must have higher or equal rank)
-      if (assigneeId !== userId) {  // Self-assignment always allowed
+      if (assigneeId !== userId) {
+        // Self-assignment always allowed
         const assigneeRank = await redis.getUserRank(assigneeId);
-        if (assigneeRank === null || currentRank === null || currentRank < assigneeRank) {
-          res.status(403).send(`You cannot assign users with rank ${assigneeRank || 0} or higher.`);
+        if (
+          assigneeRank === null ||
+          currentRank === null ||
+          currentRank < assigneeRank
+        ) {
+          res
+            .status(403)
+            .send(
+              `You cannot assign users with rank ${
+                assigneeRank || 0
+              } or higher.`
+            );
           return;
         }
       }
@@ -525,17 +568,19 @@ router.post("/reports/:id/assign", async (req, res) => {
         "seeModPanel"
       );
       if (!hasPermission) {
-        res.status(400).send(`User ${assigneeId} does not have permission to view reports.`);
+        res
+          .status(400)
+          .send(`User ${assigneeId} does not have permission to view reports.`);
         return;
       }
     }
 
     // Track changes
-    const added = assignees.filter(a => !report.assignees.includes(a));
-    const removed = report.assignees.filter(a => !assignees.includes(a));
+    const added = assignees.filter((a) => !report.assignees.includes(a));
+    const removed = report.assignees.filter((a) => !assignees.includes(a));
 
     // Update assignees
-    report.assignees = [...new Set(assignees)];  // Remove duplicates
+    report.assignees = [...new Set(assignees)]; // Remove duplicates
     report.updatedAt = Date.now();
 
     // Update status if needed
@@ -576,11 +621,13 @@ router.post("/reports/:id/assign", async (req, res) => {
 ```
 
 #### POST `/api/mod/reports/:id/status` - Update Status
+
 ```javascript
 router.post("/reports/:id/status", async (req, res) => {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
     const reportId = req.params.id;
     const { status } = req.body;
@@ -642,16 +689,18 @@ router.post("/reports/:id/status", async (req, res) => {
 ```
 
 #### POST `/api/mod/reports/:id/complete` - Complete Report with Ruling
+
 ```javascript
 router.post("/reports/:id/complete", async (req, res) => {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
     const reportId = req.params.id;
     const {
-      finalRuling,  // { violationId, offenseNumber, banLength, notes, dismissed }
-      dismissed,  // boolean - true if no violation
+      finalRuling, // { violationId, offenseNumber, banLength, notes, dismissed }
+      dismissed, // boolean - true if no violation
     } = req.body;
 
     const report = await models.Report.findOne({ id: reportId });
@@ -671,7 +720,11 @@ router.post("/reports/:id/complete", async (req, res) => {
     // If not dismissed, create violation ticket and ban
     if (!dismissed && finalRuling) {
       // Validate required fields
-      if (!finalRuling.violationId || !finalRuling.violationName || !finalRuling.banType) {
+      if (
+        !finalRuling.violationId ||
+        !finalRuling.violationName ||
+        !finalRuling.banType
+      ) {
         res.status(400).send("Violation ID, name, and ban type are required.");
         return;
       }
@@ -682,9 +735,11 @@ router.post("/reports/:id/complete", async (req, res) => {
         // Try to parse from banLength string if banLengthMs not provided
         if (finalRuling.banLength) {
           banLengthMs = routeUtils.parseTime(finalRuling.banLength);
-          if (finalRuling.banLength.toLowerCase() === "permaban" || 
-              finalRuling.banLength.toLowerCase() === "permanent" ||
-              finalRuling.banLength.toLowerCase() === "loss of privilege") {
+          if (
+            finalRuling.banLength.toLowerCase() === "permaban" ||
+            finalRuling.banLength.toLowerCase() === "permanent" ||
+            finalRuling.banLength.toLowerCase() === "loss of privilege"
+          ) {
             banLengthMs = Infinity;
           }
         } else {
@@ -692,15 +747,21 @@ router.post("/reports/:id/complete", async (req, res) => {
           return;
         }
       }
-      
+
       // Handle permanent bans
       if (banLengthMs === Infinity || banLengthMs === 0) {
-        banLengthMs = 0;  // 0 means permanent in banUser function
+        banLengthMs = 0; // 0 means permanent in banUser function
       }
 
       // Determine permissions to ban based on banType (matching existing /ban endpoint)
       const banPermissions = {
-        forum: ["vote", "createThread", "postReply", "deleteOwnPost", "editPost"],
+        forum: [
+          "vote",
+          "createThread",
+          "postReply",
+          "deleteOwnPost",
+          "editPost",
+        ],
         chat: ["publicChat", "privateChat"],
         game: ["playGame"],
         ranked: ["playRanked"],
@@ -734,7 +795,9 @@ router.post("/reports/:id/complete", async (req, res) => {
 
       const adminRank = await redis.getUserRank(userId);
       if (adminRank === null || adminRank <= targetRank) {
-        res.status(403).send("You do not have sufficient rank to ban this user.");
+        res
+          .status(403)
+          .send("You do not have sufficient rank to ban this user.");
         return;
       }
 
@@ -742,7 +805,7 @@ router.post("/reports/:id/complete", async (req, res) => {
       if (banLengthMs >= 0 && permissions.length > 0) {
         ban = await routeUtils.banUser(
           report.reportedUserId,
-          banLengthMs,  // 0 = permanent, > 0 = temporary
+          banLengthMs, // 0 = permanent, > 0 = temporary
           permissions,
           banDbType,
           userId
@@ -754,7 +817,9 @@ router.post("/reports/:id/complete", async (req, res) => {
             { id: report.reportedUserId },
             { $set: { banned: true } }
           ).exec();
-          await models.Session.deleteMany({ "session.user.id": report.reportedUserId }).exec();
+          await models.Session.deleteMany({
+            "session.user.id": report.reportedUserId,
+          }).exec();
         }
       }
 
@@ -767,18 +832,22 @@ router.post("/reports/:id/complete", async (req, res) => {
         violationName: finalRuling.violationName,
         violationCategory: finalRuling.violationCategory || "Community",
         notes: finalRuling.notes || "",
-        length: banLengthMs === 0 ? Infinity : banLengthMs,  // Store Infinity for permanent
+        length: banLengthMs === 0 ? Infinity : banLengthMs, // Store Infinity for permanent
         expiresAt: ban ? ban.expires : null,
         linkedBanId: ban ? ban.id : null,
       });
 
       // Send notification to reported user
       if (banLengthMs >= 0) {
-        const banExpires = ban && ban.expires > 0 ? new Date(ban.expires) : null;
-        const banMessage = banLengthMs === 0 || banLengthMs === Infinity
-          ? "You have been permanently banned."
-          : `Ban expires on ${banExpires ? banExpires.toLocaleString() : "N/A"}.`;
-        
+        const banExpires =
+          ban && ban.expires > 0 ? new Date(ban.expires) : null;
+        const banMessage =
+          banLengthMs === 0 || banLengthMs === Infinity
+            ? "You have been permanently banned."
+            : `Ban expires on ${
+                banExpires ? banExpires.toLocaleString() : "N/A"
+              }.`;
+
         await routeUtils.createNotification(
           {
             content: `You have received a ${finalRuling.violationName} violation. ${banMessage}`,
@@ -795,18 +864,22 @@ router.post("/reports/:id/complete", async (req, res) => {
     report.completedAt = Date.now();
     report.completedBy = userId;
     report.updatedAt = Date.now();
-    
+
     if (!dismissed && finalRuling) {
       report.finalRuling = {
         violationId: finalRuling.violationId,
         violationName: finalRuling.violationName,
         violationCategory: finalRuling.violationCategory || "Community",
         banType: finalRuling.banType,
-        banLength: finalRuling.banLength || routeUtils.timeDisplay(banLengthMs === 0 ? Infinity : banLengthMs),
-        banLengthMs: banLengthMs === 0 ? Infinity : banLengthMs,  // Store Infinity for permanent
+        banLength:
+          finalRuling.banLength ||
+          routeUtils.timeDisplay(banLengthMs === 0 ? Infinity : banLengthMs),
+        banLengthMs: banLengthMs === 0 ? Infinity : banLengthMs, // Store Infinity for permanent
         notes: finalRuling.notes || "",
       };
-      report.linkedViolationTicketId = violationTicket ? violationTicket.id : null;
+      report.linkedViolationTicketId = violationTicket
+        ? violationTicket.id
+        : null;
       report.linkedBanId = ban ? ban.id : null;
     } else {
       report.finalRuling = null;
@@ -817,7 +890,9 @@ router.post("/reports/:id/complete", async (req, res) => {
       changedBy: userId,
       timestamp: Date.now(),
       action: "completed",
-      note: dismissed ? "Report dismissed - no violation" : `Violation: ${report.finalRuling?.violationName}`,
+      note: dismissed
+        ? "Report dismissed - no violation"
+        : `Violation: ${report.finalRuling?.violationName}`,
     });
 
     await report.save();
@@ -826,7 +901,11 @@ router.post("/reports/:id/complete", async (req, res) => {
     await routeUtils.createModAction(
       userId,
       dismissed ? "Complete Report (Dismissed)" : "Complete Report",
-      [reportId, report.reportedUserId, report.finalRuling?.violationId || "dismissed"]
+      [
+        reportId,
+        report.reportedUserId,
+        report.finalRuling?.violationId || "dismissed",
+      ]
     );
 
     res.send({
@@ -842,14 +921,16 @@ router.post("/reports/:id/complete", async (req, res) => {
 ```
 
 #### POST `/api/mod/reports/:id/reopen` - Reopen Completed Report
+
 ```javascript
 router.post("/reports/:id/reopen", async (req, res) => {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
     const reportId = req.params.id;
-    const { newStatus } = req.body;  // "open" or "in-progress"
+    const { newStatus } = req.body; // "open" or "in-progress"
 
     const report = await models.Report.findOne({ id: reportId });
     if (!report) {
@@ -888,16 +969,18 @@ router.post("/reports/:id/reopen", async (req, res) => {
       changedBy: userId,
       timestamp: Date.now(),
       action: "reopened",
-      note: `Reopened from complete. Previous ruling: ${report.finalRuling ? report.finalRuling.violationName : "Dismissed"}`,
+      note: `Reopened from complete. Previous ruling: ${
+        report.finalRuling ? report.finalRuling.violationName : "Dismissed"
+      }`,
     });
 
     await report.save();
 
     // Notify previous assignees
     const previousAssignees = report.history
-      .filter(h => h.action === "assignment")
-      .flatMap(h => h.assigneesAdded || [])
-      .filter((id, index, self) => self.indexOf(id) === index);  // Unique
+      .filter((h) => h.action === "assignment")
+      .flatMap((h) => h.assigneesAdded || [])
+      .filter((id, index, self) => self.indexOf(id) === index); // Unique
 
     for (const assigneeId of previousAssignees) {
       if (assigneeId !== userId) {
@@ -925,6 +1008,7 @@ router.post("/reports/:id/reopen", async (req, res) => {
 **New Page: `react_main/src/pages/Community/Reports.jsx`**
 
 Main reports list page with:
+
 - Filter by status (open/in-progress/complete)
 - Filter by assignee (self/others/all)
 - Filter by reported user
@@ -936,6 +1020,7 @@ Main reports list page with:
 **New Component: `react_main/src/components/ReportDetail.jsx`**
 
 Report detail view with:
+
 - All report information
 - Assignment interface (multi-select with user search)
 - Status change controls
@@ -947,6 +1032,7 @@ Report detail view with:
 **New Component: `react_main/src/components/ReportTypology.jsx`**
 
 Display final ruling with:
+
 - Violation name and category
 - Ban type
 - Ban length
@@ -963,34 +1049,39 @@ const reportsRouter = require("./routes/reports");
 app.use("/api/reports", reportsRouter);
 
 // Or add to existing mod router:
-app.use("/api/mod", modRouter);  // Should already exist
+app.use("/api/mod", modRouter); // Should already exist
 ```
 
 ## Security Considerations
 
 ### 1. Permission Validation
+
 - **ALL** report endpoints must verify `seeModPanel` permission
 - Use `routeUtils.verifyPermission()` consistently
 - Never expose reports to unauthorized users
 
 ### 2. Assignment Security
+
 - Validate assignees exist and aren't deleted
 - Check assigner's rank is >= assignee's rank (except self-assignment)
 - Verify assignees have `seeModPanel` permission
 - Prevent assigning non-existent or deleted users
 
 ### 3. Status Transition Validation
+
 - Prevent invalid status transitions (e.g., complete → open directly - must use reopen)
 - Require finalRuling when completing (unless dismissed)
 - Validate violation data when completing with ruling
 
 ### 4. Ban Creation Security
+
 - Verify admin has sufficient rank to ban target user (current system uses `banRank + 1`)
 - Validate ban type is one of the supported types (site, game, chat, forum, ranked, competitive)
 - Ensure ban length parsing is safe (handle "Permaban", "Permanent", "Loss of privilege", etc.)
 - Validate violation fields (violationId, violationName, banType) are provided
 
 ### 5. Input Sanitization
+
 - Limit description length (5000 chars recommended)
 - Sanitize all string inputs
 - Validate rule names against actual rulesData
@@ -998,17 +1089,20 @@ app.use("/api/mod", modRouter);  // Should already exist
 - Validate user IDs exist
 
 ### 6. Rate Limiting
+
 - Add rate limit for report creation (5 minutes recommended)
 - Consider rate limiting status changes/assignments to prevent abuse
 - Use existing `routeUtils.rateLimit()` system
 
 ### 7. History Tracking
+
 - Never allow modification of history array directly
 - Always add new entries, never edit existing ones
 - Include user ID, timestamp, and action in every entry
 - This provides audit trail for accountability
 
 ### 8. Data Integrity
+
 - Use transactions where possible (if MongoDB supports)
 - Validate referential integrity (users, games exist)
 - Handle edge cases (deleted users, completed reports, etc.)
@@ -1016,19 +1110,23 @@ app.use("/api/mod", modRouter);  // Should already exist
 ## Limitations & Considerations
 
 ### 1. Violation Tracking
+
 **IMPORTANT**: The system does NOT have a predefined violations.js file or automatic violation type system. Admins manually enter:
+
 - Violation ID (identifier like "harassment", "cheating", etc.)
 - Violation name (display name like "Harassment", "Cheating")
 - Violation category ("Community" or "Game")
 - Ban type and length
 
 The report system should:
+
 - Display previous ViolationTickets for the reported user (filterable by violationId)
 - Allow admins to manually enter violation details when completing reports
 - Show violation history to help admins determine appropriate ban lengths
 - **DO NOT** automatically calculate offense numbers or ban lengths - admins determine these manually
 
 ### 2. Violation Ticket Creation
+
 - ViolationTickets are created when reports are completed with a violation ruling
 - ViolationTickets can be created even if no ban is issued (if banLengthMs is 0 or ban is not warranted)
 - Reports can be completed without creating violations (if dismissed)
@@ -1037,29 +1135,34 @@ The report system should:
 - A single report typically results in one ViolationTicket, but admins can create multiple if needed (future enhancement)
 
 ### 3. Ban Type Complexity
+
 - Different ban types require different permission arrays
 - Site bans require additional user flag updates and session deletion
 - "Loss of privilege" bans may require special handling
 - Permanent bans use `expires: 0` (not Infinity)
 
 ### 4. Reopening Behavior
+
 - Reopened reports keep finalRuling for reference but clear completion fields
 - Reopening doesn't undo bans or violation tickets (those remain)
 - Reopened reports may need new ruling if situation changes
 - Track reopen count to identify problematic reports
 
 ### 5. Assignment Notifications
+
 - Notify users when assigned to reports
 - Consider digest notifications for users with many assigned reports
 - Notification links should go to report detail page
 
 ### 6. Performance
+
 - Reports table will grow over time
 - Consider archiving old completed reports (move to separate collection after X months)
 - Indexes are critical for performance
 - Pagination is essential for large result sets
 
 ### 7. Discord Integration
+
 - Current Discord webhook can be kept for notifications
 - Or removed entirely once on-site system is proven
 - Could send notifications for new reports to Discord mod channel
@@ -1068,6 +1171,7 @@ The report system should:
 ### 8. Migration & Initial Implementation
 
 **Amnesty Policy**:
+
 - When the new report system is implemented, an amnesty will be given for all existing violations
 - **All existing violations will be cleared/forgiven EXCEPT permabans**
 - This effectively starts the violation tracking system from scratch
@@ -1075,18 +1179,21 @@ The report system should:
 - This allows for a clean slate while maintaining permanent bans for serious offenses
 
 **Data Migration**:
+
 - No existing report data to migrate (Discord-only currently)
 - Consider importing recent Discord reports if possible (optional)
 - Existing Ban documents will remain but ViolationTickets will only be created going forward
 - Historical violation data (if any exists) will not be migrated except for permabans
 
 ### 9. Typology Component
+
 - Typology component exists in frontend (`react_main/src/pages/User/Profile.jsx` uses it)
 - Need to locate exact component or create new one for reports
 - Should display all finalRuling fields in readable format
 - May need to link to user profile to see violation history
 
 ### 10. Game Context
+
 - Game IDs are optional (reports can be site-wide)
 - Need to validate game exists if provided
 - Could link to game view page if game ID present
@@ -1095,6 +1202,7 @@ The report system should:
 ## Testing Checklist
 
 ### Backend
+
 - [ ] Report creation with valid data
 - [ ] Report creation with invalid user/game/rule
 - [ ] Report listing with filters
@@ -1112,6 +1220,7 @@ The report system should:
 - [ ] Notification sending
 
 ### Frontend
+
 - [ ] Report list displays correctly
 - [ ] Filters work properly
 - [ ] Status colors display correctly
@@ -1124,6 +1233,7 @@ The report system should:
 - [ ] Permissions hide/show appropriate UI
 
 ### Integration
+
 - [ ] End-to-end report flow
 - [ ] Violation ticket links correctly
 - [ ] Ban creation works from report
@@ -1144,4 +1254,3 @@ The report system should:
 8. **Report Categories**: Tag reports by type/priority
 9. **File Attachments**: Allow screenshots/evidence uploads
 10. **Report Search**: Full-text search across descriptions
-
