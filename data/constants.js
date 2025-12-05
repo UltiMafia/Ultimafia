@@ -30,6 +30,7 @@ if (process.env.NODE_ENV.includes("development")) {
     postComment: 30 * 100,
     postStrategy: 30 * 100,
     favSetup: 500,
+    fileReport: 5 * 60 * 100,
   };
 } else {
   rates = {
@@ -43,6 +44,7 @@ if (process.env.NODE_ENV.includes("development")) {
     postComment: 30 * 1000,
     postStrategy: 30 * 1000,
     favSetup: 500,
+    fileReport: 5 * 60 * 1000,
   };
 }
 
@@ -464,6 +466,7 @@ module.exports = {
     createPoll: true,
     awardTrophy: true,
     deleteStrategy: true,
+    seeModPanel: true,
   },
   defaultGroups: {
     Owner: {
@@ -523,6 +526,7 @@ module.exports = {
         "createPoll",
         "awardTrophy",
         "deleteStrategy",
+        "seeModPanel",
       ],
     },
     Liaison: {
@@ -561,6 +565,7 @@ module.exports = {
         "unban",
         "forceSignOut",
         "clearSetupName",
+        "seeModPanel",
         "clearUserContent",
         "clearFamilyContent",
         "viewBans",

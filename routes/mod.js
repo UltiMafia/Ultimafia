@@ -10,6 +10,7 @@ const fs = require("fs");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
+const { getBasicUserInfo } = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
 const { rating, rate, ordinal, predictWin } = require("openskill");
@@ -2214,6 +2215,684 @@ router.post("/competitiveApprove", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Error approving user.");
+  }
+});
+
+// Report Management Routes
+
+router.get("/reports", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
+
+    const status = req.query.status;
+    const assignee = req.query.assignee;
+    const reportedUser = req.query.reportedUser;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+
+    let filter = {};
+    if (status && ["open", "in-progress", "complete"].includes(status)) {
+      filter.status = status;
+    }
+    if (assignee) {
+      filter.assignees = { $in: [assignee] };
+    }
+    if (reportedUser) {
+      filter.reportedUserId = reportedUser;
+    }
+
+    const reports = await models.Report.find(filter)
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .lean();
+
+    const total = await models.Report.countDocuments(filter);
+
+    // Populate user information for reporter, reported user, and assignees
+    for (const report of reports) {
+      try {
+        // Get reporter info
+        const reporterInfo = await getBasicUserInfo(report.reporterId);
+        if (reporterInfo) {
+          report.reporterName = reporterInfo.name;
+          report.reporterAvatar = reporterInfo.avatar;
+        }
+
+        // Get reported user info
+        const reportedUserInfo = await getBasicUserInfo(report.reportedUserId);
+        if (reportedUserInfo) {
+          report.reportedUserName = reportedUserInfo.name;
+          report.reportedUserAvatar = reportedUserInfo.avatar;
+        }
+
+        // Get assignee info
+        if (report.assignees && report.assignees.length > 0) {
+          report.assigneeInfo = [];
+          for (const assigneeId of report.assignees) {
+            const assigneeInfo = await getBasicUserInfo(assigneeId);
+            if (assigneeInfo) {
+              report.assigneeInfo.push({
+                id: assigneeId,
+                name: assigneeInfo.name,
+                avatar: assigneeInfo.avatar,
+              });
+            } else {
+              report.assigneeInfo.push({
+                id: assigneeId,
+                name: assigneeId,
+                avatar: false,
+              });
+            }
+          }
+        }
+      } catch (e) {
+        logger.warn(`Error populating user info for report ${report.id}:`, e);
+      }
+    }
+
+    res.send({
+      reports,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error loading reports.");
+  }
+});
+
+router.get("/reports/:id", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
+
+    const report = await models.Report.findOne({ id: req.params.id }).lean();
+
+    if (!report) {
+      res.status(404).send("Report not found.");
+      return;
+    }
+
+    // Populate linked violation ticket if exists
+    if (report.linkedViolationTicketId) {
+      report.violationTicket = await models.ViolationTicket.findOne({
+        id: report.linkedViolationTicketId,
+      }).lean();
+    }
+
+    // Populate user information for reporter, reported user, and assignees
+    try {
+      // Get reporter info
+      const reporterInfo = await getBasicUserInfo(report.reporterId);
+      if (reporterInfo) {
+        report.reporterName = reporterInfo.name;
+        report.reporterAvatar = reporterInfo.avatar;
+      }
+
+      // Get reported user info
+      const reportedUserInfo = await getBasicUserInfo(report.reportedUserId);
+      if (reportedUserInfo) {
+        report.reportedUserName = reportedUserInfo.name;
+        report.reportedUserAvatar = reportedUserInfo.avatar;
+      }
+
+      // Get assignee info
+      if (report.assignees && report.assignees.length > 0) {
+        report.assigneeInfo = [];
+        for (const assigneeId of report.assignees) {
+          const assigneeInfo = await getBasicUserInfo(assigneeId);
+          if (assigneeInfo) {
+            report.assigneeInfo.push({
+              id: assigneeId,
+              name: assigneeInfo.name,
+              avatar: assigneeInfo.avatar,
+            });
+          } else {
+            report.assigneeInfo.push({
+              id: assigneeId,
+              name: assigneeId,
+              avatar: false,
+            });
+          }
+        }
+      }
+    } catch (e) {
+      logger.warn(`Error populating user info for report ${report.id}:`, e);
+    }
+
+    res.send(report);
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error loading report.");
+  }
+});
+
+router.post("/reports/:id/assign", async (req, res) => {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
+
+    const reportId = req.params.id;
+    const { assignees } = req.body;
+
+    if (!Array.isArray(assignees)) {
+      res.status(400).send("Assignees must be an array.");
+      return;
+    }
+
+    const report = await models.Report.findOne({ id: reportId });
+    if (!report) {
+      res.status(404).send("Report not found.");
+      return;
+    }
+
+    // Validate all assignees exist and have seeModPanel permission
+    const currentRank = await redis.getUserRank(userId);
+
+    for (const assigneeId of assignees) {
+      const assigneeExists = await models.User.findOne({
+        id: assigneeId,
+        deleted: false,
+      }).select("id");
+
+      if (!assigneeExists) {
+        res.status(400).send(`User ${assigneeId} does not exist.`);
+        return;
+      }
+
+      // Check if assigner can assign to this user (must have higher or equal rank)
+      if (assigneeId !== userId) {
+        const assigneeRank = await redis.getUserRank(assigneeId);
+        if (
+          assigneeRank === null ||
+          currentRank === null ||
+          currentRank < assigneeRank
+        ) {
+          res
+            .status(403)
+            .send(
+              `You cannot assign users with rank ${
+                assigneeRank || 0
+              } or higher.`
+            );
+          return;
+        }
+      }
+
+      // Verify assignee has seeModPanel permission
+      const hasPermission = await routeUtils.verifyPermission(
+        assigneeId,
+        "seeModPanel"
+      );
+      if (!hasPermission) {
+        res
+          .status(400)
+          .send(`User ${assigneeId} does not have permission to view reports.`);
+        return;
+      }
+    }
+
+    // Track changes
+    const added = assignees.filter((a) => !report.assignees.includes(a));
+    const removed = report.assignees.filter((a) => !assignees.includes(a));
+
+    // Update assignees
+    report.assignees = [...new Set(assignees)];
+    report.updatedAt = Date.now();
+
+    // Update status if needed
+    if (report.status === "open" && assignees.length > 0) {
+      report.status = "in-progress";
+    }
+
+    // Add history entry
+    report.history.push({
+      status: report.status,
+      changedBy: userId,
+      timestamp: Date.now(),
+      action: "assignment",
+      assigneesAdded: added,
+      assigneesRemoved: removed,
+    });
+
+    await report.save();
+
+    // Send notifications to new assignees
+    for (const assigneeId of added) {
+      await routeUtils.createNotification(
+        {
+          content: `You have been assigned to report #${report.id}`,
+          icon: "flag",
+          link: `/mod/reports/${report.id}`,
+        },
+        [assigneeId]
+      );
+    }
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error assigning report.");
+  }
+});
+
+router.post("/reports/:id/status", async (req, res) => {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
+
+    const reportId = req.params.id;
+    const { status } = req.body;
+
+    if (!["open", "in-progress", "complete"].includes(status)) {
+      res.status(400).send("Invalid status.");
+      return;
+    }
+
+    const report = await models.Report.findOne({ id: reportId });
+    if (!report) {
+      res.status(404).send("Report not found.");
+      return;
+    }
+
+    // Validate status transitions
+    if (status === "complete" && report.status !== "complete") {
+      res.status(400).send("Use /complete endpoint to mark as complete.");
+      return;
+    }
+
+    const oldStatus = report.status;
+    report.status = status;
+    report.updatedAt = Date.now();
+
+    if (status === "in-progress" && report.assignees.length === 0) {
+      // Auto-assign to current user
+      if (!report.assignees.includes(userId)) {
+        report.assignees.push(userId);
+      }
+    }
+
+    report.history.push({
+      status: status,
+      changedBy: userId,
+      timestamp: Date.now(),
+      action: "status_change",
+      note: `Changed from ${oldStatus} to ${status}`,
+    });
+
+    await report.save();
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error updating status.");
+  }
+});
+
+router.post("/reports/:id/complete", async (req, res) => {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
+
+    const reportId = req.params.id;
+    const { finalRuling, dismissed } = req.body;
+
+    const report = await models.Report.findOne({ id: reportId });
+    if (!report) {
+      res.status(404).send("Report not found.");
+      return;
+    }
+
+    if (report.status === "complete") {
+      res.status(400).send("Report is already complete.");
+      return;
+    }
+
+    let violationTicket = null;
+    let ban = null;
+    let violationId = null;
+    let violationName = null;
+    let banLengthStr = null;
+    let violationDef = null;
+
+    // If not dismissed, create violation ticket and ban
+    if (!dismissed && finalRuling) {
+      // Validate required fields
+      if (!finalRuling.banType) {
+        res.status(400).send("Ban type is required.");
+        return;
+      }
+
+      // Get violation definition from report's rule
+      const {
+        violationDefinitions,
+      } = require("../react_main/src/constants/violations");
+      violationDef = violationDefinitions.find((v) => v.name === report.rule);
+
+      if (!violationDef) {
+        res.status(400).send("Invalid rule - violation definition not found.");
+        return;
+      }
+
+      // Count previous ACTIVE violations for this rule
+      // Only count violations that are still active (activeUntil > now)
+      const now = Date.now();
+      const previousViolations = await models.ViolationTicket.countDocuments({
+        userId: report.reportedUserId,
+        violationName: {
+          $regex: new RegExp(
+            `^${report.rule.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`
+          ),
+        },
+        activeUntil: { $gt: now },
+      });
+
+      const offenseNumber = previousViolations + 1;
+
+      // Generate violation name: rule name + offense number
+      const ordinalSuffixes = ["th", "st", "nd", "rd"];
+      const getOrdinal = (n) => {
+        const v = n % 100;
+        return (
+          n +
+          (ordinalSuffixes[(v - 20) % 10] ||
+            ordinalSuffixes[v] ||
+            ordinalSuffixes[0])
+        );
+      };
+      violationName = `${report.rule} (${getOrdinal(offenseNumber)} Offense)`;
+
+      // Generate random violation ID
+      violationId = shortid.generate();
+
+      // Get ban length from violations.js based on offense number
+      const offenseIndex = Math.min(
+        offenseNumber - 1,
+        violationDef.offenses.length - 1
+      );
+      banLengthStr = violationDef.offenses[offenseIndex];
+
+      // Parse ban length
+      let banLengthMs;
+      if (
+        banLengthStr.toLowerCase() === "permaban" ||
+        banLengthStr.toLowerCase() === "permanent" ||
+        banLengthStr.toLowerCase() === "loss of privilege" ||
+        banLengthStr === "-"
+      ) {
+        banLengthMs = Infinity;
+      } else {
+        banLengthMs = routeUtils.parseTime(banLengthStr);
+        if (isNaN(banLengthMs)) {
+          res.status(400).send(`Invalid ban length format: ${banLengthStr}`);
+          return;
+        }
+      }
+
+      // Handle permanent bans
+      if (banLengthMs === Infinity || banLengthMs === 0) {
+        banLengthMs = 0; // 0 means permanent in banUser function
+      }
+
+      // Determine permissions to ban based on banType (matching existing /ban endpoint)
+      const banPermissions = {
+        forum: [
+          "vote",
+          "createThread",
+          "postReply",
+          "deleteOwnPost",
+          "editPost",
+        ],
+        chat: ["publicChat", "privateChat"],
+        game: ["playGame"],
+        ranked: ["playRanked"],
+        competitive: ["playCompetitive"],
+        site: ["signIn"],
+      };
+
+      const banDbTypes = {
+        forum: "forum",
+        chat: "chat",
+        game: "game",
+        ranked: "playRanked",
+        competitive: "playCompetitive",
+        site: "site",
+      };
+
+      const permissions = banPermissions[finalRuling.banType];
+      const banDbType = banDbTypes[finalRuling.banType];
+
+      if (!permissions) {
+        res.status(400).send("Invalid ban type.");
+        return;
+      }
+
+      // Check if admin has permission to ban this user
+      const targetRank = await redis.getUserRank(report.reportedUserId);
+      if (targetRank === null) {
+        res.status(400).send("Reported user does not exist.");
+        return;
+      }
+
+      const adminRank = await redis.getUserRank(userId);
+      if (adminRank === null || adminRank <= targetRank) {
+        res
+          .status(403)
+          .send("You do not have sufficient rank to ban this user.");
+        return;
+      }
+
+      // Create ban if ban length > 0 (or permanent)
+      if (banLengthMs >= 0 && permissions.length > 0) {
+        ban = await routeUtils.banUser(
+          report.reportedUserId,
+          banLengthMs,
+          permissions,
+          banDbType,
+          userId
+        );
+
+        // Update user banned flag for site bans
+        if (finalRuling.banType === "site") {
+          await models.User.updateOne(
+            { id: report.reportedUserId },
+            { $set: { banned: true } }
+          ).exec();
+          await models.Session.deleteMany({
+            "session.user.id": report.reportedUserId,
+          }).exec();
+        }
+      }
+
+      // Calculate activeUntil based on violation category
+      // Community violations: 6 months, Game violations: 3 months
+      const category = violationDef.category || "Community";
+      const activityPeriodMs =
+        category === "Game"
+          ? 3 * 30 * 24 * 60 * 60 * 1000 // 3 months
+          : 6 * 30 * 24 * 60 * 60 * 1000; // 6 months
+      const activeUntil = Date.now() + activityPeriodMs;
+
+      // Create violation ticket (even if no ban was created)
+      violationTicket = await routeUtils.createViolationTicket({
+        userId: report.reportedUserId,
+        modId: userId,
+        banType: finalRuling.banType,
+        violationId: violationId,
+        violationName: violationName,
+        violationCategory: category,
+        notes: finalRuling.notes || "",
+        length: banLengthMs === 0 ? Infinity : banLengthMs,
+        expiresAt: ban ? ban.expires : null,
+        activeUntil: activeUntil,
+        linkedBanId: ban ? ban.id : null,
+      });
+
+      // Send notification to reported user
+      if (banLengthMs >= 0) {
+        const banExpires =
+          ban && ban.expires > 0 ? new Date(ban.expires) : null;
+        const banMessage =
+          banLengthMs === 0 || banLengthMs === Infinity
+            ? "You have been permanently banned."
+            : `Ban expires on ${
+                banExpires ? banExpires.toLocaleString() : "N/A"
+              }.`;
+
+        await routeUtils.createNotification(
+          {
+            content: `You have received a ${violationName} violation. ${banMessage}`,
+            icon: "ban",
+            link: `/user/${report.reportedUserId}`,
+          },
+          [report.reportedUserId]
+        );
+      }
+    }
+
+    // Update report
+    report.status = "complete";
+    report.completedAt = Date.now();
+    report.completedBy = userId;
+    report.updatedAt = Date.now();
+
+    if (!dismissed && finalRuling) {
+      report.finalRuling = {
+        violationId: violationId,
+        violationName: violationName,
+        violationCategory: violationDef.category || "Community",
+        banType: finalRuling.banType,
+        banLength: banLengthStr,
+        banLengthMs: banLengthMs === 0 ? Infinity : banLengthMs,
+        notes: finalRuling.notes || "",
+      };
+      report.linkedViolationTicketId = violationTicket
+        ? violationTicket.id
+        : null;
+      report.linkedBanId = ban ? ban.id : null;
+    } else {
+      report.finalRuling = null;
+    }
+
+    report.history.push({
+      status: "complete",
+      changedBy: userId,
+      timestamp: Date.now(),
+      action: "completed",
+      note: dismissed
+        ? "Report dismissed - no violation"
+        : `Violation: ${violationName}`,
+    });
+
+    await report.save();
+
+    // Create mod action
+    await routeUtils.createModAction(
+      userId,
+      dismissed ? "Complete Report (Dismissed)" : "Complete Report",
+      [
+        reportId,
+        report.reportedUserId,
+        report.finalRuling?.violationId || "dismissed",
+      ]
+    );
+
+    res.send({
+      report,
+      violationTicket: violationTicket ? violationTicket.toJSON() : null,
+      ban: ban ? ban.toJSON() : null,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error completing report.");
+  }
+});
+
+router.post("/reports/:id/reopen", async (req, res) => {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
+
+    const reportId = req.params.id;
+    const { newStatus } = req.body;
+
+    const report = await models.Report.findOne({ id: reportId });
+    if (!report) {
+      res.status(404).send("Report not found.");
+      return;
+    }
+
+    if (report.status !== "complete") {
+      res.status(400).send("Only completed reports can be reopened.");
+      return;
+    }
+
+    const targetStatus = newStatus || "in-progress";
+    if (!["open", "in-progress"].includes(targetStatus)) {
+      res.status(400).send("New status must be 'open' or 'in-progress'.");
+      return;
+    }
+
+    report.status = targetStatus;
+    report.reopenedAt = Date.now();
+    report.reopenedBy = userId;
+    report.reopenedCount = (report.reopenedCount || 0) + 1;
+    report.updatedAt = Date.now();
+
+    // Clear completion fields (but keep finalRuling for reference)
+    // Optionally clear assignees if reopening to "open"
+    if (targetStatus === "open") {
+      report.assignees = [];
+    } else if (report.assignees.length === 0) {
+      // Auto-assign to reopening user
+      report.assignees = [userId];
+    }
+
+    report.history.push({
+      status: targetStatus,
+      changedBy: userId,
+      timestamp: Date.now(),
+      action: "reopened",
+      note: `Reopened from complete. Previous ruling: ${
+        report.finalRuling ? report.finalRuling.violationName : "Dismissed"
+      }`,
+    });
+
+    await report.save();
+
+    // Notify previous assignees
+    const previousAssignees = report.history
+      .filter((h) => h.action === "assignment")
+      .flatMap((h) => h.assigneesAdded || [])
+      .filter((id, index, self) => self.indexOf(id) === index); // Unique
+
+    for (const assigneeId of previousAssignees) {
+      if (assigneeId !== userId) {
+        await routeUtils.createNotification(
+          {
+            content: `Report #${report.id} has been reopened`,
+            icon: "flag",
+            link: `/mod/reports/${report.id}`,
+          },
+          [assigneeId]
+        );
+      }
+    }
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error reopening report.");
   }
 });
 
