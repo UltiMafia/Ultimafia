@@ -13,42 +13,21 @@ module.exports = class ModifierConfused extends Card {
       condemn: true,
     };
 
-    /*
-    this.actions = [
+    this.passiveActions = [
       {
+        ability: ["Modifier"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
         priority: PRIORITY_NIGHT_ROLE_BLOCKER,
         labels: ["block", "hidden", "absolute"],
         run: function () {
-          if (this.game.getStateName() != "Night") return;
-
-          if (Random.randInt(0, 1) == 0) {
-            this.blockWithDelirium(this.actor);
-          }
-        },
-      },
-    ];
-*/
-
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_NIGHT_ROLE_BLOCKER,
-          labels: ["block", "hidden", "absolute"],
-          run: function () {
             if (Random.randInt(0, 1) == 0) {
               this.actor.giveEffect("FalseMode", 1);
             }
-          },
-        });
-
-        this.game.queueAction(action);
+        },
       },
-    };
+    ];
   }
 };
