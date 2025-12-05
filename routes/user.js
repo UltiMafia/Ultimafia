@@ -1003,6 +1003,103 @@ router.get("/:id/info", async function (req, res) {
   }
 });
 
+router.get("/:id/nameHistory", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var reqUserId = await routeUtils.verifyLoggedIn(req, true);
+    var userId = String(req.params.id);
+
+    // Only admins and moderators can view name history
+    if (reqUserId) {
+      const hasPermission = await redis.hasPermission(reqUserId, "seeModPanel");
+      if (!hasPermission) {
+        res.status(403);
+        res.send("You do not have permission to view name history.");
+        return;
+      }
+    } else {
+      res.status(401);
+      res.send("You must be logged in to view name history.");
+      return;
+    }
+
+    // Resolve userId (could be ID or vanity URL)
+    const userById = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("id -_id");
+
+    if (!userById) {
+      const vanityUrl = await models.VanityUrl.findOne({
+        url: userId,
+      }).select("userId -_id");
+
+      if (vanityUrl) {
+        const userByVanity = await models.User.findOne({
+          id: vanityUrl.userId,
+          deleted: false,
+        }).select("id -_id");
+
+        if (userByVanity) {
+          userId = userByVanity.id;
+        } else {
+          res.status(404);
+          res.send("User not found.");
+          return;
+        }
+      } else {
+        res.status(404);
+        res.send("User not found.");
+        return;
+      }
+    }
+
+    // Get user with name history
+    const user = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    })
+      .select("id name previousNames -_id")
+      .lean();
+
+    if (!user) {
+      res.status(404);
+      res.send("User not found.");
+      return;
+    }
+
+    // Format name history: include current name and all previous names
+    const nameHistory = [];
+
+    // Add current name first
+    nameHistory.push({
+      name: user.name,
+      changedAt: null, // Current name has no change date
+      isCurrent: true,
+    });
+
+    // Add previous names in reverse chronological order (newest first)
+    if (user.previousNames && user.previousNames.length > 0) {
+      const sortedPreviousNames = [...user.previousNames].sort(
+        (a, b) => (b.changedAt || 0) - (a.changedAt || 0)
+      );
+      sortedPreviousNames.forEach((prevName) => {
+        nameHistory.push({
+          name: prevName.name,
+          changedAt: prevName.changedAt,
+          isCurrent: false,
+        });
+      });
+    }
+
+    res.send(nameHistory);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error loading name history.");
+  }
+});
+
 router.get("/settings/data", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
@@ -1838,13 +1935,29 @@ router.post("/name", async function (req, res) {
       return;
     }
 
-    await models.User.updateOne(
-      { id: userId },
-      {
-        $set: { name: name, nameChanged: true },
-        $inc: { "itemsOwned.nameChange": -1 },
-      }
-    ).exec();
+    // Get current user to record previous name
+    const currentUser = await models.User.findOne({ id: userId }).select(
+      "name"
+    );
+    const oldName = currentUser ? currentUser.name : null;
+
+    // Update name and record previous name
+    const updateQuery = {
+      $set: { name: name, nameChanged: true },
+      $inc: { "itemsOwned.nameChange": -1 },
+    };
+
+    // Add previous name to history if it exists and is different
+    if (oldName && oldName !== name) {
+      updateQuery.$push = {
+        previousNames: {
+          name: oldName,
+          changedAt: Date.now(),
+        },
+      };
+    }
+
+    await models.User.updateOne({ id: userId }, updateQuery).exec();
 
     await redis.cacheUserInfo(userId, true);
 

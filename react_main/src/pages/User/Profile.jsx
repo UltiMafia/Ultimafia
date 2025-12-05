@@ -38,6 +38,7 @@ import {
   Box,
   Grid,
   IconButton,
+  Popover,
   Stack,
   Tooltip,
   Typography,
@@ -107,6 +108,9 @@ export default function Profile() {
   const [userFamily, setUserFamily] = useState(null);
   const [inGame, setInGame] = useState(null);
   const [canonicalUserId, setCanonicalUserId] = useState(null);
+  const [nameHistoryAnchor, setNameHistoryAnchor] = useState(null);
+  const [nameHistory, setNameHistory] = useState([]);
+  const [nameHistoryLoading, setNameHistoryLoading] = useState(false);
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -118,6 +122,7 @@ export default function Profile() {
   const profileUserId = canonicalUserId || userId;
   const isSelf = profileUserId === user.id;
   const isBlocked = !isSelf && user.blockedUsers.indexOf(profileUserId) !== -1;
+  const canViewNameHistory = user.perms.seeModPanel;
 
   // userId is the id of the current profile
   // user.id is the id of the current user
@@ -492,6 +497,35 @@ export default function Profile() {
 
   function onReportClick() {
     setReportDialogOpen(true);
+  }
+
+  function onNameClick(event) {
+    if (canViewNameHistory) {
+      setNameHistoryAnchor(event.currentTarget);
+      loadNameHistory();
+    }
+  }
+
+  function onNameHistoryClose() {
+    setNameHistoryAnchor(null);
+    setNameHistory([]);
+  }
+
+  function loadNameHistory() {
+    if (!profileUserId || nameHistoryLoading) return;
+
+    setNameHistoryLoading(true);
+    axios
+      .get(`/api/user/${profileUserId}/nameHistory`)
+      .then((res) => {
+        setNameHistory(res.data);
+        setNameHistoryLoading(false);
+      })
+      .catch((e) => {
+        errorAlert(e);
+        setNameHistoryLoading(false);
+        setNameHistoryAnchor(null);
+      });
   }
 
   function onBioClick() {
@@ -1031,9 +1065,17 @@ export default function Profile() {
           {badges}
           <Typography
             variant="h2"
+            onClick={canViewNameHistory ? onNameClick : undefined}
             sx={{
               flexShrink: "2",
               fontWeight: "600",
+              cursor: canViewNameHistory ? "pointer" : "default",
+              "&:hover": canViewNameHistory
+                ? {
+                    textDecoration: "underline",
+                    opacity: 0.8,
+                  }
+                : {},
             }}
           >
             {name}
@@ -1481,6 +1523,64 @@ export default function Profile() {
           </Grid>
         )}
       </Grid>
+      <Popover
+        open={Boolean(nameHistoryAnchor)}
+        anchorEl={nameHistoryAnchor}
+        onClose={onNameHistoryClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        <Box
+          sx={{
+            p: 2,
+            minWidth: 300,
+            maxWidth: 400,
+            maxHeight: 400,
+            overflow: "auto",
+          }}
+        >
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            Name History
+          </Typography>
+          {nameHistoryLoading ? (
+            <Typography variant="body2" color="textSecondary">
+              Loading...
+            </Typography>
+          ) : nameHistory.length === 0 ? (
+            <Typography variant="body2" color="textSecondary">
+              No name history available.
+            </Typography>
+          ) : (
+            <Stack spacing={1}>
+              {nameHistory.map((entry, index) => (
+                <Box key={index}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: entry.isCurrent ? 600 : 400,
+                      color: entry.isCurrent ? "primary.main" : "text.primary",
+                    }}
+                  >
+                    {entry.name}
+                    {entry.isCurrent && " (Current)"}
+                  </Typography>
+                  {entry.changedAt && (
+                    <Typography variant="caption" color="textSecondary">
+                      Changed: {new Date(entry.changedAt).toLocaleString()}
+                    </Typography>
+                  )}
+                </Box>
+              ))}
+            </Stack>
+          )}
+        </Box>
+      </Popover>
     </>
   );
 }
