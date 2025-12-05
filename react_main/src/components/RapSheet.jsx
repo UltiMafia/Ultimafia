@@ -78,12 +78,12 @@ export default function RapSheet({ userId }) {
             const completedDate = report.completedAt
               ? new Date(report.completedAt)
               : null;
-            
+
             // Determine violation status
             let violationStatus = null;
             let statusColor = "default";
             let statusLabel = "Dismissed";
-            
+
             if (!isDismissed && report.violationTicket) {
               const status = report.violationTicket.status;
               if (status === "active") {
@@ -220,7 +220,10 @@ export default function RapSheet({ userId }) {
                             {showRestrictedInfo && (
                               <>
                                 <Box>
-                                  <Typography variant="caption" color="textSecondary">
+                                  <Typography
+                                    variant="caption"
+                                    color="textSecondary"
+                                  >
                                     Violation
                                   </Typography>
                                   <Typography variant="body2">
@@ -229,7 +232,10 @@ export default function RapSheet({ userId }) {
                                 </Box>
                                 {report.finalRuling.violationCategory && (
                                   <Box>
-                                    <Typography variant="caption" color="textSecondary">
+                                    <Typography
+                                      variant="caption"
+                                      color="textSecondary"
+                                    >
                                       Category
                                     </Typography>
                                     <Typography variant="body2">
@@ -239,7 +245,10 @@ export default function RapSheet({ userId }) {
                                 )}
                                 {report.finalRuling.banType && (
                                   <Box>
-                                    <Typography variant="caption" color="textSecondary">
+                                    <Typography
+                                      variant="caption"
+                                      color="textSecondary"
+                                    >
                                       Ban Type
                                     </Typography>
                                     <Typography variant="body2">
@@ -249,7 +258,10 @@ export default function RapSheet({ userId }) {
                                 )}
                                 {report.finalRuling.banLength && (
                                   <Box>
-                                    <Typography variant="caption" color="textSecondary">
+                                    <Typography
+                                      variant="caption"
+                                      color="textSecondary"
+                                    >
                                       Ban Length
                                     </Typography>
                                     <Typography variant="body2">
@@ -261,7 +273,10 @@ export default function RapSheet({ userId }) {
                             )}
                             {report.finalRuling.notes && (
                               <Box>
-                                <Typography variant="caption" color="textSecondary">
+                                <Typography
+                                  variant="caption"
+                                  color="textSecondary"
+                                >
                                   Notes
                                 </Typography>
                                 <Typography
@@ -316,7 +331,10 @@ export default function RapSheet({ userId }) {
                           </Typography>
                           {report.violationTicket.activeUntil &&
                             report.violationTicket.activeUntil > 0 && (
-                              <Typography variant="caption" color="textSecondary">
+                              <Typography
+                                variant="caption"
+                                color="textSecondary"
+                              >
                                 Active until:{" "}
                                 {new Date(
                                   report.violationTicket.activeUntil
@@ -335,4 +353,3 @@ export default function RapSheet({ userId }) {
     </div>
   );
 }
-

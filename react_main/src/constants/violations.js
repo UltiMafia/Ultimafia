@@ -198,10 +198,13 @@ export const violationDefinitions = [
   },
 ];
 
-export const violationMapById = violationDefinitions.reduce((acc, violation) => {
-  acc[violation.id] = violation;
-  return acc;
-}, {});
+export const violationMapById = violationDefinitions.reduce(
+  (acc, violation) => {
+    acc[violation.id] = violation;
+    return acc;
+  },
+  {}
+);
 
 export const communityViolations = violationDefinitions.filter(
   (violation) => violation.category === "Community"
@@ -210,4 +213,3 @@ export const communityViolations = violationDefinitions.filter(
 export const gameViolations = violationDefinitions.filter(
   (violation) => violation.category === "Game"
 );
-

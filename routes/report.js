@@ -79,7 +79,9 @@ router.post("/send", async function (req, res) {
     });
 
     await report.save();
-    logger.info(`Report ${report.id} created successfully by user ${userId} for reported user ${reportedUser}`);
+    logger.info(
+      `Report ${report.id} created successfully by user ${userId} for reported user ${reportedUser}`
+    );
 
     // OPTIONAL: Still send to Discord for notification (can be removed later)
     // try {

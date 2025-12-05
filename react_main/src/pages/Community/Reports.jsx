@@ -247,13 +247,17 @@ export default function Reports() {
                           .slice(0, 3)
                           .map((assignee) => {
                             const assigneeId =
-                              typeof assignee === "string" ? assignee : assignee.id;
+                              typeof assignee === "string"
+                                ? assignee
+                                : assignee.id;
                             const assigneeName =
                               typeof assignee === "string"
                                 ? assignee
                                 : assignee.name || assigneeId;
                             const assigneeAvatar =
-                              typeof assignee === "string" ? false : assignee.avatar;
+                              typeof assignee === "string"
+                                ? false
+                                : assignee.avatar;
                             return (
                               <NameWithAvatar
                                 key={assigneeId}

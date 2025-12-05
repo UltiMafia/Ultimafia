@@ -939,7 +939,10 @@ router.get("/:id/reports", async function (req, res) {
         }
 
         // Add violation ticket info if linked
-        if (report.linkedViolationTicketId && violationMap[report.linkedViolationTicketId]) {
+        if (
+          report.linkedViolationTicketId &&
+          violationMap[report.linkedViolationTicketId]
+        ) {
           report.violationTicket = violationMap[report.linkedViolationTicketId];
         }
       } catch (e) {

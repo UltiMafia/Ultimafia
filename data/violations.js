@@ -214,4 +214,3 @@ module.exports = {
   violationMapById,
   getViolationsForBanType,
 };
-
