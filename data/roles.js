@@ -4675,7 +4675,6 @@ const roleData = {
       description: [
         "Each night, if no one was condemned, can choose to visit one player and kill them. (Even if dead)",
         "Will count towards Cult Majority when dead and not exorcised.",
-        "If a Poltergeist is Exorcised, All Cult-aligned players die.",
         "If it is possible for a Poltergeist to spawn in a setup, Dead players can be voted in village meeting.",
         "If a dead Poltergeist is condemned in the Village Meeting, they are exorcised.",
       ],
@@ -4768,6 +4767,10 @@ const roleData = {
       alignment: "Cult",
       tags: ["Events", "Advanced"],
       description: ["Each night, can choose an Event, that Event occurs."],
+      SpecialInteractionsModifiers: {
+        Refined: ["Cannot use Banished Events."],
+        Unrefined: ["Cannot use non-Banished Events."],
+      },
     },
     Bogeyman: {
       alignment: "Cult",
