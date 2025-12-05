@@ -356,6 +356,7 @@ async function createViolationTicket({
   notes,
   length,
   expiresAt,
+  activeUntil,
   linkedBanId,
 }) {
   const violationTicket = new models.ViolationTicket({
@@ -370,6 +371,7 @@ async function createViolationTicket({
     length: length || 0,
     createdAt: Date.now(),
     expiresAt: expiresAt || null,
+    activeUntil: activeUntil || null,
     linkedBanId: linkedBanId || null,
   });
 

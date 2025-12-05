@@ -40,12 +40,7 @@ export default function ReportDetail({
   const [showAssignDialog, setShowAssignDialog] = useState(false);
   const [completing, setCompleting] = useState(false);
   const [finalRuling, setFinalRuling] = useState({
-    violationId: "",
-    violationName: "",
-    violationCategory: "Community",
     banType: "",
-    banLength: "",
-    banLengthMs: null,
     notes: "",
   });
   const [dismissed, setDismissed] = useState(false);
@@ -84,16 +79,8 @@ export default function ReportDetail({
   };
 
   const handleComplete = async () => {
-    if (
-      !dismissed &&
-      (!finalRuling.violationId ||
-        !finalRuling.violationName ||
-        !finalRuling.banType)
-    ) {
-      siteInfo.showAlert(
-        "Please fill in all required violation fields",
-        "error"
-      );
+    if (!dismissed && !finalRuling.banType) {
+      siteInfo.showAlert("Please select a ban type.", "error");
       return;
     }
 
@@ -168,7 +155,8 @@ export default function ReportDetail({
                 </Typography>
                 <NameWithAvatar
                   id={report.reporterId}
-                  name={report.reporterId}
+                  name={report.reporterName || report.reporterId}
+                  avatar={report.reporterAvatar}
                 />
               </Box>
               <Box>
@@ -177,7 +165,8 @@ export default function ReportDetail({
                 </Typography>
                 <NameWithAvatar
                   id={report.reportedUserId}
-                  name={report.reportedUserId}
+                  name={report.reportedUserName || report.reportedUserId}
+                  avatar={report.reportedUserAvatar}
                 />
               </Box>
               {report.gameId && (
@@ -212,14 +201,19 @@ export default function ReportDetail({
                   </Typography>
                 </Box>
               )}
-              <Box>
-                <Typography variant="caption" color="textSecondary">
-                  Created
-                </Typography>
-                <Typography>
-                  <Time timestamp={report.createdAt} />
-                </Typography>
-              </Box>
+              {report.createdAt && (
+                <Box>
+                  <Typography variant="caption" color="textSecondary">
+                    Created
+                  </Typography>
+                  <Typography>
+                    <Time
+                      millisec={Date.now() - report.createdAt}
+                      suffix=" ago"
+                    />
+                  </Typography>
+                </Box>
+              )}
             </Stack>
           </Card>
 
@@ -250,7 +244,12 @@ export default function ReportDetail({
                           size="small"
                         />
                         <Typography variant="body2">
-                          <Time timestamp={entry.timestamp} />
+                          {entry.timestamp && (
+                            <Time
+                              millisec={Date.now() - entry.timestamp}
+                              suffix=" ago"
+                            />
+                          )}
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
                           by {entry.changedBy}
@@ -318,13 +317,24 @@ export default function ReportDetail({
             </Typography>
             {report.assignees && report.assignees.length > 0 ? (
               <Stack spacing={1}>
-                {report.assignees.map((assigneeId) => (
-                  <NameWithAvatar
-                    key={assigneeId}
-                    id={assigneeId}
-                    name={assigneeId}
-                  />
-                ))}
+                {(report.assigneeInfo || report.assignees).map((assignee) => {
+                  const assigneeId =
+                    typeof assignee === "string" ? assignee : assignee.id;
+                  const assigneeName =
+                    typeof assignee === "string"
+                      ? assignee
+                      : assignee.name || assigneeId;
+                  const assigneeAvatar =
+                    typeof assignee === "string" ? false : assignee.avatar;
+                  return (
+                    <NameWithAvatar
+                      key={assigneeId}
+                      id={assigneeId}
+                      name={assigneeName}
+                      avatar={assigneeAvatar}
+                    />
+                  );
+                })}
               </Stack>
             ) : (
               <Typography color="textSecondary">Unassigned</Typography>
@@ -418,46 +428,10 @@ export default function ReportDetail({
             </FormControl>
             <Divider>OR</Divider>
             <Typography variant="h6">Violation Details</Typography>
-            <TextField
-              label="Violation ID"
-              value={finalRuling.violationId}
-              onChange={(e) =>
-                setFinalRuling({ ...finalRuling, violationId: e.target.value })
-              }
-              fullWidth
-              required
-              disabled={dismissed}
-            />
-            <TextField
-              label="Violation Name"
-              value={finalRuling.violationName}
-              onChange={(e) =>
-                setFinalRuling({
-                  ...finalRuling,
-                  violationName: e.target.value,
-                })
-              }
-              fullWidth
-              required
-              disabled={dismissed}
-            />
-            <FormControl fullWidth>
-              <InputLabel>Violation Category</InputLabel>
-              <Select
-                value={finalRuling.violationCategory}
-                label="Violation Category"
-                onChange={(e) =>
-                  setFinalRuling({
-                    ...finalRuling,
-                    violationCategory: e.target.value,
-                  })
-                }
-                disabled={dismissed}
-              >
-                <MenuItem value="Community">Community</MenuItem>
-                <MenuItem value="Game">Game</MenuItem>
-              </Select>
-            </FormControl>
+            <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+              Violation name and ban length will be automatically determined
+              based on the rule broken and previous offenses.
+            </Typography>
             <FormControl fullWidth>
               <InputLabel>Ban Type</InputLabel>
               <Select
@@ -467,6 +441,7 @@ export default function ReportDetail({
                   setFinalRuling({ ...finalRuling, banType: e.target.value })
                 }
                 disabled={dismissed}
+                required
               >
                 <MenuItem value="site">Site</MenuItem>
                 <MenuItem value="game">Game</MenuItem>
@@ -476,16 +451,6 @@ export default function ReportDetail({
                 <MenuItem value="competitive">Competitive</MenuItem>
               </Select>
             </FormControl>
-            <TextField
-              label="Ban Length (e.g., '1 day', '3 weeks', 'Permaban')"
-              value={finalRuling.banLength}
-              onChange={(e) =>
-                setFinalRuling({ ...finalRuling, banLength: e.target.value })
-              }
-              fullWidth
-              disabled={dismissed}
-              helperText="Leave empty if no ban is warranted"
-            />
             <TextField
               label="Notes"
               value={finalRuling.notes}

@@ -30,6 +30,7 @@ import { Modal } from "components/Modal";
 import CustomMarkdown from "components/CustomMarkdown";
 import ModerationSideDrawer from "components/ModerationSideDrawer";
 import ReportDialog from "../../components/ReportDialog";
+import RapSheet from "../../components/RapSheet";
 import { PieChart } from "./PieChart";
 import { NewLoading } from "../Welcome/NewLoading";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
@@ -1297,6 +1298,9 @@ export default function Profile() {
                 </Stack>
               </div>
             </div>
+            {(isSelf || user.perms.seeModPanel) && (
+              <RapSheet userId={profileUserId} />
+            )}
             {trophyCase}
             {totalGames >= RequiredTotalForStats &&
               !settings.hideStatistics && (

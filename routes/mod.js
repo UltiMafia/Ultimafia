@@ -10,6 +10,7 @@ const fs = require("fs");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
+const { getBasicUserInfo } = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
 const { rating, rate, ordinal, predictWin } = require("openskill");
@@ -2237,7 +2238,7 @@ router.get("/reports", async (req, res) => {
       filter.status = status;
     }
     if (assignee) {
-      filter.assignees = assignee;
+      filter.assignees = { $in: [assignee] };
     }
     if (reportedUser) {
       filter.reportedUserId = reportedUser;
@@ -2250,6 +2251,48 @@ router.get("/reports", async (req, res) => {
       .lean();
 
     const total = await models.Report.countDocuments(filter);
+
+    // Populate user information for reporter, reported user, and assignees
+    for (const report of reports) {
+      try {
+        // Get reporter info
+        const reporterInfo = await getBasicUserInfo(report.reporterId);
+        if (reporterInfo) {
+          report.reporterName = reporterInfo.name;
+          report.reporterAvatar = reporterInfo.avatar;
+        }
+
+        // Get reported user info
+        const reportedUserInfo = await getBasicUserInfo(report.reportedUserId);
+        if (reportedUserInfo) {
+          report.reportedUserName = reportedUserInfo.name;
+          report.reportedUserAvatar = reportedUserInfo.avatar;
+        }
+
+        // Get assignee info
+        if (report.assignees && report.assignees.length > 0) {
+          report.assigneeInfo = [];
+          for (const assigneeId of report.assignees) {
+            const assigneeInfo = await getBasicUserInfo(assigneeId);
+            if (assigneeInfo) {
+              report.assigneeInfo.push({
+                id: assigneeId,
+                name: assigneeInfo.name,
+                avatar: assigneeInfo.avatar,
+              });
+            } else {
+              report.assigneeInfo.push({
+                id: assigneeId,
+                name: assigneeId,
+                avatar: false,
+              });
+            }
+          }
+        }
+      } catch (e) {
+        logger.warn(`Error populating user info for report ${report.id}:`, e);
+      }
+    }
 
     res.send({
       reports,
@@ -2282,6 +2325,46 @@ router.get("/reports/:id", async (req, res) => {
       report.violationTicket = await models.ViolationTicket.findOne({
         id: report.linkedViolationTicketId,
       }).lean();
+    }
+
+    // Populate user information for reporter, reported user, and assignees
+    try {
+      // Get reporter info
+      const reporterInfo = await getBasicUserInfo(report.reporterId);
+      if (reporterInfo) {
+        report.reporterName = reporterInfo.name;
+        report.reporterAvatar = reporterInfo.avatar;
+      }
+
+      // Get reported user info
+      const reportedUserInfo = await getBasicUserInfo(report.reportedUserId);
+      if (reportedUserInfo) {
+        report.reportedUserName = reportedUserInfo.name;
+        report.reportedUserAvatar = reportedUserInfo.avatar;
+      }
+
+      // Get assignee info
+      if (report.assignees && report.assignees.length > 0) {
+        report.assigneeInfo = [];
+        for (const assigneeId of report.assignees) {
+          const assigneeInfo = await getBasicUserInfo(assigneeId);
+          if (assigneeInfo) {
+            report.assigneeInfo.push({
+              id: assigneeId,
+              name: assigneeInfo.name,
+              avatar: assigneeInfo.avatar,
+            });
+          } else {
+            report.assigneeInfo.push({
+              id: assigneeId,
+              name: assigneeId,
+              avatar: false,
+            });
+          }
+        }
+      }
+    } catch (e) {
+      logger.warn(`Error populating user info for report ${report.id}:`, e);
     }
 
     res.send(report);
@@ -2476,34 +2559,69 @@ router.post("/reports/:id/complete", async (req, res) => {
 
     let violationTicket = null;
     let ban = null;
+    let violationId = null;
+    let violationName = null;
+    let banLengthStr = null;
+    let violationDef = null;
 
     // If not dismissed, create violation ticket and ban
     if (!dismissed && finalRuling) {
       // Validate required fields
-      if (
-        !finalRuling.violationId ||
-        !finalRuling.violationName ||
-        !finalRuling.banType
-      ) {
-        res.status(400).send("Violation ID, name, and ban type are required.");
+      if (!finalRuling.banType) {
+        res.status(400).send("Ban type is required.");
         return;
       }
 
-      // Parse ban length from finalRuling
-      let banLengthMs = finalRuling.banLengthMs;
-      if (banLengthMs === undefined || banLengthMs === null) {
-        // Try to parse from banLength string if banLengthMs not provided
-        if (finalRuling.banLength) {
-          banLengthMs = routeUtils.parseTime(finalRuling.banLength);
-          if (
-            finalRuling.banLength.toLowerCase() === "permaban" ||
-            finalRuling.banLength.toLowerCase() === "permanent" ||
-            finalRuling.banLength.toLowerCase() === "loss of privilege"
-          ) {
-            banLengthMs = Infinity;
-          }
-        } else {
-          res.status(400).send("Ban length is required.");
+      // Get violation definition from report's rule
+      const { violationDefinitions } = require("../react_main/src/constants/violations");
+      violationDef = violationDefinitions.find(
+        (v) => v.name === report.rule
+      );
+
+      if (!violationDef) {
+        res.status(400).send("Invalid rule - violation definition not found.");
+        return;
+      }
+
+      // Count previous ACTIVE violations for this rule
+      // Only count violations that are still active (activeUntil > now)
+      const now = Date.now();
+      const previousViolations = await models.ViolationTicket.countDocuments({
+        userId: report.reportedUserId,
+        violationName: { $regex: new RegExp(`^${report.rule.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`) },
+        activeUntil: { $gt: now },
+      });
+
+      const offenseNumber = previousViolations + 1;
+
+      // Generate violation name: rule name + offense number
+      const ordinalSuffixes = ["th", "st", "nd", "rd"];
+      const getOrdinal = (n) => {
+        const v = n % 100;
+        return n + (ordinalSuffixes[(v - 20) % 10] || ordinalSuffixes[v] || ordinalSuffixes[0]);
+      };
+      violationName = `${report.rule} (${getOrdinal(offenseNumber)} Offense)`;
+
+      // Generate random violation ID
+      violationId = shortid.generate();
+
+      // Get ban length from violations.js based on offense number
+      const offenseIndex = Math.min(offenseNumber - 1, violationDef.offenses.length - 1);
+      banLengthStr = violationDef.offenses[offenseIndex];
+
+      // Parse ban length
+      let banLengthMs;
+      if (
+        banLengthStr.toLowerCase() === "permaban" ||
+        banLengthStr.toLowerCase() === "permanent" ||
+        banLengthStr.toLowerCase() === "loss of privilege" ||
+        banLengthStr === "-"
+      ) {
+        banLengthMs = Infinity;
+      } else {
+        banLengthMs = routeUtils.parseTime(banLengthStr);
+        if (isNaN(banLengthMs)) {
+          res.status(400).send(`Invalid ban length format: ${banLengthStr}`);
           return;
         }
       }
@@ -2583,17 +2701,27 @@ router.post("/reports/:id/complete", async (req, res) => {
         }
       }
 
+      // Calculate activeUntil based on violation category
+      // Community violations: 6 months, Game violations: 3 months
+      const category = violationDef.category || "Community";
+      const activityPeriodMs =
+        category === "Game"
+          ? 3 * 30 * 24 * 60 * 60 * 1000 // 3 months
+          : 6 * 30 * 24 * 60 * 60 * 1000; // 6 months
+      const activeUntil = Date.now() + activityPeriodMs;
+
       // Create violation ticket (even if no ban was created)
       violationTicket = await routeUtils.createViolationTicket({
         userId: report.reportedUserId,
         modId: userId,
         banType: finalRuling.banType,
-        violationId: finalRuling.violationId,
-        violationName: finalRuling.violationName,
-        violationCategory: finalRuling.violationCategory || "Community",
+        violationId: violationId,
+        violationName: violationName,
+        violationCategory: category,
         notes: finalRuling.notes || "",
         length: banLengthMs === 0 ? Infinity : banLengthMs,
         expiresAt: ban ? ban.expires : null,
+        activeUntil: activeUntil,
         linkedBanId: ban ? ban.id : null,
       });
 
@@ -2610,7 +2738,7 @@ router.post("/reports/:id/complete", async (req, res) => {
 
         await routeUtils.createNotification(
           {
-            content: `You have received a ${finalRuling.violationName} violation. ${banMessage}`,
+            content: `You have received a ${violationName} violation. ${banMessage}`,
             icon: "ban",
             link: `/user/${report.reportedUserId}`,
           },
@@ -2627,13 +2755,11 @@ router.post("/reports/:id/complete", async (req, res) => {
 
     if (!dismissed && finalRuling) {
       report.finalRuling = {
-        violationId: finalRuling.violationId,
-        violationName: finalRuling.violationName,
-        violationCategory: finalRuling.violationCategory || "Community",
+        violationId: violationId,
+        violationName: violationName,
+        violationCategory: violationDef.category || "Community",
         banType: finalRuling.banType,
-        banLength:
-          finalRuling.banLength ||
-          routeUtils.timeDisplay(banLengthMs === 0 ? Infinity : banLengthMs),
+        banLength: banLengthStr,
         banLengthMs: banLengthMs === 0 ? Infinity : banLengthMs,
         notes: finalRuling.notes || "",
       };
@@ -2652,7 +2778,7 @@ router.post("/reports/:id/complete", async (req, res) => {
       action: "completed",
       note: dismissed
         ? "Report dismissed - no violation"
-        : `Violation: ${report.finalRuling?.violationName}`,
+        : `Violation: ${violationName}`,
     });
 
     await report.save();

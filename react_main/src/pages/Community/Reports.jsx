@@ -228,27 +228,42 @@ export default function Reports() {
                   <TableCell>
                     <NameWithAvatar
                       id={report.reportedUserId}
-                      name={report.reportedUserId}
+                      name={report.reportedUserName || report.reportedUserId}
+                      avatar={report.reportedUserAvatar}
                     />
                   </TableCell>
                   <TableCell>
                     <NameWithAvatar
                       id={report.reporterId}
-                      name={report.reporterId}
+                      name={report.reporterName || report.reporterId}
+                      avatar={report.reporterAvatar}
                     />
                   </TableCell>
                   <TableCell>{report.rule}</TableCell>
                   <TableCell>
                     {report.assignees && report.assignees.length > 0 ? (
                       <Stack direction="row" spacing={0.5} flexWrap="wrap">
-                        {report.assignees.slice(0, 3).map((assigneeId) => (
-                          <NameWithAvatar
-                            key={assigneeId}
-                            id={assigneeId}
-                            name={assigneeId}
-                            size="small"
-                          />
-                        ))}
+                        {(report.assigneeInfo || report.assignees)
+                          .slice(0, 3)
+                          .map((assignee) => {
+                            const assigneeId =
+                              typeof assignee === "string" ? assignee : assignee.id;
+                            const assigneeName =
+                              typeof assignee === "string"
+                                ? assignee
+                                : assignee.name || assigneeId;
+                            const assigneeAvatar =
+                              typeof assignee === "string" ? false : assignee.avatar;
+                            return (
+                              <NameWithAvatar
+                                key={assigneeId}
+                                id={assigneeId}
+                                name={assigneeName}
+                                avatar={assigneeAvatar}
+                                size="small"
+                              />
+                            );
+                          })}
                         {report.assignees.length > 3 && (
                           <Typography variant="caption">
                             +{report.assignees.length - 3}
@@ -262,7 +277,12 @@ export default function Reports() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Time timestamp={report.createdAt} />
+                    {report.createdAt && (
+                      <Time
+                        millisec={Date.now() - report.createdAt}
+                        suffix=" ago"
+                      />
+                    )}
                   </TableCell>
                 </TableRow>
               ))
