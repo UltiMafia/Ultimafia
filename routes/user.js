@@ -939,7 +939,10 @@ router.get("/:id/reports", async function (req, res) {
         }
 
         // Add violation ticket info if linked
-        if (report.linkedViolationTicketId && violationMap[report.linkedViolationTicketId]) {
+        if (
+          report.linkedViolationTicketId &&
+          violationMap[report.linkedViolationTicketId]
+        ) {
           report.violationTicket = violationMap[report.linkedViolationTicketId];
         }
       } catch (e) {
@@ -1008,10 +1011,7 @@ router.get("/:id/nameHistory", async function (req, res) {
 
     // Only admins and moderators can view name history
     if (reqUserId) {
-      const hasPermission = await redis.hasPermission(
-        reqUserId,
-        "seeModPanel"
-      );
+      const hasPermission = await redis.hasPermission(reqUserId, "seeModPanel");
       if (!hasPermission) {
         res.status(403);
         res.send("You do not have permission to view name history.");
@@ -1070,7 +1070,7 @@ router.get("/:id/nameHistory", async function (req, res) {
 
     // Format name history: include current name and all previous names
     const nameHistory = [];
-    
+
     // Add current name first
     nameHistory.push({
       name: user.name,
@@ -1936,7 +1936,9 @@ router.post("/name", async function (req, res) {
     }
 
     // Get current user to record previous name
-    const currentUser = await models.User.findOne({ id: userId }).select("name");
+    const currentUser = await models.User.findOne({ id: userId }).select(
+      "name"
+    );
     const oldName = currentUser ? currentUser.name : null;
 
     // Update name and record previous name

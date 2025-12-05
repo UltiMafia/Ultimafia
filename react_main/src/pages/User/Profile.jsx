@@ -513,7 +513,7 @@ export default function Profile() {
 
   function loadNameHistory() {
     if (!profileUserId || nameHistoryLoading) return;
-    
+
     setNameHistoryLoading(true);
     axios
       .get(`/api/user/${profileUserId}/nameHistory`)
@@ -1536,7 +1536,15 @@ export default function Profile() {
           horizontal: "left",
         }}
       >
-        <Box sx={{ p: 2, minWidth: 300, maxWidth: 400, maxHeight: 400, overflow: "auto" }}>
+        <Box
+          sx={{
+            p: 2,
+            minWidth: 300,
+            maxWidth: 400,
+            maxHeight: 400,
+            overflow: "auto",
+          }}
+        >
           <Typography variant="h6" sx={{ mb: 1 }}>
             Name History
           </Typography>

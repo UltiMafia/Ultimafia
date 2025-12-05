@@ -1105,8 +1105,12 @@ router.post("/clearUserContent", async (req, res) => {
         const currentUserForClear = await models.User.findOne({
           id: userIdToClear,
         }).select("name");
-        const oldNameForClear = currentUserForClear ? currentUserForClear.name : null;
-        const newGeneratedName = routeUtils.nameGen().slice(0, constants.maxUserNameLength);
+        const oldNameForClear = currentUserForClear
+          ? currentUserForClear.name
+          : null;
+        const newGeneratedName = routeUtils
+          .nameGen()
+          .slice(0, constants.maxUserNameLength);
 
         updateQuery = {
           $set: {
@@ -2045,7 +2049,9 @@ router.post("/changeName", async (req, res) => {
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
     // Get current user to record previous name
-    const currentUser = await models.User.findOne({ id: userIdToChange }).select("name");
+    const currentUser = await models.User.findOne({
+      id: userIdToChange,
+    }).select("name");
     const oldName = currentUser ? currentUser.name : null;
 
     // Update name and record previous name
@@ -2613,10 +2619,10 @@ router.post("/reports/:id/complete", async (req, res) => {
       }
 
       // Get violation definition from report's rule
-      const { violationDefinitions } = require("../react_main/src/constants/violations");
-      violationDef = violationDefinitions.find(
-        (v) => v.name === report.rule
-      );
+      const {
+        violationDefinitions,
+      } = require("../react_main/src/constants/violations");
+      violationDef = violationDefinitions.find((v) => v.name === report.rule);
 
       if (!violationDef) {
         res.status(400).send("Invalid rule - violation definition not found.");
@@ -2624,14 +2630,20 @@ router.post("/reports/:id/complete", async (req, res) => {
       }
 
       // Get all alt account IDs (accounts sharing IPs)
-      const altAccountIds = await routeUtils.getAltAccountIds(report.reportedUserId);
+      const altAccountIds = await routeUtils.getAltAccountIds(
+        report.reportedUserId
+      );
 
       // Count previous ACTIVE violations for this rule across all alt accounts
       // Only count violations that are still active (activeUntil > now)
       const now = Date.now();
       const previousViolations = await models.ViolationTicket.countDocuments({
         userId: { $in: altAccountIds },
-        violationName: { $regex: new RegExp(`^${report.rule.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`) },
+        violationName: {
+          $regex: new RegExp(
+            `^${report.rule.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`
+          ),
+        },
         activeUntil: { $gt: now },
       });
 
@@ -2641,7 +2653,12 @@ router.post("/reports/:id/complete", async (req, res) => {
       const ordinalSuffixes = ["th", "st", "nd", "rd"];
       const getOrdinal = (n) => {
         const v = n % 100;
-        return n + (ordinalSuffixes[(v - 20) % 10] || ordinalSuffixes[v] || ordinalSuffixes[0]);
+        return (
+          n +
+          (ordinalSuffixes[(v - 20) % 10] ||
+            ordinalSuffixes[v] ||
+            ordinalSuffixes[0])
+        );
       };
       violationName = `${report.rule} (${getOrdinal(offenseNumber)} Offense)`;
 
@@ -2649,7 +2666,10 @@ router.post("/reports/:id/complete", async (req, res) => {
       violationId = shortid.generate();
 
       // Get ban length from violations.js based on offense number
-      const offenseIndex = Math.min(offenseNumber - 1, violationDef.offenses.length - 1);
+      const offenseIndex = Math.min(
+        offenseNumber - 1,
+        violationDef.offenses.length - 1
+      );
       banLengthStr = violationDef.offenses[offenseIndex];
 
       // Parse ban length
