@@ -518,6 +518,30 @@ module.exports = class Meeting {
               );
             }
             break;
+          case "village":
+            if (self) {
+              temp = temp.filter(
+                (r) =>
+                  this.game.getRoleAlignment(r) == "Village"
+              );
+            }
+            break;
+          case "mafia":
+            if (self) {
+              temp = temp.filter(
+                (r) =>
+                  this.game.getRoleAlignment(r) == "Mafia"
+              );
+            }
+            break;
+          case "cult":
+            if (self) {
+              temp = temp.filter(
+                (r) =>
+                  this.game.getRoleAlignment(r) == "Cult"
+              );
+            }
+            break;
           case "banished":
             temp = temp.filter(
               (r) =>
