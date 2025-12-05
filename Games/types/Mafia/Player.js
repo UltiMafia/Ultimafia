@@ -539,11 +539,7 @@ module.exports = class MafiaPlayer extends Player {
         .getRoleTags(
           this.game.formatRoleInternal(this.role.name, this.role.modifier)
         )
-        .includes("Demonic") &&
-      !(
-        this.hasEffect("TelevangelistEffect") ||
-        this.role.name == "Televangelist"
-      )
+        .includes("Demonic")
     ) {
       return true;
     }
