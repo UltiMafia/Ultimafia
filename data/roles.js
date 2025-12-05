@@ -3948,7 +3948,7 @@ const roleData = {
       ],
       description: [
         "Each night, learns who visits them.",
-        "Each night, gains a Knife for each non-Cult player who visits them",
+        "Each night, gains a Knife if a non-Cult player visits them",
         knifeDef,
         bleedingDef,
       ],

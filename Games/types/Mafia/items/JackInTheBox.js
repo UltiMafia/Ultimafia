@@ -9,7 +9,7 @@ const {
 
 module.exports = class JackInTheBox extends Item {
   constructor(options) {
-    super("Jack In The Box");
+    super("Jack-In-The-Box");
 
     this.magicCult = options?.magicCult;
     this.broken = options?.broken;

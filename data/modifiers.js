@@ -51,6 +51,14 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
+    Playful: {
+      category: "Items",
+      internal: ["StartWithJack"],
+      tags: ["Items", "Coffee"],
+      description: "Starts with a Jack-In-The-Box.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      allowDuplicate: true,
+    },
     Churchgoing: {
       category: "Items",
       internal: ["StartWithTract"],
@@ -482,7 +490,7 @@ const modifierData = {
       internal: ["Demonic"],
       tags: ["Demonic", "Essential"],
       description:
-        "Cult will win if a Demonic player is alive in final 2 or only Demonic and Cult players are alive. If all Demonic players are dead, all Cult-aligned players will die.",
+        "Village Wins if all Demonic roles are dead. Cult wins if a Demonic role is alive in the final 2 or only Cult and Demonic roles are alive.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Vital: {
