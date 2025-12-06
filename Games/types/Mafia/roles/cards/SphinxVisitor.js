@@ -13,14 +13,14 @@ module.exports = class SphinxVisitor extends Card {
         shouldMeet: function () {
           // Only show if sequence is set and it's not the first night
           return (
-            this.role.data.numberSequence != null && this.game.hasBeenNight
+            this.numberSequence != null
           );
         },
         action: {
           labels: ["visit"],
           priority: PRIORITY_SUPPORT_VISIT_DEFAULT,
           run: function () {
-            if (this.actor.role.data.numberSequence == null) {
+            if (this.role.numberSequence == null) {
               this.game.sendAlert(
                 "You must choose a number sequence first!",
                 [this.actor]
@@ -33,7 +33,7 @@ module.exports = class SphinxVisitor extends Card {
               this.target,
               "SphinxRiddle",
               this.actor,
-              this.actor.role.data.numberSequence
+              this.role.numberSequence
             );
           },
         },
