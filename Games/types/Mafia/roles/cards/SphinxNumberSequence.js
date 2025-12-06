@@ -5,9 +5,6 @@ module.exports = class SphinxNumberSequence extends Card {
     super(role);
 
     // Initialize number sequence as null - must be set on first night
-    if (!role.data.numberSequence) {
-      role.data.numberSequence = null;
-    }
 
     this.meetings = {
       "Choose Number Sequence": {
@@ -24,14 +21,15 @@ module.exports = class SphinxNumberSequence extends Card {
         shouldMeet: function () {
           // Only show on first night if sequence not set
           return (
-            !this.game.hasBeenNight && this.role.data.numberSequence == null
+            !this.numberSequence
           );
         },
         action: {
           labels: ["hidden"],
           priority: 0,
+          role: this.role,
           run: function () {
-            if (this.actor.role.data.numberSequence != null) {
+            if (this.role.numberSequence != null) {
               return; // Already set
             }
 
@@ -64,7 +62,7 @@ module.exports = class SphinxNumberSequence extends Card {
             }
 
             // Store the number sequence
-            this.actor.role.data.numberSequence = sequence;
+            this.role.numberSequence = sequence;
             this.actor.queueAlert(
               `You have chosen the number sequence: ${sequence}`
             );
