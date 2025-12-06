@@ -331,7 +331,7 @@ const artContributors = {
       "Heartbreaker:noir",
     ],
   },
-  megido: {
+  aleph: {
     Mafia: [
       "Count:vivid",
       "Harpy:vivid",
@@ -362,6 +362,7 @@ const artContributors = {
       "Fool:vivid",
       "Shrink:vivid",
       "Trick-Or-Treater:vivid",
+      "Sphinx:vivid",
       //Skins
       "Cop:halloween",
       "Doctor:halloween",
