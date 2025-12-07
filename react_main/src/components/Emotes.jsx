@@ -248,6 +248,10 @@ export const Emotes = {
     name: "leafufu",
     type: "png",
   },
+  ":beefufu:": {
+    name: "beefufu",
+    type: "png",
+  },
   ":satan:": {
     name: "satan",
     type: "png",
