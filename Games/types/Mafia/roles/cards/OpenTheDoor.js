@@ -60,22 +60,21 @@ module.exports = class OpenTheDoor extends Card {
         priority: PRIORITY_KILL_DEFAULT + 1,
         labels: ["kill"],
         run: function () {
-            if (!this.role.openedDoorLastNight) return;
+          if (!this.role.openedDoorLastNight) return;
 
-            var visitors = this.getVisitors();
-            var imminentDeath = !visitors.find(
-              (visitor) => visitor.role.alignment == "Village"
-            );
+          var visitors = this.getVisitors();
+          var imminentDeath = !visitors.find(
+            (visitor) => visitor.role.alignment == "Village"
+          );
 
-            // death is absolute
-            if (imminentDeath) {
-              this.actor.kill("mistress", this.actor);
-            }
+          // death is absolute
+          if (imminentDeath) {
+            this.actor.kill("mistress", this.actor);
+          }
 
-            delete this.role.openedDoorLastNight;
-          },
+          delete this.role.openedDoorLastNight;
+        },
       },
     ];
-
   }
 };
