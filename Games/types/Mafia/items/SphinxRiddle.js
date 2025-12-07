@@ -19,7 +19,7 @@ module.exports = class SphinxRiddle extends Item {
     this.meetings = {
       "Guess Number Sequence": {
         states: ["Day"],
-        flags: ["voting", "mustAct", "instant"],
+        flags: ["voting", "mustAct", "instant", "Important"],
         inputType: "text",
         textOptions: {
           minLength: 1,
@@ -77,11 +77,11 @@ module.exports = class SphinxRiddle extends Item {
         labels: ["kill", "permanent"],
         priority: PRIORITY_KILL_DEFAULT,
         run: function () {
-          this.target.kill("sphinx", this.actor, false);
+          this.target.kill("sphinx", this.actor, true);
         },
       });
 
-      this.game.queueAction(action);
+      this.game.instantAction(action);
       this.drop();
       return;
     }
@@ -96,11 +96,13 @@ module.exports = class SphinxRiddle extends Item {
       labels: ["kill", "permanent"],
       priority: PRIORITY_KILL_DEFAULT,
       run: function () {
-        this.target.kill("eaten", this.actor, false);
+        if (this.dominates()){
+        this.target.kill("eaten", this.actor, true);
+      }
       },
     });
 
-    this.game.queueAction(killAction);
+    this.game.instantAction(killAction);
 
     // Give hints to all players
     const hintAction = new Action({
@@ -113,7 +115,7 @@ module.exports = class SphinxRiddle extends Item {
       },
     });
 
-    this.game.queueAction(hintAction);
+    this.game.instantAction(hintAction);
     this.drop();
   }
 

@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const { PRIORITY_WIN_CON_SET } = require("../../const/Priority");
 
 module.exports = class SphinxNumberSequence extends Card {
   constructor(role) {
@@ -24,7 +25,7 @@ module.exports = class SphinxNumberSequence extends Card {
         },
         action: {
           labels: ["hidden"],
-          priority: 0,
+          priority: PRIORITY_WIN_CON_SET,
           role: this.role,
           run: function () {
             if (this.role.numberSequence != null) {

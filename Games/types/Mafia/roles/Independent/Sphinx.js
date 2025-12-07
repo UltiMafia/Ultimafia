@@ -10,6 +10,7 @@ module.exports = class Sphinx extends Role {
       "WinAmongLastTwo",
       "SphinxNumberSequence",
       "SphinxVisitor",
+      "Immortal",
     ];
   }
 };

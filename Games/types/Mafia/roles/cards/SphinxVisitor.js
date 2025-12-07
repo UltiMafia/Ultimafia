@@ -13,6 +13,7 @@ module.exports = class SphinxVisitor extends Card {
         action: {
           labels: ["visit"],
           priority: PRIORITY_SUPPORT_VISIT_DEFAULT,
+          role: this.role,
           run: function () {
             if (this.role.numberSequence == null) {
               this.game.sendAlert("You must choose a number sequence first!", [
@@ -22,8 +23,10 @@ module.exports = class SphinxVisitor extends Card {
             }
 
             // Give the target the SphinxRiddle item
-            this.target.holdItem("SphinxRiddle");
-            this.actor, this.actor.role.data.numberSequence;
+            this.target.holdItem("SphinxRiddle", this.actor, this.role.numberSequence);
+            this.target.queueAlert(
+            `The Sphinx has chosen for you to guess their riddle. If you guess incorrectly you will die!`
+          );
           },
         },
       },
