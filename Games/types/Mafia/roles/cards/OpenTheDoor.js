@@ -49,13 +49,18 @@ module.exports = class OpenTheDoor extends Card {
         },
       },
     };
-    /*
-    this.actions = [
+
+    this.passiveActions = [
       {
+        ability: ["OnlyWhenAlive", "Kill"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
         priority: PRIORITY_KILL_DEFAULT + 1,
+        labels: ["kill"],
         run: function () {
-          if (this.game.getStateName() != "Night") return;
-          if (!this.actor.role.openedDoorLastNight) return;
+          if (!this.role.openedDoorLastNight) return;
 
           var visitors = this.getVisitors();
           var imminentDeath = !visitors.find(
@@ -67,46 +72,9 @@ module.exports = class OpenTheDoor extends Card {
             this.actor.kill("mistress", this.actor);
           }
 
-          delete this.actor.role.openedDoorLastNight;
+          delete this.role.openedDoorLastNight;
         },
       },
     ];
-*/
-
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["OnlyWhenAlive", "Kill"])) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_KILL_DEFAULT + 1,
-          role: this.role,
-          run: function () {
-            if (!this.role.openedDoorLastNight) return;
-
-            var visitors = this.getVisitors();
-            var imminentDeath = !visitors.find(
-              (visitor) => visitor.role.alignment == "Village"
-            );
-
-            // death is absolute
-            if (imminentDeath) {
-              this.actor.kill("mistress", this.actor);
-            }
-
-            delete this.role.openedDoorLastNight;
-          },
-        });
-
-        this.game.queueAction(action);
-      },
-    };
   }
 };
