@@ -5675,7 +5675,7 @@ const roleData = {
         "If that player guesses incorrectly they die and all players are given a hint.",
         "Pico if the guess contained a correct digit.",
         "Fermi if the guess contained a correct digit in the correct location.",
-        "Bagels if the guess contained no correct digits.",
+        "Bagel if the guess contained no correct digits.",
         "A Sphinx dies if and only if their number sequence is correctly guessed.",
         "Wins if among the last two alive.",
       ],

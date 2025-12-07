@@ -74,10 +74,7 @@ module.exports = class SphinxRiddle extends Item {
         labels: ["kill", "permanent"],
         priority: PRIORITY_KILL_DEFAULT,
         run: function () {
-          this.target.kill("basic", this.actor, false);
-          this.game.queueAlert(
-            `${this.target.name} was killed because their number sequence was correctly guessed!`
-          );
+          this.target.kill("sphinx", this.actor, false);
         },
       });
 
@@ -96,10 +93,7 @@ module.exports = class SphinxRiddle extends Item {
       labels: ["kill", "permanent"],
       priority: PRIORITY_KILL_DEFAULT,
       run: function () {
-        this.target.kill("basic", this.actor, false);
-        this.game.queueAlert(
-          `${this.target.name} was killed for an incorrect guess!`
-        );
+        this.target.kill("eaten", this.actor, false);
       },
     });
 
@@ -158,13 +152,13 @@ module.exports = class SphinxRiddle extends Item {
 
     // Add hints
     if (fermiCount > 0) {
-      hints.push(`Fermi (${fermiCount} correct digit(s) in correct location)`);
+      hints.push(`Fermi: (${fermiCount} correct digit(s) in correct location)`);
     }
     if (picoCount > 0) {
-      hints.push(`Pico (${picoCount} correct digit(s) in wrong location)`);
+      hints.push(`Pico: (${picoCount} correct digit(s) in wrong location)`);
     }
     if (fermiCount === 0 && picoCount === 0) {
-      hints.push("Bagels (no correct digits)");
+      hints.push("Bagel: (no correct digits)");
     }
 
     return hints;

@@ -13,10 +13,10 @@ module.exports = class SphinxNumberSequence extends Card {
         inputType: "text",
         textOptions: {
           minLength: 1,
-          maxLength: 6,
+          maxLength: 5,
           numericOnly: true,
           submit: "Confirm",
-          placeholder: "Enter number sequence (e.g., 1234)",
+          placeholder: "e.g. 1234",
         },
         shouldMeet: function () {
           // Only show on first night if sequence not set
@@ -42,9 +42,9 @@ module.exports = class SphinxNumberSequence extends Card {
               return;
             }
 
-            if (sequence.length < 1 || sequence.length > 6) {
+            if (sequence.length < 1 || sequence.length > 5) {
               this.game.sendAlert(
-                "Number sequence must be between 1 and 6 digits.",
+                "Number sequence must be between 1 and 5 digits.",
                 [this.actor]
               );
               return;
