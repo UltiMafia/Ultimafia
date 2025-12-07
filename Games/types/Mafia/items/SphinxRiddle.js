@@ -1,6 +1,9 @@
 const Item = require("../Item");
 const Action = require("../Action");
-const { PRIORITY_DAY_DEFAULT, PRIORITY_KILL_DEFAULT } = require("../const/Priority");
+const {
+  PRIORITY_DAY_DEFAULT,
+  PRIORITY_KILL_DEFAULT,
+} = require("../const/Priority");
 const { MEETING_PRIORITY_DAY } = require("../const/MeetingPriority");
 
 module.exports = class SphinxRiddle extends Item {
@@ -164,4 +167,3 @@ module.exports = class SphinxRiddle extends Item {
     return hints;
   }
 };
-

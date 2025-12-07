@@ -20,9 +20,7 @@ module.exports = class SphinxNumberSequence extends Card {
         },
         shouldMeet: function () {
           // Only show on first night if sequence not set
-          return (
-            !this.numberSequence
-          );
+          return !this.numberSequence;
         },
         action: {
           labels: ["hidden"],
@@ -72,4 +70,3 @@ module.exports = class SphinxNumberSequence extends Card {
     };
   }
 };
-

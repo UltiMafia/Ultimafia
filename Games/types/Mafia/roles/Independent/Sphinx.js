@@ -13,4 +13,3 @@ module.exports = class Sphinx extends Role {
     ];
   }
 };
-
