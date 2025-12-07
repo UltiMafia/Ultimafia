@@ -24,6 +24,8 @@ module.exports = class SphinxVisitor extends Card {
 
             // Give the target the SphinxRiddle item
             this.target.holdItem("SphinxRiddle");
+            this.actor,
+            this.actor.role.data.numberSequence
           },
         },
       },

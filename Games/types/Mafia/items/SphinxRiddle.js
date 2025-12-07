@@ -20,7 +20,7 @@ module.exports = class SphinxRiddle extends Item {
         inputType: "text",
         textOptions: {
           minLength: 1,
-          maxLength: 6,
+          maxLength: 5,
           numericOnly: true,
           submit: "Guess",
           placeholder: "Enter your guess",
