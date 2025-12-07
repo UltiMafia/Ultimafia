@@ -112,6 +112,12 @@ const modifierData = {
       description:
         "Can be used at night to use role abilities an additional time.",
     },
+    "Jack-In-The-Box": {
+      internal: ["JackInTheBox"],
+      tags: ["actions"],
+      description:
+        "Can be used at night to gain the abilites of a Village-aligned Banished role until the next night.",
+    },
     //Non Town Items
     Suit: {
       internal: ["Suit"],

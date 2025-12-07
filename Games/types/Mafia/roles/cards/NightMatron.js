@@ -7,6 +7,25 @@ module.exports = class NightMatron extends Card {
   constructor(role) {
     super(role);
 
+    this.passiveActions = [
+      {
+        ability: ["Meeting"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
+        priority: PRIORITY_ITEM_GIVER_DEFAULT,
+        labels: ["giveItem", "hidden"],
+        run: function () {
+          let visitors = this.getVisitors(this.actor);
+          visitors.map((v) =>
+            v.holdItem("CommonRoomPassword", this.role.data.meetingName)
+          );
+          this.actor.holdItem("CommonRoomPassword", this.role.data.meetingName);
+        },
+      },
+    ];
+
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -17,35 +36,6 @@ module.exports = class NightMatron extends Card {
         this.meetings[this.data.meetingName] =
           this.meetings["CommonRoomPlaceholder"];
         delete this.meetings["CommonRoomPlaceholder"];
-      },
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Meeting"])) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_ITEM_GIVER_DEFAULT,
-          labels: ["giveItem", "hidden"],
-          role: this.role,
-          run: function () {
-            let visitors = this.getVisitors(this.actor);
-            visitors.map((v) =>
-              v.holdItem("CommonRoomPassword", this.role.data.meetingName)
-            );
-            this.actor.holdItem(
-              "CommonRoomPassword",
-              this.role.data.meetingName
-            );
-          },
-        });
-
-        this.game.queueAction(action);
       },
     };
 
@@ -73,25 +63,5 @@ module.exports = class NightMatron extends Card {
         },
       },
     };
-    /*
-    this.actions = [
-      {
-        priority: PRIORITY_ITEM_GIVER_DEFAULT,
-        labels: ["giveItem", "hidden"],
-        run: function () {
-          if (this.game.getStateName() != "Night") return;
-
-          let visitors = this.getVisitors(this.actor);
-          visitors.map((v) =>
-            v.holdItem("CommonRoomPassword", this.actor.role.data.meetingName)
-          );
-          this.actor.holdItem(
-            "CommonRoomPassword",
-            this.actor.role.data.meetingName
-          );
-        },
-      },
-    ];
-    */
   }
 };

@@ -67,6 +67,8 @@ module.exports = class Meeting {
   join(player, options) {
     options = options || {};
 
+    //this.game.queueAlert(`Meeting Player: ${player.name} Speech Abilites: ${options.speechAbilities}`);
+
     // Set flags
     if (options.flags) for (let flag of options.flags) this[flag] = true;
 
@@ -377,6 +379,10 @@ module.exports = class Meeting {
     for (let member of this.members) if (member.player == player) return true;
   }
 
+  getMember(player) {
+    for (let member of this.members) if (member.player == player) return member;
+  }
+
   randomMember() {
     return Random.randArrayVal(this.members.array());
   }
@@ -515,6 +521,27 @@ module.exports = class Meeting {
                 (r) =>
                   this.game.getRoleAlignment(r) ==
                   this.game.getRoleAlignment(self.role.name)
+              );
+            }
+            break;
+          case "village":
+            if (self) {
+              temp = temp.filter(
+                (r) => this.game.getRoleAlignment(r) == "Village"
+              );
+            }
+            break;
+          case "mafia":
+            if (self) {
+              temp = temp.filter(
+                (r) => this.game.getRoleAlignment(r) == "Mafia"
+              );
+            }
+            break;
+          case "cult":
+            if (self) {
+              temp = temp.filter(
+                (r) => this.game.getRoleAlignment(r) == "Cult"
               );
             }
             break;

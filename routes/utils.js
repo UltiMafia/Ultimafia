@@ -346,6 +346,22 @@ async function createModAction(modId, name, args) {
   await modAction.save();
 }
 
+async function getAltAccountIds(userId) {
+  // Get the user's IP addresses
+  const user = await models.User.findOne({ id: userId }).select("ip");
+  if (!user || !user.ip || user.ip.length === 0) {
+    return [userId]; // Return just the original user if no IPs found
+  }
+
+  // Find all users with matching IPs
+  const altUsers = await models.User.find({
+    ip: { $elemMatch: { $in: user.ip } },
+  }).select("id -_id");
+
+  // Return array of user IDs (including the original user)
+  return altUsers.map((u) => u.id);
+}
+
 async function createViolationTicket({
   userId,
   modId,
@@ -356,6 +372,7 @@ async function createViolationTicket({
   notes,
   length,
   expiresAt,
+  activeUntil,
   linkedBanId,
 }) {
   const violationTicket = new models.ViolationTicket({
@@ -370,6 +387,7 @@ async function createViolationTicket({
     length: length || 0,
     createdAt: Date.now(),
     expiresAt: expiresAt || null,
+    activeUntil: activeUntil || null,
     linkedBanId: linkedBanId || null,
   });
 
@@ -402,4 +420,5 @@ module.exports = {
   modelPageQuery,
   createModAction,
   createViolationTicket,
+  getAltAccountIds,
 };

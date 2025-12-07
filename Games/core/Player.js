@@ -1252,6 +1252,16 @@ module.exports = class Player {
 
               if (meeting.exclusive && meeting.priority > maxPriority)
                 maxPriority = meeting.priority;
+            } else if (
+              meeting.hasJoined(this) &&
+              meeting.speech &&
+              extraRole.isExtraRole
+            ) {
+              let member = meeting.getMember(this);
+
+              for (let ability of options.speechAbilities) {
+                member.speechAbilities.push(ability);
+              }
             }
 
             joined = true;

@@ -10,6 +10,7 @@ const fs = require("fs");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const redis = require("../modules/redis");
+const { getBasicUserInfo } = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const logger = require("../modules/logging")(".");
 const { rating, rate, ordinal, predictWin } = require("openskill");
@@ -542,21 +543,28 @@ router.post("/ban", async (req, res) => {
       return;
     }
 
-    await routeUtils.banUser(
-      userIdToBan,
-      length,
-      banPermissions[banType],
-      banDbTypes[banType],
-      userId
+    // Get all alt account IDs (accounts sharing IPs)
+    const altAccountIds = await routeUtils.getAltAccountIds(userIdToBan);
+
+    // Apply ban to all alt accounts
+    const banPromises = altAccountIds.map((altUserId) =>
+      routeUtils.banUser(
+        altUserId,
+        length,
+        banPermissions[banType],
+        banDbTypes[banType],
+        userId
+      )
     );
+    await Promise.all(banPromises);
 
     if (banType === "site") {
-      await models.User.updateOne(
-        { id: userIdToBan },
+      await models.User.updateMany(
+        { id: { $in: altAccountIds } },
         { $set: { banned: true } }
       ).exec();
       await models.Session.deleteMany({
-        "session.user.id": userIdToBan,
+        "session.user.id": { $in: altAccountIds },
       }).exec();
     }
 
@@ -567,7 +575,7 @@ router.post("/ban", async (req, res) => {
         } ban expires on ${banExpires.toLocaleString()}.`,
         icon: "ban",
       },
-      [userIdToBan]
+      altAccountIds // Notify all alt accounts
     );
 
     const modActionNames = {
@@ -1093,11 +1101,33 @@ router.post("/clearUserContent", async (req, res) => {
         break;
 
       case "name":
+        // Get current user to record previous name
+        const currentUserForClear = await models.User.findOne({
+          id: userIdToClear,
+        }).select("name");
+        const oldNameForClear = currentUserForClear
+          ? currentUserForClear.name
+          : null;
+        const newGeneratedName = routeUtils
+          .nameGen()
+          .slice(0, constants.maxUserNameLength);
+
         updateQuery = {
           $set: {
-            name: routeUtils.nameGen().slice(0, constants.maxUserNameLength),
+            name: newGeneratedName,
           },
         };
+
+        // Add previous name to history if it exists and is different
+        if (oldNameForClear && oldNameForClear !== newGeneratedName) {
+          updateQuery.$push = {
+            previousNames: {
+              name: oldNameForClear,
+              changedAt: Date.now(),
+            },
+          };
+        }
+
         modActionName = "Clear Name";
         break;
 
@@ -2018,10 +2048,26 @@ router.post("/changeName", async (req, res) => {
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    await models.User.updateOne(
-      { id: userIdToChange },
-      { $set: { name: name } }
-    ).exec();
+    // Get current user to record previous name
+    const currentUser = await models.User.findOne({
+      id: userIdToChange,
+    }).select("name");
+    const oldName = currentUser ? currentUser.name : null;
+
+    // Update name and record previous name
+    const updateQuery = { $set: { name: name } };
+
+    // Add previous name to history if it exists and is different
+    if (oldName && oldName !== name) {
+      updateQuery.$push = {
+        previousNames: {
+          name: oldName,
+          changedAt: Date.now(),
+        },
+      };
+    }
+
+    await models.User.updateOne({ id: userIdToChange }, updateQuery).exec();
 
     await redis.cacheUserInfo(userIdToChange, true);
     res.sendStatus(200);
@@ -2223,7 +2269,8 @@ router.get("/reports", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
     const status = req.query.status;
     const assignee = req.query.assignee;
@@ -2236,7 +2283,7 @@ router.get("/reports", async (req, res) => {
       filter.status = status;
     }
     if (assignee) {
-      filter.assignees = assignee;
+      filter.assignees = { $in: [assignee] };
     }
     if (reportedUser) {
       filter.reportedUserId = reportedUser;
@@ -2249,6 +2296,48 @@ router.get("/reports", async (req, res) => {
       .lean();
 
     const total = await models.Report.countDocuments(filter);
+
+    // Populate user information for reporter, reported user, and assignees
+    for (const report of reports) {
+      try {
+        // Get reporter info
+        const reporterInfo = await getBasicUserInfo(report.reporterId);
+        if (reporterInfo) {
+          report.reporterName = reporterInfo.name;
+          report.reporterAvatar = reporterInfo.avatar;
+        }
+
+        // Get reported user info
+        const reportedUserInfo = await getBasicUserInfo(report.reportedUserId);
+        if (reportedUserInfo) {
+          report.reportedUserName = reportedUserInfo.name;
+          report.reportedUserAvatar = reportedUserInfo.avatar;
+        }
+
+        // Get assignee info
+        if (report.assignees && report.assignees.length > 0) {
+          report.assigneeInfo = [];
+          for (const assigneeId of report.assignees) {
+            const assigneeInfo = await getBasicUserInfo(assigneeId);
+            if (assigneeInfo) {
+              report.assigneeInfo.push({
+                id: assigneeId,
+                name: assigneeInfo.name,
+                avatar: assigneeInfo.avatar,
+              });
+            } else {
+              report.assigneeInfo.push({
+                id: assigneeId,
+                name: assigneeId,
+                avatar: false,
+              });
+            }
+          }
+        }
+      } catch (e) {
+        logger.warn(`Error populating user info for report ${report.id}:`, e);
+      }
+    }
 
     res.send({
       reports,
@@ -2266,7 +2355,8 @@ router.get("/reports/:id", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
     const report = await models.Report.findOne({ id: req.params.id }).lean();
 
@@ -2282,6 +2372,46 @@ router.get("/reports/:id", async (req, res) => {
       }).lean();
     }
 
+    // Populate user information for reporter, reported user, and assignees
+    try {
+      // Get reporter info
+      const reporterInfo = await getBasicUserInfo(report.reporterId);
+      if (reporterInfo) {
+        report.reporterName = reporterInfo.name;
+        report.reporterAvatar = reporterInfo.avatar;
+      }
+
+      // Get reported user info
+      const reportedUserInfo = await getBasicUserInfo(report.reportedUserId);
+      if (reportedUserInfo) {
+        report.reportedUserName = reportedUserInfo.name;
+        report.reportedUserAvatar = reportedUserInfo.avatar;
+      }
+
+      // Get assignee info
+      if (report.assignees && report.assignees.length > 0) {
+        report.assigneeInfo = [];
+        for (const assigneeId of report.assignees) {
+          const assigneeInfo = await getBasicUserInfo(assigneeId);
+          if (assigneeInfo) {
+            report.assigneeInfo.push({
+              id: assigneeId,
+              name: assigneeInfo.name,
+              avatar: assigneeInfo.avatar,
+            });
+          } else {
+            report.assigneeInfo.push({
+              id: assigneeId,
+              name: assigneeId,
+              avatar: false,
+            });
+          }
+        }
+      }
+    } catch (e) {
+      logger.warn(`Error populating user info for report ${report.id}:`, e);
+    }
+
     res.send(report);
   } catch (e) {
     logger.error(e);
@@ -2292,7 +2422,8 @@ router.get("/reports/:id", async (req, res) => {
 router.post("/reports/:id/assign", async (req, res) => {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
     const reportId = req.params.id;
     const { assignees } = req.body;
@@ -2333,7 +2464,9 @@ router.post("/reports/:id/assign", async (req, res) => {
           res
             .status(403)
             .send(
-              `You cannot assign users with rank ${assigneeRank || 0} or higher.`
+              `You cannot assign users with rank ${
+                assigneeRank || 0
+              } or higher.`
             );
           return;
         }
@@ -2347,9 +2480,7 @@ router.post("/reports/:id/assign", async (req, res) => {
       if (!hasPermission) {
         res
           .status(400)
-          .send(
-            `User ${assigneeId} does not have permission to view reports.`
-          );
+          .send(`User ${assigneeId} does not have permission to view reports.`);
         return;
       }
     }
@@ -2401,7 +2532,8 @@ router.post("/reports/:id/assign", async (req, res) => {
 router.post("/reports/:id/status", async (req, res) => {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
     const reportId = req.params.id;
     const { status } = req.body;
@@ -2419,9 +2551,7 @@ router.post("/reports/:id/status", async (req, res) => {
 
     // Validate status transitions
     if (status === "complete" && report.status !== "complete") {
-      res
-        .status(400)
-        .send("Use /complete endpoint to mark as complete.");
+      res.status(400).send("Use /complete endpoint to mark as complete.");
       return;
     }
 
@@ -2455,7 +2585,8 @@ router.post("/reports/:id/status", async (req, res) => {
 router.post("/reports/:id/complete", async (req, res) => {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
     const reportId = req.params.id;
     const { finalRuling, dismissed } = req.body;
@@ -2473,34 +2604,87 @@ router.post("/reports/:id/complete", async (req, res) => {
 
     let violationTicket = null;
     let ban = null;
+    let bans = null; // Array of bans for all alt accounts
+    let violationId = null;
+    let violationName = null;
+    let banLengthStr = null;
+    let violationDef = null;
 
     // If not dismissed, create violation ticket and ban
     if (!dismissed && finalRuling) {
       // Validate required fields
-      if (
-        !finalRuling.violationId ||
-        !finalRuling.violationName ||
-        !finalRuling.banType
-      ) {
-        res.status(400).send("Violation ID, name, and ban type are required.");
+      if (!finalRuling.banType) {
+        res.status(400).send("Ban type is required.");
         return;
       }
 
-      // Parse ban length from finalRuling
-      let banLengthMs = finalRuling.banLengthMs;
-      if (banLengthMs === undefined || banLengthMs === null) {
-        // Try to parse from banLength string if banLengthMs not provided
-        if (finalRuling.banLength) {
-          banLengthMs = routeUtils.parseTime(finalRuling.banLength);
-          if (
-            finalRuling.banLength.toLowerCase() === "permaban" ||
-            finalRuling.banLength.toLowerCase() === "permanent" ||
-            finalRuling.banLength.toLowerCase() === "loss of privilege"
-          ) {
-            banLengthMs = Infinity;
-          }
-        } else {
-          res.status(400).send("Ban length is required.");
+      // Get violation definition from report's rule
+      const {
+        violationDefinitions,
+      } = require("../react_main/src/constants/violations");
+      violationDef = violationDefinitions.find((v) => v.name === report.rule);
+
+      if (!violationDef) {
+        res.status(400).send("Invalid rule - violation definition not found.");
+        return;
+      }
+
+      // Get all alt account IDs (accounts sharing IPs)
+      const altAccountIds = await routeUtils.getAltAccountIds(
+        report.reportedUserId
+      );
+
+      // Count previous ACTIVE violations for this rule across all alt accounts
+      // Only count violations that are still active (activeUntil > now)
+      const now = Date.now();
+      const previousViolations = await models.ViolationTicket.countDocuments({
+        userId: { $in: altAccountIds },
+        violationName: {
+          $regex: new RegExp(
+            `^${report.rule.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`
+          ),
+        },
+        activeUntil: { $gt: now },
+      });
+
+      const offenseNumber = previousViolations + 1;
+
+      // Generate violation name: rule name + offense number
+      const ordinalSuffixes = ["th", "st", "nd", "rd"];
+      const getOrdinal = (n) => {
+        const v = n % 100;
+        return (
+          n +
+          (ordinalSuffixes[(v - 20) % 10] ||
+            ordinalSuffixes[v] ||
+            ordinalSuffixes[0])
+        );
+      };
+      violationName = `${report.rule} (${getOrdinal(offenseNumber)} Offense)`;
+
+      // Generate random violation ID
+      violationId = shortid.generate();
+
+      // Get ban length from violations.js based on offense number
+      const offenseIndex = Math.min(
+        offenseNumber - 1,
+        violationDef.offenses.length - 1
+      );
+      banLengthStr = violationDef.offenses[offenseIndex];
+
+      // Parse ban length
+      let banLengthMs;
+      if (
+        banLengthStr.toLowerCase() === "permaban" ||
+        banLengthStr.toLowerCase() === "permanent" ||
+        banLengthStr.toLowerCase() === "loss of privilege" ||
+        banLengthStr === "-"
+      ) {
+        banLengthMs = Infinity;
+      } else {
+        banLengthMs = routeUtils.parseTime(banLengthStr);
+        if (isNaN(banLengthMs)) {
+          res.status(400).send(`Invalid ban length format: ${banLengthStr}`);
           return;
         }
       }
@@ -2558,58 +2742,83 @@ router.post("/reports/:id/complete", async (req, res) => {
         return;
       }
 
-      // Create ban if ban length > 0 (or permanent)
+      // Get all alt account IDs (accounts sharing IPs) - already fetched above
+      // Create ban for all alt accounts if ban length > 0 (or permanent)
       if (banLengthMs >= 0 && permissions.length > 0) {
-        ban = await routeUtils.banUser(
-          report.reportedUserId,
-          banLengthMs,
-          permissions,
-          banDbType,
-          userId
+        // Apply ban to all alt accounts
+        const banPromises = altAccountIds.map((altUserId) =>
+          routeUtils.banUser(
+            altUserId,
+            banLengthMs,
+            permissions,
+            banDbType,
+            userId
+          )
         );
+        bans = await Promise.all(banPromises);
+        ban = bans[0]; // Use the first ban as the primary ban for linking
 
-        // Update user banned flag for site bans
+        // Update user banned flag for site bans on all alt accounts
         if (finalRuling.banType === "site") {
-          await models.User.updateOne(
-            { id: report.reportedUserId },
+          await models.User.updateMany(
+            { id: { $in: altAccountIds } },
             { $set: { banned: true } }
           ).exec();
           await models.Session.deleteMany({
-            "session.user.id": report.reportedUserId,
+            "session.user.id": { $in: altAccountIds },
           }).exec();
         }
       }
 
-      // Create violation ticket (even if no ban was created)
-      violationTicket = await routeUtils.createViolationTicket({
-        userId: report.reportedUserId,
-        modId: userId,
-        banType: finalRuling.banType,
-        violationId: finalRuling.violationId,
-        violationName: finalRuling.violationName,
-        violationCategory: finalRuling.violationCategory || "Community",
-        notes: finalRuling.notes || "",
-        length: banLengthMs === 0 ? Infinity : banLengthMs,
-        expiresAt: ban ? ban.expires : null,
-        linkedBanId: ban ? ban.id : null,
-      });
+      // Calculate activeUntil based on violation category
+      // Community violations: 6 months, Game violations: 3 months
+      const category = violationDef.category || "Community";
+      const activityPeriodMs =
+        category === "Game"
+          ? 3 * 30 * 24 * 60 * 60 * 1000 // 3 months
+          : 6 * 30 * 24 * 60 * 60 * 1000; // 6 months
+      const activeUntil = Date.now() + activityPeriodMs;
 
-      // Send notification to reported user
+      // Get all alt account IDs (accounts sharing IPs) - already fetched above
+      // Create violation tickets for all alt accounts (even if no ban was created)
+      const violationTicketPromises = altAccountIds.map((altUserId, index) => {
+        // Link to the corresponding ban if it exists
+        const linkedBan = bans && index < bans.length ? bans[index] : ban;
+        return routeUtils.createViolationTicket({
+          userId: altUserId,
+          modId: userId,
+          banType: finalRuling.banType,
+          violationId: violationId, // Same violation ID for all alt accounts
+          violationName: violationName,
+          violationCategory: category,
+          notes: finalRuling.notes || "",
+          length: banLengthMs === 0 ? Infinity : banLengthMs,
+          expiresAt: linkedBan ? linkedBan.expires : null,
+          activeUntil: activeUntil,
+          linkedBanId: linkedBan ? linkedBan.id : null,
+        });
+      });
+      const violationTickets = await Promise.all(violationTicketPromises);
+      violationTicket = violationTickets[0]; // Use the first violation ticket as the primary one
+
+      // Send notification to all alt accounts
       if (banLengthMs >= 0) {
         const banExpires =
           ban && ban.expires > 0 ? new Date(ban.expires) : null;
         const banMessage =
           banLengthMs === 0 || banLengthMs === Infinity
             ? "You have been permanently banned."
-            : `Ban expires on ${banExpires ? banExpires.toLocaleString() : "N/A"}.`;
+            : `Ban expires on ${
+                banExpires ? banExpires.toLocaleString() : "N/A"
+              }.`;
 
         await routeUtils.createNotification(
           {
-            content: `You have received a ${finalRuling.violationName} violation. ${banMessage}`,
+            content: `You have received a ${violationName} violation. ${banMessage}`,
             icon: "ban",
             link: `/user/${report.reportedUserId}`,
           },
-          [report.reportedUserId]
+          altAccountIds // Notify all alt accounts
         );
       }
     }
@@ -2622,15 +2831,11 @@ router.post("/reports/:id/complete", async (req, res) => {
 
     if (!dismissed && finalRuling) {
       report.finalRuling = {
-        violationId: finalRuling.violationId,
-        violationName: finalRuling.violationName,
-        violationCategory: finalRuling.violationCategory || "Community",
+        violationId: violationId,
+        violationName: violationName,
+        violationCategory: violationDef.category || "Community",
         banType: finalRuling.banType,
-        banLength:
-          finalRuling.banLength ||
-          routeUtils.timeDisplay(
-            banLengthMs === 0 ? Infinity : banLengthMs
-          ),
+        banLength: banLengthStr,
         banLengthMs: banLengthMs === 0 ? Infinity : banLengthMs,
         notes: finalRuling.notes || "",
       };
@@ -2649,7 +2854,7 @@ router.post("/reports/:id/complete", async (req, res) => {
       action: "completed",
       note: dismissed
         ? "Report dismissed - no violation"
-        : `Violation: ${report.finalRuling?.violationName}`,
+        : `Violation: ${violationName}`,
     });
 
     await report.save();
@@ -2679,7 +2884,8 @@ router.post("/reports/:id/complete", async (req, res) => {
 router.post("/reports/:id/reopen", async (req, res) => {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
 
     const reportId = req.params.id;
     const { newStatus } = req.body;
