@@ -125,8 +125,6 @@ module.exports = class Role {
         let meeting = meetings[i];
 
         for (let key in this.meetingMods[meetingName]) {
-
-          
           if (key != "shouldMeet" || meeting.shouldMeet == null) {
             meeting[key] = this.meetingMods[meetingName][key];
           } else {

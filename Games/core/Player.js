@@ -1252,19 +1252,21 @@ module.exports = class Player {
 
               if (meeting.exclusive && meeting.priority > maxPriority)
                 maxPriority = meeting.priority;
-            }
-            else if(meeting.hasJoined(this) && meeting.speech && extraRole.isExtraRole){
-            let member = meeting.getMember(this);
-            
-            for(let ability of options.speechAbilities){
-            member.speechAbilities.push(ability);
-            }
+            } else if (
+              meeting.hasJoined(this) &&
+              meeting.speech &&
+              extraRole.isExtraRole
+            ) {
+              let member = meeting.getMember(this);
+
+              for (let ability of options.speechAbilities) {
+                member.speechAbilities.push(ability);
+              }
             }
 
             joined = true;
             break;
-          }
-          else if (!meeting.group && meeting.hasJoined(this)) {
+          } else if (!meeting.group && meeting.hasJoined(this)) {
             inExclusive |= meeting.exclusive;
 
             if (meeting.exclusive && meeting.priority > maxPriority)
@@ -1288,7 +1290,6 @@ module.exports = class Player {
         if (meeting.exclusive && meeting.priority > maxPriority)
           maxPriority = meeting.priority;
       }
-      
 
       let attendedExclusiveMaxPriority = false;
 

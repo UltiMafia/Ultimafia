@@ -120,7 +120,7 @@ module.exports = class BecomeFakeCultRole extends Card {
         if (this.data.reroll) {
           return;
         }
-        if(this.hasGainedTeleRole == true){
+        if (this.hasGainedTeleRole == true) {
           return;
         }
         this.hasGainedTeleRole = true;
