@@ -583,7 +583,7 @@ module.exports = class MafiaGame extends Game {
   }
 
   shouldSkipState(state) {
-    if(this.ExtraStates == null){
+    if (this.ExtraStates == null) {
       this.ExtraStates = [];
     }
     if (this.HaveHostingState == true) {
