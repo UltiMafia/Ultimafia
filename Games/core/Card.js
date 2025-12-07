@@ -98,7 +98,7 @@ module.exports = class Card {
           tempMeet[1];
       }
     }
-
+    
     for (let key of attributes) {
       if (Array.isArray(this[key])) {
         if (this.overwrites[key]) this.role[key] = this[key];

@@ -120,6 +120,10 @@ module.exports = class BecomeFakeCultRole extends Card {
         if (this.data.reroll) {
           return;
         }
+        if(this.hasGainedTeleRole == true){
+          return;
+        }
+        this.hasGainedTeleRole = true;
         let role = this.player.addExtraRole(this.player.role.newRole);
         //this.giveEffect(player, "Delirious", Infinity, this);
         this.player.passiveExtraRoles.push(role);

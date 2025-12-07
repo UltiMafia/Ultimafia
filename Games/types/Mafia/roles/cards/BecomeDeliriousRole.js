@@ -27,9 +27,9 @@ module.exports = class BecomeDeliriousRole extends Card {
         (r) => r != currentRoles[y] && !currentRoles[y].includes(r)
       );
     }
-    roles = roles.filter((r) => !r.toLowerCase().includes("banished"));
+    roles = roles.filter((r) => !(r.split(":")[1] && r.split(":")[1].includes("Banished")));
     roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
-    roles = roles.filter((r) => !r.toLowerCase().includes("humble"));
+    roles = roles.filter((r) => !(r.split(":")[1] && r.split(":")[1].includes("Humble")));
     if (roles.length <= 0) {
       roles = currentRoles;
       roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
@@ -78,7 +78,11 @@ module.exports = class BecomeDeliriousRole extends Card {
         if (player !== this.player || this.data.reroll) {
           return;
         }
-        let role = this.player.addExtraRole(this.player.role.newRole);
+        if(this.hasGainedBraggartRole == true){
+          return;
+        }
+        this.hasGainedBraggartRole = true;
+        let role = this.player.addExtraRole(this.newRole);
         this.giveEffect(player, "Delirious", Infinity, this);
         this.player.passiveExtraRoles.push(role);
 

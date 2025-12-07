@@ -114,6 +114,14 @@ module.exports = class AdmiralGame extends Card {
           this.game.AdmiralStateBlock = null;
         }
       },
+      extraStateCheck: function (stateName) {
+        if (this.game.ExtraStates == null) {
+          this.game.ExtraStates = [];
+        }
+        if (stateName == "Treasure Chest" && !this.game.ExtraStates.includes("Treasure Chest")) {
+          this.game.ExtraStates.push("Treasure Chest");
+        }
+      },
     };
 
     this.stateMods = {
