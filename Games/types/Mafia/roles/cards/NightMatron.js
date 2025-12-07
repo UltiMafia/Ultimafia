@@ -17,15 +17,12 @@ module.exports = class NightMatron extends Card {
         priority: PRIORITY_ITEM_GIVER_DEFAULT,
         labels: ["giveItem", "hidden"],
         run: function () {
-            let visitors = this.getVisitors(this.actor);
-            visitors.map((v) =>
-              v.holdItem("CommonRoomPassword", this.role.data.meetingName)
-            );
-            this.actor.holdItem(
-              "CommonRoomPassword",
-              this.role.data.meetingName
-            );
-          },
+          let visitors = this.getVisitors(this.actor);
+          visitors.map((v) =>
+            v.holdItem("CommonRoomPassword", this.role.data.meetingName)
+          );
+          this.actor.holdItem("CommonRoomPassword", this.role.data.meetingName);
+        },
       },
     ];
 
