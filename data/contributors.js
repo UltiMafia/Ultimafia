@@ -362,6 +362,7 @@ const artContributors = {
       "Fool:vivid",
       "Shrink:vivid",
       "Trick-Or-Treater:vivid",
+      "Toymaker:vivid",
       "Sphinx:vivid",
       //Skins
       "Cop:halloween",
@@ -393,6 +394,7 @@ const artContributors = {
       "Snallygaster:vivid",
       "Weatherman:vivid",
       "Lamia:vivid",
+      "Contestant:vivid",
       //Skins
       "Weatherman:blue",
       "Zombie:jockey",
@@ -458,7 +460,6 @@ const artContributors = {
       "King:vivid",
       "Coward:vivid",
       "Queen:vivid",
-      "Fool:old",
       "Gambler:vivid",
       "Joker:vivid",
       "Ripper:vivid",

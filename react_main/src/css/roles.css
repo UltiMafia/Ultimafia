@@ -396,6 +396,10 @@
   background-image: url("/src/images/roles/village/gunsmith-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Toymaker {
+  background-image: url("/src/images/roles/village/toymaker-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Oracle {
   background-image: url("/src/images/roles/village/oracle-vivid.png");
 }
@@ -1778,6 +1782,10 @@
 
 .role-icon-halloween-Mafia-Magus {
   background-image: url("/src/images/holiday/halloween/magus-halloween.png");
+}
+
+.role-icon-vivid-Mafia-Contestant {
+  background-image: url("/src/images/roles/independent/contestant-vivid.png");
 }
 
 .role-icon-vivid-Mafia-Pyromaniac {

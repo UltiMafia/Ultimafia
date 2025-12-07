@@ -67,6 +67,8 @@ module.exports = class Meeting {
   join(player, options) {
     options = options || {};
 
+    //this.game.queueAlert(`Meeting Player: ${player.name} Speech Abilites: ${options.speechAbilities}`);
+
     // Set flags
     if (options.flags) for (let flag of options.flags) this[flag] = true;
 
@@ -375,6 +377,10 @@ module.exports = class Meeting {
 
   hasJoined(player) {
     for (let member of this.members) if (member.player == player) return true;
+  }
+
+  getMember(player) {
+    for (let member of this.members) if (member.player == player) return member;
   }
 
   randomMember() {

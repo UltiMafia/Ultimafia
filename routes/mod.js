@@ -628,6 +628,38 @@ router.post("/logout", async (req, res) => {
   }
 });
 
+//Clear Leave Penalty
+router.post("/clearleavepenalty", async (req, res) => {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdToActOn = String(req.body.userId);
+    var perm = "unban";
+    var rank = await redis.getUserRank(userIdToActOn);
+
+    if (rank == null) {
+      res.status(500);
+      res.send("User does not exist.");
+      return;
+    }
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm, rank + 1)))
+      return;
+
+    await models.LeavePenalty.deleteMany({
+      userId: userIdToActOn,
+    }).exec();
+
+    await redis.cacheUserPermissions(userIdToActOn);
+
+    routeUtils.createModAction(userId, "Clear Leave Penalty", [userIdToActOn]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error removing leave penalty user.");
+  }
+});
+
 // Unified unban endpoint
 router.post("/unban", async (req, res) => {
   try {

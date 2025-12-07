@@ -583,11 +583,19 @@ module.exports = class MafiaGame extends Game {
   }
 
   shouldSkipState(state) {
+    if (this.ExtraStates == null) {
+      this.ExtraStates = [];
+    }
     if (this.HaveHostingState == true) {
       return true;
     }
     if (this.HaveTreasureChestState == true) {
-      return true;
+      this.events.emit("extraStateCheck", "Treasure Chest");
+      if (!this.ExtraStates.includes("Treasure Chest")) {
+        this.HaveTreasureChestState = false;
+      } else {
+        return true;
+      }
     }
     if (this.HavePrologueState == true) {
       this.events.emit("extraStateCheck", "Prologue");
