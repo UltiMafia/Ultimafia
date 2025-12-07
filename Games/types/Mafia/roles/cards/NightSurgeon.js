@@ -27,11 +27,16 @@ module.exports = class NightSurgeon extends Card {
         },
       },
     };
-    this.actions = [
+
+    this.passiveActions = [
       {
-        labels: ["kill", "hidden"],
+        ability: ["Kill"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
         priority: PRIORITY_KILL_DEFAULT,
-        role: this.role,
+        labels: ["kill", "hidden"],
         run: function () {
           if (!this.role.surgeonSave) {
             return;
@@ -50,5 +55,6 @@ module.exports = class NightSurgeon extends Card {
         },
       },
     ];
+    
   }
 };
