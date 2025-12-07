@@ -7,22 +7,16 @@ module.exports = class Omiscient extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Modifier", "Information"])) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-          labels: ["investigate"],
-          run: function () {
+    this.passiveActions = [
+      {
+        ability: ["Modifier", "Information"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
+        priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+        labels: ["investigate"],
+        run: function () {
             let visits;
             let visitNames;
             let role;
@@ -50,10 +44,8 @@ module.exports = class Omiscient extends Card {
               this.actor.queueAlert(`:track: ${info2.getInfoFormated()}`);
             }
           },
-        });
-
-        this.game.queueAction(action);
       },
-    };
+    ];
+
   }
 };
