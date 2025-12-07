@@ -23,10 +23,14 @@ module.exports = class SphinxVisitor extends Card {
             }
 
             // Give the target the SphinxRiddle item
-            this.target.holdItem("SphinxRiddle", this.actor, this.role.numberSequence);
+            this.target.holdItem(
+              "SphinxRiddle",
+              this.actor,
+              this.role.numberSequence
+            );
             this.target.queueAlert(
-            `The Sphinx has chosen for you to guess their riddle. If you guess incorrectly you will die!`
-          );
+              `The Sphinx has chosen for you to guess their riddle. If you guess incorrectly you will die!`
+            );
           },
         },
       },

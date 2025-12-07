@@ -96,9 +96,9 @@ module.exports = class SphinxRiddle extends Item {
       labels: ["kill", "permanent"],
       priority: PRIORITY_KILL_DEFAULT,
       run: function () {
-        if (this.dominates()){
-        this.target.kill("eaten", this.actor, true);
-      }
+        if (this.dominates()) {
+          this.target.kill("eaten", this.actor, true);
+        }
       },
     });
 
