@@ -645,7 +645,6 @@ router.post("/clearleavepenalty", async (req, res) => {
     if (!(await routeUtils.verifyPermission(res, userId, perm, rank + 1)))
       return;
 
-
     await models.LeavePenalty.deleteMany({
       userId: userIdToActOn,
       type: banDbTypes[banType],
@@ -654,9 +653,7 @@ router.post("/clearleavepenalty", async (req, res) => {
 
     await redis.cacheUserPermissions(userIdToActOn);
 
-    routeUtils.createModAction(userId, "Clear Leave Penalty", [
-      userIdToActOn,
-    ]);
+    routeUtils.createModAction(userId, "Clear Leave Penalty", [userIdToActOn]);
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
