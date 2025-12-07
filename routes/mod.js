@@ -647,8 +647,6 @@ router.post("/clearleavepenalty", async (req, res) => {
 
     await models.LeavePenalty.deleteMany({
       userId: userIdToActOn,
-      type: banDbTypes[banType],
-      auto: false,
     }).exec();
 
     await redis.cacheUserPermissions(userIdToActOn);
