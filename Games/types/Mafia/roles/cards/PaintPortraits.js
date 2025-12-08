@@ -16,13 +16,13 @@ module.exports = class PaintPortraits extends Card {
         priority: PRIORITY_PREKILL_ACTION,
         labels: ["investigate", "role", "hidden", "absolute"],
         run: function () {
-            if (!this.actor.alive) return;
+          if (!this.actor.alive) return;
 
-            let visitors = this.getVisitors(this.actor);
-            for (let visitor of visitors) {
-              this.actor.data.portraits.push(visitor);
-            }
-          },
+          let visitors = this.getVisitors(this.actor);
+          for (let visitor of visitors) {
+            this.actor.data.portraits.push(visitor);
+          }
+        },
       },
     ];
 
