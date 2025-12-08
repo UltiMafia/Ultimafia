@@ -16,14 +16,13 @@ module.exports = class Resolute extends Card {
         priority: PRIORITY_MODIFY_ACTION_LABELS,
         labels: ["absolute", "hidden"],
         run: function () {
-            for (let action of this.game.actions[0]) {
-              if (action.actors.includes(this.actor)) {
-                action.labels = [...action.labels, "absolute"];
-              }
+          for (let action of this.game.actions[0]) {
+            if (action.actors.includes(this.actor)) {
+              action.labels = [...action.labels, "absolute"];
             }
+          }
         },
       },
     ];
-
   }
 };
