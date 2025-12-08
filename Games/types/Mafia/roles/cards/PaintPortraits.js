@@ -6,24 +6,25 @@ const { PRIORITY_PREKILL_ACTION } = require("../../const/Priority");
 module.exports = class PaintPortraits extends Card {
   constructor(role) {
     super(role);
-    /*
-    this.actions = [
+
+    this.passiveActions = [
       {
-        priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
+        priority: PRIORITY_PREKILL_ACTION,
         labels: ["investigate", "role", "hidden", "absolute"],
         run: function () {
-          if (this.game.getStateName() != "Night") return;
+            if (!this.actor.alive) return;
 
-          if (!this.actor.alive) return;
-
-          let visitors = this.getVisitors(this.actor);
-          for (let visitor of visitors) {
-            this.actor.data.portraits.push(visitor.name);
-          }
-        },
+            let visitors = this.getVisitors(this.actor);
+            for (let visitor of visitors) {
+              this.actor.data.portraits.push(visitor);
+            }
+          },
       },
     ];
-    */
 
     this.listeners = {
       roleAssigned: function (player) {
@@ -32,32 +33,6 @@ module.exports = class PaintPortraits extends Card {
         }
 
         this.player.data.portraits = [];
-      },
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Information"])) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_PREKILL_ACTION,
-          labels: ["investigate", "role", "hidden", "absolute"],
-          run: function () {
-            if (!this.actor.alive) return;
-
-            let visitors = this.getVisitors(this.actor);
-            for (let visitor of visitors) {
-              this.actor.data.portraits.push(visitor);
-            }
-          },
-        });
-
-        this.game.queueAction(action);
       },
       death: function (player, killer, deathType) {
         if (player === this.player) {
