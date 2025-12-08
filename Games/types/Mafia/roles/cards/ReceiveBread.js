@@ -6,22 +6,16 @@ module.exports = class ReceiveBread extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.player.alive) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_ITEM_GIVER_EARLY,
-          labels: ["giveItem", "bread", "hidden"],
-          run: function () {
+    this.passiveActions = [
+      {
+        ability: ["Item"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
+        priority: PRIORITY_ITEM_GIVER_EARLY,
+        labels: ["giveItem", "bread", "hidden"],
+        run: function () {
             for (let action of this.game.actions[0]) {
               if (action.target == this.actor && !action.hasLabel("hidden")) {
                 action.actor.holdItem("bread");
@@ -29,10 +23,7 @@ module.exports = class ReceiveBread extends Card {
               }
             }
           },
-        });
-
-        this.game.queueAction(action);
       },
-    };
+    ];
   }
 };
