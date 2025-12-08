@@ -9,7 +9,7 @@ module.exports = class RevealRoleToTarget extends Card {
   constructor(role) {
     super(role);
 
-      this.passiveActions = [
+    this.passiveActions = [
       {
         ability: ["Modifier", "Information"],
         actor: role.player,
@@ -19,19 +19,18 @@ module.exports = class RevealRoleToTarget extends Card {
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10,
         labels: ["investigate", "hidden"],
         run: function () {
-            let info = this.game.createInformation(
-              "RoleInfo",
-              this.actor,
-              this.game,
-              this.actor
-            );
-            info.processInfo();
-            var alert = `:mask: You learn that you were targeted by ${info.getInfoRaw()}.`;
-            let visits = this.getVisits(this.actor);
-            visits.map((v) => v.queueAlert(alert));
-          },
+          let info = this.game.createInformation(
+            "RoleInfo",
+            this.actor,
+            this.game,
+            this.actor
+          );
+          info.processInfo();
+          var alert = `:mask: You learn that you were targeted by ${info.getInfoRaw()}.`;
+          let visits = this.getVisits(this.actor);
+          visits.map((v) => v.queueAlert(alert));
+        },
       },
     ];
-    
   }
 };
