@@ -15,16 +15,16 @@ module.exports = class Regretful extends Card {
         role: role,
         priority: PRIORITY_KILL_DEFAULT,
         labels: ["kill", "hidden", "absolute"],
-          run: function () {
-            let visits = this.getVisits(this.actor);
-            let killers = visits.map((v) => this.getVisitors(v, "kill"));
+        run: function () {
+          let visits = this.getVisits(this.actor);
+          let killers = visits.map((v) => this.getVisitors(v, "kill"));
 
-            if (killers.length == 0) {
-              return;
-            } else if (this.dominates(this.actor)) {
-              this.actor.kill("basic", this.actor);
-            }
-          },
+          if (killers.length == 0) {
+            return;
+          } else if (this.dominates(this.actor)) {
+            this.actor.kill("basic", this.actor);
+          }
+        },
       },
     ];
   }
