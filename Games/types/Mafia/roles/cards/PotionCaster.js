@@ -50,32 +50,32 @@ module.exports = class PotionCaster extends Card {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
         labels: ["investigate"],
         run: function () {
-            if (this.role.data.currentPotion !== "Elucidating") return;
+          if (this.role.data.currentPotion !== "Elucidating") return;
 
-            let target = this.role.data.currentTarget;
-            if (!target) {
-              return;
-            }
+          let target = this.role.data.currentTarget;
+          if (!target) {
+            return;
+          }
 
-            let info = this.game.createInformation(
-              "RoleInfo",
-              this.actor,
-              this.game,
-              target
-            );
-            info.processInfo();
-            var alert = `:invest: ${info.getInfoFormated()}.`;
-            this.actor.queueAlert(alert);
+          let info = this.game.createInformation(
+            "RoleInfo",
+            this.actor,
+            this.game,
+            target
+          );
+          info.processInfo();
+          var alert = `:invest: ${info.getInfoFormated()}.`;
+          this.actor.queueAlert(alert);
 
-            // set cooldown
-            var potion = this.role.data.currentPotion;
-            if (this.role.data.potionCounter) {
-              this.role.data.potionCounter[potion] =
-                this.role.data.potionCooldown;
-            }
-            delete this.role.data.currentPotion;
-            delete this.role.data.currentTarget;
-          },
+          // set cooldown
+          var potion = this.role.data.currentPotion;
+          if (this.role.data.potionCounter) {
+            this.role.data.potionCounter[potion] =
+              this.role.data.potionCooldown;
+          }
+          delete this.role.data.currentPotion;
+          delete this.role.data.currentTarget;
+        },
       },
       {
         ability: ["WhenDead"],
@@ -86,25 +86,25 @@ module.exports = class PotionCaster extends Card {
         priority: PRIORITY_NIGHT_SAVER,
         labels: ["save"],
         run: function () {
-            if (this.role.data.currentPotion !== "Restoring") return;
+          if (this.role.data.currentPotion !== "Restoring") return;
 
-            let target = this.role.data.currentTarget;
-            if (!target) {
-              return;
-            }
+          let target = this.role.data.currentTarget;
+          if (!target) {
+            return;
+          }
 
-            this.heal(1, target);
+          this.heal(1, target);
 
-            // set cooldown
-            var potion = this.role.data.currentPotion;
-            if (this.role.data.potionCounter) {
-              this.role.data.potionCounter[potion] =
-                this.role.data.potionCooldown;
-            }
+          // set cooldown
+          var potion = this.role.data.currentPotion;
+          if (this.role.data.potionCounter) {
+            this.role.data.potionCounter[potion] =
+              this.role.data.potionCooldown;
+          }
 
-            delete this.role.data.currentPotion;
-            delete this.role.data.currentTarget;
-          },
+          delete this.role.data.currentPotion;
+          delete this.role.data.currentTarget;
+        },
       },
       {
         ability: ["WhenDead"],
@@ -115,30 +115,30 @@ module.exports = class PotionCaster extends Card {
         priority: PRIORITY_KILL_DEFAULT,
         labels: ["kill"],
         run: function () {
-            if (this.role.data.currentPotion !== "Damaging") return;
+          if (this.role.data.currentPotion !== "Damaging") return;
 
-            let target = this.role.data.currentTarget;
-            if (!target) {
-              return;
-            }
+          let target = this.role.data.currentTarget;
+          if (!target) {
+            return;
+          }
 
-            if (this.dominates(target)) {
-              target.kill("basic", this.actor);
-            }
+          if (this.dominates(target)) {
+            target.kill("basic", this.actor);
+          }
 
-            // set cooldown
-            var potion = this.role.data.currentPotion;
-            if (this.role.data.potionCounter) {
-              this.role.data.potionCounter[potion] =
-                this.role.data.potionCooldown;
-            }
+          // set cooldown
+          var potion = this.role.data.currentPotion;
+          if (this.role.data.potionCounter) {
+            this.role.data.potionCounter[potion] =
+              this.role.data.potionCooldown;
+          }
 
-            delete this.role.data.currentPotion;
-            delete this.role.data.currentTarget;
-          },
+          delete this.role.data.currentPotion;
+          delete this.role.data.currentTarget;
+        },
       },
     ];
-    
+
     this.listeners = {
       roleAssigned: function (player) {
         if (player !== this.player) {
@@ -180,7 +180,6 @@ module.exports = class PotionCaster extends Card {
         }
 
         this.meetings["Choose Potion"].targets = currentPotionList;
-
       },
     };
   }
