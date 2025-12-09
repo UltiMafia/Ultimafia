@@ -138,6 +138,7 @@ const sceptreDef = `A Sceptre can be used during the day to gain 10000 voting po
 const timeBombDef = `A Timebomb can be passed around during the day, it will explode after 10-30 seconds.`;
 const revolverDef = `A Revolver has 6 chambers one of which has full. A Revolver must be used during the day to fire the selected chamber or a random chamber. Then pass it to another player if the chamber was empty or die if the chamber was full.`;
 const snowballDef = `Snowballs can be used during the day to make a player "Frozen".`;
+const jackBoxDef = `A Jack-In-The-Box can be used at night to gain the abilites of a Village-aligned Banished role until the next night.`;
 
 const roleData = {
   Mafia: {
@@ -716,6 +717,23 @@ const roleData = {
       ],
       nightOrder: [["Give Rifle", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
+    Toymaker: {
+      alignment: "Village",
+      category: "Gifting",
+      tags: [
+        "Killing",
+        "Items",
+        "Banished Interaction",
+        "Visiting",
+        "Jack-in-the-box",
+        "Advanced",
+      ],
+      description: [
+        `Each night, can choose to visit one player and give them a Jack-In-The-Box.`,
+        jackBoxDef,
+      ],
+      nightOrder: [["Give Rifle", PRIORITY_ITEM_GIVER_DEFAULT]],
+    },    
     Santa: {
       alignment: "Village",
       category: "Gifting",
