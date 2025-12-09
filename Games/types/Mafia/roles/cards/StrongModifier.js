@@ -6,38 +6,16 @@ const { PRIORITY_MODIFY_ACTION_LABELS } = require("../../const/Priority");
 module.exports = class StrongModifier extends Card {
   constructor(role) {
     super(role);
-    /*
-    this.actions = [
+
+        this.passiveActions = [
       {
+        ability: ["Strong", "Modifier"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
         priority: PRIORITY_MODIFY_ACTION_LABELS,
         run: function () {
-          for (let action of this.game.actions[0]) {
-            if (action.actors.includes(this.actor) && action.hasLabel("kill")) {
-              action.power = Infinity;
-              action.labels = [...action.labels, "absolute", "strong"];
-              action.target.removeEffect("Extra Life", true);
-            }
-          }
-        },
-      },
-    ];
-*/
-
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Strong", "Modifier"])) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_MODIFY_ACTION_LABELS,
-          run: function () {
             for (let action of this.game.actions[0]) {
               if (
                 action.actors.includes(this.actor) &&
@@ -51,10 +29,8 @@ module.exports = class StrongModifier extends Card {
               }
             }
           },
-        });
-
-        this.game.queueAction(action);
       },
-    };
+    ];
+
   }
 };
