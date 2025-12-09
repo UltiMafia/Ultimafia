@@ -550,6 +550,24 @@ router.get("/:id/profile", async function (req, res) {
       user.vanityUrl = vanityUrl.url;
     }
 
+    // Add family data if user belongs to a family
+    const inFamily = await models.InFamily.findOne({
+      user: userMongoId,
+    }).populate({
+      path: "family",
+      select: "id name avatar -_id",
+    });
+
+    if (inFamily && inFamily.family) {
+      user.family = {
+        id: inFamily.family.id,
+        name: inFamily.family.name,
+        avatar: inFamily.family.avatar,
+      };
+    } else {
+      user.family = null;
+    }
+
     res.send(user);
   } catch (e) {
     logger.error(e);
