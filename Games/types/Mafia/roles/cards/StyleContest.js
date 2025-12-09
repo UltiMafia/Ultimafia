@@ -20,7 +20,7 @@ module.exports = class StyleContest extends Card {
     if (roles.includes("Butterfly") && role.canDoSpecialInteractions()) {
       targets.push("Revive all dead players as random independent roles");
     }
-/*
+    /*
     this.meetings = {
       "Prize Time": {
         actionName: "Choose Reward",
@@ -104,41 +104,40 @@ module.exports = class StyleContest extends Card {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         labels: ["role", "hidden"],
         run: function () {
-              this.role.AllTasksComplete = false;
-              let teammates = this.game.players.filter(
-                (p) => p.faction == this.actor.faction
-              );
-              for (let player of teammates) {
-                let subaction = new Action({
-                actor: this.actor,
-                game: this.actor.game,
-                target: teammate,
-                labels: ["role", "hidden"],
-                role: this.role,
-                run: function () {
-                 this.target.holdItem("Coffee");
+          this.role.AllTasksComplete = false;
+          let teammates = this.game.players.filter(
+            (p) => p.faction == this.actor.faction
+          );
+          for (let player of teammates) {
+            let subaction = new Action({
+              actor: this.actor,
+              game: this.actor.game,
+              target: teammate,
+              labels: ["role", "hidden"],
+              role: this.role,
+              run: function () {
+                this.target.holdItem("Coffee");
                 this.target.queueGetItemAlert("Coffee");
-                },
-              });
-                if (player.alive) {
-                  let effect = player.giveEffect(
-                    "DayTask",
-                    this.role,
-                    player,
-                    subaction,
-                    null,
-                    5
-                  );
-                  player.queueAlert(
-                    `${
-                      this.role.name
-                    } has ordered you to ${effect.getTaskMessage()} Complete this task for Coffee!`
-                  );
-                }
-              }
-            },
+              },
+            });
+            if (player.alive) {
+              let effect = player.giveEffect(
+                "DayTask",
+                this.role,
+                player,
+                subaction,
+                null,
+                5
+              );
+              player.queueAlert(
+                `${
+                  this.role.name
+                } has ordered you to ${effect.getTaskMessage()} Complete this task for Coffee!`
+              );
+            }
+          }
+        },
       },
     ];
-    
   }
 };
