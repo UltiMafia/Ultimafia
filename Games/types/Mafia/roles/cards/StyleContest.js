@@ -20,7 +20,7 @@ module.exports = class StyleContest extends Card {
     if (roles.includes("Butterfly") && role.canDoSpecialInteractions()) {
       targets.push("Revive all dead players as random independent roles");
     }
-
+/*
     this.meetings = {
       "Prize Time": {
         actionName: "Choose Reward",
@@ -92,47 +92,34 @@ module.exports = class StyleContest extends Card {
         },
       },
     };
+    */
 
-    this.listeners = {
-      state: function () {
-        if (this.game.getStateName() == "Night") {
-          var action = new Action({
-            actor: this.player,
-            game: this.player.game,
-            priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-            labels: ["role", "hidden"],
-            role: this,
-            run: function () {
+    this.passiveActions = [
+      {
+        ability: ["Item"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
+        priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+        labels: ["role", "hidden"],
+        run: function () {
               this.role.AllTasksComplete = false;
-              let subaction = new Action({
-                actor: this.actor,
-                game: this.actor.game,
-                labels: ["role", "hidden"],
-                role: this.role,
-                run: function () {
-                  if (!this.role.TaskComp) {
-                    this.role.TaskComp = [];
-                  }
-                  if (this.target) {
-                    this.role.TaskComp.push(this.target);
-                  }
-                  let teammates = this.game.players.filter(
-                    (p) => p.faction == this.actor.faction && p.alive
-                  );
-                  if (teammates && teammates.length > 0) {
-                    for (let player of teammates) {
-                      if (!this.role.TaskComp.includes(player)) {
-                        return;
-                      }
-                    }
-                    this.role.AllTasksComplete = true;
-                  }
-                },
-              });
               let teammates = this.game.players.filter(
                 (p) => p.faction == this.actor.faction
               );
               for (let player of teammates) {
+                let subaction = new Action({
+                actor: this.actor,
+                game: this.actor.game,
+                target: teammate,
+                labels: ["role", "hidden"],
+                role: this.role,
+                run: function () {
+                 this.target.holdItem("Coffee");
+                this.target.queueGetItemAlert("Coffee");
+                },
+              });
                 if (player.alive) {
                   let effect = player.giveEffect(
                     "DayTask",
@@ -145,35 +132,13 @@ module.exports = class StyleContest extends Card {
                   player.queueAlert(
                     `${
                       this.role.name
-                    } has ordered you to ${effect.getTaskMessage()} Complete this task to benefit the Mafia!`
+                    } has ordered you to ${effect.getTaskMessage()} Complete this task for Coffee!`
                   );
                 }
               }
             },
-          });
-
-          this.game.queueAction(action);
-        }
-        /*
-        if (this.game.getStateName() == "Day") {
-          let contest = [];
-          for (let player of this.game.players) {
-            if (player.data.StylePoints > 0) {
-              contest.push(player);
-            }
-          }
-          for (let member of contest) {
-            this.game.queueAlert(
-              `${member.name} has ${member.data.StylePoints} Style Points!`,
-              0,
-              this.game.players.filter(
-                (p) => p.role.alignment === this.player.role.alignment
-              )
-            );
-          }
-        }
-        */
       },
-    };
+    ];
+    
   }
 };
