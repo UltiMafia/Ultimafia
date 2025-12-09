@@ -28,32 +28,23 @@ module.exports = class StealItem extends Card {
       },
     };
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Item"])) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          role: this,
-          priority: PRIORITY_ITEM_TAKER_DEFAULT,
-          labels: ["stealItem"],
-          run: function () {
+    this.passiveActions = [
+      {
+        ability: ["Item"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
+        priority: PRIORITY_ITEM_TAKER_DEFAULT,
+        labels: ["stealItem"],
+        run: function () {
             if (this.role.PlayerToStealFrom != null) {
               this.stealRandomItem(this.role.PlayerToStealFrom, this.actor);
             }
             this.role.PlayerToStealFrom = null;
           },
-        });
-
-        this.game.queueAction(action);
       },
-    };
+    ];
+
   }
 };
