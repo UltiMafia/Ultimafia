@@ -10,6 +10,7 @@ module.exports = class Sleuth extends Role {
       "WinWithFaction",
       "MeetingFaction",
       "LearnFullAlignment",
+      "Sleuthing",
     ];
   }
 };
