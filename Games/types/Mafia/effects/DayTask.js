@@ -51,10 +51,10 @@ module.exports = class DayTask extends Effect {
     if (canDoVotingTasks) {
       possibleTasks.push("SwitchVotes3Times");
     }
+    /*
     if (canDoVotingTasks && this.DiffNum >= 2) {
       possibleTasks.push("SwitchVotesExactly5Times");
     }
-    /*
     if (canDoVotingTasks && this.DiffNum >= 3 && this.game.alivePlayers().length > 2) {
       possibleTasks.push("BeThe3rdPlayerToVoteToday");
     }
@@ -213,15 +213,16 @@ module.exports = class DayTask extends Effect {
       this.task == "SendExactly10Messages" ||
       this.task == "SendNoMoreThen1Message"
     ) {
-      if (this.ExtraNum < this.MessagesSent) {
-        this.HasBeenFailed = true;
-        this.HasBeenCompleted = false;
-      } else if (
+      if (
         this.task == "SendExactly10Messages" &&
         this.ExtraNum == this.MessagesSent
       ) {
         this.HasBeenCompleted = true;
       }
+      else if (this.ExtraNum < this.MessagesSent) {
+        this.HasBeenFailed = true;
+        this.HasBeenCompleted = false;
+      } 
       if (this.HasBeenFailed == true && this.punishment) {
         this.punishment.target = this.player;
         this.game.instantAction(this.punishment);

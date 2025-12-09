@@ -7,28 +7,16 @@ module.exports = class TrickedWares extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        if (!this.hasAbility(["Item"])) {
-          return;
-        }
-
-        const players = this.game.players.filter(
-          (p) => p.alive && p != this.player
-        );
-        const target = Random.randArrayVal(players);
-
-        var action = new Action({
-          labels: ["giveItem"],
-          priority: PRIORITY_ITEM_GIVER_EARLY - 1,
-          actor: this.player,
-          target: target,
-          game: this.player.game,
-          run: function () {
+          this.passiveActions = [
+          {
+            ability: ["Item"],
+            actor: role.player,
+            state: "Night",
+            game: role.game,
+            role: role,
+            priority: PRIORITY_ITEM_GIVER_EARLY - 1,
+            labels: ["giveItem"],
+            run: function () {
             var items = [
               "Gun",
               "Armor",
@@ -51,16 +39,17 @@ module.exports = class TrickedWares extends Card {
             var isItemBroken = Random.randArrayVal([true, false]);
             var isItemMagic = Random.randArrayVal([true, false, false, false]);
 
-            this.target.holdItem(itemToGive, {
+            let player = Random.randArrayVal(this.game.alivePlayers().filter((p) => p != this.actor))
+
+            player.holdItem(itemToGive, {
               broken: isItemBroken,
               magicCult: isItemMagic,
             });
-            this.target.queueGetItemAlert(itemToGive);
+            player.queueGetItemAlert(itemToGive);
           },
-        });
+          },
+        ];
 
-        this.game.queueAction(action);
-      },
-    };
+
   }
 };

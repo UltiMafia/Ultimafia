@@ -12,7 +12,7 @@ module.exports = class Slasher extends Role {
 
       "LearnVisitorsPerson",
       "GainKnifeIfVisitedNonCult",
-      "PoisonImmune",
+      
     ];
   }
 };

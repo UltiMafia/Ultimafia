@@ -3716,20 +3716,13 @@ const roleData = {
     },
     Busybody: {
       alignment: "Mafia",
-      tags: ["Mini-game", "FalseMode", "Voting", "Speaking", "Expert"],
+      tags: ["Mini-game", "Item", "Coffee", "Voting", "Speaking", "Expert"],
       description: [
         "Each night, assigns their teammates a task to complete the following day.",
         "Tasks will be related to voting and sending messages.",
-        "At night if all living teammates complete their task, the Busybody may choose to make all information false for the night or grant each mafia member an extra role ability.",
+        "If a teammate completes their task, they will be given Coffee.",
+        coffeeDef,
       ],
-      SpecialInteractions: {
-        Butterfly: [
-          "If Butterfly is in the setup, the Busybody can choose to revive all dead players as random Independent roles.",
-        ],
-        nightOrder: [
-          ["Make Info False or Grant Ability", PRIORITY_EFFECT_GIVER_EARLY],
-        ],
-      },
     },
     Prankster: {
       alignment: "Mafia",

@@ -13,11 +13,11 @@ module.exports = class Regretful extends Card {
         state: "Night",
         game: role.game,
         role: role,
-        priority: PRIORITY_KILL_DEFAULT,
+        priority: PRIORITY_KILL_DEFAULT + 3,
         labels: ["kill", "hidden", "absolute"],
         run: function () {
           let visits = this.getVisits(this.actor);
-          let killers = visits.map((v) => this.getVisitors(v, "kill"));
+          let killers = visits.filter((v) => !v.alive);
 
           if (killers.length == 0) {
             return;

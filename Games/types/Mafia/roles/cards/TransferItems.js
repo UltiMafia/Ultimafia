@@ -45,23 +45,16 @@ module.exports = class TransferItems extends Card {
       },
     };
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Item"])) {
-          return;
-        }
-
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          role: this,
-          priority: PRIORITY_ITEM_TAKER_DEFAULT,
-          labels: ["stealItem"],
-          run: function () {
+        this.passiveActions = [
+          {
+            ability: ["Item"],
+            actor: role.player,
+            state: "Night",
+            game: role.game,
+            role: role,
+            priority: PRIORITY_ITEM_TAKER_DEFAULT,
+            labels: ["stealItem"],
+            run: function () {
             if (
               this.role.PlayerToStealFrom != null &&
               this.role.data.victim != null
@@ -74,10 +67,9 @@ module.exports = class TransferItems extends Card {
             this.role.PlayerToStealFrom = null;
             this.role.data.victim = null;
           },
-        });
+          },
+        ];
 
-        this.game.queueAction(action);
-      },
-    };
+
   }
 };

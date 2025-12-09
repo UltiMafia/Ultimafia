@@ -112,7 +112,7 @@ module.exports = class StyleContest extends Card {
             let subaction = new Action({
               actor: this.actor,
               game: this.actor.game,
-              target: teammate,
+              target: player,
               labels: ["role", "hidden"],
               role: this.role,
               run: function () {

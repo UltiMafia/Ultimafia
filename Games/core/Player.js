@@ -1255,10 +1255,10 @@ module.exports = class Player {
             } else if (
               meeting.hasJoined(this) &&
               meeting.speech &&
-              extraRole.isExtraRole
+              extraRole.isExtraRole &&
+              options.speechAbilities != null
             ) {
               let member = meeting.getMember(this);
-
               for (let ability of options.speechAbilities) {
                 member.speechAbilities.push(ability);
               }
