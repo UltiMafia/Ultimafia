@@ -8,7 +8,6 @@ const { CULT_FACTIONS, EVIL_FACTIONS } = require("../../const/FactionList");
 module.exports = class Sleuthing extends Card {
   constructor(role) {
     super(role);
-
   }
 
   hear(message) {
@@ -21,9 +20,7 @@ module.exports = class Sleuthing extends Card {
     if (Random.randInt(0, 10) != 0) {
       return;
     }
-    if (
-      !this.role.hasAbility(["Kill"])
-    ) {
+    if (!this.role.hasAbility(["Kill"])) {
       return;
     }
     let formatedMessage = message.content;
@@ -39,8 +36,10 @@ module.exports = class Sleuthing extends Card {
     }
     formatedMessage = formatedMessage.toLowerCase();
     if (this.game.getStateName() != "Day") return;
-    if (formatedMessage.includes("cop") || formatedMessage.includes("detective")) {
-   
+    if (
+      formatedMessage.includes("cop") ||
+      formatedMessage.includes("detective")
+    ) {
       var action = new Action({
         actor: this.role.player,
         target: message.sender,
@@ -56,7 +55,7 @@ module.exports = class Sleuthing extends Card {
     }
   }
 
-  hearQuote(message){
+  hearQuote(message) {
     if (!message.sender) {
       return;
     }
@@ -66,9 +65,7 @@ module.exports = class Sleuthing extends Card {
     if (Random.randInt(0, 10) != 0) {
       return;
     }
-    if (
-      !this.role.hasAbility(["Kill"])
-    ) {
+    if (!this.role.hasAbility(["Kill"])) {
       return;
     }
     let formatedMessage = message.messageContent;
@@ -84,8 +81,10 @@ module.exports = class Sleuthing extends Card {
     }
     formatedMessage = formatedMessage.toLowerCase();
     if (this.game.getStateName() != "Day") return;
-    if (formatedMessage.includes("cop") || formatedMessage.includes("detective")) {
-   
+    if (
+      formatedMessage.includes("cop") ||
+      formatedMessage.includes("detective")
+    ) {
       var action = new Action({
         actor: this.role.player,
         target: message.sender,
@@ -100,7 +99,4 @@ module.exports = class Sleuthing extends Card {
       return;
     }
   }
-
-
-  
 };
