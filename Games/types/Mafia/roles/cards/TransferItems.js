@@ -45,31 +45,29 @@ module.exports = class TransferItems extends Card {
       },
     };
 
-        this.passiveActions = [
-          {
-            ability: ["Item"],
-            actor: role.player,
-            state: "Night",
-            game: role.game,
-            role: role,
-            priority: PRIORITY_ITEM_TAKER_DEFAULT,
-            labels: ["stealItem"],
-            run: function () {
-            if (
-              this.role.PlayerToStealFrom != null &&
-              this.role.data.victim != null
-            ) {
-              this.stealRandomItem(
-                this.role.data.victim,
-                this.role.PlayerToStealFrom
-              );
-            }
-            this.role.PlayerToStealFrom = null;
-            this.role.data.victim = null;
-          },
-          },
-        ];
-
-
+    this.passiveActions = [
+      {
+        ability: ["Item"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
+        priority: PRIORITY_ITEM_TAKER_DEFAULT,
+        labels: ["stealItem"],
+        run: function () {
+          if (
+            this.role.PlayerToStealFrom != null &&
+            this.role.data.victim != null
+          ) {
+            this.stealRandomItem(
+              this.role.data.victim,
+              this.role.PlayerToStealFrom
+            );
+          }
+          this.role.PlayerToStealFrom = null;
+          this.role.data.victim = null;
+        },
+      },
+    ];
   }
 };

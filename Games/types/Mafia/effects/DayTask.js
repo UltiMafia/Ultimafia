@@ -218,11 +218,10 @@ module.exports = class DayTask extends Effect {
         this.ExtraNum == this.MessagesSent
       ) {
         this.HasBeenCompleted = true;
-      }
-      else if (this.ExtraNum < this.MessagesSent) {
+      } else if (this.ExtraNum < this.MessagesSent) {
         this.HasBeenFailed = true;
         this.HasBeenCompleted = false;
-      } 
+      }
       if (this.HasBeenFailed == true && this.punishment) {
         this.punishment.target = this.player;
         this.game.instantAction(this.punishment);
