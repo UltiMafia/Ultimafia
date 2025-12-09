@@ -733,7 +733,7 @@ const roleData = {
         jackBoxDef,
       ],
       nightOrder: [["Give Rifle", PRIORITY_ITEM_GIVER_DEFAULT]],
-    },    
+    },
     Santa: {
       alignment: "Village",
       category: "Gifting",
