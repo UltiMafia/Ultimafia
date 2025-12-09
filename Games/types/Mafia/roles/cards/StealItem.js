@@ -38,13 +38,12 @@ module.exports = class StealItem extends Card {
         priority: PRIORITY_ITEM_TAKER_DEFAULT,
         labels: ["stealItem"],
         run: function () {
-            if (this.role.PlayerToStealFrom != null) {
-              this.stealRandomItem(this.role.PlayerToStealFrom, this.actor);
-            }
-            this.role.PlayerToStealFrom = null;
-          },
+          if (this.role.PlayerToStealFrom != null) {
+            this.stealRandomItem(this.role.PlayerToStealFrom, this.actor);
+          }
+          this.role.PlayerToStealFrom = null;
+        },
       },
     ];
-
   }
 };
