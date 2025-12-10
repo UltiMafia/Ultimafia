@@ -47,10 +47,10 @@ module.exports = class VotingWord extends Card {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         labels: ["effect"],
         run: function () {
-                let players = this.role.data.PlayersWhoSaidPhrase;
-                for (let player of players) {
-                  this.role.giveEffect(player, "SpeakOnlyWhispers", 1);
-                }
+          let players = this.role.data.PlayersWhoSaidPhrase;
+          for (let player of players) {
+            this.role.giveEffect(player, "SpeakOnlyWhispers", 1);
+          }
         },
       },
     ];
@@ -77,7 +77,6 @@ module.exports = class VotingWord extends Card {
           if (this.data.PlayersWhoSaidPhrase == null) {
             this.data.PlayersWhoSaidPhrase = [];
           }
-
         }
       },
     };
