@@ -37,6 +37,24 @@ module.exports = class VotingWord extends Card {
       },
     };
 
+    this.passiveActions = [
+      {
+        ability: ["Speaking"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
+        priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+        labels: ["effect"],
+        run: function () {
+          let players = this.role.data.PlayersWhoSaidPhrase;
+          for (let player of players) {
+            this.role.giveEffect(player, "SpeakOnlyWhispers", 1);
+          }
+        },
+      },
+    ];
+
     this.listeners = {
       PreVotingPowers: function (meeting) {
         if (this.data.PlayersWhoSaidPhrase == null) {
@@ -58,23 +76,6 @@ module.exports = class VotingWord extends Card {
         if (this.game.getStateName() == "Night") {
           if (this.data.PlayersWhoSaidPhrase == null) {
             this.data.PlayersWhoSaidPhrase = [];
-          }
-          if (this.hasAbility(["Speaking"])) {
-            var action = new Action({
-              actor: this.player,
-              game: this.player.game,
-              role: this.role,
-              priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-              labels: ["effect"],
-              run: function () {
-                let players = this.role.data.PlayersWhoSaidPhrase;
-                for (let player of players) {
-                  this.role.giveEffect(player, "SpeakOnlyWhispers", 1);
-                }
-              },
-            });
-
-            this.game.queueAction(action);
           }
         }
       },

@@ -7,37 +7,28 @@ module.exports = class VillageMightSurviveCondemn extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!this.hasAbility(["Protection", "Modifier"])) {
-          return;
-        }
+    this.passiveActions = [
+      {
+        ability: ["Protection", "Modifier"],
+        actor: role.player,
+        state: "Night",
+        game: role.game,
+        role: role,
+        priority: PRIORITY_EFFECT_GIVER_DEFAULT,
+        labels: ["save"],
+        run: function () {
+          const villagePlayers = this.game
+            .alivePlayers()
+            .filter(
+              (p) =>
+                p.role.alignment == "Village" || p.role.winCount == "Village"
+            );
 
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
+          let shuffledPlayers = Random.randomizeArray(villagePlayers);
 
-        var action = new Action({
-          actor: this.player,
-          game: this.player.game,
-          priority: PRIORITY_EFFECT_GIVER_DEFAULT,
-          labels: ["save"],
-          run: function () {
-            const villagePlayers = this.game
-              .alivePlayers()
-              .filter(
-                (p) =>
-                  p.role.alignment == "Village" || p.role.winCount == "Village"
-              );
-
-            let shuffledPlayers = Random.randomizeArray(villagePlayers);
-
-            shuffledPlayers[0].giveEffect("Condemn Immune", 5, 1);
-          },
-        });
-
-        this.game.queueAction(action);
+          shuffledPlayers[0].giveEffect("Condemn Immune", 5, 1);
+        },
       },
-    };
+    ];
   }
 };

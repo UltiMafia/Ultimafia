@@ -867,6 +867,15 @@ const roleData = {
         },
       ],
     },
+    Sleuth: {
+      alignment: "Village",
+      category: "Investigative",
+      tags: ["Information", "Alignment", "Visiting", "Basic"],
+      description: [
+        "Each night, can choose to visit one player and learn their alignment.",
+      ],
+      nightOrder: [["Learn Alignment", PRIORITY_INVESTIGATIVE_DEFAULT]],
+    },
     Coroner: {
       alignment: "Village",
       category: "Investigative",

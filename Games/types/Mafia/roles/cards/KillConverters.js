@@ -33,5 +33,35 @@ module.exports = class KillConverters extends Card {
         },
       },
     ];
+
+    this.listeners = {
+      AbilityToggle: function (player) {
+        if (player != this.player) {
+          return;
+        }
+        if (this.hasAbility(["Modifier"]) && this.role.killLimit > 0) {
+          if (
+            this.ConvertImmuneKillEffect == null ||
+            !this.player.effects.includes(this.ConvertImmuneKillEffect)
+          ) {
+            this.ConvertImmuneKillEffect = this.player.giveEffect(
+              "ConvertImmune",
+              1,
+              Infinity
+            );
+            this.passiveEffects.push(this.ConvertImmuneKillEffect);
+          }
+        } else {
+          var index = this.passiveEffects.indexOf(this.ConvertImmuneKillEffect);
+          if (index != -1) {
+            this.passiveEffects.splice(index, 1);
+          }
+          if (this.ConvertImmuneKillEffect != null) {
+            this.ConvertImmuneKillEffect.remove();
+            this.ConvertImmuneKillEffect = null;
+          }
+        }
+      },
+    };
   }
 };
