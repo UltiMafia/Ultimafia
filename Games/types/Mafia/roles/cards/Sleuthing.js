@@ -20,7 +20,7 @@ module.exports = class Sleuthing extends Card {
     if (Random.randInt(0, 10) != 0) {
       return;
     }
-    if(this.role.hasKilled && Random.randInt(0, 100) != 0){
+    if (this.role.hasKilled && Random.randInt(0, 100) != 0) {
       return;
     }
     if (!this.role.hasAbility(["Kill"])) {
@@ -69,7 +69,7 @@ module.exports = class Sleuthing extends Card {
     if (Random.randInt(0, 10) != 0) {
       return;
     }
-    if(this.role.hasKilled && Random.randInt(0, 100) != 0){
+    if (this.role.hasKilled && Random.randInt(0, 100) != 0) {
       return;
     }
     if (!this.role.hasAbility(["Kill"])) {
