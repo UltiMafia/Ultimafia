@@ -17,17 +17,17 @@ module.exports = class VillageMightSurviveCondemn extends Card {
         priority: PRIORITY_EFFECT_GIVER_DEFAULT,
         labels: ["save"],
         run: function () {
-            const villagePlayers = this.game
-              .alivePlayers()
-              .filter(
-                (p) =>
-                  p.role.alignment == "Village" || p.role.winCount == "Village"
-              );
+          const villagePlayers = this.game
+            .alivePlayers()
+            .filter(
+              (p) =>
+                p.role.alignment == "Village" || p.role.winCount == "Village"
+            );
 
-            let shuffledPlayers = Random.randomizeArray(villagePlayers);
+          let shuffledPlayers = Random.randomizeArray(villagePlayers);
 
-            shuffledPlayers[0].giveEffect("Condemn Immune", 5, 1);
-          },
+          shuffledPlayers[0].giveEffect("Condemn Immune", 5, 1);
+        },
       },
     ];
   }
