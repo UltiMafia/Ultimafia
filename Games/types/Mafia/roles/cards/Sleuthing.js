@@ -20,6 +20,9 @@ module.exports = class Sleuthing extends Card {
     if (Random.randInt(0, 10) != 0) {
       return;
     }
+    if(this.role.hasKilled && Random.randInt(0, 100) != 0){
+      return;
+    }
     if (!this.role.hasAbility(["Kill"])) {
       return;
     }
@@ -40,6 +43,7 @@ module.exports = class Sleuthing extends Card {
       formatedMessage.includes("cop") ||
       formatedMessage.includes("detective")
     ) {
+      this.role.hasKilled = true;
       var action = new Action({
         actor: this.role.player,
         target: message.sender,
@@ -65,6 +69,9 @@ module.exports = class Sleuthing extends Card {
     if (Random.randInt(0, 10) != 0) {
       return;
     }
+    if(this.role.hasKilled && Random.randInt(0, 100) != 0){
+      return;
+    }
     if (!this.role.hasAbility(["Kill"])) {
       return;
     }
@@ -85,6 +92,7 @@ module.exports = class Sleuthing extends Card {
       formatedMessage.includes("cop") ||
       formatedMessage.includes("detective")
     ) {
+      this.role.hasKilled = true;
       var action = new Action({
         actor: this.role.player,
         target: message.sender,
