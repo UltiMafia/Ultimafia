@@ -86,7 +86,7 @@ module.exports = class ConvertIfVisitsAllMafia extends Card {
                 .getAllRoles()
                 .filter((r) => this.game.getRoleAlignment(r) == "Mafia")
             );
-            if(randomMafiaRole == null){
+            if (randomMafiaRole == null) {
               randomMafiaRole = "Mafioso";
             }
             this.actor.setRole(randomMafiaRole);

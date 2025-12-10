@@ -34,8 +34,7 @@ module.exports = class KillConverters extends Card {
       },
     ];
 
-
-        this.listeners = {
+    this.listeners = {
       AbilityToggle: function (player) {
         if (player != this.player) {
           return;
@@ -64,6 +63,5 @@ module.exports = class KillConverters extends Card {
         }
       },
     };
-
   }
 };
