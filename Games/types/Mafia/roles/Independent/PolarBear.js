@@ -8,8 +8,6 @@ module.exports = class PolarBear extends Role {
       "VillageCore",
       "WinFourPolarisedDeaths",
       "Polariser",
-      // easter egg interaction
-      // "PenguinEater",
     ];
   }
 };

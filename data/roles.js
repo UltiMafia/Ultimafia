@@ -873,7 +873,6 @@ const roleData = {
       tags: ["Information", "Alignment", "Visiting", "Basic"],
       description: [
         "Each night, can choose to visit one player and learn their alignment.",
-        "Players who mention the Cop or Detective roles might die.",
       ],
       nightOrder: [["Learn Alignment", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },

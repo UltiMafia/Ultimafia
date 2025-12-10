@@ -81,11 +81,14 @@ module.exports = class ConvertIfVisitsAllMafia extends Card {
               return;
             }
 
-            const randomMafiaRole = Random.randArrayVal(
+            let randomMafiaRole = Random.randArrayVal(
               this.role
                 .getAllRoles()
                 .filter((r) => this.game.getRoleAlignment(r) == "Mafia")
             );
+            if(randomMafiaRole == null){
+              randomMafiaRole = "Mafioso";
+            }
             this.actor.setRole(randomMafiaRole);
           },
         });
