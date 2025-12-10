@@ -4,6 +4,7 @@ const redis = require("../modules/redis");
 const models = require("../db/models");
 const constants = require("../data/constants");
 const logger = require("../modules/logging")(".");
+const shortid = require("shortid");
 const router = express.Router();
 
 const shopItems = [
@@ -285,11 +286,11 @@ router.post(
       }
 
       const sender = await models.User.findOne({ id: senderId }).select(
-        "coins"
+        "coins name"
       );
       const recipient = await models.User.findOne({
         name: recipientUsername,
-      }).select("coins");
+      }).select("coins id");
 
       if (!recipient) {
         res.status(404).send("Recipient not found.");
@@ -309,6 +310,18 @@ router.post(
         { name: recipientUsername },
         { $inc: { coins: transferAmount } }
       ).exec();
+
+      // Create notification for recipient
+      const coinText = transferAmount === 1 ? "coin" : "coins";
+      const notification = new models.Notification({
+        id: shortid.generate(),
+        user: recipient.id,
+        isChat: false,
+        content: `${sender.name} has sent you ${transferAmount} ${coinText}!`,
+        date: Date.now(),
+        read: false,
+      });
+      await notification.save();
 
       await redis.cacheUserInfo(senderId, true);
       await redis.cacheUserInfo(recipient.id, true);

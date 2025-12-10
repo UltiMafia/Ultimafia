@@ -63,7 +63,6 @@ module.exports = {
     "Battlesnakes",
     "Dice Wars",
     "Connect Four",
-    "Ironclad",
   ],
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
   alignments: {
@@ -79,7 +78,6 @@ module.exports = {
     Battlesnakes: ["Town", "Host"],
     "Dice Wars": ["Military", "Host"],
     "Connect Four": ["Town", "Host"],
-    Ironclad: ["Navy", "Host"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -94,7 +92,6 @@ module.exports = {
     Battlesnakes: ["Day"],
     "Dice Wars": ["Play"],
     "Connect Four": ["Turn"],
-    Ironclad: ["Placement", "Battle"],
   },
   configurableStates: {
     Mafia: {
@@ -143,18 +140,6 @@ module.exports = {
         min: 5 * 60 * 1000,
         max: 60 * 60 * 1000,
         default: 5 * 60 * 1000,
-      },
-    },
-    Ironclad: {
-      Placement: {
-        min: 1 * 60 * 1000,
-        max: 15 * 60 * 1000,
-        default: 5 * 60 * 1000,
-      },
-      Battle: {
-        min: 5 * 60 * 1000,
-        max: 60 * 60 * 1000,
-        default: 20 * 60 * 1000,
       },
     },
     Jotto: {
