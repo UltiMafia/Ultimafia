@@ -130,11 +130,11 @@ module.exports = class RatscrewGame extends Game {
 
     // super.start();
     //this.rollDice();
-    if (this.CardGameType == "Cheat") {
+    if (this.CardGameType == "Ratscrew") {
       this.TheStack = [];
       this.RankNumber = 1;
       this.drawDiscardPile.shuffle();
-      this.setupCheat();
+      this.setupRatscrew();
     }
     this.startRoundRobin();
 
@@ -142,7 +142,7 @@ module.exports = class RatscrewGame extends Game {
   }
 
   //Start: Randomizes player order, and gives the microphone to first one.
-  setupCheat() {
+  setupRatscrew() {
     this.ThePot = parseInt(0);
     this.randomizedPlayers.forEach((player) => {
       player.hasFolded = false;
@@ -156,13 +156,8 @@ module.exports = class RatscrewGame extends Game {
     this.Phase = "First Bets";
     if (this.RoundNumber == 0) {
       this.Dealer = this.randomizedPlayersCopy[0];
-      this.SmallBlind = this.randomizedPlayersCopy[1];
-      this.BigBlind =
-        this.randomizedPlayersCopy[(1 + 1) % this.randomizedPlayersCopy.length];
     }
 
-    this.ThePot += this.minimumBet;
-    this.lastAmountBid = this.minimumBet;
     let cardAmount = Math.floor(52 / this.randomizedPlayersCopy.length);
 
     this.dealCards(cardAmount);
