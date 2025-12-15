@@ -53,7 +53,7 @@ export const POINTS_ICON = require(`images/points.png`);
 export const POINTS_NEGATIVE_ICON = require(`images/pointsNegative.png`);
 export const ACHIEVEMENTS_ICON = require(`images/achievements.png`);
 export const DAILY_ICON = require(`images/dailyChallenges.png`);
-export const TROPHY_ICON = require(`images/roles/village/villager-vivid.png`);
+export const TROPHY_ICON = require(`images/trophies/silver-trophy.png`);
 
 export default function Profile() {
   const [profileLoaded, setProfileLoaded] = useState(false);
