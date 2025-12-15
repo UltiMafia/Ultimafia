@@ -12,11 +12,8 @@ module.exports = class PlayCheat extends Card {
       "Play Card": {
         actionName: "Choose Cards",
         states: ["Play Cards"],
-        flags: ["voting", "multi"],
-        inputType: "playingCardButtons",
-        multiMin: 1,
-        multiMax: 4,
-        targets: role.player.CardsInHand,
+        flags: ["voting", "mustAct"],
+        inputType: "boolean",
         action: {
           item: this,
           run: function () {
