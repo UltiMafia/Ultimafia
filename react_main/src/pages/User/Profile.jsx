@@ -31,6 +31,7 @@ import CustomMarkdown from "components/CustomMarkdown";
 import ModerationSideDrawer from "components/ModerationSideDrawer";
 import ReportDialog from "../../components/ReportDialog";
 import RapSheet from "../../components/RapSheet";
+import TrophyCase from "components/TrophyCase";
 import { PieChart } from "./PieChart";
 import { NewLoading } from "../Welcome/NewLoading";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
@@ -53,7 +54,6 @@ export const POINTS_ICON = require(`images/points.png`);
 export const POINTS_NEGATIVE_ICON = require(`images/pointsNegative.png`);
 export const ACHIEVEMENTS_ICON = require(`images/achievements.png`);
 export const DAILY_ICON = require(`images/dailyChallenges.png`);
-export const TROPHY_ICON = require(`images/trophies/silver-trophy.png`);
 
 export default function Profile() {
   const [profileLoaded, setProfileLoaded] = useState(false);
@@ -955,61 +955,13 @@ export default function Profile() {
       />
     ));
 
-  const trophyCase =
-    trophies.length > 0 ? (
-      <div className="box-panel trophy-case" style={panelStyle}>
-        <Typography variant="h3" style={headingStyle}>
-          Trophy Case
-        </Typography>
-        <div className="content">
-          <Box
-            sx={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 1,
-            }}
-          >
-            {trophies.map((trophy) => {
-              const createdAt = trophy.createdAt
-                ? new Date(trophy.createdAt)
-                : null;
-              const formattedDate = createdAt
-                ? createdAt.toLocaleDateString()
-                : "Date unknown";
-
-              return (
-                <Tooltip
-                  arrow
-                  placement="top"
-                  title={
-                    <Stack spacing={0.5}>
-                      <Typography variant="subtitle2">{trophy.name}</Typography>
-                      {trophy.owner && (
-                        <Typography variant="caption">
-                          Owner: {trophy.owner.name}
-                        </Typography>
-                      )}
-                      <Typography variant="caption">
-                        Awarded {formattedDate}
-                      </Typography>
-                    </Stack>
-                  }
-                  key={trophy.id}
-                >
-                  <Box className="trophy-item">
-                    <img
-                      src={TROPHY_ICON}
-                      alt={`${trophy.name} trophy`}
-                      className="trophy-icon"
-                    />
-                  </Box>
-                </Tooltip>
-              );
-            })}
-          </Box>
-        </div>
-      </div>
-    ) : null;
+  const trophyCase = (
+    <TrophyCase
+      trophies={trophies}
+      panelStyle={panelStyle}
+      headingStyle={headingStyle}
+    />
+  );
 
   const avatarUpliftPx = !banner ? 0 : isPhoneDevice ? 38 : 58;
   const avatarPaddingPx = !banner
