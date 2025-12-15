@@ -25,8 +25,12 @@ module.exports = class RatscrewGame extends Game {
         length: options.settings.stateLengths["Play Cards"],
       },
       {
+        name: "Slap",
+        length: 1000 * 15,
+      },
+      {
         name: "Call Lie",
-        length: options.settings.stateLengths["Call Lie"],
+        length: 1000 * 15,
       },
     ];
 
@@ -38,7 +42,7 @@ module.exports = class RatscrewGame extends Game {
     this.drawDiscardPile = new DrawDiscardPile();
     this.drawDiscardPile.initCards();
     this.MaxRounds = parseInt(options.settings.MaxRounds) || 0;
-    this.CardGameType = "Cheat";
+    this.CardGameType = "Ratscrew";
 
     //VARIABLES
     this.randomizedPlayers = []; //All players after they get randomized. Used for showing players and their dice on left side of screen.
@@ -47,8 +51,6 @@ module.exports = class RatscrewGame extends Game {
     this.currentIndex = 0; //Index of player's current turn.
 
     //information about last turn's bid
-    this.lastAmountBid = 0;
-    this.lastFaceBid = 1;
     this.lastBidder = null;
     this.allRolledDice = []; //Used for counting dice on lie or spot on calls. player.diceRolled would remove dice if player left, so
     // this got created.
@@ -93,21 +95,10 @@ module.exports = class RatscrewGame extends Game {
         { color: "#718E77" }
       );
     }
-    /*
-    if (this.wildOnes) {
-      this.sendAlert(
-        `WILD ONES are enabled. Ones will count towards any face amount.`
-      );
-    }
-    if (this.spotOn) {
-      this.sendAlert(
-        `SPOT ON is enabled. On your turn, you can guess that the previous bidder called exact amount. If you're right, everyone else will lose a die.`
-      );
-    }
-    */
+
     if (this.MaxRounds >= 1) {
       this.sendAlert(
-        `The player with the least Cards wins after Round ${this.MaxRounds}.`
+        `The player with the most Cards wins after Round ${this.MaxRounds}.`
       );
     }
     this.sendAlert(`Good luck... You'll probably need it.`);
@@ -153,7 +144,6 @@ module.exports = class RatscrewGame extends Game {
       player.ShowdownCards = [];
     });
     this.RoundNumber = 0;
-    this.Phase = "First Bets";
     if (this.RoundNumber == 0) {
       this.Dealer = this.randomizedPlayersCopy[0];
     }
@@ -188,30 +178,16 @@ module.exports = class RatscrewGame extends Game {
     console.log(this.spectatorMeetFilter);
     if (previousState == "Call Lie") {
       this.RoundNumber++;
-      this.RankNumber++;
-      if (this.RankNumber > 13) {
-        this.RankNumber = 1;
-      }
-      this.sendAlert(
-        `${
-          this.RankNumber != 1 &&
-          this.RankNumber != 11 &&
-          this.RankNumber != 12 &&
-          this.RankNumber != 13
-            ? this.RankNumber
-            : this.RankNumber == 1
-            ? "Ace"
-            : this.RankNumber == 11
-            ? "Jack"
-            : this.RankNumber == 12
-            ? "Queen"
-            : "King"
-        }s must be played!`
-      );
       for (let player of this.randomizedPlayersCopy) {
+        player.hasSlapped = false;
         player.hasLied = false;
       }
+      if(this.FaceCardBlock == true){
       this.incrementCurrentIndex();
+      }
+      if(this.FaceCardPlayed == true){
+        this.FaceCardBlock = true;
+      }
       this.sendAlert(
         `${this.randomizedPlayersCopy[this.currentIndex].name}'s Turn!`
       );
