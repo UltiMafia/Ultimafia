@@ -371,15 +371,19 @@ router.get("/:id/profile", async function (req, res) {
     }
     user.karmaInfo = karmaInfo;
     user.achievements = user.achievements;
-    const trophies = await models.Trophy.find({ ownerId: userId })
+    const trophies = await models.Trophy.find({
+      ownerId: userId,
+      revoked: { $ne: true },
+    })
       .populate("owner", "id name avatar vanityUrl")
-      .select("id name ownerId owner createdAt -_id")
+      .select("id name ownerId owner type createdAt -_id")
       .sort("-createdAt")
       .lean();
     user.trophies = (trophies || []).map((trophy) => ({
       id: trophy.id,
       name: trophy.name,
       ownerId: trophy.ownerId,
+      type: trophy.type || "silver", // Default to silver for backward compatibility
       owner: trophy.owner
         ? {
             id: trophy.owner.id,

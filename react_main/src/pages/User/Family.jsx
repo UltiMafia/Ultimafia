@@ -21,7 +21,8 @@ import Comments from "../Community/Comments";
 import { NewLoading } from "../Welcome/NewLoading";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import CustomMarkdown from "components/CustomMarkdown";
-import { TROPHY_ICON } from "./Profile";
+import TrophyCase from "components/TrophyCase";
+import { capitalize } from "utils";
 
 export default function Family() {
   const { familyId } = useParams();
@@ -354,56 +355,11 @@ export default function Family() {
             </Paper>
             {family.trophies && family.trophies.length > 0 && (
               <Paper sx={panelStyle}>
-                <Typography variant="h3" sx={headingStyle}>
-                  Trophy Case
-                </Typography>
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: 1,
-                  }}
-                >
-                  {family.trophies.map((trophy) => {
-                    const createdAt = trophy.createdAt
-                      ? new Date(trophy.createdAt)
-                      : null;
-                    const formattedDate = createdAt
-                      ? createdAt.toLocaleDateString()
-                      : "Date unknown";
-
-                    return (
-                      <Tooltip
-                        arrow
-                        placement="top"
-                        title={
-                          <Stack spacing={0.5}>
-                            <Typography variant="subtitle2">
-                              {trophy.name}
-                            </Typography>
-                            {trophy.owner && (
-                              <Typography variant="caption">
-                                Owner: {trophy.owner.name}
-                              </Typography>
-                            )}
-                            <Typography variant="caption">
-                              Awarded {formattedDate}
-                            </Typography>
-                          </Stack>
-                        }
-                        key={trophy.id}
-                      >
-                        <Box className="trophy-item">
-                          <img
-                            src={TROPHY_ICON}
-                            alt={`${trophy.name} trophy`}
-                            className="trophy-icon"
-                          />
-                        </Box>
-                      </Tooltip>
-                    );
-                  })}
-                </Box>
+                <TrophyCase
+                  trophies={family.trophies}
+                  headingStyle={headingStyle}
+                  wrapInPanel={false}
+                />
               </Paper>
             )}
             {!isPhoneDevice && (

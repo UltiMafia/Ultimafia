@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
 var stats = require("./stats");
+var trophyData = require("../data/trophies");
 
 const accessibilityThemeValues = ["", "Higher Contrast"];
 
@@ -532,6 +533,15 @@ var schemas = {
         ref: "User",
         index: true,
       },
+      type: {
+        type: String,
+        enum: trophyData.trophyTypes || ["gold", "silver", "bronze"], // Fallback if trophies not loaded
+        default: trophyData.defaultTrophyType || "silver",
+        index: true,
+      },
+      revoked: { type: Boolean, default: false, index: true },
+      revokedAt: { type: Date },
+      revokedBy: { type: String },
       createdAt: { type: Date, default: Date.now, index: true },
       createdBy: { type: String },
     },
