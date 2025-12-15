@@ -4,7 +4,7 @@ const {
   ROLE_MEETINGS,
 } = require("../../const/ImportantMeetings");
 
-module.exports = class PlayCheat extends Card {
+module.exports = class PlayRatscrew extends Card {
   constructor(role) {
     super(role);
 
