@@ -182,10 +182,10 @@ module.exports = class RatscrewGame extends Game {
         player.hasSlapped = false;
         player.hasLied = false;
       }
-      if(this.FaceCardBlock == true){
-      this.incrementCurrentIndex();
+      if (this.FaceCardBlock == true) {
+        this.incrementCurrentIndex();
       }
-      if(this.FaceCardPlayed == true){
+      if (this.FaceCardPlayed == true) {
         this.FaceCardBlock = true;
       }
       this.sendAlert(
