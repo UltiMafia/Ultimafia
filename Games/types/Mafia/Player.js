@@ -473,7 +473,7 @@ module.exports = class MafiaPlayer extends Player {
       case "Whiskey":
         alert = ":beer: You have received a bottle of whiskey!";
         break;
-      case "Crystal":
+      case "Crystal Ball":
         alert = ":crystal: You have received a crystal ball!";
         break;
       case "Bread":

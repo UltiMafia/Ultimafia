@@ -84,8 +84,8 @@ const modifierData = {
     },
     Crystalline: {
       category: "Items",
-      internal: ["StartWithCrystal"],
-      tags: ["Revealing", "Items", "Crystal"],
+      internal: ["StartWithCrystalBall"],
+      tags: ["Revealing", "Items", "Crystal Ball"],
       description: "Starts with a crystal ball.",
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
