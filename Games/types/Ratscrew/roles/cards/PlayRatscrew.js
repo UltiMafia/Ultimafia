@@ -17,39 +17,31 @@ module.exports = class PlayRatscrew extends Card {
         action: {
           item: this,
           run: function () {
-
             let card = this.actor.CardsInHand[0];
             let readCard = this.game.readCard(this.actor.CardsInHand[0]);
             this.game.TheStack.push(card);
             this.actor.CardsInHand.splice(0, 1);
-             this.game.sendAlert(
-              `${this.actor.name} plays ${card}!`
-            );
-            if(readCard[0] == 1 || readCard[0] > 10){
+            this.game.sendAlert(`${this.actor.name} plays ${card}!`);
+            if (readCard[0] == 1 || readCard[0] > 10) {
               this.game.FacePlayer = this.actor;
               this.game.FaceCardPlayed = true;
               this.game.FaceCardBlock = false;
-              if(readCard[0] == 1){
+              if (readCard[0] == 1) {
                 this.game.FaceCardNumber = 4;
-              }
-              else if(readCard[0] == 13){
+              } else if (readCard[0] == 13) {
                 this.game.FaceCardNumber = 3;
-              }
-              else if(readCard[0] == 12){
+              } else if (readCard[0] == 12) {
                 this.game.FaceCardNumber = 2;
-              }
-              else{
+              } else {
                 this.game.FaceCardNumber = 1;
               }
-            }
-            else if(this.game.FaceCardPlayed == true){
+            } else if (this.game.FaceCardPlayed == true) {
               this.game.FaceCardNumber -= 1;
-              if(this.game.FaceCardNumber == 0){
-              this.game.FacePlayer.CardsInHand.push(...this.game.TheStack);
-              this.game.TheStack = [];
+              if (this.game.FaceCardNumber == 0) {
+                this.game.FacePlayer.CardsInHand.push(...this.game.TheStack);
+                this.game.TheStack = [];
               }
             }
-            
           },
         },
         shouldMeet: function () {
@@ -59,7 +51,7 @@ module.exports = class PlayRatscrew extends Card {
           );
         },
       },
-      "Slap": {
+      Slap: {
         actionName: "Slap",
         states: ["Call Lie"],
         flags: ["voting", "instant", "noVeg"],
@@ -70,14 +62,18 @@ module.exports = class PlayRatscrew extends Card {
             if (this.target == "Don't Slap") {
               return;
             }
-            this.game.sendAlert(
-              `${this.actor.name} Slaps!`
-            );
+            this.game.sendAlert(`${this.actor.name} Slaps!`);
             this.actor.hasSlapped = true;
-            if(this.game.TheStack.length <= 1){
+            if (this.game.TheStack.length <= 1) {
               this.actor.hasLied = true;
-            }
-            else if(this.game.readCard(this.game.TheStack[this.game.TheStack.length-1])[0] != this.game.readCard(this.game.TheStack[this.game.TheStack.length-2])[0]){
+            } else if (
+              this.game.readCard(
+                this.game.TheStack[this.game.TheStack.length - 1]
+              )[0] !=
+              this.game.readCard(
+                this.game.TheStack[this.game.TheStack.length - 2]
+              )[0]
+            ) {
               this.actor.hasLied = true;
             }
 
@@ -105,42 +101,35 @@ module.exports = class PlayRatscrew extends Card {
               return;
             }
 
-            let slappers = this.game.players.filter((p) => p.hasSlapped == true);
-            
-            
+            let slappers = this.game.players.filter(
+              (p) => p.hasSlapped == true
+            );
+
             this.game.sendAlert(
-              `${this.actor.name} challenges ${
-                slappers[0].name
-              } slap!`
+              `${this.actor.name} challenges ${slappers[0].name} slap!`
             );
             if (
-              slappers[0].hasLied ==
-              true && slappers[0].CardsInHand.length > 0) {
+              slappers[0].hasLied == true &&
+              slappers[0].CardsInHand.length > 0
+            ) {
               this.game.sendAlert(
-                `${this.actor.name} was correct! ${
-                  slappers[0].name
-                } must give ${this.actor.name} a card!`
+                `${this.actor.name} was correct! ${slappers[0].name} must give ${this.actor.name} a card!`
               );
               this.actor.CardsInHand.push(slappers[0].CardsInHand[0]);
               slappers[0].CardsInHand.splice(0, 1);
-            } 
-            else if(slappers[0].CardsInHand.length <= 0){
+            } else if (slappers[0].CardsInHand.length <= 0) {
               this.game.sendAlert(
                 `${this.actor.name} was Correct! ${slappers[0].name} dies for having no cards!`
               );
               this.actor.kill("Basic", this.actor, true);
-            }
-            else if(this.actor.CardsInHand.length <= 0){
+            } else if (this.actor.CardsInHand.length <= 0) {
               this.game.sendAlert(
                 `${this.actor.name} was incorrect! They die for having no cards!`
               );
               this.actor.kill("Basic", slappers[0], true);
-            }
-            else {
+            } else {
               this.game.sendAlert(
-                `${this.actor.name} was incorrect! They must give ${
-                  slappers[0].name
-                } a card!`
+                `${this.actor.name} was incorrect! They must give ${slappers[0].name} a card!`
               );
               slappers[0].CardsInHand.push(this.actor.CardsInHand[0]);
               this.actor.CardsInHand.splice(0, 1);
@@ -159,12 +148,9 @@ module.exports = class PlayRatscrew extends Card {
         },
         shouldMeet: function () {
           let slappers = this.game.players.filter((p) => p.hasSlapped == true);
-          return (
-            this.player.hasSlapped != true && slappers.length > 0
-          );
+          return this.player.hasSlapped != true && slappers.length > 0;
         },
       },
     };
-
   }
 };
