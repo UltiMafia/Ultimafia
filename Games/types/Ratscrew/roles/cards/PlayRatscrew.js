@@ -10,27 +10,46 @@ module.exports = class PlayRatscrew extends Card {
 
     this.meetings = {
       "Play Card": {
-        actionName: "Choose Cards",
+        actionName: "Play Card",
         states: ["Play Cards"],
         flags: ["voting", "mustAct"],
         inputType: "boolean",
         action: {
           item: this,
           run: function () {
-            this.game.sendAlert(
-              `${this.actor.name} plays ${this.target.length} Cards!`
+
+            let card = this.actor.CardsInHand[0];
+            let readCard = this.game.readCard(this.actor.CardsInHand[0]);
+            this.game.TheStack.push(card);
+            this.actor.CardsInHand.splice(0, 1);
+             this.game.sendAlert(
+              `${this.actor.name} plays ${card}!`
             );
-            for (let card of this.target) {
-              let readCard = this.game.readCard(card);
-              if (readCard[0] != this.game.RankNumber) {
-                this.actor.hasLied = true;
+            if(readCard[0] == 1 || readCard[0] > 10){
+              this.game.FacePlayer = this.actor;
+              this.game.FaceCardPlayed = true;
+              this.game.FaceCardBlock = false;
+              if(readCard[0] == 1){
+                this.game.FaceCardNumber = 4;
               }
-              this.actor.CardsInHand.splice(
-                this.actor.CardsInHand.indexOf(card),
-                1
-              );
+              else if(readCard[0] == 13){
+                this.game.FaceCardNumber = 3;
+              }
+              else if(readCard[0] == 12){
+                this.game.FaceCardNumber = 2;
+              }
+              else{
+                this.game.FaceCardNumber = 1;
+              }
             }
-            this.game.TheStack.push(...this.target);
+            else if(this.game.FaceCardPlayed == true){
+              this.game.FaceCardNumber -= 1;
+              if(this.game.FaceCardNumber == 0){
+              this.game.FacePlayer.CardsInHand.push(...this.game.TheStack);
+              this.game.TheStack = [];
+              }
+            }
+            
           },
         },
         shouldMeet: function () {
@@ -40,19 +59,38 @@ module.exports = class PlayRatscrew extends Card {
           );
         },
       },
-      Submit: {
-        actionName: "Submit",
-        states: ["Play Cards"],
-        flags: ["voting", "instant", "mustAct"],
-        inputType: "boolean",
+      "Slap": {
+        actionName: "Slap",
+        states: ["Call Lie"],
+        flags: ["voting", "instant", "noVeg"],
+        inputType: "custom",
+        targets: ["Slap", "Don't Slap"],
         action: {
-          run: function () {},
-        },
-        shouldMeet: function () {
-          return (
-            this.player.name ==
-            this.game.randomizedPlayersCopy[this.game.currentIndex].name
-          );
+          run: function () {
+            if (this.target == "Don't Slap") {
+              return;
+            }
+            this.game.sendAlert(
+              `${this.actor.name} Slaps!`
+            );
+            this.actor.hasSlapped = true;
+            if(this.game.TheStack.length <= 1){
+              this.actor.hasLied = true;
+            }
+            else if(this.game.readCard(this.game.TheStack[this.game.TheStack.length-1])[0] != this.game.readCard(this.game.TheStack[this.game.TheStack.length-2])[0]){
+              this.actor.hasLied = true;
+            }
+
+            for (let player of this.game.players) {
+              player.getMeetings().forEach((meeting) => {
+                if (IMPORTANT_MEETINGS.includes(meeting.name)) {
+                  meeting.leave(player, true);
+                } else if (ROLE_MEETINGS.includes(meeting.name)) {
+                  meeting.leave(player, true);
+                }
+              });
+            }
+          },
         },
       },
       "Call Lie": {
@@ -60,36 +98,52 @@ module.exports = class PlayRatscrew extends Card {
         states: ["Call Lie"],
         flags: ["voting", "instant", "noVeg"],
         inputType: "custom",
-        targets: ["Call Lie", "Don't Call Lie"],
+        targets: ["Challenge Slap", "Don't Challenge Slap"],
         action: {
           run: function () {
-            if (this.target == "Don't Call Lie") {
+            if (this.target == "Don't Challenge Slap") {
               return;
             }
+
+            let slappers = this.game.players.filter((p) => p.hasSlapped == true);
+            
+            
             this.game.sendAlert(
-              `${this.actor.name} calls ${
-                this.game.randomizedPlayersCopy[this.game.currentIndex].name
-              } a Liar!`
+              `${this.actor.name} challenges ${
+                slappers[0].name
+              } slap!`
             );
             if (
-              this.game.randomizedPlayersCopy[this.game.currentIndex].hasLied ==
-              true
-            ) {
-              this.game.randomizedPlayersCopy[
-                this.game.currentIndex
-              ].CardsInHand.push(...this.game.TheStack);
-              this.game.TheStack = [];
+              slappers[0].hasLied ==
+              true && slappers[0].CardsInHand.length > 0) {
               this.game.sendAlert(
                 `${this.actor.name} was correct! ${
-                  this.game.randomizedPlayersCopy[this.game.currentIndex].name
-                } gains the Stack!`
+                  slappers[0].name
+                } must give ${this.actor.name} a card!`
               );
-            } else {
-              this.actor.CardsInHand.push(...this.game.TheStack);
-              this.game.TheStack = [];
+              this.actor.CardsInHand.push(slappers[0].CardsInHand[0]);
+              slappers[0].CardsInHand.splice(0, 1);
+            } 
+            else if(slappers[0].CardsInHand.length <= 0){
               this.game.sendAlert(
-                `${this.actor.name} was incorrect! They gain the Stack!`
+                `${this.actor.name} was Correct! ${slappers[0].name} dies for having no cards!`
               );
+              this.actor.kill("Basic", this.actor, true);
+            }
+            else if(this.actor.CardsInHand.length <= 0){
+              this.game.sendAlert(
+                `${this.actor.name} was incorrect! They die for having no cards!`
+              );
+              this.actor.kill("Basic", slappers[0], true);
+            }
+            else {
+              this.game.sendAlert(
+                `${this.actor.name} was incorrect! They must give ${
+                  slappers[0].name
+                } a card!`
+              );
+              slappers[0].CardsInHand.push(this.actor.CardsInHand[0]);
+              this.actor.CardsInHand.splice(0, 1);
             }
 
             for (let player of this.game.players) {
@@ -104,38 +158,13 @@ module.exports = class PlayRatscrew extends Card {
           },
         },
         shouldMeet: function () {
+          let slappers = this.game.players.filter((p) => p.hasSlapped == true);
           return (
-            this.player.name !=
-            this.game.randomizedPlayersCopy[this.game.currentIndex].name
+            this.player.hasSlapped != true && slappers.length > 0
           );
         },
       },
     };
-    /*
-    this.listeners = {
-      start: function () {
-        if (!this.game.hasGovernor) return;
-        if (!this.game.enablePunctuation) {
-          this.meetings["Give Response"].textOptions.alphaOnlyWithSpaces = true;
-        }
-      },
-      state: function (stateInfo) {
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
 
-        if (this.game.hasGambler) {
-          this.meetings["Make Your Decision"].targets =
-            this.game.currentQuestion;
-          return;
-        }
-
-        if (!this.game.hasGovernor) return;
-
-        this.meetings["Give Response"].textOptions.enforceAcronym =
-          this.game.currentQuestion;
-      },
-    };
-    */
   }
 };
