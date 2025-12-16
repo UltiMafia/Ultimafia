@@ -34,13 +34,13 @@ module.exports = class WinIfWithAllCards extends Card {
         }
 
         for (let player of this.game.players) {
-            if (player.alive) {
-              if (player.CardsInHand.length > 0) {
-                return;
-              }
+          if (player.alive) {
+            if (player.CardsInHand.length > 0) {
+              return;
             }
           }
-          winners.addPlayer(this.player, this.name);
+        }
+        winners.addPlayer(this.player, this.name);
       },
     };
 
