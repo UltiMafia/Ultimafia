@@ -3152,6 +3152,20 @@
 
 /***********
 *
+* Ratscrew
+*
+************/
+
+.role-icon-vivid-Ratscrew-Player {
+  background-image: url("/src/images/roles/independent/gambler-vivid.png");
+}
+
+.role-icon-vivid-Ratscrew-Host {
+  background-image: url("/src/images/roles/independent/host-vivid.png");
+}
+
+/***********
+*
 * Connect Four
 *
 ***********/
