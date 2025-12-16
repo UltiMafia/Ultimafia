@@ -23,11 +23,13 @@ export default function LearnCheat(props) {
         Learn Cheat
       </Typography>
       <Typography variant="body1" paragraph>
-        In Ratscrew players will try to gather of the cards cards. Each round players will blindly
-        play a card into the stack. Any player may slap the card if the played card is the same as the last card.
-        If a slap is made incorrectly other players may challenge the slap. If a slap is correctly challenged
-        the slappers gives the challenger a card. If incorrectly challenged the slapper takes a card from 
-        the challenger. When a successful slap is made the slapper gains the stack.
+        In Ratscrew players will try to gather of the cards cards. Each round
+        players will blindly play a card into the stack. Any player may slap the
+        card if the played card is the same as the last card. If a slap is made
+        incorrectly other players may challenge the slap. If a slap is correctly
+        challenged the slappers gives the challenger a card. If incorrectly
+        challenged the slapper takes a card from the challenger. When a
+        successful slap is made the slapper gains the stack.
       </Typography>
       <Accordion>
         <AccordionSummary>
