@@ -45,6 +45,7 @@ const protips = {
     "All In!!!!",
   ],
   Cheat: ["Count the cards!", "Call It", "Cheaters sometimes prosper!"],
+  Ratscrew: ["Count the cards!", "Slap It", "Embrace your inner Pimp!"],
   "Connect Four": [
     "Pay attention to the other players.",
     "Beware of diagonals.",
