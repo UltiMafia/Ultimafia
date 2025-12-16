@@ -22,6 +22,7 @@ import CreateWackyWordsSetup from "./CreateWackyWordsSetup";
 import CreateLiarsDiceSetup from "./CreateLiarsDiceSetup";
 import CreateTexasHoldEmSetup from "./CreateTexasHoldEmSetup";
 import CreateCheatSetup from "./CreateCheatSetup";
+import CreateRatscrewSetup from "./CreateRatscrewSetup";
 import CreateBattlesnakesSetup from "./CreateBattlesnakesSetup";
 import CreateDiceWarsSetup from "./CreateDiceWarsSetup";
 import CreateConnectFourSetup from "./CreateConnectFourSetup";
@@ -75,6 +76,8 @@ export default function CreateSetup(props) {
       case "Texas Hold Em":
         return <CreateTexasHoldEmSetup />;
       case "Cheat":
+        return <CreateCheatSetup />;
+      case "Ratscrew":
         return <CreateCheatSetup />;
       case "Battlesnakes":
         return <CreateBattlesnakesSetup />;
