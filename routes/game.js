@@ -1162,6 +1162,13 @@ const settingsChecks = {
       MaxRounds,
     };
   },
+  Ratscrew: (settings, setup) => {
+    let MaxRounds = settings.MaxRounds;
+
+    return {
+      MaxRounds,
+    };
+  },
   Battlesnakes: (settings, setup) => {
     const boardSize = settings.boardSize;
 
