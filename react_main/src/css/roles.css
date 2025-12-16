@@ -2701,6 +2701,10 @@
   background-image: url("/src/images/modifiers/regretful.png");
 }
 
+.modifier-Mafia-Renegade {
+  background-image: url("/src/images/modifiers/renegade.png");
+}
+
 .modifier-Mafia-Resolute {
   background-image: url("/src/images/modifiers/resolute.png");
 }
