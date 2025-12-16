@@ -277,6 +277,7 @@ const artContributors = {
       "Barista:vivid",
       "Poet:vivid",
       "Time Loop:vivid",
+      "Mutation:vivid",
       //Skins
     ],
   },
@@ -364,6 +365,8 @@ const artContributors = {
       "Trick-Or-Treater:vivid",
       "Toymaker:vivid",
       "Sphinx:vivid",
+      "Sleuth:vivid",
+      "Revelation:vivid",
       //Skins
       "Cop:halloween",
       "Doctor:halloween",

@@ -23,7 +23,7 @@ module.exports = class TrickedWares extends Card {
             "Bomb",
             "Knife",
             "Whiskey",
-            "Crystal",
+            "Crystal Ball",
             "Key",
             "Candle",
             "Falcon",

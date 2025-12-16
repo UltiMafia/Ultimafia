@@ -1,9 +1,9 @@
 const Item = require("../Item");
 const { PRIORITY_REVEAL_DEFAULT } = require("../const/Priority");
 
-module.exports = class Crystal extends Item {
+module.exports = class CrystalBall extends Item {
   constructor(options) {
-    super("Crystal");
+    super("Crystal Ball");
 
     this.broken = options?.broken;
     this.magicCult = options?.magicCult;

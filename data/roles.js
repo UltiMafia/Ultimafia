@@ -125,7 +125,7 @@ const bombDef = `If a Bomb's holder is killed, their killer is killed.`;
 const keyDef = `A Key can be used at night to block the actions of anyone visits them.`;
 const shieldDef = `A Shield can be used at night to redirect kills targeting the holder on to a random player of the same alignment, if possible.`;
 const whiskeyDef = `Whiskey can be used during the day to block a selected player's actions next night.`;
-const crystalDef = `Crystal Ball allows its holder to select a player each night. If the holder dies, the last selected player will be revealed.`;
+const crystalBallDef = `Crystal Ball allows its holder to select a player each night. If the holder dies, the last selected player will be revealed.`;
 const falconDef = `A Falcon can be used at night to learn who a selected player visits.`;
 const tractDef = `A Tract will prevent its holder from being converted one time.`;
 const gunDef = `A Gun can be used during the day to kill a selected player.`;
@@ -611,14 +611,14 @@ const roleData = {
         "Revealing",
         "Information",
         "Items",
-        "Crystal",
+        "Crystal Ball",
         "Visiting",
         "Kill Interaction",
         "Advanced",
       ],
       description: [
         `Each night, can choose to visit one player and give them a Crystal Ball.`,
-        crystalDef,
+        crystalBallDef,
       ],
       nightOrder: [["Give Crystal Ball", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -752,7 +752,7 @@ const roleData = {
         "Each night, can choose to visit one player and check them.",
         "If no one visits Santa during the night, will learn whether the player they checked is naughty or nice.",
         "Each night, can choose to visit one player and give them an item.",
-        "Santa can choose to give a Gun, Knife, Armor, Bomb, Crystal, Whiskey, Bread, Key, Falcon, Tract, Syringe, or Coffee.",
+        "Santa can choose to give a Gun, Knife, Armor, Bomb, Crystal Ball, Whiskey, Bread, Key, Falcon, Tract, Syringe, or Coffee.",
       ],
       nightOrder: [
         ["Give Gifts", PRIORITY_ITEM_GIVER_EARLY],

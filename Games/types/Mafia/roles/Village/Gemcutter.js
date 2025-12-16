@@ -8,7 +8,7 @@ module.exports = class Gemcutter extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "GiveCrystal",
+      "GiveCrystalBall",
     ];
   }
 };
