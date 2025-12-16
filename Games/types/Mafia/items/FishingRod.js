@@ -34,8 +34,8 @@ const itemPool = [
   "Key",
   "Key",
   "Key",
-  "Crystal",
-  "Crystal",
+  "Crystal Ball",
+  "Crystal Ball",
 ];
 const fishPool = [
   "Trout",

@@ -29,7 +29,7 @@ module.exports = class ForageItem extends Card {
             "Bomb",
             "Knife",
             "Whiskey",
-            "Crystal",
+            "Crystal Ball",
             "Key",
             "Candle",
             "Falcon",

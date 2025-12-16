@@ -34,7 +34,7 @@ module.exports = class GivePresents extends Card {
           "Armor",
           "Bomb",
           "Knife",
-          "Crystal",
+          "Crystal Ball",
           "Whiskey",
           "Bread",
           "Key",

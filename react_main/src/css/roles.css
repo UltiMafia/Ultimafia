@@ -416,6 +416,10 @@
   background-image: url("/src/images/roles/village/detective-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Sleuth {
+  background-image: url("/src/images/roles/village/sleuth-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Drunk {
   background-image: url("/src/images/roles/village/drunk-vivid.png");
 }
@@ -2181,6 +2185,14 @@
   background-image: url("/src/images/roles/event/self-awareness-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Mutation {
+  background-image: url("/src/images/roles/event/mutation-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Revelation {
+  background-image: url("/src/images/roles/event/revelation-vivid.png");
+}
+
 /*
 /*
 /*------------------Items----------------------*/
@@ -2219,8 +2231,8 @@
   background-image: url("/src/images/items/timebomb.png");
 }
 
-.item-Mafia-Crystal {
-  background-image: url("/src/images/items/crystal.png");
+.item-Mafia-Crystal-Ball {
+  background-image: url("/src/images/items/crystal-ball.png");
 }
 
 .item-Mafia-Whiskey {
@@ -2341,6 +2353,10 @@
   background-image: url("/src/images/modifiers/bloodthirsty-hemophilic.png");
 }
 
+.modifier-Mafia-Bland {
+  background-image: url("/src/images/modifiers/modest.png");
+}
+
 .modifier-Mafia-Boastful {
   background-image: url("/src/images/modifiers/respected-boastful.png");
 }
@@ -2397,6 +2413,10 @@
   background-image: url("/src/images/modifiers/clumsy.png");
 }
 
+.modifier-Mafia-Covert {
+  background-image: url("/src/images/modifiers/wannabe.png");
+}
+
 .modifier-Mafia-Commuting {
   background-image: url("/src/images/modifiers/commuting.png");
 }
@@ -2417,8 +2437,8 @@
   background-image: url("/src/images/modifiers/creamed.png");
 }
 
-.modifier-Mafia-Complex {
-  background-image: url("/src/images/modifiers/complex.png");
+.modifier-Mafia-Cursed {
+  background-image: url("/src/images/modifiers/chaotic.png");
 }
 
 .modifier-Mafia-Crystalline {
@@ -2505,8 +2525,16 @@
   background-image: url("/src/images/modifiers/gunslinging.png");
 }
 
+.modifier-Mafia-Haunting {
+  background-image: url("/src/images/modifiers/vengeful.png");
+}
+
 .modifier-Mafia-Humble {
   background-image: url("/src/images/modifiers/humble.png");
+}
+
+.modifier-Mafia-Hylic {
+  background-image: url("/src/images/modifiers/hylic.png");
 }
 
 .modifier-Mafia-Inclusive {
@@ -2527,6 +2555,10 @@
 
 .modifier-Mafia-Inverse {
   background-image: url("/src/images/modifiers/inverse.png");
+}
+
+.modifier-Mafia-Keyed {
+  background-image: url("/src/images/modifiers/keyed.png");
 }
 
 .modifier-Mafia-Kleptomaniac {
@@ -2641,12 +2673,20 @@
   background-image: url("/src/images/modifiers/omniscient.png");
 }
 
+.modifier-Mafia-Overt {
+  background-image: url("/src/images/modifiers/overt.png");
+}
+
 .modifier-Mafia-X-Shot {
   background-image: url("/src/images/modifiers/x-shot.png");
 }
 
 .modifier-Mafia-Paranoid {
   background-image: url("/src/images/modifiers/paranoid.png");
+}
+
+.modifier-Mafia-Paranormal {
+  background-image: url("/src/images/modifiers/lone.png");
 }
 
 .modifier-Mafia-Peeking {
@@ -2663,6 +2703,14 @@
 
 .modifier-Mafia-Pious {
   background-image: url("/src/images/modifiers/pious.png");
+}
+
+.modifier-Mafia-Playful {
+  background-image: url("/src/images/modifiers/playful.png");
+}
+
+.modifier-Mafia-Pneumatic {
+  background-image: url("/src/images/modifiers/pneumatic.png");
 }
 
 .modifier-Mafia-Preoccupied {
@@ -2843,6 +2891,10 @@
 
 .modifier-Mafia-Versatile {
   background-image: url("/src/images/modifiers/versatile.png");
+}
+
+.modifier-Mafia-Voteless {
+  background-image: url("/src/images/modifiers/voteless.png");
 }
 
 .modifier-Mafia-Wannabe {
