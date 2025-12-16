@@ -27,15 +27,26 @@ module.exports = class WinIfWithAllCards extends Card {
             return;
           }
         }
-        if(this.game.alivePlayers().filter((p) => p.role.name != "Host").length == 1 && this.player.alive){
+        if (
+          this.game.alivePlayers().filter((p) => p.role.name != "Host")
+            .length == 1 &&
+          this.player.alive
+        ) {
           winners.addPlayer(this.player, this.name);
-        return;
+          return;
         }
-        let playersWithCard = this.game.alivePlayers().filter((p) => p.role.name != "Host" && p != this.player && p.CardsInHand.length > 0);
-          if (playersWithCard.length <= 0 && this.player.alive) {
-             winners.addPlayer(this.player, this.name);
-        return;
-          }
+        let playersWithCard = this.game
+          .alivePlayers()
+          .filter(
+            (p) =>
+              p.role.name != "Host" &&
+              p != this.player &&
+              p.CardsInHand.length > 0
+          );
+        if (playersWithCard.length <= 0 && this.player.alive) {
+          winners.addPlayer(this.player, this.name);
+          return;
+        }
       },
     };
 

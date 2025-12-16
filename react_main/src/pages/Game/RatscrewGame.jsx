@@ -179,10 +179,16 @@ export function ThePot() {
           </tbody>
           <tbody>
             Top Card:
-            {<div
-              key={0}
-              className={`card ${extraInfo.TheStack.length > 0 ? `c${extraInfo.TheStack[extraInfo.TheStack.length-1]}` : "card-unknown"}`}
-            ></div>}
+            {
+              <div
+                key={0}
+                className={`card ${
+                  extraInfo.TheStack.length > 0
+                    ? `c${extraInfo.TheStack[extraInfo.TheStack.length - 1]}`
+                    : "card-unknown"
+                }`}
+              ></div>
+            }
           </tbody>
           <tbody>
             The Stack:
@@ -271,10 +277,7 @@ function LiarscardPlayerRow({
       >
         <div className="current-rolls">
           {CardsInHand.map((value, index) => (
-            <div
-              key={index}
-              className={`card ${"card-unknown"}`}
-            ></div>
+            <div key={index} className={`card ${"card-unknown"}`}></div>
           ))}
         </div>
       </div>

@@ -13,7 +13,7 @@ module.exports = class RatscrewDrawDiscardPile extends DrawDiscardPile {
       temp.push(`${Standard_Deck[x]}`);
     }
 */
- for (let x = 0; x < Test_Deck.length; x++) {
+    for (let x = 0; x < Test_Deck.length; x++) {
       temp.push(`${Test_Deck[x]}`);
     }
     super.initCards(temp);

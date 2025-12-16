@@ -148,7 +148,9 @@ module.exports = class RatscrewGame extends Game {
       this.Dealer = this.randomizedPlayersCopy[0];
     }
 
-    let cardAmount = Math.floor(this.drawDiscardPile.getDrawPileSize() / this.randomizedPlayersCopy.length);
+    let cardAmount = Math.floor(
+      this.drawDiscardPile.getDrawPileSize() / this.randomizedPlayersCopy.length
+    );
 
     this.dealCards(cardAmount);
   }
@@ -204,7 +206,13 @@ module.exports = class RatscrewGame extends Game {
       }
       if (this.FaceCardPlayed == true) {
         this.FaceCardBlock = true;
-        this.sendAlert(`${this.randomizedPlayersCopy[this.currentIndex].name} must play a face card in the next ${this.FaceCardNumber} or ${this.FacePlayer.name} gains the stack!`);
+        this.sendAlert(
+          `${
+            this.randomizedPlayersCopy[this.currentIndex].name
+          } must play a face card in the next ${this.FaceCardNumber} or ${
+            this.FacePlayer.name
+          } gains the stack!`
+        );
       }
       this.sendAlert(
         `${this.randomizedPlayersCopy[this.currentIndex].name}'s Turn!`
