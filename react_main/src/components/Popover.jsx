@@ -923,6 +923,17 @@ export function parseGamePopover(game) {
         </InfoSection>
       );
       break;
+      case "Ratscrew":
+      result.push(
+        <InfoSection title="Ratscrew specific settings">
+          <InfoRow
+            title="Max Rounds"
+            content={game.settings.gameTypeOptions.MaxRounds}
+            key="MaxRounds"
+          />
+        </InfoSection>
+      );
+      break;
   }
 
   return result;
