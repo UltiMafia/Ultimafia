@@ -213,6 +213,7 @@ const modifierData = {
   },
   "Texas Hold Em": {},
   Cheat: {},
+  Ratscrew: {},
   "Connect Four": {},
 };
 

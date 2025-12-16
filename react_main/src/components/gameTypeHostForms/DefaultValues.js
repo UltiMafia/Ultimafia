@@ -16,6 +16,7 @@ const HOST_OPTIONS_VERSIONS = {
   "Secret Dictator": 1,
   "Wacky Words": 1,
   Cheat: 1,
+  Ratscrew: 1,
   "Connect Four": 1,
 };
 
@@ -111,6 +112,11 @@ var defaultOptions = {
     showdownLength: 2,
     playCardsLength: 2,
     callLieLength: 2,
+  },
+  Ratscrew: existingHostOptions["Ratscrew"] || {
+    ...commonHostOptions,
+    MaxRounds: 0,
+    playCardsLength: 2,
   },
   "Connect Four": existingHostOptions["Connect Four"] || {
     ...commonHostOptions,

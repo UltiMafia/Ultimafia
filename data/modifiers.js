@@ -1326,6 +1326,7 @@ const modifierData = {
   "Liars Dice": {},
   "Texas Hold Em": {},
   Cheat: {},
+  Ratscrew: {},
   Battlesnakes: {},
   "Connect Four": {},
   "Dice Wars": {},

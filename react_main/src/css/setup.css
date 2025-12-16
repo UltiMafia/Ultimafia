@@ -114,6 +114,10 @@
   background-image: url("/src/images/game_icons/Cheat.png");
 }
 
+.game-icon.Ratscrew {
+  background-image: url("/src/images/game_icons/Cheat.png");
+}
+
 .game-icon.Battlesnakes {
   background-image: url("/src/images/game_icons/Battlesnakes.png");
 }

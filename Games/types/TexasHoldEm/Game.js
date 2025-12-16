@@ -408,6 +408,9 @@ module.exports = class TexasHoldEmGame extends Game {
       ];
 
       player.ShowdownCards = this.sortCards(player.ShowdownCards);
+      if (player.ShowdownCards.length < 5) {
+        return;
+      }
       this.sendAlert(`${player.name} uses ${player.ShowdownCards.join(", ")}!`);
       for (let card of player.ShowdownCards) {
         let tempCard = this.readCard(card);

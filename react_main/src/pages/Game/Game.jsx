@@ -26,6 +26,7 @@ import WackyWordsGame from "./WackyWordsGame";
 import LiarsDiceGame from "./LiarsDiceGame";
 import TexasHoldEmGame from "./TexasHoldEmGame";
 import CheatGame from "./CheatGame";
+import RatscrewGame from "./RatscrewGame";
 import BattlesnakesGame from "./BattlesnakesGame";
 import DiceWarsGame from "./DiceWarsGame";
 import ConnectFourGame from "./ConnectFourGame";
@@ -874,6 +875,7 @@ export default function Game() {
             {gameType === "Liars Dice" && <LiarsDiceGame />}
             {gameType === "Texas Hold Em" && <TexasHoldEmGame />}
             {gameType === "Cheat" && <CheatGame />}
+            {gameType === "Ratscrew" && <RatscrewGame />}
             {gameType === "Battlesnakes" && <BattlesnakesGame />}
             {(gameType === "Dice Wars" || gameType === "DiceWars") && (
               <DiceWarsGame />
