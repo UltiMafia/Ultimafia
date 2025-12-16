@@ -78,7 +78,7 @@ export default function CreateSetup(props) {
       case "Cheat":
         return <CreateCheatSetup />;
       case "Ratscrew":
-        return <CreateCheatSetup />;
+        return <CreateRatscrewSetup />;
       case "Battlesnakes":
         return <CreateBattlesnakesSetup />;
       case "Dice Wars":

@@ -11,7 +11,7 @@ module.exports = class RatscrewGame extends Game {
   constructor(options) {
     super(options);
 
-    this.type = "Cheat";
+    this.type = "Ratscrew";
     this.Player = Player;
     this.states = [
       {
@@ -30,7 +30,7 @@ module.exports = class RatscrewGame extends Game {
       },
       {
         name: "Call Lie",
-        length: 1000 * 15,
+        length: 1000 * 10,
       },
     ];
 
@@ -148,7 +148,7 @@ module.exports = class RatscrewGame extends Game {
       this.Dealer = this.randomizedPlayersCopy[0];
     }
 
-    let cardAmount = Math.floor(52 / this.randomizedPlayersCopy.length);
+    let cardAmount = Math.floor(this.drawDiscardPile.getDrawPileSize() / this.randomizedPlayersCopy.length);
 
     this.dealCards(cardAmount);
   }
@@ -191,16 +191,20 @@ module.exports = class RatscrewGame extends Game {
           player.CardsInHand.push(...this.TheStack);
           this.sendAlert(`${player.name} gains the stack!`);
           this.TheStack = [];
+          this.FaceCardBlock = false;
+          this.FaceCardPlayed = false;
+          this.FacePlayer = null;
         }
 
         player.hasSlapped = false;
         player.hasLied = false;
       }
-      if (this.FaceCardBlock == true) {
+      if (this.FaceCardBlock != true) {
         this.incrementCurrentIndex();
       }
       if (this.FaceCardPlayed == true) {
         this.FaceCardBlock = true;
+        this.sendAlert(`${this.randomizedPlayersCopy[this.currentIndex].name} must play a face card in the next ${this.FaceCardNumber} or ${this.FacePlayer.name} gains the stack!`);
       }
       this.sendAlert(
         `${this.randomizedPlayersCopy[this.currentIndex].name}'s Turn!`
@@ -251,7 +255,6 @@ module.exports = class RatscrewGame extends Game {
       if (player.alive) {
         let Cards = this.drawDiscardPile.drawMultiple(amount);
         player.CardsInHand.push(...Cards);
-        player.sendAlert(`${Cards.join(", ")} have been added to your Hand!`);
       }
     });
   }

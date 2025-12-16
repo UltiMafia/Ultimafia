@@ -21,7 +21,7 @@ module.exports = class PlayRatscrew extends Card {
             let readCard = this.game.readCard(this.actor.CardsInHand[0]);
             this.game.TheStack.push(card);
             this.actor.CardsInHand.splice(0, 1);
-            this.game.sendAlert(`${this.actor.name} plays ${card}!`);
+            this.game.sendAlert(`${this.actor.name} plays a card!`);
             if (readCard[0] == 1 || readCard[0] > 10) {
               this.game.FacePlayer = this.actor;
               this.game.FaceCardPlayed = true;
@@ -60,7 +60,7 @@ module.exports = class PlayRatscrew extends Card {
       },
       Slap: {
         actionName: "Slap",
-        states: ["Call Lie"],
+        states: ["Slap"],
         flags: ["voting", "instant", "noVeg"],
         inputType: "custom",
         targets: ["Slap", "Don't Slap"],
@@ -122,12 +122,14 @@ module.exports = class PlayRatscrew extends Card {
               this.game.sendAlert(
                 `${this.actor.name} was correct! ${slappers[0].name} must give ${this.actor.name} a card!`
               );
+              slappers[0].hasSlapped = false;
               this.actor.CardsInHand.push(slappers[0].CardsInHand[0]);
               slappers[0].CardsInHand.splice(0, 1);
             } else if (slappers[0].CardsInHand.length <= 0) {
               this.game.sendAlert(
                 `${this.actor.name} was Correct! ${slappers[0].name} dies for having no cards!`
               );
+              slappers[0].hasSlapped = false;
               this.actor.kill("Basic", this.actor, true);
             } else if (this.actor.CardsInHand.length <= 0) {
               this.game.sendAlert(

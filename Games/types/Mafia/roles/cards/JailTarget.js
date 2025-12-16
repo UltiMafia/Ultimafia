@@ -52,7 +52,6 @@ module.exports = class JailTarget extends Card {
           }
           for (let action of this.game.actions[0]) {
             if (action.hasLabel("condemn")) {
-              this.player.sendAlert("condemn is true");
               return false;
             }
           }
@@ -66,9 +65,6 @@ module.exports = class JailTarget extends Card {
             if (!this.role.hasAbility(["Meeting", "Jail"])) {
               return;
             }
-            this.actor.sendAlert(
-              "JailPlaceholder Found " + this.role.data.meetingName
-            );
             if (this.dominates()) {
               this.target.holdItem(
                 "Handcuffs",

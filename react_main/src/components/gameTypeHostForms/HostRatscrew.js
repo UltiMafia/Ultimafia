@@ -98,16 +98,6 @@ export default function HostRatscrew() {
       max: 3,
       step: 0.5,
     },
-    {
-      label: "Call Lie (minutes)",
-      ref: "callLieLength",
-      type: "number",
-      showIf: "configureDuration",
-      value: defaults.showdownLength,
-      min: 0.5,
-      max: 3,
-      step: 0.5,
-    },
   ];
 
   function onHostGame(setupId, getFormFieldValue) {

@@ -178,19 +178,11 @@ export function ThePot() {
             {extraInfo.RoundNumber}
           </tbody>
           <tbody>
-            Current Card Rank:
-            {extraInfo.RankNumber != 1 &&
-            extraInfo.RankNumber != 11 &&
-            extraInfo.RankNumber != 12 &&
-            extraInfo.RankNumber != 13
-              ? extraInfo.RankNumber
-              : extraInfo.RankNumber == 1
-              ? "Ace"
-              : extraInfo.RankNumber == 11
-              ? "Jack"
-              : extraInfo.RankNumber == 12
-              ? "Queen"
-              : "King"}
+            Top Card:
+            {<div
+              key={0}
+              className={`card ${extraInfo.TheStack.length > 0 ? `c${extraInfo.TheStack[extraInfo.TheStack.length-1]}` : "card-unknown"}`}
+            ></div>}
           </tbody>
           <tbody>
             The Stack:
@@ -281,9 +273,7 @@ function LiarscardPlayerRow({
           {CardsInHand.map((value, index) => (
             <div
               key={index}
-              className={`card ${
-                isCurrentPlayer ? `c${value}` : "card-unknown"
-              }`}
+              className={`card ${"card-unknown"}`}
             ></div>
           ))}
         </div>

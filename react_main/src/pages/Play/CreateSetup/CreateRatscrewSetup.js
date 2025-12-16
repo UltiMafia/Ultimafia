@@ -7,7 +7,7 @@ import { SiteInfoContext } from "../../../Contexts";
 import { useForm } from "../../../components/Form";
 import { useErrorAlert } from "../../../components/Alerts";
 
-export default function CreateCheatSetup() {
+export default function CreateRatscrewSetup() {
   const gameType = "Ratscrew";
   const location = useLocation();
   const params = new URLSearchParams(location.search);
