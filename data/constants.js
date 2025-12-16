@@ -60,6 +60,7 @@ module.exports = {
     "Liars Dice",
     "Texas Hold Em",
     "Cheat",
+    "Ratscrew",
     "Battlesnakes",
     "Dice Wars",
     "Connect Four",
@@ -89,6 +90,7 @@ module.exports = {
     "Liars Dice": ["Guess Dice"],
     "Texas Hold Em": ["Place Bets", "Showdown"],
     Cheat: ["Play Cards", "Call Lie"],
+    Cheat: ["Play Cards", "Slap", "Call Lie"],
     Battlesnakes: ["Day"],
     "Dice Wars": ["Play"],
     "Connect Four": ["Turn"],
@@ -231,6 +233,13 @@ module.exports = {
         default: 1 * 60 * 1000,
       },
       "Call Lie": {
+        min: 30 * 1000,
+        max: 5 * 60 * 1000,
+        default: 1 * 60 * 1000,
+      },
+    },
+    Ratscrew: {
+      "Play Cards": {
         min: 30 * 1000,
         max: 5 * 60 * 1000,
         default: 1 * 60 * 1000,
