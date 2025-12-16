@@ -308,6 +308,7 @@ const AchievementData = {
   "Texas Hold Em": {},
   Cheat: {},
   "Connect Four": {},
+  Ratscrew: {},
 };
 
 //export const achievementList = AchievementData
