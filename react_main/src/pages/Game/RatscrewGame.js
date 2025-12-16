@@ -20,7 +20,7 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import "css/game.css";
 import "css/gameCardGames.css";
 
-export default function CheatGame(props) {
+export default function RatscrewGame(props) {
   const game = useContext(GameContext);
   const isPhoneDevice = useIsPhoneDevice();
 
@@ -35,7 +35,7 @@ export default function CheatGame(props) {
 
   const playBellRef = useRef(false);
 
-  const gameType = "Cheat";
+  const gameType = "Ratscrew";
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
