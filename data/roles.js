@@ -6369,6 +6369,18 @@ const roleData = {
       description: ["Facilitates the game."],
     },
   },
+  Ratscrew: {
+    Player: {
+      alignment: "Town",
+      tags: ["None"],
+      description: ["Can play cards and Slap."],
+    },
+    Host: {
+      alignment: "Host",
+      tags: ["None"],
+      description: ["Facilitates the game."],
+    },
+  },
   Battlesnakes: {
     Snake: {
       alignment: "Town",
