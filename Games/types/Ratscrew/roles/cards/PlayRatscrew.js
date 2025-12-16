@@ -39,7 +39,9 @@ module.exports = class PlayRatscrew extends Card {
               this.game.FaceCardNumber -= 1;
               if (this.game.FaceCardNumber == 0) {
                 this.game.FacePlayer.CardsInHand.push(...this.game.TheStack);
-                this.game.sendAlert(`${this.game.FacePlayer.name} gains the stack!`);
+                this.game.sendAlert(
+                  `${this.game.FacePlayer.name} gains the stack!`
+                );
                 this.game.TheStack = [];
                 this.game.FacePlayer = null;
                 this.game.FaceCardNumber = 9;
