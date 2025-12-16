@@ -1310,14 +1310,12 @@ const modifierData = {
       description: "Attends a meeting with all other Social players.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
-
-    /*
-    Red: {
+    Renegade: {
+      category: "Other",
       internal: ["BecomeRedMafia"],
       tags: ["Alignments"],
-      description: "Joins the Red Mafia.",
+      description: "Mafia roles with this modifier applied join the Red Mafia.",
     },
-    */
   },
   Resistance: {},
   Jotto: {},

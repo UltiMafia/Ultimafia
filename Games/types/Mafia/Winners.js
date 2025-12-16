@@ -127,6 +127,8 @@ module.exports = class MafiaWinners extends Winners {
         return "Nobody believed in the words of the Prophet until the day finally came and they were right.";
       case "Pyromaniac":
         return "In the midst of their crisis, the whole town was burned to the ground by a Pyromaniac!";
+      case "Red Mafia":
+        return ":rose: The renegade Red Mafia has won, giving the kiss of death to their rivals!";
       case "Ripper":
         return "The streets used to be riddled with evildoers, but now people only remember the name of the Ripper.";
       case "Rival":
