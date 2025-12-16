@@ -31,6 +31,7 @@ import HostWackyWords from "./gameTypeHostForms/HostWackyWords";
 import HostLiarsDice from "./gameTypeHostForms/HostLiarsDice";
 import HostTexasHoldEm from "./gameTypeHostForms/HostTexasHoldEm";
 import HostCheat from "./gameTypeHostForms/HostCheat";
+import HostRatscrew from "./gameTypeHostForms/HostRatscrew";
 import HostBattlesnakes from "./gameTypeHostForms/HostBattlesnakes";
 import HostDiceWars from "./gameTypeHostForms/HostDiceWars";
 import HostConnectFour from "./gameTypeHostForms/HostConnectFour";
@@ -65,6 +66,8 @@ export default function HostGameDialogue({ open, setOpen, setup }) {
         return HostTexasHoldEm();
       case "Cheat":
         return HostCheat();
+      case "Ratscrew":
+        return HostRatscrew();
       case "Battlesnakes":
         return HostBattlesnakes();
       case "Dice Wars":
