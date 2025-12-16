@@ -923,7 +923,7 @@ export function parseGamePopover(game) {
         </InfoSection>
       );
       break;
-      case "Ratscrew":
+    case "Ratscrew":
       result.push(
         <InfoSection title="Ratscrew specific settings">
           <InfoRow
