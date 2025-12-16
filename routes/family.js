@@ -284,9 +284,12 @@ router.get("/:familyId/profile", async function (req, res) {
     var allTrophies = [];
     if (memberIds.length > 0) {
       try {
-        allTrophies = await models.Trophy.find({ ownerId: { $in: memberIds } })
+        allTrophies = await models.Trophy.find({
+          ownerId: { $in: memberIds },
+          revoked: { $ne: true },
+        })
           .populate("owner", "id name avatar vanityUrl")
-          .select("id name ownerId owner createdAt -_id")
+          .select("id name ownerId owner type createdAt -_id")
           .sort("-createdAt")
           .lean();
       } catch (trophyError) {
@@ -299,6 +302,7 @@ router.get("/:familyId/profile", async function (req, res) {
       id: trophy.id,
       name: trophy.name,
       ownerId: trophy.ownerId,
+      type: trophy.type || "silver", // Default to silver for backward compatibility
       owner: trophy.owner
         ? {
             id: trophy.owner.id,

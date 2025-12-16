@@ -1233,31 +1233,62 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    // "Award Trophy": {
-    //   perm: "awardTrophy",
-    //   category: "User Management",
-    //   args: [
-    //     {
-    //       label: "User",
-    //       name: "userId",
-    //       type: "user_search",
-    //     },
-    //     {
-    //       label: "Trophy Name",
-    //       name: "name",
-    //       type: "text",
-    //     },
-    //   ],
-    //   run: function () {
-    //     axios
-    //       .post("/api/mod/awardTrophy", argValues)
-    //       .then(() => {
-    //         siteInfo.showAlert("Trophy awarded.", "success");
-    //         commandRan();
-    //       })
-    //       .catch(errorAlert);
-    //   },
-    // },
+    "Award Trophy": {
+      perm: "awardTrophy",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+        {
+          label: "Trophy Name",
+          name: "name",
+          type: "text",
+        },
+        {
+          label: "Trophy Type",
+          name: "type",
+          type: "select",
+          options: [
+            { value: "gold", label: "Gold" },
+            { value: "silver", label: "Silver" },
+            { value: "bronze", label: "Bronze" },
+          ],
+          default: "silver",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/awardTrophy", argValues)
+          .then(() => {
+            siteInfo.showAlert("Trophy awarded.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Revoke Trophy": {
+      perm: "awardTrophy",
+      category: "User Management",
+      args: [
+        {
+          label: "Trophy ID",
+          name: "trophyId",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/revokeTrophy", argValues)
+          .then(() => {
+            siteInfo.showAlert("Trophy revoked.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Refund Game": {
       perm: "refundGame",
       category: "Game Management",

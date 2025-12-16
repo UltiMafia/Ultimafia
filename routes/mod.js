@@ -1,6 +1,7 @@
 const express = require("express");
 const shortid = require("shortid");
 const constants = require("../data/constants");
+const trophyData = require("../data/trophies");
 const DailyChallengeData = require("../data/DailyChallenge");
 const roleData = require("../data/roles");
 const Random = require("../lib/Random");
@@ -1548,6 +1549,9 @@ router.post("/awardTrophy", async (req, res) => {
 
     var userIdToAward = String(req.body.userId || "").trim();
     var trophyName = String(req.body.name || "").trim();
+    var trophyType = String(req.body.type || trophyData.defaultTrophyType)
+      .trim()
+      .toLowerCase();
 
     if (!userIdToAward) {
       res.status(400);
@@ -1569,6 +1573,16 @@ router.post("/awardTrophy", async (req, res) => {
       return;
     }
 
+    if (!trophyData.trophyTypes.includes(trophyType)) {
+      res.status(400);
+      res.send(
+        `Invalid trophy type. Must be one of: ${trophyData.trophyTypes.join(
+          ", "
+        )}`
+      );
+      return;
+    }
+
     const userToAward = await models.User.findOne({
       id: userIdToAward,
       deleted: false,
@@ -1585,6 +1599,7 @@ router.post("/awardTrophy", async (req, res) => {
       name: trophyName,
       ownerId: userIdToAward,
       owner: userToAward._id,
+      type: trophyType,
       createdBy: userId,
     });
     await trophy.save();
@@ -1607,12 +1622,80 @@ router.post("/awardTrophy", async (req, res) => {
       id: trophy.id,
       name: trophy.name,
       ownerId: trophy.ownerId,
+      type: trophy.type,
       createdAt: trophy.createdAt,
     });
   } catch (e) {
     logger.error(e);
     res.status(500);
     res.send("Error awarding trophy.");
+  }
+});
+
+router.post("/revokeTrophy", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var perm = "awardTrophy"; // Use same permission as awarding
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    var trophyId = String(req.body.trophyId || "").trim();
+
+    if (!trophyId) {
+      res.status(400);
+      res.send("Trophy ID is required.");
+      return;
+    }
+
+    const trophy = await models.Trophy.findOne({
+      id: trophyId,
+      revoked: { $ne: true },
+    });
+
+    if (!trophy) {
+      res.status(404);
+      res.send("Trophy not found or already revoked.");
+      return;
+    }
+
+    await models.Trophy.updateOne(
+      { id: trophyId },
+      {
+        $set: {
+          revoked: true,
+          revokedAt: new Date(),
+          revokedBy: userId,
+        },
+      }
+    );
+
+    await routeUtils.createNotification(
+      {
+        content: `Your "${trophy.name}" trophy has been revoked.`,
+        icon: "fas fa-trophy",
+        link: `/user/${trophy.ownerId}`,
+      },
+      [trophy.ownerId]
+    );
+
+    routeUtils.createModAction(userId, "Revoke Trophy", [
+      trophy.ownerId,
+      trophy.name,
+      trophyId,
+    ]);
+
+    res.send({
+      id: trophy.id,
+      name: trophy.name,
+      ownerId: trophy.ownerId,
+      revoked: true,
+      revokedAt: new Date(),
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error revoking trophy.");
   }
 });
 
