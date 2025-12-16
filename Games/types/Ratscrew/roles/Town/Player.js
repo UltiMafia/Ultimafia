@@ -5,6 +5,6 @@ module.exports = class Player extends Role {
     super("Player", player, data);
 
     this.alignment = "Town";
-    this.cards = ["TownCore", "WinIfWithNoCards", "PlayCheat"];
+    this.cards = ["TownCore", "WinIfWithAllCards", "PlayRatscrew"];
   }
 };
