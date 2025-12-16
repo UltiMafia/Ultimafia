@@ -185,7 +185,15 @@ module.exports = class RatscrewGame extends Game {
     console.log(this.spectatorMeetFilter);
     if (previousState == "Call Lie") {
       this.RoundNumber++;
+      
       for (let player of this.randomizedPlayersCopy) {
+
+        if(player.hasSlapped == true){
+          player.CardsInHand.push(...this.TheStack);
+          this.sendAlert(`${player.name} gains the stack!`);
+          this.TheStack = [];
+        }
+        
         player.hasSlapped = false;
         player.hasLied = false;
       }
