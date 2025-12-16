@@ -2675,11 +2675,9 @@ module.exports = class Game {
         this.hasHost = this.setup.roles[0]["Host:"];
       } else if (this.type == "Cheat") {
         this.hasHost = this.setup.roles[0]["Host:"];
-      }
-      else if (this.type == "Ratscrew") {
+      } else if (this.type == "Ratscrew") {
         this.hasHost = this.setup.roles[0]["Host:"];
-      }
-      else if (this.type == "Liars Dice") {
+      } else if (this.type == "Liars Dice") {
         this.hasHost = this.setup.roles[0]["Host:"];
       } else if (this.type == "Resistance") {
         this.numMissions = this.setup.numMissions;
