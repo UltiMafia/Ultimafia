@@ -169,9 +169,12 @@ module.exports = class RatscrewGame extends Game {
   incrementCurrentIndex() {
     this.currentIndex =
       (this.currentIndex + 1) % this.randomizedPlayersCopy.length;
-    while(!this.randomizedPlayersCopy[this.currentIndex].alive || this.randomizedPlayersCopy[this.currentIndex].CardsInHand.length <= 0){
+    while (
+      !this.randomizedPlayersCopy[this.currentIndex].alive ||
+      this.randomizedPlayersCopy[this.currentIndex].CardsInHand.length <= 0
+    ) {
       this.currentIndex =
-      (this.currentIndex + 1) % this.randomizedPlayersCopy.length;
+        (this.currentIndex + 1) % this.randomizedPlayersCopy.length;
     }
   }
 
