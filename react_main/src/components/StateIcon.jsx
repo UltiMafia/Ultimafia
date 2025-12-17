@@ -46,7 +46,7 @@ export default function StateIcon({
   let stateType = stateIconMap[normalizedName] || "nowin";
 
   if (normalizedName === "postgame" && winnerGroups.length > 0) {
-    const hasMafia = winnerGroups.includes("mafia");
+    const hasMafia = winnerGroups.includes("mafia") || winnerGroups.includes("red mafia");
     const hasVillage = winnerGroups.includes("village");
     const hasCult = winnerGroups.includes("cult");
     const hasNoOne = winnerGroups.includes("no one");

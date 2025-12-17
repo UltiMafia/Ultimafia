@@ -10,7 +10,7 @@ export const gamesIcons = {
   "Liars Dice": require("images/game_icons/LiarsDice.png"),
   "Texas Hold Em": require("images/game_icons/TexasHoldEm.png"),
   Cheat: require("images/game_icons/Cheat.png"),
-  Ratscrew: require("images/game_icons/Cheat.png"),
+  Ratscrew: require("images/game_icons/Ratscrew.png"),
   Battlesnakes: require("images/game_icons/Battlesnakes.png"),
   "Connect Four": require("images/game_icons/ConnectFour.png"),
   "Dice Wars": require("images/game_icons/DiceWars.png"),
