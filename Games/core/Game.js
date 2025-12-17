@@ -2835,6 +2835,24 @@ module.exports = class Game {
         await this.adjustSkillRatings();
       }
 
+      if (this.ranked || this.competitive) {
+        for (let player of this.players) {
+          if (!player.isBot) {
+            const userId = player.userId || player.user.id;
+            await models.User.updateOne(
+              { id: userId },
+              {
+                $inc: {
+                  redHearts: this.ranked ? -1 : 0,
+                  goldHearts: this.competitive ? -1 : 0,
+                },
+              }
+            ).exec();
+            await redis.cacheUserInfo(userId, true);
+          }
+        }
+      }
+
       if (this.isTest) {
         this.broadcast("finished");
         await redis.deleteGame(this.id);
@@ -3338,8 +3356,6 @@ module.exports = class Game {
             },
             $inc: {
               coins: coinsEarned,
-              redHearts: this.ranked ? -1 : 0,
-              goldHearts: this.competitive ? -1 : 0,
               kudos:
                 kudosTarget && kudosTarget.user.id == player.user.id ? 1 : 0,
               points: pointsWon > 0 ? pointsWon : 0,
