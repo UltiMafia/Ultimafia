@@ -4002,6 +4002,23 @@ function ActionText(props) {
 
   const [textData, setTextData] = useState("");
 
+  useEffect(() => {
+    // Only act when meeting finishes and user hasn't already voted
+    if (meeting.finished && !meeting.votes[self]) {
+      if (textData.length >= minLength) {
+        // Valid content: auto-submit
+        meeting.votes[self] = textData;
+        props.socket.send("vote", {
+          meetingId: meeting.id,
+          selection: textData,
+        });
+      } else {
+        // Invalid content: clear to prevent exploits
+        setTextData("");
+      }
+    }
+  }, [meeting.finished, meeting.id, self, textData, minLength, props.socket, meeting.votes]);
+
   function handleOnChange(e) {
     var textInput = e.target.value;
     // disable new lines by default
