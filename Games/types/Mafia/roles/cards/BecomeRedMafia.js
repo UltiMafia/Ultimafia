@@ -8,7 +8,7 @@ module.exports = class BecomeRedMafia extends Card {
 
     //this.startItems = ["IsTheTelevangelist"];
 
-    if(role.alignment != "Mafia"){
+    if (role.alignment != "Mafia") {
       return;
     }
 
