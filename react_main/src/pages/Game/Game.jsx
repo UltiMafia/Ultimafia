@@ -4017,7 +4017,15 @@ function ActionText(props) {
         setTextData("");
       }
     }
-  }, [meeting.finished, meeting.id, self, textData, minLength, props.socket, meeting.votes]);
+  }, [
+    meeting.finished,
+    meeting.id,
+    self,
+    textData,
+    minLength,
+    props.socket,
+    meeting.votes,
+  ]);
 
   function handleOnChange(e) {
     var textInput = e.target.value;
