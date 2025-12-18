@@ -8,6 +8,10 @@ module.exports = class BecomeRedMafia extends Card {
 
     //this.startItems = ["IsTheTelevangelist"];
 
+    if(role.alignment != "Mafia"){
+      return;
+    }
+
     this.listeners = {
       SwitchRoleBefore: function (player) {
         if (player != this.player) return;
