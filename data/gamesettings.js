@@ -142,7 +142,7 @@ const gameSettingData = {
       internal: ["PrivateRevealing"],
       tags: ["Information"],
       description:
-        "Players can use /privatereveal to privatly reveal their role to another player.",
+        "Players can use /privatereveal to privately reveal their role to another player.",
     },
     "Public Revealing": {
       category: "Other",
