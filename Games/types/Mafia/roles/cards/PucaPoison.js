@@ -6,7 +6,7 @@ module.exports = class PucaPoison extends Card {
     super(role);
 
     this.meetings = {
-      Poison: {
+      "Poison and Make Delirious": {
         states: ["Night"],
         flags: ["voting"],
         targets: { include: ["alive"], exclude: ["Cult"] },
