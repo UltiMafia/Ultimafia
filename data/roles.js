@@ -3713,12 +3713,12 @@ const roleData = {
         Delayed: ["Adds an extra round of switching before killing."],
       },
     },
-    "Paymaster": {
+    "Suborner": {
       alignment: "Mafia",
       tags: ["Win Con", "Setup Changes", "Role Sharing", "Advanced"],
       description: [
         "Must role share with any Assassins and Vital Mafia roles in the game.",
-        "The Paymaster's team cannot win if they fail to role share with the required roles.",
+        "The Suborner's team cannot win if they fail to role share with the required roles.",
         "Adds an Assassin in closed setups.",
       ],
       RolesMadeBy: ["Assassin"],
