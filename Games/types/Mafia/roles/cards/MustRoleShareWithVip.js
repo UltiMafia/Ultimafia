@@ -28,12 +28,12 @@ module.exports = class MustRoleShareWithVip extends Card {
         }
       },
       handleWinBlockers: function (winners) {
-        if (!this.hasAbility(["Win-Con"])) {
+        if (!this.hasAbility(["Win-Con", "WhenDead"])) {
           return;
         }
 
         let hasFailed = false;
-        if (this.player.role.name == "Vice President") {
+        if (this.name == "Vice President") {
           for (let player of this.game.players) {
             if (
               player.hasEffect("PresidentEffect") &&
@@ -62,7 +62,7 @@ module.exports = class MustRoleShareWithVip extends Card {
             }
           }
         }
-        if (this.player.role.name == "Advisor") {
+        if (this.name == "Paymaster") {
           for (let player of this.game.players) {
             if (
               player.hasEffect("AssassinEffect") &&
@@ -71,20 +71,14 @@ module.exports = class MustRoleShareWithVip extends Card {
               hasFailed = true;
             }
             if (
-              player.role.name == "Queen" &&
-              !this.data.playersSharedWith.includes(player)
-            ) {
-              hasFailed = true;
-            }
-            if (
               this.game
                 .getRoleTags(
                   this.game.formatRoleInternal(
-                    this.player.role.name,
-                    this.player.role.modifiers
+                    player.role.name,
+                    player.role.modifier
                   )
                 )
-                .includes("Essential") &&
+                .includes("Vital") &&
               !this.data.playersSharedWith.includes(player)
             ) {
               hasFailed = true;
