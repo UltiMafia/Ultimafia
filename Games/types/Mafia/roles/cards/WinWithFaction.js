@@ -436,7 +436,7 @@ module.exports = class WinWithFaction extends Card {
             .filter(
               (p) =>
                 p.faction == "Village" ||
-                (p.faction == "Independent" &&
+                ((p.faction == "Independent" || p.role.alignment == "Independent") &&
                   !this.game.getRoleTags(p.role.name).includes("Hostile"))
             );
           if (
