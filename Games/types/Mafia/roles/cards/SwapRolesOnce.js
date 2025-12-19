@@ -17,6 +17,9 @@ module.exports = class SwapRolesOnce extends Card {
             if (!this.dominates()) {
               return;
             }
+            if (!this.dominates(this.actor)) {
+              return;
+            }
 
             if (this.role.data.hasSwapped) {
               return;
