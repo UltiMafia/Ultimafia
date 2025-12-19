@@ -31,7 +31,7 @@ export const AchievementData = {
     Scumhunter: {
       ID: "Mafia5",
       internal: ["Scumhunter"],
-      description: "As Villager, correctly vote on evil players for 3 days.",
+      description: "As Villager, correctly vote on Evil players for 3 days.",
       reward: 20,
       roles: ["Villager"],
     },
@@ -61,7 +61,7 @@ export const AchievementData = {
     "New Sheriff in Town": {
       ID: "Mafia9",
       internal: ["SheriffShootEvil"],
-      description: "As Sheriff, shoot and kill an Evil Player.",
+      description: "As Sheriff, shoot and kill an Evil player.",
       reward: 10,
       roles: ["Sheriff"],
     },
@@ -76,7 +76,7 @@ export const AchievementData = {
       ID: "Mafia11",
       internal: ["DeputyShootGunnedEvil"],
       description:
-        "As Deputy, shoot and kill an Evil Player who is carrying a Gun or Rifle.",
+        "As Deputy, shoot and kill an Evil player who is carrying a Gun or Rifle.",
       reward: 30,
       roles: ["Deputy"],
     },
@@ -135,7 +135,7 @@ export const AchievementData = {
       ID: "Mafia19",
       internal: ["LawyerFrame"],
       description:
-        "As Lawyer, make a player shows as guilty on a Cop/Detective report.",
+        "As Lawyer, make a player show as guilty on a Cop/Detective report.",
       reward: 20,
       roles: ["Lawyer"],
     },
@@ -165,7 +165,7 @@ export const AchievementData = {
     "I am the Night": {
       ID: "Mafia23",
       internal: ["VigilanteKill"],
-      description: "As Vigilante, kill 2 evil players.",
+      description: "As Vigilante, kill 2 Evil players.",
       reward: 20,
       roles: ["Vigilante"],
     },
@@ -173,7 +173,7 @@ export const AchievementData = {
       ID: "Mafia24",
       internal: ["GunsmithGun"],
       description:
-        "As Gunsmith, Give a gun to a player who shoots an Evil Player.",
+        "As Gunsmith, give a gun to a player who shoots an Evil player.",
       reward: 15,
       roles: ["Gunsmith"],
     },
@@ -305,6 +305,6 @@ export const AchievementData = {
   "Liars Dice": {},
   "Texas Hold Em": {},
   Cheat: {},
-  Ratscrew: {},
   "Connect Four": {},
+  Ratscrew: {},
 };
