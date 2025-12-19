@@ -62,7 +62,7 @@ module.exports = class MustRoleShareWithVip extends Card {
             }
           }
         }
-        if (this.name == "Paymaster") {
+        if (this.name == "Suborner") {
           for (let player of this.game.players) {
             if (
               player.hasEffect("AssassinEffect") &&
