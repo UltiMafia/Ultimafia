@@ -3614,7 +3614,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Conversion", "Random", "Visiting", "Expert"],
       description: [
-        "Each night, can choose to visit one Mafia-aligned player and convert to a random Mafia-aligned role.",
+        "Each night, can choose to visit one Mafia-aligned player and convert them to a random Mafia-aligned role.",
       ],
       nightOrder: [["Randomize Role", PRIORITY_CONVERT_DEFAULT + 3]],
       RolesMadeBy: ["All Mafia Roles"],
@@ -4172,7 +4172,7 @@ const roleData = {
         "Expert",
       ],
       description: [
-        "Each night, can choose to visit one Cult-aligned player and convert to a random Cult-aligned role.",
+        "Each night, can choose to visit one Cult-aligned player and convert them to a random Cult-aligned role.",
       ],
       nightOrder: [["Randomize Role", PRIORITY_CONVERT_DEFAULT + 3]],
       RolesMadeBy: ["All Cult Roles"],
