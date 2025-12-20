@@ -24,7 +24,7 @@ export default function StateSwitcher({ stateRange = null }) {
   const isPhoneDevice = useIsPhoneDevice();
   const hideFastForward = isPhoneDevice;
 
-  const { history, stateViewing, updateStateViewing, onStateNavigation } = game;
+  const { history, stateViewing, updateStateViewing } = game;
 
   const STATE_RANGE = stateRange !== null ? stateRange : isPhoneDevice ? 1 : 2;
 
@@ -35,7 +35,6 @@ export default function StateSwitcher({ stateRange = null }) {
 
   const handleClick = (action) => {
     updateStateViewing(action);
-    onStateNavigation();
   };
 
   const stateIconSize = 40;
@@ -114,7 +113,6 @@ export default function StateSwitcher({ stateRange = null }) {
   const handleChange = (event, newValue) => {
     const newState = stateNums[newValue];
     handleClick({ type: "set", stateNum: newState });
-    onStateNavigation();
   };
 
   return (
