@@ -17,8 +17,8 @@ module.exports = class MonkSave extends Card {
           run: function () {
             this.role.savedPlayer = this.target;
 
-            // power 5, lifespan 2
-            this.target.giveEffect("Immortal", 5, 2);
+            // power 5, lifespan 1
+            this.target.giveEffect("Immortal", 5, 1);
           },
         },
       },

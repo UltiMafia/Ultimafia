@@ -6,6 +6,7 @@ module.exports = class KillIfNoDayKills extends Card {
     super(role);
 
     role.banishedDied = true;
+    role.game.ExorciseVillageMeeting = true;
 
     this.meetings = {
       Kill: {

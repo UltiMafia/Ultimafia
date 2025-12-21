@@ -464,11 +464,11 @@ module.exports = class Role {
   }
 
   remove() {
-    if (this.isExtraRole != true) {
-      this.player.role = null;
-    }
     for (let effect of this.passiveEffects) {
       effect.remove();
+    }
+    if (this.isExtraRole != true) {
+      this.player.role = null;
     }
     this.passiveEffects = [];
     this.game.events.emit(
