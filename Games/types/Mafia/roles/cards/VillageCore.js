@@ -4,11 +4,11 @@ const { PRIORITY_VILLAGE } = require("../../const/Priority");
 module.exports = class VillageCore extends Card {
   constructor(role) {
     super(role);
-    /*
+    
     if (role.isExtraRole == true) {
       return;
     }
-    */
+    
 
     this.meetings = {
       Village: {

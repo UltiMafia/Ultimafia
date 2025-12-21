@@ -24,6 +24,11 @@ module.exports = class BecomeRoleForNight extends Card {
               1,
               this.target.role.data
             );
+            
+            for(let meetingA in effect.ExtraRole.meetings){
+              effect.ExtraRole.meetings[meetingA].actionName = this.role.name+" Do";
+            }
+            
             this.actor.joinMeetings(effect.ExtraRole.meetings);
             for (let meeting of this.game.meetings) {
               meeting.generateTargets();
@@ -35,17 +40,8 @@ module.exports = class BecomeRoleForNight extends Card {
     };
 
     this.meetingMods = {
-      "*": {
-        actionName: "Monkey Do",
-      },
       "Copy Actions": {
-        actionName: "Monkey See",
-      },
-      "Mafia Kill": {
-        actionName: "Mafia Kill",
-      },
-      Village: {
-        actionName: "Vote to Condemn",
+        actionName: role.name+" See",
       },
     };
   }
