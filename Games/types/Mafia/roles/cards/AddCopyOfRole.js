@@ -72,13 +72,12 @@ module.exports = class AddCopyOfRole extends Card {
           shuffledPlayers[0].setRole("President", undefined, false, true);
           shuffledPlayers[0].role.data.reroll = true;
           shuffledPlayers[0].role.data.hasCopied = true;
-        } 
-        else if (
-          this.player.role.name == "Suborner"
-        ) {
+        } else if (this.player.role.name == "Suborner") {
           let players = this.game.players.filter(
             (p) =>
-              p.role.alignment == "Village" || p.role.alignment == "Independent" || p.role.alignment == "Mafia"
+              p.role.alignment == "Village" ||
+              p.role.alignment == "Independent" ||
+              p.role.alignment == "Mafia"
           );
           let shuffledPlayers = Random.randomizeArray(players);
           for (let x = 0; x < shuffledPlayers.length; x++) {
@@ -94,8 +93,7 @@ module.exports = class AddCopyOfRole extends Card {
           shuffledPlayers[0].setRole("Assassin", undefined, false, true);
           shuffledPlayers[0].role.data.reroll = true;
           shuffledPlayers[0].role.data.hasCopied = true;
-        }
-        else {
+        } else {
           let players = this.game.players.filter(
             (p) =>
               p.role.alignment == "Village" || p.role.alignment == "Independent"

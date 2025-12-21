@@ -3713,7 +3713,7 @@ const roleData = {
         Delayed: ["Adds an extra round of switching before killing."],
       },
     },
-    "Suborner": {
+    Suborner: {
       alignment: "Mafia",
       tags: ["Win Con", "Setup Changes", "Role Sharing", "Advanced"],
       description: [

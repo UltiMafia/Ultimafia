@@ -33,11 +33,17 @@ module.exports = class WinWithFaction extends Card {
         //Const
         const ONE_NIGHT = this.game.IsBloodMoon == true;
         const CULT_IN_GAME =
-          this.game.players.filter((p) => CULT_FACTIONS.includes(p.faction) && p.role.alignment != "Independent")
-            .length > 0;
+          this.game.players.filter(
+            (p) =>
+              CULT_FACTIONS.includes(p.faction) &&
+              p.role.alignment != "Independent"
+          ).length > 0;
         const MAFIA_IN_GAME =
-          this.game.players.filter((p) => MAFIA_FACTIONS.includes(p.faction) && p.role.alignment != "Independent")
-            .length > 0;
+          this.game.players.filter(
+            (p) =>
+              MAFIA_FACTIONS.includes(p.faction) &&
+              p.role.alignment != "Independent"
+          ).length > 0;
         const SUPERHERO_IN_GAME =
           this.game.players.filter((p) => p.role.name == "Superhero").length >
           0;
@@ -436,7 +442,8 @@ module.exports = class WinWithFaction extends Card {
             .filter(
               (p) =>
                 p.faction == "Village" ||
-                ((p.faction == "Independent" || p.role.alignment == "Independent") &&
+                ((p.faction == "Independent" ||
+                  p.role.alignment == "Independent") &&
                   !this.game.getRoleTags(p.role.name).includes("Hostile"))
             );
           if (
