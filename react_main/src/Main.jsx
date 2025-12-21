@@ -1,5 +1,5 @@
 import React, { lazy, useState, useContext, useEffect, Suspense } from "react";
-import { Route, Link, Navigate, Routes } from "react-router-dom";
+import { Route, Link, Navigate, Routes, useLocation } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import axios from "axios";
 import { Icon } from "@iconify/react";
@@ -51,7 +51,18 @@ function SnowstormController() {
 }
 
 function ErrorBox({ error, resetErrorBoundary }) {
-  console.log(error);
+  const location = useLocation();
+  const [errorLocation, setErrorLocation] = useState(location.pathname);
+
+  useEffect(() => {
+    console.error(error);
+  }, []);
+
+  useEffect(() => {
+    if (location.pathname !== errorLocation) {
+      resetErrorBoundary();
+    }
+  }, [location.pathname]);
 
   return (
     <Paper

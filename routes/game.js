@@ -345,6 +345,7 @@ router.get("/:id/review/data", async function (req, res) {
     if (!game || !userId) {
       res.status(500);
       res.send("Game not found");
+      return;
     }
 
     if (game !== null) {
@@ -385,9 +386,11 @@ router.get("/:id/review/data", async function (req, res) {
         userIsInGame()
       ) {
         res.send(game);
+        return;
       } else {
         res.status(500);
         res.send("Game not found");
+        return;
       }
     }
   } catch (e) {

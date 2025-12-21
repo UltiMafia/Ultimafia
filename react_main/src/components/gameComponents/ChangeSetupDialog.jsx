@@ -20,7 +20,7 @@ import {
   Alert,
 } from "@mui/material";
 import axios from "axios";
-import { UserContext } from "../../Contexts";
+import { GameContext, UserContext } from "../../Contexts";
 import Setup from "../Setup";
 import { getSetupBackgroundColor } from "../../pages/Play/LobbyBrowser/gameRowColors.js";
 import changeling from "images/roles/cult/changeling-vivid.png";
@@ -33,6 +33,7 @@ export default function ChangeSetupDialog({
   onSetupChange,
 }) {
   const user = useContext(UserContext);
+  const game = useContext(GameContext);
   const [setups, setSetups] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -41,20 +42,23 @@ export default function ChangeSetupDialog({
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  const numPlayers = Object.values(game.players).filter(player => !player.left).length;
+
   useEffect(() => {
     if (open) {
       loadSetups();
     }
-  }, [open, gameType]);
+  }, [open, gameType, numPlayers, page]);
 
   useEffect(() => {
     if (open) {
       const timeout = setTimeout(() => {
+        setPage(1);
         loadSetups();
       }, 300);
       return () => clearTimeout(timeout);
     }
-  }, [searchQuery, page]);
+  }, [searchQuery]);
 
   const loadSetups = async () => {
     setLoading(true);
@@ -66,8 +70,7 @@ export default function ChangeSetupDialog({
         page: page.toString(),
         query: searchQuery,
         option: "popular", // Default to popular setups
-        minSlots: currentSetup?.total || 1,
-        maxSlots: currentSetup?.total || 50,
+        minSlots: numPlayers,
       });
 
       const response = await axios.get(
@@ -75,6 +78,9 @@ export default function ChangeSetupDialog({
       );
       setSetups(response.data.setups || []);
       setTotalPages(response.data.pages || 1);
+      if (page > response.data.pages) {
+        setPage(response.data.pages);
+      }
     } catch (err) {
       setError("Failed to load setups. Please try again.");
       console.error("Error loading setups:", err);
@@ -195,8 +201,6 @@ export default function ChangeSetupDialog({
 
             <Paper
               sx={{
-                maxHeight: "400px",
-                overflow: "auto",
                 border: "1px solid",
                 borderColor: "divider",
               }}
