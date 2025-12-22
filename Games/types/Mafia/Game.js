@@ -18,11 +18,11 @@ module.exports = class MafiaGame extends Game {
     this.Player = Player;
     this.BaseDayLength = options.settings.stateLengths["Day"];
     this.BaseNightLength = options.settings.stateLengths["Night"];
-    if(this.getFixedDayLength() > 0){
-      this.BaseDayLength = this.getFixedDayLength()*1000*60;
+    if (this.getFixedDayLength() > 0) {
+      this.BaseDayLength = this.getFixedDayLength() * 1000 * 60;
     }
-    if(this.getFixedNightLength() > 0){
-      this.BaseDayLength = this.getFixedDayLength()*1000*60;
+    if (this.getFixedNightLength() > 0) {
+      this.BaseDayLength = this.getFixedDayLength() * 1000 * 60;
     }
     this.states = [
       {
@@ -71,8 +71,8 @@ module.exports = class MafiaGame extends Game {
     this.useObituaries = true;
     this.pregameWaitLength = options.settings.pregameWaitLength;
     this.extendLength = options.settings.extendLength;
-    if(this.getFixedDayLength() > 0){
-    this.extendLength = 0;
+    if (this.getFixedDayLength() > 0) {
+      this.extendLength = 0;
     }
     this.advancedHosting = options.settings.advancedHosting;
     this.dayCount = 0;
@@ -673,8 +673,12 @@ module.exports = class MafiaGame extends Game {
     let length = stateInfo.length;
     let totalPlayers = this.players.length;
     let alivePlayers = this.alivePlayers().length;
-    if(stateInfo.name == "Day" && this.isTimerScaling() && totalPlayers-1 > alivePlayers){
-      length = Math.ceil(length * alivePlayers / totalPlayers);
+    if (
+      stateInfo.name == "Day" &&
+      this.isTimerScaling() &&
+      totalPlayers - 1 > alivePlayers
+    ) {
+      length = Math.ceil((length * alivePlayers) / totalPlayers);
     }
     if (this.isTest) {
       this.createTimer("main", stateInfo.length, () => this.gotoNextState());
