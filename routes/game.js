@@ -20,7 +20,10 @@ async function userCanPlayCompetitive(userId) {
     return "You cannot play ranked games because your Gold Hearts are depleted.";
   }
 
-  if (userId && !(await routeUtils.verifyPermission(userId, "playCompetitive"))) {
+  if (
+    userId &&
+    !(await routeUtils.verifyPermission(userId, "playCompetitive"))
+  ) {
     return "You have not been approved for competitive games. Please message an admin for assistance.";
   }
 
@@ -573,6 +576,16 @@ router.post("/host", async function (req, res) {
 
     if (req.body.competitive) {
       const roundInfo = await redis.getCompRoundInfo();
+
+      // Check if the competitive round is paused
+      if (roundInfo.seasonPaused) {
+        res.status(500);
+        res.send(
+          "The competitive round is currently paused. You cannot host competitive games at this time."
+        );
+        return;
+      }
+
       let setupAllowed = false;
       for (const allowedSetup of roundInfo.allowedSetups) {
         if (setup.id === allowedSetup.id) {

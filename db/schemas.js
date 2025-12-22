@@ -1038,8 +1038,14 @@ schemas.VanityUrl.virtual("user", {
 });
 
 schemas.CompetitiveRound.index({ season: 1, number: 1 }, { unique: true });
-schemas.CompetitiveSeasonStanding.index({ userId: 1, season: 1 }, { unique: true });
-schemas.CompetitiveGameCompletion.index({ userId: 1, game: 1 }, { unique: true });
+schemas.CompetitiveSeasonStanding.index(
+  { userId: 1, season: 1 },
+  { unique: true }
+);
+schemas.CompetitiveGameCompletion.index(
+  { userId: 1, game: 1 },
+  { unique: true }
+);
 schemas.CompetitiveGameCompletion.index({ season: 1, round: 1, day: 1 });
 
 // Compound indexes for Report schema

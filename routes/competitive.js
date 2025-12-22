@@ -17,7 +17,8 @@ router.post("/create", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
 
-    if (!(await routeUtils.verifyPermission(res, userId, "manageCompetitive"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "manageCompetitive")))
+      return;
 
     const startDate = req.body.startDate;
     const numRounds = Number.parseInt(req.body.numRounds || "12");
@@ -30,15 +31,13 @@ router.post("/create", async function (req, res) {
 
     // Determine new season number
     let seasonNumber = 1;
-    if(latestSeason && !latestSeason.completed) {
+    if (latestSeason && !latestSeason.completed) {
       res.status(400);
       res.send("A competitive season is already in progress.");
       return;
-    }
-    else if (latestSeason) {
+    } else if (latestSeason) {
       seasonNumber = latestSeason.number + 1;
-    }
-    else {
+    } else {
       // This is the first season
     }
 
@@ -62,11 +61,15 @@ router.post("/create", async function (req, res) {
       return;
     }
 
-    const setups = await models.Setup.find({ competitive: true }).select("_id factionRatings").lean();
+    const setups = await models.Setup.find({ competitive: true })
+      .select("_id factionRatings")
+      .lean();
 
     if (setups.length === 0) {
       res.status(400);
-      res.send("There are no competitive setups. Use Competitive Approve mod command to select setups for the season. ");
+      res.send(
+        "There are no competitive setups. Use Competitive Approve mod command to select setups for the season. "
+      );
       return;
     }
 
@@ -119,13 +122,14 @@ router.post("/pause", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
 
-    if (!(await routeUtils.verifyPermission(res, userId, "manageCompetitive"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "manageCompetitive")))
+      return;
 
     const latestSeason = await models.CompetitiveSeason.findOne({})
       .sort({ number: -1 })
       .lean();
 
-    if(!latestSeason || latestSeason.completed) {
+    if (!latestSeason || latestSeason.completed) {
       res.status(400);
       res.send("There is no season in progress.");
       return;
@@ -137,8 +141,8 @@ router.post("/pause", async function (req, res) {
       { _id: ObjectID(latestSeason._id) },
       {
         $set: {
-          paused: newPauseState
-        }
+          paused: newPauseState,
+        },
       }
     );
 
@@ -149,7 +153,7 @@ router.post("/pause", async function (req, res) {
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error creating season.");
+    res.send("Error pausing round.");
   }
 });
 
@@ -161,7 +165,7 @@ router.get("/seasons", async function (req, res) {
       .populate([
         {
           path: "rounds",
-          select: "-_id -__v"
+          select: "-_id -__v",
         },
       ])
       .sort({ number: 1 })
@@ -185,7 +189,9 @@ router.get("/season/:seasonNumber", async function (req, res) {
       users: {},
     };
 
-    const seasons = await models.CompetitiveSeason.find({ number: seasonNumber })
+    const seasons = await models.CompetitiveSeason.find({
+      number: seasonNumber,
+    })
       .select("setups setupOrder")
       .populate([
         {
@@ -204,13 +210,17 @@ router.get("/season/:seasonNumber", async function (req, res) {
     seasonInfo.setups = seasons[0].setups;
     seasonInfo.setupOrder = seasons[0].setupOrder;
 
-    seasonInfo.standings = await models.CompetitiveSeasonStanding.find({ season: seasonNumber })
+    seasonInfo.standings = await models.CompetitiveSeasonStanding.find({
+      season: seasonNumber,
+    })
       .sort({ points: -1 })
       .limit(10)
       .lean();
 
     for (const seasonStanding of seasonInfo.standings) {
-      seasonInfo.users[seasonStanding.userId] = await redis.getUserInfo(seasonStanding.userId);
+      seasonInfo.users[seasonStanding.userId] = await redis.getUserInfo(
+        seasonStanding.userId
+      );
     }
 
     res.json(seasonInfo);
@@ -223,8 +233,12 @@ router.get("/season/:seasonNumber", async function (req, res) {
 
 router.get("/roundInfo", async function (req, res) {
   try {
-    const seasonNumber = req.query.seasonNumber ? Number.parseInt(req.query.seasonNumber) : null;
-    const roundNumber = req.query.roundNumber ? Number.parseInt(req.query.roundNumber) : null;
+    const seasonNumber = req.query.seasonNumber
+      ? Number.parseInt(req.query.seasonNumber)
+      : null;
+    const roundNumber = req.query.roundNumber
+      ? Number.parseInt(req.query.roundNumber)
+      : null;
     res.json(await redis.getCompRoundInfo(seasonNumber, roundNumber));
   } catch (e) {
     logger.error(e);

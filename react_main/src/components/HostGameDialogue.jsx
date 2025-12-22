@@ -107,7 +107,7 @@ export default function HostGameDialogue({ open, setOpen, setup }) {
   const lobby = getFormFieldValue("lobby");
   const isRanked = getFormFieldValue("ranked");
   const isCompetitive = getFormFieldValue("competitive");
-  
+
   useEffect(() => {
     if (isCompetitive) {
       updateFormFields({

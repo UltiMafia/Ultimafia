@@ -158,26 +158,24 @@ export default function UserNavSection({
         alignItems: "center",
       }}
     >
-      <Box sx={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1em",
-        columnGap: 0.5,
-        width: "3em",
-        alignItems: "center",
-        textAlign: "right",
-      }}>
-        <Typography>
-          {user.redHearts ?? 0}
-        </Typography>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1em",
+          columnGap: 0.5,
+          width: "3em",
+          alignItems: "center",
+          textAlign: "right",
+        }}
+      >
+        <Typography>{user.redHearts ?? 0}</Typography>
         <Tooltip title={getHeartRefreshMessage(user, "red")}>
           <i
             className="fas fa-heart"
             style={{ color: "#e23b3b", marginLeft: "auto" }}
           />
         </Tooltip>
-        <Typography>
-          {user.goldHearts ?? 0}
-        </Typography>
+        <Typography>{user.goldHearts ?? 0}</Typography>
         <Link to="/fame/competitive">
           <i
             className="fas fa-heart"

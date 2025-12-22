@@ -42,7 +42,9 @@ export default function ChangeSetupDialog({
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const numPlayers = Object.values(game.players).filter(player => !player.left).length;
+  const numPlayers = Object.values(game.players).filter(
+    (player) => !player.left
+  ).length;
 
   useEffect(() => {
     if (open) {

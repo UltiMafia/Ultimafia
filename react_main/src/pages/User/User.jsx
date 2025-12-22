@@ -457,7 +457,11 @@ export function Avatar(props) {
         <img
           className="santa"
           width={santaProps.width}
-          style={{ display: "block", position: "absolute", transform: santaProps.transform }}
+          style={{
+            display: "block",
+            position: "absolute",
+            transform: santaProps.transform,
+          }}
           src={santaDir}
           alt="Santa hat"
         />

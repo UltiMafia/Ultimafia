@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext, useReducer } from "react";
 import axios from "axios";
 import update from "immutability-helper";
-import FullCalendar from '@fullcalendar/react'
-import dayGridPlugin from '@fullcalendar/daygrid'
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
 import { UserContext } from "../../Contexts";
 import { QUERY_PARAM_SEASON, QUERY_PARAM_ROUND } from "../Fame/Competitive";
 import {
@@ -17,13 +17,11 @@ import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 
 function renderEventContent(eventInfo) {
-  return(
+  return (
     <>
-      <Typography>
-        {eventInfo.event.title}
-      </Typography>
+      <Typography>{eventInfo.event.title}</Typography>
     </>
-  )
+  );
 }
 
 export default function Calendar(props) {
@@ -40,7 +38,7 @@ export default function Calendar(props) {
       }
       case "add": {
         return update(state, {
-          $push: [action.event]
+          $push: [action.event],
         });
       }
       default: {
@@ -52,7 +50,7 @@ export default function Calendar(props) {
   useEffect(() => {
     document.title = "Calendar | UltiMafia";
 
-    axios.get(`/api/competitive/seasons`).then((response => {
+    axios.get(`/api/competitive/seasons`).then((response) => {
       const seasons = response.data;
       const now = Date.now();
       updateEvents({ type: "reset" });
@@ -61,10 +59,11 @@ export default function Calendar(props) {
           let endDate = null;
           if (round.dateCompleted) {
             endDate = new Date(round.dateCompleted);
-          }
-          else {
+          } else {
             endDate = new Date(round.startDate);
-            endDate.setDate(endDate.getDate() + round.currentDay + round.remainingOpenDays);
+            endDate.setDate(
+              endDate.getDate() + round.currentDay + round.remainingOpenDays
+            );
           }
           updateEvents({
             type: "add",
@@ -79,7 +78,7 @@ export default function Calendar(props) {
           });
         }
       }
-    }));
+    });
   }, []);
 
   const handleEventClick = (clickInfo) => {
@@ -92,12 +91,12 @@ export default function Calendar(props) {
 
   return (
     <FullCalendar
-      plugins={[ dayGridPlugin ]}
+      plugins={[dayGridPlugin]}
       initialView="dayGridMonth"
       headerToolbar={{
-        left: 'prev,next',
-        center: 'title',
-        right: 'dayGridWeek,dayGridMonth'
+        left: "prev,next",
+        center: "title",
+        right: "dayGridWeek,dayGridMonth",
       }}
       events={events}
       eventContent={renderEventContent}
