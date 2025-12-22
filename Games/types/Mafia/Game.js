@@ -16,6 +16,14 @@ module.exports = class MafiaGame extends Game {
 
     this.type = "Mafia";
     this.Player = Player;
+    this.BaseDayLength = options.settings.stateLengths["Day"];
+    this.BaseNightLength = options.settings.stateLengths["Night"];
+    if(this.getFixedDayLength() > 0){
+      this.BaseDayLength = this.getFixedDayLength()*1000*60;
+    }
+    if(this.getFixedNightLength() > 0){
+      this.BaseDayLength = this.getFixedDayLength()*1000*60;
+    }
     this.states = [
       {
         name: "Postgame",
@@ -45,7 +53,7 @@ module.exports = class MafiaGame extends Game {
       },
       {
         name: "Night",
-        length: options.settings.stateLengths["Night"],
+        length: this.BaseNightLength,
       },
       {
         name: "Dawn",
@@ -57,12 +65,15 @@ module.exports = class MafiaGame extends Game {
       },
       {
         name: "Day",
-        length: options.settings.stateLengths["Day"],
+        length: this.BaseDayLength,
       },
     ];
     this.useObituaries = true;
     this.pregameWaitLength = options.settings.pregameWaitLength;
     this.extendLength = options.settings.extendLength;
+    if(this.getFixedDayLength() > 0){
+    this.extendLength = 0;
+    }
     this.advancedHosting = options.settings.advancedHosting;
     this.dayCount = 0;
     this.spectatorMeetFilter = {
@@ -656,6 +667,21 @@ module.exports = class MafiaGame extends Game {
     }
 
     delete this.swaps;
+  }
+
+  createNextStateTimer(stateInfo) {
+    let length = stateInfo.length;
+    let totalPlayers = this.players.length;
+    let alivePlayers = this.alivePlayers().length;
+    if(stateInfo.name == "Day" && this.isTimerScaling() && totalPlayers-1 > alivePlayers){
+      length = Math.ceil(length * alivePlayers / totalPlayers);
+    }
+    if (this.isTest) {
+      this.createTimer("main", stateInfo.length, () => this.gotoNextState());
+    } else {
+      this.createTimer("main", stateInfo.length, () => this.checkVeg());
+    }
+    this.checkAllMeetingsReady();
   }
 
   getRoleNightOrder() {
