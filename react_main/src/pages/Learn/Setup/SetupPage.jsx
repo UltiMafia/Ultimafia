@@ -186,10 +186,6 @@ export function SetupPage() {
               setDiff(JSON.parse(changelog));
             }
           }
-        })
-        .catch((e) => {
-          navigate("/play");
-          errorAlert(e);
         });
     }
   }, [setupId]);
@@ -417,6 +413,7 @@ export function SetupPage() {
                         data={pieData.data}
                         colors={pieData.colors}
                         displayPieChart={true}
+                        suffixFn={(value) => ` ${(100*Number.parseFloat(value)).toFixed(0)}%`}
                       />
                     </div>
                   </div>
@@ -432,6 +429,7 @@ export function SetupPage() {
                         data={eloPieData.data}
                         colors={eloPieData.colors}
                         displayPieChart={true}
+                        suffixFn={(value) => ` ${(Number.parseFloat(value)).toFixed(0)}`}
                       />
                     </div>
                   </div>

@@ -45,6 +45,7 @@ const COMMAND_GROUP_ORDER = {
   "Group Management": 5,
   "Family Management": 6,
   "Poll Management": 7,
+  "Competitive Management": 8,
   "Deck Management": 9,
   "Forum Management": 99,
   "Chat Window Management": 999,
@@ -1696,6 +1697,61 @@ export function useModCommands(argValues, commandRan, setResults) {
           .post("/api/poll/create", argValues)
           .then(() => {
             siteInfo.showAlert("Poll created.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Create Competitive Season": {
+      perm: "manageCompetitive",
+      category: "Competitive Management",
+      args: [
+        {
+          label: "Start Date (YYYY-MM-DD)",
+          name: "startDate",
+          type: "text",
+        },
+        {
+          label: "Number of rounds",
+          name: "numRounds",
+          type: "number",
+          optional: true,
+        },
+        {
+          label: "Number of setups per round",
+          name: "setupsPerRound",
+          type: "number",
+          optional: true,
+        },
+        {
+          label: "Shuffle Setups",
+          name: "shuffleSetups",
+          type: "select",
+          options: [
+            { value: "true", label: "Yes" },
+            { value: "false", label: "No" },
+          ],
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/competitive/create", argValues)
+          .then(() => {
+            siteInfo.showAlert("Competitive season created.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Toggle Competitive Season Pause": {
+      perm: "manageCompetitive",
+      category: "Competitive Management",
+      args: [],
+      run: function () {
+        axios
+          .post("/api/competitive/pause", argValues)
+          .then((res) => {
+            siteInfo.showAlert(`Competitive season ${Boolean(res.data) ? "paused" : "unpaused"}.`, "success");
             commandRan();
           })
           .catch(errorAlert);

@@ -14,35 +14,6 @@
   user-select: none;
 }
 
-.nav .user-wrapper {
-  color: white;
-}
-
-.nav a {
-  color: white;
-  font-family: var(--primaryFont); /* used to be BNoir */
-  /* font-weight: 700; */
-  font-size: 24px;
-  text-decoration: none;
-  opacity: 0.5;
-  transition: var(--hoverTransition);
-
-  padding: 12px;
-  /*border-radius: 32px;*/
-  /*text-decoration: underline rgba(0, 0, 0, 1);*/
-  font-weight: bold;
-}
-
-.nav a:hover {
-  opacity: 1;
-  /*background: var(--theme-color-sec);*/
-  /*text-decoration-color: white;*/
-}
-
-.nav a.active {
-  opacity: 1;
-}
-
 .nav-wrapper .profile-link {
   border: none;
   padding: 0px;
@@ -53,11 +24,6 @@
 
 .nav-wrapper .profile-link:hover {
   opacity: 0.7;
-}
-
-.nav i {
-  font-size: 20px;
-  cursor: pointer;
 }
 
 .nav i:hover {

@@ -107,10 +107,20 @@ export default function HostGameDialogue({ open, setOpen, setup }) {
   const lobby = getFormFieldValue("lobby");
   const isRanked = getFormFieldValue("ranked");
   const isCompetitive = getFormFieldValue("competitive");
+  
+  useEffect(() => {
+    if (isCompetitive) {
+      updateFormFields({
+        ref: "lobby",
+        prop: "value",
+        value: "Competitive",
+      });
+    }
+  }, [isCompetitive]);
 
   var alertText = "";
 
-  if (!user.canPlayRanked && (isRanked || isCompetitive)) {
+  if (!user.canPlayRanked && isRanked) {
     // TODO use npm link so that the frontend can access constants.js and stop hardcoding this
     alertText = `You must play 5 games before playing ranked.`;
   }

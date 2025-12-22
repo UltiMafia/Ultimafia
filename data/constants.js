@@ -352,10 +352,11 @@ module.exports = {
   leavePenaltyDurationMillis: 259200000,
 
   minimumGamesForRanked: 5,
+  minimumPointsForCompetitive: 1000,
 
   // See: https://www.npmjs.com/package/openskill
   defaultSkillRatingMu: 750,
-  defaultSkillRatingSigma: 150,
+  defaultSkillRatingSigma: 250,
 
   pointsNominalAmount: 60,
 
@@ -459,6 +460,7 @@ module.exports = {
     viewVotes: true,
     editAnySetup: true,
     createPoll: true,
+    manageCompetitive: true,
     awardTrophy: true,
     deleteStrategy: true,
     seeModPanel: true,
@@ -519,6 +521,7 @@ module.exports = {
         "playCompetitive",
         "editAnySetup",
         "createPoll",
+        "manageCompetitive",
         "awardTrophy",
         "deleteStrategy",
         "seeModPanel",
@@ -540,6 +543,7 @@ module.exports = {
         "unban",
         "editAnySetup",
         "createPoll",
+        "manageCompetitive",
       ],
     },
     Mod: {

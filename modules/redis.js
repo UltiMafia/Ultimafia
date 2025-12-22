@@ -120,6 +120,46 @@ async function invalidateCachedUser(userId) {
   client.del(`user:${userId}:info:id`);
 }
 
+
+function deleteKeysByPattern(pattern, doneCallback = null) {
+  let cursor = '0';
+
+  function scanAndDel() {
+    // The arguments to scan in v3 are typically in the order: cursor, [options...]
+    client.scan(cursor, 'MATCH', pattern, 'COUNT', 100, function(err, reply) {
+      if (err && doneCallback) {
+        return doneCallback(err);
+      }
+
+      // Reply in v3 is an array: [new_cursor, [list_of_keys]]
+      cursor = reply[0];
+      const keys = reply[1];
+
+      if (keys.length > 0) {
+        client.unlink(keys, function(delErr, response) {
+          if (delErr) {
+            console.error(`Error deleting keys: ${delErr}`);
+          }
+        });
+      }
+
+      // continue scanning if the cursor is not '0'
+      if (cursor === '0') {
+        if (doneCallback) doneCallback(null, deletedCount);
+      } else {
+        // recurse to get the next batch
+        scanAndDel();
+      }
+    });
+  }
+
+  scanAndDel(); // start recursion
+}
+
+async function invalidateAllCachedUsers() {
+  await deleteKeysByPattern("user:*:info:id");
+}
+
 async function cacheUserInfo(userId, reset) {
   var exists = await userCached(userId);
 
@@ -129,7 +169,7 @@ async function cacheUserInfo(userId, reset) {
 
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "_id id name avatar banner profileBackground blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday pronouns achievements redHearts goldHearts dailyChallengesCompleted dailyChallenges"
+        "_id id name avatar banner profileBackground blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday pronouns achievements redHearts goldHearts points dailyChallengesCompleted dailyChallenges"
       )
       .populate({
         path: "customEmotes",
@@ -188,6 +228,7 @@ async function cacheUserInfo(userId, reset) {
     await client.setAsync(`user:${userId}:info:gamesPlayed`, gamesPlayed);
     await client.setAsync(`user:${userId}:info:redHearts`, user.redHearts);
     await client.setAsync(`user:${userId}:info:goldHearts`, user.goldHearts);
+    await client.setAsync(`user:${userId}:info:points`, user.points);
     await client.setAsync(
       `user:${userId}:info:redHeartRefreshTimestamp`,
       redHeartRefreshTimestamp
@@ -233,6 +274,7 @@ async function cacheUserInfo(userId, reset) {
   client.expire(`user:${userId}:info:gamesPlayed`, 3600);
   client.expire(`user:${userId}:info:redHearts`, 3600);
   client.expire(`user:${userId}:info:goldHearts`, 3600);
+  client.expire(`user:${userId}:info:points`, 3600);
   client.expire(`user:${userId}:info:redHeartRefreshTimestamp`, 3600);
   client.expire(`user:${userId}:info:goldHeartRefreshTimestamp`, 3600);
   client.expire(`user:${userId}:info:dailyChallenges`, 3600);
@@ -256,6 +298,7 @@ async function deleteUserInfo(userId) {
   await client.delAsync(`user:${userId}:info:gamesPlayed`);
   await client.delAsync(`user:${userId}:info:redHearts`);
   await client.delAsync(`user:${userId}:info:goldHearts`);
+  await client.delAsync(`user:${userId}:info:points`);
   await client.delAsync(`user:${userId}:info:redHeartRefreshTimestamp`);
   await client.delAsync(`user:${userId}:info:goldHeartRefreshTimestamp`);
   await client.delAsync(`user:${userId}:info:dailyChallenges`);
@@ -286,6 +329,7 @@ async function getUserInfo(userId) {
   info.gamesPlayed = await client.getAsync(`user:${userId}:info:gamesPlayed`);
   info.redHearts = await client.getAsync(`user:${userId}:info:redHearts`);
   info.goldHearts = await client.getAsync(`user:${userId}:info:goldHearts`);
+  info.points = await client.getAsync(`user:${userId}:info:points`);
   info.redHeartRefreshTimestamp = await client.getAsync(
     `user:${userId}:info:redHeartRefreshTimestamp`
   );
@@ -510,6 +554,193 @@ async function getFeaturedSetup(featuredCategory) {
     client.expire(key, 600);
 
     return setup;
+  }
+}
+
+async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
+  let roundInfo = {
+    seasonNumber: null,
+    seasonPaused: false,
+    round: null,
+    allowedSetups: [],
+    gameCompletions: [],
+    standings: [],
+    users: {},
+    nextEvent: null,
+  };
+
+  let seasonQuery = { completed: false };
+  if (seasonNumber) {
+    seasonQuery = { number: seasonNumber };
+  }
+
+  const season = await models.CompetitiveSeason.findOne(seasonQuery)
+    .select("-_id setups setupOrder number paused")
+    .populate([
+      {
+        path: "setups",
+        select: "-_id -__v",
+      },
+    ])
+    .sort({ number: -1 })
+    .lean();
+
+  if (!season) {
+    return roundInfo;
+  }
+
+  roundInfo.seasonNumber = season.number;
+  roundInfo.seasonPaused = season.paused;
+
+  let roundQuery = { season: roundInfo.seasonNumber, accounted: false };
+  if (roundNumber) {
+    roundQuery = { season: roundInfo.seasonNumber, number: roundNumber };
+  }
+
+  // Get the current round, if any
+  roundInfo.round = await models.CompetitiveRound.findOne(roundQuery)
+    .select("-_id")
+    .sort({ number: -1 })
+    .lean();
+
+  if (!roundInfo.round) {
+    return roundInfo;
+  }
+
+  roundInfo.allowedSetups = season.setupOrder[roundInfo.round.number - 1].map((setupNumber) => season.setups[setupNumber]);
+
+  roundInfo.gameCompletions = await models.CompetitiveGameCompletion.aggregate([
+    { $match: { season: roundInfo.seasonNumber, round: roundInfo.round.number, valid: true } },
+    {
+      $group: {
+        _id: '$game',
+        game: { $first: '$game' },
+        day: { $first: '$day' },
+        valid: { $first: '$valid' },
+        pointsEarnedByPlayers: {
+          $push: {
+            userId: '$userId',
+            points: '$points'
+          }
+        }
+      }
+    },
+    {
+      $lookup: {
+        from: 'games',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'game'
+      }
+    },
+    { $unwind: { path: '$game' } },
+    {
+      $lookup: {
+        from: 'setups',
+        localField: 'game.setup',
+        foreignField: '_id',
+        as: 'game.setup'
+      }
+    },
+    { $unwind: { path: '$game.setup' } }
+  ]);
+
+  for (let gameCompletion of roundInfo.gameCompletions) {
+    gameCompletion.game.status = "Finished";
+  }
+
+  // Accumulate points by user ID
+  for (const gameCompletion of roundInfo.gameCompletions) {
+    for (const pointsEarnedByPlayer of gameCompletion.pointsEarnedByPlayers) {
+      const userId = pointsEarnedByPlayer.userId;
+      if (roundInfo.users[userId] === undefined) {
+        roundInfo.users[userId] = {
+          points: 0,
+          gamesPlayed: 0,
+          user: await getUserInfo(userId),
+        };
+      }
+      roundInfo.users[userId].points += pointsEarnedByPlayer.points;
+      roundInfo.users[userId].gamesPlayed += 1;
+    }
+  }
+
+  // Sort scores in descending order, then convert to map to determine ranking. This accounts for ties
+  let scores = [];
+  let rankings = {};
+  for (let userId of Object.keys(roundInfo.users)) {
+    scores.push(roundInfo.users[userId].points);
+  }
+  scores.sort((a, b) => b - a);
+  scores.forEach((score, i) => {
+    if (rankings[score] === undefined) {
+      rankings[score] = i;
+    }
+  });
+
+  // Finally, create a points sorted array of user standings
+  roundInfo.standings = Object.keys(roundInfo.users).map((userId) => {
+    const userStanding = roundInfo.users[userId];
+    return {
+      userId: userId,
+      ranking: rankings[userStanding.points],
+      points: userStanding.points,
+    };
+  });
+  roundInfo.standings.sort((a, b) => b.ranking - a.ranking);
+
+  // Help clients know when the next thing is going to happen
+  if (roundInfo.round) {
+    const startDate = new Date(roundInfo.round.startDate);
+    let endOfRoundDay = new Date(startDate);
+
+    // Check to see if the round's current day has ended
+    if (!roundInfo.round.completed) {
+      if (roundInfo.round.currentDay === 0) {
+        roundInfo.nextEvent = {
+          "type": "start",
+          "date": startDate
+        }
+      }
+      else {
+        endOfRoundDay.setDate(startDate.getDate() + roundInfo.round.currentDay + roundInfo.round.remainingOpenDays);
+        roundInfo.nextEvent = {
+          "type": "complete",
+          "date": endOfRoundDay
+        }
+      }
+    }
+    else if (!roundInfo.round.accounted) {
+      endOfRoundDay.setDate(startDate.getDate() + roundInfo.round.currentDay + roundInfo.round.remainingReviewDays);
+      roundInfo.nextEvent = {
+        "type": "account",
+        "date": endOfRoundDay
+      }
+    }
+    else {
+      // there is no next event, this round is over
+    }
+  }
+
+  return roundInfo;
+}
+
+async function getCompRoundInfo(seasonNumber = null, roundNumber = null, useCache = true) {
+  const key = `competitive:season:${seasonNumber ? seasonNumber : "latest"}:round:${roundNumber ? roundNumber : "latest"}`;
+  let roundInfo = await client.getAsync(key);
+  if (useCache && roundInfo) {
+    // Got cached result, no need to perform query
+    return JSON.parse(roundInfo);
+  } else {
+    roundInfo = await _getCompRoundInfo(seasonNumber, roundNumber);
+
+    // Cache the result in redis so that we don't have to do the query again for a little bit
+    await client.setAsync(key, JSON.stringify(roundInfo));
+
+    // Refresh results every this many seconds
+    client.expire(key, 30);
+
+    return roundInfo;
   }
 }
 
@@ -1136,6 +1367,7 @@ module.exports = {
   updateFavSetup,
   userCached,
   invalidateCachedUser,
+  invalidateAllCachedUsers,
   cacheUserInfo,
   deleteUserInfo,
   getUserInfo,
@@ -1149,6 +1381,7 @@ module.exports = {
   authenticateToken,
   getLeaderBoardStat,
   getFeaturedSetup,
+  getCompRoundInfo,
   gameExists,
   inGame,
   hostingScheduled,

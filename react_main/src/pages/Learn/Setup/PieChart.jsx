@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-export const PieChart = ({ data, colors, displayPieChart }) => {
+export const PieChart = ({ data, colors, displayPieChart, suffixFn = (value) => "", }) => {
   const svgRef = useRef();
 
   const noPieChartMsg = !displayPieChart && (
@@ -64,7 +64,7 @@ export const PieChart = ({ data, colors, displayPieChart }) => {
         return (d.y = Math.sin(a) * (radius + labelRadiusOffset2));
       })
       .text(function (d) {
-        return d.data[0];
+        return d.data[0] + suffixFn(d.data[1]);
       })
       .style("font", "14px sans-serif")
       .style("fill", "#FFFFFF")

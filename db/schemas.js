@@ -19,6 +19,14 @@ const skillRating = new mongoose.Schema({
   sigma: { type: Number }, // deviation
 });
 
+const factionRatings = [
+  {
+    factionName: { type: String },
+    skillRating: skillRating,
+    elo: { type: Number },
+  },
+];
+
 var schemas = {
   User: new mongoose.Schema({
     id: { type: String, index: true },
@@ -214,13 +222,8 @@ var schemas = {
       played: { type: Number, index: true },
       rolePlays: {},
       roleWins: {},
-      factionRatings: [
-        {
-          factionName: { type: String },
-          skillRating: skillRating,
-          elo: { type: Number },
-        },
-      ],
+      factionRatings: factionRatings,
+      lockedFactionRatings: factionRatings,
     },
     { minimize: false }
   ),
@@ -703,6 +706,43 @@ var schemas = {
     },
     createdAt: { type: Number, index: true, default: Date.now },
   }),
+  CompetitiveSeason: new mongoose.Schema({
+    number: { type: Number, index: true, unique: true },
+    setups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Setup" }],
+    setupOrder: [[{ type: Number }]], // each top level array corresponds to one round
+    rounds: [{ type: mongoose.Schema.Types.ObjectId, ref: "CompetitiveRound" }],
+    currentRound: { type: Number, default: 0 },
+    startDate: { type: String, default: Date.now }, // YYYY-MM-DD
+    paused: { type: Boolean, default: false },
+    completed: { type: Boolean, default: false },
+    numRounds: { type: Number },
+  }),
+  CompetitiveRound: new mongoose.Schema({
+    season: { type: Number },
+    number: { type: Number },
+    currentDay: { type: Number, default: 0 },
+    completed: { type: Boolean, default: false },
+    accounted: { type: Boolean, default: false },
+    startDate: { type: String }, // YYYY-MM-DD (inclusive)
+    dateCompleted: { type: String }, // YYYY-MM-DD (inclusive)
+    remainingOpenDays: { type: Number, default: 8 },
+    remainingReviewDays: { type: Number, default: 5 },
+  }),
+  CompetitiveGameCompletion: new mongoose.Schema({
+    userId: { type: String },
+    game: { type: mongoose.Schema.Types.ObjectId, ref: "Game" },
+    season: { type: Number },
+    round: { type: Number },
+    day: { type: Number },
+    points: { type: Number }, // This is the same as fortune
+    valid: { type: Boolean, default: true }, // A moderator can invalidate a game in the case of cheating
+  }),
+  CompetitiveSeasonStanding: new mongoose.Schema({
+    userId: { type: String },
+    season: { type: Number },
+    points: { type: Number, default: 0 }, // championship points from winning rounds
+    tiebreakerPoints: { type: Number, default: 0 }, // points from winning games
+  }),
   ViolationTicket: new mongoose.Schema(
     {
       id: { type: String, index: true, unique: true },
@@ -996,6 +1036,11 @@ schemas.VanityUrl.virtual("user", {
   foreignField: "id",
   justOne: true,
 });
+
+schemas.CompetitiveRound.index({ season: 1, number: 1 }, { unique: true });
+schemas.CompetitiveSeasonStanding.index({ userId: 1, season: 1 }, { unique: true });
+schemas.CompetitiveGameCompletion.index({ userId: 1, game: 1 }, { unique: true });
+schemas.CompetitiveGameCompletion.index({ season: 1, round: 1, day: 1 });
 
 // Compound indexes for Report schema
 schemas.Report.index({ status: 1, createdAt: -1 });
