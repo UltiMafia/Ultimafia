@@ -2,6 +2,8 @@ const models = require("../db/models");
 const redis = require("./redis");
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
+const shortid = require("shortid");
+const routeUtils = require("../routes/utils");
 
 // SEE: https://docs.google.com/document/d/1amLZWVBKyalKh7KalYpCDgZSmmNmBy1-BIASOj9GnFA
 const POINTS_TABLE = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
@@ -182,6 +184,134 @@ async function confirmStandings(seasonNumber, roundNumber) {
   }
 }
 
+async function endSeason(seasonNumber) {
+  console.log(`[endSeason]: Ending season ${seasonNumber}`);
+
+  // Get the top 3 standings for the season
+  // Sort by points (descending), then by tiebreakerPoints (descending)
+  const topStandings = await models.CompetitiveSeasonStanding.find({
+    season: seasonNumber,
+  })
+    .sort({ points: -1, tiebreakerPoints: -1 })
+    .limit(3)
+    .lean();
+
+  if (topStandings.length === 0) {
+    console.log(`[endSeason]: No standings found for season ${seasonNumber}`);
+    // Still mark the season as completed
+    await models.CompetitiveSeason.updateOne(
+      { number: seasonNumber },
+      {
+        $set: {
+          completed: true,
+        },
+      }
+    ).exec();
+    return;
+  }
+
+  // Award trophies to top 3
+  const trophyTypes = ["gold", "silver", "bronze"];
+  const trophyNames = [
+    `Season ${seasonNumber} Champion`,
+    `Season ${seasonNumber} Runner-Up`,
+    `Season ${seasonNumber} Third Place`,
+  ];
+
+  const winners = [];
+
+  for (let i = 0; i < Math.min(topStandings.length, 3); i++) {
+    const standing = topStandings[i];
+    const userId = standing.userId;
+    const trophyType = trophyTypes[i];
+    const trophyName = trophyNames[i];
+
+    // Verify user exists
+    const user = await models.User.findOne({
+      id: userId,
+      deleted: false,
+    }).select("_id id name");
+
+    if (!user) {
+      console.log(
+        `[endSeason]: User ${userId} not found, skipping trophy award`
+      );
+      continue;
+    }
+
+    // Check if user already has this trophy (to avoid duplicates)
+    const existingTrophy = await models.Trophy.findOne({
+      ownerId: userId,
+      name: trophyName,
+      revoked: false,
+    });
+
+    if (existingTrophy) {
+      console.log(
+        `[endSeason]: User ${userId} already has trophy "${trophyName}", skipping`
+      );
+      winners.push({
+        userId: userId,
+        name: user.name,
+        position: i + 1,
+        points: standing.points,
+        tiebreakerPoints: standing.tiebreakerPoints,
+      });
+      continue;
+    }
+
+    // Create and save the trophy
+    const trophy = new models.Trophy({
+      id: shortid.generate(),
+      name: trophyName,
+      ownerId: userId,
+      owner: user._id,
+      type: trophyType,
+      createdBy: "system", // System-awarded trophy
+    });
+    await trophy.save();
+
+    console.log(
+      `[endSeason]: Awarded ${trophyType} trophy "${trophyName}" to ${user.name} (${userId})`
+    );
+
+    // Send notification to the winner
+    await routeUtils.createNotification(
+      {
+        content: `Congratulations! You won ${i === 0 ? "1st" : i === 1 ? "2nd" : "3rd"} place in Season ${seasonNumber} and earned a ${trophyType} trophy!`,
+        icon: "fas fa-trophy",
+        link: `/user/${userId}`,
+      },
+      [userId]
+    );
+
+    winners.push({
+      userId: userId,
+      name: user.name,
+      position: i + 1,
+      points: standing.points,
+      tiebreakerPoints: standing.tiebreakerPoints,
+      trophyType: trophyType,
+    });
+  }
+
+  // Mark the season as completed
+  await models.CompetitiveSeason.updateOne(
+    { number: seasonNumber },
+    {
+      $set: {
+        completed: true,
+      },
+    }
+  ).exec();
+
+  console.log(
+    `[endSeason]: Season ${seasonNumber} completed. Winners: ${winners
+      .map((w) => `${w.name} (${w.position}${w.position === 1 ? "st" : w.position === 2 ? "nd" : "rd"})`)
+      .join(", ")}`
+  );
+}
+
 async function accountCompetitiveRounds() {
   // Get the current season, if any
   const currentSeason = await models.CompetitiveSeason.findOne({
@@ -258,7 +388,8 @@ async function accountCompetitiveRounds() {
             { $inc: { currentRound: 1 } }
           ).exec();
         } else {
-          // TODO end season
+          // All rounds are complete, end the season
+          await endSeason(seasonNumber);
         }
       }
     } else {
@@ -272,4 +403,5 @@ module.exports = {
   POINTS_TABLE,
   progressCompetitive,
   accountCompetitiveRounds,
+  endSeason,
 };

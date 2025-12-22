@@ -3362,7 +3362,7 @@ module.exports = class Game {
       const gameDocument = await game.save();
 
       if (this.competitive) {
-        this.recordCompetitiveCompletions(gameDocument._id);
+        await this.recordCompetitiveCompletions(gameDocument._id);
       }
 
       for (let player of this.players) {

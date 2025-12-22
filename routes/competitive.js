@@ -153,7 +153,7 @@ router.post("/pause", async function (req, res) {
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error creating season.");
+    res.send("Error pausing round.");
   }
 });
 
