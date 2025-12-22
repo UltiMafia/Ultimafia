@@ -1751,7 +1751,12 @@ export function useModCommands(argValues, commandRan, setResults) {
         axios
           .post("/api/competitive/pause", argValues)
           .then((res) => {
-            siteInfo.showAlert(`Competitive season ${Boolean(res.data) ? "paused" : "unpaused"}.`, "success");
+            siteInfo.showAlert(
+              `Competitive season ${
+                Boolean(res.data) ? "paused" : "unpaused"
+              }.`,
+              "success"
+            );
             commandRan();
           })
           .catch(errorAlert);

@@ -710,7 +710,11 @@ export function parseGamePopover(game) {
   result.push(
     <InfoSection title="Common settings">
       <InfoRow title="Ranked" content={game.settings.ranked} key="ranked" />
-      <InfoRow title="Competitive" content={game.settings.competitive} key="competitive" />
+      <InfoRow
+        title="Competitive"
+        content={game.settings.competitive}
+        key="competitive"
+      />
       <InfoRow
         title="Spectating"
         content={game.settings.spectating}

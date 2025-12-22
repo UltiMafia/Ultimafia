@@ -18,7 +18,7 @@ module.exports = class Host extends Role {
       "AddDawn",
       "AddPrologue",
       "CreateEvent",
-      "PublicReveal"
+      "PublicReveal",
     ];
   }
 };

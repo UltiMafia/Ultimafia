@@ -34,20 +34,17 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
         setSetups(playedSetups);
         setTitle("Most Popular Setups");
       });
-    }
-    else {
-      axios
-        .get(`/api/competitive/roundInfo`)
-        .then((response) => {
-          const roundInfo = response.data;
-          if (roundInfo.round) {
-            const allowedSetups = roundInfo.allowedSetups.map((allowedSetup) => { 
-              return { "setupDetails": allowedSetup }
-            });
-            setSetups(allowedSetups);
-            setTitle(`Competitive Round ${roundInfo.round.number} Setups`);
-          }
-        });
+    } else {
+      axios.get(`/api/competitive/roundInfo`).then((response) => {
+        const roundInfo = response.data;
+        if (roundInfo.round) {
+          const allowedSetups = roundInfo.allowedSetups.map((allowedSetup) => {
+            return { setupDetails: allowedSetup };
+          });
+          setSetups(allowedSetups);
+          setTitle(`Competitive Round ${roundInfo.round.number} Setups`);
+        }
+      });
     }
   }, [lobby]);
 

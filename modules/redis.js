@@ -120,13 +120,12 @@ async function invalidateCachedUser(userId) {
   client.del(`user:${userId}:info:id`);
 }
 
-
 function deleteKeysByPattern(pattern, doneCallback = null) {
-  let cursor = '0';
+  let cursor = "0";
 
   function scanAndDel() {
     // The arguments to scan in v3 are typically in the order: cursor, [options...]
-    client.scan(cursor, 'MATCH', pattern, 'COUNT', 100, function(err, reply) {
+    client.scan(cursor, "MATCH", pattern, "COUNT", 100, function (err, reply) {
       if (err && doneCallback) {
         return doneCallback(err);
       }
@@ -136,7 +135,7 @@ function deleteKeysByPattern(pattern, doneCallback = null) {
       const keys = reply[1];
 
       if (keys.length > 0) {
-        client.unlink(keys, function(delErr, response) {
+        client.unlink(keys, function (delErr, response) {
           if (delErr) {
             console.error(`Error deleting keys: ${delErr}`);
           }
@@ -144,7 +143,7 @@ function deleteKeysByPattern(pattern, doneCallback = null) {
       }
 
       // continue scanning if the cursor is not '0'
-      if (cursor === '0') {
+      if (cursor === "0") {
         if (doneCallback) doneCallback(null, deletedCount);
       } else {
         // recurse to get the next batch
@@ -607,42 +606,50 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
     return roundInfo;
   }
 
-  roundInfo.allowedSetups = season.setupOrder[roundInfo.round.number - 1].map((setupNumber) => season.setups[setupNumber]);
+  roundInfo.allowedSetups = season.setupOrder[roundInfo.round.number - 1].map(
+    (setupNumber) => season.setups[setupNumber]
+  );
 
   roundInfo.gameCompletions = await models.CompetitiveGameCompletion.aggregate([
-    { $match: { season: roundInfo.seasonNumber, round: roundInfo.round.number, valid: true } },
+    {
+      $match: {
+        season: roundInfo.seasonNumber,
+        round: roundInfo.round.number,
+        valid: true,
+      },
+    },
     {
       $group: {
-        _id: '$game',
-        game: { $first: '$game' },
-        day: { $first: '$day' },
-        valid: { $first: '$valid' },
+        _id: "$game",
+        game: { $first: "$game" },
+        day: { $first: "$day" },
+        valid: { $first: "$valid" },
         pointsEarnedByPlayers: {
           $push: {
-            userId: '$userId',
-            points: '$points'
-          }
-        }
-      }
+            userId: "$userId",
+            points: "$points",
+          },
+        },
+      },
     },
     {
       $lookup: {
-        from: 'games',
-        localField: '_id',
-        foreignField: '_id',
-        as: 'game'
-      }
+        from: "games",
+        localField: "_id",
+        foreignField: "_id",
+        as: "game",
+      },
     },
-    { $unwind: { path: '$game' } },
+    { $unwind: { path: "$game" } },
     {
       $lookup: {
-        from: 'setups',
-        localField: 'game.setup',
-        foreignField: '_id',
-        as: 'game.setup'
-      }
+        from: "setups",
+        localField: "game.setup",
+        foreignField: "_id",
+        as: "game.setup",
+      },
     },
-    { $unwind: { path: '$game.setup' } }
+    { $unwind: { path: "$game.setup" } },
   ]);
 
   for (let gameCompletion of roundInfo.gameCompletions) {
@@ -698,26 +705,31 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
     if (!roundInfo.round.completed) {
       if (roundInfo.round.currentDay === 0) {
         roundInfo.nextEvent = {
-          "type": "start",
-          "date": startDate
-        }
-      }
-      else {
-        endOfRoundDay.setDate(startDate.getDate() + roundInfo.round.currentDay + roundInfo.round.remainingOpenDays);
+          type: "start",
+          date: startDate,
+        };
+      } else {
+        endOfRoundDay.setDate(
+          startDate.getDate() +
+            roundInfo.round.currentDay +
+            roundInfo.round.remainingOpenDays
+        );
         roundInfo.nextEvent = {
-          "type": "complete",
-          "date": endOfRoundDay
-        }
+          type: "complete",
+          date: endOfRoundDay,
+        };
       }
-    }
-    else if (!roundInfo.round.accounted) {
-      endOfRoundDay.setDate(startDate.getDate() + roundInfo.round.currentDay + roundInfo.round.remainingReviewDays);
+    } else if (!roundInfo.round.accounted) {
+      endOfRoundDay.setDate(
+        startDate.getDate() +
+          roundInfo.round.currentDay +
+          roundInfo.round.remainingReviewDays
+      );
       roundInfo.nextEvent = {
-        "type": "account",
-        "date": endOfRoundDay
-      }
-    }
-    else {
+        type: "account",
+        date: endOfRoundDay,
+      };
+    } else {
       // there is no next event, this round is over
     }
   }
@@ -725,8 +737,14 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
   return roundInfo;
 }
 
-async function getCompRoundInfo(seasonNumber = null, roundNumber = null, useCache = true) {
-  const key = `competitive:season:${seasonNumber ? seasonNumber : "latest"}:round:${roundNumber ? roundNumber : "latest"}`;
+async function getCompRoundInfo(
+  seasonNumber = null,
+  roundNumber = null,
+  useCache = true
+) {
+  const key = `competitive:season:${
+    seasonNumber ? seasonNumber : "latest"
+  }:round:${roundNumber ? roundNumber : "latest"}`;
   let roundInfo = await client.getAsync(key);
   if (useCache && roundInfo) {
     // Got cached result, no need to perform query

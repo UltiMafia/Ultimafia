@@ -1,7 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-export const PieChart = ({ data, colors, displayPieChart, suffixFn = (value) => "", }) => {
+export const PieChart = ({
+  data,
+  colors,
+  displayPieChart,
+  suffixFn = (value) => "",
+}) => {
   const svgRef = useRef();
 
   const noPieChartMsg = !displayPieChart && (

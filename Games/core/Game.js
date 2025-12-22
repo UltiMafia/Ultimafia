@@ -3012,7 +3012,7 @@ module.exports = class Game {
       const ratedFactions = rate(factionsToBeRated, {
         model: bradleyTerryFull,
         score: factionScores,
-        beta: constants.defaultSkillRatingSigma/4,
+        beta: constants.defaultSkillRatingSigma / 4,
       });
 
       /* Notes:
@@ -3035,7 +3035,7 @@ module.exports = class Game {
       );
 
       // numbers for approximating the "look" of elo
-      const alpha = 200/constants.defaultSkillRatingSigma;
+      const alpha = 200 / constants.defaultSkillRatingSigma;
       const ordinalTarget = 1500;
 
       for (var i = 0; i < factionNames.length; i++) {
@@ -3053,7 +3053,7 @@ module.exports = class Game {
         newFactionSkillRatings.push({
           factionName: factionName,
           skillRating: newSkillRating[0],
-          elo: alpha * (ordinal(newSkillRating[0]) + ordinalTarget/alpha),
+          elo: alpha * (ordinal(newSkillRating[0]) + ordinalTarget / alpha),
         });
       }
 
@@ -3212,7 +3212,9 @@ module.exports = class Game {
 
   async recordCompetitiveCompletions(gameDbId) {
     try {
-      const currentSeason = await models.CompetitiveSeason.findOne({ completed: false })
+      const currentSeason = await models.CompetitiveSeason.findOne({
+        completed: false,
+      })
         .sort({ number: -1 })
         .lean();
 
@@ -3224,7 +3226,10 @@ module.exports = class Game {
       const seasonNumber = currentSeason.number;
 
       // Get the current round, if any
-      const currentRound = await models.CompetitiveRound.findOne({ season: seasonNumber, completed: false })
+      const currentRound = await models.CompetitiveRound.findOne({
+        season: seasonNumber,
+        completed: false,
+      })
         .sort({ number: -1 })
         .lean();
 
@@ -3233,11 +3238,21 @@ module.exports = class Game {
         return;
       }
 
-      console.log(`[recordCompetitiveCompletions]: Game ${this.id} completed for season ${seasonNumber} round ${currentRound.number} day ${currentRound.currentDay}`);
+      console.log(
+        `[recordCompetitiveCompletions]: Game ${this.id} completed for season ${seasonNumber} round ${currentRound.number} day ${currentRound.currentDay}`
+      );
       for (let player of this.players) {
-        if (!player.isBot && this.pointsEarnedByPlayers[player.id] !== undefined) {
-          const pointsEarned = Math.max(0, this.pointsEarnedByPlayers[player.id]);
-          console.log(`[recordCompetitiveCompletions]: User ${player.user.id} earned ${pointsEarned} points during game ${this.id} on season ${seasonNumber} round ${currentRound.number} day ${currentRound.currentDay}`);
+        if (
+          !player.isBot &&
+          this.pointsEarnedByPlayers[player.id] !== undefined
+        ) {
+          const pointsEarned = Math.max(
+            0,
+            this.pointsEarnedByPlayers[player.id]
+          );
+          console.log(
+            `[recordCompetitiveCompletions]: User ${player.user.id} earned ${pointsEarned} points during game ${this.id} on season ${seasonNumber} round ${currentRound.number} day ${currentRound.currentDay}`
+          );
           const gameCompletion = new models.CompetitiveGameCompletion({
             userId: player.user.id,
             game: gameDbId,
