@@ -278,7 +278,9 @@ async function endSeason(seasonNumber) {
     // Send notification to the winner
     await routeUtils.createNotification(
       {
-        content: `Congratulations! You won ${i === 0 ? "1st" : i === 1 ? "2nd" : "3rd"} place in Season ${seasonNumber} and earned a ${trophyType} trophy!`,
+        content: `Congratulations! You won ${
+          i === 0 ? "1st" : i === 1 ? "2nd" : "3rd"
+        } place in Season ${seasonNumber} and earned a ${trophyType} trophy!`,
         icon: "fas fa-trophy",
         link: `/user/${userId}`,
       },
@@ -307,7 +309,12 @@ async function endSeason(seasonNumber) {
 
   console.log(
     `[endSeason]: Season ${seasonNumber} completed. Winners: ${winners
-      .map((w) => `${w.name} (${w.position}${w.position === 1 ? "st" : w.position === 2 ? "nd" : "rd"})`)
+      .map(
+        (w) =>
+          `${w.name} (${w.position}${
+            w.position === 1 ? "st" : w.position === 2 ? "nd" : "rd"
+          })`
+      )
       .join(", ")}`
   );
 }
