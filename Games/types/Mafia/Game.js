@@ -682,13 +682,10 @@ module.exports = class MafiaGame extends Game {
     ) {
       length = Math.ceil((length * alivePlayers) / totalPlayers);
     }
-    if (
-      this.getStateName() == "Day" &&
-      this.TimerDecayAmount > 0
-    ) {
+    if (this.getStateName() == "Day" && this.TimerDecayAmount > 0) {
       length = length - this.TimerDecayAmountTotal;
       this.TimerDecayAmountTotal += this.TimerDecayAmount;
-      if(length < 1000 * 60){
+      if (length < 1000 * 60) {
         length = 1000 * 60;
       }
     }

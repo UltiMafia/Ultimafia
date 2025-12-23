@@ -2465,7 +2465,7 @@ module.exports = class Game {
     return false;
   }
 
-    getTimerDecayAmount() {
+  getTimerDecayAmount() {
     const decay = this.getGameSetting("Timer Decay");
     if (decay) {
       return decay;
