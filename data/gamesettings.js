@@ -121,6 +121,15 @@ const gameSettingData = {
       description:
         "The day length will scale with the number of living players.",
     },
+    "Timer Decay": {
+      category: "Timer",
+      internal: ["TimerDecay"],
+      tags: ["Timer", "Night"],
+      description:
+        "The day length will be reduced by X minutes every day (Cannot go below 1 minute). X is the number of times this setting is added.",
+      allowDuplicate: true,
+      maxCount: 5,
+    },
 
     //Team
     "Silent Mafia": {

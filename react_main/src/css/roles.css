@@ -3224,6 +3224,22 @@ Game Settings
   background-image: url("/src/images/modifiers/restless-scary.png");
 }
 
+.gamesetting-Fixed-Day-Length {
+  background-image: url("/src/images/modifiers/delayed.png");
+}
+
+.gamesetting-Fixed-Night-Length {
+  background-image: url("/src/images/modifiers/delayed.png");
+}
+
+.gamesetting-Scaling-Timer {
+  background-image: url("/src/images/modifiers/temporary.png");
+}
+
+.gamesetting-Timer-Decay {
+  background-image: url("/src/images/modifiers/temporary.png");
+}
+
 .gamesetting-Talking-Dead {
   background-image: url("/src/images/modifiers/dead.png");
 }

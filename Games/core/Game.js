@@ -2465,6 +2465,14 @@ module.exports = class Game {
     return false;
   }
 
+    getTimerDecayAmount() {
+    const decay = this.getGameSetting("Timer Decay");
+    if (decay) {
+      return decay;
+    }
+    return 0;
+  }
+
   isNoReveal() {
     if (this.getGameSetting("No Reveal")) {
       return true;

@@ -1307,7 +1307,7 @@ export function GameSettingSearch(props) {
 
   if (!siteInfo.gamesettings) return <NewLoading small />;
 
-  const alignButtons = ["Standard", "Voting", "Other"].map((type) => (
+  const alignButtons = ["Standard", "Voting", "Timer", "Other"].map((type) => (
     <Tab
       label={type}
       value={type}
