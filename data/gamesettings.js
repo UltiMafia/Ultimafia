@@ -94,6 +94,43 @@ const gameSettingData = {
       description: "Dead players can vote in the village meeting.",
     },
 
+    //Timer
+
+    "Fixed Day Length": {
+      category: "Timer",
+      internal: ["FixedDayLength"],
+      tags: ["Timer", "Day"],
+      description:
+        "The day length cannot be customized by Host and will always be X minutes with no extends. X is the number of times this setting is added.",
+      allowDuplicate: true,
+      maxCount: 30,
+    },
+    "Fixed Night Length": {
+      category: "Timer",
+      internal: ["FixedNightLength"],
+      tags: ["Timer", "Night"],
+      description:
+        "The night length cannot be customized by Host and will always be X minutes. X is the number of times this setting is added.",
+      allowDuplicate: true,
+      maxCount: 10,
+    },
+    "Scaling Timer": {
+      category: "Timer",
+      internal: ["LengthScaling"],
+      tags: ["Timer", "Day"],
+      description:
+        "The day length will scale with the number of living players.",
+    },
+    "Timer Decay": {
+      category: "Timer",
+      internal: ["TimerDecay"],
+      tags: ["Timer", "Night"],
+      description:
+        "The day length will be reduced by X minutes every day (Cannot go below 1 minute). X is the number of times this setting is added.",
+      allowDuplicate: true,
+      maxCount: 5,
+    },
+
     //Team
     "Silent Mafia": {
       category: "Other",

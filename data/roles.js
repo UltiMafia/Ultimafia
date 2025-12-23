@@ -5132,7 +5132,7 @@ const roleData = {
       ],
       description: [
         "Always assigned to the first player(s) in the list.",
-        "Village cannot not win until a Host stops hosting.",
+        "Village cannot win until a Host stops hosting.",
         "Can only die if they choose to stop hosting.",
         // TODO
         "If in the game, whispers will not leak.",

@@ -2442,6 +2442,37 @@ module.exports = class Game {
     return false;
   }
 
+  getFixedDayLength() {
+    const dayLength = this.getGameSetting("Fixed Day Length");
+    if (dayLength) {
+      return dayLength;
+    }
+    return 0;
+  }
+
+  getFixedNightLength() {
+    const nightLength = this.getGameSetting("Fixed Night Length");
+    if (nightLength) {
+      return nightLength;
+    }
+    return 0;
+  }
+
+  isTimerScaling() {
+    if (this.getGameSetting("Scaling Timer")) {
+      return true;
+    }
+    return false;
+  }
+
+  getTimerDecayAmount() {
+    const decay = this.getGameSetting("Timer Decay");
+    if (decay) {
+      return decay;
+    }
+    return 0;
+  }
+
   isNoReveal() {
     if (this.getGameSetting("No Reveal")) {
       return true;
