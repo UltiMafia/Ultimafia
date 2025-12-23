@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { NameWithAvatar, Avatar } from "./User";
 import { useNow } from "../../hooks/useNow";
@@ -11,6 +11,7 @@ import {
   Typography,
   IconButton,
   Badge,
+  Box,
 } from "@mui/material";
 import NavDropdown from "../../components/NavDropdown";
 import { SiteInfoContext } from "../../Contexts";
@@ -157,71 +158,31 @@ export default function UserNavSection({
         alignItems: "center",
       }}
     >
-      {/* Hearts - Show only red hearts on mobile */}
-      {isMobile ? (
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1em",
+          columnGap: 0.5,
+          width: "3em",
+          alignItems: "center",
+          textAlign: "right",
+        }}
+      >
+        <Typography>{user.redHearts ?? 0}</Typography>
         <Tooltip title={getHeartRefreshMessage(user, "red")}>
-          <Stack direction="row" spacing={0.3} alignItems="center">
-            <Typography
-              sx={{
-                fontSize: "14px",
-                fontWeight: "bold",
-              }}
-            >
-              {user.redHearts ?? 0}
-            </Typography>
-            <i
-              className="fas fa-heart"
-              style={{ color: "#e23b3b", fontSize: "12px" }}
-            ></i>
-          </Stack>
+          <i
+            className="fas fa-heart"
+            style={{ color: "#e23b3b", marginLeft: "auto" }}
+          />
         </Tooltip>
-      ) : (
-        <div
-          style={{
-            display: "flex",
-            width: "40px",
-            flexDirection: "column",
-            alignItems: "stretch",
-          }}
-        >
-          <Stack direction="row">
-            <Typography
-              sx={{
-                width: "24px",
-                pr: 0.5,
-                textAlign: "right",
-                fontSize: "16px",
-              }}
-            >
-              {user.redHearts ?? 0}
-            </Typography>
-            <Tooltip title={getHeartRefreshMessage(user, "red")}>
-              <i
-                className="fas fa-heart"
-                style={{ color: "#e23b3b", marginLeft: "auto" }}
-              ></i>
-            </Tooltip>
-          </Stack>
-          <Stack direction="row">
-            <Typography
-              sx={{
-                width: "24px",
-                pr: 0.5,
-                textAlign: "right",
-                fontSize: "16px",
-              }}
-            >
-              {user.goldHearts ?? 0}
-            </Typography>
-            <Tooltip title="Not implemented yet.">
-              <i
-                className="fas fa-heart"
-                style={{ color: "var(--gold-heart-color)", marginLeft: "auto" }}
-              ></i>
-            </Tooltip>
-          </Stack>
-        </div>
-      )}
+        <Typography>{user.goldHearts ?? 0}</Typography>
+        <Link to="/fame/competitive">
+          <i
+            className="fas fa-heart"
+            style={{ color: "var(--gold-heart-color)", marginLeft: "auto" }}
+          />
+        </Link>
+      </Box>
       <Divider orientation="vertical" flexItem />
       <IconButton
         size="small"

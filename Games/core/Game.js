@@ -33,6 +33,7 @@ const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const axios = require("axios");
 const { ordinal, rating, rate, predictWin } = require("openskill");
+const { bradleyTerryFull } = require("openskill/models");
 
 module.exports = class Game {
   constructor(options) {
@@ -3031,7 +3032,11 @@ module.exports = class Game {
 
       // library code time
       const predictions = predictWin(factionsToBeRated);
-      const ratedFactions = rate(factionsToBeRated, { score: factionScores });
+      const ratedFactions = rate(factionsToBeRated, {
+        model: bradleyTerryFull,
+        score: factionScores,
+        beta: constants.defaultSkillRatingSigma / 4,
+      });
 
       /* Notes:
        * - Read the library documentation before tweaking anything: https://www.npmjs.com/package/openskill
@@ -3051,6 +3056,11 @@ module.exports = class Game {
       const newFactionSkillRatings = factionRatingsRaw.filter(
         (factionRating) => !factionNames.includes(factionRating.factionName)
       );
+
+      // numbers for approximating the "look" of elo
+      const alpha = 200 / constants.defaultSkillRatingSigma;
+      const ordinalTarget = 1500;
+
       for (var i = 0; i < factionNames.length; i++) {
         const factionName = factionNames[i];
         const winPredictionPercent = predictions[i]; // this adds up to 1 across all factions
@@ -3066,7 +3076,7 @@ module.exports = class Game {
         newFactionSkillRatings.push({
           factionName: factionName,
           skillRating: newSkillRating[0],
-          elo: ordinal(newSkillRating[0]),
+          elo: alpha * (ordinal(newSkillRating[0]) + ordinalTarget / alpha),
         });
       }
 
@@ -3223,6 +3233,65 @@ module.exports = class Game {
     }
   }
 
+  async recordCompetitiveCompletions(gameDbId) {
+    try {
+      const currentSeason = await models.CompetitiveSeason.findOne({
+        completed: false,
+      })
+        .sort({ number: -1 })
+        .lean();
+
+      // Nothing to do if there's no active season
+      if (!currentSeason) {
+        return;
+      }
+
+      const seasonNumber = currentSeason.number;
+
+      // Get the current round, if any
+      const currentRound = await models.CompetitiveRound.findOne({
+        season: seasonNumber,
+        completed: false,
+      })
+        .sort({ number: -1 })
+        .lean();
+
+      // Nothing to do if there's no active round
+      if (!currentRound || currentRound.currentDay < 1) {
+        return;
+      }
+
+      console.log(
+        `[recordCompetitiveCompletions]: Game ${this.id} completed for season ${seasonNumber} round ${currentRound.number} day ${currentRound.currentDay}`
+      );
+      for (let player of this.players) {
+        if (
+          !player.isBot &&
+          this.pointsEarnedByPlayers[player.id] !== undefined
+        ) {
+          const pointsEarned = Math.max(
+            0,
+            this.pointsEarnedByPlayers[player.id]
+          );
+          console.log(
+            `[recordCompetitiveCompletions]: User ${player.user.id} earned ${pointsEarned} points during game ${this.id} on season ${seasonNumber} round ${currentRound.number} day ${currentRound.currentDay}`
+          );
+          const gameCompletion = new models.CompetitiveGameCompletion({
+            userId: player.user.id,
+            game: gameDbId,
+            season: seasonNumber,
+            round: currentRound.number,
+            day: currentRound.currentDay,
+            points: pointsEarned,
+          });
+          await gameCompletion.save();
+        }
+      }
+    } catch (e) {
+      logger.error("Error recording competitive completion: ", e);
+    }
+  }
+
   async endPostgame() {
     try {
       if (this.postgameOver) return;
@@ -3313,10 +3382,11 @@ module.exports = class Game {
         anonymousGame: this.anonymousGame,
         anonymousDeck: this.anonymousDeck,
       });
-      await game.save();
+      const gameDocument = await game.save();
 
-      // Determine the heart type of this game based on if it was comp, ranked, or neither
-      const heartType = this.competitive ? "gold" : this.ranked ? "red" : null;
+      if (this.competitive) {
+        await this.recordCompetitiveCompletions(gameDocument._id);
+      }
 
       for (let player of this.players) {
         let coinsEarned = 0;
@@ -3403,16 +3473,16 @@ module.exports = class Game {
           ).exec();
         }
 
-        if (heartType && !player.isBot) {
+        if (this.ranked && !player.isBot) {
           let heartRefresh = await models.HeartRefresh.findOne({
             userId: player.user.id,
-            type: heartType,
+            type: "red",
           }).select("_id");
           if (!heartRefresh) {
             heartRefresh = new models.HeartRefresh({
               userId: player.user.id,
               when: Date.now() + constants.redHeartRefreshIntervalMillis,
-              type: heartType,
+              type: "red",
             });
             await heartRefresh.save();
           }

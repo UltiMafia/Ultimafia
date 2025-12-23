@@ -311,6 +311,7 @@ function Header({ setShowAnnouncementTemporarily }) {
                       { text: "Forums", path: "/community/forums" },
                       { text: "Users", path: "/community/users" },
                       { text: "Moderation", path: "/community/moderation" },
+                      { text: "Calendar", path: "/community/calendar" },
                       {
                         text: "Reports",
                         path: "/community/reports",
@@ -411,6 +412,7 @@ function Header({ setShowAnnouncementTemporarily }) {
                   { text: "Forums", path: "/community/forums" },
                   { text: "Users", path: "/community/users" },
                   { text: "Moderation", path: "/community/moderation" },
+                  { text: "Calendar", path: "/community/calendar" },
                   {
                     text: "Reports",
                     path: "/community/reports",

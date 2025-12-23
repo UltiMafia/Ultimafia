@@ -9,6 +9,27 @@ const logger = require("../modules/logging")(".");
 const router = express.Router();
 const axios = require("axios");
 
+async function userCanPlayCompetitive(userId) {
+  const user = await redis.getUserInfo(userId);
+
+  if (!user || user.points < constants.minimumPointsForCompetitive) {
+    return `You cannot play ranked games until you've earned ${constants.minimumPointsForCompetitive} fortune.`;
+  }
+
+  if (!user || user.goldHearts <= 0) {
+    return "You cannot play ranked games because your Gold Hearts are depleted.";
+  }
+
+  if (
+    userId &&
+    !(await routeUtils.verifyPermission(userId, "playCompetitive"))
+  ) {
+    return "You have not been approved for competitive games. Please message an admin for assistance.";
+  }
+
+  return null;
+}
+
 router.post("/leave", async function (req, res) {
   try {
     var userId;
@@ -235,6 +256,7 @@ router.get("/:id/connect", async function (req, res) {
     const userInThisGame = userId && (await redis.inGame(userId)) === gameId;
 
     if (!userInThisGame) {
+      // Ranked checks
       if (userId && game.settings.ranked && !isSpectating) {
         const user = await redis.getUserInfo(userId);
 
@@ -255,6 +277,17 @@ router.get("/:id/connect", async function (req, res) {
         }
       }
 
+      // Competitive checks
+      if (userId && game.settings.competitive && !isSpectating) {
+        const failureReason = await userCanPlayCompetitive(userId);
+        if (failureReason) {
+          res.status(400);
+          res.send(failureReason);
+          return;
+        }
+      }
+
+      // Leave penalty checks
       if (userId && !isSpectating) {
         const leavePentalty = await models.LeavePenalty.findOne({
           userId: userId,
@@ -286,18 +319,6 @@ router.get("/:id/connect", async function (req, res) {
         res.status(500);
         res.send(
           "You are unable to play ranked games. Please contact an admin if this is in error."
-        );
-        return;
-      }
-
-      if (
-        userId &&
-        game.settings.competitive &&
-        !(await routeUtils.verifyPermission(userId, "playCompetitive"))
-      ) {
-        res.status(500);
-        res.send(
-          "You have not been approved for competitive games. Please message an admin for assistance."
         );
         return;
       }
@@ -553,12 +574,32 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    if (req.body.competitive && !setup.competitive) {
-      res.status(500);
-      res.send(
-        "This setup has not been approved for Competitive play. Please contact an admin if this is in error."
-      );
-      return;
+    if (req.body.competitive) {
+      const roundInfo = await redis.getCompRoundInfo();
+
+      // Check if the competitive round is paused
+      if (roundInfo.seasonPaused) {
+        res.status(500);
+        res.send(
+          "The competitive round is currently paused. You cannot host competitive games at this time."
+        );
+        return;
+      }
+
+      let setupAllowed = false;
+      for (const allowedSetup of roundInfo.allowedSetups) {
+        if (setup.id === allowedSetup.id) {
+          setupAllowed = true;
+        }
+      }
+
+      if (!setupAllowed) {
+        res.status(500);
+        res.send(
+          "This setup is not allowed for the current round. Please contact an admin if this is in error."
+        );
+        return;
+      }
     }
 
     if (req.body.ranked && req.body.competitive) {
@@ -602,17 +643,6 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    if (
-      req.body.competitive &&
-      !(await routeUtils.verifyPermission(userId, "playCompetitive"))
-    ) {
-      res.status(500);
-      res.send(
-        "You are unable to play competitive games. Sign up here: https://ultimafia.com/community/forums/thread/ku_mE7QWu"
-      );
-      return;
-    }
-
     const user = await redis.getUserInfo(userId);
     if (req.body.ranked) {
       if (user && user.gamesPlayed < constants.minimumGamesForRanked) {
@@ -628,6 +658,15 @@ router.post("/host", async function (req, res) {
         res.send(
           "You cannot play ranked games because your Red Hearts are depleted."
         );
+        return;
+      }
+    }
+
+    if (userId && req.body.competitive) {
+      const failureReason = await userCanPlayCompetitive(userId);
+      if (failureReason) {
+        res.status(400);
+        res.send(failureReason);
         return;
       }
     }

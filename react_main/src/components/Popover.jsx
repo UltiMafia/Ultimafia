@@ -244,6 +244,7 @@ export function parseSetupPopover(setup, siteInfo) {
     );
     result.push(<InfoRow title="Created By" content={name} key="createdBy" />);
   }
+  result.push(<InfoRow title="ID" content={setup.id} key="setupId" />);
 
   const IMPORTANT_GAME_SETTINGS = ["Whispers"];
   let settings = siteInfo.gamesettings[setup.gameType].map((gameSetting) => {
@@ -709,6 +710,11 @@ export function parseGamePopover(game) {
   result.push(
     <InfoSection title="Common settings">
       <InfoRow title="Ranked" content={game.settings.ranked} key="ranked" />
+      <InfoRow
+        title="Competitive"
+        content={game.settings.competitive}
+        key="competitive"
+      />
       <InfoRow
         title="Spectating"
         content={game.settings.spectating}

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
+import axios from "axios";
 
 import {
   Box,
@@ -19,6 +20,7 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import LobbySidebarPanel from "./LobbySidebarPanel";
 
 export const RecentlyPlayedSetups = ({ lobby }) => {
+  const [title, setTitle] = useState([]);
   const [setups, setSetups] = useState([]);
   const [selSetup, setSelSetup] = useState(null);
   const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
@@ -27,10 +29,23 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
   const isPhoneDevice = useIsPhoneDevice();
 
   useEffect(() => {
-    (async () => {
-      const playedSetups = await getRecentlyPlayedSetups({ lobby });
-      setSetups(playedSetups);
-    })();
+    if (lobby !== "Competitive") {
+      getRecentlyPlayedSetups({ lobby }).then((playedSetups) => {
+        setSetups(playedSetups);
+        setTitle("Most Popular Setups");
+      });
+    } else {
+      axios.get(`/api/competitive/roundInfo`).then((response) => {
+        const roundInfo = response.data;
+        if (roundInfo.round) {
+          const allowedSetups = roundInfo.allowedSetups.map((allowedSetup) => {
+            return { setupDetails: allowedSetup };
+          });
+          setSetups(allowedSetups);
+          setTitle(`Competitive Round ${roundInfo.round.number} Setups`);
+        }
+      });
+    }
   }, [lobby]);
 
   if (!setups?.length) {
@@ -72,7 +87,7 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
   });
 
   return (
-    <LobbySidebarPanel title="Most Popular Setups">
+    <LobbySidebarPanel title={title}>
       {selSetup && (
         <HostGameDialogue
           open={ishostGameDialogueOpen}
