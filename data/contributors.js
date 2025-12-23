@@ -367,6 +367,7 @@ const artContributors = {
       "Sphinx:vivid",
       "Sleuth:vivid",
       "Revelation:vivid",
+      "Suborner:vivid",
       //Skins
       "Cop:halloween",
       "Doctor:halloween",

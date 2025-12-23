@@ -1462,6 +1462,10 @@
   background-image: url("/src/images/roles/mafia/skins/assassin-old.png");
 }
 
+.role-icon-vivid-Mafia-Suborner {
+  background-image: url("/src/images/roles/mafia/suborner-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Stylist {
   background-image: url("/src/images/roles/mafia/stylist-vivid.png");
 }
