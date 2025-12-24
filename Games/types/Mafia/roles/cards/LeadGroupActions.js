@@ -18,9 +18,12 @@ module.exports = class LeadGroupActions extends Card {
           if (!this.actor.alive) return;
           //this.actor.giveEffect("Astral", )
           for (let action of this.game.actions[0]) {
-            if (action.actors.includes(this.actor) && action.actors.length > 1) {
-              for(let player of action.actors){
-                if(player != this.actor){
+            if (
+              action.actors.includes(this.actor) &&
+              action.actors.length > 1
+            ) {
+              for (let player of action.actors) {
+                if (player != this.actor) {
                   action.actors.splice(action.actors.indexOf(player), 1);
                 }
               }

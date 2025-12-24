@@ -39,8 +39,8 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
               }
               currentRoles.push(playerRole);
             }
-            if(!this.target.includes(":")){
-              this.target = `${this.target}:`
+            if (!this.target.includes(":")) {
+              this.target = `${this.target}:`;
             }
             for (let y = 0; y < currentRoles.length; y++) {
               if (this.target == currentRoles[y]) {

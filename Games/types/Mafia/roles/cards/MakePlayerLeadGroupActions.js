@@ -20,15 +20,18 @@ module.exports = class MakePlayerLeadGroupActions extends Card {
               return;
             }
             for (let action of this.game.actions[0]) {
-            if (action.actors.includes(this.target) && action.actors.length > 1) {
-              for(let player of action.actors){
-                if(player != this.target){
-                  action.actors.splice(action.actors.indexOf(player), 1);
+              if (
+                action.actors.includes(this.target) &&
+                action.actors.length > 1
+              ) {
+                for (let player of action.actors) {
+                  if (player != this.target) {
+                    action.actors.splice(action.actors.indexOf(player), 1);
+                  }
                 }
+                //action.labels = [...action.labels, "hidden"];
               }
-              //action.labels = [...action.labels, "hidden"];
             }
-          }
           },
         },
       },
