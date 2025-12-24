@@ -547,17 +547,9 @@ export function RoleCount({
           ref={roleRef}
         >
           {count > 1 && <DigitsCount digits={digits} />}
-          {modifiers &&
-            modifiers
-              .split("/")
-              .map((modifier, k) => (
-                <div
-                  key={modifier}
-                  className={`modifier modifier-pos-${k} modifier-${gameType}-${hyphenDelimit(
-                    modifier
-                  )}`}
-                />
-              ))}
+          {modifiers && modifiers.trim() && (
+            <div className="modifier-modified" />
+          )}
         </div>
       </div>
     );
