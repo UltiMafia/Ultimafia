@@ -2008,7 +2008,7 @@ const roleData = {
     Freemason: {
       alignment: "Village",
       category: "Meeting",
-      tags: ["Meetings", "Conversion", "Alignment", "Visiting", "Basic"],
+      tags: ["Meetings", "Conversion", "Alignment", "Visiting", "Basic", "Group Action"],
       description: [
         "Meets with other Freemasons at night.",
         "Each night, all Freemasons can choose to visit one player and convert them to Freemason.",
@@ -2930,6 +2930,15 @@ const roleData = {
       ],
       nightOrder: [["Make Mafia kill astral", PRIORITY_NIGHT_ROLE_BLOCKER + 5]],
     },
+    Underboss: {
+      alignment: "Mafia",
+      tags: ["Group Action Interaction", "Advanced", "Visiting"],
+      description: [
+        "Each night, can choose to visit one player and make them the only member to act in any group actions they are apart of.",
+        "The Mafia kill is a group action.",
+      ],
+      nightOrder: [["Apoint Leader", PRIORITY_NIGHT_ROLE_BLOCKER + 3]],
+    },
     Vizier: {
       alignment: "Mafia",
       tags: ["Garbage", "Voting", "Items", "Advanced"],
@@ -2952,7 +2961,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Deception", "Alignment", "Visiting", "Basic"],
       description: [
-        "Chooses a player each night and makes them appear as an opposing vanilla role to information roles.",
+        "Each night, can choose to visit one player and makes them appear as an opposing vanilla role to information roles.",
       ],
       nightOrder: [
         ["Flip Alignment", PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT],
@@ -5587,9 +5596,10 @@ const roleData = {
     },
     Alien: {
       alignment: "Independent",
-      tags: ["Probe", "Visiting", "Hostile", "Advanced"],
+      tags: ["Probe", "Visiting", "Hostile", "Advanced", "Group Action"],
       description: [
-        "Each night, can choose to visit one player and probe them.",
+        "Meets with other Aliens at night.",
+        "Each night, all Aliens can choose to visit one player and probe them.",
         "Wins if all players left alive have been probed.",
       ],
       nightOrder: [["Probe", PRIORITY_EFFECT_GIVER_DEFAULT]],
@@ -5659,7 +5669,7 @@ const roleData = {
     },
     Communist: {
       alignment: "Independent",
-      tags: ["Conversion", "Vanilla", "Visiting", "Hostile", "Basic"],
+      tags: ["Conversion", "Vanilla", "Visiting", "Hostile", "Basic", "Group Action"],
       description: [
         "Meets with other Communists at night.",
         "Each night, all Communists can choose to visits one player each night and convert them to their alignment's vanilla role.",
@@ -5755,6 +5765,7 @@ const roleData = {
         "Visiting",
         "Hostile",
         "Advanced",
+        "Group Action",
       ],
       description: [
         "Meets with other Polar Bears at night.",
