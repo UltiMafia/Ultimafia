@@ -1,5 +1,6 @@
 const Role = require("../../core/Role");
 const MafiaAction = require("./Action");
+const Random = require("../../../lib/Random");
 const roleData = require("../../../data/roles");
 
 module.exports = class MafiaRole extends Role {
@@ -40,7 +41,7 @@ module.exports = class MafiaRole extends Role {
       !this.player.hasEffect("NoModifiers")
     ) {
       let AllRoles = [];
-      for (let player of this.game.players) {
+      for (let player of Random.randomizeArray(this.game.players)) {
         if (player.role != null && player.role.name != null) {
           if (player.role.modifier) {
             AllRoles.push(`${player.role.name}:${player.role.modifier}`);
@@ -50,10 +51,11 @@ module.exports = class MafiaRole extends Role {
         }
       }
       if (AllRoles.length < this.game.players.length) {
-        for (let r of this.game.StartingRoleset) {
+        for (let r of Random.randomizeArray(this.game.StartingRoleset)) {
           AllRoles.push(r);
         }
       }
+      AllRoles = Random.randomizeArray(AllRoles);
       if (AllRoles.length <= 0) {
         return this.game.PossibleRoles;
       }

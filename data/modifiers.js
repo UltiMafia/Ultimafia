@@ -620,6 +620,22 @@ const modifierData = {
       description: "All actions done by this player are not visits.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    Leading: {
+      category: "Visits",
+      internal: ["LeadGroupActions"],
+      tags: ["Visits", "Group Action Interaction"],
+      description: "Will be the only member to act when performing a group action.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Slacking"],
+    },
+    Slacking: {
+      category: "Visits",
+      internal: ["AvoidGroupActions"],
+      tags: ["Visits", "Group Action Interaction"],
+      description: "Will not act when performing a group action if another member is acting.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Leading"],
+    },
     Resolute: {
       category: "Visits",
       internal: ["Resolute"],

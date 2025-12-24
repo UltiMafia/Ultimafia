@@ -504,6 +504,7 @@ module.exports = class Meeting {
         for (let player of this.game.players) {
           temp.push(`${player.role.name}:${player.role.modifier}`);
         }
+        temp = Random.randomizeArray(temp);
       }
 
       for (let tag of this.AllRolesFilters.filter(
