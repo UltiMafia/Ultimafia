@@ -1466,6 +1466,10 @@
   background-image: url("/src/images/roles/mafia/suborner-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Underboss {
+  background-image: url("/src/images/roles/mafia/underboss-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Stylist {
   background-image: url("/src/images/roles/mafia/stylist-vivid.png");
 }
@@ -2589,6 +2593,10 @@
   background-image: url("/src/images/modifiers/selfish-vital.png");
 }
 
+.modifier-Mafia-Leading {
+  background-image: url("/src/images/modifiers/leading.png");
+}
+
 .modifier-Mafia-Lone {
   background-image: url("/src/images/modifiers/lone.png");
 }
@@ -2811,6 +2819,10 @@
 
 .modifier-Mafia-Shady {
   background-image: url("/src/images/modifiers/shady-suspect.png");
+}
+
+.modifier-Mafia-Slacking {
+  background-image: url("/src/images/modifiers/slacking.png");
 }
 
 .modifier-Mafia-Suspect {
