@@ -626,13 +626,15 @@ const modifierData = {
       tags: ["Visits", "Group Action Interaction"],
       description: "Will be the only member to act when performing a group action.",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Slacking"],
     },
     Slacking: {
       category: "Visits",
-      internal: ["LeadGroupActions"],
+      internal: ["AvoidGroupActions"],
       tags: ["Visits", "Group Action Interaction"],
       description: "Will not act when performing a group action if another member is acting.",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Leading"],
     },
     Resolute: {
       category: "Visits",
