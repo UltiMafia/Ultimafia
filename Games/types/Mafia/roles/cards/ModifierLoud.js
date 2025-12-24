@@ -24,8 +24,7 @@ module.exports = class ModifierLoud extends Card {
             "WatcherInfo",
             this.actor,
             this.game,
-            this.actor,
-            true
+            this.actor
           );
           info.processInfo();
           let visitors = info.getInfoRaw();
