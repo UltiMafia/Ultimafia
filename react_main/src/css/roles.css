@@ -125,34 +125,20 @@
   background-size: contain;
 }
 
-.role .modifier.modifier-pos-0 {
+.role .modifier-modified {
+  position: absolute;
   top: -5px;
-  right: -7px;
+  right: -5px;
+  width: 1rem;
+  height: 1rem;
+  background-size: 100% 100%;
+  background-image: url("/src/images/modifiers/modified.png");
+  image-rendering: crisp-edges;
 }
 
-.role .modifier.modifier-pos-1 {
+.role.small .modifier-modified {
   top: -5px;
-  right: 6px;
-}
-
-.role .modifier.modifier-pos-2 {
-  top: -5px;
-  right: 17px;
-}
-
-.role.small .modifier.modifier-pos-0 {
-  top: -5px;
-  right: -7px;
-}
-
-.role.small .modifier.modifier-pos-1 {
-  top: -5px;
-  right: 0px;
-}
-
-.role.small .modifier.modifier-pos-2 {
-  top: -5px;
-  right: 5px;
+  right: -5px;
 }
 
 .modifiers-select {

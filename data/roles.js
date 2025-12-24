@@ -2008,7 +2008,14 @@ const roleData = {
     Freemason: {
       alignment: "Village",
       category: "Meeting",
-      tags: ["Meetings", "Conversion", "Alignment", "Visiting", "Basic", "Group Action"],
+      tags: [
+        "Meetings",
+        "Conversion",
+        "Alignment",
+        "Visiting",
+        "Basic",
+        "Group Action",
+      ],
       description: [
         "Meets with other Freemasons at night.",
         "Each night, all Freemasons can choose to visit one player and convert them to Freemason.",
@@ -5669,7 +5676,14 @@ const roleData = {
     },
     Communist: {
       alignment: "Independent",
-      tags: ["Conversion", "Vanilla", "Visiting", "Hostile", "Basic", "Group Action"],
+      tags: [
+        "Conversion",
+        "Vanilla",
+        "Visiting",
+        "Hostile",
+        "Basic",
+        "Group Action",
+      ],
       description: [
         "Meets with other Communists at night.",
         "Each night, all Communists can choose to visits one player each night and convert them to their alignment's vanilla role.",
