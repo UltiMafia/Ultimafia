@@ -1565,7 +1565,7 @@ const roleData = {
     Gatekeeper: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Kill Interaction", "Events", "Advanced"],
+      tags: ["Events", "Advanced"],
       description: [
         "Each night, if the Gatekeeper is dead, a Banished Event will occur.",
         //"When a Gatekeeper is dead, a Banished Event will occur each night.",
@@ -1665,7 +1665,7 @@ const roleData = {
     Mooncalf: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Kill Interaction", "Killing", "Advanced"],
+      tags: ["Killing", "Advanced"],
       description: [
         "Once per game during the day when dead, must choose a player.",
         //"After dying chooses a player.",
