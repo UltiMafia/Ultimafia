@@ -2309,7 +2309,7 @@ const roleData = {
         "Treasure Chest",
         "Voting",
         "Advanced",
-        "Special",
+        "Mini-Game",
       ],
       description: [
         "Starts revealed to all players.",
@@ -4186,6 +4186,7 @@ const roleData = {
         "Exorcise Village Meeting",
         "Visiting",
         "Expert",
+        "Special",
       ],
       description: [
         "Each night, can choose to visit one Cult-aligned player and convert them to a random Cult-aligned role.",
@@ -5319,6 +5320,7 @@ const roleData = {
         "Visiting",
         "No Investigate",
         "Expert",
+        "Special"
       ],
       description: [
         "If a Magus is present, no Evil roles will be present in the game.",
