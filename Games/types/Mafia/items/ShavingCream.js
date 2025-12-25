@@ -11,7 +11,7 @@ module.exports = class ShavingCream extends Item {
       "Swap Players": {
         actionName: "Swap Players (Choose 2)",
         states: ["Night"],
-        flags: ["voting", "multi"],
+        flags: ["voting", "multi", "noVeg"],
         actor: this.holder,
         targets: { include: ["alive", "self"] },
         multiMin: 2,
