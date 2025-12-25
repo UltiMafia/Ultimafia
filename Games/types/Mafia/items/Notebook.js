@@ -11,7 +11,7 @@ module.exports = class Notebook extends Item {
     this.meetings = {
       "Write Name": {
         states: ["Night"],
-        flags: ["voting"],
+        flags: ["voting", "noVeg"],
         item: this,
         action: {
           labels: ["kill"],
