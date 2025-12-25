@@ -533,6 +533,26 @@ export function RoleCount({
     );
     popoverPage = `/learn/role/${roleName}`;
     popoverIcon = <div className={`role role-icon-${roleSkin}-${roleClass}`} />;
+    
+    // Determine which modifier icon to display
+    let modifierIcon = null;
+    if (modifiers && modifiers.trim()) {
+      const modifierCount = roleData?.modifiers?.length || 0;
+      if (modifierCount === 1) {
+        // Show the actual modifier icon
+        const firstModifier = roleData.modifiers[0];
+        modifierIcon = (
+          <div className={`modifier modifier-${gameType}-${firstModifier.name}`} />
+        );
+      } else if (modifierCount === 2) {
+        // Show modified-twice icon
+        modifierIcon = <div className="modifier-modified-twice" />;
+      } else if (modifierCount >= 3) {
+        // Show modified-thrice icon
+        modifierIcon = <div className="modifier-modified-thrice" />;
+      }
+    }
+    
     layoutContent = (
       <div
         {...popoverProps}
@@ -547,9 +567,7 @@ export function RoleCount({
           ref={roleRef}
         >
           {count > 1 && <DigitsCount digits={digits} />}
-          {modifiers && modifiers.trim() && (
-            <div className="modifier-modified" />
-          )}
+          {modifierIcon}
         </div>
       </div>
     );
