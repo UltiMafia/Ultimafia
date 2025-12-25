@@ -20,21 +20,6 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
-    Medical: {
-      category: "Other",
-      internal: ["NightSaveVisits"],
-      tags: ["Visits", "Killing"],
-      description:
-        "When visiting, their target will be protected from night kills.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Bloodthirsty: {
-      category: "Other",
-      internal: ["ModifierBloodthirsty"],
-      tags: ["Visits", "Killing"],
-      description: "When visiting, their target will be killed.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
     Bulletproof: {
       category: "Items",
       internal: ["StartWithArmor"],
@@ -675,6 +660,21 @@ const modifierData = {
       internal: ["BlockTargets"],
       tags: ["Visits", "Role Blocker"],
       description: "While visiting a player, that player will be roleblocked.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Medical: {
+      category: "Visits",
+      internal: ["NightSaveVisits"],
+      tags: ["Visits", "Killing"],
+      description:
+        "When visiting, their target will be protected from night kills.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Bloodthirsty: {
+      category: "Visits",
+      internal: ["ModifierBloodthirsty"],
+      tags: ["Visits", "Killing"],
+      description: "When visiting, their target will be killed.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
