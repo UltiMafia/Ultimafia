@@ -11,7 +11,7 @@ module.exports = class IceCream extends Item {
     this.meetings = {
       "Become Vanilla": {
         states: ["Night"],
-        flags: ["voting"],
+        flags: ["voting", "noVeg"],
         inputType: "boolean",
         item: this,
         action: {
