@@ -3599,7 +3599,7 @@ const roleData = {
     },
     Lobotomist: {
       alignment: "Mafia",
-      tags: ["Night-acting", "Conversion", "Vanilla", "Visiting", "Basic"],
+      tags: ["Night-acting", "Conversion", "Vanilla Interaction", "Visiting", "Basic"],
       description: [
         "Each night, can choose to visit one player and convert them to their alignment's vanilla role.",
         "Village roles convert to Villager. Cult roles convert to Cultist. Independent roles convert to Grouch.",
@@ -5680,7 +5680,7 @@ const roleData = {
       alignment: "Independent",
       tags: [
         "Conversion",
-        "Vanilla",
+        "Vanilla Interaction",
         "Visiting",
         "Hostile",
         "Basic",
