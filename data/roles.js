@@ -3839,9 +3839,9 @@ const roleData = {
     Zombie: {
       alignment: "Cult",
       category: "Conversion",
-      tags: ["Conversion", "Visiting", "Malicious Effects", "Advanced"],
+      tags: ["Conversion", "Visiting", "Malicious Effects", "Advanced", "Group Action"],
       description: [
-        `Each night, can choose to visit one player and "Infect" them.`,
+        `Each night, all Zombies can choose to visit one player and "Infect" them.`,
         infectDef,
         //"Can infect one person each night.",
         //"That person converts to a zombie the next day.",
