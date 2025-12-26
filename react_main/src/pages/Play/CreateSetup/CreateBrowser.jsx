@@ -475,6 +475,7 @@ export default function CreateSetup(props) {
   let usingRoleGroups = roleData.closed && roleData.useRoleGroups;
   let showAddRoleSet =
     (!roleData.closed && roleData.roles.length < 10) || usingRoleGroups;
+  let showMoveOptions = roleData.roles.length > 1;
 
   const roleSets = roleData.roles.map((roleSet, i) => {
     let roles = [];
@@ -575,6 +576,75 @@ export default function CreateSetup(props) {
                 </Stack>
               </Stack>
             </Stack>
+            {showMoveOptions && i > 0 && (
+              <Button
+                onClick={() => {
+                  updateRoleData({
+                    type: "moveRoleSetUp",
+                    index: i,
+                  });
+                }}
+                sx={{
+                  padding: 1,
+                  bgcolor: "#e45050",
+                  alignSelf: "stretch",
+                  minWidth: "0px",
+                  ml: 1,
+                }}
+              >
+                <i
+                  className="fa-times fas"
+                  aria-hidden="true"
+                  style={{ fontSize: isPhoneDevice ? "0.5em" : "1em" }}
+                />
+              </Button>
+            )}
+            {showMoveOptions && i < roleData.roles.length-1 && (
+              <Button
+                onClick={() => {
+                  updateRoleData({
+                    type: "moveRoleSetUp",
+                    index: i,
+                  });
+                }}
+                sx={{
+                  padding: 1,
+                  bgcolor: "#e45050",
+                  alignSelf: "stretch",
+                  minWidth: "0px",
+                  ml: 1,
+                }}
+              >
+                <i
+                  className="fa-times fas"
+                  aria-hidden="true"
+                  style={{ fontSize: isPhoneDevice ? "0.5em" : "1em" }}
+                />
+              </Button>
+            )}
+            {showAddRoleSet && (
+              <Button
+                onClick={() => {
+                  updateRoleData({
+                    type: "copyRoleSet",
+                    index: i,
+                  });
+                }}
+                sx={{
+                  padding: 1,
+                  bgcolor: "#e45050",
+                  alignSelf: "stretch",
+                  minWidth: "0px",
+                  ml: 1,
+                }}
+              >
+                <i
+                  className="fa-times fas"
+                  aria-hidden="true"
+                  style={{ fontSize: isPhoneDevice ? "0.5em" : "1em" }}
+                />
+              </Button>
+            )}
             {i > 0 && (
               <Button
                 onClick={() => {
