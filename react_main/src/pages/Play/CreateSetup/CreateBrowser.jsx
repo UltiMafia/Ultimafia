@@ -241,19 +241,21 @@ export default function CreateSetup(props) {
           });
           break;
         case "moveRoleSetUp":
+          let index1 = action.index;
+          let index2 = action.index-1;
           if(action.index == 0){
-            break;
+            index2 = newRoleData.roles.length-1;
           }
-          let tempRoles = newRoleData.roles[action.index];
-          let tempGroupSize = newRoleData.roleGroupSizes[action.index];
-          let tempRoles2 = newRoleData.roles[action.index-1];
-          let tempGroupSize2 = newRoleData.roleGroupSizes[action.index-1];
+          let tempRoles = newRoleData.roles[index1];
+          let tempGroupSize = newRoleData.roleGroupSizes[index1];
+          let tempRoles2 = newRoleData.roles[index2];
+          let tempGroupSize2 = newRoleData.roleGroupSizes[index2];
          newRoleData = update(newRoleData, {
           roles: {
-              [action.index-1]: {
+              [index2]: {
                 $set: tempRoles,
               },
-              [action.index]: {
+              [index1]: {
                 $set: tempRoles2,
               },
             },
@@ -261,34 +263,36 @@ export default function CreateSetup(props) {
               [action.index-1]: {
                 $set: tempGroupSize,
               },
-              [action.index]: {
+              [index1]: {
                 $set: tempGroupSize2,
               },
             },
           });
           break;
           case "moveRoleSetDown":
+          let index3 = action.index;
+          let index4 = action.index+1;
           if(action.index == newRoleData.roles.length-1){
-            break;
+            index4 = 0;
           }
-          let tempRoles3 = newRoleData.roles[action.index];
-          let tempGroupSize3 = newRoleData.roleGroupSizes[action.index];
-          let tempRoles4 = newRoleData.roles[action.index+1];
-          let tempGroupSize4 = newRoleData.roleGroupSizes[action.index+1];
+          let tempRoles3 = newRoleData.roles[index3];
+          let tempGroupSize3 = newRoleData.roleGroupSizes[index3];
+          let tempRoles4 = newRoleData.roles[index4];
+          let tempGroupSize4 = newRoleData.roleGroupSizes[index4];
          newRoleData = update(newRoleData, {
           roles: {
-              [action.index+1]: {
+              [index4]: {
                 $set: tempRoles3,
               },
-              [action.index]: {
+              [index3]: {
                 $set: tempRoles4,
               },
             },
             roleGroupSizes: {
-              [action.index+1]: {
+              [index4]: {
                 $set: tempGroupSize3,
               },
-              [action.index]: {
+              [index3]: {
                 $set: tempGroupSize4,
               },
             },
@@ -615,7 +619,7 @@ export default function CreateSetup(props) {
                 </Stack>
               </Stack>
             </Stack>
-            {showMoveOptions && i > 0 && (
+            {showMoveOptions && (
               <Button
                 onClick={() => {
                   updateRoleData({
@@ -625,7 +629,7 @@ export default function CreateSetup(props) {
                 }}
                 sx={{
                   padding: 1,
-                  bgcolor: "#7ae450ff",
+                  bgcolor: "#62a0db",
                   alignSelf: "stretch",
                   minWidth: "0px",
                   ml: 1,
@@ -638,7 +642,7 @@ export default function CreateSetup(props) {
                 />
               </Button>
             )}
-            {showMoveOptions && i < roleData.roles.length-1 && (
+            {showMoveOptions && (
               <Button
                 onClick={() => {
                   updateRoleData({
@@ -648,7 +652,7 @@ export default function CreateSetup(props) {
                 }}
                 sx={{
                   padding: 1,
-                  bgcolor: "#5a50e4ff",
+                  bgcolor: "#62a0db",
                   alignSelf: "stretch",
                   minWidth: "0px",
                   ml: 1,
