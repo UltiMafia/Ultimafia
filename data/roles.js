@@ -167,7 +167,7 @@ const roleData = {
     Bleeder: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Kill Interaction", "Basic", "Malicious Effects"],
+      tags: ["Kill Interaction", "Self Protection", "Basic", "Effects"],
       description: [
         `If killed, the Bleeder will survive and start "Bleeding".`,
         bleedingDef,
@@ -194,7 +194,7 @@ const roleData = {
     Commuter: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Blocking", "Basic", "Reflexive"],
+      tags: ["Blocking", "Basic", "Visit Interaction"],
       description: [
         "Each night, blocks the night actions of any players who visit them.",
         //"Blocks any player who visits them during the night from performing any actions.",
@@ -241,7 +241,7 @@ const roleData = {
     Loudmouth: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Visit Interaction", "Basic", "Information", "Whispers"],
+      tags: ["Visit Interaction", "Basic", "Information", "Whisper Interaction", "Effects"],
       description: [
         "Each night, will announce who visits them at night.",
         "Each night, will announce any system messages they receive.",
@@ -256,7 +256,8 @@ const roleData = {
     Miller: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Humble", "Basic", "Deception", "No Investigate"],
+      tags: ["Unaware", "Basic", "Deception"],
+      tagsHidden: ["No Investigate"],
       description: [
         "Appears as Villager to self.",
         "Appears as a random Evil role to information roles.",
@@ -289,7 +290,7 @@ const roleData = {
     Sapling: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Basic", "Voting", "Kill Interaction", "Condemn Interaction"],
+      tags: ["Basic", "Voting", "Self Protection"],
       description: [
         "Once per game at night, can choose to grow into a Tree.",
         "Trees are immune to most ways of dying.",
