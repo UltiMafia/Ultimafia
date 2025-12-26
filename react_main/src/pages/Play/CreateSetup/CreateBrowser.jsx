@@ -234,6 +234,27 @@ export default function CreateSetup(props) {
 
           if (action.index === selRoleSet) setSelRoleSet(0);
           break;
+        case "copyRoleSet":
+          newRoleData = update(newRoleData, {
+            roles: { $push: newRoleData.roles[action.index] },
+            roleGroupSizes: { $push: newRoleData.roleGroupSizes[action.index] },
+          });
+          break;
+        case "moveRoleSetUp":
+          if(action.index == 0){
+            break;
+          }
+          let tempRoles = newRoleData.roles[action.index];
+          let tempGroupSize = newRoleData.roleGroupSizes[action.index];
+          let tempRoles2 = newRoleData.roles[action.index-1];
+          let tempGroupSize2 = newRoleData.roleGroupSizes[action.index-1];
+          newRoleData = update(newRoleData, {
+            roles: { $set: { [action.index]: tempRoles2, [action.index-1]: tempRoles}},
+            roleGroupSizes: { $set: { [action.index]: tempRoles2, [action.index-1]: tempRoles}},
+          });
+
+          if (action.index === selRoleSet) setSelRoleSet(0);
+          break;
         case "increaseRolesetSize":
           newRoleData = update(newRoleData, {
             roleGroupSizes: {
