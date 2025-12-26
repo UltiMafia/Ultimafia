@@ -125,18 +125,34 @@
   background-size: contain;
 }
 
-.role .modifier-modified {
+.role .modifier-modified-twice {
   position: absolute;
   top: -5px;
   right: -5px;
   width: 1rem;
   height: 1rem;
   background-size: 100% 100%;
-  background-image: url("/src/images/modifiers/modified.png");
+  background-image: url("/src/images/modifiers/modified-twice.png");
   image-rendering: crisp-edges;
 }
 
-.role.small .modifier-modified {
+.role.small .modifier-modified-twice {
+  top: -5px;
+  right: -5px;
+}
+
+.role .modifier-modified-thrice {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 1rem;
+  height: 1rem;
+  background-size: 100% 100%;
+  background-image: url("/src/images/modifiers/modified-thrice.png");
+  image-rendering: crisp-edges;
+}
+
+.role.small .modifier-modified-thrice {
   top: -5px;
   right: -5px;
 }

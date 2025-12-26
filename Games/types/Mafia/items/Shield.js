@@ -18,7 +18,7 @@ module.exports = class Shield extends Item {
       [this.baseMeetingName]: {
         actionName: "Use Shield",
         states: ["Night"],
-        flags: ["voting"],
+        flags: ["voting", "noVeg"],
         inputType: "boolean",
         item: this,
         action: {

@@ -12,7 +12,7 @@ module.exports = class Falcon extends Item {
     this.meetings = {
       "Track with Falcon": {
         states: ["Night"],
-        flags: ["voting"],
+        flags: ["voting", "noVeg"],
         item: this,
         action: {
           labels: ["hidden", "absolute"],

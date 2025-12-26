@@ -12,7 +12,7 @@ module.exports = class CrystalBall extends Item {
       "Reveal on Death": {
         actionName: "Reveal on Death",
         states: ["Night"],
-        flags: ["voting"],
+        flags: ["voting", "noVeg"],
         item: this,
         action: {
           labels: ["hidden", "absolute"],

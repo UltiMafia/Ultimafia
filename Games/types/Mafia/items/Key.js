@@ -11,7 +11,7 @@ module.exports = class Key extends Item {
     this.meetings = {
       "Lock yourself in?": {
         states: ["Day"],
-        flags: ["voting"],
+        flags: ["voting", "noVeg"],
         inputType: "boolean",
         item: this,
         action: {
