@@ -167,7 +167,7 @@ const roleData = {
     Bleeder: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Kill Interaction", "Basic", "Malicious Effects"],
+      tags: ["Kill Interaction", "Self Protection", "Basic", "Effects"],
       description: [
         `If killed, the Bleeder will survive and start "Bleeding".`,
         bleedingDef,
@@ -194,7 +194,7 @@ const roleData = {
     Commuter: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Blocking", "Basic", "Reflexive"],
+      tags: ["Blocking", "Basic", "Visit Interaction"],
       description: [
         "Each night, blocks the night actions of any players who visit them.",
         //"Blocks any player who visits them during the night from performing any actions.",
@@ -241,7 +241,7 @@ const roleData = {
     Loudmouth: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Visit Interaction", "Basic", "Information", "Whispers"],
+      tags: ["Visit Interaction", "Basic", "Information", "Whisper Interaction", "Effects"],
       description: [
         "Each night, will announce who visits them at night.",
         "Each night, will announce any system messages they receive.",
@@ -256,7 +256,8 @@ const roleData = {
     Miller: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Humble", "Basic", "Deception", "No Investigate"],
+      tags: ["Unaware", "Basic", "Deception"],
+      tagsHidden: ["No Investigate"],
       description: [
         "Appears as Villager to self.",
         "Appears as a random Evil role to information roles.",
@@ -289,7 +290,7 @@ const roleData = {
     Sapling: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Basic", "Voting", "Kill Interaction", "Condemn Interaction"],
+      tags: ["Basic", "Voting", "Self Protection"],
       description: [
         "Once per game at night, can choose to grow into a Tree.",
         "Trees are immune to most ways of dying.",
@@ -1422,7 +1423,8 @@ const roleData = {
     Impersonator: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Deception", "No Investigate", "Advanced"],
+      tags: ["Deception", "Advanced"],
+      tagsHidden: ["No Investigate"],
       description: [
         "Each night, can choose a role and will appear as that role on death and to information roles.",
         //"Chooses a role each night to appear as on death and to information role.",
@@ -1565,7 +1567,7 @@ const roleData = {
     Gatekeeper: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Kill Interaction", "Events", "Advanced"],
+      tags: ["Events", "Advanced"],
       description: [
         "Each night, if the Gatekeeper is dead, a Banished Event will occur.",
         //"When a Gatekeeper is dead, a Banished Event will occur each night.",
@@ -1665,7 +1667,7 @@ const roleData = {
     Mooncalf: {
       alignment: "Village",
       category: "Sacrificial",
-      tags: ["Kill Interaction", "Killing", "Advanced"],
+      tags: ["Killing", "Advanced"],
       description: [
         "Once per game during the day when dead, must choose a player.",
         //"After dying chooses a player.",
@@ -2309,7 +2311,7 @@ const roleData = {
         "Treasure Chest",
         "Voting",
         "Advanced",
-        "Special",
+        "Mini-Game",
       ],
       description: [
         "Starts revealed to all players.",
@@ -2547,7 +2549,8 @@ const roleData = {
     Godfather: {
       alignment: "Mafia",
       category: "Basic",
-      tags: ["Villager", "Basic", "Deception", "No Investigate"],
+      tags: ["Villager", "Basic", "Deception"],
+      tagsHidden: ["No Investigate"],
       description: [
         //"Leads the mafia kill each night.",
         "Appears as Villager to information roles.",
@@ -3599,7 +3602,7 @@ const roleData = {
     },
     Lobotomist: {
       alignment: "Mafia",
-      tags: ["Night-acting", "Conversion", "Vanilla", "Visiting", "Basic"],
+      tags: ["Night-acting", "Conversion", "Vanilla Interaction", "Visiting", "Basic"],
       description: [
         "Each night, can choose to visit one player and convert them to their alignment's vanilla role.",
         "Village roles convert to Villager. Cult roles convert to Cultist. Independent roles convert to Grouch.",
@@ -3691,7 +3694,8 @@ const roleData = {
     },
     Imposter: {
       alignment: "Mafia",
-      tags: ["Deception", "Night-acting", "No Investigate", "Basic"],
+      tags: ["Deception", "Night-acting", "Basic"],
+      tagsHidden: ["No Investigate"],
       description: [
         "Each night, can choose a role and will appear as that role on death and to information roles.",
         "Cannot choose Villager, Impersonator or Imposter",
@@ -3835,9 +3839,9 @@ const roleData = {
     Zombie: {
       alignment: "Cult",
       category: "Conversion",
-      tags: ["Conversion", "Visiting", "Malicious Effects", "Advanced"],
+      tags: ["Conversion", "Visiting", "Malicious Effects", "Advanced", "Group Action"],
       description: [
-        `Each night, can choose to visit one player and "Infect" them.`,
+        `Each night, all Zombies can choose to visit one player and "Infect" them.`,
         infectDef,
         //"Can infect one person each night.",
         //"That person converts to a zombie the next day.",
@@ -4186,6 +4190,7 @@ const roleData = {
         "Exorcise Village Meeting",
         "Visiting",
         "Expert",
+        "Special",
       ],
       description: [
         "Each night, can choose to visit one Cult-aligned player and convert them to a random Cult-aligned role.",
@@ -4583,9 +4588,9 @@ const roleData = {
         "Win Con",
         "Deception",
         "Visiting",
-        "No Investigate",
         "Advanced",
       ],
+      tagsHidden: ["No Investigate"],
       description: [
         "Each night, can choose to visit one player and kill them.",
         "While alive, most information created by Village roles is made false.",
@@ -5317,9 +5322,10 @@ const roleData = {
         "Setup Changes",
         "Village",
         "Visiting",
-        "No Investigate",
         "Expert",
+        "Special"
       ],
+      tagsHidden: ["No Investigate"],
       description: [
         "If a Magus is present, no Evil roles will be present in the game.",
         "At night, the Magus will passively and randomly kill players and use abilities of Evil roles that can spawn in the setup.",
@@ -5678,7 +5684,7 @@ const roleData = {
       alignment: "Independent",
       tags: [
         "Conversion",
-        "Vanilla",
+        "Vanilla Interaction",
         "Visiting",
         "Hostile",
         "Basic",
