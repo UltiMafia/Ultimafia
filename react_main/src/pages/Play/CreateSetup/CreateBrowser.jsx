@@ -236,8 +236,8 @@ export default function CreateSetup(props) {
           break;
         case "copyRoleSet":
           newRoleData = update(newRoleData, {
-            roles: { $push: newRoleData.roles[action.index] },
-            roleGroupSizes: { $push: newRoleData.roleGroupSizes[action.index] },
+            roles: { $push: [newRoleData.roles[action.index]] },
+            roleGroupSizes: { $push: [newRoleData.roleGroupSizes[action.index]] },
           });
           break;
         case "moveRoleSetUp":
@@ -248,12 +248,51 @@ export default function CreateSetup(props) {
           let tempGroupSize = newRoleData.roleGroupSizes[action.index];
           let tempRoles2 = newRoleData.roles[action.index-1];
           let tempGroupSize2 = newRoleData.roleGroupSizes[action.index-1];
-          newRoleData = update(newRoleData, {
-            roles: { $set: { [action.index]: tempRoles2, [action.index-1]: tempRoles}},
-            roleGroupSizes: { $set: { [action.index]: tempRoles2, [action.index-1]: tempRoles}},
+         newRoleData = update(newRoleData, {
+          roles: {
+              [action.index-1]: {
+                $set: tempRoles,
+              },
+              [action.index]: {
+                $set: tempRoles2,
+              },
+            },
+            roleGroupSizes: {
+              [action.index-1]: {
+                $set: tempGroupSize,
+              },
+              [action.index]: {
+                $set: tempGroupSize2,
+              },
+            },
           });
-
-          if (action.index === selRoleSet) setSelRoleSet(0);
+          break;
+          case "moveRoleSetDown":
+          if(action.index == newRoleData.roles.length-1){
+            break;
+          }
+          let tempRoles3 = newRoleData.roles[action.index];
+          let tempGroupSize3 = newRoleData.roleGroupSizes[action.index];
+          let tempRoles4 = newRoleData.roles[action.index+1];
+          let tempGroupSize4 = newRoleData.roleGroupSizes[action.index+1];
+         newRoleData = update(newRoleData, {
+          roles: {
+              [action.index+1]: {
+                $set: tempRoles3,
+              },
+              [action.index]: {
+                $set: tempRoles4,
+              },
+            },
+            roleGroupSizes: {
+              [action.index+1]: {
+                $set: tempGroupSize3,
+              },
+              [action.index]: {
+                $set: tempGroupSize4,
+              },
+            },
+          });
           break;
         case "increaseRolesetSize":
           newRoleData = update(newRoleData, {
@@ -586,14 +625,14 @@ export default function CreateSetup(props) {
                 }}
                 sx={{
                   padding: 1,
-                  bgcolor: "#e45050",
+                  bgcolor: "#7ae450ff",
                   alignSelf: "stretch",
                   minWidth: "0px",
                   ml: 1,
                 }}
               >
                 <i
-                  className="fa-times fas"
+                  className="fa-arrow-circle-up fas"
                   aria-hidden="true"
                   style={{ fontSize: isPhoneDevice ? "0.5em" : "1em" }}
                 />
@@ -603,20 +642,20 @@ export default function CreateSetup(props) {
               <Button
                 onClick={() => {
                   updateRoleData({
-                    type: "moveRoleSetUp",
+                    type: "moveRoleSetDown",
                     index: i,
                   });
                 }}
                 sx={{
                   padding: 1,
-                  bgcolor: "#e45050",
+                  bgcolor: "#5a50e4ff",
                   alignSelf: "stretch",
                   minWidth: "0px",
                   ml: 1,
                 }}
               >
                 <i
-                  className="fa-times fas"
+                  className="fa-arrow-circle-down fas"
                   aria-hidden="true"
                   style={{ fontSize: isPhoneDevice ? "0.5em" : "1em" }}
                 />
@@ -632,14 +671,14 @@ export default function CreateSetup(props) {
                 }}
                 sx={{
                   padding: 1,
-                  bgcolor: "#e45050",
+                  bgcolor: "#d350e4ff",
                   alignSelf: "stretch",
                   minWidth: "0px",
                   ml: 1,
                 }}
               >
                 <i
-                  className="fa-times fas"
+                  className="fa-copy fas"
                   aria-hidden="true"
                   style={{ fontSize: isPhoneDevice ? "0.5em" : "1em" }}
                 />

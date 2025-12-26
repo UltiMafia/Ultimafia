@@ -1423,7 +1423,8 @@ const roleData = {
     Impersonator: {
       alignment: "Village",
       category: "Night-acting",
-      tags: ["Deception", "No Investigate", "Advanced"],
+      tags: ["Deception", "Advanced"],
+      tagsHidden: ["No Investigate"],
       description: [
         "Each night, can choose a role and will appear as that role on death and to information roles.",
         //"Chooses a role each night to appear as on death and to information role.",
@@ -2548,7 +2549,8 @@ const roleData = {
     Godfather: {
       alignment: "Mafia",
       category: "Basic",
-      tags: ["Villager", "Basic", "Deception", "No Investigate"],
+      tags: ["Villager", "Basic", "Deception"],
+      tagsHidden: ["No Investigate"],
       description: [
         //"Leads the mafia kill each night.",
         "Appears as Villager to information roles.",
@@ -3692,7 +3694,8 @@ const roleData = {
     },
     Imposter: {
       alignment: "Mafia",
-      tags: ["Deception", "Night-acting", "No Investigate", "Basic"],
+      tags: ["Deception", "Night-acting", "Basic"],
+      tagsHidden: ["No Investigate"],
       description: [
         "Each night, can choose a role and will appear as that role on death and to information roles.",
         "Cannot choose Villager, Impersonator or Imposter",
@@ -4585,9 +4588,9 @@ const roleData = {
         "Win Con",
         "Deception",
         "Visiting",
-        "No Investigate",
         "Advanced",
       ],
+      tagsHidden: ["No Investigate"],
       description: [
         "Each night, can choose to visit one player and kill them.",
         "While alive, most information created by Village roles is made false.",
@@ -5319,10 +5322,10 @@ const roleData = {
         "Setup Changes",
         "Village",
         "Visiting",
-        "No Investigate",
         "Expert",
         "Special"
       ],
+      tagsHidden: ["No Investigate"],
       description: [
         "If a Magus is present, no Evil roles will be present in the game.",
         "At night, the Magus will passively and randomly kill players and use abilities of Evil roles that can spawn in the setup.",
