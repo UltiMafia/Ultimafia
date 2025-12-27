@@ -239,45 +239,55 @@ module.exports = class MafiaRole extends Role {
   }
 
   canTargetPlayer(player) {
+    let playerAlignment = player.role.alignment;
+    let playerDemonic = player.isDemonic(true);
+    let playerBanished = player.role.data.banished == true;
+    let playerVanilla = this.isVanilla(player);
+    if(player.hasEffect("Misregistration")){
+      playerAlignment = this.game.getRoleAlignment(player.getRoleAppearance().split(" (")[0]);
+      playerDemonic = player.isDemonic(false);
+      playerBanished = player.getRoleAppearance().split(" (")[1] && player.getRoleAppearance().split(" (")[1].includes("Banished");
+      playerVanilla = this.isAppearanceVanilla(player);
+    }
     if (this.modifier != null) {
       if (
         this.modifier.split("/").includes("Loyal") &&
-        player.role.alignment != this.alignment
+        playerAlignment != this.alignment
       ) {
         return false;
       } else if (
         this.modifier.split("/").includes("Disloyal") &&
-        player.role.alignment == this.alignment
+         playerAlignment == this.alignment
       ) {
         return false;
       }
-      if (this.modifier.split("/").includes("Holy") && player.isDemonic(true)) {
+      if (this.modifier.split("/").includes("Holy") && playerDemonic) {
         return false;
       } else if (
         this.modifier.split("/").includes("Unholy") &&
-        !player.isDemonic(true)
+        !playerDemonic
       ) {
         return false;
       }
       if (
         this.modifier.split("/").includes("Refined") &&
-        player.role.data.banished == true
+        playerBanished
       ) {
         return false;
       } else if (
         this.modifier.split("/").includes("Unrefined") &&
-        player.role.data.banished != true
+        !playerBanished
       ) {
         return false;
       }
       if (
         this.modifier.split("/").includes("Simple") &&
-        !this.isVanilla(player)
+        !playerVanilla
       ) {
         return false;
       } else if (
         this.modifier.split("/").includes("Complex") &&
-        this.isVanilla(player)
+        playerVanilla
       ) {
         return false;
       }
@@ -291,6 +301,18 @@ module.exports = class MafiaRole extends Role {
       player.role.name == "Mafioso" ||
       player.role.name == "Cultist" ||
       player.role.name == "Grouch"
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  isAppearanceVanilla(player) {
+    if (
+      player.getRoleAppearance().split(" (")[1] == "Villager" ||
+      player.getRoleAppearance().split(" (")[1] == "Mafioso" ||
+       player.getRoleAppearance().split(" (")[1] == "Cultist" ||
+      player.getRoleAppearance().split(" (")[1] == "Grouch"
     ) {
       return true;
     }
