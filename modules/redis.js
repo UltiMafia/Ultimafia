@@ -591,7 +591,11 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
   roundInfo.seasonNumber = season.number;
   roundInfo.seasonPaused = season.paused;
 
-  let roundQuery = { season: roundInfo.seasonNumber, accounted: false, number: { $gt: 0 } };
+  let roundQuery = {
+    season: roundInfo.seasonNumber,
+    accounted: false,
+    number: { $gt: 0 },
+  };
   if (roundNumber) {
     roundQuery = { season: roundInfo.seasonNumber, number: roundNumber };
     // Still filter out round 0 even if explicitly requested
