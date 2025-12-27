@@ -26,7 +26,7 @@ router.post("/send", async function (req, res) {
     const reportedUserDoc = await models.User.findOne({
       id: reportedUser,
       deleted: false,
-    }).select("id");
+    }).select("id name");
 
     if (!reportedUserDoc) {
       return res.status(400).send("Reported user does not exist.");
@@ -83,41 +83,36 @@ router.post("/send", async function (req, res) {
       `Report ${report.id} created successfully by user ${userId} for reported user ${reportedUser}`
     );
 
-    // OPTIONAL: Still send to Discord for notification (can be removed later)
-    // try {
-    //   const title = `[${user.name}] reporting https://ultimafia.com/user/${reportedUser}`;
-    //   let reportDetails = `**Rule Broken:** ${rule}\n`;
-    //   reportDetails += `**Report ID:** ${report.id}\n`;
+    try {
+      // Get report counts
+      const openReportCount = await models.Report.countDocuments({ status: "open" });
+      const inProgressReportCount = await models.Report.countDocuments({ status: "in-progress" });
 
-    //   if (game) {
-    //     reportDetails += `**Game:** https://ultimafia.com/game/${game}\n`;
-    //   }
+      const title = `${user.name} reporting ${reportedUserDoc.name}: https://ultimafia.com/community/reports/${report.id}`;
+      let reportDetails = `\nNumber of open reports: ${openReportCount}\n`;
+      reportDetails += `Number of in-progress reports: ${inProgressReportCount}`;
 
-    //   if (description) {
-    //     reportDetails += `**Description:** ${description}`;
-    //   }
+      const ping = "<@&1107343293848768622>\n";
 
-    //   const ping = "<@&1107343293848768622>\n";
+      // Decode the Base64 webhook URL components
+      const wht =
+        "QTQ0dG9WSFA3UUNfSk1KbTZZTFh1Q05JT2xhLVoxanZqczhTRDE3WmQyOGktTU5kYmJlbzFCTVRPQzBnTmJKblMwRGM=";
+      const whId = "MTMyODgwNjY5OTcxNjMxNzE5NQ==";
+      const base = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3Mv";
 
-    //   // Decode the Base64 webhook URL components
-    //   const wht =
-    //     "QTQ0dG9WSFA3UUNfSk1KbTZZTFh1Q05JT2xhLVoxanZqczhTRDE3WmQyOGktTU5kYmJlbzFCTVRPQzBnTmJKblMwRGM=";
-    //   const whId = "MTMyODgwNjY5OTcxNjMxNzE5NQ==";
-    //   const base = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3Mv";
+      const decodeBase64 = (str) =>
+        Buffer.from(str, "base64").toString("utf-8");
+      const webhookURL =
+        decodeBase64(base) + decodeBase64(whId) + "/" + decodeBase64(wht);
 
-    //   const decodeBase64 = (str) =>
-    //     Buffer.from(str, "base64").toString("utf-8");
-    //   const webhookURL =
-    //     decodeBase64(base) + decodeBase64(whId) + "/" + decodeBase64(wht);
-
-    //   await axios.post(webhookURL, {
-    //     content: `${ping}${title}\n${reportDetails}`,
-    //     username: "SnitchBot",
-    //   });
-    // } catch (discordError) {
-    //   // Log but don't fail if Discord webhook fails
-    //   logger.warn("Failed to send Discord notification:", discordError);
-    // }
+      await axios.post(webhookURL, {
+        content: `${ping}${title}${reportDetails}`,
+        username: "SnitchBot",
+      });
+    } catch (discordError) {
+      // Log but don't fail if Discord webhook fails
+      logger.warn("Failed to send Discord notification:", discordError);
+    }
 
     res.status(200).send("Report has been filed successfully.");
   } catch (e) {
