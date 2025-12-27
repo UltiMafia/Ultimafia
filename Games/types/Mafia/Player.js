@@ -550,10 +550,10 @@ module.exports = class MafiaPlayer extends Player {
   }
 
   isEvil() {
-     if(player.hasEffect("Misregistration")){
-       let temp = this.game.createInformation("AlignmentInfo", this, this);
-       return temp.isAppearanceEvil(this, "investigate");
-     }
+    if (player.hasEffect("Misregistration")) {
+      let temp = this.game.createInformation("AlignmentInfo", this, this);
+      return temp.isAppearanceEvil(this, "investigate");
+    }
     if (
       EVIL_FACTIONS.includes(this.faction) ||
       (this.faction == "Independent" &&
