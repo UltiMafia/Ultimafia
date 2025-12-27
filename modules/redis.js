@@ -591,9 +591,13 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
   roundInfo.seasonNumber = season.number;
   roundInfo.seasonPaused = season.paused;
 
-  let roundQuery = { season: roundInfo.seasonNumber, accounted: false };
+  let roundQuery = { season: roundInfo.seasonNumber, accounted: false, number: { $gt: 0 } };
   if (roundNumber) {
     roundQuery = { season: roundInfo.seasonNumber, number: roundNumber };
+    // Still filter out round 0 even if explicitly requested
+    if (roundNumber <= 0) {
+      return roundInfo;
+    }
   }
 
   // Get the current round, if any
@@ -606,7 +610,15 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
     return roundInfo;
   }
 
-  roundInfo.allowedSetups = season.setupOrder[roundInfo.round.number - 1].map(
+  // Validate round number is valid (rounds are 1-indexed, setupOrder is 0-indexed)
+  const roundIndex = roundInfo.round.number - 1;
+  if (roundIndex < 0 || roundIndex >= season.setupOrder.length) {
+    // Invalid round number, return empty allowedSetups
+    roundInfo.allowedSetups = [];
+    return roundInfo;
+  }
+
+  roundInfo.allowedSetups = season.setupOrder[roundIndex].map(
     (setupNumber) => season.setups[setupNumber]
   );
 
