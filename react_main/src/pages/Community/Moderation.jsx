@@ -4,6 +4,7 @@ import update from "immutability-helper";
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
   Typography,
   Grid,
   Stack,
@@ -14,6 +15,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  IconButton,
 } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
@@ -31,6 +33,7 @@ import {
 
 import { Badge, NameWithAvatar, StatusIcon } from "pages/User/User";
 import { NewLoading } from "pages/Welcome/NewLoading";
+import Setup from "components/Setup";
 
 import "css/main.css";
 import "css/moderation.css";
@@ -53,6 +56,431 @@ const COMMAND_GROUP_ORDER = {
 };
 
 export const COMMAND_COLOR = "#8A2BE2";
+
+function ManageSeasonDialog({ open, onClose, modCommands, commandRan }) {
+  const [seasonData, setSeasonData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [addSetupDialogOpen, setAddSetupDialogOpen] = useState(false);
+  const [addSetupRoundIndex, setAddSetupRoundIndex] = useState(null);
+  const [setupIdToAdd, setSetupIdToAdd] = useState("");
+  const [addingSetup, setAddingSetup] = useState(false);
+  const errorAlert = useErrorAlert();
+  const siteInfo = useContext(SiteInfoContext);
+
+  useEffect(() => {
+    if (open) {
+      setLoading(true);
+      setSeasonData(null);
+      let cancelled = false;
+
+      axios
+        .get("/api/competitive/current")
+        .then((response) => {
+          if (cancelled) return;
+
+          if (
+            response.data &&
+            response.data.setups &&
+            response.data.setupOrder
+          ) {
+            // Validate that setups array has valid entries
+            if (
+              !Array.isArray(response.data.setups) ||
+              response.data.setups.length === 0
+            ) {
+              errorAlert("Season has no setups configured.");
+              setLoading(false);
+              onClose();
+              return;
+            }
+            setSeasonData(response.data);
+            setLoading(false);
+          } else {
+            errorAlert("Invalid season data received.");
+            setLoading(false);
+            onClose();
+          }
+        })
+        .catch((error) => {
+          if (cancelled) return;
+
+          const errorMessage =
+            error.response?.data ||
+            error.message ||
+            "Failed to load current season data.";
+          errorAlert(
+            typeof errorMessage === "string"
+              ? errorMessage
+              : "Failed to load current season data."
+          );
+          setLoading(false);
+          onClose();
+        });
+
+      return () => {
+        cancelled = true;
+      };
+    } else {
+      setSeasonData(null);
+      setLoading(false);
+    }
+  }, [open]);
+
+  const moveSetup = (roundIndex, setupIndex, direction) => {
+    if (!seasonData) return;
+
+    const newSetupOrder = seasonData.setupOrder.map((round) => [...round]);
+    const setupNumber = newSetupOrder[roundIndex][setupIndex];
+
+    if (direction === "up") {
+      // Move to previous round
+      if (roundIndex > 0) {
+        newSetupOrder[roundIndex].splice(setupIndex, 1);
+        newSetupOrder[roundIndex - 1].push(setupNumber);
+        setSeasonData({ ...seasonData, setupOrder: newSetupOrder });
+      }
+    } else if (direction === "down") {
+      // Move to next round
+      if (roundIndex < newSetupOrder.length - 1) {
+        newSetupOrder[roundIndex].splice(setupIndex, 1);
+        newSetupOrder[roundIndex + 1].push(setupNumber);
+        setSeasonData({ ...seasonData, setupOrder: newSetupOrder });
+      }
+    }
+  };
+
+  const handleSave = () => {
+    if (!seasonData) return;
+
+    setSaving(true);
+    axios
+      .post("/api/competitive/updateSetupOrder", {
+        setupOrder: seasonData.setupOrder,
+      })
+      .then(() => {
+        siteInfo.showAlert("Setup order updated successfully.", "success");
+        setSaving(false);
+        commandRan();
+        onClose();
+      })
+      .catch((error) => {
+        errorAlert("Failed to update setup order.");
+        setSaving(false);
+      });
+  };
+
+  const handleRemoveSetup = (roundIndex, setupIndex) => {
+    if (!seasonData) return;
+
+    const newSetupOrder = seasonData.setupOrder.map((round) => [...round]);
+    newSetupOrder[roundIndex].splice(setupIndex, 1);
+    setSeasonData({ ...seasonData, setupOrder: newSetupOrder });
+  };
+
+  const handleAddSetup = (roundIndex) => {
+    setAddSetupRoundIndex(roundIndex);
+    setSetupIdToAdd("");
+    setAddSetupDialogOpen(true);
+  };
+
+  const handleConfirmAddSetup = () => {
+    if (!seasonData || !setupIdToAdd.trim()) return;
+
+    setAddingSetup(true);
+    axios
+      .post("/api/competitive/addSetup", {
+        setupId: setupIdToAdd.trim(),
+        roundIndex: addSetupRoundIndex,
+      })
+      .then((response) => {
+        // Reload season data to get the updated setups array
+        axios
+          .get("/api/competitive/current")
+          .then((response) => {
+            if (
+              response.data &&
+              response.data.setups &&
+              response.data.setupOrder
+            ) {
+              setSeasonData(response.data);
+              setAddSetupDialogOpen(false);
+              setSetupIdToAdd("");
+              setAddingSetup(false);
+              siteInfo.showAlert("Setup added successfully.", "success");
+            } else {
+              errorAlert("Failed to reload season data.");
+              setAddingSetup(false);
+            }
+          })
+          .catch((error) => {
+            errorAlert("Failed to reload season data.");
+            setAddingSetup(false);
+          });
+      })
+      .catch((error) => {
+        const errorMessage =
+          error.response?.data || error.message || "Failed to add setup.";
+        errorAlert(
+          typeof errorMessage === "string"
+            ? errorMessage
+            : "Failed to add setup."
+        );
+        setAddingSetup(false);
+      });
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+      <DialogContent
+        sx={{
+          px: 2,
+          py: 2,
+          minHeight: "400px",
+        }}
+      >
+        <Stack direction="column" spacing={2}>
+          <Typography
+            sx={{
+              fontFamily: "RobotoMono",
+              fontSize: "18px",
+              backgroundColor: COMMAND_COLOR,
+              textAlign: "center",
+              px: 2,
+              py: 1,
+            }}
+          >
+            Manage Current Season{" "}
+            {seasonData ? `#${seasonData.seasonNumber}` : ""}
+          </Typography>
+
+          {loading ? (
+            <NewLoading />
+          ) : seasonData ? (
+            <>
+              <Box
+                sx={{
+                  maxHeight: "60vh",
+                  overflowY: "auto",
+                  border: "1px solid var(--scheme-color-border)",
+                  p: 2,
+                }}
+              >
+                <Stack direction="column" spacing={2}>
+                  {seasonData.setupOrder && seasonData.setupOrder.length > 0 ? (
+                    seasonData.setupOrder.map((roundSetups, roundIndex) => (
+                      <Box
+                        key={roundIndex}
+                        sx={{
+                          border: "1px solid var(--scheme-color-border)",
+                          borderRadius: 1,
+                          p: 2,
+                        }}
+                      >
+                        <Stack
+                          direction="row"
+                          alignItems="center"
+                          spacing={1}
+                          sx={{ mb: 1 }}
+                        >
+                          <Typography
+                            variant="h6"
+                            sx={{ fontFamily: "RobotoMono", flex: 1 }}
+                          >
+                            Round {roundIndex + 1}
+                          </Typography>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleAddSetup(roundIndex)}
+                            sx={{
+                              color: "primary.main",
+                            }}
+                            title="Add setup to this round"
+                          >
+                            <i className="fas fa-plus" />
+                          </IconButton>
+                        </Stack>
+                        <Stack direction="column" spacing={1}>
+                          {roundSetups && roundSetups.length > 0 ? (
+                            roundSetups.map((setupNumber, setupIndex) => {
+                              const setup =
+                                seasonData.setups &&
+                                seasonData.setups[setupNumber];
+                              if (!setup) {
+                                return (
+                                  <Typography
+                                    key={`${roundIndex}-${setupIndex}`}
+                                    color="error"
+                                  >
+                                    Setup {setupNumber} not found (index out of
+                                    bounds)
+                                  </Typography>
+                                );
+                              }
+                              if (!setup.id) {
+                                return (
+                                  <Typography
+                                    key={`${roundIndex}-${setupIndex}`}
+                                    color="error"
+                                  >
+                                    Setup at index {setupNumber} is missing id
+                                    field
+                                  </Typography>
+                                );
+                              }
+                              return (
+                                <Box
+                                  key={
+                                    setup.id || `${roundIndex}-${setupIndex}`
+                                  }
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1,
+                                    p: 1,
+                                    backgroundColor: "var(--scheme-color)",
+                                    borderRadius: 1,
+                                  }}
+                                >
+                                  <Stack direction="column" spacing={0.5}>
+                                    <IconButton
+                                      size="small"
+                                      onClick={() =>
+                                        moveSetup(roundIndex, setupIndex, "up")
+                                      }
+                                      disabled={roundIndex === 0}
+                                      sx={{
+                                        width: "24px",
+                                        height: "24px",
+                                        fontSize: "16px",
+                                      }}
+                                    >
+                                      ↑
+                                    </IconButton>
+                                    <IconButton
+                                      size="small"
+                                      onClick={() =>
+                                        moveSetup(
+                                          roundIndex,
+                                          setupIndex,
+                                          "down"
+                                        )
+                                      }
+                                      disabled={
+                                        roundIndex ===
+                                        seasonData.setupOrder.length - 1
+                                      }
+                                      sx={{
+                                        width: "24px",
+                                        height: "24px",
+                                        fontSize: "16px",
+                                      }}
+                                    >
+                                      ↓
+                                    </IconButton>
+                                  </Stack>
+                                  <Box sx={{ flex: 1 }}>
+                                    {setup.id ? (
+                                      <Setup setup={setup} />
+                                    ) : (
+                                      <Typography color="error">
+                                        Setup missing id:{" "}
+                                        {JSON.stringify(setup)}
+                                      </Typography>
+                                    )}
+                                  </Box>
+                                  <IconButton
+                                    size="small"
+                                    onClick={() =>
+                                      handleRemoveSetup(roundIndex, setupIndex)
+                                    }
+                                    sx={{
+                                      color: "error.main",
+                                    }}
+                                    title="Remove setup from this round"
+                                  >
+                                    <i className="fas fa-times" />
+                                  </IconButton>
+                                </Box>
+                              );
+                            })
+                          ) : (
+                            <Typography color="text.secondary">
+                              No setups in this round
+                            </Typography>
+                          )}
+                        </Stack>
+                      </Box>
+                    ))
+                  ) : (
+                    <Typography color="text.secondary">
+                      No rounds configured
+                    </Typography>
+                  )}
+                </Stack>
+              </Box>
+              <Stack direction="row" justifyContent="flex-end" spacing={1}>
+                <Button onClick={onClose} disabled={saving}>
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSave}
+                  disabled={saving}
+                  variant="contained"
+                >
+                  {saving ? "Saving..." : "Save Changes"}
+                </Button>
+              </Stack>
+            </>
+          ) : null}
+        </Stack>
+      </DialogContent>
+
+      {/* Add Setup Dialog */}
+      <Dialog
+        open={addSetupDialogOpen}
+        onClose={() => setAddSetupDialogOpen(false)}
+      >
+        <DialogTitle>
+          Add Setup to Round{" "}
+          {addSetupRoundIndex !== null ? addSetupRoundIndex + 1 : ""}
+        </DialogTitle>
+        <DialogContent>
+          <Stack direction="column" spacing={2} sx={{ mt: 1 }}>
+            <TextField
+              label="Setup ID"
+              value={setupIdToAdd}
+              onChange={(e) => setSetupIdToAdd(e.target.value)}
+              placeholder="Enter competitive setup ID"
+              fullWidth
+              disabled={addingSetup}
+              onKeyPress={(e) => {
+                if (e.key === "Enter" && !addingSetup && setupIdToAdd.trim()) {
+                  handleConfirmAddSetup();
+                }
+              }}
+            />
+            <Stack direction="row" justifyContent="flex-end" spacing={1}>
+              <Button
+                onClick={() => setAddSetupDialogOpen(false)}
+                disabled={addingSetup}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleConfirmAddSetup}
+                disabled={addingSetup || !setupIdToAdd.trim()}
+                variant="contained"
+              >
+                {addingSetup ? "Adding..." : "Add Setup"}
+              </Button>
+            </Stack>
+          </Stack>
+        </DialogContent>
+      </Dialog>
+    </Dialog>
+  );
+}
 
 export default function Moderation() {
   const [groups, setGroups] = useState([]);
@@ -176,6 +604,8 @@ export function ModCommands(props) {
   const [command, setCommand] = useState();
   const [searchVal, setSearchVal] = useState("");
   const [isDialogueOpen, setDialogueOpen] = useState(false);
+  const [isManageSeasonDialogOpen, setIsManageSeasonDialogOpen] =
+    useState(false);
   const [argValues, setArgValues] = useState(prefilledArgs);
 
   const { userId } = useParams();
@@ -245,8 +675,14 @@ export function ModCommands(props) {
           !searchVal || commandName.toLowerCase().includes(searchVal);
 
         function openDialogue() {
-          setDialogueOpen(true);
-          setCommand(commandName);
+          const cmd = modCommands[commandName];
+          if (cmd.customDialog) {
+            setIsManageSeasonDialogOpen(true);
+            setCommand(commandName);
+          } else {
+            setDialogueOpen(true);
+            setCommand(commandName);
+          }
         }
 
         if (
@@ -420,6 +856,17 @@ export function ModCommands(props) {
 
   return (
     <Stack direction="column" spacing={1} key="mod-commands">
+      {command === "Manage Current Season" && (
+        <ManageSeasonDialog
+          open={isManageSeasonDialogOpen}
+          onClose={() => {
+            setIsManageSeasonDialogOpen(false);
+            setCommand(null);
+          }}
+          modCommands={modCommands}
+          commandRan={commandRan}
+        />
+      )}
       <Dialog open={isDialogueOpen} onClose={closeDialogue} fullWidth>
         <DialogContent
           sx={{
@@ -1760,6 +2207,15 @@ export function useModCommands(argValues, commandRan, setResults) {
             commandRan();
           })
           .catch(errorAlert);
+      },
+    },
+    "Manage Current Season": {
+      perm: "manageCompetitive",
+      category: "Competitive Management",
+      args: [],
+      customDialog: true,
+      run: function () {
+        // This will be handled by the custom dialog
       },
     },
     "Assign Credit": {

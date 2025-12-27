@@ -56,6 +56,10 @@ export default function Calendar(props) {
       updateEvents({ type: "reset" });
       for (const season of seasons) {
         for (const round of season.rounds) {
+          // Skip round 0 (rounds should be 1-indexed)
+          if (round.number <= 0) {
+            continue;
+          }
           let endDate = null;
           if (round.dateCompleted) {
             endDate = new Date(round.dateCompleted);

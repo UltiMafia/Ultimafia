@@ -352,11 +352,13 @@ function SeasonRoundSelect({ seasonNumber, roundNumber, setSearchParams }) {
             onChange={handleRoundChange}
           >
             <MenuItem value={"latest"}>Latest</MenuItem>
-            {roundList.map((round) => (
-              <MenuItem value={round.number} key={round.number}>
-                {round.number}
-              </MenuItem>
-            ))}
+            {roundList
+              .filter((round) => round.number > 0)
+              .map((round) => (
+                <MenuItem value={round.number} key={round.number}>
+                  {round.number}
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
       )}
@@ -387,10 +389,15 @@ export default function Competitive() {
       })
       .then((response) => {
         setCurrentRoundInfo(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching round info:", error);
+        // Set to empty object to prevent infinite loading
+        setCurrentRoundInfo({});
       });
   }, [seasonNumber, roundNumber]);
 
-  if (!currentRoundInfo) {
+  if (!currentRoundInfo || Object.keys(currentRoundInfo).length === 0) {
     return <NewLoading />;
   }
 
