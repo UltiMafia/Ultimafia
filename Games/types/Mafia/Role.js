@@ -243,10 +243,14 @@ module.exports = class MafiaRole extends Role {
     let playerDemonic = player.isDemonic(true);
     let playerBanished = player.role.data.banished == true;
     let playerVanilla = this.isVanilla(player);
-    if(player.hasEffect("Misregistration")){
-      playerAlignment = this.game.getRoleAlignment(player.getRoleAppearance().split(" (")[0]);
+    if (player.hasEffect("Misregistration")) {
+      playerAlignment = this.game.getRoleAlignment(
+        player.getRoleAppearance().split(" (")[0]
+      );
       playerDemonic = player.isDemonic(false);
-      playerBanished = player.getRoleAppearance().split(" (")[1] && player.getRoleAppearance().split(" (")[1].includes("Banished");
+      playerBanished =
+        player.getRoleAppearance().split(" (")[1] &&
+        player.getRoleAppearance().split(" (")[1].includes("Banished");
       playerVanilla = this.isAppearanceVanilla(player);
     }
     if (this.modifier != null) {
@@ -257,7 +261,7 @@ module.exports = class MafiaRole extends Role {
         return false;
       } else if (
         this.modifier.split("/").includes("Disloyal") &&
-         playerAlignment == this.alignment
+        playerAlignment == this.alignment
       ) {
         return false;
       }
@@ -269,10 +273,7 @@ module.exports = class MafiaRole extends Role {
       ) {
         return false;
       }
-      if (
-        this.modifier.split("/").includes("Refined") &&
-        playerBanished
-      ) {
+      if (this.modifier.split("/").includes("Refined") && playerBanished) {
         return false;
       } else if (
         this.modifier.split("/").includes("Unrefined") &&
@@ -280,10 +281,7 @@ module.exports = class MafiaRole extends Role {
       ) {
         return false;
       }
-      if (
-        this.modifier.split("/").includes("Simple") &&
-        !playerVanilla
-      ) {
+      if (this.modifier.split("/").includes("Simple") && !playerVanilla) {
         return false;
       } else if (
         this.modifier.split("/").includes("Complex") &&
@@ -311,7 +309,7 @@ module.exports = class MafiaRole extends Role {
     if (
       player.getRoleAppearance().split(" (")[1] == "Villager" ||
       player.getRoleAppearance().split(" (")[1] == "Mafioso" ||
-       player.getRoleAppearance().split(" (")[1] == "Cultist" ||
+      player.getRoleAppearance().split(" (")[1] == "Cultist" ||
       player.getRoleAppearance().split(" (")[1] == "Grouch"
     ) {
       return true;
