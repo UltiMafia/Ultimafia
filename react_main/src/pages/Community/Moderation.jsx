@@ -73,15 +73,22 @@ function ManageSeasonDialog({ open, onClose, modCommands, commandRan }) {
       setLoading(true);
       setSeasonData(null);
       let cancelled = false;
-      
+
       axios
         .get("/api/competitive/current")
         .then((response) => {
           if (cancelled) return;
-          
-          if (response.data && response.data.setups && response.data.setupOrder) {
+
+          if (
+            response.data &&
+            response.data.setups &&
+            response.data.setupOrder
+          ) {
             // Validate that setups array has valid entries
-            if (!Array.isArray(response.data.setups) || response.data.setups.length === 0) {
+            if (
+              !Array.isArray(response.data.setups) ||
+              response.data.setups.length === 0
+            ) {
               errorAlert("Season has no setups configured.");
               setLoading(false);
               onClose();
@@ -97,13 +104,20 @@ function ManageSeasonDialog({ open, onClose, modCommands, commandRan }) {
         })
         .catch((error) => {
           if (cancelled) return;
-          
-          const errorMessage = error.response?.data || error.message || "Failed to load current season data.";
-          errorAlert(typeof errorMessage === "string" ? errorMessage : "Failed to load current season data.");
+
+          const errorMessage =
+            error.response?.data ||
+            error.message ||
+            "Failed to load current season data.";
+          errorAlert(
+            typeof errorMessage === "string"
+              ? errorMessage
+              : "Failed to load current season data."
+          );
           setLoading(false);
           onClose();
         });
-      
+
       return () => {
         cancelled = true;
       };
@@ -184,7 +198,11 @@ function ManageSeasonDialog({ open, onClose, modCommands, commandRan }) {
         axios
           .get("/api/competitive/current")
           .then((response) => {
-            if (response.data && response.data.setups && response.data.setupOrder) {
+            if (
+              response.data &&
+              response.data.setups &&
+              response.data.setupOrder
+            ) {
               setSeasonData(response.data);
               setAddSetupDialogOpen(false);
               setSetupIdToAdd("");
@@ -201,8 +219,13 @@ function ManageSeasonDialog({ open, onClose, modCommands, commandRan }) {
           });
       })
       .catch((error) => {
-        const errorMessage = error.response?.data || error.message || "Failed to add setup.";
-        errorAlert(typeof errorMessage === "string" ? errorMessage : "Failed to add setup.");
+        const errorMessage =
+          error.response?.data || error.message || "Failed to add setup.";
+        errorAlert(
+          typeof errorMessage === "string"
+            ? errorMessage
+            : "Failed to add setup."
+        );
         setAddingSetup(false);
       });
   };
@@ -227,7 +250,8 @@ function ManageSeasonDialog({ open, onClose, modCommands, commandRan }) {
               py: 1,
             }}
           >
-            Manage Current Season {seasonData ? `#${seasonData.seasonNumber}` : ""}
+            Manage Current Season{" "}
+            {seasonData ? `#${seasonData.seasonNumber}` : ""}
           </Typography>
 
           {loading ? (
@@ -253,7 +277,12 @@ function ManageSeasonDialog({ open, onClose, modCommands, commandRan }) {
                           p: 2,
                         }}
                       >
-                        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                        <Stack
+                          direction="row"
+                          alignItems="center"
+                          spacing={1}
+                          sx={{ mb: 1 }}
+                        >
                           <Typography
                             variant="h6"
                             sx={{ fontFamily: "RobotoMono", flex: 1 }}
@@ -274,86 +303,106 @@ function ManageSeasonDialog({ open, onClose, modCommands, commandRan }) {
                         <Stack direction="column" spacing={1}>
                           {roundSetups && roundSetups.length > 0 ? (
                             roundSetups.map((setupNumber, setupIndex) => {
-                              const setup = seasonData.setups && seasonData.setups[setupNumber];
+                              const setup =
+                                seasonData.setups &&
+                                seasonData.setups[setupNumber];
                               if (!setup) {
                                 return (
-                                  <Typography key={`${roundIndex}-${setupIndex}`} color="error">
-                                    Setup {setupNumber} not found (index out of bounds)
+                                  <Typography
+                                    key={`${roundIndex}-${setupIndex}`}
+                                    color="error"
+                                  >
+                                    Setup {setupNumber} not found (index out of
+                                    bounds)
                                   </Typography>
                                 );
                               }
                               if (!setup.id) {
                                 return (
-                                  <Typography key={`${roundIndex}-${setupIndex}`} color="error">
-                                    Setup at index {setupNumber} is missing id field
+                                  <Typography
+                                    key={`${roundIndex}-${setupIndex}`}
+                                    color="error"
+                                  >
+                                    Setup at index {setupNumber} is missing id
+                                    field
                                   </Typography>
                                 );
                               }
-                          return (
-                            <Box
-                              key={setup.id || `${roundIndex}-${setupIndex}`}
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 1,
-                                p: 1,
-                                backgroundColor: "var(--scheme-color)",
-                                borderRadius: 1,
-                              }}
-                            >
-                              <Stack direction="column" spacing={0.5}>
-                                <IconButton
-                                  size="small"
-                                  onClick={() =>
-                                    moveSetup(roundIndex, setupIndex, "up")
-                                  }
-                                  disabled={roundIndex === 0}
-                                  sx={{
-                                    width: "24px",
-                                    height: "24px",
-                                    fontSize: "16px",
-                                  }}
-                                >
-                                  ↑
-                                </IconButton>
-                                <IconButton
-                                  size="small"
-                                  onClick={() =>
-                                    moveSetup(roundIndex, setupIndex, "down")
-                                  }
-                                  disabled={
-                                    roundIndex === seasonData.setupOrder.length - 1
+                              return (
+                                <Box
+                                  key={
+                                    setup.id || `${roundIndex}-${setupIndex}`
                                   }
                                   sx={{
-                                    width: "24px",
-                                    height: "24px",
-                                    fontSize: "16px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1,
+                                    p: 1,
+                                    backgroundColor: "var(--scheme-color)",
+                                    borderRadius: 1,
                                   }}
                                 >
-                                  ↓
-                                </IconButton>
-                              </Stack>
-                              <Box sx={{ flex: 1 }}>
-                                {setup.id ? (
-                                  <Setup setup={setup} />
-                                ) : (
-                                  <Typography color="error">
-                                    Setup missing id: {JSON.stringify(setup)}
-                                  </Typography>
-                                )}
-                              </Box>
-                              <IconButton
-                                size="small"
-                                onClick={() => handleRemoveSetup(roundIndex, setupIndex)}
-                                sx={{
-                                  color: "error.main",
-                                }}
-                                title="Remove setup from this round"
-                              >
-                                <i className="fas fa-times" />
-                              </IconButton>
-                            </Box>
-                            );
+                                  <Stack direction="column" spacing={0.5}>
+                                    <IconButton
+                                      size="small"
+                                      onClick={() =>
+                                        moveSetup(roundIndex, setupIndex, "up")
+                                      }
+                                      disabled={roundIndex === 0}
+                                      sx={{
+                                        width: "24px",
+                                        height: "24px",
+                                        fontSize: "16px",
+                                      }}
+                                    >
+                                      ↑
+                                    </IconButton>
+                                    <IconButton
+                                      size="small"
+                                      onClick={() =>
+                                        moveSetup(
+                                          roundIndex,
+                                          setupIndex,
+                                          "down"
+                                        )
+                                      }
+                                      disabled={
+                                        roundIndex ===
+                                        seasonData.setupOrder.length - 1
+                                      }
+                                      sx={{
+                                        width: "24px",
+                                        height: "24px",
+                                        fontSize: "16px",
+                                      }}
+                                    >
+                                      ↓
+                                    </IconButton>
+                                  </Stack>
+                                  <Box sx={{ flex: 1 }}>
+                                    {setup.id ? (
+                                      <Setup setup={setup} />
+                                    ) : (
+                                      <Typography color="error">
+                                        Setup missing id:{" "}
+                                        {JSON.stringify(setup)}
+                                      </Typography>
+                                    )}
+                                  </Box>
+                                  <IconButton
+                                    size="small"
+                                    onClick={() =>
+                                      handleRemoveSetup(roundIndex, setupIndex)
+                                    }
+                                    sx={{
+                                      color: "error.main",
+                                    }}
+                                    title="Remove setup from this round"
+                                  >
+                                    <i className="fas fa-times" />
+                                  </IconButton>
+                                </Box>
+                              );
                             })
                           ) : (
                             <Typography color="text.secondary">
@@ -388,8 +437,14 @@ function ManageSeasonDialog({ open, onClose, modCommands, commandRan }) {
       </DialogContent>
 
       {/* Add Setup Dialog */}
-      <Dialog open={addSetupDialogOpen} onClose={() => setAddSetupDialogOpen(false)}>
-        <DialogTitle>Add Setup to Round {addSetupRoundIndex !== null ? addSetupRoundIndex + 1 : ""}</DialogTitle>
+      <Dialog
+        open={addSetupDialogOpen}
+        onClose={() => setAddSetupDialogOpen(false)}
+      >
+        <DialogTitle>
+          Add Setup to Round{" "}
+          {addSetupRoundIndex !== null ? addSetupRoundIndex + 1 : ""}
+        </DialogTitle>
         <DialogContent>
           <Stack direction="column" spacing={2} sx={{ mt: 1 }}>
             <TextField
@@ -549,7 +604,8 @@ export function ModCommands(props) {
   const [command, setCommand] = useState();
   const [searchVal, setSearchVal] = useState("");
   const [isDialogueOpen, setDialogueOpen] = useState(false);
-  const [isManageSeasonDialogOpen, setIsManageSeasonDialogOpen] = useState(false);
+  const [isManageSeasonDialogOpen, setIsManageSeasonDialogOpen] =
+    useState(false);
   const [argValues, setArgValues] = useState(prefilledArgs);
 
   const { userId } = useParams();

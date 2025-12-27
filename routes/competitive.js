@@ -315,14 +315,21 @@ router.post("/addSetup", async function (req, res) {
       return;
     }
 
-    if (roundIndex === undefined || roundIndex === null || isNaN(roundIndex) || roundIndex < 0) {
+    if (
+      roundIndex === undefined ||
+      roundIndex === null ||
+      isNaN(roundIndex) ||
+      roundIndex < 0
+    ) {
       res.status(400);
       res.send("Valid round index is required.");
       return;
     }
 
     // Get the setup and verify it's competitive-approved
-    const setup = await models.Setup.findOne({ id: setupId }).select("_id competitive").lean();
+    const setup = await models.Setup.findOne({ id: setupId })
+      .select("_id competitive")
+      .lean();
 
     if (!setup) {
       res.status(404);
@@ -332,7 +339,9 @@ router.post("/addSetup", async function (req, res) {
 
     if (!setup.competitive) {
       res.status(400);
-      res.send("Setup is not competitive-approved. Use 'Toggle Competitive Setup' command to approve it first.");
+      res.send(
+        "Setup is not competitive-approved. Use 'Toggle Competitive Setup' command to approve it first."
+      );
       return;
     }
 
@@ -351,14 +360,16 @@ router.post("/addSetup", async function (req, res) {
     // Check if round index is valid
     if (roundIndex >= currentSeason.setupOrder.length) {
       res.status(400);
-      res.send(`Round index ${roundIndex} is out of bounds. Season has ${currentSeason.setupOrder.length} rounds.`);
+      res.send(
+        `Round index ${roundIndex} is out of bounds. Season has ${currentSeason.setupOrder.length} rounds.`
+      );
       return;
     }
 
     // Check if setup is already in the season's setups array
     const setupObjectId = ObjectID(setup._id);
     let existingIndex = -1;
-    
+
     // Convert setups array to strings for comparison
     for (let i = 0; i < currentSeason.setups.length; i++) {
       if (String(currentSeason.setups[i]) === String(setupObjectId)) {
@@ -438,7 +449,11 @@ router.post("/updateSetupOrder", async function (req, res) {
       for (let j = 0; j < setupOrder[i].length; j++) {
         if (typeof setupOrder[i][j] !== "number") {
           res.status(400);
-          res.send(`Setup number at round ${i + 1}, position ${j + 1} must be a number.`);
+          res.send(
+            `Setup number at round ${i + 1}, position ${
+              j + 1
+            } must be a number.`
+          );
           return;
         }
       }
@@ -464,7 +479,9 @@ router.post("/updateSetupOrder", async function (req, res) {
         if (setupNumber < 0 || setupNumber > maxSetupIndex) {
           res.status(400);
           res.send(
-            `Invalid setup number ${setupNumber} at round ${i + 1}, position ${j + 1}. Must be between 0 and ${maxSetupIndex}.`
+            `Invalid setup number ${setupNumber} at round ${i + 1}, position ${
+              j + 1
+            }. Must be between 0 and ${maxSetupIndex}.`
           );
           return;
         }
