@@ -1,25 +1,24 @@
-
 const tagData = {
   Mafia: {
-
     //Design Based Tags
-    
+
     //Skill Rating Tags
-    "Basic": {
+    Basic: {
       description: "Beginner friendly.",
     },
-    "Advanced": {
+    Advanced: {
       description: "Recommended for more experienced players.",
     },
-    "Expert": {
+    Expert: {
       description: "Recommended for very experienced players.",
     },
     //design descriptive tags
     "Mini-Game": {
       description: "Ability involves a mini-game or alternate game mode.",
     },
-    "Special": {
-      description: "Adds new rules to the game even if not currently in the game.",
+    Special: {
+      description:
+        "Adds new rules to the game even if not currently in the game.",
     },
 
     //Ability Descriptive tags
@@ -30,14 +29,14 @@ const tagData = {
     //Functional Tags
 
     //Important
-    "Information": {
+    Information: {
       description: "Creates information.",
     },
-    "Deception": {
+    Deception: {
       description: "Creates information.",
     },
-    
-    "Vanilla": {
+
+    Vanilla: {
       description: "Villager, Mafioso, Cultist, and Grouch.",
       paired: ["Vanilla Interaction"],
     },
@@ -46,7 +45,7 @@ const tagData = {
       paired: ["Vanilla"],
     },
     //Killing Group
-    "Killing": {
+    Killing: {
       description: "Kills other players.",
       paired: ["Kill Interaction", "Protective", "Self Protection"],
     },
@@ -58,7 +57,7 @@ const tagData = {
       description: "Interacts with death.",
       paired: ["Killing"],
     },
-    "Protective": {
+    Protective: {
       description: "Prevents other players from dying.",
       paired: ["Killing", "Protection Interaction"],
     },
@@ -74,10 +73,9 @@ const tagData = {
     "Condemn Interaction": {
       description: "Interacts with condemnation.",
     },
-    
-    
+
     //Effects
-    "Effects": {
+    Effects: {
       description: "Causes or has status effects.",
       paired: ["Effect Interaction"],
     },
@@ -85,7 +83,7 @@ const tagData = {
       description: "Interacts with effects.",
       paired: ["Effects"],
     },
-    "Delirium": {
+    Delirium: {
       description: "Makes players Delirious.",
       paired: ["Delirium Interaction"],
     },
@@ -95,7 +93,7 @@ const tagData = {
     },
 
     //Items
-    "Items": {
+    Items: {
       description: "Creates or has items.",
       paired: ["Item Interaction"],
     },
@@ -103,7 +101,7 @@ const tagData = {
       description: "Interacts with items.",
       paired: ["Items"],
     },
-    "Gun": {
+    Gun: {
       description: "Creates or has guns.",
       paired: ["Gun Interaction"],
     },
@@ -145,25 +143,23 @@ const tagData = {
     },
 
     //Voting
-    "Voting": {
+    Voting: {
       description: "Interacts with voting.",
     },
-    
 
     //Game Settings
     "Whisper Interaction": {
       description: "Can block other player' night actions.",
       //paired: ["Blocking Interaction"],
     },
-    
+
     //Other
-    "Exposed": {
+    Exposed: {
       description: "Is revealed to all players.",
     },
-    "Unaware": {
+    Unaware: {
       description: "Sees self as another role.",
     },
-
   },
   Resistance: {},
   Jotto: {},

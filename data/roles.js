@@ -241,7 +241,13 @@ const roleData = {
     Loudmouth: {
       alignment: "Village",
       category: "Basic",
-      tags: ["Visit Interaction", "Basic", "Information", "Whisper Interaction", "Effects"],
+      tags: [
+        "Visit Interaction",
+        "Basic",
+        "Information",
+        "Whisper Interaction",
+        "Effects",
+      ],
       description: [
         "Each night, will announce who visits them at night.",
         "Each night, will announce any system messages they receive.",
@@ -3602,7 +3608,13 @@ const roleData = {
     },
     Lobotomist: {
       alignment: "Mafia",
-      tags: ["Night-acting", "Conversion", "Vanilla Interaction", "Visiting", "Basic"],
+      tags: [
+        "Night-acting",
+        "Conversion",
+        "Vanilla Interaction",
+        "Visiting",
+        "Basic",
+      ],
       description: [
         "Each night, can choose to visit one player and convert them to their alignment's vanilla role.",
         "Village roles convert to Villager. Cult roles convert to Cultist. Independent roles convert to Grouch.",
@@ -3839,7 +3851,13 @@ const roleData = {
     Zombie: {
       alignment: "Cult",
       category: "Conversion",
-      tags: ["Conversion", "Visiting", "Malicious Effects", "Advanced", "Group Action"],
+      tags: [
+        "Conversion",
+        "Visiting",
+        "Malicious Effects",
+        "Advanced",
+        "Group Action",
+      ],
       description: [
         `Each night, all Zombies can choose to visit one player and "Infect" them.`,
         infectDef,
@@ -4583,13 +4601,7 @@ const roleData = {
     Nyarlathotep: {
       alignment: "Cult",
       category: "Demon",
-      tags: [
-        "Killing",
-        "Win Con",
-        "Deception",
-        "Visiting",
-        "Advanced",
-      ],
+      tags: ["Killing", "Win Con", "Deception", "Visiting", "Advanced"],
       tagsHidden: ["No Investigate"],
       description: [
         "Each night, can choose to visit one player and kill them.",
@@ -5323,7 +5335,7 @@ const roleData = {
         "Village",
         "Visiting",
         "Expert",
-        "Special"
+        "Special",
       ],
       tagsHidden: ["No Investigate"],
       description: [
