@@ -3179,6 +3179,50 @@ module.exports = class Game {
     }
   }
 
+  async recordCompetitiveCompletions(gameDbId) {
+    try {
+      const currentSeason = await models.CompetitiveSeason.findOne({ completed: false })
+        .sort({ number: -1 })
+        .lean();
+
+      // Nothing to do if there's no active season
+      if (!currentSeason) {
+        return;
+      }
+
+      const seasonNumber = currentSeason.number;
+
+      // Get the current round, if any
+      const currentRound = await models.CompetitiveRound.findOne({ season: seasonNumber, completed: false })
+        .sort({ number: -1 })
+        .lean();
+
+      // Nothing to do if there's no active round
+      if (!currentRound || currentRound.currentDay < 1) {
+        return;
+      }
+
+      console.log(`[recordCompetitiveCompletions]: Game ${this.id} completed for season ${seasonNumber} round ${currentRound.number} day ${currentRound.currentDay}`);
+      for (let player of this.players) {
+        if (!player.isBot && this.pointsEarnedByPlayers[player.id] !== undefined) {
+          const pointsEarned = Math.max(0, this.pointsEarnedByPlayers[player.id]);
+          console.log(`[recordCompetitiveCompletions]: User ${player.user.id} earned ${pointsEarned} points during game ${this.id} on season ${seasonNumber} round ${currentRound.number} day ${currentRound.currentDay}`);
+          const gameCompletion = new models.CompetitiveGameCompletion({
+            userId: player.user.id,
+            game: gameDbId,
+            season: seasonNumber,
+            round: currentRound.number,
+            day: currentRound.currentDay,
+            points: pointsEarned,
+          });
+          await gameCompletion.save();
+        }
+      }
+    } catch (e) {
+      logger.error("Error recording competitive completion: ", e);
+    }
+  }
+
   async endPostgame() {
     try {
       if (this.postgameOver) return;
@@ -3269,10 +3313,11 @@ module.exports = class Game {
         anonymousGame: this.anonymousGame,
         anonymousDeck: this.anonymousDeck,
       });
-      await game.save();
+      const gameDocument = await game.save();
 
-      // Determine the heart type of this game based on if it was comp, ranked, or neither
-      const heartType = this.competitive ? "gold" : this.ranked ? "red" : null;
+      if (this.competitive) {
+        this.recordCompetitiveCompletions(gameDocument._id);
+      }
 
       for (let player of this.players) {
         let coinsEarned = 0;
@@ -3361,16 +3406,16 @@ module.exports = class Game {
           ).exec();
         }
 
-        if (heartType && !player.isBot) {
+        if (this.ranked && !player.isBot) {
           let heartRefresh = await models.HeartRefresh.findOne({
             userId: player.user.id,
-            type: heartType,
+            type: "red",
           }).select("_id");
           if (!heartRefresh) {
             heartRefresh = new models.HeartRefresh({
               userId: player.user.id,
               when: Date.now() + constants.redHeartRefreshIntervalMillis,
-              type: heartType,
+              type: "red",
             });
             await heartRefresh.save();
           }

@@ -23,7 +23,19 @@
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
-    <url>
+  <url>
+    <loc>https://ultimafia.com/community/calendar</loc>
+    <lastmod>2025-08-17</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://ultimafia.com/fame/competitive</loc>
+    <lastmod>2025-05-25</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://ultimafia.com/fame/leaderboard</loc>
     <lastmod>2025-05-25</lastmod>
     <changefreq>daily</changefreq>

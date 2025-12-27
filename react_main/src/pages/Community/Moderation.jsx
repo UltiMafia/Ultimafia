@@ -1650,6 +1650,41 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Create Season": {
+      perm: "createCompetitiveSeason",
+      category: "Competitive Management",
+      args: [
+        {
+          label: "Start Date (YYYY-MM-DD)",
+          name: "startDate",
+          type: "text",
+        },
+        {
+          label: "Number of rounds",
+          name: "numRounds",
+          type: "number",
+          optional: true,
+        },
+        {
+          label: "Shuffle Setups",
+          name: "shuffleSetups",
+          type: "select",
+          options: [
+            { value: "true", label: "Yes" },
+            { value: "false", label: "No" },
+          ],
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/competitive/create", argValues)
+          .then(() => {
+            siteInfo.showAlert("Competitive season created.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Assign Credit": {
       perm: "changeUsersName",
       category: "User Management",

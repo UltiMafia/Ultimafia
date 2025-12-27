@@ -8,6 +8,7 @@ const DailyChallengeData = require("../data/DailyChallenge");
 const roleData = require("../data/roles");
 const models = require("../db/models");
 const redis = require("./redis");
+const competitive = require("./competitive");
 const logger = require("./logging")(".");
 const routeUtils = require("../routes/utils");
 
@@ -125,8 +126,6 @@ module.exports = function () {
           if (type === "red")
             update["redHearts"] =
               constants.initialRedHeartCapacity + bonusRedHearts;
-          if (type === "gold")
-            update["goldHearts"] = constants.initialGoldHeartCapacity;
 
           // Refresh the user's heart type to capacity
           const result1 = await models.User.updateOne(
@@ -322,6 +321,14 @@ module.exports = function () {
         }
       },
       interval: 1000 * 10,
+    },
+    competitivePeriodic: {
+      run: async function() {
+        await competitive.progressCompetitive();
+        await competitive.rollupCompetitiveGameCompletions();
+        await competitive.rollupCompetitiveRoundStandings();
+      },
+      interval: 1000 * 300,
     },
   };
 

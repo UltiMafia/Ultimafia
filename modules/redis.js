@@ -120,6 +120,46 @@ async function invalidateCachedUser(userId) {
   client.del(`user:${userId}:info:id`);
 }
 
+
+function deleteKeysByPattern(pattern, doneCallback = null) {
+  let cursor = '0';
+
+  function scanAndDel() {
+    // The arguments to scan in v3 are typically in the order: cursor, [options...]
+    client.scan(cursor, 'MATCH', pattern, 'COUNT', 100, function(err, reply) {
+      if (err && doneCallback) {
+        return doneCallback(err);
+      }
+
+      // Reply in v3 is an array: [new_cursor, [list_of_keys]]
+      cursor = reply[0];
+      const keys = reply[1];
+
+      if (keys.length > 0) {
+        client.unlink(keys, function(delErr, response) {
+          if (delErr) {
+            console.error(`Error deleting keys: ${delErr}`);
+          }
+        });
+      }
+
+      // continue scanning if the cursor is not '0'
+      if (cursor === '0') {
+        if (doneCallback) doneCallback(null, deletedCount);
+      } else {
+        // recurse to get the next batch
+        scanAndDel();
+      }
+    });
+  }
+
+  scanAndDel(); // start recursion
+}
+
+async function invalidateAllCachedUsers() {
+  await deleteKeysByPattern("user:*:info:id");
+}
+
 async function cacheUserInfo(userId, reset) {
   var exists = await userCached(userId);
 
@@ -129,7 +169,7 @@ async function cacheUserInfo(userId, reset) {
 
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "_id id name avatar banner profileBackground blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday pronouns achievements redHearts goldHearts dailyChallengesCompleted dailyChallenges"
+        "_id id name avatar banner profileBackground blockedUsers settings customEmotes itemsOwned nameChanged bdayChanged birthday pronouns achievements redHearts goldHearts points dailyChallengesCompleted dailyChallenges"
       )
       .populate({
         path: "customEmotes",
@@ -188,6 +228,7 @@ async function cacheUserInfo(userId, reset) {
     await client.setAsync(`user:${userId}:info:gamesPlayed`, gamesPlayed);
     await client.setAsync(`user:${userId}:info:redHearts`, user.redHearts);
     await client.setAsync(`user:${userId}:info:goldHearts`, user.goldHearts);
+    await client.setAsync(`user:${userId}:info:points`, user.points);
     await client.setAsync(
       `user:${userId}:info:redHeartRefreshTimestamp`,
       redHeartRefreshTimestamp
@@ -233,6 +274,7 @@ async function cacheUserInfo(userId, reset) {
   client.expire(`user:${userId}:info:gamesPlayed`, 3600);
   client.expire(`user:${userId}:info:redHearts`, 3600);
   client.expire(`user:${userId}:info:goldHearts`, 3600);
+  client.expire(`user:${userId}:info:points`, 3600);
   client.expire(`user:${userId}:info:redHeartRefreshTimestamp`, 3600);
   client.expire(`user:${userId}:info:goldHeartRefreshTimestamp`, 3600);
   client.expire(`user:${userId}:info:dailyChallenges`, 3600);
@@ -256,6 +298,7 @@ async function deleteUserInfo(userId) {
   await client.delAsync(`user:${userId}:info:gamesPlayed`);
   await client.delAsync(`user:${userId}:info:redHearts`);
   await client.delAsync(`user:${userId}:info:goldHearts`);
+  await client.delAsync(`user:${userId}:info:points`);
   await client.delAsync(`user:${userId}:info:redHeartRefreshTimestamp`);
   await client.delAsync(`user:${userId}:info:goldHeartRefreshTimestamp`);
   await client.delAsync(`user:${userId}:info:dailyChallenges`);
@@ -286,6 +329,7 @@ async function getUserInfo(userId) {
   info.gamesPlayed = await client.getAsync(`user:${userId}:info:gamesPlayed`);
   info.redHearts = await client.getAsync(`user:${userId}:info:redHearts`);
   info.goldHearts = await client.getAsync(`user:${userId}:info:goldHearts`);
+  info.points = await client.getAsync(`user:${userId}:info:points`);
   info.redHeartRefreshTimestamp = await client.getAsync(
     `user:${userId}:info:redHeartRefreshTimestamp`
   );
@@ -1136,6 +1180,7 @@ module.exports = {
   updateFavSetup,
   userCached,
   invalidateCachedUser,
+  invalidateAllCachedUsers,
   cacheUserInfo,
   deleteUserInfo,
   getUserInfo,

@@ -294,11 +294,13 @@ function Header({ setShowAnnouncementTemporarily }) {
                       { text: "Forums", path: "/community/forums" },
                       { text: "Users", path: "/community/users" },
                       { text: "Moderation", path: "/community/moderation" },
+                      { text: "Calendar", path: "/community/calendar" },
                     ],
                   },
                   {
                     label: "Fame",
                     items: [
+                      { text: "Competitive", path: "/fame/competitive" },
                       { text: "Leaderboard", path: "/fame/leaderboard" },
                       { text: "Contributors", path: "/fame/contributors" },
                       { text: "Donors", path: "/fame/donors" },
@@ -389,11 +391,13 @@ function Header({ setShowAnnouncementTemporarily }) {
                   { text: "Forums", path: "/community/forums" },
                   { text: "Users", path: "/community/users" },
                   { text: "Moderation", path: "/community/moderation" },
+                  { text: "Calendar", path: "/community/calendar" },
                 ]}
               />
               <NavDropdown
                 label="Fame"
                 items={[
+                  { text: "Competitive", path: "/fame/competitive" },
                   { text: "Leaderboard", path: "/fame/leaderboard" },
                   { text: "Contributors", path: "/fame/contributors" },
                   { text: "Donors", path: "/fame/donors" },

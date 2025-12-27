@@ -355,6 +355,7 @@ module.exports = {
   leavePenaltyDurationMillis: 259200000,
 
   minimumGamesForRanked: 5,
+  minimumPointsForCompetitive: 1000,
 
   // See: https://www.npmjs.com/package/openskill
   defaultSkillRatingMu: 750,
@@ -462,6 +463,7 @@ module.exports = {
     viewVotes: true,
     editAnySetup: true,
     createPoll: true,
+    createCompetitiveSeason: true,
     awardTrophy: true,
     deleteStrategy: true,
   },
@@ -521,6 +523,7 @@ module.exports = {
         "playCompetitive",
         "editAnySetup",
         "createPoll",
+        "createCompetitiveSeason",
         "awardTrophy",
         "deleteStrategy",
       ],
@@ -541,6 +544,7 @@ module.exports = {
         "unban",
         "editAnySetup",
         "createPoll",
+        "createCompetitiveSeason",
       ],
     },
     Mod: {
