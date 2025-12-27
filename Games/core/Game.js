@@ -1653,10 +1653,10 @@ module.exports = class Game {
     for (let tag of roleData[this.type][roleFull.split(":")[0]].tags) {
       roleTags.push(tag);
     }
-    if(roleData[this.type][roleFull.split(":")[0]].tagsHidden){
+    if (roleData[this.type][roleFull.split(":")[0]].tagsHidden) {
       for (let tag of roleData[this.type][roleFull.split(":")[0]].tagsHidden) {
-      roleTags.push(tag);
-    }
+        roleTags.push(tag);
+      }
     }
     if (modifiers && modifiers.length > 0) {
       //this.sendAlert(`Modifiers Pre loop ${modifiers}`,undefined);

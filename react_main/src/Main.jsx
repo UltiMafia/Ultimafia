@@ -322,7 +322,7 @@ function Header({ setShowAnnouncementTemporarily }) {
                   {
                     label: "Fame",
                     items: [
-                      { text: "Leaderboard", path: "/fame/leaderboard" },
+                      { text: "Leaderboard", path: "/fame/competitive" },
                       { text: "Contributors", path: "/fame/contributors" },
                       { text: "Donors", path: "/fame/donors" },
                     ],
@@ -423,7 +423,7 @@ function Header({ setShowAnnouncementTemporarily }) {
               <NavDropdown
                 label="Fame"
                 items={[
-                  { text: "Leaderboard", path: "/fame/leaderboard" },
+                  { text: "Leaderboard", path: "/fame/competitive" },
                   { text: "Contributors", path: "/fame/contributors" },
                   { text: "Donors", path: "/fame/donors" },
                 ]}

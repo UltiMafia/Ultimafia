@@ -15,10 +15,10 @@ export default function Fame(props) {
       <Box maxWidth="1080px" sx={{ flexGrow: 1 }}>
         <Card sx={{ padding: theme.spacing(3), textAlign: "justify" }}>
           <Routes>
-            <Route path="leaderboard" element={<Leaderboard />} />
+            <Route path="competitive" element={<Leaderboard />} />
             <Route path="contributors" element={<Contributors />} />
             <Route path="donors" element={<Donors />} />
-            <Route path="*" element={<Navigate to="leaderboard" />} />
+            <Route path="*" element={<Navigate to="competitive" />} />
           </Routes>
         </Card>
       </Box>
