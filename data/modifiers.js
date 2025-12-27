@@ -1268,6 +1268,14 @@ const modifierData = {
         "One Village-aligned player will have unfavorable results to this role's information abilities.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    Literal: {
+      category: "Appearance",
+      internal: ["LiteralAppearance"],
+      tags: ["Information"],
+      description:
+        "This role's appearance to information roles will also affect non-information abilites.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     //Speaking
     //Speaking Mods
     Blind: {
