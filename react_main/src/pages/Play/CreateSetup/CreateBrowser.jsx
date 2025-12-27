@@ -237,21 +237,23 @@ export default function CreateSetup(props) {
         case "copyRoleSet":
           newRoleData = update(newRoleData, {
             roles: { $push: [newRoleData.roles[action.index]] },
-            roleGroupSizes: { $push: [newRoleData.roleGroupSizes[action.index]] },
+            roleGroupSizes: {
+              $push: [newRoleData.roleGroupSizes[action.index]],
+            },
           });
           break;
         case "moveRoleSetUp":
           let index1 = action.index;
-          let index2 = action.index-1;
-          if(action.index == 0){
-            index2 = newRoleData.roles.length-1;
+          let index2 = action.index - 1;
+          if (action.index == 0) {
+            index2 = newRoleData.roles.length - 1;
           }
           let tempRoles = newRoleData.roles[index1];
           let tempGroupSize = newRoleData.roleGroupSizes[index1];
           let tempRoles2 = newRoleData.roles[index2];
           let tempGroupSize2 = newRoleData.roleGroupSizes[index2];
-         newRoleData = update(newRoleData, {
-          roles: {
+          newRoleData = update(newRoleData, {
+            roles: {
               [index2]: {
                 $set: tempRoles,
               },
@@ -260,7 +262,7 @@ export default function CreateSetup(props) {
               },
             },
             roleGroupSizes: {
-              [action.index-1]: {
+              [action.index - 1]: {
                 $set: tempGroupSize,
               },
               [index1]: {
@@ -269,18 +271,18 @@ export default function CreateSetup(props) {
             },
           });
           break;
-          case "moveRoleSetDown":
+        case "moveRoleSetDown":
           let index3 = action.index;
-          let index4 = action.index+1;
-          if(action.index == newRoleData.roles.length-1){
+          let index4 = action.index + 1;
+          if (action.index == newRoleData.roles.length - 1) {
             index4 = 0;
           }
           let tempRoles3 = newRoleData.roles[index3];
           let tempGroupSize3 = newRoleData.roleGroupSizes[index3];
           let tempRoles4 = newRoleData.roles[index4];
           let tempGroupSize4 = newRoleData.roleGroupSizes[index4];
-         newRoleData = update(newRoleData, {
-          roles: {
+          newRoleData = update(newRoleData, {
+            roles: {
               [index4]: {
                 $set: tempRoles3,
               },
