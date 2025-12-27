@@ -247,4 +247,265 @@ router.get("/roundInfo", async function (req, res) {
   }
 });
 
+// Get current season data for management
+router.get("/current", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+
+    if (!(await routeUtils.verifyPermission(res, userId, "manageCompetitive")))
+      return;
+
+    const currentSeason = await models.CompetitiveSeason.findOne({
+      completed: false,
+    })
+      .sort({ number: -1 })
+      .select("setups setupOrder number")
+      .populate([
+        {
+          path: "setups",
+        },
+      ])
+      .lean();
+
+    if (!currentSeason) {
+      res.status(404);
+      res.send("No season in progress.");
+      return;
+    }
+
+    // Ensure setups and setupOrder exist
+    if (!currentSeason.setups || !Array.isArray(currentSeason.setups)) {
+      res.status(500);
+      res.send("Season has invalid setups data.");
+      return;
+    }
+
+    if (!currentSeason.setupOrder || !Array.isArray(currentSeason.setupOrder)) {
+      res.status(500);
+      res.send("Season has invalid setupOrder data.");
+      return;
+    }
+
+    res.json({
+      seasonNumber: currentSeason.number,
+      setups: currentSeason.setups,
+      setupOrder: currentSeason.setupOrder,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error fetching current season.");
+  }
+});
+
+// Add a setup to a round in the current season
+router.post("/addSetup", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+
+    if (!(await routeUtils.verifyPermission(res, userId, "manageCompetitive")))
+      return;
+
+    const setupId = req.body.setupId;
+    const roundIndex = Number.parseInt(req.body.roundIndex);
+
+    if (!setupId || typeof setupId !== "string") {
+      res.status(400);
+      res.send("Setup ID is required.");
+      return;
+    }
+
+    if (
+      roundIndex === undefined ||
+      roundIndex === null ||
+      isNaN(roundIndex) ||
+      roundIndex < 0
+    ) {
+      res.status(400);
+      res.send("Valid round index is required.");
+      return;
+    }
+
+    // Get the setup and verify it's competitive-approved
+    const setup = await models.Setup.findOne({ id: setupId })
+      .select("_id competitive")
+      .lean();
+
+    if (!setup) {
+      res.status(404);
+      res.send("Setup not found.");
+      return;
+    }
+
+    if (!setup.competitive) {
+      res.status(400);
+      res.send(
+        "Setup is not competitive-approved. Use 'Toggle Competitive Setup' command to approve it first."
+      );
+      return;
+    }
+
+    const currentSeason = await models.CompetitiveSeason.findOne({
+      completed: false,
+    })
+      .sort({ number: -1 })
+      .lean();
+
+    if (!currentSeason) {
+      res.status(404);
+      res.send("No season in progress.");
+      return;
+    }
+
+    // Check if round index is valid
+    if (roundIndex >= currentSeason.setupOrder.length) {
+      res.status(400);
+      res.send(
+        `Round index ${roundIndex} is out of bounds. Season has ${currentSeason.setupOrder.length} rounds.`
+      );
+      return;
+    }
+
+    // Check if setup is already in the season's setups array
+    const setupObjectId = ObjectID(setup._id);
+    let existingIndex = -1;
+
+    // Convert setups array to strings for comparison
+    for (let i = 0; i < currentSeason.setups.length; i++) {
+      if (String(currentSeason.setups[i]) === String(setupObjectId)) {
+        existingIndex = i;
+        break;
+      }
+    }
+
+    let setupNumber;
+    if (existingIndex >= 0) {
+      // Setup already exists in the season, use its existing index
+      setupNumber = existingIndex;
+    } else {
+      // Append the setup to the setups array
+      await models.CompetitiveSeason.updateOne(
+        { _id: ObjectID(currentSeason._id) },
+        {
+          $push: {
+            setups: setupObjectId,
+          },
+        }
+      );
+      // The new index will be the current length
+      setupNumber = currentSeason.setups.length;
+    }
+
+    // Add the setup number to the specified round
+    const newSetupOrder = currentSeason.setupOrder.map((round) => [...round]);
+    newSetupOrder[roundIndex].push(setupNumber);
+
+    await models.CompetitiveSeason.updateOne(
+      { _id: ObjectID(currentSeason._id) },
+      {
+        $set: {
+          setupOrder: newSetupOrder,
+        },
+      }
+    );
+
+    // Create mod action
+    routeUtils.createModAction(userId, "Add Setup to Season", [
+      setupId,
+      roundIndex + 1,
+    ]);
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error adding setup to season.");
+  }
+});
+
+// Update setup order for current season
+router.post("/updateSetupOrder", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+
+    if (!(await routeUtils.verifyPermission(res, userId, "manageCompetitive")))
+      return;
+
+    const setupOrder = req.body.setupOrder;
+
+    if (!Array.isArray(setupOrder)) {
+      res.status(400);
+      res.send("setupOrder must be an array.");
+      return;
+    }
+
+    // Validate that each element is an array of numbers
+    for (let i = 0; i < setupOrder.length; i++) {
+      if (!Array.isArray(setupOrder[i])) {
+        res.status(400);
+        res.send(`Round ${i + 1} must be an array.`);
+        return;
+      }
+      for (let j = 0; j < setupOrder[i].length; j++) {
+        if (typeof setupOrder[i][j] !== "number") {
+          res.status(400);
+          res.send(
+            `Setup number at round ${i + 1}, position ${
+              j + 1
+            } must be a number.`
+          );
+          return;
+        }
+      }
+    }
+
+    const currentSeason = await models.CompetitiveSeason.findOne({
+      completed: false,
+    })
+      .sort({ number: -1 })
+      .lean();
+
+    if (!currentSeason) {
+      res.status(404);
+      res.send("No season in progress.");
+      return;
+    }
+
+    // Validate that all setup numbers reference valid indices in the setups array
+    const maxSetupIndex = currentSeason.setups.length - 1;
+    for (let i = 0; i < setupOrder.length; i++) {
+      for (let j = 0; j < setupOrder[i].length; j++) {
+        const setupNumber = setupOrder[i][j];
+        if (setupNumber < 0 || setupNumber > maxSetupIndex) {
+          res.status(400);
+          res.send(
+            `Invalid setup number ${setupNumber} at round ${i + 1}, position ${
+              j + 1
+            }. Must be between 0 and ${maxSetupIndex}.`
+          );
+          return;
+        }
+      }
+    }
+
+    await models.CompetitiveSeason.updateOne(
+      { _id: ObjectID(currentSeason._id) },
+      {
+        $set: {
+          setupOrder: setupOrder,
+        },
+      }
+    );
+
+    // Create mod action
+    routeUtils.createModAction(userId, "Manage Current Season", []);
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error updating setup order.");
+  }
+});
+
 module.exports = router;
