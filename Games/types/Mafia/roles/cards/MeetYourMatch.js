@@ -33,10 +33,10 @@ module.exports = class MeetYourMatch extends Card {
 
             let alignmentA = lovebirdA.role.winCount
               ? lovebirdA.role.winCount
-              : lovebirdA.role.alignment;
+              : lovebirdA.getRoleAlignment();
             let alignmentB = lovebirdB.role.winCount
               ? lovebirdB.role.winCount
-              : lovebirdB.role.alignment;
+              : lovebirdB.getRoleAlignment();
             let alert;
             if (alignmentA === alignmentB) {
               lovebirdA.giveEffect("Love", this.actor);

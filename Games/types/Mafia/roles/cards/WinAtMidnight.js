@@ -24,7 +24,7 @@ module.exports = class WinAtMidnight extends Card {
           player !== this.player
         ) {
           let delta;
-          switch (player.role.alignment) {
+          switch (player.getRoleAlignment()) {
             case "Village":
               delta = 1;
               break;

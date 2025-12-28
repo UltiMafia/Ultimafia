@@ -36,7 +36,7 @@ module.exports = class Revolver extends Item {
               this.game.queueAlert(
                 `:gun: ${this.actor.name} fires the Revolver!`
               );
-              if (magicBullet && this.actor.role.alignment !== "Cult") {
+              if (magicBullet && this.actor.getRoleAlignment() !== "Cult") {
                 let action = new Action({
                   actor: this.actor,
                   target: this.actor,

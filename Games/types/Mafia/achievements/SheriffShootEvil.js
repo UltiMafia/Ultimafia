@@ -11,7 +11,7 @@ module.exports = class SheriffShootEvil extends Achievements {
           deathType == "gun" &&
           this.player.role.name == "Sheriff"
         )
-          if (player.isEvil()) {
+          if (player.isEvil(true)) {
             this.ShotEvil = true;
           }
       },

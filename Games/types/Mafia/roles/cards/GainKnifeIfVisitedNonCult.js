@@ -18,7 +18,7 @@ module.exports = class GainKnifeIfVisitedNonCult extends Card {
         run: function () {
           let visitors = this.getVisitors(this.actor);
           let hasNonCultVisitors =
-            visitors.filter((v) => v.role.alignment !== "Cult")?.length > 0;
+            visitors.filter((v) => v.getRoleAlignment() !== "Cult")?.length > 0;
 
           if (!hasNonCultVisitors) {
             return;

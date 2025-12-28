@@ -37,10 +37,10 @@ module.exports = class ChooseWinner extends Card {
             this.hasAbility(["Win-Con", "WhenDead"])
           ) {
             this.ReaperWin = true;
-            if (this.FaithTarget.faction == "Independent") {
+            if (this.FaithTarget.getFaction() == "Independent") {
               this.ReaperWinningTeam = this.FaithTarget.role.name;
             } else {
-              this.ReaperWinningTeam = this.FaithTarget.faction;
+              this.ReaperWinningTeam = this.FaithTarget.getFaction();
             }
           } else {
             this.FaithTarget = null;

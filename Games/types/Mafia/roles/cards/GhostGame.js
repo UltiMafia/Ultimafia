@@ -53,7 +53,7 @@ module.exports = class GhostGame extends Card {
 
         for (let player of this.game.players) {
           if (
-            player.faction == "Cult" &&
+            player.getFaction() == "Cult" &&
             player.role.name != "Poet" &&
             !player.hasItem("GhostGuessWord")
           ) {
@@ -90,7 +90,7 @@ module.exports = class GhostGame extends Card {
       roleAssigned: function (player) {
         if (
           this.game.getStateName() == "Day" &&
-          player.faction == "Cult" &&
+          player.getFaction() == "Cult" &&
           player.role.name != "Poet" &&
           !player.hasItem("GhostGuessWord")
         ) {

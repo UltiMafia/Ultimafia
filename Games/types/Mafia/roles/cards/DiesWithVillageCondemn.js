@@ -13,7 +13,7 @@ module.exports = class DiesWithVillageCondemn extends Card {
           let member = meeting.members[voterId];
           let target = meeting.votes[voterId] || "*";
           if (!target) continue;
-          if (member.player.faction == "Village" && member.player.alive) {
+          if (member.player.getFaction() == "Village" && member.player.alive) {
             if (target != this.player.id) {
               allVillageVoted = false;
             }
@@ -26,7 +26,7 @@ module.exports = class DiesWithVillageCondemn extends Card {
           let member = meeting.members[voterId];
           let target = meeting.votes[voterId] || "*";
           if (!target) continue;
-          if (member.player.faction == "Village" && member.player.alive) {
+          if (member.player.getFaction() == "Village" && member.player.alive) {
             if (target == this.player.id) {
               member.player.giveEffect("Voteless", -1);
             }

@@ -11,7 +11,7 @@ module.exports = class BodyguardKill extends Achievements {
           deathType == "basic" &&
           this.player.role.name == "Bodyguard"
         )
-          if (player.isEvil()) {
+          if (player.isEvil(true)) {
             this.KilledEvil = true;
           }
       },

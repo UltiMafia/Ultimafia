@@ -37,7 +37,7 @@ module.exports = class GunsmithGun extends Achievements {
       },
       death: function (player, killer, deathType) {
         if (this.GunnedPlayers.includes(killer) && deathType == "gun") {
-          if (player.isEvil()) {
+          if (player.isEvil(true)) {
             this.KilledEvil = true;
           }
           if (!killer.hasItem("Gun")) {

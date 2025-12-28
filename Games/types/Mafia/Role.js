@@ -307,10 +307,10 @@ module.exports = class MafiaRole extends Role {
 
   isAppearanceVanilla(player) {
     if (
-      player.getRoleAppearance().split(" (")[1] == "Villager" ||
-      player.getRoleAppearance().split(" (")[1] == "Mafioso" ||
-      player.getRoleAppearance().split(" (")[1] == "Cultist" ||
-      player.getRoleAppearance().split(" (")[1] == "Grouch"
+      player.getRoleAppearance().split(" (")[0] == "Villager" ||
+      player.getRoleAppearance().split(" (")[0] == "Mafioso" ||
+      player.getRoleAppearance().split(" (")[0] == "Cultist" ||
+      player.getRoleAppearance().split(" (")[0] == "Grouch"
     ) {
       return true;
     }

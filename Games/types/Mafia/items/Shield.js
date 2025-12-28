@@ -45,7 +45,7 @@ module.exports = class Shield extends Item {
               (p) =>
                 p.alive &&
                 p != this.actor &&
-                p.role.alignment == this.actor.role.alignment
+                p.getRoleAlignment() == this.actor.getRoleAlignment()
             );
             if (alive.length > 0) {
               var randomTarget = Random.randArrayVal(alive);

@@ -21,7 +21,7 @@ module.exports = class Magnetic extends Card {
             (p) =>
               p.alive &&
               p != this.actor &&
-              p.role.alignment == this.actor.role.alignment
+              p.getRoleAlignment() == this.actor.role.alignment
           );
           if (alive.length > 0) {
             for (const action of this.game.actions[0]) {

@@ -17,10 +17,10 @@ module.exports = class Evolution extends Event {
       .alivePlayers()
       .filter(
         (p) =>
-          p.role.name == "Villager" ||
-          p.role.name == "Mafioso" ||
-          p.role.name == "Cultist" ||
-          p.role.name == "Grouch"
+          p.getRoleName() == "Villager" ||
+          p.getRoleName() == "Mafioso" ||
+          p.getRoleName() == "Cultist" ||
+          p.getRoleName() == "Grouch"
       );
     if (vanillaPlayers.length <= 0) return false;
     return true;
@@ -41,10 +41,10 @@ module.exports = class Evolution extends Event {
           .alivePlayers()
           .filter(
             (p) =>
-              (p.role.name == "Villager" ||
-                p.role.name == "Mafioso" ||
-                p.role.name == "Cultist" ||
-                p.role.name == "Grouch") &&
+              (p.getRoleName() == "Villager" ||
+                p.getRoleName() == "Mafioso" ||
+                p.getRoleName() == "Cultist" ||
+                p.getRoleName() == "Grouch") &&
               this.event.canTargetPlayer(p)
           );
         if (vanillaPlayers.length <= 0) return;
@@ -57,7 +57,7 @@ module.exports = class Evolution extends Event {
         let victim = Random.randArrayVal(vanillaPlayers);
         const randomAlignedRole = Random.randArrayVal(
           this.game.PossibleRoles.filter(
-            (r) => this.game.getRoleAlignment(r) == victim.role.alignment
+            (r) => this.game.getRoleAlignment(r) == victim.getRoleAlignment()
           )
         );
         victim.setRole(

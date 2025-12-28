@@ -14,7 +14,7 @@ module.exports = class StealAllItemsAndClovers extends Card {
           labels: ["stealItem", "kill"],
           priority: PRIORITY_ITEM_TAKER_DEFAULT,
           run: function () {
-            if (this.target.role.name == "Leprechaun") {
+            if (this.target.getRoleName() == "Leprechaun") {
               if (this.dominates()) {
                 this.actor.queueAlert(
                   `You discover that ${this.target.name} is kin and murder them for their wares!`

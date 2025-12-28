@@ -15,7 +15,7 @@ module.exports = class DetectiveCheck2 extends Achievements {
           if (
             info.isTrue() &&
             info.name == "Role Info" &&
-            info.target.isEvil() == true &&
+            info.target.isEvil(true) == true &&
             !this.hasChecked.includes(info.target)
           ) {
             this.GoodChecks++;

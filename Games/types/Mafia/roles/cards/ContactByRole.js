@@ -44,7 +44,7 @@ module.exports = class ContactByRole extends Card {
     message.parseForReview = this.parseForReview;
 
     for (let player of message.game.players)
-      if (player.role.name == message.abilityTarget)
+      if (player.getRoleName() == message.abilityTarget)
         message.recipients.push(player);
 
     if (message.recipients.length == 1) {

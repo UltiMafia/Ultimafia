@@ -13,7 +13,7 @@ module.exports = class Alcoholic extends Effect {
         if (!this.player.alive) return;
 
         const nonMafia = this.game.players.filter(
-          (p) => p.role.alignment != "Mafia" && p.alive && p != this.player
+          (p) => p.getRoleAlignment() != "Mafia" && p.alive && p != this.player
         );
         const target = Random.randArrayVal(nonMafia);
 

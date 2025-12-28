@@ -28,7 +28,7 @@ module.exports = class BleedingCult extends Effect {
           return;
         }
         if (this.dominates()) {
-          if (this.target.role.alignment == "Cult") return;
+          if (this.target.getRoleAlignment() == "Cult") return;
           this.target.setRole("Cultist");
         }
 

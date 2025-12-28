@@ -13,7 +13,7 @@ module.exports = class BackUp extends Effect {
         if (player == this.player) {
           return;
         }
-        if (player.role.name != this.BackupRole) return;
+        if (player.getRoleName() != this.BackupRole) return;
         if (
           !this.CurrentRole.hasAbility(["Convert", "OnlyWhenAlive", "Modifier"])
         )

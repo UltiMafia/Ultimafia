@@ -12,7 +12,7 @@ module.exports = class ConvertKillersOnDeath extends Card {
             killer.queueAlert(
               ":bible: You regret what you have done… You want to change your ways…"
             );
-            switch (killer.role.alignment) {
+            switch (killer.getRoleAlignment()) {
               case "Mafia":
                 killer.setRole("Traitor");
                 break;

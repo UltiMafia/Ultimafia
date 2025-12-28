@@ -61,7 +61,7 @@ module.exports = class VotingWord extends Card {
           this.data.PlayersWhoSaidPhrase = [];
         }
         let count = this.data.PlayersWhoSaidPhrase.filter(
-          (p) => p.faction == "Village"
+          (p) => p.getFaction() == "Village"
         ).length;
 
         if (this.hasAbility(["Voting"])) {

@@ -25,7 +25,7 @@ module.exports = class NightPhantom extends Card {
                 )}.`
               );
               this.actor.setRole(
-                `${target.role.name}:${target.role.modifier}`,
+                `${target.getRoleName()}:${target.getModifierName()}`,
                 target.role.data
               );
             }

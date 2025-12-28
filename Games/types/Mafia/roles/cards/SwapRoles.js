@@ -23,7 +23,7 @@ module.exports = class SwapRoles extends Card {
             let currFaction = this.actor.faction;
 
             this.actor.setRole(
-              `${this.target.role.name}:${this.target.role.modifier}`,
+              `${this.target.getRoleName()}:${this.target.getModifierName()}`,
               this.target.role.data,
               false,
               false,

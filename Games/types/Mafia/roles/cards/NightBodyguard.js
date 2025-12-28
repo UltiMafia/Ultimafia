@@ -29,7 +29,7 @@ module.exports = class NightBodyguard extends Card {
             }
 
             this.role.killers = killers;
-            this.role.savedRole = this.target.role.name;
+            this.role.savedRole = this.target.getRoleName();
           },
         },
       },

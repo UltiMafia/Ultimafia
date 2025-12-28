@@ -61,8 +61,8 @@ module.exports = class DeliriateNeighbors extends Card {
               leftIdx =
                 (indexOfActor - distance - 1 + players.length) % players.length;
               rightIdx = (indexOfActor + distance + 1) % players.length;
-              leftAlign = players[leftIdx].role.alignment;
-              rightAlign = players[rightIdx].role.alignment;
+              leftAlign = players[leftIdx].getRoleAlignment();
+              rightAlign = players[rightIdx].getRoleAlignment();
 
               if (
                 rightAlign == "Village" &&

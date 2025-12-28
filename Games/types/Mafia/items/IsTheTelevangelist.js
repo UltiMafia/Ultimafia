@@ -70,7 +70,7 @@ module.exports = class IsTheTelevangelist extends Item {
           return;
         }
 
-        if (this.holder.faction != "Village") {
+        if (this.holder.getFaction() != "Village") {
           this.drop();
           return;
         }

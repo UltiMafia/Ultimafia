@@ -48,7 +48,7 @@ module.exports = class Orange extends Item {
   }
 
   eat() {
-    if (this.magicCult == true && this.holder.role.alignment != "Cult") {
+    if (this.magicCult == true && this.holder.getRoleAlignment() != "Cult") {
       let action = new Action({
         actor: this.holder,
         target: this.holder,

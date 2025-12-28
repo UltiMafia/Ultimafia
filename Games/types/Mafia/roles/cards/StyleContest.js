@@ -106,7 +106,7 @@ module.exports = class StyleContest extends Card {
         run: function () {
           this.role.AllTasksComplete = false;
           let teammates = this.game.players.filter(
-            (p) => p.faction == this.actor.faction
+            (p) => p.getFaction() == this.actor.getFaction()
           );
           for (let player of teammates) {
             let subaction = new Action({

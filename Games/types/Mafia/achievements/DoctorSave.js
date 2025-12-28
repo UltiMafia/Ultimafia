@@ -27,7 +27,7 @@ module.exports = class DoctorSave extends Achievements {
                   action.actor == this.target &&
                   action.target.alive
                 ) {
-                  if (!action.target.isEvil()) {
+                  if (!action.target.isEvil(true)) {
                     temp = action.target;
                   }
                   break;
@@ -42,7 +42,7 @@ module.exports = class DoctorSave extends Achievements {
                   action.target == temp &&
                   temp.alive
                 ) {
-                  if (!action.target.isEvil()) {
+                  if (!action.target.isEvil(true)) {
                     this.achievement.Saved = true;
                   }
                   break;

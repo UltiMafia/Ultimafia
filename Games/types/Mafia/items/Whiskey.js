@@ -45,7 +45,7 @@ module.exports = class Whiskey extends Item {
 
             if (this.dominates()) {
               if (magicCult) {
-                if (this.target.role.alignment == "Cult") {
+                if (this.target.getRoleAlignment() == "Cult") {
                   this.item.drop();
                   return;
                 }

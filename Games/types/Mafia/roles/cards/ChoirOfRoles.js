@@ -80,7 +80,7 @@ module.exports = class ChoirOfRoles extends Card {
           let roles = this.role.getAllRoles().filter((r) => r);
           let players = this.game
             .alivePlayers()
-            .filter((p) => p.role.alignment != "Cult");
+            .filter((p) => p.getRoleAlignment() != "Cult");
 
           let role = Random.randArrayVal(roles, true)
             .split(":")[0]

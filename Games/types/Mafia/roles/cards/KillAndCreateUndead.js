@@ -18,7 +18,7 @@ module.exports = class KillAndCreateUndead extends Card {
           priority: PRIORITY_KILL_DEFAULT + 1,
           run: function () {
             if (this.dominates()) {
-              if (this.target.role.alignment == "Cult") {
+              if (this.target.getRoleAlignment() == "Cult") {
                 let players = this.game.alivePlayers();
                 var indexOfTarget = players.indexOf(this.target);
                 var rightIdx;
@@ -34,8 +34,8 @@ module.exports = class KillAndCreateUndead extends Card {
                     (indexOfTarget - distance - 1 + players.length) %
                     players.length;
                   rightIdx = (indexOfTarget + distance + 1) % players.length;
-                  leftAlign = players[leftIdx].role.alignment;
-                  rightAlign = players[rightIdx].role.alignment;
+                  leftAlign = players[leftIdx].getRoleAlignment();
+                  rightAlign = players[rightIdx].getRoleAlignment();
 
                   if (rightAlign == "Village" && foundUp == 0) {
                     foundUp = players[rightIdx];

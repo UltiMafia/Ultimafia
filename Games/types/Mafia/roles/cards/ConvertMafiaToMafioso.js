@@ -15,14 +15,14 @@ module.exports = class ConvertMafiaToMafioso extends Card {
           priority: PRIORITY_CONVERT_DEFAULT + 8,
           run: function () {
             if (
-              !MAFIA_FACTIONS.includes(this.target.faction) &&
-              !CULT_FACTIONS.includes(this.target.faction)
+              !MAFIA_FACTIONS.includes(this.target.getFaction()) &&
+              !CULT_FACTIONS.includes(this.target.getFaction())
             ) {
               return;
             }
 
             if (this.dominates()) {
-              if (MAFIA_FACTIONS.includes(this.target.faction)) {
+              if (MAFIA_FACTIONS.includes(this.target.getFaction())) {
                 this.target.setRole(
                   "Mafioso",
                   undefined,

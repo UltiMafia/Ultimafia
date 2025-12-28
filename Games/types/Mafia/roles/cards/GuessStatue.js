@@ -27,7 +27,7 @@ module.exports = class GuessStatue extends Card {
             */
             if (this.role.roleToGuess == null) return;
             for (let x = 0; x < this.role.roleToGuess.length; x++) {
-              if (this.target.role.name == this.role.roleToGuess[x]) {
+              if (this.target.getRoleName() == this.role.roleToGuess[x]) {
                 if (this.dominates()) {
                   let randomVillageRole = Random.randArrayVal(
                     this.role

@@ -17,7 +17,7 @@ module.exports = class FlipAlignment extends Card {
           labels: ["frame", "alignment", "flip"],
           run: function () {
             var appearanceToSet =
-              this.target.role.alignment == "Mafia" ? "Villager" : "Mafioso";
+              this.target.getRoleAlignment() == "Mafia" ? "Villager" : "Mafioso";
             this.target.setTempAppearance("investigate", appearanceToSet);
           },
         },

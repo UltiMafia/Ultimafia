@@ -745,7 +745,7 @@ module.exports = class WinWithFaction extends Card {
             return false;
           }
 
-          if (NOT_EVIL_FACTIONS.includes(this.player.faction)) {
+          if (NOT_EVIL_FACTIONS.includes(this.player.getFaction())) {
             return false;
           }
 
@@ -768,7 +768,7 @@ module.exports = class WinWithFaction extends Card {
               return;
             }
 
-            this.game.guessedSeers[this.actor.faction].push(this.target);
+            this.game.guessedSeers[this.actor.getFaction()].push(this.target);
             this.target.kill("condemnRevenge", this.actor);
           },
         },

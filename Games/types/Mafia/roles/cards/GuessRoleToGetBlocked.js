@@ -50,7 +50,7 @@ module.exports = class GuessRoleToGetBlocked extends Card {
               ) {
                 for (let y = 0; y < toCheck.length; y++) {
                   if (
-                    `${toCheck[y].role.name}:${toCheck[y].role.modifier}` ==
+                    `${toCheck[y].getRoleName()}:${toCheck[y].getModifierName()}` ==
                     this.target
                   ) {
                     if (

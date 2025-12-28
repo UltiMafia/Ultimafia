@@ -9,7 +9,7 @@ module.exports = class InheritFirstDeadAligned extends Card {
       death: function (player) {
         if (
           player !== this.player &&
-          player.role.alignment === this.player.role.alignment &&
+          player.getRoleAlignment() === this.player.role.alignment &&
           this.hasAbility(["Convert", "Modifier"])
         ) {
           let inheritAction = new Action({
@@ -21,12 +21,12 @@ module.exports = class InheritFirstDeadAligned extends Card {
               if (!this.isVanillaRole()) {
                 this.actor.queueAlert(
                   `:tomb: You decide to become ${this.target.role.getRevealText(
-                    this.target.role.name,
-                    this.target.role.modifier
+                    this.target.getRoleName(),
+                    this.target.getModifierName()
                   )}, filling up the gap that ${this.target.name} left.`
                 );
                 this.actor.setRole(
-                  `${this.target.role.name}:${this.target.role.modifier}`,
+                  `${this.target.getRoleName()}:${this.target.role.modifier}`,
                   this.target.role.data,
                   false,
                   false,
