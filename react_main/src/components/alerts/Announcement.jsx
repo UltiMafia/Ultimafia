@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Alert, Box, IconButton } from "@mui/material";
+import { Alert, Box, IconButton, Stack } from "@mui/material";
 import {
   getAnnouncement,
   getPrevAnnouncement,
@@ -139,16 +139,8 @@ export const Announcement = ({
     urlifyText(announcement?.content)
   );
 
-  const width = isPhoneDevice ? "85%" : "80%";
   return (
-    <Box
-      sx={{
-        width,
-        margin: "0 auto",
-        mb: 2,
-        display: "flex",
-      }}
-    >
+    <Stack direction="row" spacing={1}>
       {ScrollButtons}
       <Alert
         severity="info"
@@ -169,6 +161,6 @@ export const Announcement = ({
           {content}
         </Box>
       </Alert>
-    </Box>
+    </Stack>
   );
 };
