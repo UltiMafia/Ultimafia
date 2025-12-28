@@ -25,17 +25,21 @@ module.exports = class KillorPass extends Card {
               var cultTargets = aliveTargets.filter(
                 (p) => p.getRoleAlignment(true) == "Cult"
               );
-              if(cultTargets.length <= 0){
+              if (cultTargets.length <= 0) {
                 var cultTargets = aliveTargets.filter(
-                (p) => p.getRoleAlignment() == "Cult"
-              );
+                  (p) => p.getRoleAlignment() == "Cult"
+                );
               }
 
               if (cultTargets.length > 0) {
                 const randomTarget = Random.randArrayVal(cultTargets);
                 randomTarget.setRole(
                   `${this.role.name}:${this.role.modifier}`,
-                  this.role.data, null, null, null, "No Change"
+                  this.role.data,
+                  null,
+                  null,
+                  null,
+                  "No Change"
                 );
                 this.actor.kill("basic");
               }

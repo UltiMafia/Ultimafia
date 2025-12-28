@@ -33,7 +33,6 @@ module.exports = class VotingMadness extends Effect {
             continue;
           }
           memberCount++;
-          
 
           const vote = meeting.votes[player.id];
           if (vote == this.target.id) {

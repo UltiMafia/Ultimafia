@@ -549,8 +549,8 @@ module.exports = class MafiaPlayer extends Player {
     return false;
   }
 
-  isFairMisReg(){
-    if(this.hasEffect("Misregistration")){
+  isFairMisReg() {
+    if (this.hasEffect("Misregistration")) {
       return true;
     }
     return false;
@@ -571,14 +571,16 @@ module.exports = class MafiaPlayer extends Player {
     return false;
   }
 
-  getRoleAlignment(absolute, fair){
-     if (this.isFairMisReg() && absolute != true) {
-      return this.game.getRoleAlignment(this.getRoleAppearance().split(" (")[0]);
+  getRoleAlignment(absolute, fair) {
+    if (this.isFairMisReg() && absolute != true) {
+      return this.game.getRoleAlignment(
+        this.getRoleAppearance().split(" (")[0]
+      );
     }
     return this.role.alignment;
   }
 
-  getFaction(absolute, fair){
+  getFaction(absolute, fair) {
     if (this.isFairMisReg() && absolute != true) {
       let temp = this.game.createInformation("AlignmentInfo", this, this);
       return temp.mainInfo;
@@ -586,23 +588,23 @@ module.exports = class MafiaPlayer extends Player {
     return this.faction;
   }
 
-  getRoleName(absolute, fair){
+  getRoleName(absolute, fair) {
     if (this.isFairMisReg() && absolute != true) {
       let temp = this.getRoleAppearance("investigate");
       return temp.split(" (")[0];
     }
-    return this.role.name
+    return this.role.name;
   }
 
-  getModifierName(absolute, fair){
+  getModifierName(absolute, fair) {
     if (this.isFairMisReg() && absolute != true) {
       let temp = this.getRoleAppearance("investigate");
-      if(temp.split(" (")[1]){
+      if (temp.split(" (")[1]) {
         return temp.split(" (")[1].replace(")", "");
       }
       return "";
     }
-    return this.role.modifier
+    return this.role.modifier;
   }
 
   getNeighbors() {

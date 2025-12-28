@@ -21,7 +21,8 @@ module.exports = class VillageMightSurviveCondemn extends Card {
             .alivePlayers()
             .filter(
               (p) =>
-                p.getRoleAlignment() == "Village" || p.role.winCount == "Village"
+                p.getRoleAlignment() == "Village" ||
+                p.role.winCount == "Village"
             );
 
           let shuffledPlayers = Random.randomizeArray(villagePlayers);

@@ -33,7 +33,6 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
               meeting.generateTargets();
             }
             this.actor.sendMeetings();
-
           },
         },
       },

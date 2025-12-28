@@ -51,7 +51,10 @@ module.exports = class Syringe extends Item {
             if (this.dominates()) {
               this.target.revive("basic", this.actor, true);
             }
-            if (this.item.magicCult && this.target.getRoleAlignment() !== "Cult") {
+            if (
+              this.item.magicCult &&
+              this.target.getRoleAlignment() !== "Cult"
+            ) {
               let action = new Action({
                 actor: this.actor,
                 target: this.target,

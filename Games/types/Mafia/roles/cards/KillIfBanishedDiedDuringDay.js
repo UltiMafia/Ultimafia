@@ -40,9 +40,10 @@ module.exports = class KillIfBanishedDiedDuringDay extends Card {
       },
       death: function (player, killer, deathType) {
         let isBanished = player.role.data.banished;
-        if(player.hasEffect("Misregistration")){
-          isBanished = player.getRoleAppearance().split(" (")[1] &&
-        player.getRoleAppearance().split(" (")[1].includes("Banished");
+        if (player.hasEffect("Misregistration")) {
+          isBanished =
+            player.getRoleAppearance().split(" (")[1] &&
+            player.getRoleAppearance().split(" (")[1].includes("Banished");
         }
 
         if (isBanished) {

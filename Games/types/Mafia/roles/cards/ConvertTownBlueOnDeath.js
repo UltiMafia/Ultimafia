@@ -14,14 +14,7 @@ module.exports = class ConvertTownBlueOnDeath extends Card {
           );
           for (let _player of this.game.players) {
             if (_player.alive && _player.getRoleAlignment() === "Village") {
-              _player.setRole(
-                    "Villager",
-                    null,
-                    null,
-                    null,
-                    null,
-                    "No Change"
-                  );
+              _player.setRole("Villager", null, null, null, null, "No Change");
             }
             this.data.paintBlue = true;
           }

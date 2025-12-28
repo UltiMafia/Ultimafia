@@ -41,7 +41,9 @@ module.exports = class Twins extends Card {
         if (this.player.getFaction() == "Village") {
           nonMafia = this.game.players.filter(
             (p) =>
-              p.getFaction() != this.player.getFaction() && p.alive && p !== this.player
+              p.getFaction() != this.player.getFaction() &&
+              p.alive &&
+              p !== this.player
           );
         } else {
           nonMafia = this.game.players.filter(

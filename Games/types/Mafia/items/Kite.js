@@ -41,7 +41,8 @@ module.exports = class Kite extends Item {
             let players = this.game
               .alivePlayers()
               .filter(
-                (p) => p.getFaction() == this.actor.getFaction() && p != this.actor
+                (p) =>
+                  p.getFaction() == this.actor.getFaction() && p != this.actor
               );
             if (broken || magicBullet || players.length <= 0) {
               this.target = this.actor;
@@ -49,7 +50,8 @@ module.exports = class Kite extends Item {
               let players = this.game
                 .alivePlayers()
                 .filter(
-                  (p) => p.getFaction() == this.actor.getFaction() && p != this.actor
+                  (p) =>
+                    p.getFaction() == this.actor.getFaction() && p != this.actor
                 );
               this.target = Random.randArrayVal(players);
             }

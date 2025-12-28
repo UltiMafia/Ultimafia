@@ -126,7 +126,10 @@ module.exports = class Gun extends Item {
             }
 
             // kill
-            if (mafiaImmune && this.target.getFaction() != this.actor.getFaction())
+            if (
+              mafiaImmune &&
+              this.target.getFaction() != this.actor.getFaction()
+            )
               return;
 
             if (this.dominates()) {

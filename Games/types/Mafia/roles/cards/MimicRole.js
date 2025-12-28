@@ -14,9 +14,7 @@ module.exports = class MimicRole extends Card {
           priority: PRIORITY_MIMIC_ROLE,
           run: function () {
             let targetRoleAlignment = this.target.getRoleAlignment();
-            if (
-              targetRoleAlignment === "Village"
-            ) {
+            if (targetRoleAlignment === "Village") {
               // only check conversion immunity for village roles
               if (this.dominates()) {
                 this.actor.setRole(
@@ -28,27 +26,24 @@ module.exports = class MimicRole extends Card {
                   "No Change"
                 );
                 this.target.setRole(
-                    "Villager",
-                    null,
-                    null,
-                    null,
-                    null,
-                    "No Change"
-                  );
+                  "Villager",
+                  null,
+                  null,
+                  null,
+                  null,
+                  "No Change"
+                );
                 this.game.events.emit("roleAssigned", this.actor);
               }
-            } else if (
-              targetRoleAlignment === "Mafia"
-            ) {
+            } else if (targetRoleAlignment === "Mafia") {
               this.actor.setRole(
-                    "Villager",
-                    null,
-                    null,
-                    null,
-                    null,
-                    "No Change"
-                  );
-
+                "Villager",
+                null,
+                null,
+                null,
+                null,
+                "No Change"
+              );
             } else {
               this.actor.setRole("Amnesiac");
             }
