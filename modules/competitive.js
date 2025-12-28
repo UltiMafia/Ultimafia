@@ -38,18 +38,26 @@ async function progressCompetitive() {
       `[progressCompetitive]: Starting season ${seasonNumber} round ${currentSeason.currentRound}`
     );
 
-    const now = new Date(Date.now());
-    const startDayOfWeek = new Date(currentSeason.startDate).getDay();
-    const endDayOfWeek = now.getDay();
+    const now = new Date();
+    let startDateNew = new Date();
+    if (currentSeason.currentRound !== 1) {
+      const startDayOfWeek = new Date(currentSeason.startDate).getUTCDay();
+      const endDayOfWeek = now.getUTCDay();
 
-    // The plus seven is only for preventing modulo of a negative number
-    let daysUntilNextRound =
-      startDayOfWeek > endDayOfWeek
-        ? (startDayOfWeek - endDayOfWeek) % 7
-        : (startDayOfWeek + 7 - endDayOfWeek) % 7;
-
-    let startDateNew = new Date(now);
-    startDateNew.setDate(now.getDate() + daysUntilNextRound);
+      // The plus seven is only for preventing modulo of a negative number
+      const daysUntilNextRound =
+        startDayOfWeek > endDayOfWeek
+          ? (startDayOfWeek - endDayOfWeek) % 7
+          : (startDayOfWeek + 7 - endDayOfWeek) % 7;
+      startDateNew = new Date(now);
+      startDateNew.setUTCDate(now.getUTCDate() + daysUntilNextRound);
+    }
+    else {
+      // For the very first round, set the start date to the start date of the season
+      const seasonStartDate = new Date(currentSeason.startDate);
+      startDateNew = new Date(seasonStartDate);
+      startDateNew.setUTCDate(seasonStartDate.getUTCDate());
+    }
 
     const round = new models.CompetitiveRound({
       season: seasonNumber,
@@ -71,12 +79,12 @@ async function progressCompetitive() {
     await models.User.updateMany({}, { $set: { goldHearts: 0 } }).exec();
     await redis.invalidateAllCachedUsers();
   } else if (!currentRound.completed) {
-    const now = new Date(Date.now());
+    const now = new Date();
     const startDate = new Date(currentRound.startDate);
     let endOfRoundDay = new Date(startDate);
 
     // Check to see if the round's current day has ended
-    endOfRoundDay.setDate(startDate.getDate() + currentRound.currentDay);
+    endOfRoundDay.setUTCDate(startDate.getUTCDate() + currentRound.currentDay);
     if (now > endOfRoundDay) {
       if (currentSeason.paused) {
         // Progress the day only if the round is paused
@@ -317,6 +325,10 @@ async function endSeason(seasonNumber) {
       )
       .join(", ")}`
   );
+
+  console.log(`[endSeason]: Setting everyone's gold hearts to 0`);
+  await models.User.updateMany({}, { $set: { goldHearts: 0 } }).exec();
+  await redis.invalidateAllCachedUsers();
 }
 
 async function accountCompetitiveRounds() {
@@ -355,7 +367,7 @@ async function accountCompetitiveRounds() {
     let endOfRoundDay = new Date(startDate);
 
     // Check to see if the round's current day has ended
-    endOfRoundDay.setDate(startDate.getDate() + currentRound.currentDay);
+    endOfRoundDay.setUTCDate(startDate.getUTCDate() + currentRound.currentDay);
     if (now > endOfRoundDay) {
       // Check to see if the round is still in review
       if (currentRound.remainingReviewDays > 0) {

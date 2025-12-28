@@ -25,4 +25,6 @@ while true; do
     echo -e "\nDate advanced to: $current_date"
 
     docker exec backend pm2 restart www
+    sleep 5
+    docker logs -n 10 backend
 done

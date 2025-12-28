@@ -13,11 +13,11 @@ async function userCanPlayCompetitive(userId) {
   const user = await redis.getUserInfo(userId);
 
   if (!user || user.points < constants.minimumPointsForCompetitive) {
-    return `You cannot play ranked games until you've earned ${constants.minimumPointsForCompetitive} fortune.`;
+    return `You cannot play competitive games until you've earned ${constants.minimumPointsForCompetitive} fortune.`;
   }
 
   if (!user || user.goldHearts <= 0) {
-    return "You cannot play ranked games because your Gold Hearts are depleted.";
+    return "You cannot play competitive games because your Gold Hearts are depleted.";
   }
 
   if (
