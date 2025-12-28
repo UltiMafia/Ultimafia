@@ -120,16 +120,12 @@ async function invalidateCachedUser(userId) {
   client.del(`user:${userId}:info:id`);
 }
 
-function deleteKeysByPattern(pattern, doneCallback = null) {
+function deleteKeysByPattern(pattern) {
   let cursor = "0";
 
   function scanAndDel() {
     // The arguments to scan in v3 are typically in the order: cursor, [options...]
     client.scan(cursor, "MATCH", pattern, "COUNT", 100, function (err, reply) {
-      if (err && doneCallback) {
-        return doneCallback(err);
-      }
-
       // Reply in v3 is an array: [new_cursor, [list_of_keys]]
       cursor = reply[0];
       const keys = reply[1];
@@ -143,9 +139,7 @@ function deleteKeysByPattern(pattern, doneCallback = null) {
       }
 
       // continue scanning if the cursor is not '0'
-      if (cursor === "0") {
-        if (doneCallback) doneCallback(null, deletedCount);
-      } else {
+      if (cursor !== "0") {
         // recurse to get the next batch
         scanAndDel();
       }
@@ -725,8 +719,8 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
           date: startDate,
         };
       } else {
-        endOfRoundDay.setDate(
-          startDate.getDate() +
+        endOfRoundDay.setUTCDate(
+          startDate.getUTCDate() +
             roundInfo.round.currentDay +
             roundInfo.round.remainingOpenDays
         );
@@ -736,8 +730,8 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
         };
       }
     } else if (!roundInfo.round.accounted) {
-      endOfRoundDay.setDate(
-        startDate.getDate() +
+      endOfRoundDay.setUTCDate(
+        startDate.getUTCDate() +
           roundInfo.round.currentDay +
           roundInfo.round.remainingReviewDays
       );

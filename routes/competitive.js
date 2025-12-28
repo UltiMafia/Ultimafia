@@ -23,7 +23,6 @@ router.post("/create", async function (req, res) {
     const startDate = req.body.startDate;
     const numRounds = Number.parseInt(req.body.numRounds || "12");
     const setupsPerRound = Number.parseInt(req.body.setupsPerRound || "2");
-    const shuffleSetups = Boolean(req.body.shuffleSetups || false);
 
     const latestSeason = await models.CompetitiveSeason.findOne({})
       .sort({ number: -1 })
@@ -75,10 +74,6 @@ router.post("/create", async function (req, res) {
 
     let setupIds = setups.map((setup) => ObjectID(setup._id));
 
-    if (shuffleSetups) {
-      Random.randomizeArray(setupIds);
-    }
-
     // Repeat setups as many times as necessary to meet the numRounds*setupsPerRound count
     // Then slice them up into chunks of setupsPerRound
     let setupOrder = [];
@@ -107,7 +102,6 @@ router.post("/create", async function (req, res) {
       startDate,
       numRounds,
       setupsPerRound,
-      shuffleSetups,
     ]);
 
     res.sendStatus(200);
@@ -153,7 +147,7 @@ router.post("/pause", async function (req, res) {
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error pausing round.");
+    res.send("Error toggling pause for season.");
   }
 });
 
@@ -201,7 +195,6 @@ router.get("/season/:seasonNumber", async function (req, res) {
       .lean();
 
     if (seasons.length === 0) {
-      logger.error(e);
       res.status(404);
       res.send("Could not find season.");
       return;
@@ -498,7 +491,7 @@ router.post("/updateSetupOrder", async function (req, res) {
     );
 
     // Create mod action
-    routeUtils.createModAction(userId, "Manage Current Season", []);
+    routeUtils.createModAction(userId, "Manage Competitive Season Setups", []);
 
     res.sendStatus(200);
   } catch (e) {

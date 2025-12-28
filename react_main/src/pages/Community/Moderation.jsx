@@ -250,7 +250,7 @@ function ManageSeasonDialog({ open, onClose, modCommands, commandRan }) {
               py: 1,
             }}
           >
-            Manage Current Season{" "}
+            {"Manage Competitive Season Setups "}
             {seasonData ? `#${seasonData.seasonNumber}` : ""}
           </Typography>
 
@@ -856,7 +856,7 @@ export function ModCommands(props) {
 
   return (
     <Stack direction="column" spacing={1} key="mod-commands">
-      {command === "Manage Current Season" && (
+      {command === "Manage Competitive Season Setups" && (
         <ManageSeasonDialog
           open={isManageSeasonDialogOpen}
           onClose={() => {
@@ -878,6 +878,7 @@ export function ModCommands(props) {
             <Stack direction="row">
               <Button onClick={onExecute}>Execute</Button>
               <Button
+                variant ="outlined"
                 onClick={() => setDialogueOpen(false)}
                 sx={{
                   marginLeft: "auto",
@@ -2170,15 +2171,6 @@ export function useModCommands(argValues, commandRan, setResults) {
           type: "number",
           optional: true,
         },
-        {
-          label: "Shuffle Setups",
-          name: "shuffleSetups",
-          type: "select",
-          options: [
-            { value: "true", label: "Yes" },
-            { value: "false", label: "No" },
-          ],
-        },
       ],
       run: function () {
         axios
@@ -2209,7 +2201,7 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Manage Current Season": {
+    "Manage Competitive Season Setups": {
       perm: "manageCompetitive",
       category: "Competitive Management",
       args: [],

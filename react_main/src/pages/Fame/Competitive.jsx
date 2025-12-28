@@ -276,7 +276,7 @@ function SeasonRoundSelect({ seasonNumber, roundNumber, setSearchParams }) {
   const [seasonList, setSeasonList] = useState([]);
 
   useEffect(() => {
-    document.title = "Leaderboard | UltiMafia";
+    document.title = "Competitive | UltiMafia";
 
     axios
       .get(`/api/competitive/seasons`)
@@ -389,11 +389,6 @@ export default function Competitive() {
       })
       .then((response) => {
         setCurrentRoundInfo(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching round info:", error);
-        // Set to empty object to prevent infinite loading
-        setCurrentRoundInfo({});
       });
   }, [seasonNumber, roundNumber]);
 
@@ -403,10 +398,6 @@ export default function Competitive() {
 
   const roundHasStarted =
     currentRoundInfo.round && currentRoundInfo.round.currentDay > 0;
-  const roundIsClosed =
-    currentRoundInfo.round && currentRoundInfo.round.completed;
-  const roundIsAccounted =
-    currentRoundInfo.round && currentRoundInfo.round.accounted;
 
   let displayTitle = null;
   let caption = null;
