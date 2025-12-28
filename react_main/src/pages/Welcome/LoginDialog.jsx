@@ -16,6 +16,7 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signOut,
 } from "firebase/auth";
 import axios from "axios";
 
@@ -29,6 +30,7 @@ export const LoginDialog = ({ open, setOpen }) => {
   const siteInfo = useContext(SiteInfoContext);
   const [loading, setLoading] = useState(false);
   const [forgotPasswordOn, setForgotPasswordOn] = useState(false);
+  const [resendVerificationOn, setResendVerificationOn] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const googleProvider = new GoogleAuthProvider();
@@ -37,6 +39,7 @@ export const LoginDialog = ({ open, setOpen }) => {
   useEffect(() => {
     if (open) {
       setForgotPasswordOn(false);
+      setResendVerificationOn(false);
     } else {
       setPassword("");
     }
@@ -52,6 +55,8 @@ export const LoginDialog = ({ open, setOpen }) => {
 
   const handleOpenForgotPassword = () => setForgotPasswordOn(true);
   const handleUndoForgotPassword = () => setForgotPasswordOn(false);
+  const handleOpenResendVerification = () => setResendVerificationOn(true);
+  const handleUndoResendVerification = () => setResendVerificationOn(false);
 
   const login = async (e) => {
     e.preventDefault();
@@ -102,7 +107,19 @@ export const LoginDialog = ({ open, setOpen }) => {
 
         if (err?.response?.status === 403) {
           try {
-            await sendEmailVerification(userCred.user);
+            // Check if email is already verified
+            if (userCred.user.emailVerified) {
+              snackbarHook.popSnackbar(
+                "Your email is already verified. Please contact support if you're still unable to log in.",
+                "info"
+              );
+            } else {
+              await sendEmailVerification(userCred.user);
+              snackbarHook.popSnackbar(
+                "A verification email has been sent. Please check your inbox (and spam folder) and verify your email before logging in.",
+                "info"
+              );
+            }
           } catch (err) {
             snackbarHook.popUnexpectedError();
             console.error(err);
@@ -209,6 +226,68 @@ export const LoginDialog = ({ open, setOpen }) => {
     setLoading(false);
   };
 
+  const resendVerification = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    let emailTest = true;
+    if (skips.includes(email)) {
+      emailTest = false;
+    }
+
+    try {
+      if (import.meta.env.MODE !== "development" && emailTest) {
+        await verifyRecaptcha("auth");
+      }
+
+      const auth = getAuth();
+      // Sign in to get the user object (this will work even if email isn't verified)
+      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      
+      // Check if email is already verified
+      if (userCred.user.emailVerified) {
+        snackbarHook.popSnackbar(
+          "This email is already verified. You can now log in.",
+          "info"
+        );
+        setResendVerificationOn(false);
+        setLoading(false);
+        return;
+      }
+
+      // Send verification email
+      await sendEmailVerification(userCred.user);
+      
+      snackbarHook.popSnackbar(
+        "Verification email has been sent. Please check your inbox (and spam folder).",
+        "success"
+      );
+      
+      // Sign out since they can't actually log in yet
+      await signOut(auth);
+      
+      setResendVerificationOn(false);
+    } catch (err) {
+      if (err.message.includes("(auth/user-not-found)")) {
+        snackbarHook.popSnackbar(
+          "No account found with this email address.",
+          "warning"
+        );
+      } else if (err.message.includes("(auth/wrong-password)")) {
+        snackbarHook.popSnackbar(
+          "Incorrect password. Please try again.",
+          "warning"
+        );
+      } else if (err.message.includes("(auth/too-many-requests)")) {
+        snackbarHook.popTooManyLoginAttempts();
+      } else {
+        snackbarHook.popUnexpectedError();
+        console.error(err);
+      }
+    }
+    setLoading(false);
+  };
+
   const LoginJSX = (
     <>
       <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -282,6 +361,13 @@ export const LoginDialog = ({ open, setOpen }) => {
         >
           Forgot Password?
         </Button>
+        <Button
+          variant="text"
+          sx={{ mt: 0.5, pb: 0, cursor: "Pointer", textTransform: "none" }}
+          onClick={handleOpenResendVerification}
+        >
+          Resend Verification Email
+        </Button>
         {loading && <LinearProgress sx={{ mt: 2 }} />}
       </DialogContent>
     </>
@@ -327,11 +413,64 @@ export const LoginDialog = ({ open, setOpen }) => {
     </>
   );
 
+  const ResendVerificationJSX = (
+    <>
+      <DialogTitle sx={{ display: "flex", justifyContent: "space-between" }}>
+        <div>Resend Verification Email</div>
+        <Button
+          variant="text"
+          onClick={handleUndoResendVerification}
+          sx={{ minWidth: "32px", p: 0 }}
+        >
+          <i className="fas fa-chevron-circle-left" />
+        </Button>
+      </DialogTitle>
+      <DialogContent>
+        <form onSubmit={resendVerification}>
+          <TextField
+            label="Email Address"
+            type="email"
+            autoFocus
+            required
+            autoComplete="off"
+            margin="dense"
+            fullWidth
+            variant="standard"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            label="Password"
+            type="password"
+            required
+            autoComplete="current-password"
+            margin="dense"
+            fullWidth
+            variant="standard"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            sx={{ mt: 1 }}
+          />
+          <Button
+            fullWidth
+            sx={{ mt: 2 }}
+            type="submit"
+            disabled={loading || !email || !password}
+          >
+            Resend Verification Email
+          </Button>
+        </form>
+        {loading && <LinearProgress sx={{ mt: 2 }} />}
+      </DialogContent>
+    </>
+  );
+
   return (
     <>
       <Dialog open={open} onClose={handleClose} maxWidth="sm">
-        {!forgotPasswordOn && LoginJSX}
+        {!forgotPasswordOn && !resendVerificationOn && LoginJSX}
         {forgotPasswordOn && ForgotPasswordJSX}
+        {resendVerificationOn && ResendVerificationJSX}
       </Dialog>
       {snackbarHook.SnackbarWrapped}
     </>

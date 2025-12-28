@@ -170,6 +170,80 @@ router.post("/verifyCaptcha", async function (req, res) {
   }
 });
 
+router.post("/resendVerification", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const email = String(req.body.email || "").trim().toLowerCase();
+
+    if (!email) {
+      res.status(400);
+      res.send(JSON.stringify({ error: "Email is required." }));
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      res.status(400);
+      res.send(JSON.stringify({ error: "Invalid email format." }));
+      return;
+    }
+
+    // Check if user exists in our database
+    const user = await models.User.findOne({
+      email: { $elemMatch: { $regex: new RegExp(`^${email.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") } },
+      deleted: false,
+    }).select("id fbUid").lean();
+
+    if (!user) {
+      // Don't reveal if email exists or not for security
+      res.status(200);
+      res.send(JSON.stringify({ 
+        message: "If an account exists with this email and it is not verified, a verification email will be sent when you attempt to sign in." 
+      }));
+      return;
+    }
+
+    // Get Firebase user
+    let firebaseUser;
+    try {
+      if (user.fbUid) {
+        firebaseUser = await fbAdmin.auth().getUser(user.fbUid);
+      } else {
+        firebaseUser = await fbAdmin.auth().getUserByEmail(email);
+      }
+    } catch (err) {
+      if (err.code === "auth/user-not-found") {
+        // Don't reveal if email exists or not for security
+        res.status(200);
+        res.send(JSON.stringify({ 
+          message: "If an account exists with this email and it is not verified, a verification email will be sent when you attempt to sign in." 
+        }));
+        return;
+      }
+      throw err;
+    }
+
+    // Check if email is already verified
+    if (firebaseUser.emailVerified) {
+      res.status(200);
+      res.send(JSON.stringify({ message: "This email is already verified." }));
+      return;
+    }
+
+    // User exists and email is not verified - frontend will handle sending
+    res.status(200);
+    res.send(JSON.stringify({ 
+      message: "Please sign in with your email and password to resend the verification email.",
+      requiresSignIn: true
+    }));
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send(JSON.stringify({ error: "Error processing request." }));
+  }
+});
+
 async function authSuccess(req, uid, email, discordProfile) {
   try {
     /* *** Scenarios ***
