@@ -2719,7 +2719,7 @@ const roleData = {
       tags: ["Killing", "Win Con", "Advanced"],
       description: [
         "If the Queen is the only Mafia alive at the start of the day, they will start a beheading.",
-        "During a beheading, if a the Queen is alive at the end of the day, all non-Mafia players die.",
+        "During a beheading, if the Queen is alive at the end of the day, all non-Mafia players die.",
       ],
     },
     Rottweiler: {
