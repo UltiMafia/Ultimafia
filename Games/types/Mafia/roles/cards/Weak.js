@@ -39,7 +39,9 @@ module.exports = class Weak extends Card {
               toCheck[0] instanceof Player
             ) {
               for (let y = 0; y < toCheck.length; y++) {
-                if (toCheck[y].role.alignment != this.actor.role.alignment) {
+                if (
+                  toCheck[y].getRoleAlignment() != this.actor.role.alignment
+                ) {
                   if (this.dominates(this.actor)) {
                     this.actor.kill("basic", this.actor);
                   }

@@ -27,7 +27,7 @@ module.exports = class ChoosePlayerOnDeath extends Card {
               return;
             }
 
-            if (this.target.role.alignment != "Village") {
+            if (this.target.getRoleAlignment() != "Village") {
               for (let p of this.game.alivePlayers()) {
                 if (p.faction === this.actor.faction) {
                   p.kill("basic", this.actor, true);

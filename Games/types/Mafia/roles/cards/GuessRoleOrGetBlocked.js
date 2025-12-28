@@ -50,8 +50,9 @@ module.exports = class GuessRoleOrGetBlocked extends Card {
               ) {
                 for (let y = 0; y < toCheck.length; y++) {
                   if (
-                    `${toCheck[y].role.name}:${toCheck[y].role.modifier}` !=
-                    this.target
+                    `${toCheck[y].getRoleName()}:${toCheck[
+                      y
+                    ].getModifierName()}` != this.target
                   ) {
                     if (
                       action.priority > this.priority &&

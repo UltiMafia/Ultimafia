@@ -13,7 +13,7 @@ module.exports = class GrannyKills extends Achievements {
           deathType == "basic" &&
           this.player.role.name == "Granny"
         )
-          if (player.isEvil()) {
+          if (player.isEvil(true)) {
             this.KillCount++;
           }
       },

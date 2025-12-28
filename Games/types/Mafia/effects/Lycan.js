@@ -17,7 +17,7 @@ module.exports = class Lycan extends Effect {
           this.game.stateEvents["Full Moon"] == true
         ) {
           const nonCult = this.game.players.filter(
-            (p) => p.role.alignment != "Cult" && p.alive && p != this.player
+            (p) => p.getRoleAlignment() != "Cult" && p.alive && p != this.player
           );
           const target = Random.randArrayVal(nonCult);
           this.game.queueAction(

@@ -9,14 +9,14 @@ module.exports = class BecomeRoleInstantly extends Card {
         flags: ["voting", "instant", "mustAct"],
         action: {
           run: function () {
-            this.actor.faction = this.target.faction;
+            this.actor.faction = this.target.getFaction();
             this.actor.setRole(
-              `${this.target.role.name}:${this.target.role.modifier}`,
+              `${this.target.getRoleName()}:${this.target.role.modifier}`,
               this.target.role.data,
               true,
               true,
               false,
-              this.target.faction
+              this.target.getFaction()
             );
 
             this.actor.joinMeetings(this.actor.role.meetings);

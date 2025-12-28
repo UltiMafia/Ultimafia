@@ -18,8 +18,8 @@ module.exports = class BecomeRoleForNight extends Card {
             let effect = this.actor.giveEffect(
               "ExtraRoleEffect",
               this.game.formatRoleInternal(
-                this.target.role.name,
-                this.target.role.modifier
+                this.target.getRoleName(),
+                this.target.getModifierName()
               ),
               1,
               this.target.role.data

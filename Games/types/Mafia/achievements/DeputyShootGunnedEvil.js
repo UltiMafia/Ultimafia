@@ -12,7 +12,7 @@ module.exports = class DeputyShootGunnedEvil extends Achievements {
           this.player.role.name == "Deputy"
         )
           if (
-            player.isEvil() &&
+            player.isEvil(true) &&
             (player.hasItem("Gun") || player.hasItem("Rifle"))
           ) {
             this.ShotGunnedEvil = true;

@@ -47,7 +47,7 @@ function isVampire(player) {
       this.role &&
       player.role.name == "Vampire" &&
       player.alive &&
-      player.faction == this.role.player.faction
+      player.getFaction() == this.role.player.getFaction()
     );
   } else {
     return this.role && player.alive;

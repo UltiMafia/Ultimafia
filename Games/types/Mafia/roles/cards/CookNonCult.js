@@ -10,7 +10,7 @@ module.exports = class CookNonCult extends Card {
           return;
         }
 
-        if (player.role.alignment == "Cult") {
+        if (player.getRoleAlignment() == "Cult") {
           return;
         }
         if (!this.hasAbility(["Effect"])) {
@@ -19,7 +19,7 @@ module.exports = class CookNonCult extends Card {
 
         let cult = this.game
           .alivePlayers()
-          .filter((p) => p.role.alignment == "Cult");
+          .filter((p) => p.getRoleAlignment() == "Cult");
         for (let p of cult) {
           p.holdItem("Food", "Stew");
           p.holdItem("Food", "Stew");

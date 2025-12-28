@@ -49,7 +49,8 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
         }
 
         const nonMafia = this.game.players.filter(
-          (p) => p.role.alignment === "Village" && p.alive && p !== this.player
+          (p) =>
+            p.getRoleAlignment() === "Village" && p.alive && p !== this.player
         );
         let shuffledPlayers = Random.randomizeArray(nonMafia);
         if (nonMafia.length <= 0) return;

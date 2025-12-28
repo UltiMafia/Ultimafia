@@ -19,7 +19,7 @@ module.exports = class ConquerAlignment extends Card {
           run: function () {
             var princeAlignment = this.target.faction;
             if (princeAlignment == "Independent") {
-              princeAlignment = this.target.role.name;
+              princeAlignment = this.target.getRoleName();
             }
 
             this.actor.faction = princeAlignment;

@@ -98,20 +98,20 @@ module.exports = class Gun extends Item {
               }
               if (
                 this.item.modifiers.includes("Vain") &&
-                this.target.faction == this.actor.faction
+                this.target.getFaction() == this.actor.getFaction()
               ) {
                 selfKill.do();
               }
               if (
                 this.item.modifiers.includes("Weak") &&
-                this.target.faction != this.actor.faction
+                this.target.getFaction() != this.actor.getFaction()
               ) {
                 selfKill.do();
               }
             }
 
             // convert or kill
-            if (magicBullet && this.target.role.alignment !== "Cult") {
+            if (magicBullet && this.target.getRoleAlignment() !== "Cult") {
               let action = new Action({
                 actor: this.actor,
                 target: this.target,
@@ -126,7 +126,10 @@ module.exports = class Gun extends Item {
             }
 
             // kill
-            if (mafiaImmune && this.target.faction != this.actor.faction)
+            if (
+              mafiaImmune &&
+              this.target.getFaction() != this.actor.getFaction()
+            )
               return;
 
             if (this.dominates()) {
@@ -190,20 +193,20 @@ module.exports = class Gun extends Item {
 
   isTargetValid(player) {
     if (this.modifiers.includes("Loyal")) {
-      if (player.faction != this.holder.faction) {
+      if (player.getFaction() != this.holder.getFaction()) {
         return false;
       }
     }
     if (this.modifiers.includes("Disloyal")) {
-      if (player.faction == this.holder.faction) {
+      if (player.getFaction() == this.holder.getFaction()) {
         return false;
       }
     }
     if (
-      player.role.name == "Villager" ||
-      player.role.name == "Mafioso" ||
-      player.role.name == "Cultist" ||
-      player.role.name == "Grouch"
+      player.getRoleName() == "Villager" ||
+      player.getRoleName() == "Mafioso" ||
+      player.getRoleName() == "Cultist" ||
+      player.getRoleName() == "Grouch"
     ) {
       if (this.modifiers.includes("Complex")) {
         return false;

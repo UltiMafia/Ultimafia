@@ -23,17 +23,17 @@ module.exports = class BecomeAlignmentOfVisitors extends Card {
             if (this.dominates(visit)) {
               this.blockWithDelirium(visit);
             }
-            if (visit.faction == "Independent") {
+            if (visit.getFaction() == "Independent") {
               this.actor.queueAlert(
-                `After Hitchhiking with a player you feel like Supporting a ${visit.role.name}.`
+                `After Hitchhiking with a player you feel like Supporting a ${visit.getRoleName()}.`
               );
-              this.actor.faction = visit.role.name;
+              this.actor.faction = visit.getRoleName();
               return;
             } else {
               this.actor.queueAlert(
-                `After Hitchhiking with a player you feel like Supporting the ${visit.faction}.`
+                `After Hitchhiking with a player you feel like Supporting the ${visit.getFaction()}.`
               );
-              this.actor.faction = visit.faction;
+              this.actor.faction = visit.getFaction();
               return;
             }
           }

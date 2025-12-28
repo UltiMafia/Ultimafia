@@ -38,11 +38,11 @@ module.exports = class ShavingCream extends Item {
               this.dominates(this.target[0]) &&
               this.dominates(this.target[1])
             ) {
-              var oldARole = `${targetA.role.name}:${targetA.role.modifier}`;
+              var oldARole = `${targetA.getRoleName()}:${targetA.getModifierName()}`;
               var oldARoleData = targetA.role.data;
 
               targetA.setRole(
-                `${targetB.role.name}:${targetB.role.modifier}`,
+                `${targetB.getRoleName()}:${targetB.getModifierName()}`,
                 targetB.role.data,
                 false,
                 false,

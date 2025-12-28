@@ -29,8 +29,8 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
 
             for (let x = 0; x < players.length; x++) {
               //currentRoles.push(players[x].role);
-              let tempName = players[x].role.name;
-              let tempModifier = players[x].role.modifier;
+              let tempName = players[x].getRoleName();
+              let tempModifier = players[x].getModifierName();
               let playerRole = `${tempName}:${tempModifier}`;
               if (tempModifier) {
                 playerRole = `${tempName}:${tempModifier}`;

@@ -16,7 +16,7 @@ module.exports = class BecomeDeadRole extends Card {
           run: function () {
             let oldRoleName = this.actor.role.name;
             this.actor.setRole(
-              `${this.target.role.name}:${this.target.role.modifier}`,
+              `${this.target.getRoleName()}:${this.target.getModifierName()}`,
               this.target.role.data
             );
             /*

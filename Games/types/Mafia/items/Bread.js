@@ -10,7 +10,7 @@ module.exports = class Bread extends Item {
     this.magicCult = options?.magicCult;
   }
   eat() {
-    if (this.magicCult == true && this.holder.role.alignment != "Cult") {
+    if (this.magicCult == true && this.holder.getRoleAlignment() != "Cult") {
       let action = new Action({
         actor: this.holder,
         target: this.holder,

@@ -14,7 +14,7 @@ module.exports = class HunterKill extends Achievements {
           this.player.role.name == "Hunter" &&
           this.game.alivePlayers().length <= 2
         )
-          if (player.isEvil()) {
+          if (player.isEvil(true)) {
             this.Kill = true;
           }
       },

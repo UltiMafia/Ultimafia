@@ -19,14 +19,14 @@ module.exports = class MeetWithMasons extends Card {
           labels: ["convert", "mason"],
           priority: PRIORITY_CONVERT_DEFAULT + 2,
           run: function () {
-            if (this.target.role.alignment == "Cult") {
+            if (this.target.getRoleAlignment() == "Cult") {
               this.role.masonKills = [this.target];
               this.role.masonKiller = this.actor;
               return;
             }
 
             if (
-              this.target.role.alignment == "Mafia" ||
+              this.target.getRoleAlignment() == "Mafia" ||
               this.target.role == "Serial Killer"
             ) {
               this.role.masonKills = this.actors;

@@ -13,7 +13,7 @@ module.exports = class VigilanteKill extends Achievements {
           deathType == "basic" &&
           this.player.role.name == "Vigilante"
         )
-          if (player.isEvil()) {
+          if (player.isEvil(true)) {
             this.KillCount++;
           }
       },

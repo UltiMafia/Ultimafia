@@ -30,7 +30,7 @@ module.exports = class Twins extends Card {
       roleAssigned: function (player) {
         if (player !== this.player) {
           if (this.target && this.target == player) {
-            if (this.player.faction != this.target.faction) {
+            if (this.player.getFaction() != this.target.getFaction()) {
               return;
             }
           } else {
@@ -38,14 +38,16 @@ module.exports = class Twins extends Card {
           }
         }
         let nonMafia;
-        if (this.player.faction == "Village") {
+        if (this.player.getFaction() == "Village") {
           nonMafia = this.game.players.filter(
             (p) =>
-              p.faction != this.player.faction && p.alive && p !== this.player
+              p.getFaction() != this.player.getFaction() &&
+              p.alive &&
+              p !== this.player
           );
         } else {
           nonMafia = this.game.players.filter(
-            (p) => p.faction == "Village" && p.alive && p !== this.player
+            (p) => p.getFaction() == "Village" && p.alive && p !== this.player
           );
         }
         if (nonMafia.length <= 0) {
@@ -62,8 +64,8 @@ module.exports = class Twins extends Card {
       },
       death: function (player, killer, deathType) {
         if (
-          ((player === this.target && this.target.faction == "Village") ||
-            (player == this.player && this.player.faction == "Village")) &&
+          ((player === this.target && this.target.getFaction() == "Village") ||
+            (player == this.player && this.player.getFaction() == "Village")) &&
           deathType === "condemn" &&
           this.hasAbility(["Win-Con"])
         ) {

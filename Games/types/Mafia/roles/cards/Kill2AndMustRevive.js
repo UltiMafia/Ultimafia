@@ -23,7 +23,7 @@ module.exports = class KillorCharge extends Card {
           run: function () {
             let CultPlayers = this.game
               .alivePlayers()
-              .filter((p) => p.faction == this.actor.faction);
+              .filter((p) => p.getFaction() == this.actor.getFaction());
             if (
               this.role.EatenPlayers != null &&
               this.role.EatenPlayers.length > 0

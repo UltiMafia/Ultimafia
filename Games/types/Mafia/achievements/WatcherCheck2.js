@@ -14,7 +14,7 @@ module.exports = class WatcherCheck2 extends Achievements {
         ) {
           if (info.isTrue()) {
             for (let player of info.mainInfo) {
-              if (player.isEvil() == true) {
+              if (player.isEvil(true) == true) {
                 this.GoodChecks++;
                 return;
               }

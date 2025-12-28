@@ -13,8 +13,8 @@ module.exports = class ConvertTownBlueOnDeath extends Card {
             "The Schoolmarm has died… who will be left to teach anyone?"
           );
           for (let _player of this.game.players) {
-            if (_player.alive && _player.role.alignment === "Village") {
-              _player.setRole("Villager");
+            if (_player.alive && _player.getRoleAlignment() === "Village") {
+              _player.setRole("Villager", null, null, null, null, "No Change");
             }
             this.data.paintBlue = true;
           }

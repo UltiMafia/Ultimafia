@@ -20,8 +20,8 @@ module.exports = class NightTrapper extends Card {
             let visitors = this.getVisitors(this.target)
               .sort(
                 (x, y) =>
-                  actorRole.data.mapAlignment(x.role.alignment) -
-                  actorRole.data.mapAlignment(y.role.alignment)
+                  actorRole.data.mapAlignment(x.getRoleAlignment()) -
+                  actorRole.data.mapAlignment(y.getRoleAlignment())
               )
               .filter((p) => p != this.actor);
 

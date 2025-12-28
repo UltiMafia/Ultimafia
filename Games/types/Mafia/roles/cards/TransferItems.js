@@ -34,7 +34,7 @@ module.exports = class TransferItems extends Card {
           run: function () {
             if (
               typeof this.role.data.victim === "undefined" ||
-              this.target.role.alignment === "Mafia"
+              this.target.getRoleAlignment() === "Mafia"
             )
               return;
 

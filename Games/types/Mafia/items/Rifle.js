@@ -55,7 +55,7 @@ module.exports = class Rifle extends Item {
                 `:gun: Someone fires a rifle at ${this.target.name}!`
               );
 
-            if (magicCult && this.target.role.alignment !== "Cult") {
+            if (magicCult && this.target.getRoleAlignment() !== "Cult") {
               let action = new Action({
                 actor: this.actor,
                 target: this.target,
@@ -70,8 +70,8 @@ module.exports = class Rifle extends Item {
                     Village: ["Mafia", "Cult"],
                   };
 
-                  var victimAlignment = this.target.role.alignment;
-                  var sameAlignment = this.actor.role.alignment;
+                  var victimAlignment = this.target.getRoleAlignment();
+                  var sameAlignment = this.actor.getRoleAlignment();
                   var opposingAlignment = alignments[sameAlignment];
 
                   if (victimAlignment === sameAlignment) {
@@ -101,8 +101,8 @@ module.exports = class Rifle extends Item {
               Village: ["Mafia", "Cult"],
             };
 
-            var victimAlignment = this.target.role.alignment;
-            var sameAlignment = this.actor.role.alignment;
+            var victimAlignment = this.target.getRoleAlignment();
+            var sameAlignment = this.actor.getRoleAlignment();
             var opposingAlignment = alignments[sameAlignment];
 
             if (victimAlignment === sameAlignment) {

@@ -18,10 +18,10 @@ module.exports = class GiveSuperpowers extends Card {
 
           let teammates = this.game.players.filter(
             (p) =>
-              this.game.getRoleAlignment(p.role.name) == "Independent" &&
+              this.game.getRoleAlignment(p.getRoleName()) == "Independent" &&
               !this.game
                 .getRoleTags(
-                  this.game.formatRoleInternal(p.role.name, p.role.modifier)
+                  this.game.formatRoleInternal(p.getRoleName(), p.role.modifier)
                 )
                 .includes("Lone")
           );

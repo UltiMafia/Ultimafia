@@ -33,11 +33,6 @@ module.exports = class VotingMadness extends Effect {
             continue;
           }
           memberCount++;
-          /*
-          if (player.role.alignment != "Village") {
-            continue;
-          }
-          */
 
           const vote = meeting.votes[player.id];
           if (vote == this.target.id) {

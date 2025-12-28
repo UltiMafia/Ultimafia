@@ -30,7 +30,7 @@ module.exports = class BecomeExcessRole extends Card {
               (r) =>
                 r.split(":")[0] != currentRoles[y].name &&
                 (this.game.getRoleAlignment(r) ==
-                  this.game.getRoleAlignment(this.actor.role.name) ||
+                  this.game.getRoleAlignment(this.actor.getRoleName()) ||
                   this.game.getRoleAlignment(this.actor.role.name) ==
                     "Independent")
             );
@@ -40,7 +40,7 @@ module.exports = class BecomeExcessRole extends Card {
               .filter(
                 (roleData) =>
                   roleData[1].alignment ===
-                  this.game.getRoleAlignment(this.actor.role.name)
+                  this.game.getRoleAlignment(this.actor.getRoleName())
               )
               .map((roleData) => roleData[0]);
           }

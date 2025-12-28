@@ -40,7 +40,7 @@ module.exports = class ShrinkSaveTwice extends Achievements {
                   action.hasLabels(["convert blocker"]) &&
                   action.actor == this.target
                 ) {
-                  if (!action.target.isEvil()) {
+                  if (!action.target.isEvil(true)) {
                     this.achievement.SavedPlayer = action.target;
                   }
                   break;

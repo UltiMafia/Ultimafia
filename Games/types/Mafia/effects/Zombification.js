@@ -20,7 +20,10 @@ module.exports = class Zombification extends Effect {
       delay: 1,
       effect: this,
       run: function () {
-        if (this.target.role.name === "Survivor") {
+        if (
+          this.target.role.name === "Survivor" &&
+          this.target.role.canDoSpecialInteractions()
+        ) {
           return;
         }
 

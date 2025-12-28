@@ -21,7 +21,7 @@ module.exports = class Scumhunter extends Achievements {
           return;
         }
         if (vote.meeting.name === "Village" && vote.voter === this.player) {
-          if (target.isEvil() && this.player.role.name == "Villager") {
+          if (target.isEvil(true) && this.player.role.name == "Villager") {
             this.isVotingEvil = true;
           } else {
             this.isVotingEvil = false;

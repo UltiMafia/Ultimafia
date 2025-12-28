@@ -11,7 +11,7 @@ module.exports = class Food extends Item {
   eat() {
     if (
       (this.foodType == "Stew" || this.magicCult == true) &&
-      this.holder.role.alignment != "Cult"
+      this.holder.getRoleAlignment() != "Cult"
     ) {
       let action = new Action({
         actor: this.holder,

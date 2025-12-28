@@ -12,7 +12,7 @@ module.exports = class SniperShootGunnedPR extends Achievements {
           this.player.role.name == "Sniper"
         )
           if (
-            !player.isEvil() &&
+            !player.isEvil(true) &&
             player.role.name != "Villager" &&
             (player.hasItem("Gun") || player.hasItem("Rifle"))
           ) {
