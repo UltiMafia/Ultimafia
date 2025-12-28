@@ -711,7 +711,7 @@ var schemas = {
     setups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Setup" }],
     setupOrder: [[{ type: Number }]], // each top level array corresponds to one round
     rounds: [{ type: mongoose.Schema.Types.ObjectId, ref: "CompetitiveRound" }],
-    currentRound: { type: Number, default: 0 },
+    currentRound: { type: Number, default: 1 },
     startDate: { type: String, default: Date.now }, // YYYY-MM-DD
     paused: { type: Boolean, default: false },
     completed: { type: Boolean, default: false },
