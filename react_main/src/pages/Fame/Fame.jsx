@@ -5,7 +5,7 @@ import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
 
 import Donors from "./Donors";
 import Contributors from "./Contributors";
-import Leaderboard from "./Leaderboard";
+import Competitive from "./Competitive";
 
 export default function Fame(props) {
   const theme = useTheme();
@@ -15,7 +15,7 @@ export default function Fame(props) {
       <Box maxWidth="1080px" sx={{ flexGrow: 1 }}>
         <Card sx={{ padding: theme.spacing(3), textAlign: "justify" }}>
           <Routes>
-            <Route path="competitive" element={<Leaderboard />} />
+            <Route path="competitive" element={<Competitive />} />
             <Route path="contributors" element={<Contributors />} />
             <Route path="donors" element={<Donors />} />
             <Route path="*" element={<Navigate to="competitive" />} />

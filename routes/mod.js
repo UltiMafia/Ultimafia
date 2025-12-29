@@ -2736,7 +2736,7 @@ router.post("/reports/:id/complete", async (req, res) => {
       // Get violation definition from report's rule
       const {
         violationDefinitions,
-      } = require("../react_main/src/constants/violations");
+      } = require("../data/violations");
       violationDef = violationDefinitions.find((v) => v.name === report.rule);
 
       if (!violationDef) {
@@ -2936,15 +2936,7 @@ router.post("/reports/:id/complete", async (req, res) => {
           altAccountIds // Notify all alt accounts
         );
       }
-    }
 
-    // Update report
-    report.status = "complete";
-    report.completedAt = Date.now();
-    report.completedBy = userId;
-    report.updatedAt = Date.now();
-
-    if (!dismissed && finalRuling) {
       report.finalRuling = {
         violationId: violationId,
         violationName: violationName,
@@ -2961,6 +2953,11 @@ router.post("/reports/:id/complete", async (req, res) => {
     } else {
       report.finalRuling = null;
     }
+
+    report.status = "complete";
+    report.completedAt = Date.now();
+    report.completedBy = userId;
+    report.updatedAt = Date.now();
 
     report.history.push({
       status: "complete",

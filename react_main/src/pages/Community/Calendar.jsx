@@ -65,8 +65,8 @@ export default function Calendar(props) {
             endDate = new Date(round.dateCompleted);
           } else {
             endDate = new Date(round.startDate);
-            endDate.setDate(
-              endDate.getDate() + round.currentDay + round.remainingOpenDays
+            endDate.setUTCDate(
+              endDate.getUTCDate() + round.currentDay + round.remainingOpenDays
             );
           }
           updateEvents({
@@ -97,6 +97,7 @@ export default function Calendar(props) {
     <FullCalendar
       plugins={[dayGridPlugin]}
       initialView="dayGridMonth"
+      timezone="UTC"
       headerToolbar={{
         left: "prev,next",
         center: "title",

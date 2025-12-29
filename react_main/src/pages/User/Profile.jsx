@@ -877,7 +877,6 @@ export default function Profile() {
     <Grid
       item
       xs={12}
-      md={3}
       sx={{
         display: "flex",
         alignItems: "center",
@@ -1054,7 +1053,7 @@ export default function Profile() {
   );
 
   const inLoveBox = (
-    <Grid item xs={12}>
+    <Grid item xs={12} md={3}>
       {love.id != null && (isLove || isMarried) && (
         <Link
           className={`name-with-avatar`}
@@ -1094,7 +1093,7 @@ export default function Profile() {
   );
 
   const familyBox = (
-    <Grid item xs={12}>
+    <Grid item xs={12} md={3}>
       {profileFamily && (
         <Link
           className={`name-with-avatar`}
@@ -1152,10 +1151,10 @@ export default function Profile() {
     </>
   ) : (
     <>
-      {buttonsBox}
+      {familyBox}
       {nameBox}
       {inLoveBox}
-      {familyBox}
+      {buttonsBox}
     </>
   );
 
