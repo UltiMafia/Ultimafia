@@ -450,7 +450,7 @@ export default function Chat() {
         alignItems="center"
         spacing={1.5}
         sx={{
-          color: theme.palette.primary.contrastText,
+          color: theme.palette.text.primary,
         }}
       >
         <Badge
