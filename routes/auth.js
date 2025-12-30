@@ -173,7 +173,9 @@ router.post("/verifyCaptcha", async function (req, res) {
 router.post("/resendVerification", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
   try {
-    const email = String(req.body.email || "").trim().toLowerCase();
+    const email = String(req.body.email || "")
+      .trim()
+      .toLowerCase();
 
     if (!email) {
       res.status(400);
@@ -191,16 +193,28 @@ router.post("/resendVerification", async function (req, res) {
 
     // Check if user exists in our database
     const user = await models.User.findOne({
-      email: { $elemMatch: { $regex: new RegExp(`^${email.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") } },
+      email: {
+        $elemMatch: {
+          $regex: new RegExp(
+            `^${email.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+            "i"
+          ),
+        },
+      },
       deleted: false,
-    }).select("id fbUid").lean();
+    })
+      .select("id fbUid")
+      .lean();
 
     if (!user) {
       // Don't reveal if email exists or not for security
       res.status(200);
-      res.send(JSON.stringify({ 
-        message: "If an account exists with this email and it is not verified, a verification email will be sent when you attempt to sign in." 
-      }));
+      res.send(
+        JSON.stringify({
+          message:
+            "If an account exists with this email and it is not verified, a verification email will be sent when you attempt to sign in.",
+        })
+      );
       return;
     }
 
@@ -216,9 +230,12 @@ router.post("/resendVerification", async function (req, res) {
       if (err.code === "auth/user-not-found") {
         // Don't reveal if email exists or not for security
         res.status(200);
-        res.send(JSON.stringify({ 
-          message: "If an account exists with this email and it is not verified, a verification email will be sent when you attempt to sign in." 
-        }));
+        res.send(
+          JSON.stringify({
+            message:
+              "If an account exists with this email and it is not verified, a verification email will be sent when you attempt to sign in.",
+          })
+        );
         return;
       }
       throw err;
@@ -233,10 +250,13 @@ router.post("/resendVerification", async function (req, res) {
 
     // User exists and email is not verified - frontend will handle sending
     res.status(200);
-    res.send(JSON.stringify({ 
-      message: "Please sign in with your email and password to resend the verification email.",
-      requiresSignIn: true
-    }));
+    res.send(
+      JSON.stringify({
+        message:
+          "Please sign in with your email and password to resend the verification email.",
+        requiresSignIn: true,
+      })
+    );
   } catch (e) {
     logger.error(e);
     res.status(500);

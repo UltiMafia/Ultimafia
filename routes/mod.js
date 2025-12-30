@@ -2734,9 +2734,7 @@ router.post("/reports/:id/complete", async (req, res) => {
       }
 
       // Get violation definition from report's rule
-      const {
-        violationDefinitions,
-      } = require("../data/violations");
+      const { violationDefinitions } = require("../data/violations");
       violationDef = violationDefinitions.find((v) => v.name === report.rule);
 
       if (!violationDef) {

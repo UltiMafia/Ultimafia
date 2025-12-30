@@ -878,7 +878,7 @@ export function ModCommands(props) {
             <Stack direction="row">
               <Button onClick={onExecute}>Execute</Button>
               <Button
-                variant ="outlined"
+                variant="outlined"
                 onClick={() => setDialogueOpen(false)}
                 sx={{
                   marginLeft: "auto",
