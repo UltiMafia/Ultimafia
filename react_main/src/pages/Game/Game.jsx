@@ -89,7 +89,7 @@ import poison from "images/emotes/poison.webp";
 import unicorn from "images/emotes/unicorn.webp";
 import exit from "images/emotes/exit.png";
 import veg from "images/emotes/veg.webp";
-import { usePopover, InfoPopover } from "components/Popover";
+import { usePopover, InfoPopover, SetupInfo } from "components/Popover";
 
 import dice1 from "images/emotes/dice1.webp";
 import dice2 from "images/emotes/dice2.webp";
@@ -1122,19 +1122,16 @@ export function TopBar() {
   } else {
     // MOBILE ================================================================
     return (
-      <Stack
-        direction="column"
-        spacing={1}
-        sx={{
-          p: 1,
-          flex: "1 1",
-        }}
-      >
+      <Stack direction="column" spacing={1} sx={{
+        p: 1,
+        flex: "1 1",
+        overflowY: "scroll",
+      }}>
         <Stack direction="row" spacing={1}>
           {logo}
           {buttonGroup}
         </Stack>
-        {setup}
+        <SetupInfo setup={game.setup}/>
       </Stack>
     );
   }

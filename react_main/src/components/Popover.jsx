@@ -229,6 +229,21 @@ export function InfoRow({ title, content, multiRow = false }) {
   }
 }
 
+export function SetupInfo({ setup }) {
+  const siteInfo = useContext(SiteInfoContext);
+  const [content, setContent] = useState([]);
+
+  useEffect(() => {
+    setContent(parseSetupPopover(setup, siteInfo))
+  }, [setup.id]);
+
+  return (
+    <Stack direction="column">
+      {content}
+    </Stack>
+  );
+}
+
 export function parseSetupPopover(setup, siteInfo) {
   const result = [];
 
