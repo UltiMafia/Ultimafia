@@ -576,8 +576,13 @@ export function FullRoleList({ setup }) {
 
   const siteInfo = useContext(SiteInfoContext);
   const isPhoneDevice = useIsPhoneDevice();
+  
+  const multi =
+    (!setup.closed || setup.useRoleGroups) &&
+    !setup.useRoleGroups &&
+    setup.roles.length > 1;
 
-  const { rolesDividedByAlignment, events } = getRolesByAlignment(
+  const { rolesDividedByAlignment, events, eventsPerRoleset } = getRolesByAlignment(
     siteInfo,
     gameType,
     roles
@@ -587,6 +592,16 @@ export function FullRoleList({ setup }) {
   const rolesetAlignments = Object.keys(rolesDividedByAlignment).map((i) => {
     const alignmentKeys = Object.keys(rolesDividedByAlignment[i]);
     const gridItemSize = isPhoneDevice ? 12 : 12 / alignmentKeys.length;
+
+    // Determine which events to display
+    let eventsToDisplay = {};
+    if (multi) {
+      // For multi-setup, only show events for the currently selected roleset
+      eventsToDisplay = eventsPerRoleset[i] || {};
+    } else {
+      // For closed setups or single setups, show all events
+      eventsToDisplay = events || {};
+    }
 
     const alignmentRoles = ALIGNMENT_ORDER.map((alignment) => {
       if (rolesDividedByAlignment[i][alignment] === undefined) {
@@ -619,7 +634,6 @@ export function FullRoleList({ setup }) {
               flexWrap: "wrap",
               border: `4px solid ${alignmentColor}`,
               borderRadius: "4px",
-              boxSizing: "border-box",
               alignContent: "flex-start",
             }}
           >
@@ -642,29 +656,31 @@ export function FullRoleList({ setup }) {
             count={setup.roleGroupSizes[i]}
             showPopover={false}
             role={INDEXED_ROLE_GROUP_LABELS[i]}
-            roleGroup={(() => {
-              // Filter out events from role group display
-              const filteredRoleGroup = {};
-              for (let role in setup.roles[i]) {
-                const roleName = role.split(":")[0];
-                const roleObj = siteInfo.rolesRaw?.[gameType]?.[roleName];
-                if (roleObj && roleObj.alignment !== "Event") {
-                  filteredRoleGroup[role] = setup.roles[i][role];
-                }
-              }
-              return filteredRoleGroup;
-            })()}
+            roleGroup={setup.roles[i]}
             gameType={gameType}
           />
         )}
         <Grid container columns={12} spacing={1}>
           {alignmentRoles}
         </Grid>
+        {Object.keys(eventsToDisplay).length > 0 && (
+          <Box sx={{
+            width: "var(--role-icon-size)",
+            height: "var(--role-icon-size)",
+            ml: 0.5
+          }}>
+            <EventPool
+              key="event-pool"
+              events={eventsToDisplay}
+              gameType={setup.gameType}
+              otherRoles={setup.roles}
+            />
+          </Box>
+        )}
       </Stack>
     );
   });
 
-  // Events are now displayed in Event Pool, not here
   return (
     <Stack
       direction="column"
