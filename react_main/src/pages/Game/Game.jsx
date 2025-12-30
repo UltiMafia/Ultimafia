@@ -2679,18 +2679,10 @@ function RoleMarkerToggle({ playerId, setup, toggleRolePrediction }) {
 export function PlayerRows({ players, className = "" }) {
   const game = useContext(GameContext);
   const [activity, updateActivity] = useActivity();
-
-  useEffect(() => {
-    if (socket && socket.on) {
-      socket.on("typing", (info) => {
-        updateActivity({
-          type: "typing",
-          playerId: info.playerId,
-          meetingId: info.meetingId,
-        });
-      });
-    }
-  }, []);
+  const [visibleTyping, setVisibleTyping] = useState({});
+  const typingTimeoutsRef = useRef({});
+  const lastStateChangeTimeRef = useRef(0);
+  const activityUpdateTimeRef = useRef({});
 
   const {
     gameType,
@@ -2705,8 +2697,128 @@ export function PlayerRows({ players, className = "" }) {
     togglePlayerIsolation,
     isolatedPlayers,
   } = game;
+
+  const prevStateRef = useRef(history?.currentState);
+
+  // Track when the current state changes (not stateViewing, but the actual game state)
+  useEffect(() => {
+    if (!history || history.currentState === undefined) {
+      return;
+    }
+
+    const currentState = history.currentState;
+
+    if (prevStateRef.current !== currentState) {
+      lastStateChangeTimeRef.current = Date.now();
+      prevStateRef.current = currentState;
+      // Clear all visible typing indicators when state changes
+      setVisibleTyping({});
+      // Clear all pending timeouts
+      Object.values(typingTimeoutsRef.current).forEach((timeout) => {
+        clearTimeout(timeout);
+      });
+      typingTimeoutsRef.current = {};
+    }
+  }, [history?.currentState]);
+
+  useEffect(() => {
+    if (socket && socket.on) {
+      socket.on("typing", (info) => {
+        const now = Date.now();
+        activityUpdateTimeRef.current[info.playerId] = now;
+
+        updateActivity({
+          type: "typing",
+          playerId: info.playerId,
+          meetingId: info.meetingId,
+        });
+      });
+    }
+  }, [socket, updateActivity]);
+
+  // Handle typing indicator visibility - only delay if within 2s of state change
+  useEffect(() => {
+    const now = Date.now();
+    const stateChangeWindow = 2000; // 2 seconds
+    const lastStateChangeTime = lastStateChangeTimeRef.current;
+
+    // Only apply delay logic if we've had at least one state change
+    const isWithinStateChangeWindow =
+      lastStateChangeTime > 0 && now - lastStateChangeTime < stateChangeWindow;
+
+    // Clear existing timeouts and visible indicators for players that are no longer typing
+    Object.keys(typingTimeoutsRef.current).forEach((playerId) => {
+      if (!activity.typing[playerId]) {
+        clearTimeout(typingTimeoutsRef.current[playerId]);
+        delete typingTimeoutsRef.current[playerId];
+        setVisibleTyping((prev) => {
+          const next = { ...prev };
+          delete next[playerId];
+          return next;
+        });
+        delete activityUpdateTimeRef.current[playerId];
+      }
+    });
+
+    // Set visibility for players who are typing
+    Object.keys(activity.typing).forEach((playerId) => {
+      const meetingId = activity.typing[playerId];
+
+      // If player is already visible and still typing, keep them visible
+      if (visibleTyping[playerId] === meetingId) {
+        return;
+      }
+
+      // If there's already a timeout for this player, don't create a new one
+      if (typingTimeoutsRef.current[playerId]) {
+        return;
+      }
+
+      // Only delay if we're currently within 1.5 seconds of a state change
+      if (isWithinStateChangeWindow) {
+        // Calculate remaining delay needed
+        const timeSinceStateChange = now - lastStateChangeTime;
+        const remainingDelay = stateChangeWindow - timeSinceStateChange;
+
+        // Set timeout to show typing indicator after remaining delay
+        typingTimeoutsRef.current[playerId] = setTimeout(() => {
+          setVisibleTyping((prev) => ({
+            ...prev,
+            [playerId]: meetingId,
+          }));
+          delete typingTimeoutsRef.current[playerId];
+        }, remainingDelay);
+      } else {
+        // Show immediately if not within state change window
+        setVisibleTyping((prev) => ({
+          ...prev,
+          [playerId]: meetingId,
+        }));
+      }
+    });
+
+    // Cleanup function to clear all timeouts
+    return () => {
+      Object.values(typingTimeoutsRef.current).forEach((timeout) => {
+        clearTimeout(timeout);
+      });
+      typingTimeoutsRef.current = {};
+    };
+  }, [activity.typing, visibleTyping]);
+
   const stateViewingInfo = history.states[stateViewing];
   const selTab = stateViewingInfo && stateViewingInfo.selTab;
+
+  // Clear visible typing indicators when viewing state or meeting changes
+  useEffect(() => {
+    // Clear all visible typing indicators when viewing state changes
+    setVisibleTyping({});
+    // Clear all pending timeouts
+    Object.values(typingTimeoutsRef.current).forEach((timeout) => {
+      clearTimeout(timeout);
+    });
+    typingTimeoutsRef.current = {};
+  }, [stateViewing, selTab]);
 
   const isPlayerIsolated = (playerId) => isolatedPlayers.has(playerId);
 
@@ -2784,7 +2896,7 @@ export function PlayerRows({ players, className = "" }) {
           includeMiniprofile
           newTab
         />
-        {selTab && showBubbles && activity.typing[player.id] === selTab && (
+        {selTab && showBubbles && visibleTyping[player.id] === selTab && (
           <ReactLoading
             className={`typing-icon ${stateViewing != -1 ? "has-role" : ""}`}
             type="bubbles"

@@ -243,7 +243,7 @@ export const LoginDialog = ({ open, setOpen }) => {
       const auth = getAuth();
       // Sign in to get the user object (this will work even if email isn't verified)
       const userCred = await signInWithEmailAndPassword(auth, email, password);
-      
+
       // Check if email is already verified
       if (userCred.user.emailVerified) {
         snackbarHook.popSnackbar(
@@ -257,15 +257,15 @@ export const LoginDialog = ({ open, setOpen }) => {
 
       // Send verification email
       await sendEmailVerification(userCred.user);
-      
+
       snackbarHook.popSnackbar(
         "Verification email has been sent. Please check your inbox (and spam folder).",
         "success"
       );
-      
+
       // Sign out since they can't actually log in yet
       await signOut(auth);
-      
+
       setResendVerificationOn(false);
     } catch (err) {
       if (err.message.includes("(auth/user-not-found)")) {

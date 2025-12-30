@@ -51,8 +51,7 @@ async function progressCompetitive() {
           : (startDayOfWeek + 7 - endDayOfWeek) % 7;
       startDateNew = new Date(now);
       startDateNew.setUTCDate(now.getUTCDate() + daysUntilNextRound);
-    }
-    else {
+    } else {
       // For the very first round, set the start date to the start date of the season
       const seasonStartDate = new Date(currentSeason.startDate);
       startDateNew = new Date(seasonStartDate);

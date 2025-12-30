@@ -32,26 +32,56 @@ export function getSiteTheme(customPrimaryColor) {
   const currentMonth = new Date().getMonth();
   const isHalloween = currentMonth === 9;
 
-  const commonPalette = {
+  // Determine primary color based on custom color, Halloween, or default
+  const getPrimaryColor = (mode) => {
+    if (customPrimaryColor) {
+      return customPrimaryColor;
+    }
+    if (isHalloween) {
+      return "#FF8C00";
+    }
+    // Different colors for light and dark modes
+    return mode === "light" ? "#D50032" : "#EFBF04";
+  };
+
+  const getSecondaryColor = (mode) => {
+    if (customPrimaryColor) {
+      return customPrimaryColor;
+    }
+    if (isHalloween) {
+      return "#FF8C00";
+    }
+    // Different colors for light and dark modes that complement the primary
+    return mode === "light" ? "#B80028" : "#D4A704";
+  };
+
+  const lightPalette = {
     primary: {
-      main: customPrimaryColor
-        ? customPrimaryColor
-        : isHalloween
-        ? "#FF8C00"
-        : "#AC2222",
+      main: getPrimaryColor("light"),
     },
     secondary: {
-      main: customPrimaryColor
-        ? customPrimaryColor
-        : isHalloween
-        ? "#FF8C00"
-        : "#D42A2A",
+      main: getSecondaryColor("light"),
     },
     info: {
       main: "#DAA520",
     },
     text: {
-      main: "#F1F1F1", // Text color remains the same
+      main: "#F1F1F1",
+    },
+  };
+
+  const darkPalette = {
+    primary: {
+      main: getPrimaryColor("dark"),
+    },
+    secondary: {
+      main: getSecondaryColor("dark"),
+    },
+    info: {
+      main: "#DAA520",
+    },
+    text: {
+      main: "#F1F1F1",
     },
   };
 
@@ -143,7 +173,7 @@ export function getSiteTheme(customPrimaryColor) {
           },
         },
         palette: {
-          ...commonPalette,
+          ...lightPalette,
           activeAppBarText: {
             main: "var(--scheme-color-sec)",
           },
@@ -154,7 +184,7 @@ export function getSiteTheme(customPrimaryColor) {
           ...commonComponents,
         },
         palette: {
-          ...commonPalette,
+          ...darkPalette,
           activeAppBarText: {
             main: "var(--mui-palette-primary-main)",
           },
