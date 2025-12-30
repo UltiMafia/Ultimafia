@@ -29,7 +29,7 @@ module.exports = class CurseWithWord extends Card {
       Curse: {
         states: ["Night"],
         flags: ["voting"],
-        targets: { include: ["alive"], exclude: ["Mafia"] },
+        targets: { include: ["alive"], exclude: ["self"] },
         action: {
           role: this.role,
           labels: ["effect"],
