@@ -2705,9 +2705,9 @@ export function PlayerRows({ players, className = "" }) {
     if (!history || history.currentState === undefined) {
       return;
     }
-    
+
     const currentState = history.currentState;
-    
+
     if (prevStateRef.current !== currentState) {
       lastStateChangeTimeRef.current = Date.now();
       prevStateRef.current = currentState;
@@ -2726,7 +2726,7 @@ export function PlayerRows({ players, className = "" }) {
       socket.on("typing", (info) => {
         const now = Date.now();
         activityUpdateTimeRef.current[info.playerId] = now;
-        
+
         updateActivity({
           type: "typing",
           playerId: info.playerId,
@@ -2741,10 +2741,10 @@ export function PlayerRows({ players, className = "" }) {
     const now = Date.now();
     const stateChangeWindow = 2000; // 2 seconds
     const lastStateChangeTime = lastStateChangeTimeRef.current;
-    
+
     // Only apply delay logic if we've had at least one state change
-    const isWithinStateChangeWindow = lastStateChangeTime > 0 && 
-      (now - lastStateChangeTime) < stateChangeWindow;
+    const isWithinStateChangeWindow =
+      lastStateChangeTime > 0 && now - lastStateChangeTime < stateChangeWindow;
 
     // Clear existing timeouts and visible indicators for players that are no longer typing
     Object.keys(typingTimeoutsRef.current).forEach((playerId) => {
@@ -2763,7 +2763,7 @@ export function PlayerRows({ players, className = "" }) {
     // Set visibility for players who are typing
     Object.keys(activity.typing).forEach((playerId) => {
       const meetingId = activity.typing[playerId];
-      
+
       // If player is already visible and still typing, keep them visible
       if (visibleTyping[playerId] === meetingId) {
         return;
@@ -2779,7 +2779,7 @@ export function PlayerRows({ players, className = "" }) {
         // Calculate remaining delay needed
         const timeSinceStateChange = now - lastStateChangeTime;
         const remainingDelay = stateChangeWindow - timeSinceStateChange;
-        
+
         // Set timeout to show typing indicator after remaining delay
         typingTimeoutsRef.current[playerId] = setTimeout(() => {
           setVisibleTyping((prev) => ({
