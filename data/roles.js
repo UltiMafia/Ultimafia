@@ -903,6 +903,15 @@ const roleData = {
       ],
       nightOrder: [["Learn Role", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
+    Profiler: {
+      alignment: "Village",
+      category: "Investigative",
+      tags: ["Information", "Modifiers", "Visiting", "Basic"],
+      description: [
+        "Each night, can choose to visit one player and learn their modifiers.",
+      ],
+      nightOrder: [["Learn Modifiers", PRIORITY_INVESTIGATIVE_DEFAULT]],
+    },
     Empath: {
       alignment: "Village",
       category: "Investigative",
