@@ -908,7 +908,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Modifiers", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and learn their modifiers.",
+        "Each night, can choose to visit one player and learn what modifiers are on their role.",
       ],
       nightOrder: [["Learn Modifiers", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
