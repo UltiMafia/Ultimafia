@@ -123,7 +123,7 @@ const candleDef = `A Candle will tell its holder who visited them during the nig
 const knifeDef = `A Knife can be used during the day to make a selected player start "Bleeding".`;
 const bombDef = `If a Bomb's holder is killed, their killer is killed.`;
 const keyDef = `A Key can be used at night to block the actions of anyone visits them.`;
-const shieldDef = `A Shield can be used at night to redirect kills targeting the holder on to a random player of the same alignment, if possible.`;
+const shieldDef = `If possible, A Shield will protect its holder from one attack by redirecting it to another player whose alignment differs from the killer.`;
 const whiskeyDef = `Whiskey can be used during the day to block a selected player's actions next night.`;
 const crystalBallDef = `Crystal Ball allows its holder to select a player each night. If the holder dies, the last selected player will be revealed.`;
 const falconDef = `A Falcon can be used at night to learn who a selected player visits.`;
@@ -664,7 +664,7 @@ const roleData = {
         `Each night, can choose to visit one player and give them a Shield.`,
         shieldDef,
       ],
-      nightOrder: [["Give Shield", PRIORITY_ITEM_GIVER_DEFAULT]],
+      nightOrder: [["Give Shield", PRIORITY_ITEM_GIVER_EARLY]],
     },
     Mailman: {
       alignment: "Village",

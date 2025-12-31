@@ -36,7 +36,7 @@ module.exports = class ModifierInfo extends Information {
     let trueModifier = target.role.modifier;
     
     this.trueModifier = trueModifier;
-    this.mainInfo = role;
+    this.mainInfo = this.targetModifiers;
 
     //this.game.queueAlert(`:invest: Main ${this.mainInfo} Invest ${target.getRoleAppearance("investigate")} Real ${this.trueRole}.`);
   }
@@ -51,13 +51,13 @@ module.exports = class ModifierInfo extends Information {
     if(this.mainInfo == ""){
       return `You Learn that ${this.target.name} has no modifiers`;
     }
-    return `You Learn that ${this.target.name} has the following modifier(s): ${this.mainInfo}`;
+    return `You Learn that ${this.target.name}'s role has the following modifier(s): ${this.mainInfo}`;
     //return `You Learn that your Target's Role is ${this.mainInfo}`
   }
 
   getInfoSpecial() {
      if(this.mainInfo == ""){
-      return `You Learn that ${this.target.name} has no modifiers`;
+      return `You Learn that ${this.target.name}'s role has no modifiers`;
     }
     return `You Learn that ${this.target.name} has the following modifier(s): ${this.mainInfo}`;
   }
@@ -78,7 +78,7 @@ module.exports = class ModifierInfo extends Information {
   }
   isFavorable() {
     if (this.mainInfo == "")
-    ) {
+     {
       return true;
     } else {
       return false;

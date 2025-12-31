@@ -3,7 +3,7 @@ const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
 const { PRIORITY_MODIFY_ACTION } = require("../../const/Priority");
 
-module.exports = class Bouncy extends Card {
+module.exports = class BouncyOnce extends Card {
   constructor(role) {
     super(role);
 
@@ -17,6 +17,10 @@ module.exports = class Bouncy extends Card {
         labels: ["redirect"],
         role: role,
         run: function () {
+            if(role.hasBounced == true){
+                return;
+            }
+            role.hasBounced = true;
           var alive = this.game.players.filter(
             (p) =>
               p.alive &&
@@ -32,6 +36,7 @@ module.exports = class Bouncy extends Card {
               }
             }
             }
+          
         },
       },
     ];

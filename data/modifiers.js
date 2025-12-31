@@ -725,8 +725,18 @@ const modifierData = {
       internal: ["Bouncy"],
       tags: ["Redirection"],
       description:
-        "If possible, night kills will be redirected to another player of the same alignment.",
+        "If possible, night kills targeting this player will be redirected to another player who is not the killer.",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Intangible"],
+    },
+    Intangible: {
+      category: "Visits",
+      internal: ["BouncyOnce"],
+      tags: ["Redirection"],
+      description:
+        "If possible on thee first, night kills targeting this player will be redirected to another player who is not the killer.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Bouncy"],
     },
     Magnetic: {
       category: "Visits",
@@ -942,7 +952,7 @@ const modifierData = {
       description:
         "If this player visits a player of the opposite alignment, their secondary actions will be blocked.",
       eventDescription: "This Event will not apply to Evil players.",
-      incompatible: ["Disloyal"],
+      incompatible: ["Disloyal", "Equitable"],
     },
     Disloyal: {
       category: "Visits",
@@ -951,7 +961,7 @@ const modifierData = {
       description:
         "If this player visits a player of the same alignment, their secondary actions will be blocked.",
       eventDescription: "This Event will not apply to Non-Evil players.",
-      incompatible: ["Loyal"],
+      incompatible: ["Loyal", "Equitable"],
     },
     Complex: {
       category: "Visits",
@@ -1019,6 +1029,16 @@ const modifierData = {
         "If this player visits a player with a non-Banished role, their secondary actions will be blocked.",
       eventDescription: "This Event will not apply to non-Banished players.",
       incompatible: ["Refined"],
+    },
+
+    Equitable: {
+      category: "Visits",
+      internal: ["BlockIfVisitingSameAlignmentTwice"],
+      tags: ["Visits", "Block Self", "Alignments", "Equitable"],
+      description:
+        "If this player visits a player of the same alignment on a player they visited the previous night, their secondary actions will be blocked.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Loyal", "Disloyal"],
     },
 
     //Sub Role Guessing
