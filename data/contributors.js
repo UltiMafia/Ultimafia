@@ -279,6 +279,7 @@ const artContributors = {
       "Time Loop:vivid",
       "Mutation:vivid",
       "Underboss:vivid",
+      "Profiler:vivid",
       //Skins
     ],
   },

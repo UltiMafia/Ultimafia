@@ -926,6 +926,10 @@
   background-image: url("/src/images/roles/village/gatekeeper-vivid.png");
 }
 
+.role-icon-vivid-Mafia-Profiler {
+  background-image: url("/src/images/roles/village/profiler-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Groundskeeper {
   background-image: url("/src/images/roles/village/groundskeeper-vivid.png");
 }
@@ -2323,6 +2327,10 @@
   background-image: url("/src/images/modifiers/astral.png");
 }
 
+.modifier-Mafia-Intangible {
+  background-image: url("/src/images/modifiers/astral.png");
+}
+
 .modifier-Mafia-Austere {
   background-image: url("/src/images/modifiers/austere.png");
 }
@@ -2487,6 +2495,10 @@
   background-image: url("/src/images/modifiers/even.png");
 }
 
+.modifier-Mafia-Equitable {
+  background-image: url("/src/images/modifiers/even.png");
+}
+
 .modifier-Mafia-Exclusive {
   background-image: url("/src/images/modifiers/exclusive.png");
 }
@@ -2547,6 +2559,10 @@
   background-image: url("/src/images/modifiers/hylic.png");
 }
 
+.modifier-Mafia-Immolated {
+  background-image: url("/src/images/modifiers/immolated.png");
+}
+
 .modifier-Mafia-Inclusive {
   background-image: url("/src/images/modifiers/inclusive.png");
 }
@@ -2597,6 +2613,10 @@
 
 .modifier-Mafia-Leading {
   background-image: url("/src/images/modifiers/leading.png");
+}
+
+.modifier-Mafia-Literal {
+  background-image: url("/src/images/modifiers/literal.png");
 }
 
 .modifier-Mafia-Lone {
@@ -2792,6 +2812,10 @@
 }
 
 .modifier-Mafia-Steeled {
+  background-image: url("/src/images/modifiers/sacrificial-steeled.png");
+}
+
+.modifier-Mafia-Sharp {
   background-image: url("/src/images/modifiers/sacrificial-steeled.png");
 }
 
