@@ -14,7 +14,7 @@ module.exports = class Armor extends Item {
       immune: function (action, player) {
         //let killer = this.getVisitors(this.target, "kill");
 
-        if(action.HasBeenSavedByArmor == true){
+        if (action.HasBeenSavedByArmor == true) {
           return;
         }
 
@@ -39,10 +39,10 @@ module.exports = class Armor extends Item {
           this.holder.queueAlert(
             ":armor: Shattering to pieces, your armor saves your life!"
           );
-          action.HasBeenSavedByArmor = true
+          action.HasBeenSavedByArmor = true;
 
-            this.removeEffectsIfNeeded();
-            this.drop();
+          this.removeEffectsIfNeeded();
+          this.drop();
         }
       },
     };

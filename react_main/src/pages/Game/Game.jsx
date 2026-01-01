@@ -1122,16 +1122,20 @@ export function TopBar() {
   } else {
     // MOBILE ================================================================
     return (
-      <Stack direction="column" spacing={1} sx={{
-        p: 1,
-        flex: "1 1",
-        overflowY: "scroll",
-      }}>
+      <Stack
+        direction="column"
+        spacing={1}
+        sx={{
+          p: 1,
+          flex: "1 1",
+          overflowY: "scroll",
+        }}
+      >
         <Stack direction="row" spacing={1}>
           {logo}
           {buttonGroup}
         </Stack>
-        <SetupInfo setup={game.setup}/>
+        <SetupInfo setup={game.setup} />
       </Stack>
     );
   }

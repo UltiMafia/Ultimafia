@@ -24,17 +24,17 @@ module.exports = class ModifierInfo extends Information {
       target = Random.randArrayVal(this.game.alivePlayers());
     }
     this.target = target;
-    if(this.target.getRoleAppearance(this.investType).split(" (")[1]){
+    if (this.target.getRoleAppearance(this.investType).split(" (")[1]) {
       this.targetModifiers = this.target
-      .getRoleAppearance(this.investType)
-      .split(" (")[1].replace(")", "");
-    }
-    else{
+        .getRoleAppearance(this.investType)
+        .split(" (")[1]
+        .replace(")", "");
+    } else {
       this.targetModifiers = "";
     }
 
     let trueModifier = target.role.modifier;
-    
+
     this.trueModifier = trueModifier;
     this.mainInfo = this.targetModifiers;
 
@@ -48,7 +48,7 @@ module.exports = class ModifierInfo extends Information {
 
   getInfoFormated() {
     super.getInfoRaw();
-    if(this.mainInfo == ""){
+    if (this.mainInfo == "") {
       return `You Learn that ${this.target.name} has no modifiers`;
     }
     return `You Learn that ${this.target.name}'s role has the following modifier(s): ${this.mainInfo}`;
@@ -56,7 +56,7 @@ module.exports = class ModifierInfo extends Information {
   }
 
   getInfoSpecial() {
-     if(this.mainInfo == ""){
+    if (this.mainInfo == "") {
       return `You Learn that ${this.target.name}'s role has no modifiers`;
     }
     return `You Learn that ${this.target.name} has the following modifier(s): ${this.mainInfo}`;
@@ -77,8 +77,7 @@ module.exports = class ModifierInfo extends Information {
     }
   }
   isFavorable() {
-    if (this.mainInfo == "")
-     {
+    if (this.mainInfo == "") {
       return true;
     } else {
       return false;
@@ -96,13 +95,19 @@ module.exports = class ModifierInfo extends Information {
     this.mainInfo = this.trueModifier;
   }
   makeFalse() {
-    let roleOptions = this.role.getAllRoles().filter((r) => r.split(":")[1] && r.split(":")[1] != this.mainInfo && this.game.getRoleTags(r).includes("No Investigate"));
+    let roleOptions = this.role
+      .getAllRoles()
+      .filter(
+        (r) =>
+          r.split(":")[1] &&
+          r.split(":")[1] != this.mainInfo &&
+          this.game.getRoleTags(r).includes("No Investigate")
+      );
 
-    if(roleOptions.length <= 0 && this.trueModifier != ""){
+    if (roleOptions.length <= 0 && this.trueModifier != "") {
       this.mainInfo = "";
       return;
-    }
-    else if(roleOptions.length <= 0 && this.trueModifier == ""){
+    } else if (roleOptions.length <= 0 && this.trueModifier == "") {
       this.mainInfo = "Loyal";
       return;
     }
@@ -113,9 +118,16 @@ module.exports = class ModifierInfo extends Information {
     this.mainInfo = "";
   }
   makeUnfavorable() {
-    let roleOptions = this.role.getAllRoles().filter((r) => r.split(":")[1] && r.split(":")[1] != this.mainInfo && this.game.getRoleTags(r).includes("No Investigate"));
+    let roleOptions = this.role
+      .getAllRoles()
+      .filter(
+        (r) =>
+          r.split(":")[1] &&
+          r.split(":")[1] != this.mainInfo &&
+          this.game.getRoleTags(r).includes("No Investigate")
+      );
 
-  if(roleOptions.length <= 0){
+    if (roleOptions.length <= 0) {
       this.mainInfo = "Loyal";
       return;
     }

@@ -333,8 +333,7 @@ const modifierData = {
       category: "Other",
       internal: ["ConvertKillToBleed"],
       tags: ["Bleeding", "Effect"],
-      description:
-      `If killed, this role will survive and start "Bleeding". ${bleedingDef}`,
+      description: `If killed, this role will survive and start "Bleeding". ${bleedingDef}`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Gunslinging: {
@@ -744,7 +743,7 @@ const modifierData = {
       internal: ["BouncyOnce"],
       tags: ["Redirection"],
       description:
-        "If possible on thee first, night kills targeting this player will be redirected to another player who is not the killer.",
+        "If possible on the first, night kills targeting this player will be redirected to another player who is not the killer.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Bouncy"],
     },

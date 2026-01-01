@@ -18,20 +18,20 @@ module.exports = class Bouncy extends Card {
         role: role,
         run: function () {
           var alive = this.game.players.filter(
-            (p) =>
-              p.alive &&
-              p != this.actor
+            (p) => p.alive && p != this.actor
           );
-        
-            for (const action of this.game.actions[0]) {
-                alive = this.game.players.filter((p) => p.alive && p != this.actor && !action.actors.includes(p));
-                if (alive.length > 0) {
+
+          for (const action of this.game.actions[0]) {
+            alive = this.game.players.filter(
+              (p) => p.alive && p != this.actor && !action.actors.includes(p)
+            );
+            if (alive.length > 0) {
               var randomTarget = Random.randArrayVal(alive);
               if (action.target === this.actor && action.hasLabel("kill")) {
                 action.target = randomTarget;
               }
             }
-            }
+          }
         },
       },
     ];

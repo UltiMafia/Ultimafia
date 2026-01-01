@@ -21,7 +21,7 @@ module.exports = class LearnModifiers extends Card {
               this.game,
               this.target,
               null,
-              this.role,
+              this.role
             );
             info.processInfo();
             var alert = `:invest: ${info.getInfoFormated()}.`;
