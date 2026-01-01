@@ -743,7 +743,7 @@ const modifierData = {
       internal: ["BouncyOnce"],
       tags: ["Redirection"],
       description:
-        "If possible on thee first, night kills targeting this player will be redirected to another player who is not the killer.",
+        "If possible on the first, night kills targeting this player will be redirected to another player who is not the killer.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Bouncy"],
     },
