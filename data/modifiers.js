@@ -1,6 +1,7 @@
 const leakyDef = `Players who are "Leaky" will have all whispers involving them leak.`;
 const blindDef = `Players who are "Blind" will see all speech as anonymous and cannot see votes.`;
 const cluelessDef = `Players who are "Clueless" will see messages as being sent from random players.`;
+const bleedingDef = `Players who are "Bleeding" will die during the next night.`;
 
 const modifierData = {
   Mafia: {
@@ -331,9 +332,9 @@ const modifierData = {
     Hemophilic: {
       category: "Other",
       internal: ["ConvertKillToBleed"],
-      tags: ["Bleeding"],
+      tags: ["Bleeding", "Effect"],
       description:
-        "If this player is shot or targeted for a kill, will bleed and then die in one day.",
+      `If killed, this role will survive and start "Bleeding". ${bleedingDef}`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Gunslinging: {
@@ -669,12 +670,21 @@ const modifierData = {
       description:
         "When visiting, their target will be protected from night kills.",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Bloodthirsty"],
     },
     Bloodthirsty: {
       category: "Visits",
       internal: ["ModifierBloodthirsty"],
       tags: ["Visits", "Killing"],
       description: "When visiting, their target will be killed.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Medical"],
+    },
+    Sharp: {
+      category: "Visits",
+      internal: ["CauseBleedingToTargets"],
+      tags: ["Visits", "Bleeding", "Effect"],
+      description: `When visiting, their target will start "Bleeding". ${bleedingDef}`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
@@ -864,7 +874,7 @@ const modifierData = {
       tags: ["Dead", "Graveyard", "Transcendent", "Graveyard Participation"],
       description: "Can perform secondary actions while either alive or dead.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Restless", "Vengeful"],
+      incompatible: ["Restless", "Vengeful", "Immolated"],
     },
     Restless: {
       category: "Visits",
@@ -872,7 +882,7 @@ const modifierData = {
       tags: ["Dead", "Graveyard", "Restless", "Graveyard Participation"],
       description: "Can only perform secondary actions while dead.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Transcendent", "Vengeful"],
+      incompatible: ["Transcendent", "Vengeful", "Immolated"],
     },
     Vengeful: {
       category: "Visits",
@@ -880,7 +890,15 @@ const modifierData = {
       tags: ["Graveyard", "Vengeful", "Graveyard Participation"],
       description: "Can perform secondary actions after being killed at night",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Transcendent", "Restless"],
+      incompatible: ["Transcendent", "Restless", "Immolated"],
+    },
+    Immolated: {
+      category: "Visits",
+      internal: ["ActAfterCondemned"],
+      tags: ["Graveyard", "Vengeful", "Graveyard Participation"],
+      description: "Can perform secondary actions after being condemned.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Transcendent", "Restless", "Vengeful"],
     },
     //Death Visit
     Vain: {
