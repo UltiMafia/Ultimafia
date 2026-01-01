@@ -151,7 +151,7 @@ router.get("/search", async function (req, res) {
 
     const search = {};
     search.gameType = gameType;
-    search.creator = { "$exists": true };
+    search.creator = { $exists: true };
 
     if (minSlots || maxSlots) {
       search.total = {};

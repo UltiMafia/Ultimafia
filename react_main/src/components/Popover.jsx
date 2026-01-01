@@ -234,14 +234,10 @@ export function SetupInfo({ setup }) {
   const [content, setContent] = useState([]);
 
   useEffect(() => {
-    setContent(parseSetupPopover(setup, siteInfo))
+    setContent(parseSetupPopover(setup, siteInfo));
   }, [setup.id]);
 
-  return (
-    <Stack direction="column">
-      {content}
-    </Stack>
-  );
+  return <Stack direction="column">{content}</Stack>;
 }
 
 export function parseSetupPopover(setup, siteInfo) {

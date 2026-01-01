@@ -26,32 +26,32 @@ module.exports = class Nonconsecutive extends Card {
         labels: ["block", "hidden", "absolute"],
         role: role,
         run: function () {
-            let visits = [];
-            let actionList = this.game.actions[0];
-            for (let action of actionList) {
-              let toCheck1 = action.target;
-              if (!Array.isArray(action.target)) {
-                toCheck1 = [action.target];
-              }
-
-              if (
-                action.actors.indexOf(this.target) != -1 &&
-                !action.hasLabel("hidden") &&
-                action.target &&
-                toCheck1[0] instanceof Player
-              ) {
-                visits.push(...toCheck1);
-              }
+          let visits = [];
+          let actionList = this.game.actions[0];
+          for (let action of actionList) {
+            let toCheck1 = action.target;
+            if (!Array.isArray(action.target)) {
+              toCheck1 = [action.target];
             }
 
-            this.target.role.data.LimitedLastNightVisits = visits;
-            if (this.target.role.data.LimitedAllVisits == null) {
-              this.target.role.data.LimitedAllVisits = visits;
-            } else {
-              this.target.role.data.LimitedAllVisits =
-                this.target.role.data.LimitedAllVisits.concat(visits);
+            if (
+              action.actors.indexOf(this.target) != -1 &&
+              !action.hasLabel("hidden") &&
+              action.target &&
+              toCheck1[0] instanceof Player
+            ) {
+              visits.push(...toCheck1);
             }
-          },
+          }
+
+          this.target.role.data.LimitedLastNightVisits = visits;
+          if (this.target.role.data.LimitedAllVisits == null) {
+            this.target.role.data.LimitedAllVisits = visits;
+          } else {
+            this.target.role.data.LimitedAllVisits =
+              this.target.role.data.LimitedAllVisits.concat(visits);
+          }
+        },
       },
     ];
 

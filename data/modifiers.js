@@ -333,8 +333,7 @@ const modifierData = {
       category: "Other",
       internal: ["ConvertKillToBleed"],
       tags: ["Bleeding", "Effect"],
-      description:
-      `If killed, this role will survive and start "Bleeding". ${bleedingDef}`,
+      description: `If killed, this role will survive and start "Bleeding". ${bleedingDef}`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Gunslinging: {

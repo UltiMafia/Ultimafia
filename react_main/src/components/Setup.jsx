@@ -576,17 +576,14 @@ export function FullRoleList({ setup }) {
 
   const siteInfo = useContext(SiteInfoContext);
   const isPhoneDevice = useIsPhoneDevice();
-  
+
   const multi =
     (!setup.closed || setup.useRoleGroups) &&
     !setup.useRoleGroups &&
     setup.roles.length > 1;
 
-  const { rolesDividedByAlignment, events, eventsPerRoleset } = getRolesByAlignment(
-    siteInfo,
-    gameType,
-    roles
-  );
+  const { rolesDividedByAlignment, events, eventsPerRoleset } =
+    getRolesByAlignment(siteInfo, gameType, roles);
 
   // holy fricken FREAK this is a 3-dimensional effort
   const rolesetAlignments = Object.keys(rolesDividedByAlignment).map((i) => {
@@ -664,11 +661,13 @@ export function FullRoleList({ setup }) {
           {alignmentRoles}
         </Grid>
         {Object.keys(eventsToDisplay).length > 0 && (
-          <Box sx={{
-            width: "var(--role-icon-size)",
-            height: "var(--role-icon-size)",
-            ml: 0.5
-          }}>
+          <Box
+            sx={{
+              width: "var(--role-icon-size)",
+              height: "var(--role-icon-size)",
+              ml: 0.5,
+            }}
+          >
             <EventPool
               key="event-pool"
               events={eventsToDisplay}

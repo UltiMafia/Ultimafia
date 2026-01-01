@@ -21,7 +21,7 @@ module.exports = class ActAfterCondemned extends Card {
         if (player != this.player) {
           return;
         }
-        if (deathType != "condemn"){
+        if (deathType != "condemn") {
           return;
         }
         this.HasBeenCondemned = true;

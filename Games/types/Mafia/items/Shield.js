@@ -13,10 +13,10 @@ module.exports = class Shield extends Item {
     this.magicCult = options?.magicCult;
 
     this.listeners = {
-      state: function (stateInfo){
+      state: function (stateInfo) {
         if (stateInfo.name.match(/Night/)) {
-          if(!this.broken){
-          this.applyEffectsIfNeeded();
+          if (!this.broken) {
+            this.applyEffectsIfNeeded();
           }
         }
         if (stateInfo.name.match(/Day/)) {
@@ -26,7 +26,10 @@ module.exports = class Shield extends Item {
       immune: function (action, player) {
         //let killer = this.getVisitors(this.target, "kill");
 
-        if(action.HasBeenSavedByArmor == true || action.HasBeenSavedByShield == true){
+        if (
+          action.HasBeenSavedByArmor == true ||
+          action.HasBeenSavedByShield == true
+        ) {
           return;
         }
 
@@ -49,26 +52,27 @@ module.exports = class Shield extends Item {
           }
 
           let temp = new Action({
-              actor: action.actor,
-              target: null,
-              game: this.game,
-              labels: ["kill"],
-              run: function () {
-                if (this.dominates()) this.target.kill("basic", this.actor);
-              },
-            });
-          action.HasBeenSavedByShield = true
-          let alive = this.game.players.filter((p) => p.alive && p != this.holder && !action.actors.includes(p));
+            actor: action.actor,
+            target: null,
+            game: this.game,
+            labels: ["kill"],
+            run: function () {
+              if (this.dominates()) this.target.kill("basic", this.actor);
+            },
+          });
+          action.HasBeenSavedByShield = true;
+          let alive = this.game.players.filter(
+            (p) => p.alive && p != this.holder && !action.actors.includes(p)
+          );
           if (alive.length > 0) {
-              temp.target = Random.randArrayVal(alive);
-            }
-            else{
-              temp.target = this.holder;
-            }
+            temp.target = Random.randArrayVal(alive);
+          } else {
+            temp.target = this.holder;
+          }
 
-            this.removeEffectsIfNeeded();
-            this.drop();
-            temp.do();
+          this.removeEffectsIfNeeded();
+          this.drop();
+          temp.do();
         }
       },
     };
