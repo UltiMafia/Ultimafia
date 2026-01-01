@@ -9,7 +9,6 @@ module.exports = class WarDemon extends Role {
       "VillageCore",
       "WinWithFaction",
       "MeetingFaction",
-      "Demonic",
       "NightKiller",
       "TrickedWares",
       "DefendAndSnatchGun",

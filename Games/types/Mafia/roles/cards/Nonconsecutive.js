@@ -15,22 +15,17 @@ module.exports = class Nonconsecutive extends Card {
   constructor(role) {
     super(role);
 
-    this.listeners = {
-      state: function (stateInfo) {
-        if (!stateInfo.name.match(/Night/)) {
-          return;
-        }
-
-        var action = new Action({
-          actor: null,
-          target: this.player,
-          game: this.player.game,
-          priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 20,
-          labels: ["block", "hidden", "absolute"],
-          run: function () {
-            if (!this.target.hasAbility(["Modifier", "WhenDead", "Blocking"])) {
-              return;
-            }
+    this.passiveActions = [
+      {
+        ability: ["Modifier", "WhenDead"],
+        state: "Night",
+        actor: null,
+        target: role.player,
+        game: role.player.game,
+        priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 20,
+        labels: ["block", "hidden", "absolute"],
+        role: role,
+        run: function () {
             let visits = [];
             let actionList = this.game.actions[0];
             for (let action of actionList) {
@@ -57,10 +52,10 @@ module.exports = class Nonconsecutive extends Card {
                 this.target.role.data.LimitedAllVisits.concat(visits);
             }
           },
-        });
-
-        this.game.queueAction(action);
       },
+    ];
+
+    this.listeners = {
       meetingsMade: function () {
         this.player.getMeetings().forEach((meeting) => {
           if (meeting.name == "Village") {

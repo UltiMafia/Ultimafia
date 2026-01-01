@@ -29,6 +29,12 @@ module.exports = class Meteor extends Effect {
         this.game.MeteorLanded = true;
       },
       handleWinBlockers: function (winners) {
+        if (
+          this.game.getStateName() == "Night" ||
+          this.game.getStateName() == "Dawn"
+        ) {
+          return;
+        }
         let AllPlayers = this.game.players.filter((p) => p);
         for (let y = 0; y < AllPlayers.length; y++) {
           if (

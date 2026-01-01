@@ -14,6 +14,10 @@ module.exports = class Armor extends Item {
       immune: function (action, player) {
         //let killer = this.getVisitors(this.target, "kill");
 
+        if(action.HasBeenSavedByArmor == true){
+          return;
+        }
+
         if (player == this.holder && action.hasLabel("kill")) {
           if (this.holder.tempImmunity["kill"]) return;
 
@@ -32,17 +36,13 @@ module.exports = class Armor extends Item {
             action.actor.giveEffect("Insanity");
           }
 
-          this.uses--;
           this.holder.queueAlert(
             ":armor: Shattering to pieces, your armor saves your life!"
           );
+          action.HasBeenSavedByArmor = true
 
-          if (this.uses <= 0) {
             this.removeEffectsIfNeeded();
-            if (this.brokenUses <= 0) {
-              this.drop();
-            }
-          }
+            this.drop();
         }
       },
     };
@@ -50,12 +50,8 @@ module.exports = class Armor extends Item {
 
   set broken(broken) {
     if (broken) {
-      this.brokenUses += this.uses;
-      this.uses = 0;
       this.removeEffectsIfNeeded();
     } else {
-      this.uses += this.brokenUses;
-      this.brokenUses = 0;
       this.applyEffectsIfNeeded();
     }
   }
@@ -68,7 +64,7 @@ module.exports = class Armor extends Item {
   }
 
   applyEffectsIfNeeded() {
-    if (this.uses > 0 && this.effects.length == 0) {
+    if (this.effects.length == 0) {
       this.effects = ["Kill Immune"];
       this.applyEffects();
     }
@@ -76,15 +72,17 @@ module.exports = class Armor extends Item {
 
   hold(player) {
     for (let item of player.items) {
+      /*
       if (item.name == "Armor") {
         item.uses += this.uses;
         item.brokenUses += this.brokenUses;
         item.applyEffectsIfNeeded();
         return;
       }
+      */
     }
-
     super.hold(player);
+    this.applyEffectsIfNeeded();
     this.broken = this.optionBroken;
   }
 };
