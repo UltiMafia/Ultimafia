@@ -5177,7 +5177,7 @@ const roleData = {
         "Village cannot win until a Host stops hosting.",
         "Can only die if they choose to stop hosting.",
         // TODO
-        "If in the game, whispers will not leak.",
+        "Whispers to or from a Host will not leak.",
         "Cannot be added to ranked or competitive games",
       ],
     },
