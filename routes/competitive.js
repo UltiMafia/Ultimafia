@@ -76,6 +76,8 @@ router.post("/create", async function (req, res) {
       Random.randomizeArray(setupIds);
     }
 
+    // Repeat setups as many times as necessary to meet the numRounds*setupsPerRound count
+    // Then slice them up into chunks of setupsPerRound
     let setupOrder = [];
     for (let roundNumber = 0; roundNumber < numRounds; roundNumber++) {
       let roundSetups = [];
@@ -117,16 +119,14 @@ router.post("/create", async function (req, res) {
 router.get("/seasons", async function (req, res) {
   try {
     const seasons = await models.CompetitiveSeason.find({})
-      .select("-_id -__v")
+      .select("-_id -__v -setups")
       .populate([
         {
-          path: "setups",
-        },
-        {
           path: "rounds",
+          select: "-_id -__v"
         },
       ])
-      .sort({ number: -1 })
+      .sort({ number: 1 })
       .lean();
 
     res.json(seasons);
@@ -183,10 +183,11 @@ router.get("/season/:seasonNumber", async function (req, res) {
   }
 });
 
-// Get the current round info
-router.get("/currentRound", async function (req, res) {
+router.get("/roundInfo", async function (req, res) {
   try {
-    res.json(await redis.getCurrentCompRoundInfo());
+    const seasonNumber = req.query.seasonNumber ? Number.parseInt(req.query.seasonNumber) : null;
+    const roundNumber = req.query.roundNumber ? Number.parseInt(req.query.roundNumber) : null;
+    res.json(await redis.getCompRoundInfo(seasonNumber, roundNumber));
   } catch (e) {
     logger.error(e);
     res.status(500);

@@ -569,7 +569,7 @@ router.post("/host", async function (req, res) {
     }
 
     if (req.body.competitive) {
-      const roundInfo = await redis.getCurrentCompRoundInfo();
+      const roundInfo = await redis.getCompRoundInfo();
       let setupAllowed = false;
       for (const allowedSetup of roundInfo.allowedSetups) {
         if (setup.id === allowedSetup.id) {

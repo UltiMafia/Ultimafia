@@ -37,6 +37,11 @@ export default function Calendar(props) {
 
   const [events, updateEvents] = useReducer((state, action) => {
     switch (action.type) {
+      case "reset": {
+        return update(state, {
+          $set: [],
+        });
+      }
       case "add": {
         return update(state, {
           $push: [action.event]
@@ -53,17 +58,27 @@ export default function Calendar(props) {
 
     axios.get(`/api/competitive/seasons`).then((response => {
       const seasons = response.data;
+      const now = Date.now();
+      updateEvents({ type: "reset" });
       for (const season of seasons) {
         for (const round of season.rounds) {
-          console.log(`Rendering season ${season.number} round ${round.number}`);
+          let endDate = null;
+          if (round.dateCompleted) {
+            endDate = new Date(round.dateCompleted);
+          }
+          else {
+            const offsetDate = now > round.startDate ? now : new Date(round.startDate);
+            endDate = new Date(offsetDate);
+            endDate.setDate(offsetDate.getDate() + round.remainingOpenDays);
+          }
           updateEvents({
             type: "add",
             event: {
               title: `Competitive Season ${season.number} Round ${round.number}`,
               start: round.startDate,
-              end: round.endDate,
+              end: endDate,
             },
-          })
+          });
         }
       }
     }));

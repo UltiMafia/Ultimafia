@@ -10,6 +10,10 @@ import {
   Tab,
   Box,
   Tooltip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { NameWithAvatar } from "../User/User";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
@@ -76,7 +80,7 @@ function Overview({ roundInfo }) {
               <Typography sx={{
                 lineHeight: "1",
               }}>
-                {"0"}
+                {seasonStanding.tiebreakerPoints}
               </Typography>
               <Tooltip title="fortune">
                 <img
@@ -94,7 +98,7 @@ function Overview({ roundInfo }) {
     <Grid2 size={1}>
       <Stack direction="column" spacing={1} divider={<Divider orientation="horizontal" flexItem />}>
         <Typography variant="h3" gutterBottom>
-          Round {roundInfo.currentRound.number} top 10 players
+          Round {roundInfo.round.number} top 10 players
         </Typography>
         {roundInfo.standings.map((roundStanding) => {
           const userId = roundStanding.userId;
@@ -232,39 +236,119 @@ function GameHistory({ roundInfo }) {
   )
 }
 
-export default function Competitive() {
-  const [tab, setTab] = useState("overview");
-  const [currentRoundInfo, setCurrentRoundInfo] = useState(null);
-  const isPhoneDevice = useIsPhoneDevice();
+function SeasonRoundSelect({
+  seasonNumber,
+  setSeasonNumber,
+  roundNumber,
+  setRoundNumber,
+}) {
+  const [seasonList, setSeasonList] = useState([]);
 
   useEffect(() => {
     document.title = "Competitive | UltiMafia";
 
     axios
-      .get(`/api/competitive/currentRound`)
+      .get(`/api/competitive/seasons`)
+      .then((response) => {
+        setSeasonList(response.data);
+      });
+  }, []);
+
+  let roundList = null;
+  if (seasonNumber !== null && seasonList[seasonNumber-1]) {
+    roundList = seasonList[seasonNumber-1].rounds;
+  }
+
+  return (
+    <Stack direction="row" spacing={1}>
+      <FormControl fullWidth>
+        <InputLabel id="season-select-label">Season</InputLabel>
+        <Select
+          labelId="season-select-label"
+          id="season-select"
+          value={seasonNumber ? seasonNumber : "null"}
+          label="Season"
+          onChange={(e) => setSeasonNumber(e.target.value)}
+        >
+          <MenuItem value={"null"}>Latest</MenuItem>
+          {seasonList.map((season) => <MenuItem value={season.number} key={season.number}>{season.number}</MenuItem>)}
+        </Select>
+      </FormControl>
+      {roundList && (<FormControl fullWidth>
+        <InputLabel id="round-select-label">Round</InputLabel>
+        <Select
+          labelId="round-select-label"
+          id="round-select"
+          value={roundNumber ? roundNumber : "null"}
+          label="Round"
+          onChange={(e) => setRoundNumber(e.target.value)}
+        >
+          <MenuItem value={"null"}>Latest</MenuItem>
+          {roundList.map((round) => <MenuItem value={round.number} key={round.number}>{round.number}</MenuItem>)}
+        </Select>
+      </FormControl>)}
+    </Stack>
+  );
+}
+
+export default function Competitive() {
+  const [tab, setTab] = useState("overview");
+  const [seasonNumber, setSeasonNumber] = useState(null);
+  const [roundNumber, setRoundNumber] = useState(null);
+  const [currentRoundInfo, setCurrentRoundInfo] = useState(null);
+  const isPhoneDevice = useIsPhoneDevice();
+
+  useEffect(() => {
+    axios
+      .get(`/api/competitive/roundInfo`, {
+        params: {
+          seasonNumber: seasonNumber,
+          roundNumber: roundNumber,
+        }
+      })
       .then((response) => {
         setCurrentRoundInfo(response.data);
       });
-  }, []);
+  }, [seasonNumber, roundNumber]);
 
   if (!currentRoundInfo) {
     return <NewLoading />
   }
 
-  const roundHasStarted = currentRoundInfo.currentRound && currentRoundInfo.currentRound.currentDay > 0;
+  const roundHasStarted = currentRoundInfo.round && currentRoundInfo.round.currentDay > 0 ;
+  const roundIsClosed = currentRoundInfo.round && currentRoundInfo.round.completed;
+  const roundIsAccounted = currentRoundInfo.round && currentRoundInfo.round.accounted;
 
   let displayTitle = null;
   let caption = null;
   if (currentRoundInfo.seasonNumber) {
-    if (roundHasStarted) {
-      const date = new Date(currentRoundInfo.currentRound.endDate);
-      displayTitle = `Season ${currentRoundInfo.seasonNumber} Round ${currentRoundInfo.currentRound.number} Day ${currentRoundInfo.currentRound.currentDay}`;
-      caption = `Current round closes on ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    if (currentRoundInfo.round) {
+      if (currentRoundInfo.round.paused) {
+        displayTitle = `Season ${currentRoundInfo.seasonNumber} - Round ${currentRoundInfo.round.number} - Paused`;
+      }
+      else if (currentRoundInfo.nextEvent) {
+        const date = new Date(currentRoundInfo.nextEvent.date);
+        if (currentRoundInfo.nextEvent.type === "start") {
+          displayTitle = `Season ${currentRoundInfo.seasonNumber} - Round ${currentRoundInfo.round.number}`;
+          caption = `Next round starts on ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+        }
+        else if (currentRoundInfo.nextEvent.type === "complete") {
+          displayTitle = `Season ${currentRoundInfo.seasonNumber} - Round ${currentRoundInfo.round.number} - Day ${currentRoundInfo.round.currentDay}`;
+          caption = `Current round closes on ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+        }
+        else if (currentRoundInfo.nextEvent.type === "account") {
+          displayTitle = `Season ${currentRoundInfo.seasonNumber} - Round ${currentRoundInfo.round.number} - Closed`;
+          caption = `Round standings confirm on ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+        }
+      }
+      else {
+        const date = new Date(currentRoundInfo.round.dateCompleted);
+        displayTitle = `Season ${currentRoundInfo.seasonNumber} - Round ${currentRoundInfo.round.number} - Closed`;
+        caption = `Round completed on ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+      }
     }
     else {
-      const date = new Date(currentRoundInfo.currentRound.startDate);
       displayTitle = `Season ${currentRoundInfo.seasonNumber}`;
-      caption = `Next round starts on ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
     }
   }
   else {
@@ -273,17 +357,34 @@ export default function Competitive() {
 
   return (
     <Stack direction="column" spacing={1}>
-      <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1} sx={{
+      <Grid2 container columns={isPhoneDevice ? 1 : 3} spacing={1} sx={{
         alignItems: "center",
       }}>
-        <Typography variant="h2">
-          {displayTitle}
-        </Typography>
-        {caption && (<Typography variant="caption" sx={{ marginLeft: isPhoneDevice ? undefined : "auto !important" }}>
-          {caption}
-        </Typography>)}
-      </Stack>
-      {currentRoundInfo.currentRound && (
+        <Grid2 size={1}>
+          <Typography variant="h2">
+            {displayTitle}
+          </Typography>
+        </Grid2>
+        <Grid2 size={1}>
+          <SeasonRoundSelect
+            seasonNumber={seasonNumber}
+            setSeasonNumber={setSeasonNumber}
+            roundNumber={roundNumber}
+            setRoundNumber={setRoundNumber}
+          />
+        </Grid2>
+        <Grid2 size={1}>
+          {caption && (
+            <Typography variant="caption" sx={{
+              display: "block",
+              textAlign: isPhoneDevice ? "center" : "right",
+            }}>
+            {caption}
+            </Typography>
+          )}
+        </Grid2>
+      </Grid2>
+      {currentRoundInfo.round && (
         <>
           <Tabs
             value={tab}

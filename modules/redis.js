@@ -557,49 +557,58 @@ async function getFeaturedSetup(featuredCategory) {
   }
 }
 
-async function _getCurrentCompRoundInfo() {
+async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
   let roundInfo = {
-    active: true,
     seasonNumber: null,
-    currentRound: null,
+    round: null,
     allowedSetups: [],
     gameCompletions: [],
     standings: [],
     users: {},
+    nextEvent: null,
   };
 
-  const currentSeason = await models.CompetitiveSeason.findOne({ completed: false })
+  let seasonQuery = { completed: false };
+  if (seasonNumber) {
+    seasonQuery = { number: seasonNumber };
+  }
+
+  const season = await models.CompetitiveSeason.findOne(seasonQuery)
     .select("-_id setups setupOrder number")
     .populate([
       {
         path: "setups",
+        select: "-_id -__v",
       },
     ])
     .sort({ number: -1 })
     .lean();
 
-  if (!currentSeason) {
-    roundInfo.active = false;
+  if (!season) {
     return roundInfo;
   }
 
-  roundInfo.seasonNumber = currentSeason.number;
+  roundInfo.seasonNumber = season.number;
+
+  let roundQuery = { season: roundInfo.seasonNumber, accounted: false };
+  if (roundNumber) {
+    roundQuery = { season: roundInfo.seasonNumber, number: roundNumber };
+  }
 
   // Get the current round, if any
-  roundInfo.currentRound = await models.CompetitiveRound.findOne({ season: roundInfo.seasonNumber, completed: false })
+  roundInfo.round = await models.CompetitiveRound.findOne(roundQuery)
     .select("-_id")
     .sort({ number: -1 })
     .lean();
 
-  if (!roundInfo.currentRound) {
-    roundInfo.active = false;
+  if (!roundInfo.round) {
     return roundInfo;
   }
 
-  roundInfo.allowedSetups = currentSeason.setupOrder[roundInfo.currentRound.number - 1].map((setupNumber) => currentSeason.setups[setupNumber]);
+  roundInfo.allowedSetups = season.setupOrder[roundInfo.round.number - 1].map((setupNumber) => season.setups[setupNumber]);
 
   roundInfo.gameCompletions = await models.CompetitiveGameCompletion.aggregate([
-    { $match: { season: roundInfo.seasonNumber, round: roundInfo.currentRound.number, valid: true } },
+    { $match: { season: roundInfo.seasonNumber, round: roundInfo.round.number, valid: true } },
     {
       $group: {
         _id: '$game',
@@ -673,21 +682,55 @@ async function _getCurrentCompRoundInfo() {
     return {
       userId: userId,
       ranking: rankings[userStanding.points],
+      points: userStanding.points,
     };
   });
   roundInfo.standings.sort((a, b) => b.ranking - a.ranking);
 
+  // Help clients know when the next thing is going to happen
+  if (roundInfo.round) {
+    const startDate = new Date(roundInfo.round.startDate);
+    let endOfRoundDay = new Date(startDate);
+
+    // Check to see if the round's current day has ended
+    if (!roundInfo.round.completed) {
+      if (roundInfo.round.currentDay === 0) {
+        roundInfo.nextEvent = {
+          "type": "start",
+          "date": startDate
+        }
+      }
+      else {
+        endOfRoundDay.setDate(startDate.getDate() + roundInfo.round.currentDay + roundInfo.round.remainingOpenDays);
+        roundInfo.nextEvent = {
+          "type": "complete",
+          "date": endOfRoundDay
+        }
+      }
+    }
+    else if (!roundInfo.round.accounted) {
+      endOfRoundDay.setDate(startDate.getDate() + roundInfo.round.currentDay + roundInfo.round.remainingReviewDays);
+      roundInfo.nextEvent = {
+        "type": "account",
+        "date": endOfRoundDay
+      }
+    }
+    else {
+      // there is no next event, this round is over
+    }
+  }
+
   return roundInfo;
 }
 
-async function getCurrentCompRoundInfo(useCache = true) {
-  const key = `competitive:currentRoundInfo`;
+async function getCompRoundInfo(seasonNumber = null, roundNumber = null, useCache = true) {
+  const key = `competitive:season:${seasonNumber ? seasonNumber : "latest"}:round:${roundNumber ? roundNumber : "latest"}`;
   let roundInfo = await client.getAsync(key);
   if (useCache && roundInfo) {
     // Got cached result, no need to perform query
     return JSON.parse(roundInfo);
   } else {
-    roundInfo = await _getCurrentCompRoundInfo();
+    roundInfo = await _getCompRoundInfo(seasonNumber, roundNumber);
 
     // Cache the result in redis so that we don't have to do the query again for a little bit
     await client.setAsync(key, JSON.stringify(roundInfo));
@@ -1336,7 +1379,7 @@ module.exports = {
   authenticateToken,
   getLeaderBoardStat,
   getFeaturedSetup,
-  getCurrentCompRoundInfo,
+  getCompRoundInfo,
   gameExists,
   inGame,
   hostingScheduled,

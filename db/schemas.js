@@ -697,7 +697,6 @@ var schemas = {
     setupOrder: [[{ type: Number }]], // each top level array corresponds to one round
     rounds: [{ type: mongoose.Schema.Types.ObjectId, ref: "CompetitiveRound" }],
     currentRound: { type: Number, default: 0 },
-    accountedRound: { type: Number, default: 0 },
     startDate: { type: String, default: Date.now }, // YYYY-MM-DD
     completed: { type: Boolean, default: false },
     numRounds: { type: Number },
@@ -705,10 +704,14 @@ var schemas = {
   CompetitiveRound: new mongoose.Schema({
     season: { type: Number },
     number: { type: Number },
-    currentDay: { type: Number },
+    currentDay: { type: Number, default: 0 },
+    paused: { type: Boolean, default: false },
     completed: { type: Boolean, default: false },
+    accounted: { type: Boolean, default: false },
     startDate: { type: String }, // YYYY-MM-DD (inclusive)
-    endDate: { type: String }, // YYYY-MM-DD (exclusive)
+    dateCompleted: { type: String }, // YYYY-MM-DD (inclusive)
+    remainingOpenDays: { type: Number, default: 8 },
+    remainingReviewDays: { type: Number, default: 5 },
   }),
   CompetitiveGameCompletion: new mongoose.Schema({
     userId: { type: String },
@@ -723,6 +726,7 @@ var schemas = {
     userId: { type: String },
     season: { type: Number },
     points: { type: Number, default: 0 }, // championship points from winning rounds
+    tiebreakerPoints: { type: Number, default: 0 }, // points from winning games
   }),
 };
 
