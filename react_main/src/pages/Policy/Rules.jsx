@@ -108,8 +108,7 @@ export default function Rules() {
                   <TableCell
                     sx={{
                       fontWeight: "bold",
-                      backgroundColor: theme.palette.primary.main,
-                      color: theme.palette.text.main,
+                      backgroundColor: "var(--scheme-color-sec)",
                     }}
                     align="center"
                   >
@@ -120,8 +119,7 @@ export default function Rules() {
                       key={n}
                       sx={{
                         fontWeight: "bold",
-                        backgroundColor: theme.palette.primary.main,
-                        color: theme.palette.text.main,
+                        backgroundColor: "var(--scheme-color-sec)",
                       }}
                       align="center"
                     >
@@ -146,8 +144,7 @@ export default function Rules() {
                       <TableCell
                         key={i}
                         sx={{
-                          backgroundColor: theme.palette.primary.main,
-                          color: theme.palette.text.main,
+                          backgroundColor: "var(--scheme-color-sec)",
                         }}
                         align="center"
                       >
