@@ -1837,17 +1837,21 @@ module.exports = class Player {
     }
 
     //Swap Winners
-    if(winners){
-      let playerWin = Object.values(winners.groups).flat().find((p) => p === player);
-      let thisPlayerWin = Object.values(winners.groups).flat().find((p) => p === this);
+    if (winners) {
+      let playerWin = Object.values(winners.groups)
+        .flat()
+        .find((p) => p === player);
+      let thisPlayerWin = Object.values(winners.groups)
+        .flat()
+        .find((p) => p === this);
       let playerGroup = winners.findPlayerGroup(player);
       let thisPlayerGroup = winners.findPlayerGroup(this);
       winners.removePlayer(player, playerGroup);
       winners.removePlayer(this, thisPlayerGroup);
-      if(playerWin){
+      if (playerWin) {
         winners.addPlayer(this, playerGroup);
       }
-      if(thisPlayerWin){
+      if (thisPlayerWin) {
         winners.addPlayer(player, thisPlayerGroup);
       }
     }
