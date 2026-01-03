@@ -691,8 +691,9 @@ var schemas = {
   CompetitiveSeason: new mongoose.Schema({
     number: { type: Number, index: true, unique: true },
     setups: [{ type: mongoose.Schema.Types.ObjectId, ref: "Setup" }],
+    setupOrder: [[{ type: Number }]], // each top level array corresponds to one round
     rounds: [{ type: mongoose.Schema.Types.ObjectId, ref: "CompetitiveRound" }],
-    currentRound: { type: Number },
+    currentRound: { type: Number, default: 0 },
     accountedRound: { type: Number, default: 0 },
     startDate: { type: String, default: Date.now }, // YYYY-MM-DD
     completed: { type: Boolean, default: false },
@@ -702,7 +703,6 @@ var schemas = {
     season: { type: Number },
     number: { type: Number },
     currentDay: { type: Number },
-    accountedDay: { type: Number, default: 0 },
     completed: { type: Boolean, default: false },
     startDate: { type: String }, // YYYY-MM-DD (inclusive)
     endDate: { type: String }, // YYYY-MM-DD (exclusive)
@@ -715,14 +715,6 @@ var schemas = {
     day: { type: Number },
     points: { type: Number }, // This is the same as fortune
     valid: { type: Boolean, default: true }, // A moderator can invalidate a game in the case of cheating
-  }),
-  CompetitiveRoundStanding: new mongoose.Schema({
-    userId: { type: String },
-    season: { type: Number },
-    round: { type: Number },
-    points: { type: Number, default: 0, index: true },
-    accountedGames: [{ type: mongoose.Schema.Types.ObjectId, ref: "CompetitiveGameCompletion" }],
-    invalidatedGames: [{ type: mongoose.Schema.Types.ObjectId, ref: "CompetitiveGameCompletion" }],
   }),
   CompetitiveSeasonStanding: new mongoose.Schema({
     userId: { type: String },
@@ -919,7 +911,6 @@ schemas.VanityUrl.virtual("user", {
 
 schemas.CompetitiveRound.index({ season: 1, number: 1 }, { unique: true });
 schemas.CompetitiveSeasonStanding.index({ userId: 1, season: 1 }, { unique: true });
-schemas.CompetitiveRoundStanding.index({ userId: 1, season: 1, round: 1 }, { unique: true });
 schemas.CompetitiveGameCompletion.index({ userId: 1, game: 1 }, { unique: true });
 schemas.CompetitiveGameCompletion.index({ season: 1, round: 1, day: 1 });
 

@@ -557,6 +557,138 @@ async function getFeaturedSetup(featuredCategory) {
   }
 }
 
+async function _getCurrentCompRoundInfo() {
+  let roundInfo = {
+    active: true,
+    seasonNumber: null,
+    currentRound: null,
+    gameCompletions: [],
+    standings: [],
+    users: {},
+  };
+
+  const currentSeason = await models.CompetitiveSeason.findOne({ completed: false })
+    .sort({ number: -1 })
+    .lean();
+
+  if (!currentSeason) {
+    roundInfo.active = false;
+    return roundInfo;
+  }
+
+  roundInfo.seasonNumber = currentSeason.number;
+
+  // Get the current round, if any
+  roundInfo.currentRound = await models.CompetitiveRound.findOne({ season: roundInfo.seasonNumber, completed: false })
+    .sort({ number: -1 })
+    .lean();
+
+  if (!roundInfo.currentRound) {
+    roundInfo.active = false;
+    return roundInfo;
+  }
+
+  roundInfo.gameCompletions = await models.CompetitiveGameCompletion.aggregate([
+    { $match: { season: roundInfo.seasonNumber, round: roundInfo.currentRound.number, valid: true } },
+    {
+      $group: {
+        _id: '$game',
+        game: { $first: '$game' },
+        day: { $first: '$day' },
+        valid: { $first: '$valid' },
+        pointsEarnedByPlayers: {
+          $push: {
+            userId: '$userId',
+            points: '$points'
+          }
+        }
+      }
+    },
+    {
+      $lookup: {
+        from: 'games',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'game'
+      }
+    },
+    { $unwind: { path: '$game' } },
+    {
+      $lookup: {
+        from: 'setups',
+        localField: 'game.setup',
+        foreignField: '_id',
+        as: 'game.setup'
+      }
+    },
+    { $unwind: { path: '$game.setup' } }
+  ]);
+
+  for (let gameCompletion of roundInfo.gameCompletions) {
+    gameCompletion.game.status = "Finished";
+  }
+
+  // Accumulate points by user ID
+  for (const gameCompletion of roundInfo.gameCompletions) {
+    for (const pointsEarnedByPlayer of gameCompletion.pointsEarnedByPlayers) {
+      const userId = pointsEarnedByPlayer.userId;
+      if (roundInfo.users[userId] === undefined) {
+        roundInfo.users[userId] = {
+          points: 0,
+          gamesPlayed: 0,
+          user: await getUserInfo(userId),
+        };
+      }
+      roundInfo.users[userId].points += pointsEarnedByPlayer.points;
+      roundInfo.users[userId].gamesPlayed += 1;
+    }
+  }
+
+  // Sort scores in descending order, then convert to map to determine ranking. This accounts for ties
+  let scores = [];
+  let rankings = {};
+  for (let userId of Object.keys(roundInfo.users)) {
+    scores.push(roundInfo.users[userId].points);
+  }
+  scores.sort((a, b) => b - a);
+  scores.forEach((score, i) => {
+    if (rankings[score] === undefined) {
+      rankings[score] = i;
+    }
+  });
+
+  // Finally, create a points sorted array of user standings
+  roundInfo.standings = Object.keys(roundInfo.users).map((userId) => {
+    const userStanding = roundInfo.users[userId];
+    return {
+      userId: userId,
+      ranking: rankings[userStanding.points],
+    };
+  });
+  roundInfo.standings.sort((a, b) => b.ranking - a.ranking);
+
+  return roundInfo;
+}
+
+async function getCurrentCompRoundInfo(useCache = true) {
+  const key = `competitive:currentRoundInfo`;
+  let roundInfo = await client.getAsync(key);
+  if (useCache && roundInfo) {
+    // Got cached result, no need to perform query
+    return JSON.parse(roundInfo);
+  } else {
+    roundInfo = await _getCurrentCompRoundInfo();
+
+    // Cache the result in redis so that we don't have to do the query again for a little bit
+    await client.setAsync(key, JSON.stringify(roundInfo));
+
+    // Refresh results every this many seconds
+    client.expire(key, 30);
+
+    return roundInfo;
+  }
+}
+
 async function gameExists(gameId) {
   return (await client.sismemberAsync("games", gameId)) != 0;
 }
@@ -1194,6 +1326,7 @@ module.exports = {
   authenticateToken,
   getLeaderBoardStat,
   getFeaturedSetup,
+  getCurrentCompRoundInfo,
   gameExists,
   inGame,
   hostingScheduled,

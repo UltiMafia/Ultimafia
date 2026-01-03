@@ -45,6 +45,7 @@ const COMMAND_GROUP_ORDER = {
   "Group Management": 5,
   "Family Management": 6,
   "Poll Management": 7,
+  "Competitive Management": 8,
   "Deck Management": 9,
   "Forum Management": 99,
   "Chat Window Management": 999,
@@ -1662,6 +1663,12 @@ export function useModCommands(argValues, commandRan, setResults) {
         {
           label: "Number of rounds",
           name: "numRounds",
+          type: "number",
+          optional: true,
+        },
+        {
+          label: "Number of setups per round",
+          name: "setupsPerRound",
           type: "number",
           optional: true,
         },

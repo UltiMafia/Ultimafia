@@ -21,6 +21,7 @@ router.post("/create", async function (req, res) {
 
     const startDate = req.body.startDate;
     const numRounds = Number.parseInt(req.body.numRounds || "12");
+    const setupsPerRound = Number.parseInt(req.body.setupsPerRound || "2");
     const shuffleSetups = Boolean(req.body.shuffleSetups || false);
 
     const latestSeason = await models.CompetitiveSeason.findOne({})
@@ -62,13 +63,27 @@ router.post("/create", async function (req, res) {
     }
 
     const setups = await models.Setup.find({ competitive: true }).select("_id").lean();
-    let setupIds = [];
-    for (const setup of setups) {
-      setupIds.push(ObjectID(setup._id));
+
+    if (setups.length === 0) {
+      res.status(400);
+      res.send("There are no competitive setups. Use Competitive Approve mod command to select setups for the season. ");
+      return;
     }
+
+    let setupIds = setups.map((setup) => ObjectID(setup._id));
 
     if (shuffleSetups) {
       Random.randomizeArray(setupIds);
+    }
+
+    let setupOrder = [];
+    for (let roundNumber = 0; roundNumber < numRounds; roundNumber++) {
+      let roundSetups = [];
+      for (let i = 0; i < setupsPerRound; i++) {
+        const setupNumber = roundNumber * setupsPerRound + i;
+        roundSetups.push(setupNumber % setupIds.length);
+      }
+      setupOrder.push(roundSetups);
     }
 
     // Create the season only - in periodic.js progressCompetitive we will manage the rounds
@@ -76,6 +91,7 @@ router.post("/create", async function (req, res) {
       number: seasonNumber,
       startDate: startDate,
       setups: setupIds,
+      setupOrder: setupOrder,
       numRounds: numRounds,
     });
 
@@ -85,6 +101,7 @@ router.post("/create", async function (req, res) {
     routeUtils.createModAction(userId, "Create Season", [
       startDate,
       numRounds,
+      setupsPerRound,
       shuffleSetups,
     ]);
 
@@ -116,50 +133,64 @@ router.get("/seasons", async function (req, res) {
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error fetching polls.");
+    res.send("Error fetching seasons.");
   }
 });
 
-// Get all standings in a season
-router.get("/season/:seasonNumber/standings", async function (req, res) {
+router.get("/season/:seasonNumber", async function (req, res) {
   try {
     const seasonNumber = Number.parseInt(req.params.seasonNumber);
-    let seasonStandings = await models.CompetitiveSeasonStanding.find({ season: seasonNumber })
+
+    let seasonInfo = {
+      setups: [],
+      standings: {},
+      users: {},
+    };
+
+    const seasons = await models.CompetitiveSeason.find({ number: seasonNumber })
+      .select("setups setupOrder")
+      .populate([
+        {
+          path: "setups",
+        },
+      ])
+      .lean();
+
+    if (seasons.length === 0) {
+      logger.error(e);
+      res.status(404);
+      res.send("Could not find season.");
+      return;
+    }
+
+    seasonInfo.setups = seasons[0].setups;
+    seasonInfo.setupOrder = seasons[0].setupOrder;
+
+    seasonInfo.standings = await models.CompetitiveSeasonStanding.find({ season: seasonNumber })
       .sort({ points: -1 })
       .limit(10)
       .lean();
 
-    for (const seasonStanding of seasonStandings) {
-      seasonStanding.user = await redis.getUserInfo(seasonStanding.userId);
+    for (const seasonStanding of seasonInfo.standings) {
+      seasonInfo.users[seasonStanding.userId] = await redis.getUserInfo(seasonStanding.userId);
     }
 
-    res.json(seasonStandings);
+    res.json(seasonInfo);
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error fetching polls.");
+    res.send("Error fetching season.");
   }
 });
 
-// Get all standings in a round
-router.get("/season/:seasonNumber/round/:roundNumber/standings", async function (req, res) {
+// Get the current round info
+router.get("/currentRound", async function (req, res) {
   try {
-    const seasonNumber = Number.parseInt(req.params.seasonNumber);
-    const roundNumber = Number.parseInt(req.params.roundNumber);
-    let roundStandings = await models.CompetitiveRoundStanding.find({ season: seasonNumber, round: roundNumber })
-      .sort({ points: -1 })
-      .limit(10)
-      .lean();
-
-    for (const roundStanding of roundStandings) {
-      roundStanding.user = await redis.getUserInfo(roundStanding.userId);
-    }
-
-    res.json(roundStandings);
+    res.json(await redis.getCurrentCompRoundInfo());
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error fetching polls.");
+    res.send("Error getting current round info.");
   }
 });
 

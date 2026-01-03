@@ -4,6 +4,18 @@ const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 
 // SEE: https://docs.google.com/document/d/1amLZWVBKyalKh7KalYpCDgZSmmNmBy1-BIASOj9GnFA
+const POINTS_TABLE = [
+  25,
+  18,
+  15,
+  12,
+  10,
+  8,
+  6,
+  4,
+  2,
+  1,
+];
 
 async function progressCompetitive() {
   // Get the current season, if any
@@ -55,6 +67,35 @@ async function progressCompetitive() {
 
       startDateNew = new Date(endDate);
       startDateNew.setDate(endDate.getDate() + daysUntilNextRound);
+
+      const roundInfo = await redis.getCurrentCompRoundInfo(false);
+
+      let i = 0;
+      for (const roundStanding of roundInfo.standings) {
+        const userId = roundStanding.userId;
+        const ranking = roundStanding.ranking;
+        const championshipPoints = (ranking < POINTS_TABLE.length) ? POINTS_TABLE[ranking] : 0;
+        const existingSeasonStanding = await models.CompetitiveSeasonStanding.findOne({ userId: roundStanding.userId, season: seasonNumber });
+        if (existingSeasonStanding) {
+          console.log(`[progressCompetitive]: Updating season ${seasonNumber} standing for ${userId}: achieved ranking ${ranking} and earned ${championshipPoints} prestige from round ${currentRound.number}`);
+          await models.CompetitiveSeasonStanding.updateOne(
+            { _id: existingSeasonStanding._id },
+            {
+              $inc: { points: championshipPoints },
+            },
+          ).exec();
+        }
+        else {
+          console.log(`[progressCompetitive]: Creating season ${seasonNumber} standing for ${userId}: achieved ranking ${ranking} and earned ${championshipPoints} prestige from round ${currentRound.number}`);
+          const seasonStanding = new models.CompetitiveSeasonStanding({
+            userId: roundStanding.userId,
+            season: seasonNumber,
+            points: championshipPoints,
+          });
+          await seasonStanding.save();
+        }
+        i++;
+      }
 
       await models.CompetitiveRound.updateOne(
         { _id: ObjectID(currentRound._id) },
@@ -123,181 +164,7 @@ async function progressCompetitive() {
   }
 }
 
-async function rollupCompetitiveGameCompletions() {
-  const currentSeason = await models.CompetitiveSeason.findOne({ completed: false })
-    .sort({ number: -1 })
-    .lean();
-
-  // Nothing to do if there's no active season
-  if (!currentSeason) {
-    return;
-  }
-
-  const seasonNumber = currentSeason.number;
-  console.log(`[rollupCompetitiveGameCompletions]: Checking season ${seasonNumber}`);
-
-  // Get the current round, if any
-  const currentRound = await models.CompetitiveRound.findOne({ season: seasonNumber, completed: false })
-    .sort({ number: -1 })
-    .lean();
-
-  // Nothing to do if there's no active round or completed days yet
-  if (!currentRound || currentRound.currentDay < 2) {
-    return;
-  }
-
-  // Nothing to do if everything has already been accounted for
-  const dayToAccount = currentRound.currentDay - 1;
-  if (currentRound.accountedDay >= dayToAccount) {
-    return;
-  }
-
-  // Find all game completions for this round that have not been accounted yet
-  console.log(`[rollupCompetitiveGameCompletions]: Updating season ${seasonNumber} round ${currentRound.number} day ${dayToAccount} standings`);
-  const gameCompletions = await models.CompetitiveGameCompletion.find({
-    $and: [
-      { season: seasonNumber },
-      { round: currentRound.number },
-      { day: {$gt: currentRound.accountedDay} },
-      { day: {$lte: dayToAccount} },
-    ],
-  }).lean();
-
-  // Accumulate updates by user ID
-  let userUpdates = {};
-  for (const gameCompletion of gameCompletions) {
-    const userId = gameCompletion.userId;
-    if (userUpdates[userId] === undefined) {
-      userUpdates[userId] = {
-        points: 0,
-        games: [],
-      };
-    }
-    userUpdates[userId].points += gameCompletion.points;
-    userUpdates[userId].games.push(gameCompletion.game);
-  }
-
-  // Update the round standing for each user accordingly
-  for (const userId of Object.keys(userUpdates)) {
-    const update = userUpdates[userId];
-
-    const existingRoundStanding = await models.CompetitiveRoundStanding.findOne({ userId: userId, season: seasonNumber, round: currentRound.number });
-    if (existingRoundStanding) {
-      console.log(`[rollupCompetitiveGameCompletions]: Updating season ${seasonNumber} round ${currentRound.number} standing for ${userId}: +${update.points} points from day ${dayToAccount}`);
-      await models.CompetitiveRoundStanding.updateOne(
-        { _id: existingRoundStanding._id },
-        {
-          $inc: { points: update.points },
-          $push: { games: update.games },
-        },
-      ).exec();
-    }
-    else {
-      console.log(`[rollupCompetitiveGameCompletions]: Creating season ${seasonNumber} round ${currentRound.number} standing for ${userId}: +${update.points} points from day ${dayToAccount}`);
-      const roundStanding = new models.CompetitiveRoundStanding({
-        userId: userId,
-        season: seasonNumber,
-        round: currentRound.number,
-        points: update.points,
-        accountedGames: update.games,
-        invalidatedGames: [],
-      });
-      await roundStanding.save();
-    }
-  }
-
-  // Now that the day has been accounted for, set the round's accounted day
-  await models.CompetitiveRound.updateOne(
-    { season: seasonNumber, number: currentRound.number },
-    {
-      $set: { accountedDay: dayToAccount },
-    },
-  );
-}
-
-async function rollupCompetitiveRoundStandings() {
-  const currentSeason = await models.CompetitiveSeason.findOne({ completed: false })
-    .sort({ number: -1 })
-    .lean();
-
-  // Nothing to do if there's no active season
-  if (!currentSeason) {
-    return;
-  }
-
-  const seasonNumber = currentSeason.number;
-  console.log(`[rollupCompetitiveRoundStandings]: Checking season ${seasonNumber}`);
-
-  // Nothing to do if everything has already been accounted for
-  const roundToAccount = currentSeason.currentRound - 1;
-  if (currentSeason.accountedRound >= roundToAccount) {
-    return;
-  }
-
-  // Find all rounds for this season that have not been accounted yet
-  console.log(`[rollupCompetitiveRoundStandings]: Updating season ${seasonNumber} round ${roundToAccount} standings`);
-  const roundStandings = await models.CompetitiveRoundStanding.find({
-    $and: [
-      { season: seasonNumber },
-      { round: {$gt: currentSeason.accountedRound} },
-      { round: {$lte: roundToAccount} },
-    ],
-  })
-    .sort({ points: -1 })
-    .lean();
-
-  // CHAMPIONSHIP POINTS: grant points to the top 10 scorers according to a table
-  const POINTS_TABLE = [
-    25,
-    18,
-    15,
-    12,
-    10,
-    8,
-    6,
-    4,
-    2,
-    1,
-  ];
-
-  // Update the round standing for each top 10 user accordingly
-  let i = 0;
-  for (const roundStanding of roundStandings) {
-    const championshipPoints = i < POINTS_TABLE.length ? POINTS_TABLE[i] : 0;
-    const existingSeasonStanding = await models.CompetitiveSeasonStanding.findOne({ userId: roundStanding.userId, season: seasonNumber });
-    if (existingSeasonStanding) {
-      console.log(`[rollupCompetitiveRoundStandings]: Updating season ${seasonNumber} standing for ${roundStanding.userId}: +${championshipPoints} points from round ${roundStanding.round}`);
-      await models.CompetitiveSeasonStanding.updateOne(
-        { _id: existingSeasonStanding._id },
-        {
-          $inc: { points: championshipPoints },
-        },
-      ).exec();
-    }
-    else {
-      console.log(`[rollupCompetitiveRoundStandings]: Creating season ${seasonNumber} standing for ${roundStanding.userId}: +${championshipPoints} points from round ${roundStanding.round}`);
-      const seasonStanding = new models.CompetitiveSeasonStanding({
-        userId: roundStanding.userId,
-        season: seasonNumber,
-        points: championshipPoints,
-      });
-      await seasonStanding.save();
-    }
-    i++;
-  }
-
-  // Now that the day has been accounted for, set the round's accounted day
-  await models.CompetitiveSeason.updateOne(
-    { number: seasonNumber },
-    {
-      $set: { accountedRound: roundToAccount },
-    },
-  ).exec();
-}
-
 module.exports = {
+  POINTS_TABLE,
   progressCompetitive,
-  rollupCompetitiveGameCompletions,
-  rollupCompetitiveRoundStandings,
 };
-

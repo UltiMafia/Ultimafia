@@ -325,8 +325,6 @@ module.exports = function () {
     competitivePeriodic: {
       run: async function() {
         await competitive.progressCompetitive();
-        await competitive.rollupCompetitiveGameCompletions();
-        await competitive.rollupCompetitiveRoundStandings();
       },
       interval: 1000 * 300,
     },
