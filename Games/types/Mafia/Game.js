@@ -524,7 +524,7 @@ module.exports = class MafiaGame extends Game {
     }
 
     if (finished) {
-      this.resetIdentities();
+      this.resetIdentities(winners);
       this.events.emit("handleWinBlockers", winners);
       for (let winCheck of winQueue) {
         if (winCheck.againOnFinished) {
@@ -660,11 +660,11 @@ module.exports = class MafiaGame extends Game {
     return false;
   }
 
-  resetIdentities() {
+  resetIdentities(winners) {
     if (!this.swaps) return;
 
     for (let swap of this.swaps) {
-      swap[0].swapIdentity(swap[1]);
+      swap[0].swapIdentity(swap[1], winners);
       delete swap[1].swapped;
     }
 
