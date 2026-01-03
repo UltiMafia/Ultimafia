@@ -1736,7 +1736,7 @@ module.exports = class Player {
     } else stats.totalGames++;
   }
 
-  swapIdentity(player) {
+  swapIdentity(player, winners) {
     //Swap Factions
     let tempFaction = this.faction;
     this.faction = player.faction;
@@ -1833,6 +1833,22 @@ module.exports = class Player {
         } else if (recipient.id === this.id) {
           alert.recipients[i] = player;
         }
+      }
+    }
+
+    //Swap Winners
+    if(winners){
+      let playerWin = Object.values(winners.groups).flat().find((p) => p === player);
+      let thisPlayerWin = Object.values(winners.groups).flat().find((p) => p === this);
+      let playerGroup = winners.findPlayerGroup(player);
+      let thisPlayerGroup = winners.findPlayerGroup(this);
+      winners.removePlayer(player, playerGroup);
+      winners.removePlayer(this, thisPlayerGroup);
+      if(playerWin){
+        winners.addPlayer(this, playerGroup);
+      }
+      if(thisPlayerWin){
+        winners.addPlayer(player, thisPlayerGroup);
       }
     }
 
