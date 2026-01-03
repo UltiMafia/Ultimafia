@@ -126,7 +126,7 @@ function Overview({ roundInfo }) {
           <Typography variant="h3" gutterBottom>
             Round {roundInfo.round.number} top 10 players
           </Typography>
-          {roundInfo.standings.map((roundStanding) => {
+          {roundInfo.standings.slice(0, 10).map((roundStanding) => {
             const userId = roundStanding.userId;
             const user = roundInfo.users[userId].user;
             const points = roundInfo.users[userId].points;

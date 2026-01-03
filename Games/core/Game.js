@@ -3000,7 +3000,11 @@ module.exports = class Game {
           alignment === "Village" ||
           alignment === "Mafia" ||
           alignment === "Cult";
-        const factionName = alignmentIsFaction ? alignment : roleName;
+        let factionName = alignmentIsFaction ? alignment : roleName;
+        if (factionName === "Traitor") {
+          // I'm hardcoding this sorry not sorry
+          factionName = "Mafia";
+        }
         memberFactions[playerId] = factionName;
 
         if (factionWinnerFractions[factionName] === undefined) {
@@ -3037,18 +3041,21 @@ module.exports = class Game {
       // In edge cases, such as members of a faction being converted then losing to their starting faction, this number will be somewhere in between
       const factionScores = factionNames.map((factionName) => {
         const factionWinnerFraction = factionWinnerFractions[factionName];
-        return (
+        return Math.floor(1, 
           factionWinnerFraction.winnerCount /
           factionWinnerFraction.originalCount
         );
       });
 
       // library code time
-      const predictions = predictWin(factionsToBeRated);
-      const ratedFactions = rate(factionsToBeRated, {
+      const options = {
         model: bradleyTerryFull,
+        beta: constants.defaultSkillRatingSigma * 4,
+      };
+      const predictions = predictWin(factionsToBeRated, options);
+      const ratedFactions = rate(factionsToBeRated, {
         score: factionScores,
-        beta: constants.defaultSkillRatingSigma / 4,
+        ...options,
       });
 
       /* Notes:

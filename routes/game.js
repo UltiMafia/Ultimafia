@@ -20,13 +20,6 @@ async function userCanPlayCompetitive(userId) {
     return "You cannot play competitive games because your Gold Hearts are depleted.";
   }
 
-  if (
-    userId &&
-    !(await routeUtils.verifyPermission(userId, "playCompetitive"))
-  ) {
-    return "You have not been approved for competitive games. Please message an admin for assistance.";
-  }
-
   return null;
 }
 

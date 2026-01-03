@@ -352,7 +352,8 @@ module.exports = {
   leavePenaltyDurationMillis: 259200000,
 
   minimumGamesForRanked: 5,
-  minimumPointsForCompetitive: 1000,
+  minimumPointsForCompetitive: 150,
+  //minimumPointsForCompetitive: 1000,
 
   // See: https://www.npmjs.com/package/openskill
   defaultSkillRatingMu: 750,
