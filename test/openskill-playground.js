@@ -1,5 +1,9 @@
 const { ordinal, rating, rate, predictWin } = require("openskill");
-const { bradleyTerryFull, thurstoneMostellerFull, plackettLuce } = require("openskill/models");
+const {
+  bradleyTerryFull,
+  thurstoneMostellerFull,
+  plackettLuce,
+} = require("openskill/models");
 
 const toMap = (obj) => new Map(Object.entries(obj));
 
@@ -13,22 +17,22 @@ const defaultScenario = {
     model: plackettLuce,
     beta: 1000,
   },
-}
+};
 
 const fiveMafiaWins = [
-  toMap({ "Mafia": 1, "Village": 0, }),
-  toMap({ "Mafia": 1, "Village": 0, }),
-  toMap({ "Mafia": 1, "Village": 0, }),
-  toMap({ "Mafia": 1, "Village": 0, }),
-  toMap({ "Mafia": 1, "Village": 0, }),
+  toMap({ Mafia: 1, Village: 0 }),
+  toMap({ Mafia: 1, Village: 0 }),
+  toMap({ Mafia: 1, Village: 0 }),
+  toMap({ Mafia: 1, Village: 0 }),
+  toMap({ Mafia: 1, Village: 0 }),
 ];
 
 const fiveVillageWins = [
-  toMap({ "Mafia": 0, "Village": 1, }),
-  toMap({ "Mafia": 0, "Village": 1, }),
-  toMap({ "Mafia": 0, "Village": 1, }),
-  toMap({ "Mafia": 0, "Village": 1, }),
-  toMap({ "Mafia": 0, "Village": 1, }),
+  toMap({ Mafia: 0, Village: 1 }),
+  toMap({ Mafia: 0, Village: 1 }),
+  toMap({ Mafia: 0, Village: 1 }),
+  toMap({ Mafia: 0, Village: 1 }),
+  toMap({ Mafia: 0, Village: 1 }),
 ];
 
 const village33winrate = [
@@ -38,7 +42,7 @@ const village33winrate = [
 ];
 
 // Use a "true" winrate of 33% for village
-let scenario1 = {...defaultScenario};
+let scenario1 = { ...defaultScenario };
 scenario1.sequence = [
   ...village33winrate,
   ...village33winrate,
@@ -74,23 +78,30 @@ function runScenario(scenario) {
 
       // Default initialize the faction rating for the setup if it doesn't yet exist
       if (factionRating === undefined) {
-        factionsToBeRated.set(factionName, rating({
-          mu: scenario.defaultSkillRatingMu,
-          sigma: scenario.defaultSkillRatingSigma,
-        }));
+        factionsToBeRated.set(
+          factionName,
+          rating({
+            mu: scenario.defaultSkillRatingMu,
+            sigma: scenario.defaultSkillRatingSigma,
+          })
+        );
       }
     }
 
     const factionNames = [...factionsToBeRated.keys()];
 
-    const factionsToBeRatedRaw = factionNames.map(factionName => [factionsToBeRated.get(factionName)]);
-    const factionScoresRaw = factionNames.map(factionName => factionScores.get(factionName));
+    const factionsToBeRatedRaw = factionNames.map((factionName) => [
+      factionsToBeRated.get(factionName),
+    ]);
+    const factionScoresRaw = factionNames.map((factionName) =>
+      factionScores.get(factionName)
+    );
 
     // library code time
     const predictions = predictWin(factionsToBeRatedRaw, scenario.options);
     const ratedFactions = rate(factionsToBeRatedRaw, {
       score: factionScoresRaw,
-      ...scenario.options
+      ...scenario.options,
     });
 
     // Transform the results from the rate and predictWin functions back into their usable forms
@@ -108,7 +119,9 @@ function runScenario(scenario) {
       const factionName = factionNames[i];
       const winPredictionPercent = predictions[i]; // this adds up to 1 across all factions
       const newSkillRating = ratedFactions[i];
-      console.log(`${factionName} win ${100*winPredictionPercent.toFixed(2)}%`);
+      console.log(
+        `${factionName} win ${100 * winPredictionPercent.toFixed(2)}%`
+      );
 
       pointsWonByFactions[factionName] = Math.round(
         2 * scenario.pointsNominalAmount * (1 - winPredictionPercent)
@@ -127,10 +140,14 @@ function runScenario(scenario) {
     }
 
     for (const factionName of Object.keys(pointsWonByFactions)) {
-      console.log(`${factionName} would win ${pointsWonByFactions[factionName]} points`);
+      console.log(
+        `${factionName} would win ${pointsWonByFactions[factionName]} points`
+      );
     }
     for (const factionSkillRating of newFactionSkillRatings) {
-      console.log(`${factionSkillRating.factionName}: ${factionSkillRating.skillRating.mu}μ / ${factionSkillRating.skillRating.sigma}σ`);
+      console.log(
+        `${factionSkillRating.factionName}: ${factionSkillRating.skillRating.mu}μ / ${factionSkillRating.skillRating.sigma}σ`
+      );
     }
   }
 }

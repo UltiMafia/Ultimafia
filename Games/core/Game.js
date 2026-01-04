@@ -3041,9 +3041,10 @@ module.exports = class Game {
       // In edge cases, such as members of a faction being converted then losing to their starting faction, this number will be somewhere in between
       const factionScores = factionNames.map((factionName) => {
         const factionWinnerFraction = factionWinnerFractions[factionName];
-        return Math.floor(1, 
+        return Math.floor(
+          1,
           factionWinnerFraction.winnerCount /
-          factionWinnerFraction.originalCount
+            factionWinnerFraction.originalCount
         );
       });
 
