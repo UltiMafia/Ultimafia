@@ -704,7 +704,7 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
       points: userStanding.points,
     };
   });
-  roundInfo.standings.sort((a, b) => b.ranking - a.ranking);
+  roundInfo.standings.sort((a, b) => a.ranking - b.ranking);
 
   // Help clients know when the next thing is going to happen
   if (roundInfo.round) {
