@@ -450,10 +450,9 @@ module.exports = class Role {
       //this.game.queueAlert(options.state + " " + this.game.getStateInfo().name)
       let stateName = this.game.getStateInfo().name;
       let stateValid = this.game.getStateInfo().name.match(options.state);
-      if(options.state == "Night" && stateName.match("Dawn")){
+      if (options.state == "Night" && stateName.match("Dawn")) {
         stateValid = true;
-      }
-      else if(options.state == "Day" && stateName.match("Dusk")){
+      } else if (options.state == "Day" && stateName.match("Dusk")) {
         stateValid = true;
       }
       if (stateValid) {
