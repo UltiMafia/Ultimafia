@@ -6,9 +6,9 @@ module.exports = class Winners {
   }
 
   findPlayerGroup(player) {
-    for (let group of this.groups) {
-      if (group.includes(player)) {
-        return group;
+    for (let group in this.groups) {
+      if (this.groups[group].includes(player)) {
+        return `${group}`;
       }
     }
     return false;

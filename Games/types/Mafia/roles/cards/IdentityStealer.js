@@ -63,7 +63,7 @@ module.exports = class IdentityStealer extends Card {
         },
       },
     ];
-
+    /*
     this.listeners = {
       death: function (player, killer, deathType) {
         let swappedPlayers = this.game
@@ -74,6 +74,7 @@ module.exports = class IdentityStealer extends Card {
         }
       },
     };
+    */
   }
 };
 
