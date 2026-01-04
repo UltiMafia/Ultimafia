@@ -112,22 +112,23 @@ export function RoleDetails({
   const Modifiers = hasModifiers ? (
     <Stack direction="column" spacing={1}>
       {roleData?.modifiers?.map((modifier, index) => (
+        let count = roleData?.modifiers.filter((m) => m == modifier).length;
         <Stack
           direction="row"
           spacing={1}
-          key={modifier.name + index}
+          key={modifier.name}
           sx={{ alignItems: "center" }}
         >
           <i className={`modifier modifier-${gameType}-${modifier.name}`} />
           <Typography>
             <span style={{ fontWeight: "bold" }}>{modifier.name}</span>:{" "}
-            {roleData?.SpecialInteractionsModifiers &&
+            {(roleData?.SpecialInteractionsModifiers &&
             roleData?.SpecialInteractionsModifiers[modifier.name]
               ? roleData?.SpecialInteractionsModifiers[modifier.name]
               : roleData?.alignment == "Event" &&
                 modifier.eventDescription != null
               ? modifier.eventDescription
-              : modifier.description}
+              : modifier.description).replace("(X)", count)}
           </Typography>
         </Stack>
       ))}
