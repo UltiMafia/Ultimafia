@@ -776,7 +776,7 @@ const modifierData = {
       internal: ["OneShot"],
       tags: ["X-Shot"],
       description:
-        "Can only perform actions X times. X is equal the number of times this modifier is added.",
+        "Can only attend secondary meetings X times. X is equal the number of times this modifier is added.",
       eventDescription: "This Event will only occur once.",
       allowDuplicate: true,
     },
@@ -802,7 +802,7 @@ const modifierData = {
       internal: ["Delayed"],
       tags: ["Delayed", "Meetings"],
       description:
-        "Cannot attend secondary meetings for the first day and night.",
+        "Cannot attend secondary meetings for the first X day(s) and night(s). X is equal the number of times this modifier is added.",
       eventDescription: "This Event will not occur on the first night.",
       incompatible: ["Suspended"],
       allowDuplicate: true,
@@ -812,7 +812,7 @@ const modifierData = {
       internal: ["Suspended"],
       tags: ["Suspended", "Meetings"],
       description:
-        "Can only attend secondary meetings for the first day and night.",
+        "Can only attend secondary meetings for the first X day(s) and night(s). X is equal the number of times this modifier is added.",
       eventDescription: "This Event can only occur on the first night.",
       allowDuplicate: true,
       incompatible: ["Delayed"],

@@ -524,13 +524,13 @@ module.exports = class MafiaGame extends Game {
     }
 
     if (finished) {
-      this.resetIdentities();
       this.events.emit("handleWinBlockers", winners);
       for (let winCheck of winQueue) {
         if (winCheck.againOnFinished) {
           winCheck.check(counts, winners, aliveCount, true);
         }
       }
+      this.resetIdentities(winners);
       // Roles with braggadocious modifiers will prevent joint wins
       this.events.emit("handleWinBlockers", winners);
       this.events.emit("handleWinWith", winners);
@@ -660,12 +660,13 @@ module.exports = class MafiaGame extends Game {
     return false;
   }
 
-  resetIdentities() {
+  resetIdentities(winners) {
     if (!this.swaps) return;
 
     for (let swap of this.swaps) {
-      swap[0].swapIdentity(swap[1]);
+      swap[0].swapIdentity(swap[1], winners);
       delete swap[1].swapped;
+      delete swap[0].swapped;
     }
 
     delete this.swaps;

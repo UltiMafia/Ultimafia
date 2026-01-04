@@ -5,6 +5,15 @@ module.exports = class Winners {
     this.players = [];
   }
 
+  findPlayerGroup(player) {
+    for (let group in this.groups) {
+      if (this.groups[group].includes(player)) {
+        return `${group}`;
+      }
+    }
+    return false;
+  }
+
   addPlayer(player, group) {
     group = group || player.role.alignment;
 

@@ -92,6 +92,7 @@ module.exports = class HauntedMask extends Item {
           }
         }
       },
+      /*
       death: function (player, killer, deathType) {
         let swappedPlayers = this.game
           .alivePlayers()
@@ -100,6 +101,7 @@ module.exports = class HauntedMask extends Item {
           this.game.resetIdentities();
         }
       },
+      */
     };
   }
 
