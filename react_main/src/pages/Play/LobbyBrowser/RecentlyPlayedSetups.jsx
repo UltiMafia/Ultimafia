@@ -37,15 +37,15 @@ export const RecentlyPlayedSetups = ({ lobby }) => {
     }
     else {
       axios
-        .get(`/api/competitive/currentRound`)
+        .get(`/api/competitive/roundInfo`)
         .then((response) => {
           const roundInfo = response.data;
-          if (roundInfo.currentRound) {
+          if (roundInfo.round) {
             const allowedSetups = roundInfo.allowedSetups.map((allowedSetup) => { 
               return { "setupDetails": allowedSetup }
             });
             setSetups(allowedSetups);
-            setTitle(`Competitive Round ${roundInfo.currentRound.number} Setups`);
+            setTitle(`Competitive Round ${roundInfo.round.number} Setups`);
           }
         });
     }

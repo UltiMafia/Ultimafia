@@ -20,9 +20,13 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import Setup from "components/Setup";
 import { NewLoading } from "pages/Welcome/NewLoading";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
+import { useSearchParams } from "react-router-dom";
 
-export const POINTS_ICON = require(`images/points.png`);
-export const PRESTIGE_ICON = require(`images/prestige.png`);
+export const QUERY_PARAM_SEASON = "season";
+export const QUERY_PARAM_ROUND = "round";
+
+const POINTS_ICON = require(`images/points.png`);
+const PRESTIGE_ICON = require(`images/prestige.png`);
 
 function Overview({ roundInfo }) {
   const [currentSeasonInfo, setCurrentSeasonInfo] = useState(null);
@@ -238,9 +242,8 @@ function GameHistory({ roundInfo }) {
 
 function SeasonRoundSelect({
   seasonNumber,
-  setSeasonNumber,
   roundNumber,
-  setRoundNumber,
+  setSearchParams,
 }) {
   const [seasonList, setSeasonList] = useState([]);
 
@@ -255,8 +258,37 @@ function SeasonRoundSelect({
   }, []);
 
   let roundList = null;
-  if (seasonNumber !== null && seasonList[seasonNumber-1]) {
+  if (seasonNumber !== "latest" && seasonList[seasonNumber-1]) {
     roundList = seasonList[seasonNumber-1].rounds;
+  }
+  else if (seasonNumber === "latest" && seasonList.length > 0) {
+    roundList = seasonList[seasonList.length-1].rounds;
+  }
+
+  function handleSeasonChange(e) {
+    const newSeasonNumber = e.target.value;
+    setSearchParams(searchParams  => {
+      if (newSeasonNumber !== "latest") {
+        searchParams.set(QUERY_PARAM_SEASON, newSeasonNumber);
+      }
+      else {
+        searchParams.delete(QUERY_PARAM_SEASON);
+      }
+      return searchParams;
+    });
+  }
+
+  function handleRoundChange(e) {
+    const newRoundNumber = e.target.value;
+    setSearchParams(searchParams  => {
+      if (newRoundNumber !== "latest") {
+        searchParams.set(QUERY_PARAM_ROUND, newRoundNumber);
+      }
+      else {
+        searchParams.delete(QUERY_PARAM_ROUND);
+      }
+      return searchParams;
+    });
   }
 
   return (
@@ -266,11 +298,11 @@ function SeasonRoundSelect({
         <Select
           labelId="season-select-label"
           id="season-select"
-          value={seasonNumber ? seasonNumber : "null"}
+          value={seasonNumber}
           label="Season"
-          onChange={(e) => setSeasonNumber(e.target.value)}
+          onChange={handleSeasonChange}
         >
-          <MenuItem value={"null"}>Latest</MenuItem>
+          <MenuItem value={"latest"}>Latest</MenuItem>
           {seasonList.map((season) => <MenuItem value={season.number} key={season.number}>{season.number}</MenuItem>)}
         </Select>
       </FormControl>
@@ -279,11 +311,11 @@ function SeasonRoundSelect({
         <Select
           labelId="round-select-label"
           id="round-select"
-          value={roundNumber ? roundNumber : "null"}
+          value={roundNumber}
           label="Round"
-          onChange={(e) => setRoundNumber(e.target.value)}
+          onChange={handleRoundChange}
         >
-          <MenuItem value={"null"}>Latest</MenuItem>
+          <MenuItem value={"latest"}>Latest</MenuItem>
           {roundList.map((round) => <MenuItem value={round.number} key={round.number}>{round.number}</MenuItem>)}
         </Select>
       </FormControl>)}
@@ -293,10 +325,12 @@ function SeasonRoundSelect({
 
 export default function Competitive() {
   const [tab, setTab] = useState("overview");
-  const [seasonNumber, setSeasonNumber] = useState(null);
-  const [roundNumber, setRoundNumber] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [currentRoundInfo, setCurrentRoundInfo] = useState(null);
   const isPhoneDevice = useIsPhoneDevice();
+
+  const seasonNumber = searchParams.get("season") ? Number.parseInt(searchParams.get("season")) : "latest";
+  const roundNumber = searchParams.get("round") ? Number.parseInt(searchParams.get("round")) : "latest";
 
   useEffect(() => {
     axios
@@ -368,9 +402,8 @@ export default function Competitive() {
         <Grid2 size={1}>
           <SeasonRoundSelect
             seasonNumber={seasonNumber}
-            setSeasonNumber={setSeasonNumber}
             roundNumber={roundNumber}
-            setRoundNumber={setRoundNumber}
+            setSearchParams={setSearchParams}
           />
         </Grid2>
         <Grid2 size={1}>

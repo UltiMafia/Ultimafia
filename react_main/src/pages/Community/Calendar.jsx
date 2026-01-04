@@ -4,10 +4,7 @@ import update from "immutability-helper";
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import { UserContext } from "../../Contexts";
-import { useErrorAlert } from "../../components/Alerts";
-import { NameWithAvatar, StatusIcon } from "../User/User";
-import { getPageNavFilterArg, PageNav } from "../../components/Nav";
-import { Time } from "../../components/Basic";
+import { QUERY_PARAM_SEASON, QUERY_PARAM_ROUND } from "../Fame/Competitive";
 import {
   Box,
   Grid,
@@ -17,13 +14,11 @@ import {
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
 
 function renderEventContent(eventInfo) {
   return(
     <>
-      <Typography>
-        {eventInfo.timeText}
-      </Typography>
       <Typography>
         {eventInfo.event.title}
       </Typography>
@@ -34,6 +29,7 @@ function renderEventContent(eventInfo) {
 export default function Calendar(props) {
   const theme = useTheme();
   const user = useContext(UserContext);
+  const navigate = useNavigate();
 
   const [events, updateEvents] = useReducer((state, action) => {
     switch (action.type) {
@@ -67,9 +63,8 @@ export default function Calendar(props) {
             endDate = new Date(round.dateCompleted);
           }
           else {
-            const offsetDate = now > round.startDate ? now : new Date(round.startDate);
-            endDate = new Date(offsetDate);
-            endDate.setDate(offsetDate.getDate() + round.remainingOpenDays);
+            endDate = new Date(round.startDate);
+            endDate.setDate(endDate.getDate() + round.currentDay + round.remainingOpenDays);
           }
           updateEvents({
             type: "add",
@@ -77,12 +72,23 @@ export default function Calendar(props) {
               title: `Competitive Season ${season.number} Round ${round.number}`,
               start: round.startDate,
               end: endDate,
+              extendedProps: {
+                urlPath: `/fame/competitive?season=${season.number}&round=${round.number}`,
+              },
             },
           });
         }
       }
     }));
   }, []);
+
+  const handleEventClick = (clickInfo) => {
+    const { urlPath } = clickInfo.event.extendedProps;
+
+    if (urlPath) {
+      navigate(urlPath);
+    }
+  };
 
   return (
     <FullCalendar
@@ -95,6 +101,7 @@ export default function Calendar(props) {
       }}
       events={events}
       eventContent={renderEventContent}
+      eventClick={handleEventClick}
     />
   );
 }
