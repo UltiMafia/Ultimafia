@@ -776,7 +776,7 @@ const modifierData = {
       internal: ["OneShot"],
       tags: ["X-Shot"],
       description:
-        "Can only perform actions X times. X is equal the number of times this modifier is added.",
+        "Can only attend secondary meetings X times. X is equal the number of times this modifier is added.",
       eventDescription: "This Event will only occur once.",
       allowDuplicate: true,
     },
