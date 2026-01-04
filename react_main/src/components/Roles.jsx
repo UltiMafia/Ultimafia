@@ -111,11 +111,11 @@ export function RoleDetails({
   const hasModifiers = roleData?.modifiers?.length;
   const Modifiers = hasModifiers ? (
     <Stack direction="column" spacing={1}>
-      {roleData?.modifiers?.map((modifier) => (
+      {roleData?.modifiers?.map((modifier, index) => (
         <Stack
           direction="row"
           spacing={1}
-          key={modifier.name}
+          key={modifier.name + index}
           sx={{ alignItems: "center" }}
         >
           <i className={`modifier modifier-${gameType}-${modifier.name}`} />
