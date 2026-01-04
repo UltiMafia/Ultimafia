@@ -290,6 +290,7 @@ router.post(
       );
       const recipient = await models.User.findOne({
         name: recipientUsername,
+        deleted: false,
       }).select("coins id");
 
       if (!recipient) {
@@ -307,7 +308,7 @@ router.post(
         { $inc: { coins: -transferAmount } }
       ).exec();
       await models.User.updateOne(
-        { name: recipientUsername },
+        { id: recipient.id },
         { $inc: { coins: transferAmount } }
       ).exec();
 
