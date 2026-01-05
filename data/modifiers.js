@@ -793,7 +793,8 @@ const modifierData = {
       category: "Visits",
       internal: ["Odd"],
       tags: ["Odd", "Meetings"],
-      description: "Can only perform secondary actions on odd days and nights. Involuntary actions are not affected.",
+      description:
+        "Can only perform secondary actions on odd days and nights. Involuntary actions are not affected.",
       eventDescription: "This Event will only occur on Odd nights.",
       incompatible: ["Even"],
     },

@@ -58,10 +58,10 @@ export function RoleDetails({
   // Gather role data and modifiers exactly like RoleCount
   const baseRoleData = siteInfo.rolesRaw?.[gameType]?.[roleName] || {};
   const source2 = Array.isArray(modifiersOverride)
-          ? modifiersOverride
-          : baseRoleData?.modifiers
-          ? baseRoleData.modifiers.split("/")
-          : [];
+    ? modifiersOverride
+    : baseRoleData?.modifiers
+    ? baseRoleData.modifiers.split("/")
+    : [];
   const mappedModifiers = siteInfo.modifiers?.[gameType]
     ? siteInfo.modifiers[gameType].filter((m) => {
         const source = Array.isArray(modifiersOverride)
@@ -72,7 +72,11 @@ export function RoleDetails({
         return source.includes(m.name);
       })
     : [];
-  const roleData = { ...baseRoleData, modifiers: mappedModifiers, modifierNameList: source2 };
+  const roleData = {
+    ...baseRoleData,
+    modifiers: mappedModifiers,
+    modifierNameList: source2,
+  };
 
   const roleClass = roleName
     ? `${hyphenDelimit(gameType)}-${hyphenDelimit(roleName)}`
@@ -116,28 +120,35 @@ export function RoleDetails({
   const hasModifiers = roleData?.modifiers?.length;
   const Modifiers = hasModifiers ? (
     <Stack direction="column" spacing={1}>
-      {roleData?.modifiers?.map((modifier, index) =>{ 
-        let count = roleData?.modifierNameList.filter((m) => m == modifier.name).length;
-      return ( 
-        <Stack
-          direction="row"
-          spacing={1}
-          key={modifier.name}
-          sx={{ alignItems: "center" }}
-        >
-          <i className={`modifier modifier-${gameType}-${modifier.name}`} />
-          <Typography>
-            <span style={{ fontWeight: "bold" }}>{count > 1 ? (modifier.name +" x"+count) : modifier.name}</span>:{" "}
-            {(roleData?.SpecialInteractionsModifiers &&
-            roleData?.SpecialInteractionsModifiers[modifier.name]
-              ? roleData?.SpecialInteractionsModifiers[modifier.name]
-              : roleData?.alignment == "Event" &&
-                modifier.eventDescription != null
-              ? modifier.eventDescription
-              : modifier.description).replace("[X]", ""+count)}
-          </Typography>
-        </Stack>
-      )})}
+      {roleData?.modifiers?.map((modifier, index) => {
+        let count = roleData?.modifierNameList.filter(
+          (m) => m == modifier.name
+        ).length;
+        return (
+          <Stack
+            direction="row"
+            spacing={1}
+            key={modifier.name}
+            sx={{ alignItems: "center" }}
+          >
+            <i className={`modifier modifier-${gameType}-${modifier.name}`} />
+            <Typography>
+              <span style={{ fontWeight: "bold" }}>
+                {count > 1 ? modifier.name + " x" + count : modifier.name}
+              </span>
+              :{" "}
+              {(roleData?.SpecialInteractionsModifiers &&
+              roleData?.SpecialInteractionsModifiers[modifier.name]
+                ? roleData?.SpecialInteractionsModifiers[modifier.name]
+                : roleData?.alignment == "Event" &&
+                  modifier.eventDescription != null
+                ? modifier.eventDescription
+                : modifier.description
+              ).replace("[X]", "" + count)}
+            </Typography>
+          </Stack>
+        );
+      })}
     </Stack>
   ) : (
     ""
@@ -369,29 +380,36 @@ export function RoleCount({
   const Modifiers = hasModifiers ? (
     <Stack direction="column" spacing={1}>
       {roleData?.modifiers?.map((modifier) => {
-       let count = roleData?.modifierNameList.filter((m) => m == modifier.name).length;
-      return (
-        <Stack
-          direction="row"
-          spacing={1}
-          key={modifier.name}
-          sx={{
-            alignItems: "center",
-          }}
-        >
-          <i className={`modifier modifier-${gameType}-${modifier.name}`} />
-          <Typography>
-            <span style={{ fontWeight: "bold" }}>{count > 1 ? (modifier.name +" x"+count) : modifier.name}</span>:{" "}
-            {(roleData?.SpecialInteractionsModifiers &&
-            roleData?.SpecialInteractionsModifiers[modifier.name]
-              ? roleData?.SpecialInteractionsModifiers[modifier.name]
-              : roleData?.alignment == "Event" &&
-                modifier.eventDescription != null
-              ? modifier.eventDescription
-              : modifier.description).replace("[X]", ""+count)}
-          </Typography>
-        </Stack>
-      )})}
+        let count = roleData?.modifierNameList.filter(
+          (m) => m == modifier.name
+        ).length;
+        return (
+          <Stack
+            direction="row"
+            spacing={1}
+            key={modifier.name}
+            sx={{
+              alignItems: "center",
+            }}
+          >
+            <i className={`modifier modifier-${gameType}-${modifier.name}`} />
+            <Typography>
+              <span style={{ fontWeight: "bold" }}>
+                {count > 1 ? modifier.name + " x" + count : modifier.name}
+              </span>
+              :{" "}
+              {(roleData?.SpecialInteractionsModifiers &&
+              roleData?.SpecialInteractionsModifiers[modifier.name]
+                ? roleData?.SpecialInteractionsModifiers[modifier.name]
+                : roleData?.alignment == "Event" &&
+                  modifier.eventDescription != null
+                ? modifier.eventDescription
+                : modifier.description
+              ).replace("[X]", "" + count)}
+            </Typography>
+          </Stack>
+        );
+      })}
     </Stack>
   ) : (
     ""
