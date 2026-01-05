@@ -57,6 +57,11 @@ export function RoleDetails({
 
   // Gather role data and modifiers exactly like RoleCount
   const baseRoleData = siteInfo.rolesRaw?.[gameType]?.[roleName] || {};
+  const source2 = Array.isArray(modifiersOverride)
+          ? modifiersOverride
+          : baseRoleData?.modifiers
+          ? baseRoleData.modifiers.split("/")
+          : [];
   const mappedModifiers = siteInfo.modifiers?.[gameType]
     ? siteInfo.modifiers[gameType].filter((m) => {
         const source = Array.isArray(modifiersOverride)
@@ -67,7 +72,7 @@ export function RoleDetails({
         return source.includes(m.name);
       })
     : [];
-  const roleData = { ...baseRoleData, modifiers: mappedModifiers };
+  const roleData = { ...baseRoleData, modifiers: mappedModifiers, modifierNameList: source2 };
 
   const roleClass = roleName
     ? `${hyphenDelimit(gameType)}-${hyphenDelimit(roleName)}`
@@ -111,8 +116,9 @@ export function RoleDetails({
   const hasModifiers = roleData?.modifiers?.length;
   const Modifiers = hasModifiers ? (
     <Stack direction="column" spacing={1}>
-      {roleData?.modifiers?.map((modifier, index) => (
-        let count = roleData?.modifiers.filter((m) => m == modifier).length;
+      {roleData?.modifiers?.map((modifier, index) =>{ 
+        let count = roleData?.modifierNameList.filter((m) => m == modifier.name).length;
+      return ( 
         <Stack
           direction="row"
           spacing={1}
@@ -121,17 +127,17 @@ export function RoleDetails({
         >
           <i className={`modifier modifier-${gameType}-${modifier.name}`} />
           <Typography>
-            <span style={{ fontWeight: "bold" }}>{modifier.name}</span>:{" "}
+            <span style={{ fontWeight: "bold" }}>{count > 1 ? (modifier.name +" x"+count) : modifier.name}</span>:{" "}
             {(roleData?.SpecialInteractionsModifiers &&
             roleData?.SpecialInteractionsModifiers[modifier.name]
               ? roleData?.SpecialInteractionsModifiers[modifier.name]
               : roleData?.alignment == "Event" &&
                 modifier.eventDescription != null
               ? modifier.eventDescription
-              : modifier.description).replace("(X)", count)}
+              : modifier.description).replace("[X]", ""+count)}
           </Typography>
         </Stack>
-      ))}
+      )})}
     </Stack>
   ) : (
     ""
@@ -313,6 +319,7 @@ export function RoleCount({
       modifiers: siteInfo.modifiers[gameType].filter((m) =>
         modifiers?.split("/").includes(m.name)
       ),
+      modifierNameList: modifiers?.split("/"),
     });
   }, [siteInfo, roleName]);
 
@@ -361,7 +368,9 @@ export function RoleCount({
   );
   const Modifiers = hasModifiers ? (
     <Stack direction="column" spacing={1}>
-      {roleData?.modifiers?.map((modifier, i) => (
+      {roleData?.modifiers?.map((modifier) => {
+       let count = roleData?.modifierNameList.filter((m) => m == modifier.name).length;
+      return (
         <Stack
           direction="row"
           spacing={1}
@@ -372,17 +381,17 @@ export function RoleCount({
         >
           <i className={`modifier modifier-${gameType}-${modifier.name}`} />
           <Typography>
-            <span style={{ fontWeight: "bold" }}>{modifier.name}</span>:{" "}
-            {roleData?.SpecialInteractionsModifiers &&
+            <span style={{ fontWeight: "bold" }}>{count > 1 ? (modifier.name +" x"+count) : modifier.name}</span>:{" "}
+            {(roleData?.SpecialInteractionsModifiers &&
             roleData?.SpecialInteractionsModifiers[modifier.name]
               ? roleData?.SpecialInteractionsModifiers[modifier.name]
               : roleData?.alignment == "Event" &&
                 modifier.eventDescription != null
               ? modifier.eventDescription
-              : modifier.description}
+              : modifier.description).replace("[X]", ""+count)}
           </Typography>
         </Stack>
-      ))}
+      )})}
     </Stack>
   ) : (
     ""
