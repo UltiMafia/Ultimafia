@@ -65,47 +65,27 @@ fbAdmin.initializeApp({
 });
 
 router.post("/", async function (req, res) {
-  try {
-    var idToken = String(req.body.idToken);
-    if (idToken) {
-      var userData = await fbAdmin.auth().verifyIdToken(idToken);
-      var verified = userData.email_verified;
+  const { idToken } = req.body;
 
-      if (verified) {
-        const authResult = await authSuccess(req, userData.uid, userData.email);
-        // Check if authSuccess actually created a session
-        if (req.session.user) {
-          res.sendStatus(200);
-        } else {
-          // authSuccess silently failed (banned IP, invalid domain, etc.)
-          res.status(403);
-          res.send("Authentication failed.");
-        }
-      } else {
-        res.status(403);
-        res.send("Authentication failed.");
-      }
+  if (typeof idToken !== "string" || idToken.length === 0) {
+    return res.status(400).send("Missing or invalid token.");
+  }
+
+  try {
+    let userData = await fbAdmin.auth().verifyIdToken(req.body.idToken);
+
+    if (!userData.email_verified) {
+      return res.status(403).send("Email not verified.");
+    }
+
+    const authResult = await authSuccess(req, userData.uid, userData.email);
+    // Check if authSuccess actually created a session
+    if (req.session.user) {
+      res.sendStatus(200);
     } else {
-      console.log("Req body: " + req.body);
-      if (req.body.discordProfile) {
-        const authResult = await authSuccess(
-          req,
-          null,
-          req.body.email,
-          req.body.discordProfile
-        );
-        // Check if authSuccess actually created a session
-        if (req.session.user) {
-          res.sendStatus(200);
-        } else {
-          // authSuccess silently failed (banned IP, invalid domain, etc.)
-          res.status(403);
-          res.send("Authentication failed.");
-        }
-      } else {
-        res.status(403);
-        res.send("Authentication failed.");
-      }
+      // authSuccess silently failed (banned IP, invalid domain, etc.)
+      res.status(403);
+      res.send("Authentication failed.");
     }
   } catch (e) {
     if (e.siteBanned) {
@@ -125,8 +105,8 @@ router.post("/", async function (req, res) {
       );
     } else {
       logger.error(e);
-      res.status(500);
-      res.send("5Authentication failed.");
+      res.status(403);
+      res.send("Authentication failed.");
     }
   }
 });
