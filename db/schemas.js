@@ -758,6 +758,9 @@ var schemas = {
       expiresAt: { type: Number, index: true },
       activeUntil: { type: Number, index: true },
       linkedBanId: { type: String, index: true },
+      appealed: { type: Boolean, default: false, index: true },
+      appealedAt: { type: Number, index: true },
+      appealedBy: { type: String, index: true },
     },
     {
       toObject: { virtuals: true },
@@ -794,6 +797,7 @@ var schemas = {
       },
       linkedViolationTicketId: { type: String, index: true },
       linkedBanId: { type: String, index: true },
+      linkedAppealId: { type: String, index: true },
       reopenedAt: { type: Number },
       reopenedBy: { type: String },
       reopenedCount: { type: Number, default: 0 },
@@ -808,6 +812,30 @@ var schemas = {
           assigneesRemoved: [String],
         },
       ],
+    },
+    {
+      toObject: { virtuals: true },
+      toJSON: { virtuals: true },
+    }
+  ),
+  Appeal: new mongoose.Schema(
+    {
+      id: { type: String, index: true, unique: true },
+      userId: { type: String, index: true },
+      reportId: { type: String, index: true },
+      violationTicketId: { type: String, index: true },
+      description: String,
+      status: {
+        type: String,
+        enum: ["pending", "approved", "rejected"],
+        default: "pending",
+        index: true,
+      },
+      reviewedBy: { type: String, index: true },
+      reviewedAt: { type: Number, index: true },
+      reviewNotes: String,
+      createdAt: { type: Number, index: true },
+      updatedAt: { type: Number, index: true },
     },
     {
       toObject: { virtuals: true },

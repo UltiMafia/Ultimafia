@@ -215,7 +215,7 @@ router.get("/season/:seasonNumber", async function (req, res) {
       seasonInfo.users[seasonStanding.userId] = {
         points: seasonStanding.points,
         user: await redis.getUserInfo(seasonStanding.userId),
-      }
+      };
     }
 
     res.json(seasonInfo);

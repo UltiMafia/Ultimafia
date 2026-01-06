@@ -31,6 +31,7 @@ if (process.env.NODE_ENV.includes("development")) {
     postStrategy: 30 * 100,
     favSetup: 500,
     fileReport: 5 * 60 * 100,
+    fileAppeal: 5 * 60 * 100,
   };
 } else {
   rates = {
@@ -45,6 +46,7 @@ if (process.env.NODE_ENV.includes("development")) {
     postStrategy: 30 * 1000,
     favSetup: 500,
     fileReport: 5 * 60 * 1000,
+    fileAppeal: 5 * 60 * 1000,
   };
 }
 
@@ -352,8 +354,7 @@ module.exports = {
   leavePenaltyDurationMillis: 259200000,
 
   minimumGamesForRanked: 5,
-  minimumPointsForCompetitive: 150,
-  //minimumPointsForCompetitive: 1000,
+  minimumPointsForCompetitive: 1000,
 
   // See: https://www.npmjs.com/package/openskill
   defaultSkillRatingMu: 750,
@@ -389,6 +390,7 @@ module.exports = {
     "giveCoins",
     "changeUsersName",
     "restoreDeletedUser",
+    "deleteViolation",
   ],
   // The list of all enabled perms
   allPerms: {
@@ -465,6 +467,7 @@ module.exports = {
     awardTrophy: true,
     deleteStrategy: true,
     seeModPanel: true,
+    deleteViolation: true,
   },
   defaultGroups: {
     Owner: {
