@@ -356,7 +356,7 @@ router.get("/:id/review/data", async function (req, res) {
         ],
       });
 
-    if (!game || !userId) {
+    if (!game) {
       res.status(500);
       res.send("Game not found");
       return;
