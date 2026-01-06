@@ -1,37 +1,34 @@
 //Common Tag is for any item that can be used by Santa, Fab, exc.
-//Party is for 
+//Party is for
 const modifierData = {
   Mafia: {
     //Killing
     Gun: {
       internal: ["Gun"],
       tags: ["Day Killer", "Common"],
-      description: "A Gun can be used during the day to kill a selected player.",
+      description:
+        "A Gun can be used during the day to kill a selected player.",
     },
     Rifle: {
       internal: ["Rifle"],
       tags: ["Day Killer", "Alignment", "Common"],
-      description:
-        `A Rifle can be used during the day to kill a selected player. If a "Rifle" kills a player of same alignment as its holder, its holder dies. If a "Rifle" kills a player of different alignment to its holder, its holder is given a Rifle.`,
+      description: `A Rifle can be used during the day to kill a selected player. If a "Rifle" kills a player of same alignment as its holder, its holder dies. If a "Rifle" kills a player of different alignment to its holder, its holder is given a Rifle.`,
     },
     Knife: {
       internal: ["Knife"],
       tags: ["Day Killer", "Bleeding", "Common"],
-      description:
-        `A Knife can be used during the day to make a selected player start "Bleeding".`,
+      description: `A Knife can be used during the day to make a selected player start "Bleeding".`,
     },
     //Reflexive/Protective
     Armor: {
       internal: ["Armor"],
       tags: ["Armor", "Common"],
-      description:
-        `Armor will protect its holder from one attack.`,
+      description: `Armor will protect its holder from one attack.`,
     },
     Key: {
       internal: ["Key"],
       tags: ["Role Blocker", "Common"],
-      description:
-        `A Key can be used at night to block the actions of anyone visits them.`,
+      description: `A Key can be used at night to block the actions of anyone visits them.`,
     },
     Tract: {
       internal: ["Tract"],
@@ -41,20 +38,17 @@ const modifierData = {
     Bomb: {
       internal: ["Bomb"],
       tags: ["Night Killer", "Common"],
-      description:
-        `If a Bomb's holder is killed, their killer is killed.`,
+      description: `If a Bomb's holder is killed, their killer is killed.`,
     },
     Shield: {
       internal: ["Shield"],
       tags: ["Shield", "Common"],
-      description:
-        `If possible, A Shield will protect its holder from one attack by redirecting it to another player who is not the attacker.`,
+      description: `If possible, A Shield will protect its holder from one attack by redirecting it to another player who is not the attacker.`,
     },
     "Crystal Ball": {
       internal: ["CrystalBall"],
       tags: ["Reveal", "Common"],
-      description:
-        `Crystal Ball allows its holder to select a player each night. If the holder dies, the last selected player will be revealed.`,
+      description: `Crystal Ball allows its holder to select a player each night. If the holder dies, the last selected player will be revealed.`,
     },
     //Info
     Candle: {
@@ -70,27 +64,23 @@ const modifierData = {
     Envelope: {
       internal: ["Envelope"],
       tags: ["Message", "Common"],
-      description:
-        `An Envelope can be used at night to send a message to a selected player.`,
+      description: `An Envelope can be used at night to send a message to a selected player.`,
     },
     //Other Town Items
     Syringe: {
       internal: ["Syringe"],
       tags: ["Revive", "Common"],
-      description:
-        `A Syringe can be used during the day to revive a selected dead player.`,
+      description: `A Syringe can be used during the day to revive a selected dead player.`,
     },
     Sceptre: {
       internal: ["Sceptre"],
       tags: ["Voting", "Common"],
-      description:
-        `A Sceptre can be used during the day to gain 10000 voting power.`,
+      description: `A Sceptre can be used during the day to gain 10000 voting power.`,
     },
     Whiskey: {
       internal: ["Whiskey"],
       tags: ["RoleBlock", "Common"],
-      description:
-        `Whiskey can be used during the day to block a selected player's actions next night.`,
+      description: `Whiskey can be used during the day to block a selected player's actions next night.`,
     },
     Bread: {
       internal: ["Bread"],
@@ -105,20 +95,17 @@ const modifierData = {
     "Yuzu Orange": {
       internal: ["Orange"],
       tags: ["Famine", "Meeting", "Common"],
-      description:
-        `An Orange can be used during the day to meet with Capybaras at night. When meeting with Capybaras no night actions can be performed.`,
+      description: `An Orange can be used during the day to meet with Capybaras at night. When meeting with Capybaras no night actions can be performed.`,
     },
     Coffee: {
       internal: ["Coffee"],
       tags: ["Common"],
-      description:
-        `Coffee can be used at night to perform their role's night actions an additional time.`,
+      description: `Coffee can be used at night to perform their role's night actions an additional time.`,
     },
     "Jack-In-The-Box": {
       internal: ["JackInTheBox"],
       tags: ["Banished Interaction", "Common"],
-      description:
-        `A Jack-In-The-Box can be used at night to gain the abilites of a Village-aligned Banished role until the next night.`,
+      description: `A Jack-In-The-Box can be used at night to gain the abilites of a Village-aligned Banished role until the next night.`,
     },
     //Non Town Items
     Suit: {
@@ -135,14 +122,12 @@ const modifierData = {
     Timebomb: {
       internal: ["Timebomb"],
       tags: ["Killing"],
-      description:
-        `A Timebomb can be passed around during the day, it will explode after 10-30 seconds.`,
+      description: `A Timebomb can be passed around during the day, it will explode after 10-30 seconds.`,
     },
     Revolver: {
       internal: ["Revolver"],
       tags: ["Killing"],
-      description:
-        `A Revolver has 6 chambers one of which has full. A Revolver must be used during the day to fire the selected chamber or a random chamber. Then pass it to another player if the chamber was empty or die if the chamber was full.`,
+      description: `A Revolver has 6 chambers one of which has full. A Revolver must be used during the day to fire the selected chamber or a random chamber. Then pass it to another player if the chamber was empty or die if the chamber was full.`,
     },
     Sockpuppet: {
       internal: ["Sockpuppet"],
@@ -159,8 +144,7 @@ const modifierData = {
     "Shaving Cream": {
       internal: ["ShavingCream"],
       tags: ["Conversion"],
-      description:
-        `Shaving Cream can be used at night to make two selected players swap roles but not alignments. A switch fails if one of the players is an Independent role.`,
+      description: `Shaving Cream can be used at night to make two selected players swap roles but not alignments. A switch fails if one of the players is an Independent role.`,
     },
     "Fishing Rod": {
       internal: ["FishingRod"],
@@ -170,8 +154,7 @@ const modifierData = {
     Snowball: {
       internal: ["Snowball"],
       tags: ["Conversion"],
-      description:
-        `Snowballs can be used during the day to make a player "Frozen".`,
+      description: `Snowballs can be used during the day to make a player "Frozen".`,
     },
     "Ice Cream": {
       internal: ["IceCream"],
