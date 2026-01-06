@@ -206,14 +206,16 @@ router.get("/season/:seasonNumber", async function (req, res) {
     seasonInfo.standings = await models.CompetitiveSeasonStanding.find({
       season: seasonNumber,
     })
+      .select("userId points tiebreakerPoints")
       .sort({ points: -1 })
       .limit(10)
       .lean();
 
     for (const seasonStanding of seasonInfo.standings) {
-      seasonInfo.users[seasonStanding.userId] = await redis.getUserInfo(
-        seasonStanding.userId
-      );
+      seasonInfo.users[seasonStanding.userId] = {
+        points: seasonStanding.points,
+        user: await redis.getUserInfo(seasonStanding.userId),
+      }
     }
 
     res.json(seasonInfo);
