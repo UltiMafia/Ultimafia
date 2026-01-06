@@ -1,3 +1,4 @@
+const itemData = require("./items");
 const {
   // WINCHECK PRIORITY
   PRIORITY_WIN_CHECK_DEFAULT,
@@ -116,14 +117,14 @@ const foggyDef = `Players who are "Foggy" can only see their neighbors messages.
 const lovesickDef = `Players who are "Lovesick" for another player, will die if that player dies.`;
 
 //Item Def
-const coffeeDef = `Coffee can be used at night to perform their role's night actions an additional time.`;
+const coffeeDef = itemData["Mafia"]["Coffee"];
 const breadDef = `Bread is consumed during a famine to prevent death.`;
 const armorDef = `Armor will protect its holder from one attack.`;
 const candleDef = `A Candle will tell its holder who visited them during the night.`;
 const knifeDef = `A Knife can be used during the day to make a selected player start "Bleeding".`;
 const bombDef = `If a Bomb's holder is killed, their killer is killed.`;
 const keyDef = `A Key can be used at night to block the actions of anyone visits them.`;
-const shieldDef = `If possible, A Shield will protect its holder from one attack by redirecting it to another player whose alignment differs from the killer.`;
+const shieldDef = `If possible, A Shield will protect its holder from one attack by redirecting it to another player who is not the attacker.`;
 const whiskeyDef = `Whiskey can be used during the day to block a selected player's actions next night.`;
 const crystalBallDef = `Crystal Ball allows its holder to select a player each night. If the holder dies, the last selected player will be revealed.`;
 const falconDef = `A Falcon can be used at night to learn who a selected player visits.`;
