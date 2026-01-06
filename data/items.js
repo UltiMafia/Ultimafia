@@ -1,122 +1,124 @@
+//Common Tag is for any item that can be used by Santa, Fab, exc.
+//Party is for 
 const modifierData = {
   Mafia: {
     //Killing
     Gun: {
       internal: ["Gun"],
-      tags: ["Day Killer"],
-      description: "Can be shot once during the day to kill a specific player.",
+      tags: ["Day Killer", "Common"],
+      description: "A Gun can be used during the day to kill a selected player.",
     },
     Rifle: {
       internal: ["Rifle"],
-      tags: ["Day Killer", "alignment"],
+      tags: ["Day Killer", "Alignment", "Common"],
       description:
-        "Can be shot once during the day to kill a specific player. If target shares alignment with shooter, shooter will die too. If target is of an opposing alignment, shooter gains another rifle. Otherwise, nothing happens.",
+        `A Rifle can be used during the day to kill a selected player. If a "Rifle" kills a player of same alignment as its holder, its holder dies. If a "Rifle" kills a player of different alignment to its holder, its holder is given a Rifle.`,
     },
     Knife: {
       internal: ["Knife"],
-      tags: ["Day Killer", "Bleeding"],
+      tags: ["Day Killer", "Bleeding", "Common"],
       description:
-        "Can be used once during the day to stab a specific player, who will bleed out and die the following night.",
+        `A Knife can be used during the day to make a selected player start "Bleeding".`,
     },
     //Reflexive/Protective
     Armor: {
       internal: ["Armor"],
-      tags: ["Armor"],
+      tags: ["Armor", "Common"],
       description:
-        "Saves a player from being killed one time, not including being condemned.",
+        `Armor will protect its holder from one attack.`,
     },
     Key: {
       internal: ["Key"],
-      tags: ["Role Blocker"],
+      tags: ["Role Blocker", "Common"],
       description:
-        "Can be used once during the night to make the player untargetable. All actions on the player are cancelled.",
+        `A Key can be used at night to block the actions of anyone visits them.`,
     },
     Tract: {
       internal: ["Tract"],
-      tags: ["Tract"],
-      description: "Saves a player from being converted one time",
+      tags: ["Tract", "Common"],
+      description: `A Tract will prevent its holder from being converted one time.`,
     },
     Bomb: {
       internal: ["Bomb"],
-      tags: ["Night Killer"],
+      tags: ["Night Killer", "Common"],
       description:
-        "When a player is killed while holding a bomb, the player who killed them will also die.",
+        `If a Bomb's holder is killed, their killer is killed.`,
     },
     Shield: {
       internal: ["Shield"],
-      tags: ["Shield"],
+      tags: ["Shield", "Common"],
       description:
-        "Can be used at night to redirect kill targeting the holder on to a random player of the same alignment if possible",
+        `If possible, A Shield will protect its holder from one attack by redirecting it to another player who is not the attacker.`,
     },
     "Crystal Ball": {
       internal: ["CrystalBall"],
-      tags: ["Reveal"],
+      tags: ["Reveal", "Common"],
       description:
-        "The holder of the crystal ball can choose a person each night and if they die, their target's role will be revealed.",
+        `Crystal Ball allows its holder to select a player each night. If the holder dies, the last selected player will be revealed.`,
     },
     //Info
     Candle: {
       internal: ["Candle"],
-      tags: ["Visits"],
-      description: "Allows the holder to see all their visitors at night.",
+      tags: ["Visits", "Common"],
+      description: `A Candle will tell its holder who visited them during the night.`,
     },
     Falcon: {
       internal: ["Falcon"],
-      tags: ["Visits"],
-      description: "Can be used to track another player during the night.",
+      tags: ["Visits", "Common"],
+      description: `A Falcon can be used at night to learn who a selected player visits.`,
     },
     Envelope: {
       internal: ["Envelope"],
-      tags: ["Message"],
+      tags: ["Message", "Common"],
       description:
-        "Can be used at night to send an anonymous letter to another player.",
+        `An Envelope can be used at night to send a message to a selected player.`,
     },
     //Other Town Items
     Syringe: {
       internal: ["Syringe"],
-      tags: ["Revive"],
+      tags: ["Revive", "Common"],
       description:
-        "Can be shot once during the day to resurrect a specific player.",
+        `A Syringe can be used during the day to revive a selected dead player.`,
     },
     Sceptre: {
       internal: ["Sceptre"],
-      tags: ["Voting"],
+      tags: ["Voting", "Common"],
       description:
-        "Can be used to overrides other voters and determine the condemnation.",
+        `A Sceptre can be used during the day to gain 10000 voting power.`,
     },
     Whiskey: {
       internal: ["Whiskey"],
-      tags: ["RoleBlock"],
+      tags: ["RoleBlock", "Common"],
       description:
-        "Can be used once during the day on a specific player, who will be roleblocked the following night.",
+        `Whiskey can be used during the day to block a selected player's actions next night.`,
     },
     Bread: {
       internal: ["Bread"],
-      tags: ["Famine"],
-      description: "Counts as 1 ration for each phase in a famine.",
+      tags: ["Famine", "Common"],
+      description: `Bread is consumed during a famine to prevent death.`,
     },
     Food: {
       internal: ["Food"],
-      tags: ["Famine"],
-      description: "Counts as 1 ration for each phase in a famine.",
+      tags: ["Famine", "Common"],
+      description: `Food is consumed during a famine to prevent death.`,
     },
     "Yuzu Orange": {
       internal: ["Orange"],
-      tags: ["Famine", "Meeting"],
+      tags: ["Famine", "Meeting", "Common"],
       description:
-        "Given out by the Capybara to invite players to relax at the hot springs. Counts as 1 ration for each phase in a famine.",
+        `An Orange can be used during the day to meet with Capybaras at night. When meeting with Capybaras no night actions can be performed.`,
     },
     Coffee: {
       internal: ["Coffee"],
-      tags: ["actions"],
+      tags: ["Common"],
       description:
-        "Can be used at night to use role abilities an additional time.",
+        `Coffee can be used at night to perform their role's night actions an additional time.`,
     },
     "Jack-In-The-Box": {
       internal: ["JackInTheBox"],
-      tags: ["actions"],
+      tags: ["Banished Interaction", "Common"],
       description:
-        "Can be used at night to gain the abilites of a Village-aligned Banished role until the next night.",
+        `A Jack-In-The-Box can be used at night to gain the abilites of a Village-aligned Banished role until the next night.`,
     },
     //Non Town Items
     Suit: {
@@ -134,13 +136,13 @@ const modifierData = {
       internal: ["Timebomb"],
       tags: ["Killing"],
       description:
-        "Players pass the timebomb around during the day. The timebomb will randomly explode between 10 and 30 seconds and kill the person holding the bomb.",
+        `A Timebomb can be passed around during the day, it will explode after 10-30 seconds.`,
     },
     Revolver: {
       internal: ["Revolver"],
       tags: ["Killing"],
       description:
-        "One chamber of 6 chambers has a bullet. Players must shoot or spin and shoot the revolver. Spinning will randomize which chamber the gun is on. Shooting an empty chamber passes the Revolver to player below them on the list.",
+        `A Revolver has 6 chambers one of which has full. A Revolver must be used during the day to fire the selected chamber or a random chamber. Then pass it to another player if the chamber was empty or die if the chamber was full.`,
     },
     Sockpuppet: {
       internal: ["Sockpuppet"],
@@ -150,7 +152,7 @@ const modifierData = {
     },
     Kite: {
       internal: ["Kite"],
-      tags: ["Killing", "alignment"],
+      tags: ["Killing", "Alignment"],
       description:
         "Can be used to kill a random player who shares an alignment with the Holder.",
     },
@@ -158,7 +160,7 @@ const modifierData = {
       internal: ["ShavingCream"],
       tags: ["Conversion"],
       description:
-        "Can be used at night to switch two players roles, Their alignments will not change.",
+        `Shaving Cream can be used at night to make two selected players swap roles but not alignments. A switch fails if one of the players is an Independent role.`,
     },
     "Fishing Rod": {
       internal: ["FishingRod"],
@@ -169,7 +171,7 @@ const modifierData = {
       internal: ["Snowball"],
       tags: ["Conversion"],
       description:
-        "Can be used once during the day on a specific player, who will be roleblocked and unable to vote until visited.",
+        `Snowballs can be used during the day to make a player "Frozen".`,
     },
     "Ice Cream": {
       internal: ["IceCream"],
