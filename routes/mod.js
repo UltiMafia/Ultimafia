@@ -511,6 +511,23 @@ router.post("/ban", async (req, res) => {
     }
 
     const banExpires = new Date(Date.now() + length);
+
+    // Whitelist of valid ban types to prevent prototype pollution
+    const validBanTypes = [
+      "forum",
+      "chat",
+      "game",
+      "ranked",
+      "competitive",
+      "site",
+    ];
+
+    if (!validBanTypes.includes(banType)) {
+      res.status(400);
+      res.send("Invalid ban type.");
+      return;
+    }
+
     const banTypeLabels = {
       forum: "forum",
       chat: "chat",
@@ -538,16 +555,32 @@ router.post("/ban", async (req, res) => {
       site: "site",
     };
 
-    if (!banPermissions[banType]) {
-      res.status(400);
-      res.send("Invalid ban type.");
+    // Get all alt account IDs (accounts sharing IPs)
+    const allAltAccountIds = await routeUtils.getAltAccountIds(userIdToBan);
+
+    // Get mod's rank to validate which alt accounts can be banned
+    const modRank = await redis.getUserRank(userId);
+    if (modRank == null) {
+      res.status(500);
+      res.send("Error getting moderator rank.");
       return;
     }
 
-    // Get all alt account IDs (accounts sharing IPs)
-    const altAccountIds = await routeUtils.getAltAccountIds(userIdToBan);
+    // Filter alt accounts to only include those the mod has permission to ban
+    // (only ban accounts with same or lower rank)
+    const altAccountIds = [];
+    for (const altUserId of allAltAccountIds) {
+      const altRank = await redis.getUserRank(altUserId);
+      // If alt account rank is null, treat it as 0 (lowest rank)
+      const altRankValue = altRank == null ? 0 : altRank;
+      // Only ban if mod rank >= alt account rank (same or lower rank)
+      if (modRank >= altRankValue) {
+        altAccountIds.push(altUserId);
+      }
+    }
 
-    // Apply ban to all alt accounts
+    // Apply ban to filtered alt accounts only
+    // Safe to use banType here since it's been validated against whitelist
     const banPromises = altAccountIds.map((altUserId) =>
       routeUtils.banUser(
         altUserId,
@@ -576,7 +609,7 @@ router.post("/ban", async (req, res) => {
         } ban expires on ${banExpires.toLocaleString()}.`,
         icon: "ban",
       },
-      altAccountIds // Notify all alt accounts
+      altAccountIds // Notify only banned alt accounts
     );
 
     const modActionNames = {
@@ -679,6 +712,22 @@ router.post("/unban", async (req, res) => {
     if (!(await routeUtils.verifyPermission(res, userId, perm, rank + 1)))
       return;
 
+    // Whitelist of valid ban types to prevent prototype pollution
+    const validBanTypes = [
+      "forum",
+      "chat",
+      "game",
+      "ranked",
+      "competitive",
+      "site",
+    ];
+
+    if (!validBanTypes.includes(banType)) {
+      res.status(400);
+      res.send("Invalid ban type.");
+      return;
+    }
+
     const banDbTypes = {
       forum: "forum",
       chat: "chat",
@@ -687,12 +736,6 @@ router.post("/unban", async (req, res) => {
       competitive: "playCompetitive",
       site: "site",
     };
-
-    if (!banDbTypes[banType]) {
-      res.status(400);
-      res.send("Invalid ban type.");
-      return;
-    }
 
     await models.Ban.deleteMany({
       userId: userIdToActOn,
@@ -2807,6 +2850,21 @@ router.post("/reports/:id/complete", async (req, res) => {
         banLengthMs = 0; // 0 means permanent in banUser function
       }
 
+      // Whitelist of valid ban types to prevent prototype pollution
+      const validBanTypes = [
+        "forum",
+        "chat",
+        "game",
+        "ranked",
+        "competitive",
+        "site",
+      ];
+
+      if (!validBanTypes.includes(finalRuling.banType)) {
+        res.status(400).send("Invalid ban type.");
+        return;
+      }
+
       // Determine permissions to ban based on banType (matching existing /ban endpoint)
       const banPermissions = {
         forum: [
@@ -2832,13 +2890,9 @@ router.post("/reports/:id/complete", async (req, res) => {
         site: "site",
       };
 
+      // Safe to use finalRuling.banType here since it's been validated against whitelist
       const permissions = banPermissions[finalRuling.banType];
       const banDbType = banDbTypes[finalRuling.banType];
-
-      if (!permissions) {
-        res.status(400).send("Invalid ban type.");
-        return;
-      }
 
       // Check if admin has permission to ban this user
       const targetRank = await redis.getUserRank(report.reportedUserId);

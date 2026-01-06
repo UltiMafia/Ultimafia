@@ -776,7 +776,7 @@ const modifierData = {
       internal: ["OneShot"],
       tags: ["X-Shot"],
       description:
-        "Can only attend secondary meetings X times. X is equal the number of times this modifier is added.",
+        "Can only perform secondary actions [X] time(s). Involuntary actions are not affected.",
       eventDescription: "This Event will only occur once.",
       allowDuplicate: true,
     },
@@ -785,7 +785,7 @@ const modifierData = {
       internal: ["Even"],
       tags: ["Even", "Meetings"],
       description:
-        "Can only attend secondary meetings on even days and nights.",
+        "Can only perform secondary actions on even days and nights. Involuntary actions are not affected.",
       eventDescription: "This Event will only occur on Even nights.",
       incompatible: ["Odd", "Delayed"],
     },
@@ -793,7 +793,8 @@ const modifierData = {
       category: "Visits",
       internal: ["Odd"],
       tags: ["Odd", "Meetings"],
-      description: "Can only attend secondary meetings on odd days and nights.",
+      description:
+        "Can only perform secondary actions on odd days and nights. Involuntary actions are not affected.",
       eventDescription: "This Event will only occur on Odd nights.",
       incompatible: ["Even"],
     },
@@ -802,7 +803,7 @@ const modifierData = {
       internal: ["Delayed"],
       tags: ["Delayed", "Meetings"],
       description:
-        "Cannot attend secondary meetings for the first X day(s) and night(s). X is equal the number of times this modifier is added.",
+        "Cannot perform secondary actions for the first [X] day(s) and night(s). Involuntary actions are not affected.",
       eventDescription: "This Event will not occur on the first night.",
       incompatible: ["Suspended"],
       allowDuplicate: true,
@@ -812,7 +813,7 @@ const modifierData = {
       internal: ["Suspended"],
       tags: ["Suspended", "Meetings"],
       description:
-        "Can only attend secondary meetings for the first X day(s) and night(s). X is equal the number of times this modifier is added.",
+        "Can only perform secondary actions for the first [X] day(s) and night(s). Involuntary actions are not affected.",
       eventDescription: "This Event can only occur on the first night.",
       allowDuplicate: true,
       incompatible: ["Delayed"],
