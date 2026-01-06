@@ -35,16 +35,15 @@ function Overview({ roundInfo, seasonInfo }) {
   const isPhoneDevice = useIsPhoneDevice();
 
   return (
-    <Grid2
-      container
-      columns={isPhoneDevice ? 1 : 3}
-      spacing={1}
-    >
+    <Grid2 container columns={isPhoneDevice ? 1 : 3} spacing={1}>
       <Grid2 size={1}>
-        <Paper elevation={2} sx={{
-          p: 2,
-          height: "100%",
-        }}>
+        <Paper
+          elevation={2}
+          sx={{
+            p: 2,
+            height: "100%",
+          }}
+        >
           <Stack
             direction="column"
             spacing={1}
@@ -74,9 +73,12 @@ function Overview({ roundInfo, seasonInfo }) {
                       avatar={user.avatar}
                     />
                   </Box>
-                  <Typography variant="body2" sx={{
-                    lineHeight: "1",
-                  }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      lineHeight: "1",
+                    }}
+                  >
                     {seasonStanding.points}
                   </Typography>
                   <Tooltip title="prestige">
@@ -87,9 +89,12 @@ function Overview({ roundInfo, seasonInfo }) {
                       height="16px"
                     />
                   </Tooltip>
-                  <Typography variant="body2" sx={{
-                    lineHeight: "1",
-                  }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      lineHeight: "1",
+                    }}
+                  >
                     {seasonStanding.tiebreakerPoints}
                   </Typography>
                   <Tooltip title="fortune">
@@ -107,10 +112,13 @@ function Overview({ roundInfo, seasonInfo }) {
         </Paper>
       </Grid2>
       <Grid2 size={1}>
-        <Paper elevation={2} sx={{
-          p: 2,
-          height: "100%",
-        }}>
+        <Paper
+          elevation={2}
+          sx={{
+            p: 2,
+            height: "100%",
+          }}
+        >
           <Stack
             direction="column"
             spacing={1}
@@ -143,9 +151,12 @@ function Overview({ roundInfo, seasonInfo }) {
                       avatar={user.avatar}
                     />
                   </Box>
-                  <Typography variant="body2" sx={{
-                    lineHeight: "1",
-                  }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      lineHeight: "1",
+                    }}
+                  >
                     {points}
                   </Typography>
                   <Tooltip title="fortune">
@@ -156,9 +167,12 @@ function Overview({ roundInfo, seasonInfo }) {
                       height="16px"
                     />
                   </Tooltip>
-                  <Typography variant="body2" sx={{
-                    lineHeight: "1",
-                  }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      lineHeight: "1",
+                    }}
+                  >
                     {gamesPlayed}
                   </Typography>
                   <Tooltip title="games played">
@@ -177,11 +191,14 @@ function Overview({ roundInfo, seasonInfo }) {
         </Paper>
       </Grid2>
       <Grid2 size={1}>
-        <Paper elevation={2} sx={{
-          p: 2,
-          maxHeight: "calc(10*var(--mui-spacing) + 10*40px)",
-          overflowY: "scroll",
-        }}>
+        <Paper
+          elevation={2}
+          sx={{
+            p: 2,
+            maxHeight: "calc(10*var(--mui-spacing) + 10*40px)",
+            overflowY: "scroll",
+          }}
+        >
           <Stack direction="column" spacing={1}>
             {seasonInfo.setupOrder.map((roundSetups, i) => (
               <Stack direction="column" spacing={1} key={i}>
@@ -218,10 +235,13 @@ function GameHistory({ roundInfo }) {
         <Stack direction="column" spacing={1} key={day}>
           <Typography variant="h3">Day {day}</Typography>
           {currentRoundGamesByDay[day].map((gameCompletion) => (
-            <Paper elevation={2} sx={{
-              p: 2,
-              height: "100%",
-            }}>
+            <Paper
+              elevation={2}
+              sx={{
+                p: 2,
+                height: "100%",
+              }}
+            >
               <Grid2
                 container
                 columns={isPhoneDevice ? 1 : 2}
@@ -457,9 +477,13 @@ export default function Competitive() {
         }}
       >
         <Grid2 size={1}>
-          <Stack direction="column" spacing={0.5} sx={{
-            alignItems: "center",
-          }}>
+          <Stack
+            direction="column"
+            spacing={0.5}
+            sx={{
+              alignItems: "center",
+            }}
+          >
             <Typography variant="h2">{displayTitle}</Typography>
             {caption && (
               <Typography
@@ -481,73 +505,95 @@ export default function Competitive() {
             setSearchParams={setSearchParams}
           />
         </Grid2>
-        {user.loggedIn && (<Grid2 size={1}>
-          <Stack direction="row" spacing={1} sx={{
-            alignItems: "center",
-            borderRadius: 1,
-            borderWidth: 1,
-            borderStyle: "solid",
-            borderColor: "divider",
-            p: 1,
-          }}>
-            <Avatar
-              id={user.id}
-              hasImage={user.avatar}
-              name={user.name}
-              isSquare
-            />
-            <Stack direction="column" spacing={0}>
-              <Typography>
-                {user.name}
-              </Typography>
-              <Stack direction="row" spacing={1}>
-                <Stack Stack direction="row" spacing={0.5} sx={{
-                  alignItems: "center",
-                }}>
-                  <Typography variant="body2" sx={{
-                    lineHeight: "1",
-                  }}>
-                    {currentSeasonInfo.users[user.id]?.points || 0}
-                  </Typography>
-                  <Tooltip title="prestige">
-                    <img
-                      src={PRESTIGE_ICON}
-                      alt="Prestige"
-                      width="16px"
-                      height="16px"
-                    />
-                  </Tooltip>
-                </Stack>
-                {currentRoundInfo.users && (
-                  <Stack Stack direction="row" spacing={0.5} sx={{
-                    alignItems: "center",
-                  }}>
-                    <Typography variant="body2" sx={{
-                      lineHeight: "1",
-                    }}>
-                      {currentRoundInfo.users[user.id]?.points || 0}
+        {user.loggedIn && (
+          <Grid2 size={1}>
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                alignItems: "center",
+                borderRadius: 1,
+                borderWidth: 1,
+                borderStyle: "solid",
+                borderColor: "divider",
+                p: 1,
+              }}
+            >
+              <Avatar
+                id={user.id}
+                hasImage={user.avatar}
+                name={user.name}
+                isSquare
+              />
+              <Stack direction="column" spacing={0}>
+                <Typography>{user.name}</Typography>
+                <Stack direction="row" spacing={1}>
+                  <Stack
+                    Stack
+                    direction="row"
+                    spacing={0.5}
+                    sx={{
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        lineHeight: "1",
+                      }}
+                    >
+                      {currentSeasonInfo.users[user.id]?.points || 0}
                     </Typography>
-                    <Tooltip title="fortune">
+                    <Tooltip title="prestige">
                       <img
-                        src={POINTS_ICON}
-                        alt="Fortune"
+                        src={PRESTIGE_ICON}
+                        alt="Prestige"
                         width="16px"
                         height="16px"
                       />
                     </Tooltip>
                   </Stack>
-                )}
+                  {currentRoundInfo.users && (
+                    <Stack
+                      Stack
+                      direction="row"
+                      spacing={0.5}
+                      sx={{
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          lineHeight: "1",
+                        }}
+                      >
+                        {currentRoundInfo.users[user.id]?.points || 0}
+                      </Typography>
+                      <Tooltip title="fortune">
+                        <img
+                          src={POINTS_ICON}
+                          alt="Fortune"
+                          width="16px"
+                          height="16px"
+                        />
+                      </Tooltip>
+                    </Stack>
+                  )}
+                </Stack>
               </Stack>
+              <Box
+                sx={{
+                  marginLeft: "auto !important",
+                }}
+              >
+                <IconButton component={Link} to="faq" aria-label="faq">
+                  <i className="fas fa-question-circle" />
+                </IconButton>
+              </Box>
             </Stack>
-            <Box sx={{
-              marginLeft: "auto !important",
-            }}>
-              <IconButton component={Link} to="faq" aria-label="faq">
-                <i className="fas fa-question-circle" />
-              </IconButton>
-            </Box>
-          </Stack>
-        </Grid2>)}
+          </Grid2>
+        )}
       </Grid2>
       {currentRoundInfo.round && (
         <>
@@ -566,7 +612,10 @@ export default function Competitive() {
             )}
           </Tabs>
           <Box sx={{ display: tab === "overview" ? undefined : "none" }}>
-            <Overview roundInfo={currentRoundInfo} seasonInfo={currentSeasonInfo} />
+            <Overview
+              roundInfo={currentRoundInfo}
+              seasonInfo={currentSeasonInfo}
+            />
           </Box>
           <Box sx={{ display: tab === "gameHistory" ? undefined : "none" }}>
             <GameHistory roundInfo={currentRoundInfo} />
