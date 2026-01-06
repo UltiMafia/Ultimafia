@@ -511,10 +511,17 @@ router.post("/ban", async (req, res) => {
     }
 
     const banExpires = new Date(Date.now() + length);
-    
+
     // Whitelist of valid ban types to prevent prototype pollution
-    const validBanTypes = ["forum", "chat", "game", "ranked", "competitive", "site"];
-    
+    const validBanTypes = [
+      "forum",
+      "chat",
+      "game",
+      "ranked",
+      "competitive",
+      "site",
+    ];
+
     if (!validBanTypes.includes(banType)) {
       res.status(400);
       res.send("Invalid ban type.");
@@ -706,8 +713,15 @@ router.post("/unban", async (req, res) => {
       return;
 
     // Whitelist of valid ban types to prevent prototype pollution
-    const validBanTypes = ["forum", "chat", "game", "ranked", "competitive", "site"];
-    
+    const validBanTypes = [
+      "forum",
+      "chat",
+      "game",
+      "ranked",
+      "competitive",
+      "site",
+    ];
+
     if (!validBanTypes.includes(banType)) {
       res.status(400);
       res.send("Invalid ban type.");
@@ -2880,8 +2894,15 @@ router.post("/reports/:id/complete", async (req, res) => {
       }
 
       // Whitelist of valid ban types to prevent prototype pollution
-      const validBanTypes = ["forum", "chat", "game", "ranked", "competitive", "site"];
-      
+      const validBanTypes = [
+        "forum",
+        "chat",
+        "game",
+        "ranked",
+        "competitive",
+        "site",
+      ];
+
       if (!validBanTypes.includes(finalRuling.banType)) {
         res.status(400).send("Invalid ban type.");
         return;
@@ -3239,11 +3260,11 @@ router.post("/appeals/:id/approve", async (req, res) => {
     }
 
     // Create mod action
-    await routeUtils.createModAction(
-      userId,
-      "Approve Appeal",
-      [appealId, appeal.reportId, appeal.violationTicketId]
-    );
+    await routeUtils.createModAction(userId, "Approve Appeal", [
+      appealId,
+      appeal.reportId,
+      appeal.violationTicketId,
+    ]);
 
     res.send({ appeal, violationTicket });
   } catch (e) {
@@ -3304,11 +3325,11 @@ router.post("/appeals/:id/reject", async (req, res) => {
     }
 
     // Create mod action
-    await routeUtils.createModAction(
-      userId,
-      "Reject Appeal",
-      [appealId, appeal.reportId, appeal.violationTicketId]
-    );
+    await routeUtils.createModAction(userId, "Reject Appeal", [
+      appealId,
+      appeal.reportId,
+      appeal.violationTicketId,
+    ]);
 
     res.send({ appeal });
   } catch (e) {
@@ -3371,11 +3392,11 @@ router.post("/reports/:id/rule", async (req, res) => {
     await report.save();
 
     // Create mod action
-    await routeUtils.createModAction(
-      userId,
-      "Update Report Rule",
-      [reportId, oldRule, rule]
-    );
+    await routeUtils.createModAction(userId, "Update Report Rule", [
+      reportId,
+      oldRule,
+      rule,
+    ]);
 
     res.send({ report });
   } catch (e) {

@@ -2567,7 +2567,9 @@ router.post("/appeals", async function (req, res) {
     }).lean();
 
     if (!report) {
-      res.status(404).send("Report not found or you don't have permission to appeal it.");
+      res
+        .status(404)
+        .send("Report not found or you don't have permission to appeal it.");
       return;
     }
 
@@ -2585,7 +2587,9 @@ router.post("/appeals", async function (req, res) {
     });
 
     if (existingAppeal) {
-      res.status(400).send("You already have a pending appeal for this violation.");
+      res
+        .status(400)
+        .send("You already have a pending appeal for this violation.");
       return;
     }
 
@@ -2597,7 +2601,9 @@ router.post("/appeals", async function (req, res) {
     });
 
     if (approvedAppeal) {
-      res.status(400).send("This violation has already been successfully appealed.");
+      res
+        .status(400)
+        .send("This violation has already been successfully appealed.");
       return;
     }
 

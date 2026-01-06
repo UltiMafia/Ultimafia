@@ -109,4 +109,3 @@ export default function AppealDialog({ open, onClose, report, onSuccess }) {
     </Dialog>
   );
 }
-

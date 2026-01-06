@@ -96,7 +96,10 @@ export default function ReportDetail({
 
   const handleComplete = async () => {
     if (!finalRuling.banType) {
-      siteInfo.showAlert("Please select a ban type or dismiss the report.", "error");
+      siteInfo.showAlert(
+        "Please select a ban type or dismiss the report.",
+        "error"
+      );
       return;
     }
 
@@ -230,9 +233,7 @@ export default function ReportDetail({
                 </Box>
               )}
               <Box>
-                <Typography color="textSecondary">
-                  Rule Broken
-                </Typography>
+                <Typography color="textSecondary">Rule Broken</Typography>
                 {user.perms?.seeModPanel && report.status !== "complete" ? (
                   <FormControl fullWidth sx={{ mt: 1 }}>
                     <Select
@@ -452,7 +453,10 @@ export default function ReportDetail({
                             `/api/mod/appeals/${report.appeal.id}/approve`,
                             { notes: appealNotes }
                           );
-                          siteInfo.showAlert("Appeal approved successfully", "success");
+                          siteInfo.showAlert(
+                            "Appeal approved successfully",
+                            "success"
+                          );
                           setAppealNotes("");
                           if (onUpdate) onUpdate();
                           // Reload report
@@ -480,7 +484,10 @@ export default function ReportDetail({
                             `/api/mod/appeals/${report.appeal.id}/reject`,
                             { notes: appealNotes }
                           );
-                          siteInfo.showAlert("Appeal rejected successfully", "success");
+                          siteInfo.showAlert(
+                            "Appeal rejected successfully",
+                            "success"
+                          );
                           setAppealNotes("");
                           if (onUpdate) onUpdate();
                           // Reload report
@@ -663,7 +670,9 @@ export default function ReportDetail({
                 }
                 required
               >
-                <MenuItem value="dismiss">Dismiss Report (No Violation)</MenuItem>
+                <MenuItem value="dismiss">
+                  Dismiss Report (No Violation)
+                </MenuItem>
                 <MenuItem value="site">Site</MenuItem>
                 <MenuItem value="game">Game</MenuItem>
                 <MenuItem value="chat">Chat</MenuItem>

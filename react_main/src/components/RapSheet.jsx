@@ -390,7 +390,9 @@ export default function RapSheet({ userId }) {
                                 }
 
                                 try {
-                                  setDeletingViolation(report.linkedViolationTicketId);
+                                  setDeletingViolation(
+                                    report.linkedViolationTicketId
+                                  );
                                   await axios.delete(
                                     `/api/mod/violations/${report.linkedViolationTicketId}`
                                   );
@@ -414,7 +416,8 @@ export default function RapSheet({ userId }) {
                                 }
                               }}
                               disabled={
-                                deletingViolation === report.linkedViolationTicketId
+                                deletingViolation ===
+                                report.linkedViolationTicketId
                               }
                             >
                               <i className="fas fa-trash" />
