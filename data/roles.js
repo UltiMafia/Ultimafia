@@ -2457,7 +2457,7 @@ const roleData = {
       category: "Essential",
       tags: ["Setup Changes", "Advanced", "Win Con"],
       description: [
-        "If more then half the number of Senators in play die, Mafia/Cult wins.",
+        "If more then half of the Senators in play die, Mafia/Cult wins.",
         "Adds 2 to 4 Senators in closed setups.",
       ],
     },
