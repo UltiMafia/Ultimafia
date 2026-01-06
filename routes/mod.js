@@ -511,17 +511,10 @@ router.post("/ban", async (req, res) => {
     }
 
     const banExpires = new Date(Date.now() + length);
-
+    
     // Whitelist of valid ban types to prevent prototype pollution
-    const validBanTypes = [
-      "forum",
-      "chat",
-      "game",
-      "ranked",
-      "competitive",
-      "site",
-    ];
-
+    const validBanTypes = ["forum", "chat", "game", "ranked", "competitive", "site"];
+    
     if (!validBanTypes.includes(banType)) {
       res.status(400);
       res.send("Invalid ban type.");
@@ -713,15 +706,8 @@ router.post("/unban", async (req, res) => {
       return;
 
     // Whitelist of valid ban types to prevent prototype pollution
-    const validBanTypes = [
-      "forum",
-      "chat",
-      "game",
-      "ranked",
-      "competitive",
-      "site",
-    ];
-
+    const validBanTypes = ["forum", "chat", "game", "ranked", "competitive", "site"];
+    
     if (!validBanTypes.includes(banType)) {
       res.status(400);
       res.send("Invalid ban type.");
@@ -2492,6 +2478,27 @@ router.get("/reports", async (req, res) => {
             }
           }
         }
+
+        // Populate appeal info if this is an appeal report
+        if (report.linkedAppealId) {
+          const appeal = await models.Appeal.findOne({
+            id: report.linkedAppealId,
+          }).lean();
+          if (appeal) {
+            report.appeal = appeal;
+            // Get original report info
+            const originalReport = await models.Report.findOne({
+              id: appeal.reportId,
+            }).lean();
+            if (originalReport) {
+              report.originalReport = {
+                id: originalReport.id,
+                rule: originalReport.rule,
+                finalRuling: originalReport.finalRuling,
+              };
+            }
+          }
+        }
       } catch (e) {
         logger.warn(`Error populating user info for report ${report.id}:`, e);
       }
@@ -2528,6 +2535,27 @@ router.get("/reports/:id", async (req, res) => {
       report.violationTicket = await models.ViolationTicket.findOne({
         id: report.linkedViolationTicketId,
       }).lean();
+    }
+
+    // Populate appeal info if this is an appeal report
+    if (report.linkedAppealId) {
+      const appeal = await models.Appeal.findOne({
+        id: report.linkedAppealId,
+      }).lean();
+      if (appeal) {
+        report.appeal = appeal;
+        // Get original report info
+        const originalReport = await models.Report.findOne({
+          id: appeal.reportId,
+        }).lean();
+        if (originalReport) {
+          report.originalReport = {
+            id: originalReport.id,
+            rule: originalReport.rule,
+            finalRuling: originalReport.finalRuling,
+          };
+        }
+      }
     }
 
     // Populate user information for reporter, reported user, and assignees
@@ -2747,7 +2775,7 @@ router.post("/reports/:id/complete", async (req, res) => {
       return;
 
     const reportId = req.params.id;
-    const { finalRuling, dismissed } = req.body;
+    const { finalRuling, dismissed, notes } = req.body;
 
     const report = await models.Report.findOne({ id: reportId });
     if (!report) {
@@ -2791,7 +2819,7 @@ router.post("/reports/:id/complete", async (req, res) => {
       );
 
       // Count previous ACTIVE violations for this rule across all alt accounts
-      // Only count violations that are still active (activeUntil > now)
+      // Only count violations that are still active (activeUntil > now) and not appealed
       const now = Date.now();
       const previousViolations = await models.ViolationTicket.countDocuments({
         userId: { $in: altAccountIds },
@@ -2801,6 +2829,7 @@ router.post("/reports/:id/complete", async (req, res) => {
           ),
         },
         activeUntil: { $gt: now },
+        $or: [{ appealed: { $exists: false } }, { appealed: false }],
       });
 
       const offenseNumber = previousViolations + 1;
@@ -2851,15 +2880,8 @@ router.post("/reports/:id/complete", async (req, res) => {
       }
 
       // Whitelist of valid ban types to prevent prototype pollution
-      const validBanTypes = [
-        "forum",
-        "chat",
-        "game",
-        "ranked",
-        "competitive",
-        "site",
-      ];
-
+      const validBanTypes = ["forum", "chat", "game", "ranked", "competitive", "site"];
+      
       if (!validBanTypes.includes(finalRuling.banType)) {
         res.status(400).send("Invalid ban type.");
         return;
@@ -2924,6 +2946,22 @@ router.post("/reports/:id/complete", async (req, res) => {
         );
         bans = await Promise.all(banPromises);
         ban = bans[0]; // Use the first ban as the primary ban for linking
+
+        // Create mod action for the ban (same as ban command)
+        const modActionNames = {
+          forum: "Forum Ban",
+          chat: "Chat Ban",
+          game: "Game Ban",
+          ranked: "Ranked Ban",
+          competitive: "Competitive Ban",
+          site: "Site Ban",
+        };
+
+        await routeUtils.createModAction(
+          userId,
+          modActionNames[finalRuling.banType],
+          [report.reportedUserId, banLengthStr]
+        );
 
         // Update user banned flag for site bans on all alt accounts
         if (finalRuling.banType === "site") {
@@ -3003,7 +3041,12 @@ router.post("/reports/:id/complete", async (req, res) => {
         : null;
       report.linkedBanId = ban ? ban.id : null;
     } else {
-      report.finalRuling = null;
+      // When dismissed, save notes if provided
+      report.finalRuling = notes
+        ? {
+            notes: notes,
+          }
+        : null;
     }
 
     report.status = "complete";
@@ -3017,7 +3060,9 @@ router.post("/reports/:id/complete", async (req, res) => {
       timestamp: Date.now(),
       action: "completed",
       note: dismissed
-        ? "Report dismissed - no violation"
+        ? notes
+          ? `Report dismissed - no violation. Notes: ${notes}`
+          : "Report dismissed - no violation"
         : `Violation: ${violationName}`,
     });
 
@@ -3121,6 +3166,260 @@ router.post("/reports/:id/reopen", async (req, res) => {
   } catch (e) {
     logger.error(e);
     res.status(500).send("Error reopening report.");
+  }
+});
+
+router.post("/appeals/:id/approve", async (req, res) => {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
+
+    const appealId = req.params.id;
+    const { notes } = req.body;
+
+    const appeal = await models.Appeal.findOne({ id: appealId });
+    if (!appeal) {
+      res.status(404).send("Appeal not found.");
+      return;
+    }
+
+    if (appeal.status !== "pending") {
+      res.status(400).send("Appeal has already been reviewed.");
+      return;
+    }
+
+    // Get the violation ticket
+    const violationTicket = await models.ViolationTicket.findOne({
+      id: appeal.violationTicketId,
+    });
+
+    if (!violationTicket) {
+      res.status(404).send("Violation ticket not found.");
+      return;
+    }
+
+    // Mark violation ticket as appealed (we'll add an appealed field or use a status)
+    // For now, we'll mark it by setting activeUntil to 0 or a special value
+    // Actually, let's add an appealed field to the schema
+    violationTicket.appealed = true;
+    violationTicket.appealedAt = Date.now();
+    violationTicket.appealedBy = userId;
+    await violationTicket.save();
+
+    // Update appeal
+    appeal.status = "approved";
+    appeal.reviewedBy = userId;
+    appeal.reviewedAt = Date.now();
+    appeal.reviewNotes = notes || "";
+    appeal.updatedAt = Date.now();
+    await appeal.save();
+
+    // Complete the appeal report
+    const appealReport = await models.Report.findOne({
+      linkedAppealId: appealId,
+    });
+
+    if (appealReport) {
+      appealReport.status = "complete";
+      appealReport.completedAt = Date.now();
+      appealReport.completedBy = userId;
+      appealReport.updatedAt = Date.now();
+      appealReport.finalRuling = {
+        notes: notes || "Appeal approved - violation removed",
+      };
+      appealReport.history.push({
+        status: "complete",
+        changedBy: userId,
+        timestamp: Date.now(),
+        action: "completed",
+        note: "Appeal approved - violation removed",
+      });
+      await appealReport.save();
+    }
+
+    // Create mod action
+    await routeUtils.createModAction(
+      userId,
+      "Approve Appeal",
+      [appealId, appeal.reportId, appeal.violationTicketId]
+    );
+
+    res.send({ appeal, violationTicket });
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error approving appeal.");
+  }
+});
+
+router.post("/appeals/:id/reject", async (req, res) => {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
+
+    const appealId = req.params.id;
+    const { notes } = req.body;
+
+    const appeal = await models.Appeal.findOne({ id: appealId });
+    if (!appeal) {
+      res.status(404).send("Appeal not found.");
+      return;
+    }
+
+    if (appeal.status !== "pending") {
+      res.status(400).send("Appeal has already been reviewed.");
+      return;
+    }
+
+    // Update appeal
+    appeal.status = "rejected";
+    appeal.reviewedBy = userId;
+    appeal.reviewedAt = Date.now();
+    appeal.reviewNotes = notes || "";
+    appeal.updatedAt = Date.now();
+    await appeal.save();
+
+    // Complete the appeal report
+    const appealReport = await models.Report.findOne({
+      linkedAppealId: appealId,
+    });
+
+    if (appealReport) {
+      appealReport.status = "complete";
+      appealReport.completedAt = Date.now();
+      appealReport.completedBy = userId;
+      appealReport.updatedAt = Date.now();
+      appealReport.finalRuling = {
+        notes: notes || "Appeal rejected - violation upheld",
+      };
+      appealReport.history.push({
+        status: "complete",
+        changedBy: userId,
+        timestamp: Date.now(),
+        action: "completed",
+        note: "Appeal rejected - violation upheld",
+      });
+      await appealReport.save();
+    }
+
+    // Create mod action
+    await routeUtils.createModAction(
+      userId,
+      "Reject Appeal",
+      [appealId, appeal.reportId, appeal.violationTicketId]
+    );
+
+    res.send({ appeal });
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error rejecting appeal.");
+  }
+});
+
+router.post("/reports/:id/rule", async (req, res) => {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, userId, "seeModPanel")))
+      return;
+
+    const reportId = req.params.id;
+    const { rule } = req.body;
+
+    if (!rule) {
+      res.status(400).send("Rule is required.");
+      return;
+    }
+
+    // Validate rule exists in rulesData
+    try {
+      const { rulesData } = require("../react_main/src/constants/rules");
+      const validRule = rulesData.find((r) => r.name === rule);
+      if (!validRule) {
+        res.status(400).send("Invalid rule selected.");
+        return;
+      }
+    } catch (e) {
+      // If rules file doesn't exist, skip validation
+      logger.warn("Could not validate rule:", e);
+    }
+
+    const report = await models.Report.findOne({ id: reportId });
+    if (!report) {
+      res.status(404).send("Report not found.");
+      return;
+    }
+
+    // Don't allow changing rule if report is already complete
+    if (report.status === "complete") {
+      res.status(400).send("Cannot change rule on completed reports.");
+      return;
+    }
+
+    const oldRule = report.rule;
+    report.rule = rule;
+    report.updatedAt = Date.now();
+
+    report.history.push({
+      status: report.status,
+      changedBy: userId,
+      timestamp: Date.now(),
+      action: "rule_change",
+      note: `Changed rule from "${oldRule}" to "${rule}"`,
+    });
+
+    await report.save();
+
+    // Create mod action
+    await routeUtils.createModAction(
+      userId,
+      "Update Report Rule",
+      [reportId, oldRule, rule]
+    );
+
+    res.send({ report });
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error updating rule.");
+  }
+});
+
+router.delete("/violations/:id", async (req, res) => {
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!(await routeUtils.verifyPermission(res, userId, "deleteViolation"))) {
+      return;
+    }
+
+    // Check user has rank Infinity
+    const userRank = await redis.getUserRank(userId);
+    if (userRank === null || userRank !== Infinity) {
+      res.status(403).send("You must have rank Infinity to delete violations.");
+      return;
+    }
+
+    const violationId = req.params.id;
+
+    const violationTicket = await models.ViolationTicket.findOne({
+      id: violationId,
+    });
+
+    if (!violationTicket) {
+      res.status(404).send("Violation ticket not found.");
+      return;
+    }
+
+    // Delete the violation ticket
+    await models.ViolationTicket.deleteOne({ id: violationId });
+
+    logger.info(
+      `Violation ${violationId} deleted by user ${userId} for user ${violationTicket.userId}`
+    );
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error deleting violation.");
   }
 });
 

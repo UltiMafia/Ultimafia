@@ -929,9 +929,10 @@ router.get("/:id/reports", async function (req, res) {
         "id status completedAt finalRuling rule description createdAt reporterId gameId linkedViolationTicketId"
       );
 
-    // Fetch all violation tickets for this user
+    // Fetch all violation tickets for this user (excluding appealed ones)
     const violationTickets = await models.ViolationTicket.find({
       userId: profileUserId,
+      $or: [{ appealed: { $exists: false } }, { appealed: false }],
     })
       .sort({ createdAt: -1 })
       .lean();
@@ -2539,6 +2540,117 @@ router.post("/delete", async function (req, res) {
     logger.error(e);
     res.status(500);
     res.send("Error deleting account.");
+  }
+});
+
+router.post("/appeals", async function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req);
+    if (!userId) {
+      res.status(401).send("You must be logged in to submit an appeal.");
+      return;
+    }
+
+    const { reportId, description } = req.body;
+
+    if (!reportId || !description) {
+      res.status(400).send("Report ID and description are required.");
+      return;
+    }
+
+    // Validate report exists and belongs to user
+    const report = await models.Report.findOne({
+      id: reportId,
+      reportedUserId: userId,
+      status: "complete",
+    }).lean();
+
+    if (!report) {
+      res.status(404).send("Report not found or you don't have permission to appeal it.");
+      return;
+    }
+
+    // Check if report has a violation (can't appeal dismissed reports)
+    if (!report.finalRuling || !report.linkedViolationTicketId) {
+      res.status(400).send("You can only appeal reports with violations.");
+      return;
+    }
+
+    // Check if there's already a pending appeal for this report
+    const existingAppeal = await models.Appeal.findOne({
+      reportId: reportId,
+      userId: userId,
+      status: "pending",
+    });
+
+    if (existingAppeal) {
+      res.status(400).send("You already have a pending appeal for this violation.");
+      return;
+    }
+
+    // Check if there's already an approved appeal (violation already removed)
+    const approvedAppeal = await models.Appeal.findOne({
+      reportId: reportId,
+      userId: userId,
+      status: "approved",
+    });
+
+    if (approvedAppeal) {
+      res.status(400).send("This violation has already been successfully appealed.");
+      return;
+    }
+
+    // Rate limiting
+    if (!(await routeUtils.rateLimit(userId, "fileAppeal", res))) return;
+
+    // Create appeal
+    const appeal = new models.Appeal({
+      id: shortid.generate(),
+      userId: userId,
+      reportId: reportId,
+      violationTicketId: report.linkedViolationTicketId,
+      description: String(description).trim().slice(0, 5000),
+      status: "pending",
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    await appeal.save();
+
+    // Create a report entry for the appeal (as if user is reporting themselves)
+    const appealReport = new models.Report({
+      id: shortid.generate(),
+      reporterId: userId,
+      reportedUserId: userId,
+      rule: report.rule,
+      description: `APPEAL: ${description}`,
+      status: "open",
+      assignees: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      history: [
+        {
+          status: "open",
+          changedBy: userId,
+          timestamp: Date.now(),
+          action: "created",
+          note: `Appeal for report ${reportId}`,
+        },
+      ],
+      linkedAppealId: appeal.id,
+    });
+
+    await appealReport.save();
+
+    logger.info(
+      `Appeal ${appeal.id} created by user ${userId} for report ${reportId}`
+    );
+
+    res.status(200).send({ appeal, appealReport });
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error submitting appeal.");
   }
 });
 
