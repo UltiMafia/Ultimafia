@@ -279,73 +279,74 @@ router.post(
       const { recipientUsername, amount } = req.body;
 
       const transferAmount = Number(amount);
-
-      if (!recipientUsername || isNaN(transferAmount) || transferAmount <= 0) {
-        res.status(400).send("Invalid transfer data.");
-        return;
+      if (
+        !recipientUsername ||
+        !Number.isFinite(transferAmount) ||
+        transferAmount <= 0
+      ) {
+        return res.status(400).send("Invalid transfer data.");
       }
 
-      // Find recipient first
-      const recipient = await models.User.findOne({
-        name: recipientUsername,
-        deleted: false,
-      }).select("coins id");
+      const [recipient, sender] = await Promise.all([
+        models.User.findOne({
+          name: recipientUsername,
+          deleted: false,
+        })
+          .select("id")
+          .lean()
+          .exec(),
+        models.User.findOne({ id: senderId }).select("name").lean().exec(),
+      ]);
 
       if (!recipient) {
-        res.status(404).send("Recipient not found.");
-        return;
+        return res.status(404).send("Recipient not found.");
       }
-
-      // Get sender name for notification (we'll get coins after atomic update)
-      const sender = await models.User.findOne({ id: senderId }).select("name");
       if (!sender) {
-        res.status(404).send("Sender not found.");
-        return;
+        return res.status(404).send("Sender not found.");
+      }
+      if (recipient.id === senderId) {
+        return res.status(400).send("Cannot transfer coins to yourself.");
       }
 
-      // Atomically subtract coins from sender first (prevents race condition)
-      await models.User.updateOne(
-        { id: senderId },
+      // Atomically subtract coins only if balance is sufficient
+      const debitResult = await models.User.updateOne(
+        { id: senderId, coins: { $gte: transferAmount } },
         { $inc: { coins: -transferAmount } }
       ).exec();
 
-      // Check if balance went negative and refund if so
-      const updatedSender = await models.User.findOne({ id: senderId }).select(
-        "coins"
-      );
-      if (updatedSender.coins < 0) {
-        // Refund the coins
-        await models.User.updateOne(
-          { id: senderId },
-          { $inc: { coins: transferAmount } }
-        ).exec();
-        res.status(400).send("Insufficient balance.");
-        return;
+      const modified =
+        debitResult.modifiedCount ??
+        debitResult.nModified ??
+        debitResult.matchedCount ??
+        0;
+      if (!modified) {
+        return res.status(400).send("Insufficient balance.");
       }
 
+      const coinText = transferAmount === 1 ? "coin" : "coins";
+
       try {
-        // Add coins to recipient
-        await models.User.updateOne(
-          { id: recipient.id },
-          { $inc: { coins: transferAmount } }
-        ).exec();
+        await Promise.all([
+          models.User.updateOne(
+            { id: recipient.id },
+            { $inc: { coins: transferAmount } }
+          ).exec(),
+          models.Notification.create({
+            id: shortid.generate(),
+            user: recipient.id,
+            isChat: false,
+            content: `${sender.name} has sent you ${transferAmount} ${coinText}!`,
+            date: Date.now(),
+            read: false,
+          }),
+        ]);
 
-        // Create notification for recipient
-        const coinText = transferAmount === 1 ? "coin" : "coins";
-        const notification = new models.Notification({
-          id: shortid.generate(),
-          user: recipient.id,
-          isChat: false,
-          content: `${sender.name} has sent you ${transferAmount} ${coinText}!`,
-          date: Date.now(),
-          read: false,
-        });
-        await notification.save();
+        await Promise.all([
+          redis.cacheUserInfo(senderId, true),
+          redis.cacheUserInfo(recipient.id, true),
+        ]);
 
-        await redis.cacheUserInfo(senderId, true);
-        await redis.cacheUserInfo(recipient.id, true);
-
-        res.sendStatus(200);
+        return res.sendStatus(200);
       } catch (e) {
         // If adding to recipient fails, refund the sender
         await models.User.updateOne(
@@ -356,7 +357,7 @@ router.post(
       }
     } catch (e) {
       logger.error(e);
-      res.status(500).send("Error transferring coins.");
+      return res.status(500).send("Error transferring coins.");
     }
   })
 );

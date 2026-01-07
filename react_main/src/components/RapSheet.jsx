@@ -2,23 +2,31 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import {
   Box,
+  Button,
   Chip,
+  IconButton,
   Stack,
   Typography,
   Accordion,
   AccordionSummary,
   AccordionDetails,
   Divider,
+  Tooltip,
 } from "@mui/material";
 import { Time } from "./Basic";
 import { NameWithAvatar } from "pages/User/User";
-import { UserContext } from "../Contexts";
+import { UserContext, SiteInfoContext } from "../Contexts";
 import { useErrorAlert } from "./Alerts";
+import AppealDialog from "./AppealDialog";
 
 export default function RapSheet({ userId }) {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showAppealDialog, setShowAppealDialog] = useState(false);
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [deletingViolation, setDeletingViolation] = useState(null);
   const user = useContext(UserContext);
+  const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
 
   // Check if user is viewing their own profile and is not a mod
@@ -26,26 +34,25 @@ export default function RapSheet({ userId }) {
   const isMod = user.perms?.seeModPanel;
   const showRestrictedInfo = isMod || !isSelfViewing;
 
-  useEffect(() => {
+  const loadReports = async () => {
     if (!userId) return;
-
-    const loadReports = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get(`/api/user/${userId}/reports`);
-        setReports(res.data.reports || []);
-      } catch (e) {
-        if (e.response?.status === 403 || e.response?.status === 401) {
-          // User doesn't have permission - don't show component
-          setReports([]);
-        } else {
-          errorAlert(e);
-        }
-      } finally {
-        setLoading(false);
+    try {
+      setLoading(true);
+      const res = await axios.get(`/api/user/${userId}/reports`);
+      setReports(res.data.reports || []);
+    } catch (e) {
+      if (e.response?.status === 403 || e.response?.status === 401) {
+        // User doesn't have permission - don't show component
+        setReports([]);
+      } else {
+        errorAlert(e);
       }
-    };
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadReports();
   }, [userId]);
 
@@ -343,6 +350,81 @@ export default function RapSheet({ userId }) {
                             )}
                         </Box>
                       )}
+
+                    {/* Appeal button - only show for violations (not dismissed) and if user is viewing their own profile */}
+                    {isSelfViewing &&
+                      !isDismissed &&
+                      report.finalRuling &&
+                      report.linkedViolationTicketId && (
+                        <Box sx={{ mt: 2 }}>
+                          <Button
+                            variant="outlined"
+                            color="primary"
+                            onClick={() => {
+                              setSelectedReport(report);
+                              setShowAppealDialog(true);
+                            }}
+                          >
+                            Appeal Violation
+                          </Button>
+                        </Box>
+                      )}
+
+                    {/* Delete violation button - only show for violations and if user has deleteViolation permission and rank Infinity */}
+                    {!isDismissed &&
+                      report.finalRuling &&
+                      report.linkedViolationTicketId &&
+                      user.perms?.deleteViolation &&
+                      user.rank === Infinity && (
+                        <Box sx={{ mt: 2 }}>
+                          <Tooltip title="Delete Violation (Rank Infinity Only)">
+                            <IconButton
+                              color="error"
+                              onClick={async () => {
+                                if (
+                                  !window.confirm(
+                                    "Are you sure you want to permanently delete this violation? This action cannot be undone."
+                                  )
+                                ) {
+                                  return;
+                                }
+
+                                try {
+                                  setDeletingViolation(
+                                    report.linkedViolationTicketId
+                                  );
+                                  await axios.delete(
+                                    `/api/mod/violations/${report.linkedViolationTicketId}`
+                                  );
+                                  siteInfo.showAlert(
+                                    "Violation deleted successfully",
+                                    "success"
+                                  );
+                                  // Reload reports to update the UI
+                                  loadReports();
+                                } catch (e) {
+                                  if (e?.response?.data) {
+                                    siteInfo.showAlert(
+                                      e.response.data.toString(),
+                                      "error"
+                                    );
+                                  } else {
+                                    errorAlert(e);
+                                  }
+                                } finally {
+                                  setDeletingViolation(null);
+                                }
+                              }}
+                              disabled={
+                                deletingViolation ===
+                                report.linkedViolationTicketId
+                              }
+                            >
+                              <i className="fas fa-trash" />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                      )}
                   </Stack>
                 </AccordionDetails>
               </Accordion>
@@ -350,6 +432,22 @@ export default function RapSheet({ userId }) {
           })}
         </Stack>
       </div>
+      {showAppealDialog && selectedReport && (
+        <AppealDialog
+          open={showAppealDialog}
+          onClose={() => {
+            setShowAppealDialog(false);
+            setSelectedReport(null);
+          }}
+          report={selectedReport}
+          onSuccess={() => {
+            setShowAppealDialog(false);
+            setSelectedReport(null);
+            // Reload reports to update the UI
+            loadReports();
+          }}
+        />
+      )}
     </div>
   );
 }

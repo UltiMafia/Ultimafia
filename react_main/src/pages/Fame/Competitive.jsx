@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import {
   Typography,
@@ -14,13 +14,16 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Paper,
+  IconButton,
 } from "@mui/material";
-import { NameWithAvatar } from "../User/User";
+import { NameWithAvatar, Avatar } from "../User/User";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import Setup from "components/Setup";
 import { NewLoading } from "pages/Welcome/NewLoading";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { UserContext } from "Contexts";
 
 export const QUERY_PARAM_SEASON = "season";
 export const QUERY_PARAM_ROUND = "round";
@@ -28,176 +31,186 @@ export const QUERY_PARAM_ROUND = "round";
 const POINTS_ICON = require(`images/points.png`);
 const PRESTIGE_ICON = require(`images/prestige.png`);
 
-function Overview({ roundInfo }) {
-  const [currentSeasonInfo, setCurrentSeasonInfo] = useState(null);
+function Overview({ roundInfo, seasonInfo }) {
   const isPhoneDevice = useIsPhoneDevice();
 
-  useEffect(() => {
-    if (roundInfo.seasonNumber) {
-      axios
-        .get(`/api/competitive/season/${roundInfo.seasonNumber}`)
-        .then((response) => {
-          setCurrentSeasonInfo(response.data);
-        });
-    }
-  }, [roundInfo ? roundInfo.seasonNumber : null]);
-
-  if (!currentSeasonInfo) {
-    return <NewLoading />;
-  }
-
   return (
-    <Grid2
-      container
-      columns={isPhoneDevice ? 1 : 3}
-      spacing={isPhoneDevice ? 1 : 4}
-    >
+    <Grid2 container columns={isPhoneDevice ? 1 : 3} spacing={1}>
       <Grid2 size={1}>
-        <Stack
-          direction="column"
-          spacing={1}
-          divider={<Divider orientation="horizontal" flexItem />}
+        <Paper
+          elevation={2}
+          sx={{
+            p: 2,
+            height: "100%",
+          }}
         >
-          <Typography variant="h3" gutterBottom>
-            Season {roundInfo.seasonNumber} top 10 players
-          </Typography>
-          {currentSeasonInfo.standings.map((seasonStanding) => {
-            const userId = seasonStanding.userId;
-            const user = currentSeasonInfo.users[userId];
-            return (
-              <Box
-                key={userId}
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: "minmax(0, 1fr) 2em 16px 2em 16px",
-                  gap: 0.5,
-                  alignItems: "center",
-                  textAlign: "right",
-                }}
-              >
-                <Box sx={{ overflowX: "clip" }}>
-                  <NameWithAvatar
-                    id={user.id}
-                    name={user.name}
-                    avatar={user.avatar}
-                  />
-                </Box>
-                <Typography
+          <Stack
+            direction="column"
+            spacing={1}
+            divider={<Divider orientation="horizontal" flexItem />}
+          >
+            <Typography variant="h3" gutterBottom>
+              Season {roundInfo.seasonNumber} top 10 players
+            </Typography>
+            {seasonInfo.standings.map((seasonStanding) => {
+              const userId = seasonStanding.userId;
+              const user = seasonInfo.users[userId].user;
+              return (
+                <Box
+                  key={userId}
                   sx={{
-                    lineHeight: "1",
+                    display: "grid",
+                    gridTemplateColumns: "minmax(0, 1fr) 2em 16px 2em 16px",
+                    gap: 0.5,
+                    alignItems: "center",
+                    textAlign: "right",
                   }}
                 >
-                  {seasonStanding.points}
-                </Typography>
-                <Tooltip title="prestige">
-                  <img
-                    src={PRESTIGE_ICON}
-                    alt="prestige"
-                    width="16px"
-                    height="16px"
-                  />
-                </Tooltip>
-                <Typography
-                  sx={{
-                    lineHeight: "1",
-                  }}
-                >
-                  {seasonStanding.tiebreakerPoints}
-                </Typography>
-                <Tooltip title="fortune">
-                  <img
-                    src={POINTS_ICON}
-                    alt="Fortune"
-                    width="16px"
-                    height="16px"
-                  />
-                </Tooltip>
-              </Box>
-            );
-          })}
-        </Stack>
-      </Grid2>
-      <Grid2 size={1}>
-        <Stack
-          direction="column"
-          spacing={1}
-          divider={<Divider orientation="horizontal" flexItem />}
-        >
-          <Typography variant="h3" gutterBottom>
-            Round {roundInfo.round.number} top 10 players
-          </Typography>
-          {roundInfo.standings.slice(0, 10).map((roundStanding) => {
-            const userId = roundStanding.userId;
-            const user = roundInfo.users[userId].user;
-            const points = roundInfo.users[userId].points;
-            const gamesPlayed = roundInfo.users[userId].gamesPlayed;
-
-            return (
-              <Box
-                key={roundStanding.userId}
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: "minmax(0, 1fr) 2em 16px 1.5em 1em",
-                  gap: 0.5,
-                  alignItems: "center",
-                  textAlign: "right",
-                }}
-              >
-                <Box sx={{ overflowX: "clip" }}>
-                  <NameWithAvatar
-                    id={user.id}
-                    name={user.name}
-                    avatar={user.avatar}
-                  />
-                </Box>
-                <Typography
-                  sx={{
-                    lineHeight: "1",
-                  }}
-                >
-                  {points}
-                </Typography>
-                <Tooltip title="fortune">
-                  <img
-                    src={POINTS_ICON}
-                    alt="Fortune"
-                    width="16px"
-                    height="16px"
-                  />
-                </Tooltip>
-                <Typography
-                  sx={{
-                    lineHeight: "1",
-                  }}
-                >
-                  {gamesPlayed}
-                </Typography>
-                <Tooltip title="games played">
-                  <i
-                    className="fas fa-heart"
-                    style={{
-                      fontSize: "1em",
-                      color: "var(--gold-heart-color)",
+                  <Box sx={{ overflowX: "clip" }}>
+                    <NameWithAvatar
+                      id={user.id}
+                      name={user.name}
+                      avatar={user.avatar}
+                    />
+                  </Box>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      lineHeight: "1",
                     }}
-                  />
-                </Tooltip>
-              </Box>
-            );
-          })}
-        </Stack>
+                  >
+                    {seasonStanding.points}
+                  </Typography>
+                  <Tooltip title="prestige">
+                    <img
+                      src={PRESTIGE_ICON}
+                      alt="prestige"
+                      width="16px"
+                      height="16px"
+                    />
+                  </Tooltip>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      lineHeight: "1",
+                    }}
+                  >
+                    {seasonStanding.tiebreakerPoints}
+                  </Typography>
+                  <Tooltip title="fortune">
+                    <img
+                      src={POINTS_ICON}
+                      alt="Fortune"
+                      width="16px"
+                      height="16px"
+                    />
+                  </Tooltip>
+                </Box>
+              );
+            })}
+          </Stack>
+        </Paper>
       </Grid2>
       <Grid2 size={1}>
-        <Stack direction="column" spacing={1}>
-          {currentSeasonInfo.setupOrder.map((roundSetups, i) => (
-            <Stack direction="column" spacing={1} key={i}>
-              <Typography variant="h3">Round {i + 1}</Typography>
-              {roundSetups.map((setupNumber) => {
-                const setup = currentSeasonInfo.setups[setupNumber];
-                return <Setup setup={setup} key={setup.id} />;
-              })}
-            </Stack>
-          ))}
-        </Stack>
+        <Paper
+          elevation={2}
+          sx={{
+            p: 2,
+            height: "100%",
+          }}
+        >
+          <Stack
+            direction="column"
+            spacing={1}
+            divider={<Divider orientation="horizontal" flexItem />}
+          >
+            <Typography variant="h3" gutterBottom>
+              Round {roundInfo.round.number} top 10 players
+            </Typography>
+            {roundInfo.standings.slice(0, 10).map((roundStanding) => {
+              const userId = roundStanding.userId;
+              const user = roundInfo.users[userId].user;
+              const points = roundInfo.users[userId].points;
+              const gamesPlayed = roundInfo.users[userId].gamesPlayed;
+
+              return (
+                <Box
+                  key={roundStanding.userId}
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: "minmax(0, 1fr) 2em 16px 1.5em 1em",
+                    gap: 0.5,
+                    alignItems: "center",
+                    textAlign: "right",
+                  }}
+                >
+                  <Box sx={{ overflowX: "clip" }}>
+                    <NameWithAvatar
+                      id={user.id}
+                      name={user.name}
+                      avatar={user.avatar}
+                    />
+                  </Box>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      lineHeight: "1",
+                    }}
+                  >
+                    {points}
+                  </Typography>
+                  <Tooltip title="fortune">
+                    <img
+                      src={POINTS_ICON}
+                      alt="Fortune"
+                      width="16px"
+                      height="16px"
+                    />
+                  </Tooltip>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      lineHeight: "1",
+                    }}
+                  >
+                    {gamesPlayed}
+                  </Typography>
+                  <Tooltip title="games played">
+                    <i
+                      className="fas fa-heart"
+                      style={{
+                        fontSize: "1em",
+                        color: "var(--gold-heart-color)",
+                      }}
+                    />
+                  </Tooltip>
+                </Box>
+              );
+            })}
+          </Stack>
+        </Paper>
+      </Grid2>
+      <Grid2 size={1}>
+        <Paper
+          elevation={2}
+          sx={{
+            p: 2,
+            maxHeight: "calc(10*var(--mui-spacing) + 10*40px)",
+            overflowY: "scroll",
+          }}
+        >
+          <Stack direction="column" spacing={1}>
+            {seasonInfo.setupOrder.map((roundSetups, i) => (
+              <Stack direction="column" spacing={1} key={i}>
+                <Typography variant="h3">Round {i + 1}</Typography>
+                {roundSetups.map((setupNumber) => {
+                  const setup = seasonInfo.setups[setupNumber];
+                  return <Setup setup={setup} key={setup.id} />;
+                })}
+              </Stack>
+            ))}
+          </Stack>
+        </Paper>
       </Grid2>
     </Grid2>
   );
@@ -222,49 +235,57 @@ function GameHistory({ roundInfo }) {
         <Stack direction="column" spacing={1} key={day}>
           <Typography variant="h3">Day {day}</Typography>
           {currentRoundGamesByDay[day].map((gameCompletion) => (
-            <Grid2
-              container
-              columns={isPhoneDevice ? 1 : 2}
-              key={gameCompletion.game.id}
-              spacing={isPhoneDevice ? 1 : 4}
+            <Paper
+              elevation={2}
+              sx={{
+                p: 2,
+                height: "100%",
+              }}
             >
-              <Grid2 size={1}>
-                <GameRow
-                  game={gameCompletion.game}
-                  lobby={"Competitive"}
-                  showGameTypeIcon
-                  showGameState
-                />
+              <Grid2
+                container
+                columns={isPhoneDevice ? 1 : 2}
+                key={gameCompletion.game.id}
+                spacing={isPhoneDevice ? 1 : 4}
+              >
+                <Grid2 size={1}>
+                  <GameRow
+                    game={gameCompletion.game}
+                    lobby={"Competitive"}
+                    showGameTypeIcon
+                    showGameState
+                  />
+                </Grid2>
+                <Grid2 size={1}>
+                  {gameCompletion.pointsEarnedByPlayers.map(
+                    (pointsEarnedByPlayer) => {
+                      const userId = pointsEarnedByPlayer.userId;
+                      const user = roundInfo.users[userId].user;
+                      return (
+                        <Stack
+                          direction="row"
+                          spacing={1}
+                          key={userId}
+                          sx={{
+                            alignItems: "center",
+                          }}
+                        >
+                          <NameWithAvatar
+                            id={userId}
+                            name={user.name}
+                            avatar={user.avatar}
+                          />
+                          <Typography sx={{ marginLeft: "auto !important" }}>
+                            {pointsEarnedByPlayer.points}
+                          </Typography>
+                          <img src={POINTS_ICON} alt="Fortune" />
+                        </Stack>
+                      );
+                    }
+                  )}
+                </Grid2>
               </Grid2>
-              <Grid2 size={1}>
-                {gameCompletion.pointsEarnedByPlayers.map(
-                  (pointsEarnedByPlayer) => {
-                    const userId = pointsEarnedByPlayer.userId;
-                    const user = roundInfo.users[userId].user;
-                    return (
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        key={userId}
-                        sx={{
-                          alignItems: "center",
-                        }}
-                      >
-                        <NameWithAvatar
-                          id={userId}
-                          name={user.name}
-                          avatar={user.avatar}
-                        />
-                        <Typography sx={{ marginLeft: "auto !important" }}>
-                          {pointsEarnedByPlayer.points}
-                        </Typography>
-                        <img src={POINTS_ICON} alt="Fortune" />
-                      </Stack>
-                    );
-                  }
-                )}
-              </Grid2>
-            </Grid2>
+            </Paper>
           ))}
         </Stack>
       ))}
@@ -370,7 +391,9 @@ export default function Competitive() {
   const [tab, setTab] = useState("overview");
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentRoundInfo, setCurrentRoundInfo] = useState(null);
+  const [currentSeasonInfo, setCurrentSeasonInfo] = useState(null);
   const isPhoneDevice = useIsPhoneDevice();
+  const user = useContext(UserContext);
 
   const seasonNumber = searchParams.get("season")
     ? Number.parseInt(searchParams.get("season"))
@@ -391,6 +414,20 @@ export default function Competitive() {
         setCurrentRoundInfo(response.data);
       });
   }, [seasonNumber, roundNumber]);
+
+  useEffect(() => {
+    if (currentRoundInfo && currentRoundInfo.seasonNumber) {
+      axios
+        .get(`/api/competitive/season/${currentRoundInfo.seasonNumber}`)
+        .then((response) => {
+          setCurrentSeasonInfo(response.data);
+        });
+    }
+  }, [currentRoundInfo ? currentRoundInfo.seasonNumber : null]);
+
+  if (!currentSeasonInfo) {
+    return <NewLoading />;
+  }
 
   if (!currentRoundInfo || Object.keys(currentRoundInfo).length === 0) {
     return <NewLoading />;
@@ -440,7 +477,26 @@ export default function Competitive() {
         }}
       >
         <Grid2 size={1}>
-          <Typography variant="h2">{displayTitle}</Typography>
+          <Stack
+            direction="column"
+            spacing={0.5}
+            sx={{
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h2">{displayTitle}</Typography>
+            {caption && (
+              <Typography
+                variant="caption"
+                sx={{
+                  display: "block",
+                  textAlign: isPhoneDevice ? "center" : "right",
+                }}
+              >
+                {caption}
+              </Typography>
+            )}
+          </Stack>
         </Grid2>
         <Grid2 size={1}>
           <SeasonRoundSelect
@@ -449,23 +505,100 @@ export default function Competitive() {
             setSearchParams={setSearchParams}
           />
         </Grid2>
-        <Grid2 size={1}>
-          {caption && (
-            <Typography
-              variant="caption"
+        {user.loggedIn && (
+          <Grid2 size={1}>
+            <Stack
+              direction="row"
+              spacing={1}
               sx={{
-                display: "block",
-                textAlign: isPhoneDevice ? "center" : "right",
+                alignItems: "center",
+                borderRadius: 1,
+                borderWidth: 1,
+                borderStyle: "solid",
+                borderColor: "divider",
+                p: 1,
               }}
             >
-              {caption}
-            </Typography>
-          )}
-        </Grid2>
+              <Avatar
+                id={user.id}
+                hasImage={user.avatar}
+                name={user.name}
+                isSquare
+              />
+              <Stack direction="column" spacing={0}>
+                <Typography>{user.name}</Typography>
+                <Stack direction="row" spacing={1}>
+                  <Stack
+                    Stack
+                    direction="row"
+                    spacing={0.5}
+                    sx={{
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        lineHeight: "1",
+                      }}
+                    >
+                      {currentSeasonInfo.users[user.id]?.points || 0}
+                    </Typography>
+                    <Tooltip title="prestige">
+                      <img
+                        src={PRESTIGE_ICON}
+                        alt="Prestige"
+                        width="16px"
+                        height="16px"
+                      />
+                    </Tooltip>
+                  </Stack>
+                  {currentRoundInfo.users && (
+                    <Stack
+                      Stack
+                      direction="row"
+                      spacing={0.5}
+                      sx={{
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          lineHeight: "1",
+                        }}
+                      >
+                        {currentRoundInfo.users[user.id]?.points || 0}
+                      </Typography>
+                      <Tooltip title="fortune">
+                        <img
+                          src={POINTS_ICON}
+                          alt="Fortune"
+                          width="16px"
+                          height="16px"
+                        />
+                      </Tooltip>
+                    </Stack>
+                  )}
+                </Stack>
+              </Stack>
+              <Box
+                sx={{
+                  marginLeft: "auto !important",
+                }}
+              >
+                <IconButton component={Link} to="faq" aria-label="faq">
+                  <i className="fas fa-question-circle" />
+                </IconButton>
+              </Box>
+            </Stack>
+          </Grid2>
+        )}
       </Grid2>
       {currentRoundInfo.round && (
         <>
           <Tabs
+            centered
             value={tab}
             onChange={(_, newValue) => setTab(newValue)}
             sx={{
@@ -479,7 +612,10 @@ export default function Competitive() {
             )}
           </Tabs>
           <Box sx={{ display: tab === "overview" ? undefined : "none" }}>
-            <Overview roundInfo={currentRoundInfo} />
+            <Overview
+              roundInfo={currentRoundInfo}
+              seasonInfo={currentSeasonInfo}
+            />
           </Box>
           <Box sx={{ display: tab === "gameHistory" ? undefined : "none" }}>
             <GameHistory roundInfo={currentRoundInfo} />

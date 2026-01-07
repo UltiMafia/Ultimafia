@@ -24,7 +24,7 @@ const GameStatus = (props) => {
   const showGameState = props.showGameState;
 
   const canShowGameButton =
-    (user.loggedIn || props.status === "Finished") &&
+    (user.loggedIn || props.game.status === "Finished") &&
     !props.game.broken &&
     !props.game.private;
 
