@@ -753,6 +753,10 @@ router.post("/create", async function (req, res) {
       count: setup.count,
     };
 
+    delete obj.featured;
+    delete obj.ranked;
+    delete obj.competitive;
+
     var setupId = null;
     if (req.body.editing) {
       await models.Setup.updateOne({ id: setup.id }, { $set: obj }).exec();

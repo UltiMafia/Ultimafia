@@ -81,7 +81,9 @@ export default function RapSheet({ userId }) {
       <div className="content">
         <Stack spacing={1}>
           {reports.map((report) => {
-            const isDismissed = !report.finalRuling;
+            // A report is dismissed if finalRuling is null or doesn't have a violationName
+            // If it has a violationName, it's a violation, not dismissed
+            const isDismissed = !report.finalRuling || !report.finalRuling.violationName;
             const completedDate = report.completedAt
               ? new Date(report.completedAt)
               : null;
@@ -390,9 +392,7 @@ export default function RapSheet({ userId }) {
                                 }
 
                                 try {
-                                  setDeletingViolation(
-                                    report.linkedViolationTicketId
-                                  );
+                                  setDeletingViolation(report.linkedViolationTicketId);
                                   await axios.delete(
                                     `/api/mod/violations/${report.linkedViolationTicketId}`
                                   );
@@ -416,8 +416,7 @@ export default function RapSheet({ userId }) {
                                 }
                               }}
                               disabled={
-                                deletingViolation ===
-                                report.linkedViolationTicketId
+                                deletingViolation === report.linkedViolationTicketId
                               }
                             >
                               <i className="fas fa-trash" />
