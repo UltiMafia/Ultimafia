@@ -116,30 +116,58 @@ const frozenDef = `Players who are "Frozen" cannot vote or will have their night
 const foggyDef = `Players who are "Foggy" can only see their neighbors messages.`;
 const lovesickDef = `Players who are "Lovesick" for another player, will die if that player dies.`;
 
+/*
+const coffeeDef = itemData["Mafia"]["Coffee"].description;
+const breadDef = itemData["Mafia"]["Bread"].description;
+const armorDef = itemData["Mafia"]["Armor"].description;
+const candleDef = itemData["Mafia"]["Candle"].description;
+const knifeDef = itemData["Mafia"]["Knife"].description;
+const bombDef = itemData["Mafia"]["Bomb"].description;
+const keyDef = itemData["Mafia"]["Key"].description;
+const shieldDef = itemData["Mafia"]["Shield"].description;
+const whiskeyDef = itemData["Mafia"]["Whiskey"].description;
+const crystalBallDef = itemData["Mafia"]["Crystal Ball"].description;
+const falconDef = itemData["Mafia"]["Falcon"].description;
+const tractDef = itemData["Mafia"]["Tract"].description;
+const gunDef = itemData["Mafia"]["Gun"].description;
+const rifleDef = itemData["Mafia"]["Rifle"].description;
+const needleDef = itemData["Mafia"]["Syringe"].description;
+const envelopeDef = itemData["Mafia"]["Envelope"].description;
+const orangeDef = itemData["Mafia"]["Orange"].description;
+const shavingCreamDef = itemData["Mafia"]["Shaving Cream"].description;
+const sceptreDef = itemData["Mafia"]["Sceptre"].description;
+const timeBombDef = itemData["Mafia"]["Timebomb"].description;
+const revolverDef = itemData["Mafia"]["Revolver"].description;
+const snowballDef = itemData["Mafia"]["Snowball"].description;
+const jackBoxDef = itemData["Mafia"]["Jack-In-The-Box"].description;
+*/
+
+
+
 //Item Def
-const coffeeDef = itemData["Mafia"]["Coffee"];
-const breadDef = `Bread is consumed during a famine to prevent death.`;
-const armorDef = `Armor will protect its holder from one attack.`;
-const candleDef = `A Candle will tell its holder who visited them during the night.`;
-const knifeDef = `A Knife can be used during the day to make a selected player start "Bleeding".`;
-const bombDef = `If a Bomb's holder is killed, their killer is killed.`;
-const keyDef = `A Key can be used at night to block the actions of anyone visits them.`;
-const shieldDef = `If possible, A Shield will protect its holder from one attack by redirecting it to another player who is not the attacker.`;
-const whiskeyDef = `Whiskey can be used during the day to block a selected player's actions next night.`;
-const crystalBallDef = `Crystal Ball allows its holder to select a player each night. If the holder dies, the last selected player will be revealed.`;
-const falconDef = `A Falcon can be used at night to learn who a selected player visits.`;
-const tractDef = `A Tract will prevent its holder from being converted one time.`;
-const gunDef = `A Gun can be used during the day to kill a selected player.`;
-const rifleDef = `A Rifle can be used during the day to kill a selected player. If a "Rifle" kills a player of same alignment as its holder, its holder dies. If a "Rifle" kills a player of different alignment to its holder, its holder is given a Rifle.`;
-const needleDef = `A Syringe can be used during the day to revive a selected dead player.`;
-const envelopeDef = `An Envelope can be used at night to send a message to a selected player.`;
-const orangeDef = `An Orange can be used during the day to meet with Capybaras at night. When meeting with Capybaras no night actions can be performed.`;
-const shavingCreamDef = `Shaving Cream can be used at night to make two selected players swap roles but not alignments. A switch fails if one of the players is an Independent role.`;
-const sceptreDef = `A Sceptre can be used during the day to gain 10000 voting power.`;
-const timeBombDef = `A Timebomb can be passed around during the day, it will explode after 10-30 seconds.`;
-const revolverDef = `A Revolver has 6 chambers one of which has full. A Revolver must be used during the day to fire the selected chamber or a random chamber. Then pass it to another player if the chamber was empty or die if the chamber was full.`;
-const snowballDef = `Snowballs can be used during the day to make a player "Frozen".`;
-const jackBoxDef = `A Jack-In-The-Box can be used at night to gain the abilites of a Village-aligned Banished role until the next night.`;
+const coffeeDef = itemData["Mafia"]["Coffee"].description;
+const breadDef = itemData["Mafia"]["Bread"].description;
+const armorDef = itemData["Mafia"]["Armor"].description;
+const candleDef = itemData["Mafia"]["Candle"].description;
+const knifeDef = itemData["Mafia"]["Knife"].description;
+const bombDef = itemData["Mafia"]["Bomb"].description;
+const keyDef = itemData["Mafia"]["Key"].description;
+const shieldDef = itemData["Mafia"]["Shield"].description;
+const whiskeyDef = itemData["Mafia"]["Whiskey"].description;
+const crystalBallDef = itemData["Mafia"]["Crystal Ball"].description;
+const falconDef = itemData["Mafia"]["Falcon"].description;
+const tractDef = itemData["Mafia"]["Tract"].description;
+const gunDef = itemData["Mafia"]["Gun"].description;
+const rifleDef = itemData["Mafia"]["Rifle"].description;
+const needleDef = itemData["Mafia"]["Syringe"].description;
+const envelopeDef = itemData["Mafia"]["Envelope"].description;
+const orangeDef = itemData["Mafia"]["Yuzu Orange"].description;
+const shavingCreamDef = itemData["Mafia"]["Shaving Cream"].description;
+const sceptreDef = itemData["Mafia"]["Sceptre"].description;
+const timeBombDef = itemData["Mafia"]["Timebomb"].description;
+const revolverDef = itemData["Mafia"]["Revolver"].description;
+const snowballDef = itemData["Mafia"]["Snowball"].description;
+const jackBoxDef = itemData["Mafia"]["Jack-In-The-Box"].description;
 
 const roleData = {
   Mafia: {
