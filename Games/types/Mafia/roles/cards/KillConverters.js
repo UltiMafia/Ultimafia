@@ -39,7 +39,7 @@ module.exports = class KillConverters extends Card {
         if (player != this.player) {
           return;
         }
-        if (this.hasAbility(["Modifier"]) && this.role.killLimit > 0) {
+        if (this.hasAbility(["Modifier"]) && this.killLimit > 0) {
           if (
             this.ConvertImmuneKillEffect == null ||
             !this.player.effects.includes(this.ConvertImmuneKillEffect)
