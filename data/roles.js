@@ -142,8 +142,6 @@ const snowballDef = itemData["Mafia"]["Snowball"].description;
 const jackBoxDef = itemData["Mafia"]["Jack-In-The-Box"].description;
 */
 
-
-
 //Item Def
 const coffeeDef = itemData["Mafia"]["Coffee"].description;
 const breadDef = itemData["Mafia"]["Bread"].description;
