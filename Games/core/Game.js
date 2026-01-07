@@ -2327,6 +2327,13 @@ module.exports = class Game {
   }
 
   spectatorsHearQuote(quote) {
+    if (
+      quote.meeting &&
+      quote.meeting.members &&
+      quote.recipients.length < quote.meeting.members.length
+    ) {
+      return;
+    }
     for (let spectator of this.spectators) spectator.hearQuote(quote);
   }
 
