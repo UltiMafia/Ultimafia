@@ -19,7 +19,6 @@ module.exports = class CauseBleedingToTargets extends Card {
           let visits = this.getVisits(this.actor);
           for (let v of visits) {
             if (this.dominates(v)) {
-              v.kill("basic", this.actor);
               this.role.giveEffect(v, "Bleeding", this.actor);
             }
           }
