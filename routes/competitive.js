@@ -206,17 +206,29 @@ router.get("/season/:seasonNumber", async function (req, res) {
     seasonInfo.standings = await models.CompetitiveSeasonStanding.find({
       season: seasonNumber,
     })
-      .select("userId points tiebreakerPoints")
+      .select("-_id userId points tiebreakerPoints")
       .sort({ points: -1 })
       .limit(10)
       .lean();
 
-    for (const seasonStanding of seasonInfo.standings) {
-      seasonInfo.users[seasonStanding.userId] = {
-        points: seasonStanding.points,
-        user: await redis.getUserInfo(seasonStanding.userId),
+    seasonInfo.standings = seasonInfo.standings.map((standing, index) => {
+      return {
+        ...standing,
+        ranking: index,
       };
-    }
+    });
+
+    const usersBulk = await redis.getUserInfoBulk(seasonInfo.standings.map(s => s.userId));
+    seasonInfo.users = seasonInfo.standings.reduce((accumulator, seasonStanding, i) => {
+      return {
+        ...accumulator,
+        [seasonStanding.userId]: {
+          points: seasonStanding.points,
+          tiebreakerPoints: seasonStanding.tiebreakerPoints,
+          user: usersBulk[seasonStanding.userId],
+        },
+      };
+    }, {});
 
     res.json(seasonInfo);
   } catch (e) {
