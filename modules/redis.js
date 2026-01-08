@@ -303,54 +303,104 @@ async function deleteUserInfo(userId) {
 }
 
 async function getUserInfo(userId) {
-  var exists = await cacheUserInfo(userId);
-
+  const exists = await cacheUserInfo(userId);
   if (!exists) return;
 
-  var info = {};
-  info.id = await client.getAsync(`user:${userId}:info:id`);
-  info.name = await client.getAsync(`user:${userId}:info:name`);
-  info.avatar = (await client.getAsync(`user:${userId}:info:avatar`)) == "true";
-  info.profileBackground =
-    (await client.getAsync(`user:${userId}:info:profileBackground`)) == "true";
-  info.nameChanged =
-    (await client.getAsync(`user:${userId}:info:nameChanged`)) == "true";
-  info.bdayChanged =
-    (await client.getAsync(`user:${userId}:info:bdayChanged`)) == "true";
-  info.birthday = await client.getAsync(`user:${userId}:info:birthday`);
-  info.pronouns = await client.getAsync(`user:${userId}:info:pronouns`);
-  info.gamesPlayed = await client.getAsync(`user:${userId}:info:gamesPlayed`);
-  info.redHearts = await client.getAsync(`user:${userId}:info:redHearts`);
-  info.goldHearts = await client.getAsync(`user:${userId}:info:goldHearts`);
-  info.points = await client.getAsync(`user:${userId}:info:points`);
-  info.redHeartRefreshTimestamp = await client.getAsync(
-    `user:${userId}:info:redHeartRefreshTimestamp`
+  // Using promise.all speeds up performance because it's parallel
+  const fetchResults = await Promise.all(
+    [
+      `user:${userId}:info:id`,
+      `user:${userId}:info:name`,
+      `user:${userId}:info:avatar`,
+      `user:${userId}:info:profileBackground`,
+      `user:${userId}:info:nameChanged`,
+      `user:${userId}:info:bdayChanged`,
+      `user:${userId}:info:birthday`,
+      `user:${userId}:info:pronouns`,
+      `user:${userId}:info:gamesPlayed`,
+      `user:${userId}:info:redHearts`,
+      `user:${userId}:info:goldHearts`,
+      `user:${userId}:info:points`,
+      `user:${userId}:info:redHeartRefreshTimestamp`,
+      `user:${userId}:info:goldHeartRefreshTimestamp`,
+      `user:${userId}:info:dailyChallenges`,
+      `user:${userId}:info:status`,
+      `user:${userId}:info:blockedUsers`,
+      `user:${userId}:info:settings`,
+      `user:${userId}:info:itemsOwned`,
+      `user:${userId}:info:groups`,
+      `user:${userId}:info:achievements`,
+      `user:${userId}:info:vanityUrl`,
+    ].map((k) => client.getAsync(k))
   );
-  info.goldHeartRefreshTimestamp = await client.getAsync(
-    `user:${userId}:info:goldHeartRefreshTimestamp`
-  );
-  info.dailyChallenges = JSON.parse(
-    await client.getAsync(`user:${userId}:info:dailyChallenges`)
-  );
-  info.status = await client.getAsync(`user:${userId}:info:status`);
-  info.blockedUsers = JSON.parse(
-    await client.getAsync(`user:${userId}:info:blockedUsers`)
-  );
-  info.settings = JSON.parse(
-    await client.getAsync(`user:${userId}:info:settings`)
-  );
-  info.itemsOwned = JSON.parse(
-    await client.getAsync(`user:${userId}:info:itemsOwned`)
-  );
-  info.groups = JSON.parse(await client.getAsync(`user:${userId}:info:groups`));
-  info.achievements = await client.getAsync(`user:${userId}:info:achievements`);
 
-  const vanityUrl = await client.getAsync(`user:${userId}:info:vanityUrl`);
-  if (vanityUrl) {
-    info.vanityUrl = vanityUrl;
-  }
+  const [
+    id,
+    name,
+    avatar,
+    profileBackground,
+    nameChanged,
+    bdayChanged,
+    birthday,
+    pronouns,
+    gamesPlayed,
+    redHearts,
+    goldHearts,
+    points,
+    redHeartRefreshTimestamp,
+    goldHeartRefreshTimestamp,
+    dailyChallenges,
+    status,
+    blockedUsers,
+    settings,
+    itemsOwned,
+    groups,
+    achievements,
+    vanityUrl,
+  ] = fetchResults;
+
+  const info = {};
+  info.id = id;
+  info.name = name;
+  info.avatar = avatar === "true";
+  info.profileBackground = profileBackground === "true";
+  info.nameChanged = nameChanged === "true";
+  info.bdayChanged = bdayChanged === "true";
+  info.birthday = birthday;
+  info.pronouns = pronouns;
+  info.gamesPlayed = gamesPlayed;
+  info.redHearts = redHearts;
+  info.goldHearts = goldHearts;
+  info.points = points;
+  info.redHeartRefreshTimestamp = redHeartRefreshTimestamp;
+  info.goldHeartRefreshTimestamp = goldHeartRefreshTimestamp;
+  info.dailyChallenges = JSON.parse(dailyChallenges || "[]");
+  info.status = status;
+  info.blockedUsers = JSON.parse(blockedUsers || "[]");
+  info.settings = JSON.parse(settings || "{}");
+  info.itemsOwned = JSON.parse(itemsOwned || "{}");
+  info.groups = JSON.parse(groups || "[]");
+  info.achievements = achievements;
+
+  if (vanityUrl) info.vanityUrl = vanityUrl;
 
   return info;
+}
+
+async function getUserInfoBulk(userIds) {
+  if (!Array.isArray(userIds)) {
+    throw new Error("userIds must be an array");
+  }
+
+  const promises = userIds.map((userId) => getUserInfo(userId));
+  const results = await Promise.all(promises);
+
+  const map = {};
+  userIds.forEach((userId, i) => {
+    map[userId] = results[i];
+  });
+
+  return map;
 }
 
 async function getBasicUserInfo(userId, delTemplate) {
@@ -674,13 +724,19 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
         roundInfo.users[userId] = {
           points: 0,
           gamesPlayed: 0,
-          user: await getUserInfo(userId),
+          user: null,
         };
       }
       roundInfo.users[userId].points += pointsEarnedByPlayer.points;
       roundInfo.users[userId].gamesPlayed += 1;
     }
   }
+
+  // This performance optimization fetches all user info in parallel
+  const usersBulk = await getUserInfoBulk(Object.keys(roundInfo.users));
+  Object.keys(roundInfo.users).forEach((userId) => {
+    roundInfo.users[userId].user = usersBulk[userId];
+  });
 
   // Sort scores in descending order, then convert to map to determine ranking. This accounts for ties
   let scores = [];
@@ -1399,6 +1455,7 @@ module.exports = {
   cacheUserInfo,
   deleteUserInfo,
   getUserInfo,
+  getUserInfoBulk,
   getBasicUserInfo,
   getUserName,
   getUserStatus,
