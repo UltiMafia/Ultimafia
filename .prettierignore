@@ -1,5 +1,0 @@
-build
-coverage
-*.min.*
-**/*.sh
-.github
