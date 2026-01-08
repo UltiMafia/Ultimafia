@@ -140,9 +140,7 @@ router.get("/search", async function (req, res) {
     var minSlots = req.query.minSlots ? parseInt(req.query.minSlots) : null;
     var maxSlots = req.query.maxSlots ? parseInt(req.query.maxSlots) : null;
     var pageSize = 7;
-    var pageLimit = 10;
     var start = ((Number(req.query.page) || 1) - 1) * pageSize;
-    var setupLimit = pageSize * pageLimit;
 
     if (!utils.verifyGameType(gameType)) {
       res.send({ setups: [], pages: 0 });
@@ -214,25 +212,21 @@ router.get("/search", async function (req, res) {
       );
     }
 
-    if (start < setupLimit) {
-      var setups = await models.Setup.find(search)
-        .sort(sort)
-        .skip(start)
-        .limit(pageSize)
-        .select(
-          "id gameType name roles closed useRoleGroups roleGroupSizes gameSettings count total featured -_id"
-        )
-        .populate("creator", "id name avatar tag -_id");
-      var count = await models.Setup.countDocuments(search);
+    var setups = await models.Setup.find(search)
+      .sort(sort)
+      .skip(start)
+      .limit(pageSize)
+      .select(
+        "id gameType name roles closed useRoleGroups roleGroupSizes gameSettings count total featured -_id"
+      )
+      .populate("creator", "id name avatar tag -_id");
+    var count = await models.Setup.countDocuments(search);
 
-      await markFavSetups(userId, setups);
-      res.send({
-        setups: setups,
-        pages: Math.min(Math.ceil(count / pageSize), pageLimit) || 1,
-      });
-    } else {
-      res.send({ setups: [], pages: 0 });
-    }
+    await markFavSetups(userId, setups);
+    res.send({
+      setups: setups,
+      pages: Math.ceil(count / pageSize) || 1,
+    });
   } catch (e) {
     logger.error(e);
     res.send({ setups: [], pages: 0 });

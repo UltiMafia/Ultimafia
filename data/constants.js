@@ -35,7 +35,7 @@ if (process.env.NODE_ENV.includes("development")) {
   };
 } else {
   rates = {
-    hostGame: 60 * 1000,
+    hostGame: 30 * 1000,
     createSetup: 60 * 1000,
     createThread: 5 * 60 * 1000,
     postReply: 30 * 1000,

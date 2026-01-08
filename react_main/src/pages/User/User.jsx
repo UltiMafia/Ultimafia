@@ -3,7 +3,7 @@ import axios from "axios";
 
 import { Link, Route, Routes, Navigate } from "react-router-dom";
 
-import Profile, { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "./Profile";
+import Profile from "./Profile";
 import Settings from "./Settings";
 import Shop from "./Shop";
 import Inbox from "./Inbox";
@@ -21,14 +21,12 @@ const vimeoRegex = /^https?:\/\/(www\.)?vimeo\.com\/(\d+)/;
 const invidiousRegex =
   /^https?:\/\/(www\.)?(invidious\.io|yewtu\.be|invidious\.flokinet\.to|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.fdn\.fr|invidious\.lelux\.fi|invidious\.mint\.lgbt|invidious\.nixnet\.xyz|invidious\.privacydev\.net|invidious\.kavin\.rocks|invidious\.tux\.pizza|invidious\.projectsegfau\.lt|invidious\.riverside\.rocks|invidious\.busa\.co|invidious\.tinfoil-hat\.net|invidious\.jotoma\.de|invidious\.fdn\.fr|invidious\.mastodon\.host|invidious\.lelux\.fi|invidious\.mint\.lgbt)\/watch\?v=([a-zA-Z0-9_-]{11})/;
 import { useTheme } from "@mui/material/styles";
-import { Popover, Tooltip } from "@mui/material";
+import { Popover } from "@mui/material";
 import { Box, IconButton, Stack, Typography } from "@mui/material";
-import { PieChart } from "./PieChart";
-import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import ImageViewer from "components/ImageViewer";
-import ReportDialog from "components/ReportDialog";
-import { useErrorAlert } from "components/Alerts";
+import Miniprofile from "components/Miniprofile";
+import { usePopoverOpen } from "hooks/usePopoverOpen";
 
 import santaDir from "images/holiday/santahat.png";
 
@@ -631,162 +629,6 @@ export function NameWithAvatar(props) {
       </Link>
     );
   }
-}
-
-export function Miniprofile(props) {
-  const user = props.user;
-  const game = props.game;
-  const inheritedProps = user.props;
-  const currentUser = useContext(UserContext);
-  const siteInfo = useContext(SiteInfoContext);
-  const errorAlert = useErrorAlert();
-
-  const id = user.id;
-  const name = user.name || "[deleted]";
-  const pronouns = user.pronouns || "";
-  const avatar = user.avatar;
-  const color = inheritedProps.color;
-  const avatarId = inheritedProps.avatarId;
-  const hasDefaultPronouns = pronouns === "";
-  const vanityUrl = user.vanityUrl;
-
-  let pieChart = <></>;
-  if (user.stats) {
-    const mafiaStats = user.stats["Mafia"].all;
-    pieChart = (
-      <PieChart
-        wins={mafiaStats.wins.count}
-        losses={mafiaStats.wins.total - mafiaStats.wins.count}
-        abandons={mafiaStats.abandons.total}
-      />
-    );
-  }
-
-  const profileLink = vanityUrl ? `/user/${vanityUrl}` : `/user/${id}`;
-
-  const isSelf = currentUser.loggedIn && currentUser.id === id;
-  const [isFriend, setIsFriend] = useState(user.isFriend || false);
-  const [reportDialogOpen, setReportDialogOpen] = useState(false);
-  const gameId = game?.gameId || null;
-
-  // Update friend status when user prop changes
-  useEffect(() => {
-    setIsFriend(user.isFriend || false);
-  }, [user.isFriend]);
-
-  function onFriendUserClick() {
-    if (isFriend) {
-      var shouldUnfriend = window.confirm(
-        "Are you sure you wish to unfriend or cancel your friend request?"
-      );
-      if (!shouldUnfriend) return;
-    }
-
-    axios
-      .post("/api/user/friend", { user: id })
-      .then((res) => {
-        setIsFriend(!isFriend);
-        siteInfo.showAlert(res.data, "success");
-      })
-      .catch(errorAlert);
-  }
-
-  function onReportClick() {
-    setReportDialogOpen(true);
-  }
-
-  return (
-    <div className="miniprofile">
-      <div className="mui-popover-title">
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{
-            alignItems: "center",
-            width: "100%",
-            justifyContent: "space-between",
-          }}
-        >
-          <Link
-            className={`name-with-avatar`}
-            to={profileLink}
-            target="_blank"
-            style={{ flex: 1, minWidth: 0 }}
-          >
-            <Stack direction="row" spacing={1}>
-              <Avatar
-                hasImage={avatar}
-                id={id}
-                avatarId={avatarId}
-                name={name}
-              />
-              <div
-                className={`user-name`}
-                style={{
-                  ...(color ? { color } : {}),
-                  display: "inline",
-                  alignSelf: "center",
-                }}
-              >
-                {name}
-              </div>
-            </Stack>
-          </Link>
-          {!isSelf && currentUser.loggedIn && (
-            <Stack direction="row" spacing={0.5}>
-              <Tooltip title={isFriend ? "Unfriend" : "Send Friend Request"}>
-                <IconButton
-                  size="small"
-                  onClick={onFriendUserClick}
-                  sx={{
-                    color: isFriend ? "primary.main" : "text.secondary",
-                  }}
-                >
-                  <i className={`fas fa-user-plus ${isFriend ? "sel" : ""}`} />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="File Report">
-                <IconButton size="small" onClick={onReportClick}>
-                  <i className="fas fa-flag" />
-                </IconButton>
-              </Tooltip>
-            </Stack>
-          )}
-        </Stack>
-      </div>
-      <ReportDialog
-        open={reportDialogOpen}
-        onClose={() => setReportDialogOpen(false)}
-        prefilledArgs={{
-          userId: id,
-          userName: name,
-          game: gameId,
-        }}
-      />
-      {!hasDefaultPronouns && <div className="pronouns">({pronouns})</div>}
-      {pieChart}
-      <div className="score-info">
-        <div className="score-info-column">
-          <div className="score-info-row score-info-smallicon">
-            <img src={KUDOS_ICON} />
-          </div>
-          <div className="score-info-row">{user.kudos}</div>
-        </div>
-        <div className="score-info-column">
-          <div className="score-info-row score-info-smallicon">
-            <img src={KARMA_ICON} />
-          </div>
-          <div className="score-info-row">{user.karma}</div>
-        </div>
-        <div className="score-info-column">
-          <div className="score-info-row score-info-smallicon">
-            <img src={ACHIEVEMENTS_ICON} />
-          </div>
-          <div className="score-info-row">{user.achievements.length}/40</div>
-        </div>
-      </div>
-    </div>
-  );
 }
 
 export function getLoveTitle(loveType) {
