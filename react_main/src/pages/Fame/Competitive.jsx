@@ -357,7 +357,7 @@ export default function Competitive() {
   let caption = null;
   if (currentRoundInfo.seasonNumber) {
     if (currentRoundInfo.round) {
-      if (currentRoundInfo.round.paused) {
+      if (currentRoundInfo.seasonPaused) {
         displayTitle = `Season ${currentRoundInfo.seasonNumber} - Round ${currentRoundInfo.round.number} - Paused`;
       }
       else if (currentRoundInfo.nextEvent) {

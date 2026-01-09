@@ -72,7 +72,7 @@ async function progressCompetitive() {
     await models.User.updateMany({}, { $set: { goldHearts: 0 } }).exec();
     await redis.invalidateAllCachedUsers();
   }
-  else if (!currentRound.completed && !currentRound.paused) {
+  else if (!currentRound.completed) {
     const now = new Date(Date.now());
     const startDate = new Date(currentRound.startDate);
     let endOfRoundDay = new Date(startDate);
@@ -80,9 +80,20 @@ async function progressCompetitive() {
     // Check to see if the round's current day has ended
     endOfRoundDay.setDate(startDate.getDate() + currentRound.currentDay);
     if (now > endOfRoundDay) {
-      // Check to see if the round is still open
-      if (currentRound.remainingOpenDays > 0) {
-        // If so, progress the day by one and give everyone their gold hearts
+      if (currentSeason.paused) {
+        // Progress the day only if the round is paused
+        console.log(`[progressCompetitive]: Starting season ${seasonNumber} round ${currentRound.number} day ${currentRound.currentDay + 1} (paused)`);
+        await models.CompetitiveRound.updateOne(
+          { _id: ObjectID(currentRound._id) },
+          {
+            $inc: {
+              currentDay: 1,
+            } 
+          }
+        ).exec();
+      }
+      else if (currentRound.remainingOpenDays > 0) {
+        // Check to see if the round is still open. If so, progress the day by one and give everyone their gold hearts
         console.log(`[progressCompetitive]: Starting season ${seasonNumber} round ${currentRound.number} day ${currentRound.currentDay + 1}`);
 
         // Don't add gold hearts on the final day
@@ -182,7 +193,7 @@ async function accountCompetitiveRounds() {
     return;
   }
 
-  if (!currentRound.paused) {
+  if (!currentSeason.paused) {
     const now = Date.now();
     const startDate = new Date(currentRound.startDate);
     let endOfRoundDay = new Date(startDate);

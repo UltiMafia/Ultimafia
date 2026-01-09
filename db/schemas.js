@@ -698,6 +698,7 @@ var schemas = {
     rounds: [{ type: mongoose.Schema.Types.ObjectId, ref: "CompetitiveRound" }],
     currentRound: { type: Number, default: 0 },
     startDate: { type: String, default: Date.now }, // YYYY-MM-DD
+    paused: { type: Boolean, default: false },
     completed: { type: Boolean, default: false },
     numRounds: { type: Number },
   }),
@@ -705,7 +706,6 @@ var schemas = {
     season: { type: Number },
     number: { type: Number },
     currentDay: { type: Number, default: 0 },
-    paused: { type: Boolean, default: false },
     completed: { type: Boolean, default: false },
     accounted: { type: Boolean, default: false },
     startDate: { type: String }, // YYYY-MM-DD (inclusive)

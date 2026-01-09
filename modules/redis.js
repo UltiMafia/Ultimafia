@@ -560,6 +560,7 @@ async function getFeaturedSetup(featuredCategory) {
 async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
   let roundInfo = {
     seasonNumber: null,
+    seasonPaused: false,
     round: null,
     allowedSetups: [],
     gameCompletions: [],
@@ -574,7 +575,7 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
   }
 
   const season = await models.CompetitiveSeason.findOne(seasonQuery)
-    .select("-_id setups setupOrder number")
+    .select("-_id setups setupOrder number paused")
     .populate([
       {
         path: "setups",
@@ -589,6 +590,7 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
   }
 
   roundInfo.seasonNumber = season.number;
+  roundInfo.seasonPaused = season.paused;
 
   let roundQuery = { season: roundInfo.seasonNumber, accounted: false };
   if (roundNumber) {

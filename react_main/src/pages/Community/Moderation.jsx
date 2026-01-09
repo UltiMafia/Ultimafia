@@ -1651,8 +1651,8 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Create Season": {
-      perm: "createCompetitiveSeason",
+    "Create Competitive Season": {
+      perm: "manageCompetitive",
       category: "Competitive Management",
       args: [
         {
@@ -1687,6 +1687,20 @@ export function useModCommands(argValues, commandRan, setResults) {
           .post("/api/competitive/create", argValues)
           .then(() => {
             siteInfo.showAlert("Competitive season created.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Toggle Competitive Season Pause": {
+      perm: "manageCompetitive",
+      category: "Competitive Management",
+      args: [],
+      run: function () {
+        axios
+          .post("/api/competitive/pause", argValues)
+          .then((res) => {
+            siteInfo.showAlert(`Competitive season ${Boolean(res.data) ? "paused" : "unpaused"}.`, "success");
             commandRan();
           })
           .catch(errorAlert);

@@ -17,7 +17,7 @@ router.post("/create", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
 
-    if (!(await routeUtils.verifyPermission(res, userId, "createCompetitiveSeason"))) return;
+    if (!(await routeUtils.verifyPermission(res, userId, "manageCompetitive"))) return;
 
     const startDate = req.body.startDate;
     const numRounds = Number.parseInt(req.body.numRounds || "12");
@@ -100,7 +100,7 @@ router.post("/create", async function (req, res) {
     await season.save();
 
     // Create mod action
-    routeUtils.createModAction(userId, "Create Season", [
+    routeUtils.createModAction(userId, "Create Competitive Season", [
       startDate,
       numRounds,
       setupsPerRound,
@@ -108,6 +108,44 @@ router.post("/create", async function (req, res) {
     ]);
 
     res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error creating season.");
+  }
+});
+
+router.post("/pause", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+
+    if (!(await routeUtils.verifyPermission(res, userId, "manageCompetitive"))) return;
+
+    const latestSeason = await models.CompetitiveSeason.findOne({})
+      .sort({ number: -1 })
+      .lean();
+
+    if(!latestSeason || latestSeason.completed) {
+      res.status(400);
+      res.send("There is no season in progress.");
+      return;
+    }
+
+    const newPauseState = !latestSeason.paused;
+
+    await models.CompetitiveSeason.updateOne(
+      { _id: ObjectID(latestSeason._id) },
+      {
+        $set: {
+          paused: newPauseState
+        }
+      }
+    );
+
+    // Create mod action
+    routeUtils.createModAction(userId, "Toggle Competitive Season Pause", []);
+
+    res.send(newPauseState);
   } catch (e) {
     logger.error(e);
     res.status(500);
