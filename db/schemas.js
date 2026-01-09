@@ -538,7 +538,7 @@ var schemas = {
       },
       type: {
         type: String,
-        enum: trophyData.trophyTypes || ["gold", "silver", "bronze"], // Fallback if trophies not loaded
+        enum: trophyData.trophyTypes || ["gold", "silver", "bronze", "crown"], // Fallback if trophies not loaded
         default: trophyData.defaultTrophyType || "silver",
         index: true,
       },
@@ -725,8 +725,8 @@ var schemas = {
     accounted: { type: Boolean, default: false },
     startDate: { type: String }, // YYYY-MM-DD (inclusive)
     dateCompleted: { type: String }, // YYYY-MM-DD (inclusive)
-    remainingOpenDays: { type: Number, default: 8 },
-    remainingReviewDays: { type: Number, default: 5 },
+    remainingOpenDays: { type: Number, default: 9 },
+    remainingReviewDays: { type: Number, default: 4 },
   }),
   CompetitiveGameCompletion: new mongoose.Schema({
     userId: { type: String },

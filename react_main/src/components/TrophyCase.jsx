@@ -7,6 +7,7 @@ export const TROPHY_ICONS = {
   gold: require(`images/trophies/gold-trophy.png`),
   silver: require(`images/trophies/silver-trophy.png`),
   bronze: require(`images/trophies/bronze-trophy.png`),
+  crown: require(`images/trophies/crown-trophy.png`),
 };
 
 export const getTrophyIcon = (trophyType) => {

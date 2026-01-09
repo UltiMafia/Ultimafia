@@ -1738,26 +1738,6 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Refund Game": {
-      perm: "refundGame",
-      category: "Game Management",
-      args: [
-        {
-          label: "Game ID",
-          name: "gameId",
-          type: "text",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/refundGame", argValues)
-          .then((res) => {
-            siteInfo.showAlert(res.data || "Game refunded.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
     "Break Game": {
       perm: "breakGame",
       category: "Game Management",
@@ -2196,6 +2176,26 @@ export function useModCommands(argValues, commandRan, setResults) {
               }.`,
               "success"
             );
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
+    "Refund Competitive Game": {
+      perm: "manageCompetitive",
+      category: "Competitive Management",
+      args: [
+        {
+          label: "Game ID",
+          name: "gameId",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/competitive/refund", argValues)
+          .then((res) => {
+            siteInfo.showAlert("Game refunded.", "success");
             commandRan();
           })
           .catch(errorAlert);

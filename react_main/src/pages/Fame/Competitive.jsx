@@ -491,11 +491,11 @@ export default function Competitive() {
     }
   }, [currentRoundInfo ? currentRoundInfo.seasonNumber : null]);
 
-  if (!currentSeasonInfo) {
+  if (!currentRoundInfo || Object.keys(currentRoundInfo).length === 0) {
     return <NewLoading />;
   }
 
-  if (!currentRoundInfo || Object.keys(currentRoundInfo).length === 0) {
+  if (currentRoundInfo.seasonNumber !== null && !currentSeasonInfo) {
     return <NewLoading />;
   }
 
@@ -571,7 +571,7 @@ export default function Competitive() {
             setSearchParams={setSearchParams}
           />
         </Grid2>
-        {user.loggedIn && (
+        {user.loggedIn && currentSeasonInfo && (
           <Grid2 size={1}>
             <Stack
               direction="row"
