@@ -7,6 +7,7 @@ import Forums from "./Forums/Forums";
 import UserSearch from "./UserSearch";
 import Moderation from "./Moderation";
 import Calendar from "./Calendar";
+import Reports from "./Reports";
 import { UserContext } from "../../Contexts";
 
 export default function Community() {
@@ -23,6 +24,8 @@ export default function Community() {
             <Route path="users" element={<UserSearch />} />
             <Route path="moderation" element={<Moderation />} />
             <Route path="calendar" element={<Calendar />} />
+            <Route path="reports/:reportId" element={<Reports />} />
+            <Route path="reports" element={<Reports />} />
             <Route path="*" element={<Navigate to="forums" />} />
           </Routes>
         </Card>

@@ -2258,7 +2258,10 @@ function WinnersMessage(props) {
           id: player.userId || player.id,
           name: player.name,
           avatar: player.avatar !== undefined ? player.avatar : true,
-          avatarId: player.avatarId || player.id,
+          avatarId:
+            player.anonId === undefined
+              ? player.userId || player.id
+              : player.anonId,
         }));
 
       return {
@@ -2289,7 +2292,10 @@ function WinnersMessage(props) {
           id: player.userId || player.id,
           name: player.name,
           avatar: player.avatar,
-          avatarId: player.avatarId,
+          avatarId:
+            player.anonId === undefined
+              ? player.userId || player.id
+              : player.anonId,
           deathMessage: groupMessage,
           revealMessage: `${player.name} was a member of the ${group}.`,
           lastWill: "",

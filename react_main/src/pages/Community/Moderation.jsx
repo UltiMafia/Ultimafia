@@ -750,6 +750,26 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Clear User Leave Penalty": {
+      perm: "viewPerms",
+      category: "User Management",
+      args: [
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/clearleavepenalty", argValues)
+          .then(() => {
+            siteInfo.showAlert("Penalty Cleared.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Get User Permissions": {
       perm: "viewPerms",
       category: "User Management",

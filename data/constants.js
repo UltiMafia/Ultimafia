@@ -30,6 +30,7 @@ if (process.env.NODE_ENV.includes("development")) {
     postComment: 30 * 100,
     postStrategy: 30 * 100,
     favSetup: 500,
+    fileReport: 5 * 60 * 100,
   };
 } else {
   rates = {
@@ -43,6 +44,7 @@ if (process.env.NODE_ENV.includes("development")) {
     postComment: 30 * 1000,
     postStrategy: 30 * 1000,
     favSetup: 500,
+    fileReport: 5 * 60 * 1000,
   };
 }
 
@@ -61,7 +63,6 @@ module.exports = {
     "Battlesnakes",
     "Dice Wars",
     "Connect Four",
-    "Ironclad",
   ],
   lobbies: ["Main", "Sandbox", "Competitive", "Games", "Survivor", "Roleplay"],
   alignments: {
@@ -77,7 +78,6 @@ module.exports = {
     Battlesnakes: ["Town", "Host"],
     "Dice Wars": ["Military", "Host"],
     "Connect Four": ["Town", "Host"],
-    Ironclad: ["Navy", "Host"],
   },
   startStates: {
     Mafia: ["Night", "Day"],
@@ -92,7 +92,6 @@ module.exports = {
     Battlesnakes: ["Day"],
     "Dice Wars": ["Play"],
     "Connect Four": ["Turn"],
-    Ironclad: ["Placement", "Battle"],
   },
   configurableStates: {
     Mafia: {
@@ -141,18 +140,6 @@ module.exports = {
         min: 5 * 60 * 1000,
         max: 60 * 60 * 1000,
         default: 5 * 60 * 1000,
-      },
-    },
-    Ironclad: {
-      Placement: {
-        min: 1 * 60 * 1000,
-        max: 15 * 60 * 1000,
-        default: 5 * 60 * 1000,
-      },
-      Battle: {
-        min: 5 * 60 * 1000,
-        max: 60 * 60 * 1000,
-        default: 20 * 60 * 1000,
       },
     },
     Jotto: {
@@ -466,6 +453,7 @@ module.exports = {
     manageCompetitive: true,
     awardTrophy: true,
     deleteStrategy: true,
+    seeModPanel: true,
   },
   defaultGroups: {
     Owner: {
@@ -526,6 +514,7 @@ module.exports = {
         "manageCompetitive",
         "awardTrophy",
         "deleteStrategy",
+        "seeModPanel",
       ],
     },
     Liaison: {
@@ -565,6 +554,7 @@ module.exports = {
         "unban",
         "forceSignOut",
         "clearSetupName",
+        "seeModPanel",
         "clearUserContent",
         "clearFamilyContent",
         "viewBans",

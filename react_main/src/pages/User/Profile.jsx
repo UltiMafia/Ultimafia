@@ -30,6 +30,7 @@ import { Modal } from "components/Modal";
 import CustomMarkdown from "components/CustomMarkdown";
 import ModerationSideDrawer from "components/ModerationSideDrawer";
 import ReportDialog from "../../components/ReportDialog";
+import RapSheet from "../../components/RapSheet";
 import { PieChart } from "./PieChart";
 import { NewLoading } from "../Welcome/NewLoading";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
@@ -37,6 +38,7 @@ import {
   Box,
   Grid,
   IconButton,
+  Popover,
   Stack,
   Tooltip,
   Typography,
@@ -104,8 +106,12 @@ export default function Profile() {
   const [status, setStatus] = useState("offline");
   const [lastActive, setLastActive] = useState(null);
   const [userFamily, setUserFamily] = useState(null);
+  const [profileFamily, setProfileFamily] = useState(null);
   const [inGame, setInGame] = useState(null);
   const [canonicalUserId, setCanonicalUserId] = useState(null);
+  const [nameHistoryAnchor, setNameHistoryAnchor] = useState(null);
+  const [nameHistory, setNameHistory] = useState([]);
+  const [nameHistoryLoading, setNameHistoryLoading] = useState(false);
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -117,6 +123,7 @@ export default function Profile() {
   const profileUserId = canonicalUserId || userId;
   const isSelf = profileUserId === user.id;
   const isBlocked = !isSelf && user.blockedUsers.indexOf(profileUserId) !== -1;
+  const canViewNameHistory = user.perms.seeModPanel;
 
   // userId is the id of the current profile
   // user.id is the id of the current user
@@ -189,6 +196,7 @@ export default function Profile() {
     setEditingBio(false);
     setEditingPronouns(false);
     setUserFamily(null);
+    setProfileFamily(null);
 
     if (userId) {
       setProfileLoaded(false);
@@ -238,6 +246,7 @@ export default function Profile() {
           setCurrentUserLove(res.data.currentLove);
           setAchievements(res.data.achievements);
           setTrophies(res.data.trophies || []);
+          setProfileFamily(res.data.family || null);
           setFriendsPage(1);
           loadFriends(resolvedId, "", 1);
 
@@ -491,6 +500,35 @@ export default function Profile() {
 
   function onReportClick() {
     setReportDialogOpen(true);
+  }
+
+  function onNameClick(event) {
+    if (canViewNameHistory) {
+      setNameHistoryAnchor(event.currentTarget);
+      loadNameHistory();
+    }
+  }
+
+  function onNameHistoryClose() {
+    setNameHistoryAnchor(null);
+    setNameHistory([]);
+  }
+
+  function loadNameHistory() {
+    if (!profileUserId || nameHistoryLoading) return;
+
+    setNameHistoryLoading(true);
+    axios
+      .get(`/api/user/${profileUserId}/nameHistory`)
+      .then((res) => {
+        setNameHistory(res.data);
+        setNameHistoryLoading(false);
+      })
+      .catch((e) => {
+        errorAlert(e);
+        setNameHistoryLoading(false);
+        setNameHistoryAnchor(null);
+      });
   }
 
   function onBioClick() {
@@ -1030,9 +1068,17 @@ export default function Profile() {
           {badges}
           <Typography
             variant="h2"
+            onClick={canViewNameHistory ? onNameClick : undefined}
             sx={{
               flexShrink: "2",
               fontWeight: "600",
+              cursor: canViewNameHistory ? "pointer" : "default",
+              "&:hover": canViewNameHistory
+                ? {
+                    textDecoration: "underline",
+                    opacity: 0.8,
+                  }
+                : {},
             }}
           >
             {name}
@@ -1056,7 +1102,7 @@ export default function Profile() {
   );
 
   const inLoveBox = (
-    <Grid item xs={12} md={3}>
+    <Grid item xs={12}>
       {love.id != null && (isLove || isMarried) && (
         <Link
           className={`name-with-avatar`}
@@ -1095,10 +1141,61 @@ export default function Profile() {
     </Grid>
   );
 
+  const familyBox = (
+    <Grid item xs={12}>
+      {profileFamily && (
+        <Link
+          className={`name-with-avatar`}
+          to={`/user/family/${profileFamily.id}`}
+          target={""}
+          style={{ height: "100%" }}
+        >
+          <Stack
+            direction="row"
+            sx={{
+              width: "100%",
+              position: "relative",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Stack
+              direction={isPhoneDevice ? "row" : "column"}
+              spacing={isPhoneDevice ? 1 : 0}
+              sx={{
+                mb: 1,
+                height: "100%",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Typography variant="italicRelation">Member of</Typography>
+              {profileFamily.avatar && (
+                <div
+                  style={{
+                    width: isPhoneDevice ? "40px" : "60px",
+                    height: isPhoneDevice ? "40px" : "60px",
+                    borderRadius: "50%",
+                    backgroundImage: `url(/uploads/${profileFamily.id}_family_avatar.webp?t=${siteInfo.cacheVal})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    flexShrink: 0,
+                  }}
+                />
+              )}
+              <Typography>{profileFamily.name}</Typography>
+            </Stack>
+          </Stack>
+        </Link>
+      )}
+    </Grid>
+  );
+
   const aviGridItems = isPhoneDevice ? (
     <>
       {nameBox}
       {inLoveBox}
+      {familyBox}
       {buttonsBox}
     </>
   ) : (
@@ -1106,6 +1203,7 @@ export default function Profile() {
       {buttonsBox}
       {nameBox}
       {inLoveBox}
+      {familyBox}
     </>
   );
 
@@ -1297,6 +1395,9 @@ export default function Profile() {
                 </Stack>
               </div>
             </div>
+            {(isSelf || user.perms.seeModPanel) && (
+              <RapSheet userId={profileUserId} />
+            )}
             {trophyCase}
             {totalGames >= RequiredTotalForStats &&
               !settings.hideStatistics && (
@@ -1477,6 +1578,64 @@ export default function Profile() {
           </Grid>
         )}
       </Grid>
+      <Popover
+        open={Boolean(nameHistoryAnchor)}
+        anchorEl={nameHistoryAnchor}
+        onClose={onNameHistoryClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        <Box
+          sx={{
+            p: 2,
+            minWidth: 300,
+            maxWidth: 400,
+            maxHeight: 400,
+            overflow: "auto",
+          }}
+        >
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            Name History
+          </Typography>
+          {nameHistoryLoading ? (
+            <Typography variant="body2" color="textSecondary">
+              Loading...
+            </Typography>
+          ) : nameHistory.length === 0 ? (
+            <Typography variant="body2" color="textSecondary">
+              No name history available.
+            </Typography>
+          ) : (
+            <Stack spacing={1}>
+              {nameHistory.map((entry, index) => (
+                <Box key={index}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: entry.isCurrent ? 600 : 400,
+                      color: entry.isCurrent ? "primary.main" : "text.primary",
+                    }}
+                  >
+                    {entry.name}
+                    {entry.isCurrent && " (Current)"}
+                  </Typography>
+                  {entry.changedAt && (
+                    <Typography variant="caption" color="textSecondary">
+                      Changed: {new Date(entry.changedAt).toLocaleString()}
+                    </Typography>
+                  )}
+                </Box>
+              ))}
+            </Stack>
+          )}
+        </Box>
+      </Popover>
     </>
   );
 }

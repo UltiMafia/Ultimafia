@@ -16,8 +16,6 @@ module.exports = class User {
     this.competitiveCount = props.competitiveCount;
     this.stats = props.stats || dbStats.allStats();
     this.achievements = props.achievements || [];
-    this.availableStamps = props.availableStamps || [];
-    this.ownedStamps = props.ownedStamps || [];
     if (props.dailyChallenges) {
       this.dailyChallenges =
         props.dailyChallenges.map((m) => m.split(":")) || [];

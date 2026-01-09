@@ -8,7 +8,7 @@ module.exports = class ModifierTelepathic extends Card {
       Village: {
         speechAbilities: [
           {
-            name: "Contact",
+            name: "Contact Telepathic",
             targetsDescription: { include: ["all"], exclude: ["self"] },
             targetType: "player",
             verb: "",
@@ -18,7 +18,7 @@ module.exports = class ModifierTelepathic extends Card {
     };
   }
   speak(message) {
-    if (message.abilityName != "Contact") return;
+    if (message.abilityName != "Contact Telepathic") return;
 
     message.modified = true;
     message.anonymous = true;

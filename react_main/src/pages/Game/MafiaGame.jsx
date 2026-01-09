@@ -143,6 +143,18 @@ export default function MafiaGame() {
       volumes: 0.6,
     },
     {
+      fileName: "music/NightJoker",
+      loops: true,
+      overrides: false,
+      volumes: 0.6,
+    },
+    {
+      fileName: "music/NightSiren",
+      loops: true,
+      overrides: false,
+      volumes: 0.6,
+    },
+    {
       fileName: "music/NightClockmaker",
       loops: true,
       overrides: false,
@@ -398,10 +410,15 @@ export default function MafiaGame() {
           case "Clown":
           case "Dodo":
           case "Fool":
-          case "Joker":
           case "Trickster":
           case "Prankster":
             game.playAudio("music/NightFool");
+            break;
+          case "Joker":
+            game.playAudio("music/NightJoker");
+            break;
+          case "Siren":
+            game.playAudio("music/NightSiren");
             break;
           case "Suitress":
           case "Mistress":

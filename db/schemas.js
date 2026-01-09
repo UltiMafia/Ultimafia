@@ -30,6 +30,12 @@ var schemas = {
   User: new mongoose.Schema({
     id: { type: String, index: true },
     name: { type: String, index: true },
+    previousNames: [
+      {
+        name: { type: String },
+        changedAt: { type: Number },
+      },
+    ],
     ip: [{ type: String, index: true }],
     email: [{ type: String, index: true }],
     birthday: Date,
@@ -78,6 +84,7 @@ var schemas = {
       fontSize: { type: String, default: "system" },
       siteColorScheme: { type: String, default: "dark" },
       disableProTips: { type: Boolean, default: false },
+      disableSnowstorm: { type: Boolean, default: false },
       expHighDpiCorrection: { type: Boolean, default: false },
       roleSkins: String,
       autoplay: { type: Boolean, default: false },
@@ -151,8 +158,6 @@ var schemas = {
     winRate: { type: Number, default: 0 },
     achievements: [],
     achievementCount: { type: Number, default: 0 },
-    ownedStamps: [],
-    availableStamps: [],
     redHearts: { type: Number, default: 0 },
     goldHearts: { type: Number, default: 0 },
     kudos: { type: Number, default: 0 },
@@ -728,6 +733,77 @@ var schemas = {
     points: { type: Number, default: 0 }, // championship points from winning rounds
     tiebreakerPoints: { type: Number, default: 0 }, // points from winning games
   }),
+  ViolationTicket: new mongoose.Schema(
+    {
+      id: { type: String, index: true, unique: true },
+      userId: { type: String, index: true },
+      modId: { type: String, index: true },
+      banType: { type: String, index: true },
+      violationId: { type: String, index: true },
+      violationName: { type: String },
+      violationCategory: { type: String },
+      notes: String,
+      length: { type: Number },
+      createdAt: { type: Number, index: true },
+      expiresAt: { type: Number, index: true },
+      activeUntil: { type: Number, index: true },
+      linkedBanId: { type: String, index: true },
+    },
+    {
+      toObject: { virtuals: true },
+      toJSON: { virtuals: true },
+    }
+  ),
+  Report: new mongoose.Schema(
+    {
+      id: { type: String, index: true, unique: true },
+      reporterId: { type: String, index: true },
+      reportedUserId: { type: String, index: true },
+      gameId: { type: String, index: true },
+      rule: { type: String, index: true },
+      description: String,
+      status: {
+        type: String,
+        enum: ["open", "in-progress", "complete"],
+        default: "open",
+        index: true,
+      },
+      assignees: [{ type: String, index: true }],
+      createdAt: { type: Number, index: true },
+      updatedAt: { type: Number, index: true },
+      completedAt: { type: Number, index: true },
+      completedBy: { type: String, index: true },
+      finalRuling: {
+        violationId: String,
+        violationName: String,
+        violationCategory: String,
+        banType: String,
+        banLength: String,
+        banLengthMs: Number,
+        notes: String,
+      },
+      linkedViolationTicketId: { type: String, index: true },
+      linkedBanId: { type: String, index: true },
+      reopenedAt: { type: Number },
+      reopenedBy: { type: String },
+      reopenedCount: { type: Number, default: 0 },
+      history: [
+        {
+          status: String,
+          changedBy: String,
+          timestamp: Number,
+          action: String,
+          note: String,
+          assigneesAdded: [String],
+          assigneesRemoved: [String],
+        },
+      ],
+    },
+    {
+      toObject: { virtuals: true },
+      toJSON: { virtuals: true },
+    }
+  ),
 };
 
 schemas.ForumVote.virtual("user", {
@@ -876,6 +952,41 @@ schemas.Ban.virtual("mod", {
   justOne: true,
 });
 
+schemas.ViolationTicket.virtual("user", {
+  ref: "User",
+  localField: "userId",
+  foreignField: "id",
+  justOne: true,
+});
+
+schemas.ViolationTicket.virtual("mod", {
+  ref: "User",
+  localField: "modId",
+  foreignField: "id",
+  justOne: true,
+});
+
+schemas.ViolationTicket.virtual("ban", {
+  ref: "Ban",
+  localField: "linkedBanId",
+  foreignField: "id",
+  justOne: true,
+});
+
+schemas.Report.virtual("reporter", {
+  ref: "User",
+  localField: "reporterId",
+  foreignField: "id",
+  justOne: true,
+});
+
+schemas.Report.virtual("reportedUser", {
+  ref: "User",
+  localField: "reportedUserId",
+  foreignField: "id",
+  justOne: true,
+});
+
 // VanityUrl schema for custom user URLs
 schemas.VanityUrl = new mongoose.Schema({
   url: {
@@ -920,5 +1031,21 @@ schemas.CompetitiveRound.index({ season: 1, number: 1 }, { unique: true });
 schemas.CompetitiveSeasonStanding.index({ userId: 1, season: 1 }, { unique: true });
 schemas.CompetitiveGameCompletion.index({ userId: 1, game: 1 }, { unique: true });
 schemas.CompetitiveGameCompletion.index({ season: 1, round: 1, day: 1 });
+
+// Compound indexes for Report schema
+schemas.Report.index({ status: 1, createdAt: -1 });
+schemas.Report.index({ assignees: 1, status: 1 });
+schemas.Report.index({ reportedUserId: 1, status: 1 });
+
+// Compound indexes for ViolationTicket schema
+schemas.ViolationTicket.index({ userId: 1, createdAt: -1 });
+schemas.ViolationTicket.index({ userId: 1, activeUntil: 1 });
+schemas.ViolationTicket.index({ userId: 1, violationName: 1, activeUntil: 1 });
+
+// Compound indexes for ViolationTicket schema
+schemas.ViolationTicket.index({ userId: 1, createdAt: -1 });
+schemas.ViolationTicket.index({ userId: 1, violationId: 1 });
+schemas.ViolationTicket.index({ userId: 1, activeUntil: 1 });
+schemas.ViolationTicket.index({ userId: 1, violationName: 1, activeUntil: 1 });
 
 module.exports = schemas;

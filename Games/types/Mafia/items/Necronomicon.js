@@ -17,7 +17,7 @@ module.exports = class Necronomicon extends Item {
     super("Necronomicon");
 
     this.cannotBeStolen = true;
-    his.cannotBeSnooped = true;
+    this.cannotBeSnooped = true;
     this.meetings = {
       Necronomicon: {
         states: ["Night"],
