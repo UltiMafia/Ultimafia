@@ -12,7 +12,7 @@ module.exports = class SecretGifting extends Item {
     this.PlayerTarget = player;
     let meetingName = "Give Gift to "+player.name
     let itemTargets = Object.entries(items.Mafia)
-                .filter((roleData) => roleData[1].tag.includes("Common"))
+                .filter((roleData) => roleData[1].tags.includes("Common"))
                 .map((roleData) => roleData[0]);
 
     this.meetings[meetingName] = {
@@ -20,19 +20,14 @@ module.exports = class SecretGifting extends Item {
       states: ["Night"],
       flags: ["voting"],
       inputType: "custom",
-        targets: itemTargets,
+      targets: itemTargets,
       item: this,
         action: {
           labels: ["hidden", "absolute"],
           priority: PRIORITY_ITEM_GIVER_EARLY,
           item: this,
           run: function () {
-            let itemType = this.role.data.itemType;
-            if (!itemType) {
-              return;
-            }
-
-            this.item.PlayerTarget.holdItem(this.target);
+            this.item.PlayerTarget.holdItem(items["Mafia"][this.target].internal[0]);
             this.item.PlayerTarget.queueGetItemAlert(this.target);
             delete this.role.data.itemType;
             this.item.drop();

@@ -141,6 +141,12 @@ const modifierData = {
       description:
         "Can be used to kill a random player who shares an alignment with the Holder.",
     },
+    "Haunted Mask": {
+      internal: ["HauntedMask"],
+      tags: ["Protection"],
+      description:
+        "A Haunted Mask will protect its holder from one attack and kill the attacker. The holder will then and steal the attacker's identity.",
+    },
     "Shaving Cream": {
       internal: ["ShavingCream"],
       tags: ["Conversion"],

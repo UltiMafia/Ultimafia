@@ -5982,6 +5982,15 @@ const roleData = {
       ],
       nightOrder: [["Give Haunted Mask", PRIORITY_ITEM_GIVER_EARLY]],
     },
+    "Secret Santa": {
+      alignment: "Event",
+      tags: ["Event", "Items"],
+      description: [
+        "If this event occurs, each player will be assigned another player.",
+        "Each player will choose an item for their assigned player to receive.",
+      ],
+      nightOrder: [["Give Gifts", PRIORITY_ITEM_GIVER_EARLY]],
+    },
     Evolution: {
       alignment: "Event",
       tags: ["Event"],

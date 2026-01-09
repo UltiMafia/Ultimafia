@@ -7,6 +7,9 @@ module.exports = class VillagerToInvestigative extends Card {
     let tempApp = {
       investigate: "Villager",
     };
+    this.hideModifier = {
+      investigate: true,
+    };
     this.editAppearance(tempApp);
   }
 };

@@ -139,12 +139,12 @@ export function RoleDetails({
               :{" "}
               {(roleData?.SpecialInteractionsModifiers &&
               roleData?.SpecialInteractionsModifiers[modifier.name]
-                ? roleData?.SpecialInteractionsModifiers[modifier.name]
+                ? roleData?.SpecialInteractionsModifiers[modifier.name][0]
                 : roleData?.alignment == "Event" &&
                   modifier.eventDescription != null
                 ? modifier.eventDescription
                 : modifier.description
-              ).replace("[X]", "" + count)}
+              )?.replace("[X]", "" + count)}
             </Typography>
           </Stack>
         );
@@ -400,7 +400,7 @@ export function RoleCount({
               :{" "}
               {(roleData?.SpecialInteractionsModifiers &&
               roleData?.SpecialInteractionsModifiers[modifier.name]
-                ? roleData?.SpecialInteractionsModifiers[modifier.name]
+                ? roleData?.SpecialInteractionsModifiers[modifier.name][0]
                 : roleData?.alignment == "Event" &&
                   modifier.eventDescription != null
                 ? modifier.eventDescription
