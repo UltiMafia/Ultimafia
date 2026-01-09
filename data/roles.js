@@ -4849,6 +4849,10 @@ const roleData = {
       alignment: "Cult",
       tags: ["Events", "Advanced"],
       description: ["Each night, can choose an Event, that Event occurs."],
+      SpecialInteractionsModifiers: {
+        Refined: ["Cannot use Banished Events."],
+        Unrefined: ["Cannot use non-Banished Events."],
+      },
     },
     Bogeyman: {
       alignment: "Cult",
