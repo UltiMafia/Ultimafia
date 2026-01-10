@@ -18,6 +18,14 @@ const skillRating = new mongoose.Schema({
   sigma: { type: Number }, // deviation
 });
 
+const factionRatings = [
+  {
+    factionName: { type: String },
+    skillRating: skillRating,
+    elo: { type: Number },
+  },
+];
+
 var schemas = {
   User: new mongoose.Schema({
     id: { type: String, index: true },
@@ -208,13 +216,8 @@ var schemas = {
       played: { type: Number, index: true },
       rolePlays: {},
       roleWins: {},
-      factionRatings: [
-        {
-          factionName: { type: String },
-          skillRating: skillRating,
-          elo: { type: Number },
-        },
-      ],
+      factionRatings: factionRatings,
+      lockedFactionRatings: factionRatings,
     },
     { minimize: false }
   ),

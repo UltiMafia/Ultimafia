@@ -359,7 +359,7 @@ module.exports = {
 
   // See: https://www.npmjs.com/package/openskill
   defaultSkillRatingMu: 750,
-  defaultSkillRatingSigma: 150,
+  defaultSkillRatingSigma: 250,
 
   pointsNominalAmount: 60,
 

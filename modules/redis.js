@@ -562,12 +562,19 @@ async function _getCurrentCompRoundInfo() {
     active: true,
     seasonNumber: null,
     currentRound: null,
+    allowedSetups: [],
     gameCompletions: [],
     standings: [],
     users: {},
   };
 
   const currentSeason = await models.CompetitiveSeason.findOne({ completed: false })
+    .select("-_id setups setupOrder number")
+    .populate([
+      {
+        path: "setups",
+      },
+    ])
     .sort({ number: -1 })
     .lean();
 
@@ -580,6 +587,7 @@ async function _getCurrentCompRoundInfo() {
 
   // Get the current round, if any
   roundInfo.currentRound = await models.CompetitiveRound.findOne({ season: roundInfo.seasonNumber, completed: false })
+    .select("-_id")
     .sort({ number: -1 })
     .lean();
 
@@ -587,6 +595,8 @@ async function _getCurrentCompRoundInfo() {
     roundInfo.active = false;
     return roundInfo;
   }
+
+  roundInfo.allowedSetups = currentSeason.setupOrder[roundInfo.currentRound.number - 1].map((setupNumber) => currentSeason.setups[setupNumber]);
 
   roundInfo.gameCompletions = await models.CompetitiveGameCompletion.aggregate([
     { $match: { season: roundInfo.seasonNumber, round: roundInfo.currentRound.number, valid: true } },

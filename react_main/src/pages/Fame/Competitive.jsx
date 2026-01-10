@@ -18,6 +18,7 @@ import { NewLoading } from "pages/Welcome/NewLoading";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
 
 export const POINTS_ICON = require(`images/points.png`);
+export const PRESTIGE_ICON = require(`images/prestige.png`);
 
 function Overview({ roundInfo }) {
   const [currentSeasonInfo, setCurrentSeasonInfo] = useState(null);
@@ -45,18 +46,47 @@ function Overview({ roundInfo }) {
           const userId = seasonStanding.userId;
           const user = currentSeasonInfo.users[userId];
           return (
-            <Stack direction="row" spacing={1} key={userId} sx={{
-              alignItems: "center"
+            <Box key={userId} sx={{
+              display: "grid",
+              gridTemplateColumns: "minmax(0, 1fr) 2em 16px 2em 16px",
+              gap: 0.5,
+              alignItems: "center",
+              textAlign: "right",
             }}>
-              <NameWithAvatar
-                id={user.id}
-                name={user.name}
-                avatar={user.avatar}
-              />
-              <Typography sx={{ marginLeft: "auto !important" }}>
+              <Box sx={{ overflowX: "clip" }}>
+                <NameWithAvatar
+                  id={user.id}
+                  name={user.name}
+                  avatar={user.avatar}
+                />
+              </Box>
+              <Typography sx={{
+                lineHeight: "1",
+              }}>
                 {seasonStanding.points}
               </Typography>
-            </Stack>
+              <Tooltip title="prestige">
+                <img
+                  src={PRESTIGE_ICON}
+                  alt="prestige"
+                  width="16px"
+                  height="16px"
+                />
+              </Tooltip>
+              <Typography sx={{
+                lineHeight: "1",
+              }}>
+                {"0"}
+              </Typography>
+              <Tooltip title="fortune">
+                <img
+                  src={POINTS_ICON}
+                  alt="Fortune"
+                  width="16px"
+                  height="16px"
+                />
+              </Tooltip>
+            </Box>
           );
         })}
       </Stack>
@@ -71,56 +101,49 @@ function Overview({ roundInfo }) {
           const user = roundInfo.users[userId].user;
           const points = roundInfo.users[userId].points;
           const gamesPlayed = roundInfo.users[userId].gamesPlayed;
-          
+
           return (
             <Box key={roundStanding.userId} sx={{
               display: "grid",
-              gridTemplateColumns: "1fr calc(2em + 16px) 3em",
-              gap: 1,
+              gridTemplateColumns: "minmax(0, 1fr) 2em 16px 1.5em 1em",
+              gap: 0.5,
               alignItems: "center",
+              textAlign: "right",
             }}>
-              <NameWithAvatar
-                id={user.id}
-                name={user.name}
-                avatar={user.avatar}
-              />
-              <Stack direction="row" spacing={0.5} sx={{
-                alignItems: "center",
-                marginLeft: "auto !important",
+              <Box sx={{ overflowX: "clip" }}>
+                <NameWithAvatar
+                  id={user.id}
+                  name={user.name}
+                  avatar={user.avatar}
+                />
+              </Box>
+              <Typography sx={{
+                lineHeight: "1",
               }}>
-                <Typography sx={{
-                  lineHeight: "1",
-                }}>
-                  {points}
-                </Typography>
-                <Tooltip title="fortune">
-                  <img
-                    src={POINTS_ICON}
-                    alt="Fortune"
-                    width="16px"
-                    height="16px"
-                  />
-                </Tooltip>
-              </Stack>
-              <Stack direction="row" spacing={0.5} sx={{
-                alignItems: "center",
-                marginLeft: "auto !important",
+                {points}
+              </Typography>
+              <Tooltip title="fortune">
+                <img
+                  src={POINTS_ICON}
+                  alt="Fortune"
+                  width="16px"
+                  height="16px"
+                />
+              </Tooltip>
+              <Typography sx={{
+                lineHeight: "1",
               }}>
-                <Typography sx={{
-                  lineHeight: "1",
-                }}>
-                  {gamesPlayed}
-                </Typography>
-                <Tooltip title="games played">
-                  <i
-                    className="fas fa-heart"
-                    style={{
-                      fontSize: "1em",
-                      color: "var(--gold-heart-color)",
-                    }}
-                  />
-                </Tooltip>
-              </Stack>
+                {gamesPlayed}
+              </Typography>
+              <Tooltip title="games played">
+                <i
+                  className="fas fa-heart"
+                  style={{
+                    fontSize: "1em",
+                    color: "var(--gold-heart-color)",
+                  }}
+                />
+              </Tooltip>
             </Box>
           );
         })}
@@ -236,7 +259,7 @@ export default function Competitive() {
     if (roundHasStarted) {
       const date = new Date(currentRoundInfo.currentRound.endDate);
       displayTitle = `Season ${currentRoundInfo.seasonNumber} Round ${currentRoundInfo.currentRound.number} Day ${currentRoundInfo.currentRound.currentDay}`;
-      caption = `Current round ends on ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+      caption = `Current round closes on ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
     }
     else {
       const date = new Date(currentRoundInfo.currentRound.startDate);

@@ -33,6 +33,7 @@ const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const axios = require("axios");
 const { ordinal, rating, rate, predictWin } = require("openskill");
+const { bradleyTerryFull } = require("openskill/models");
 
 module.exports = class Game {
   constructor(options) {
@@ -2987,7 +2988,11 @@ module.exports = class Game {
 
       // library code time
       const predictions = predictWin(factionsToBeRated);
-      const ratedFactions = rate(factionsToBeRated, { score: factionScores });
+      const ratedFactions = rate(factionsToBeRated, {
+        model: bradleyTerryFull,
+        score: factionScores,
+        beta: constants.defaultSkillRatingSigma/4,
+      });
 
       /* Notes:
        * - Read the library documentation before tweaking anything: https://www.npmjs.com/package/openskill
@@ -3007,6 +3012,11 @@ module.exports = class Game {
       const newFactionSkillRatings = factionRatingsRaw.filter(
         (factionRating) => !factionNames.includes(factionRating.factionName)
       );
+
+      // numbers for approximating the "look" of elo
+      const alpha = 200/constants.defaultSkillRatingSigma;
+      const ordinalTarget = 1500;
+
       for (var i = 0; i < factionNames.length; i++) {
         const factionName = factionNames[i];
         const winPredictionPercent = predictions[i]; // this adds up to 1 across all factions
@@ -3022,7 +3032,7 @@ module.exports = class Game {
         newFactionSkillRatings.push({
           factionName: factionName,
           skillRating: newSkillRating[0],
-          elo: ordinal(newSkillRating[0]),
+          elo: alpha * (ordinal(newSkillRating[0]) + ordinalTarget/alpha),
         });
       }
 

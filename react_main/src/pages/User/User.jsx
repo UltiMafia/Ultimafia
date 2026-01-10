@@ -454,15 +454,13 @@ export function Avatar(props) {
 
       {/* Santa hat: Only shows during December (turns off on January 1) */}
       {isDecember && santaProps && (
-        <div>
-          <img
-            className="santa"
-            width={santaProps.width}
-            style={{ position: "absolute", transform: santaProps.transform }}
-            src={santaDir}
-            alt="Santa hat"
-          />
-        </div>
+        <img
+          className="santa"
+          width={santaProps.width}
+          style={{ display: "block", position: "absolute", transform: santaProps.transform }}
+          src={santaDir}
+          alt="Santa hat"
+        />
       )}
     </div>
   );

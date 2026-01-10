@@ -568,12 +568,22 @@ router.post("/host", async function (req, res) {
       return;
     }
 
-    if (req.body.competitive && !setup.competitive) {
-      res.status(500);
-      res.send(
-        "This setup has not been approved for Competitive play. Please contact an admin if this is in error."
-      );
-      return;
+    if (req.body.competitive) {
+      const roundInfo = await redis.getCurrentCompRoundInfo();
+      let setupAllowed = false;
+      for (const allowedSetup of roundInfo.allowedSetups) {
+        if (setup.id === allowedSetup.id) {
+          setupAllowed = true;
+        }
+      }
+
+      if (!setupAllowed) {
+        res.status(500);
+        res.send(
+          "This setup is not allowed for the current round. Please contact an admin if this is in error."
+        );
+        return;
+      }
     }
 
     if (req.body.ranked && req.body.competitive) {

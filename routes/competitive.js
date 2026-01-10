@@ -62,7 +62,7 @@ router.post("/create", async function (req, res) {
       return;
     }
 
-    const setups = await models.Setup.find({ competitive: true }).select("_id").lean();
+    const setups = await models.Setup.find({ competitive: true }).select("_id factionRatings").lean();
 
     if (setups.length === 0) {
       res.status(400);
