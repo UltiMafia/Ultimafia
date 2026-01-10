@@ -49,6 +49,10 @@ module.exports = class BecomeDeliriousRole extends Card {
       reveal: role.newRole,
     };
     this.editAppearance(tempApp);
+    this.hideModifier = {
+      self: true,
+      reveal: true,
+    };
 
     this.listeners = {
       SwitchRoleBefore: function (player) {

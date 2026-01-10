@@ -4849,6 +4849,10 @@ const roleData = {
       alignment: "Cult",
       tags: ["Events", "Advanced"],
       description: ["Each night, can choose an Event, that Event occurs."],
+      SpecialInteractionsModifiers: {
+        Refined: ["Cannot use Banished Events."],
+        Unrefined: ["Cannot use non-Banished Events."],
+      },
     },
     Bogeyman: {
       alignment: "Cult",
@@ -5981,6 +5985,15 @@ const roleData = {
         "If a player with a Haunted Mask is attacked, they will kill their attacker and steal their identity.",
       ],
       nightOrder: [["Give Haunted Mask", PRIORITY_ITEM_GIVER_EARLY]],
+    },
+    "Secret Santa": {
+      alignment: "Event",
+      tags: ["Event", "Items"],
+      description: [
+        "If this event occurs, each player will be assigned another player.",
+        "Each player will choose an item for their assigned player to receive.",
+      ],
+      nightOrder: [["Give Gifts", PRIORITY_ITEM_GIVER_EARLY]],
     },
     Evolution: {
       alignment: "Event",

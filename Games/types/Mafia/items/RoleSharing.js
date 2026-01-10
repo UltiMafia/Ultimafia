@@ -149,7 +149,7 @@ module.exports = class RoleSharing extends Item {
                 this.actor.queueAlert(
                   `You ${this.item.currentShareMethod} to ${this.target.name}.`
                 );
-                this.actor.role.revealToPlayer(targetPlayer);
+                this.actor.role.revealToPlayer(targetPlayer, null, "investigate");
               },
             });
             this.game.instantAction(action);
