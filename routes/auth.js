@@ -34,8 +34,18 @@ passport.use(
         if (profile) {
           if (profile.email) {
             await authSuccess(req, null, profile.email, profile);
-            done(null, profile);
+            // Verify that authSuccess actually created a session
+            if (req.session.user) {
+              done(null, profile);
+            } else {
+              // authSuccess silently failed (banned IP, invalid domain, etc.)
+              done(new Error("Authentication failed"), null);
+            }
+          } else {
+            done(new Error("No email in Discord profile"), null);
           }
+        } else {
+          done(new Error("No Discord profile"), null);
         }
       } catch (err) {
         console.log(err);
@@ -72,46 +82,31 @@ router.post("/", async function (req, res) {
 
 
   try {
-    var idToken = String(req.body.idToken);
-    if (idToken) {
-      var userData = await fbAdmin.auth().verifyIdToken(idToken);
-      var verified = userData.email_verified;
+    // Validate idToken is present and not empty
+    var idToken = req.body.idToken;
+    if (!idToken || typeof idToken !== 'string' || idToken.trim().length === 0) {
+      res.status(403);
+      res.send("Authentication failed.");
+      return;
+    }
 
-      if (verified) {
-        const authResult = await authSuccess(req, userData.uid, userData.email);
-        // Check if authSuccess actually created a session
-        if (req.session.user) {
-          res.sendStatus(200);
-        } else {
-          // authSuccess silently failed (banned IP, invalid domain, etc.)
-          res.status(403);
-          res.send("Authentication failed.");
-        }
+    // Verify Firebase ID token - this will throw if invalid
+    var userData = await fbAdmin.auth().verifyIdToken(idToken);
+    var verified = userData.email_verified;
+
+    if (verified) {
+      await authSuccess(req, userData.uid, userData.email);
+      // Check if authSuccess actually created a session
+      if (req.session.user) {
+        res.sendStatus(200);
       } else {
+        // authSuccess silently failed (banned IP, invalid domain, etc.)
         res.status(403);
         res.send("Authentication failed.");
       }
     } else {
-      console.log("Req body: " + req.body);
-      if (req.body.discordProfile) {
-        const authResult = await authSuccess(
-          req,
-          null,
-          req.body.email,
-          req.body.discordProfile
-        );
-        // Check if authSuccess actually created a session
-        if (req.session.user) {
-          res.sendStatus(200);
-        } else {
-          // authSuccess silently failed (banned IP, invalid domain, etc.)
-          res.status(403);
-          res.send("Authentication failed.");
-        }
-      } else {
-        res.status(403);
-        res.send("Authentication failed.");
-      }
+      res.status(403);
+      res.send("Authentication failed.");
     }
   } catch (e) {
     if (e.siteBanned) {
@@ -140,11 +135,23 @@ router.post("/", async function (req, res) {
 router.get("/discord", passport.authenticate("discord"));
 
 router.get("/discord/redirect", (req, res, next) => {
-  passport.authenticate("discord", { session: false, successRedirect: "/" })(
-    req,
-    res,
-    next
-  );
+  passport.authenticate("discord", { session: false }, (err, user, info) => {
+    if (err) {
+      logger.warn(`Discord authentication error: ${err.message}`);
+      res.status(403);
+      res.send("Authentication failed.");
+      return;
+    }
+    if (!req.session.user) {
+      // authSuccess failed silently - session was not created
+      logger.warn("Discord authentication succeeded but no session was created");
+      res.status(403);
+      res.send("Authentication failed.");
+      return;
+    }
+    // Authentication succeeded and session was created
+    res.redirect("/");
+  })(req, res, next);
 });
 
 router.post("/verifyCaptcha", async function (req, res) {
@@ -289,7 +296,7 @@ async function authSuccess(req, uid, email, discordProfile) {
     var id = routeUtils.getUserId(req);
     var ip = routeUtils.getIP(req);
     var user = await models.User.findOne({ email, deleted: false }).select(
-      "id deleted discordId"
+      "id deleted discordId fbUid"
     );
     var bannedUser = await models.User.findOne({ email, banned: true }).select(
       "id discordId"
@@ -463,6 +470,18 @@ async function authSuccess(req, uid, email, discordProfile) {
     } else {
       //Link or refresh account (1) (2) (7)
       id = user.id;
+
+      // CRITICAL SECURITY: Verify Firebase UID matches stored fbUid to prevent privilege escalation
+      if (uid) {
+        if (user.fbUid && user.fbUid !== uid) {
+          // User exists with different Firebase UID - reject authentication
+          logger.warn(`Firebase UID mismatch for user ${id}: stored=${user.fbUid}, provided=${uid}`);
+          return;
+        } else if (!user.fbUid) {
+          // User exists but no Firebase UID yet - link it for legacy accounts
+          await models.User.updateOne({ id: id }, { $set: { fbUid: uid } });
+        }
+      }
 
       if (!(await routeUtils.verifyPermission(id, "signIn"))) {
         return;

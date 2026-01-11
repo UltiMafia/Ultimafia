@@ -1561,6 +1561,68 @@ router.post("/settings/update", async function (req, res) {
         );
     }
 
+    if (prop === "deathMessage") {
+      // Truncate to 150 chars first
+      if (value.length > 150) {
+        value = value.substring(0, 150);
+      }
+
+      // Validate deathMessage includes ${name} placeholder (after truncation)
+      if (!value.includes("${name}")) {
+        res.status(500);
+        res.send(
+          "You must use ${name} in the death message as a placeholder for your username."
+        );
+        return;
+      }
+    }
+
+    if (prop === "youtube") {
+      // Validate URL length
+      if (value.length > 200) {
+        res.status(500);
+        res.send("URL is too long");
+        return;
+      }
+
+      // Validate URL against allowed patterns
+      let matches = value.match(youtubeRegex);
+      let soundcloudMatches = value.match(soundcloudRegex);
+      let spotifyMatches = value.match(spotifyRegex);
+      let vimeoMatches = value.match(vimeoRegex);
+      let invidiousMatches = value.match(invidiousRegex);
+      let directMediaMatches = value.match(
+        /^https?:\/\/.*?\.(ogg|mp3|mp4|webm)$/
+      );
+      let emptyMatches = value.match(/^$/g);
+
+      if (matches) {
+        // For YouTube URLs, extract and truncate to just the video ID portion
+        let embedId = 0;
+        if (matches && matches.length >= 7) {
+          embedId = matches[7];
+        }
+        let embedIndex = value.indexOf(embedId);
+        // Youtube video IDs are 11 characters, so get the substring,
+        // & end at the end of the found embedID.
+        value = value.substring(0, embedIndex + 11);
+      } else if (
+        soundcloudMatches ||
+        spotifyMatches ||
+        vimeoMatches ||
+        invidiousMatches ||
+        directMediaMatches ||
+        emptyMatches
+      ) {
+        // Valid URL for other allowed services or empty
+        // value is already set, no need to modify
+      } else {
+        res.status(500);
+        res.send("Error updating settings.");
+        return;
+      }
+    }
+
     let unsetOperator = {};
     if (prop === "textColor") {
       unsetOperator = { $unset: { "settings.warnTextColor": "" } };
