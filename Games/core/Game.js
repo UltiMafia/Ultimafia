@@ -2230,6 +2230,7 @@ module.exports = class Game {
 
   makeMeetings() {
     for (let player of this.players) player.meet();
+    for (let spectator of this.spectators) spectator.meet();
 
     this.initMeetings();
     this.sendMeetings();
