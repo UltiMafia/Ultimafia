@@ -14,7 +14,7 @@ import {
   Paper,
 } from "@mui/material";
 
-import { rulesData } from "../../constants/rules";
+import { violationDefinitions } from "../../constants/violations";
 
 export default function Rules() {
   const theme = useTheme();
@@ -23,8 +23,8 @@ export default function Rules() {
     document.title = "Rules | UltiMafia";
   }, []);
 
-  const communityRules = rulesData.filter((r) => r.category === "Community");
-  const gameRules = rulesData.filter((r) => r.category === "Game");
+  const communityRules = violationDefinitions.filter((r) => r.category === "Community");
+  const gameRules = violationDefinitions.filter((r) => r.category === "Game");
 
   return (
     <>
@@ -129,7 +129,7 @@ export default function Rules() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rulesData.map((rule) => (
+                {violationDefinitions.map((rule) => (
                   <TableRow key={rule.name}>
                     <TableCell
                       sx={{

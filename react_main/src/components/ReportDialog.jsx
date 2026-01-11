@@ -17,7 +17,7 @@ import {
 import { useErrorAlert } from "./Alerts";
 import { UserSearchSelect } from "./Form";
 import { UserContext, SiteInfoContext } from "../Contexts";
-import { rulesData } from "../constants/rules";
+import { violationDefinitions } from "../constants/violations";
 
 import janitor from "images/roles/mafia/janitor-vivid.png";
 
@@ -169,7 +169,7 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
                 label="Rule Broken"
                 onChange={(e) => setRuleBroken(e.target.value)}
               >
-                {rulesData.map((rule) => (
+                {violationDefinitions.map((rule) => (
                   <MenuItem key={rule.name} value={rule.name}>
                     {rule.name}
                   </MenuItem>

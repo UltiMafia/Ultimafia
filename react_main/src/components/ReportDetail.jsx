@@ -27,7 +27,7 @@ import { Time } from "./Basic";
 import { NameWithAvatar } from "pages/User/User";
 import { UserContext, SiteInfoContext } from "../Contexts";
 import ReportTypology from "./ReportTypology";
-import { rulesData } from "../constants/rules";
+import { violationDefinitions } from "../constants/violations";
 
 export default function ReportDetail({
   report: initialReport,
@@ -244,7 +244,7 @@ export default function ReportDetail({
                       }}
                       disabled={updatingRule}
                     >
-                      {rulesData.map((r) => (
+                      {violationDefinitions.map((r) => (
                         <MenuItem key={r.name} value={r.name}>
                           {r.name}
                         </MenuItem>
