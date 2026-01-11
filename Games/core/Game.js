@@ -6,6 +6,7 @@ const History = require("./History");
 const Queue = require("./Queue");
 const PregameMeeting = require("./PregameMeeting");
 const PregameReadyMeeting = require("./PregameReadyMeeting");
+const SpectatorMeeting = require("./SpectatorMeeting");
 const Timer = require("./Timer");
 const Random = require("../../lib/Random");
 const Utils = require("./Utils");
@@ -2230,7 +2231,10 @@ module.exports = class Game {
 
   makeMeetings() {
     for (let player of this.players) player.meet();
-    for (let spectator of this.spectators) spectator.meet();
+    if(!this.spectatorMeeting){
+      this.spectatorMeeting =
+    }
+    for (let spectator of this.spectators) this.spectatorMeeting.join(spectator);
 
     this.initMeetings();
     this.sendMeetings();
