@@ -344,7 +344,7 @@ export const LoginDialog = ({ open, setOpen }) => {
           <img src={GoogleIcon} alt="Google Icon" width={21} />
           &nbsp;Login with Google
         </Button>
-        {/* <Button
+        <Button
           fullWidth
           variant="outlined"
           sx={{ mt: 1, textTransform: "none" }}
@@ -352,7 +352,7 @@ export const LoginDialog = ({ open, setOpen }) => {
         >
           <img src={DiscordIcon} alt="Discord Icon" width={21} />
           &nbsp;Login with Discord
-        </Button> */}
+        </Button>
         <YouAgree action={"logging in"} />
         <Button
           variant="text"
