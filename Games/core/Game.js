@@ -6,6 +6,7 @@ const History = require("./History");
 const Queue = require("./Queue");
 const PregameMeeting = require("./PregameMeeting");
 const PregameReadyMeeting = require("./PregameReadyMeeting");
+const SpectatorMeeting = require("./SpectatorMeeting");
 const Timer = require("./Timer");
 const Random = require("../../lib/Random");
 const Utils = require("./Utils");
@@ -92,6 +93,7 @@ module.exports = class Game {
     this.players = new ArrayHash();
     this.playersGone = {};
     this.spectators = [];
+    this.spectatorsOld = [];
     this.spectatorLimit = constants.maxSpectators;
     this.history = new History(this);
     this.spectatorHistory = new History(this, "spectator");
@@ -535,11 +537,16 @@ module.exports = class Game {
       spectator.init();
 
       this.spectators.push(spectator);
+      this.spectatorsOld.push(spectator);
+      this.spectatorMeeting.join(spectator);
       this.sendAllGameInfo(spectator);
+      spectator.sendMeetings();
       spectator.send("loaded");
+      
 
       this.broadcast("spectatorCount", this.spectators.length);
       redis.setSpectatorCount(this.id, this.spectators.length);
+      this.broadcast("spectators", this.spectators);
     } catch (e) {
       logger.error(e);
       // this.handleError(e);
@@ -711,6 +718,7 @@ module.exports = class Game {
     spectator.init();
 
     this.spectators.push(spectator);
+    this.spectatorsOld.push(spectator);
     this.sendAllGameInfo(spectator);
     spectator.send("loaded");
 
@@ -837,6 +845,24 @@ module.exports = class Game {
     for (let playerInfo of this.beforeAnonPlayerInfo) {
       allPlayerInfo[playerInfo.id] = playerInfo;
     }
+    /*
+    for (let spectator of this.spectators)
+      allPlayerInfo[spectator.id] = spectator.getPlayerInfo(recipient);
+    */
+
+    return allPlayerInfo;
+  }
+
+    getAllSpectatorInfo(recipient) {
+    var allPlayerInfo = {};
+
+    for (let player of this.spectators){
+      allPlayerInfo[player.id] = player.getPlayerInfo(recipient);
+    }
+
+    for (let player2 of this.spectatorsOld){
+      allPlayerInfo[player2.id] = player2.getPlayerInfo(recipient);
+    }
 
     return allPlayerInfo;
   }
@@ -864,6 +890,7 @@ module.exports = class Game {
     player.send("emojis", this.emojis);
     player.send("isStarted", this.started);
     player.send("spectatorCount", this.spectators.length);
+    player.send("spectators", this.getAllSpectatorInfo(player));
 
     if (!player.user.playedGame && !player.isBot) player.send("firstGame");
 
@@ -2230,6 +2257,10 @@ module.exports = class Game {
 
   makeMeetings() {
     for (let player of this.players) player.meet();
+    if(this.spectating){
+    this.spectatorMeeting = this.createMeeting(SpectatorMeeting);
+    for (let spectator of this.spectators) this.spectatorMeeting.join(spectator);
+    }
 
     this.initMeetings();
     this.sendMeetings();
@@ -2237,6 +2268,9 @@ module.exports = class Game {
 
   initMeetings() {
     for (let meeting of this.meetings) meeting.init();
+    if(this.spectating){
+      this.spectatorMeeting.init();
+    }
   }
 
   sendMeetings(players) {

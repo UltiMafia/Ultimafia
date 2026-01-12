@@ -22,6 +22,16 @@ module.exports = class Agent extends Role {
           },
         ],
       },
+      "Village Dusk": {
+        speechAbilities: [
+          {
+            name: "Contact",
+            targetsDescription: { include: ["all"], exclude: ["Village"] },
+            targetType: "role",
+            verb: "",
+          },
+        ],
+      },
       "Room 1": {
         speechAbilities: [
           {

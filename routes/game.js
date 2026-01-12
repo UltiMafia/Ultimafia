@@ -423,7 +423,7 @@ router.get("/:id/info", async function (req, res) {
     if (!game) {
       game = await models.Game.findOne({ id: gameId })
         .select(
-          "type users players left stateLengths lobbyName ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions winners winnersInfo kudosReceiver playerIdMap playerAlignmentMap -_id"
+          "type users players spectators left stateLengths lobbyName ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions winners winnersInfo kudosReceiver playerIdMap playerAlignmentMap -_id"
         )
         .populate("users", "id name avatar -_id");
 
@@ -439,6 +439,7 @@ router.get("/:id/info", async function (req, res) {
         0,
         game.players.length - game.left.length
       );
+      game.spectators = game.spectators;
       game.settings = {
         ranked: game.ranked,
         competitive: game.competitive,

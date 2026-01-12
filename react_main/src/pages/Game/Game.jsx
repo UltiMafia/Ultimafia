@@ -136,6 +136,7 @@ export default function Game() {
   const [history, updateHistory] = useHistoryReducer();
   const [stateViewing, updateStateViewing] = useStateViewingReducer(history);
   const [players, updatePlayers] = usePlayersReducer();
+  const [spectators, setSpectators] = useState();
   const [spectatorCount, setSpectatorCount] = useState(0);
   const [isSpectator, setIsSpectator] = useState(false);
   const [self, setSelf] = useState();
@@ -566,6 +567,10 @@ export default function Game() {
       setSpectatorCount(count);
     });
 
+    socket.on("spectators", (spectators) => {
+      setSpectators(spectators);
+    });
+
     socket.on("self", (playerId) => {
       setSelf(playerId);
     });
@@ -845,6 +850,7 @@ export default function Game() {
       hostId: hostId,
       changeSetupDialogOpen: changeSetupDialogOpen,
       setChangeSetupDialogOpen: setChangeSetupDialogOpen,
+      spectators: spectators,
     };
 
     return (
@@ -1348,7 +1354,7 @@ export function TextMeetingLayout() {
   const game = useContext(GameContext);
   const { singleState } = useContext(GameTypeContext);
   const { isolationEnabled, isolatedPlayers } = game;
-  const { history, players, stateViewing, updateHistory, settings, filters } =
+  const { history, players, stateViewing, updateHistory, settings, filters, spectators } =
     game;
 
   const stateInfo = history.states[stateViewing];
@@ -1484,7 +1490,8 @@ export function TextMeetingLayout() {
         selTab,
         players,
         settings,
-        filters
+        filters,
+        spectators
       );
     }
 
@@ -1509,6 +1516,7 @@ export function TextMeetingLayout() {
           review={game.review}
           history={history}
           players={players}
+          spectators={spectators}
           stateViewing={stateViewing}
           key={message.id || message.messageId + message.time || i}
           onMessageQuote={game.onMessageQuote}
@@ -1535,12 +1543,12 @@ export function TextMeetingLayout() {
   var canSpeak = selTab;
   canSpeak =
     canSpeak &&
-    (meetings[selTab].members.length > 1 || history.currentState == -1);
+    (meetings[selTab].members.length > 1 || history.currentState == -1 || meetings[selTab].name == "Spectator Meeting");
   canSpeak =
     canSpeak &&
     stateViewing === history.currentState &&
-    meetings[selTab].amMember &&
-    meetings[selTab].canTalk;
+    (meetings[selTab].amMember &&
+    meetings[selTab].canTalk);
   return (
     <>
       <Box
@@ -1692,7 +1700,8 @@ function getMessagesToDisplay(
   selTab,
   players,
   settings,
-  filters
+  filters,
+  spectators
 ) {
   var messages;
 
@@ -1705,7 +1714,7 @@ function getMessagesToDisplay(
       var matches =
         content.toLowerCase().indexOf(filters.contains.toLowerCase()) !== -1;
 
-      var playerName = players[m.senderId]?.name || "";
+      var playerName = players[m.senderId]?.name || spectators[m.senderId]?.name || "";
       matches =
         matches &&
         playerName.toLowerCase().indexOf(filters.from.toLowerCase()) !== -1;
@@ -1866,6 +1875,7 @@ function Message(props) {
 
   const history = props.history;
   const players = props.players;
+  const spectators = props.spectators;
   const chainToPrevious = props.chainToPrevious;
   var message = props.message;
 
@@ -1929,6 +1939,9 @@ function Message(props) {
 
   if (isPlayerMessage) {
     player = players[message.senderId];
+    if(!player && spectators){
+      player = spectators[message.senderId];
+    }
   }
   var customEmotes = player ? player.customEmotes : null;
 
@@ -1943,7 +1956,7 @@ function Message(props) {
 
     for (let msg of meeting.messages) {
       if (msg.id === message.messageId) {
-        const senderPlayer = players[msg.senderId];
+        const senderPlayer = players[msg.senderId] || spectators[msg.senderId];
 
         let senderName = "Anonymous";
         if (senderPlayer && msg.senderId !== "anonymous") {
@@ -2154,6 +2167,7 @@ function Message(props) {
                 text={message.content}
                 settings={user.settings}
                 players={players}
+                spectators={spectators}
                 customEmotes={customEmotes}
                 filterProfanity
                 linkify
@@ -2178,6 +2192,7 @@ function Message(props) {
                   text={quotedMessage.content}
                   settings={user.settings}
                   players={players}
+                  spectators={spectators}
                   customEmotes={customEmotes}
                   filterProfanity
                   linkify
@@ -4755,6 +4770,7 @@ export function PinnedMessages() {
         review={game.review}
         history={game.history}
         players={game.players}
+        spectators={game.spectators}
         stateViewing={game.stateViewing}
         key={message.id || message.messageId + message.time || i}
         onMessageQuote={game.onMessageQuote}
