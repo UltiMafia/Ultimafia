@@ -10,7 +10,7 @@ module.exports = class OverturnVote extends Card {
       "Overturn Vote": {
         meetingName: "Overturn",
         states: ["Dusk"],
-        flags: ["group", "speech", "voting", "anonymousVotes"],
+        flags: ["group", "voting", "anonymousVotes"],
         targets: { include: ["alive"], exclude: ["dead", "self"] },
         shouldMeet: function () {
           //skip if town is trying to condemn mafia under don
@@ -55,12 +55,13 @@ module.exports = class OverturnVote extends Card {
           if (isNoVote) {
             return false;
           }
-
+          /*
           for (let player of this.game.players) {
             if (!player.hasItem("OverturnSpectator")) {
               player.holdItem("OverturnSpectator");
             }
           }
+          */
           return true;
         },
         leader: true,

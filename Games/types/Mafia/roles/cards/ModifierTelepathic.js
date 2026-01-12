@@ -15,6 +15,16 @@ module.exports = class ModifierTelepathic extends Card {
           },
         ],
       },
+      "Village Dusk": {
+        speechAbilities: [
+          {
+            name: "Contact Telepathic",
+            targetsDescription: { include: ["all"], exclude: ["self"] },
+            targetType: "player",
+            verb: "",
+          },
+        ],
+      },
     };
   }
   speak(message) {

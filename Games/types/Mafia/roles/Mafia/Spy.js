@@ -23,6 +23,16 @@ module.exports = class Spy extends Role {
           },
         ],
       },
+      "Village Dusk": {
+        speechAbilities: [
+          {
+            name: "Contact",
+            targetsDescription: { include: ["all"], exclude: ["self"] },
+            targetType: "role",
+            verb: "",
+          },
+        ],
+      },
       "Room 1": {
         speechAbilities: [
           {

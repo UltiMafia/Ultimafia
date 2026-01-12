@@ -25,6 +25,17 @@ module.exports = class Parasite extends Role {
           },
         ],
       },
+      "Village Dusk": {
+        speechAbilities: [
+          {
+            name: "Speak As Host",
+            targets: ["Speak as Host"],
+            targetType: "Speak as Host",
+            verb: "",
+            whileDead: true,
+          },
+        ],
+      },
     };
   }
 };

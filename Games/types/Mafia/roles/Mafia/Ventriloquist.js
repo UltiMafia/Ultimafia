@@ -23,6 +23,16 @@ module.exports = class Ventriloquist extends Role {
           },
         ],
       },
+      "Village Dusk": {
+        speechAbilities: [
+          {
+            name: "Control Puppet",
+            targetsDescription: { include: ["all"], exclude: ["self"] },
+            targetType: "player",
+            verb: "",
+          },
+        ],
+      },
       "Room 1": {
         speechAbilities: [
           {

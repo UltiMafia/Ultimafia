@@ -107,6 +107,11 @@ module.exports = class Meeting {
       originalOptions: options,
     };
 
+    if(this.name == "Spectator Chat"){
+      member.canTalk = true;
+      member.visible = true;
+    }
+
     this.members.push(member);
 
     if (member.canVote) this.totalVoters++;
@@ -1070,7 +1075,7 @@ module.exports = class Meeting {
       !member ||
       !this.speech ||
       !member.canTalk ||
-      (!(this.members.length > 1) && this.name != "Pregame")
+      (!(this.members.length > 1) && (this.name != "Pregame" && this.name != "Spectator Meeting"))
     ) {
       return;
     }

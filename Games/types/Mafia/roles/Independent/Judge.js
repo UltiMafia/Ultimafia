@@ -22,6 +22,16 @@ module.exports = class Judge extends Role {
           },
         ],
       },
+      "Village Dusk": {
+        speechAbilities: [
+          {
+            name: "Cry",
+            targets: ["out"],
+            targetType: "out",
+            verb: "",
+          },
+        ],
+      },
       "Room 1": {
         speechAbilities: [
           {
