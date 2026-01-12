@@ -1,13 +1,13 @@
 import React from "react";
 import { Box } from "@mui/material";
 
-import logovalentines from "images/branding/logo-valentines.png";
-import logopride from "images/branding/logo-pride.png";
-import logohalloween from "images/branding/logo-halloween.webp";
-import logowinter from "images/branding/logo-winter.webp";
-import logodefault from "images/branding/logo-default.png";
+import logovalentines from "images/logos/logo-valentines.png";
+import logopride from "images/logos/logo-pride.png";
+import logohalloween from "images/logos/logo-halloween.png";
+import logowinter from "images/logos/logo-winter.png";
+import logodefault from "images/logos/logo-default.png";
 
-export default function SiteLogo({ height = 144, width = 247, ...props }) {
+export default function SiteLogo({ height = 75, width = 350, ...props }) {
   const getLogoSrc = () => {
     const currentMonth = new Date().getMonth();
     // 0 = January, 11 = December
@@ -24,8 +24,8 @@ export default function SiteLogo({ height = 144, width = 247, ...props }) {
     <Box
       component="img"
       sx={{
-        height: 105,
-        width: 179,
+        height: 75,
+        width: 350,
         ml: "auto",
         mr: "auto",
         display: "block",
