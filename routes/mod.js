@@ -2835,7 +2835,9 @@ router.post("/reports/:id/complete", async (req, res) => {
       // Count previous ACTIVE violations for this rule across all alt accounts
       // Only count violations that are still active (activeUntil > now) and not appealed
       const now = Date.now();
-      const previousViolations = await models.ViolationTicket.countDocuments({
+      
+      // Find all violation tickets matching the rule
+      const allViolationTickets = await models.ViolationTicket.find({
         userId: { $in: altAccountIds },
         violationName: {
           $regex: new RegExp(
@@ -2844,8 +2846,28 @@ router.post("/reports/:id/complete", async (req, res) => {
         },
         activeUntil: { $gt: now },
         $or: [{ appealed: { $exists: false } }, { appealed: false }],
-      });
+      }).select("violationId").lean();
 
+      // Find all reports that have been reopened (status is not "complete" but have a finalRuling.violationId)
+      // These reports' violation tickets should not be counted
+      const reopenedReports = await models.Report.find({
+        status: { $ne: "complete" },
+        "finalRuling.violationId": { $exists: true, $ne: null },
+      }).select("finalRuling.violationId").lean();
+
+      // Collect violationIds from reopened reports
+      const reopenedViolationIds = new Set(
+        reopenedReports
+          .map((r) => r.finalRuling?.violationId)
+          .filter((id) => id != null)
+      );
+
+      // Filter out violations that belong to reopened reports
+      const validViolationTickets = allViolationTickets.filter(
+        (ticket) => !reopenedViolationIds.has(ticket.violationId)
+      );
+
+      const previousViolations = validViolationTickets.length;
       const offenseNumber = previousViolations + 1;
 
       // Generate violation name: rule name + offense number
@@ -3135,6 +3157,61 @@ router.post("/reports/:id/reopen", async (req, res) => {
     if (!["open", "in-progress"].includes(targetStatus)) {
       res.status(400).send("New status must be 'open' or 'in-progress'.");
       return;
+    }
+
+    // If the report has a violation (not dismissed), remove the violation tickets and bans
+    if (report.finalRuling && report.finalRuling.violationId) {
+      const violationId = report.finalRuling.violationId;
+      const banType = report.finalRuling.banType;
+
+      // Find all violation tickets with this violationId
+      const violationTickets = await models.ViolationTicket.find({
+        violationId: violationId,
+      });
+
+      if (violationTickets.length > 0) {
+        // Collect all linked ban IDs
+        const linkedBanIds = violationTickets
+          .map((ticket) => ticket.linkedBanId)
+          .filter((id) => id != null);
+
+        // Collect all user IDs (for site ban handling)
+        const affectedUserIds = violationTickets
+          .map((ticket) => ticket.userId)
+          .filter((id, index, self) => self.indexOf(id) === index); // Unique
+
+        // Delete the linked bans if they exist
+        if (linkedBanIds.length > 0) {
+          await models.Ban.deleteMany({
+            id: { $in: linkedBanIds },
+          }).exec();
+
+          // Handle site bans - update User.banned flag and clear sessions
+          if (banType === "site") {
+            await models.User.updateMany(
+              { id: { $in: affectedUserIds } },
+              { $set: { banned: false } }
+            ).exec();
+            await models.Session.deleteMany({
+              "session.user.id": { $in: affectedUserIds },
+            }).exec();
+          }
+
+          // Refresh user permissions cache for all affected users
+          for (const affectedUserId of affectedUserIds) {
+            await redis.cacheUserPermissions(affectedUserId);
+          }
+        }
+
+        // Delete the violation tickets
+        await models.ViolationTicket.deleteMany({
+          violationId: violationId,
+        }).exec();
+      }
+
+      // Clear the linked violation ticket and ban IDs from the report
+      report.linkedViolationTicketId = null;
+      report.linkedBanId = null;
     }
 
     report.status = targetStatus;

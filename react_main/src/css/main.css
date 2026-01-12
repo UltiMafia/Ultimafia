@@ -111,24 +111,6 @@ a {
   justify-content: center;
 }
 
-.header .logo {
-  width: 179px;
-  height: 105px;
-  background-size: 100% 100%;
-}
-
-.header .default-logo {
-  background-image: url("/src/images/fadelogohat.png");
-}
-
-.header .pride-logo {
-  background-image: url("/src/images/holiday/umpride2.png");
-}
-
-.header .bloody-logo {
-  background-image: url("/src/images/holiday/fadelogoHalloween.webp");
-}
-
 .nav-wrapper {
   flex-grow: 1;
 
