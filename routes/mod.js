@@ -2848,23 +2848,70 @@ router.post("/reports/:id/complete", async (req, res) => {
         $or: [{ appealed: { $exists: false } }, { appealed: false }],
       }).select("violationId").lean();
 
-      // Find all reports that have been reopened (status is not "complete" but have a finalRuling.violationId)
-      // These reports' violation tickets should not be counted
-      const reopenedReports = await models.Report.find({
-        status: { $ne: "complete" },
+      // Find all completed reports for this user and rule
+      // We need to distinguish between violations from before and after a reopen
+      const allCompletedReports = await models.Report.find({
+        reportedUserId: report.reportedUserId,
+        rule: report.rule,
+        status: "complete",
         "finalRuling.violationId": { $exists: true, $ne: null },
-      }).select("finalRuling.violationId").lean();
+      }).select("finalRuling.violationId reopenedCount reopenedAt").lean();
 
-      // Collect violationIds from reopened reports
-      const reopenedViolationIds = new Set(
-        reopenedReports
+      // Separate reports that were never reopened vs reports that were reopened
+      const neverReopenedReports = allCompletedReports.filter(
+        (r) => (!r.reopenedCount || r.reopenedCount === 0) && !r.reopenedAt
+      );
+      
+      const reopenedAndCompletedAgainReports = allCompletedReports.filter(
+        (r) => (r.reopenedCount && r.reopenedCount > 0) || r.reopenedAt
+      );
+
+      // For reports that were never reopened, ALL their violations should be counted
+      // For reports that were reopened and completed again, ONLY the CURRENT violationId should be counted
+      // (the old violations were deleted when reopening, but legacy data might still have them)
+      
+      // Collect violationIds from never-reopened reports (all violations should be counted)
+      const validViolationIds = new Set(
+        neverReopenedReports
           .map((r) => r.finalRuling?.violationId)
           .filter((id) => id != null)
       );
 
-      // Filter out violations that belong to reopened reports
+      // For reopened reports, add their CURRENT violationId to valid set (violations from after reopen)
+      // But also track their violationIds separately to exclude old ones if they still exist
+      const reopenedCurrentViolationIds = new Set(
+        reopenedAndCompletedAgainReports
+          .map((r) => r.finalRuling?.violationId)
+          .filter((id) => id != null)
+      );
+
+      // Add current violations from reopened reports to valid set (these should be counted)
+      reopenedCurrentViolationIds.forEach((id) => validViolationIds.add(id));
+
+      // For reopened reports, we need to exclude OLD violations (from before reopen)
+      // But we can't easily identify them. However, since we're now properly deleting
+      // violations when reopening, old violations should be gone. For legacy data,
+      // we rely on the fact that only violations matching valid reports are counted,
+      // and the old violationIds won't match the current finalRuling.violationId.
+
+      // Filter violations: only count those that belong to valid reports
+      // This ensures:
+      // 1. Only violations from valid reports are counted (never-reopened OR current from reopened reports)
+      // 2. Orphaned violations (don't match any report) are excluded for safety
+      // 3. For reopened reports, old violations (if they still exist) are excluded because they
+      //    don't match the current finalRuling.violationId
       const validViolationTickets = allViolationTickets.filter(
-        (ticket) => !reopenedViolationIds.has(ticket.violationId)
+        (ticket) => {
+          // Only count if it belongs to a valid report's violationId
+          // This includes:
+          // - All violations from never-reopened reports
+          // - Current violations from reopened reports (from after the reopen)
+          // This excludes:
+          // - Old violations from reopened reports (from before reopen) - they don't match current finalRuling
+          // - Orphaned violations that don't match any report
+          // - Violations from deleted reports
+          return validViolationIds.has(ticket.violationId);
+        }
       );
 
       const previousViolations = validViolationTickets.length;
@@ -3180,24 +3227,34 @@ router.post("/reports/:id/reopen", async (req, res) => {
           .map((ticket) => ticket.userId)
           .filter((id, index, self) => self.indexOf(id) === index); // Unique
 
-        // Delete the linked bans if they exist
+        // Unban: Delete the linked bans if they exist
+        // This applies the same type of unban that was applied when the report was completed
         if (linkedBanIds.length > 0) {
+          // Map ban type to database ban type (for reference)
+          const banDbTypes = {
+            forum: "forum",
+            chat: "chat",
+            game: "game",
+            ranked: "playRanked",
+            competitive: "playCompetitive",
+            site: "site",
+          };
+
+          // Delete the linked bans by ID (more precise than deleting by type and userId)
           await models.Ban.deleteMany({
             id: { $in: linkedBanIds },
           }).exec();
 
-          // Handle site bans - update User.banned flag and clear sessions
+          // Handle site bans - update User.banned flag (sessions were already cleared when banned)
           if (banType === "site") {
             await models.User.updateMany(
               { id: { $in: affectedUserIds } },
               { $set: { banned: false } }
             ).exec();
-            await models.Session.deleteMany({
-              "session.user.id": { $in: affectedUserIds },
-            }).exec();
           }
 
           // Refresh user permissions cache for all affected users
+          // This ensures permissions are updated after the unban
           for (const affectedUserId of affectedUserIds) {
             await redis.cacheUserPermissions(affectedUserId);
           }
