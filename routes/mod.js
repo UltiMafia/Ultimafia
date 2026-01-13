@@ -3539,43 +3539,4 @@ router.post("/reports/:id/rule", async (req, res) => {
   }
 });
 
-router.delete("/violations/:id", async (req, res) => {
-  try {
-    const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "deleteViolation"))) {
-      return;
-    }
-
-    // Check user has rank Infinity
-    const userRank = await redis.getUserRank(userId);
-    if (userRank === null || userRank !== Infinity) {
-      res.status(403).send("You must have rank Infinity to delete violations.");
-      return;
-    }
-
-    const violationId = req.params.id;
-
-    const violationTicket = await models.ViolationTicket.findOne({
-      id: violationId,
-    });
-
-    if (!violationTicket) {
-      res.status(404).send("Violation ticket not found.");
-      return;
-    }
-
-    // Delete the violation ticket
-    await models.ViolationTicket.deleteOne({ id: violationId });
-
-    logger.info(
-      `Violation ${violationId} deleted by user ${userId} for user ${violationTicket.userId}`
-    );
-
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500).send("Error deleting violation.");
-  }
-});
-
 module.exports = router;
