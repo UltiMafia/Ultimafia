@@ -486,6 +486,7 @@ export function NameWithAvatar(props) {
   const vanityUrl = props.vanityUrl;
   const large = props.large;
   const isSquare = props.isSquare;
+  const subContent = props.subContent;
 
   const game = useContext(GameContext);
   const [userProfile, setUserProfile] = useState(null);
@@ -540,13 +541,20 @@ export function NameWithAvatar(props) {
         deckProfile={deckProfile}
         absoluteLeftAvatarPx={absoluteLeftAvatarPx}
       />
-      <div
-        className={`user-name ${props.dead ? "dead" : color}`}
-        style={{ ...(color ? { color } : {}), display: "inline" }}
-      >
-        {name}
-      </div>
-      {groups && <Badges groups={groups} small={small} />}
+      <Stack direction="column">
+        <div
+          className={`user-name ${props.dead ? "dead" : color}`}
+          style={{ ...(color ? { color } : {}), display: "inline" }}
+        >
+          <Stack direction="row" spacing={0.5} alignItems="center">
+            <Typography>
+              {name}
+            </Typography>
+            {groups && <Badges groups={groups} small={small} />}
+          </Stack>
+        </div>
+        {subContent}
+      </Stack>
     </Stack>
   );
 

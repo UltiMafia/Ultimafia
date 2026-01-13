@@ -515,7 +515,7 @@ async function getLeaderBoardStat(field) {
     // Query the top 100 users for a given field
     const leadingUsers = await models.User.find({ deleted: false })
       .select(
-        "id name avatar kudos karma achievementCount winRate dailyChallengesCompleted _id"
+        "id name avatar kudos karma championshipPoints achievementCount winRate dailyChallengesCompleted _id"
       )
       .sort(sortBy)
       .limit(100);

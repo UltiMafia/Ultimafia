@@ -117,6 +117,7 @@ export default function Setup(props) {
       }
     }
   } else if (useRoleGroups) {
+    let roleGroupCounter = 0;
     let i = 0;
     for (let roleGroup in props.setup.roles) {
       if (maxIconsTotal !== null && roleCounts.length >= maxIconsTotal) {
@@ -124,6 +125,7 @@ export default function Setup(props) {
         break;
       }
       const roleGroupData = props.setup.roles[roleGroup];
+
       // Filter out events from role group display
       const filteredRoleGroup = {};
       for (let role in roleGroupData) {
@@ -133,18 +135,37 @@ export default function Setup(props) {
           filteredRoleGroup[role] = roleGroupData[role];
         }
       }
-      roleCounts.push(
-        <RoleCount
-          key={JSON.stringify(props.setup.roles[roleGroup])}
-          count={props.setup.roleGroupSizes[roleGroup]}
-          showPopover
-          small={small}
-          role={INDEXED_ROLE_GROUP_LABELS[i]}
-          roleGroup={filteredRoleGroup}
-          gameType={props.setup.gameType}
-          otherRoles={props.setup.roles}
-        />
-      );
+
+      if (Object.keys(filteredRoleGroup).length === 1) {
+        // Don't use the A, B, C, etc. labels if there's only one role in the group
+        const roleName = Object.keys(filteredRoleGroup)[0];
+        roleCounts.push(
+          <RoleCount
+            key={i}
+            count={props.setup.roleGroupSizes[roleGroup]}
+            showPopover
+            small={small}
+            role={roleName}
+            gameType={props.setup.gameType}
+            otherRoles={props.setup.roles}
+          />
+        );
+      }
+      else {
+        roleCounts.push(
+          <RoleCount
+            key={i}
+            count={props.setup.roleGroupSizes[roleGroup]}
+            showPopover
+            small={small}
+            role={INDEXED_ROLE_GROUP_LABELS[roleGroupCounter]}
+            roleGroup={filteredRoleGroup}
+            gameType={props.setup.gameType}
+            otherRoles={props.setup.roles}
+          />
+        );
+        roleGroupCounter++;
+      }
       i++;
     }
   } else {

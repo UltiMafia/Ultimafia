@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Box, Button, Container, Typography } from "@mui/material";
+import { Box, Button, Container, Stack, Typography } from "@mui/material";
 import { Navigate, useNavigate } from "react-router-dom";
 import "css/main.css";
 import "./Welcome.css";
@@ -204,7 +204,9 @@ export const Welcome = () => {
               boxSizing: "border-box",
             }}
           >
-            <SiteLogo />
+            <Stack direction="row" justifyContent="center">
+              <SiteLogo large />
+            </Stack>
             <Typography
               variant={isPhoneDevice ? "body1" : "h4"}
               align="center"

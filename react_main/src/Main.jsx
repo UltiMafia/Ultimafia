@@ -3,7 +3,7 @@ import { Route, Link, Navigate, Routes, useLocation } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import axios from "axios";
 import { Icon } from "@iconify/react";
-import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
+import { ThemeProvider, CssBaseline, createTheme, AppBar, Link as MuiLink, Toolbar } from "@mui/material";
 
 import {
   UserContext,
@@ -122,26 +122,21 @@ function Main(props) {
   const User = lazy(() => import("pages/User/User"));
 
   const siteContent = (
-    <Box
-      className="site-wrapper"
-      sx={{
-        backgroundColor: "background.paper",
-      }}
-    >
+    <Stack className="site-wrapper" sx={{
+      backgroundColor: "background.paper",
+    }}>
       <CookieBanner />
-      <Stack
-        direction="column"
-        spacing={1}
-        sx={{
-          flexWrap: "nowrap",
-          px: isPhoneDevice ? 1 : 3,
-          width: "1080px",
-          maxWidth: "100%",
-        }}
-      >
-        <Header
-          setShowAnnouncementTemporarily={setShowAnnouncementTemporarily}
-        />
+      <Header
+        setShowAnnouncementTemporarily={setShowAnnouncementTemporarily}
+      />
+      <Stack direction="column" spacing={1} sx={{
+        flex: "1",
+        margin: "0 auto",
+        px: isPhoneDevice ? 1 : 3,
+        py: 1,
+        width: "1080px",
+        maxWidth: "100%",
+      }}>
         <Announcement
           showAnnouncementTemporarily={showAnnouncementTemporarily}
           setShowAnnouncementTemporarily={setShowAnnouncementTemporarily}
@@ -164,10 +159,10 @@ function Main(props) {
           )}
         </div>
         <InGameWarning />
-        <Footer />
         <AlertList />
       </Stack>
-    </Box>
+      <Footer />
+    </Stack>
   );
 
   // Site content will display instead of game if content is being overriden by the error boundary
@@ -230,7 +225,10 @@ function Header({ setShowAnnouncementTemporarily }) {
   };
 
   return (
-    <div className="header">
+    <AppBar position="sticky" sx={{
+      backgroundColor: "background.paper",
+      color: "text.primary",
+    }}>
       {new Date().getMonth() === 9 && (
         <img
           src={spiderweb}
@@ -242,173 +240,48 @@ function Header({ setShowAnnouncementTemporarily }) {
             zIndex: 1000,
             width: "10%",
             aspectRatio: "1",
-            display: window.innerWidth <= 768 ? "none" : "block",
+            display: isPhoneDevice ? "none" : "block",
           }}
         />
       )}
 
-      {/* Desktop Logo - Top Center */}
-      {!isPhoneDevice && (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            py: 2,
-          }}
-        >
-          <Link to="/play">
-            <SiteLogo />
-          </Link>
-        </Box>
-      )}
-
-      {/* Mobile Header - Icon Navigation Top, Logo Centered Below */}
+      {/* Mobile AppBar */}
       {isPhoneDevice && (
-        <Stack direction="column" spacing={1} sx={{ width: "100%" }}>
-          {/* Top bar with navigation menu and user section */}
-          <Stack
-            direction="row"
-            sx={{
-              justifyContent: "space-between",
-              alignItems: "center",
-              px: 0.5,
-              py: 0.5,
-              borderBottom: "1px solid var(--scheme-color-border)",
-              overflow: "hidden",
-            }}
-          >
-            {/* Unified mobile menu */}
-            <Box sx={{ flexShrink: 0 }}>
-              <NavDropdown
-                label="Menu"
-                isMobileMenu={true}
-                groups={[
-                  {
-                    label: "Play",
-                    items: [
-                      { text: "Play", path: "/play" },
-                      {
-                        text: "Host",
-                        path: "/play/host",
-                        hide: !user.loggedIn,
-                      },
-                      {
-                        text: "Create Setup",
-                        path: "/play/create",
-                        hide: !user.loggedIn,
-                      },
-                      {
-                        text: "Decks",
-                        path: "/play/decks",
-                        hide: !user.loggedIn,
-                      },
-                    ],
-                  },
-                  {
-                    label: "Community",
-                    items: [
-                      { text: "Forums", path: "/community/forums" },
-                      { text: "Users", path: "/community/users" },
-                      { text: "Moderation", path: "/community/moderation" },
-                      { text: "Calendar", path: "/community/calendar" },
-                      {
-                        text: "Reports",
-                        path: "/community/reports",
-                        hide: !user.perms.seeModPanel,
-                      },
-                    ],
-                  },
-                  {
-                    label: "Fame",
-                    items: [
-                      { text: "Competitive", path: "/fame/competitive" },
-                      { text: "Contributors", path: "/fame/contributors" },
-                      { text: "Donors", path: "/fame/donors" },
-                    ],
-                  },
-                  {
-                    label: "Learn",
-                    items: [
-                      { text: "Games", path: "/learn/games" },
-                      { text: "Terminology", path: "/learn/terminology" },
-                      { text: "Achievements", path: "/learn/achievements" },
-                    ],
-                  },
-                  {
-                    label: "Policy",
-                    items: [
-                      { text: "Rules", path: "/policy/rules" },
-                      { text: "Terms of Service", path: "/policy/tos" },
-                      { text: "Privacy Policy", path: "/policy/privacy" },
-                    ],
-                  },
-                ]}
-              />
-            </Box>
-            {/* User section */}
-            <div className="user-wrapper" style={{ flexShrink: 0 }}>
-              {user.loggedIn ? (
-                <UserNavSection
-                  openAnnouncements={openAnnouncements}
-                  user={user}
-                  useUnreadNotifications={useUnreadNotifications}
-                />
-              ) : (
-                <GuestAuthButtons />
-              )}
-            </div>
-          </Stack>
-          {/* Centered logo */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              py: 1,
-            }}
-          >
-            <Link to="/play">
-              <SiteLogo />
-            </Link>
-          </Box>
-        </Stack>
-      )}
-      {/* Desktop Navigation Bar */}
-      {!isPhoneDevice && (
-        <Box
-          sx={{
-            backgroundColor: "var(--scheme-color-background)",
-            borderTop: "1px solid var(--scheme-color-border)",
-            borderBottom: "1px solid var(--scheme-color-border)",
-            display: "flex",
-            justifyContent: "center",
-            width: "100%",
-          }}
-        >
-          <Box
-            sx={{
-              maxWidth: "1080px",
-              width: "100%",
-            }}
-          >
-            <Nav>
-              <NavDropdown
-                label="Play"
-                items={[
+        <Stack direction="row" sx={{
+          alignItems: "center",
+          width: "100%",
+          px: 1,
+          py: 0.5,
+          overflow: "hidden",
+        }}>
+          {/* Unified mobile menu */}
+          <NavDropdown
+            isMobileMenu={true}
+            groups={[
+              {
+                label: "Play",
+                items: [
                   { text: "Play", path: "/play" },
-                  { text: "Host", path: "/play/host", hide: !user.loggedIn },
+                  {
+                    text: "Host",
+                    path: "/play/host",
+                    hide: !user.loggedIn,
+                  },
                   {
                     text: "Create Setup",
                     path: "/play/create",
                     hide: !user.loggedIn,
                   },
-                  { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
-                ]}
-              />
-              <NavDropdown
-                label="Community"
-                items={[
+                  {
+                    text: "Decks",
+                    path: "/play/decks",
+                    hide: !user.loggedIn,
+                  },
+                ],
+              },
+              {
+                label: "Community",
+                items: [
                   { text: "Forums", path: "/community/forums" },
                   { text: "Users", path: "/community/users" },
                   { text: "Moderation", path: "/community/moderation" },
@@ -418,48 +291,131 @@ function Header({ setShowAnnouncementTemporarily }) {
                     path: "/community/reports",
                     hide: !user.perms.seeModPanel,
                   },
-                ]}
-              />
-              <NavDropdown
-                label="Fame"
-                items={[
+                ],
+              },
+              {
+                label: "Fame",
+                items: [
                   { text: "Competitive", path: "/fame/competitive" },
                   { text: "Contributors", path: "/fame/contributors" },
                   { text: "Donors", path: "/fame/donors" },
-                ]}
-              />
-              <NavDropdown
-                label="Learn"
-                items={[
+                ],
+              },
+              {
+                label: "Learn",
+                items: [
                   { text: "Games", path: "/learn/games" },
                   { text: "Terminology", path: "/learn/terminology" },
                   { text: "Achievements", path: "/learn/achievements" },
-                ]}
-              />
-              <NavDropdown
-                label="Policy"
-                items={[
+                ],
+              },
+              {
+                label: "Policy",
+                items: [
                   { text: "Rules", path: "/policy/rules" },
                   { text: "Terms of Service", path: "/policy/tos" },
                   { text: "Privacy Policy", path: "/policy/privacy" },
-                ]}
+                ],
+              },
+            ]}
+          />
+          <SiteLogo small />
+          {/* User section */}
+          <div style={{ flex: "1 0" }}>
+            {user.loggedIn ? (
+              <UserNavSection
+                openAnnouncements={openAnnouncements}
+                user={user}
+                useUnreadNotifications={useUnreadNotifications}
               />
-              <div className="user-wrapper">
-                {user.loggedIn ? (
-                  <UserNavSection
-                    openAnnouncements={openAnnouncements}
-                    user={user}
-                    useUnreadNotifications={useUnreadNotifications}
-                  />
-                ) : (
-                  <GuestAuthButtons />
-                )}
-              </div>
-            </Nav>
-          </Box>
-        </Box>
+            ) : (
+              <GuestAuthButtons />
+            )}
+          </div>
+        </Stack>
       )}
-    </div>
+
+      {/* Desktop AppBar */}
+      {!isPhoneDevice && (
+        <Stack direction="row" spacing={2} sx={{
+          alignItems: "center",
+          px: 1,
+          py: 0.5,
+        }}>
+          <SiteLogo />
+          <Stack direction="row" spacing={2} className="nav" sx={{
+            flexGrow: "1",
+            alignItems: "center",
+            width: "100%",
+          }}>
+            <NavDropdown
+              label="Play"
+              items={[
+                { text: "Play", path: "/play" },
+                { text: "Host", path: "/play/host", hide: !user.loggedIn },
+                {
+                  text: "Create Setup",
+                  path: "/play/create",
+                  hide: !user.loggedIn,
+                },
+                { text: "Decks", path: "/play/decks", hide: !user.loggedIn },
+              ]}
+            />
+            <NavDropdown
+              label="Community"
+              items={[
+                { text: "Forums", path: "/community/forums" },
+                { text: "Users", path: "/community/users" },
+                { text: "Moderation", path: "/community/moderation" },
+                { text: "Calendar", path: "/community/calendar" },
+                {
+                  text: "Reports",
+                  path: "/community/reports",
+                  hide: !user.perms.seeModPanel,
+                },
+              ]}
+            />
+            <NavDropdown
+              label="Fame"
+              items={[
+                { text: "Competitive", path: "/fame/competitive" },
+                { text: "Contributors", path: "/fame/contributors" },
+                { text: "Donors", path: "/fame/donors" },
+              ]}
+            />
+            <NavDropdown
+              label="Learn"
+              items={[
+                { text: "Games", path: "/learn/games" },
+                { text: "Terminology", path: "/learn/terminology" },
+                { text: "Achievements", path: "/learn/achievements" },
+              ]}
+            />
+            <NavDropdown
+              label="Policy"
+              items={[
+                { text: "Rules", path: "/policy/rules" },
+                { text: "Terms of Service", path: "/policy/tos" },
+                { text: "Privacy Policy", path: "/policy/privacy" },
+              ]}
+            />
+            <Box sx={{
+              marginLeft: "auto !important",
+            }}>
+              {user.loggedIn ? (
+                <UserNavSection
+                  openAnnouncements={openAnnouncements}
+                  user={user}
+                  useUnreadNotifications={useUnreadNotifications}
+                />
+              ) : (
+                <GuestAuthButtons />
+              )}
+            </Box>
+          </Stack>
+        </Stack>
+      )}
+    </AppBar>
   );
 }
 
@@ -547,80 +503,88 @@ function useUnreadNotifications() {
 }
 
 function Footer() {
+  const isPhoneDevice = useIsPhoneDevice();
   let year = new Date().getYear() + 1900;
 
   return (
-    <div className="footer">
-      <div className="footer-inner">
-        <div
-          style={{
-            fontSize: "xx-large",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginTop: "8px",
-          }}
-        >
-          <a
+    <AppBar position="static" sx={{
+      backgroundColor: "background.paper",
+      color: "text.primary",
+    }}>
+      <Stack direction="column" spacing={2} sx={{
+        p: 2,
+        alignItems: "center",
+        textAlign: "center",
+        "& a": {
+          textDecoration: "none",
+        },
+      }}>
+        <Stack direction="row" spacing={2} sx={{
+          fontSize: "xx-large",
+        }}>
+          <MuiLink
             href="https://github.com/UltiMafia/Ultimafia"
-            style={{ display: "flex", opacity: 0.5 }}
             rel="noopener noreferrer nofollow"
+            sx={{ display: "flex", }}
           >
             <i className="fab fa-github" />
-          </a>
-          <a
+          </MuiLink>
+          <MuiLink
             href="https://www.patreon.com/"
-            style={{ display: "flex", opacity: 0.5 }}
             rel="noopener noreferrer nofollow"
+            sx={{ display: "flex", }}
           >
             <i className="fab fa-patreon" />
-          </a>
-          <a
+          </MuiLink>
+          <MuiLink
             href="https://ko-fi.com/ultimafia"
-            style={{ display: "flex", opacity: 0.5 }}
             rel="noopener noreferrer nofollow"
+            sx={{ display: "flex", }}
           >
             <Icon icon="simple-icons:kofi" />
-          </a>
-          <a
+          </MuiLink>
+          <MuiLink
             href="https://discord.gg/C5WMFpYRHQ"
             target="blank"
             rel="noopener noreferrer nofollow"
+            sx={{ display: "flex", }}
           >
             <Icon
               icon="simple-icons:discord"
-              style={{ color: "#5865F2", display: "flex", opacity: 1 }}
+              style={{ color: "#5865F2" }}
             />
-          </a>
-        </div>
-        <div className="footer-inner" style={{ opacity: 0.5 }}>
-          <span>
-            Built on code provided by
-            <a
-              href="https://github.com/r3ndd/BeyondMafia-Integration"
-              rel="noopener noreferrer nofollow"
-            >
-              rend
-            </a>
-          </span>
-          <span>
-            <a
-              target="_blank"
-              href="https://www.youtube.com/@fredthemontymole"
-              rel="noopener noreferrer nofollow"
-            >
-              <i className="fab fa-youtube"></i> Featuring music by FredTheMole
-            </a>
-          </span>
-          <span>
-            <a target="_blank" href="https://ultimafia.com/user/2oDrE3Ueq">
-              Additional music by Jumpy
-            </a>
-          </span>
-          <div>© {year} UltiMafia</div>
-        </div>
-      </div>
-    </div>
+          </MuiLink>
+        </Stack>
+        <Stack direction={isPhoneDevice ? "column" : "row"} spacing={isPhoneDevice ? 0.5 : 2} sx={{
+        }}>
+          <Typography variant="body2">
+            © {year} UltiMafia
+          </Typography>
+          <MuiLink
+            variant="body2"
+            href="https://github.com/r3ndd/BeyondMafia-Integration"
+            rel="noopener noreferrer nofollow"
+          >
+            {"Built on code provided by rend"}
+          </MuiLink>
+          <MuiLink
+            variant="body2"
+            target="_blank"
+            href="https://www.youtube.com/@fredthemontymole"
+            rel="noopener noreferrer nofollow"
+          >
+            <i className="fab fa-youtube"></i> Featuring music by FredTheMole
+          </MuiLink>
+          <MuiLink
+            variant="body2"
+            target="_blank"
+            href="https://ultimafia.com/user/2oDrE3Ueq"
+          >
+            Additional music by Jumpy
+          </MuiLink>
+        </Stack>
+      </Stack>
+    </AppBar>
   );
 }
 

@@ -265,7 +265,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative achievements bio pronouns banner setups games numFriends stats lastActive _id"
+        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner setups games numFriends stats lastActive _id"
       )
       .populate({
         path: "setups",

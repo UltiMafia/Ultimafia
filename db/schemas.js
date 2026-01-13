@@ -165,6 +165,7 @@ var schemas = {
     karma: { type: Number, default: 0 },
     points: { type: Number, default: 0 },
     pointsNegative: { type: Number, default: 0 },
+    championshipPoints: { type: Number, default: 0 },
     dailyChallenges: [String],
     dailyChallengesCompleted: { type: Number, default: 0 },
     nameChanged: { type: Boolean, default: false },

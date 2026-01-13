@@ -147,6 +147,7 @@ export const Announcement = ({
         variant="outlined"
         sx={{
           width: "100%",
+          backgroundColor: "background.paper",
         }}
         action={CloseButton}
         icon={<i className="fas fa-bullhorn" />}

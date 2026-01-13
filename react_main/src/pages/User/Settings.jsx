@@ -985,7 +985,7 @@ export default function Settings() {
             }
           />
         ))}
-        <Route path="*" element={<Navigate to={sections[0].path} />} />
+        <Route path="*" element={<Navigate to={sections[0].path} replace />} />
       </Routes>
     </Paper>
   );
