@@ -89,7 +89,11 @@ export default function UserNavSection({
     {
       text: "Inbox",
       path: "/user/inbox",
-      icon: (<i className="fas fa-inbox"/>),
+      icon: (
+        <Badge badgeContent={unreadCount} color="error" max={99}>
+          <i className="fas fa-inbox"/>
+        </Badge>
+      ),
     },
     {
       text: "Settings",
