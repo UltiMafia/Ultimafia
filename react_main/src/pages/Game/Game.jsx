@@ -997,29 +997,20 @@ export function TopBar() {
   }
 
   const logo = (
-    <div style={{ flex: "1" }} key="logo">
-      <Link to="/play" target="_blank" rel="noopener noreferrer">
-        <SiteLogo
-          sx={{
-            height: 75,
-            width: 350,
-          }}
-        />
-      </Link>
-    </div>
+    <Stack direction="row" sx={{
+      flex: "1",
+      alignItems: "center",
+    }}>
+      <SiteLogo newTab />
+    </Stack>
   );
 
   const stateSwitcher = (
-    <Stack
-      direction="column"
-      spacing={1}
-      key="stateSwitcher"
-      sx={{
-        alignItems: "center",
-        justifyContent: "center",
-        flex: "none",
-      }}
-    >
+    <Stack direction="column" spacing={1} sx={{
+      alignItems: "center",
+      justifyContent: "center",
+      flex: "none",
+    }}>
       {!singleState && (
         <Paper>
           <StateSwitcher />
@@ -1104,6 +1095,7 @@ export function TopBar() {
         spacing={1}
         sx={{
           px: 1,
+          pb: 1,
           alignItems: "center",
         }}
       >
@@ -1128,19 +1120,18 @@ export function TopBar() {
   } else {
     // MOBILE ================================================================
     return (
-      <Stack
-        direction="column"
-        spacing={1}
-        sx={{
-          p: 1,
-          flex: "1 1",
-          overflowY: "scroll",
-        }}
-      >
+      <Stack direction="column" spacing={1} sx={{
+        p: 1,
+        flex: "1 1",
+        overflowY: "scroll",
+      }}>
         <Stack direction="row" spacing={1}>
           {logo}
           {buttonGroup}
         </Stack>
+        <Typography variant="h3">
+          {game.setup.name}
+        </Typography>
         <SetupInfo setup={game.setup} />
       </Stack>
     );

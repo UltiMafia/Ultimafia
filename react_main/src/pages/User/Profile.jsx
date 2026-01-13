@@ -52,6 +52,7 @@ export const KUDOS_ICON = require(`images/kudos.png`);
 export const KARMA_ICON = require(`images/karma.png`);
 export const POINTS_ICON = require(`images/points.png`);
 export const POINTS_NEGATIVE_ICON = require(`images/pointsNegative.png`);
+export const PRESTIGE_ICON = require(`images/prestige.png`);
 export const ACHIEVEMENTS_ICON = require(`images/achievements.png`);
 export const DAILY_ICON = require(`images/dailyChallenges.png`);
 
@@ -73,6 +74,7 @@ export default function Profile() {
   const [kudos, setKudos] = useState(0);
   const [points, setPoints] = useState(0);
   const [pointsNegative, setPointsNegative] = useState(0);
+  const [championshipPoints, setChampionshipPoints] = useState(0);
   const [achievements, setAchievements] = useState([]);
   const [trophies, setTrophies] = useState([]);
   const [karmaInfo, setKarmaInfo] = useState({});
@@ -232,6 +234,7 @@ export default function Profile() {
           setFriendsPage(1);
           setStats(res.data.stats);
           setKudos(res.data.kudos);
+          setChampionshipPoints(res.data.championshipPoints);
           setPoints(res.data.points);
           setPointsNegative(res.data.pointsNegative);
           setKarmaInfo(res.data.karmaInfo);
@@ -1083,7 +1086,7 @@ export default function Profile() {
               <Typography variant="italicRelation">
                 {getLoveTitle(love.type)}
               </Typography>
-              <Avatar hasImage={love.avatar} id={love.id} name={love.name} />
+              <Avatar hasImage={love.avatar} id={love.id} name={love.name} mediumlarge={!isPhoneDevice} />
               <Typography>{love.name}</Typography>
             </Stack>
           </Stack>
@@ -1342,6 +1345,20 @@ export default function Profile() {
                         {pointsNegative}
                       </Stack>
                     )}
+                  </Stack>
+                  <Stack direction="column" spacing={1}>
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      sx={{ alignItems: "center" }}
+                    >
+                      <img
+                        src={PRESTIGE_ICON}
+                        style={{ marginRight: "12px" }}
+                        alt="Prestige"
+                      />
+                      {championshipPoints || 0}
+                    </Stack>
                   </Stack>
                 </Stack>
               </div>

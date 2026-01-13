@@ -97,9 +97,6 @@ a {
 }
 
 .site-wrapper {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
   background-image: url("/src/images/white-diamond-dark.png");
   min-height: 100vh;
 }
@@ -355,23 +352,6 @@ input:focus {
   margin-top: 10px;
 }
 
-.footer {
-  text-align: center;
-  margin-top: 16px;
-}
-
-.footer-inner {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.footer-inner a {
-  margin-left: 5px;
-  margin-right: 5px;
-}
-
 ::selection,
 ::-moz-selection {
   background-color: green;
@@ -472,18 +452,6 @@ input:focus {
   font-family: Arial;
   font-size: 12px;
   font-weight: 900;
-}
-
-.user-wrapper {
-  display: inline-flex;
-  flex-flow: row nowrap;
-
-  height: 60px;
-  align-items: center;
-  justify-content: flex-start;
-
-  background: rgba(16, 16, 16, 0.5);
-  border-radius: 10px;
 }
 
 .nav .notifs-wrapper {

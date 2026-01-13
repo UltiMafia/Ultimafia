@@ -86,9 +86,26 @@ export default function UserNavSection({
           },
         ]
       : []),
-    { text: "Inbox", path: "/user/inbox" },
-    { text: "Settings", path: "/user/settings" },
-    { text: "Shop", path: "/user/shop" },
+    {
+      text: "Inbox",
+      path: "/user/inbox",
+      icon: (<i className="fas fa-inbox"/>),
+    },
+    {
+      text: "Settings",
+      path: "/user/settings",
+      icon: (<i className="fas fa-cog"/>),
+    },
+    {
+      text: "Shop",
+      path: "/user/shop",
+      icon: (<i className="fas fa-coins"/>),
+    },
+    {
+      text: "Announcements",
+      onClick: openAnnouncements,
+      icon: (<i className="fas fa-bullhorn"/>),
+    },
     { divider: true },
     {
       text: "Log Out",
@@ -102,19 +119,6 @@ export default function UserNavSection({
       ),
     },
   ];
-
-  const UserMenuTrigger = ({ user }) => {
-    return isMobile ? (
-      <Avatar id={user.id} name={user.name} hasImage={user.avatar} />
-    ) : (
-      <NameWithAvatar
-        id={user.id}
-        name={user.name}
-        avatar={user.avatar}
-        noLink={true}
-      />
-    );
-  };
 
   function timeToGo(timestamp) {
     // Utility to add leading zero
@@ -150,67 +154,46 @@ export default function UserNavSection({
   }
 
   return (
-    <Stack
-      direction="row"
-      spacing={isMobile ? 0.3 : 0.5}
-      sx={{
-        px: isMobile ? 0.25 : 0.5,
-        alignItems: "center",
-      }}
-    >
-      <Box
-        sx={{
+    <Stack direction="row" spacing={0.5} divider={<Divider orientation="vertical" flexItem />} sx={{
+      px: 1,
+      alignItems: "center",
+      justifyContent: "end",
+    }}>
+      <Stack>
+        <Box sx={{
           display: "grid",
           gridTemplateColumns: "1fr 1em",
           columnGap: 0.5,
           width: "3em",
           alignItems: "center",
           textAlign: "right",
-        }}
-      >
-        <Typography>{user.redHearts ?? 0}</Typography>
-        <Tooltip title={getHeartRefreshMessage(user, "red")}>
-          <i
-            className="fas fa-heart"
-            style={{ color: "#e23b3b", marginLeft: "auto" }}
-          />
-        </Tooltip>
-        <Typography>{user.goldHearts ?? 0}</Typography>
-        <Link to="/fame/competitive">
-          <i
-            className="fas fa-heart"
-            style={{ color: "var(--gold-heart-color)", marginLeft: "auto" }}
-          />
-        </Link>
-      </Box>
-      <Divider orientation="vertical" flexItem />
-      <IconButton
-        size="small"
-        onClick={() => openAnnouncements()}
-        sx={{ p: 0.5 }}
-      >
-        <i
-          className="fas fa-bullhorn"
-          style={{ fontSize: isMobile ? "12px" : "14px" }}
+        }}>
+          <Typography variant="body2">
+            {user.redHearts ?? 0}
+          </Typography>
+          <Tooltip title={getHeartRefreshMessage(user, "red")}>
+            <i
+              className="fas fa-heart"
+              style={{ color: "#e23b3b", marginLeft: "auto" }}
+            />
+          </Tooltip>
+          <Typography variant="body2">
+            {user.goldHearts ?? 0}
+          </Typography>
+          <Link to="/fame/competitive">
+            <i
+              className="fas fa-heart"
+              style={{ color: "var(--gold-heart-color)", marginLeft: "auto" }}
+            />
+          </Link>
+        </Box>
+      </Stack>
+      <Badge badgeContent={unreadCount} color="error" max={99}>
+        <NavDropdown
+          items={userMenuItems}
+          customTrigger={<Avatar id={user.id} name={user.name} hasImage={user.avatar} />}
         />
-      </IconButton>
-      <IconButton
-        size="small"
-        onClick={() => navigate("/user/inbox")}
-        sx={{ p: 0.5 }}
-      >
-        <Badge badgeContent={unreadCount} color="error" max={99}>
-          <i
-            className="fas fa-bell"
-            style={{ fontSize: isMobile ? "12px" : "14px" }}
-          />
-        </Badge>
-      </IconButton>
-      <NavDropdown
-        items={userMenuItems}
-        customTrigger={UserMenuTrigger}
-        customTriggerProps={{ user }}
-      />
+      </Badge>
     </Stack>
   );
 }

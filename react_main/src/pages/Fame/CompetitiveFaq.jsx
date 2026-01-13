@@ -14,11 +14,14 @@ import {
   TableContainer,
   Stack,
 } from "@mui/material";
+import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 const POINTS_ICON = require(`images/points.png`);
 const PRESTIGE_ICON = require(`images/prestige.png`);
 
 export default function CompetitiveFaq() {
+  const isPhoneDevice = useIsPhoneDevice();
+
   return (
     <>
       <Typography variant="h2" gutterBottom>
@@ -131,7 +134,7 @@ export default function CompetitiveFaq() {
         prestige points for 2nd place.
       </Typography>
       <Stack direction="row" sx={{ justifyContent: "center", mb: 4 }}>
-        <TableContainer sx={{ maxWidth: "50%" }}>
+        <TableContainer sx={{ maxWidth: isPhoneDevice ? "80%" : "50%" }}>
           <Table aria-label="prestige table">
             <TableHead>
               <TableRow>

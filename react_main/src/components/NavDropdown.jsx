@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation, NavLink } from "react-router-dom";
-import { Menu, MenuItem, Box, Divider } from "@mui/material";
+import { Menu, MenuItem, Box, Divider, IconButton, Typography, Stack, Button } from "@mui/material";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 
 export default function NavDropdown({
   label,
   items,
   customTrigger,
-  customTriggerProps,
   onMenuItemClick: customOnMenuItemClick,
   groups, // For mobile unified menu - array of {label, items}
   isMobileMenu = false, // Flag to indicate this is the mobile unified menu
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
-  const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsPhoneDevice();
   const open = Boolean(anchorEl);
@@ -33,7 +31,7 @@ export default function NavDropdown({
     if (item.hide || item.divider) return false;
     return (
       location.pathname === item.path ||
-      location.pathname.startsWith(item.path + "/")
+      location.pathname.startsWith(item.path)
     );
   });
 
@@ -73,35 +71,33 @@ export default function NavDropdown({
         cursor: "pointer",
       }}
     >
-      {customTrigger(customTriggerProps)}
+      {customTrigger}
     </Box>
-  ) : (
-    <Box
-      component="span"
+  ) : isMobileMenu ? (
+    <IconButton
+      large
       onClick={handleClick}
-      className={`nav-dropdown ${isActive ? "active" : ""}`}
-      sx={{
-        padding: "8px 16px",
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "6px",
-        cursor: "pointer",
-        position: "relative",
-        textTransform: "uppercase",
-        color: isActive ? "var(--color-main-1)" : "inherit",
-        fontWeight: isActive ? "bold" : "normal",
-        "&:hover": {
-          color: "var(--color-main-1)",
-        },
-      }}
+      aria-label="menu"
     >
-      {isMobileMenu && <span style={{ fontSize: "18px" }}>☰</span>}
-      <span>{label}</span>
-      <i
-        className="fas fa-caret-down"
-        style={{ fontSize: isMobile ? "10px" : "12px" }}
-      />
-    </Box>
+      <i className="fas fa-bars" />
+    </IconButton>
+  ) : (
+    <Button
+      variant="text"
+      onClick={handleClick}
+      sx={{
+        px: 1,
+        cursor: "pointer",
+        textTransform: "uppercase",
+        color: "inherit",
+        backgroundColor: !isMobileMenu && isActive ? "rgba(var(--mui-palette-primary-mainChannel) / var(--mui-palette-action-selectedOpacity));" : undefined,
+      }}
+      endIcon={<i className="fas fa-caret-down" aria-hidden="true" />}
+    >
+      <Typography variant="h3">
+        {label}
+      </Typography>
+    </Button>
   );
 
   return (

@@ -89,23 +89,27 @@ export default function Comments(props) {
     <Stack direction="column" spacing={1}>
       <div className="comments-input-wrapper">
         {!showInput && user.loggedIn && user.perms.postReply && (
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => setShowInput(true)}
+          <Paper sx={{
+            p: 1,
+          }}>
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
             >
-              Post Comment
-            </Button>
-            <PageNav inverted page={page} onNav={onCommentsPageNav} />
-          </Stack>
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => setShowInput(true)}
+              >
+                Post Comment
+              </Button>
+              <PageNav inverted page={page} onNav={onCommentsPageNav} />
+            </Stack>
+          </Paper>
         )}
         {showInput && (
           <Paper

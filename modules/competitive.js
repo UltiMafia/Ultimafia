@@ -217,7 +217,7 @@ async function confirmStandings(seasonNumber, roundNumber) {
       });
     if (existingSeasonStanding) {
       console.log(
-        `[accountCompetitiveRounds]: Updating season ${seasonNumber} standing for ${userId}: achieved ranking ${ranking} and earned ${championshipPoints} prestige from round ${roundNumber}`
+        `[confirmStandings]: Updating season ${seasonNumber} standing for ${userId}: achieved ranking ${ranking} and earned ${championshipPoints} prestige from round ${roundNumber}`
       );
       await models.CompetitiveSeasonStanding.updateOne(
         { _id: existingSeasonStanding._id },
@@ -230,7 +230,7 @@ async function confirmStandings(seasonNumber, roundNumber) {
       ).exec();
     } else {
       console.log(
-        `[accountCompetitiveRounds]: Creating season ${seasonNumber} standing for ${userId}: achieved ranking ${ranking} and earned ${championshipPoints} prestige from round ${roundNumber}`
+        `[confirmStandings]: Creating season ${seasonNumber} standing for ${userId}: achieved ranking ${ranking} and earned ${championshipPoints} prestige from round ${roundNumber}`
       );
       const seasonStanding = new models.CompetitiveSeasonStanding({
         userId: roundStanding.userId,
@@ -241,13 +241,27 @@ async function confirmStandings(seasonNumber, roundNumber) {
       await seasonStanding.save();
     }
 
+    try {
+      await models.User.updateOne(
+        { id: userId },
+        {
+          $inc: {
+            championshipPoints: championshipPoints,
+          },
+        }
+      ).exec();
+    }
+    catch (e) {
+      console.error(`[confirmStandings]: Error updating championship points for ${userId}`, e);
+    }
+
     // if the user got first place, then award them a round trophy
     if (roundStanding.ranking === 0) {
       try {
         await awardRoundTrophy(seasonNumber, roundNumber, userId);
       }
       catch (e) {
-        console.error(`[accountCompetitiveRounds]: Error awarding round trophy to ${userId} for season ${seasonNumber} round ${roundNumber}`, e);
+        console.error(`[confirmStandings]: Error awarding round trophy to ${userId} for season ${seasonNumber} round ${roundNumber}`, e);
       }
     }
 

@@ -23,6 +23,7 @@
   float: left;
   width: 100%;
   align-self: stretch;
+  overflow-x: hidden;
 }
 
 .shiny {

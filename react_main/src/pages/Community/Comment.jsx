@@ -68,33 +68,38 @@ export const Comment = (props) => {
                   groups={comment.author.groups}
                   vanityUrl={comment.author.vanityUrl}
                   color={theme.palette.text.primary}
+                  subContent={
+                    <Box sx={{
+                      opacity: "0.5",
+                    }}>
+                      <Time
+                        minSec
+                        millisec={Date.now() - comment.date}
+                        suffix=" ago"
+                      />
+                    </Box>
+                  }
                 />
-                <Stack
-                  sx={{
-                    marginLeft: "auto !important",
-                    opacity: "0.5",
-                  }}
-                >
-                  <Time
-                    minSec
-                    millisec={Date.now() - comment.date}
-                    suffix=" ago"
-                  />
-                </Stack>
-                {!comment.deleted &&
-                  (user.perms.deleteAnyPost ||
-                    (user.perms.deleteOwnPost &&
-                      comment.author.id === user.id) ||
-                    location === user.id) && (
-                    <IconButton onClick={onDeleteClick}>
-                      <i className="fas fa-trash" />
+                <Stack direction="row" spacing={1} sx={{
+                  alignItems: "center",
+                  marginLeft: "auto !important",
+                }}>
+                  {!comment.deleted &&
+                    (user.perms.deleteAnyPost ||
+                      (user.perms.deleteOwnPost &&
+                        comment.author.id === user.id) ||
+                      location === user.id) && (
+                      <IconButton onClick={onDeleteClick}>
+                        <i className="fas fa-trash" />
+                      </IconButton>
+                    )
+                  }
+                  {comment.deleted && user.perms.restoreDeleted && (
+                    <IconButton onClick={onRestoreClick}>
+                      <i className="fas fa-trash-restore" />
                     </IconButton>
                   )}
-                {comment.deleted && user.perms.restoreDeleted && (
-                  <IconButton onClick={onRestoreClick}>
-                    <i className="fas fa-trash-restore" />
-                  </IconButton>
-                )}
+                </Stack>
               </Stack>
               <Divider />
               <Box

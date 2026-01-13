@@ -524,20 +524,24 @@ export function RoleCount({
     );
     layoutContent = (
       <div className="role-count-wrap closed-role-count" {...popoverProps}>
-        <DigitsCount digits={digits} />
-        <Typography
-          sx={{
-            lineHeight: 1,
-            fontFamily: "RobotoSlab",
-            fontSize: "2rem",
-            fontWeight: "bold",
-            userSelect: "none",
-            textShadow: "0 .04rem 0 #000",
-            color: getAlignmentColor(roleGroupAlignment),
-          }}
-        >
-          {role}
-        </Typography>
+        <Box sx={{
+          margin: "0 auto",
+        }}>
+          <DigitsCount digits={digits} />
+          <Typography
+            sx={{
+              lineHeight: 1,
+              fontFamily: "RobotoSlab",
+              fontSize: "2rem",
+              fontWeight: "bold",
+              userSelect: "none",
+              textShadow: "0 .04rem 0 #000",
+              color: getAlignmentColor(roleGroupAlignment),
+            }}
+          >
+            {role}
+          </Typography>
+        </Box>
       </div>
     );
   } else if (!closed) {
