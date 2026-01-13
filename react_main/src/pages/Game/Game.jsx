@@ -1002,7 +1002,7 @@ export function TopBar() {
         <SiteLogo
           sx={{
             height: 75,
-            width: 145,
+            width: 350,
           }}
         />
       </Link>
