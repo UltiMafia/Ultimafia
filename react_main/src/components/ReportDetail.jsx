@@ -42,6 +42,8 @@ export default function ReportDetail({
   const [completing, setCompleting] = useState(false);
   const [finalRuling, setFinalRuling] = useState({
     banType: "",
+    rule: "",
+    offenseNumber: 1,
     notes: "",
   });
   const [rule, setRule] = useState(report.rule);
@@ -105,6 +107,20 @@ export default function ReportDetail({
 
     const isDismissed = finalRuling.banType === "dismiss";
 
+    if (!isDismissed) {
+      if (!finalRuling.rule) {
+        siteInfo.showAlert("Please select a rule (violation type).", "error");
+        return;
+      }
+      if (!finalRuling.offenseNumber || finalRuling.offenseNumber < 1) {
+        siteInfo.showAlert(
+          "Please select a violation rating (1st, 2nd, 3rd, etc.).",
+          "error"
+        );
+        return;
+      }
+    }
+
     try {
       setCompleting(true);
       const res = await axios.post(`/api/mod/reports/${report.id}/complete`, {
@@ -115,7 +131,7 @@ export default function ReportDetail({
       setReport(res.data.report);
       setShowCompleteDialog(false);
       // Reset form
-      setFinalRuling({ banType: "", notes: "" });
+      setFinalRuling({ banType: "", rule: "", offenseNumber: 1, notes: "" });
       siteInfo.showAlert("Report completed successfully", "success");
       if (onUpdate) onUpdate();
     } catch (e) {
@@ -647,7 +663,7 @@ export default function ReportDetail({
         onClose={() => {
           setShowCompleteDialog(false);
           // Reset form when dialog closes
-          setFinalRuling({ banType: "", notes: "" });
+          setFinalRuling({ banType: "", rule: "", offenseNumber: 1, notes: "" });
         }}
         maxWidth="md"
         fullWidth
@@ -656,10 +672,6 @@ export default function ReportDetail({
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
             <Typography variant="h6">Violation Details</Typography>
-            <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-              Violation name and ban length will be automatically determined
-              based on the rule broken and previous offenses.
-            </Typography>
             <FormControl fullWidth>
               <InputLabel>Ban Type</InputLabel>
               <Select
@@ -681,6 +693,52 @@ export default function ReportDetail({
                 <MenuItem value="competitive">Competitive</MenuItem>
               </Select>
             </FormControl>
+            {finalRuling.banType !== "dismiss" && (
+              <>
+                <FormControl fullWidth>
+                  <InputLabel>Rule (Violation Type)</InputLabel>
+                  <Select
+                    value={finalRuling.rule}
+                    label="Rule (Violation Type)"
+                    onChange={(e) =>
+                      setFinalRuling({ ...finalRuling, rule: e.target.value })
+                    }
+                    required
+                  >
+                    {violationDefinitions.map((violation) => (
+                      <MenuItem key={violation.id} value={violation.name}>
+                        {violation.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth>
+                  <InputLabel>Violation Rating</InputLabel>
+                  <Select
+                    value={finalRuling.offenseNumber}
+                    label="Violation Rating"
+                    onChange={(e) =>
+                      setFinalRuling({
+                        ...finalRuling,
+                        offenseNumber: parseInt(e.target.value),
+                      })
+                    }
+                    required
+                  >
+                    <MenuItem value={1}>1st Offense</MenuItem>
+                    <MenuItem value={2}>2nd Offense</MenuItem>
+                    <MenuItem value={3}>3rd Offense</MenuItem>
+                    <MenuItem value={4}>4th Offense</MenuItem>
+                    <MenuItem value={5}>5th Offense</MenuItem>
+                    <MenuItem value={6}>6th Offense</MenuItem>
+                    <MenuItem value={7}>7th Offense</MenuItem>
+                    <MenuItem value={8}>8th Offense</MenuItem>
+                    <MenuItem value={9}>9th Offense</MenuItem>
+                    <MenuItem value={10}>10th Offense</MenuItem>
+                  </Select>
+                </FormControl>
+              </>
+            )}
             <TextField
               label="Notes"
               value={finalRuling.notes}
@@ -703,7 +761,7 @@ export default function ReportDetail({
             onClick={() => {
               setShowCompleteDialog(false);
               // Reset form when dialog closes
-              setFinalRuling({ banType: "", notes: "" });
+              setFinalRuling({ banType: "", rule: "", offenseNumber: 1, notes: "" });
             }}
             disabled={completing}
           >
