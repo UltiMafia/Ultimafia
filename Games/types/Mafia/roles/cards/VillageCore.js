@@ -64,7 +64,6 @@ module.exports = class VillageCore extends Card {
         flags: ["group", "speech", "Important"],
         whileDead: true,
         passiveDead: true,
-        speakDead: true,
       },
       Graveyard: {
         states: ["Night"],
