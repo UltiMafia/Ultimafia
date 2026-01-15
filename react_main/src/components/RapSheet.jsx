@@ -3,7 +3,6 @@ import axios from "axios";
 import {
   Box,
   Button,
-  Chip,
   Stack,
   Typography,
   Dialog,
@@ -12,31 +11,39 @@ import {
   DialogTitle,
   Divider,
 } from "@mui/material";
-import { Time } from "./Basic";
 import { NameWithAvatar } from "pages/User/User";
 import { UserContext, SiteInfoContext } from "../Contexts";
 import { useErrorAlert } from "./Alerts";
 import AppealDialog from "./AppealDialog";
 
-// Mapping from violation names to role icon classes
-const VIOLATION_TO_ROLE_ICON = {
-  "No Violation": "role-icon-vivid-Mafia-Villager",
-  "Personal Attacks & Harassment": "role-icon-vivid-Mafia-Stalker",
-  "Personal Attacks & Harassment (PA)": "role-icon-vivid-Mafia-Stalker",
-  "Adult Content": "role-icon-vivid-Mafia-Hooker",
-  "Instigation": "role-icon-vivid-Mafia-Informant",
-  "Hazing": "role-icon-vivid-Mafia-Cult-Leader",
-  "Outing of Personal Information": "role-icon-vivid-Mafia-Paparazzo",
-  "Coercion": "role-icon-vivid-Mafia-Interrogator",
-  "Impersonation": "role-icon-vivid-Mafia-Disguiser",
-  "Illegal Content & Activity": "role-icon-vivid-Mafia-Pyromaniac",
-  "Gamethrowing": "role-icon-vivid-Mafia-Fool",
-  "Game-related Abandonment": "role-icon-vivid-Mafia-Coward",
-  "Insufficient Participation": "role-icon-vivid-Mafia-Amnesiac",
-  "Outside of Game Information": "role-icon-vivid-Mafia-Jinx",
-  "Exploits": "role-icon-vivid-Mafia-Cthulhu",
-  "Cheating": "role-icon-vivid-Mafia-Busybody",
+// Verdict icons mapping
+export const VERDICT_ICONS = {
+  "No Violation": require(`images/verdicts/no-violation.png`),
+  "Personal Attacks & Harassment (PA)": require(`images/verdicts/personal-attacks.png`),
+  "Adult Content": require(`images/verdicts/adult-content.png`),
+  "Instigation": require(`images/verdicts/instigation.png`),
+  "Hazing": require(`images/verdicts/hazing.png`),
+  "Outing of Personal Information (OPI)": require(`images/verdicts/outing-personal-information.png`),
+  "Coercion": require(`images/verdicts/coercion.png`),
+  "Impersonation": require(`images/verdicts/impersonation.png`),
+  "Illegal Content & Activity (IC)": require(`images/verdicts/illegal-content.png`),
+  "Gamethrowing": require(`images/verdicts/game-throwing.png`),
+  "Game-related Abandonment (GRA)": require(`images/verdicts/game-related-abandonment.png`),
+  "Insufficient Participation (ISP)": require(`images/verdicts/insufficient-participation.png`),
+  "Outside of Game Information (OGI)": require(`images/verdicts/out-of-game-information.png`),
+  "Exploits": require(`images/verdicts/exploits.png`),
+  "Cheating": require(`images/verdicts/cheating.png`),
+  "Intolerance": require(`images/verdicts/intolerance.png`),
 };
+
+function getVerdictIcon(violationName) {
+  if (!violationName) {
+    return VERDICT_ICONS["No Violation"];
+  }
+  // Remove offense suffix if present (e.g., " (1st Offense)")
+  const baseName = violationName.replace(/\s*\(\d+(st|nd|rd|th)\s+Offense\)\s*$/, "");
+  return VERDICT_ICONS[baseName] || VERDICT_ICONS[violationName] || VERDICT_ICONS["No Violation"];
+}
 
 function DigitsCount({ digits }) {
   if (!digits || digits.length === 0) return null;
@@ -56,14 +63,6 @@ function DigitsCount({ digits }) {
   );
 }
 
-function getVerdictIconClass(violationName) {
-  if (!violationName) {
-    return VIOLATION_TO_ROLE_ICON["No Violation"];
-  }
-  // Remove offense suffix if present (e.g., " (1st Offense)")
-  const baseName = violationName.replace(/\s*\(\d+(st|nd|rd|th)\s+Offense\)\s*$/, "");
-  return VIOLATION_TO_ROLE_ICON[baseName] || VIOLATION_TO_ROLE_ICON[violationName] || VIOLATION_TO_ROLE_ICON["No Violation"];
-}
 
 function extractOffenseNumber(violationName) {
   if (!violationName) return null;
@@ -388,8 +387,8 @@ export default function RapSheet({ userId }) {
               }
             }
 
-            // Get icon class for this verdict
-            const iconClass = getVerdictIconClass(violationName);
+            // Get icon for this verdict
+            const verdictIcon = getVerdictIcon(violationName);
 
             // Extract offense number from violationName (format: "Rule Name (1st Offense)")
             const offenseNumber = extractOffenseNumber(report.finalRuling?.violationName);
@@ -408,9 +407,25 @@ export default function RapSheet({ userId }) {
                   },
                 }}
               >
-                <div className={`role ${iconClass} small`} style={{ position: "relative" }}>
+                <Box
+                  sx={{
+                    position: "relative",
+                    width: "var(--role-icon-size)",
+                    height: "var(--role-icon-size)",
+                  }}
+                >
+                  <img
+                    src={verdictIcon}
+                    alt={violationName}
+                    className="verdict-icon"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                    }}
+                  />
                   {degreeDigits.length > 0 && <DigitsCount digits={degreeDigits} />}
-                </div>
+                </Box>
               </Box>
             );
           })}
