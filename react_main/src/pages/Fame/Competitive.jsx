@@ -41,10 +41,12 @@ function Overview({ roundInfo, seasonInfo }) {
   const [pageNumRound, setPageNumRound] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE_OPTIONS[0]);
 
-  const userStandingsSeasonFull = seasonInfo.standings.filter((seasonStanding) => seasonInfo.users[seasonStanding.userId].user.name.toLowerCase().includes(userSearch));
+  const userMatch = (user) => user && user.name.toLowerCase().includes(userSearch);
+
+  const userStandingsSeasonFull = seasonInfo.standings.filter((seasonStanding) => userMatch(seasonInfo.users[seasonStanding.userId].user));
   const userStandingsSeason = userStandingsSeasonFull.slice((pageNumSeason-1)*itemsPerPage, pageNumSeason*itemsPerPage);
 
-  const userStandingsRoundFull = roundInfo.standings.filter((roundStanding) => roundInfo.users[roundStanding.userId].user.name.toLowerCase().includes(userSearch));
+  const userStandingsRoundFull = roundInfo.standings.filter((roundStanding) => userMatch(roundInfo.users[roundStanding.userId].user));
   const userStandingsRound = userStandingsRoundFull.slice((pageNumRound-1)*itemsPerPage, pageNumRound*itemsPerPage);
 
   function handleItemsPerPageChange(e) {
