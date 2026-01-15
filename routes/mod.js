@@ -2817,10 +2817,18 @@ router.post("/reports/:id/complete", async (req, res) => {
         res.status(400).send("Ban type is required.");
         return;
       }
+      if (!finalRuling.rule) {
+        res.status(400).send("Rule (violation type) is required.");
+        return;
+      }
+      if (!finalRuling.offenseNumber || finalRuling.offenseNumber < 1) {
+        res.status(400).send("Violation rating (1st, 2nd, 3rd, etc.) is required.");
+        return;
+      }
 
-      // Get violation definition from report's rule
+      // Get violation definition from selected rule
       const { violationDefinitions } = require("../data/violations");
-      violationDef = violationDefinitions.find((v) => v.name === report.rule);
+      violationDef = violationDefinitions.find((v) => v.name === finalRuling.rule);
 
       if (!violationDef) {
         res.status(400).send("Invalid rule - violation definition not found.");
@@ -2832,90 +2840,7 @@ router.post("/reports/:id/complete", async (req, res) => {
         report.reportedUserId
       );
 
-      // Count previous ACTIVE violations for this rule across all alt accounts
-      // Only count violations that are still active (activeUntil > now) and not appealed
-      const now = Date.now();
-      
-      // Find all violation tickets matching the rule
-      const allViolationTickets = await models.ViolationTicket.find({
-        userId: { $in: altAccountIds },
-        violationName: {
-          $regex: new RegExp(
-            `^${report.rule.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`
-          ),
-        },
-        activeUntil: { $gt: now },
-        $or: [{ appealed: { $exists: false } }, { appealed: false }],
-      }).select("violationId").lean();
-
-      // Find all completed reports for this user and rule
-      // We need to distinguish between violations from before and after a reopen
-      const allCompletedReports = await models.Report.find({
-        reportedUserId: report.reportedUserId,
-        rule: report.rule,
-        status: "complete",
-        "finalRuling.violationId": { $exists: true, $ne: null },
-      }).select("finalRuling.violationId reopenedCount reopenedAt").lean();
-
-      // Separate reports that were never reopened vs reports that were reopened
-      const neverReopenedReports = allCompletedReports.filter(
-        (r) => (!r.reopenedCount || r.reopenedCount === 0) && !r.reopenedAt
-      );
-      
-      const reopenedAndCompletedAgainReports = allCompletedReports.filter(
-        (r) => (r.reopenedCount && r.reopenedCount > 0) || r.reopenedAt
-      );
-
-      // For reports that were never reopened, ALL their violations should be counted
-      // For reports that were reopened and completed again, ONLY the CURRENT violationId should be counted
-      // (the old violations were deleted when reopening, but legacy data might still have them)
-      
-      // Collect violationIds from never-reopened reports (all violations should be counted)
-      const validViolationIds = new Set(
-        neverReopenedReports
-          .map((r) => r.finalRuling?.violationId)
-          .filter((id) => id != null)
-      );
-
-      // For reopened reports, add their CURRENT violationId to valid set (violations from after reopen)
-      // But also track their violationIds separately to exclude old ones if they still exist
-      const reopenedCurrentViolationIds = new Set(
-        reopenedAndCompletedAgainReports
-          .map((r) => r.finalRuling?.violationId)
-          .filter((id) => id != null)
-      );
-
-      // Add current violations from reopened reports to valid set (these should be counted)
-      reopenedCurrentViolationIds.forEach((id) => validViolationIds.add(id));
-
-      // For reopened reports, we need to exclude OLD violations (from before reopen)
-      // But we can't easily identify them. However, since we're now properly deleting
-      // violations when reopening, old violations should be gone. For legacy data,
-      // we rely on the fact that only violations matching valid reports are counted,
-      // and the old violationIds won't match the current finalRuling.violationId.
-
-      // Filter violations: only count those that belong to valid reports
-      // This ensures:
-      // 1. Only violations from valid reports are counted (never-reopened OR current from reopened reports)
-      // 2. Orphaned violations (don't match any report) are excluded for safety
-      // 3. For reopened reports, old violations (if they still exist) are excluded because they
-      //    don't match the current finalRuling.violationId
-      const validViolationTickets = allViolationTickets.filter(
-        (ticket) => {
-          // Only count if it belongs to a valid report's violationId
-          // This includes:
-          // - All violations from never-reopened reports
-          // - Current violations from reopened reports (from after the reopen)
-          // This excludes:
-          // - Old violations from reopened reports (from before reopen) - they don't match current finalRuling
-          // - Orphaned violations that don't match any report
-          // - Violations from deleted reports
-          return validViolationIds.has(ticket.violationId);
-        }
-      );
-
-      const previousViolations = validViolationTickets.length;
-      const offenseNumber = previousViolations + 1;
+      const offenseNumber = finalRuling.offenseNumber;
 
       // Generate violation name: rule name + offense number
       const ordinalSuffixes = ["th", "st", "nd", "rd"];
@@ -2928,7 +2853,7 @@ router.post("/reports/:id/complete", async (req, res) => {
             ordinalSuffixes[0])
         );
       };
-      violationName = `${report.rule} (${getOrdinal(offenseNumber)} Offense)`;
+      violationName = `${finalRuling.rule} (${getOrdinal(offenseNumber)} Offense)`;
 
       // Generate random violation ID
       violationId = shortid.generate();
@@ -3536,45 +3461,6 @@ router.post("/reports/:id/rule", async (req, res) => {
   } catch (e) {
     logger.error(e);
     res.status(500).send("Error updating rule.");
-  }
-});
-
-router.delete("/violations/:id", async (req, res) => {
-  try {
-    const userId = await routeUtils.verifyLoggedIn(req);
-    if (!(await routeUtils.verifyPermission(res, userId, "deleteViolation"))) {
-      return;
-    }
-
-    // Check user has rank Infinity
-    const userRank = await redis.getUserRank(userId);
-    if (userRank === null || userRank !== Infinity) {
-      res.status(403).send("You must have rank Infinity to delete violations.");
-      return;
-    }
-
-    const violationId = req.params.id;
-
-    const violationTicket = await models.ViolationTicket.findOne({
-      id: violationId,
-    });
-
-    if (!violationTicket) {
-      res.status(404).send("Violation ticket not found.");
-      return;
-    }
-
-    // Delete the violation ticket
-    await models.ViolationTicket.deleteOne({ id: violationId });
-
-    logger.info(
-      `Violation ${violationId} deleted by user ${userId} for user ${violationTicket.userId}`
-    );
-
-    res.sendStatus(200);
-  } catch (e) {
-    logger.error(e);
-    res.status(500).send("Error deleting violation.");
   }
 });
 
