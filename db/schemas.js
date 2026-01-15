@@ -267,6 +267,7 @@ var schemas = {
     players: [String],
     left: [String],
     names: [String],
+    spectators: [String],
     winners: [String],
     winnersInfo: {
       players: {
