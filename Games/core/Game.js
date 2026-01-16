@@ -757,6 +757,7 @@ module.exports = class Game {
   }
 
   createPlayerGoneObj(player) {
+    this.spectatorsOld.push(player);
     return {
       id: player.id,
       userId: player.user.id,
