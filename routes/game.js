@@ -344,7 +344,7 @@ router.get("/:id/review/data", async function (req, res) {
     let game = await models.Game.findOne({ id: gameId })
       .select("-_id")
       .populate("setup", "-_id")
-      .populate({
+      .populate([{
         path: "users",
         select: "id avatar tag settings customEmotes -_id",
         populate: [
@@ -354,7 +354,21 @@ router.get("/:id/review/data", async function (req, res) {
             select: "id extension name -_id",
           },
         ],
-      });
+      },
+    {
+        path: "spectatorsUsers",
+        select: "id avatar tag settings customEmotes -_id",
+        populate: [
+          {
+            path: "customEmotes",
+            model: "CustomEmote",
+            select: "id extension name -_id",
+          },
+        ],
+      }]
+    );
+
+    
 
     if (!game) {
       res.status(500);
@@ -381,9 +395,30 @@ router.get("/:id/review/data", async function (req, res) {
           };
         })
       );
+      game.spectatorsUsers = await Promise.all(
+        game.spectatorsUsers.map(async (user) => {
+          // Get vanity URL for each user
+          const vanityUrl = await models.VanityUrl.findOne({
+            userId: user.id,
+          }).select("url -_id");
+
+          return {
+            ...user,
+            settings: {
+              textColor: user.settings.textColor,
+              nameColor: user.settings.textColor,
+            },
+            vanityUrl: vanityUrl?.url,
+          };
+        })
+      );
 
       for (let user of game.users) {
         utils.remapCustomEmotes(user, user.id);
+      }
+
+      for (let spectator of game.spectatorsUsers) {
+        utils.remapCustomEmotes(spectator, spectator.id);
       }
 
       function userIsInGame() {
@@ -423,7 +458,7 @@ router.get("/:id/info", async function (req, res) {
     if (!game) {
       game = await models.Game.findOne({ id: gameId })
         .select(
-          "type users players spectators left stateLengths lobbyName ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions winners winnersInfo kudosReceiver playerIdMap playerAlignmentMap -_id"
+          "type users spectatorsUsers players spectators left stateLengths lobbyName ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions winners winnersInfo kudosReceiver playerIdMap playerAlignmentMap -_id"
         )
         .populate("users", "id name avatar -_id");
 

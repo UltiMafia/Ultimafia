@@ -898,9 +898,14 @@ async function getGameInfo(gameId, idsOnly) {
   );
   info.setup = info.settings.setup;
 
-  if (!info.settings.scheduled || info.settings.scheduled < Date.now())
+  if (!info.settings.scheduled || info.settings.scheduled < Date.now()){
     info.players = (await client.smembersAsync(`game:${gameId}:players`)) || [];
-  else info.players = await getGameReservations(gameId);
+    info.spectators = (await client.smembersAsync(`game:${gameId}:spectators`)) || [];
+  }
+  else{ 
+    info.players = await getGameReservations(gameId);
+    info.spectators = [];
+  }
 
   if (!idsOnly) {
     var newPlayers = [];
@@ -919,6 +924,22 @@ async function getGameInfo(gameId, idsOnly) {
     }
 
     info.players = newPlayers;
+  var newSpectators = [];
+
+    for (let playerId of info.spectators) {
+      let userInfo = await getBasicUserInfo(playerId);
+
+      if (userInfo) newSpectators.push(userInfo);
+      else {
+        newSpectators.push({
+          name: "[Guest]",
+          id: "",
+          avatar: false,
+        });
+      }
+    }
+
+    info.spectators = newSpectators;
   }
 
   return info;

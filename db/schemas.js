@@ -267,7 +267,9 @@ var schemas = {
     players: [String],
     left: [String],
     names: [String],
+    spectatorsUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     spectators: [String],
+    spectatorNames: [String],
     winners: [String],
     winnersInfo: {
       players: {

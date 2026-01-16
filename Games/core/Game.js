@@ -546,7 +546,7 @@ module.exports = class Game {
 
       this.broadcast("spectatorCount", this.spectators.length);
       redis.setSpectatorCount(this.id, this.spectators.length);
-      this.broadcast("spectators", this.spectators);
+      this.broadcast("spectators", this.getAllSpectatorInfo());
     } catch (e) {
       logger.error(e);
       // this.handleError(e);
@@ -1294,6 +1294,7 @@ module.exports = class Game {
     // force assign "Host" role to the current game host
     let hostCount = 0;
     let toDelete = [];
+    this.originalRoles = {};
     for (let roleName in roleset) {
       let role = roleName.split(":")[0];
       let modifiers = roleName.split(":")[1];
@@ -1317,15 +1318,18 @@ module.exports = class Game {
           if (hostPlayer) {
             hostPlayer.setRole(roleName);
             hostCount += 1;
+            this.originalRoles[hostPlayer.id] = roleName;
           } else {
             // Fallback to first player if host not found
             players[hostCount].setRole(roleName);
             hostCount += 1;
+            this.originalRoles[players[hostCount].id] = roleName;
           }
         } else {
           // Additional Host roles go to subsequent players
           players[hostCount].setRole(roleName);
           hostCount += 1;
+          this.originalRoles[players[hostCount].id] = roleName;
         }
       }
 
@@ -1338,7 +1342,6 @@ module.exports = class Game {
     var randomPlayers = Random.randomizeArray(remainingToAssign);
 
     var i = 0;
-    this.originalRoles = {};
 
     if (
       this.HaveHostingState &&
@@ -1347,6 +1350,7 @@ module.exports = class Game {
     ) {
       for (let player of randomPlayers) {
         player.setRole("Contestant", undefined, false, true, true);
+        this.originalRoles[player.id] = "Contestant";
       }
     } else {
       for (let roleName in roleset) {
@@ -3407,9 +3411,18 @@ module.exports = class Game {
 
         if (user) users.push(user._id);
       }
+      let spectators = [];
+
+      for(let spec of this.spectatorsOld){
+        let userId = spec.userId || spec.user.id;
+        let user = await models.User.findOne({ id: userId }).select("_id");
+        if (user) spectators.push(user._id);
+      }
 
       var playerNames = players.map((p) => p.name);
       var playerIds = players.map((p) => p.id);
+      var spectatorIds = this.spectatorsOld.map((p) => p.id);
+      var spectatorNames = this.spectatorsOld.map((p) => p.name);
 
       // Only include players who left and had roles assigned
       var playersLeft = playersGone.filter((p) => this.originalRoles[p.id]);
@@ -3422,6 +3435,9 @@ module.exports = class Game {
         setup: setup._id,
         users: users,
         players: playerIds,
+        spectatorsUsers: spectators,
+        spectators: spectatorIds,
+        spectatorNames: spectatorNames,
         left: playersLeft.map((p) => p.id),
         names: playerNames,
         winners: this.winners.players.map((p) => p.id),

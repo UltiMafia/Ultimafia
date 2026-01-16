@@ -441,6 +441,7 @@ export default function Game() {
           });
 
           var players = {};
+          var spectators = {};
 
           for (let i in data.players) {
             players[data.players[i]] = {
@@ -456,10 +457,26 @@ export default function Game() {
             };
           }
 
+          for (let i in data.spectators) {
+            spectators[data.spectators[i]] = {
+              id: data.spectators[i],
+              name: data.spectatorNames[i],
+              userId: data.spectatorsUsers[i] ? data.spectatorsUsers[i].id : "",
+              avatar: data.spectatorsUsers[i] ? data.spectatorsUsers[i].avatar : false,
+              textColor: data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.textColor,
+              nameColor: data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.nameColor,
+              customEmotes:
+                data.spectatorsUsers[i] && data.spectatorsUsers[i].settings.customEmotes,
+              left: data.left.indexOf(data.spectators[i]) !== -1,
+            };
+          }
+
           updatePlayers({
             type: "set",
             players,
           });
+
+          setSpectators(spectators);
 
           setLoaded(true);
         })
@@ -851,6 +868,7 @@ export default function Game() {
       changeSetupDialogOpen: changeSetupDialogOpen,
       setChangeSetupDialogOpen: setChangeSetupDialogOpen,
       spectators: spectators,
+      setSpectators: setSpectators,
     };
 
     return (
