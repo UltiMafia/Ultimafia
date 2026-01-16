@@ -468,6 +468,7 @@ export default function Form({
                 disabled={disabled}
                 onChange={(e) => onFieldChange(e, field, true)}
               />
+              <FormHelperText>{field.extraInfo}</FormHelperText>
             </FormField>
           );
         case "datetime-local": {
@@ -487,6 +488,7 @@ export default function Form({
                 disabled={disabled}
                 onChange={(e) => onFieldChange(e, field)}
               />
+              <FormHelperText>{field.extraInfo}</FormHelperText>
             </FormField>
           );
         }
@@ -555,13 +557,7 @@ function ColorPicker(props) {
 
   function onChangeComplete(event) {
     const color = event.target.value;
-    if (props.fieldRef === "nameColor" || props.fieldRef === "textColor") {
-      if (colorHasGoodBackgroundContrast(color)) {
-        props.onChange({ target: { value: color } });
-      }
-    } else {
-      props.onChange({ target: { value: color } });
-    }
+    props.onChange({ target: { value: color } });
   }
 
   return (
