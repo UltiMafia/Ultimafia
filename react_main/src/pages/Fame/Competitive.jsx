@@ -41,7 +41,14 @@ function Overview({ roundInfo, seasonInfo }) {
   const [pageNumRound, setPageNumRound] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE_OPTIONS[0]);
 
-  const userMatch = (user) => user && user.name.toLowerCase().includes(userSearch);
+  const userMatch = (user) => {
+    if (userSearch === "") {
+      return true;
+    }
+    else {
+      return user && user.name.toLowerCase().includes(userSearch);
+    }
+  }
 
   const userStandingsSeasonFull = seasonInfo.standings.filter((seasonStanding) => userMatch(seasonInfo.users[seasonStanding.userId].user));
   const userStandingsSeason = userStandingsSeasonFull.slice((pageNumSeason-1)*itemsPerPage, pageNumSeason*itemsPerPage);
@@ -115,7 +122,7 @@ function Overview({ roundInfo, seasonInfo }) {
               </Stack>
               {userStandingsSeason.map((seasonStanding) => {
                 const userId = seasonStanding.userId;
-                const user = seasonInfo.users[userId].user;
+                const user = seasonInfo.users[userId].user || {};
                 return (
                   <Box key={userId} sx={{
                     display: "grid",
@@ -196,7 +203,7 @@ function Overview({ roundInfo, seasonInfo }) {
               </Stack>
               {userStandingsRound.map((roundStanding) => {
                 const userId = roundStanding.userId;
-                const user = roundInfo.users[userId].user;
+                const user = roundInfo.users[userId].user || {};
                 const points = roundInfo.users[userId].points;
                 const gamesPlayed = roundInfo.users[userId].gamesPlayed;
 
@@ -327,7 +334,7 @@ function GameHistory({ roundInfo }) {
                   {gameCompletion.pointsEarnedByPlayers.map(
                     (pointsEarnedByPlayer) => {
                       const userId = pointsEarnedByPlayer.userId;
-                      const user = roundInfo.users[userId].user;
+                      const user = roundInfo.users[userId].user || {};
                       return (
                         <Stack
                           direction="row"

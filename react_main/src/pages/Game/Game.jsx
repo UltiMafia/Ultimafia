@@ -2136,7 +2136,7 @@ function Message(props) {
                 avatar={player.avatar}
                 color={
                   !user.settings?.ignoreTextColor && message.nameColor !== ""
-                    ? message.nameColor
+                    ? user.autoContrastColor(message.nameColor)
                     : ""
                 }
                 noLink
@@ -2159,7 +2159,7 @@ function Message(props) {
           style={{
             ...(!user.settings?.ignoreTextColor && message.textColor !== ""
               ? // ? { color: flipTextColor(message.textColor) }
-                { color: message.textColor }
+                { color: user.autoContrastColor(message.textColor) }
               : contentClass.includes("content")
               ? extraStyle
               : {}),
