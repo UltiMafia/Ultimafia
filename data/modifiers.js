@@ -602,7 +602,7 @@ const modifierData = {
       category: "Visits",
       internal: ["Astral"],
       tags: ["Visits", "Astral"],
-      description: "All actions done by this player are not visits.",
+      description: "All secondary actions done by this player are not visits.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Leading: {
