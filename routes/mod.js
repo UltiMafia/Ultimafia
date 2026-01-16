@@ -3125,6 +3125,12 @@ router.post("/reports/:id/reopen", async (req, res) => {
       return;
     }
 
+    // Prevent reopening appealed reports
+    if (report.status === "appealed") {
+      res.status(400).send("Appealed reports cannot be reopened.");
+      return;
+    }
+
     const targetStatus = newStatus || "in-progress";
     if (!["open", "in-progress"].includes(targetStatus)) {
       res.status(400).send("New status must be 'open' or 'in-progress'.");
@@ -3279,9 +3285,17 @@ router.post("/appeals/:id/approve", async (req, res) => {
       return;
     }
 
-    // Mark violation ticket as appealed (we'll add an appealed field or use a status)
-    // For now, we'll mark it by setting activeUntil to 0 or a special value
-    // Actually, let's add an appealed field to the schema
+    // Get the original report being appealed
+    const originalReport = await models.Report.findOne({
+      id: appeal.reportId,
+    });
+
+    if (!originalReport) {
+      res.status(404).send("Original report not found.");
+      return;
+    }
+
+    // Mark violation ticket as appealed (this removes it from rap sheet)
     violationTicket.appealed = true;
     violationTicket.appealedAt = Date.now();
     violationTicket.appealedBy = userId;
@@ -3295,7 +3309,19 @@ router.post("/appeals/:id/approve", async (req, res) => {
     appeal.updatedAt = Date.now();
     await appeal.save();
 
-    // Complete the appeal report
+    // Change original report status to "appealed"
+    originalReport.status = "appealed";
+    originalReport.updatedAt = Date.now();
+    originalReport.history.push({
+      status: "appealed",
+      changedBy: userId,
+      timestamp: Date.now(),
+      action: "appealed",
+      note: notes || "Appeal approved - violation removed",
+    });
+    await originalReport.save();
+
+    // Complete the appeal report (the report created for the appeal)
     const appealReport = await models.Report.findOne({
       linkedAppealId: appealId,
     });
@@ -3318,6 +3344,16 @@ router.post("/appeals/:id/approve", async (req, res) => {
       await appealReport.save();
     }
 
+    // Send notification to user
+    await routeUtils.createNotification(
+      {
+        content: `Your appeal has been approved. ${notes ? `Notes: ${notes}` : "The violation has been removed from your record."}`,
+        icon: "check-circle",
+        link: `/user/${appeal.userId}`,
+      },
+      [appeal.userId]
+    );
+
     // Create mod action
     await routeUtils.createModAction(userId, "Approve Appeal", [
       appealId,
@@ -3325,7 +3361,7 @@ router.post("/appeals/:id/approve", async (req, res) => {
       appeal.violationTicketId,
     ]);
 
-    res.send({ appeal, violationTicket });
+    res.send({ appeal, violationTicket, originalReport });
   } catch (e) {
     logger.error(e);
     res.status(500).send("Error approving appeal.");
@@ -3360,7 +3396,7 @@ router.post("/appeals/:id/reject", async (req, res) => {
     appeal.updatedAt = Date.now();
     await appeal.save();
 
-    // Complete the appeal report
+    // Complete the appeal report (the report created for the appeal)
     const appealReport = await models.Report.findOne({
       linkedAppealId: appealId,
     });
@@ -3382,6 +3418,16 @@ router.post("/appeals/:id/reject", async (req, res) => {
       });
       await appealReport.save();
     }
+
+    // Send notification to user
+    await routeUtils.createNotification(
+      {
+        content: `Your appeal has been rejected. ${notes ? `Notes: ${notes}` : "The violation remains on your record."}`,
+        icon: "times-circle",
+        link: `/user/${appeal.userId}`,
+      },
+      [appeal.userId]
+    );
 
     // Create mod action
     await routeUtils.createModAction(userId, "Reject Appeal", [

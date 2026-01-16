@@ -782,7 +782,7 @@ var schemas = {
       description: String,
       status: {
         type: String,
-        enum: ["open", "in-progress", "complete"],
+        enum: ["open", "in-progress", "complete", "appealed"],
         default: "open",
         index: true,
       },

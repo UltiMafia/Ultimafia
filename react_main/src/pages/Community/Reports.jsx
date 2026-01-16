@@ -61,7 +61,7 @@ export default function Reports() {
       setLoading(true);
       const params = new URLSearchParams({
         page: page.toString(),
-        limit: "50",
+        limit: "20",
       });
       if (statusFilter) params.append("status", statusFilter);
       if (assigneeFilter) params.append("assignee", assigneeFilter);
@@ -99,6 +99,8 @@ export default function Reports() {
         return "warning";
       case "complete":
         return "error";
+      case "appealed":
+        return "info";
       default:
         return "default";
     }
