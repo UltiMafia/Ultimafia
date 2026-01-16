@@ -4,7 +4,7 @@ module.exports = class SpectatorMeeting extends Meeting {
   constructor(game) {
     super(game, "Spectator Meeting");
     this.group = true;
-    this.speech = false; 
+    this.speech = true; 
     this.liveJoin = true;
     this.voting = false;
   }
