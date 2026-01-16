@@ -14,7 +14,6 @@ const utils = require("../lib/Utils");
 const redis = require("../modules/redis");
 const constants = require("../data/constants");
 const dbStats = require("../db/stats");
-const { colorHasGoodContrastForBothThemes } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 
@@ -1549,16 +1548,6 @@ router.post("/settings/update", async function (req, res) {
       res.status(500);
       res.send("You must purchase text colors with coins from the Shop.");
       return;
-    }
-
-    const propRequiresGoodContrast =
-      prop === "textColor" || prop === "nameColor";
-    if (propRequiresGoodContrast && !colorHasGoodContrastForBothThemes(value)) {
-      return res
-        .status(422)
-        .end(
-          "Color must have good contrast in both light and dark themes. Please choose a different color."
-        );
     }
 
     if (prop === "deathMessage") {

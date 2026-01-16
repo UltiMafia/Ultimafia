@@ -5,8 +5,9 @@ import MuiLink from "@mui/material/Link";
 
 import { AlertFadeTimeout, AlertFadeDuration } from "./Constants";
 import axios from "axios";
-import { GlobalStyles, useColorScheme } from "@mui/material";
+import { GlobalStyles, useColorScheme, useTheme } from "@mui/material";
 import { getIconFilter } from "utilsFolder/iconFilter";
+import { generateContrastLookup, autoContrastColor } from "utilsFolder/autoContrast";
 
 export const UserContext = React.createContext();
 export const SiteInfoContext = React.createContext();
@@ -18,9 +19,11 @@ export function UserProvider({
   setCustomPrimaryColor,
 }) {
   const siteInfo = useContext(SiteInfoContext);
+  const theme = useTheme();
   const [inGame, setInGame] = useState(null);
   const [dpiCorrection, setDpiCorrection] = useState(undefined);
   const [iconFilter, setIconFilter] = useState({});
+  const [contrastLookup, setContrastLookup] = useState(null);
   const [user, setUser] = useState({
     loggedIn: false,
     loaded: false,
@@ -78,8 +81,25 @@ export function UserProvider({
   user.gamesPlayed = user.gamesPlayed || 0;
   user.canPlayRanked = user.gamesPlayed >= 5;
 
+  const minimumContrast = user.settings.minimumContrast === "none" ? 0 : Number.parseFloat(user.settings.minimumContrast);
+
+  useEffect(() => {
+    setContrastLookup(generateContrastLookup(theme.palette.background.paper, minimumContrast));
+  }, [theme.palette.background.paper, minimumContrast]);
+
+  function _autoContrastColor(color) {
+    if (minimumContrast == 0) {
+      return color;
+    }
+    else {
+      return autoContrastColor(color, theme.palette.background.paper, contrastLookup, minimumContrast);
+    }
+  };
+
   const userVal = {
     ...user,
+    contrastLookup: contrastLookup,
+    autoContrastColor: _autoContrastColor,
     state: user,
     set: setUser,
     blockUserToggle,

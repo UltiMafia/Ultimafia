@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link, Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import axios from "axios";
 import update from "immutability-helper";
+import { ContrastComparison } from "utilsFolder/autoContrast";
 
 import {
   Box,
@@ -146,6 +147,30 @@ export default function Settings() {
         {
           label: "Dark",
           value: "dark",
+        },
+      ],
+      value: mode,
+    },
+    {
+      label: "Minimum WCAG contrast",
+      ref: "minimumContrast",
+      type: "select",
+      extraInfo: (
+        <ContrastComparison contrastLookup={user.contrastLookup} />
+      ),
+      groupName: "Appearance",
+      options: [
+        {
+          label: "None",
+          value: "none",
+        },
+        {
+          label: "3.5",
+          value: "3.5",
+        },
+        {
+          label: "7",
+          value: "7",
         },
       ],
       value: mode,
