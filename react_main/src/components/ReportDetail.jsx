@@ -186,6 +186,8 @@ export default function ReportDetail({
         return "warning";
       case "complete":
         return "error";
+      case "appealed":
+        return "info";
       default:
         return "default";
     }
@@ -531,7 +533,8 @@ export default function ReportDetail({
               >
                 Manage Assignees
               </Button>
-              {status !== "complete" && (
+              {/* Hide status change and complete buttons for appeals */}
+              {!report.linkedAppealId && status !== "complete" && (
                 <>
                   <FormControl fullWidth>
                     <InputLabel>Change Status</InputLabel>
@@ -553,11 +556,22 @@ export default function ReportDetail({
                   </Button>
                 </>
               )}
-              {status === "complete" && (
+              {/* Hide reopen button for appeals that have been approved/rejected */}
+              {!report.linkedAppealId && status === "complete" && (
                 <Button variant="outlined" onClick={handleReopen}>
                   Reopen Report
                 </Button>
               )}
+              {/* Also hide reopen button if appeal is approved or rejected */}
+              {report.linkedAppealId &&
+                report.appeal &&
+                (report.appeal.status === "approved" ||
+                  report.appeal.status === "rejected") && (
+                  <Typography variant="body2" color="textSecondary">
+                    This appeal has been {report.appeal.status}. The report
+                    cannot be reopened.
+                  </Typography>
+                )}
             </Stack>
           </Card>
 

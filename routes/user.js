@@ -8,12 +8,14 @@ const formidable = bluebird.promisifyAll(require("formidable"), {
 const sharp = require("sharp");
 const shortid = require("shortid");
 const color = require("color");
+const axios = require("axios");
 const models = require("../db/models");
 const routeUtils = require("./utils");
 const utils = require("../lib/Utils");
 const redis = require("../modules/redis");
 const constants = require("../data/constants");
 const dbStats = require("../db/stats");
+const { colorHasGoodContrastForBothThemes } = require("../shared/colors");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
 
@@ -1550,6 +1552,16 @@ router.post("/settings/update", async function (req, res) {
       return;
     }
 
+    const propRequiresGoodContrast =
+      prop === "textColor" || prop === "nameColor";
+    if (propRequiresGoodContrast && !colorHasGoodContrastForBothThemes(value)) {
+      return res
+        .status(422)
+        .end(
+          "Color must have good contrast in both light and dark themes. Please choose a different color."
+        );
+    }
+
     if (prop === "deathMessage") {
       // Truncate to 150 chars first
       if (value.length > 150) {
@@ -2703,6 +2715,47 @@ router.post("/appeals", async function (req, res) {
     logger.info(
       `Appeal ${appeal.id} created by user ${userId} for report ${reportId}`
     );
+
+    // Send Discord notification (same as reports)
+    try {
+      const user = await models.User.findOne({
+        id: userId,
+        deleted: false,
+      }).select("_id name");
+
+      // Get report counts
+      const openReportCount = await models.Report.countDocuments({
+        status: "open",
+      });
+      const inProgressReportCount = await models.Report.countDocuments({
+        status: "in-progress",
+      });
+
+      const title = `${user.name} appealing violation: https://ultimafia.com/community/reports/${appealReport.id}`;
+      let reportDetails = `\nNumber of open reports: ${openReportCount}\n`;
+      reportDetails += `Number of in-progress reports: ${inProgressReportCount}`;
+
+      const ping = "<@&1107343293848768622>\n";
+
+      // Decode the Base64 webhook URL components
+      const wht =
+        "QTQ0dG9WSFA3UUNfSk1KbTZZTFh1Q05JT2xhLVoxanZqczhTRDE3WmQyOGktTU5kYmJlbzFCTVRPQzBnTmJKblMwRGM=";
+      const whId = "MTMyODgwNjY5OTcxNjMxNzE5NQ==";
+      const base = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3Mv";
+
+      const decodeBase64 = (str) =>
+        Buffer.from(str, "base64").toString("utf-8");
+      const webhookURL =
+        decodeBase64(base) + decodeBase64(whId) + "/" + decodeBase64(wht);
+
+      await axios.post(webhookURL, {
+        content: `${ping}${title}${reportDetails}`,
+        username: "SnitchBot",
+      });
+    } catch (discordError) {
+      // Log but don't fail if Discord webhook fails
+      logger.warn("Failed to send Discord notification:", discordError);
+    }
 
     res.status(200).send({ appeal, appealReport });
   } catch (e) {
