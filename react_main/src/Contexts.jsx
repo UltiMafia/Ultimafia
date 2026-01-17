@@ -81,7 +81,8 @@ export function UserProvider({
   user.gamesPlayed = user.gamesPlayed || 0;
   user.canPlayRanked = user.gamesPlayed >= 5;
 
-  const minimumContrast = user.settings.minimumContrast === "none" ? 0 : Number.parseFloat(user.settings.minimumContrast);
+  const autoContrastEnabled = user && user.settings && user.settings.minimumContrast !== undefined && user.settings.minimumContrast !== "none";
+  const minimumContrast = !autoContrastEnabled ? 0 : Math.max(0, Number.parseFloat(user.settings.minimumContrast));
 
   useEffect(() => {
     setContrastLookup(generateContrastLookup(theme.palette.background.paper, minimumContrast));
