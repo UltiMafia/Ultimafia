@@ -1993,6 +1993,11 @@ const roleData = {
         //"At night chooses a banished Village role, gains its abilities until the next night",
         "Cannot select a role they already selected.",
       ],
+      SpecialInteractionsModifiers: {
+        Fair: ["Cannot select a role they already selected."],
+        Consecutive: ["Cannot select a role they selected the previous night."],
+        Nonconsecutive: ["Can only select the role they selected the previous night."],
+      },
     },
     Hermit: {
       alignment: "Village",
@@ -3402,6 +3407,11 @@ const roleData = {
         "Each night, can choose a banished Mafia role and gains its abilities until the next night.",
         "Cannot select a role they already selected.",
       ],
+      SpecialInteractionsModifiers: {
+        Fair: ["Cannot select a role they already selected."],
+        Consecutive: ["Cannot select a role they selected the previous night."],
+        Nonconsecutive: ["Can only select the role they selected the previous night."],
+      },
     },
     Oddfather: {
       alignment: "Mafia",
@@ -4304,6 +4314,11 @@ const roleData = {
         "Each night, can choose a banished Cult role and gains its abilities until the next night.",
         "Cannot select a role they already selected.",
       ],
+      SpecialInteractionsModifiers: {
+        Fair: ["Cannot select a role they already selected."],
+        Consecutive: ["Cannot select a role they selected the previous night."],
+        Nonconsecutive: ["Can only select the role they selected the previous night."],
+      },
     },
     Yith: {
       alignment: "Cult",
