@@ -11,15 +11,28 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
         flags: ["voting", "instant"],
         inputType: "AllRoles",
         AllRolesFilters: ["banished", "blacklist", "aligned"],
+        role: role,
         action: {
           role: this.role,
           run: function () {
             if (this.target == "None") {
               return;
             }
-
+            this.role.data.roleSelectedLastNight.push(this.target);
+            this.role.data.roleSelectedEver.push(this.target);
             //this.actor.role.data.ConvertOptions.splice(this.actor.role.data.ConvertOptions.indexOf(this.target),1);
-            this.actor.role.data.roleBlacklist2.push(this.target);
+            if(this.role.modifier.split("/").includes("Fair")){
+              this.role.data.roleBlacklist2 = this.role.data.roleSelectedEver;
+            }
+            else if(this.role.modifier.split("/").includes("Nonconsecutive")){
+              this.role.data.roleBlacklist2 = this.role.data.roleSelectedEver;
+            }
+            else if(this.role.modifier.split("/").includes("Consecutive")){
+              let allRole = this.role.getAllRoles();
+              allRole = allRole.filter((r) => r != this.target);
+              this.role.data.roleBlacklist2 = allRole;
+            }
+            //this.role.data.roleBlacklist2.push(this.target);
 
             let effect = this.actor.giveEffect(
               "ExtraRoleEffect",
@@ -47,6 +60,8 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
         if (this.data.roleBlacklist == null) {
           this.data.roleBlacklist = roleBlacklist.filter((r) => r);
           this.data.roleBlacklist2 = [];
+          this.data.roleSelectedLastNight = [];
+            this.data.roleSelectedEver = [];
         }
         /*
         this.data.ConvertOptions = this.game.PossibleRoles.filter(
@@ -59,19 +74,12 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
         */
       },
       // refresh cooldown
-      /*
       state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
           return;
         }
-        var ConvertOptions = this.data.ConvertOptions.filter((r) => r);
-        if(!this.modifier.includes("Proactive")){
-        ConvertOptions.push("None");
-        }
-
-        this.meetings["Use Power"].targets = ConvertOptions;
+       this.data.roleSelectedLastNight = [];
       },
-      */
     };
   }
 };
