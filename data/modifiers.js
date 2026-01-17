@@ -436,7 +436,7 @@ const modifierData = {
       internal: ["BanishedRole"],
       tags: ["Banished"],
       description:
-        "Banished roles will only spawn if other roles add Banished roles to the game.",
+        "Roles with this modifier will not spawn normally.",
       eventDescription: "This Event will not occur normally.",
       incompatible: ["Inclusive", "Exclusive"],
     },
@@ -602,7 +602,7 @@ const modifierData = {
       category: "Visits",
       internal: ["Astral"],
       tags: ["Visits", "Astral"],
-      description: "All actions done by this player are not visits.",
+      description: "All secondary actions done by this player are not visits.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Leading: {

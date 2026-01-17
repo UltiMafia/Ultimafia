@@ -296,7 +296,7 @@ module.exports = class MafiaInformation {
     }
     let fakeRoles = [];
     let returnRoles = [];
-    if (!this.game.setup.closed) {
+    if (!this.game.setup.closed || this.name == "One Of 3 Roles Info") {
       let randomPlayers = Random.randomizeArray(
         this.game
           .alivePlayers()

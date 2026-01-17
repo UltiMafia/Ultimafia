@@ -29,11 +29,12 @@ module.exports = class Pranked extends Card {
             target: this.data.playerVoter,
             game: this.player.game,
             priority: PRIORITY_OVERTHROW_VOTE - 1,
-            labels: ["hidden", "convert"],
+            labels: ["hidden", "effect"],
             role: this.role,
             run: function () {
               if (this.dominates(this.role.data.playerVoter)) {
-                this.target.setRole("Fool");
+                //this.target.setRole("Fool");
+                this.role.giveEffect(this.target,"Foolish", this.actor);
               }
               this.role.data.playerVoter = 0;
             },

@@ -1,35 +1,34 @@
 const Effect = require("../Effect");
 const Action = require("../Action");
+const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../const/Priority");
 
-module.exports = class BleedingCult extends Effect {
+module.exports = class Foolish extends Effect {
   constructor(killer) {
-    super("BleedingCult");
+    super("Foolish");
     this.killer = killer;
     this.isMalicious = true;
   }
 
   apply(player) {
-    if (player.hasEffect("BleedingCult")) {
+    if (player.hasEffect("Foolish")) {
       return;
     }
 
     super.apply(player);
-    player.queueAlert("You start to bleed…");
 
     this.action = new Action({
       actor: this.killer,
       target: player,
       game: this.killer.game,
-      labels: ["convert", "bleed", "hidden", "absolute", "uncontrollable"],
+      labels: ["convert", "hidden", "absolute", "uncontrollable"],
       delay: 1,
       effect: this,
       run: function () {
-        if (!this.target.hasEffect("BleedingCult")) {
+        if (!this.target.hasEffect("Foolish")) {
           return;
         }
         if (this.dominates()) {
-          if (this.target.getRoleAlignment() == "Cult") return;
-          this.target.setRole("Cultist");
+          this.target.setRole("Fool");
         }
 
         this.effect.remove();

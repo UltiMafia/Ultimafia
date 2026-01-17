@@ -115,6 +115,7 @@ const polarisedDef = `Players who are "Polarised" will die if they visit or get 
 const frozenDef = `Players who are "Frozen" cannot vote or will have their night actions blocked. If a "Frozen" player is visited, they will stop being "Frozen".`;
 const foggyDef = `Players who are "Foggy" can only see their neighbors messages.`;
 const lovesickDef = `Players who are "Lovesick" for another player, will die if that player dies.`;
+const foolishDef = `Players who are "Foolish" will be converted to Fool during the next night.`;
 
 /*
 const coffeeDef = itemData["Mafia"]["Coffee"].description;
@@ -3815,7 +3816,9 @@ const roleData = {
       alignment: "Mafia",
       category: "Gaming",
       tags: ["Voting", "Conversion", "Expert"],
-      description: ["The first player to vote the Prankster becomes Fool."],
+      description: ["The first player to vote the Prankster becomes \"Foolish\".",
+        foolishDef,
+      ],
       SpecialInteractionsModifiers: {
         Loyal: [
           "If the first player to vote for the Prankster is a different alignment to the Prankster, nothing happens.",
