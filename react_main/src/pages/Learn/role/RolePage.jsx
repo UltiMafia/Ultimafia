@@ -39,6 +39,7 @@ import "css/setupPage.css";
 import { useErrorAlert } from "../../../components/Alerts";
 import { NewLoading } from "../../Welcome/NewLoading";
 import { RoleCount } from "../../../components/Roles";
+import { ExtraRoleData } from "../../../constants/ExtraRoleData";
 
 export default function RolePage() {
   return (
@@ -294,7 +295,8 @@ export function RoleThings() {
   }
 
   let examples;
-  if (role[1].examples) {
+  let exampleData = ExtraRoleData["Mafia"][role[0]];
+  if (exampleData && exampleData.examples) {
     examples = (
       <SetupRowInfo
         title="Examples"
