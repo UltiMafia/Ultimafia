@@ -512,44 +512,46 @@ module.exports = class Meeting {
         temp = Random.randomizeArray(temp);
       }
 
+      let actorRole;
+      if(this.role){
+        actorRole = this.role;
+      }
+      else if(self){
+        actorRole = self.role;
+      }
+
       for (let tag of this.AllRolesFilters.filter(
         (t) => t != "AllOnSite" && t != "addedRoles" && t != "InPlayOnly"
       )) {
         switch (tag) {
           case "self":
-            if (self) {
-              temp = temp.filter((r) => r != self.role.name);
+            if (actorRole) {
+              temp = temp.filter((r) => r != actorRole.name);
             }
             break;
           case "aligned":
-            if (self) {
+            if (actorRole) {
               temp = temp.filter(
                 (r) =>
                   this.game.getRoleAlignment(r) ==
-                  this.game.getRoleAlignment(self.role.name)
+                  this.game.getRoleAlignment(actorRole.name)
               );
             }
             break;
           case "village":
-            if (self) {
               temp = temp.filter(
                 (r) => this.game.getRoleAlignment(r) == "Village"
               );
-            }
             break;
           case "mafia":
-            if (self) {
               temp = temp.filter(
                 (r) => this.game.getRoleAlignment(r) == "Mafia"
               );
-            }
             break;
           case "cult":
-            if (self) {
               temp = temp.filter(
                 (r) => this.game.getRoleAlignment(r) == "Cult"
               );
-            }
             break;
           case "banished":
             temp = temp.filter(
@@ -568,12 +570,12 @@ module.exports = class Meeting {
             );
             break;
           case "blacklist":
-            if (self && self.role.data.roleBlacklist) {
+            if (actorRole && actorRole.data.roleBlacklist) {
               temp = temp.filter(
-                (r) => !self.role.data.roleBlacklist.includes(r.split(":")[0])
+                (r) => !actorRole.data.roleBlacklist.includes(r.split(":")[0])
               );
               temp = temp.filter(
-                (r) => !self.role.data.roleBlacklist2.includes(r)
+                (r) => !actorRole.data.roleBlacklist2.includes(r)
               );
             }
             break;
