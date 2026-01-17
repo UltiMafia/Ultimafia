@@ -41,7 +41,7 @@ module.exports = class MafiaRole extends Role {
       !this.player.hasEffect("NoModifiers")
     ) {
       let AllRoles = [];
-      for (let player of Random.randomizeArray(this.game.players)) {
+      for (let player of Random.randomizeArray(this.game.players.array())) {
         if (player.role != null && player.role.name != null) {
           if (player.role.modifier) {
             AllRoles.push(`${player.role.name}:${player.role.modifier}`);
