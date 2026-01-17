@@ -1,69 +1,45 @@
 import React, { useLayoutEffect, useRef, useState, useContext } from "react";
-import { EmoteKeys, emotify } from "./Emotes";
-import { useOnOutsideClick } from "./Basic";
+import EmojiPicker from 'emoji-picker-react';
 import { Box, Button, Popover, Stack, Tooltip } from "@mui/material";
-import { UserContext } from "../Contexts";
+import { useTheme } from "@emotion/react";
 
-import happy from "images/emotes/happy.webp";
+import { Emotes } from "./Emotes";
+import { UserContext } from "../Contexts";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 
-import "css/emotes.css";
+import happy from "images/emotes/happy.webp";
 
-export default function EmotePicker(props) {
+function EmotePicker({ onEmoteSelected, className = "" }) {
   const user = useContext(UserContext);
-  let emotesToUse = user.settings?.customEmotes || {};
-  /*
-  if(props.players){
-    for(let player of Object.values(props.players)){
-      if(player.user?.id == user.id){
-        emotesToUse = player.user.customEmotes;
-        break;
-      }
-    }
-  }
-  */
+  const theme = useTheme();
 
   const { popoverOpen, openByClick, anchorEl, handleClick, closePopover } =
     usePopoverOpen();
 
-  const userCustomEmotes = emotesToUse || {};
-  const customEmotes = (
-    <>
-      {Object.keys(userCustomEmotes).map((customEmote) => (
-        <div
-          style={{ width: "var(--emote-size)", height: "var(--emote-size)" }}
-          key={customEmote}
-          onClick={(e) => selectEmote(e, customEmote)}
-        >
-          {emotify(customEmote, userCustomEmotes)}
-        </div>
-      ))}
-    </>
-  );
+  const customEmotesMap = user.settings?.customEmotes || {};
+  const customEmotes = Object.keys(customEmotesMap).map((emoteName) => {
+    return {
+      "id": emoteName,
+      "names": [emoteName],
+      "imgUrl": `/${customEmotesMap[emoteName].path}`,
+    };
+  });
+  const siteEmotes = Object.keys(Emotes).map((emoteName) => {
+    const emote = Emotes[emoteName];
+    return {
+      "id": emoteName,
+      "names": [emoteName],
+      "imgUrl": require(`images/emotes/${emote.name.toLowerCase()}.${emote.type}`),
+    };
+  });
 
-  const emotes = (
-    <>
-      {EmoteKeys.map((emote) => (
-        <Box
-          sx={{ width: "var(--emote-size)", height: "var(--emote-size)" }}
-          key={emote}
-          onClick={(e) => selectEmote(e, emote)}
-        >
-          {emotify(emote)}
-        </Box>
-      ))}
-    </>
-  );
-
-  function selectEmote(e, emote) {
-    props.onEmoteSelected(emote);
-    if (!e.shiftKey) {
-      closePopover();
-    }
+  function selectEmote(emote) {
+    onEmoteSelected(emote.emoji);
+    closePopover();
   }
 
   return (
-    <div className={`dropdown ${props.className || ""}`}>
+    <div className={`dropdown ${className}`}>
       <Tooltip title="Emotes!" placement="top">
         <Button
           className="dropdown-control"
@@ -91,11 +67,27 @@ export default function EmotePicker(props) {
         disableScrollLock
         disableRestoreFocus
       >
-        <div className="emote-picker">
-          {customEmotes}
-          {emotes}
-        </div>
+        <EmojiPicker
+          width="100%"
+          height="80vh"
+          emojiStyle="native"
+          theme={theme.palette.mode}
+          onEmojiClick={selectEmote}
+          lazyLoadEmojis={true}
+          customEmojis={[...customEmotes, ...siteEmotes]}
+          style={{
+            "--epr-picker-border-color": "var(--mui-palette-divider)",
+            "--epr-bg-color": "var(--scheme-color)",
+            "--epr-category-label-bg-color": "var(--scheme-color)",
+            "--epr-horizontal-padding": "var(--mui-spacing)",
+            "--epr-header-padding": "var(--mui-spacing)",
+            "--epr-search-input-bg-color": "transparent",
+            "--epr-search-border-color": "var(--mui-palette-divider)",
+          }}
+        />
       </Popover>
     </div>
   );
 }
+
+export default React.memo(EmotePicker);

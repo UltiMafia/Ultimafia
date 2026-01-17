@@ -16,37 +16,3 @@
   background-repeat: no-repeat;
   background-position: center;
 }
-
-.emote-picker {
-  display: grid;
-
-  grid-template-columns: repeat(10, 1fr);
-  row-gap: calc(0.5 * var(--mui-spacing));
-  column-gap: calc(0.5 * var(--mui-spacing));
-
-  padding: var(--mui-spacing);
-}
-
-.emote-picker .emote {
-  cursor: pointer;
-  user-select: none;
-}
-
-.emote-picker .emote::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  top: calc(-0.25 * var(--mui-spacing));
-  left: calc(-0.25 * var(--mui-spacing));
-  width: calc(100% + 0.5 * var(--mui-spacing));
-  height: calc(100% + 0.5 * var(--mui-spacing));
-  border-radius: var(--mui-shape-borderRadius);
-  background-color: unset;
-}
-
-.emote-picker .emote:hover::before {
-  background-color: rgba(
-    var(--mui-palette-action-activeChannel) /
-      var(--mui-palette-action-hoverOpacity)
-  );
-}
