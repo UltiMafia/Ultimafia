@@ -37,6 +37,7 @@ export function emotify(text, customEmotes) {
 
   if (!Array.isArray(text)) text = [text];
 
+  let emoteOnlyText = true;
   for (let i in text) {
     let segment = text[i];
 
@@ -53,6 +54,9 @@ export function emotify(text, customEmotes) {
       } else if (Emotes[word] && typeof Emotes[word] != "function") {
         words[j] = <Emote emote={word} />;
       } else {
+        if (word !== "") {
+          emoteOnlyText = false;
+        }
         if (j < words.length - 1) {
           // do NOT append an extra ' ' space in the last word (which wasn't there in the first place)
           words[j] += " ";
@@ -64,6 +68,24 @@ export function emotify(text, customEmotes) {
   }
 
   text = text.flat();
+
+  // if the entire text is only emotes, make them larger
+  if (emoteOnlyText) {
+    text = text.map((segment, i) =>
+      React.isValidElement(segment) ? (
+        <span key={i} style={{
+          "--emote-size": "30px",
+          display: "inline-block",
+          verticalAlign: "middle",
+        }}>
+          {segment}
+        </span>
+      ) : (
+        segment
+      )
+    );
+  }
+
   return text.length === 1 ? text[0] : text;
 }
 
@@ -294,6 +316,10 @@ export const Emotes = {
   },
   ":omg:": {
     name: "omg",
+    type: "webp",
+  },
+  ":icry:": {
+    name: "icry",
     type: "webp",
   },
   ":gay:": {

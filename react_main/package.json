@@ -14,6 +14,7 @@
     "color": "3.2.1",
     "color-contrast": "^1.0.0",
     "d3": "7.8.5",
+    "emoji-picker-react": "^4.16.1",
     "firebase": "^11.10.0",
     "fullcalendar": "^6.1.19",
     "immutability-helper": "^3.0.2",
