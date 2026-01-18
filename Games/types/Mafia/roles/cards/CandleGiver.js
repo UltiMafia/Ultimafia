@@ -10,11 +10,14 @@ module.exports = class CandleGiver extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          role: this.role,
           labels: ["giveItem", "candle"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-            this.target.holdItem("Candle");
+            let item = this.target.holdItem("Candle");
             this.target.queueGetItemAlert("Candle");
+
+            item.inheritedModifiers = this.role.modifier.split("/");
           },
         },
       },
