@@ -1,4 +1,4 @@
-//This can be used to quickly change them if needed
+//This can be used to quickly change any fake username if needed
 const fakeUserNames = [
   "AngleLover90",
   "BadHat120",
@@ -8,6 +8,8 @@ const fakeUserNames = [
   "AgletInspector77",
   "GoldenFlower123",
   "WindowOperator97",
+  "ChillZebra12",
+  "MagnetSpinner63",
 ];
 let nameArray = fakeUserNames;
 export const ExtraRoleData = {
@@ -19,6 +21,7 @@ export const ExtraRoleData = {
         `On night 2, ${nameArray[0]} the Cop chooses to visit ${nameArray[2]}. ${nameArray[2]}'s role is Mafioso. At the end of the night, ${nameArray[0]} receives the report "After investigating, you learn that ${nameArray[2]} is Guilty!".`,
         `On night 3, ${nameArray[0]} the Cop chooses to visit ${nameArray[3]}. ${nameArray[3]}'s role is Fool. At the end of the night, ${nameArray[0]} receives the report "After investigating, you learn that ${nameArray[3]} is Innocent!".`,
         `On night 4, ${nameArray[0]} the Cop chooses to visit ${nameArray[4]}. ${nameArray[4]}'s role is Serial Killer. At the end of the night, ${nameArray[0]} receives the report "After investigating, you learn that ${nameArray[4]} is Guilty!".`,
+        `On night 5, ${nameArray[0]} the Cop chooses to visit ${nameArray[5]}. ${nameArray[5]}'s role is Cultist. At the end of the night, ${nameArray[0]} receives the report "After investigating, you learn that ${nameArray[5]} is Guilty!".`,
       ],
     },
     //Cult
