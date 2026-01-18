@@ -25,7 +25,7 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
               this.role.data.roleBlacklist2 = this.role.data.roleSelectedEver;
             }
             else if(this.role.modifier.split("/").includes("Nonconsecutive")){
-              this.role.data.roleBlacklist2 = this.role.data.roleSelectedEver;
+              this.role.data.roleBlacklist2 = this.role.data.roleSelectedLastNight;
             }
             else if(this.role.modifier.split("/").includes("Consecutive")){
               let allRole = this.role.getAllRoles();
@@ -76,6 +76,8 @@ module.exports = class BecomeBanishedRoleFor1Phase extends Card {
       // refresh cooldown
       state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
+          this.data.LimitedLastNightVisits = [];
+          this.data.LimitedAllVisits = [];
           return;
         }
        this.data.roleSelectedLastNight = [];

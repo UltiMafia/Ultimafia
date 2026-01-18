@@ -302,7 +302,7 @@ export function RoleThings() {
         title="Examples"
         content={
           <List>
-            {role[1].examples.map((line) => {
+            {exampleData.examples.map((line) => {
               return <ListItem>{line}</ListItem>;
             })}
           </List>

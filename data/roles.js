@@ -168,6 +168,19 @@ const revolverDef = itemData["Mafia"]["Revolver"].description;
 const snowballDef = itemData["Mafia"]["Snowball"].description;
 const jackBoxDef = itemData["Mafia"]["Jack-In-The-Box"].description;
 
+//Shared Modifier Overrides
+const jackModifierOverrides = {
+        Fair: ["Cannot select a role they already selected."],
+        Nonconsecutive: ["Cannot select a role they selected the previous night."],
+        Consecutive: ["Can only select the role they selected the previous night."],
+      };
+const itemSanity = {
+  Sane: ["All information created by items given by this role will be true. Hides other modifiers."],
+  Insane: ["All information created by items given by this role will be false. Hides other modifiers."],
+  Paranoid: ["All information created by items given by this role will be unfavorable to the player being checked. Hides other modifiers."],
+  Naive: ["All information created by items given by this role will be favorable to the player being checked. Hides other modifiers."],
+};
+
 const roleData = {
   Mafia: {
     //Village
@@ -566,6 +579,7 @@ const roleData = {
         candleDef,
       ],
       nightOrder: [["Give Candle", PRIORITY_ITEM_GIVER_DEFAULT]],
+      SpecialInteractionsModifiers: itemSanity,
     },
     Cutler: {
       alignment: "Village",
@@ -619,6 +633,7 @@ const roleData = {
         falconDef,
       ],
       nightOrder: [["Give Falcon", PRIORITY_ITEM_GIVER_DEFAULT]],
+      SpecialInteractionsModifiers: itemSanity,
     },
     Funsmith: {
       alignment: "Village",
@@ -656,6 +671,7 @@ const roleData = {
         crystalBallDef,
       ],
       nightOrder: [["Give Crystal Ball", PRIORITY_ITEM_GIVER_DEFAULT]],
+      SpecialInteractionsModifiers: itemSanity,
     },
     Gunsmith: {
       alignment: "Village",
@@ -1991,13 +2007,8 @@ const roleData = {
       description: [
         "Each night, can choose a banished Village role and gains its abilities until the next night.",
         //"At night chooses a banished Village role, gains its abilities until the next night",
-        "Cannot select a role they already selected.",
       ],
-      SpecialInteractionsModifiers: {
-        Fair: ["Cannot select a role they already selected."],
-        Consecutive: ["Cannot select a role they selected the previous night."],
-        Nonconsecutive: ["Can only select the role they selected the previous night."],
-      },
+      SpecialInteractionsModifiers: jackModifierOverrides,
     },
     Hermit: {
       alignment: "Village",
@@ -3405,13 +3416,8 @@ const roleData = {
       tags: ["Advanced", "Banished Interaction"],
       description: [
         "Each night, can choose a banished Mafia role and gains its abilities until the next night.",
-        "Cannot select a role they already selected.",
       ],
-      SpecialInteractionsModifiers: {
-        Fair: ["Cannot select a role they already selected."],
-        Consecutive: ["Cannot select a role they selected the previous night."],
-        Nonconsecutive: ["Can only select the role they selected the previous night."],
-      },
+      SpecialInteractionsModifiers: jackModifierOverrides,
     },
     Oddfather: {
       alignment: "Mafia",
@@ -4312,13 +4318,8 @@ const roleData = {
       tags: ["Advanced", "Banished Interaction"],
       description: [
         "Each night, can choose a banished Cult role and gains its abilities until the next night.",
-        "Cannot select a role they already selected.",
       ],
-      SpecialInteractionsModifiers: {
-        Fair: ["Cannot select a role they already selected."],
-        Consecutive: ["Cannot select a role they selected the previous night."],
-        Nonconsecutive: ["Can only select the role they selected the previous night."],
-      },
+      SpecialInteractionsModifiers: jackModifierOverrides,
     },
     Yith: {
       alignment: "Cult",
