@@ -10,11 +10,15 @@ module.exports = class GiveCrystalBall extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          role: this.role,
           labels: ["giveItem", "crystal"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-            this.target.holdItem("Crystal Ball");
+            
+            let item = this.target.holdItem("Crystal Ball");
             this.target.queueGetItemAlert("Crystal Ball");
+
+            item.inheritedModifiers = this.role.modifier.split("/");
           },
         },
       },
