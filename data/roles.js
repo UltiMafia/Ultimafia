@@ -168,6 +168,19 @@ const revolverDef = itemData["Mafia"]["Revolver"].description;
 const snowballDef = itemData["Mafia"]["Snowball"].description;
 const jackBoxDef = itemData["Mafia"]["Jack-In-The-Box"].description;
 
+//Shared Modifier Overrides
+const jackModifierOverrides = {
+        Fair: ["Cannot select a role they already selected."],
+        Nonconsecutive: ["Cannot select a role they selected the previous night."],
+        Consecutive: ["Can only select the role they selected the previous night."],
+      };
+const itemSanity = {
+  Sane: ["All information created by items given by this role will be true. Hides other modifiers."],
+  Insane: ["All information created by items given by this role will be false. Hides other modifiers."],
+  Paranoid: ["All information created by items given by this role will be unfavorable to the player being checked. Hides other modifiers."],
+  Naive: ["All information created by items given by this role will be favorable to the player being checked. Hides other modifiers."],
+};
+
 const roleData = {
   Mafia: {
     //Village
@@ -566,6 +579,7 @@ const roleData = {
         candleDef,
       ],
       nightOrder: [["Give Candle", PRIORITY_ITEM_GIVER_DEFAULT]],
+      SpecialInteractionsModifiers: itemSanity,
     },
     Cutler: {
       alignment: "Village",
@@ -619,6 +633,7 @@ const roleData = {
         falconDef,
       ],
       nightOrder: [["Give Falcon", PRIORITY_ITEM_GIVER_DEFAULT]],
+      SpecialInteractionsModifiers: itemSanity,
     },
     Funsmith: {
       alignment: "Village",
@@ -656,6 +671,7 @@ const roleData = {
         crystalBallDef,
       ],
       nightOrder: [["Give Crystal Ball", PRIORITY_ITEM_GIVER_DEFAULT]],
+      SpecialInteractionsModifiers: itemSanity,
     },
     Gunsmith: {
       alignment: "Village",
@@ -1991,8 +2007,8 @@ const roleData = {
       description: [
         "Each night, can choose a banished Village role and gains its abilities until the next night.",
         //"At night chooses a banished Village role, gains its abilities until the next night",
-        "Cannot select a role they already selected.",
       ],
+      SpecialInteractionsModifiers: jackModifierOverrides,
     },
     Hermit: {
       alignment: "Village",
@@ -3400,8 +3416,8 @@ const roleData = {
       tags: ["Advanced", "Banished Interaction"],
       description: [
         "Each night, can choose a banished Mafia role and gains its abilities until the next night.",
-        "Cannot select a role they already selected.",
       ],
+      SpecialInteractionsModifiers: jackModifierOverrides,
     },
     Oddfather: {
       alignment: "Mafia",
@@ -4302,8 +4318,8 @@ const roleData = {
       tags: ["Advanced", "Banished Interaction"],
       description: [
         "Each night, can choose a banished Cult role and gains its abilities until the next night.",
-        "Cannot select a role they already selected.",
       ],
+      SpecialInteractionsModifiers: jackModifierOverrides,
     },
     Yith: {
       alignment: "Cult",
@@ -4471,12 +4487,6 @@ const roleData = {
         'If a Reaper says "I claim Reaper and choose (Player Name)" within the first minute of the day.',
         "If the chosen player survives until the end of the day, that player's team wins.",
         "A Reaper cannot choose themselves.",
-      ],
-      examples: [
-        `On day 2 at the start of the day AngleLover90 says "I claim Reaper and choose BadHat120", BadHat120's role is Cultist. The Village decides to condemn AngleLover90, BadHat120 is still alive so Cult wins.`,
-        `On day 4 at the start of the day SpiningTop23 says "i claim reaper and choose JohnYellow56", JohnYellow56's role is Villager. The Village decides to condemn no one, JohnYellow56 is still alive so Village wins.`,
-        `On day 1 at the start of the day UnbrellaEater31 says "i claim Reaper and Choose AgletInspector77", AgletInspector77's role is Villager. The Village decides to condemn AgletInspector77, AgletInspector77 is dead so the game continues.`,
-        `On day 1 after 1 minute of discussion GoldenFlower123 says "I claim Reaper and choose WindowOperator97", the first minute of the day has passed so GoldenFlower123's pick does nothing.`,
       ],
     },
     Devotee: {
