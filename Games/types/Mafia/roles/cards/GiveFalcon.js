@@ -10,11 +10,14 @@ module.exports = class GiveFalcon extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
+          role: this.role,
           labels: ["giveItem", "falcon"],
           priority: PRIORITY_ITEM_GIVER_DEFAULT,
           run: function () {
-            this.target.holdItem("Falcon");
+            let item = this.target.holdItem("Falcon");
             this.target.queueGetItemAlert("Falcon");
+
+            item.inheritedModifiers = this.role.modifier.split("/");
           },
         },
       },
