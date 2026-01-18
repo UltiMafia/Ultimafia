@@ -49,6 +49,26 @@ module.exports = class MafiaInformation {
           this.makeFalse();
         }
       }
+      if (item.inheritedModifiers && item.inheritedModifiers.includes("Sane")) {
+        if (!this.isTrue()) {
+          this.makeTrue();
+        }
+      }
+      else if (item.inheritedModifiers && item.inheritedModifiers.includes("Insane")) {
+        if (!this.isFalse()) {
+          this.makeFalse();
+        }
+      }
+      else if (item.inheritedModifiers && item.inheritedModifiers.includes("Paranoid")) {
+        if (!this.isUnfavorable()) {
+          this.makeUnfavorable();
+        }
+      }
+      else if (item.inheritedModifiers && item.inheritedModifiers.includes("Naive")) {
+        if (!this.isFavorable()) {
+          this.makeFavorable();
+        }
+      }
     }
   }
 
