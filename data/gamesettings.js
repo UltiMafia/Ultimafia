@@ -131,6 +131,34 @@ const gameSettingData = {
       maxCount: 5,
     },
 
+    //Comp Settings
+    /*
+    "Force No Vegging": {
+      category: "Timer",
+      internal: ["ForceNoVeg"],
+      tags: ["Timer", "Day"],
+      description:
+        "The Host cannot disable no vegging. No vegging will prevent players from dying when failing to take an action and remove kicks.",
+      incompatible: ["Disable No Veg"],
+    },
+    "Disable No Vegging": {
+      category: "Timer",
+      internal: ["DisableNoVeg"],
+      tags: ["Timer", "Day"],
+      description:
+        "The Host cannot enable no vegging. No vegging will prevent players from dying when failing to take an action and remove kicks.",
+      incompatible: ["Force No Vegging"],
+    },
+    "Force Anonymous Game": {
+      category: "Timer",
+      internal: ["ForceDeck"],
+      tags: ["Timer", "Day"],
+      description:
+        "The Host cannot disable no vegging. No vegging will prevent players from dying when failing to take an action and remove kicks.",
+      incompatible: ["Disable No Veg"],
+    },
+    */
+
     //Team
     "Silent Mafia": {
       category: "Other",

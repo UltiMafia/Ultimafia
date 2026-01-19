@@ -101,6 +101,7 @@ export default function HostMafia() {
       ref: "noVeg",
       value: defaults.noVeg,
       type: "boolean",
+      showIf: ["!ranked", "!competitive"],
     },
     {
       label: "Configure Duration",
