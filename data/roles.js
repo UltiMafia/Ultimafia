@@ -4035,7 +4035,7 @@ const roleData = {
       description: [
         //"Is bloodthirsty.",
         "Each night, can choose to visit one player and steal 50% of their blood.",
-        "If that player dies from blood lose, the Leech gains an additional 50% of blood.",
+        "If that player dies from blood loss, the Leech gains an additional 50% of blood.",
         "Gains an extra life if they have 150% blood.",
       ],
       nightOrder: [["Drain Blood", PRIORITY_KILL_SPECIAL - 4]],
