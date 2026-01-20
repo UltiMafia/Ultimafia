@@ -25,6 +25,7 @@ module.exports = function (type, name) {
     sacrifice: `${name} has sacrificed themself.`,
     sheep: `:sheep: ${name} just couldn't be a hog in this world full of sheep. :boar:`,
     sphinx: `:lion: ${name} has thrown themselves into the sea!`,
+    victory: `:flagyellow: ${name} has achieved all their goals!`,
   };
 
   return templates[type];
