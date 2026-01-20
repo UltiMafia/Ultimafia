@@ -505,6 +505,8 @@ module.exports = class MafiaGame extends Game {
       if (stop) break;
     }
 
+    this.events.emit("handleWinLater", winners);
+
     if (winners.groupAmt() > 0) finished = true;
     else if (aliveCount == 0) {
       winners.addGroup("No one");
@@ -513,6 +515,12 @@ module.exports = class MafiaGame extends Game {
 
     if (this.IsBloodMoon == true && this.hasBeenBloodMoonDay == true) {
       finished = true;
+    }
+
+    if(finished && this.game.WillWinLater && this.game.WillWinLater.length > 0){
+      for(let item of this.game.WillWinLater){
+        winners.addPlayer(item[0], item[1]);
+      }
     }
 
     if (
