@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const {
   PRIORITY_CONVERT_DEFAULT,
   PRIORITY_KILL_DEFAULT,
@@ -19,18 +20,39 @@ module.exports = class MeetWithMasons extends Card {
           labels: ["convert", "mason"],
           priority: PRIORITY_CONVERT_DEFAULT + 2,
           run: function () {
-            if (this.target.getRoleAlignment() == "Cult") {
-              this.role.masonKills = [this.target];
-              this.role.masonKiller = this.actor;
-              return;
-            }
+            let action = new Action({
+                  actor: this.actor,
+                  target: this.target,
+                  role: this.role,
+                  game: this.game,
+                  labels: ["kill"],
+                  run: function () {
+                    if (this.dominates()) {
+                    }
+                  },
+                });
 
             if (
               this.target.getRoleAlignment() == "Mafia" ||
-              this.target.role == "Serial Killer"
+              this.target.isDemonic() ||
+              (this.target.role.name == "Serial Killer" && this.role.canDoSpecialInteractions())
             ) {
-              this.role.masonKills = this.actors;
-              this.role.masonKiller = this.target;
+              for(let actor of this.players.filter((p) => p.getRoleName() == "Freemason")){
+                if(action.dominates(actor)){
+                  actor.kill("basic", this.target);
+                }
+              }
+              return;
+            }
+
+            if (((this.target.role.name == "Cult Leader" || this.target.role.name == "Cultist") && this.role.canDoSpecialInteractions())) {
+              if(action.dominates(this.target)){
+                this.target.kill("basic", this.actor);
+              }
+              return;
+            }
+
+            if(this.target.getRoleAlignment() == "Cult"){
               return;
             }
 
@@ -41,34 +63,5 @@ module.exports = class MeetWithMasons extends Card {
         },
       },
     };
-
-    this.actions = [
-      {
-        priority: PRIORITY_KILL_DEFAULT + 1,
-        labels: ["kill", "hidden", "absolute"],
-        role: this.role,
-        run: function () {
-          if (
-            this.game.getStateName() != "Night" &&
-            this.game.getStateName() != "Dawn"
-          )
-            return;
-
-          let targets = this.role.masonKills;
-          if (!targets) {
-            return;
-          }
-
-          for (let t of targets) {
-            if (this.dominates(t)) {
-              t.kill("basic", this.role.masonKiller);
-            }
-          }
-
-          delete this.role.masonKill;
-          delete this.role.masonKiller;
-        },
-      },
-    ];
   }
 };
