@@ -31,7 +31,7 @@ import AvatarUpload from "components/AvatarUpload";
 
 import "css/settings.css";
 import { setCaptchaVisible } from "utils";
-import { NewLoading } from "../Welcome/NewLoading";
+import { Loading } from "components/Loading";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 function SettingsSection({ sections, activeSection }) {
@@ -595,7 +595,7 @@ export default function Settings() {
 
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
   if (!settingsLoaded || !accountsLoaded || !user.loaded || !familyLoaded)
-    return <NewLoading small />;
+    return <Loading small />;
 
   const sections = [
     {

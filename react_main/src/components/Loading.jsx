@@ -1,8 +1,7 @@
 import React from "react";
 import ReactLoading from "react-loading";
 import { Box } from "@mui/material";
-import "./Welcome.css";
-import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 import { useTheme } from "@mui/material/styles";
 
 export const Loading = ({ small, extraSmall }) => {

@@ -40,7 +40,7 @@ import Form from "components/Form";
 import { useErrorAlert } from "components/Alerts";
 
 import "css/createSetup.css";
-import { NewLoading } from "pages/Welcome/NewLoading";
+import { Loading } from "components/Loading";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 function StickyStateViewer(props) {
@@ -753,7 +753,7 @@ export default function CreateSetup(props) {
     return modifierOptions;
   }
 
-  if (params.get("edit") && !editing) return <NewLoading small />;
+  if (params.get("edit") && !editing) return <Loading small />;
 
   const innerContentHeight = "calc(1.2 * 2em)";
   const iconLength = isPhoneDevice ? "1em" : innerContentHeight;

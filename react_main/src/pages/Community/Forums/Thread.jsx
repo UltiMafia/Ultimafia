@@ -10,7 +10,7 @@ import { Time, filterProfanity } from "components/Basic";
 import { PageNav } from "components/Nav";
 import { TextEditor } from "components/Form";
 import { UserContext } from "Contexts";
-import { NewLoading } from "../../Welcome/NewLoading";
+import { Loading } from "components/Loading";
 import { ThreadPoll } from "components/Poll";
 
 import { VoteWidget } from "./Forums";
@@ -204,7 +204,7 @@ export default function Thread(props) {
 
   if (redirect) return <Navigate to={redirect} />;
 
-  if (!loaded) return <NewLoading small />;
+  if (!loaded) return <Loading small />;
 
   const replies = threadInfo.replies.map((reply) => (
     <Post

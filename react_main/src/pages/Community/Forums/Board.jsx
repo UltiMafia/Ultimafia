@@ -10,7 +10,7 @@ import { VoteWidget, ViewsAndReplies } from "./Forums";
 import { TextEditor } from "../../../components/Form";
 import { Time } from "../../../components/Basic";
 import { UserContext } from "../../../Contexts";
-import { NewLoading } from "../../Welcome/NewLoading";
+import { Loading } from "../../../components/Loading";
 
 export default function Board(props) {
   const [boardInfo, setBoardInfo] = useState({});
@@ -171,7 +171,7 @@ export default function Board(props) {
 
   if (redirect) return <Navigate to={redirect} />;
 
-  if (!loaded) return <NewLoading small />;
+  if (!loaded) return <Loading small />;
 
   const threads = boardInfo.threads.map(threadRowsMap);
   const pinnedThreads = boardInfo.pinnedThreads.map(threadRowsMap);

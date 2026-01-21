@@ -10,7 +10,7 @@ import Comments from "../../Community/Comments";
 import { Lobbies } from "../../../Constants";
 import "css/join.css";
 import { RefreshButton } from "./RefreshButton";
-import { NewLoading } from "../../Welcome/NewLoading";
+import { Loading } from "components/Loading";
 import {
   Box,
   Divider,
@@ -156,7 +156,7 @@ export default function LobbyBrowser() {
   if (lobbyName !== "All" && Lobbies.indexOf(lobbyName) === -1)
     setLobbyName(defaultLobbyName);
 
-  if (!user.loaded) return <NewLoading small />;
+  if (!user.loaded) return <Loading small />;
   // Allow logged-out users to access LobbyBrowser
 
   const lobbyTabs = (
@@ -202,7 +202,7 @@ export default function LobbyBrowser() {
   );
 
   const gameList = loading ? (
-    <NewLoading small />
+    <Loading small />
   ) : games.length ? (
     <Stack direction="column" spacing={1}>
       {games.map((game) => {

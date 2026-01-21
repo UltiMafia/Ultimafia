@@ -51,7 +51,7 @@ import { textIncludesSlurs } from "../../lib/profanity";
 import "css/game.css";
 import EmotePicker from "../../components/EmotePicker";
 import "./Game.css";
-import { NewLoading } from "../Welcome/NewLoading";
+import { Loading } from "../../components/Loading";
 import StateSwitcher from "../../components/gameComponents/StateSwitcher";
 
 import { randomizeMeetingTargetsWithSeed } from "../../utilsFolder";
@@ -812,7 +812,7 @@ export default function Game() {
   else if (!loaded || stateViewing == null)
     return (
       <div className="game">
-        <NewLoading />
+        <Loading />
       </div>
     );
   else {

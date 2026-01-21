@@ -27,7 +27,7 @@ import { PageNav } from "components/Nav";
 import { Time } from "components/Basic";
 import { NameWithAvatar } from "pages/User/User";
 import { UserContext, SiteInfoContext } from "../../Contexts";
-import { NewLoading } from "pages/Welcome/NewLoading";
+import { Loading } from "components/Loading";
 import ReportDetail from "components/ReportDetail";
 
 export default function Reports() {
@@ -120,7 +120,7 @@ export default function Reports() {
   };
 
   if (loading && !selectedReport) {
-    return <NewLoading />;
+    return <Loading />;
   }
 
   if (showDetail && selectedReport) {
