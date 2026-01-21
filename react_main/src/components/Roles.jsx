@@ -21,7 +21,7 @@ import {
   Button,
 } from "@mui/material";
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
-import { NewLoading } from "../pages/Welcome/NewLoading";
+import { Loading } from "./Loading";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 import { PopoverContent } from "./Popover";
 import { getAlignmentColor, SmallRoleList } from "./Setup";
@@ -1104,7 +1104,7 @@ export function RoleSearch(props) {
     />
   ));
 
-  if (!siteInfo.roles) return <NewLoading small />;
+  if (!siteInfo.roles) return <Loading small />;
 
   const roleCells = useMemo(
     () =>
@@ -1219,7 +1219,7 @@ export function ModifierSearch(props) {
     return modifierOptions;
   }
 
-  if (!siteInfo.modifiers) return <NewLoading small />;
+  if (!siteInfo.modifiers) return <Loading small />;
 
   const alignButtons = ["Items", "Visits", "Appearance", "Chat", "Other"].map(
     (type) => (
@@ -1349,7 +1349,7 @@ export function GameSettingSearch(props) {
     return modifierOptions;
   }
 
-  if (!siteInfo.gamesettings) return <NewLoading small />;
+  if (!siteInfo.gamesettings) return <Loading small />;
 
   const alignButtons = ["Standard", "Voting", "Timer", "Other"].map((type) => (
     <Tab

@@ -11,7 +11,7 @@ import { UserContext } from "../../Contexts";
 
 import "css/play.css";
 
-import { NewLoading } from "pages/Welcome/NewLoading";
+import { Loading } from "../../components/Loading";
 
 export default function Play(props) {
   const defaultGameType = "Mafia";
@@ -51,7 +51,7 @@ export default function Play(props) {
   return (
     <>
       <div className="inner-content play">
-        <Suspense fallback={<NewLoading />}>
+        <Suspense fallback={<Loading />}>
           <Routes>
             <Route path="/" element={<LobbyBrowser />} />
             <Route path="host" element={<HostBrowser />} />

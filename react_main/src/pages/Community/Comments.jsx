@@ -9,7 +9,7 @@ import { UserContext } from "../../Contexts";
 
 import "css/forums.css";
 import "css/comments.css";
-import { NewLoading } from "../Welcome/NewLoading";
+import { Loading } from "../../components/Loading";
 import { Box, Button, Paper, Stack, Typography } from "@mui/material";
 import { Comment } from "./Comment";
 
@@ -83,7 +83,7 @@ export default function Comments(props) {
     />
   ));
 
-  if (!loaded) return <NewLoading small />;
+  if (!loaded) return <Loading small />;
 
   return (
     <Stack direction="column" spacing={1}>

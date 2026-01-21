@@ -1,11 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Box, Button, Container, Stack, Typography } from "@mui/material";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Box, Button, Container, Stack, Typography, Paper, Grid2 } from "@mui/material";
+import { Navigate } from "react-router-dom";
 import "css/main.css";
-import "./Welcome.css";
-import { RegisterDialog } from "./RegisterDialog";
-import { LoginDialog } from "./LoginDialog";
-import { Scenario2 } from "./Scenario2";
+import { Auth } from "../../components/Auth";
+import IconGallery from "../../components/IconGallery";
+import bannerImage from "../../images/welcome_page/banner.png";
+import welcomeImage1 from "../../images/welcome_page/welcome-page_1.png";
+import welcomeImage2 from "../../images/welcome_page/welcome-page_2.png";
+import welcomeImage3 from "../../images/welcome_page/welcome-page_3.png";
+import welcomeImage4 from "../../images/welcome_page/welcome-page_4.png";
 import {
   getAuth,
   getRedirectResult,
@@ -14,9 +17,8 @@ import {
 } from "firebase/auth";
 import axios from "axios";
 import { useSnackbar } from "hooks/useSnackbar";
-import { NewLoading } from "./NewLoading";
+import { Loading } from "../../components/Loading";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
-import SiteLogo from "../../components/SiteLogo";
 import { UserContext } from "Contexts";
 
 // localStorage.setItem('firebase:debug', 'true');
@@ -32,13 +34,9 @@ export const Welcome = () => {
   const user = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(true);
   const isPhoneDevice = useIsPhoneDevice();
-  const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
-  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const snackbarHook = useSnackbar();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    document.body.style.backgroundImage = `none`;
     const auth = getAuth();
     auth.setPersistence(inMemoryPersistence);
 
@@ -68,7 +66,7 @@ export const Welcome = () => {
                 }
                 if (data.deleted) {
                   snackbarHook.popUserDeleted();
-                  setLoading(false);
+                  setIsLoading(false);
                   return;
                 }
               } catch (parseErr) {
@@ -83,212 +81,200 @@ export const Welcome = () => {
         setIsLoading(false);
       }
     });
-    return () => {
-      document.body.style.backgroundImage = `var(--backgroundImageURL)`;
-    };
   }, []);
-  const openLoginDialog = () => setLoginDialogOpen(true);
-  const openRegisterDialog = () => setRegisterDialogOpen(true);
-  const proceedAsGuest = () => navigate("/play");
 
   const paddingX = isPhoneDevice ? 1 : 4;
-  const CTAbuttons = (
-    <Box
-      textAlign="center"
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        mb: 1,
-      }}
-    >
-      <style>{"body, html { background: #FFF !important; }"}</style>
-      <div style={{ width: "250px" }}>
-        {/*<Button*/}
-        {/*  variant="contained"*/}
-        {/*  sx={{*/}
-        {/*    textTransform: "none",*/}
-        {/*    fontSize: "24px",*/}
-        {/*    width: "100%",*/}
-        {/*    ...(isPhoneDevice ? { flex: 0 } : {}),*/}
-        {/*  }}*/}
-        {/*>*/}
-        {/*  I want to play!*/}
-        {/*</Button>*/}
-        <Box sx={{ mt: 1 }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginBottom: "8px",
-            }}
-          >
-            <Button
-              variant="outlined"
-              sx={{
-                textTransform: "none",
-                fontSize: "16px",
-                minWidth: "120px",
-                ...(isPhoneDevice ? { flex: 0 } : {}),
-              }}
-              onClick={openLoginDialog}
-            >
-              Login
-            </Button>
-
-            <Button
-              // variant="outlined"
-              variant="contained"
-              sx={{
-                textTransform: "none",
-                fontSize: "16px",
-                minWidth: "120px",
-                ...(isPhoneDevice ? { flex: 0 /*width: "100%"*/ } : {}),
-              }}
-              onClick={openRegisterDialog}
-            >
-              Register
-            </Button>
-          </div>
-          <Button
-            variant="text"
-            sx={{
-              textTransform: "none",
-              fontSize: "16px",
-              width: "100%",
-              color: "text.secondary",
-            }}
-            onClick={proceedAsGuest}
-          >
-            Proceed as Guest
-          </Button>
-        </Box>
-      </div>
-    </Box>
-  );
 
   if (user && user.loggedIn) {
     return <Navigate to="/play" />;
   }
 
   if (isLoading) {
-    return <NewLoading />;
+    return <Loading />;
   }
 
   return (
     <>
-      <Box
+      <Container
+        maxWidth="md"
         sx={{
-          bgcolor: "background.paper",
-          height: "100dvh",
+          paddingLeft: paddingX,
+          paddingRight: paddingX,
           display: "flex",
           flexDirection: "column",
           boxSizing: "border-box",
+          pt: isPhoneDevice ? 2 : 3,
+          pb: isPhoneDevice ? 4 : 8,
         }}
       >
-        <Box
-          sx={{
-            bgcolor: "background.paper",
-            pt: isPhoneDevice ? 4 : 8,
-            pb: isPhoneDevice ? 0 : 2,
-            display: "flex",
-            flex: 1,
-          }}
+        <Typography
+          variant={isPhoneDevice ? "body1" : "h4"}
+          align="center"
+          color="text.secondary"
+          paragraph
+          sx={{ mb: 3 }}
         >
-          <Container
-            maxWidth="md"
-            sx={{
-              paddingLeft: paddingX,
-              paddingRight: paddingX,
-              display: "flex",
-              flexDirection: "column",
-              boxSizing: "border-box",
-            }}
-          >
-            <Stack direction="row" justifyContent="center">
-              <SiteLogo large />
-            </Stack>
-            <Typography
-              variant={isPhoneDevice ? "body1" : "h4"}
-              align="center"
-              color="text.secondary"
-              paragraph
-            >
-              The classic social deduction game, online.
-            </Typography>
-            <Typography
-              variant={isPhoneDevice ? "body2" : "body1"}
-              align="center"
-              color="text.secondary"
-              paragraph
-              sx={{ pt: 0 }}
-            >
-              Mafia, played by millions, is a captivating party game that forges
-              friendships and sharpens cognitive skills.
-            </Typography>
-            <Box align="center" className="role-icon-scheme-vivid">
-              <div
-                //Default icon--uncomment this on July 1
-                className="role role-icon-vivid-Mafia-Cop small"
-                //Pride icon--comment this on July 1
-                //className="role role-redmafiac small"
-                style={{ display: "inline-block" }}
-              />
-              <div
-                //Default icon--uncomment this on July 1
-                className="role role-icon-vivid-Mafia-Doctor small"
-                //Pride icon--comment this on July 1
-                //className="role role-yellowmafiac small"
-                style={{ display: "inline-block" }}
-              />
-              <div
-                //Default icon--uncomment this on July 1
-                className="role role-icon-vivid-Mafia-Villager small"
-                //Pride icon--comment this on July 1
-                //className="role role-greenmafiac small"
-                style={{ display: "inline-block" }}
-              />
-              <div
-                //Default icon--uncomment this on July 1
-                className="role role-icon-vivid-Mafia-Mafioso small"
-                //Pride icon--comment this on July 1
-                //className="role role-bluemafiac small"
-                style={{ display: "inline-block" }}
-              />
-              <div
-                //Default icon--uncomment this on July 1
-                className="role role-icon-vivid-Mafia-Hooker small"
-                //Pride icon--comment this on July 1
-                //className="role role-purplemafiac small"
-                style={{ display: "inline-block" }}
-              />
-              <div
-              //Extra div for Pride; comment on July 1
-              //className="role role-pinkmafiac small"
-              //style={{ display: "inline-block" }}
-              />
-            </Box>
-            <Box className="demoGame">
-              <Scenario2 dialogOpen={registerDialogOpen || loginDialogOpen} />
-            </Box>
-            <Box
+          The classic social deduction game, <span style={{ color: "red" }}>online.</span>
+        </Typography>
+        <Grid2 container rowSpacing={1} columnSpacing={1}>
+          <Grid2 size={{ xs: 12, md: 4 }}>
+            <Paper
+              elevation={2}
               sx={{
-                bgcolor: "background.paper",
-                p: 6,
-                pb: isPhoneDevice ? 2 : 6,
-                pt: 0,
-                flex: 0,
+                p: 2,
+                height: isPhoneDevice ? "400px" : "500px",
+                display: "flex",
+                flexDirection: "column",
               }}
             >
-              {CTAbuttons}
-            </Box>
-          </Container>
-        </Box>
-      </Box>
-      <RegisterDialog
-        open={registerDialogOpen}
-        setOpen={setRegisterDialogOpen}
-      />
-      <LoginDialog open={loginDialogOpen} setOpen={setLoginDialogOpen} />
+              <Auth defaultTab={0} />
+            </Paper>
+          </Grid2>
+
+          <Grid2 size={{ xs: 12, md: 8 }}>
+            <Paper
+              elevation={2}
+              sx={{
+                p: 2,
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                minHeight: isPhoneDevice ? "200px" : "300px",
+              }}
+            >
+              <Box
+                component="img"
+                src={bannerImage}
+                alt="Info on Mafia as a game AND our site"
+                sx={{
+                  width: "100%",
+                  height: "auto",
+                  objectFit: "contain",
+                  mb: 2,
+                }}
+              />
+              <Typography variant="body1" color="text.secondary" paragraph>
+                UltiMafia is a community-built rendition of the classic social deduction game Mafia. Mafia, played by millions, is a captivating party game that forges friendships and sharpens cognitive skills. Join casual and competitive matches and build fully-customizable setups tailored to your needs.
+              </Typography>
+              <Box>
+                <IconGallery />
+              </Box>
+            </Paper>
+          </Grid2>
+        </Grid2>
+
+        <Grid2 container rowSpacing={1.5} columnSpacing={1.5} sx={{ mt: 4 }}>
+          <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
+            <Paper
+              elevation={2}
+              sx={{
+                p: 1.5,
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+              }}
+            >
+              <Box
+                component="img"
+                src={welcomeImage1}
+                alt="Welcome feature 1"
+                sx={{
+                  width: "100%",
+                  height: "auto",
+                  objectFit: "contain",
+                  mb: 1.5,
+                }}
+              />
+              <Typography variant="body2" color="text.secondary" paragraph sx={{ flex: 1 }}>
+                Experience Mafia in live-chat format. No need for bots or referees. Real-time and responsive actions facilitated by the game itself.
+              </Typography>
+            </Paper>
+          </Grid2>
+
+          <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
+            <Paper
+              elevation={2}
+              sx={{
+                p: 1.5,
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+              }}
+            >
+              <Box
+                component="img"
+                src={welcomeImage2}
+                alt="Welcome feature 2"
+                sx={{
+                  width: "100%",
+                  height: "auto",
+                  objectFit: "contain",
+                  mb: 1.5,
+                }}
+              />
+              <Typography variant="body2" color="text.secondary" paragraph sx={{ flex: 1 }}>
+                Over 400 roles combined with countless modifiers and items allowing you to tailor your setups to any playstyle.
+              </Typography>
+            </Paper>
+          </Grid2>
+
+          <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
+            <Paper
+              elevation={2}
+              sx={{
+                p: 1.5,
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+              }}
+            >
+              <Box
+                component="img"
+                src={welcomeImage3}
+                alt="Welcome feature 3"
+                sx={{
+                  width: "100%",
+                  height: "auto",
+                  objectFit: "contain",
+                  mb: 1.5,
+                }}
+              />
+              <Typography variant="body2" color="text.secondary" paragraph sx={{ flex: 1 }}>
+                Compete and hone your skills of deception and deducation in seasonal play. Join the community in off-season events and build yourself a rep.
+              </Typography>
+            </Paper>
+          </Grid2>
+
+          <Grid2 size={{ xs: 12, sm: 6, md: 3 }}>
+            <Paper
+              elevation={2}
+              sx={{
+                p: 1.5,
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+              }}
+            >
+              <Box
+                component="img"
+                src={welcomeImage4}
+                alt="Welcome feature 4"
+                sx={{
+                  width: "100%",
+                  height: "auto",
+                  objectFit: "contain",
+                  mb: 1.5,
+                }}
+              />
+              <Typography variant="body2" color="text.secondary" paragraph sx={{ flex: 1 }}>
+                Take a break from Mafia and play all manner of card, dice, and word games.
+              </Typography>
+            </Paper>
+          </Grid2>
+        </Grid2>
+      </Container>
     </>
   );
 };
+
+export default Welcome;

@@ -20,7 +20,7 @@ import {
   Divider,
 } from "@mui/material";
 
-import { NewLoading } from "pages/Welcome/NewLoading";
+import { Loading } from "../../components/Loading";
 
 import coin from "images/umcoin.png";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
@@ -227,7 +227,7 @@ export default function Shop(props) {
 
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
 
-  if (!loaded) return <NewLoading small />;
+  if (!loaded) return <Loading small />;
 
   return (
     <Stack direction="column" spacing={1}>

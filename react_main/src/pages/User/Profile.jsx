@@ -33,7 +33,7 @@ import ReportDialog from "../../components/ReportDialog";
 import RapSheet from "../../components/RapSheet";
 import TrophyCase from "components/TrophyCase";
 import { PieChart } from "./PieChart";
-import { NewLoading } from "../Welcome/NewLoading";
+import { Loading } from "components/Loading";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
 import {
   Box,
@@ -874,7 +874,7 @@ export default function Profile() {
     return <Navigate to={profilePath} replace />;
   }
 
-  if (!profileLoaded || !user.loaded) return <NewLoading small />;
+  if (!profileLoaded || !user.loaded) return <Loading small />;
 
   const buttonsBox = (
     <Grid

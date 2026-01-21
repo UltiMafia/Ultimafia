@@ -16,7 +16,7 @@ import {
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
-import { NewLoading } from "../Welcome/NewLoading";
+import { Loading } from "components/Loading";
 
 import "css/inbox.css";
 
@@ -122,7 +122,7 @@ export default function Inbox() {
   }
 
   if (!user.loaded || loading) {
-    return <NewLoading small />;
+    return <Loading small />;
   }
 
   return (
