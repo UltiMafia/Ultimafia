@@ -26,7 +26,7 @@ import { TextEditor } from "components/Form";
 import CustomMarkdown from "components/CustomMarkdown";
 import { VoteWidget } from "pages/Community/Forums/Forums";
 import { NameWithAvatar } from "pages/User/User";
-import { NewLoading } from "pages/Welcome/NewLoading";
+import { Loading } from "components/Loading";
 import surprisedFace from "images/emotes/surprised.webp";
 import sadFace from "images/emotes/sad.webp";
 
@@ -428,7 +428,7 @@ function StrategiesBase({
 
   const header = renderHeader();
   const listContent = loading ? (
-    <NewLoading small />
+    <Loading small />
   ) : strategies.length === 0 ? (
     <Typography variant="body2" align="center" sx={{ opacity: 0.7 }}>
       No strategies yet. Write one!

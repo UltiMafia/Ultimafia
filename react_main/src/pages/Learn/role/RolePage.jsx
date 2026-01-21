@@ -37,7 +37,7 @@ import Comments from "../../Community/Comments";
 import "css/setupPage.css";
 
 import { useErrorAlert } from "../../../components/Alerts";
-import { NewLoading } from "../../Welcome/NewLoading";
+import { Loading } from "../../../components/Loading";
 import { RoleCount } from "../../../components/Roles";
 import { ExtraRoleData } from "../../../constants/ExtraRoleData";
 
@@ -147,7 +147,7 @@ export function RoleThings() {
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
   // TODO if setupId not set, redirect to a setup page
 
-  if (!role || !user.loaded) return <NewLoading small />;
+  if (!role || !user.loaded) return <Loading small />;
 
   let commentLocation = `role/${RoleName}`;
   let temproleSkins;

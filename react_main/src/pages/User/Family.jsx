@@ -18,7 +18,7 @@ import { filterProfanity } from "components/Basic";
 import { TextEditor } from "components/Form";
 import { Avatar, NameWithAvatar } from "./User";
 import Comments from "../Community/Comments";
-import { NewLoading } from "../Welcome/NewLoading";
+import { Loading } from "components/Loading";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import CustomMarkdown from "components/CustomMarkdown";
 import TrophyCase from "components/TrophyCase";
@@ -205,7 +205,7 @@ export default function Family() {
       .catch(errorAlert);
   }
 
-  if (!familyLoaded) return <NewLoading small />;
+  if (!familyLoaded) return <Loading small />;
   if (!family) return <Navigate to="/play" />;
 
   const panelStyle = {

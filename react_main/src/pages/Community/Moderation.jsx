@@ -32,7 +32,7 @@ import {
 } from "Constants";
 
 import { Badge, NameWithAvatar, StatusIcon } from "pages/User/User";
-import { NewLoading } from "pages/Welcome/NewLoading";
+import { Loading } from "components/Loading";
 import Setup from "components/Setup";
 
 import "css/main.css";
@@ -255,7 +255,7 @@ function ManageSeasonDialog({ open, onClose, modCommands, commandRan }) {
           </Typography>
 
           {loading ? (
-            <NewLoading />
+            <Loading />
           ) : seasonData ? (
             <>
               <Box
@@ -546,7 +546,7 @@ export default function Moderation() {
     );
   });
 
-  if (!loaded) return <NewLoading small />;
+  if (!loaded) return <Loading small />;
 
   return (
     <>

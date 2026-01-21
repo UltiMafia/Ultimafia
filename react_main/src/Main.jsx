@@ -144,7 +144,7 @@ function Main(props) {
           {errorContent ? (
             errorContent
           ) : (
-            <Suspense fallback={<NewLoading />}>
+            <Suspense fallback={<Loading />}>
               <Routes>
                 <Route path="play/*" element={<Play />} />
                 <Route path="community/*" element={<Community />} />
@@ -168,7 +168,7 @@ function Main(props) {
   const gameContent = errorContent ? (
     siteContent
   ) : (
-    <Suspense fallback={<NewLoading />}>
+    <Suspense fallback={<Loading />}>
       <Game />
       <AlertList />
     </Suspense>
@@ -176,7 +176,7 @@ function Main(props) {
 
   const mainContent = (
     <SiteInfoProvider setSiteInfoLoading={setSiteInfoLoading}>
-      {loading && <NewLoading />}
+      {loading && <Loading />}
       {!loading && (
         <Routes>
           <Route path="/game/:gameId/*" element={gameContent} />
@@ -189,7 +189,7 @@ function Main(props) {
   return (
     <ThemeProvider theme={siteTheme} noSsr defaultMode="dark">
       <CssBaseline enableColorScheme />
-      <Suspense fallback={<NewLoading />}>
+      <Suspense fallback={<Loading />}>
         <ErrorBoundary
           FallbackComponent={
             errorContent !== undefined ? ErrorFallbackNoMain : ErrorFallback

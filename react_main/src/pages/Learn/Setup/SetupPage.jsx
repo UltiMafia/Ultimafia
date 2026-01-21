@@ -36,7 +36,7 @@ import { UserContext, SiteInfoContext } from "Contexts";
 import Comments from "pages/Community/Comments";
 import { SetupStrategiesSection } from "components/Strategies";
 import { NameWithAvatar } from "pages/User/User";
-import { NewLoading } from "pages/Welcome/NewLoading";
+import { Loading } from "components/Loading";
 import {
   getRowStubColor,
   getSetupBackgroundColor,
@@ -193,7 +193,7 @@ export function SetupPage() {
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
   // TODO if setupId not set, redirect to a setup page
 
-  if (!setup || !user.loaded) return <NewLoading small />;
+  if (!setup || !user.loaded) return <Loading small />;
 
   let commentLocation = `setup/${setupId}`;
 

@@ -16,7 +16,7 @@ import { useErrorAlert } from "../../../components/Alerts";
 import { Time } from "../../../components/Basic";
 import { NameWithAvatar } from "../../User/User";
 import { UserContext } from "../../../Contexts";
-import { NewLoading } from "../../Welcome/NewLoading";
+import { Loading } from "../../../components/Loading";
 import CustomMarkdown from "../../../components/CustomMarkdown";
 
 export default function SearchResults(props) {
@@ -115,7 +115,7 @@ export default function SearchResults(props) {
   };
 
   if (loading) {
-    return <NewLoading />;
+    return <Loading />;
   }
 
   if (!query && !username) {

@@ -24,7 +24,7 @@ import {
   AccordionDetails,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { NewLoading } from "../../Welcome/NewLoading";
+import { Loading } from "../../../components/Loading";
 import { useErrorAlert } from "../../../components/Alerts";
 
 //import { AchievementList } from "../../../../data/Achievements";
@@ -73,7 +73,7 @@ export function NightOrder() {
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
   // TODO if setupId not set, redirect to a setup page
 
-  if (!setup || !user.loaded) return <NewLoading small />;
+  if (!setup || !user.loaded) return <Loading small />;
   //let useingRoles = setup.roles[0].filter((p));
   //let useingRoles2 = useingRoles.concat(setup.roles[1]);
 

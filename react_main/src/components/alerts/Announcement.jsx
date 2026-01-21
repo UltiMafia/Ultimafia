@@ -7,7 +7,7 @@ import {
   isFirstAnnouncement,
   isLastAnnouncement,
 } from "../../services/announcementService";
-import { NewLoading } from "../../pages/Welcome/NewLoading";
+import { Loading } from "./Loading";
 import { minimumLoadingTime } from "../../Constants";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { urlifyText } from "../../utilsFolder";
@@ -133,7 +133,7 @@ export const Announcement = ({
         maxHeight: "20px" /* MAGIC NUMBER WARNING... CSS demands sacrifices */,
       }}
     >
-      <NewLoading extraSmall />
+      <Loading extraSmall />
     </div>
   ) : (
     urlifyText(announcement?.content)

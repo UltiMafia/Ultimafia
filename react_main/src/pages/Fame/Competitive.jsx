@@ -20,7 +20,7 @@ import {
 import { NameWithAvatar, Avatar } from "../User/User";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import Setup from "components/Setup";
-import { NewLoading } from "pages/Welcome/NewLoading";
+import { Loading } from "components/Loading";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
 import { Link, useSearchParams } from "react-router-dom";
 import { UserContext } from "Contexts";
@@ -501,11 +501,11 @@ export default function Competitive() {
   }, [currentRoundInfo ? currentRoundInfo.seasonNumber : null]);
 
   if (!currentRoundInfo || Object.keys(currentRoundInfo).length === 0) {
-    return <NewLoading />;
+    return <Loading />;
   }
 
   if (currentRoundInfo.seasonNumber !== null && !currentSeasonInfo) {
-    return <NewLoading />;
+    return <Loading />;
   }
 
   const roundHasStarted =

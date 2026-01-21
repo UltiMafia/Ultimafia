@@ -3,8 +3,7 @@ import { Box, Button, Container, Stack, Typography } from "@mui/material";
 import { Navigate, useNavigate } from "react-router-dom";
 import "css/main.css";
 import "./Welcome.css";
-import { RegisterDialog } from "./RegisterDialog";
-import { LoginDialog } from "./LoginDialog";
+import { AuthDialog } from "../../components/AuthDialog";
 import { Scenario2 } from "./Scenario2";
 import {
   getAuth,
@@ -14,7 +13,7 @@ import {
 } from "firebase/auth";
 import axios from "axios";
 import { useSnackbar } from "hooks/useSnackbar";
-import { NewLoading } from "./NewLoading";
+import { Loading } from "../../components/Loading";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import SiteLogo from "../../components/SiteLogo";
 import { UserContext } from "Contexts";
@@ -32,8 +31,8 @@ export const Welcome = () => {
   const user = useContext(UserContext);
   const [isLoading, setIsLoading] = useState(true);
   const isPhoneDevice = useIsPhoneDevice();
-  const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
-  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [authDialogMode, setAuthDialogMode] = useState("login");
   const snackbarHook = useSnackbar();
   const navigate = useNavigate();
 
@@ -87,8 +86,14 @@ export const Welcome = () => {
       document.body.style.backgroundImage = `var(--backgroundImageURL)`;
     };
   }, []);
-  const openLoginDialog = () => setLoginDialogOpen(true);
-  const openRegisterDialog = () => setRegisterDialogOpen(true);
+  const openLoginDialog = () => {
+    setAuthDialogMode("login");
+    setAuthDialogOpen(true);
+  };
+  const openRegisterDialog = () => {
+    setAuthDialogMode("register");
+    setAuthDialogOpen(true);
+  };
   const proceedAsGuest = () => navigate("/play");
 
   const paddingX = isPhoneDevice ? 1 : 4;
@@ -171,7 +176,7 @@ export const Welcome = () => {
   }
 
   if (isLoading) {
-    return <NewLoading />;
+    return <Loading />;
   }
 
   return (
@@ -268,7 +273,7 @@ export const Welcome = () => {
               />
             </Box>
             <Box className="demoGame">
-              <Scenario2 dialogOpen={registerDialogOpen || loginDialogOpen} />
+              <Scenario2 dialogOpen={authDialogOpen} />
             </Box>
             <Box
               sx={{
@@ -284,11 +289,11 @@ export const Welcome = () => {
           </Container>
         </Box>
       </Box>
-      <RegisterDialog
-        open={registerDialogOpen}
-        setOpen={setRegisterDialogOpen}
+      <AuthDialog
+        open={authDialogOpen}
+        setOpen={setAuthDialogOpen}
+        defaultMode={authDialogMode}
       />
-      <LoginDialog open={loginDialogOpen} setOpen={setLoginDialogOpen} />
     </>
   );
 };
