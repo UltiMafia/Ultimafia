@@ -31,12 +31,12 @@ import {
   Alert,
   AlertTitle,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 
 import { Announcement } from "./components/alerts/Announcement";
 import SiteLogo from "./components/SiteLogo";
 import { useIsPhoneDevice } from "./hooks/useIsPhoneDevice";
 import { useSnowstorm } from "./hooks/useSnowstorm";
+import { GuestAuthButtons } from "./components/GuestAuthButtons";
 
 import spiderweb from "images/holiday/spiderweb.gif";
 
@@ -219,7 +219,6 @@ function Main(props) {
 function Header({ setShowAnnouncementTemporarily }) {
   const user = useContext(UserContext);
   const isPhoneDevice = useIsPhoneDevice();
-  const navigate = useNavigate();
   const location = useLocation();
   const isOnWelcomePage = location.pathname === "/welcome" || location.pathname === "/";
 
@@ -332,19 +331,7 @@ function Header({ setShowAnnouncementTemporarily }) {
                 useUnreadNotifications={useUnreadNotifications}
               />
             ) : (
-              !isOnWelcomePage && (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => navigate("/welcome")}
-                  sx={{
-                    textTransform: "none",
-                    fontSize: "14px",
-                  }}
-                >
-                  Back to Login
-                </Button>
-              )
+              !isOnWelcomePage && <GuestAuthButtons />
             )}
           </div>
         </Stack>
@@ -424,19 +411,7 @@ function Header({ setShowAnnouncementTemporarily }) {
                   useUnreadNotifications={useUnreadNotifications}
                 />
               ) : (
-                !isOnWelcomePage && (
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    onClick={() => navigate("/welcome")}
-                    sx={{
-                      textTransform: "none",
-                      fontSize: "14px",
-                    }}
-                  >
-                    Back to Login
-                  </Button>
-                )
+                !isOnWelcomePage && <GuestAuthButtons />
               )}
             </Box>
           </Stack>
