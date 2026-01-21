@@ -19,7 +19,7 @@ module.exports = class AlwaysJoints extends Card {
         if(winners.findPlayerGroup(this.player)){
           let group = winners.findPlayerGroup(this.player);
           this.game.WillWinLater.push([this.player, group]);
-          winners.remove(this.player, group);
+          winners.removePlayer(this.player, group);
           this.game.sendAlert(`${this.player.name} has achieved their goals and ascends to a new plane of existance!`);
           if(this.player.alive){
             this.player.kill("victory", this.actor, true);

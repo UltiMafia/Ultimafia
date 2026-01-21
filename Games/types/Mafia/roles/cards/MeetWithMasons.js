@@ -37,7 +37,7 @@ module.exports = class MeetWithMasons extends Card {
               this.target.isDemonic() ||
               (this.target.role.name == "Serial Killer" && this.role.canDoSpecialInteractions())
             ) {
-              for(let actor of this.players.filter((p) => p.getRoleName() == "Freemason")){
+              for(let actor of this.game.players.filter((p) => p.getRoleName() == "Freemason")){
                 if(action.dominates(actor)){
                   actor.kill("basic", this.target);
                 }

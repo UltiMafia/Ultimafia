@@ -517,8 +517,8 @@ module.exports = class MafiaGame extends Game {
       finished = true;
     }
 
-    if(finished && this.game.WillWinLater && this.game.WillWinLater.length > 0){
-      for(let item of this.game.WillWinLater){
+    if(finished && this.WillWinLater && this.WillWinLater.length > 0){
+      for(let item of this.WillWinLater){
         winners.addPlayer(item[0], item[1]);
       }
     }
