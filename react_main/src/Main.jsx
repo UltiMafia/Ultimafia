@@ -14,9 +14,7 @@ import {
 import { getSiteTheme } from "./constants/themes";
 import { AlertList, useErrorAlert } from "./components/Alerts";
 import { Nav } from "./components/Nav";
-import { Welcome } from "./pages/Welcome/Welcome";
 import UserNavSection from "./pages/User/UserNavSection";
-import { GuestAuthButtons } from "./components/GuestAuthButtons";
 import CookieBanner from "./components/CookieBanner";
 import NavDropdown from "./components/NavDropdown";
 import { Loading } from "./components/Loading";
@@ -33,6 +31,7 @@ import {
   Alert,
   AlertTitle,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 import { Announcement } from "./components/alerts/Announcement";
 import SiteLogo from "./components/SiteLogo";
@@ -119,6 +118,7 @@ function Main(props) {
   const Learn = lazy(() => import("pages/Learn/Learn"));
   const Policy = lazy(() => import("pages/Policy/Policy"));
   const User = lazy(() => import("pages/User/User"));
+  const Welcome = lazy(() => import("pages/Welcome/Welcome"));
 
   const siteContent = (
     <Stack className="site-wrapper" sx={{
@@ -146,6 +146,7 @@ function Main(props) {
           ) : (
             <Suspense fallback={<Loading />}>
               <Routes>
+                <Route path="welcome" element={<Welcome />} />
                 <Route path="play/*" element={<Play />} />
                 <Route path="community/*" element={<Community />} />
                 <Route path="fame/*" element={<Fame />} />
@@ -205,7 +206,7 @@ function Main(props) {
           >
             <SnowstormController />
             <Routes>
-              <Route path="/" element={<Welcome />} />
+              <Route path="/" element={<Navigate to="/welcome" />} />
               <Route path="/*" element={mainContent} />
             </Routes>
           </UserProvider>
@@ -218,6 +219,9 @@ function Main(props) {
 function Header({ setShowAnnouncementTemporarily }) {
   const user = useContext(UserContext);
   const isPhoneDevice = useIsPhoneDevice();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isOnWelcomePage = location.pathname === "/welcome" || location.pathname === "/";
 
   const openAnnouncements = () => {
     setShowAnnouncementTemporarily(true);
@@ -328,7 +332,19 @@ function Header({ setShowAnnouncementTemporarily }) {
                 useUnreadNotifications={useUnreadNotifications}
               />
             ) : (
-              <GuestAuthButtons />
+              !isOnWelcomePage && (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => navigate("/welcome")}
+                  sx={{
+                    textTransform: "none",
+                    fontSize: "14px",
+                  }}
+                >
+                  Back to Login
+                </Button>
+              )
             )}
           </div>
         </Stack>
@@ -408,7 +424,19 @@ function Header({ setShowAnnouncementTemporarily }) {
                   useUnreadNotifications={useUnreadNotifications}
                 />
               ) : (
-                <GuestAuthButtons />
+                !isOnWelcomePage && (
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => navigate("/welcome")}
+                    sx={{
+                      textTransform: "none",
+                      fontSize: "14px",
+                    }}
+                  >
+                    Back to Login
+                  </Button>
+                )
               )}
             </Box>
           </Stack>

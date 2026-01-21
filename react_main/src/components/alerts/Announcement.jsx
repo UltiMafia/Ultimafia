@@ -7,7 +7,7 @@ import {
   isFirstAnnouncement,
   isLastAnnouncement,
 } from "../../services/announcementService";
-import { Loading } from "./Loading";
+import { Loading } from "../Loading";
 import { minimumLoadingTime } from "../../Constants";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { urlifyText } from "../../utilsFolder";
