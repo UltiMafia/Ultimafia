@@ -10,6 +10,8 @@ import {
   IconButton,
   Tooltip,
   Typography,
+  Dialog,
+  DialogContent,
 } from "@mui/material";
 import GoogleIcon from "../images/welcome_page/GoogleIcon.png";
 import DiscordIcon from "../images/welcome_page/DiscordIcon.png";
@@ -30,7 +32,7 @@ import { useSnackbar } from "../hooks/useSnackbar";
 import { SiteInfoContext } from "../Contexts";
 import { Link } from "react-router-dom";
 
-export const Auth = ({ defaultTab = 0 }) => {
+export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
   const snackbarHook = useSnackbar();
   const siteInfo = useContext(SiteInfoContext);
   const [tabValue, setTabValue] = useState(defaultTab);
@@ -56,6 +58,22 @@ export const Auth = ({ defaultTab = 0 }) => {
     setShowForgotPassword(false);
     setShowResendVerification(false);
   }, [tabValue]);
+
+  // Reset form and tab when dialog opens/closes
+  useEffect(() => {
+    if (asDialog && open !== undefined) {
+      if (open) {
+        setTabValue(defaultTab);
+      } else {
+        setPassword("");
+        setPasswordConfirmation("");
+        setBirthDate("");
+        setAgeError("");
+        setShowForgotPassword(false);
+        setShowResendVerification(false);
+      }
+    }
+  }, [open, asDialog, defaultTab]);
 
   // Password confirmation validation
   useEffect(() => {
@@ -131,6 +149,9 @@ export const Auth = ({ defaultTab = 0 }) => {
 
       try {
         await axios.post("/api/auth", { idToken });
+        if (asDialog && onClose) {
+          onClose();
+        }
         window.location.reload();
       } catch (err) {
         // Check if this is a site-ban error
@@ -202,6 +223,9 @@ export const Auth = ({ defaultTab = 0 }) => {
 
       try {
         await axios.post("/api/auth", { idToken });
+        if (asDialog && onClose) {
+          onClose();
+        }
         window.location.reload();
       } catch (err) {
         // Check if this is a site-ban error
@@ -757,41 +781,69 @@ export const Auth = ({ defaultTab = 0 }) => {
     </Box>
   );
 
+  const authContent = (
+    <Box sx={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
+      <Tabs
+        value={tabValue}
+        onChange={handleTabChange}
+        aria-label="authentication tabs"
+        sx={{ borderBottom: 1, borderColor: "divider", flexShrink: 0 }}
+      >
+        <Tab label="Login" />
+        <Tab label="Register" />
+      </Tabs>
+      <Box 
+        role="tabpanel" 
+        hidden={tabValue !== 0}
+        sx={{ 
+          flex: 1, 
+          overflowY: "auto",
+          minHeight: 0,
+        }}
+      >
+        {tabValue === 0 && LoginContent}
+      </Box>
+      <Box 
+        role="tabpanel" 
+        hidden={tabValue !== 1}
+        sx={{ 
+          flex: 1, 
+          overflowY: "auto",
+          minHeight: 0,
+        }}
+      >
+        {tabValue === 1 && RegisterContent}
+      </Box>
+    </Box>
+  );
+
+  if (asDialog) {
+    return (
+      <>
+        <Dialog 
+          open={open || false} 
+          onClose={onClose}
+          maxWidth="sm"
+          fullWidth
+          PaperProps={{
+            sx: {
+              height: "600px",
+              maxHeight: "90vh",
+            }
+          }}
+        >
+          <DialogContent sx={{ p: 0, height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            {authContent}
+          </DialogContent>
+        </Dialog>
+        {snackbarHook.SnackbarWrapped}
+      </>
+    );
+  }
+
   return (
     <>
-      <Box sx={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
-        <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
-          aria-label="authentication tabs"
-          sx={{ borderBottom: 1, borderColor: "divider", flexShrink: 0 }}
-        >
-          <Tab label="Login" />
-          <Tab label="Register" />
-        </Tabs>
-        <Box 
-          role="tabpanel" 
-          hidden={tabValue !== 0}
-          sx={{ 
-            flex: 1, 
-            overflowY: "auto",
-            minHeight: 0,
-          }}
-        >
-          {tabValue === 0 && LoginContent}
-        </Box>
-        <Box 
-          role="tabpanel" 
-          hidden={tabValue !== 1}
-          sx={{ 
-            flex: 1, 
-            overflowY: "auto",
-            minHeight: 0,
-          }}
-        >
-          {tabValue === 1 && RegisterContent}
-        </Box>
-      </Box>
+      {authContent}
       {snackbarHook.SnackbarWrapped}
     </>
   );
