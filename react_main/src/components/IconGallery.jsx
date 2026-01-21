@@ -22,7 +22,7 @@ export default function IconGallery() {
       "role role-icon-vivid-Mafia-Magus small",
     ];
 
-    // Valentine's classes (only for roles that have Pride versions)
+    // Valentine's classes
     const valentinesClasses = [
       "role role-icon-vivid-Suitress small",
       "role role-icon-vivid-Virgin small",

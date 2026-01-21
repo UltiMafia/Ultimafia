@@ -469,9 +469,9 @@ const modifierData = {
       description:
         "If a role with this modifier wins, then Village, Mafia, and Cult cannot also win alongside them.",
       eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Complaisant"],
+      incompatible: ["Complacent"],
     },
-    Complaisant: {
+    Complacent: {
       category: "Other",
       internal: ["AlwaysJoints"],
       tags: [],
