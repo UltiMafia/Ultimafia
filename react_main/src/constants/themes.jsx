@@ -30,6 +30,7 @@ const CUSTOM_EXPAND_ICON = (
 
 export function getSiteTheme(customPrimaryColor) {
   const currentMonth = new Date().getMonth();
+  const isValentines = currentMonth === 1;
   const isHalloween = currentMonth === 9;
 
   // Determine primary color based on custom color, Halloween, or default
@@ -40,8 +41,11 @@ export function getSiteTheme(customPrimaryColor) {
     if (isHalloween) {
       return "#FF8C00";
     }
+    else if (isValentines) {
+      return "#fc007e";
+    }
     // Different colors for light and dark modes
-    return mode === "light" ? "#D50032" : "#EFBF04";
+    else return mode === "light" ? "#D50032" : "#EFBF04";
   };
 
   const getSecondaryColor = (mode) => {
@@ -50,6 +54,9 @@ export function getSiteTheme(customPrimaryColor) {
     }
     if (isHalloween) {
       return "#FF8C00";
+    }
+    else if (isValentines) {
+      return "#fc007e";
     }
     // Different colors for light and dark modes that complement the primary
     return mode === "light" ? "#B80028" : "#D4A704";
