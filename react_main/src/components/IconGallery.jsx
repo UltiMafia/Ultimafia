@@ -24,17 +24,17 @@ export default function IconGallery() {
 
     // Valentine's classes (only for roles that have Pride versions)
     const valentinesClasses = [
-      "role role-icon-vivid-Suitress small",      // 0: Cop
-      "role role-icon-vivid-Heartbreaker small",   // 1: Doctor
-      null,                                         // 2: Gunsmith (no Pride version)
-      null,                                         // 3: Miller (no Pride version)
-      "role role-icon-vivid-Astrologer small",     // 4: Villager
-      null,                                         // 5: Godfather (no Pride version)
-      "role role-icon-vivid-Lover small",   // 6: Hooker
-      "role role-icon-vivid-Matchmaker small",     // 7: Mafioso
-      "role role-icon-vivid-Panda-Bear small",     // 8: Cult Leader (no Pride version)
-      null,                                         // 9: Fool (no Pride version)
-      null,                                         // 10: Magus (no Pride version)
+      "role role-icon-vivid-Suitress small",
+      "role role-icon-vivid-Virgin small",
+      "role role-icon-vivid-Mistress small",
+      "role role-icon-vivid-Heartbreaker small",
+      "role role-icon-vivid-Astrologer small",
+      "role role-icon-vivid-Succubus small",
+      "role role-icon-vivid-Incubus small",
+      "role role-icon-vivid-Lover small",
+      "role role-icon-vivid-Matchmaker small",
+      "role role-icon-vivid-Panda-Bear small",
+      "role role-icon-vivid-Yandere small"
     ];
 
     // Pride classes
