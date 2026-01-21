@@ -5,7 +5,7 @@ import "./Welcome.css";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { useTheme } from "@mui/material/styles";
 
-export const NewLoading = ({ small, extraSmall }) => {
+export const Loading = ({ small, extraSmall }) => {
   const theme = useTheme();
   const isPhoneDevice = useIsPhoneDevice();
 

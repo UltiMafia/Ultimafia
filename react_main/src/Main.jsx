@@ -19,9 +19,8 @@ import UserNavSection from "./pages/User/UserNavSection";
 import { GuestAuthButtons } from "./components/GuestAuthButtons";
 import CookieBanner from "./components/CookieBanner";
 import NavDropdown from "./components/NavDropdown";
-
+import { Loading } from "./components/Loading";
 import "css/main.css";
-import { NewLoading } from "./pages/Welcome/NewLoading";
 
 // Navigation icons removed - now using text-only navigation
 import {
