@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
 const { PRIORITY_KILL_SPECIAL } = require("../../const/Priority");
 
@@ -17,6 +18,17 @@ module.exports = class KillorPass extends Card {
           priority: PRIORITY_KILL_SPECIAL,
           role: this.role,
           run: function () {
+            let action = new Action({
+                  actor: this.actor,
+                  target: this.target,
+                  role: this.role,
+                  game: this.game,
+                  labels: ["convert"],
+                  run: function () {
+                    if (this.dominates()) {
+                    }
+                  },
+                });
             let savers = this.getVisitors(this.target, "save");
             if (savers.length == 0 && this.target === this.actor) {
               var aliveTargets = this.game.players.filter(
@@ -33,6 +45,7 @@ module.exports = class KillorPass extends Card {
 
               if (cultTargets.length > 0) {
                 const randomTarget = Random.randArrayVal(cultTargets);
+              if(action.dominates(randomTarget)){
                 randomTarget.setRole(
                   `${this.role.name}:${this.role.modifier}`,
                   this.role.data,
@@ -41,6 +54,7 @@ module.exports = class KillorPass extends Card {
                   null,
                   "No Change"
                 );
+              }
                 this.actor.kill("basic");
               }
             }

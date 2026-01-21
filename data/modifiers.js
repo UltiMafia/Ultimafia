@@ -467,8 +467,18 @@ const modifierData = {
       internal: ["PreventFactionJoints"],
       tags: [],
       description:
-        "If a player with this modifier wins, then Village, Mafia, and Cult cannot also win alongside them.",
+        "If a role with this modifier wins, then Village, Mafia, and Cult cannot also win alongside them.",
       eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Complaisant"],
+    },
+    Complaisant: {
+      category: "Other",
+      internal: ["AlwaysJoints"],
+      tags: [],
+      description:
+        "If a role with this modifier wins, the game will continue and they will win at the end of the game.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Braggadocious"],
     },
     Demonic: {
       category: "Other",

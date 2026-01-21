@@ -1,4 +1,5 @@
 const Card = require("../../Card");
+const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
 const { PRIORITY_KILL_SPECIAL } = require("../../const/Priority");
 
@@ -32,12 +33,25 @@ module.exports = class KillorBanishedJump extends Card {
 
             if (savers.length == 0 && isBanished && !this.role.data.hasJumped) {
               if (saversSelf.length == 0) {
+                let action = new Action({
+                  actor: this.actor,
+                  target: this.target,
+                  role: this.role,
+                  game: this.game,
+                  labels: ["convert"],
+                  run: function () {
+                    if (this.dominates()) {
+                    }
+                  },
+                });
+                if(action.dominates() && this.dominates(this.actor)){
                 this.role.data.hasJumped = true;
                 this.target.setRole(
                   `${this.role.name}:${this.role.modifier}`,
                   this.role.data
                 );
                 this.actor.kill("basic");
+                }
               }
               return;
             }

@@ -2082,13 +2082,20 @@ const roleData = {
         "Each night, all Freemasons can choose to visit one player and convert them to Freemason.",
         //"Converts one player into a Freemason each night.",
         //"Shares a night meeting with other Freemasons.",
-        "All Freemasons die if they attempt to convert a member of the Mafia.",
-        "All Cultists die if targeted by a Freemason meeting.",
+        "All Freemasons die if they attempt to convert a member of the Mafia or Demonic.",
+        "Cult-aligned roles will not be converted.",
       ],
       nightOrder: [
         ["Convert to Mason", PRIORITY_CONVERT_DEFAULT + 2],
-        ["Kill Cultist", PRIORITY_KILL_DEFAULT + 1],
       ],
+    SpecialInteractions: {
+        "Serial Killer": [
+          "All Freemasons die if they attempt to convert a Serial Killer.",
+        ],
+      "Cult Leader": [
+          "Cultists and Cult Leaders will die if targeted by Freemasons.",
+        ],
+      },
     },
     "Invisible Man": {
       alignment: "Village",
@@ -4035,7 +4042,7 @@ const roleData = {
       description: [
         //"Is bloodthirsty.",
         "Each night, can choose to visit one player and steal 50% of their blood.",
-        "If that player dies from blood lose, the Leech gains an additional 50% of blood.",
+        "If that player dies from blood loss, the Leech gains an additional 50% of blood.",
         "Gains an extra life if they have 150% blood.",
       ],
       nightOrder: [["Drain Blood", PRIORITY_KILL_SPECIAL - 4]],
