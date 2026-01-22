@@ -240,7 +240,7 @@ export const Welcome = () => {
                 }}
               />
               <Typography variant="body2" color="text.secondary" paragraph sx={{ flex: 1 }}>
-                Compete and hone your skills of deception and deducation in seasonal play. Join the community in off-season events as well.
+                Compete and hone your skills of deception and deduction in seasonal play. Join the community in off-season events as well.
               </Typography>
             </Paper>
           </Grid2>
