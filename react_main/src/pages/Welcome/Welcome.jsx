@@ -114,7 +114,7 @@ export const Welcome = () => {
           paragraph
           sx={{ mb: 3 }}
         >
-          The classic social deduction game, <span style={{ color: "red" }}>online.</span>
+          The classic social deduction game, <span style={{ color: theme.palette.primary }}>online.</span>
         </Typography>
         <Grid2 container rowSpacing={1} columnSpacing={1}>
           <Grid2 size={{ xs: 12, md: 4 }}>
@@ -240,7 +240,7 @@ export const Welcome = () => {
                 }}
               />
               <Typography variant="body2" color="text.secondary" paragraph sx={{ flex: 1 }}>
-                Compete and hone your skills of deception and deducation in seasonal play. Join the community in off-season events as well.
+                Compete and hone your skills of deception and deduction in seasonal play. Join the community in off-season events as well.
               </Typography>
             </Paper>
           </Grid2>
