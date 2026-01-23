@@ -25,6 +25,10 @@ module.exports = class RevealEvilPlayersToSelf extends Card {
           return;
         }
 
+        if(!this.hasAbility(["Information"])){
+          return;
+        }
+
         let info = this.game.createInformation(
           "RevealEvilPlayersInfo",
           this.player,

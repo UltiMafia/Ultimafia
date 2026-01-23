@@ -21,10 +21,10 @@ module.exports = class RevealEvilPlayersInfo extends Information {
     let evilPlayers = this.game.players.filter(
       (p) =>
         this.game.getRoleAlignment(
-          p.getRoleAppearance("reveal").split(" (")[0]
+          p.getRoleAppearance("investigate").split(" (")[0]
         ) == "Mafia" ||
         this.game.getRoleAlignment(
-          p.getRoleAppearance("reveal").split(" (")[0]
+          p.getRoleAppearance("investigate").split(" (")[0]
         ) == "Cult"
     );
     this.mainInfo = evilPlayers;
@@ -37,21 +37,21 @@ module.exports = class RevealEvilPlayersInfo extends Information {
     let evilPlayers = this.game.players.filter(
       (p) =>
         this.game.getRoleAlignment(
-          p.getRoleAppearance("reveal").split(" (")[0]
+          p.getRoleAppearance("investigate").split(" (")[0]
         ) == "Mafia" ||
         this.game.getRoleAlignment(
-          p.getRoleAppearance("reveal").split(" (")[0]
+          p.getRoleAppearance("investigate").split(" (")[0]
         ) == "Cult"
     );
     let OtherRoles = [];
     for (let item of evilPlayers) {
-      if (item.tempAppearance["reveal"] != null) {
+      if (item.tempAppearance["investigate"] != null) {
         OtherRoles.push(
-          `${item.tempAppearance["reveal"]}:${item.tempAppearanceMods["reveal"]}`
+          `${item.tempAppearance["investigate"]}:${item.tempAppearanceMods["investigate"]}`
         );
       } else {
         OtherRoles.push(
-          `${item.role.appearance["reveal"]}:${item.role.appearanceMods["reveal"]}`
+          `${item.role.appearance["investigate"]}:${item.role.appearanceMods["investigate"]}`
         );
       }
     }
@@ -71,19 +71,19 @@ module.exports = class RevealEvilPlayersInfo extends Information {
     OtherRoles = Random.randomizeArray(OtherRoles);
     let number = 0;
     for (let playerB of this.mainInfo) {
-      let tempTempAppearanceMods = playerB.tempAppearanceMods["reveal"];
-      let tempTempAppearance = playerB.tempAppearance["reveal"];
+      let tempTempAppearanceMods = playerB.tempAppearanceMods["investigate"];
+      let tempTempAppearance = playerB.tempAppearance["investigate"];
 
       if (this.truthValue == "Normal") {
         this.revealTarget(playerB);
       } else if (this.truthValue == "True") {
         playerB.setTempAppearance(
-          "reveal",
+          "investigate",
           this.game.formatRoleInternal(playerB.role.name, playerB.role.modifier)
         );
         this.revealTarget(playerB);
       } else if (this.truthValue == "False") {
-        playerB.setTempAppearance("reveal", OtherRoles[number]);
+        playerB.setTempAppearance("investigate", OtherRoles[number]);
         this.revealTarget(playerB);
       }
 
@@ -99,17 +99,17 @@ module.exports = class RevealEvilPlayersInfo extends Information {
 
   revealTarget(playerToReveal) {
     if (this.revealTo == "All") {
-      playerToReveal.role.revealToAll();
+      playerToReveal.role.revealToAll(null, "investigate");
     }
     if (this.revealTo == "Faction") {
       for (let player of this.game.players) {
         if (player.faction == this.creator.faction) {
-          playerToReveal.role.revealToPlayer(player);
+          playerToReveal.role.revealToPlayer(player, null, "investigate");
         }
       }
     }
     if (this.revealTo == "Self") {
-      playerToReveal.role.revealToPlayer(this.creator);
+      playerToReveal.role.revealToPlayer(this.creator, null, "investigate");
     }
   }
 
