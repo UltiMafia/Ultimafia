@@ -69,6 +69,7 @@
 .item {
   width: 1rem;
   height: 1rem;
+  flex-shrink: 0;
 
   background-size: 100% 100%;
   background-image: url("/src/images/modifiers/unknown-modifier.png");
@@ -78,6 +79,7 @@
 .modifier {
   width: 1rem;
   height: 1rem;
+  flex-shrink: 0;
 
   background-size: 100% 100%;
   background-image: url("/src/images/modifiers/unknown-modifier.png");
@@ -89,6 +91,7 @@
 
   width: 1rem;
   height: 1rem;
+  flex-shrink: 0;
 
   background-size: 100% 100%;
   background-image: url("/src/images/modifiers/unknown-modifier.png");
@@ -114,6 +117,8 @@
 
   width: var(--role-icon-size);
   height: var(--role-icon-size);
+  flex-shrink: 0;
+
   background-size: 100% 100%;
   background-image: url("/src/images/roles/01-default-tall.png");
   image-rendering: crisp-edges;
