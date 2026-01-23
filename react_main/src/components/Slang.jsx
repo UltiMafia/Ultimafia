@@ -59,7 +59,7 @@ export const Slang = ({ slang, original, slangifySeed, displayEmoji }) => {
         disableRestoreFocus
         slotProps={{
           paper: {
-            style: { maxWidth: "50%", background: theme.palette.primary.main },
+            style: { maxWidth: "50%" },
           },
         }}
       >

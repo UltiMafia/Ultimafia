@@ -57,6 +57,7 @@ module.exports = class Player {
     this.ExtraRoles = [];
     this.passiveExtraRoles = [];
     this.joinTime = Date.now(); // Track when player joined for host reassignment
+    this.youAreBeingVoteKicked = false;
   }
 
   init() {
@@ -1862,5 +1863,17 @@ module.exports = class Player {
 
   getVotePower(meeting) {
     return 1;
+  }
+
+  warnOfVoteKick() {
+    if (!this.hasVotedInAllCoreMeetings()) {
+      this.send("youAreBeingVoteKicked", { status: true });
+    }
+  }
+
+  noMoreVoteKick() {
+    if (this.isBeingVoteKicked) {
+      this.send("youAreBeingVoteKicked", { status: false });
+    }
   }
 };

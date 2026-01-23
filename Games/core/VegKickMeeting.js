@@ -41,6 +41,7 @@ module.exports = class VegKickMeeting extends Meeting {
 
       let canKick = player.alive && player.hasVotedInAllMeetings();
       this.members[player.id].canVote = canKick;
+      player.noMoreVoteKick();
       player.sendMeeting(this);
     }
 
@@ -133,6 +134,9 @@ module.exports = class VegKickMeeting extends Meeting {
         this.game.gotoNextState()
       );
       this.game.sendAlert("Enough kicks, vegging players!");
+      for (let player of this.game.players) {
+        player.warnOfVoteKick();
+      }
     }
   }
 

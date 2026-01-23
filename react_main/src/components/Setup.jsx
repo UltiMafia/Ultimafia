@@ -247,7 +247,6 @@ export default function Setup(props) {
     roleCounts[maxIconsTotal - 1] = (
       <i
         onClick={handleClick}
-        gameType={props.setup.gameType}
         className="fas fa-ellipsis-h"
         style={{
           fontSize: "1.5rem",

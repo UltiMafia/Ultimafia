@@ -134,13 +134,13 @@ export function getIconFilter(iconFilter) {
           filter:
             "drop-shadow(0px 0px .15em rgba(255, 0, 255, 0.7)) drop-shadow(0px 0px .2em rgba(0, 255, 255, 0.7))",
         },
-        ".site-wrapper, #root": {
+        "#root": {
           position: "relative",
           zIndex: "0",
           textShadow:
             "0px 0px .1em rgba(255, 0, 255, 0.7), 0px 0px .2em rgba(0, 255, 255, 0.7)",
         },
-        ".site-wrapper:before": {
+        "#root:before": {
           content: "''",
           position: "absolute",
           top: "0",
