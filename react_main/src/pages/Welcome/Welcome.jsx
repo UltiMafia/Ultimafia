@@ -114,7 +114,7 @@ export const Welcome = () => {
           paragraph
           sx={{ mb: 3 }}
         >
-          The classic social deduction game, <span style={{ color: theme.palette.primary }}>online.</span>
+          The classic social deduction game, <span style={{ color: "primary.main" }}>online.</span>
         </Typography>
         <Grid2 container rowSpacing={1} columnSpacing={1}>
           <Grid2 size={{ xs: 12, md: 4 }}>

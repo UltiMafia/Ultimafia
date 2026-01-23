@@ -340,6 +340,10 @@ module.exports = {
   initialRedHeartCapacity: 15,
   initialGoldHeartCapacity: 0,
 
+  // X days of open play -> Y days of review -> (14 - X - Y) days of nothing
+  openDaysPerCompetitiveRound: 9,
+  reviewDaysPerCompetitiveRound: 4,
+
   // Refresh every 23 hours
   redHeartRefreshIntervalMillis: 82800000,
   goldHeartRefreshIntervalMillis: 82800000,

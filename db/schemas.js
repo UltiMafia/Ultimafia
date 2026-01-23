@@ -730,8 +730,8 @@ var schemas = {
     accounted: { type: Boolean, default: false },
     startDate: { type: String }, // YYYY-MM-DD (inclusive)
     dateCompleted: { type: String }, // YYYY-MM-DD (inclusive)
-    remainingOpenDays: { type: Number, default: 9 },
-    remainingReviewDays: { type: Number, default: 4 },
+    remainingOpenDays: { type: Number, required: true },
+    remainingReviewDays: { type: Number, required: true },
   }),
   CompetitiveGameCompletion: new mongoose.Schema({
     userId: { type: String },
