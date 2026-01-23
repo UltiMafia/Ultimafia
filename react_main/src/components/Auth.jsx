@@ -832,7 +832,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
             }
           }}
         >
-          <DialogContent sx={{ p: 0, height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          <DialogContent sx={{ p: 2, height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
             {authContent}
           </DialogContent>
         </Dialog>
