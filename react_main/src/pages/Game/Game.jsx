@@ -1446,7 +1446,7 @@ export function TextMeetingLayout() {
 
     if (
       Math.round(speech.scrollTop + speech.clientHeight) >=
-      Math.round(speech.scrollHeight - 5)
+      Math.round(speech.scrollHeight - 10)
     )
       setAutoScroll(true);
     else setAutoScroll(false);
@@ -2074,6 +2074,22 @@ function Message(props) {
     }
   }
 
+  let contentStyle = {};
+  if (!user.settings?.ignoreTextColor && message.textColor !== "") {
+    contentStyle.color = user.autoContrastColor(message.textColor);
+  }
+  else if (contentClass.includes("content") && extraStyle) {
+    if (extraStyle.color) {
+      contentStyle = {
+        ...extraStyle,
+        color: user.autoContrastColor(contentStyle.color),
+      };
+    }
+    else {
+      contentStyle = extraStyle;
+    }
+  }
+
   function messageOnMouseEnter() {
     setIsHovering(true);
   }
@@ -2156,14 +2172,7 @@ function Message(props) {
         )}
         <div
           className={contentClass}
-          style={{
-            ...(!user.settings?.ignoreTextColor && message.textColor !== ""
-              ? // ? { color: flipTextColor(message.textColor) }
-                { color: user.autoContrastColor(message.textColor) }
-              : contentClass.includes("content")
-              ? extraStyle
-              : {}),
-          }}
+          style={contentStyle}
         >
           {!message.isQuote && (
             <>
