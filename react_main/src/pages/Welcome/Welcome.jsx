@@ -103,7 +103,6 @@ export const Welcome = () => {
           display: "flex",
           flexDirection: "column",
           boxSizing: "border-box",
-          pt: isPhoneDevice ? 2 : 3,
           pb: isPhoneDevice ? 4 : 8,
         }}
       >
@@ -112,9 +111,12 @@ export const Welcome = () => {
           align="center"
           color="text.secondary"
           paragraph
-          sx={{ mb: 3 }}
+          sx={{
+            m: 0,
+            py: 2,
+          }}
         >
-          The classic social deduction game, <span style={{ color: "primary.main" }}>online.</span>
+          The classic social deduction game, <Box component="span" sx={{ color: "primary.main" }}>online.</Box>
         </Typography>
         <Grid2 container rowSpacing={1} columnSpacing={1}>
           <Grid2 size={{ xs: 12, md: 4 }}>

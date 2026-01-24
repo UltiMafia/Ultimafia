@@ -1,6 +1,7 @@
 import { useContext, useEffect, useReducer, useState } from "react";
 import ChangeHead from "components/gameComponents/ChangeHead";
 import { GameContext } from "Contexts";
+import { Box } from "@mui/material";
 
 function formatTimerTime(time) {
   if (time > 0) time = Math.round(time / 1000);
@@ -173,29 +174,40 @@ export function Timer(props) {
 
   const timer = timers[timerName];
 
-  if (!timer || game.review)
-    return <div className="state-timer">{"--:--"}</div>;
+  let timerContent;
+  if (!timer || game.review) {
+    timerContent = "--:--";
+  }
+  else {
+    let time = timer.delay - timer.time;
 
-  var time = timer.delay - timer.time;
-
-  if (timers["secondary"]) {
-    // show main timer if needed
-    const mainTimer = timers["main"];
-    if (mainTimer) {
-      var mainTime = mainTimer.delay - mainTimer.time;
-      time = Math.min(time, mainTime);
+    if (timers["secondary"]) {
+      // show main timer if needed
+      const mainTimer = timers["main"];
+      if (mainTimer) {
+        var mainTime = mainTimer.delay - mainTimer.time;
+        time = Math.min(time, mainTime);
+      }
     }
+
+    time = formatTimerTime(time);
+    timerContent = time;
   }
 
-  time = formatTimerTime(time);
+  const isSecondary = timerName === "secondary";
+  const isVegKickCountdown = timerName === "vegKickCountdown";
+  const isVegKick = timerName === "vegKick";
 
-  if (timerName === "vegKick") {
-    return <div className="state-timer">Kicking in {time}</div>;
-  }
   return (
     <>
       {HeadChanges}
-      <div className="state-timer">{time}</div>
+      <Box className="state-timer" sx={{
+        borderWidth: "1px",
+        borderColor: isVegKick || isVegKickCountdown ? "error.main" : isSecondary ? "warning.main" : "divider",
+        borderStyle: isVegKick ? "solid" : isSecondary || isVegKickCountdown ? "dashed solid" : "solid",
+      }}>
+        {timerContent}
+      </Box>
     </>
   );
 }
