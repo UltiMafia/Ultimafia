@@ -18,6 +18,8 @@ module.exports = class MafiaGame extends Game {
     this.Player = Player;
     this.TimerDecayAmountTotal = 0;
     this.TimerDecayAmount = this.getTimerDecayAmount() * 1000 * 60;
+    this.OptionsDayLength = options.settings.stateLengths["Day"];
+    this.OptionsNightLength = options.settings.stateLengths["Night"];
     this.BaseDayLength = options.settings.stateLengths["Day"];
     this.BaseNightLength = options.settings.stateLengths["Night"];
     if (this.getFixedDayLength() > 0) {
@@ -289,8 +291,9 @@ module.exports = class MafiaGame extends Game {
 
       this.queueAction(actionVisit);
     }
-    if (this.getStateName() == "Night" && this.CurrentEvents.length > 0) {
+    if (this.getStateName() == "Night") {
       this.selectedEvent = false;
+      if(this.CurrentEvents.length > 0){
       for (
         let x = 0;
         x < this.EventsPerNight &&
@@ -317,6 +320,7 @@ module.exports = class MafiaGame extends Game {
         event.doEvent();
         event = null;
       }
+    }
       this.selectedEvent = true;
     }
   }

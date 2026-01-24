@@ -2756,13 +2756,13 @@ module.exports = class Game {
         this.GameEndEvent = this.setup.GameEndEvent;
         //Timer Stuff
     this.TimerDecayAmount = this.getTimerDecayAmount() * 1000 * 60;
-    this.BaseDayLength = options.settings.stateLengths["Day"];
-    this.BaseNightLength = options.settings.stateLengths["Night"];
+    this.BaseDayLength = this.OptionsDayLength;
+    this.BaseNightLength = this.OptionsNightLength;
     if (this.getFixedDayLength() > 0) {
       this.BaseDayLength = this.getFixedDayLength() * 1000 * 60;
     }
     if (this.getFixedNightLength() > 0) {
-      this.BaseDayLength = this.getFixedDayLength() * 1000 * 60;
+      this.BaseNightLength = this.getFixedNightLength() * 1000 * 60;
     }
         for(let state of this.states){
           if(state.name == "Day"){
