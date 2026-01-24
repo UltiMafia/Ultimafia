@@ -107,11 +107,6 @@ module.exports = class Meeting {
       originalOptions: options,
     };
 
-    if(this.name == "Spectator Chat"){
-      member.canTalk = true;
-      member.visible = true;
-    }
-
     this.members.push(member);
 
     if (member.canVote) this.totalVoters++;
@@ -150,6 +145,7 @@ module.exports = class Meeting {
     if (
       this.game.isWhispers() &&
       this.name != "Pregame" &&
+      this.name != "Spectator Meeting" &&
       // disable whispers for anonymous meetings that are not the village meeting
       !(this.anonymous && this.name != "Village") &&
       member.canWhisper
