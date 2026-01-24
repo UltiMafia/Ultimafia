@@ -55,6 +55,9 @@ module.exports = class SecretSanta extends Event {
             let item = player.holdItem("SecretGifting", randomPlayer);
             }
             playersWithGifts.push(randomPlayer);
+          if(this.game.selectedEvent == true){
+            this.game.instantMeeting(item.meetings, [player]);
+          }
             //this.game.instantMeeting(item.meetings, [player]);
             /*
             player.joinMeetings(item.meetings);
