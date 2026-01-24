@@ -541,8 +541,8 @@ router.post("/ban", async (req, res) => {
       forum: ["vote", "createThread", "postReply", "deleteOwnPost", "editPost"],
       chat: ["publicChat", "privateChat"],
       game: ["playGame"],
-      ranked: ["playRanked"],
-      competitive: ["playCompetitive"],
+      ranked: ["playRanked", "playCompetitive"],
+      competitive: ["playCompetitive", "playRanked"],
       site: ["signIn"],
     };
 
