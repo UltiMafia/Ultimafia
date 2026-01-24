@@ -474,7 +474,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
 
   // Login Tab Content
   const LoginContent = (
-    <Box sx={{ pt: 2 }}>
+    <Box>
       {showForgotPassword ? (
         <Box>
           <Button
@@ -658,7 +658,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
 
   // Register Tab Content
   const RegisterContent = (
-    <Box sx={{ pt: 2 }}>
+    <Box>
       <form onSubmit={register}>
         <TextField
           label="Email Address"

@@ -895,9 +895,6 @@ export default function Game() {
             height: "100%",
           }}
         >
-          {/* <Button onClick={() => setYouAreBeingVoteKicked(!youAreBeingVoteKicked)}>
-            nearbear test
-          </Button> */}
           <Box
             className="game no-highlight"
             sx={{
