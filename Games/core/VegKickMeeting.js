@@ -41,7 +41,6 @@ module.exports = class VegKickMeeting extends Meeting {
 
       let canKick = player.alive && player.hasVotedInAllMeetings();
       this.members[player.id].canVote = canKick;
-      player.noMoreVoteKick();
       player.sendMeeting(this);
     }
 
