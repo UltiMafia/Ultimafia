@@ -57,6 +57,7 @@ module.exports = class Player {
     this.ExtraRoles = [];
     this.passiveExtraRoles = [];
     this.joinTime = Date.now(); // Track when player joined for host reassignment
+    this.youAreBeingVoteKicked = false;
   }
 
   init() {
@@ -395,7 +396,19 @@ module.exports = class Player {
       }
 
       if (meeting.Important != true) {
-        continue;
+        // For mafia, night meetings are considered core
+        if (this.game.type == "Mafia") {
+          if (this.game.getStateName() == "Day") {
+            continue;
+          }
+          else if (meeting.noVeg) {
+            // noVeg meetings are never core
+            continue;
+          }
+        }
+        else {
+          continue;
+        }
       }
 
       if (meeting.finished) {
@@ -1862,5 +1875,19 @@ module.exports = class Player {
 
   getVotePower(meeting) {
     return 1;
+  }
+
+  warnOfVoteKick() {
+    if (!this.hasVotedInAllCoreMeetings()) {
+      this.youAreBeingVoteKicked = true;
+      this.send("youAreBeingVoteKicked", { status: true });
+    }
+  }
+
+  checkVoteKick() {
+    if (this.youAreBeingVoteKicked && this.hasVotedInAllCoreMeetings()) {
+      this.youAreBeingVoteKicked = false;
+      this.send("youAreBeingVoteKicked", { status: false });
+    }
   }
 };

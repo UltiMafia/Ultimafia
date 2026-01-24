@@ -133,6 +133,9 @@ module.exports = class VegKickMeeting extends Meeting {
         this.game.gotoNextState()
       );
       this.game.sendAlert("Enough kicks, vegging players!");
+      for (let player of this.game.players) {
+        player.warnOfVoteKick();
+      }
     }
   }
 

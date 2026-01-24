@@ -821,6 +821,10 @@ module.exports = class Meeting {
 
     this.events.emit("vote", vote);
 
+    const player = this.members[voter.id].player;
+    // player.checkVoteKick() needs to happen before checkReady()
+    player.checkVoteKick();
+
     this.checkReady();
 
     if (
@@ -835,8 +839,6 @@ module.exports = class Meeting {
       this.members[voter.id].canUpdateVote = false;
       this.members[voter.id].canUnvote = false;
     }
-
-    let player = this.members[voter.id].player;
 
     // join veg kick meeting if needed
     if (player.alive && player.hasVotedInAllMeetings()) {

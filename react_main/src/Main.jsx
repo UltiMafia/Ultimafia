@@ -121,45 +121,50 @@ function Main(props) {
   const Welcome = lazy(() => import("pages/Welcome/Welcome"));
 
   const siteContent = (
-    <Stack className="site-wrapper" sx={{
+    <Stack sx={{
       backgroundColor: "background.paper",
+      minHeight: "100vh",
     }}>
       <CookieBanner />
       <Header
         setShowAnnouncementTemporarily={setShowAnnouncementTemporarily}
       />
-      <Stack direction="column" spacing={1} sx={{
+      <Stack direction="row" className="site-wrapper" sx={{
         flex: "1",
-        margin: "0 auto",
-        px: isPhoneDevice ? 1 : 3,
-        py: 1,
-        width: "1080px",
-        maxWidth: "100%",
+        justifyContent: "center",
       }}>
-        <Announcement
-          showAnnouncementTemporarily={showAnnouncementTemporarily}
-          setShowAnnouncementTemporarily={setShowAnnouncementTemporarily}
-        />
-        <div className="inner-container">
-          {errorContent ? (
-            errorContent
-          ) : (
-            <Suspense fallback={<Loading />}>
-              <Routes>
-                <Route path="welcome" element={<Welcome />} />
-                <Route path="play/*" element={<Play />} />
-                <Route path="community/*" element={<Community />} />
-                <Route path="fame/*" element={<Fame />} />
-                <Route path="learn/*" element={<Learn />} />
-                <Route path="policy/*" element={<Policy />} />
-                <Route path="user/*" element={<User />} />
-                <Route path="*" element={<Navigate to="play" />} />
-              </Routes>
-            </Suspense>
-          )}
-        </div>
-        <InGameWarning />
-        <AlertList />
+        <Stack direction="column" spacing={1} sx={{
+          margin: "0 auto",
+          px: isPhoneDevice ? 1 : 3,
+          py: 1,
+          width: "1080px",
+          maxWidth: "100%",
+        }}>
+          <Announcement
+            showAnnouncementTemporarily={showAnnouncementTemporarily}
+            setShowAnnouncementTemporarily={setShowAnnouncementTemporarily}
+          />
+          <div className="inner-container">
+            {errorContent ? (
+              errorContent
+            ) : (
+              <Suspense fallback={<Loading />}>
+                <Routes>
+                  <Route path="welcome" element={<Welcome />} />
+                  <Route path="play/*" element={<Play />} />
+                  <Route path="community/*" element={<Community />} />
+                  <Route path="fame/*" element={<Fame />} />
+                  <Route path="learn/*" element={<Learn />} />
+                  <Route path="policy/*" element={<Policy />} />
+                  <Route path="user/*" element={<User />} />
+                  <Route path="*" element={<Navigate to="play" />} />
+                </Routes>
+              </Suspense>
+            )}
+          </div>
+          <InGameWarning />
+          <AlertList />
+        </Stack>
       </Stack>
       <Footer />
     </Stack>

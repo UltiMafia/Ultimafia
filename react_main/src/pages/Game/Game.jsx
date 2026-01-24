@@ -101,6 +101,7 @@ import { Timer } from "components/gameComponents/Timer";
 import { ChangeHeadPing } from "components/gameComponents/ChangeHeadPing";
 import RoleRevealModal from "components/gameComponents/RoleRevealModal";
 import ChangeSetupDialog from "components/gameComponents/ChangeSetupDialog";
+import UrgencyOverlay from "./components/UrgencyOverlay";
 
 const emoteMap = {
   dice1: dice1,
@@ -140,6 +141,7 @@ export default function Game() {
   const [spectatorCount, setSpectatorCount] = useState(0);
   const [isSpectator, setIsSpectator] = useState(false);
   const [self, setSelf] = useState();
+  const [youAreBeingVoteKicked, setYouAreBeingVoteKicked] = useState(false);
   const [lastWill, setLastWill] = useState("");
   const [settings, updateSettings] = useSettingsReducer();
   const [showFirstGameModal, setShowFirstGameModal] = useState(false);
@@ -328,6 +330,7 @@ export default function Game() {
       { fileName: "ping", loops: false, overrides: false, volumes: 1 },
       { fileName: "tick", loops: false, overrides: false, volumes: 1 },
       { fileName: "vegPing", loops: false, overrides: false, volumes: 1 },
+      { fileName: "youAreBeingVoteKicked", loops: false, overrides: false, volumes: 1 },
     ],
   };
 
@@ -728,6 +731,18 @@ export default function Game() {
       });
     });
 
+    socket.on("youAreBeingVoteKicked", (data) => {
+      const status = data.status;
+      setYouAreBeingVoteKicked(status);
+      if (status) {
+        playAudio("youAreBeingVoteKicked");
+        setPingInfo({
+          msg: `⚠ You are vegging!`,
+          timestamp: new Date().getTime(),
+        });
+      }
+    });
+
     socket.on("lastWill", (will) => {
       setLastWill(will);
     });
@@ -907,6 +922,7 @@ export default function Game() {
             {gameType === "Connect Four" && <ConnectFourGame />}
           </Box>
         </Stack>
+        <UrgencyOverlay hidden={!youAreBeingVoteKicked} />
         <LeaveGameDialog
           open={leaveDialogOpen}
           onClose={() => setLeaveDialogOpen(false)}
