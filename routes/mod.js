@@ -2913,8 +2913,8 @@ router.post("/reports/:id/complete", async (req, res) => {
         ],
         chat: ["publicChat", "privateChat"],
         game: ["playGame"],
-        ranked: ["playRanked"],
-        competitive: ["playCompetitive"],
+        ranked: ["playRanked", "playCompetitive"],
+        competitive: ["playCompetitive", "playRanked"],
         site: ["signIn"],
       };
 
