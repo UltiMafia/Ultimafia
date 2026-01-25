@@ -23,7 +23,7 @@ module.exports = class VotingWord extends Card {
           priority: PRIORITY_EFFECT_GIVER_DEFAULT - 1,
           run: function () {
             this.role.cursedWord = this.target;
-            for (let player of this.game.players) {
+            for (let player of this.game.alivePlayers()) {
               player.giveEffect(
                 "WordTracker",
                 1,
