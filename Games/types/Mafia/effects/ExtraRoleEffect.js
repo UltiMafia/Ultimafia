@@ -17,10 +17,10 @@ module.exports = class ExtraRoleEffect extends Effect {
     this.ExtraRole = player.addExtraRole(
       this.CopyingRole,
       this.ExtraRoleData,
+      true,
+      true,
       false,
-      false,
-      false,
-      "NoStartingItems"
+      this.item
     );
   }
 
