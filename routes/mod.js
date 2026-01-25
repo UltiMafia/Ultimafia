@@ -541,7 +541,7 @@ router.post("/ban", async (req, res) => {
       forum: ["vote", "createThread", "postReply", "deleteOwnPost", "editPost"],
       chat: ["publicChat", "privateChat"],
       game: ["playGame"],
-      ranked: ["playRanked"],
+      ranked: ["playRanked", "playCompetitive"],
       competitive: ["playCompetitive"],
       site: ["signIn"],
     };
@@ -2913,7 +2913,7 @@ router.post("/reports/:id/complete", async (req, res) => {
         ],
         chat: ["publicChat", "privateChat"],
         game: ["playGame"],
-        ranked: ["playRanked"],
+        ranked: ["playRanked", "playCompetitive"],
         competitive: ["playCompetitive"],
         site: ["signIn"],
       };

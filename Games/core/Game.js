@@ -2754,6 +2754,25 @@ module.exports = class Game {
         this.ForceMustAct = this.setup.ForceMustAct;
         this.EventsPerNight = this.setup.EventsPerNight;
         this.GameEndEvent = this.setup.GameEndEvent;
+        //Timer Stuff
+    this.TimerDecayAmount = this.getTimerDecayAmount() * 1000 * 60;
+    this.BaseDayLength = this.OptionsDayLength;
+    this.BaseNightLength = this.OptionsNightLength;
+    if (this.getFixedDayLength() > 0) {
+      this.BaseDayLength = this.getFixedDayLength() * 1000 * 60;
+    }
+    if (this.getFixedNightLength() > 0) {
+      this.BaseNightLength = this.getFixedNightLength() * 1000 * 60;
+    }
+        for(let state of this.states){
+          if(state.name == "Day"){
+            state.length = this.BaseDayLength;
+          }
+          if(state.name == "Night"){
+            state.length = this.BaseNightLength;
+          }
+        }
+        
       } else if (this.type == "Texas Hold Em") {
         this.hasHost = this.setup.roles[0]["Host:"];
       } else if (this.type == "Cheat") {
