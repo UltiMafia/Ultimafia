@@ -63,6 +63,20 @@ module.exports = class CreateEvent extends Card {
           this.meetings["Select Event"].targets = ConvertOptions;
         }
       },
+      playerHasJoinedMeetings: function (player) {
+        if(player != this.player){
+          return;
+        }
+        this.data.ConvertOptions = this.getEvents();
+        var ConvertOptions = this.data.ConvertOptions;
+        if (this.meetings["Select Event"]) {
+          if (!this.meetings["Select Event"].mustAct) {
+            ConvertOptions.push("None");
+          }
+
+          this.meetings["Select Event"].targets = ConvertOptions;
+        }
+      },
     };
   }
 };
