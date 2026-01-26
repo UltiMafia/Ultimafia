@@ -1324,6 +1324,7 @@ module.exports = class Player {
         }
       }
     }
+    this.game.events.emit("playerHasJoinedMeetings", player);
   }
 
   getMeetingsExclusivity() {
