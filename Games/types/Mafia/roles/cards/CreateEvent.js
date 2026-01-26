@@ -15,6 +15,9 @@ module.exports = class CreateEvent extends Card {
         action: {
           labels: ["event"],
           run: function () {
+            if(this.target == "None"){
+              return;
+            }
             let eventMods = this.target.split(":")[1];
             let eventName = this.target.split(":")[0];
             let event = this.game.createGameEvent(eventName, eventMods);
@@ -49,6 +52,7 @@ module.exports = class CreateEvent extends Card {
         }
       },
       // refresh cooldown
+      /*
       state: function (stateInfo) {
         if (!stateInfo.name.match(/Night/)) {
           return;
@@ -63,19 +67,22 @@ module.exports = class CreateEvent extends Card {
           this.meetings["Select Event"].targets = ConvertOptions;
         }
       },
+      */
       playerHasJoinedMeetings: function (player) {
         if(player != this.player){
           return;
         }
         this.data.ConvertOptions = this.getEvents();
         var ConvertOptions = this.data.ConvertOptions;
-        if (this.meetings["Select Event"]) {
-          if (!this.meetings["Select Event"].mustAct) {
-            ConvertOptions.push("None");
-          }
+        this.player.getMeetings().forEach((meeting) => {
+          if(meeting.name.includes("Select Event")){
+            if(!meeting.mustAct){
+              ConvertOptions.push("None");
+            }
 
-          this.meetings["Select Event"].targets = ConvertOptions;
-        }
+            meeting.targets = ConvertOptions;
+          }
+        });
       },
     };
   }

@@ -61,7 +61,10 @@ module.exports = class FairModifier extends Card {
 
         this.game.queueAction(action);
       },
-      meetingsMade: function () {
+       playerHasJoinedMeetings: function (player) {
+        if(player != this.player){
+          return;
+        }
         this.player.getMeetings().forEach((meeting) => {
           if (meeting.name == "Village") {
             return;
