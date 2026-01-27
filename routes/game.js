@@ -606,7 +606,14 @@ router.post("/host", async function (req, res) {
     if (req.body.competitive) {
       const roundInfo = await redis.getCompRoundInfo();
 
-      // Check if the competitive round is paused
+      // Check if the competitive round is completed or paused
+      if (!roundInfo.round || roundInfo.round.completed) {
+        res.status(500);
+        res.send(
+          "Competitive is not currently open. You cannot host competitive games at this time."
+        );
+        return;
+      }
       if (roundInfo.seasonPaused) {
         res.status(500);
         res.send(

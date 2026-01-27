@@ -701,6 +701,11 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
       },
     },
     { $unwind: { path: "$game" } },
+   	{
+      $project: {
+        "game.history": 0,
+      }
+    },
     {
       $lookup: {
         from: "setups",
