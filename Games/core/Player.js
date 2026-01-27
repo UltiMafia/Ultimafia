@@ -1194,6 +1194,7 @@ module.exports = class Player {
   }
 
   joinMeetings(meetings, extraRole) {
+    
     if (extraRole == null) {
       extraRole = this.role;
     }
@@ -1324,6 +1325,7 @@ module.exports = class Player {
         }
       }
     }
+    this.game.events.emit("playerHasJoinedMeetings", this);
   }
 
   getMeetingsExclusivity() {

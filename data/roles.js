@@ -4216,8 +4216,7 @@ const roleData = {
         "Expert",
       ],
       description: [
-        "On their first night, must choose a player to visit and make them their host.",
-        //"Chooses a player to Infest on their first night and Dies.",
+        "On their first night, must choose to die and visit a player and make them their host.",
         "Will count towards Cult Majority when dead and not exorcised.",
         "Can Speak as their host.",
         "Each night, can choose to redirect their host's visits on to another player. (Not a visit)",
@@ -5861,7 +5860,7 @@ const roleData = {
       ],
       description: [
         "Meets with other Polar Bears at night.",
-        `Each night, all Polar Bears can choose to visits two players and make them "Polarised".`,
+        `Each night, all Polar Bears can choose to visit two players and make them "Polarised".`,
         polarisedDef,
         "A polarised player visiting another polarised player will kill both of them.",
         //"If visited by a Penguin, will eat it.",

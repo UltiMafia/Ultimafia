@@ -22,7 +22,7 @@ module.exports = class WinIfAlive extends Card {
             counts["Village"] == aliveCount &&
             admiralInGame.length <= 0 &&
             magusInGame.length <= 0) || // Only Suvivors remain
-            (confirmedFinished && !winners.groups[this.name]))
+            (confirmedFinished))
         ) {
           winners.addPlayer(this.player, this.name);
         }

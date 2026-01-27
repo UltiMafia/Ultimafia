@@ -55,7 +55,10 @@ module.exports = class Consecutive extends Card {
     ];
 
     this.listeners = {
-      meetingsMade: function () {
+       playerHasJoinedMeetings: function (player) {
+        if(player != this.player){
+          return;
+        }
         this.player.getMeetings().forEach((meeting) => {
           if (meeting.name == "Village") {
             return;
