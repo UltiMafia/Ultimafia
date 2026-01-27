@@ -11,8 +11,7 @@ module.exports = class WinIfDiesWithDoll extends Card {
       check: function (counts, winners, aliveCount) {
         if (
           this.player.alive &&
-          this.data.dollDeath &&
-          !winners.groups[this.name]
+          this.data.dollDeath
         ) {
           winners.addPlayer(this.player, this.name);
         }
