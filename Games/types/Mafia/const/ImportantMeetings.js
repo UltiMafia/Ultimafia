@@ -34,6 +34,7 @@ const IMPORTANT_MEETINGS_DAY = [
   "Room 6",
   "Extra Condemn",
   "Bonus Condemn",
+  "Village Dusk",
 ];
 
 module.exports = {
