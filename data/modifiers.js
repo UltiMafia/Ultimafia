@@ -110,7 +110,7 @@ const modifierData = {
     Macabre: {
       category: "Items",
       internal: ["StartWithSyringe"],
-      tags: ["Revive", "Items", "Syringe", "Graveyard"],
+      tags: ["Revive", "Items", "Syringe", "Graveyard Participation All"],
       description: "Starts with a syringe.",
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
@@ -1352,14 +1352,14 @@ const modifierData = {
     Haunting: {
       category: "Chat",
       internal: ["CanSpeakWhenDead"],
-      tags: ["Speech", "Effect"],
+      tags: ["Speech", "Effect", "Graveyard Participation"],
       description: `Can talk with alive players when dead.`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Paranormal: {
       category: "Chat",
       internal: ["CanSeeDeadChat"],
-      tags: ["Speech", "Effect"],
+      tags: ["Speech", "Effect", "Graveyard Participation All"],
       description: `Can talk with dead players when alive.`,
       eventDescription: "This modifier does nothing when on an Event.",
     },

@@ -629,7 +629,7 @@ function getRolesByAlignment(siteInfo, gameType, roles) {
     for (let role in roles[i]) {
       let roleName = role.split(":")[0];
       const modifiers = role.split(":")[1];
-      if (modifiers.includes("Banished")) {
+      if (modifiers && modifiers.includes("Banished")) {
         if (!banishedRoles[role]) {
           banishedRoles[role] = 0;
         }
