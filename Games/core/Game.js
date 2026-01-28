@@ -603,7 +603,7 @@ module.exports = class Game {
 
     this.playerLeave(player);
 
-    if (player.alive || (this.graveyardParticipation == true && !player.exorcised))
+    if (player.alive || (this.graveyardParticipation == true && !player.exorcised) || (this.type == "Mafia" || player.requiresGraveyardParticipation()))
       this.sendAlert(`${player.name} has left.`, undefined, undefined, [
         "info",
       ]);
