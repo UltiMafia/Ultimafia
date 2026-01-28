@@ -603,7 +603,7 @@ module.exports = class Game {
 
     this.playerLeave(player);
 
-    if (player.alive || (this.graveyardParticipation == true && !player.exorcised) || (this.type == "Mafia" || player.requiresGraveyardParticipation()))
+    if (player.alive || (this.graveyardParticipation == true && !player.exorcised) || (this.type == "Mafia" && player.requiresGraveyardParticipation()))
       this.sendAlert(`${player.name} has left.`, undefined, undefined, [
         "info",
       ]);
@@ -634,7 +634,7 @@ module.exports = class Game {
         await this.reassignHost();
       }
     } else {
-      if (this.started && !this.finished && (player.alive || (this.graveyardParticipation == true && !player.exorcised))) {
+      if (this.started && !this.finished && (player.alive || (this.graveyardParticipation == true && !player.exorcised) || (this.type == "Mafia" && player.requiresGraveyardParticipation()))) {
         this.makeUnranked();
         this.makeUncompetitive();
 
