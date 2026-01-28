@@ -18,7 +18,7 @@ import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { GameSettingCount } from "./Roles";
 import { KUDOS_ICON } from "pages/User/Profile";
 
-export function PopoverContent({ title, content, page = null, icon = <></> }) {
+export function PopoverContent({ title, content, page = null, icon = <></>, subTitle = <></> }) {
   let wrappedTitle = (
     <Stack
       direction="row"
@@ -26,14 +26,21 @@ export function PopoverContent({ title, content, page = null, icon = <></> }) {
       className="mui-popover-title"
       sx={{
         p: 1,
-        textAlign: "center",
+        alignItems: "center",
         cursor: page ? "pointer" : "default",
         color: page ? "var(--mui-palette-primary-main)" : undefined,
         "&:hover": page ? { bgcolor: "rgba(12, 12, 12, 0.15)" } : undefined,
       }}
     >
       {icon}
-      <Typography variant="h3">{title}</Typography>
+      <Stack direction="column" sx={{
+        justifyContent: "end",
+      }}>
+        <Typography variant="h2">
+          {title}
+        </Typography>
+        {subTitle}
+      </Stack>
     </Stack>
   );
 
@@ -64,6 +71,8 @@ export const InfoPopover = function ({
   page,
   title,
   content,
+  icon,
+  subTitle,
 }) {
   if (content === null) {
     return <></>;
@@ -94,7 +103,7 @@ export const InfoPopover = function ({
           },
         }}
       >
-        <PopoverContent page={page} title={title} content={content} />
+        <PopoverContent page={page} title={title} content={content} icon={icon} subTitle={subTitle} />
       </Popover>
     ),
     [openByClick, showPopover, Boolean(content !== null)]
@@ -431,7 +440,7 @@ export function parseSetupPopover(setup, siteInfo) {
     </InfoSection>
   );
 
-  result.push(<FullRoleList setup={setup} key="fullRoleList" />);
+  result.push(<FullRoleList setup={setup} key="fullRoleList" compact />);
 
   return result;
 }

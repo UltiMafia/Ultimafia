@@ -93,7 +93,7 @@ export default function Setup(props) {
   }, [iconContainerRef]);
 
   // Extract events from all setup types
-  const { rolesDividedByAlignment, events, eventsPerRoleset } =
+  const { rolesDividedByAlignment, rolesDividedByRoleset, banishedRoles, events, eventsPerRoleset } =
     getRolesByAlignment(siteInfo, props.setup.gameType, props.setup.roles);
 
   var roleCounts = [];
@@ -119,12 +119,12 @@ export default function Setup(props) {
   } else if (useRoleGroups) {
     let roleGroupCounter = 0;
     let i = 0;
-    for (let roleGroup in props.setup.roles) {
+    for (let roleGroup in rolesDividedByRoleset) {
       if (maxIconsTotal !== null && roleCounts.length >= maxIconsTotal) {
         overSize = true;
         break;
       }
-      const roleGroupData = props.setup.roles[roleGroup];
+      const roleGroupData = rolesDividedByRoleset[roleGroup];
 
       // Filter out events from role group display
       const filteredRoleGroup = {};
@@ -173,7 +173,7 @@ export default function Setup(props) {
   }
 
   function selectSetup(index) {
-    let roleNames = Object.keys(props.setup.roles[index]);
+    let roleNames = Object.keys(rolesDividedByRoleset[index]);
     // Filter out events from role display
     const filteredRoleNames = roleNames.filter((role) => {
       const roleName = role.split(":")[0];
@@ -184,10 +184,10 @@ export default function Setup(props) {
       <RoleCount
         small={small}
         role={role}
-        count={props.setup.roles[index][role]}
+        count={rolesDividedByRoleset[index][role]}
         gameType={props.setup.gameType}
         key={role}
-        otherRoles={props.setup.roles}
+        otherRoles={rolesDividedByRoleset}
       />
     ));
   }
@@ -217,6 +217,20 @@ export default function Setup(props) {
       <EventPool
         key="event-pool"
         events={eventsToDisplay}
+        gameType={props.setup.gameType}
+        otherRoles={props.setup.roles}
+        small={small}
+      />
+    );
+  }
+
+  // Add Banished Pool icon if there are banished roles
+  const banishedKeys = Object.keys(banishedRoles);
+  if (banishedKeys.length > 0) {
+    roleCounts.push(
+      <BanishedPool
+        key="banished-pool"
+        roles={banishedRoles}
         gameType={props.setup.gameType}
         otherRoles={props.setup.roles}
         small={small}
@@ -482,14 +496,6 @@ function EventPool({ events, gameType, otherRoles, small = false }) {
     closePopover,
   } = usePopoverOpen();
 
-  const eventIconRef = useRef();
-  const eventKeys = Object.keys(events);
-  const hasEvents = eventKeys.length > 0;
-
-  if (!hasEvents) {
-    return null;
-  }
-
   const popoverProps = {
     "aria-owns": popoverOpen ? "mouse-over-popover" : undefined,
     "aria-haspopup": "true",
@@ -510,7 +516,6 @@ function EventPool({ events, gameType, otherRoles, small = false }) {
     <>
       <div
         className="role-count-wrap event-pool-wrap"
-        ref={eventIconRef}
         {...popoverProps}
         style={{
           cursor: "pointer",
@@ -544,8 +549,78 @@ function EventPool({ events, gameType, otherRoles, small = false }) {
   );
 }
 
+function BanishedPool({ roles, gameType, otherRoles, small = false }) {
+  const {
+    popoverOpen,
+    openByClick,
+    anchorEl,
+    handleClick,
+    handleMouseEnter,
+    handleMouseLeave,
+    closePopover,
+  } = usePopoverOpen();
+
+  if (Object.keys(roles) === 0) {
+    return <></>;
+  }
+
+  const popoverProps = {
+    "aria-owns": popoverOpen ? "mouse-over-popover" : undefined,
+    "aria-haspopup": "true",
+    onClick: handleClick,
+    onMouseEnter: handleMouseEnter,
+    onMouseLeave: handleMouseLeave,
+  };
+
+  const popoverTitle = "Banished Pool";
+  const popoverContent = (
+    <SmallRoleList roles={roles} gameType={gameType} otherRoles={otherRoles} />
+  );
+  const popoverIcon = (
+    <div className={`role role-icon-banished-pool ${small ? "small" : ""}`} />
+  );
+
+  return (
+    <>
+      <div
+        className="role-count-wrap event-pool-wrap"
+        {...popoverProps}
+        style={{
+          cursor: "pointer",
+        }}
+      >
+        <div className={`role role-icon-banished-pool ${small ? "small" : ""}`} />
+      </div>
+      <Popover
+        open={popoverOpen}
+        sx={{ pointerEvents: openByClick ? "auto" : "none" }}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        onClose={closePopover}
+        disableScrollLock
+        disableRestoreFocus
+      >
+        <PopoverContent
+          title={popoverTitle}
+          content={popoverContent}
+          icon={popoverIcon}
+        />
+      </Popover>
+    </>
+  );
+}
+
 function getRolesByAlignment(siteInfo, gameType, roles) {
   let rolesDividedByAlignment = {};
+  let rolesDividedByRoleset = {};
+  const banishedRoles = {};
   const events = {};
   const eventsPerRoleset = {};
 
@@ -553,6 +628,14 @@ function getRolesByAlignment(siteInfo, gameType, roles) {
     eventsPerRoleset[i] = {};
     for (let role in roles[i]) {
       let roleName = role.split(":")[0];
+      const modifiers = role.split(":")[1];
+      if (modifiers.includes("Banished")) {
+        if (!banishedRoles[role]) {
+          banishedRoles[role] = 0;
+        }
+        banishedRoles[role] += roles[i][role];
+        continue;
+      }
 
       for (let roleObj of siteInfo.roles[gameType]) {
         if (roleObj.name === roleName) {
@@ -576,8 +659,11 @@ function getRolesByAlignment(siteInfo, gameType, roles) {
           if (!rolesDividedByAlignment[i]) rolesDividedByAlignment[i] = {};
           if (!rolesDividedByAlignment[i][alignment])
             rolesDividedByAlignment[i][alignment] = {};
+          if (!rolesDividedByRoleset[i])
+            rolesDividedByRoleset[i] = {};
 
           rolesDividedByAlignment[i][alignment][role] = roles[i][role];
+          rolesDividedByRoleset[i][role] = roles[i][role];
         }
       }
     }
@@ -585,30 +671,60 @@ function getRolesByAlignment(siteInfo, gameType, roles) {
 
   return {
     rolesDividedByAlignment: rolesDividedByAlignment,
+    rolesDividedByRoleset: rolesDividedByRoleset,
+    banishedRoles: banishedRoles,
     events: events,
     eventsPerRoleset: eventsPerRoleset,
   };
 }
 
-export function FullRoleList({ setup }) {
+function RoleBox({ children, color, legend = null }) {
+  return (
+    <fieldset style={{
+      height: "100%",
+      border: `4px solid ${color}`,
+      borderRadius: "4px",
+      minWidth: "0",
+    }}>
+      {legend && (
+        <legend>
+          <Typography>
+            {legend}
+          </Typography>
+        </legend>
+      )}
+      <Stack
+        direction="row"
+        spacing={0}
+        sx={{
+          flexWrap: "wrap",
+          alignContent: "flex-start",
+        }}
+      >
+        {children}
+      </Stack>
+    </fieldset>
+  );
+}
+
+export function FullRoleList({ setup, compact = false }) {
   const roles = setup.roles;
   const gameType = setup.gameType;
 
   const siteInfo = useContext(SiteInfoContext);
-  const isPhoneDevice = useIsPhoneDevice();
 
   const multi =
     (!setup.closed || setup.useRoleGroups) &&
     !setup.useRoleGroups &&
     setup.roles.length > 1;
 
-  const { rolesDividedByAlignment, events, eventsPerRoleset } =
+  const { rolesDividedByAlignment, banishedRoles, events, eventsPerRoleset } =
     getRolesByAlignment(siteInfo, gameType, roles);
 
   // holy fricken FREAK this is a 3-dimensional effort
   const rolesetAlignments = Object.keys(rolesDividedByAlignment).map((i) => {
     const alignmentKeys = Object.keys(rolesDividedByAlignment[i]);
-    const gridItemSize = isPhoneDevice ? 12 : 12 / alignmentKeys.length;
+    const gridItemSize = compact ? 12 : 12 / alignmentKeys.length;
 
     // Determine which events to display
     let eventsToDisplay = {};
@@ -641,28 +757,17 @@ export function FullRoleList({ setup }) {
       );
 
       return (
-        <Grid item xs={12} md={gridItemSize}>
-          <Stack
-            direction="row"
-            spacing={0}
-            sx={{
-              p: 1,
-              height: "100%",
-              flexWrap: "wrap",
-              border: `4px solid ${alignmentColor}`,
-              borderRadius: "4px",
-              alignContent: "flex-start",
-            }}
-          >
+        <Grid item xs={12} md={gridItemSize} key={alignment}>
+          <RoleBox color={alignmentColor} legend={alignment}>
             {roles}
-          </Stack>
+          </RoleBox>
         </Grid>
       );
     });
 
     return (
       <Stack
-        direction={isPhoneDevice ? "column" : "row"}
+        direction={compact ? "column" : "row"}
         sx={{
           alignItems: "center",
         }}
@@ -707,6 +812,20 @@ export function FullRoleList({ setup }) {
       divider={<Divider orientation="horizontal" flexItem />}
     >
       {rolesetAlignments}
+      {Object.keys(banishedRoles).length > 0 && (
+        <RoleBox color="magenta" legend={"Banished"}>
+          {Object.keys(banishedRoles).map(banishedRole => {
+            return (
+              <RoleCount
+                key={banishedRole}
+                count={banishedRoles[banishedRole]}
+                role={banishedRole}
+                gameType={gameType}
+              />
+            );
+          })}
+        </RoleBox>
+      )}
     </Stack>
   );
 }
