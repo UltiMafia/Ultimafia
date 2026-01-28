@@ -2051,7 +2051,7 @@ const roleData = {
       tags: ["Meetings", "Information", "Basic"],
       description: [
         "Each day, chooses two players and have them attend a banquet at night together.",
-        "When attending a banquet they will learn each other's roles and cannot preform night actions.",
+        "When attending a banquet they will learn each other's roles and cannot perform night actions.",
         //"Chooses two players during the day to attend a banquet the following evening.",
         //"Players chosen to attend the banquet meet anonymously with their roles revealed to one another.",
       ],
