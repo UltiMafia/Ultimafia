@@ -603,7 +603,7 @@ module.exports = class Game {
 
     this.playerLeave(player);
 
-    if (player.alive)
+    if (player.alive || (this.graveyardParticipation == true && !player.exorcised))
       this.sendAlert(`${player.name} has left.`, undefined, undefined, [
         "info",
       ]);
@@ -634,7 +634,7 @@ module.exports = class Game {
         await this.reassignHost();
       }
     } else {
-      if (this.started && !this.finished && player.alive) {
+      if (this.started && !this.finished && (player.alive || (this.graveyardParticipation == true && !player.exorcised))) {
         this.makeUnranked();
         this.makeUncompetitive();
 
