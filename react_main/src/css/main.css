@@ -668,13 +668,13 @@ input:focus {
 }
 
 .mui-popover-title {
-  display: flex;
-  flex-flow: row wrap;
-
-  font-size: 1.5rem;
   background-color: var(--scheme-color-sec);
   border-bottom: 2px solid var(--mui-palette-divider);
   padding: var(--mui-spacing);
+}
+
+.mui-popover-title > .role {
+  font-size: 2em;
 }
 
 @media only screen and (min-width: 700px) {

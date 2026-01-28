@@ -367,7 +367,7 @@ export function SetupPage() {
         </Grid>
       </Card>
       <Box>
-        <FullRoleList setup={setup} />
+        <FullRoleList setup={setup} compact={isPhoneDevice} />
       </Box>
       <Box>
         <Grid container spacing={1}>

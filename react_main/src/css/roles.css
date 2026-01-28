@@ -276,6 +276,10 @@
   background-image: url("/src/images/roles/event-vivid.png");
 }
 
+.role-icon-banished-pool {
+  background-image: url("/src/images/roles/banished-vivid.png");
+}
+
 .role-icon-vivid-Mafia-Banished-Village {
   background-image: url("/src/images/roles/village-vivid.png");
 }

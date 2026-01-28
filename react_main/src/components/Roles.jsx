@@ -491,7 +491,8 @@ export function RoleCount({
     popoverTitle = null,
     popoverContent = null,
     popoverPage = null,
-    popoverIcon = null;
+    popoverIcon = null,
+    popoverSubTitle = null;
   if (closed) {
     popoverTitle = `${alignment} roleset`;
     popoverContent = (
@@ -553,9 +554,6 @@ export function RoleCount({
         divider={<Divider orientation="horizontal" flexItem />}
       >
         <Typography>
-          <span style={{ fontWeight: "bold" }}>Alignment</span>: {roleAlignment}
-        </Typography>
-        <Typography>
           <span style={{ fontWeight: "bold" }}>Tags</span>: {roleTags}
         </Typography>
         {DescriptionLines}
@@ -565,6 +563,11 @@ export function RoleCount({
     );
     popoverPage = `/learn/role/${roleName}`;
     popoverIcon = <div className={`role role-icon-${roleSkin}-${roleClass}`} />;
+    popoverSubTitle = (
+      <Typography>
+        <span style={{ fontWeight: "bold" }}>Alignment</span>: {roleAlignment}
+      </Typography>
+    );
 
     // Determine which modifier icon to display
     let modifierIcon = null;
@@ -633,6 +636,7 @@ export function RoleCount({
           content={popoverContent}
           page={popoverPage}
           icon={popoverIcon}
+          subTitle={popoverSubTitle}
         />
       </Popover>
     </>
