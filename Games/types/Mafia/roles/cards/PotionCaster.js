@@ -178,8 +178,28 @@ module.exports = class PotionCaster extends Card {
             );
           }
         }
+      },
+      playerHasJoinedMeetings: function (player) {
+        if(player != this.player){
+          return;
+        }
+        var currentPotionList = [];
+        for (let potion of this.data.fullPotionList) {
+          if (this.data.potionCounter[potion] <= 0) {
+            this.data.potionCounter[potion] = 0;
+            currentPotionList.push(potion);
+          }
+        }
+        
+        this.player.getMeetings().forEach((meeting) => {
+          if(meeting.name.includes("Choose Potion")){
+            if(currentPotionList.length <= 0){
+              currentPotionList.push("None");
+            }
 
-        this.meetings["Choose Potion"].targets = currentPotionList;
+            meeting.targets = currentPotionList;
+          }
+        });
       },
     };
   }
