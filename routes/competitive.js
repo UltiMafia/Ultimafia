@@ -249,10 +249,14 @@ router.get("/season/:seasonNumber", async function (req, res) {
 
     seasonInfo.standings = await models.CompetitiveSeasonStanding.find({
       season: seasonNumber,
+      points: { $gt: 0 },
     })
       .select("-_id userId points tiebreakerPoints")
-      .sort({ points: -1 })
-      .limit(10)
+      .sort({
+        points: -1,
+        tiebreakerPoints: -1,
+       })
+      .limit(100)
       .lean();
 
     seasonInfo.standings = seasonInfo.standings.map((standing, index) => {
