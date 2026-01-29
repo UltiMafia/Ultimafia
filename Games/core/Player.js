@@ -341,7 +341,9 @@ module.exports = class Player {
       try {
         this.game.playerLeave(this);
 
-        if (this.alive) this.game.sendAlert(`${this.name} has left.`);
+        if (this.alive || (this.game.graveyardParticipation == true && this.exorcised == false) || (this.game.type == "Mafia" && this.requiresGraveyardParticipation())){
+           this.game.sendAlert(`${this.name} has left.`);
+        }
       } catch (e) {
         logger.error(e);
         // this.handleError(e);

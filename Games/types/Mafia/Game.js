@@ -9,6 +9,7 @@ const Action = require("./Action");
 const stateEventMessages = require("./templates/stateEvents");
 const roleData = require("../../../data/roles");
 const rolePriority = require("./const/RolePriority");
+const modifierData = require("../../../data/modifiers");
 
 module.exports = class MafiaGame extends Game {
   constructor(options) {
@@ -139,7 +140,7 @@ module.exports = class MafiaGame extends Game {
 
     this.rebroadcastSetup();
 
-    if (this.isVotingDead()) {
+    if (this.isVotingDead() || this.isTalkingDead()) {
       this.graveyardParticipation = true;
     }
 
@@ -156,11 +157,22 @@ module.exports = class MafiaGame extends Game {
 
     for (let playerId in this.originalRoles) {
       let roleName = this.originalRoles[playerId].split(":")[0];
+      let modifiers = this.originalRoles[playerId].split(":")[1];
       let data = roleData[this.type][roleName];
       if (data.graveyardParticipation === "all") {
         this.graveyardParticipation = true;
         return;
       }
+      if(modifiers){
+      modifiers = modifiers.split("/");
+      for(let modifier of modifiers){
+        let modData = modifierData[this.type][modifier];
+        if(modData.tags.includes("Graveyard Participation All")){
+        this.graveyardParticipation = true;
+        return;
+        }
+      }
+    }
     }
   }
 

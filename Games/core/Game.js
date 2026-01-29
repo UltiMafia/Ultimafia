@@ -600,13 +600,13 @@ module.exports = class Game {
 
       return;
     }
-
-    this.playerLeave(player);
-
-    if (player.alive)
+    //this.sendAlert(`Alive ${player.alive} Grave Part ${this.graveyardParticipation} Exorcised ${player.exorcised} Player Grave Part ${player.requiresGraveyardParticipation()}`);
+    if (player.alive || (this.graveyardParticipation == true && player.exorcised == false) || (this.type == "Mafia" && player.requiresGraveyardParticipation())){
       this.sendAlert(`${player.name} has left.`, undefined, undefined, [
         "info",
       ]);
+    }
+    this.playerLeave(player);
   }
 
   async playerLeave(player) {
@@ -634,7 +634,7 @@ module.exports = class Game {
         await this.reassignHost();
       }
     } else {
-      if (this.started && !this.finished && player.alive) {
+      if (this.started && !this.finished && (player.alive || (this.graveyardParticipation == true && !player.exorcised) || (this.type == "Mafia" && player.requiresGraveyardParticipation()))) {
         this.makeUnranked();
         this.makeUncompetitive();
 
