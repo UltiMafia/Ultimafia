@@ -2999,7 +2999,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Deception", "Astral", "Basic"],
       description: [
-        "Does not visit when preforming the mafia kill.",
+        "Does not visit when performing the mafia kill.",
         //"Does not get detected by watchers and trackers.",
         //"Does not trigger any when visited abilities on the target.",
         "Kills players holding Bombs without setting off the explosion.",
