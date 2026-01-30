@@ -167,6 +167,12 @@ export default function MafiaGame() {
       volumes: 1,
     },
     {
+      fileName: "music/NightBird",
+      loops: true,
+      overrides: false,
+      volumes: 1,
+    },
+    {
       fileName: "music/NightHostile",
       loops: true,
       overrides: false,
@@ -343,7 +349,6 @@ export default function MafiaGame() {
           case "Chandler":
           case "Cutler":
           case "Demolitionist":
-          case "Falconer":
           case "Funsmith":
           case "Gemcutter":
           case "Gunsmith":
@@ -408,7 +413,6 @@ export default function MafiaGame() {
             game.playAudio("music/NightHostile");
             break;
           case "Clown":
-          case "Dodo":
           case "Fool":
           case "Trickster":
           case "Prankster":
@@ -452,6 +456,14 @@ export default function MafiaGame() {
           case "Prophet":
           case "Fatalist":
             game.playAudio("music/NightMystical");
+            break;
+          case "Egg":
+          case "Dodo":
+          case "Turkey":
+          case "Tofurkey":
+          case "Harpy":
+          case "Falconer":
+            game.playAudio("music/NightBird");
             break;
           default:
             if (currentAlignment === "Mafia") {
