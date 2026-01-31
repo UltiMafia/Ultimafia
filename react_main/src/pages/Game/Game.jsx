@@ -2969,8 +2969,8 @@ export function PlayerRows({ players, className = "" }) {
       avatarId = player.anonId === undefined ? player.userId : player.anonId;
     }
 
-    const readyCheck = true;
-    const isReady = false || readyCheck && readyCheckInfo.readyPlayers[player.id];
+    const readyCheck = readyCheckInfo?.active;
+    const isReady = readyCheck && readyCheckInfo.readyPlayers[player.id];
 
     return (
       <div 
