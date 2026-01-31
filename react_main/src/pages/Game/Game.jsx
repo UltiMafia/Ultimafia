@@ -190,6 +190,7 @@ export default function Game() {
 
   function onReadyCheckVerify() {
     socket.send("readyCheck verify");
+    stopAudio("urgent");
   }
 
   function onLeaveGameClick() {
@@ -797,10 +798,12 @@ export default function Game() {
     });
 
     socket.on("readyCheck cancel", () => {
+      stopAudio("urgent");
       setReadyCheckInfo({ active: false, readyPlayers: {}, endTime: 0 });
     });
 
     socket.on("readyCheck success", () => {
+      stopAudio("urgent");
       setReadyCheckInfo({ active: false, readyPlayers: {}, endTime: 0 });
     });
 
