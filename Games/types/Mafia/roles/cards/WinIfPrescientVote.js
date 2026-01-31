@@ -17,7 +17,6 @@ module.exports = class WinIfPrescientVote extends Card {
       check: function (counts, winners) {
         if (
           this.player.alive &&
-          !winners.groups[this.name] &&
           this.predictedCorrect >= 2
         ) {
           winners.addPlayer(this.player, this.name);
