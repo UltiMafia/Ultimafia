@@ -26,7 +26,6 @@ module.exports = class WinWithDeadNeighbors extends Card {
         if (
           this.player.alive &&
           this.game.IsBloodMoon &&
-          !winners.groups[this.name] &&
           this.startingNeigbors &&
           this.HasKilledANeighborDuringBloodMoon
         ) {
