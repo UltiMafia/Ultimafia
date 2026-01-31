@@ -183,7 +183,7 @@ export default function HostMafia() {
       defaults.ranked = getFormFieldValue("ranked");
       defaults.competitive = getFormFieldValue("competitive");
       defaults.spectating = getFormFieldValue("spectating");
-      defaults.readyCheck = getFormFieldValue("readyCheck");
+      defaults.readyCheck = true;
       defaults.noVeg = getFormFieldValue("noVeg");
       defaults.dayLength = getFormFieldValue("dayLength");
       defaults.nightLength = getFormFieldValue("nightLength");

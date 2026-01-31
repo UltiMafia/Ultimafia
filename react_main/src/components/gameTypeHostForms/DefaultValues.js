@@ -60,6 +60,7 @@ const commonHostOptions = {
 var defaultOptions = {
   Mafia: existingHostOptions["Mafia"] || {
     ...commonHostOptions,
+    readyCheck: true,
     ranked: false,
     competitive: false,
     advancedHosting: false,
