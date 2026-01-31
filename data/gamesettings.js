@@ -236,6 +236,14 @@ const gameSettingData = {
       description:
         "Players who die will have any malicious effects they have removed.",
     },
+    "Post Conversion Death Reveals": {
+      category: "Other",
+      internal: ["PostConversionDeathReveals"],
+      tags: ["Conversion", "Death"],
+      description:
+        "Players who are converted and die in the same night will flip as their new role on death.",
+      incompatible: ["No Reveal"],
+    },
     "Last Wills": {
       category: "Other",
       internal: ["LastWills"],
