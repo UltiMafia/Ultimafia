@@ -5777,7 +5777,7 @@ function ReadyCheckDialog({ open, endTime, onReady, onLeave }) {
             The game is starting! Please confirm you are here.
           </Typography>
           <Typography variant="h4" color={timeLeft < 10000 ? "error" : "primary"}>
-            {(timeLeft / 1000).toFixed(1)}s
+            {(timeLeft / 1000).toFixed(0)}s
           </Typography>
           <Typography variant="caption" color="text.secondary">
             Failure to ready up will result in being kicked.
