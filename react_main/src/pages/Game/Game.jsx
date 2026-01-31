@@ -2969,25 +2969,25 @@ export function PlayerRows({ players, className = "" }) {
       avatarId = player.anonId === undefined ? player.userId : player.anonId;
     }
 
-    const isReady = readyCheckInfo?.active && readyCheckInfo.readyPlayers[player.id];
+    const readyCheck = true;
+    const isReady = false || readyCheck && readyCheckInfo.readyPlayers[player.id];
 
     return (
-      <div className={`player ${className ? className : ""}`} key={player.id}>
+      <div 
+        className={`player ${className ? className : ""}`} 
+        key={player.id}
+        style={readyCheck ? {
+          boxShadow: isReady ? "inset 4px 0 0 #4caf50" : "inset 4px 0 0 #e02626",
+          backgroundColor: isReady ? "#4caf500c" : "#e026260c",
+          transition: "background-color 0.2s, box-shadow 0.2s",
+          display: "flex", 
+          alignItems: "center",
+          width: "100%",
+          paddingLeft: "10px",
+          paddingRight: "8px"
+        } : {}}
+      >
         {isolationCheckbox}
-        {isReady && (
-          <div
-            className="ready-indicator"
-            style={{
-              position: "absolute",
-              left: "4px",
-              zIndex: 10,
-              color: "#4caf50",
-              fontSize: "1.2em",
-            }}
-          >
-            <i className="fas fa-check-circle" />
-          </div>
-        )}
         {stateViewing !== -1 && (
           <RoleMarkerToggle
             playerId={player.id}
@@ -3023,6 +3023,18 @@ export function PlayerRows({ players, className = "" }) {
             width="20"
             height="20"
           />
+        )}
+        {readyCheck && (
+          <Box sx={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
+            {isReady ?
+              (<Tooltip title="Ready" arrow>
+                <i className="fas fa-check-circle" style={{ color: "#4caf50", fontSize: "1.2rem" }} />
+              </Tooltip>)
+            : (<Tooltip title="Not Ready" arrow>
+                <i className="fas fa-times-circle" style={{ color: "#e02626", fontSize: "1.2rem" }} />
+              </Tooltip>)
+            }
+          </Box>
         )}
       </div>
     );
