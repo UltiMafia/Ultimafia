@@ -53,6 +53,9 @@ module.exports = class DeliriateRoleFor3Nights extends Card {
                   this.role
                 );
                 this.blockWithDelirium(players[y], true);
+                if(!this.role.playersToBlock){
+                  this.role.playersToBlock = [];
+                }
                 this.role.playersToBlock.push(players[y]);
                 //this.actor.role.blockCounter = 3;
               }
