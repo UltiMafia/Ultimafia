@@ -2643,6 +2643,13 @@ module.exports = class Game {
     return false;
   }
 
+    isPostConvertDeathReveals() {
+    if (this.getGameSetting("Post Conversion Death Reveals")) {
+      return true;
+    }
+    return false;
+  }
+
   isLastWills() {
     if (this.getGameSetting("Last Wills")) {
       return true;
