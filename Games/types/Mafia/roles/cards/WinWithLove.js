@@ -14,7 +14,7 @@ module.exports = class WinWithLove extends Card {
           this.loves &&
           this.loves.alive &&
           ((!confirmedFinished && counts["Village"] == aliveCount) ||
-            (confirmedFinished && !winners.groups[this.name]))
+            (confirmedFinished))
         ) {
           winners.addPlayer(this.player, this.name);
         }

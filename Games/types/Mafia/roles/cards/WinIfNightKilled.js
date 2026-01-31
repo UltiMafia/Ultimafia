@@ -9,7 +9,7 @@ module.exports = class WinIfNightKilled extends Card {
       priority: PRIORITY_WIN_IF_CONDEMNED,
       againOnFinished: true,
       check: function (counts, winners) {
-        if (this.data.nightKilled && !winners.groups[this.name]) {
+        if (this.data.nightKilled) {
           winners.addPlayer(this.player, this.name);
         }
       },

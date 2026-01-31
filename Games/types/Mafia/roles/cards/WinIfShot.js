@@ -9,7 +9,7 @@ module.exports = class WinIfShot extends Card {
       priority: PRIORITY_WIN_BY_GETTING_SHOT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount) {
-        if (this.data.shot && !winners.groups[this.name]) {
+        if (this.data.shot) {
           winners.addPlayer(this.player, this.name);
         }
       },

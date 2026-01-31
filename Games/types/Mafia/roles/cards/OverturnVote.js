@@ -14,10 +14,12 @@ module.exports = class OverturnVote extends Card {
         targets: { include: ["alive"], exclude: ["dead", "self"] },
         shouldMeet: function () {
           //skip if town is trying to condemn mafia under don
-          if (this.player.alive && this.player.role.name == "Don") {
+          if (this.player.role.name == "Don") {
             for (let action of this.game.actions[0]) {
               if (
-                action.hasLabel("condemn") &&
+                action.hasLabel("condemn") && 
+                action.target &&
+                action.target instanceof Player &&
                 action.target.getRoleAlignment() == "Mafia"
               ) {
                 return false;
@@ -34,9 +36,6 @@ module.exports = class OverturnVote extends Card {
           }
 
           if (!this.overturnsLeft) {
-            return false;
-          }
-          if (!this.player.alive) {
             return false;
           }
 

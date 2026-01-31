@@ -18,7 +18,6 @@ module.exports = class WinByStealingClovers extends Card {
       againOnFinished: true,
       check: function (counts, winners, aliveCount) {
         if (
-          !winners.groups[this.name] &&
           this.player.alive &&
           this.player.getItems("Clover").length >= this.data.cloverTarget
         ) {

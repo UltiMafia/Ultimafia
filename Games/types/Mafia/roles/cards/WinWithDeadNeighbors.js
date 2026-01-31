@@ -13,7 +13,6 @@ module.exports = class WinWithDeadNeighbors extends Card {
       check: function (counts, winners) {
         if (
           this.player.alive &&
-          !winners.groups[this.name] &&
           this.startingNeigbors &&
           !this.startingNeigbors[0].alive &&
           !this.startingNeigbors[1].alive
@@ -27,7 +26,6 @@ module.exports = class WinWithDeadNeighbors extends Card {
         if (
           this.player.alive &&
           this.game.IsBloodMoon &&
-          !winners.groups[this.name] &&
           this.startingNeigbors &&
           this.HasKilledANeighborDuringBloodMoon
         ) {
