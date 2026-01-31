@@ -67,6 +67,7 @@ import {
   Button,
   ButtonGroup,
   Divider,
+  Dialog,
   IconButton,
   Stack,
   Tab,
