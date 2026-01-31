@@ -118,6 +118,7 @@ export default function MafiaGame() {
       volumes: 1,
     },
     { fileName: "music/NightMafia", loops: true, overrides: false, volumes: 1 },
+    { fileName: "music/NightCult", loops: true, overrides: false, volumes: 1 },
     {
       fileName: "music/NightProtector",
       loops: true,
@@ -469,7 +470,12 @@ export default function MafiaGame() {
             if (currentAlignment === "Mafia") {
               // If mafia role isn't listed above the mafia track plays
               game.playAudio("music/NightMafia");
-            } else {
+            }
+            else if (currentAlignment === "Cult") {
+              // If cult role isn't listed above the mafia track plays
+              game.playAudio("music/NightCult");
+            }
+            else {
               // If no role has assigned music the generic track plays
               game.playAudio("music/NightGeneric");
             }
