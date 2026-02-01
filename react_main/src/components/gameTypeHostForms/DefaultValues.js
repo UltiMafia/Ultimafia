@@ -6,7 +6,7 @@ function getStorageKey(gameType) {
 
 // increment a number here to force people's hosting preferences to be reset one time only for that game type
 const HOST_OPTIONS_VERSIONS = {
-  Mafia: 2,
+  Mafia: 3,
   Acrotopia: 1,
   Jotto: 1,
   "Liars Dice": 1,
@@ -60,6 +60,7 @@ const commonHostOptions = {
 var defaultOptions = {
   Mafia: existingHostOptions["Mafia"] || {
     ...commonHostOptions,
+    readyCheck: true,
     ranked: false,
     competitive: false,
     advancedHosting: false,

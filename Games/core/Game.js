@@ -5,7 +5,6 @@ const Message = require("./Message");
 const History = require("./History");
 const Queue = require("./Queue");
 const PregameMeeting = require("./PregameMeeting");
-const PregameReadyMeeting = require("./PregameReadyMeeting");
 const SpectatorMeeting = require("./SpectatorMeeting");
 const Timer = require("./Timer");
 const Random = require("../../lib/Random");
@@ -138,6 +137,9 @@ module.exports = class Game {
 
     this.numHostInGame = 0;
     this.originalHostId = options.hostId; // Track the original host for reassignment
+
+    this.isReadyCheckActive = false;
+    this.readyPlayers = {};
   }
 
   async init() {
@@ -897,6 +899,13 @@ module.exports = class Game {
 
     if (player.user.dev && !player.isBot) player.send("dev");
 
+    if (this.isReadyCheckActive) {
+        player.send("readyCheck init", {
+            endTime: Date.now() + this.getTimeLeft("pregameCountdown"),
+            readyPlayers: Object.keys(this.readyPlayers)
+        });
+    }
+
     this.sendTimersToPlayer(player);
     this.syncPlayerTimers(player);
   }
@@ -941,13 +950,13 @@ module.exports = class Game {
   }
 
   startReadyCheck() {
-    this.readyMeeting = this.createMeeting(PregameReadyMeeting);
+    this.isReadyCheckActive = true;
+    this.readyPlayers = {};
 
-    for (let player of this.players) this.readyMeeting.join(player);
-
-    this.readyMeeting.init();
-
-    for (let player of this.players) player.sendMeeting(this.readyMeeting);
+    this.broadcast("readyCheck init", {
+        endTime: Date.now() + this.readyCountdownLength,
+        readyPlayers: []
+    });
 
     this.createTimer("pregameCountdown", this.readyCountdownLength, () =>
       this.failReadyCheck()
@@ -957,21 +966,46 @@ module.exports = class Game {
 
   cancelReadyCheck() {
     this.clearTimer("pregameCountdown");
+    this.isReadyCheckActive = false;
+    this.readyPlayers = {};
+    
+    this.broadcast("readyCheck cancel", {});
+  }
 
-    if (this.readyMeeting) this.readyMeeting.cancel();
+  playerReady(player) {
+    if (!this.isReadyCheckActive) return;
+    if (this.readyPlayers[player.id]) return;
+
+    this.readyPlayers[player.id] = true;
+
+    this.sendAlert(`${player.name} is ready.`, undefined, undefined, ["info"]);
+    this.broadcast("readyCheck update", { playerId: player.id });
+    this.checkAllPlayersReady();
+  }
+
+  checkAllPlayersReady() {
+    if (!this.isReadyCheckActive) return;
+
+    for (let player of this.players) {
+      if (!this.readyPlayers[player.id]) return;
+    }
+
+    this.isReadyCheckActive = false;
+    this.startPregameCountdown();
+    this.sendAlert("Everyone is ready, starting the game!");
   }
 
   failReadyCheck() {
-    for (let member of this.readyMeeting.members) {
-      if (!member.ready) {
-        this.kickPlayer(member.player);
-        this.sendAlert(
-          `${member.player.name} was kicked for inactivity.`,
-          undefined,
-          undefined,
-          ["info"]
-        );
-      }
+    for (let player of this.players) {
+      if (!this.readyPlayers[player.id]) {
+          this.kickPlayer(player);
+          this.sendAlert(
+            `${player.name} was kicked for inactivity.`,
+            undefined,
+            undefined,
+            ["info"]
+          );
+        }
     }
 
     this.cancelReadyCheck();
@@ -979,6 +1013,8 @@ module.exports = class Game {
 
   startPregameCountdown() {
     this.clearTimer("pregameCountdown");
+    this.broadcast("readyCheck success", {}); 
+    
     this.createTimer("pregameCountdown", this.pregameCountdownLength, () =>
       this.start()
     );

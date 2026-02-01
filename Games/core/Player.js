@@ -131,6 +131,14 @@ module.exports = class Player {
     var speechPast = [];
     var votePast = [];
 
+    socket.on("readyCheck verify", () => {
+        try {
+            this.game.playerReady(this);
+        } catch (e) {
+            logger.error(e);
+        }
+    });
+
     socket.on("speak", (message) => {
       try {
         if (typeof message != "object") return;
