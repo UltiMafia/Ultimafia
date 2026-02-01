@@ -67,6 +67,10 @@ import {
   Button,
   ButtonGroup,
   Divider,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   IconButton,
   Stack,
   Tab,
@@ -141,7 +145,7 @@ export default function Game() {
   const [spectatorCount, setSpectatorCount] = useState(0);
   const [isSpectator, setIsSpectator] = useState(false);
   const [self, setSelf] = useState();
-  const [youAreBeingVoteKicked, setYouAreBeingVoteKicked] = useState(false);
+  const [voteKickUrgency, setVoteKickUrgency] = useState(false);
   const [lastWill, setLastWill] = useState("");
   const [settings, updateSettings] = useSettingsReducer();
   const [showFirstGameModal, setShowFirstGameModal] = useState(false);
@@ -177,6 +181,17 @@ export default function Game() {
   ).filter(
     (meeting) => !meeting.playerHasVoted && meeting.voting && meeting.canVote
   ).length;
+
+  const [readyCheckInfo, setReadyCheckInfo] = useState({
+    active: false,
+    readyPlayers: {},
+    endTime: 0,
+  });
+
+  function onReadyCheckVerify() {
+    socket.send("readyCheck verify");
+    stopAudio("urgent");
+  }
 
   function onLeaveGameClick() {
     if (
@@ -330,7 +345,7 @@ export default function Game() {
       { fileName: "ping", loops: false, overrides: false, volumes: 1 },
       { fileName: "tick", loops: false, overrides: false, volumes: 1 },
       { fileName: "vegPing", loops: false, overrides: false, volumes: 1 },
-      { fileName: "youAreBeingVoteKicked", loops: false, overrides: false, volumes: 1 },
+      { fileName: "urgent", loops: false, overrides: false, volumes: 1 },
     ],
   };
 
@@ -733,9 +748,9 @@ export default function Game() {
 
     socket.on("youAreBeingVoteKicked", (data) => {
       const status = data.status;
-      setYouAreBeingVoteKicked(status);
+      setVoteKickUrgency(status);
       if (status) {
-        playAudio("youAreBeingVoteKicked");
+        playAudio("urgent");
         setPingInfo({
           msg: `⚠ You are vegging!`,
           timestamp: new Date().getTime(),
@@ -769,6 +784,34 @@ export default function Game() {
 
     socket.on("dev", () => {
       setDev(true);
+    });
+
+    socket.on("readyCheck init", (data) => {
+      const readyMap = {};
+      if (data.readyPlayers) data.readyPlayers.forEach((id) => (readyMap[id] = true));
+      setReadyCheckInfo({ active: true, readyPlayers: readyMap, endTime: data.endTime });
+      playAudio("urgent");
+      setPingInfo({
+        msg: `⚠ Ready Check!`,
+        timestamp: new Date().getTime(),
+      });
+    });
+
+    socket.on("readyCheck cancel", () => {
+      stopAudio("urgent");
+      setReadyCheckInfo({ active: false, readyPlayers: {}, endTime: 0 });
+    });
+
+    socket.on("readyCheck success", () => {
+      stopAudio("urgent");
+      setReadyCheckInfo({ active: false, readyPlayers: {}, endTime: 0 });
+    });
+
+    socket.on("readyCheck update", (data) => {
+      setReadyCheckInfo((prev) => ({
+        ...prev,
+        readyPlayers: { ...prev.readyPlayers, [data.playerId]: true },
+      }));
     });
   }, [connected]);
 
@@ -884,7 +927,10 @@ export default function Game() {
       setChangeSetupDialogOpen: setChangeSetupDialogOpen,
       spectators: spectators,
       setSpectators: setSpectators,
+      readyCheckInfo: readyCheckInfo
     };
+
+    const isUrgent = voteKickUrgency || (readyCheckInfo.active && !readyCheckInfo.readyPlayers[self]);
 
     return (
       <GameContext.Provider value={gameContext}>
@@ -922,7 +968,13 @@ export default function Game() {
             {gameType === "Connect Four" && <ConnectFourGame />}
           </Box>
         </Stack>
-        <UrgencyOverlay hidden={!youAreBeingVoteKicked} />
+        <UrgencyOverlay hidden={!isUrgent} />
+        <ReadyCheckDialog
+          open={readyCheckInfo.active && !readyCheckInfo.readyPlayers[self]}
+          endTime={readyCheckInfo.endTime}
+          onReady={onReadyCheckVerify}
+          onLeave={leaveGame}
+        />
         <LeaveGameDialog
           open={leaveDialogOpen}
           onClose={() => setLeaveDialogOpen(false)}
@@ -2746,6 +2798,7 @@ export function PlayerRows({ players, className = "" }) {
     isolationEnabled,
     togglePlayerIsolation,
     isolatedPlayers,
+    readyCheckInfo
   } = game;
 
   const prevStateRef = useRef(history?.currentState);
@@ -2916,8 +2969,24 @@ export function PlayerRows({ players, className = "" }) {
       avatarId = player.anonId === undefined ? player.userId : player.anonId;
     }
 
+    const readyCheck = readyCheckInfo?.active;
+    const isReady = readyCheck && readyCheckInfo.readyPlayers[player.id];
+
     return (
-      <div className={`player ${className ? className : ""}`} key={player.id}>
+      <div 
+        className={`player ${className ? className : ""}`} 
+        key={player.id}
+        style={readyCheck ? {
+          boxShadow: isReady ? "inset 4px 0 0 #4caf50" : "inset 4px 0 0 #e02626",
+          backgroundColor: isReady ? "#4caf500c" : "#e026260c",
+          transition: "background-color 0.2s, box-shadow 0.2s",
+          display: "flex", 
+          alignItems: "center",
+          width: "100%",
+          paddingLeft: "10px",
+          paddingRight: "8px"
+        } : {}}
+      >
         {isolationCheckbox}
         {stateViewing !== -1 && (
           <RoleMarkerToggle
@@ -2954,6 +3023,18 @@ export function PlayerRows({ players, className = "" }) {
             width="20"
             height="20"
           />
+        )}
+        {readyCheck && (
+          <Box sx={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
+            {isReady ?
+              (<Tooltip title="Ready" arrow>
+                <i className="fas fa-check-circle" style={{ color: "#4caf50", fontSize: "1.2rem" }} />
+              </Tooltip>)
+            : (<Tooltip title="Not Ready" arrow>
+                <i className="fas fa-times-circle" style={{ color: "#e02626", fontSize: "1.2rem" }} />
+              </Tooltip>)
+            }
+          </Box>
         )}
       </div>
     );
@@ -5683,6 +5764,51 @@ export function useAudio(settings) {
   }
 
   return [playAudio, loadAudioFiles, stopAudio, stopAudios];
+}
+
+function ReadyCheckDialog({ open, endTime, onReady, onLeave }) {
+  const [timeLeft, setTimeLeft] = useState(0);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const interval = setInterval(() => {
+      const remaining = Math.max(0, endTime - Date.now());
+      setTimeLeft(remaining);
+      if (remaining <= 0) clearInterval(interval);
+    }, 100);
+    
+    return () => clearInterval(interval);
+  }, [open, endTime]);
+
+  if (!open) return null;
+
+  return (
+    <Dialog open={open} maxWidth="xs" fullWidth disableEscapeKeyDown>
+      <DialogTitle sx={{ textAlign: "center" }}>Are you ready?</DialogTitle>
+      <DialogContent>
+        <Stack alignItems="center" spacing={2}>
+          <Typography variant="body1">
+            The game is starting! Please confirm you are here.
+          </Typography>
+          <Typography variant="h4" color={timeLeft < 10000 ? "error" : "primary"}>
+            {(timeLeft / 1000).toFixed(0)}s
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            Failure to ready up will result in being kicked.
+          </Typography>
+        </Stack>
+      </DialogContent>
+      <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
+        <Button onClick={onLeave} color="error" variant="outlined">
+          Leave Game
+        </Button>
+        <Button onClick={onReady} color="success" variant="contained" size="large">
+          I am Ready
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
 }
 
 async function requestNotificationAccess() {
