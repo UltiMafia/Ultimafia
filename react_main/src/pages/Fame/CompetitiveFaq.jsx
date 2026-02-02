@@ -67,7 +67,7 @@ export default function CompetitiveFaq() {
       </Typography>
       <Typography paragraph>
         A competitive season is divided into multiple rounds. Each round
-        consists of eight open days and five review days, which are followed by
+        consists of nine open days and four review days, which are followed by
         a one day break before the next round begins. During open days, players
         can play competitive games and earn fortune points. During review days,
         players cannot play competitive games, and admins may review games.

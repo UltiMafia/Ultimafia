@@ -4,6 +4,7 @@ const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const shortid = require("shortid");
 const routeUtils = require("../routes/utils");
+const constants = require("../data/constants");
 
 // SEE: https://docs.google.com/document/d/1amLZWVBKyalKh7KalYpCDgZSmmNmBy1-BIASOj9GnFA
 const POINTS_TABLE = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
@@ -62,6 +63,8 @@ async function progressCompetitive() {
       season: seasonNumber,
       number: currentSeason.currentRound,
       startDate: startDateNew.toISOString().split("T")[0],
+      remainingOpenDays: constants.openDaysPerCompetitiveRound,
+      remainingReviewDays: constants.reviewDaysPerCompetitiveRound,
     });
     const newDocument = await round.save();
 
@@ -108,8 +111,8 @@ async function progressCompetitive() {
           } day ${currentRound.currentDay + 1}`
         );
 
-        // Don't add gold hearts on the final day
-        if (currentRound.remainingOpenDays > 1) {
+        // Only give out gold hearts on the first seven days of a round
+        if (constants.openDaysPerCompetitiveRound - currentRound.remainingOpenDays < 7) {
           console.log(`[progressCompetitive]: Giving everyone 4 gold hearts`);
           await models.User.updateMany({}, { $inc: { goldHearts: 4 } }).exec();
           await redis.invalidateAllCachedUsers();
