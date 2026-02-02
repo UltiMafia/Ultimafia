@@ -56,7 +56,7 @@ const gameSettingData = {
       internal: ["NoReveal"],
       tags: ["Death", "Information"],
       description: "The roles of dead players are not revealed.",
-      incompatible: ["Alignment Only Reveal"],
+      incompatible: ["Alignment Only Reveal", "Sensible Death Reveals"],
     },
     "Alignment Only Reveal": {
       category: "Standard",
@@ -236,12 +236,12 @@ const gameSettingData = {
       description:
         "Players who die will have any malicious effects they have removed.",
     },
-    "Post Conversion Death Reveals": {
+    "Sensible Death Reveals": {
       category: "Other",
       internal: ["PostConversionDeathReveals"],
       tags: ["Conversion", "Death"],
       description:
-        "Players who are converted and die in the same night will flip as their new role on death.",
+        "Players who are converted and die in the same night will appear as their new role on death.",
       incompatible: ["No Reveal"],
     },
     "Last Wills": {

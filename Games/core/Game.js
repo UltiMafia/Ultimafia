@@ -2680,7 +2680,7 @@ module.exports = class Game {
   }
 
     isPostConvertDeathReveals() {
-    if (this.getGameSetting("Post Conversion Death Reveals")) {
+    if (this.getGameSetting("Sensible Death Reveals")) {
       return true;
     }
     return false;

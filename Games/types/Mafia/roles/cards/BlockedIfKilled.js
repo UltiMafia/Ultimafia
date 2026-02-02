@@ -51,7 +51,11 @@ module.exports = class BlockedIfKilled extends Card {
             continue;
             }
             else{
+              if(action.priority < PRIORITY_FATAL_KILLS){
               action.priority = PRIORITY_FATAL_KILLS;
+              this.game.dequeueAction(action);
+              this.game.queueAction(action);
+              }
             }
           }
         }
