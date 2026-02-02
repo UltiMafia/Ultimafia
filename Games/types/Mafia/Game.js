@@ -294,6 +294,13 @@ module.exports = class MafiaGame extends Game {
 
           this.game.hasBeenNight = true;
 
+          if(this.game.isPostConvertDeathReveals() && this.game.PostConvertDeathsToReveal){
+          for(let thing of this.game.PostConvertDeathsToReveal){
+            thing[0].postConvertDeathReveal(thing[1], thing[2], thing[3]);
+          }
+            this.game.PostConvertDeathsToReveal = [];
+          }
+
           this.game.lastNightVisits = [];
           for (let action of this.game.actions[0]) {
             this.game.lastNightVisits.push(action);

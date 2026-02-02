@@ -3319,6 +3319,10 @@ Game Settings
   background-image: url("/src/images/modifiers/pious.png");
 }
 
+.gamesetting-Sensible-Death-Reveals {
+  background-image: url("/src/images/modifiers/sensible.png");
+}
+
 .gamesetting-Last-Wills {
   background-image: url("/src/images/modifiers/prosaic.png");
 }
