@@ -374,20 +374,6 @@ module.exports = class Game {
 
   async userJoin(user, isBot) {
     try {
-      var currentGame;
-
-      if (!isBot) currentGame = await redis.inGame(user.id);
-
-      // Check if user is already in a different game
-      if (currentGame && currentGame != this.id) {
-        user.send(
-          "error",
-          "You must leave your current game before joining a new one."
-        );
-        user.socket.terminate();
-        return;
-      }
-
       var player;
 
       // Find existing player in this game with same user
@@ -445,13 +431,19 @@ module.exports = class Game {
         return;
       }
 
-      // Join the game as a new player if possible
       await this.joinMutexLock();
+
+      let existingGameId = null;
+      if (!player && !isBot) {
+        existingGameId = await redis.inGame(user.id);
+      }
+
       if (
         !player &&
         this.currentState == -1 &&
         this.players.length < this.setup.total &&
-        !this.banned[user.id]
+        !this.banned[user.id] &&
+        (!existingGameId || existingGameId == this.id)
       ) {
         await redis.joinGame(user.id, this.id, this.ranked, this.competitive);
 
@@ -470,7 +462,6 @@ module.exports = class Game {
         );
         this.players.push(player);
 
-        // If the original host is rejoining, restore their host status
         if (
           user.id === this.originalHostId &&
           this.hostId !== this.originalHostId
