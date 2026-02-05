@@ -164,7 +164,7 @@ const violationDefinitions = [
   {
     id: "insufficient-participation",
     name: "Insufficient Participation (ISP)",
-    description: "Not participating actively or consistently in a game.",
+    description: "Playing a game without showing participation or full attention. Scrolling short-form video content while playing a game. If you do step away during a game, please notify the other players and make sure to review the course of the game upon returning to catch up and continue participating.",
     offenses: ["1 day", "1 week", "3 weeks", "Loss of privilege", "-", "-"],
     category: "Game",
     appliesTo: ["game", "playRanked", "playCompetitive"],
@@ -173,7 +173,7 @@ const violationDefinitions = [
     id: "outside-game-information",
     name: "Outside of Game Information (OGI)",
     description:
-      "Using external info to influence the game. Includes outside comms, threats of retaliation, or copy/pasting system messages.",
+      "Using external info to influence the game. Includes outside communication, threats of retaliation, or copy/pasting system messages. Contacting people externally to bring their attention to the game also counts as OGI.",
     offenses: ["1 day", "1 week", "3 weeks", "Loss of privilege", "-", "-"],
     category: "Game",
     appliesTo: ["game", "playRanked", "playCompetitive"],
@@ -191,7 +191,7 @@ const violationDefinitions = [
     id: "cheating",
     name: "Cheating",
     description:
-      "Any manipulation that provides an unfair advantage (multi-accounting, external discussion of game info, using exploits).",
+      "Any manipulation that provides an unfair advantage. Examples include one person using multiple accounts in one game (multi-accounting), two or more people using the same account across ranked games or the Competitive round (account-sharing), or using external methods to discuss the game.",
     offenses: ["1 day", "1 week", "3 weeks", "Loss of privilege", "-", "-"],
     category: "Game",
     appliesTo: ["game", "playRanked", "playCompetitive"],
