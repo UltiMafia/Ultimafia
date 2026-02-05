@@ -800,6 +800,7 @@ var schemas = {
         banLength: String,
         banLengthMs: Number,
         notes: String,
+        warning: Boolean,
       },
       linkedViolationTicketId: { type: String, index: true },
       linkedBanId: { type: String, index: true },

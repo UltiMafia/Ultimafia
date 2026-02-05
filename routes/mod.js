@@ -2810,8 +2810,8 @@ router.post("/reports/:id/complete", async (req, res) => {
     let banLengthStr = null;
     let violationDef = null;
 
-    // If not dismissed, create violation ticket and ban
-    if (!dismissed && finalRuling) {
+    // If not dismissed and not warning, create violation ticket and ban
+    if (!dismissed && !warning && finalRuling) {
       // Validate required fields
       if (!finalRuling.banType) {
         res.status(400).send("Ban type is required.");
@@ -2823,6 +2823,11 @@ router.post("/reports/:id/complete", async (req, res) => {
       }
       if (!finalRuling.offenseNumber || finalRuling.offenseNumber < 1) {
         res.status(400).send("Violation rating (1st, 2nd, 3rd, etc.) is required.");
+        return;
+      }
+      // Notes are required for violations
+      if (!finalRuling.notes || !finalRuling.notes.trim()) {
+        res.status(400).send("Notes are required for violations.");
         return;
       }
 
@@ -3055,8 +3060,18 @@ router.post("/reports/:id/complete", async (req, res) => {
         ? violationTicket.id
         : null;
       report.linkedBanId = ban ? ban.id : null;
+    } else if (warning) {
+      // When warning, save notes (required)
+      if (!notes || !notes.trim()) {
+        res.status(400).send("Notes are required for warnings.");
+        return;
+      }
+      report.finalRuling = {
+        warning: true,
+        notes: notes.trim(),
+      };
     } else {
-      // When dismissed, save notes if provided
+      // When dismissed, save notes if provided (optional)
       report.finalRuling = notes
         ? {
             notes: notes,
@@ -3078,6 +3093,8 @@ router.post("/reports/:id/complete", async (req, res) => {
         ? notes
           ? `Report dismissed - no violation. Notes: ${notes}`
           : "Report dismissed - no violation"
+        : warning
+        ? `Warning issued. Notes: ${notes}`
         : `Violation: ${violationName}`,
     });
 
@@ -3086,11 +3103,15 @@ router.post("/reports/:id/complete", async (req, res) => {
     // Create mod action
     await routeUtils.createModAction(
       userId,
-      dismissed ? "Complete Report (Dismissed)" : "Complete Report",
+      dismissed
+        ? "Complete Report (Dismissed)"
+        : warning
+        ? "Complete Report (Warning)"
+        : "Complete Report",
       [
         reportId,
         report.reportedUserId,
-        report.finalRuling?.violationId || "dismissed",
+        report.finalRuling?.violationId || (warning ? "warning" : "dismissed"),
       ]
     );
 
