@@ -1706,7 +1706,10 @@ module.exports = class Player {
 
     this.meet();
 
-    for (let meeting of this.game.meetings) meeting.generateTargets();
+    for (let meeting of this.game.meetings){ 
+      meeting.generateTargets();
+      meeting.showAllVotes(this);
+    }
 
     this.game.sendMeetings();
     this.game.checkAllMeetingsReady();
