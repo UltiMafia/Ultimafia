@@ -2759,10 +2759,33 @@ router.post("/reports/:id/status", async (req, res) => {
     report.status = status;
     report.updatedAt = Date.now();
 
-    if (status === "in-progress" && report.assignees.length === 0) {
-      // Auto-assign to current user
-      if (!report.assignees.includes(userId)) {
+    // Auto-assign when changing to in-progress
+    if (status === "in-progress") {
+      const previousAssignees = [...report.assignees];
+      const hasOtherAssignees = report.assignees.some((id) => id !== userId);
+      
+      if (hasOtherAssignees) {
+        // Reassign to current admin if assigned to different admin
+        report.assignees = [userId];
+        report.history.push({
+          status: status,
+          changedBy: userId,
+          timestamp: Date.now(),
+          action: "assignment",
+          assigneesAdded: [userId],
+          assigneesRemoved: previousAssignees.filter((id) => id !== userId),
+        });
+      } else if (!report.assignees.includes(userId)) {
+        // Add current admin if not already assigned
         report.assignees.push(userId);
+        report.history.push({
+          status: status,
+          changedBy: userId,
+          timestamp: Date.now(),
+          action: "assignment",
+          assigneesAdded: [userId],
+          assigneesRemoved: [],
+        });
       }
     }
 
@@ -2789,7 +2812,7 @@ router.post("/reports/:id/complete", async (req, res) => {
       return;
 
     const reportId = req.params.id;
-    const { finalRuling, dismissed, notes } = req.body;
+    const { finalRuling, dismissed, warning, notes } = req.body;
 
     const report = await models.Report.findOne({ id: reportId });
     if (!report) {
@@ -3084,6 +3107,34 @@ router.post("/reports/:id/complete", async (req, res) => {
     report.completedBy = userId;
     report.updatedAt = Date.now();
 
+    // Auto-assign completing admin (reassign if assigned to different admin)
+    const previousAssignees = [...report.assignees];
+    const hasOtherAssignees = report.assignees.some((id) => id !== userId);
+    
+    if (hasOtherAssignees) {
+      // Reassign to current admin if assigned to different admin
+      report.assignees = [userId];
+      report.history.push({
+        status: "complete",
+        changedBy: userId,
+        timestamp: Date.now(),
+        action: "assignment",
+        assigneesAdded: [userId],
+        assigneesRemoved: previousAssignees.filter((id) => id !== userId),
+      });
+    } else if (!report.assignees.includes(userId)) {
+      // Add current admin if not already assigned
+      report.assignees.push(userId);
+      report.history.push({
+        status: "complete",
+        changedBy: userId,
+        timestamp: Date.now(),
+        action: "assignment",
+        assigneesAdded: [userId],
+        assigneesRemoved: [],
+      });
+    }
+
     report.history.push({
       status: "complete",
       changedBy: userId,
@@ -3229,13 +3280,37 @@ router.post("/reports/:id/reopen", async (req, res) => {
     report.reopenedCount = (report.reopenedCount || 0) + 1;
     report.updatedAt = Date.now();
 
-    // Clear completion fields (but keep finalRuling for reference)
-    // Optionally clear assignees if reopening to "open"
+    // Auto-assign when reopening (unless reopening to "open")
     if (targetStatus === "open") {
       report.assignees = [];
-    } else if (report.assignees.length === 0) {
-      // Auto-assign to reopening user
-      report.assignees = [userId];
+    } else {
+      // Auto-assign reopening admin (reassign if assigned to different admin)
+      const previousAssignees = [...report.assignees];
+      const hasOtherAssignees = report.assignees.some((id) => id !== userId);
+      
+      if (hasOtherAssignees) {
+        // Reassign to current admin if assigned to different admin
+        report.assignees = [userId];
+        report.history.push({
+          status: targetStatus,
+          changedBy: userId,
+          timestamp: Date.now(),
+          action: "assignment",
+          assigneesAdded: [userId],
+          assigneesRemoved: previousAssignees.filter((id) => id !== userId),
+        });
+      } else if (!report.assignees.includes(userId)) {
+        // Add current admin if not already assigned
+        report.assignees = [userId];
+        report.history.push({
+          status: targetStatus,
+          changedBy: userId,
+          timestamp: Date.now(),
+          action: "assignment",
+          assigneesAdded: [userId],
+          assigneesRemoved: [],
+        });
+      }
     }
 
     report.history.push({
