@@ -8,6 +8,14 @@ module.exports = class VoteBlind extends Effect {
   }
 
   seeVote(vote) {
+    if (vote.voter != this.player) vote.cancel = true;
+  }
+
+  seeUnvote(info) {
+    if (info.voter != this.player) info.cancel = true;
+  }
+/*
+  seeVote(vote) {
     if (vote.voter != this.player) {
       // Hide the target instead of cancelling the vote completely
       // This allows players to see that someone voted, but not who they voted for
@@ -23,4 +31,5 @@ module.exports = class VoteBlind extends Effect {
       info.modified = true;
     }
   }
+  */
 };
