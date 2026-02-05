@@ -3459,7 +3459,7 @@ router.post("/reports/:id/rule", async (req, res) => {
 
     // Validate rule exists
     try {
-      const { violationDefinitions } = require("../react_main/src/constants/violations.js");
+      const { violationDefinitions } = require("../data/violations");
       const validRule = violationDefinitions.find((r) => r.name === rule);
       if (!validRule) {
         res.status(400).send("Invalid rule selected.");

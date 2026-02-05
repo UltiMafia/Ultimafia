@@ -4,6 +4,7 @@ const router = express.Router();
 const models = require("../db/models");
 const contributorData = require("../data/contributors");
 const donorData = require("../data/donors");
+const { violationDefinitions } = require("../data/violations");
 
 router.get("/contributors", async function (req, res) {
   res.setHeader("Content-Type", "application/json");
@@ -87,6 +88,16 @@ router.get("/donors", async function (req, res) {
     }
 
     res.send(result);
+  } catch (e) {
+    logger.error(e);
+    res.send([]);
+  }
+});
+
+router.get("/violations", function (req, res) {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    res.send(violationDefinitions);
   } catch (e) {
     logger.error(e);
     res.send([]);

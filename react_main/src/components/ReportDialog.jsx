@@ -17,7 +17,7 @@ import {
 import { useErrorAlert } from "./Alerts";
 import { UserSearchSelect } from "./Form";
 import { UserContext, SiteInfoContext } from "../Contexts";
-import { violationDefinitions } from "../constants/violations";
+import { useViolations } from "../hooks/useViolations";
 
 import janitor from "images/roles/mafia/janitor-vivid.png";
 
@@ -52,6 +52,7 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
+  const { violationDefinitions, loading: violationsLoading } = useViolations();
 
   const handleSubmit = async () => {
     const reportedUserValue =
@@ -168,6 +169,7 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
                 value={ruleBroken}
                 label="Rule Broken"
                 onChange={(e) => setRuleBroken(e.target.value)}
+                disabled={violationsLoading}
               >
                 {violationDefinitions.map((rule) => (
                   <MenuItem key={rule.name} value={rule.name}>

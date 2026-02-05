@@ -209,8 +209,17 @@ function getViolationsForBanType(banType) {
   );
 }
 
+const communityViolations = violationDefinitions.filter(
+  (violation) => violation.category === "Community"
+);
+const gameViolations = violationDefinitions.filter(
+  (violation) => violation.category === "Game"
+);
+
 module.exports = {
   violationDefinitions,
   violationMapById,
   getViolationsForBanType,
+  communityViolations,
+  gameViolations,
 };

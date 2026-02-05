@@ -27,7 +27,7 @@ import { Time } from "./Basic";
 import { NameWithAvatar } from "pages/User/User";
 import { UserContext, SiteInfoContext } from "../Contexts";
 import ReportTypology from "./ReportTypology";
-import { violationDefinitions } from "../constants/violations";
+import { useViolations } from "../hooks/useViolations";
 
 export default function ReportDetail({
   report: initialReport,
@@ -67,6 +67,7 @@ export default function ReportDetail({
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
   const navigate = useNavigate();
+  const { violationDefinitions, loading: violationsLoading } = useViolations();
 
   const handleStatusChange = async (newStatus) => {
     try {
@@ -260,7 +261,7 @@ export default function ReportDetail({
                         setRule(e.target.value);
                         handleRuleChange(e.target.value);
                       }}
-                      disabled={updatingRule}
+                      disabled={updatingRule || violationsLoading}
                     >
                       {violationDefinitions.map((r) => (
                         <MenuItem key={r.name} value={r.name}>
@@ -718,6 +719,7 @@ export default function ReportDetail({
                       setFinalRuling({ ...finalRuling, rule: e.target.value })
                     }
                     required
+                    disabled={violationsLoading}
                   >
                     {violationDefinitions.map((violation) => (
                       <MenuItem key={violation.id} value={violation.name}>
