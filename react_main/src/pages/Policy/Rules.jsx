@@ -13,11 +13,11 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-
-import { violationDefinitions } from "../../constants/violations";
+import { useViolations } from "../../hooks/useViolations";
 
 export default function Rules() {
   const theme = useTheme();
+  const { violationDefinitions, loading } = useViolations();
 
   useEffect(() => {
     document.title = "Rules | UltiMafia";
@@ -25,6 +25,10 @@ export default function Rules() {
 
   const communityRules = violationDefinitions.filter((r) => r.category === "Community");
   const gameRules = violationDefinitions.filter((r) => r.category === "Game");
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <>
@@ -165,13 +169,19 @@ export default function Rules() {
         </AccordionSummary>
         <AccordionDetails>
           <Typography variant="body1" paragraph>
-            If you believe that a violation, past or present, is in error,
-            please file an appeal. You may use the Report page to file your
-            appeal like you would any other report, simply enter your own name
-            in the Username field. Please provide a detailed description for why
-            you believe the violation is in error and what alternative
-            verdict—if any—you find acceptable. An admin will contact you to
-            inform you of the decision.
+            If you believe that a violation on your record is in error, you may
+            file an appeal. Navigate to your profile page and view
+            your Rap Sheet. Click on any violation to view
+            its details and file an appeal directly. Please provide a detailed
+            explanation for why you believe the violation should be removed from
+            your record. Your appeal will be reviewed by moderators, and you will
+            be notified of the decision.
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Note: You can only appeal reports that resulted in violations. Reports
+            that were dismissed cannot be appealed. If you
+            already have a pending appeal for a violation, you must wait for it
+            to be reviewed before filing another appeal for the same violation.
           </Typography>
         </AccordionDetails>
       </Accordion>
