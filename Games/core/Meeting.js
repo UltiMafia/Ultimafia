@@ -485,6 +485,16 @@ module.exports = class Meeting {
     }
   }
 
+  showAllVotes(player){
+    if(this.anonymous || this.anonymousVotes){
+      return;
+    }
+    let member = this.getMember(player);
+    if(member){
+    this.voteVersions[member.id].votes = this.votes;
+    }
+  }
+
   getAllRolesTargets(targetType, self) {
     if (targetType == "AllRoles") {
       let temp = this.game.PossibleRoles.filter((r) => r);
