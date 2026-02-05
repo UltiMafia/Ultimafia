@@ -24,17 +24,17 @@ export default function IconGallery() {
 
     // Valentine's classes
     const valentinesClasses = [
-      "role role-icon-vivid-Suitress small",
-      "role role-icon-vivid-Virgin small",
-      "role role-icon-vivid-Mistress small",
-      "role role-icon-vivid-Heartbreaker small",
-      "role role-icon-vivid-Astrologer small",
-      "role role-icon-vivid-Succubus small",
-      "role role-icon-vivid-Incubus small",
-      "role role-icon-vivid-Lover small",
-      "role role-icon-vivid-Matchmaker small",
-      "role role-icon-vivid-Panda-Bear small",
-      "role role-icon-vivid-Yandere small"
+      "role role-icon-vivid-Mafia-Suitress small",
+      "role role-icon-vivid-Mafia-Virgin small",
+      "role role-icon-vivid-Mafia-Mistress small",
+      "role role-icon-vivid-Mafia-Heartbreaker small",
+      "role role-icon-vivid-Mafia-Astrologer small",
+      "role role-icon-vivid-Mafia-Succubus small",
+      "role role-icon-vivid-Mafia-Incubus small",
+      "role role-icon-vivid-Mafia-Lover small",
+      "role role-icon-vivid-Mafia-Matchmaker small",
+      "role role-icon-vivid-Mafia-Panda-Bear small",
+      "role role-icon-vivid-Mafia-Yandere small"
     ];
 
     // Pride classes
