@@ -800,6 +800,10 @@ module.exports = class Meeting {
       time: Date.now(),
     });
 
+    if(!this.hasVotedOnce){
+      this.hasVotedOnce = [];
+    }
+
     for (let member of this.members) {
       if (!this.votesInvisible || member.id == voter.id) {
         let voteVersion = member.player.seeVote(vote);
@@ -825,6 +829,38 @@ module.exports = class Meeting {
           });
         }
       }
+      else if(!this.hasVotedOnce.includes(voter)){
+        let tempVote = { ...vote };
+        tempVote.target = "*unknown"
+        let voteVersion = member.player.seeVote(tempVote);
+
+        if (voteVersion) {
+          let versionVotes = this.voteVersions[member.id].votes;
+          let versionVote = versionVotes[voteVersion.voter.id];
+
+          if (!this.multi)
+            versionVotes[voteVersion.voter.id] = voteVersion.target;
+          else {
+            if (!versionVote)
+              versionVote = versionVotes[voteVersion.voter.id] = [];
+
+            versionVote.push(voteVersion.target);
+          }
+
+          this.voteVersions[member.id].voteRecord.push({
+            type: "vote",
+            voterId: voteVersion.voter.id,
+            target: voteVersion.target,
+            time: Date.now(),
+          });
+        }
+
+
+      }
+    }
+
+    if(!this.hasVotedOnce.includes(voter)){
+      this.hasVotedOnce.push(voter);
     }
 
     if (this.game.isSpectatorMeeting(this)) this.game.spectatorsSeeVote(vote);

@@ -113,7 +113,7 @@ const infestedDef = `Players who are "Infested" with a role will convert to that
 const woozyDef = `Players who are "Woozy" will die during the next night if they visit another player.`;
 const polarisedDef = `Players who are "Polarised" will die if they visit or get visited by another "Polarised".`;
 const frozenDef = `Players who are "Frozen" cannot vote or will have their night actions blocked. If a "Frozen" player is visited, they will stop being "Frozen".`;
-const foggyDef = `Players who are "Foggy" can only see their neighbors messages.`;
+const foggyDef = `Players who are "Foggy" can only see their neighbors messages and votes.`;
 const lovesickDef = `Players who are "Lovesick" for another player, will die if that player dies.`;
 const foolishDef = `Players who are "Foolish" will be converted to Fool during the next night.`;
 

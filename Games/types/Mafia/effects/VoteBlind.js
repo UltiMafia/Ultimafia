@@ -6,7 +6,22 @@ module.exports = class VoteBlind extends Effect {
     this.lifespan = lifespan || Infinity;
     this.isMalicious = true;
   }
+seeVote(vote) {
+    if (vote.voter != this.player){ 
+      if(vote.meeting.hasVotedOnce && vote.meeting.hasVotedOnce.includes(vote.voter)){
+      vote.cancel = true;
+      return;
+    }
+      vote.target = "*unknown";
+      vote.modified = true;
+    }
+  }
 
+  seeUnvote(info) {
+    if (info.voter != this.player) info.cancel = true;
+  }
+
+/*
   seeVote(vote) {
     if (vote.voter != this.player) vote.cancel = true;
   }
@@ -14,7 +29,7 @@ module.exports = class VoteBlind extends Effect {
   seeUnvote(info) {
     if (info.voter != this.player) info.cancel = true;
   }
-/*
+
   seeVote(vote) {
     if (vote.voter != this.player) {
       // Hide the target instead of cancelling the vote completely

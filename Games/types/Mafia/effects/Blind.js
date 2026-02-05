@@ -18,9 +18,20 @@ module.exports = class Blind extends Effect {
     quote.anonymous = true;
     quote.modified = true;
   }
-
+/*
   seeVote(vote) {
     if (vote.voter != this.player) vote.cancel = true;
+  }
+*/
+  seeVote(vote) {
+    if (vote.voter != this.player){ 
+      if(vote.meeting.hasVotedOnce && vote.meeting.hasVotedOnce.includes(vote.voter)){
+      vote.cancel = true;
+      return;
+    }
+      vote.target = "*unknown";
+      vote.modified = true;
+    }
   }
 
   seeUnvote(info) {
