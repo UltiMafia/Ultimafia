@@ -114,6 +114,7 @@ export default function Profile() {
   const [nameHistoryAnchor, setNameHistoryAnchor] = useState(null);
   const [nameHistory, setNameHistory] = useState([]);
   const [nameHistoryLoading, setNameHistoryLoading] = useState(false);
+  const [joined, setJoined] = useState(null);
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -250,6 +251,7 @@ export default function Profile() {
           setAchievements(res.data.achievements);
           setTrophies(res.data.trophies || []);
           setProfileFamily(res.data.family || null);
+          setJoined(res.data.joined || null);
           setFriendsPage(1);
           loadFriends(resolvedId, "", 1);
 
@@ -1009,8 +1011,8 @@ export default function Profile() {
           )}
         </Box>
         <Stack
-          direction="row"
-          spacing={1}
+          direction="column"
+          spacing={0.5}
           sx={{
             alignItems: "center",
             justifyContent: "center",
@@ -1019,35 +1021,56 @@ export default function Profile() {
             width: "100%",
           }}
         >
-          {badges}
-          <Typography
-            variant="h2"
-            onClick={canViewNameHistory ? onNameClick : undefined}
+          <Stack
+            direction="row"
+            spacing={1}
             sx={{
-              flexShrink: "2",
-              fontWeight: "600",
-              cursor: canViewNameHistory ? "pointer" : "default",
-              "&:hover": canViewNameHistory
-                ? {
-                    textDecoration: "underline",
-                    opacity: 0.8,
-                  }
-                : {},
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
             }}
           >
-            {name}
-          </Typography>
-          {pronouns && (
+            {badges}
+            <Typography
+              variant="h2"
+              onClick={canViewNameHistory ? onNameClick : undefined}
+              sx={{
+                flexShrink: "2",
+                fontWeight: "600",
+                cursor: canViewNameHistory ? "pointer" : "default",
+                "&:hover": canViewNameHistory
+                  ? {
+                      textDecoration: "underline",
+                      opacity: 0.8,
+                    }
+                  : {},
+              }}
+            >
+              {name}
+            </Typography>
+            {pronouns && (
+              <Typography
+                variant="caption"
+                sx={{
+                  flexShrink: "1",
+                  filter: "opacity(.75)",
+                  minWidth: "40px",
+                  wordBreak: pronouns.includes("/") ? "normal" : "break-word",
+                }}
+              >
+                ({pronouns})
+              </Typography>
+            )}
+          </Stack>
+          {joined && (
             <Typography
               variant="caption"
               sx={{
-                flexShrink: "1",
                 filter: "opacity(.75)",
-                minWidth: "40px",
-                wordBreak: pronouns.includes("/") ? "normal" : "break-word",
+                fontSize: "0.75rem",
               }}
             >
-              ({pronouns})
+              Joined {new Date(joined).toLocaleDateString()}
             </Typography>
           )}
         </Stack>

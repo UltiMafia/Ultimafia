@@ -94,6 +94,7 @@ var schemas = {
       hideStatistics: { type: Boolean, default: false },
       hideKarma: { type: Boolean, default: false },
       hidePointsNegative: { type: Boolean, default: true },
+      hideJoinDate: { type: Boolean, default: false },
       deathMessage: String,
       vanityUrl: { type: String, default: "" },
       backgroundRepeatMode: { type: String, default: "repeat" },
