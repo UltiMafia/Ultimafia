@@ -19,6 +19,7 @@ import AppealDialog from "./AppealDialog";
 // Verdict icons mapping
 export const VERDICT_ICONS = {
   "No Violation": require(`images/verdicts/no-violation.png`),
+  "Warning": require(`images/emotes/system.webp`),
   "Personal Attacks & Harassment (PA)": require(`images/verdicts/personal-attacks.png`),
   "Adult Content": require(`images/verdicts/adult-content.png`),
   "Instigation": require(`images/verdicts/instigation.png`),
@@ -84,7 +85,9 @@ function VerdictDialog({
 }) {
   if (!report) return null;
 
-  const isDismissed = !report.finalRuling || !report.finalRuling.violationName;
+  const isWarning = report.finalRuling?.warning === true;
+  const isDismissed =
+    (!report.finalRuling || !report.finalRuling.violationName) && !isWarning;
   const completedDate = report.completedAt ? new Date(report.completedAt) : null;
 
   // Extract offense number from violationName (format: "Rule Name (1st Offense)")
@@ -94,7 +97,11 @@ function VerdictDialog({
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
-        {isDismissed ? "No Violation" : report.finalRuling?.violationName || "Violation"}
+        {isWarning
+          ? "Warning"
+          : isDismissed
+          ? "No Violation"
+          : report.finalRuling?.violationName || "Violation"}
       </DialogTitle>
       <DialogContent>
         <Stack spacing={1.5}>
@@ -368,9 +375,15 @@ export default function RapSheet({ userId }) {
         >
           {reports.map((report) => {
             // A report is dismissed if finalRuling is null or doesn't have a violationName
-            // If it has a violationName, it's a violation, not dismissed
-            const isDismissed = !report.finalRuling || !report.finalRuling.violationName;
-            const violationName = isDismissed
+            // A report is a warning if finalRuling has warning: true
+            // If it has a violationName, it's a violation, not dismissed or warning
+            const isWarning = report.finalRuling?.warning === true;
+            const isDismissed =
+              (!report.finalRuling || !report.finalRuling.violationName) &&
+              !isWarning;
+            const violationName = isWarning
+              ? "Warning"
+              : isDismissed
               ? "No Violation"
               : report.finalRuling?.violationName || "Violation";
 
