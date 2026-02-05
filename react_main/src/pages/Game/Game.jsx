@@ -118,6 +118,7 @@ const emoteMap = {
 
 const NO_ONE_NAME = "no one";
 const MAGUS_NAME = "Declare Magus Game";
+const UNKNOWN_NAME = "???";
 
 export const GameTypeContext = createContext({
   singleState: false,
@@ -4457,15 +4458,18 @@ function getTargetDisplay(targets, meeting, players) {
       case "player":
         if (target === "*") target = noOneDisplayName;
         else if (target === "*magus") target = MAGUS_NAME;
+        else if (target === "*unknown") target = UNKNOWN_NAME;
         else if (target) target = players[target].name;
         else target = "";
         break;
       case "boolean":
         if (target === "*") target = "No";
+        else if (target === "*unknown") target = UNKNOWN_NAME;
         else if (!target) target = "";
         break;
       default:
         if (target === "*") target = "None";
+        else if (target === "*unknown") target = UNKNOWN_NAME;
         else if (!target) target = "";
     }
 

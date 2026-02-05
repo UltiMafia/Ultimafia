@@ -28,7 +28,7 @@ module.exports = class Eclipse extends Event {
       run: function () {
         if (this.game.SilentEvents != false) {
           this.game.queueAlert(
-            `Event: Eclispe, Everything goes dark as an eclipse begins!`
+            `Event: Eclipse, Everything goes dark as an eclipse begins!`
           );
         }
         for (const player of this.game.players) {
