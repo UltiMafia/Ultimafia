@@ -46,15 +46,8 @@ export default function ReportDetail({
     offenseNumber: 1,
     notes: "",
   });
-  const [rule, setRule] = useState(report.rule);
-  const [updatingRule, setUpdatingRule] = useState(false);
   const [handlingAppeal, setHandlingAppeal] = useState(false);
   const [appealNotes, setAppealNotes] = useState("");
-
-  // Update rule state when report prop changes
-  useEffect(() => {
-    setRule(report.rule);
-  }, [report.rule]);
 
   // Update report state when initialReport changes
   useEffect(() => {
@@ -107,8 +100,15 @@ export default function ReportDetail({
     }
 
     const isDismissed = finalRuling.banType === "dismiss";
+    const isWarning = finalRuling.banType === "warning";
 
-    if (!isDismissed) {
+    // Notes are required for all verdict types except dismissals
+    if (!isDismissed && !finalRuling.notes?.trim()) {
+      siteInfo.showAlert("Please enter notes for this verdict.", "error");
+      return;
+    }
+
+    if (!isDismissed && !isWarning) {
       if (!finalRuling.rule) {
         siteInfo.showAlert("Please select a rule (violation type).", "error");
         return;
@@ -125,8 +125,9 @@ export default function ReportDetail({
     try {
       setCompleting(true);
       const res = await axios.post(`/api/mod/reports/${report.id}/complete`, {
-        finalRuling: isDismissed ? null : finalRuling,
+        finalRuling: isDismissed || isWarning ? null : finalRuling,
         dismissed: isDismissed,
+        warning: isWarning,
         notes: finalRuling.notes || "",
       });
       setReport(res.data.report);
@@ -153,29 +154,6 @@ export default function ReportDetail({
       if (onUpdate) onUpdate();
     } catch (e) {
       errorAlert(e);
-    }
-  };
-
-  const handleRuleChange = async (newRule) => {
-    if (newRule === rule) return; // No change needed
-
-    try {
-      setUpdatingRule(true);
-      const res = await axios.post(`/api/mod/reports/${report.id}/rule`, {
-        rule: newRule,
-      });
-      // Update from response if available, otherwise use newRule
-      const updatedRule = res.data?.report?.rule || newRule;
-      setRule(updatedRule);
-      setReport({ ...report, rule: updatedRule });
-      siteInfo.showAlert("Rule updated successfully", "success");
-      if (onUpdate) onUpdate();
-    } catch (e) {
-      errorAlert(e);
-      // Revert to original rule on error
-      setRule(report.rule);
-    } finally {
-      setUpdatingRule(false);
     }
   };
 
@@ -252,27 +230,10 @@ export default function ReportDetail({
                 </Box>
               )}
               <Box>
-                <Typography color="textSecondary">Rule Broken</Typography>
-                {user.perms?.seeModPanel && report.status !== "complete" ? (
-                  <FormControl fullWidth sx={{ mt: 1 }}>
-                    <Select
-                      value={rule}
-                      onChange={(e) => {
-                        setRule(e.target.value);
-                        handleRuleChange(e.target.value);
-                      }}
-                      disabled={updatingRule || violationsLoading}
-                    >
-                      {violationDefinitions.map((r) => (
-                        <MenuItem key={r.name} value={r.name}>
-                          {r.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                ) : (
-                  <Typography>{report.rule}</Typography>
-                )}
+                <Typography variant="caption" color="textSecondary">
+                  Rule Broken
+                </Typography>
+                <Typography>{report.rule}</Typography>
               </Box>
               {report.description && (
                 <Box>
@@ -700,6 +661,9 @@ export default function ReportDetail({
                 <MenuItem value="dismiss">
                   Dismiss Report (No Violation)
                 </MenuItem>
+                <MenuItem value="warning">
+                  Warning (No Violation)
+                </MenuItem>
                 <MenuItem value="site">Site</MenuItem>
                 <MenuItem value="game">Game</MenuItem>
                 <MenuItem value="chat">Chat</MenuItem>
@@ -708,7 +672,7 @@ export default function ReportDetail({
                 <MenuItem value="competitive">Competitive</MenuItem>
               </Select>
             </FormControl>
-            {finalRuling.banType !== "dismiss" && (
+            {finalRuling.banType !== "dismiss" && finalRuling.banType !== "warning" && (
               <>
                 <FormControl fullWidth>
                   <InputLabel>Rule (Violation Type)</InputLabel>
@@ -764,9 +728,12 @@ export default function ReportDetail({
               fullWidth
               multiline
               rows={3}
+              required={finalRuling.banType !== "dismiss"}
               placeholder={
                 finalRuling.banType === "dismiss"
-                  ? "Enter notes about why the report was dismissed..."
+                  ? "Enter notes about why the report was dismissed... (optional)"
+                  : finalRuling.banType === "warning"
+                  ? "Enter notes about the warning..."
                   : "Enter notes about the violation..."
               }
             />

@@ -9,36 +9,59 @@ export default function ReportTypology({ finalRuling }) {
     );
   }
 
+  const isWarning = finalRuling.warning === true;
+  const isDismissed = !finalRuling.violationName && !isWarning;
+
   return (
     <Box>
       <Stack spacing={2}>
-        <Box>
-          <Typography variant="caption" color="textSecondary">
-            Violation
-          </Typography>
-          <Typography variant="h6">{finalRuling.violationName}</Typography>
-          <Chip
-            label={finalRuling.violationCategory}
-            size="small"
-            sx={{ mt: 0.5 }}
-          />
-        </Box>
+        {isWarning ? (
+          <Box>
+            <Typography variant="caption" color="textSecondary">
+              Verdict
+            </Typography>
+            <Typography variant="h6">Warning</Typography>
+          </Box>
+        ) : isDismissed ? (
+          <Box>
+            <Typography variant="caption" color="textSecondary">
+              Verdict
+            </Typography>
+            <Typography variant="h6">No Violation</Typography>
+          </Box>
+        ) : (
+          <Box>
+            <Typography variant="caption" color="textSecondary">
+              Violation
+            </Typography>
+            <Typography variant="h6">{finalRuling.violationName}</Typography>
+            <Chip
+              label={finalRuling.violationCategory}
+              size="small"
+              sx={{ mt: 0.5 }}
+            />
+          </Box>
+        )}
 
-        <Box>
-          <Typography variant="caption" color="textSecondary">
-            Violation ID
-          </Typography>
-          <Typography variant="body2" sx={{ fontFamily: "monospace" }}>
-            {finalRuling.violationId}
-          </Typography>
-        </Box>
+        {finalRuling.violationId && (
+          <Box>
+            <Typography variant="caption" color="textSecondary">
+              Violation ID
+            </Typography>
+            <Typography variant="body2" sx={{ fontFamily: "monospace" }}>
+              {finalRuling.violationId}
+            </Typography>
+          </Box>
+        )}
 
-        <Box>
-          <Typography variant="caption" color="textSecondary">
-            Ban Type
-          </Typography>
-          <Typography>{finalRuling.banType}</Typography>
-        </Box>
+        {finalRuling.banType && (
+          <Box>
+            <Typography variant="caption" color="textSecondary">
+              Ban Type
+            </Typography>
+            <Typography>{finalRuling.banType}</Typography>
+          </Box>
+        )}
 
         {finalRuling.banLength && (
           <Box>
