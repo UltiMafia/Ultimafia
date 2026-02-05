@@ -466,6 +466,12 @@ export default function Settings() {
         type: "boolean",
         groupName: "Stat Hiding",
       },
+      {
+        label: "Hide Join Date",
+        ref: "hideJoinDate",
+        type: "boolean",
+        groupName: "Stat Hiding",
+      },
     ],
     [accounts]
   );
