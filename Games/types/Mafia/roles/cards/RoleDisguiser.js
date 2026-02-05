@@ -18,7 +18,7 @@ module.exports = class RoleDisguiser extends Card {
           priority: PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT,
           role: this.role,
           run: function () {
-            let role = this.target.getAppearance("investigate", true);
+            let role = `${this.target.getRoleName()}:${this.target.role.modifier}`;
             let info = this.game.createInformation(
               "RoleInfo",
               this.actor,
@@ -29,7 +29,7 @@ module.exports = class RoleDisguiser extends Card {
             let alert = `:mask: After studying ${
               this.target.name
             }, you learn to act like ${addArticle(info.getInfoRaw())}.`;
-            this.actor.holdItem("Suit", { type: role });
+            this.actor.holdItem("Suit", { type: `${this.target.getRoleName()}:${this.target.role.modifier}` });
             this.actor.queueAlert(alert);
           },
         },
