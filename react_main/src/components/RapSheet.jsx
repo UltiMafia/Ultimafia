@@ -27,7 +27,7 @@ export const VERDICT_ICONS = {
   "Coercion": require(`images/verdicts/coercion.png`),
   "Impersonation": require(`images/verdicts/impersonation.png`),
   "Illegal Content & Activity (IC)": require(`images/verdicts/illegal-content.png`),
-  "Gamethrowing": require(`images/verdicts/game-throwing.png`),
+  "Game Throwing": require(`images/verdicts/game-throwing.png`),
   "Game-Related Abandonment (GRA)": require(`images/verdicts/game-related-abandonment.png`),
   "Insufficient Participation (ISP)": require(`images/verdicts/insufficient-participation.png`),
   "Outside of Game Information (OGI)": require(`images/verdicts/out-of-game-information.png`),

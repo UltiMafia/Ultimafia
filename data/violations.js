@@ -67,7 +67,7 @@ const violationDefinitions = [
     id: "hazing",
     name: "Hazing",
     description:
-      "Discriminating against or mistreating users on new accounts. Includes policy-voting, accusing a new account of rule-breaking, and promoting an anti-growth mindset.",
+      "Discriminating against or mistreating users on new accounts. Includes policy-voting, falsely accusing a new account of rule-breaking, and promoting an anti-growth mindset.",
     offenses: [
       "1 day",
       "3 days",
@@ -147,7 +147,7 @@ const violationDefinitions = [
     id: "game-throwing",
     name: "Game Throwing",
     description:
-      "Intentionally not playing toward your win condition (e.g. outing mafia partners). Using tactics with no reasonable chance of success also qualifies.",
+      "Failing to play toward your win condition (e.g. outing mafia partners), or playing toward the win condition of an alignment is not your own (i.e. assisting a Cult win when you are Village), including situations where one's alignment can hypothetically be changed. Players must always play to their present win-condition rather than hypothetical or future win conditions they may later acquire. Using tactics with no reasonable chance of success also qualifies. Please note that Game Throwing requires intent.",
     offenses: ["1 day", "1 week", "3 weeks", "Loss of privilege", "-", "-"],
     category: "Game",
     appliesTo: ["game", "playRanked", "playCompetitive"],
