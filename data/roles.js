@@ -180,6 +180,34 @@ const itemSanity = {
   Paranoid: ["All information created by items given by this role will be unfavorable to the player being checked. Hides other modifiers."],
   Naive: ["All information created by items given by this role will be favorable to the player being checked. Hides other modifiers."],
 };
+const gunModifiers = {
+        Loyal: [
+          "Your starting Gun will do nothing when shooting players of a diffrent alignment.",
+        ],
+        Disloyal: [
+          "Your starting Gun will do nothing when shooting players of the same alignment.",
+        ],
+        Holy: ["Your starting Gun will do nothing when shooting players with Demonic roles."],
+        Unholy: [
+          "Your starting Gun will do nothing when shooting players with non-Demonic roles.",
+        ],
+        Simple: [
+          "Your starting Gun will do nothing when shooting players with Vanilla Roles.",
+        ],
+        Complex: ["Your starting Gun will do nothing when shooting players with PR Roles."],
+        Refined: [
+          "Your starting Gun will do nothing when shooting players with Banished Roles.",
+        ],
+        Unrefined: [
+          "Your starting Gun will do nothing when shooting players with non-Banished Roles.",
+        ],
+        Vain: ["Your starting Gun will kill you when shooting players of the same alignment."],
+        Weak: ["Your starting Gun will kill you when shooting players of a diffrent alignment."],
+        Sacrificial: ["Your starting Gun will kill you when shooting another player."],
+        Regretful: ["Your starting Gun will kill you when killing a player."],
+        Random: ["Your starting Gun will shoot a Random player when used."],
+        Narcissistic: ["Your starting Gun will have 50% chance to shoot you instead when used."],
+}
 
 const roleData = {
   Mafia: {
@@ -191,8 +219,8 @@ const roleData = {
       category: "Basic",
       tags: ["Vanilla", "Basic"],
       description: [
-        "Wins when no Mafia, Cult, or Hostile Independents remain.",
-        "Other roles appear as Villager to information roles, upon death, and to themself.",
+        "You win when no Mafia, Cult, or Hostile Independents remain.",
+        //"Other roles appear as Villager to information roles, upon death, and to themself.",
       ],
       skins: [
         {
@@ -210,7 +238,7 @@ const roleData = {
       category: "Basic",
       tags: ["Kill Interaction", "Self Protection", "Basic", "Effects"],
       description: [
-        `If killed, the Bleeder will survive and start "Bleeding".`,
+        `If killed, you will survive and start "Bleeding".`,
         bleedingDef,
         //`Players who are "Bleeding" will die during the next night.`,
         //"Will die one day after being targeted for a kill or shot.",
@@ -220,7 +248,7 @@ const roleData = {
       alignment: "Village",
       category: "Basic",
       tags: ["Exposed", "Basic"],
-      description: ["Starts revealed to all players."],
+      description: ["You are revealed to all players."],
       skins: [
         {
           label: "Vivid",
@@ -237,7 +265,7 @@ const roleData = {
       category: "Basic",
       tags: ["Blocking", "Basic", "Visit Interaction"],
       description: [
-        "Each night, blocks the night actions of any players who visit them.",
+        "Each night, you will block the night actions of any players who visit you.",
         //"Blocks any player who visits them during the night from performing any actions.",
       ],
       nightOrder: [["Block Visitors", PRIORITY_BLOCK_VISITORS]],
@@ -247,37 +275,10 @@ const roleData = {
       category: "Basic",
       tags: ["Items", "Basic", "Killing", "Gun", "Day Actions"],
       description: [
-        "Starts with a gun.",
-        "This gun never reveals the deputy when shot.",
+        "You start with a gun.",
+        "This gun never reveal you when shot.",
       ],
-      SpecialInteractionsModifiers: {
-        Loyal: [
-          "Gun will do nothing when shooting players of a diffrent alignment.",
-        ],
-        Disloyal: [
-          "Gun will do nothing when shooting players of the same alignment.",
-        ],
-        Holy: ["Gun will do nothing when shooting players with Demonic roles."],
-        Unholy: [
-          "Gun will do nothing when shooting players with non-Demonic roles.",
-        ],
-        Simple: [
-          "Gun will do nothing when shooting players with Vanilla Roles.",
-        ],
-        Complex: ["Gun will do nothing when shooting players with PR Roles."],
-        Refined: [
-          "Gun will do nothing when shooting players with Banished Roles.",
-        ],
-        Unrefined: [
-          "Gun will do nothing when shooting players with non-Banished Roles.",
-        ],
-        Vain: ["Will die when shooting players of the same alignment."],
-        Weak: ["Will die when shooting players of a diffrent alignment."],
-        Sacrificial: ["Will die when shooting the gun."],
-        Regretful: ["Will die when killing a player with the gun."],
-        Random: ["Gun will shoot a Random player when used."],
-        Narcissistic: ["Gun will have 50% chance to self target when used."],
-      },
+      SpecialInteractionsModifiers: gunModifiers,
     },
     Loudmouth: {
       alignment: "Village",
@@ -290,10 +291,10 @@ const roleData = {
         "Effects",
       ],
       description: [
-        "Each night, will announce who visits them at night.",
-        "Each night, will announce any system messages they receive.",
+        "Each night, you will announce who visits you at night.",
+        "Each night, you will announce any system messages you receive.",
         //"When visited, will announce the name of their visitors.",
-        `Starts the game "Leaky".`,
+        `You start the game "Leaky".`,
         leakyDef,
       ],
       nightOrder: [
@@ -306,10 +307,10 @@ const roleData = {
       tags: ["Unaware", "Basic", "Deception"],
       tagsHidden: ["No Investigate"],
       description: [
-        "Appears as Villager to self.",
-        "Appears as a random Evil role to information roles.",
-        "Appears as a random Evil role upon being condemned.",
-        "Appears as Miller upon being killed.",
+        "You see self as Villager.",
+        "You appears as a random Evil role to information roles.",
+        "You appears as a random Evil role upon being condemned.",
+        "You appears as Miller upon being killed.",
       ],
       skins: [
         {
@@ -330,7 +331,7 @@ const roleData = {
       category: "Basic",
       tags: ["Meetings", "Basic"],
       description: [
-        "Once per game during the day, can choose to host a party at night.",
+        "Once per game during the day, you can choose to host a party at night.",
         "During a party all players can chat at night.",
       ],
     },
@@ -339,7 +340,7 @@ const roleData = {
       category: "Basic",
       tags: ["Basic", "Voting", "Self Protection"],
       description: [
-        "Once per game at night, can choose to grow into a Tree.",
+        "Once per game at night, you can choose to grow into a Tree.",
         "Trees are immune to most ways of dying.",
         "Trees cannot vote.",
       ],
@@ -350,43 +351,16 @@ const roleData = {
       category: "Basic",
       tags: ["Items", "Basic", "Killing", "Gun", "Day Actions"],
       description: [
-        "Starts with a gun.",
-        "This gun always reveals the sheriff when shot.",
+        "You starts with a gun.",
+        "This gun always reveals you when shot.",
       ],
-      SpecialInteractionsModifiers: {
-        Loyal: [
-          "Gun will do nothing when shooting players of a diffrent alignment.",
-        ],
-        Disloyal: [
-          "Gun will do nothing when shooting players of the same alignment.",
-        ],
-        Holy: ["Gun will do nothing when shooting players with Demonic roles."],
-        Unholy: [
-          "Gun will do nothing when shooting players with non-Demonic roles.",
-        ],
-        Simple: [
-          "Gun will do nothing when shooting players with Vanilla Roles.",
-        ],
-        Complex: ["Gun will do nothing when shooting players with PR Roles."],
-        Refined: [
-          "Gun will do nothing when shooting players with Banished Roles.",
-        ],
-        Unrefined: [
-          "Gun will do nothing when shooting players with non-Banished Roles.",
-        ],
-        Vain: ["Will die when shooting players of the same alignment."],
-        Weak: ["Will die when shooting players of a diffrent alignment."],
-        Sacrificial: ["Will die when shooting the gun."],
-        Regretful: ["Will die when killing a player with the gun."],
-        Random: ["Gun will shoot a Random player when used."],
-        Narcissistic: ["Gun will have 50% chance to self target when used."],
-      },
+      SpecialInteractionsModifiers: gunModifiers,
     },
     Sleepwalker: {
       alignment: "Village",
       tags: ["Visiting", "Basic"],
       category: "Basic",
-      description: ["Each night, randomly visits one player."],
+      description: ["Each night, you randomly visit one player."],
       nightOrder: [["Visit", PRIORITY_SUPPORT_VISIT_DEFAULT]],
       SpecialInteractions: {
         Ghost: ["If a Ghost is Present, a Sleepwalker will learn a fake word."],
@@ -398,8 +372,8 @@ const roleData = {
       category: "Protective",
       tags: ["Protective", "Delirium", "Visiting", "Advanced"],
       description: [
-        "Each night, can choose to visit two players and protect them from death.",
-        `One of the players the Bawd protects will become “Delirious” until the next night.`,
+        "Each night, you can choose to visit two players and protect them from death.",
+        `One of the players you protect will become “Delirious” until the next night.`,
         deliriumDef,
       ],
       nightOrder: [
@@ -411,8 +385,8 @@ const roleData = {
       category: "Protective",
       tags: ["Protective", "Killing", "Self Kill", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and protect them from being killed.",
-        "If the player the Bodyguard protects is attacked, the Bodyguard will kill one attacker and die.",
+        "Each night, you can choose to visit one player and protect them from being killed.",
+        "If a player you protect is attacked, you will kill one attacker and die.",
         //"If the target was the Celebrity, the Bodyguard will kill all attackers and die.",
       ],
       nightOrder: [
@@ -430,7 +404,7 @@ const roleData = {
       category: "Protective",
       tags: ["Protective", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and protect them from death.",
+        "Each night, you can choose to visit one player and protect them from death.",
       ],
       nightOrder: [["Protect", PRIORITY_NIGHT_SAVER]],
       skins: [
@@ -449,8 +423,8 @@ const roleData = {
       category: "Protective",
       tags: ["Protective", "Visiting", "Basic", "Killing"],
       description: [
-        "Each night, can choose to visit one player and protect them from death.",
-        "If the Soprano dies, the player they most recently protected will die.",
+        "Each night, you can choose to visit one player and protect them from death.",
+        "If you die, the player you most recently protected will also die.",
       ],
       nightOrder: [["Protect", PRIORITY_NIGHT_SAVER]],
     },
@@ -459,8 +433,8 @@ const roleData = {
       category: "Protective",
       tags: ["Protective", "Condemn Interaction", "Visiting", "Advanced"],
       description: [
-        "Each night, can choose to visit one player and protect them from being condemned the following day.",
-        "If the player the Martyr protects is condemned, the Martyr dies.",
+        "Each night, you can choose to visit one player and protect them from being condemned the following day.",
+        "If the player you protect is condemned, you die.",
       ],
       nightOrder: [["Protect from Condemn", PRIORITY_NIGHT_SAVER]],
     },
@@ -469,8 +443,8 @@ const roleData = {
       category: "Protective",
       tags: ["Kill Interaction", "Extra Lives", "Visiting", "Advanced"],
       description: [
-        "Each night, can choose to visit two players.",
-        `If the first player the Medic visits dies, the second player the Medic visits will gain an extra life.`,
+        "Each night, you can choose to visit two players.",
+        `If the first player you visit dies, the second player you visit will gain an extra life.`,
       ],
       nightOrder: [["Give Extra Life", PRIORITY_NIGHT_SAVER]],
     },
@@ -479,7 +453,7 @@ const roleData = {
       category: "Protective",
       tags: ["Malicious Effects", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and remove any malicious effects they have.",
+        "Each night, you can choose to visit one player and remove any malicious effects they have.",
         MalEffects,
       ],
       nightOrder: [
@@ -492,7 +466,7 @@ const roleData = {
       category: "Protective",
       tags: ["Revive", "Graveyard", "Visiting", "Dead", "Basic"],
       description: [
-        "Each night, can choose to visit one dead player and revive them.",
+        "Each night, you can choose to visit one dead player and revive them.",
         //"If player was revealed upon death, they will remain revealed when revived.",
       ],
       nightOrder: [["Revive", PRIORITY_NIGHT_REVIVER]],
@@ -503,8 +477,8 @@ const roleData = {
       category: "Protective",
       tags: ["Protective", "Conversion", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and prevent them from being converted to another role.",
-        "If a Shrink visits a Hostile Independent, the Hostile Independent will be converted to Villager.",
+        "Each night, you can choose to visit one player and prevent them from being converted to another role.",
+        "If you visit a Hostile Independent, the Hostile Independent will be converted to Villager.",
       ],
       nightOrder: [["Save from Conversion", PRIORITY_NIGHT_SAVER - 1]],
       RolesMadeBy: ["Villager"],
@@ -514,8 +488,8 @@ const roleData = {
       category: "Protective",
       tags: ["Protective", "Killing", "Kill Interaction", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and protect them from death.",
-        "If the player the Surgeon protects is attacked, the Surgeon will kill one attacker.",
+        "Each night, you can choose to visit one player and protect them from death.",
+        "If a player you protects is attacked, you will kill one attacker.",
       ],
       nightOrder: [
         ["Protect", PRIORITY_NIGHT_SAVER],
@@ -527,7 +501,7 @@ const roleData = {
       category: "Protective",
       tags: ["Protective", "Neighbors", "Position", "Advanced"],
       description: [
-        "If both of the Tea Lady's neighbors are not Evil, the neighbors cannot die.",
+        "If both of your neighbors are not Evil, they cannot die.",
       ],
     },
     //gifting roles
@@ -536,7 +510,7 @@ const roleData = {
       category: "Gifting",
       tags: ["Items", "Coffee", "Visiting", "Advanced"],
       description: [
-        `Each night, can choose to visit one player and give them Coffee.`,
+        `Each night, you can choose to visit one player and give them Coffee.`,
         coffeeDef,
       ],
       nightOrder: [["Give Coffee", PRIORITY_ITEM_GIVER_DEFAULT]],
@@ -547,7 +521,7 @@ const roleData = {
       tags: ["Famine", "Items", "Bread", "Visiting", "Advanced"],
       description: [
         //"When baker is present in the game, all players start with two breads. A famine will start.",
-        `Each night, can choose to visit two players and give them Bread.`,
+        `Each night, you can choose to visit two players and give them Bread.`,
         breadDef,
         //"Bread is consumed each night, staving off the famine for another phase. Running out will eventually starve the player to death.",
       ],
@@ -558,7 +532,7 @@ const roleData = {
       category: "Gifting",
       tags: ["Protective", "Items", "Armor", "Visiting", "Basic"],
       description: [
-        `Each night, can choose to visit one player and give them Armor.`,
+        `Each night, you can choose to visit one player and give them Armor.`,
         armorDef,
       ],
       nightOrder: [["Give Armor", PRIORITY_ITEM_GIVER_EARLY]],
@@ -575,7 +549,7 @@ const roleData = {
         "Basic",
       ],
       description: [
-        `Each night, can choose to visit one player and give them a Candle.`,
+        `Each night, you can choose to visit one player and give them a Candle.`,
         candleDef,
       ],
       nightOrder: [["Give Candle", PRIORITY_ITEM_GIVER_DEFAULT]],
@@ -594,7 +568,7 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        `Each night, can choose to visit one player and give them a Knife.`,
+        `Each night, you can choose to visit one player and give them a Knife.`,
         knifeDef,
         bleedingDef,
       ],
@@ -612,7 +586,7 @@ const roleData = {
         "Basic",
       ],
       description: [
-        `Each night, can choose to visit one player and give them a Bomb.`,
+        `Each night, you can choose to visit one player and give them a Bomb.`,
         bombDef,
       ],
       nightOrder: [["Give Bomb", PRIORITY_ITEM_GIVER_EARLY]],
@@ -629,7 +603,7 @@ const roleData = {
         "Basic",
       ],
       description: [
-        `Each night, can choose to visit one player and give them a Falcon.`,
+        `Each night, you can choose to visit one player and give them a Falcon.`,
         falconDef,
       ],
       nightOrder: [["Give Falcon", PRIORITY_ITEM_GIVER_DEFAULT]],
@@ -648,8 +622,8 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        `Each night, can choose to visit one player and give them a Gun.`,
-        `Each night, each player who visits the Funsmith will be given a Gun.`,
+        `Each night, you can choose to visit one player and give them a Gun.`,
+        `Each night, each player who visits you will be given a Gun.`,
         gunDef,
       ],
       nightOrder: [["Give Guns", PRIORITY_ITEM_GIVER_DEFAULT]],
@@ -667,7 +641,7 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        `Each night, can choose to visit one player and give them a Crystal Ball.`,
+        `Each night, you can choose to visit one player and give them a Crystal Ball.`,
         crystalBallDef,
       ],
       nightOrder: [["Give Crystal Ball", PRIORITY_ITEM_GIVER_DEFAULT]],
@@ -678,7 +652,7 @@ const roleData = {
       category: "Gifting",
       tags: ["Killing", "Items", "Gun", "Visiting", "Day Actions", "Basic"],
       description: [
-        `Each night, can choose to visit one player and give them a Gun.`,
+        `Each night, you can choose to visit one player and give them a Gun.`,
         gunDef,
       ],
       nightOrder: [["Give Gun", PRIORITY_ITEM_GIVER_DEFAULT]],
@@ -695,7 +669,7 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        `Each night, can choose to visit one player and give them a Key.`,
+        `Each night, you can choose to visit one player and give them a Key.`,
         keyDef,
       ],
       nightOrder: [["Give Key", PRIORITY_ITEM_GIVER_DEFAULT]],
@@ -705,7 +679,7 @@ const roleData = {
       category: "Gifting",
       tags: ["Redirection", "Items", "Shield", "Visiting", "Advanced"],
       description: [
-        `Each night, can choose to visit one player and give them a Shield.`,
+        `Each night, you can choose to visit one player and give them a Shield.`,
         shieldDef,
       ],
       nightOrder: [["Give Shield", PRIORITY_ITEM_GIVER_EARLY]],
@@ -715,7 +689,7 @@ const roleData = {
       category: "Gifting",
       tags: ["Messages", "Items", "Envelope", "Visiting", "Basic"],
       description: [
-        `Each night, can choose to visit one player and give them an Envelope.`,
+        `Each night, you can choose to visit one player and give them an Envelope.`,
         envelopeDef,
       ],
       nightOrder: [["Give Envelope", PRIORITY_ITEM_GIVER_DEFAULT]],
@@ -725,7 +699,7 @@ const roleData = {
       category: "Gifting",
       tags: ["Items", "Tract", "Protective", "Visiting", "Basic"],
       description: [
-        `Each night, can choose to visit one player and give them a Tract.`,
+        `Each night, you can choose to visit one player and give them a Tract.`,
         tractDef,
       ],
       nightOrder: [["Give Tract", PRIORITY_ITEM_GIVER_EARLY]],
@@ -742,7 +716,7 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        `Each night, can choose to visit one player and give them a Whiskey.`,
+        `Each night, you can choose to visit one player and give them a Whiskey.`,
         whiskeyDef,
       ],
       nightOrder: [["Give Whiskey", PRIORITY_ITEM_GIVER_DEFAULT]],
@@ -752,7 +726,7 @@ const roleData = {
       category: "Gifting",
       tags: ["Revive", "Items", "Syringe", "Graveyard", "Visiting", "Basic"],
       description: [
-        `Each night, can choose to visit one player and give them a Syringe.`,
+        `Each night, you can choose to visit one player and give them a Syringe.`,
         needleDef,
       ],
       nightOrder: [["Give Syringe", PRIORITY_ITEM_GIVER_DEFAULT]],
@@ -763,7 +737,7 @@ const roleData = {
       category: "Gifting",
       tags: ["Killing", "Items", "Gun", "Visiting", "Day Actions", "Basic"],
       description: [
-        `Each night, can choose to visit one player and give them a Rifle.`,
+        `Each night, you can choose to visit one player and give them a Rifle.`,
         rifleDef,
       ],
       nightOrder: [["Give Rifle", PRIORITY_ITEM_GIVER_DEFAULT]],
@@ -780,10 +754,10 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        `Each night, can choose to visit one player and give them a Jack-In-The-Box.`,
+        `Each night, you can choose to visit one player and give them a Jack-In-The-Box.`,
         jackBoxDef,
       ],
-      nightOrder: [["Give Rifle", PRIORITY_ITEM_GIVER_DEFAULT]],
+      nightOrder: [["Give Jack-In-The-Box", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
     Santa: {
       alignment: "Village",
@@ -800,16 +774,26 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Each night, can choose to visit one player and check them.",
-        "If no one visits Santa during the night, will learn whether the player they checked is naughty or nice.",
-        "Each night, can choose to visit one player and give them an item.",
-        "Santa can choose to give a Gun, Knife, Armor, Bomb, Crystal Ball, Whiskey, Bread, Key, Falcon, Tract, Syringe, or Coffee.",
+        "Each night, you can choose to visit one player and learn if they are naughty or nice.",
+        "If another player visits you during the night, you will learn nothing.",
+        "Each night, you can choose to visit one player and give them an item.",
+        "You can choose to give a Gun, Knife, Armor, Bomb, Crystal Ball, Whiskey, Bread, Key, Falcon, Tract, Syringe, or Coffee.",
       ],
       nightOrder: [
         ["Give Gifts", PRIORITY_ITEM_GIVER_EARLY],
         ["Learn Alignment", PRIORITY_INVESTIGATIVE_DEFAULT],
       ],
       graveyardParticipation: "all",
+    },
+    Carpenter: {
+      alignment: "Village",
+      category: "Gifting",
+      tags: ["Items", "Visiting", "Basic"],
+      description: [
+        "You will not start with any items.",
+        `Each night, you can choose to visit one player and give them any items you would have started with.`,
+      ],
+      nightOrder: [["Give Items", PRIORITY_ITEM_GIVER_EARLY]],
     },
     //investigative roles
     Analyst: {
@@ -2660,34 +2644,7 @@ const roleData = {
         "Starts with a gun.",
         "Gun does not reveal identity when fired.",
       ],
-      SpecialInteractionsModifiers: {
-        Loyal: [
-          "Gun will do nothing when shooting players of a diffrent alignment.",
-        ],
-        Disloyal: [
-          "Gun will do nothing when shooting players of the same alignment.",
-        ],
-        Holy: ["Gun will do nothing when shooting players with Demonic roles."],
-        Unholy: [
-          "Gun will do nothing when shooting players with non-Demonic roles.",
-        ],
-        Simple: [
-          "Gun will do nothing when shooting players with Vanilla Roles.",
-        ],
-        Complex: ["Gun will do nothing when shooting players with PR Roles."],
-        Refined: [
-          "Gun will do nothing when shooting players with Banished Roles.",
-        ],
-        Unrefined: [
-          "Gun will do nothing when shooting players with non-Banished Roles.",
-        ],
-        Vain: ["Will die when shooting players of the same alignment."],
-        Weak: ["Will die when shooting players of a diffrent alignment."],
-        Sacrificial: ["Will die when shooting the gun."],
-        Regretful: ["Will die when killing a player with the gun."],
-        Random: ["Gun will shoot a Random player when used."],
-        Narcissistic: ["Gun will have 50% chance to self target when used."],
-      },
+      SpecialInteractionsModifiers: gunModifiers,
     },
     //killing roles
     Arsonist: {
@@ -3731,37 +3688,10 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Killing", "Gun", "Items", "Day Actions", "Basic"],
       description: [
-        "Will gain a gun once per game if Mafia chose to abstain from killing the previous night.",
-        "Gun will always reveal the shooter.",
+        "You will gain a Gun once per game if Mafia chose to abstain from killing the previous night.",
+        "A Gun gained from your ability will always reveal the shooter.",
       ],
-      SpecialInteractionsModifiers: {
-        Loyal: [
-          "Gun will do nothing when shooting players of a diffrent alignment.",
-        ],
-        Disloyal: [
-          "Gun will do nothing when shooting players of the same alignment.",
-        ],
-        Holy: ["Gun will do nothing when shooting players with Demonic roles."],
-        Unholy: [
-          "Gun will do nothing when shooting players with non-Demonic roles.",
-        ],
-        Simple: [
-          "Gun will do nothing when shooting players with Vanilla Roles.",
-        ],
-        Complex: ["Gun will do nothing when shooting players with PR Roles."],
-        Refined: [
-          "Gun will do nothing when shooting players with Banished Roles.",
-        ],
-        Unrefined: [
-          "Gun will do nothing when shooting players with non-Banished Roles.",
-        ],
-        Vain: ["Will die when shooting players of the same alignment."],
-        Weak: ["Will die when shooting players of a diffrent alignment."],
-        Sacrificial: ["Will die when shooting the gun."],
-        Regretful: ["Will die when killing a player with the gun."],
-        Random: ["Gun will shoot a Random player when used."],
-        Narcissistic: ["Gun will have 50% chance to self target when used."],
-      },
+      SpecialInteractionsModifiers: gunModifiers,
       nightOrder: [["Gain Gun", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
     Imposter: {
