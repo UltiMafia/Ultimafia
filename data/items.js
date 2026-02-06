@@ -7,17 +7,17 @@ const modifierData = {
       internal: ["Gun"],
       tags: ["Day Killer", "Common"],
       description:
-        "A Gun can be used during the day to kill a selected player.",
+        "A Gun can be used during the day to kill a player.",
     },
     Rifle: {
       internal: ["Rifle"],
       tags: ["Day Killer", "Alignment", "Common"],
-      description: `A Rifle can be used during the day to kill a selected player. If a "Rifle" kills a player of same alignment as its holder, its holder dies. If a "Rifle" kills a player of different alignment to its holder, its holder is given a Rifle.`,
+      description: `A Rifle can be used during the day to kill a player. If a Rifle kills a player of same alignment as its holder, its holder dies. If a "Rifle" kills a player of different alignment to its holder, its holder is given a Rifle at the end of the day.`,
     },
     Knife: {
       internal: ["Knife"],
       tags: ["Day Killer", "Bleeding", "Common"],
-      description: `A Knife can be used during the day to make a selected player start "Bleeding".`,
+      description: `A Knife can be used during the day to make a player start "Bleeding".`,
     },
     //Reflexive/Protective
     Armor: {
@@ -28,7 +28,7 @@ const modifierData = {
     Key: {
       internal: ["Key"],
       tags: ["Role Blocker", "Common"],
-      description: `A Key can be used at night to block the actions of anyone visits them.`,
+      description: `A Key can be used at night to block the actions of anyone visits its holder.`,
     },
     Tract: {
       internal: ["Tract"],
@@ -59,18 +59,18 @@ const modifierData = {
     Falcon: {
       internal: ["Falcon"],
       tags: ["Visits", "Common"],
-      description: `A Falcon can be used at night to learn who a selected player visits.`,
+      description: `A Falcon can be used at night to learn who a player visits.`,
     },
     Envelope: {
       internal: ["Envelope"],
       tags: ["Message", "Common"],
-      description: `An Envelope can be used at night to send a message to a selected player.`,
+      description: `An Envelope can be used at anytime to send a message to a player.`,
     },
     //Other Town Items
     Syringe: {
       internal: ["Syringe"],
       tags: ["Revive", "Common"],
-      description: `A Syringe can be used during the day to revive a selected dead player.`,
+      description: `A Syringe can be used during the day to revive a dead player.`,
     },
     Sceptre: {
       internal: ["Sceptre"],
@@ -80,7 +80,7 @@ const modifierData = {
     Whiskey: {
       internal: ["Whiskey"],
       tags: ["RoleBlock", "Common"],
-      description: `Whiskey can be used during the day to block a selected player's actions next night.`,
+      description: `Whiskey can be used during the day to block a player's actions next night.`,
     },
     Bread: {
       internal: ["Bread"],
@@ -100,7 +100,7 @@ const modifierData = {
     Coffee: {
       internal: ["Coffee"],
       tags: ["Common"],
-      description: `Coffee can be used at night to perform their role's night actions an additional time.`,
+      description: `Coffee can be used at night to perform their role's actions an additional time.`,
     },
     "Jack-In-The-Box": {
       internal: ["JackInTheBox"],
@@ -166,7 +166,7 @@ const modifierData = {
       internal: ["IceCream"],
       tags: ["Vanilla"],
       description:
-        "Can be used to become the Vanilla role from their alignment.",
+        "Can be used at night to become the Vanilla role from their alignment.",
     },
 
     //Host Items?
