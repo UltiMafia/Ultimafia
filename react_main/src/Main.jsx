@@ -320,8 +320,6 @@ function Header({ setShowAnnouncementTemporarily }) {
                 label: "Policy",
                 items: [
                   { text: "Rules", path: "/policy/rules" },
-                  { text: "Terms of Service", path: "/policy/tos" },
-                  { text: "Privacy Policy", path: "/policy/privacy" },
                 ],
               },
             ]}
@@ -402,8 +400,6 @@ function Header({ setShowAnnouncementTemporarily }) {
               label="Policy"
               items={[
                 { text: "Rules", path: "/policy/rules" },
-                { text: "Terms of Service", path: "/policy/tos" },
-                { text: "Privacy Policy", path: "/policy/privacy" },
               ]}
             />
             <Box sx={{
@@ -562,6 +558,23 @@ function Footer() {
             />
           </MuiLink>
         </Stack>
+        <Typography variant="body2" sx={{ textAlign: "center" }}>
+          By accessing this website, you agree to our{" "}
+          <MuiLink
+            component={Link}
+            to="/policy/tos"
+          >
+            Terms of Service
+          </MuiLink>
+          {" "}and{" "}
+          <MuiLink
+            component={Link}
+            to="/policy/privacy"
+          >
+            Privacy Policy
+          </MuiLink>
+          .
+        </Typography>
         <Stack direction={isPhoneDevice ? "column" : "row"} spacing={isPhoneDevice ? 0.5 : 2} sx={{
         }}>
           <Typography variant="body2">
