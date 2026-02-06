@@ -15,7 +15,7 @@ export default function PrivacyPolicy() {
         Privacy Policy
       </Typography>
       <Typography variant="body2" color="text.secondary" paragraph>
-        Last Updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+        Last Updated: February 6, 2026
       </Typography>
 
       <Typography variant="body1" paragraph>
