@@ -20,6 +20,8 @@ import {
   Divider,
   Tabs,
   Tab,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
 
@@ -28,11 +30,140 @@ import Form, { useForm, HiddenUpload, UserSearchSelect } from "components/Form";
 import { useErrorAlert } from "components/Alerts";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import AvatarUpload from "components/AvatarUpload";
+import { useCookieConsent } from "../../hooks/useCookieConsent";
 
 import "css/settings.css";
 import { setCaptchaVisible } from "utils";
 import { Loading } from "components/Loading";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+
+function CookieSettings() {
+  const { preferences, updatePreferences, acceptAll, rejectAll } = useCookieConsent();
+  const siteInfo = useContext(SiteInfoContext);
+  const [saved, setSaved] = useState(false);
+
+  const handlePreferenceChange = (key) => (event) => {
+    if (key === "essential") return; // Essential cookies cannot be disabled
+    
+    const newPreferences = {
+      ...preferences,
+      [key]: event.target.checked,
+    };
+    updatePreferences(newPreferences);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleAcceptAll = () => {
+    acceptAll();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleRejectAll = () => {
+    rejectAll();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  return (
+    <Stack direction="column" spacing={3}>
+      <Box>
+        <Typography variant="h4" sx={{ mb: 1 }}>
+          Cookie Preferences
+        </Typography>
+        <Typography variant="body2" color="text.secondary" paragraph>
+          Manage your cookie preferences. These settings are stored in your browser 
+          and apply to this device only. For more information, see our{" "}
+          <Link href="/policy/privacy" target="_blank">
+            Privacy Policy
+          </Link>.
+        </Typography>
+      </Box>
+
+      <Divider />
+
+      <Stack spacing={2}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={preferences.essential}
+              disabled
+              size="small"
+            />
+          }
+          label={
+            <Box>
+              <Typography variant="body1" fontWeight="bold">
+                Essential Cookies
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Required for the site to function properly. These cannot be disabled.
+              </Typography>
+            </Box>
+          }
+        />
+
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={preferences.analytics}
+              onChange={handlePreferenceChange("analytics")}
+              size="small"
+            />
+          }
+          label={
+            <Box>
+              <Typography variant="body1" fontWeight="bold">
+                Analytics Cookies
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Help us understand how visitors interact with our website (e.g., Google Analytics).
+              </Typography>
+            </Box>
+          }
+        />
+
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={preferences.functional}
+              onChange={handlePreferenceChange("functional")}
+              size="small"
+            />
+          }
+          label={
+            <Box>
+              <Typography variant="body1" fontWeight="bold">
+                Functional Cookies
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Remember your preferences and settings to enhance your experience.
+              </Typography>
+            </Box>
+          }
+        />
+      </Stack>
+
+      {saved && (
+        <Typography variant="caption" color="success.main">
+          Preferences saved
+        </Typography>
+      )}
+
+      <Divider />
+
+      <Stack direction="row" spacing={2}>
+        <Button onClick={handleAcceptAll} variant="outlined" color="primary">
+          Accept All
+        </Button>
+        <Button onClick={handleRejectAll} variant="outlined" color="secondary">
+          Reject All
+        </Button>
+      </Stack>
+    </Stack>
+  );
+}
 
 function SettingsSection({ sections, activeSection }) {
   const isPhoneDevice = useIsPhoneDevice();
@@ -692,6 +823,11 @@ export default function Settings() {
           </Button>
         </Stack>
       ),
+    },
+    {
+      title: "Cookies",
+      path: "cookies",
+      content: <CookieSettings />,
     },
     {
       title: "Family",

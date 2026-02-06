@@ -13,20 +13,60 @@
   </head>
 
   <head>
-    <!-- Google tag (gtag.js) -->
-    <!--<script src="snowstorm.js"></script> -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-X5P3N0872P"
-    ></script>
+    <!-- Google tag (gtag.js) - Loaded conditionally based on consent -->
     <script>
+      // Initialize dataLayer and gtag function
       window.dataLayer = window.dataLayer || [];
       function gtag() {
         dataLayer.push(arguments);
       }
       window.gtag = gtag;
       gtag("js", new Date());
-      gtag("config", "G-X5P3N0872P");
+      
+      // Set default consent to denied until user accepts
+      gtag("consent", "default", {
+        analytics_storage: "denied",
+      });
+      
+      // Check for existing consent and load analytics if accepted
+      (function() {
+        try {
+          const consent = localStorage.getItem("cookieConsent");
+          const preferences = localStorage.getItem("cookiePreferences");
+          
+          if (consent === "accepted") {
+            let analyticsEnabled = false;
+            if (preferences) {
+              try {
+                const prefs = JSON.parse(preferences);
+                analyticsEnabled = prefs.analytics === true;
+              } catch (e) {
+                // If preferences can't be parsed, default to enabled for "accepted"
+                analyticsEnabled = true;
+              }
+            } else {
+              // Legacy: if consent is "accepted" but no preferences, enable analytics
+              analyticsEnabled = true;
+            }
+            
+            if (analyticsEnabled) {
+              // Load Google Analytics script
+              var script = document.createElement("script");
+              script.async = true;
+              script.src = "https://www.googletagmanager.com/gtag/js?id=G-X5P3N0872P";
+              document.head.appendChild(script);
+              
+              // Update consent to granted
+              gtag("consent", "update", {
+                analytics_storage: "granted",
+              });
+              gtag("config", "G-X5P3N0872P");
+            }
+          }
+        } catch (e) {
+          console.error("Error checking cookie consent:", e);
+        }
+      })();
     </script>
 
     <link rel="icon" href="<%= assetPrefix %>/images/favicon.webp" />
