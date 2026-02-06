@@ -110,6 +110,26 @@ module.exports = class WinWithFaction extends Card {
             return;
           }
         }
+        //Dead Senators
+        if (this.player.faction == "Village") {
+          let hasSenators = false;
+          let senatorCount = 0;
+          let senAliveCount = 0;
+          for (let p of this.game.players) {
+          if (p.hasEffect("SenatorEffect")) {
+            hasSenators = true;
+            senatorCount++;
+            senAliveCount += p.alive ? 1 : 0;
+          }
+           if (
+          hasSenators &&
+          senAliveCount < Math.ceil(senatorCount * 0.5 - 0.01)
+        ) {
+            return;
+        }   
+        }
+          
+        }
         //Dead Unguessed Poet
         if (this.player.faction == "Village") {
           if (

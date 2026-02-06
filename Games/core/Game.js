@@ -3145,25 +3145,32 @@ module.exports = class Game {
         }
       });
 
-      // In most cases the faction winner fraction will be either 0 or 1
-      // In edge cases, such as members of a faction being converted then losing to their starting faction, this number will be somewhere in between
-      const factionScores = factionNames.map((factionName) => {
-        const factionWinnerFraction = factionWinnerFractions[factionName];
-        return Math.floor(
-          1,
-          factionWinnerFraction.winnerCount /
-            factionWinnerFraction.originalCount
-        );
-      });
+      // In most cases the stillAlignedPercent will be either 0 or 1
+      // In edge cases, such as members of a faction being converted then losing to their starting faction,
+      // this number will be somewhere in between
+      const factionScores = new Map(
+        factionNames.map((factionName) => {
+          const factionWinnerFraction = factionWinnerFractions[factionName];
+          const stillAlignedPercent = factionWinnerFraction.winnerCount / factionWinnerFraction.originalCount;
+          return [
+            factionName,
+            stillAlignedPercent,
+          ];
+        })
+      );
+
+      // the 1e-6 is to avoid zero scores which openskill refuses to consider a draw
+      const factionScoresRaw = factionNames.map((factionName) =>
+        Math.floor(1, factionScores.get(factionName)+1e-6)
+      );
 
       // library code time
       const options = {
         model: bradleyTerryFull,
-        beta: constants.defaultSkillRatingSigma * 4,
       };
       const predictions = predictWin(factionsToBeRated, options);
       const ratedFactions = rate(factionsToBeRated, {
-        score: factionScores,
+        score: factionScoresRaw,
         ...options,
       });
 
@@ -3196,10 +3203,10 @@ module.exports = class Game {
         const newSkillRating = ratedFactions[i];
 
         pointsWonByFactions[factionName] = Math.round(
-          constants.pointsNominalAmount / 2 / winPredictionPercent
+          factionScores.get(factionName) * constants.pointsNominalAmount / 2 / winPredictionPercent
         );
         pointsLostByFactions[factionName] = Math.round(
-          constants.pointsNominalAmount / 2 / (1 - winPredictionPercent)
+          factionScores.get(factionName) * constants.pointsNominalAmount / 2 / (1 - winPredictionPercent)
         );
 
         newFactionSkillRatings.push({
