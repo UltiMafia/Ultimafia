@@ -163,6 +163,7 @@ module.exports = class Role {
 
     // Hold starting items
     if (itemStatus == "NoStartingItems") {
+      this.RemovedStartingItems = this.startItems;
       this.startItems = [];
     }
     for (let item of this.startItems) {
