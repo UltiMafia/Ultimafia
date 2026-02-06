@@ -175,10 +175,10 @@ const jackModifierOverrides = {
         Consecutive: ["Can only select the role they selected the previous night."],
       };
 const itemSanity = {
-  Sane: ["All information created by items given by this role will be true. Hides other modifiers."],
-  Insane: ["All information created by items given by this role will be false. Hides other modifiers."],
-  Paranoid: ["All information created by items given by this role will be unfavorable to the player being checked. Hides other modifiers."],
-  Naive: ["All information created by items given by this role will be favorable to the player being checked. Hides other modifiers."],
+  Sane: ["All information created by items given by you will be true. Hides other modifiers."],
+  Insane: ["All information created by items given by you will be false. Hides other modifiers."],
+  Paranoid: ["All information created by items given by you will be unfavorable to the player being checked. Hides other modifiers."],
+  Naive: ["All information created by items given by you will be favorable to the player being checked. Hides other modifiers."],
 };
 const gunModifiers = {
         Loyal: [
