@@ -1,7 +1,35 @@
+const itemData = require("./items");
+
 const leakyDef = `Players who are "Leaky" will have all whispers involving them leak.`;
 const blindDef = `Players who are "Blind" will see all speech as anonymous and cannot see votes.`;
 const cluelessDef = `Players who are "Clueless" will see messages as being sent from random players.`;
 const bleedingDef = `Players who are "Bleeding" will die during the next night.`;
+
+//Item Def
+const coffeeDef = itemData["Mafia"]["Coffee"].description;
+const breadDef = itemData["Mafia"]["Bread"].description;
+const armorDef = itemData["Mafia"]["Armor"].description;
+const candleDef = itemData["Mafia"]["Candle"].description;
+const knifeDef = itemData["Mafia"]["Knife"].description;
+const bombDef = itemData["Mafia"]["Bomb"].description;
+const keyDef = itemData["Mafia"]["Key"].description;
+const shieldDef = itemData["Mafia"]["Shield"].description;
+const whiskeyDef = itemData["Mafia"]["Whiskey"].description;
+const crystalBallDef = itemData["Mafia"]["Crystal Ball"].description;
+const falconDef = itemData["Mafia"]["Falcon"].description;
+const tractDef = itemData["Mafia"]["Tract"].description;
+const gunDef = itemData["Mafia"]["Gun"].description;
+const rifleDef = itemData["Mafia"]["Rifle"].description;
+const needleDef = itemData["Mafia"]["Syringe"].description;
+const envelopeDef = itemData["Mafia"]["Envelope"].description;
+const orangeDef = itemData["Mafia"]["Yuzu Orange"].description;
+const shavingCreamDef = itemData["Mafia"]["Shaving Cream"].description;
+const sceptreDef = itemData["Mafia"]["Sceptre"].description;
+const timeBombDef = itemData["Mafia"]["Timebomb"].description;
+const revolverDef = itemData["Mafia"]["Revolver"].description;
+const snowballDef = itemData["Mafia"]["Snowball"].description;
+const jackBoxDef = itemData["Mafia"]["Jack-In-The-Box"].description;
+const iceCreamDef = itemData["Mafia"]["Ice Cream"].description;
 
 const modifierData = {
   Mafia: {
@@ -9,7 +37,7 @@ const modifierData = {
       category: "Items",
       internal: ["StartWithGun"],
       tags: ["Items", "Killing", "Gun", "Day Killer"],
-      description: "Starts with a gun.",
+      description: "You start with a Gun. "+ gunDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
@@ -17,7 +45,7 @@ const modifierData = {
       category: "Items",
       internal: ["StartWithFalcon"],
       tags: ["Information", "Items", "Falcon", "Visits"],
-      description: "Starts with a falcon.",
+      description: "You start with a Falcon. "+falconDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
@@ -25,7 +53,7 @@ const modifierData = {
       category: "Items",
       internal: ["StartWithArmor"],
       tags: ["Items", "Armor"],
-      description: "Starts with armor.",
+      description: "You start with Armor. "+armorDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
@@ -33,7 +61,7 @@ const modifierData = {
       category: "Items",
       internal: ["StartWithCoffee"],
       tags: ["Items", "Coffee"],
-      description: "Starts with a Coffee.",
+      description: "You start with a Coffee. "+coffeeDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
@@ -41,7 +69,7 @@ const modifierData = {
       category: "Items",
       internal: ["StartWithJack"],
       tags: ["Items", "Coffee"],
-      description: "Starts with a Jack-In-The-Box.",
+      description: "You start with a Jack-In-The-Box. "+jackBoxDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
@@ -49,45 +77,31 @@ const modifierData = {
       category: "Items",
       internal: ["StartWithTract"],
       tags: ["Items", "Convert Saver", "Tract"],
-      description: "Starts with a tract.",
+      description: "You start with a Tract. "+tractDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
-    },
-    Clannish: {
-      category: "Other",
-      internal: ["AddRottenCopy"],
-      tags: ["Delirium", "Setup Changes"],
-      description: `In closed setups will add 0 to 2 copies of this role, 1 of the added roles is permanently “Delirious”.`,
-      eventDescription: "This modifier does nothing when on an Event.",
     },
     Creamed: {
       category: "Items",
       internal: ["StartWithIceCream"],
       tags: ["Items", "Ice Cream"],
       description:
-        "Starts with an Ice Cream. Ice Cream can be used to become a Vanilla role.",
+        "You start with Ice Cream. "+iceCreamDef,
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Crystalline: {
       category: "Items",
       internal: ["StartWithCrystalBall"],
       tags: ["Revealing", "Items", "Crystal Ball"],
-      description: "Starts with a crystal ball.",
+      description: "You start with a Crystal Ball. "+crystalBallDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
-    },
-    Dead: {
-      category: "Other",
-      internal: ["Dead"],
-      tags: ["Dead"],
-      description: "Starts game dead.",
-      eventDescription: "This modifier does nothing when on an Event.",
     },
     Explosive: {
       category: "Items",
       internal: ["StartWithBomb"],
       tags: ["Items", "Killing"],
-      description: "Starts with a bomb.",
+      description: "You start with a Bomb."+bombDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
@@ -95,7 +109,7 @@ const modifierData = {
       category: "Items",
       internal: ["StartWithKey"],
       tags: ["Items", "Key"],
-      description: "Starts with a Key.",
+      description: "You start with a Key. "+keyDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
@@ -103,7 +117,7 @@ const modifierData = {
       category: "Items",
       internal: ["StartWithCandle"],
       tags: ["Information", "Items", "Candle", "Visits"],
-      description: "Starts with a candle.",
+      description: "You start with a Candle. "+candleDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
@@ -111,7 +125,7 @@ const modifierData = {
       category: "Items",
       internal: ["StartWithSyringe"],
       tags: ["Revive", "Items", "Syringe", "Graveyard Participation All"],
-      description: "Starts with a syringe.",
+      description: "You start with a Syringe. "+syringeDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
@@ -119,7 +133,7 @@ const modifierData = {
       category: "Items",
       internal: ["StartWithEnvelope"],
       tags: ["Messages", "Items", "Envelope"],
-      description: "Starts with an envelope.",
+      description: "You start with an Envelope. "+envelopeDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
@@ -128,7 +142,7 @@ const modifierData = {
       category: "Items",
       internal: ["StartWithShield"],
       tags: ["Items"],
-      description: "Starts with a Shield.",
+      description: "You start with a Shield. "+shieldDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
@@ -136,7 +150,7 @@ const modifierData = {
       category: "Items",
       internal: ["StartWithKnife"],
       tags: ["Bleeding", "Items", "Knife", "Killing", "Day Killer"],
-      description: "Starts with a knife.",
+      description: "You start with a Knife. "+knifeDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
@@ -144,9 +158,24 @@ const modifierData = {
       category: "Items",
       internal: ["StartWithRifle"],
       tags: ["Items", "Killing", "Gun", "Alignments", "Day Killer"],
-      description: "Starts with a rifle.",
+      description: "You start with a Rifle. "+rifleDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
+    },
+
+     Dead: {
+      category: "Other",
+      internal: ["Dead"],
+      tags: ["Dead"],
+      description: "Starts game dead.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Clannish: {
+      category: "Other",
+      internal: ["AddRottenCopy"],
+      tags: ["Delirium", "Setup Changes"],
+      description: `In closed setups will add 0 to 2 copies of this role, 1 of the added roles is permanently “Delirious”.`,
+      eventDescription: "This modifier does nothing when on an Event.",
     },
     //Referance
     Austere: {
