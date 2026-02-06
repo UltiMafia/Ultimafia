@@ -75,12 +75,6 @@ fbAdmin.initializeApp({
 });
 
 router.post("/", async function (req, res) {
-
-
-
-
-
-
   try {
     // Validate idToken is present and not empty
     var idToken = req.body.idToken;

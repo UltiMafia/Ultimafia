@@ -184,8 +184,8 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
             // Check if email is already verified
             if (userCred.user.emailVerified) {
               snackbarHook.popSnackbar(
-                "Your email is already verified. Please contact support if you're still unable to log in.",
-                "info"
+                "Could not log in. Please contact support if you believe this is an error.",
+                "error"
               );
             } else {
               await sendEmailVerification(userCred.user);
