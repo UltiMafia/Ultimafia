@@ -54,6 +54,9 @@ export default function Rules() {
       <Typography variant="h2" gutterBottom>
         UltiMafia Rules of Conduct
       </Typography>
+      <Typography variant="body2" color="text.secondary" paragraph>
+        Last Updated: February 6, 2026
+      </Typography>
 
       <Box sx={{ borderBottom: 1, borderColor: "divider"}}>
         <Tabs value={selectedTab} onChange={handleTabChange} aria-label="rules tabs">
