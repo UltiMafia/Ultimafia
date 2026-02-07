@@ -7,6 +7,6 @@ module.exports = class Carpenter extends Role {
     this.cards = ["VillageCore", "WinWithFaction", "MeetingFaction", "StartingItemGiver"];
   }
   init(modifiers, itemStatus){
-    super(modifiers, "NoStartingItems");
+    super.init(modifiers, "NoStartingItems");
   }
 };

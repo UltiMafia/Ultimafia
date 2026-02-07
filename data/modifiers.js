@@ -134,7 +134,7 @@ const modifierData = {
       category: "Items",
       internal: ["StartWithSyringe"],
       tags: ["Revive", "Items", "Syringe", "Graveyard Participation All"],
-      description: "You start with a Syringe. "+syringeDef,
+      description: "You start with a Syringe. "+needleDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },

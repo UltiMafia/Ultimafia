@@ -20,12 +20,13 @@ module.exports = class TNT extends Item {
             target: killer,
             game: this.holder.game,
             labels: ["kill", "bomb"],
+            item: this,
             run: function () {
-              if (this.dominates(this.neighbors[0])){
-                this.target.kill("bomb", this.actor, instant);
+              if (this.dominates(this.item.neighbors[0])){
+                this.item.neighbors[0].kill("bomb", this.actor, instant);
               }
-              if (this.dominates(this.neighbors[1])){
-                this.target.kill("bomb", this.actor, instant);
+              if (this.dominates(this.item.neighbors[1])){
+                this.item.neighbors[1].kill("bomb", this.actor, instant);
               }
             },
           });

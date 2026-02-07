@@ -45,7 +45,7 @@ module.exports = class Envelope extends Item {
             }
 
             if (this.actor.role.data.message != undefined) {
-              var alert = `:will2: You receive a message in an Envelope that reads: ${this.actor.role.data.message}.`;
+              var alert = `:will: You receive a message in an Envelope that reads: ${this.actor.role.data.message}.`;
 
               this.actor.role.data.PlayerToSendTo.queueAlert(alert);
             }
@@ -87,7 +87,7 @@ module.exports = class Envelope extends Item {
             }
 
             if (this.actor.role.data.message != undefined) {
-              var alert = `:will2: You receive a message in an Envelope that reads: ${this.actor.role.data.message}.`;
+              var alert = `:will: You receive a message in an Envelope that reads: ${this.actor.role.data.message}.`;
 
               this.actor.role.data.PlayerToSendTo.queueAlert(alert);
             }
