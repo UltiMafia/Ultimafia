@@ -11,8 +11,8 @@ module.exports = class Envelope extends Item {
 
     this.meetings = {
       "Write Letter": {
-        states: ["Night"],
-        flags: ["voting"],
+        states: ["*"],
+        flags: ["voting", "instant", "noVeg"],
         inputType: "text",
         textOptions: {
           minLength: 1,
@@ -28,22 +28,12 @@ module.exports = class Envelope extends Item {
           item: this,
           run: function () {
             this.actor.role.data.message = this.target;
-          },
-        },
-      },
-
-      "Send Letter": {
-        states: ["Night"],
-        flags: ["voting"],
-        item: this,
-        targets: { include: ["alive"], exclude: ["self"] },
-        action: {
-          labels: ["hidden", "absolute", "message"],
-          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
-          item: this,
-          run: function () {
+            if(!this.actor.role.data.PlayerToSendTo){
+              return;
+            }
             if (this.item.broken) {
               delete this.actor.role.data.message;
+              delete this.actor.role.data.PlayerToSendTo;
               this.item.drop();
               return;
             }
@@ -55,11 +45,54 @@ module.exports = class Envelope extends Item {
             }
 
             if (this.actor.role.data.message != undefined) {
-              var alert = `:will2: You receive a message that reads: ${this.actor.role.data.message}.`;
+              var alert = `:will: You receive a message in an Envelope that reads: ${this.actor.role.data.message}.`;
 
-              this.target.queueAlert(alert);
+              this.actor.role.data.PlayerToSendTo.queueAlert(alert);
             }
             delete this.actor.role.data.message;
+            delete this.actor.role.data.PlayerToSendTo;
+            this.item.drop();
+
+            
+            
+          },
+        },
+      },
+
+      "Send Letter": {
+        states: ["*"],
+        flags: ["voting", "instant", "noVeg"],
+        item: this,
+        targets: { include: ["alive"], exclude: ["self"] },
+        action: {
+          labels: ["hidden", "absolute", "message"],
+          priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+          item: this,
+          run: function () {
+            this.actor.role.data.PlayerToSendTo = this.target;
+            if(!this.actor.role.data.message){
+              return;
+            }
+            if (this.item.broken) {
+              delete this.actor.role.data.message;
+              delete this.actor.role.data.PlayerToSendTo;
+              this.item.drop();
+              return;
+            }
+
+            if (this.item.magicCult) {
+              this.actor.role.data.message = rlyehianify(
+                this.actor.role.data.message
+              );
+            }
+
+            if (this.actor.role.data.message != undefined) {
+              var alert = `:will: You receive a message in an Envelope that reads: ${this.actor.role.data.message}.`;
+
+              this.actor.role.data.PlayerToSendTo.queueAlert(alert);
+            }
+            delete this.actor.role.data.message;
+            delete this.actor.role.data.PlayerToSendTo;
             this.item.drop();
           },
         },
