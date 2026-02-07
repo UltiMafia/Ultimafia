@@ -40,6 +40,11 @@ const modifierData = {
       tags: ["Night Killer", "Common"],
       description: `If a Bomb's holder is killed, their killer is killed.`,
     },
+    TNT: {
+      internal: ["TNT"],
+      tags: ["Night Killer", "Common"],
+      description: `If a TNT's holder is killed, their neighbors are killed.`,
+    },
     Shield: {
       internal: ["Shield"],
       tags: ["Shield", "Common"],
