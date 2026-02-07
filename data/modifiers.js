@@ -102,7 +102,7 @@ const modifierData = {
       category: "Items",
       internal: ["StartWithBomb"],
       tags: ["Items", "Killing"],
-      description: "You start with a Bomb."+bombDef,
+      description: "You start with a Bomb. "+bombDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
@@ -110,7 +110,7 @@ const modifierData = {
       category: "Items",
       internal: ["StartWithTNT"],
       tags: ["Items", "Killing"],
-      description: "You start with TNT."+tntDef,
+      description: "You start with TNT. "+tntDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
@@ -171,12 +171,78 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
+    //Other Item mods
+    Gunslinging: {
+      category: "Items",
+      internal: ["DefendAndSnatchGun"],
+      tags: ["Items", "Gun"],
+      description: "If shot with a gun, you have 80% chance of snatching the gun.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Apprehensive: {
+      category: "Items",
+      internal: ["LearnVisitorsAndArm"],
+      tags: ["Items", "Gun", "Killing", "Reflexive", "Information"],
+      description:
+        "Each night, you learn who visits you and you gain a gun (that will not reveal shooter) for each player who visits you.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    //Non-Starting Item
+    Provocative: {
+      category: "Items",
+      internal: ["Provocative"],
+      tags: ["Messages", "Items", "Sockpuppet"],
+      description: "Each day, you gain a sockpuppet.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Tinkering: {
+      category: "Items",
+      internal: ["ForageItem"],
+      tags: ["Items"],
+      description:
+        "Each night, if no one visits you, gain a random item. If killed, the killer will gain a Gun (that will always reveal shooter).",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    //Item Interaction
+    Kleptomaniac: {
+      category: "Items",
+      internal: ["StealFromTargets"],
+      tags: ["Items", "Visits"],
+      description:
+        "While visiting a player, you will steal that player's items.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Klutzy: {
+      category: "Items",
+      internal: ["DropOwnItems"],
+      tags: ["Items"],
+      description: "You will passively drop any items held or received.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Covert: {
+      category: "Items",
+      internal: ["MakeAllGunsHidden"],
+      tags: ["Items"],
+      description:
+        "All Guns, Knives, and Rifles you use will not reveal you.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Overt"],
+    },
+    Overt: {
+      category: "Items",
+      internal: ["MakeAllGunsReveal"],
+      tags: ["Items"],
+      description:
+        "All Guns, Knives, and Rifles you use will reveal you.",
+      eventDescription: "This modifier does nothing when on an Event.",
+      incompatible: ["Covert"],
+    },
 
      Dead: {
       category: "Other",
       internal: ["Dead"],
       tags: ["Dead"],
-      description: "Starts game dead.",
+      description: "You start the game dead.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Clannish: {
@@ -335,7 +401,7 @@ const modifierData = {
       category: "Other",
       internal: ["ConvertImmune"],
       tags: ["Convert Saver"],
-      description: "Cannot be converted to another role.",
+      description: "You cannot be converted.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Reactionary: {
@@ -357,28 +423,21 @@ const modifierData = {
       category: "Other",
       internal: ["StartWithExtraLife"],
       tags: ["Extra Lives"],
-      description: "Starts with an Extra Life",
+      description: "You start with an Extra Life",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Traitorous: {
       category: "Other",
       internal: ["TurnIntoTraitorOnMafiaKill"],
       tags: ["Sacrificial", "Conversion", "Traitor"],
-      description: "If killed by the Mafia, will turn into a Traitor instead.",
+      description: "If killed by the Mafia, you will survive and be converted to Traitor.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Hemophilic: {
       category: "Other",
       internal: ["ConvertKillToBleed"],
       tags: ["Bleeding", "Effect"],
-      description: `If killed, this role will survive and start "Bleeding". ${bleedingDef}`,
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Gunslinging: {
-      category: "Items",
-      internal: ["DefendAndSnatchGun"],
-      tags: ["Items", "Gun"],
-      description: "80% chance of snatching a gun when shot at.",
+      description: `If killed, you will survive and start "Bleeding". `+bleedingDef,
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
@@ -568,65 +627,6 @@ const modifierData = {
       description: "Will learn the fake word if a Ghost is present.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Pneumatic"],
-    },
-
-    //Non-Starting Item
-    Apprehensive: {
-      category: "Items",
-      internal: ["LearnVisitorsAndArm"],
-      tags: ["Items", "Gun", "Killing", "Reflexive", "Information"],
-      description:
-        "Will receive a Gun (that will not reveal shooter) with each visit and learn the name of the visitor.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Provocative: {
-      category: "Items",
-      internal: ["Provocative"],
-      tags: ["Messages", "Items", "Sockpuppet"],
-      description: "Each day, receives a sockpuppet.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Tinkering: {
-      category: "Items",
-      internal: ["ForageItem"],
-      tags: ["Items"],
-      description:
-        "Crafts a random item if not visited during the night. If killed, the killer will find a gun that always reveals.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    //Item Interaction
-    Kleptomaniac: {
-      category: "Items",
-      internal: ["StealFromTargets"],
-      tags: ["Items", "Visits"],
-      description:
-        "While visiting a player, that player's items will be stolen.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Klutzy: {
-      category: "Items",
-      internal: ["DropOwnItems"],
-      tags: ["Items"],
-      description: "Will passively drop any items held or received.",
-      eventDescription: "This modifier does nothing when on an Event.",
-    },
-    Covert: {
-      category: "Items",
-      internal: ["MakeAllGunsHidden"],
-      tags: ["Items"],
-      description:
-        "All Guns, Knives, and Rifles used by this role will not reveal user.",
-      eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Overt"],
-    },
-    Overt: {
-      category: "Items",
-      internal: ["MakeAllGunsReveal"],
-      tags: ["Items"],
-      description:
-        "All Guns, Knives, and Rifles used by this role will reveal user.",
-      eventDescription: "This modifier does nothing when on an Event.",
-      incompatible: ["Covert"],
     },
 
     //Visit Immunies
@@ -1016,7 +1016,7 @@ const modifierData = {
       internal: ["BlockIfVisitingThingModifiers"],
       tags: ["Visits", "Block Self", "Alignments", "Loyal"],
       description:
-        "If this player visits a player of the opposite alignment, their secondary actions will be blocked.",
+        "If you visit a player of the opposite alignment, your secondary actions will be blocked.",
       eventDescription: "This Event will not apply to Evil players.",
       incompatible: ["Disloyal", "Equitable"],
     },
@@ -1025,7 +1025,7 @@ const modifierData = {
       internal: ["BlockIfVisitingThingModifiers"],
       tags: ["Visits", "Block Self", "Alignments", "Disloyal"],
       description:
-        "If this player visits a player of the same alignment, their secondary actions will be blocked.",
+        "If you visit a player of the same alignment, your secondary actions will be blocked.",
       eventDescription: "This Event will not apply to Non-Evil players.",
       incompatible: ["Loyal", "Equitable"],
     },
@@ -1034,7 +1034,7 @@ const modifierData = {
       internal: ["BlockIfVisitingThingModifiers"],
       tags: ["Visits", "Block Self", "Vanilla Interaction", "Complex"],
       description:
-        "If this player visits a player with a vanilla role, all their actions will be blocked.",
+        "If you visit a player with a vanilla role, your secondary actions will be blocked.",
       eventDescription:
         "This Event will not apply to players with Vanilla roles.",
       incompatible: ["Simple"],
@@ -1044,7 +1044,7 @@ const modifierData = {
       internal: ["BlockIfVisitingThingModifiers"],
       tags: ["Visits", "Block Self", "Vanilla Interaction", "Simple"],
       description:
-        "If this player visits a player with a power role, all their actions will be blocked.",
+        "If you visit a player with a power role, your secondary actions will be blocked.",
       eventDescription: "This Event will not apply to non-Vanilla players.",
       incompatible: ["Complex"],
     },
@@ -1053,7 +1053,7 @@ const modifierData = {
       internal: ["BlockIfVisitingThingModifiers"],
       tags: ["Visits", "Block Self", "Modifiers", "Holy"],
       description:
-        "If this player visits a player with a Demonic role, their secondary actions will be blocked.",
+        "If you visit a player with a Demonic role, your secondary actions will be blocked.",
       eventDescription: "This Event will not apply to Demonic players.",
       incompatible: ["Unholy"],
     },
@@ -1062,7 +1062,7 @@ const modifierData = {
       internal: ["BlockIfVisitingThingModifiers"],
       tags: ["Visits", "Block Self", "Modifiers", "Unholy"],
       description:
-        "If this player visits a player with a non-Demonic role, their secondary actions will be blocked.",
+        "If you visit a player with a non-Demonic role, your secondary actions will be blocked.",
       eventDescription: "This Event will not apply to non-Demonic players.",
       incompatible: ["Holy"],
     },
@@ -1077,7 +1077,7 @@ const modifierData = {
         "Banished Interaction",
       ],
       description:
-        "If this player visits a player with a Banished role, their secondary actions will be blocked.",
+        "If you visit a player with a Banished role, your secondary actions will be blocked.",
       eventDescription: "This Event will not apply to Banished players.",
       incompatible: ["Unrefined"],
     },
@@ -1092,7 +1092,7 @@ const modifierData = {
         "Banished Interaction",
       ],
       description:
-        "If this player visits a player with a non-Banished role, their secondary actions will be blocked.",
+        "If you visit a player with a non-Banished role, your secondary actions will be blocked.",
       eventDescription: "This Event will not apply to non-Banished players.",
       incompatible: ["Refined"],
     },
@@ -1102,7 +1102,7 @@ const modifierData = {
       internal: ["BlockIfVisitingSameAlignmentTwice"],
       tags: ["Visits", "Block Self", "Alignments", "Equitable"],
       description:
-        "If this player visits a player of the same alignment on a player they visited the previous night, their secondary actions will be blocked.",
+        "If you visit a player of the same alignment as a player you visited the previous night, your secondary actions will be blocked.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Loyal", "Disloyal"],
     },
@@ -1113,7 +1113,7 @@ const modifierData = {
       internal: ["GuessRoleOrGetBlocked"],
       tags: ["Self Block"],
       description:
-        "Each night chooses a role. Actions will be blocked unless visiting a player with that role.",
+        "Each night, you must choose a role. Unless visiting a player with that role, your secondary actions will be blocked.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Choosy"],
     },
@@ -1122,7 +1122,7 @@ const modifierData = {
       internal: ["GuessRoleToGetBlocked"],
       tags: ["Self Block"],
       description:
-        "Each night chooses a role. Actions will be blocked if visiting a player with that role.",
+        "Each night, you must choose a role. If visiting a player with that role, your secondary actions will be blocked.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Picky"],
     },
@@ -1155,7 +1155,7 @@ const modifierData = {
       category: "Appearance",
       internal: ["PublicReveal"],
       tags: ["Reveal Self"],
-      description: "Starts revealed to everyone.",
+      description: "You are revealed to all players.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Notable", "Infamous"],
     },
@@ -1163,7 +1163,7 @@ const modifierData = {
       category: "Appearance",
       internal: ["RevealToVillage"],
       tags: ["Reveal Self"],
-      description: "Starts revealed to all Village-aligned players.",
+      description: "You are revealed to all Village-aligned players.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Exposed"],
     },
@@ -1171,7 +1171,7 @@ const modifierData = {
       category: "Appearance",
       internal: ["RevealToEvils"],
       tags: ["Reveal Self"],
-      description: "Starts revealed to all Evil players.",
+      description: "You are revealed to all Evil players.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Exposed"],
     },
