@@ -829,6 +829,7 @@ module.exports = class Meeting {
           });
         }
       }
+        /*
       else if(!this.hasVotedOnce.includes(voter)){
         let tempVote = { ...vote };
         tempVote.target = "*unknown"
@@ -857,6 +858,7 @@ module.exports = class Meeting {
 
 
       }
+      */
     }
 
     if(!this.hasVotedOnce.includes(voter)){
