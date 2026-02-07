@@ -12,6 +12,7 @@ const armorDef = itemData["Mafia"]["Armor"].description;
 const candleDef = itemData["Mafia"]["Candle"].description;
 const knifeDef = itemData["Mafia"]["Knife"].description;
 const bombDef = itemData["Mafia"]["Bomb"].description;
+const tntDef = itemData["Mafia"]["TNT"].description;
 const keyDef = itemData["Mafia"]["Key"].description;
 const shieldDef = itemData["Mafia"]["Shield"].description;
 const whiskeyDef = itemData["Mafia"]["Whiskey"].description;
@@ -102,6 +103,14 @@ const modifierData = {
       internal: ["StartWithBomb"],
       tags: ["Items", "Killing"],
       description: "You start with a Bomb."+bombDef,
+      eventDescription: "This modifier does nothing when on an Event.",
+      allowDuplicate: true,
+    },
+    Combustible: {
+      category: "Items",
+      internal: ["StartWithTNT"],
+      tags: ["Items", "Killing"],
+      description: "You start with TNT."+tntDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
     },
