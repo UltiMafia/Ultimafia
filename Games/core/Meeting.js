@@ -829,8 +829,7 @@ module.exports = class Meeting {
           });
         }
       }
-        /*
-      else if(!this.hasVotedOnce.includes(voter)){
+      else if(!this.hasVotedOnce.includes(voter) && this.name != "Vote Kick"){
         let tempVote = { ...vote };
         tempVote.target = "*unknown"
         let voteVersion = member.player.seeVote(tempVote);
@@ -858,7 +857,6 @@ module.exports = class Meeting {
 
 
       }
-      */
     }
 
     if(!this.hasVotedOnce.includes(voter)){
