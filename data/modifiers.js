@@ -473,7 +473,7 @@ const modifierData = {
       category: "Other",
       internal: ["VotingPowerIncrease"],
       tags: ["Voting"],
-      description: "Player's vote is worth 1 more.",
+      description: "Your vote weight is worth [X] more votes.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Felonious", "Voteless"],
       allowDuplicate: true,
@@ -482,7 +482,7 @@ const modifierData = {
       category: "Other",
       internal: ["VotingNegative"],
       tags: ["Voting"],
-      description: "Player's vote is Negative.",
+      description: "Your vote is Negative.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Felonious", "Voteless"],
     },
@@ -490,7 +490,7 @@ const modifierData = {
       category: "Other",
       internal: ["VotingPowerZero"],
       tags: ["Voting"],
-      description: "Player's vote is worth 0.",
+      description: "Your vote is worth 0.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Trustworthy", "Inverse", "Voteless"],
     },
@@ -498,7 +498,7 @@ const modifierData = {
       category: "Other",
       internal: ["CannotVoteModifier"],
       tags: ["Voting"],
-      description: "Player cannot vote.",
+      description: "You cannot vote.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Trustworthy", "Inverse", "Felonious"],
     },
@@ -507,7 +507,7 @@ const modifierData = {
       internal: ["FrustratedCondemnation"],
       tags: ["Voting", "Condemn"],
       description:
-        "Cannot be condemned by majority vote. A non-zero minority vote will kill the target.",
+        "You cannot be condemned by majority vote. A non-zero minority vote will kill you.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Diplomatic"],
     },
@@ -515,7 +515,7 @@ const modifierData = {
       category: "Other",
       internal: ["CondemnImmune"],
       tags: ["Condemn", "Condemn Immune"],
-      description: "Cannot be condemned.",
+      description: "You cannot be condemned.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Frustrated"],
     },
@@ -524,7 +524,7 @@ const modifierData = {
       internal: ["VillageMightSurviveCondemn"],
       tags: ["Condemn", "Condemn Immune", "Alignments", "Protective"],
       description:
-        "While a role with this modifier is in play, Village-aligned players might survive being condemned",
+        "Village-aligned players might survive being condemned.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     //Banished
@@ -533,7 +533,7 @@ const modifierData = {
       internal: ["BanishedRole"],
       tags: ["Banished"],
       description:
-        "Roles with this modifier will not spawn normally.",
+        "You role will not spawn normally.",
       eventDescription: "This Event will not occur normally.",
       incompatible: ["Inclusive", "Exclusive"],
     },
@@ -1215,7 +1215,7 @@ const modifierData = {
       category: "Appearance",
       internal: ["VillagerToInvestigative"],
       tags: ["Villager", "Deception", "No Investigate"],
-      description: "Appears as a Villager to investigative roles.",
+      description: "You appear as a Villager to information roles.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Suspect", "Shady", "Camouflaged"],
     },
@@ -1224,7 +1224,7 @@ const modifierData = {
       internal: ["Wannabe"],
       tags: ["Deception"],
       description:
-        "Appears to visit a player who dies at night, prioritizing players who are killed by the mafia.",
+        "You appear to visit a player who dies at night, prioritizing players who are killed by the mafia.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     //Death Appearance Mods
@@ -1233,7 +1233,7 @@ const modifierData = {
       internal: ["AppearAsVanillaEvil"],
       tags: ["Deception", "No Investigate"],
       description:
-        "Appears as a Vanilla Evil Role from the setup when investigated or condemned. Appears as their real role on death.",
+        "You appear as an vanilla evil role when condemned and to information roles. You appear as your real role when killed.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: [
         "Faceless",
@@ -1249,7 +1249,7 @@ const modifierData = {
       internal: ["AppearAsRandomEvil"],
       tags: ["Deception", "No Investigate"],
       description:
-        "Appears as a Random Evil Role from the setup when investigated or condemned. Appears as their real role on death.",
+        "You appear as an evil role when condemned and to information roles. You appear as your real role when killed.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: [
         "Faceless",
@@ -1264,7 +1264,7 @@ const modifierData = {
       category: "Appearance",
       internal: ["AppearAsVillagerOnDeath"],
       tags: ["Villager", "Deception"],
-      description: "Appears as Villager when condemned or on death.",
+      description: "You appears as Villager when you die.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Shady", "Faceless", "Suspect", "Phony", "Camouflaged"],
     },
@@ -1272,7 +1272,7 @@ const modifierData = {
       category: "Appearance",
       internal: ["AppearAsVillagePROnDeath"],
       tags: ["Deception"],
-      description: "Appears as Village Power Role when condemned or on death.",
+      description: "You appears as Village power role when you die.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: [
         "Shady",
@@ -1287,7 +1287,7 @@ const modifierData = {
       internal: ["AppearAsRandomRole"],
       tags: ["Roles", "Deception", "No Investigate"],
       description:
-        "Appears on death and to information roles as a random role in the game that is not Villager, Impersonator or Impostor.",
+        "You appear as a random role to information roles and when you die. (The role cannot be Villager, Impersonator or Impostor).",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Shady", "Faceless", "Suspect", "Unassuming", "Phony"],
     },
@@ -1296,7 +1296,7 @@ const modifierData = {
       internal: ["AppearAsFliplessOnDeath"],
       tags: ["Deception", "No Reveal"],
       description:
-        "Player's role will be hidden from the town when condemned or on death.",
+        "Your role will be hidden when you die.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Shady", "Unassuming", "Phony", "Suspect", "Camouflaged"],
     },
