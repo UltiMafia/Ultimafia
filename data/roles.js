@@ -277,7 +277,7 @@ const roleData = {
       description: [
         "You start with a Gun.",
         gunDef,
-        "Your starting Gun never reveal you when shot.",
+        "Your starting Gun never reveal you when used.",
       ],
       SpecialInteractionsModifiers: gunModifiers,
     },
@@ -309,9 +309,9 @@ const roleData = {
       tagsHidden: ["No Investigate"],
       description: [
         "You see self as Villager.",
-        "You appears as a random evil role to information roles.",
-        "You appears as a random evil role upon being condemned.",
-        "You appears as Miller upon being killed.",
+        "You appear as a random evil role to information roles.",
+        "You appear as a random evil role when condemned.",
+        "You appear as Miller when killed.",
       ],
       skins: [
         {
@@ -354,7 +354,7 @@ const roleData = {
       description: [
         "You start with a Gun.",
         gunDef,
-        "Your starting Gun always reveals you when shot.",
+        "Your starting Gun always reveals you when used.",
       ],
       SpecialInteractionsModifiers: gunModifiers,
     },
@@ -1623,7 +1623,7 @@ const roleData = {
       category: "Sacrificial",
       tags: ["Condemn Interaction", "Killing", "Dusk", "Basic"],
       description: [
-        "If condemned, you can choose a player to kill.",
+        "If you are condemned, you can choose a player to kill.",
         //"Chooses a player to kill when condemned by town during the day.",
       ],
     },
@@ -1699,7 +1699,7 @@ const roleData = {
       category: "Sacrificial",
       tags: ["Condemn Interaction", "Protective", "Conversion", "Basic"],
       description: [
-        "If condemned, no one can die the following night.",
+        "If you are condemned, no one can die the following night.",
         //"If condemned by the village, no one will die the following night.",
         //"If visited by Hooker, gets turned into Villager.",
       ],
@@ -1726,7 +1726,7 @@ const roleData = {
       alignment: "Village",
       category: "Voting",
       tags: ["Voting", "Basic"],
-      description: [" Your vote weight is worth 2 votes."],
+      description: ["Your vote weight is worth 2 votes."],
     },
     Butler: {
       alignment: "Village",
@@ -2249,10 +2249,11 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Each dusk, if no one was condemned, you can choose a player.",
-        //"If no one was condemned, chooses a player to jail after each day meeting.",
-        "You will meet anonymously with the chosen player at night and the chosen player cannot perform night actions and blocks the night actions of any players who visit the the chosen player.",
-        "You can choose to kill the chosen player.",
+        "Each dusk, if no one was condemned, you can choose to jail a player during the night.",
+        "The jailed player cannot perform night actions.",
+        "You will block the night actions of any players who visit the jailed player.",
+        "You will meet anonymously with the jailed player.",
+        "You can choose to kill the jailed player.",
       ],
       nightOrder: [
         ["Execute Prisoner", PRIORITY_KILL_DEFAULT],
@@ -2290,7 +2291,7 @@ const roleData = {
         "Each night, you can choose to visit one player and kill one player who visits them.",
         //"Each night, visits one player and kills one of their visitors.",
         "Preferentially kills Mafia, Cult, Independents, then Villagers.",
-        "Other players who visit the chosen player will learn that you are the Trapper.",
+        "Other players who visit the chosen player will learn that you are a Trapper.",
       ],
       nightOrder: [["Trap", PRIORITY_KILL_DEFAULT]],
     },
@@ -2318,7 +2319,7 @@ const roleData = {
       tags: ["Speaking", "Dead", "Graveyard", "Basic"],
       description: [
         "Each day, you can choose a dead player.",
-        "You will meet anonymously with the chosen player at night",
+        "You will meet anonymously with the chosen player at night.",
         //"Holds a seance with a dead player once per night.",
         //"Identity is not revealed to the dead player.",
       ],
@@ -2444,7 +2445,7 @@ const roleData = {
       category: "Essential",
       tags: ["Essential", "Condemn", "Sacrificial", "Basic"],
       description: [
-        "If condemned, all players who are aligned with you die.",
+        "If you are condemned, all players who are aligned with you die.",
       ],
       SpecialInteractions: {
         Ghost: ["If a Ghost is Present, a Saint will not learn any words."],
@@ -2583,7 +2584,7 @@ const roleData = {
       alignment: "Mafia",
       category: "Basic",
       tags: ["Vanilla", "Basic"],
-      description: ["Wins when the mafia outnumbers all other players."],
+      description: ["You win when the Mafia has a majority."],
       skins: [
         {
           label: "Vivid",
@@ -2603,7 +2604,7 @@ const roleData = {
       tagsHidden: ["No Investigate"],
       description: [
         //"Leads the mafia kill each night.",
-        "Appears as Villager to information roles.",
+        "You appear as Villager to information roles.",
       ],
       skins: [
         {
@@ -2624,7 +2625,7 @@ const roleData = {
       category: "Basic",
       tags: ["Basic", "Information", "Visits", "Roles", "Reflexive"],
       description: [
-        "Each night, learns the role of each player who visits them",
+        "Each night, you learn the role of each player who visits you.",
         //"Learns role of any player who visits them.",
         // "Cannot be killed normally.",
       ],
@@ -2634,15 +2635,16 @@ const roleData = {
       alignment: "Mafia",
       category: "Basic",
       tags: ["Voting", "Basic"],
-      description: ["Vote weight is worth 2 votes."],
+      description: ["Your vote weight is worth 2 votes."],
     },
     Sniper: {
       alignment: "Mafia",
       category: "Basic",
       tags: ["Killing", "Basic", "Gun", "Items", "Day Actions"],
       description: [
-        "Starts with a gun.",
-        "Gun does not reveal identity when fired.",
+        "You start with a Gun.",
+        gunDef,
+        "Your starting Gun never reveal you when used.",
       ],
       SpecialInteractionsModifiers: gunModifiers,
     },
@@ -2652,8 +2654,8 @@ const roleData = {
       category: "Killing",
       tags: ["Killing", "Gasoline", "Visiting", "Day Actions", "Basic"],
       description: [
-        `Each night, can choose to visit one player and make them "Doused".`,
-        `Once per game during the day, can choose to kill all players that are "Doused".`,
+        `Each night, you can choose to visit one player and make them "Doused".`,
+        `Once per game during the day, you can choose to kill all players that are "Doused".`,
         //"Douses one player with Gasoline each night.",
         //"Chooses to light a match during the day to burn doused players to ashes.",
       ],
@@ -2670,7 +2672,7 @@ const roleData = {
         "Basic",
       ],
       description: [
-        "Each night, can choose to visit one player and kill them if a non-Mafia player visits them.",
+        "Each night, you can choose to visit one player and kill them if a non-Mafia player visits them.",
         //"Gives the kiss of death to someone each night.",
         //"Target will die if visited by a non-Mafia player that night.",
       ],
@@ -2680,7 +2682,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Killing", "Visits", "Visiting", "Basic"],
       description: [
-        `Each night, can choose to visit one player and make them "Woozy".`,
+        `Each night, you can choose to visit one player and make them "Woozy".`,
         woozyDef,
       ],
       nightOrder: [["Make Player Woozy", PRIORITY_EFFECT_GIVER_DEFAULT]],
@@ -2690,7 +2692,7 @@ const roleData = {
       category: "Killing",
       tags: ["Killing", "Setup Change", "Hide and Seek", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and kill them if their role is Seeker or Invader.",
+        "Each night, you can choose to visit one player and kill them if their role is Seeker or Invader.",
         "Forces a Seeker or Invader to Spawn in closed Setups.",
       ],
       nightOrder: [["Guess Seeker/Invader", 0]],
@@ -2701,7 +2703,7 @@ const roleData = {
       category: "Killing",
       tags: ["Killing", "Extra Night Deaths", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and kill them.",
+        "Each night, you can choose to visit one player and kill them.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT]],
     },
@@ -2710,8 +2712,8 @@ const roleData = {
       category: "Killing",
       tags: ["Killing", "Word Kill", "Visiting", "Speaking", "Basic"],
       description: [
-        "Each night, can choose a word.",
-        `Each night, can choose to visit one player and "Jinx" them with the chosen word for the following day.`,
+        "Each night, you can choose a word.",
+        `Each night, you can choose to visit one player and "Jinx" them with the chosen word for the following day.`,
         jinxDef,
         //"Curses a player with a forbidden word each night.",
         //"If the player speaks the word the next day, they will die.",
@@ -2723,7 +2725,7 @@ const roleData = {
       category: "Killing",
       tags: ["Killing", "Poison", "Malicious Effects", "Visiting", "Basic"],
       description: [
-        `Each night, can choose to visit one player and "Poison" them`,
+        `Each night, you can choose to visit one player and "Poison" them`,
         poisonDef,
         //"Concocts a deadly poison and administers it to one player each night.",
         //"The poisoned target will die at the end of the following night unless saved.",
@@ -2735,8 +2737,8 @@ const roleData = {
       category: "Killing",
       tags: ["Killing", "Win Con", "Advanced"],
       description: [
-        "If the Queen is the only Mafia alive at the start of the day, they will start a beheading.",
-        "During a beheading, if the Queen is alive at the end of the day, all non-Mafia players die.",
+        "If you are the only Mafia-aligned player alive at the start of the day, you will start a beheading.",
+        "During a beheading, if you are alive at the end of the day, all non-Mafia players die.",
       ],
     },
     Rottweiler: {
@@ -2750,9 +2752,9 @@ const roleData = {
         "Basic",
       ],
       description: [
-        "Each night, can choose to visit one player and kill one player who visits them.",
-        "Preferentially kills Mafia, Cult, Independents, then Villagers.",
-        "Other players who visit the chosen player will learn who the Rottweiler is.",
+        "Each night, you can choose to visit one player and kill one player who visits them.",
+        //"Preferentially kills Mafia, Cult, Independents, then Villagers.",
+        "Other players who visit the chosen player will learn that you are a Rottweiler.",
         //"Each night, visits one player and kills one of their visitors.",
         //"Other visitors will learn the identity of the Rottweiler.",
       ],
@@ -2763,7 +2765,7 @@ const roleData = {
       category: "Killing",
       tags: ["Killing", "Self Kill", "Day Actions", "Basic"],
       description: [
-        "Once per game during the day, can choose to kill themself and another player.",
+        "Once per game during the day, you can choose to kill themself and another player.",
       ],
     },
     //investigative roles
@@ -2779,8 +2781,8 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Each night, can choose to visit one player and learn their role.",
-        "Will appear as that player's role on death and to information roles.",
+        "Each night, you can choose to visit one player and learn their role.",
+        "You will appear as that player's role when you die and to information roles.",
         //"Visits a player to appears as their role.",
         //"Learns chosen player's role.",
       ],
@@ -2796,8 +2798,8 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Roles", "Visiting", "Guess", "Basic"],
       description: [
-        "Each night, chooses a role.",
-        "Each night, can choose to visit one player and learn if their role is the selected role.",
+        "Each night, you choose a role.",
+        "Each night, you can choose to visit one player and learn if their role is the selected role..",
       ],
       nightOrder: [["Guess Role", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
@@ -2806,7 +2808,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Visit Interaction", "Roles", "Basic"],
       description: [
-        "Each night, can choose to visit one player and learn what roles visited them.",
+        "Each night, you can choose to visit one player and learn what roles visited them.",
       ],
       nightOrder: [["Watch", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5]],
     },
@@ -2815,7 +2817,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Reports", "Visiting", "Basic"],
       description: [
-        "Chooses a player each night and views any reports they receive the following day.",
+        "Each night, you can choose to visit one player and learn what reports they received.",
       ],
       nightOrder: [
         ["Learn Reports", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 2],
@@ -2826,7 +2828,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Visit Interaction", "Basic"],
       description: [
-        "Each night, can choose to visit one player and learn who visited them.",
+        "Each night, you can choose to visit one player and learn who visited them.",
       ],
       nightOrder: [["Watch", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5]],
     },
@@ -2835,7 +2837,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Visit Interaction", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and learn if they visited anybody.",
+        "Each night, you can choose to visit one player and learn if they visited anybody.",
       ],
       nightOrder: [["Binary Track", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
@@ -2844,7 +2846,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Reports", "Dead", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one dead player and learn all system messages they ever received.",
+        "Each night, you can choose to visit one dead player and learn all system messages they ever received.",
       ],
       nightOrder: [["Learn Reports", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
@@ -2853,7 +2855,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Visit Interaction", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and learn who they visited.",
+        "Each night, you can choose to visit one player and learn who they visited.",
       ],
       nightOrder: [["Track", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
@@ -2862,7 +2864,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Roles", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and learn their role.",
+        "Each night, you can choose to visit one player and learn their role.",
       ],
       nightOrder: [["Learn Role", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
@@ -2871,7 +2873,7 @@ const roleData = {
       category: "Investigative",
       tags: ["Information", "Roles", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player.",
+        "Each night, you can choose to visit one player.",
         "If that player is the first to speak or vote the following day, that player's role is revealed to the Mafia.",
         //"Each night visits a player, If that player is first to speak or vote the following day, that player's role is revealed to the Mafia.",
       ],
@@ -2882,7 +2884,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Role Blocker", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and block their night actions.",
+        "Each night, you can choose to visit one player and block their night actions.",
       ],
       nightOrder: [["Block", PRIORITY_NIGHT_ROLE_BLOCKER]],
       skins: [
@@ -2905,7 +2907,7 @@ const roleData = {
       category: "Manipulative",
       tags: ["Manipulative", "Delirium", "Visiting", "Advanced"],
       description: [
-        `Each night, can choose to visit one player and make them "Delirious" until the next night.`,
+        `Each night, you can choose to visit one player and make them "Delirious" until the next night.`,
         deliriumDef,
       ],
       nightOrder: [["Give Delirium", PRIORITY_NIGHT_ROLE_BLOCKER + 1]],
@@ -2914,17 +2916,17 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Condemn Interaction", "Overturn", "Dusk", "Advanced"],
       description: [
-        "Once per game at dusk, can choose to change the target of a condemation.",
-        "Cannot change the target to no one.",
-        "Cannot cancel a village condemnation on a Mafia-aligned player.",
-        "Choosing no one or the original target preserves the Don's override ability.",
+        "Once per game at dusk, you can choose to change the target of a condemation.",
+        "You cannot change the target to no one.",
+        "You cannot change the target of a condemnation on a Mafia-aligned player.",
+        "Choosing no one or the original target preserves your override ability.",
       ],
     },
     Driver: {
       alignment: "Mafia",
       tags: ["Redirection", "Visiting", "Advanced"],
       description: [
-        "Each night, can choose to visit two players and swap their visitors.",
+        "Each night, you can choose to visit two players and swap their visitors.",
         "Players who visit first player will be redirected to second player.",
         "Players who visit second player will be redirected to first player.",
       ],
@@ -2937,8 +2939,8 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Redirection", "Control", "Visiting", "Advanced"],
       description: [
-        "Each night, can choose to visit one player.",
-        "Each night, can choose to redirect that player's visits on to another player. (Not a visit)",
+        "Each night, you can choose to visit one player.",
+        "Each night, you can choose to redirect that player's visits on to another player. (Not a visit)",
       ],
       nightOrder: [["Control Player", PRIORITY_REDIRECT_ACTION]],
     },
@@ -2946,7 +2948,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Redirection", "Visiting", "Advanced"],
       description: [
-        "Each night, can choose to visit two players and redirect anyone who visits the first player to the second player.",
+        "Each night, you can choose to visit two players and redirect anyone who visits the first player to the second player.",
         //"Chooses one player every night to snitch on.",
         //"Chooses another player to divert attention from and redirect their visitors to the first target.",
       ],
@@ -2956,10 +2958,10 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Deception", "Astral", "Basic"],
       description: [
-        "Does not visit when performing the mafia kill.",
+        "You you not visit when performing the mafia kill.",
         //"Does not get detected by watchers and trackers.",
         //"Does not trigger any when visited abilities on the target.",
-        "Kills players holding Bombs without setting off the explosion.",
+        "You can kill players holding Bombs without setting off the explosion.",
       ],
       nightOrder: [["Make Mafia kill astral", PRIORITY_NIGHT_ROLE_BLOCKER + 5]],
     },
@@ -2967,7 +2969,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Group Action Interaction", "Advanced", "Visiting"],
       description: [
-        "Each night, can choose to visit one player and make them the only member to act in any group actions they are apart of.",
+        "Each night, you can choose to visit one player and make them the only member to act in any group actions they are apart of.",
         "The Mafia kill is a group action.",
       ],
       nightOrder: [["Apoint Leader", PRIORITY_NIGHT_ROLE_BLOCKER + 3]],
@@ -2987,14 +2989,14 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Meeting", "Advanced"],
       description: [
-        "While at least one Santista is alive, the Mafia gain a day meeting.",
+        "While you are alive, the Mafia gain a day meeting.",
       ],
     },
     Lawyer: {
       alignment: "Mafia",
       tags: ["Deception", "Alignment", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and makes them appear as an opposing vanilla role to information roles.",
+        "Each night, you can choose to visit one player and make them appear as an opposing vanilla role to information roles.",
       ],
       nightOrder: [
         ["Flip Alignment", PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT],
@@ -3004,8 +3006,8 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Deception", "Visit Interaction", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player.",
-        "Each night, can choose to make that player appear to visit another player to information roles. (Not a visit)",
+        "Each night, you can choose to visit one player.",
+        "Each night, you can choose to make that player appear to visit another player to information roles. (Not a visit)",
         //"At night chooses two players, The 1st Player will appear to visit the 2nd Player to Investigative Roles.",
         //"The Framer will not visit the 2nd Player.",
       ],
@@ -3017,9 +3019,9 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Speaking", "Disguise", "Expert"],
       description: [
-        "Each night, can choose to steal the identity of the player the Mafia kills.",
+        "Each night, you can choose to steal the identity of the player the Mafia kills.",
         //"Chooses to steal the identity of the Mafia kill each night.",
-        "Cannot be targeted while disguised as another player.",
+        "You cannot be targeted while disguised as another player.",
       ],
       nightOrder: [["Steal Indentity", PRIORITY_IDENTITY_STEALER]],
     },
@@ -3027,7 +3029,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Clean", "Information", "Roles", "Basic"],
       description: [
-        "Once per game at night, can choose to hide and learn the role of the player killed by the Mafia.",
+        "Once per game at night, you can choose to hide and learn the role of the player killed by the Mafia.",
         //"Chooses to clean a mafia kill once per game.",
         //"Player's role will be hidden from the town if kill is successful.",
         //"Learns the cleaned player's role.",
@@ -3045,7 +3047,7 @@ const roleData = {
         "Basic",
       ],
       description: [
-        "Once per game at dusk, can choose to hide and learn the condemned player's role",
+        "Once per game at dusk, you can choose to hide and learn the condemned player's role",
         //"Chooses to clean a condemnation once per game.",
         //"Player's role will be hidden from the town if condemnation is successful.",
         //"Learns the cleaned player's role.",
@@ -3057,7 +3059,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Dead", "Graveyard", "Exorcise", "Visiting", "Advanced"],
       description: [
-        "Each night, can choose to visit one dead player and exorcise them.",
+        "Each night, you can choose to visit one dead player and exorcise them.",
         "Exorcised players can't be revived or use graveyard abilities.",
       ],
       nightOrder: [["Exorcise", PRIORITY_KILL_EXORCISE]],
@@ -3066,7 +3068,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Kill Interaction", "Support", "Unstoppable", "Advanced"],
       description: [
-        "Once per game at night, can choose to make the mafia kill ignore protection and blocking.",
+        "Once per game at night, you can choose to make the mafia kill ignore protection and blocking.",
       ],
       nightOrder: [["Strength Kill", PRIORITY_MODIFY_ACTION_LABELS]],
       skins: [
@@ -3083,7 +3085,7 @@ const roleData = {
     Spy: {
       alignment: "Mafia",
       tags: ["Speaking", "Roles", "Advanced"],
-      description: ["Can anonymously contact any role during the day."],
+      description: ["You can anonymously contact any role during the day."],
     },
     Gunrunner: {
       alignment: "Mafia",
@@ -3097,9 +3099,9 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        `Each night, can choose to visit one player and give them a Gun.`,
+        `Each night, you can choose to visit one player and give them a Gun.`,
         gunDef,
-        "Guns given by the Gunrunner will only kill if the player being shot is the same alignment as the shooter.",
+        "Guns given by you will only kill if the player being shot is the same alignment as the shooter.",
       ],
       nightOrder: [["Give Tommy Gun", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -3107,8 +3109,8 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Gifting", "Deception", "Items", "Suits", "Visiting", "Advanced"],
       description: [
-        "Each night, chooses a role.",
-        "Each night, can choose to visit one player and give them a Suit of that role.",
+        "Each night, you can choose a role.",
+        "Each night, you can choose to visit one player and give them a Suit of that role.",
         "A Suit causes its holder to appear a role on death and to information roles.",
       ],
       nightOrder: [["Give Suit", PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT]],
@@ -3117,7 +3119,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Gifting", "Broken", "Items", "Visiting", "Advanced"],
       description: [
-        "Each night, can choose to visit one player and give them a broken item.",
+        "Each night, you can choose to visit one player and give them a broken item.",
         "Broken Guns, Rifles, Knives, and Whiskey, will backfire against the player who used them.",
         "Broken Falcons and Candles will give false information.",
         "Broken Armor, Crystal balls, Coffee, Keys, Envlopes, Bread, and Syringes will do nothing.",
@@ -3128,7 +3130,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Broken", "Items", "Visiting", "Advanced"],
       description: [
-        "Each night, can choose to visit one player and break any items they have.",
+        "Each night, you can choose to visit one player and break any items they are holding.",
         "Broken Guns, Rifles, Knives, and Whiskey, will backfire against the player who used them.",
         "Broken Falcons and Candles will give false information.",
         "Broken Armor, Crystal balls, Coffee, Keys, Envlopes, Bread, and Syringes will do nothing.",
@@ -3142,7 +3144,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Linked", "Lover", "Visiting", "Advanced"],
       description: [
-        `Once per game at night, can choose to visit one player and makes that player "Lovesick" for the Heartbreaker.`,
+        `Once per game at night, you can choose to visit one player and makes that player "Lovesick" for the Heartbreaker.`,
         lovesickDef,
         "If the Heartbreaker dies, the beloved player also dies.",
         //"Both players will die if Heartbreaker dies.",
@@ -3167,7 +3169,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Conversion", "Sacrificial", "Visiting", "Basic"],
       description: [
-        "Once per game at night, can choose to visit one player and die, then convert that player to Mafioso",
+        "Once per game at night, you can choose to visit one player and die, then convert that player to Mafioso",
         //"Chooses to sacrifice self once per game to convert another player to Mafioso.",
       ],
       nightOrder: [["Convert and Die", PRIORITY_CONVERT_DEFAULT + 1]],
@@ -3177,7 +3179,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Revive", "Protective", "Graveyard", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one dead player and revive them.",
+        "Each night, you can choose to visit one dead player and revive them.",
       ],
       nightOrder: [["Revive", PRIORITY_NIGHT_REVIVER]],
       graveyardParticipation: "all",
@@ -3186,8 +3188,10 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Killing", "Gun", "Items", "Day Actions", "Advanced"],
       description: [
-        "Starts with a gun.",
-        "Each night, choose to visit one player and make any guns the Illusionist uses appear as being used by that player the following day.",
+        "You start with a Gun.",
+        gunDef,
+        "Your starting Gun always reveals you when used.",
+        "Each night, you choose to visit one player and make any Guns you use appear as being used by that player the following day.",
         //"Any guns the Illusionist uses will appear as being used by that player the following day",
         //"Chooses one player each night to frame as the shooter of any guns or rifles shot by the Illusionist.",
       ],
@@ -3197,7 +3201,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Speech", "Whispers", "Silence", "Basic"],
       description: [
-        `Once per game at night, can make all players "Muffled" for the following day.`,
+        `Once per game at night, you can make all players "Muffled" for the following day.`,
         muffledDef,
         //"While in a Library meeting, players can only whisper instead of speaking aloud.",
       ],
@@ -3207,11 +3211,11 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Speech", "Whispers", "Silence", "Advanced", "Speaking"],
       description: [
-        "Vote weight is worth 0 votes",
-        "Each Night, can choose a 4-20 letter phrase.",
-        "The Dilettante's vote weight increases by 1 for every Village-Aligned player who says the phrase during the day.",
-        "Each Night, the Dilettante's vote weight resets.",
-        `All players who said the phrase will be "Muffled" following day.`,
+        "Your vote weight is worth 0 votes",
+        "Each Night, you can choose a 4-20 letter phrase.",
+        "Your vote weight increases by 1 for every Village-Aligned player who says your phrase during the day.",
+        "Each Night, your vote weight resets.",
+        `All players who said your phrase will be "Muffled" following day.`,
         muffledDef,
       ],
       nightOrder: [
@@ -3229,10 +3233,9 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Receives a Knife if not visited during the night.",
+        "Each Night, you gain a Knife (that will not reveal you) if no one visits you.",
         knifeDef,
         bleedingDef,
-        "A knife used by the Sicario does not reveal.",
       ],
       nightOrder: [["Gain Knife", PRIORITY_ITEM_GIVER_DEFAULT]],
     },
@@ -3240,7 +3243,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Killing", "Voting", "Vote Kills", "Visiting", "Advanced"],
       description: [
-        `Each night, can choose to visit two players and make first player have "Cold Feet" towards the second player.`,
+        `Each night, you can choose to visit two players and make first player have "Cold Feet" towards the second player.`,
         coldfeetDef,
         //"Chooses a victim and a target each night.",
         //"If the victim votes for the target in the village meeting the following day, the victim will die.",
@@ -3251,7 +3254,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Night-Acting", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player.",
+        "Each night, you can choose to visit one player.",
         "Mafia roles with the Scatterbrained modifier appear as this role to self.",
       ],
       nightOrder: [["Visit", PRIORITY_SUPPORT_VISIT_DEFAULT]],
@@ -3260,7 +3263,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Items", "Night-Acting", "Visiting", "Advanced"],
       description: [
-        "Each night, can choose to visit one player and steal an item from them.",
+        "Each night, you can choose to visit one player and steal an item from them.",
       ],
       nightOrder: [
         ["Steal Item secound try", PRIORITY_ITEM_TAKER_DEFAULT],
@@ -3281,8 +3284,8 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Meeting", "Dead", "Graveyard", "Basic"],
       description: [
-        "Each day, can choose a dead player.",
-        "Meets anonymously with the chosen player at night",
+        "Each day, you can choose a dead player.",
+        "You will meet anonymously with the chosen player at night.",
       ],
       graveyardParticipation: "all",
     },
@@ -3297,9 +3300,11 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Each dusk, if no one was condemned, chooses a player.",
-        "Meets anonymously with the chosen player at night and the chosen player cannot perform night actions and blocks the night actions of any players who visit the the chosen player.",
-        "The Interrogator can choose to kill the chosen player.",
+        "Each dusk, if no one was condemned, you can choose to jail a player during the night.",
+        "The jailed player cannot perform night actions.",
+        "You will block the night actions of any players who visit the jailed player.",
+        "You will meet anonymously with the jailed player.",
+        "You can choose to kill the jailed player.",
       ],
       nightOrder: [
         ["Execute Prisoner", PRIORITY_KILL_DEFAULT],
@@ -3327,8 +3332,8 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Each night, can choose to visit one player.",
-        "If that player is condemned the following day, then at night the Bookie will be able to choose to vist one player and kill them.",
+        "Each night, you can choose to visit one player.",
+        "If that player is condemned the following day, then at night you will be able to choose to visit one player and kill them.",
         //"If they successfully predict the village vote, they gain a bonus kill.",
       ],
       nightOrder: [
@@ -3345,8 +3350,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Manipulative", "Copy Actions", "Advanced"],
       description: [
-        "Each night, chooses a player.",
-        "Gains that player's abilites until the next night.",
+        "Each night, you can choose a player and gain their abilites until the next night.",
       ],
     },
     Blackguard: {
@@ -3354,8 +3358,8 @@ const roleData = {
       category: "Night-acting",
       tags: ["Kill Interaction", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player.",
-        "If that player dies, the Blackguard will gains that player's abilities.",
+        "Each night, you can choose to visit one player.",
+        "If that player dies, you will gains that player's abilities.",
       ],
       nightOrder: [["Gain abilities if Target dies", PRIORITY_PREKILL_ACTION]],
     },
@@ -3364,11 +3368,11 @@ const roleData = {
       category: "Manipulative",
       tags: ["Manipulative", "Conversion", "Delirium", "Advanced"],
       description: [
-        "Once per game at night, can choose Mafia-aligned role from the setup.",
-        "The Associate will convert to the chosen role.",
-        `If the chosen role is already in play, The player with that role will be "Delirious" until the Associate dies.`,
+        "Once per game at night, you can choose Mafia-aligned role from the setup.",
+        "You will be converted to the chosen role.",
+        `If another player is that role, that player will become "Delirious" until you die.`,
         deliriumDef,
-        "Does not attend the mafia meeting.",
+        "You do not attend the mafia meeting.",
       ],
       nightOrder: [
         ["Become Role and Make Delirious", PRIORITY_NIGHT_ROLE_BLOCKER + 1],
@@ -3379,7 +3383,7 @@ const roleData = {
       category: "Manipulative",
       tags: ["Advanced", "Banished Interaction"],
       description: [
-        "Each night, can choose a banished Mafia role and gains its abilities until the next night.",
+        "Each night, you can choose a banished Mafia role and gains its abilities until the next night.",
       ],
       SpecialInteractionsModifiers: jackModifierOverrides,
     },
@@ -3388,15 +3392,15 @@ const roleData = {
       category: "Manipulative",
       tags: ["Advanced", "Banished Interaction"],
       description: [
-        "Has the abilities of up to 5 banished Mafia roles.",
-        "Cannot have the Oddfather ability.",
+        "You have the abilities of up to 5 banished Mafia roles.",
+        "You cannot have the Oddfather ability.",
       ],
     },
     Apprentice: {
       alignment: "Mafia",
       tags: ["Conversion", "Dead", "Basic"],
       description: [
-        "Once per game at night, can choose to visit one dead Mafia-aligned player and convert to their role.",
+        "Once per game at night, you can choose to visit one dead Mafia-aligned player and convert to their role.",
       ],
       nightOrder: [["Become Dead Role", PRIORITY_BECOME_DEAD_ROLE]],
     },
@@ -3404,15 +3408,15 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Speaking", "Deception", "Expert"],
       description: [
-        "Can speak as any player during the day.",
-        "That player won't be able to see messages said and quoted via this ability.",
+        "You can speak as any player during the day.",
+        "Players you speak as won't be able to see messages said and quoted via this ability.",
       ],
     },
     Fiddler: {
       alignment: "Mafia",
       tags: ["Speech", "Deafen", "Visiting", "Basic"],
       description: [
-        `Each night, can choose to visit one player and make them "Deaf" for the following day`,
+        `Each night, you can choose to visit one player and make them "Deaf" for the following day`,
         deafDef,
       ],
       nightOrder: [["Deafen", PRIORITY_EFFECT_GIVER_DEFAULT]],
@@ -3421,7 +3425,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Speech", "Silence", "Visiting", "Basic"],
       description: [
-        `Each night, can choose to visit one player and make them "Silent" for the following day`,
+        `Each night, you can choose to visit one player and make them "Silent" for the following day`,
         silentDef,
       ],
       nightOrder: [["Silence", PRIORITY_EFFECT_GIVER_DEFAULT]],
@@ -3431,7 +3435,7 @@ const roleData = {
       tags: ["Speech", "Clueless", "Random Messages", "Visiting", "Basic"],
       description: [
         //"Scrambles a player each night, causing them to see messages from random players the next day.",
-        `Each night, can choose to visit one player and make them "Clueless" for the following day`,
+        `Each night, you can choose to visit one player and make them "Clueless" for the following day`,
         cluelessDef,
       ],
       nightOrder: [["Scramble", PRIORITY_EFFECT_GIVER_DEFAULT]],
@@ -3440,7 +3444,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Condemn", "Revealing", "Information", "Dusk", "Basic"],
       description: [
-        "If the Paparazzo is condemned, they can choose a player and reveal their role to the Mafia.",
+        "If you are condemned, they can choose a player and reveal their role to the Mafia.",
         //"If condemned, can choose to reveal the role of one player to the Mafia.",
       ],
     },
@@ -3448,14 +3452,14 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Condemn", "Voting", "Advanced"],
       description: [
-        "Votes for a Fed will not count unless every Village-aligned player votes for them.",
+        "Votes for you will not count unless every Village-aligned player is voting for you.",
       ],
     },
     Rainmaker: {
       alignment: "Mafia",
       tags: ["Voting", "Meeting", "Condemn", "Basic"],
       description: [
-        "Once a game at night, can choose to force players to vote for no one the next day.",
+        "Once a game at night, you can choose to force all players to vote for no one the next day.",
       ],
       nightOrder: [["Summon Rain", PRIORITY_EFFECT_GIVER_DEFAULT]],
     },
@@ -3463,7 +3467,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Events", "Advanced"],
       description: [
-        "Each night, can choose an Event, that Event occurs.",
+        "Each night, you can choose an Event, that Event occurs.",
         //"At Night can Choose an Event.",
         //"That Event will Occur in addition to any other Events.",
       ],
@@ -3486,8 +3490,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Manipulative", "Redirection", "Control", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player.",
-        "That player will be redirected to the Toreador.",
+        "Each night, you can choose to visit one player and redirect them to you.",
       ],
       nightOrder: [["Redirect Action", PRIORITY_REDIRECT_ACTION + 2]],
     },
@@ -3495,7 +3498,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Speech", "Blind", "Visiting", "Basic"],
       description: [
-        `Each night, can choose to visit one player and make them "Blind" for the following day`,
+        `Each night, you can choose to visit one player and make them "Blind" for the following day`,
         blindDef,
       ],
       nightOrder: [["Blind", PRIORITY_EFFECT_GIVER_DEFAULT]],
@@ -3504,7 +3507,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Protective", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and protect them from death.",
+        "Each night, you can choose to visit one player and protect them from death.",
       ],
       nightOrder: [["Protect", PRIORITY_NIGHT_SAVER]],
     },
@@ -3512,7 +3515,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Malicious Effects", "Visiting", "Advanced"],
       description: [
-        "Each night, can choose to visit one player and remove any malicious effects they have.",
+        "Each night, you can choose to visit one player and remove any malicious effects they have.",
         MalEffects,
       ],
       nightOrder: [
@@ -3525,8 +3528,8 @@ const roleData = {
       category: "Reflexive",
       tags: ["Reflexive", "Malicious Effects", "Role Share", "Advanced"],
       description: [
-        "Each night, each player who visits the Dealer will have any malicious effects they have removed and will be protected from death.",
-        "Players who Role Share with an Dealer will have any malicious effects they have removed.",
+        "Each night, each player who visits you will have any malicious effects they have removed and will be protected from death.",
+        "Players who Role Share with you will have any malicious effects they have removed.",
         MalEffects,
       ],
       nightOrder: [
@@ -3538,8 +3541,8 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Condemn", "Protective", "Condemn Immune", "Visiting", "Advanced"],
       description: [
-        "Each night, can choose to visit one player and protect them from being condemned the following day",
-        "Cannot choose to visit the player they visited the previous night",
+        "Each night, you can choose to visit one player and protect them from being condemned the following day",
+        "You cannot choose to visit a player you visited the previous night",
       ],
       nightOrder: [["Make Safe from Condemns", PRIORITY_EFFECT_GIVER_DEFAULT]],
     },
@@ -3554,8 +3557,8 @@ const roleData = {
         "Basic",
       ],
       description: [
-        "Each night, can choose to visit one player and prevent them from being converted to another role.",
-        "If an Enforcer visits a Hostile Independent, the Hostile Independent will be converted to Traitor.",
+        "Each night, you can choose to visit one player and prevent them from being converted to another role.",
+        "If you visit a Hostile Independent, the Hostile Independent will be converted to Traitor.",
       ],
       nightOrder: [["Save from Conversion", PRIORITY_NIGHT_SAVER - 1]],
     },
@@ -3563,8 +3566,8 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Deception", "Will", "Information", "Advanced"],
       description: [
-        "Each night, can choose to visit one player and rewrite their will.",
-        "Learns that player's real will on the next day.",
+        "Each night, you can choose to visit one player and rewrite their will.",
+        "You learn that player's real will on the next day.",
       ],
       nightOrder: [["Forge Will", PRIORITY_EFFECT_GIVER_EARLY]],
     },
@@ -3578,7 +3581,7 @@ const roleData = {
         "Basic",
       ],
       description: [
-        "Each night, can choose to visit one player and block the night actions of any players who visit them.",
+        "Each night, you can choose to visit one player and block the night actions of any players who visit them.",
       ],
       nightOrder: [["Block Visitors", PRIORITY_UNTARGETABLE]],
     },
@@ -3586,7 +3589,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Whispers", "Speech", "Visiting", "Basic"],
       description: [
-        `Each night, can choose to visit one player and make them "Sealed" for the following day`,
+        `Each night, you can choose to visit one player and make them "Sealed" for the following day`,
         sealedDef,
       ],
       nightOrder: [["Block Whispers", PRIORITY_EFFECT_GIVER_DEFAULT]],
@@ -3595,7 +3598,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Whispers", "Speech", "Visiting", "Basic"],
       description: [
-        `Each night, can choose to visit one player and make them "Leaky" for the following day`,
+        `Each night, you can choose to visit one player and make them "Leaky" for the following day`,
         leakyDef,
       ],
       nightOrder: [["Make Leaky", PRIORITY_EFFECT_GIVER_DEFAULT]],
@@ -3604,7 +3607,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Voting", "Advanced"],
       description: [
-        `Once per game during the day, can choose to make all players "Paralyzed" for rest of the day.`,
+        `Once per game during the day, you can choose to make all players "Paralyzed" for rest of the day.`,
         paralyzedDef,
       ],
     },
@@ -3612,7 +3615,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Voting", "Speech", "Eclipse", "Blind", "Basic", "Day Actions"],
       description: [
-        `Once per game during the day, can choose to make all players "Blind" for rest of the day.`,
+        `Once per game during the day, you can choose to make all players "Blind" for rest of the day.`,
         blindDef,
       ],
     },
@@ -3620,7 +3623,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Timer", "Day Actions", "Basic"],
       description: [
-        "Once per game during the day, can set the timer to 1 minute and disable extends.",
+        "Once per game during the day, you can set the timer to 1 minute and disable extends.",
       ],
     },
     Lobotomist: {
@@ -3633,7 +3636,7 @@ const roleData = {
         "Basic",
       ],
       description: [
-        "Each night, can choose to visit one player and convert them to their alignment's vanilla role.",
+        "Each night, you can choose to visit one player and convert them to their alignment's vanilla role.",
         "Village roles convert to Villager. Cult roles convert to Cultist. Independent roles convert to Grouch.",
       ],
       nightOrder: [["Convert to Vanilla", PRIORITY_CONVERT_DEFAULT + 8]],
@@ -3644,7 +3647,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Modifiers", "Conversion", "Visiting", "Advanced"],
       description: [
-        "Each night, can choose to visit one player and remove modifiers from their role.",
+        "Each night, you can choose to visit one player and remove modifiers from their role.",
       ],
       nightOrder: [["Remove Modifiers", PRIORITY_CONVERT_DEFAULT + 7]],
     },
@@ -3653,8 +3656,8 @@ const roleData = {
       category: "Night-acting",
       tags: ["Modifiers", "Conversion", "Visiting", "Advanced"],
       description: [
-        "Each night, can choose to visit one player and add a random modifier to their role.",
-        "Cannot add Exclusive, Clannish, Inclusive, or Starting Item modifiers.",
+        "Each night, you can choose to visit one player and add a random modifier to their role.",
+        "You cannot add Exclusive, Clannish, Inclusive, or Starting Item modifiers.",
       ],
       nightOrder: [["Add Modifiers", PRIORITY_CONVERT_DEFAULT + 6]],
     },
@@ -3662,7 +3665,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Conversion", "Random", "Visiting", "Expert"],
       description: [
-        "Each night, can choose to visit one Mafia-aligned player and convert them to a random Mafia-aligned role.",
+        "Each night, you can choose to visit one Mafia-aligned player and convert them to a random Mafia-aligned role.",
       ],
       nightOrder: [["Randomize Role", PRIORITY_CONVERT_DEFAULT + 3]],
       RolesMadeBy: ["All Mafia Roles"],
@@ -3671,7 +3674,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Effects", "Alcoholics", "Role Blocker", "Visiting", "Advanced"],
       description: [
-        `Each night, can choose to visit one player and make them become "Alcoholic"`,
+        `Each night, you can choose to visit one player and make them become "Alcoholic"`,
         alcoholicDef,
       ],
       nightOrder: [["Make Alcoholic", PRIORITY_EFFECT_GIVER_DEFAULT]],
@@ -3714,11 +3717,11 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Mini-game", "Essential", "Split Decision", "Killing", "Advanced"],
       description: [
-        "Splits all players into two rooms.",
+        "All players will be split into two rooms.",
         "During the Day, each room meets and chooses a leader.",
         "At night, room leaders meet and choose players to switch rooms.",
-        "After three rounds of switching, the Assassin will kill all players who are in the same room as them.",
-        "Mafia will not win by majority if an Assassin is alive.",
+        "After three rounds of switching, you will kill all players who are in the same room as you.",
+        "While you are alive, Mafia will not win by majority.",
       ],
       nightOrder: [["Kill players in Room", PRIORITY_KILL_DEFAULT]],
       skins: [
@@ -3740,8 +3743,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Win Con", "Setup Changes", "Role Sharing", "Advanced"],
       description: [
-        "Must role share with any Assassins and Vital Mafia roles in the game.",
-        "The Suborner's team cannot win if they fail to role share with the required roles.",
+        "Your team cannot win if you fail to role share with any Assassins and Vital Mafia roles in the game.",
         "Adds an Assassin in closed setups.",
       ],
       RolesMadeBy: ["Assassin"],
@@ -3751,8 +3753,8 @@ const roleData = {
       category: "Night-acting",
       tags: ["Conversion", "Role Swapping", "Visiting", "Advanced"],
       description: [
-        `Each night, can choose to visit two players and make them swap roles but not alignments.`,
-        "Cannot swap Independent roles",
+        `Each night, you can choose to visit two players and make them swap roles but not alignments.`,
+        "You cannot swap Independent roles",
       ],
       nightOrder: [["Swap Roles", PRIORITY_SWAP_ROLES + 1]],
     },
@@ -3760,7 +3762,7 @@ const roleData = {
       alignment: "Mafia",
       tags: ["Mini-game", "Item", "Coffee", "Voting", "Speaking", "Expert"],
       description: [
-        "Each night, assigns their teammates a task to complete the following day.",
+        "Each night, you assign your teammates a task to complete the following day.",
         "Tasks will be related to voting and sending messages.",
         "If a teammate completes their task, they will be given Coffee.",
         coffeeDef,
@@ -3770,33 +3772,33 @@ const roleData = {
       alignment: "Mafia",
       category: "Gaming",
       tags: ["Voting", "Conversion", "Expert"],
-      description: ["The first player to vote the Prankster becomes \"Foolish\".",
+      description: ["The first player to vote for you becomes \"Foolish\".",
         foolishDef,
       ],
       SpecialInteractionsModifiers: {
         Loyal: [
-          "If the first player to vote for the Prankster is a different alignment to the Prankster, nothing happens.",
+          "If the first player to vote for you is a different alignment as you, nothing happens.",
         ],
         Disloyal: [
-          "If the first player to vote for the Prankster is the same alignment of the Prankster, nothing happens.",
+          "If the first player to vote for you is the same alignment as you, nothing happens.",
         ],
         Holy: [
-          "If the first player to vote for the Prankster is Demonic, nothing happens.",
+          "If the first player to vote for you is Demonic, nothing happens.",
         ],
         Unholy: [
-          "If the first player to vote for the Prankster is non-Demonic, nothing happens.",
+          "If the first player to vote for you is non-Demonic, nothing happens.",
         ],
         Simple: [
-          "If the first player to vote for the Prankster is a Power Role, nothing happens.",
+          "If the first player to vote for you is a Power Role, nothing happens.",
         ],
         Complex: [
-          "If the first player to vote for the Prankster is a Vanilla Role, nothing happens.",
+          "If the first player to vote for you is a Vanilla Role, nothing happens.",
         ],
         Refined: [
-          "If the first player to vote for the Prankster is a Banished Role, nothing happens.",
+          "If the first player to vote for you is a Banished Role, nothing happens.",
         ],
         Unrefined: [
-          "If the first player to vote for the Prankster is a non-Banished Role, nothing happens.",
+          "If the first player to vote for you is a non-Banished Role, nothing happens.",
         ],
       },
       RolesMadeBy: ["Fool"],
