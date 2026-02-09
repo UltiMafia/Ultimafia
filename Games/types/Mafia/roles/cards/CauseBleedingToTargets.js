@@ -16,7 +16,7 @@ module.exports = class CauseBleedingToTargets extends Card {
         priority: PRIORITY_EFFECT_GIVER_EARLY,
         labels: ["effect"],
         run: function () {
-          let visits = this.getVisits(this.actor);
+          let visits = this.getSecondaryActions(this.actor);
           for (let v of visits) {
             if (this.dominates(v)) {
               this.role.giveEffect(v, "Bleeding", this.actor);
