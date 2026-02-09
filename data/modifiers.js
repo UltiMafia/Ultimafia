@@ -377,7 +377,7 @@ const modifierData = {
       internal: ["ModifierBoastful"],
       tags: ["Information", "Reports"],
       description:
-        "All reports received are announced to everyone, with the player's role revealed.",
+        "Each night, you will announce any system messages you received.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Sensible: {
@@ -634,7 +634,7 @@ const modifierData = {
       category: "Visits",
       internal: ["Ascetic"],
       tags: ["Role Blocker", "Kill Interaction", "Reflexive"],
-      description: "Is untargetable from all non-killing actions.",
+      description: "Each night, you will block the non-killing night actions of any players who visit you.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Commuting"],
     },
@@ -642,7 +642,7 @@ const modifierData = {
       category: "Visits",
       internal: ["Commuting"],
       tags: ["Role Blocker", "Reflexive"],
-      description: "Is untargetable from all actions.",
+      description: "Each night, you will block the night actions of any players who visit you.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Ascetic"],
     },
@@ -741,7 +741,7 @@ const modifierData = {
       internal: ["ModifierLoud"],
       tags: ["Reflexive", "Information"],
       description:
-        "If visited, cries out the identity of players who visited them during the night.",
+        "Each night, you will announce who visits you.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Checking: {
@@ -1368,7 +1368,7 @@ const modifierData = {
       category: "Chat",
       internal: ["Blind"],
       tags: ["Speech", "Blind", "Effect"],
-      description: `Starts the game "Blind". ${blindDef}`,
+      description: `You start the game "Blind". ${blindDef}`,
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Clueless"],
     },
@@ -1376,7 +1376,7 @@ const modifierData = {
       category: "Chat",
       internal: ["Clueless"],
       tags: ["Speech", "Clueless", "Random Messages", "Effect"],
-      description: `Starts the game "Clueless". ${cluelessDef}`,
+      description: `You start the game "Clueless". ${cluelessDef}`,
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Blind"],
     },
@@ -1384,7 +1384,7 @@ const modifierData = {
       category: "Chat",
       internal: ["ModifierLeaky"],
       tags: ["Whispers", "Effect"],
-      description: `Starts the game "Leaky". ${leakyDef}`,
+      description: `You start the game "Leaky". ${leakyDef}`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Haunting: {
