@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { getDefaults, persistDefaults } from "./DefaultValues";
+import { getDefaults, persistDefaults, sortInitialFormFields } from "./DefaultValues";
 import { Lobbies } from "Constants";
 
 import "css/host.css";
@@ -93,12 +93,14 @@ export default function HostRatscrew() {
       ref: "playCardsLength",
       type: "number",
       showIf: "configureDuration",
-      value: defaults.placeBetsLength,
+      value: defaults.playCardsLength,
       min: 0.5,
       max: 3,
       step: 0.5,
     },
   ];
+
+  sortInitialFormFields(initialFormFields);
 
   function onHostGame(setupId, getFormFieldValue) {
     var scheduled = getFormFieldValue("scheduled");
@@ -117,7 +119,6 @@ export default function HostRatscrew() {
         readyCheck: getFormFieldValue("readyCheck"),
         stateLengths: {
           "Play Cards": getFormFieldValue("playCardsLength"),
-          "Call Lie": getFormFieldValue("callLieLength"),
         },
         startingChips: getFormFieldValue("startingChips"),
         minimumBet: getFormFieldValue("minimumBet"),

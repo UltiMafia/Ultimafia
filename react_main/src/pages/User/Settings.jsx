@@ -167,8 +167,19 @@ function CookieSettings() {
 
 function SettingsSection({ sections, activeSection }) {
   const isPhoneDevice = useIsPhoneDevice();
+  const wrapInPaper = activeSection.wrapInPaper === true;
+
+  let content = activeSection.content;
+  if (wrapInPaper) {
+    content = (
+      <Paper sx={{ p: 2 }}>
+        {content}
+      </Paper>
+    );
+  }
+
   return (
-    <Stack direction="column" spacing={2}>
+    <Stack direction="column" spacing={1}>
       <Stack
         direction="row"
         spacing={1}
@@ -186,7 +197,6 @@ function SettingsSection({ sections, activeSection }) {
               color="inherit"
               component={Link}
               to={`../${section.path}`}
-              endIcon={<i className="fas fa-chevron-right" />}
               sx={{
                 minWidth: isPhoneDevice ? 0 : undefined,
               }}
@@ -194,13 +204,7 @@ function SettingsSection({ sections, activeSection }) {
           ))}
         </Tabs>
       </Stack>
-      <Box
-        sx={{
-          maxWidth: isPhoneDevice ? undefined : "50%",
-        }}
-      >
-        {activeSection.content}
-      </Box>
+      {content}
     </Stack>
   );
 }
@@ -743,6 +747,8 @@ export default function Settings() {
           fields={siteFields}
           deps={{ user }}
           onChange={(action) => onSettingChange(action, updateSiteFields)}
+          wrapGroupsInPaper
+          halfWidth
         />
       ),
     },
@@ -769,6 +775,8 @@ export default function Settings() {
               onProfileBackgroundRemove,
             }}
             onChange={(action) => onSettingChange(action, updateProfileFields)}
+            wrapGroupsInPaper
+            halfWidth
           />
         </>
       ),
@@ -786,12 +794,15 @@ export default function Settings() {
             errorAlert,
           }}
           onChange={(action) => onSettingChange(action, updateGameFields)}
+          wrapGroupsInPaper
+          halfWidth
         />
       ),
     },
     {
       title: "Account",
       path: "account",
+      wrapInPaper: true,
       content: (
         <Stack direction="column" spacing={1}>
           <TextField
@@ -827,11 +838,13 @@ export default function Settings() {
     {
       title: "Cookies",
       path: "cookies",
+      wrapInPaper: true,
       content: <CookieSettings />,
     },
     {
       title: "Family",
       path: "family",
+      wrapInPaper: true,
       content: (
         <Stack direction="column" spacing={3}>
           {/* No Family Section */}
@@ -1141,20 +1154,18 @@ export default function Settings() {
   ];
 
   return (
-    <Paper sx={{ p: 2 }}>
-      <Routes>
-        {sections.map((section) => (
-          <Route
-            key={section.path}
-            path={section.path}
-            element={
-              <SettingsSection sections={sections} activeSection={section} />
-            }
-          />
-        ))}
-        <Route path="*" element={<Navigate to={sections[0].path} replace />} />
-      </Routes>
-    </Paper>
+    <Routes>
+      {sections.map((section) => (
+        <Route
+          key={section.path}
+          path={section.path}
+          element={
+            <SettingsSection sections={sections} activeSection={section} />
+          }
+        />
+      ))}
+      <Route path="*" element={<Navigate to={sections[0].path} replace />} />
+    </Routes>
   );
 
   function onSettingChange(action, update) {

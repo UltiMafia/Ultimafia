@@ -1559,16 +1559,6 @@ router.post("/settings/update", async function (req, res) {
       return;
     }
 
-    const propRequiresGoodContrast =
-      prop === "textColor" || prop === "nameColor";
-    if (propRequiresGoodContrast && !colorHasGoodContrastForBothThemes(value)) {
-      return res
-        .status(422)
-        .end(
-          "Color must have good contrast in both light and dark themes. Please choose a different color."
-        );
-    }
-
     if (prop === "deathMessage") {
       // Truncate to 150 chars first
       if (value.length > 150) {

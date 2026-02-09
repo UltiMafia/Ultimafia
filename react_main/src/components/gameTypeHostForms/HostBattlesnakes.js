@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { getDefaults, persistDefaults } from "./DefaultValues";
+import { getDefaults, persistDefaults, sortInitialFormFields } from "./DefaultValues";
 import { Lobbies } from "Constants";
 
 export default function HostBattlesnakes() {
@@ -107,6 +107,8 @@ export default function HostBattlesnakes() {
       step: 1,
     },
   ];
+    
+  sortInitialFormFields(initialFormFields);
 
   function onHostGame(setupId, getFormFieldValue) {
     var scheduled = getFormFieldValue("scheduled");
