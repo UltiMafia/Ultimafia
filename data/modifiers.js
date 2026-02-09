@@ -650,7 +650,7 @@ const modifierData = {
       category: "Visits",
       internal: ["Astral"],
       tags: ["Visits", "Astral"],
-      description: "All secondary actions done by this player are not visits.",
+      description: "Your secondary actions will not be counted as visits.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Leading: {
@@ -676,7 +676,7 @@ const modifierData = {
       internal: ["Resolute"],
       tags: ["Unblockable"],
       description:
-        "All actions done by this player cannot be roleblocked or controlled.",
+        "Your secondary actions cannot be blocked or controlled.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
@@ -685,14 +685,14 @@ const modifierData = {
       category: "Visits",
       internal: ["MustAct"],
       tags: ["Action"],
-      description: "Must take actions.",
+      description: "You must take actions.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Global: {
       category: "Visits",
       internal: ["GlobalModifier"],
       tags: ["Visits", "Dawn"],
-      description: "Will target all players at Night",
+      description: "Your secondary night actions will target all players.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Lazy: {
@@ -700,7 +700,7 @@ const modifierData = {
       internal: ["ModifierLazy"],
       tags: ["Manipulative", "Delayed"],
       description:
-        "Actions taken on night will only execute after a full day/night phase.",
+        "Your secondary night actions will be delayed until the following night.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Seductive: {
