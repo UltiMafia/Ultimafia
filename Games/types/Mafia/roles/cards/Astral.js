@@ -20,7 +20,8 @@ module.exports = class Astral extends Card {
             if (
               action.priority > this.priority &&
               action.actors.includes(this.actor) &&
-              !action.hasLabels(["mafia"])
+              !action.hasLabels(["mafia"]) &&
+              !action.hasLabels(["primary"])
             ) {
               action.labels = [...action.labels, "hidden"];
             }
