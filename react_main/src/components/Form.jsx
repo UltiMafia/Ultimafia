@@ -15,7 +15,6 @@ import "react-mde/lib/styles/css/react-mde-suggestions.css";
 import "css/form.css";
 import "css/markdown.css";
 import { dateToHTMLString } from "../utils";
-import { colorHasGoodBackgroundContrast } from "../shared/colors";
 import {
   Autocomplete,
   TextField,
@@ -33,7 +32,9 @@ import {
   Paper,
   Tooltip,
   Slider,
+  Popover,
 } from "@mui/material";
+import { MuiColorInput } from 'mui-color-input'
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 const UNGROUPED_NAME = "__UNGROUPED__";
@@ -47,10 +48,8 @@ function FormField({
   useFormControl = false,
   additionalButtons = <></>,
 }) {
-  const separateLabel =
-    forceSeparateLabel || (field.type !== "boolean" && !compact);
-  const isUnsaved =
-    deps !== undefined && deps[field.saveBtnDiffer] !== field.value;
+  const separateLabel = forceSeparateLabel || (field.type !== "boolean" && !compact);
+  const isUnsaved = deps !== undefined && deps[field.saveBtnDiffer] !== field.value;
 
   const unsavedIndicator = (
     <>
@@ -97,7 +96,9 @@ function FormField({
   }
 
   return (
-    <Stack direction="column" spacing={0.5}>
+    <Stack direction="column" spacing={0.5} sx={{
+      mt: 1,
+    }}>
       {separateLabel && !useFormControl && (
         <Stack
           direction="row"
@@ -113,7 +114,6 @@ function FormField({
             sx={{
               fontWeight: "bold",
               lineHeight: 1,
-              mt: "var(--mui-spacing) !important",
             }}
           >
             {field.label}
@@ -151,7 +151,11 @@ export default function Form({
   onSubmit,
   sx,
   compact = false,
+  wrapGroupsInPaper = false,
+  halfWidth = false,
 }) {
+  const isPhoneDevice = useIsPhoneDevice();
+
   function onFieldChange(event, field, localOnly) {
     let value =
       field.type === "boolean" ? event.target.checked : event.target.value;
@@ -424,7 +428,7 @@ export default function Form({
                 </>
               }
             >
-              <ColorPicker
+              <CustomColorPicker
                 value={field.value}
                 default={field.default}
                 alpha={field.alpha}
@@ -513,23 +517,35 @@ export default function Form({
       }
     });
 
-    return (
-      <Stack direction="column" spacing={1}>
+    const groupFormFields = (
+      <Stack direction="column" spacing={1} key={group}>
         {group !== UNGROUPED_NAME && (
-          <Typography
-            variant="h1"
-            sx={{
-              borderBottom: 1,
-              borderColor: "divider",
-              pt: 1,
-            }}
-          >
+          <Typography variant="h2" sx={{
+            borderBottom: 1,
+            borderColor: "divider",
+            pt: 1,
+          }}>
             {group}
           </Typography>
         )}
-        {formFields}
+        <Box sx={{
+          maxWidth: !isPhoneDevice && halfWidth ? "50%" : undefined,
+        }}>
+          {formFields}
+        </Box>
       </Stack>
     );
+
+    if (wrapGroupsInPaper) {
+      return (
+        <Paper key={group} sx={{ p: 2 }}>
+          {groupFormFields}
+        </Paper>
+      );
+    }
+    else {
+      return groupFormFields;
+    }
   });
 
   return (
@@ -551,23 +567,79 @@ export default function Form({
   );
 }
 
-function ColorPicker(props) {
+function CustomColorPicker(props) {
   const value = props.value || props.default;
   const disabled = props.disabled;
 
-  function onChangeComplete(event) {
-    const color = event.target.value;
-    props.onChange({ target: { value: color } });
-  }
+  const [color, setColor] = useState(value);
+
+  // This effect prevents API spam
+  const timerRef = useRef(null);
+  useEffect(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
+    timerRef.current = setTimeout(() => {
+      props.onChange({ target: { value: color } });
+      timerRef.current = null;
+    }, 500);
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, [color]);
 
   return (
-    <input
-      type="color"
-      value={value}
+    <MuiColorInput
+      value={color}
+      onChange={(val) => setColor(val)}
+      format="hex"
       disabled={disabled}
-      onChange={onChangeComplete}
+      fallbackValue="#ffffff"
     />
   );
+
+  /* const popoverContent = (
+    <ColorPicker
+      color={color}
+      disabled={disabled}
+      onChange={onChange}
+      onChangeComplete={onChangeComplete}
+      hideAlpha
+    />
+  );
+
+  return (
+    <Stack direction="row" spacing={1}>
+      <Stack direction="row" onClick={handleCustomColorClick} ref={popoverRef} sx={{
+        p: 1,
+        alignItems: "center",
+        width: "8em",
+        height: "2em",
+        borderRadius: 1,
+        backgroundColor: color.hex,
+        border: "1px solid",
+        borderColor: "divider",
+        cursor: disabled ? "not-allowed" : "pointer",
+      }}>
+        <i className="fas fa-palette" style={{
+          color: "var(--mui-palette-background-paper)",
+        }} />
+        <Popover
+          open={showPicker}
+          onClose={() => setShowPicker(false)}
+          anchorOrigin={{ vertical: "center", horizontal: "right" }}
+          transformOrigin={{ vertical: "center", horizontal: "left" }}
+          anchorEl={popoverRef.current}
+        >
+          {popoverContent}
+        </Popover>
+      </Stack>
+    </Stack>
+  ); */
 }
 
 export function HiddenUpload(props) {
@@ -702,7 +774,7 @@ class EmoteUpload extends React.Component {
         <Stack direction="row" spacing={1}>
           <TextField
             placeholder="your emote name here"
-            maxlength={25}
+            maxLength={25}
             disabled={this.props.disabled}
             onChange={this.updateEmoteText.bind(this)}
             sx={{

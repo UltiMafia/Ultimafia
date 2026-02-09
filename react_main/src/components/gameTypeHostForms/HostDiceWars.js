@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { getDefaults, persistDefaults } from "./DefaultValues";
+import { getDefaults, persistDefaults, sortInitialFormFields } from "./DefaultValues";
 import { Lobbies } from "Constants";
 
 export default function HostDiceWars() {
@@ -98,6 +98,8 @@ export default function HostDiceWars() {
       value: defaults.playLength,
     },
   ];
+  
+  sortInitialFormFields(initialFormFields);
 
   function onHostGame(setupId, getFormFieldValue) {
     var scheduled = getFormFieldValue("scheduled");
