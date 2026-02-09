@@ -16,7 +16,7 @@ module.exports = class CheckSuccessfulVisit extends Card {
         labels: ["investigate", "hidden"],
         role: role,
         run: function () {
-          let targets = this.getVisits(this.actor);
+          let targets = this.getSecondaryActions(this.actor);
           let targetNames = targets.map((t) => t.name);
           if (targetNames.length >= 1) {
             this.actor.queueAlert(
