@@ -17,7 +17,7 @@ import {
 import { UserContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 
-import { ModCommands, COMMAND_COLOR } from "pages/Community/Moderation";
+import { ModCommands, COMMAND_COLOR } from "pages/Policy/Moderation";
 import hammer from "images/emotes/hammer.webp";
 
 export default function ModerationSideDrawer({ open, setOpen, prefilledArgs }) {

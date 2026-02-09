@@ -85,7 +85,7 @@ export default function Reports() {
       setShowDetail(true);
     } catch (e) {
       errorAlert(e);
-      navigate("/community/reports");
+      navigate("/policy/reports");
     } finally {
       setLoading(false);
     }
@@ -107,13 +107,13 @@ export default function Reports() {
   };
 
   const handleReportClick = (report) => {
-    navigate(`/community/reports/${report.id}`);
+    navigate(`/policy/reports/${report.id}`);
     setSelectedReport(report);
     setShowDetail(true);
   };
 
   const handleBackToList = () => {
-    navigate("/community/reports");
+    navigate("/policy/reports");
     setShowDetail(false);
     setSelectedReport(null);
     loadReports();

@@ -6,6 +6,8 @@ import { Box, Paper } from "@mui/material";
 import PrivacyPolicy from "./PrivacyPolicy";
 import TermsOfService from "./TermsOfService";
 import Rules from "./Rules";
+import Moderation from "./Moderation";
+import Reports from "./Reports";
 
 export default function Policy() {
   return (
@@ -14,6 +16,8 @@ export default function Policy() {
         <Route path="rules" element={<Rules />} />
         <Route path="tos" element={<TermsOfService />} />
         <Route path="privacy" element={<PrivacyPolicy />} />
+        <Route path="moderation" element={<Moderation />} />
+        <Route path="reports/*" element={<Reports />} />
         <Route path="*" element={<Navigate to="rules" />} />
       </Routes>
     </Paper>
