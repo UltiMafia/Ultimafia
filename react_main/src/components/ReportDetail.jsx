@@ -284,7 +284,7 @@ export default function ReportDetail({
                           </Typography>
                           <Typography variant="body2">
                             <a
-                              href={`/community/reports/${report.originalReport.id}`}
+                              href={`/policy/reports/${report.originalReport.id}`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >

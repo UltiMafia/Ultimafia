@@ -291,13 +291,7 @@ function Header({ setShowAnnouncementTemporarily }) {
                 items: [
                   { text: "Forums", path: "/community/forums" },
                   { text: "Users", path: "/community/users" },
-                  { text: "Moderation", path: "/community/moderation" },
                   { text: "Calendar", path: "/community/calendar" },
-                  {
-                    text: "Reports",
-                    path: "/community/reports",
-                    hide: !user.perms.seeModPanel,
-                  },
                 ],
               },
               {
@@ -320,6 +314,8 @@ function Header({ setShowAnnouncementTemporarily }) {
                 label: "Policy",
                 items: [
                   { text: "Rules", path: "/policy/rules" },
+                  { text: "Moderation", path: "/policy/moderation" },
+                  { text: "Reports", path: "/policy/reports", hide: !user.perms.seeModPanel, },
                 ],
               },
             ]}
@@ -371,13 +367,7 @@ function Header({ setShowAnnouncementTemporarily }) {
               items={[
                 { text: "Forums", path: "/community/forums" },
                 { text: "Users", path: "/community/users" },
-                { text: "Moderation", path: "/community/moderation" },
                 { text: "Calendar", path: "/community/calendar" },
-                {
-                  text: "Reports",
-                  path: "/community/reports",
-                  hide: !user.perms.seeModPanel,
-                },
               ]}
             />
             <NavDropdown
@@ -400,6 +390,8 @@ function Header({ setShowAnnouncementTemporarily }) {
               label="Policy"
               items={[
                 { text: "Rules", path: "/policy/rules" },
+                { text: "Moderation", path: "/policy/moderation" },
+                { text: "Reports", path: "/policy/reports", hide: !user.perms.seeModPanel, },
               ]}
             />
             <Box sx={{

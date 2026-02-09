@@ -92,7 +92,7 @@ router.post("/send", async function (req, res) {
         status: "in-progress",
       });
 
-      const title = `${user.name} reporting ${reportedUserDoc.name}: https://ultimafia.com/community/reports/${report.id}`;
+      const title = `${user.name} reporting ${reportedUserDoc.name}: https://ultimafia.com/policy/reports/${report.id}`;
       let reportDetails = `\nNumber of open reports: ${openReportCount}\n`;
       reportDetails += `Number of in-progress reports: ${inProgressReportCount}`;
 

@@ -5,9 +5,7 @@ import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
 
 import Forums from "./Forums/Forums";
 import UserSearch from "./UserSearch";
-import Moderation from "./Moderation";
 import Calendar from "./Calendar";
-import Reports from "./Reports";
 import { UserContext } from "../../Contexts";
 
 export default function Community() {
