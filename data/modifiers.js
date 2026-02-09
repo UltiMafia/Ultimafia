@@ -209,7 +209,7 @@ const modifierData = {
       internal: ["StealFromTargets"],
       tags: ["Items", "Visits"],
       description:
-        "While visiting a player, you will steal that player's items.",
+        "When you visit a player with your secondary action, you will steal all their items.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Klutzy: {
@@ -707,7 +707,7 @@ const modifierData = {
       category: "Visits",
       internal: ["BlockTargets"],
       tags: ["Visits", "Role Blocker"],
-      description: "While visiting a player, that player will be roleblocked.",
+      description: "When you visit a player with your secondary action, that player will have their night actions blocked.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Medical: {
@@ -715,7 +715,7 @@ const modifierData = {
       internal: ["NightSaveVisits"],
       tags: ["Visits", "Killing"],
       description:
-        "When visiting, their target will be protected from night kills.",
+        "When you visit a player with your secondary action, that player will be protected from death.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Bloodthirsty"],
     },
@@ -723,7 +723,7 @@ const modifierData = {
       category: "Visits",
       internal: ["ModifierBloodthirsty"],
       tags: ["Visits", "Killing"],
-      description: "When visiting, their target will be killed.",
+      description: "When you visit a player with your secondary action, that player will be killed.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Medical"],
     },
@@ -731,7 +731,7 @@ const modifierData = {
       category: "Visits",
       internal: ["CauseBleedingToTargets"],
       tags: ["Visits", "Bleeding", "Effect"],
-      description: `When visiting, their target will start "Bleeding". ${bleedingDef}`,
+      description: `When you visit a player with your secondary action, that player will start "Bleeding". ${bleedingDef}`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
@@ -748,7 +748,7 @@ const modifierData = {
       category: "Visits",
       internal: ["CheckSuccessfulVisit"],
       tags: ["Information", "Visits"],
-      description: "Learns if their visit was successful or if it was blocked.",
+      description: "When you visit a player with your secondary action, you learn if the visit was successful or if it was blocked.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Peeking: {
@@ -756,7 +756,7 @@ const modifierData = {
       internal: ["WatchPlayerBoolean"],
       tags: ["Information", "Visits"],
       description:
-        "Learns if their visit target was visited by another player.",
+        "When you visit a player with your secondary action, you learn if that player was visited by another player.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Clumsy: {
@@ -764,7 +764,7 @@ const modifierData = {
       internal: ["RevealRoleToTarget"],
       tags: ["Information", "Visits", "Roles"],
       description:
-        "Announces the player's role to the targets of their night actions.",
+        "When you visit a player with your secondary action, that player learns that your role visited them.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Noisy: {
@@ -772,7 +772,7 @@ const modifierData = {
       internal: ["RevealNameToTarget"],
       tags: ["Information", "Visits"],
       description:
-        "Announces the player's name to the targets of their night actions.",
+        "When you visit a player with your secondary action, that player learns that you visited them.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
