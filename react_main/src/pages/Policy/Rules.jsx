@@ -59,7 +59,17 @@ export default function Rules() {
       </Typography>
 
       <Box sx={{ borderBottom: 1, borderColor: "divider"}}>
-        <Tabs value={selectedTab} onChange={handleTabChange} aria-label="rules tabs">
+        <Tabs 
+          value={selectedTab}
+          onChange={handleTabChange}
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
+          sx={{
+            borderBottom: 1,
+            borderColor: "divider",
+          }}
+          >
           <Tab label="Community Violations" />
           <Tab label="Game-Related Violations" />
           <Tab label="Violation Lengths" />
