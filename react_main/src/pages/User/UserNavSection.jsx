@@ -76,7 +76,11 @@ export default function UserNavSection({
   ) : null;
 
   const userMenuItems = [
-    { text: "Profile", path: profilePath },
+    {
+      text: "Profile",
+      path: profilePath,
+      icon: (<i className="fas fa-user"/>),
+    },
     ...(userFamily
       ? [
           {

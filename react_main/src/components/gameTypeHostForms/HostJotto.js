@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { getDefaults, persistDefaults } from "./DefaultValues";
+import { getDefaults, persistDefaults, sortInitialFormFields } from "./DefaultValues";
 import { Lobbies } from "Constants";
 
 export default function HostJotto() {
@@ -140,6 +140,8 @@ export default function HostJotto() {
       step: 0.5,
     },
   ];
+
+  sortInitialFormFields(initialFormFields);
 
   function onHostGame(setupId, getFormFieldValue) {
     var scheduled = getFormFieldValue("scheduled");

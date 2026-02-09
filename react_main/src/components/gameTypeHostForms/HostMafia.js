@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { getDefaults, persistDefaults } from "./DefaultValues";
+import { getDefaults, persistDefaults, sortInitialFormFields } from "./DefaultValues";
 import { Lobbies } from "Constants";
 
 export default function HostMafia() {
@@ -146,6 +146,8 @@ export default function HostMafia() {
       max: 5,
     },
   ];
+
+  sortInitialFormFields(initialFormFields);
 
   function onHostGame(setupId, getFormFieldValue) {
     // var scheduled = getFormFieldValue("scheduled");
