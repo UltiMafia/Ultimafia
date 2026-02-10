@@ -93,7 +93,7 @@ module.exports = class OneShot extends Card {
               return true;
             }
           }
-          if (meetingName == "X-Shot Night" || meetingName == "X-Shot Day") {
+          if (meetingName.includes("X-Shot Night") || meetingName.includes("X-Shot Day")) {
             return true;
           }
           if (meetingName == "Graveyard") return true;
