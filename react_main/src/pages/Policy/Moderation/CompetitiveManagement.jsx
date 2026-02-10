@@ -192,8 +192,9 @@ export default function CompetitiveManagement() {
             py: 1,
           }}
         >
-          {"Manage Competitive Season Setups "}
+          {"Manage Competitive Season "}
           {seasonData ? `#${seasonData.seasonNumber}` : ""}
+          {" Setups "}
         </Typography>
 
         {loading ? (

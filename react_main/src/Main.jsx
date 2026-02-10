@@ -315,7 +315,6 @@ function Header({ setShowAnnouncementTemporarily }) {
                 items: [
                   { text: "Rules", path: "/policy/rules" },
                   { text: "Moderation", path: "/policy/moderation" },
-                  { text: "Reports", path: "/policy/reports", hide: !user.perms.seeModPanel, },
                 ],
               },
             ]}
@@ -391,7 +390,6 @@ function Header({ setShowAnnouncementTemporarily }) {
               items={[
                 { text: "Rules", path: "/policy/rules" },
                 { text: "Moderation", path: "/policy/moderation" },
-                { text: "Reports", path: "/policy/reports", hide: !user.perms.seeModPanel, },
               ]}
             />
             <Box sx={{

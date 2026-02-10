@@ -177,7 +177,13 @@ export default function Moderation() {
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
-        sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}
+        variant="scrollable"
+        scrollButtons="auto"
+        allowScrollButtonsMobile
+        sx={{
+          borderBottom: 1,
+          borderColor: "divider",
+        }}
       >
         <Tab label="Moderation Log" value="log" />
         {user?.perms?.viewModActions && (
