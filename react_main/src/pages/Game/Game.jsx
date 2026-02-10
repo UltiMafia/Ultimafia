@@ -1494,10 +1494,14 @@ export function TextMeetingLayout() {
   }, []);
 
   function doAutoScroll() {
-    if (autoScroll && speechDisplayRef.current) {
+    const container = speechDisplayRef.current;  
+    if (autoScroll && container) {
       requestAnimationFrame(() => {
-        if (speechDisplayRef.current) {
-          speechDisplayRef.current.lastElementChild.scrollIntoView();
+        if (container) {
+          const lastChild = container.lastElementChild;
+          if (lastChild && typeof lastChild.scrollIntoView === "function") {  
+            lastChild.scrollIntoView();
+          }
         }
       });
     }
