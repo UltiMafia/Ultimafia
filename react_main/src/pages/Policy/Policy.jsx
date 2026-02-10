@@ -18,6 +18,8 @@ export default function Policy() {
         <Route path="privacy" element={<PrivacyPolicy />} />
         <Route path="moderation" element={<Moderation />} />
         <Route path="reports/*" element={<Reports />} />
+        <Route path="reports/:reportId" element={<Reports />} />
+        <Route path="reports" element={<Reports />} />
         <Route path="*" element={<Navigate to="rules" />} />
       </Routes>
     </Paper>

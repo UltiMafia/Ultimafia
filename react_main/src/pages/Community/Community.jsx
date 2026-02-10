@@ -20,10 +20,7 @@ export default function Community() {
           <Routes>
             <Route path="forums/*" element={<Forums />} />
             <Route path="users" element={<UserSearch />} />
-            <Route path="moderation" element={<Moderation />} />
             <Route path="calendar" element={<Calendar />} />
-            <Route path="reports/:reportId" element={<Reports />} />
-            <Route path="reports" element={<Reports />} />
             <Route path="*" element={<Navigate to="forums" />} />
           </Routes>
         </Card>
