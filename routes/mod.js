@@ -447,7 +447,7 @@ router.post("/assignCredit", async function (req, res) {
 
     await redis.cacheUserInfo(userIdToCredit, true);
 
-    routeUtils.createModAction(userId, "Manage Contributor Credit", [
+    routeUtils.createModAction(userId, "Manage Credits", [
       userIdToCredit,
       contributorType,
     ]);
