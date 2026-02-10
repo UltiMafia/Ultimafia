@@ -84,6 +84,7 @@ import {
   Paper,
   Popover,
   useMediaQuery,
+  Alert,
 } from "@mui/material";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
@@ -756,6 +757,9 @@ export default function Game() {
           msg: `⚠ You are vegging!`,
           timestamp: new Date().getTime(),
         });
+      }
+      else {
+        stopAudio("urgent");
       }
     });
 
@@ -1490,9 +1494,13 @@ export function TextMeetingLayout() {
   }, []);
 
   function doAutoScroll() {
-    if (autoScroll && speechDisplayRef.current)
-      speechDisplayRef.current.scrollTop =
-        speechDisplayRef.current.scrollHeight;
+    if (autoScroll && speechDisplayRef.current) {
+      requestAnimationFrame(() => {
+        if (speechDisplayRef.current) {
+          speechDisplayRef.current.lastElementChild.scrollIntoView();
+        }
+      });
+    }
   }
 
   function onTabClick(tabId) {
@@ -2457,6 +2465,8 @@ function SpeechInput(props) {
   const [typingIn, setTypingIn] = useState();
   const [clearTyping, setClearTyping] = useState();
   const [checkboxOptions, setCheckboxOptions] = useState({});
+  const [lastHeartbeat, setLastHeartbeat] = useState(null);
+  const [isDisconnected, setIsDisconnected] = useState(false);
 
   var placeholder = "";
 
@@ -2522,6 +2532,33 @@ function SpeechInput(props) {
       socket.send("typing", { meetingId: typingIn, isTyping: false });
     }
   }, [lastTyped]);
+
+  const timeoutRef = useRef(null);
+  useEffect(() => {
+    if (socket.on) {
+      socket.on("p", () => {
+        setLastHeartbeat(Date.now());
+        setIsDisconnected(false);
+
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = setTimeout(() => {
+          setIsDisconnected(true);
+        }, 15000);
+
+        return () => clearTimeout(timeoutRef.current);
+      });
+    }
+  }, [socket]);
+
+  if (isDisconnected) {
+    return (
+      <Alert severity="error" sx={{ m: 1 }}>
+        Disconnected from server. Attempting to reconnect...
+      </Alert>
+    );
+  }
 
   function onSpeechDropdownChange(value) {
     setSpeechDropdownValue(value);
