@@ -18,7 +18,6 @@ module.exports = class WinIfTimebombKillsThree extends Card {
       check: function (counts, winners, aliveCount) {
         if (
           this.player.alive &&
-          !winners.groups[this.name] &&
           (this.timebombKills >= this.data.killsToWin || aliveCount == 2)
         ) {
           winners.addPlayer(this.player, this.name);

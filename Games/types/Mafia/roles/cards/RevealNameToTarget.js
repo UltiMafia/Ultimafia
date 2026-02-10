@@ -30,7 +30,7 @@ module.exports = class RevealNameToTarget extends Card {
             info.getInfoRaw().name
           }.`;
 
-          let visits = this.getVisits(this.actor);
+          let visits = this.getSecondaryActions(this.actor);
           visits.map((v) => v.queueAlert(alert));
         },
       },

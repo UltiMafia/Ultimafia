@@ -29,6 +29,10 @@ module.exports = class Suspended extends Card {
           }
           if (meetingName == "Graveyard") return true;
 
+          if(!this.meetings[meetingName]){
+            return true;
+          }
+
           return (
             this.game.getStateInfo().dayCount <= this.player.role.SuspendedDate
           );

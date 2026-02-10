@@ -17,7 +17,9 @@ module.exports = class Resolute extends Card {
         labels: ["absolute", "hidden"],
         run: function () {
           for (let action of this.game.actions[0]) {
-            if (action.actors.includes(this.actor)) {
+            if (action.actors.includes(this.actor) &&
+              !action.hasLabels(["mafia"]) &&
+              !action.hasLabels(["primary"])) {
               action.labels = [...action.labels, "absolute"];
             }
           }

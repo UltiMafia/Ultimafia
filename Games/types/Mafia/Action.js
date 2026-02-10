@@ -167,6 +167,49 @@ module.exports = class MafiaAction extends Action {
     }
   }
 
+  getSecondaryActions(player) {
+    player = player || this.target;
+
+    var visits = [];
+    for (let action of this.game.actions[0]) {
+      let toCheck = action.target;
+      if (!Array.isArray(action.target)) {
+        toCheck = [action.target];
+      }
+
+      if (
+        action.actors.indexOf(player) != -1 &&
+        !action.hasLabel("hidden") &&
+        !action.hasLabel("mafia") &&
+        !action.hasLabel("primary") &&
+        action.target &&
+        toCheck[0] instanceof Player
+      ) {
+        visits.push(...toCheck);
+      }
+    }
+
+    return Random.randomizeArray(visits);
+  }
+
+  
+  blockSecondaryActions(target, label, exclude) {
+    target = target || this.target;
+
+    for (let action of this.game.actions[0]) {
+      if (label && !action.hasLabel(label)) {
+        continue;
+      }
+      if (exclude && action.hasLabel(exclude)) {
+        continue;
+      }
+
+      if (action.priority > this.priority && !action.hasLabel("absolute") && !action.hasLabel("mafia") && !action.hasLabel("primary")) {
+        action.cancelActor(target);
+      }
+    }
+  }
+
   getVisits(player) {
     player = player || this.target;
 
