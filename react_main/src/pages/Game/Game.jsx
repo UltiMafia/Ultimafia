@@ -2465,7 +2465,6 @@ function SpeechInput(props) {
   const [typingIn, setTypingIn] = useState();
   const [clearTyping, setClearTyping] = useState();
   const [checkboxOptions, setCheckboxOptions] = useState({});
-  const [lastHeartbeat, setLastHeartbeat] = useState(null);
   const [isDisconnected, setIsDisconnected] = useState(false);
 
   var placeholder = "";
@@ -2537,7 +2536,6 @@ function SpeechInput(props) {
   useEffect(() => {
     if (socket.on) {
       socket.on("p", () => {
-        setLastHeartbeat(Date.now());
         setIsDisconnected(false);
 
         if (timeoutRef.current) {
