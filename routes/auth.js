@@ -411,7 +411,7 @@ async function authSuccess(req, uid, email, discordProfile) {
           {
             content: `Your IP address has been flagged as suspicious. Please message an admin or moderator in the chat panel to gain full access to the site. A list of moderators can be found by clicking on this message.`,
             icon: "flag",
-            link: "/community/moderation",
+            link: "/policy/moderation",
           },
           [id]
         );
