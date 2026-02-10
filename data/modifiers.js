@@ -367,7 +367,7 @@ const modifierData = {
     Insightful: {
       category: "Other",
       internal: ["Learn3ExcessRoles"],
-      tags: ["Investigative", "Roles", "Excess Roles"],
+      tags: ["Information", "Roles", "Excess Roles"],
       description:
         "Learns 3 excess roles upon the game's start. Mafia/Cult roles always learn Village-aligned excess roles.",
       eventDescription: "This modifier does nothing when on an Event.",
