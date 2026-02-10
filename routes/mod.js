@@ -408,35 +408,18 @@ router.post("/assignCredit", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var userIdToCredit = String(req.body.userId);
-    var contributorTypes = req.body.contributorTypes || [];
+    var contributorType = String(req.body.contributorType || "").trim();
     var perm = "changeUsersName";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    if (!Array.isArray(contributorTypes)) {
-      res.status(500);
-      res.send("contributorTypes must be an array.");
-      return;
-    }
-
-    if (contributorTypes.length === 0) {
-      res.status(500);
-      res.send("At least one contributor type must be assigned.");
-      return;
-    }
-
-    // Validate contributor types
     const validTypes = ["code", "art", "music", "design"];
-    for (let type of contributorTypes) {
-      if (!validTypes.includes(type)) {
-        res.status(500);
-        res.send(
-          `"${type}" is not a valid contributor type. Valid types: ${validTypes.join(
-            ", "
-          )}`
-        );
-        return;
-      }
+    if (!contributorType || !validTypes.includes(contributorType)) {
+      res.status(500);
+      res.send(
+        `Invalid contributor type. Valid types: ${validTypes.join(", ")}`
+      );
+      return;
     }
 
     var userToUpdate = await models.User.findOne({
@@ -450,24 +433,29 @@ router.post("/assignCredit", async function (req, res) {
       return;
     }
 
-    // Update contributor types
-    userToUpdate.contributorTypes = contributorTypes;
+    // Toggle: if user already has this credit, remove it; otherwise add it
+    const currentTypes = userToUpdate.contributorTypes || [];
+    const hasType = currentTypes.includes(contributorType);
+    if (hasType) {
+      userToUpdate.contributorTypes = currentTypes.filter(
+        (t) => t !== contributorType
+      );
+    } else {
+      userToUpdate.contributorTypes = [...currentTypes, contributorType];
+    }
     await userToUpdate.save();
 
     await redis.cacheUserInfo(userIdToCredit, true);
 
-    var typesStr = contributorTypes.join(", ");
-
-    routeUtils.createModAction(userId, "Assign Credit", [
+    routeUtils.createModAction(userId, "Manage Contributor Credit", [
       userIdToCredit,
-      userToUpdate.name,
-      typesStr,
+      contributorType,
     ]);
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error assigning credit.");
+    res.send("Error updating contributor credit.");
   }
 });
 
@@ -2798,6 +2786,20 @@ router.post("/reports/:id/status", async (req, res) => {
     });
 
     await report.save();
+
+    // Notify reporter when status changes to in-progress (do not notify when reverting to open)
+    if (status === "in-progress" && oldStatus !== "in-progress") {
+      const reportedUserInfo = await getBasicUserInfo(report.reportedUserId);
+      const reportedName = reportedUserInfo?.name || "a user";
+      await routeUtils.createNotification(
+        {
+          content: `Your report on ${reportedName} is being processed by moderators now.`,
+          icon: "flag",
+        },
+        [report.reporterId]
+      );
+    }
+
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
@@ -3164,6 +3166,17 @@ router.post("/reports/:id/complete", async (req, res) => {
         report.reportedUserId,
         report.finalRuling?.violationId || (warning ? "warning" : "dismissed"),
       ]
+    );
+
+    // Notify reporter that their report has been completed (no link - reports are private)
+    const reportedUserInfo = await getBasicUserInfo(report.reportedUserId);
+    const reportedName = reportedUserInfo?.name || "a user";
+    await routeUtils.createNotification(
+      {
+        content: `Your report on ${reportedName} has been completed.`,
+        icon: "flag",
+      },
+      [report.reporterId]
     );
 
     res.send({

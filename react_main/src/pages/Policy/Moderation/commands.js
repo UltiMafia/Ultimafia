@@ -1295,7 +1295,7 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Assign Credit": {
+    "Manage Contributor Credit": {
       perm: "changeUsersName",
       category: "User Management",
       args: [
@@ -1305,23 +1305,25 @@ export function useModCommands(argValues, commandRan, setResults) {
           type: "user_search",
         },
         {
-          label:
-            "Contributor Types (comma-separated: code, art, music, design)",
-          name: "contributorTypes",
-          type: "text",
-          isArray: true,
+          label: "Contributor Type",
+          name: "contributorType",
+          type: "select",
+          options: [
+            { value: "code", label: "Code" },
+            { value: "art", label: "Art" },
+            { value: "music", label: "Music" },
+            { value: "design", label: "Design" },
+          ],
         },
       ],
       run: function () {
-        var contributorTypes = argValues.contributorTypes || [];
-
         axios
           .post("/api/mod/assignCredit", {
             userId: argValues.userId,
-            contributorTypes: contributorTypes,
+            contributorType: argValues.contributorType,
           })
           .then(() => {
-            siteInfo.showAlert("Credit assigned.", "success");
+            siteInfo.showAlert("Contributor credit updated.", "success");
             commandRan();
           })
           .catch(errorAlert);
