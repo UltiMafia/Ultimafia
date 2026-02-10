@@ -30,7 +30,7 @@ import { UserContext, SiteInfoContext } from "../../Contexts";
 import { Loading } from "components/Loading";
 import ReportDetail from "components/ReportDetail";
 
-export default function Reports() {
+export default function Reports({ basePath = "/policy" }) {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -85,7 +85,7 @@ export default function Reports() {
       setShowDetail(true);
     } catch (e) {
       errorAlert(e);
-      navigate("/policy/reports");
+      navigate(`${basePath}/reports`);
     } finally {
       setLoading(false);
     }
@@ -107,13 +107,13 @@ export default function Reports() {
   };
 
   const handleReportClick = (report) => {
-    navigate(`/policy/reports/${report.id}`);
+    navigate(`${basePath}/reports/${report.id}`);
     setSelectedReport(report);
     setShowDetail(true);
   };
 
   const handleBackToList = () => {
-    navigate("/policy/reports");
+    navigate(`${basePath}/reports`);
     setShowDetail(false);
     setSelectedReport(null);
     loadReports();

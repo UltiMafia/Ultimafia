@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
+import {
+  Outlet,
+  useLocation,
+  useNavigate,
+  useOutletContext,
+} from "react-router-dom";
 import axios from "axios";
-import { Box, Grid, Stack, Typography } from "@mui/material";
+import { Box, Grid, Stack, Tab, Tabs, Typography } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
 import { UserContext } from "Contexts";
@@ -16,17 +22,14 @@ import "css/moderation.css";
 
 export { ModCommands, COMMAND_COLOR } from "./Moderation/ModCommands";
 
-export default function Moderation() {
+export function ModerationLog() {
+  const { results = "", setResults = () => {}, user } =
+    useOutletContext() || {};
   const [groups, setGroups] = useState([]);
   const [loaded, setLoaded] = useState(false);
-
-  const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
-  const [results, setResults] = useState("");
 
   useEffect(() => {
-    document.title = "Moderation | UltiMafia";
-
     axios
       .get("/api/mod/groups")
       .then((res) => {
@@ -89,13 +92,13 @@ export default function Moderation() {
           Mission Statement
         </Typography>
         <Typography>
-          UltiMafia seeks to create an inclusive and welcoming space for playing
-          chat-based Mafia and related minigames. Our goal is to provide a fair
-          and respectful environment where all players can enjoy the game free
-          from hostility. We are dedicated to maintaining a community free from
-          prejudice or bias based on sex, age, gender identity, sexual
-          orientation, skin color, ability, religion, nationality, or any other
-          characteristic.{" "}
+          UltiMafia seeks to create an inclusive and welcoming space for
+          playing chat-based Mafia and related minigames. Our goal is to
+          provide a fair and respectful environment where all players can enjoy
+          the game free from hostility. We are dedicated to maintaining a
+          community free from prejudice or bias based on sex, age, gender
+          identity, sexual orientation, skin color, ability, religion,
+          nationality, or any other characteristic.{" "}
         </Typography>
       </Box>
       <Grid container rowSpacing={1} columnSpacing={1} className="moderation">
@@ -103,7 +106,7 @@ export default function Moderation() {
         <Grid item xs={12} md={8} key={"execute-action"}>
           <Stack direction="column" spacing={1}>
             <Stack direction="column" spacing={1}>
-              {user.perms.viewModActions && (
+              {user?.perms?.viewModActions && (
                 <div className="box-panel">
                   <Typography variant="h3">Execute Action</Typography>
                   <Stack direction="column" spacing={1}>
@@ -127,5 +130,71 @@ export default function Moderation() {
         </Grid>
       </Grid>
     </>
+  );
+}
+
+function getTabValue(pathname) {
+  if (pathname.includes("/reports")) return "reports";
+  if (pathname.includes("/competitive")) return "competitive";
+  return "log";
+}
+
+export default function Moderation() {
+  const [results, setResults] = useState("");
+  const user = useContext(UserContext);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const tabValue = getTabValue(location.pathname);
+
+  useEffect(() => {
+    document.title = "Moderation | UltiMafia";
+  }, []);
+
+  useEffect(() => {
+    if (
+      location.pathname.includes("/reports") &&
+      !user?.perms?.viewModActions
+    ) {
+      navigate("/policy/moderation", { replace: true });
+    } else if (
+      location.pathname.includes("/competitive") &&
+      !user?.perms?.manageCompetitive
+    ) {
+      navigate("/policy/moderation", { replace: true });
+    }
+  }, [location.pathname, user?.perms?.viewModActions, user?.perms?.manageCompetitive, navigate]);
+
+  const handleTabChange = (_, newValue) => {
+    const base = "/policy/moderation";
+    if (newValue === "log") navigate(base);
+    else if (newValue === "reports") navigate(`${base}/reports`);
+    else if (newValue === "competitive") navigate(`${base}/competitive`);
+  };
+
+  return (
+    <Box>
+      <Tabs
+        value={tabValue}
+        onChange={handleTabChange}
+        sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}
+      >
+        <Tab label="Moderation Log" value="log" />
+        {user?.perms?.viewModActions && (
+          <Tab label="Reports" value="reports" />
+        )}
+        {user?.perms?.manageCompetitive && (
+          <Tab label="Competitive Management" value="competitive" />
+        )}
+      </Tabs>
+
+      <Outlet
+        context={{
+          results,
+          setResults,
+          user,
+        }}
+      />
+    </Box>
   );
 }
