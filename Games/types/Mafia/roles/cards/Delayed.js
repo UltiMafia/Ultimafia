@@ -28,6 +28,10 @@ module.exports = class Delayed extends Card {
           }
           if (meetingName == "Graveyard") return true;
 
+          if(!this.meetings[meetingName]){
+            return true;
+          }
+
           return this.game.getStateInfo().dayCount > this.DelayedMax;
         },
       },

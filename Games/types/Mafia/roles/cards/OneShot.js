@@ -98,6 +98,10 @@ module.exports = class OneShot extends Card {
           }
           if (meetingName == "Graveyard") return true;
 
+          if(!this.meetings[meetingName]){
+            return true;
+          }
+
           // meetings invited by others
           for (let w = 0; w < INVITED_MEETINGS.length; w++) {
             if (meetingName == INVITED_MEETINGS[w]) {

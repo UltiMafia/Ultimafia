@@ -1199,7 +1199,7 @@ const modifierData = {
       category: "Appearance",
       internal: ["Modest"],
       tags: ["Modifiers"],
-      description: "Appears to self with no modifiers.",
+      description: "You cannot see your modifiers.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
@@ -1208,7 +1208,7 @@ const modifierData = {
       category: "Appearance",
       internal: ["DisguiseAsTarget"],
       tags: ["Roles", "Deception", "Suits"],
-      description: "Gains a suit of each target's role.",
+      description: "When you visit a player with your secondary action, you gains a suit of each that player's role.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Respected: {

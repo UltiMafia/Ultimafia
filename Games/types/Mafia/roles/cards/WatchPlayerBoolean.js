@@ -8,7 +8,7 @@ module.exports = class WatchPlayerBoolean extends Card {
   constructor(role) {
     super(role);
 
-        this.passiveActions = [
+    this.passiveActions = [
       {
         ability: ["Information", "Modifier"],
         actor: role.player,
@@ -18,7 +18,7 @@ module.exports = class WatchPlayerBoolean extends Card {
         priority: PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5,
         labels: ["investigate"],
         run: function () {
-            let visits = this.getVisits(this.actor);
+            let visits = this.getSecondaryActions(this.actor);
             for (let v of visits) {
               if (this.dominates(v)) {
                 let info = this.game.createInformation(
@@ -28,7 +28,7 @@ module.exports = class WatchPlayerBoolean extends Card {
                   v
                 );
                 info.processInfo();
-                if (info == "visited by somebody") {
+                if (info.mainInfo == "visited by somebody") {
                   this.actor.queueAlert(`:watch: ${info.getInfoFormated()}`);
                 }
               }
