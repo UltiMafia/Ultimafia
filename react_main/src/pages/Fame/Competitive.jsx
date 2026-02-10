@@ -149,7 +149,7 @@ function Overview({ roundInfo, seasonInfo }) {
                         lineHeight: "1",
                       }}
                     >
-                      {seasonStanding.points}
+                      {Math.trunc(seasonStanding.points)}
                     </Typography>
                     <Tooltip title="prestige">
                       <img
@@ -165,7 +165,7 @@ function Overview({ roundInfo, seasonInfo }) {
                         lineHeight: "1",
                       }}
                     >
-                      {seasonStanding.tiebreakerPoints}
+                      {Math.trunc(seasonStanding.tiebreakerPoints)}
                     </Typography>
                     <Tooltip title="fortune">
                       <img
@@ -233,7 +233,7 @@ function Overview({ roundInfo, seasonInfo }) {
                         lineHeight: "1",
                       }}
                     >
-                      {points}
+                      {Math.trunc(points)}
                     </Typography>
                     <Tooltip title="fortune">
                       <img
@@ -350,7 +350,7 @@ function GameHistory({ roundInfo }) {
                             avatar={user.avatar}
                           />
                           <Typography sx={{ marginLeft: "auto !important" }}>
-                            {pointsEarnedByPlayer.points}
+                            {Math.trunc(pointsEarnedByPlayer.points)}
                           </Typography>
                           <img src={POINTS_ICON} alt="Fortune" />
                         </Stack>
@@ -604,7 +604,6 @@ export default function Competitive() {
                 <Typography>{user.name}</Typography>
                 <Stack direction="row" spacing={1}>
                   <Stack
-                    Stack
                     direction="row"
                     spacing={0.5}
                     sx={{
@@ -617,7 +616,7 @@ export default function Competitive() {
                         lineHeight: "1",
                       }}
                     >
-                      {currentSeasonInfo.users[user.id]?.points || 0}
+                      {Math.trunc(currentSeasonInfo.users[user.id]?.points || 0)}
                     </Typography>
                     <Tooltip title="prestige">
                       <img
@@ -630,7 +629,6 @@ export default function Competitive() {
                   </Stack>
                   {currentRoundInfo.users && (
                     <Stack
-                      Stack
                       direction="row"
                       spacing={0.5}
                       sx={{
@@ -643,7 +641,7 @@ export default function Competitive() {
                           lineHeight: "1",
                         }}
                       >
-                        {currentRoundInfo.users[user.id]?.points || 0}
+                        {Math.trunc(currentRoundInfo.users[user.id]?.points || 0)}
                       </Typography>
                       <Tooltip title="fortune">
                         <img
