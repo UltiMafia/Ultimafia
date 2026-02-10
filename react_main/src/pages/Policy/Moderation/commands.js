@@ -1295,15 +1295,6 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Manage Competitive Season Setups": {
-      perm: "manageCompetitive",
-      category: "Competitive Management",
-      args: [],
-      customDialog: true,
-      run: function () {
-        // This will be handled by the custom dialog
-      },
-    },
     "Assign Credit": {
       perm: "changeUsersName",
       category: "User Management",

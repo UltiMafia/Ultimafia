@@ -20,7 +20,6 @@ import { UserSearchSelect } from "components/Form";
 import { SearchBar } from "components/Nav";
 import { UserContext } from "Contexts";
 
-import ManageSeasonDialog from "./ManageSeasonDialog";
 import {
   COMMAND_COLOR,
   COMMAND_GROUP_ORDER,
@@ -41,8 +40,6 @@ export function ModCommands(props) {
   const [command, setCommand] = useState();
   const [searchVal, setSearchVal] = useState("");
   const [isDialogueOpen, setDialogueOpen] = useState(false);
-  const [isManageSeasonDialogOpen, setIsManageSeasonDialogOpen] =
-    useState(false);
   const [argValues, setArgValues] = useState(prefilledArgs);
 
   const { userId } = useParams();
@@ -112,14 +109,8 @@ export function ModCommands(props) {
           !searchVal || commandName.toLowerCase().includes(searchVal);
 
         function openDialogue() {
-          const cmd = modCommands[commandName];
-          if (cmd.customDialog) {
-            setIsManageSeasonDialogOpen(true);
-            setCommand(commandName);
-          } else {
-            setDialogueOpen(true);
-            setCommand(commandName);
-          }
+          setDialogueOpen(true);
+          setCommand(commandName);
         }
 
         if (
@@ -293,17 +284,6 @@ export function ModCommands(props) {
 
   return (
     <Stack direction="column" spacing={1} key="mod-commands">
-      {command === "Manage Competitive Season Setups" && (
-        <ManageSeasonDialog
-          open={isManageSeasonDialogOpen}
-          onClose={() => {
-            setIsManageSeasonDialogOpen(false);
-            setCommand(null);
-          }}
-          modCommands={modCommands}
-          commandRan={commandRan}
-        />
-      )}
       <Dialog open={isDialogueOpen} onClose={closeDialogue} fullWidth>
         <DialogContent
           sx={{
