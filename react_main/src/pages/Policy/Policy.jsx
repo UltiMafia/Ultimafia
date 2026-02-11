@@ -9,6 +9,7 @@ import Moderation from "./Moderation";
 import { ModerationLog } from "./Moderation";
 import Reports from "./Reports";
 import CompetitiveManagement from "./Moderation/CompetitiveManagement";
+import StaffHandbook from "./Moderation/StaffHandbook";
 
 function ReportsRedirect() {
   const location = useLocation();
@@ -39,6 +40,7 @@ export default function Policy() {
             element={<Reports basePath="/policy/moderation" />}
           />
           <Route path="competitive" element={<CompetitiveManagement />} />
+          <Route path="handbook" element={<StaffHandbook />} />
         </Route>
         <Route path="reports/*" element={<ReportsRedirect />} />
         <Route path="*" element={<Navigate to="rules" />} />

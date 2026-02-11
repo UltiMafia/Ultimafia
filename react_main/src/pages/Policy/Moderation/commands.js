@@ -292,7 +292,7 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Clear User Leave Penalty": {
+    "Clear Leave Penalty": {
       perm: "viewPerms",
       category: "User Management",
       args: [
@@ -1295,7 +1295,7 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Manage Contributor Credit": {
+    "Manage Credits": {
       perm: "changeUsersName",
       category: "User Management",
       args: [

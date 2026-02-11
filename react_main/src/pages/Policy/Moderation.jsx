@@ -87,20 +87,6 @@ export function ModerationLog() {
 
   return (
     <>
-      <Box sx={{ p: 1 }}>
-        <Typography variant="h2" sx={{ mb: 1 }}>
-          Mission Statement
-        </Typography>
-        <Typography>
-          UltiMafia seeks to create an inclusive and welcoming space for
-          playing chat-based Mafia and related minigames. Our goal is to
-          provide a fair and respectful environment where all players can enjoy
-          the game free from hostility. We are dedicated to maintaining a
-          community free from prejudice or bias based on sex, age, gender
-          identity, sexual orientation, skin color, ability, religion,
-          nationality, or any other characteristic.{" "}
-        </Typography>
-      </Box>
       <Grid container rowSpacing={1} columnSpacing={1} className="moderation">
         <Grid item xs={12} key={"mission-statement"}></Grid>
         <Grid item xs={12} md={8} key={"execute-action"}>
@@ -136,6 +122,7 @@ export function ModerationLog() {
 function getTabValue(pathname) {
   if (pathname.includes("/reports")) return "reports";
   if (pathname.includes("/competitive")) return "competitive";
+  if (pathname.includes("/handbook")) return "handbook";
   return "log";
 }
 
@@ -170,6 +157,7 @@ export default function Moderation() {
     if (newValue === "log") navigate(base);
     else if (newValue === "reports") navigate(`${base}/reports`);
     else if (newValue === "competitive") navigate(`${base}/competitive`);
+    else if (newValue === "handbook") navigate(`${base}/handbook`);
   };
 
   return (
@@ -177,15 +165,10 @@ export default function Moderation() {
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
-        variant="scrollable"
-        scrollButtons="auto"
-        allowScrollButtonsMobile
-        sx={{
-          borderBottom: 1,
-          borderColor: "divider",
-        }}
+        sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}
       >
         <Tab label="Moderation Log" value="log" />
+        <Tab label="Staff Handbook" value="handbook" />
         {user?.perms?.viewModActions && (
           <Tab label="Reports" value="reports" />
         )}
