@@ -447,7 +447,7 @@ router.post("/assignCredit", async function (req, res) {
 
     await redis.cacheUserInfo(userIdToCredit, true);
 
-    routeUtils.createModAction(userId, "Manage Contributor Credit", [
+    routeUtils.createModAction(userId, "Manage Credits", [
       userIdToCredit,
       contributorType,
     ]);
@@ -2443,31 +2443,14 @@ router.get("/reports", async (req, res) => {
 
     const total = await models.Report.countDocuments(filter);
 
-    // Populate user information for reporter(s), reported user, and assignees
+    // Populate user information for reporter, reported user, and assignees
     for (const report of reports) {
       try {
-        // Get reporter info - support multiple reporters via getReportReporters
-        const reporters = routeUtils.getReportReporters(report);
-        report.reporterInfo = [];
-        for (const r of reporters) {
-          const info = await getBasicUserInfo(r.userId);
-          report.reporterInfo.push({
-            id: r.userId,
-            name: info?.name || r.userId,
-            avatar: info?.avatar || false,
-          });
-        }
-        // Backwards compat: first reporter as reporterId/reporterName/reporterAvatar
-        if (report.reporterInfo.length > 0) {
-          report.reporterId = report.reporterInfo[0].id;
-          report.reporterName = report.reporterInfo[0].name;
-          report.reporterAvatar = report.reporterInfo[0].avatar;
-        } else if (report.reporterId) {
-          const reporterInfo = await getBasicUserInfo(report.reporterId);
-          if (reporterInfo) {
-            report.reporterName = reporterInfo.name;
-            report.reporterAvatar = reporterInfo.avatar;
-          }
+        // Get reporter info
+        const reporterInfo = await getBasicUserInfo(report.reporterId);
+        if (reporterInfo) {
+          report.reporterName = reporterInfo.name;
+          report.reporterAvatar = reporterInfo.avatar;
         }
 
         // Get reported user info
@@ -2577,33 +2560,13 @@ router.get("/reports/:id", async (req, res) => {
       }
     }
 
-    // Populate user information for reporter(s), reported user, and assignees
+    // Populate user information for reporter, reported user, and assignees
     try {
-      // Get reporter info - support multiple reporters via getReportReporters
-      const reporters = routeUtils.getReportReporters(report);
-      report.reporterInfo = [];
-      for (const r of reporters) {
-        const info = await getBasicUserInfo(r.userId);
-        report.reporterInfo.push({
-          id: r.userId,
-          name: info?.name || r.userId,
-          avatar: info?.avatar || false,
-          rule: r.rule,
-          description: r.description,
-          submittedAt: r.submittedAt,
-        });
-      }
-      // Backwards compat: first reporter
-      if (report.reporterInfo.length > 0) {
-        report.reporterId = report.reporterInfo[0].id;
-        report.reporterName = report.reporterInfo[0].name;
-        report.reporterAvatar = report.reporterInfo[0].avatar;
-      } else if (report.reporterId) {
-        const reporterInfo = await getBasicUserInfo(report.reporterId);
-        if (reporterInfo) {
-          report.reporterName = reporterInfo.name;
-          report.reporterAvatar = reporterInfo.avatar;
-        }
+      // Get reporter info
+      const reporterInfo = await getBasicUserInfo(report.reporterId);
+      if (reporterInfo) {
+        report.reporterName = reporterInfo.name;
+        report.reporterAvatar = reporterInfo.avatar;
       }
 
       // Get reported user info
@@ -2824,20 +2787,16 @@ router.post("/reports/:id/status", async (req, res) => {
 
     await report.save();
 
-    // Notify all reporters when status changes to in-progress (do not notify when reverting to open)
+    // Notify reporter when status changes to in-progress (do not notify when reverting to open)
     if (status === "in-progress" && oldStatus !== "in-progress") {
       const reportedUserInfo = await getBasicUserInfo(report.reportedUserId);
       const reportedName = reportedUserInfo?.name || "a user";
-      const reporterIds = routeUtils
-        .getReportReporters(report)
-        .map((r) => r.userId)
-        .filter((id, i, arr) => arr.indexOf(id) === i);
       await routeUtils.createNotification(
         {
           content: `Your report on ${reportedName} is being processed by moderators now.`,
           icon: "flag",
         },
-        reporterIds
+        [report.reporterId]
       );
     }
 
@@ -3209,19 +3168,15 @@ router.post("/reports/:id/complete", async (req, res) => {
       ]
     );
 
-    // Notify all reporters that their report has been completed (no link - reports are private)
+    // Notify reporter that their report has been completed (no link - reports are private)
     const reportedUserInfo = await getBasicUserInfo(report.reportedUserId);
     const reportedName = reportedUserInfo?.name || "a user";
-    const reporterIds = routeUtils
-      .getReportReporters(report)
-      .map((r) => r.userId)
-      .filter((id, i, arr) => arr.indexOf(id) === i);
     await routeUtils.createNotification(
       {
         content: `Your report on ${reportedName} has been completed.`,
         icon: "flag",
       },
-      reporterIds
+      [report.reporterId]
     );
 
     res.send({
