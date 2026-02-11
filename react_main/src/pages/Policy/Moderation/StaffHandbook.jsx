@@ -4,7 +4,7 @@ import { Box, Typography } from "@mui/material";
 export default function StaffHandbook() {
   return (
     <Box sx={{ px: 2, py: 2 }}>
-      <Typography variant="h3" sx={{ mb: 3 }}>
+      <Typography variant="h3">
         Staff Handbook
       </Typography>
       <Typography variant="body2" color="text.secondary" paragraph>
