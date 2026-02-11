@@ -590,35 +590,6 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Get Bans": {
-      perm: "viewBans",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .get(`/api/mod/bans?userId=${argValues.userId}`)
-          .then((res) => {
-            alert(
-              res.data
-                .map(
-                  (ban) =>
-                    `Type: ${ban.type}, mod: ${ban.modId}, expires: ${new Date(
-                      ban.expires
-                    ).toLocaleString()}`
-                )
-                .join("\n")
-            );
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
     "Check Flagged": {
       perm: "viewFlagged",
       category: "User Management",

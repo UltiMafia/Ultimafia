@@ -155,6 +155,11 @@ export default function MafiaGame() {
       overrides: false,
       volumes: 0.6,
     },
+      fileName: "music/NightWarlock",
+      loops: true,
+      overrides: false,
+      volumes: 0.6,
+    },
     {
       fileName: "music/NightClockmaker",
       loops: true,
@@ -424,6 +429,9 @@ export default function MafiaGame() {
             break;
           case "Siren":
             game.playAudio("music/NightSiren");
+            break;
+          case "Warlock":
+            game.playAudio("music/NightWarlock");
             break;
           case "Suitress":
           case "Mistress":
