@@ -168,7 +168,7 @@ export default function Moderation() {
         sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}
       >
         <Tab label="Moderation Log" value="log" />
-        <Tab label="Admin Handbook" value="handbook" />
+        <Tab label="Staff Handbook" value="handbook" />
         {user?.perms?.viewModActions && (
           <Tab label="Reports" value="reports" />
         )}
