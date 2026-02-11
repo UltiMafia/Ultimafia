@@ -362,6 +362,29 @@ async function getAltAccountIds(userId) {
   return altUsers.map((u) => u.id);
 }
 
+function getReportReporters(report) {
+  if (!report) return [];
+  if (report.reporters && Array.isArray(report.reporters) && report.reporters.length > 0) {
+    return report.reporters.map((r) => ({
+      userId: r.userId,
+      rule: r.rule || "",
+      description: r.description || "",
+      submittedAt: r.submittedAt,
+    }));
+  }
+  if (report.reporterId) {
+    return [
+      {
+        userId: report.reporterId,
+        rule: report.rule || "",
+        description: report.description || "",
+        submittedAt: report.createdAt || Date.now(),
+      },
+    ];
+  }
+  return [];
+}
+
 async function createViolationTicket({
   userId,
   modId,
@@ -421,4 +444,5 @@ module.exports = {
   createModAction,
   createViolationTicket,
   getAltAccountIds,
+  getReportReporters,
 };

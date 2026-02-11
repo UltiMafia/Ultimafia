@@ -235,11 +235,30 @@ export default function Reports({ basePath = "/policy" }) {
                     />
                   </TableCell>
                   <TableCell>
-                    <NameWithAvatar
-                      id={report.reporterId}
-                      name={report.reporterName || report.reporterId}
-                      avatar={report.reporterAvatar}
-                    />
+                    {report.reporterInfo?.length > 1 ? (
+                      <Stack direction="row" spacing={0.5} flexWrap="wrap" alignItems="center">
+                        {report.reporterInfo.slice(0, 2).map((r) => (
+                          <NameWithAvatar
+                            key={r.id}
+                            id={r.id}
+                            name={r.name || r.id}
+                            avatar={r.avatar}
+                            size="small"
+                          />
+                        ))}
+                        {report.reporterInfo.length > 2 && (
+                          <Typography variant="caption" color="textSecondary">
+                            +{report.reporterInfo.length - 2}
+                          </Typography>
+                        )}
+                      </Stack>
+                    ) : (
+                      <NameWithAvatar
+                        id={report.reporterId}
+                        name={report.reporterName || report.reporterId}
+                        avatar={report.reporterAvatar}
+                      />
+                    )}
                   </TableCell>
                   <TableCell>{report.rule}</TableCell>
                   <TableCell>

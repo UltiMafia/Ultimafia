@@ -781,6 +781,14 @@ var schemas = {
       gameId: { type: String, index: true },
       rule: { type: String, index: true },
       description: String,
+      reporters: [
+        {
+          userId: { type: String, required: true },
+          rule: { type: String, required: true },
+          description: { type: String, default: "" },
+          submittedAt: { type: Number, required: true },
+        },
+      ],
       status: {
         type: String,
         enum: ["open", "in-progress", "complete", "appealed"],

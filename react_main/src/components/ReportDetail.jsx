@@ -195,13 +195,58 @@ export default function ReportDetail({
             <Stack spacing={2}>
               <Box>
                 <Typography variant="caption" color="textSecondary">
-                  Reporter
+                  {report.reporterInfo?.length > 1 ? "Reporters" : "Reporter"}
                 </Typography>
-                <NameWithAvatar
-                  id={report.reporterId}
-                  name={report.reporterName || report.reporterId}
-                  avatar={report.reporterAvatar}
-                />
+                {report.reporterInfo?.length > 0 ? (
+                  <Stack spacing={1.5}>
+                    {report.reporterInfo.map((r) => (
+                      <Paper key={r.id} variant="outlined" sx={{ p: 1.5 }}>
+                        <NameWithAvatar
+                          id={r.id}
+                          name={r.name || r.id}
+                          avatar={r.avatar}
+                        />
+                        {(r.rule || r.description) && (
+                          <Box sx={{ mt: 1, pl: 0 }}>
+                            {r.rule && (
+                              <Typography variant="body2" color="textSecondary">
+                                Rule: {r.rule}
+                              </Typography>
+                            )}
+                            {r.description && (
+                              <Typography
+                                variant="body2"
+                                sx={{ whiteSpace: "pre-wrap", mt: 0.5 }}
+                              >
+                                {r.description}
+                              </Typography>
+                            )}
+                            {r.submittedAt && (
+                              <Typography
+                                variant="caption"
+                                color="textSecondary"
+                                sx={{ display: "block", mt: 0.5 }}
+                              >
+                                <Time
+                                  millisec={Date.now() - r.submittedAt}
+                                  suffix=" ago"
+                                />
+                              </Typography>
+                            )}
+                          </Box>
+                        )}
+                      </Paper>
+                    ))}
+                  </Stack>
+                ) : (
+                  <>
+                    <NameWithAvatar
+                      id={report.reporterId}
+                      name={report.reporterName || report.reporterId}
+                      avatar={report.reporterAvatar}
+                    />
+                  </>
+                )}
               </Box>
               <Box>
                 <Typography variant="caption" color="textSecondary">
@@ -229,21 +274,25 @@ export default function ReportDetail({
                   </Typography>
                 </Box>
               )}
-              <Box>
-                <Typography variant="caption" color="textSecondary">
-                  Rule Broken
-                </Typography>
-                <Typography>{report.rule}</Typography>
-              </Box>
-              {report.description && (
-                <Box>
-                  <Typography variant="caption" color="textSecondary">
-                    Description
-                  </Typography>
-                  <Typography sx={{ whiteSpace: "pre-wrap" }}>
-                    {report.description}
-                  </Typography>
-                </Box>
+              {(!report.reporterInfo || report.reporterInfo.length === 0) && (
+                <>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary">
+                      Rule Broken
+                    </Typography>
+                    <Typography>{report.rule}</Typography>
+                  </Box>
+                  {report.description && (
+                    <Box>
+                      <Typography variant="caption" color="textSecondary">
+                        Description
+                      </Typography>
+                      <Typography sx={{ whiteSpace: "pre-wrap" }}>
+                        {report.description}
+                      </Typography>
+                    </Box>
+                  )}
+                </>
               )}
 
               {/* Appeal Information */}
