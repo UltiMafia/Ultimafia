@@ -155,6 +155,7 @@ export default function MafiaGame() {
       overrides: false,
       volumes: 0.6,
     },
+    {
       fileName: "music/NightWarlock",
       loops: true,
       overrides: false,
