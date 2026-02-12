@@ -115,6 +115,7 @@ export default function Profile() {
   const [nameHistory, setNameHistory] = useState([]);
   const [nameHistoryLoading, setNameHistoryLoading] = useState(false);
   const [joined, setJoined] = useState(null);
+  const [isFlagged, setIsFlagged] = useState(false);
 
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -127,6 +128,7 @@ export default function Profile() {
   const isSelf = profileUserId === user.id;
   const isBlocked = !isSelf && user.blockedUsers.indexOf(profileUserId) !== -1;
   const canViewNameHistory = user.perms.seeModPanel;
+  const canViewFlagged = user.perms.viewFlagged;
 
   // userId is the id of the current profile
   // user.id is the id of the current user
@@ -200,6 +202,7 @@ export default function Profile() {
     setEditingPronouns(false);
     setUserFamily(null);
     setProfileFamily(null);
+    setIsFlagged(false);
 
     if (userId) {
       setProfileLoaded(false);
@@ -252,6 +255,7 @@ export default function Profile() {
           setTrophies(res.data.trophies || []);
           setProfileFamily(res.data.family || null);
           setJoined(res.data.joined || null);
+          setIsFlagged(Boolean(res.data.flagged));
           setFriendsPage(1);
           loadFriends(resolvedId, "", 1);
 
@@ -888,60 +892,77 @@ export default function Profile() {
         justifyContent: "center",
       }}
     >
-      <Stack direction="row" className="options">
-        {!isSelf && user.loggedIn && (
-          <>
-            <IconButton aria-label="friend user">
-              <i
-                className={`fas fa-user-plus ${isFriend ? "sel" : ""}`}
-                onClick={onFriendUserClick}
+      <Stack direction="column" spacing={0.5} sx={{ alignItems: "center" }}>
+        <Stack direction="row" className="options">
+          {!isSelf && user.loggedIn && (
+            <>
+              <IconButton aria-label="friend user">
+                <i
+                  className={`fas fa-user-plus ${isFriend ? "sel" : ""}`}
+                  onClick={onFriendUserClick}
+                />
+              </IconButton>
+              {userFamily &&
+                userFamily.isLeader &&
+                userFamily.memberCount < 20 && (
+                  <IconButton
+                    aria-label="request to join family"
+                    title={`Invite to ${userFamily.name}`}
+                  >
+                    <i
+                      className="fas fa-users"
+                      onClick={onFamilyJoinRequestClick}
+                    />
+                  </IconButton>
+                )}
+              <LoveIcon
+                isLove={isLove}
+                userId={user.id}
+                isMarried={isMarried}
+                love={love}
+                currentUserLove={currentUserLove}
+                onClick={onLoveUserClick}
               />
-            </IconButton>
-            {userFamily &&
-              userFamily.isLeader &&
-              userFamily.memberCount < 20 && (
-                <IconButton
-                  aria-label="request to join family"
-                  title={`Invite to ${userFamily.name}`}
-                >
-                  <i
-                    className="fas fa-users"
-                    onClick={onFamilyJoinRequestClick}
-                  />
-                </IconButton>
-              )}
-            <LoveIcon
-              isLove={isLove}
-              userId={user.id}
-              isMarried={isMarried}
-              love={love}
-              currentUserLove={currentUserLove}
-              onClick={onLoveUserClick}
-            />
-            <MarriedIcon
-              isLove={isLove}
-              saved={saved}
-              userId={user.id}
-              love={love}
-              isMarried={isMarried}
-              onClick={onMarryUserClick}
-            />
-            <IconButton aria-label="block user">
-              <i
-                className={`fas fa-ban ${isBlocked ? "sel" : ""}`}
-                onClick={onBlockUserClick}
-                title="Block user"
+              <MarriedIcon
+                isLove={isLove}
+                saved={saved}
+                userId={user.id}
+                love={love}
+                isMarried={isMarried}
+                onClick={onMarryUserClick}
               />
-            </IconButton>
-            <IconButton size="small" onClick={onReportClick}>
-              <i className="fas fa-flag" />
-            </IconButton>
-            <ReportDialog
-              open={reportDialogOpen}
-              onClose={() => setReportDialogOpen(false)}
-              prefilledArgs={{ userId: profileUserId, userName: name }}
-            />
-          </>
+              <IconButton aria-label="block user">
+                <i
+                  className={`fas fa-ban ${isBlocked ? "sel" : ""}`}
+                  onClick={onBlockUserClick}
+                  title="Block user"
+                />
+              </IconButton>
+              <IconButton size="small" onClick={onReportClick}>
+                <i className="fas fa-flag" />
+              </IconButton>
+              <ReportDialog
+                open={reportDialogOpen}
+                onClose={() => setReportDialogOpen(false)}
+                prefilledArgs={{ userId: profileUserId, userName: name }}
+              />
+            </>
+          )}
+        </Stack>
+        {!isSelf && user.loggedIn && canViewFlagged && (
+          <Stack direction="row" className="options">
+            <Tooltip title={isFlagged ? "User is flagged" : "User is not flagged"}>
+              <IconButton size="small" aria-label="user flagged status">
+                <i
+                  className="fas fa-flag"
+                  style={{
+                    color: "error.main",
+                    opacity: isFlagged ? 1 : 0.35,
+                  }}
+                />
+              </IconButton>
+            </Tooltip>
+          </Stack>
         )}
       </Stack>
     </Grid>
