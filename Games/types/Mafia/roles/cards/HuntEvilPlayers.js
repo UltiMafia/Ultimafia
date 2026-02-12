@@ -29,7 +29,7 @@ module.exports = class HuntEvilPlayers extends Card {
           info.processInfo();
           learnPlayer = info.getInfoRaw();
 
-          if (learnPlayer == "No Evil Players Exist") {
+          if (learnPlayer == "no Evildoers exist.") {
             this.actor.queueAlert(`You could not Find any Evil Players.`);
           } else {
             this.role.data.EvilTarget = learnPlayer;
