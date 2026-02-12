@@ -264,39 +264,10 @@ router.get("/:id/profile", async function (req, res) {
     }
 
     var isSelf = reqUserId == userId;
-    const canViewFlagged = reqUserId
-      ? await redis.hasPermission(reqUserId, "viewFlagged")
-      : false;
-    const profileSelectFields = [
-      "id",
-      "name",
-      "avatar",
-      "profileBackground",
-      "settings",
-      "accounts",
-      "wins",
-      "losses",
-      "kudos",
-      "karma",
-      "points",
-      "pointsNegative",
-      "championshipPoints",
-      "achievements",
-      "bio",
-      "pronouns",
-      "banner",
-      "setups",
-      "games",
-      "numFriends",
-      "stats",
-      "lastActive",
-      "joined",
-      "_id",
-    ];
-    if (canViewFlagged) profileSelectFields.push("flagged");
-
     var user = await models.User.findOne({ id: userId, deleted: false })
-      .select(profileSelectFields.join(" "))
+      .select(
+        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner setups games numFriends stats lastActive joined _id"
+      )
       .populate({
         path: "setups",
         select:
