@@ -17,7 +17,7 @@ module.exports = class BlockIfVisited extends Card {
         role: role,
         run: function () {
           if (this.hasVisitors() === true) {
-            this.blockActions(this.actor);
+            this.blockSecondaryActions(this.actor);
           }
         },
       },
