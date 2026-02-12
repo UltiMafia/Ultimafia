@@ -110,7 +110,6 @@ const artContributors = {
       "Fatalist:vivid",
       "Phantom:vivid",
       "Creepy Girl:vivid",
-      "Siren:vivid",
       "Angel:vivid",
       "Yandere:vivid",
       "Nyarlathotep:vivid",
@@ -207,6 +206,7 @@ const artContributors = {
       "Statue:vivid",
       "Soprano:vivid",
       "Samurai:vivid",
+      "Siren:vivid",
       //Skins
       "Hellhound:goofy",
     ],
@@ -371,6 +371,7 @@ const artContributors = {
       "Suborner:vivid",
       "Gatekeeper:vivid",
       "Miller:vivid",
+      "Trucker:vivid",
       //Skins
       "Cop:halloween",
       "Doctor:halloween",
