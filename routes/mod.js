@@ -991,33 +991,6 @@ router.get("/alts", async (req, res) => {
   }
 });
 
-router.get("/flagged", async (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.query.userId);
-    var perm = "viewFlagged";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    var user = await models.User.findOne({
-      id: userIdToActOn /*, deleted: false*/,
-    }).select("flagged");
-
-    if (!user) {
-      res.status(500);
-      res.send("User does not exist.");
-      return;
-    }
-
-    res.send(user.flagged);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error loading alt accounts.");
-  }
-});
-
 router.post("/clearSetupName", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {

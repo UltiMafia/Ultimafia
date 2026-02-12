@@ -956,7 +956,7 @@ export default function Profile() {
                 <i
                   className="fas fa-flag"
                   style={{
-                    color: "#d32f2f",
+                    color: "error.main",
                     opacity: isFlagged ? 1 : 0.35,
                   }}
                 />
