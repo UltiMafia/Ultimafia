@@ -19,35 +19,14 @@ module.exports = class Vain extends Card {
         run: function () {
           if (!this.actor.alive) return;
 
-          for (let action of this.game.actions[0]) {
-            if (action.hasLabel("mafia")) {
-              continue;
-            }
-            if (action.hasLabel("hidden")) {
-              continue;
-            }
+          let visits = this.getSecondaryActions(this.actor);
 
-            let toCheck = action.target;
-            if (!Array.isArray(action.target)) {
-              toCheck = [action.target];
-            }
-
-            if (
-              action.actors.indexOf(this.actor) != -1 &&
-              !action.hasLabel("hidden") &&
-              action.target &&
-              toCheck[0] instanceof Player
-            ) {
-              for (let y = 0; y < toCheck.length; y++) {
-                if (
-                  toCheck[y].getRoleAlignment() == this.actor.role.alignment
-                ) {
+          for(let visit of visits){
+            if (visit.getRoleAlignment() == this.actor.role.alignment) {
                   if (this.dominates(this.actor)) {
                     this.actor.kill("basic", this.actor);
                   }
                 }
-              }
-            }
           }
         },
       },
