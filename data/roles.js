@@ -2467,7 +2467,7 @@ const roleData = {
         "You know which players are Mafia and Cult.",
         "When condemned, Mafia and Cult have a chance to guess who you are.",
         "On a correct guess, you die and the Mafia or Cult wins.",
-        "You appears as Villager on death.",
+        "You appear as Villager when killed.",
       ],
       SpecialInteractions: {
         Ghost: ["If a Ghost is Present, a Seer will not learn any words."],
@@ -4352,11 +4352,11 @@ const roleData = {
         "Basic",
       ],
       description: [
-        "Each night, can choose one of three potions.",
+        "Each night, you can choose one of three potions.",
         "A damaging potion, which kills a player.",
         "A restoring potion, which protects a player from death.",
-        "An elucidating potion, which lets the Alchemist learn a players role.",
-        "Each night, can choose to visit one player and use the selected potion on the player.",
+        "An elucidating potion, which lets you learn a players role.",
+        "Each night, you can choose to visit one player and use the selected potion on the player.",
         "Once a potion has been chosen, it cannot be chosen again for the next two nights.",
       ],
       nightOrder: [
@@ -4387,8 +4387,8 @@ const roleData = {
       category: "Chaos",
       tags: ["Win Con", "Information", "Condemn Interaction", "Advanced"],
       description: [
-        "Is randomly assigned an opposing player as a Twin.",
-        "The Changeling and their target will learn each other's roles.",
+        "You are randomly assigned an opposing player as a Twin.",
+        "You and your Twin will learn each other's roles.",
         "If the Village-aligned Twin is condemned, the Cult wins.",
       ],
     },
@@ -4396,7 +4396,7 @@ const roleData = {
       alignment: "Cult",
       tags: ["Ghost", "Mini-game", "Dusk"],
       description: [
-        "When present in the game, all non-Cult-aligned players will know one of two randomly-selected words: the real word and the fake word.",
+        "All non-Cult-aligned players will know one of two randomly-selected words: the real word and the fake word.",
         "All Village roles will learn the real word.",
         "All Mafia roles and Sleepwalkers will learn the fake word instead.",
         "Each night if no one was condemned, all Ghosts must choose one player. Then all players will give clues about their word starting with that player.",
@@ -4407,11 +4407,11 @@ const roleData = {
       alignment: "Cult",
       tags: ["Ghost", "Mini-game", "Dusk", "Pregame Actions"],
       description: [
-        "Before the game starts, chooses a real word and a fake word.",
-        "Forces a Ghost to spawn in closed setups.",
+        "Before the game starts, you choose a real word and a fake word.",
         "If a Cult member guesses the real word, Village will have a chance to guess who the Poet is.",
         "On a correct guess, Village Wins and Cult loses.",
-        "Appears as villager on death.",
+        "You appear as Villager when you die.",
+        "Forces a Ghost to spawn in closed setups.",
         "Does not attend the cult meeting.",
       ],
       RolesMadeBy: ["Ghost"],
@@ -4422,9 +4422,9 @@ const roleData = {
       category: "Chaos",
       tags: ["Win Con", "Condemn Interaction", "Speaking", "Expert"],
       description: [
-        'If a Reaper says "I claim Reaper and choose (Player Name)" within the first minute of the day.',
+        'If you say "I claim Reaper and choose (Player Name)" within the first minute of the day.',
         "If the chosen player survives until the end of the day, that player's team wins.",
-        "A Reaper cannot choose themselves.",
+        "You cannot choose yourself.",
       ],
     },
     Devotee: {
@@ -4432,8 +4432,8 @@ const roleData = {
       category: "Chaos",
       tags: ["Conversion", "Demonic Interaction", "Basic"],
       description: [
-        "If a Demonic or Vital Cult role dies, the Devotee will convert to that role.",
-        "If there are less then 5 players alive, the Devotee has no ability.",
+        "If a Demonic or Vital Cult role dies, you will convert to that role.",
+        "If there are less then 5 players alive, you have no ability.",
       ],
     },
     Zealot: {
@@ -4465,7 +4465,7 @@ const roleData = {
         "Expert",
       ],
       description: [
-        "Each night, can choose to visit one player and corrupt their items.",
+        "Each night, you can choose to visit one player and corrupt their items.",
         "Corrupted Guns, Rifles, and Knives will convert instead of killing.",
         "Corrupted Armor will make an Attacker Insane.",
         "Corrupted Tracts will convert a player to a random Cult role if converted.",
@@ -4498,7 +4498,7 @@ const roleData = {
         "Expert",
       ],
       description: [
-        "Each night, can choose to visit one player and give them a corrupted item.",
+        "Each night, you can choose to visit one player and give them a corrupted item.",
         "Corrupted Guns, Rifles, and Knives will convert instead of killing.",
         "Corrupted Armor will make an Attacker Insane.",
         "Corrupted Tracts will convert a player to a random Cult role if converted.",
@@ -4519,7 +4519,7 @@ const roleData = {
       category: "Chaos",
       tags: ["Extra Lives", "Protective", "Killing", "Visiting", "Advanced"],
       description: [
-        "Each night, can choose to visit two Cult-aligned players and kill the first player and give second player an extra life.",
+        "Each night, you can choose to visit two Cult-aligned players and kill the first player and give second player an extra life.",
       ],
       nightOrder: [["Kill to grant extra life", PRIORITY_KILL_SPECIAL - 3]],
     },
@@ -4529,8 +4529,8 @@ const roleData = {
       category: "Demon",
       tags: ["Killing", "Conversion", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and kill them.",
-        "If an Imp kills themselves, a random Cult-aligned player becomes an Imp.",
+        "Each night, you can choose to visit one player and kill them.",
+        "If you kill yourself, a random Cult-aligned player becomes an Imp.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_SPECIAL]],
     },
@@ -4547,8 +4547,8 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Each night, can choose to visit one player and kill them.",
-        "The first time a Jiangshi attacks a Banished Role, the Jiangshi will die instead and the Banished Player will be converted to Jiangshi.",
+        "Each night, you can choose to visit one player and kill them.",
+        "The first time a Jiangshi attacks a Banished Role, that Jiangshi will die instead and the Banished role will be converted to Jiangshi.",
         "In closed setups, replaces 1 non-Banished Village role with a Banished role.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_SPECIAL]],
@@ -4565,8 +4565,8 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Each night, can choose to visit one player and kill them.",
-        `If the Necromancer kills a Cult-aligned player, that player will gain the Transcendent modifier and make one of their non-banished Village-aligned neighbors "Delirious".`,
+        "Each night, you can choose to visit one player and kill them.",
+        `If you kill a Cult-aligned player, that player will gain the Transcendent modifier and make one of their non-banished Village-aligned neighbors "Delirious".`,
         deliriumDef,
         "In closed setups, replaces 1 Banished role with a non-Banished Village role.",
       ],
@@ -4578,8 +4578,8 @@ const roleData = {
       category: "Demon",
       tags: ["Killing", "Delirium", "Visiting", "Advanced"],
       description: [
-        "Each night, can choose to visit one player and kill them.",
-        `If that player survives, they will become "Delirious".`,
+        "Each night, you can choose to visit one player and kill them.",
+        `If a player you attack survives, they will become "Delirious".`,
         deliriumDef,
         `If a Lamia attacks a "Delirious" player, that player will die even if protected.`,
       ],
@@ -4591,9 +4591,9 @@ const roleData = {
       tags: ["Killing", "Win Con", "Deception", "Visiting", "Advanced"],
       tagsHidden: ["No Investigate"],
       description: [
-        "Each night, can choose to visit one player and kill them.",
-        "While alive, most information created by Village roles is made false.",
-        "If no one is condemned while Nyarlathotep is alive, the Cult wins.",
+        "Each night, you can choose to visit one player and kill them.",
+        "While you are alive, all information created by Village roles is made false.",
+        "Each day, if no one was condemned, the Cult wins.",
       ],
       SpecialInteractions: {
         Mayor: [
@@ -4607,10 +4607,10 @@ const roleData = {
       category: "Demon",
       tags: ["Killing", "Delirium", "Poison", "Visiting", "Advanced"],
       description: [
-        `Each night, can choose to visit one player and make them "Delirious" and "Poison" them.`,
+        `Each night, you can choose to visit one player and make them "Delirious" and "Poison" them.`,
         deliriumDef,
         poisonDef,
-        "Player's Poisoned by a Puca will not be told they were poisoned.",
+        "Player's Poisoned by you will not be told they were poisoned.",
       ],
       nightOrder: [
         ["Give Delirium and Poison", PRIORITY_NIGHT_ROLE_BLOCKER + 3],
@@ -4629,9 +4629,9 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Each night, can choose to visit one player and kill them.",
-        `A Satyr's starting neighbors are "Delirious". Neighbors whose roles are banished or not village aligned are skipped over.`,
-        `If a Satyr's starting neighbors stop being "Delirious", they will become "Delirious" the next night.`,
+        "Each night, you can choose to visit one player and kill them.",
+        `Your starting neighbors are "Delirious". Neighbors whose roles are banished or not village aligned are skipped over.`,
+        `If your starting neighbors stop being "Delirious", they will become "Delirious" the next night.`,
         deliriumDef,
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
@@ -4648,11 +4648,11 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Each night, can choose to visit one player and kill them.",
-        `On the first night, must choose to visit one player and make them their vessel and "Delirious".`,
-        `If a Lich's vessel stops being "Delirious", they will become "Delirious" the next night.`,
+        "Each night, you can choose to visit one player and kill them.",
+        `On your first night, you must choose to visit one player and make them your vessel and "Delirious".`,
+        `If your vessel stops being "Delirious", they will become "Delirious" the next night.`,
         deliriumDef,
-        "A Lich dies if and only if their Vessel dies.",
+        "You can only die if and only if your Vessel dies.",
       ],
       nightOrder: [
         ["Kill", PRIORITY_KILL_DEFAULT + 1],
@@ -4671,9 +4671,9 @@ const roleData = {
         "Advanced",
       ],
       description: [
-        "Each night, can choose to visit two players and kill them.",
-        "Players killed by a Shoggoth have a chance of reviving the following night.",
-        "Shoggoth will only revive a player once per game.",
+        "Each night, you can choose to visit two players and kill them.",
+        "Players killed by you have a chance of reviving the following night.",
+        //"Shoggoth will only revive a player once per game.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 2]],
       graveyardParticipation: "all",
@@ -4683,9 +4683,9 @@ const roleData = {
       category: "Demon",
       tags: ["Killing", "Extra Night Deaths", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and kill them.",
-        "Can choose to charge their kill instead of killing.",
-        "If a Snallygaster chooses to charge kill, They can choose to visit three players and kill them the next night.",
+        "Each night, you can choose to visit one player and kill them.",
+        "You can choose to charge their kill instead of killing.",
+        "If you chooses to charge kill, They can choose to visit three players and kill them the next night.",
       ],
       nightOrder: [
         ["Kill", PRIORITY_KILL_DEFAULT + 1],
@@ -4705,11 +4705,11 @@ const roleData = {
         "Expert",
       ],
       description: [
-        "Each night, if no one was condemned, can choose to visit one player and kill them. (Even if dead)",
-        "Will count towards Cult Majority when dead and not exorcised.",
-        "If a Poltergeist is Exorcised, All Cult-aligned players die.",
+        "Each night, if no one was condemned, you can choose to visit one player and kill them. (Even if dead)",
+        "You will count towards Cult Majority when dead and not exorcised.",
+        //"If a Poltergeist is Exorcised, All Cult-aligned players die.",
         "If it is possible for a Poltergeist to spawn in a setup, Dead players can be voted in village meeting.",
-        "If a dead Poltergeist is condemned in the Village Meeting, they are exorcised.",
+        "If you are condemned when dead, you are exorcised.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT]],
       graveyardParticipation: "self",
@@ -4726,11 +4726,11 @@ const roleData = {
         "Mini-Game",
       ],
       description: [
-        "Each night, may choose three players.",
+        "Each night, you may choose three players.",
         "Each of the selected players will choose to live or die at dawn.",
-        "The Warden will visit players that choose die and kill them.",
-        "The Warden will visit players that choose live and revive them.",
-        "If all three players choose live they the Warden will visit and kill all of them.",
+        "You will visit players that choose die and kill them.",
+        "You will visit players that choose live and revive them.",
+        "If all three players choose live they you will visit and kill all of them.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT + 1]],
       graveyardParticipation: "all",
@@ -4740,10 +4740,10 @@ const roleData = {
       category: "Demon",
       tags: ["Killing", "Voting", "Setup Changes", "Visiting", "Expert"],
       description: [
-        "Vampire votes only count if a Village-aligned player votes with them.",
+        "Your votes only counts if a Village-aligned player votes with you.",
         "Most players including all non-Village roles are Vampires",
-        "Vampires will appear as random Non-Vampire evil roles on Investigations.",
-        "Each Night, One Vampire must choose to visit one player and kill them.",
+        "You will appear as Non-Vampire evil role to information roles.",
+        "Each Night, one Vampire must choose to visit one player and kill them.",
         "Vampires can only select Vampires for killing until 1 remains.",
         "Cult can only win when one or fewer Village players are alive.",
       ],
@@ -4764,8 +4764,8 @@ const roleData = {
       alignment: "Cult",
       tags: ["Condemn", "Protective", "Condemn Immune", "Visiting", "Advanced"],
       description: [
-        "Each night, can choose to visit one player and protect them from being condemned the following day",
-        "Cannot choose to visit the player they visited the previous night",
+        "Each night, you can choose to visit one player and protect them from being condemned the following day",
+        "You cannot choose to visit the player you visited the previous night",
       ],
       nightOrder: [["Make Safe from Condemns", PRIORITY_EFFECT_GIVER_DEFAULT]],
     },
@@ -4781,7 +4781,7 @@ const roleData = {
       alignment: "Cult",
       tags: ["Information", "Visits", "Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player and learn who they visited and who visited them.",
+        "Each night, you can choose to visit one player and learn who they visited and who visited them.",
       ],
       nightOrder: [["Track and Watch", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
@@ -4789,7 +4789,7 @@ const roleData = {
       alignment: "Cult",
       tags: ["Graveyard", "Dead", "Revive", "Visiting", "Voting", "Garbage"],
       description: [
-        "Each night, can choose to visit one dead player and revive them as a tree.",
+        "Each night, you can choose to visit one dead player and revive them as a tree.",
         "Trees are immune to most ways of dying.",
         "Trees cannot vote.",
       ],
@@ -4799,7 +4799,7 @@ const roleData = {
     Sorcerer: {
       alignment: "Cult",
       tags: ["Events", "Advanced"],
-      description: ["Each night, can choose an Event, that Event occurs."],
+      description: ["Each night, you can choose an Event, that Event occurs."],
       SpecialInteractionsModifiers: {
         Refined: ["Cannot use Banished Events."],
         Unrefined: ["Cannot use non-Banished Events."],
@@ -4810,7 +4810,7 @@ const roleData = {
       category: "Night-acting",
       tags: ["Visiting", "Basic"],
       description: [
-        "Each night, can choose to visit one player.",
+        "Each night, you can choose to visit one player.",
         "Bogeyman roles with the Scatterbrained modifier appear as this role to self.",
       ],
       nightOrder: [["Visit", PRIORITY_SUPPORT_VISIT_DEFAULT]],
