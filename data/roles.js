@@ -787,7 +787,7 @@ const roleData = {
       ],
       graveyardParticipation: "all",
     },
-    Carpenter: {
+    Trucker: {
       alignment: "Village",
       category: "Gifting",
       tags: ["Items", "Visiting", "Basic"],
