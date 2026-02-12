@@ -707,7 +707,7 @@ const modifierData = {
       category: "Visits",
       internal: ["BlockTargets"],
       tags: ["Visits", "Role Blocker"],
-      description: "When you visit a player with your secondary action, that player will have their night actions blocked.",
+      description: "When you visit a player, that player will have their night actions blocked.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Medical: {
@@ -715,7 +715,7 @@ const modifierData = {
       internal: ["NightSaveVisits"],
       tags: ["Visits", "Killing"],
       description:
-        "When you visit a player with your secondary action, that player will be protected from death.",
+        "When you visit a player, that player will be protected from death.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Bloodthirsty"],
     },
@@ -723,7 +723,7 @@ const modifierData = {
       category: "Visits",
       internal: ["ModifierBloodthirsty"],
       tags: ["Visits", "Killing"],
-      description: "When you visit a player with your secondary action, that player will be killed.",
+      description: "When you visit a player, that player will be killed.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Medical"],
     },
@@ -731,7 +731,7 @@ const modifierData = {
       category: "Visits",
       internal: ["CauseBleedingToTargets"],
       tags: ["Visits", "Bleeding", "Effect"],
-      description: `When you visit a player with your secondary action, that player will start "Bleeding". ${bleedingDef}`,
+      description: `When you visit a player, that player will start "Bleeding". ${bleedingDef}`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
@@ -748,7 +748,7 @@ const modifierData = {
       category: "Visits",
       internal: ["CheckSuccessfulVisit"],
       tags: ["Information", "Visits"],
-      description: "When you visit a player with your secondary action, you learn if the visit was successful or if it was blocked.",
+      description: "When you visit a player, you learn if the visit was successful or if it was blocked.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Peeking: {
@@ -756,7 +756,7 @@ const modifierData = {
       internal: ["WatchPlayerBoolean"],
       tags: ["Information", "Visits"],
       description:
-        "When you visit a player with your secondary action, you learn if that player was visited by another player.",
+        "When you visit a player, you learn if that player was visited by another player.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Clumsy: {
@@ -764,7 +764,7 @@ const modifierData = {
       internal: ["RevealRoleToTarget"],
       tags: ["Information", "Visits", "Roles"],
       description:
-        "When you visit a player with your secondary action, that player learns that your role visited them.",
+        "When you visit a player, that player learns that your role visited them.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Noisy: {
@@ -772,7 +772,7 @@ const modifierData = {
       internal: ["RevealNameToTarget"],
       tags: ["Information", "Visits"],
       description:
-        "When you visit a player with your secondary action, that player learns that you visited them.",
+        "When you visit a player, that player learns that you visited them.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
@@ -782,7 +782,7 @@ const modifierData = {
       internal: ["Bouncy"],
       tags: ["Redirection"],
       description:
-        "If possible, night kills targeting this player will be redirected to another player who is not the killer.",
+        "If possible, night kills targeting you will be redirected to another player who is not the killer.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Intangible"],
     },
@@ -791,7 +791,7 @@ const modifierData = {
       internal: ["BouncyOnce"],
       tags: ["Redirection"],
       description:
-        "If possible on the first night, night kills targeting this player will be redirected to another player who is not the killer.",
+        "If possible on the first night, night kills targeting you will be redirected to another player who is not the killer.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Bouncy"],
     },
@@ -800,14 +800,14 @@ const modifierData = {
       internal: ["Magnetic"],
       tags: ["Redirection"],
       description:
-        "If possible, night kills will be redirected onto this player if someone with the same alignment as them is targeted.",
+        "If possible, night kills will be redirected onto you if someone with the same alignment as you is targeted.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Random: {
       category: "Visits",
       internal: ["TargetRandom"],
       tags: ["Redirection", "RNG"],
-      description: "Each night is redirected onto a random player.",
+      description: "Each night, you are redirected onto a random player.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Narcissistic: {
@@ -815,7 +815,7 @@ const modifierData = {
       internal: ["TargetSelf50Percent"],
       tags: ["Redirection", "RNG"],
       description:
-        "Each night has 50% chance to be redirected onto themselves.",
+        "Each night, you have a 50% chance to be redirected onto yourself.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     //Meeting Mods
@@ -824,7 +824,7 @@ const modifierData = {
       internal: ["OneShot"],
       tags: ["X-Shot"],
       description:
-        "Can only perform secondary actions [X] time(s). Involuntary actions are not affected.",
+        "You can only perform secondary actions [X] time(s). Involuntary actions are not affected.",
       eventDescription: "This Event will only occur once.",
       allowDuplicate: true,
     },
@@ -833,7 +833,7 @@ const modifierData = {
       internal: ["Even"],
       tags: ["Even", "Meetings"],
       description:
-        "Can only perform secondary actions on even days and nights. Involuntary actions are not affected.",
+        "You can only perform secondary actions on even days and nights. Involuntary actions are not affected.",
       eventDescription: "This Event will only occur on Even nights.",
       incompatible: ["Odd", "Delayed"],
     },
@@ -842,7 +842,7 @@ const modifierData = {
       internal: ["Odd"],
       tags: ["Odd", "Meetings"],
       description:
-        "Can only perform secondary actions on odd days and nights. Involuntary actions are not affected.",
+        "You can only perform secondary actions on odd days and nights. Involuntary actions are not affected.",
       eventDescription: "This Event will only occur on Odd nights.",
       incompatible: ["Even"],
     },
@@ -851,7 +851,7 @@ const modifierData = {
       internal: ["Delayed"],
       tags: ["Delayed", "Meetings"],
       description:
-        "Cannot perform secondary actions for the first [X] day(s) and night(s). Involuntary actions are not affected.",
+        "You cannot perform secondary actions for the first [X] day(s) and night(s). Involuntary actions are not affected.",
       eventDescription: "This Event will not occur on the first night.",
       incompatible: ["Suspended"],
       allowDuplicate: true,
@@ -861,7 +861,7 @@ const modifierData = {
       internal: ["Suspended"],
       tags: ["Suspended", "Meetings"],
       description:
-        "Can only perform secondary actions for the first [X] day(s) and night(s). Involuntary actions are not affected.",
+        "You can only perform secondary actions for the first [X] day(s) and night(s). Involuntary actions are not affected.",
       eventDescription: "This Event can only occur on the first night.",
       allowDuplicate: true,
       incompatible: ["Delayed"],
@@ -872,7 +872,7 @@ const modifierData = {
       category: "Visits",
       internal: ["FairModifier"],
       tags: ["Fair", "Visits"],
-      description: "Cannot target a previously targeted player.",
+      description: "You cannot target a player for targeted previously.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Nonconsecutive", "Consecutive"],
     },
@@ -880,7 +880,7 @@ const modifierData = {
       category: "Visits",
       internal: ["Consecutive"],
       tags: ["Visits", "Consecutive"],
-      description: "Can only target players they targeted previously.",
+      description: "You can only target players you targeted previously.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Fair", "Nonconsecutive"],
     },
@@ -888,7 +888,7 @@ const modifierData = {
       category: "Visits",
       internal: ["Nonconsecutive"],
       tags: ["Visits", "Nonconsecutive"],
-      description: "Cannot target a player they targeted the previous night",
+      description: "You cannot target a player you targeted the previous night",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Fair", "Consecutive"],
     },
@@ -896,14 +896,14 @@ const modifierData = {
       category: "Visits",
       internal: ["CanVisitSelf"],
       tags: ["Visits", "Role Blocker", "Selfish"],
-      description: "Can target themselves.",
+      description: "You secondary actions can be used yourself.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Liminal: {
       category: "Visits",
       internal: ["VisitDeadOrAlive"],
       tags: ["Visits", "Dead", "Liminal"],
-      description: "Secondary actions can be used on dead or living players.",
+      description: "Your secondary actions can be used on dead or living players.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Morbid"],
     },
@@ -911,7 +911,7 @@ const modifierData = {
       category: "Visits",
       internal: ["VisitOnlyDead"],
       tags: ["Visits", "Dead", "Morbid"],
-      description: "Secondary actions can only be used on dead players.",
+      description: "Your secondary actions can only be used on dead players.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Liminal"],
     },
@@ -920,7 +920,7 @@ const modifierData = {
       category: "Visits",
       internal: ["ActAliveOrDead"],
       tags: ["Dead", "Graveyard", "Transcendent", "Graveyard Participation"],
-      description: "Can perform secondary actions while either alive or dead.",
+      description: "You can perform secondary actions while either alive or dead.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Restless", "Vengeful", "Immolated"],
     },
@@ -928,7 +928,7 @@ const modifierData = {
       category: "Visits",
       internal: ["ActWhileDead"],
       tags: ["Dead", "Graveyard", "Restless", "Graveyard Participation"],
-      description: "Can only perform secondary actions while dead.",
+      description: "You can only perform secondary actions while dead.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Transcendent", "Vengeful", "Immolated"],
     },
@@ -936,7 +936,7 @@ const modifierData = {
       category: "Visits",
       internal: ["ActAfterNightKilled"],
       tags: ["Graveyard", "Vengeful", "Graveyard Participation"],
-      description: "Can perform secondary actions after being killed at night",
+      description: "You can only perform secondary actions after being killed at night",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Transcendent", "Restless", "Immolated"],
     },
@@ -944,7 +944,7 @@ const modifierData = {
       category: "Visits",
       internal: ["ActAfterCondemned"],
       tags: ["Graveyard", "Vengeful", "Graveyard Participation"],
-      description: "Can perform secondary actions after being condemned.",
+      description: "You can only perform secondary actions after being condemned.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Transcendent", "Restless", "Vengeful"],
     },
@@ -954,7 +954,7 @@ const modifierData = {
       internal: ["Vain"],
       tags: ["Visits", "Killing", "Alignments", "Self Kill"],
       description:
-        "If this player visits a player of the same alignment, they die.",
+        "If you visit a player of the same alignment, you die.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Weak"],
     },
@@ -963,7 +963,7 @@ const modifierData = {
       internal: ["Weak"],
       tags: ["Visits", "Killing", "Alignments", "Self Kill"],
       description:
-        "If this player visits a player of the opposite alignment, they die.",
+        "If you visit a player of the opposite alignment, you die.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Vain"],
     },
@@ -971,7 +971,7 @@ const modifierData = {
       category: "Visits",
       internal: ["Regretful"],
       tags: ["Killing", "Visits", "Self Kill"],
-      description: "Will be killed if their target was killed.",
+      description: "If you visit a player who is killed, you die.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Sacrificial: {
@@ -979,14 +979,14 @@ const modifierData = {
       internal: ["Sacrificial"],
       tags: ["Sacrificial", "Killing", "Self Kill"],
       description:
-        "Will sacrifice themselves and die, if they ever visit another player.",
+        "When you visit a player, you die.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Fragile: {
       category: "Visits",
       internal: ["DieIfVisited"],
       tags: ["Killing", "Visits", "Self Kill"],
-      description: "Will be killed if visited.",
+      description: "If you are visited, you die.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
@@ -996,7 +996,7 @@ const modifierData = {
       internal: ["BlockedIfKilled"],
       tags: ["Block Self", "Death"],
       description:
-        "If killed at night, their secondary actions will be blocked.",
+        "If killed at night, your secondary actions will be blocked..",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Sorrowful"],
     },
@@ -1005,7 +1005,7 @@ const modifierData = {
       internal: ["BlockedUnlessKilled"],
       tags: ["Block Self", "Death"],
       description:
-        "Unless killed at night, their secondary actions will be blocked.",
+        "Unless killed at night, your secondary actions will be blocked..",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Fatal"],
     },
@@ -1113,7 +1113,7 @@ const modifierData = {
       internal: ["GuessRoleOrGetBlocked"],
       tags: ["Self Block"],
       description:
-        "Each night, you must choose a role. Unless visiting a player with that role, your secondary actions will be blocked.",
+        "Each night, you must choose a role. Unless you visit a player with that role, your secondary actions will be blocked.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Choosy"],
     },
@@ -1122,7 +1122,7 @@ const modifierData = {
       internal: ["GuessRoleToGetBlocked"],
       tags: ["Self Block"],
       description:
-        "Each night, you must choose a role. If visiting a player with that role, your secondary actions will be blocked.",
+        "Each night, you must choose a role. If you visit a player with that role, your secondary actions will be blocked.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Picky"],
     },
@@ -1132,21 +1132,21 @@ const modifierData = {
       internal: ["BlockIfVisited"],
       tags: ["Visits", "Block Self"],
       description:
-        "If visited during the night, blocks the player's night action.",
+        "If you are visited, your secondary actions will be blocked.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Fearful: {
       category: "Visits",
       internal: ["BlockedIfScary"],
       tags: ["Self Block"],
-      description: "Actions will be Blocked if a Scary role is alive.",
+      description: "If a Scary role is alive, your secondary actions will be blocked.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Scary: {
       category: "Visits",
       internal: ["BlockedFearful"],
       tags: ["Self Block"],
-      description: "Will Block any Fearful roles when alive.",
+      description: "When you are alive, all Fearful roles will have their secondary actions will be blocked.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
@@ -1264,7 +1264,7 @@ const modifierData = {
       category: "Appearance",
       internal: ["AppearAsVillagerOnDeath"],
       tags: ["Villager", "Deception"],
-      description: "You appears as Villager when you die.",
+      description: "You appear as Villager when you die.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Shady", "Faceless", "Suspect", "Phony", "Camouflaged"],
     },
@@ -1272,7 +1272,7 @@ const modifierData = {
       category: "Appearance",
       internal: ["AppearAsVillagePROnDeath"],
       tags: ["Deception"],
-      description: "You appears as Village power role when you die.",
+      description: "You appear as Village power role when you die.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: [
         "Shady",
