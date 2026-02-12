@@ -1780,6 +1780,7 @@ const roleData = {
       tags: ["Voting", "Advanced"],
       description: [
         "All votes for whoever you are voting for do not count.",
+        "If less then 4 players are able to vote, you have no ability.",
       ],
     },
     Magistrate: {
@@ -5171,15 +5172,6 @@ const roleData = {
         "Wins if the Host chooses for them to win.",
       ],
     },
-    Siren: {
-      alignment: "Independent",
-      tags: ["Killing", "Visits", "Reflexive", "Advanced"],
-      description: [
-        "Each night, can choose one player and kill them if they visit the Siren.",
-        "Wins if successfully kills two players.",
-      ],
-      nightOrder: [["Kill Beckoned", PRIORITY_KILL_SIREN]],
-    },
     Fisherman: {
       alignment: "Independent",
       category: "Gifting",
@@ -5799,6 +5791,16 @@ const roleData = {
         "Wins if four polarised players die or if majority is attained.",
       ],
       nightOrder: [["Polarize", PRIORITY_EFFECT_GIVER_EARLY]],
+    },
+    Siren: {
+      alignment: "Independent",
+      tags: ["Killing", "Visit Interaction", "Hostile", "Reflexive", "Advanced", "Visiting"],
+      description: [
+        "Each night, you can choose to visit one player and kill them if they visit you.",
+        "If you kill a player, you gain a point.",
+        "If have 2 points or you are alive in final 2, you win.",
+      ],
+      nightOrder: [["Kill Beckoned", PRIORITY_KILL_SIREN]],
     },
     Samurai: {
       alignment: "Independent",
