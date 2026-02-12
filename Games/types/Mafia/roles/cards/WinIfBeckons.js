@@ -9,7 +9,7 @@ module.exports = class WinIfBeckons extends Card {
       priority: PRIORITY_WIN_CHECK_DEFAULT,
       againOnFinished: true,
       check: function (counts, winners, aliveCount, confirmedFinished) {
-        if (this.player.alive && this.player.role.data.beckoned >= 2) {
+        if (this.player.alive && (this.player.role.data.beckoned >= 2 || aliveCount == 2)) {
           winners.addPlayer(this.player, this.name);
         }
       },
