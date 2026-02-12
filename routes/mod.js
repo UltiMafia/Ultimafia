@@ -763,7 +763,7 @@ router.post("/unban", async (req, res) => {
 router.post("/whitelist", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.body.userId);
+    var userIdToActOn = String(req.body.userId || "").trim();
     var perm = "whitelist";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
@@ -775,7 +775,7 @@ router.post("/whitelist", async (req, res) => {
     await models.User.updateOne(
       { id: userIdToActOn },
       { $set: { flagged: false } }
-    );
+    ).exec();
     await redis.cacheUserPermissions(userIdToActOn);
 
     routeUtils.createModAction(userId, "Whitelist", [userIdToActOn]);
@@ -879,7 +879,7 @@ router.post("/givePerms", async (req, res) => {
 router.post("/blacklist", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.body.userId);
+    var userIdToActOn = String(req.body.userId || "").trim();
     var perm = "whitelist";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
@@ -912,7 +912,7 @@ router.post("/blacklist", async (req, res) => {
     await models.User.updateOne(
       { id: userIdToActOn },
       { $set: { flagged: true } }
-    );
+    ).exec();
     await redis.cacheUserPermissions(userIdToActOn);
 
     routeUtils.createModAction(userId, "Blacklist", [userIdToActOn]);
@@ -942,15 +942,7 @@ router.get("/ips", async (req, res) => {
       res.send("User does not exist.");
       return;
     }
-    var response = user.toJSON();
-
-    for (var i = 0; i < response.ip.length; i++) {
-      response.ip[
-        i
-      ] = `<a target="_blank" rel="noopener noreferrer nofollow" href="https://www.ipqualityscore.com/free-ip-lookup-proxy-vpn-test/lookup/${response.ip[i]}">${response.ip[i]}</a>`;
-    }
-
-    res.send(response.ip);
+    res.send(user.ip || []);
   } catch (e) {
     logger.error(e);
     res.status(500);
@@ -982,12 +974,44 @@ router.get("/alts", async (req, res) => {
       ip: { $elemMatch: { $in: ips } },
     }).select("id name -_id");
 
-    // routeUtils.createModAction(userId, "Get Alt Accounts", [userIdToActOn]);
     res.send(users);
   } catch (e) {
     logger.error(e);
     res.status(500);
     res.send("Error loading alt accounts.");
+  }
+});
+
+router.get("/flagged", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var userIdToActOn = String(req.query.userId || "").trim();
+    var perm = "viewFlagged";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    var user = await models.User.findOne({
+      id: userIdToActOn,
+    }).select("flagged");
+
+    if (!user) {
+      res.status(500);
+      res.send("User does not exist.");
+      return;
+    }
+
+    var activeIpFlagBan = await models.Ban.findOne({
+      userId: userIdToActOn,
+      type: "ipFlag",
+      $or: [{ expires: 0 }, { expires: { $gt: Date.now() } }],
+    }).select("_id");
+
+    res.send({ flagged: Boolean(user.flagged || activeIpFlagBan) });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error loading flagged status.");
   }
 });
 
