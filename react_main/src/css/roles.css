@@ -209,43 +209,43 @@
 }
 
 .digit.digit-0 {
-  background-image: url("/src/images/digits/0.webp");
+  background-image: url("/src/images/digits/0.png");
 }
 
 .digit.digit-1 {
-  background-image: url("/src/images/digits/1.webp");
+  background-image: url("/src/images/digits/1.png");
 }
 
 .digit.digit-2 {
-  background-image: url("/src/images/digits/2.webp");
+  background-image: url("/src/images/digits/2.png");
 }
 
 .digit.digit-3 {
-  background-image: url("/src/images/digits/3.webp");
+  background-image: url("/src/images/digits/3.png");
 }
 
 .digit.digit-4 {
-  background-image: url("/src/images/digits/4.webp");
+  background-image: url("/src/images/digits/4.png");
 }
 
 .digit.digit-5 {
-  background-image: url("/src/images/digits/5.webp");
+  background-image: url("/src/images/digits/5.png");
 }
 
 .digit.digit-6 {
-  background-image: url("/src/images/digits/6.webp");
+  background-image: url("/src/images/digits/6.png");
 }
 
 .digit.digit-7 {
-  background-image: url("/src/images/digits/7.webp");
+  background-image: url("/src/images/digits/7.png");
 }
 
 .digit.digit-8 {
-  background-image: url("/src/images/digits/8.webp");
+  background-image: url("/src/images/digits/8.png");
 }
 
 .digit.digit-9 {
-  background-image: url("/src/images/digits/9.webp");
+  background-image: url("/src/images/digits/9.png");
 }
 
 /***********
@@ -701,6 +701,10 @@
 
 .role-icon-vivid-Mafia-Medium {
   background-image: url("/src/images/roles/village/medium-vivid.png");
+}
+
+.role-icon-vivid-Mafia-Trucker {
+  background-image: url("/src/images/roles/village/trucker-vivid.png");
 }
 
 .role-icon-noir-Mafia-Medium {
