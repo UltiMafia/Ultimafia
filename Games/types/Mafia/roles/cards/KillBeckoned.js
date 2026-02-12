@@ -10,7 +10,7 @@ module.exports = class KillBeckoned extends Card {
         states: ["Night"],
         flags: ["voting"],
         action: {
-          labels: ["kill", "hidden"],
+          labels: ["kill"],
           priority: PRIORITY_KILL_SIREN,
           role: this.role,
           run: function () {
