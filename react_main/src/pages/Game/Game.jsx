@@ -84,6 +84,7 @@ import {
   Paper,
   Popover,
   useMediaQuery,
+  Alert,
 } from "@mui/material";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 import { getSetupBackgroundColor } from "../Play/LobbyBrowser/gameRowColors.js";
@@ -118,6 +119,7 @@ const emoteMap = {
 
 const NO_ONE_NAME = "no one";
 const MAGUS_NAME = "Declare Magus Game";
+const UNKNOWN_NAME = "???";
 
 export const GameTypeContext = createContext({
   singleState: false,
@@ -755,6 +757,9 @@ export default function Game() {
           msg: `⚠ You are vegging!`,
           timestamp: new Date().getTime(),
         });
+      }
+      else {
+        stopAudio("urgent");
       }
     });
 
@@ -1489,9 +1494,17 @@ export function TextMeetingLayout() {
   }, []);
 
   function doAutoScroll() {
-    if (autoScroll && speechDisplayRef.current)
-      speechDisplayRef.current.scrollTop =
-        speechDisplayRef.current.scrollHeight;
+    const container = speechDisplayRef.current;  
+    if (autoScroll && container) {
+      requestAnimationFrame(() => {
+        if (container) {
+          const lastChild = container.lastElementChild;
+          if (lastChild && typeof lastChild.scrollIntoView === "function") {  
+            lastChild.scrollIntoView();
+          }
+        }
+      });
+    }
   }
 
   function onTabClick(tabId) {
@@ -2456,6 +2469,7 @@ function SpeechInput(props) {
   const [typingIn, setTypingIn] = useState();
   const [clearTyping, setClearTyping] = useState();
   const [checkboxOptions, setCheckboxOptions] = useState({});
+  const [isDisconnected, setIsDisconnected] = useState(false);
 
   var placeholder = "";
 
@@ -2521,6 +2535,32 @@ function SpeechInput(props) {
       socket.send("typing", { meetingId: typingIn, isTyping: false });
     }
   }, [lastTyped]);
+
+  const timeoutRef = useRef(null);
+  useEffect(() => {
+    if (socket.on) {
+      socket.on("p", () => {
+        setIsDisconnected(false);
+
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = setTimeout(() => {
+          setIsDisconnected(true);
+        }, 15000);
+
+        return () => clearTimeout(timeoutRef.current);
+      });
+    }
+  }, [socket]);
+
+  if (isDisconnected) {
+    return (
+      <Alert severity="error" sx={{ m: 1 }}>
+        Disconnected from server. Attempting to reconnect...
+      </Alert>
+    );
+  }
 
   function onSpeechDropdownChange(value) {
     setSpeechDropdownValue(value);
@@ -4457,15 +4497,18 @@ function getTargetDisplay(targets, meeting, players) {
       case "player":
         if (target === "*") target = noOneDisplayName;
         else if (target === "*magus") target = MAGUS_NAME;
+        else if (target === "*unknown") target = UNKNOWN_NAME;
         else if (target) target = players[target].name;
         else target = "";
         break;
       case "boolean":
         if (target === "*") target = "No";
+        else if (target === "*unknown") target = UNKNOWN_NAME;
         else if (!target) target = "";
         break;
       default:
         if (target === "*") target = "None";
+        else if (target === "*unknown") target = UNKNOWN_NAME;
         else if (!target) target = "";
     }
 

@@ -27,7 +27,7 @@ module.exports = class RevealRoleToTarget extends Card {
           );
           info.processInfo();
           var alert = `:mask: You learn that you were targeted by ${info.getInfoRaw()}.`;
-          let visits = this.getVisits(this.actor);
+          let visits = this.getSecondaryActions(this.actor);
           visits.map((v) => v.queueAlert(alert));
         },
       },

@@ -27,7 +27,7 @@ import { Time } from "./Basic";
 import { NameWithAvatar } from "pages/User/User";
 import { UserContext, SiteInfoContext } from "../Contexts";
 import ReportTypology from "./ReportTypology";
-import { violationDefinitions } from "../constants/violations";
+import { useViolations } from "../hooks/useViolations";
 
 export default function ReportDetail({
   report: initialReport,
@@ -46,15 +46,8 @@ export default function ReportDetail({
     offenseNumber: 1,
     notes: "",
   });
-  const [rule, setRule] = useState(report.rule);
-  const [updatingRule, setUpdatingRule] = useState(false);
   const [handlingAppeal, setHandlingAppeal] = useState(false);
   const [appealNotes, setAppealNotes] = useState("");
-
-  // Update rule state when report prop changes
-  useEffect(() => {
-    setRule(report.rule);
-  }, [report.rule]);
 
   // Update report state when initialReport changes
   useEffect(() => {
@@ -67,6 +60,7 @@ export default function ReportDetail({
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
   const navigate = useNavigate();
+  const { violationDefinitions, loading: violationsLoading } = useViolations();
 
   const handleStatusChange = async (newStatus) => {
     try {
@@ -106,8 +100,15 @@ export default function ReportDetail({
     }
 
     const isDismissed = finalRuling.banType === "dismiss";
+    const isWarning = finalRuling.banType === "warning";
 
-    if (!isDismissed) {
+    // Notes are required for all verdict types except dismissals
+    if (!isDismissed && !finalRuling.notes?.trim()) {
+      siteInfo.showAlert("Please enter notes for this verdict.", "error");
+      return;
+    }
+
+    if (!isDismissed && !isWarning) {
       if (!finalRuling.rule) {
         siteInfo.showAlert("Please select a rule (violation type).", "error");
         return;
@@ -124,8 +125,9 @@ export default function ReportDetail({
     try {
       setCompleting(true);
       const res = await axios.post(`/api/mod/reports/${report.id}/complete`, {
-        finalRuling: isDismissed ? null : finalRuling,
+        finalRuling: isDismissed || isWarning ? null : finalRuling,
         dismissed: isDismissed,
+        warning: isWarning,
         notes: finalRuling.notes || "",
       });
       setReport(res.data.report);
@@ -152,29 +154,6 @@ export default function ReportDetail({
       if (onUpdate) onUpdate();
     } catch (e) {
       errorAlert(e);
-    }
-  };
-
-  const handleRuleChange = async (newRule) => {
-    if (newRule === rule) return; // No change needed
-
-    try {
-      setUpdatingRule(true);
-      const res = await axios.post(`/api/mod/reports/${report.id}/rule`, {
-        rule: newRule,
-      });
-      // Update from response if available, otherwise use newRule
-      const updatedRule = res.data?.report?.rule || newRule;
-      setRule(updatedRule);
-      setReport({ ...report, rule: updatedRule });
-      siteInfo.showAlert("Rule updated successfully", "success");
-      if (onUpdate) onUpdate();
-    } catch (e) {
-      errorAlert(e);
-      // Revert to original rule on error
-      setRule(report.rule);
-    } finally {
-      setUpdatingRule(false);
     }
   };
 
@@ -216,13 +195,58 @@ export default function ReportDetail({
             <Stack spacing={2}>
               <Box>
                 <Typography variant="caption" color="textSecondary">
-                  Reporter
+                  {report.reporterInfo?.length > 1 ? "Reporters" : "Reporter"}
                 </Typography>
-                <NameWithAvatar
-                  id={report.reporterId}
-                  name={report.reporterName || report.reporterId}
-                  avatar={report.reporterAvatar}
-                />
+                {report.reporterInfo?.length > 0 ? (
+                  <Stack spacing={1.5}>
+                    {report.reporterInfo.map((r) => (
+                      <Paper key={r.id} variant="outlined" sx={{ p: 1.5 }}>
+                        <NameWithAvatar
+                          id={r.id}
+                          name={r.name || r.id}
+                          avatar={r.avatar}
+                        />
+                        {(r.rule || r.description) && (
+                          <Box sx={{ mt: 1, pl: 0 }}>
+                            {r.rule && (
+                              <Typography variant="body2" color="textSecondary">
+                                Rule: {r.rule}
+                              </Typography>
+                            )}
+                            {r.description && (
+                              <Typography
+                                variant="body2"
+                                sx={{ whiteSpace: "pre-wrap", mt: 0.5 }}
+                              >
+                                {r.description}
+                              </Typography>
+                            )}
+                            {r.submittedAt && (
+                              <Typography
+                                variant="caption"
+                                color="textSecondary"
+                                sx={{ display: "block", mt: 0.5 }}
+                              >
+                                <Time
+                                  millisec={Date.now() - r.submittedAt}
+                                  suffix=" ago"
+                                />
+                              </Typography>
+                            )}
+                          </Box>
+                        )}
+                      </Paper>
+                    ))}
+                  </Stack>
+                ) : (
+                  <>
+                    <NameWithAvatar
+                      id={report.reporterId}
+                      name={report.reporterName || report.reporterId}
+                      avatar={report.reporterAvatar}
+                    />
+                  </>
+                )}
               </Box>
               <Box>
                 <Typography variant="caption" color="textSecondary">
@@ -250,38 +274,25 @@ export default function ReportDetail({
                   </Typography>
                 </Box>
               )}
-              <Box>
-                <Typography color="textSecondary">Rule Broken</Typography>
-                {user.perms?.seeModPanel && report.status !== "complete" ? (
-                  <FormControl fullWidth sx={{ mt: 1 }}>
-                    <Select
-                      value={rule}
-                      onChange={(e) => {
-                        setRule(e.target.value);
-                        handleRuleChange(e.target.value);
-                      }}
-                      disabled={updatingRule}
-                    >
-                      {violationDefinitions.map((r) => (
-                        <MenuItem key={r.name} value={r.name}>
-                          {r.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                ) : (
-                  <Typography>{report.rule}</Typography>
-                )}
-              </Box>
-              {report.description && (
-                <Box>
-                  <Typography variant="caption" color="textSecondary">
-                    Description
-                  </Typography>
-                  <Typography sx={{ whiteSpace: "pre-wrap" }}>
-                    {report.description}
-                  </Typography>
-                </Box>
+              {(!report.reporterInfo || report.reporterInfo.length === 0) && (
+                <>
+                  <Box>
+                    <Typography variant="caption" color="textSecondary">
+                      Rule Broken
+                    </Typography>
+                    <Typography>{report.rule}</Typography>
+                  </Box>
+                  {report.description && (
+                    <Box>
+                      <Typography variant="caption" color="textSecondary">
+                        Description
+                      </Typography>
+                      <Typography sx={{ whiteSpace: "pre-wrap" }}>
+                        {report.description}
+                      </Typography>
+                    </Box>
+                  )}
+                </>
               )}
 
               {/* Appeal Information */}
@@ -322,7 +333,7 @@ export default function ReportDetail({
                           </Typography>
                           <Typography variant="body2">
                             <a
-                              href={`/community/reports/${report.originalReport.id}`}
+                              href={`/policy/reports/${report.originalReport.id}`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
@@ -699,6 +710,9 @@ export default function ReportDetail({
                 <MenuItem value="dismiss">
                   Dismiss Report (No Violation)
                 </MenuItem>
+                <MenuItem value="warning">
+                  Warning (No Violation)
+                </MenuItem>
                 <MenuItem value="site">Site</MenuItem>
                 <MenuItem value="game">Game</MenuItem>
                 <MenuItem value="chat">Chat</MenuItem>
@@ -707,7 +721,7 @@ export default function ReportDetail({
                 <MenuItem value="competitive">Competitive</MenuItem>
               </Select>
             </FormControl>
-            {finalRuling.banType !== "dismiss" && (
+            {finalRuling.banType !== "dismiss" && finalRuling.banType !== "warning" && (
               <>
                 <FormControl fullWidth>
                   <InputLabel>Rule (Violation Type)</InputLabel>
@@ -718,6 +732,7 @@ export default function ReportDetail({
                       setFinalRuling({ ...finalRuling, rule: e.target.value })
                     }
                     required
+                    disabled={violationsLoading}
                   >
                     {violationDefinitions.map((violation) => (
                       <MenuItem key={violation.id} value={violation.name}>
@@ -762,9 +777,12 @@ export default function ReportDetail({
               fullWidth
               multiline
               rows={3}
+              required={finalRuling.banType !== "dismiss"}
               placeholder={
                 finalRuling.banType === "dismiss"
-                  ? "Enter notes about why the report was dismissed..."
+                  ? "Enter notes about why the report was dismissed... (optional)"
+                  : finalRuling.banType === "warning"
+                  ? "Enter notes about the warning..."
                   : "Enter notes about the violation..."
               }
             />

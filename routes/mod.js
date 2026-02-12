@@ -408,35 +408,18 @@ router.post("/assignCredit", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var userIdToCredit = String(req.body.userId);
-    var contributorTypes = req.body.contributorTypes || [];
+    var contributorType = String(req.body.contributorType || "").trim();
     var perm = "changeUsersName";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
-    if (!Array.isArray(contributorTypes)) {
-      res.status(500);
-      res.send("contributorTypes must be an array.");
-      return;
-    }
-
-    if (contributorTypes.length === 0) {
-      res.status(500);
-      res.send("At least one contributor type must be assigned.");
-      return;
-    }
-
-    // Validate contributor types
     const validTypes = ["code", "art", "music", "design"];
-    for (let type of contributorTypes) {
-      if (!validTypes.includes(type)) {
-        res.status(500);
-        res.send(
-          `"${type}" is not a valid contributor type. Valid types: ${validTypes.join(
-            ", "
-          )}`
-        );
-        return;
-      }
+    if (!contributorType || !validTypes.includes(contributorType)) {
+      res.status(500);
+      res.send(
+        `Invalid contributor type. Valid types: ${validTypes.join(", ")}`
+      );
+      return;
     }
 
     var userToUpdate = await models.User.findOne({
@@ -450,24 +433,29 @@ router.post("/assignCredit", async function (req, res) {
       return;
     }
 
-    // Update contributor types
-    userToUpdate.contributorTypes = contributorTypes;
+    // Toggle: if user already has this credit, remove it; otherwise add it
+    const currentTypes = userToUpdate.contributorTypes || [];
+    const hasType = currentTypes.includes(contributorType);
+    if (hasType) {
+      userToUpdate.contributorTypes = currentTypes.filter(
+        (t) => t !== contributorType
+      );
+    } else {
+      userToUpdate.contributorTypes = [...currentTypes, contributorType];
+    }
     await userToUpdate.save();
 
     await redis.cacheUserInfo(userIdToCredit, true);
 
-    var typesStr = contributorTypes.join(", ");
-
-    routeUtils.createModAction(userId, "Assign Credit", [
+    routeUtils.createModAction(userId, "Manage Contributor Credit", [
       userIdToCredit,
-      userToUpdate.name,
-      typesStr,
+      contributorType,
     ]);
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error assigning credit.");
+    res.send("Error updating contributor credit.");
   }
 });
 
@@ -775,7 +763,7 @@ router.post("/unban", async (req, res) => {
 router.post("/whitelist", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.body.userId);
+    var userIdToActOn = String(req.body.userId || "").trim();
     var perm = "whitelist";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
@@ -787,7 +775,7 @@ router.post("/whitelist", async (req, res) => {
     await models.User.updateOne(
       { id: userIdToActOn },
       { $set: { flagged: false } }
-    );
+    ).exec();
     await redis.cacheUserPermissions(userIdToActOn);
 
     routeUtils.createModAction(userId, "Whitelist", [userIdToActOn]);
@@ -891,7 +879,7 @@ router.post("/givePerms", async (req, res) => {
 router.post("/blacklist", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.body.userId);
+    var userIdToActOn = String(req.body.userId || "").trim();
     var perm = "whitelist";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
@@ -916,7 +904,7 @@ router.post("/blacklist", async (req, res) => {
       {
         content: `Your IP address has been flagged as suspicious. Please message an admin or moderator in the chat panel to gain full access to the site. A list of moderators can be found by clicking on this message.`,
         icon: "flag",
-        link: "/community/moderation",
+        link: "/policy/moderation",
       },
       [userIdToActOn]
     );
@@ -924,7 +912,7 @@ router.post("/blacklist", async (req, res) => {
     await models.User.updateOne(
       { id: userIdToActOn },
       { $set: { flagged: true } }
-    );
+    ).exec();
     await redis.cacheUserPermissions(userIdToActOn);
 
     routeUtils.createModAction(userId, "Blacklist", [userIdToActOn]);
@@ -954,15 +942,7 @@ router.get("/ips", async (req, res) => {
       res.send("User does not exist.");
       return;
     }
-    var response = user.toJSON();
-
-    for (var i = 0; i < response.ip.length; i++) {
-      response.ip[
-        i
-      ] = `<a target="_blank" rel="noopener noreferrer nofollow" href="https://www.ipqualityscore.com/free-ip-lookup-proxy-vpn-test/lookup/${response.ip[i]}">${response.ip[i]}</a>`;
-    }
-
-    res.send(response.ip);
+    res.send(user.ip || []);
   } catch (e) {
     logger.error(e);
     res.status(500);
@@ -994,41 +974,7 @@ router.get("/alts", async (req, res) => {
       ip: { $elemMatch: { $in: ips } },
     }).select("id name -_id");
 
-    // routeUtils.createModAction(userId, "Get Alt Accounts", [userIdToActOn]);
     res.send(users);
-  } catch (e) {
-    logger.error(e);
-    res.status(500);
-    res.send("Error loading alt accounts.");
-  }
-});
-
-router.get("/bans", async (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  try {
-    var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.query.userId);
-    var perm = "viewBans";
-
-    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
-
-    var user = await models.User.findOne({
-      id: userIdToActOn,
-      deleted: false,
-    }).select("_id");
-
-    if (!user) {
-      res.status(500);
-      res.send("User does not exist.");
-      return;
-    }
-
-    var bans = await models.Ban.find({
-      userId: userIdToActOn,
-      auto: false,
-    }).select("type expires modId -_id");
-
-    res.send(bans);
   } catch (e) {
     logger.error(e);
     res.status(500);
@@ -1040,13 +986,13 @@ router.get("/flagged", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
-    var userIdToActOn = String(req.query.userId);
+    var userIdToActOn = String(req.query.userId || "").trim();
     var perm = "viewFlagged";
 
     if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
 
     var user = await models.User.findOne({
-      id: userIdToActOn /*, deleted: false*/,
+      id: userIdToActOn,
     }).select("flagged");
 
     if (!user) {
@@ -1055,11 +1001,17 @@ router.get("/flagged", async (req, res) => {
       return;
     }
 
-    res.send(user.flagged);
+    var activeIpFlagBan = await models.Ban.findOne({
+      userId: userIdToActOn,
+      type: "ipFlag",
+      $or: [{ expires: 0 }, { expires: { $gt: Date.now() } }],
+    }).select("_id");
+
+    res.send({ flagged: Boolean(user.flagged || activeIpFlagBan) });
   } catch (e) {
     logger.error(e);
     res.status(500);
-    res.send("Error loading alt accounts.");
+    res.send("Error loading flagged status.");
   }
 });
 
@@ -2455,14 +2407,31 @@ router.get("/reports", async (req, res) => {
 
     const total = await models.Report.countDocuments(filter);
 
-    // Populate user information for reporter, reported user, and assignees
+    // Populate user information for reporter(s), reported user, and assignees
     for (const report of reports) {
       try {
-        // Get reporter info
-        const reporterInfo = await getBasicUserInfo(report.reporterId);
-        if (reporterInfo) {
-          report.reporterName = reporterInfo.name;
-          report.reporterAvatar = reporterInfo.avatar;
+        // Get reporter info - support multiple reporters via getReportReporters
+        const reporters = routeUtils.getReportReporters(report);
+        report.reporterInfo = [];
+        for (const r of reporters) {
+          const info = await getBasicUserInfo(r.userId);
+          report.reporterInfo.push({
+            id: r.userId,
+            name: info?.name || r.userId,
+            avatar: info?.avatar || false,
+          });
+        }
+        // Backwards compat: first reporter as reporterId/reporterName/reporterAvatar
+        if (report.reporterInfo.length > 0) {
+          report.reporterId = report.reporterInfo[0].id;
+          report.reporterName = report.reporterInfo[0].name;
+          report.reporterAvatar = report.reporterInfo[0].avatar;
+        } else if (report.reporterId) {
+          const reporterInfo = await getBasicUserInfo(report.reporterId);
+          if (reporterInfo) {
+            report.reporterName = reporterInfo.name;
+            report.reporterAvatar = reporterInfo.avatar;
+          }
         }
 
         // Get reported user info
@@ -2572,13 +2541,33 @@ router.get("/reports/:id", async (req, res) => {
       }
     }
 
-    // Populate user information for reporter, reported user, and assignees
+    // Populate user information for reporter(s), reported user, and assignees
     try {
-      // Get reporter info
-      const reporterInfo = await getBasicUserInfo(report.reporterId);
-      if (reporterInfo) {
-        report.reporterName = reporterInfo.name;
-        report.reporterAvatar = reporterInfo.avatar;
+      // Get reporter info - support multiple reporters via getReportReporters
+      const reporters = routeUtils.getReportReporters(report);
+      report.reporterInfo = [];
+      for (const r of reporters) {
+        const info = await getBasicUserInfo(r.userId);
+        report.reporterInfo.push({
+          id: r.userId,
+          name: info?.name || r.userId,
+          avatar: info?.avatar || false,
+          rule: r.rule,
+          description: r.description,
+          submittedAt: r.submittedAt,
+        });
+      }
+      // Backwards compat: first reporter
+      if (report.reporterInfo.length > 0) {
+        report.reporterId = report.reporterInfo[0].id;
+        report.reporterName = report.reporterInfo[0].name;
+        report.reporterAvatar = report.reporterInfo[0].avatar;
+      } else if (report.reporterId) {
+        const reporterInfo = await getBasicUserInfo(report.reporterId);
+        if (reporterInfo) {
+          report.reporterName = reporterInfo.name;
+          report.reporterAvatar = reporterInfo.avatar;
+        }
       }
 
       // Get reported user info
@@ -2759,10 +2748,33 @@ router.post("/reports/:id/status", async (req, res) => {
     report.status = status;
     report.updatedAt = Date.now();
 
-    if (status === "in-progress" && report.assignees.length === 0) {
-      // Auto-assign to current user
-      if (!report.assignees.includes(userId)) {
+    // Auto-assign when changing to in-progress
+    if (status === "in-progress") {
+      const previousAssignees = [...report.assignees];
+      const hasOtherAssignees = report.assignees.some((id) => id !== userId);
+      
+      if (hasOtherAssignees) {
+        // Reassign to current admin if assigned to different admin
+        report.assignees = [userId];
+        report.history.push({
+          status: status,
+          changedBy: userId,
+          timestamp: Date.now(),
+          action: "assignment",
+          assigneesAdded: [userId],
+          assigneesRemoved: previousAssignees.filter((id) => id !== userId),
+        });
+      } else if (!report.assignees.includes(userId)) {
+        // Add current admin if not already assigned
         report.assignees.push(userId);
+        report.history.push({
+          status: status,
+          changedBy: userId,
+          timestamp: Date.now(),
+          action: "assignment",
+          assigneesAdded: [userId],
+          assigneesRemoved: [],
+        });
       }
     }
 
@@ -2775,6 +2787,24 @@ router.post("/reports/:id/status", async (req, res) => {
     });
 
     await report.save();
+
+    // Notify all reporters when status changes to in-progress (do not notify when reverting to open)
+    if (status === "in-progress" && oldStatus !== "in-progress") {
+      const reportedUserInfo = await getBasicUserInfo(report.reportedUserId);
+      const reportedName = reportedUserInfo?.name || "a user";
+      const reporterIds = routeUtils
+        .getReportReporters(report)
+        .map((r) => r.userId)
+        .filter((id, i, arr) => arr.indexOf(id) === i);
+      await routeUtils.createNotification(
+        {
+          content: `Your report on ${reportedName} is being processed by moderators now.`,
+          icon: "flag",
+        },
+        reporterIds
+      );
+    }
+
     res.sendStatus(200);
   } catch (e) {
     logger.error(e);
@@ -2789,7 +2819,7 @@ router.post("/reports/:id/complete", async (req, res) => {
       return;
 
     const reportId = req.params.id;
-    const { finalRuling, dismissed, notes } = req.body;
+    const { finalRuling, dismissed, warning, notes } = req.body;
 
     const report = await models.Report.findOne({ id: reportId });
     if (!report) {
@@ -2810,8 +2840,8 @@ router.post("/reports/:id/complete", async (req, res) => {
     let banLengthStr = null;
     let violationDef = null;
 
-    // If not dismissed, create violation ticket and ban
-    if (!dismissed && finalRuling) {
+    // If not dismissed and not warning, create violation ticket and ban
+    if (!dismissed && !warning && finalRuling) {
       // Validate required fields
       if (!finalRuling.banType) {
         res.status(400).send("Ban type is required.");
@@ -2823,6 +2853,11 @@ router.post("/reports/:id/complete", async (req, res) => {
       }
       if (!finalRuling.offenseNumber || finalRuling.offenseNumber < 1) {
         res.status(400).send("Violation rating (1st, 2nd, 3rd, etc.) is required.");
+        return;
+      }
+      // Notes are required for violations
+      if (!finalRuling.notes || !finalRuling.notes.trim()) {
+        res.status(400).send("Notes are required for violations.");
         return;
       }
 
@@ -3055,8 +3090,18 @@ router.post("/reports/:id/complete", async (req, res) => {
         ? violationTicket.id
         : null;
       report.linkedBanId = ban ? ban.id : null;
+    } else if (warning) {
+      // When warning, save notes (required)
+      if (!notes || !notes.trim()) {
+        res.status(400).send("Notes are required for warnings.");
+        return;
+      }
+      report.finalRuling = {
+        warning: true,
+        notes: notes.trim(),
+      };
     } else {
-      // When dismissed, save notes if provided
+      // When dismissed, save notes if provided (optional)
       report.finalRuling = notes
         ? {
             notes: notes,
@@ -3069,6 +3114,34 @@ router.post("/reports/:id/complete", async (req, res) => {
     report.completedBy = userId;
     report.updatedAt = Date.now();
 
+    // Auto-assign completing admin (reassign if assigned to different admin)
+    const previousAssignees = [...report.assignees];
+    const hasOtherAssignees = report.assignees.some((id) => id !== userId);
+    
+    if (hasOtherAssignees) {
+      // Reassign to current admin if assigned to different admin
+      report.assignees = [userId];
+      report.history.push({
+        status: "complete",
+        changedBy: userId,
+        timestamp: Date.now(),
+        action: "assignment",
+        assigneesAdded: [userId],
+        assigneesRemoved: previousAssignees.filter((id) => id !== userId),
+      });
+    } else if (!report.assignees.includes(userId)) {
+      // Add current admin if not already assigned
+      report.assignees.push(userId);
+      report.history.push({
+        status: "complete",
+        changedBy: userId,
+        timestamp: Date.now(),
+        action: "assignment",
+        assigneesAdded: [userId],
+        assigneesRemoved: [],
+      });
+    }
+
     report.history.push({
       status: "complete",
       changedBy: userId,
@@ -3078,6 +3151,8 @@ router.post("/reports/:id/complete", async (req, res) => {
         ? notes
           ? `Report dismissed - no violation. Notes: ${notes}`
           : "Report dismissed - no violation"
+        : warning
+        ? `Warning issued. Notes: ${notes}`
         : `Violation: ${violationName}`,
     });
 
@@ -3086,12 +3161,31 @@ router.post("/reports/:id/complete", async (req, res) => {
     // Create mod action
     await routeUtils.createModAction(
       userId,
-      dismissed ? "Complete Report (Dismissed)" : "Complete Report",
+      dismissed
+        ? "Complete Report (Dismissed)"
+        : warning
+        ? "Complete Report (Warning)"
+        : "Complete Report",
       [
         reportId,
         report.reportedUserId,
-        report.finalRuling?.violationId || "dismissed",
+        report.finalRuling?.violationId || (warning ? "warning" : "dismissed"),
       ]
+    );
+
+    // Notify all reporters that their report has been completed (no link - reports are private)
+    const reportedUserInfo = await getBasicUserInfo(report.reportedUserId);
+    const reportedName = reportedUserInfo?.name || "a user";
+    const reporterIds = routeUtils
+      .getReportReporters(report)
+      .map((r) => r.userId)
+      .filter((id, i, arr) => arr.indexOf(id) === i);
+    await routeUtils.createNotification(
+      {
+        content: `Your report on ${reportedName} has been completed.`,
+        icon: "flag",
+      },
+      reporterIds
     );
 
     res.send({
@@ -3208,13 +3302,37 @@ router.post("/reports/:id/reopen", async (req, res) => {
     report.reopenedCount = (report.reopenedCount || 0) + 1;
     report.updatedAt = Date.now();
 
-    // Clear completion fields (but keep finalRuling for reference)
-    // Optionally clear assignees if reopening to "open"
+    // Auto-assign when reopening (unless reopening to "open")
     if (targetStatus === "open") {
       report.assignees = [];
-    } else if (report.assignees.length === 0) {
-      // Auto-assign to reopening user
-      report.assignees = [userId];
+    } else {
+      // Auto-assign reopening admin (reassign if assigned to different admin)
+      const previousAssignees = [...report.assignees];
+      const hasOtherAssignees = report.assignees.some((id) => id !== userId);
+      
+      if (hasOtherAssignees) {
+        // Reassign to current admin if assigned to different admin
+        report.assignees = [userId];
+        report.history.push({
+          status: targetStatus,
+          changedBy: userId,
+          timestamp: Date.now(),
+          action: "assignment",
+          assigneesAdded: [userId],
+          assigneesRemoved: previousAssignees.filter((id) => id !== userId),
+        });
+      } else if (!report.assignees.includes(userId)) {
+        // Add current admin if not already assigned
+        report.assignees = [userId];
+        report.history.push({
+          status: targetStatus,
+          changedBy: userId,
+          timestamp: Date.now(),
+          action: "assignment",
+          assigneesAdded: [userId],
+          assigneesRemoved: [],
+        });
+      }
     }
 
     report.history.push({
@@ -3459,7 +3577,7 @@ router.post("/reports/:id/rule", async (req, res) => {
 
     // Validate rule exists
     try {
-      const { violationDefinitions } = require("../react_main/src/constants/violations.js");
+      const { violationDefinitions } = require("../data/violations");
       const validRule = violationDefinitions.find((r) => r.name === rule);
       if (!validRule) {
         res.status(400).send("Invalid rule selected.");

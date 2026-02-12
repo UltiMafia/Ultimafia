@@ -94,6 +94,7 @@ var schemas = {
       hideStatistics: { type: Boolean, default: false },
       hideKarma: { type: Boolean, default: false },
       hidePointsNegative: { type: Boolean, default: true },
+      hideJoinDate: { type: Boolean, default: false },
       deathMessage: String,
       vanityUrl: { type: String, default: "" },
       backgroundRepeatMode: { type: String, default: "repeat" },
@@ -780,6 +781,14 @@ var schemas = {
       gameId: { type: String, index: true },
       rule: { type: String, index: true },
       description: String,
+      reporters: [
+        {
+          userId: { type: String, required: true },
+          rule: { type: String, required: true },
+          description: { type: String, default: "" },
+          submittedAt: { type: Number, required: true },
+        },
+      ],
       status: {
         type: String,
         enum: ["open", "in-progress", "complete", "appealed"],
@@ -799,6 +808,7 @@ var schemas = {
         banLength: String,
         banLengthMs: Number,
         notes: String,
+        warning: Boolean,
       },
       linkedViolationTicketId: { type: String, index: true },
       linkedBanId: { type: String, index: true },

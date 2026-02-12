@@ -18,6 +18,7 @@
     "firebase": "^11.10.0",
     "fullcalendar": "^6.1.19",
     "immutability-helper": "^3.0.2",
+    "mui-color-input": "^6.0.0",
     "react": "^17.0.0",
     "react-color": "^2.18.0",
     "react-dom": "^17.0.1",
@@ -37,6 +38,10 @@
     },
     "react-is": {
       "react": "$react"
+    },
+    "mui-color-input": {
+      "react": "$react",
+      "react-dom": "$react-dom"
     }
   },
   "scripts": {

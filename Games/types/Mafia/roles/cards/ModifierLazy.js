@@ -20,6 +20,9 @@ module.exports = class ModifierLazy extends Card {
               if (action.hasLabel("mafia")) {
                 continue;
               }
+              if (action.hasLabel("primary")) {
+                continue;
+              }
               if (action.hasLabel("delayAction")) {
                 continue;
               }

@@ -266,7 +266,7 @@ router.get("/:id/profile", async function (req, res) {
     var isSelf = reqUserId == userId;
     var user = await models.User.findOne({ id: userId, deleted: false })
       .select(
-        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner setups games numFriends stats lastActive _id"
+        "id name avatar profileBackground settings accounts wins losses kudos karma points pointsNegative championshipPoints achievements bio pronouns banner setups games numFriends stats lastActive joined _id"
       )
       .populate({
         path: "setups",
@@ -497,6 +497,13 @@ router.get("/:id/profile", async function (req, res) {
     }
     if (user.settings.hidePointsNegative) {
       delete user.pointsNegative;
+    }
+    // Hide join date if user has setting enabled, unless viewer is the profile owner or has seeModPanel permission
+    if (user.settings.hideJoinDate && reqUserId && !isSelf) {
+      const hasPermission = await redis.hasPermission(reqUserId, "seeModPanel");
+      if (!hasPermission) {
+        delete user.joined;
+      }
     }
 
     if (userId) {
@@ -1550,16 +1557,6 @@ router.post("/settings/update", async function (req, res) {
       res.status(500);
       res.send("You must purchase text colors with coins from the Shop.");
       return;
-    }
-
-    const propRequiresGoodContrast =
-      prop === "textColor" || prop === "nameColor";
-    if (propRequiresGoodContrast && !colorHasGoodContrastForBothThemes(value)) {
-      return res
-        .status(422)
-        .end(
-          "Color must have good contrast in both light and dark themes. Please choose a different color."
-        );
     }
 
     if (prop === "deathMessage") {
@@ -2731,7 +2728,7 @@ router.post("/appeals", async function (req, res) {
         status: "in-progress",
       });
 
-      const title = `${user.name} appealing violation: https://ultimafia.com/community/reports/${appealReport.id}`;
+      const title = `${user.name} appealing violation: https://ultimafia.com/policy/reports/${appealReport.id}`;
       let reportDetails = `\nNumber of open reports: ${openReportCount}\n`;
       reportDetails += `Number of in-progress reports: ${inProgressReportCount}`;
 

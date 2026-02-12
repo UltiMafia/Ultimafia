@@ -104,6 +104,12 @@ module.exports = class Role {
         this.meetings[meetingName].times = Infinity;
     }
 
+    //Set role on meetings
+    for (let meetingName in this.meetings) {
+      if (this.meetings[meetingName].role == null)
+        this.meetings[meetingName].role = this;
+    }
+
     // Set modifications of meetings
     for (let meetingName in this.meetingMods) {
       var meetings = [];
@@ -163,6 +169,7 @@ module.exports = class Role {
 
     // Hold starting items
     if (itemStatus == "NoStartingItems") {
+      this.RemovedStartingItems = this.startItems;
       this.startItems = [];
     }
     for (let item of this.startItems) {

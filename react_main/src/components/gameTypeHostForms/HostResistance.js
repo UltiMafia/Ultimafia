@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { getDefaults, persistDefaults } from "./DefaultValues";
+import { getDefaults, persistDefaults, sortInitialFormFields } from "./DefaultValues";
 import { Lobbies } from "Constants";
 
 import "css/host.css";
@@ -110,6 +110,8 @@ export default function HostResistance() {
       step: 0.1,
     },
   ];
+
+  sortInitialFormFields(initialFormFields);
 
   function onHostGame(setupId, getFormFieldValue) {
     var scheduled = getFormFieldValue("scheduled");

@@ -20,6 +20,8 @@ import {
   Divider,
   Tabs,
   Tab,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
 
@@ -28,16 +30,156 @@ import Form, { useForm, HiddenUpload, UserSearchSelect } from "components/Form";
 import { useErrorAlert } from "components/Alerts";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import AvatarUpload from "components/AvatarUpload";
+import { useCookieConsent } from "../../hooks/useCookieConsent";
 
 import "css/settings.css";
 import { setCaptchaVisible } from "utils";
 import { Loading } from "components/Loading";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
+function CookieSettings() {
+  const { preferences, updatePreferences, acceptAll, rejectAll } = useCookieConsent();
+  const siteInfo = useContext(SiteInfoContext);
+  const [saved, setSaved] = useState(false);
+
+  const handlePreferenceChange = (key) => (event) => {
+    if (key === "essential") return; // Essential cookies cannot be disabled
+    
+    const newPreferences = {
+      ...preferences,
+      [key]: event.target.checked,
+    };
+    updatePreferences(newPreferences);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleAcceptAll = () => {
+    acceptAll();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleRejectAll = () => {
+    rejectAll();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  return (
+    <Stack direction="column" spacing={3}>
+      <Box>
+        <Typography variant="h4" sx={{ mb: 1 }}>
+          Cookie Preferences
+        </Typography>
+        <Typography variant="body2" color="text.secondary" paragraph>
+          Manage your cookie preferences. These settings are stored in your browser 
+          and apply to this device only. For more information, see our{" "}
+          <Link href="/policy/privacy" target="_blank">
+            Privacy Policy
+          </Link>.
+        </Typography>
+      </Box>
+
+      <Divider />
+
+      <Stack spacing={2}>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={preferences.essential}
+              disabled
+              size="small"
+            />
+          }
+          label={
+            <Box>
+              <Typography variant="body1" fontWeight="bold">
+                Essential Cookies
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Required for the site to function properly. These cannot be disabled.
+              </Typography>
+            </Box>
+          }
+        />
+
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={preferences.analytics}
+              onChange={handlePreferenceChange("analytics")}
+              size="small"
+            />
+          }
+          label={
+            <Box>
+              <Typography variant="body1" fontWeight="bold">
+                Analytics Cookies
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Help us understand how visitors interact with our website (e.g., Google Analytics).
+              </Typography>
+            </Box>
+          }
+        />
+
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={preferences.functional}
+              onChange={handlePreferenceChange("functional")}
+              size="small"
+            />
+          }
+          label={
+            <Box>
+              <Typography variant="body1" fontWeight="bold">
+                Functional Cookies
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Remember your preferences and settings to enhance your experience.
+              </Typography>
+            </Box>
+          }
+        />
+      </Stack>
+
+      {saved && (
+        <Typography variant="caption" color="success.main">
+          Preferences saved
+        </Typography>
+      )}
+
+      <Divider />
+
+      <Stack direction="row" spacing={2}>
+        <Button onClick={handleAcceptAll} variant="outlined" color="primary">
+          Accept All
+        </Button>
+        <Button onClick={handleRejectAll} variant="outlined" color="secondary">
+          Reject All
+        </Button>
+      </Stack>
+    </Stack>
+  );
+}
+
 function SettingsSection({ sections, activeSection }) {
   const isPhoneDevice = useIsPhoneDevice();
+  const wrapInPaper = activeSection.wrapInPaper === true;
+
+  let content = activeSection.content;
+  if (wrapInPaper) {
+    content = (
+      <Paper sx={{ p: 2 }}>
+        {content}
+      </Paper>
+    );
+  }
+
   return (
-    <Stack direction="column" spacing={2}>
+    <Stack direction="column" spacing={1}>
       <Stack
         direction="row"
         spacing={1}
@@ -55,7 +197,6 @@ function SettingsSection({ sections, activeSection }) {
               color="inherit"
               component={Link}
               to={`../${section.path}`}
-              endIcon={<i className="fas fa-chevron-right" />}
               sx={{
                 minWidth: isPhoneDevice ? 0 : undefined,
               }}
@@ -63,13 +204,7 @@ function SettingsSection({ sections, activeSection }) {
           ))}
         </Tabs>
       </Stack>
-      <Box
-        sx={{
-          maxWidth: isPhoneDevice ? undefined : "50%",
-        }}
-      >
-        {activeSection.content}
-      </Box>
+      {content}
     </Stack>
   );
 }
@@ -466,6 +601,12 @@ export default function Settings() {
         type: "boolean",
         groupName: "Stat Hiding",
       },
+      {
+        label: "Hide Join Date",
+        ref: "hideJoinDate",
+        type: "boolean",
+        groupName: "Stat Hiding",
+      },
     ],
     [accounts]
   );
@@ -606,6 +747,8 @@ export default function Settings() {
           fields={siteFields}
           deps={{ user }}
           onChange={(action) => onSettingChange(action, updateSiteFields)}
+          wrapGroupsInPaper
+          halfWidth
         />
       ),
     },
@@ -632,6 +775,8 @@ export default function Settings() {
               onProfileBackgroundRemove,
             }}
             onChange={(action) => onSettingChange(action, updateProfileFields)}
+            wrapGroupsInPaper
+            halfWidth
           />
         </>
       ),
@@ -649,12 +794,15 @@ export default function Settings() {
             errorAlert,
           }}
           onChange={(action) => onSettingChange(action, updateGameFields)}
+          wrapGroupsInPaper
+          halfWidth
         />
       ),
     },
     {
       title: "Account",
       path: "account",
+      wrapInPaper: true,
       content: (
         <Stack direction="column" spacing={1}>
           <TextField
@@ -688,8 +836,15 @@ export default function Settings() {
       ),
     },
     {
+      title: "Cookies",
+      path: "cookies",
+      wrapInPaper: true,
+      content: <CookieSettings />,
+    },
+    {
       title: "Family",
       path: "family",
+      wrapInPaper: true,
       content: (
         <Stack direction="column" spacing={3}>
           {/* No Family Section */}
@@ -999,20 +1154,18 @@ export default function Settings() {
   ];
 
   return (
-    <Paper sx={{ p: 2 }}>
-      <Routes>
-        {sections.map((section) => (
-          <Route
-            key={section.path}
-            path={section.path}
-            element={
-              <SettingsSection sections={sections} activeSection={section} />
-            }
-          />
-        ))}
-        <Route path="*" element={<Navigate to={sections[0].path} replace />} />
-      </Routes>
-    </Paper>
+    <Routes>
+      {sections.map((section) => (
+        <Route
+          key={section.path}
+          path={section.path}
+          element={
+            <SettingsSection sections={sections} activeSection={section} />
+          }
+        />
+      ))}
+      <Route path="*" element={<Navigate to={sections[0].path} replace />} />
+    </Routes>
   );
 
   function onSettingChange(action, update) {

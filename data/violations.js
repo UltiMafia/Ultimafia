@@ -19,7 +19,7 @@ const violationDefinitions = [
     id: "intolerance",
     name: "Intolerance",
     description:
-      "Any disrespectful behavior on the basis of group identity. Includes bigotry of any kind (racism, homophobia, transphobia, misogyny, etc.), bypassing slur filters, and genocide denial.",
+      "Any disrespectful behavior on the basis of group identity. Includes bigotry of any kind (racism, homophobia, transphobia, misogyny, etc.), bypassing slur filters, and genocide denial. Please note that one is not permitted to use slurs or bigoted phrases despite belonging to affected groups (i.e. reclamation).",
     offenses: [
       "1 day",
       "3 days",
@@ -35,7 +35,7 @@ const violationDefinitions = [
     id: "adult-content",
     name: "Adult Content",
     description:
-      'Graphic descriptions of adult behavior, including explicit sex acts, drug use, or descriptions of real violence. Restrict to a "13 and up" mindset.',
+      "Graphic or textual descriptions of adult behavior, including explicit sex acts, drug use, mentions of sites/content intended to shock or disturb, pornographic websites, or descriptions of real violence.",
     offenses: [
       "1 day",
       "3 days",
@@ -67,7 +67,7 @@ const violationDefinitions = [
     id: "hazing",
     name: "Hazing",
     description:
-      "Discriminating against or mistreating users on new accounts. Includes policy-voting, accusing a new account of rule-breaking, and promoting an anti-growth mindset.",
+      "Discriminating against or mistreating users on new accounts. Includes policy-voting, falsely accusing a new account of rule-breaking, and promoting an anti-growth mindset.",
     offenses: [
       "1 day",
       "3 days",
@@ -147,7 +147,7 @@ const violationDefinitions = [
     id: "game-throwing",
     name: "Game Throwing",
     description:
-      "Intentionally not playing toward your win condition (e.g. outing mafia partners). Using tactics with no reasonable chance of success also qualifies.",
+      "Failing to play toward your win condition (e.g. outing mafia partners), or playing toward the win condition of an alignment is not your own (i.e. assisting a Cult win when you are Village), including situations where one's alignment can hypothetically be changed. Players must always play to their present win-condition rather than hypothetical or future win conditions they may later acquire. Using tactics with no reasonable chance of success also qualifies. Please note that Game Throwing requires intent.",
     offenses: ["1 day", "1 week", "3 weeks", "Loss of privilege", "-", "-"],
     category: "Game",
     appliesTo: ["game", "playRanked", "playCompetitive"],
@@ -164,7 +164,7 @@ const violationDefinitions = [
   {
     id: "insufficient-participation",
     name: "Insufficient Participation (ISP)",
-    description: "Not participating actively or consistently in a game.",
+    description: "Playing a game without showing participation or full attention. Scrolling short-form video content while playing a game. If you do step away during a game, please notify the other players and make sure to review the course of the game upon returning to catch up and continue participating.",
     offenses: ["1 day", "1 week", "3 weeks", "Loss of privilege", "-", "-"],
     category: "Game",
     appliesTo: ["game", "playRanked", "playCompetitive"],
@@ -173,7 +173,7 @@ const violationDefinitions = [
     id: "outside-game-information",
     name: "Outside of Game Information (OGI)",
     description:
-      "Using external info to influence the game. Includes outside comms, threats of retaliation, or copy/pasting system messages.",
+      "Using external info to influence the game. Includes outside communication, threats of retaliation, or copy/pasting system messages. Contacting people externally to bring their attention to the game also counts as OGI.",
     offenses: ["1 day", "1 week", "3 weeks", "Loss of privilege", "-", "-"],
     category: "Game",
     appliesTo: ["game", "playRanked", "playCompetitive"],
@@ -191,7 +191,7 @@ const violationDefinitions = [
     id: "cheating",
     name: "Cheating",
     description:
-      "Any manipulation that provides an unfair advantage (multi-accounting, external discussion of game info, using exploits).",
+      "Any manipulation that provides an unfair advantage. Examples include one person using multiple accounts in one game (multi-accounting), two or more people using the same account across ranked games or the Competitive round (account-sharing), or using external methods to discuss the game.",
     offenses: ["1 day", "1 week", "3 weeks", "Loss of privilege", "-", "-"],
     category: "Game",
     appliesTo: ["game", "playRanked", "playCompetitive"],
@@ -209,8 +209,17 @@ function getViolationsForBanType(banType) {
   );
 }
 
+const communityViolations = violationDefinitions.filter(
+  (violation) => violation.category === "Community"
+);
+const gameViolations = violationDefinitions.filter(
+  (violation) => violation.category === "Game"
+);
+
 module.exports = {
   violationDefinitions,
   violationMapById,
   getViolationsForBanType,
+  communityViolations,
+  gameViolations,
 };

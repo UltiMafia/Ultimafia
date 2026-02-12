@@ -1607,12 +1607,7 @@ module.exports = class Player {
     return false;
   }
 
-  kill(killType, killer, instant) {
-    if (!this.alive) return;
-
-    this.game.resetLastDeath = true;
-    this.game.queueDeath(this);
-
+    postConvertDeathReveal(killType, killer, instant){
     if (killType != "silent") this.queueDeathMessage(killType, instant);
 
     let roleReveal = true;
@@ -1631,6 +1626,42 @@ module.exports = class Player {
     }
 
     this.queueLastWill();
+  }
+
+  kill(killType, killer, instant) {
+    if (!this.alive) return;
+
+    this.game.resetLastDeath = true;
+    this.game.queueDeath(this);
+
+
+    if(!this.game.isPostConvertDeathReveals() || instant || (this.game.getStateName() != "Night" && this.game.getStateName() != "Dawn")){
+    if (killType != "silent") this.queueDeathMessage(killType, instant);
+
+    let roleReveal = true;
+
+    if (this.game.isNoReveal()) {
+      roleReveal = false;
+    }
+
+    if (this.game.isAlignmentOnlyReveal()) {
+      roleReveal = false;
+      this.role.revealAlignmentToAll(false, this.getRevealType(killType), true);
+    }
+
+    if (roleReveal) {
+      this.role.revealToAll(false, this.getRevealType(killType), true);
+    }
+
+    this.queueLastWill();
+
+  }
+  else{
+  if(!this.game.PostConvertDeathsToReveal){
+    this.game.PostConvertDeathsToReveal = [];
+  }
+    this.game.PostConvertDeathsToReveal.push([this, killType, killer, instant]);
+  }
     this.game.events.emit("death", this, killer, killType, instant);
     this.game.events.emit("AbilityToggle", this);
 
@@ -1675,7 +1706,10 @@ module.exports = class Player {
 
     this.meet();
 
-    for (let meeting of this.game.meetings) meeting.generateTargets();
+    for (let meeting of this.game.meetings){ 
+      meeting.generateTargets();
+      meeting.showAllVotes(this);
+    }
 
     this.game.sendMeetings();
     this.game.checkAllMeetingsReady();
