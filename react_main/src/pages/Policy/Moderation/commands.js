@@ -549,69 +549,6 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Get IP Addresses": {
-      perm: "viewIPs",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .get(`/api/mod/ips?userId=${argValues.userId}`)
-          .then((res) => {
-            setResults("test");
-            //setResults(res.data.join(" "));
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Get Alt Accounts": {
-      perm: "viewAlts",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .get(`/api/mod/alts?userId=${argValues.userId}`)
-          .then((res) => {
-            alert(res.data.map((u) => `${u.name} (${u.id})`).join(", "));
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
-    "Check Flagged": {
-      perm: "viewFlagged",
-      category: "User Management",
-      args: [
-        {
-          label: "User",
-          name: "userId",
-          type: "user_search",
-        },
-      ],
-      run: function () {
-        axios
-          .get(`/api/mod/flagged?userId=${argValues.userId}`)
-          .then((res) => {
-            if (res.data) alert("Flagged!");
-            else alert("Not flagged");
-
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
     "Clear Setup Name": {
       perm: "clearSetupName",
       category: "Setup Management",

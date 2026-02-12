@@ -19,7 +19,7 @@ const violationDefinitions = [
     id: "intolerance",
     name: "Intolerance",
     description:
-      "Any disrespectful behavior on the basis of group identity. Includes bigotry of any kind (racism, homophobia, transphobia, misogyny, etc.), bypassing slur filters, and genocide denial.",
+      "Any disrespectful behavior on the basis of group identity. Includes bigotry of any kind (racism, homophobia, transphobia, misogyny, etc.), bypassing slur filters, and genocide denial. Please note that one is not permitted to use slurs or bigoted phrases despite belonging to affected groups (i.e. reclamation).",
     offenses: [
       "1 day",
       "3 days",
@@ -35,7 +35,7 @@ const violationDefinitions = [
     id: "adult-content",
     name: "Adult Content",
     description:
-      'Graphic descriptions of adult behavior, including explicit sex acts, drug use, or descriptions of real violence. Restrict to a "13 and up" mindset.',
+      "Graphic or textual descriptions of adult behavior, including explicit sex acts, drug use, mentions of sites/content intended to shock or disturb, pornographic websites, or descriptions of real violence.",
     offenses: [
       "1 day",
       "3 days",

@@ -55,7 +55,7 @@ export default function Rules() {
         UltiMafia Rules of Conduct
       </Typography>
       <Typography variant="body2" color="text.secondary" paragraph>
-        Last Updated: February 6, 2026
+        Last Updated: February 12, 2026
       </Typography>
 
       <Box sx={{ borderBottom: 1, borderColor: "divider"}}>
