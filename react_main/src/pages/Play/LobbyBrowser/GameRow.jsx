@@ -1,10 +1,12 @@
 import React, { useContext, useState } from "react";
+import axios from "axios";
 
 import "css/shiny.css";
 import { Link } from "react-router-dom";
 import { PlayerCount } from "./PlayerCount";
-import { UserContext } from "Contexts";
+import { UserContext, SiteInfoContext } from "Contexts";
 import { filterProfanity } from "components/Basic";
+import { useErrorAlert } from "components/Alerts";
 import Setup from "components/Setup";
 import HostGameDialogue from "components/HostGameDialogue";
 import {
@@ -151,9 +153,23 @@ const GameStatus = (props) => {
 export const GameRow = (props) => {
   const isPhoneDevice = useIsPhoneDevice();
   const user = useContext(UserContext);
+  const siteInfo = useContext(SiteInfoContext);
+  const errorAlert = useErrorAlert();
   const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
 
   const showLobbyName = props.showLobbyName;
+  const canBreakGame = user.perms?.breakGame && !props.game.broken;
+
+  function onBreakGameClick() {
+    if (!canBreakGame) return;
+    if (!window.confirm("Break this game? This cannot be undone.")) return;
+    axios
+      .post("/api/mod/breakGame", { gameId: props.game.id })
+      .then(() => {
+        siteInfo.showAlert("Game broken.", "success");
+      })
+      .catch(errorAlert);
+  }
   const showGameState = props.showGameState;
   const showGameTypeIcon = props.showGameTypeIcon;
   const showRedoButton = isPhoneDevice
@@ -261,14 +277,30 @@ export const GameRow = (props) => {
                   {filterProfanity(lobbyName, user.settings)}
                 </Typography>
               </Box>
-              {showRedoButton && (
-                <Box
-                  style={{
+              {(showRedoButton || canBreakGame) && (
+                <Stack
+                  direction="row"
+                  spacing={0}
+                  sx={{
                     marginLeft: "auto",
-                    width: "2rem",
-                    textAlign: "center",
+                    alignItems: "center",
                   }}
                 >
+                  {canBreakGame && (
+                    <Tooltip title="Break game">
+                      <IconButton
+                        size="small"
+                        onClick={onBreakGameClick}
+                        sx={{ color: "text.secondary" }}
+                        aria-label="Break game"
+                      >
+                        <i
+                          className="fas fa-car-crash"
+                          style={{ fontSize: "1rem" }}
+                        />
+                      </IconButton>
+                    </Tooltip>
+                  )}
                   {props.game.status === "Finished" && user.loggedIn && (
                     <IconButton
                       size="small"
@@ -282,7 +314,7 @@ export const GameRow = (props) => {
                       />
                     </IconButton>
                   )}
-                </Box>
+                </Stack>
               )}
             </Stack>
           )}

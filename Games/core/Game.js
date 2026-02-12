@@ -996,16 +996,21 @@ module.exports = class Game {
   }
 
   failReadyCheck() {
+    const playersToKick = [];
     for (let player of this.players) {
       if (!this.readyPlayers[player.id]) {
-          this.kickPlayer(player);
-          this.sendAlert(
+          playersToKick.push(player);
+      }
+    }
+
+    for (let player of playersToKick) {
+        this.kickPlayer(player);
+        this.sendAlert(
             `${player.name} was kicked for inactivity.`,
             undefined,
             undefined,
             ["info"]
-          );
-        }
+        );
     }
 
     this.cancelReadyCheck();

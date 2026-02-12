@@ -740,26 +740,6 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Break Game": {
-      perm: "breakGame",
-      category: "Game Management",
-      args: [
-        {
-          label: "Game Id",
-          name: "gameId",
-          type: "text",
-        },
-      ],
-      run: function () {
-        axios
-          .post("/api/mod/breakGame", argValues)
-          .then(() => {
-            siteInfo.showAlert("Game broken.", "success");
-            commandRan();
-          })
-          .catch(errorAlert);
-      },
-    },
     "Toggle Featured Setup": {
       perm: "featureSetup",
       category: "Setup Management",
