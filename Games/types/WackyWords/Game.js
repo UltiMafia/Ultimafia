@@ -123,6 +123,7 @@ module.exports = class WackyWordsGame extends Game {
     }
     if (this.hasNeighbor) {
       this.shuffledQuestions = [];
+      this.NeighborsList = [];
       this.questionNeighbor = {};
       this.promptMode = true;
       this.secondPromptBank = Random.randomizeArray(neighborQuestionList);
@@ -208,7 +209,7 @@ module.exports = class WackyWordsGame extends Game {
     let otherPlayer = Random.randArrayVal(this.players.filter((p) => p != this.players.at(playerIndex)));
     let otherPlayerName = otherPlayer.name;
     question = question.replaceAll("$player", playerName);
-    question = question.replace("$OtherPlayer", otherPlayerName);
+    question = question.replaceAll("$OtherPlayer", otherPlayerName);
     question = question.replaceAll("$blank", "____");
     this.shuffledQuestions.shift();
 
@@ -220,8 +221,10 @@ module.exports = class WackyWordsGame extends Game {
     }
 
     if (this.hasNeighbor) {
+      let neighbor = this.NeighborsList[0];
+      this.NeighborsList.shift();
       for (let player of this.players) {
-        if (this.currentQuestion.search(player.name) > -1) {
+        if (player == neighbor) {
           this.realAnswer = this.responseNeighbor[player.name];
           this.realAnswerer = player.name;
           this.recordResponse(player, this.realAnswer);
@@ -331,6 +334,7 @@ module.exports = class WackyWordsGame extends Game {
       question = question.replace("$OtherPlayer", otherPlayerName);
       question = question.replace("$blank", "____");
       this.shuffledQuestions.push(question);
+      this.NeighborsList.push(player);
 
       this.secondPromptBank.shift();
 

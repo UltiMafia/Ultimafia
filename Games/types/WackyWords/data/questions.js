@@ -222,6 +222,7 @@ module.exports = [
   "How to start a fight at a thanksgiving dinner",
   "Baby, it's $blank outside",
   "The worst pickup line in existence",
+  
   /* The following prompts are derived from Cards Against Humanity.
    * You can find their license at the bottom of the "Main Game" PDF downloaded from their website: https://www.cardsagainsthumanity.com/#downloads
    * Their intellectual property is under a CC BY-NC-SA 2.0 license: https://creativecommons.org/licenses/by-nc-sa/2.0/
@@ -230,6 +231,7 @@ module.exports = [
    * Changes were made to the questions sourced from Cards Against Humanity to make it suitable for Ultimafia's game engine.
    */
   // ==== BEGIN CARDS AGAINST HUMANITY PROMPTS ==========================================================================
+  
   "$blank? Yeah, nah.",
   "★✰✰✰✰ Do NOT go here! Found $blank in my spag bol!",
   "As my New Year's resolution, I vow to give up $blank.",
@@ -1045,17 +1047,46 @@ module.exports = [
   "Now on Netflix: $player Dreams of $blank.",
   "Hey, you guys want to try this awesome new game? It's called $blank.",
   // ==== END CARDS AGAINST HUMANITY PROMPTS ==========================================================================
-  //Double Prompets
-  "$player would give $OtherPlayer $blank for their birthday.",
-  "What would $player and $OtherPlayer's couple name be?",
-  "If $player and $OtherPlayer were alone on an island. They would $blank.",
-  "$player wants to $blank $OtherPlayer.",
-  "$player and $OtherPlayer walk into a bar and $blank.",
-  "$player and $OtherPlayer have a shared interest in $blank.",
-  "$player wishes $OtherPlayer would $blank.",
-  "$player and $OtherPlayer started a new company together called $blank.",
+  
+  //Double Player Prompets
   "What is $player's contingency plan for $OtherPlayer?",
   "What is the difference between $player and $OtherPlayer?",
+
+  "What would $player and $OtherPlayer's couple name be?",
+  "What would $player and $OtherPlayer's fusion name be?",
+  "What would $player and $OtherPlayer stew taste like?",
+  "What would $player and $OtherPlayer both enjoy?",
+  "What would $player and $OtherPlayer both despise?",
+
+  "If $player saw $OtherPlayer's browser history, they would $blank.",
+  "If $player saw $OtherPlayer's basement, they would $blank.",
+
+  "If $player was $OtherPlayer's parent, they would $blank.",
+  "If $player was $OtherPlayer's child, they would $blank.",
+  "If $player was $OtherPlayer's lawyer, they would $blank.",
+  "If $player was $OtherPlayer's therapist, they would $blank.",
+  "If $player was $OtherPlayer's doctor, they would $blank.",
+  "If $player was $OtherPlayer's manager, they would $blank.",
+
+  "If $player and $OtherPlayer were stranded on an island, they would $blank.",
+  "If $player and $OtherPlayer were trapped in a room, they would $blank.",
+  "If $player and $OtherPlayer were waiting in the line at the DMV, they would $blank.",
+  "If $player and $OtherPlayer joined forces, they would $blank.",
+
+  "$player would give $OtherPlayer $blank for their birthday.",
+  "$player wants to $blank $OtherPlayer.",
+  "$player wishes $OtherPlayer would $blank.",
+
+  "$player and $OtherPlayer walk into a bar and $blank.",
+  "$player and $OtherPlayer have a shared interest in $blank.",
+  "$player and $OtherPlayer started a new company together called $blank.",
   "$player and $OtherPlayer are so in tune, they can finish each other's $blank.",
+  "$player and $OtherPlayer work poorly together because $blank.",
+  "$player and $OtherPlayer collectively have $blank.",
+  "$player and $OtherPlayer are basically $blank.",
+
+  "It was just annouced that $player and $OtherPlayer will be co-starring in $blank.",
+  "One word that describes $player and $OtherPlayer's relationship is $blank.",
+  "One thing $player and $OtherPlayer can agree on is $blank.",
   
 ];
