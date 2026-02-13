@@ -2980,7 +2980,7 @@ export function PlayerRows({ players, className = "" }) {
       : stateViewingInfo.roles[player.id];
 
     var showBubbles =
-      Object.keys(history.states[history.currentState].dead).includes(self) ||
+      (Object.keys(history.states[history.currentState].dead).includes(self) && Object.keys(history.states[history.currentState].dead)[self] == true) ||
       players.find((x) => x.id === self) !== undefined;
     var colorAutoScheme = false;
     var bubbleColor = "black";
