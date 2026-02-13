@@ -1490,9 +1490,12 @@ export function TextMeetingLayout() {
   }, []);
 
   function doAutoScroll() {
-    if (autoScroll && speechDisplayRef.current)
-      speechDisplayRef.current.scrollTop =
-        speechDisplayRef.current.scrollHeight;
+    const container = speechDisplayRef.current;
+    if (autoScroll && container) {
+      requestAnimationFrame(() => {
+        container.scrollTo(0, container.scrollHeight);
+      });
+    }
   }
 
   function onTabClick(tabId) {
