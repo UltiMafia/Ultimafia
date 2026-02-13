@@ -530,7 +530,7 @@ router.post("/ban", async (req, res) => {
       chat: ["publicChat", "privateChat"],
       game: ["playGame"],
       ranked: ["playRanked", "playCompetitive"],
-      competitive: ["playCompetitive"],
+      competitive: ["playRanked", "playCompetitive"],
       site: ["signIn"],
     };
 
@@ -3629,3 +3629,4 @@ router.post("/reports/:id/rule", async (req, res) => {
 });
 
 module.exports = router;
+
