@@ -22,7 +22,7 @@ module.exports = class CleanDeath extends Card {
             for (let action of this.game.actions[0]) {
               if (action.hasLabels(["kill", "mafia"])) {
                 mafiaTarget = action.target;
-                if (!action.dominates(mafiaTarget)) {
+                if (!mafiaTarget || !action.dominates(mafiaTarget)) {
                   return;
                 }
                 break;

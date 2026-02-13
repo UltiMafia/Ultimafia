@@ -20,7 +20,7 @@ module.exports = class BlockedIfScary extends Card {
             .alivePlayers()
             .filter((p) => p.hasEffect("Scary"));
           if (ScaryPlayers.length > 0) {
-            this.blockActions(this.actor);
+            this.blockSecondaryActions(this.actor);
           }
         },
       },

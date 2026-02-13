@@ -27,7 +27,7 @@ module.exports = class BlockedFearful extends Card {
                 player.getModifierName() &&
                 player.getModifierName().split("/").includes("Fearful")
               ) {
-                this.blockActions(player);
+                this.blockSecondaryActions(player);
               }
             }
           }

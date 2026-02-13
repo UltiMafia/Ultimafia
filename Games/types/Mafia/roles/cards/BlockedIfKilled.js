@@ -17,7 +17,7 @@ module.exports = class BlockedIfKilled extends Card {
         role: role,
         run: function () {
           if (!this.actor.alive) {
-            this.blockActions(this.actor);
+            this.blockSecondaryActions(this.actor);
           }
         },
       },
@@ -31,7 +31,7 @@ module.exports = class BlockedIfKilled extends Card {
         role: role,
         run: function () {
           if (!this.actor.alive) {
-            this.blockActions(this.actor);
+            this.blockSecondaryActions(this.actor);
           }
         },
       },

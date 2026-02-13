@@ -13,6 +13,10 @@ module.exports = class VoteToBlockVotes extends Card {
         if (!this.hasAbility(["Voting"])) {
           return;
         }
+        
+        if(meeting.votes && Object.entries(meeting.votes).length <= 3){
+          return;
+        }
         this.player.role.VotePower = 0;
         let masterTarget;
         for (let voterId in meeting.votes) {

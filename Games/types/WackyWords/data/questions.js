@@ -892,7 +892,7 @@ module.exports = [
   "Legend tells of a princess who has been asleep for a thousand years and can only be awoken by $blank.",
   "Who blasphemes and bubbles at the center of all infinity, whose name no lips dare speak aloud, and who gnaws hungrily in inconceivable, unlighted chambers beyond time?",
   "Aw babe, your burps smell like $blank!",
-  "Don't miss Rachel Ray's hit new show, Cooking with $blank.",
+  "Don't miss $player's hit new show, Cooking with $blank.",
   "Excuse me, waiter. Could you take this back? This soup tastes like $blank.",
   "I'm Bobby Flay, and if you can't stand $blank, get out of the kitchen!",
   "It's not delivery. It's $blank.",

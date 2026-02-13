@@ -16,7 +16,7 @@ module.exports = class Regretful extends Card {
         priority: PRIORITY_KILL_DEFAULT + 3,
         labels: ["kill", "hidden", "absolute"],
         run: function () {
-          let visits = this.getVisits(this.actor);
+          let visits = this.getSecondaryActions(this.actor);
           let killers = visits.filter((v) => !v.alive);
 
           if (killers.length == 0) {
