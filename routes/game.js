@@ -319,7 +319,7 @@ router.get("/:id/connect", async function (req, res) {
       if (
         userId &&
         game.settings.competitive &&
-        !(await routeUtils.verifyPermission(userId, "playCompetitive"))
+        !(await routeUtils.verifyPermission(userId, "playRanked"))
       ) {
         res.status(500);
         res.send(
@@ -693,7 +693,7 @@ router.post("/host", async function (req, res) {
 
     if (
         req.body.competitive &&
-        !(await routeUtils.verifyPermission(userId, "playCompetitive"))
+        !(await routeUtils.verifyPermission(userId, "playRanked"))
       ) {
         res.status(500);
         res.send(
