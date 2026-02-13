@@ -151,4 +151,13 @@ module.exports = [
   "$player could be won over, immediately with $blank",
   "The first item on $player's wishlist is $blank",
   "$player would not be able to resist buying $blank",
+  //Two player Questions
+  "What is $player's favorite thing about $OtherPlayer.",
+  "What is $player's least favorite thing about $OtherPlayer.",
+  "$player wants ask $OtherPlayer about $blank.",
+  "$player wishes they had $OtherPlayer's $blank.",
+  "$player thinks they can beat $OtherPlayer at $blank.",
+  "$player would give $OtherPlayer $blank for their birthday.",
+  "If $player could change one thing about $OtherPlayer. It would be $blank",
+  "Two words of advice $player would give $OtherPlayer would be $blank",
 ];
