@@ -134,7 +134,7 @@ const artContributors = {
       "Hellhound:old",
     ],
   },
-  shego: {
+  VXN: {
     Mafia: [
       "Sorcerer:vivid",
       "Vizier:vivid",
