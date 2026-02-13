@@ -8,7 +8,32 @@ module.exports = class GiveSuperpowers extends Card {
     super(role);
 
     this.dayShorten = 0;
+this.actions = [
+      {
+        priority: PRIORITY_INVESTIGATIVE_DEFAULT,
+        run: function () {
+          if (!this.actor.alive) return;
+          if (this.game.getStateName() != "Dusk") return;
 
+          let teammates = this.game.players.filter(
+            (p) =>
+              this.game.getRoleAlignment(p.getRoleName()) == "Independent" &&
+              !this.game
+                .getRoleTags(
+                  this.game.formatRoleInternal(p.getRoleName(), p.role.modifier)
+                )
+                .includes("Lone")
+          );
+
+          for (let v = 0; v < teammates.length; v++) {
+            teammates
+              .filter((p) => p)
+              [v].holdItem("WackyJoinFactionMeeting", this.actor.role.name);
+          }
+        },
+      }];
+    
+/*
     this.actions = [
       {
         priority: PRIORITY_INVESTIGATIVE_DEFAULT,
@@ -233,5 +258,6 @@ module.exports = class GiveSuperpowers extends Card {
         },
       },
     ];
+    */
   }
 };
