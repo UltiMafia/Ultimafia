@@ -1045,4 +1045,17 @@ module.exports = [
   "Now on Netflix: $player Dreams of $blank.",
   "Hey, you guys want to try this awesome new game? It's called $blank.",
   // ==== END CARDS AGAINST HUMANITY PROMPTS ==========================================================================
+  //Double Prompets
+  "$player would give $OtherPlayer $blank for their birthday.",
+  "What would $player and $OtherPlayer's couple name be?",
+  "If $player and $OtherPlayer were alone on an island. They would $blank.",
+  "$player wants to $blank $OtherPlayer.",
+  "$player and $OtherPlayer walk into a bar and $blank.",
+  "$player and $OtherPlayer have a shared interest in $blank.",
+  "$player wishes $OtherPlayer would $blank.",
+  "$player and $OtherPlayer started a new company together called $blank.",
+  "What is $player's contingency plan for $OtherPlayer?",
+  "What is the difference between $player and $OtherPlayer?",
+  "$player and $OtherPlayer are so in tune, they can finish each other's $blank.",
+  
 ];
