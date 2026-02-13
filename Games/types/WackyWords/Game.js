@@ -123,6 +123,7 @@ module.exports = class WackyWordsGame extends Game {
     }
     if (this.hasNeighbor) {
       this.shuffledQuestions = [];
+      this.NeighborsList = [];
       this.questionNeighbor = {};
       this.promptMode = true;
       this.secondPromptBank = Random.randomizeArray(neighborQuestionList);
@@ -205,7 +206,10 @@ module.exports = class WackyWordsGame extends Game {
     let question = this.shuffledQuestions[0];
     let playerIndex = Random.randInt(0, this.players.length - 1);
     let playerName = this.players.at(playerIndex).name;
+    let otherPlayer = Random.randArrayVal(this.players.filter((p) => p != this.players.at(playerIndex)));
+    let otherPlayerName = otherPlayer.name;
     question = question.replaceAll("$player", playerName);
+    question = question.replaceAll("$OtherPlayer", otherPlayerName);
     question = question.replaceAll("$blank", "____");
     this.shuffledQuestions.shift();
 
@@ -217,8 +221,10 @@ module.exports = class WackyWordsGame extends Game {
     }
 
     if (this.hasNeighbor) {
+      let neighbor = this.NeighborsList[0];
+      this.NeighborsList.shift();
       for (let player of this.players) {
-        if (this.currentQuestion.search(player.name) > -1) {
+        if (player == neighbor) {
           this.realAnswer = this.responseNeighbor[player.name];
           this.realAnswerer = player.name;
           this.recordResponse(player, this.realAnswer);
@@ -300,8 +306,11 @@ module.exports = class WackyWordsGame extends Game {
     for (let player of alive) {
       let question = this.secondPromptBank[0];
       let playerIndex = Random.randInt(0, this.players.length - 1);
+      let otherPlayer = Random.randArrayVal(this.players.filter((p) => p != this.players.at(playerIndex)));
       let playerName = this.players.at(playerIndex).name;
+      let otherPlayerName = otherPlayer.name;
       question = question.replace("$player", playerName);
+      question = question.replace("$OtherPlayer", otherPlayerName);
       question = question.replace("$blank", "____");
 
       this.secondPromptBank.shift();
@@ -319,9 +328,13 @@ module.exports = class WackyWordsGame extends Game {
     var alive = this.players.filter((p) => p.alive && p.role.name != "Host");
     for (let player of alive) {
       let question = this.secondPromptBank[0];
+      let otherPlayer = Random.randArrayVal(this.players.filter((p) => p != player));
+      let otherPlayerName = otherPlayer.name;
       question = question.replace("$player", player.name);
+      question = question.replace("$OtherPlayer", otherPlayerName);
       question = question.replace("$blank", "____");
       this.shuffledQuestions.push(question);
+      this.NeighborsList.push(player);
 
       this.secondPromptBank.shift();
 
