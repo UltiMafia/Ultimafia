@@ -1182,7 +1182,7 @@ const modifierData = {
       internal: ["Humble"],
       tags: ["Vanilla", "Villager", "Self Appearance"],
       description:
-        "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
+        "You see self as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) with no modifier.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Scatterbrained"],
     },
@@ -1191,7 +1191,7 @@ const modifierData = {
       internal: ["Scatterbrained"],
       tags: ["Visitor"],
       description:
-        "Appears as Visitor (Village) / Trespasser (Mafia) / Bogeyman (Cult) / Fool (Independent) to self with no modifier.",
+        "You see self as Visitor (Village) / Trespasser (Mafia) / Bogeyman (Cult) / Fool (Independent) with no modifier.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Humble"],
     },
@@ -1208,7 +1208,7 @@ const modifierData = {
       category: "Appearance",
       internal: ["DisguiseAsTarget"],
       tags: ["Roles", "Deception", "Suits"],
-      description: "When you visit a player with your secondary action, you gains a suit of each that player's role.",
+      description: "When you visit a player, you gain a suit of each that player's role.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Respected: {
@@ -1306,7 +1306,7 @@ const modifierData = {
       internal: ["TrueModifier"],
       tags: ["Information", "Sanity"],
       description:
-        "All information created by this role is true. Hides other modifiers.",
+        "All information from your ability is true. Your modifiers are hidden.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Confused", "Insane", "Naive", "Paranoid"],
     },
@@ -1315,7 +1315,7 @@ const modifierData = {
       internal: ["FalseModifier"],
       tags: ["Information", "Sanity"],
       description:
-        "All information created by this role is false. Hides other modifiers.",
+        "All information from your ability is false. Your modifiers are hidden.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Sane", "Confused", "Naive", "Paranoid"],
     },
@@ -1324,7 +1324,7 @@ const modifierData = {
       internal: ["UnfavorableModifier"],
       tags: ["Information", "Sanity"],
       description:
-        "All information created by this role will be unfavorable to the player being checked. Hides other modifiers.",
+        "All information from your ability will be unfavorable to the player being checked. Your modifiers are hidden.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Sane", "Insane", "Confused", "Naive"],
     },
@@ -1333,7 +1333,7 @@ const modifierData = {
       internal: ["FavorableModifier"],
       tags: ["Information", "Sanity"],
       description:
-        "All information created by this role will be favorable to the player being checked. Hides other modifiers.",
+        "All information from your ability will be favorable to the player being checked. Your modifiers are hidden.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Sane", "Insane", "Confused", "Paranoid"],
     },
@@ -1342,7 +1342,7 @@ const modifierData = {
       internal: ["ModifierConfused"],
       tags: ["Information", "Sanity", "RNG"],
       description:
-        "Information created by this role has a 50% chance to be made false. Hides other modifiers.",
+        "All information from your ability has a 50% chance to be made false. Your modifiers are hidden.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Sane", "Insane", "Naive", "Paranoid"],
     },
@@ -1351,7 +1351,7 @@ const modifierData = {
       internal: ["OnePlayerShowsAsEvil"],
       tags: ["Information"],
       description:
-        "One Village-aligned player will have unfavorable results to this role's information abilities.",
+        "One Village-aligned player will have unfavorable results to your information abilities.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Literal: {
@@ -1359,7 +1359,7 @@ const modifierData = {
       internal: ["LiteralAppearance"],
       tags: ["Information"],
       description:
-        "This role's appearance to information roles will also affect non-information abilites.",
+        "Your appearance to information roles will also affect non-information abilites.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     //Speaking
@@ -1391,35 +1391,35 @@ const modifierData = {
       category: "Chat",
       internal: ["CanSpeakWhenDead"],
       tags: ["Speech", "Effect", "Graveyard Participation"],
-      description: `Can talk with alive players when dead.`,
+      description: `You can talk with alive players when dead.`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Paranormal: {
       category: "Chat",
       internal: ["CanSeeDeadChat"],
       tags: ["Speech", "Effect", "Graveyard Participation All"],
-      description: `Can talk with dead players when alive.`,
+      description: `You can talk with dead players when alive.`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Telepathic: {
       category: "Chat",
       internal: ["ModifierTelepathic"],
       tags: ["Speaking"],
-      description: "May anonymously contact any player.",
+      description: "You can anonymously contact any player.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Neighborly: {
       category: "Chat",
       internal: ["MeetWithNeighbors"],
       tags: ["Meeting"],
-      description: "Attends a Night Meeting with their Neighbors.",
+      description: "You meet with your neighbors at night.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Social: {
       category: "Chat",
       internal: ["MeetWithSocial"],
       tags: ["Meeting"],
-      description: "Attends a meeting with all other Social players.",
+      description: "You meet with all Social roles at night.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Renegade: {
