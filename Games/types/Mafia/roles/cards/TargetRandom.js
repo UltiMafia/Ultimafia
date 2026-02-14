@@ -19,7 +19,7 @@ module.exports = class TargetRandom extends Card {
         run: function () {
           let players = this.game.alivePlayers().filter((p) => p != this.actor);
           if (Random.randInt(0, 1) == 0) {
-            this.redirectAllActions(this.actor, Random.randArrayVal(players), "mafia");
+            this.redirectAllActions(this.actor, Random.randArrayVal(players));
           }
         },
       },
