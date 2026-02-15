@@ -127,7 +127,7 @@ function buildRoleRegex(siteInfo) {
   if (names.length === 0) return null;
   const pattern = names.map((n) => escapeRegex(n)).join("|");
   // Use negative lookbehind and lookahead to exclude matches adjacent to apostrophes
-  return new RegExp(`(?<!')\\b(${pattern})\\b(?!')`, "gi");
+  return new RegExp(`(?<!['\u2019])\\b(${pattern})\\b(?!['\u2019])`, "gi");
 }
 
 function roleifySegments(text, siteInfo) {
