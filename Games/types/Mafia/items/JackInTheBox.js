@@ -32,6 +32,10 @@ module.exports = class JackInTheBox extends Item {
             if (this.target == "None") return;
             this.item.drop("No");
 
+            if(this.item.broken || this.item.magicCult){
+              return;
+            }
+
             let effect = this.actor.giveEffect(
               "ExtraRoleEffect",
               this.target,
