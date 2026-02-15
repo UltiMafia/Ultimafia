@@ -2224,7 +2224,7 @@ const roleData = {
         "Each night, each player who visits you will be killed.",
         //"Kills all players who visit during the night.",
         "You cannot be converted.",
-        "You can only be killed by village condemnation.",
+        "You can only be killed by condemn.",
       ],
       nightOrder: [["Kill Visitors", PRIORITY_KILL_DEFAULT]],
       skins: [
