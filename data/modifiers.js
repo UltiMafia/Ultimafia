@@ -872,7 +872,7 @@ const modifierData = {
       category: "Visits",
       internal: ["FairModifier"],
       tags: ["Fair", "Visits"],
-      description: "You cannot target a player for targeted previously.",
+      description: "You cannot target a player you targeted previously.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Nonconsecutive", "Consecutive"],
     },
