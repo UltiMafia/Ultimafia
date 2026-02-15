@@ -4,6 +4,7 @@ const leakyDef = `Players who are "Leaky" will have all whispers involving them 
 const blindDef = `Players who are "Blind" will see all speech as anonymous and cannot see votes.`;
 const cluelessDef = `Players who are "Clueless" will see messages as being sent from random players.`;
 const bleedingDef = `Players who are "Bleeding" will die during the next night.`;
+const deliriumDef = `Players who are "Delirious" will only learn false information with their abilities and will have their non-information abilities disabled.`;
 
 //Item Def
 const coffeeDef = itemData["Mafia"]["Coffee"].description;
@@ -257,7 +258,7 @@ const modifierData = {
       category: "Other",
       internal: ["OnlyUseInPlayRoles"],
       tags: ["Austere"],
-      description: "This role can only reference roles currently in the game.",
+      description: "Your ability can only reference roles currently in the game.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Excessive"],
     },
@@ -265,14 +266,14 @@ const modifierData = {
       category: "Other",
       internal: ["NoSpecialInteractions"],
       tags: ["Bland"],
-      description: "Any Special Interactions this role has are disabled.",
+      description: "Any Special Interactions your role has are disabled.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Excessive: {
       category: "Other",
       internal: ["ExcessiveRole"],
       tags: ["Excessive"],
-      description: "This role treats every role on the site as an Excess Role.",
+      description: "Your ability treats every role on the site as an Excess Role.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Austere"],
     },
@@ -281,21 +282,21 @@ const modifierData = {
       category: "Other",
       internal: ["StrongModifier"],
       tags: ["Unblockable", "Strong"],
-      description: "All kills performed by this player cannot be saved.",
+      description: "All kills performed by you cannot be saved.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Macho: {
       category: "Other",
       internal: ["SaveImmune"],
       tags: ["Macho", "Save Immune"],
-      description: "Can not be saved or protected from kills by any means.",
+      description: "You cannot be saved or protected from kills by any means.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Unlucky: {
       category: "Other",
       internal: ["UnluckyDeath"],
       tags: ["Killing"],
-      description: "Can die at any time after night 1.",
+      description: "You can die at any time after night 1.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     //Convert
@@ -303,14 +304,14 @@ const modifierData = {
       category: "Other",
       internal: ["LoseModifiers"],
       tags: ["Temporary", "Modifiers"],
-      description: "Loses their Modifiers at the end of the Night.",
+      description: "You lose your modifiers at the end of the night.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Pious: {
       category: "Other",
       internal: ["ConvertKillersOnDeath"],
       tags: ["Sacrificial", "Conversion"],
-      description: "On death, has a chance to redeem their killer.",
+      description: "If killed, your killer has a chance to be converted to a role based on their alignment. Village to Villager, Mafia to Traitor, Cult to Cultist, and Independent to Survivor.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Chaotic: {
@@ -318,7 +319,7 @@ const modifierData = {
       internal: ["BecomeExcessRole"],
       tags: ["Conversion", "Excess Roles"],
       description:
-        "On the first night, a player with this modifier will become a random excess role within their alignment. Independents will become excess roles from any alignment.",
+        "On your first night, you will be converted to a random excess role within your alignment. If your alignment is Independent you will become excess roles from any alignment.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Versatile: {
@@ -326,7 +327,7 @@ const modifierData = {
       internal: ["InheritFirstDeadAligned"],
       tags: ["Dead", "Conversion"],
       description:
-        "Will passively convert to the role of the first aligned power role.",
+        "You will passively convert to the role of the first non-vanilla player of your alignment to die.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     //Retired
@@ -335,7 +336,7 @@ const modifierData = {
       internal: ["BackUpModifier"],
       tags: ["Conversion"],
       description:
-        "Independents will become a Sidekick with this role as the Target. Other roles will have no abilities until a player with their role dies.",
+        "Your role ability is disabled until another player with your role dies.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Retired"],
     },
@@ -344,7 +345,7 @@ const modifierData = {
       internal: ["Retired"],
       tags: ["Information", "Retired"],
       description:
-        "Starts knowing anyone who has the same role. Has all other abilities disabled",
+        "Your role ability is disabled. You start knowing which have the same role as you.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Backup"],
     },
@@ -354,14 +355,14 @@ const modifierData = {
       internal: ["LearnAndLifeLinkToPlayer"],
       tags: ["Information", "Linked"],
       description:
-        "On Night 1 will learn a Village-aligned player and their role. If that player is killed by the Mafia or a Demonic role, the Married player dies.",
+        "On your first night, You will learn a Village-aligned player and their role. If that player is killed by the Mafia or a Demonic role, you die.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Omniscient: {
       category: "Other",
       internal: ["Omniscient"],
       tags: ["Roles", "Visits", "Information"],
-      description: "Each night see all visits and learn all players roles.",
+      description: "Each night, you learn each player's role and who they visit.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Insightful: {
@@ -369,7 +370,7 @@ const modifierData = {
       internal: ["Learn3ExcessRoles"],
       tags: ["Information", "Roles", "Excess Roles"],
       description:
-        "Learns 3 excess roles upon the game's start. Mafia/Cult roles always learn Village-aligned excess roles.",
+        "You know 3 excess roles. Mafia/Cult roles always learn Village-aligned excess roles.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Boastful: {
@@ -384,7 +385,7 @@ const modifierData = {
       category: "Other",
       internal: ["LearnIfRoleChanged"],
       tags: ["Information"],
-      description: "Each night, learns what their role is.",
+      description: "Each night, you learn what your role is.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Wise: {
@@ -392,7 +393,7 @@ const modifierData = {
       internal: ["MakePlayerLearnOneOfTwoPlayersOnDeath"],
       tags: ["Sacrificial", "Information", "Graveyard Participation"],
       description:
-        "If killed at night, a player with this modifier learns that 1 of 2 players is evil.",
+        "If killed at night, you learn that 1 of 2 players is evil.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
@@ -409,14 +410,14 @@ const modifierData = {
       internal: ["KillConverters"],
       tags: ["Convert Saver", "Killing", "Reflexive"],
       description:
-        "Kills anyone (up to two people) who tries to convert them at night.",
+        "You will kill anyone (up to two people) who tries to convert you at night.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Unkillable: {
       category: "Other",
       internal: ["KillImmune"],
       tags: ["Unkillable"],
-      description: "Can only be killed by condemn.",
+      description: "You can only be killed by condemn.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Blessed: {
@@ -447,7 +448,7 @@ const modifierData = {
       internal: ["GivePermaDelirium"],
       tags: ["Sacrificial", "Manipulative", "Delirium"],
       description:
-        "On death a random Village Aligned player will be chosen to be made Delirious for the rest of the game.",
+        "If you die, a Village Aligned player will become \"Delirious\"."+deliriumDef,
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Cursed: {
@@ -455,7 +456,7 @@ const modifierData = {
       internal: ["RemoveEffectsAppliedOnDeath"],
       tags: ["Effects"],
       description:
-        "When this role dies or gets converted, any effects it inflicted will be removed.",
+        "When you die or get converted, any effects you inflicted will be removed.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
@@ -464,7 +465,7 @@ const modifierData = {
       internal: ["ModifierLone"],
       tags: ["Lone"],
       description:
-        "If this role typically has a group meeting at night, they will not meet with or know the identity of their partner(s).",
+        "You do not attend the mafia or cult meetings.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
 
@@ -564,7 +565,7 @@ const modifierData = {
       internal: ["PreventFactionJoints"],
       tags: [],
       description:
-        "If a role with this modifier wins, then Village, Mafia, and Cult cannot also win alongside them.",
+        "If you wins, then Village, Mafia, and Cult will not win.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Complacent"],
     },
@@ -573,7 +574,7 @@ const modifierData = {
       internal: ["AlwaysJoints"],
       tags: [],
       description:
-        "If a role with this modifier wins, the game will continue and they will win at the end of the game.",
+        "If you win, the game will continue and you will win at the end of the game.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Braggadocious"],
     },
@@ -582,7 +583,7 @@ const modifierData = {
       internal: ["Demonic"],
       tags: ["Demonic", "Essential"],
       description:
-        "Village Wins if all Demonic roles are dead. Cult wins if a Demonic role is alive in the final 2 or only Cult and Demonic roles are alive.",
+        "If you and all other Demonic roles are dead, Village wins. If you or another Demonic role are alive in the final two or only Cult and Demonic roles are alive, Cult wins.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Vital: {
@@ -590,7 +591,7 @@ const modifierData = {
       internal: ["KillAlignedOnDeath"],
       tags: ["Essential", "Selective Revealing", "Vital"],
       description:
-        "If killed, all players with the same alignment will die too.",
+        "If you die, all players with the same alignment as you will also die.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     //Role Share
@@ -599,7 +600,7 @@ const modifierData = {
       internal: ["MakeSkittishOnRoleShare"],
       tags: ["Role Share"],
       description:
-        "Players who role-share with a Brutish player become skittish. Skittish players must accept all incoming role-shares.",
+        "Players who role-share with you become \"Skittish\". Skittish players must accept all incoming role-shares.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Reclusive"],
     },
@@ -608,7 +609,7 @@ const modifierData = {
       internal: ["MakeShyOnRoleShare"],
       tags: ["Role Share"],
       description:
-        "Players who role-share with a Reclusive player become shy. Shy players cannot accept incoming role-shares and cannot Private/Public Reveal.",
+        "Players who role-share with you become \"Shy\". Shy players cannot accept incoming role-shares and cannot Private/Public Reveal.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Brutish"],
     },
@@ -616,7 +617,7 @@ const modifierData = {
       category: "Other",
       internal: ["LearnRealWord"],
       tags: ["Ghost Interaction"],
-      description: "Will learn the real word if a Ghost is present.",
+      description: "You will learn the real word if a Ghost is present.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Hylic"],
     },
@@ -624,7 +625,7 @@ const modifierData = {
       category: "Other",
       internal: ["LearnFakeWord"],
       tags: ["Ghost Interaction"],
-      description: "Will learn the fake word if a Ghost is present.",
+      description: "You will learn the fake word if a Ghost is present.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Pneumatic"],
     },
@@ -872,7 +873,7 @@ const modifierData = {
       category: "Visits",
       internal: ["FairModifier"],
       tags: ["Fair", "Visits"],
-      description: "You cannot target a player for targeted previously.",
+      description: "You cannot target a player you targeted previously.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Nonconsecutive", "Consecutive"],
     },
@@ -1182,7 +1183,7 @@ const modifierData = {
       internal: ["Humble"],
       tags: ["Vanilla", "Villager", "Self Appearance"],
       description:
-        "Appears as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) to self with no modifier.",
+        "You see self as Villager (Village) / Mafioso (Mafia) / Cultist (Cult) / Grouch (Independent) with no modifier.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Scatterbrained"],
     },
@@ -1191,7 +1192,7 @@ const modifierData = {
       internal: ["Scatterbrained"],
       tags: ["Visitor"],
       description:
-        "Appears as Visitor (Village) / Trespasser (Mafia) / Bogeyman (Cult) / Fool (Independent) to self with no modifier.",
+        "You see self as Visitor (Village) / Trespasser (Mafia) / Bogeyman (Cult) / Fool (Independent) with no modifier.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Humble"],
     },
@@ -1208,7 +1209,7 @@ const modifierData = {
       category: "Appearance",
       internal: ["DisguiseAsTarget"],
       tags: ["Roles", "Deception", "Suits"],
-      description: "When you visit a player with your secondary action, you gains a suit of each that player's role.",
+      description: "When you visit a player, you gain a suit of each that player's role.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Respected: {
@@ -1306,7 +1307,7 @@ const modifierData = {
       internal: ["TrueModifier"],
       tags: ["Information", "Sanity"],
       description:
-        "All information created by this role is true. Hides other modifiers.",
+        "All information from your ability is true. Your modifiers are hidden.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Confused", "Insane", "Naive", "Paranoid"],
     },
@@ -1315,7 +1316,7 @@ const modifierData = {
       internal: ["FalseModifier"],
       tags: ["Information", "Sanity"],
       description:
-        "All information created by this role is false. Hides other modifiers.",
+        "All information from your ability is false. Your modifiers are hidden.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Sane", "Confused", "Naive", "Paranoid"],
     },
@@ -1324,7 +1325,7 @@ const modifierData = {
       internal: ["UnfavorableModifier"],
       tags: ["Information", "Sanity"],
       description:
-        "All information created by this role will be unfavorable to the player being checked. Hides other modifiers.",
+        "All information from your ability will be unfavorable to the player being checked. Your modifiers are hidden.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Sane", "Insane", "Confused", "Naive"],
     },
@@ -1333,7 +1334,7 @@ const modifierData = {
       internal: ["FavorableModifier"],
       tags: ["Information", "Sanity"],
       description:
-        "All information created by this role will be favorable to the player being checked. Hides other modifiers.",
+        "All information from your ability will be favorable to the player being checked. Your modifiers are hidden.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Sane", "Insane", "Confused", "Paranoid"],
     },
@@ -1342,7 +1343,7 @@ const modifierData = {
       internal: ["ModifierConfused"],
       tags: ["Information", "Sanity", "RNG"],
       description:
-        "Information created by this role has a 50% chance to be made false. Hides other modifiers.",
+        "All information from your ability has a 50% chance to be made false. Your modifiers are hidden.",
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Sane", "Insane", "Naive", "Paranoid"],
     },
@@ -1351,7 +1352,7 @@ const modifierData = {
       internal: ["OnePlayerShowsAsEvil"],
       tags: ["Information"],
       description:
-        "One Village-aligned player will have unfavorable results to this role's information abilities.",
+        "One Village-aligned player will have unfavorable results to your information abilities.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Literal: {
@@ -1359,7 +1360,7 @@ const modifierData = {
       internal: ["LiteralAppearance"],
       tags: ["Information"],
       description:
-        "This role's appearance to information roles will also affect non-information abilites.",
+        "Your appearance to information roles will also affect non-information abilites.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     //Speaking
@@ -1391,35 +1392,35 @@ const modifierData = {
       category: "Chat",
       internal: ["CanSpeakWhenDead"],
       tags: ["Speech", "Effect", "Graveyard Participation"],
-      description: `Can talk with alive players when dead.`,
+      description: `You can talk with alive players when dead.`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Paranormal: {
       category: "Chat",
       internal: ["CanSeeDeadChat"],
       tags: ["Speech", "Effect", "Graveyard Participation All"],
-      description: `Can talk with dead players when alive.`,
+      description: `You can talk with dead players when alive.`,
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Telepathic: {
       category: "Chat",
       internal: ["ModifierTelepathic"],
       tags: ["Speaking"],
-      description: "May anonymously contact any player.",
+      description: "You can anonymously contact any player.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Neighborly: {
       category: "Chat",
       internal: ["MeetWithNeighbors"],
       tags: ["Meeting"],
-      description: "Attends a Night Meeting with their Neighbors.",
+      description: "You meet with your neighbors at night.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Social: {
       category: "Chat",
       internal: ["MeetWithSocial"],
       tags: ["Meeting"],
-      description: "Attends a meeting with all other Social players.",
+      description: "You meet with all Social roles at night.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
     Renegade: {

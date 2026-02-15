@@ -1,4 +1,5 @@
 const Effect = require("../Effect");
+const Action = require("../Action");
 
 module.exports = class Lovesick extends Effect {
   constructor(lover) {
@@ -9,7 +10,19 @@ module.exports = class Lovesick extends Effect {
     this.listeners = {
       death: function (player, killer, deathType, instant) {
         if (player == this.lover) {
-          this.player.kill("love", this.lover, instant);
+          var action = new Action({
+          labels: ["kill", "hidden"],
+          actor: this.lover,
+          target: this.player,
+          game: this.player.game,
+          priority: 0,
+          run: function () {
+            if (this.dominates()){
+            this.target.kill("love", this.lover, instant);
+            }
+          },
+        });
+          action.do();
         }
       },
     };
