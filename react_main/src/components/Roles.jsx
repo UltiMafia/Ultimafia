@@ -19,6 +19,9 @@ import {
   Stack,
   Divider,
   Button,
+  FormGroup,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
 import { Loading } from "./Loading";
@@ -1056,6 +1059,9 @@ export function RoleSearch(props) {
   const [roleListType, setRoleListType] = useState(
     Alignments[props.gameType][0]
   );
+  const [selectedTags, setSelectedTags] = useState(
+    []
+  );
   const [searchVal, setSearchVal] = useState("");
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -1064,6 +1070,17 @@ export function RoleSearch(props) {
   function onAlignNavClick(alignment) {
     setSearchVal("");
     setRoleListType(alignment);
+  }
+
+  function handleTagChange(tag) {
+    if(selectedTags.includes(tag)){
+      selectedTags.splice(selectedTags.indexOf(tag), 1);
+    }
+    else{
+      selectedTags.push(tag);
+    }
+    setSearchVal("");
+    setSelectedTags(selectedTags);
   }
 
   const roleAbbreviations = {
@@ -1107,6 +1124,13 @@ export function RoleSearch(props) {
       key={type}
     />
   ));
+
+  const tabCheckboxes = (<FormGroup>
+    (siteInfo.tags[props.gameType].map((type) => (
+  <FormControlLabel control={<Checkbox defaultChecked />} onChange={handleTagChange("analytics")} label="Label" />
+  ));
+    )
+    </FormGroup>)
 
   if (!siteInfo.roles) return <Loading small />;
 
@@ -1168,6 +1192,7 @@ export function RoleSearch(props) {
           />
         </Box>
       </Stack>
+      {tabCheckboxes}
       <Divider direction="horizontal" sx={{ mb: 1 }} />
       <Paper sx={{ p: 1 }}>
         <Grid2 container spacing={1} columns={{ xs: 4, sm: 6, md: 8 }}>
