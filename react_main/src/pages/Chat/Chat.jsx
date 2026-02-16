@@ -673,7 +673,7 @@ function Message(props) {
     !user.settings?.ignoreTextColor &&
     message.sender.settings &&
     message.sender.settings.textColor
-      ? message.sender.settings.textColor
+      ? user.autoContrastColor(message.sender.settings.textColor)
       : null;
 
   return (

@@ -489,8 +489,11 @@ export function NameWithAvatar(props) {
   const subContent = props.subContent;
 
   const game = useContext(GameContext);
+  const user = useContext(UserContext);
   const [userProfile, setUserProfile] = useState(null);
   const [isClicked, setIsClicked] = useState(false);
+
+  const autoColor = user.autoContrastColor(color);
 
   const {
     popoverOpen: canOpenPopover,
@@ -543,8 +546,8 @@ export function NameWithAvatar(props) {
       />
       <Stack direction="column">
         <div
-          className={`user-name ${props.dead ? "dead" : color}`}
-          style={{ ...(color ? { color } : {}), display: "inline" }}
+          className={`user-name ${props.dead ? "dead" : autoColor}`} 
+          style={{ ...(autoColor ? { color: autoColor } : {}), display: "inline" }}
         >
           <Stack direction="row" spacing={0.5} alignItems="center">
             <Typography>
