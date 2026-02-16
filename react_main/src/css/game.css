@@ -291,7 +291,7 @@
 }
 
 .game .message .content.dead {
-  background: linear-gradient(to right, #bd4c4c, #d3d3d3) !important;
+  background: linear-gradient(to right, #bd4c4c, var(--mui-palette-text-primary)) !important;
   background-clip: text !important;
   -webkit-background-clip: text !important;
   -moz-background-clip: text !important;
