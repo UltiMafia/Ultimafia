@@ -33,7 +33,7 @@ const tagData = {
       description: "Creates information.",
     },
     Deception: {
-      description: "Creates information.",
+      description: "Alters information.",
     },
 
     Vanilla: {
