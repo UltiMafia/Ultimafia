@@ -576,6 +576,8 @@ function CustomColorPicker(props) {
   // This effect prevents API spam
   const timerRef = useRef(null);
   useEffect(() => {
+    if (color === value) return;
+
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
