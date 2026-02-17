@@ -22,9 +22,6 @@ import {
   FormGroup,
   Checkbox,
   FormControlLabel,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Drawer,
 } from "@mui/material";
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
@@ -32,7 +29,6 @@ import { Loading } from "./Loading";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 import { PopoverContent } from "./Popover";
 import { getAlignmentColor, SmallRoleList } from "./Setup";
-import { Slang } from "./Slang";
 
 export function RoleDetails({
   gameType,
