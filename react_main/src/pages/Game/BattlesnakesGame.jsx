@@ -11,6 +11,7 @@ import {
   GameTypeContext,
 } from "./Game";
 import { GameContext } from "../../Contexts";
+import { battlesnakesAudioConfig } from "../../audio/audioConfigs";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/gameBattlesnakes.css";
@@ -32,24 +33,13 @@ function SnakeGame(props) {
     ? history.states[stateViewing].meetings
     : {};
 
-  const audioConfig = {
-    music: [
-      {
-        fileName: "music/14_Minigame",
-        loop: true,
-        overrides: true,
-        volume: 1,
-      },
-    ],
-  };
-
   // Make player view current state when it changes
   useEffect(() => {
     updateStateViewing({ type: "current" });
   }, [history.currentState]);
 
   useEffect(() => {
-    game.loadAudioFiles(audioConfig);
+    game.loadAudioFiles(battlesnakesAudioConfig);
 
     // Make game review start at pregame
     if (game.review) updateStateViewing({ type: "first" });
