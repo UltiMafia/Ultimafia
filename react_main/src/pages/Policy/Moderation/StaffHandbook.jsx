@@ -8,7 +8,7 @@ export default function StaffHandbook() {
         Staff Handbook
       </Typography>
       <Typography variant="body2" color="text.secondary" paragraph>
-        Last Updated: February 11, 2026
+        Last Updated: February 17, 2026
       </Typography>
 
       <Typography variant="h5" sx={{ mt: 2, mb: 1 }}>
@@ -53,7 +53,7 @@ export default function StaffHandbook() {
       <Typography sx={{ mb: 2 }}>
         Staff are held to a higher standard than regular users. They are expected to
         demonstrate professionalism and respect in all interactions with both users
-        and fellow staffs, including in games. Staff should not engage in favoritism
+        and fellow staff, including in games. Staff should not engage in favoritism
         for certain users, should be respectful in all discussions or arguments regarding
         game events, site contents, or staff decisions, and should avoid engaging in drama. 
         Staff shall not insult either users or fellow staff, even in the heat of games.
@@ -64,7 +64,7 @@ export default function StaffHandbook() {
         are free to provide constructive feedback and suggestions for improvement,
         and to express their own beliefs and frustrations in public. That being said: Staff are expected
         to represent the site and team in public discourse and users will often conflate
-        the words of an Staff with the words of the team or site as a whole, so Staff are
+        the words of a member of Staff with the words of the team or site as a whole, so Staff are
         asked to be mindful of their conduct.
       </Typography>
 
@@ -101,7 +101,7 @@ export default function StaffHandbook() {
       warning before a member of staff takes action. Staff are free to complete reports according to their 
       own judgment; one does not need to wait for other opinions if they don't feel the need to. 
       Staff are to maintain the atmosphere of hospitality and acceptance in every game they join 
-      and every discussion they participate in. Staff are not use their authority to retaliate against users 
+      and every discussion they participate in. Staff are not to use their authority to retaliate against users 
       following the decisions of another staff or to target users for personal reasons. Do not use 
       one's authority to threaten users with Staff action in the face of noncompliance.
       </Typography>

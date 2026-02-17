@@ -35,7 +35,7 @@ const violationDefinitions = [
     id: "adult-content",
     name: "Adult Content",
     description:
-      "Graphic or textual descriptions of adult behavior, including explicit sex acts, drug use, lewd words, mentions or descriptions of content intended to shock or disturb, pornographic websites, or descriptions of real violence or assault.",
+      "Graphic or textual descriptions of adult behavior, including explicit sex acts, drug use, lewd word, mentions or descriptions of content intended to shock or disturb, pornographic websites, or descriptions of real violence or assault.",
     offenses: [
       "1 day",
       "3 days",
