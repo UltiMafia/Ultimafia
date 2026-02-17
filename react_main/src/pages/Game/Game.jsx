@@ -47,6 +47,8 @@ import {
   MaxWillLength,
 } from "../../Constants";
 import { textIncludesSlurs } from "../../lib/profanity";
+import { useAudio } from "../../hooks/useAudio";
+import { coreAudioConfig } from "../../audio/audioConfigs";
 
 import "css/game.css";
 import EmotePicker from "../../components/EmotePicker";
@@ -169,7 +171,7 @@ export default function Game() {
   const selfRef = useRef();
   const noLeaveRef = useRef();
 
-  const [playAudio, loadAudioFiles, stopAudio, stopAudios] = useAudio(settings);
+  const { playAudio, loadAudioFiles, stopAudio, stopAudios } = useAudio(settings);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
   const isPhoneDevice = useIsPhoneDevice();
@@ -340,16 +342,6 @@ export default function Game() {
       });
     }
   }
-
-  const coreAudioConfig = {
-    sfx: [
-      { fileName: "bell", loops: false, overrides: false, volumes: 1 },
-      { fileName: "ping", loops: false, overrides: false, volumes: 1 },
-      { fileName: "tick", loops: false, overrides: false, volumes: 1 },
-      { fileName: "vegPing", loops: false, overrides: false, volumes: 1 },
-      { fileName: "urgent", loops: false, overrides: false, volumes: 1 },
-    ],
-  };
 
   const togglePlayerIsolation = (playerId) => {
     const newIsolatedPlayers = new Set(isolatedPlayers);
@@ -5611,197 +5603,6 @@ export function useActivity() {
   );
 
   return [activity, updateActivity];
-}
-
-export function useAudio(settings) {
-  const audioRef = useRef({});
-
-  const clampSlider = (value, fallback = 1) => {
-    const parsed = Number(value);
-
-    if (!Number.isFinite(parsed)) return fallback;
-
-    if (parsed < 0) return 0;
-    if (parsed > 1) return 1;
-    return parsed;
-  };
-
-  const normalizeEntries = (payload) => {
-    const entries = [];
-
-    if (!payload) return entries;
-
-    if (Array.isArray(payload)) {
-      for (const item of payload) {
-        if (!item || typeof item !== "object") continue;
-        entries.push({ ...item });
-      }
-    } else if (typeof payload === "object") {
-      for (const [defaultChannel, list] of Object.entries(payload)) {
-        if (!Array.isArray(list)) continue;
-        for (const item of list) {
-          if (!item || typeof item !== "object") continue;
-          entries.push({ channel: defaultChannel, ...item });
-        }
-      }
-    }
-
-    return entries;
-  };
-
-  const [audioInfo, updateAudio] = useReducer(
-    (audioInfo, action) => {
-      var newAudioInfo;
-
-      switch (action.type) {
-        case "play": {
-          const audioElement = audioRef.current[action.audioName];
-          if (!audioElement) return audioInfo;
-
-          if (audioInfo.overrides[action.audioName])
-            for (let audioName in audioInfo.overrides)
-              if (audioInfo.overrides[audioName] && audioRef.current[audioName])
-                audioRef.current[audioName].pause();
-
-          audioElement.currentTime = 0;
-          audioElement.play().catch(() => {});
-          break;
-        }
-        case "load": {
-          newAudioInfo = {
-            overrides: { ...audioInfo.overrides },
-            volumes: { ...audioInfo.volumes },
-            channels: { ...audioInfo.channels },
-          };
-
-          const entries = normalizeEntries(action.entries);
-
-          for (const entry of entries) {
-            const {
-              fileName,
-              loop,
-              loops,
-              overrides = false,
-              volume,
-              volumes,
-              channel,
-            } = entry;
-            const resolvedLoop = loop ?? loops ?? false;
-            const resolvedVolume = volume ?? volumes ?? 1;
-
-            if (!fileName) continue;
-
-            if (!audioRef.current[fileName]) {
-              audioRef.current[fileName] = new Audio(`/audio/${fileName}.mp3`);
-              audioRef.current[fileName].load();
-              audioRef.current[fileName].loop = resolvedLoop;
-            } else {
-              audioRef.current[
-                fileName
-              ].pause(); /* ensure loop changes apply on reload */
-              audioRef.current[fileName].loop = resolvedLoop;
-            }
-
-            newAudioInfo.overrides[fileName] = overrides;
-            newAudioInfo.volumes[fileName] = resolvedVolume;
-            newAudioInfo.channels[fileName] =
-              channel || (fileName.includes("music") ? "music" : "sfx");
-          }
-          break;
-        }
-        case "volume":
-          for (let audioName in audioRef.current) {
-            const audioElement = audioRef.current[audioName];
-            const baseVolume =
-              audioInfo.volumes[audioName] != null
-                ? audioInfo.volumes[audioName]
-                : 1;
-
-            if (audioName === "vegPing") {
-              audioElement.volume = baseVolume;
-              continue;
-            }
-
-            const channel =
-              (audioInfo.channels && audioInfo.channels[audioName]) ||
-              (audioName.includes("music") ? "music" : "sfx");
-            const slider =
-              channel === "music"
-                ? clampSlider(action.musicVolume, settings.musicVolume)
-                : clampSlider(action.sfxVolume, settings.sfxVolume);
-
-            audioElement.volume = baseVolume * slider;
-          }
-          break;
-      }
-
-      return newAudioInfo || audioInfo;
-    },
-    { overrides: {}, volumes: {}, channels: {} }
-  );
-
-  useEffect(() => {
-    updateAudio({
-      type: "volume",
-      sfxVolume: settings.sfxVolume,
-      musicVolume: settings.musicVolume,
-    });
-  }, [settings.sfxVolume, settings.musicVolume, audioInfo]);
-
-  function playAudio(audioName) {
-    updateAudio({
-      type: "play",
-      audioName,
-    });
-  }
-
-  function loadAudioFiles(config, loops, overrides, volumes) {
-    let entries = [];
-
-    if (Array.isArray(config)) {
-      if (config.length && typeof config[0] === "string") {
-        entries = config.map((fileName, index) => ({
-          fileName,
-          loop: Array.isArray(loops) ? loops[index] : false,
-          overrides: Array.isArray(overrides) ? overrides[index] : false,
-          volume:
-            Array.isArray(volumes) && volumes[index] != null
-              ? volumes[index]
-              : 1,
-        }));
-      } else {
-        entries = config;
-      }
-    } else if (config && typeof config === "object") {
-      entries = Object.entries(config).reduce((allEntries, [channel, list]) => {
-        if (!Array.isArray(list)) return allEntries;
-
-        list.forEach((item) => {
-          if (!item || typeof item !== "object") return;
-          allEntries.push({ channel, ...item });
-        });
-
-        return allEntries;
-      }, []);
-    }
-
-    if (!entries.length) return;
-
-    updateAudio({
-      type: "load",
-      entries,
-    });
-  }
-
-  function stopAudio() {
-    for (let audioName in audioRef.current) audioRef.current[audioName].pause();
-  }
-
-  function stopAudios(audios) {
-    for (let audioName of audios) audioRef.current[audioName].pause();
-  }
-
-  return [playAudio, loadAudioFiles, stopAudio, stopAudios];
 }
 
 function ReadyCheckDialog({ open, endTime, onReady, onLeave }) {

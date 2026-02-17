@@ -14,6 +14,7 @@ import {
   GameTypeContext,
 } from "./Game";
 import { GameContext } from "../../Contexts";
+import { cardGameAudioConfig } from "../../audio/audioConfigs";
 import { SideMenu } from "./Game";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
@@ -39,16 +40,6 @@ export default function RatscrewGame(props) {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
-  const audioConfig = {
-    sfx: [
-      { fileName: "cardShuffle" },
-      { fileName: "gunshot" },
-      { fileName: "chips_large1" },
-      { fileName: "chips_large2" },
-      { fileName: "chips_small1" },
-      { fileName: "chips_small2" },
-    ],
-  };
 
   // Make player view current state when it changes
   useEffect(() => {
@@ -56,7 +47,7 @@ export default function RatscrewGame(props) {
   }, [history.currentState]);
 
   useEffect(() => {
-    game.loadAudioFiles(audioConfig);
+    game.loadAudioFiles(cardGameAudioConfig);
 
     // Make game review start at pregame
     if (game.review) updateStateViewing({ type: "first" });
@@ -67,19 +58,9 @@ export default function RatscrewGame(props) {
       if (playBellRef.current) game.playAudio("ping");
 
       playBellRef.current = true;
-
-      // for (let stateName of stateNames)
-      // 	if (state.name.indexOf(stateName) == 0)
-      // 		game.playAudio(stateName);
     });
 
-    socket.on("winners", (winners) => {
-      // game.stopAudios(stateNames);
-      // if (winners.groups.indexOf("Resistance") != -1)
-      // 	game.playAudio("resistancewin");
-      // else
-      // 	game.playAudio("spieswin");
-    });
+    socket.on("winners", (winners) => {});
     socket.on("cardShuffle", () => {
       game.playAudio("cardShuffle");
     });
@@ -87,7 +68,7 @@ export default function RatscrewGame(props) {
       game.playAudio("chips_large1");
     });
     socket.on("chips_large2", () => {
-      game.playAudio("chips_large");
+      game.playAudio("chips_large2");
     });
     socket.on("chips_small1", () => {
       game.playAudio("chips_small1");

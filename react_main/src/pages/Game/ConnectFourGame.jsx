@@ -39,7 +39,6 @@ export default function ConnectFourGame(props) {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
-  const audioConfig = [];
 
   // Make player view current state when it changes
   useEffect(() => {
@@ -47,8 +46,6 @@ export default function ConnectFourGame(props) {
   }, [history.currentState]);
 
   useEffect(() => {
-    game.loadAudioFiles(audioConfig);
-
     // Make game review start at pregame
     if (game.review) updateStateViewing({ type: "first" });
   }, []);
@@ -58,15 +55,9 @@ export default function ConnectFourGame(props) {
       if (playBellRef.current) game.playAudio("ping");
 
       playBellRef.current = true;
-
-      // for (let stateName of stateNames)
-      // 	if (state.name.indexOf(stateName) == 0)
-      // 		game.playAudio(stateName);
     });
 
-    socket.on("winners", (winners) => {
-      // game.stopAudios(stateNames);
-    });
+    socket.on("winners", (winners) => {});
   }, game.socket);
 
   return (

@@ -42,8 +42,6 @@ export default function JottoGame() {
 
   const playBellRef = useRef(false);
 
-  const audioConfig = [];
-
   // Make player view current state when it changes
   useEffect(() => {
     updateStateViewing({ type: "current" });
@@ -71,28 +69,14 @@ export default function JottoGame() {
     }
   }, {});
 
-  useEffect(() => {
-    game.loadAudioFiles(audioConfig);
-  }, []);
-
   useSocketListeners((socket) => {
     socket.on("state", (state) => {
       if (playBellRef.current) game.playAudio("ping");
 
       playBellRef.current = true;
-
-      // for (let stateName of stateNames)
-      // 	if (state.name.indexOf(stateName) == 0)
-      // 		game.playAudio(stateName);
     });
 
-    socket.on("winners", (winners) => {
-      // game.stopAudios(stateNames);
-      // if (winners.groups.indexOf("Resistance") != -1)
-      // 	game.playAudio("resistancewin");
-      // else
-      // 	game.playAudio("spieswin");
-    });
+    socket.on("winners", (winners) => {});
   }, game.socket);
 
   const jottoCheatSheet = (
