@@ -4,161 +4,206 @@ const tagData = {
 
     //Skill Rating Tags
     Basic: {
-      description: "Beginner friendly.",
+      definition: "Beginner friendly.",
     },
     Advanced: {
-      description: "Recommended for more experienced players.",
+      definition: "Recommended for more experienced players.",
     },
     Expert: {
-      description: "Recommended for very experienced players.",
+      definition: "Recommended for very experienced players.",
     },
     //design descriptive tags
     "Mini-Game": {
-      description: "Ability involves a mini-game or alternate game mode.",
+      definition: "Ability involves a mini-game or alternate game mode.",
     },
     Special: {
-      description:
+      definition:
         "Adds new rules to the game even if not currently in the game.",
     },
 
     //Ability Descriptive tags
     "Day Actions": {
-      description: "Has actions that are used during the day.",
+      definition: "Has actions that are used during the day.",
     },
 
     //Functional Tags
 
     //Important
     Information: {
-      description: "Creates information.",
+      definition: "Creates information.",
     },
     Deception: {
-      description: "Creates information.",
+      definition: "Alters information.",
     },
 
     Vanilla: {
-      description: "Villager, Mafioso, Cultist, and Grouch.",
+      definition: "Villager, Mafioso, Cultist, and Grouch.",
       paired: ["Vanilla Interaction"],
     },
     "Vanilla Interaction": {
-      description: "Interacts with Vanilla roles.",
+      definition: "Interacts with Vanilla roles.",
       paired: ["Vanilla"],
     },
     //Killing Group
     Killing: {
-      description: "Kills other players.",
+      definition: "Kills other players.",
       paired: ["Kill Interaction", "Protective", "Self Protection"],
     },
     "Kill Interaction": {
-      description: "Interacts with killing.",
+      definition: "Interacts with killing.",
       paired: ["Killing"],
     },
     "Death Interaction": {
-      description: "Interacts with death.",
+      definition: "Interacts with death.",
       paired: ["Killing"],
     },
     Protective: {
-      description: "Prevents other players from dying.",
+      definition: "Prevents other players from dying.",
       paired: ["Killing", "Protection Interaction"],
     },
     "Self Protection": {
-      description: "Prevents themselves from dying.",
+      definition: "Prevents themselves from dying.",
       paired: ["Killing", "Protection Interaction"],
     },
     "Protection Interaction": {
-      description: "Interacts with protection.",
+      definition: "Interacts with protection.",
       paired: ["Protective", "Self Protection"],
     },
 
     "Condemn Interaction": {
-      description: "Interacts with condemnation.",
+      definition: "Interacts with condemnation.",
+    },
+
+    //Conversion
+    "Conversion": {
+      definition: "Can change players roles.",
+    },
+    "Conversion Interaction": {
+      definition: "Interacts with conversions.",
     },
 
     //Effects
     Effects: {
-      description: "Causes or has status effects.",
+      definition: "Causes or has status effects.",
       paired: ["Effect Interaction"],
     },
     "Effect Interaction": {
-      description: "Interacts with effects.",
+      definition: "Interacts with effects.",
       paired: ["Effects"],
     },
     Delirium: {
-      description: "Makes players Delirious.",
+      definition: "Makes players Delirious.",
       paired: ["Delirium Interaction"],
     },
     "Delirium Interaction": {
-      description: "Interacts with the Delirious effect.",
+      definition: "Interacts with the Delirious effect.",
       paired: ["Delirium"],
     },
 
     //Items
     Items: {
-      description: "Creates or has items.",
+      definition: "Creates or has items.",
       paired: ["Item Interaction"],
     },
     "Item Interaction": {
-      description: "Interacts with items.",
+      definition: "Interacts with items.",
       paired: ["Items"],
     },
     Gun: {
-      description: "Creates or has guns.",
+      definition: "Creates or has guns.",
       paired: ["Gun Interaction"],
     },
     "Gun Interaction": {
-      description: "Interacts with guns.",
+      definition: "Interacts with guns.",
       paired: ["Gun"],
     },
 
     //Visiting Group
     Visiting: {
-      description: "Visits other players.",
+      definition: "Visits other players.",
       paired: ["Visit Interaction"],
     },
     "Visit Interaction": {
-      description: "Interacts with visits.",
+      definition: "Interacts with visits.",
+      paired: ["Visiting"],
+    },
+    Redirection: {
+      definition: "Redirects visits.",
+      paired: ["Visiting"],
+    },
+    "Group Action": {
+      definition: "Performs Actions as a Group.",
       paired: ["Visiting"],
     },
 
     //Blocking
     Blocking: {
-      description: "Can block other player' night actions.",
+      definition: "Can block other player' night actions.",
       //paired: ["Blocking Interaction"],
     },
     /*
     "Blocking Interaction": {
-      description: "Interacts with blocking.",
+      definition: "Interacts with blocking.",
       paired: ["Blocking"],
     },
     */
 
     //Meeting
     Meetings: {
-      description: "Can meet with other players at night.",
+      definition: "Can meet with other players at night.",
       paired: ["Meeting Interaction"],
     },
     "Meeting Interaction": {
-      description: "Interacts with night meetings.",
+      definition: "Interacts with night meetings.",
       paired: ["Meetings"],
     },
 
+    
+
     //Voting
     Voting: {
-      description: "Interacts with voting.",
+      definition: "Interacts with voting.",
     },
-
+    //Speech
+    Speech:{
+      definition: "Has an ability that interacts with chat.",
+    },
     //Game Settings
     "Whisper Interaction": {
-      description: "Can block other player' night actions.",
+      definition: "Can block other player' night actions.",
       //paired: ["Blocking Interaction"],
     },
 
+    "Graveyard":{
+      definition: "Requires dead players to stay in game.",
+    },
+
+     "Revive":{
+      definition: "Revives players.",
+    },
+
+    "Excess Role Interaction":{
+      definition: "Interacts with excess roles.",
+    },
+
     //Other
-    Exposed: {
-      description: "Is revealed to all players.",
+    "Position": {
+       definition: "Interacts with the player list.",
+    },
+    "Banished Interaction":{
+      definition: "Interacts with banished roles.",
+    },
+    "Modifier Interaction":{
+      definition: "Interacts with modifiers.",
+    },
+    Revealing: {
+      definition: "Is revealed or reveals players.",
     },
     Unaware: {
-      description: "Sees self as another role.",
+      definition: "Sees self as another role.",
+    },
+    Hostile: {
+      definition: "Village cannot when this is alive.",
     },
   },
   Resistance: {},

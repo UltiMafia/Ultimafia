@@ -19,6 +19,10 @@ import {
   Stack,
   Divider,
   Button,
+  FormGroup,
+  Checkbox,
+  FormControlLabel,
+  Drawer,
 } from "@mui/material";
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
 import { Loading } from "./Loading";
@@ -1056,6 +1060,13 @@ export function RoleSearch(props) {
   const [roleListType, setRoleListType] = useState(
     Alignments[props.gameType][0]
   );
+  const [selectedTags, setSelectedTags] = useState(
+    []
+  );
+  const [selectedTagsCount, setSelectedTagsCount] = useState(
+    0
+  );
+  const [tagDrawer, setTagDrawer] = useState(false);
   const [searchVal, setSearchVal] = useState("");
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -1064,6 +1075,30 @@ export function RoleSearch(props) {
   function onAlignNavClick(alignment) {
     setSearchVal("");
     setRoleListType(alignment);
+  }
+
+  function toggleDrawer(status)
+  {
+    setTagDrawer(status);
+  }
+
+  function handleTagChange(tag) {
+    if(selectedTags.includes(tag)){
+      selectedTags.splice(selectedTags.indexOf(tag), 1);
+    }
+    else{
+      selectedTags.push(tag);
+    }
+    if(selectedTags.length > 0){
+    setSearchVal("");
+    setRoleListType("");
+    }
+    else{
+    setSearchVal(searchVal);
+    setRoleListType(roleListType);
+    }
+    setSelectedTags(selectedTags);
+    setSelectedTagsCount(selectedTags.length);
   }
 
   const roleAbbreviations = {
@@ -1108,6 +1143,13 @@ export function RoleSearch(props) {
     />
   ));
 
+  if (!siteInfo.tags) return <Loading small />;
+
+  const tabCheckboxes = (siteInfo.tags[props.gameType].map((type) => (
+  <FormControlLabel control={<Checkbox defaultChecked={selectedTags.includes(type.name)} />} onChange={(e) => handleTagChange(`${type.name}`)} label={`${type.name}`} />
+  ))
+    );
+
   if (!siteInfo.roles) return <Loading small />;
 
   const roleCells = useMemo(
@@ -1129,13 +1171,21 @@ export function RoleSearch(props) {
                   shortcut === term && roleNames.includes(role.name)
               )
           );
+          let matchesTags = true;
+          if(selectedTags.length > 0){
+            for(let tag of selectedTags){
+                if(!role.tags.includes(tag)){
+                  matchesTags = false;
+                }
+            }
+          }
 
         if (
           !role.disabled &&
           (role.alignment === roleListType ||
             (searchVal.length > 0 &&
               (role.name.toLowerCase().indexOf(searchVal) !== -1 ||
-                matchesSearch)))
+                matchesSearch)) || (roleListType == "" && matchesTags && matchesSearch)) && matchesTags
         ) {
           return (
             <Grid2 size={{ xs: 2 }} key={role.name}>
@@ -1148,7 +1198,7 @@ export function RoleSearch(props) {
           );
         }
       }),
-    [searchVal, roleListType, props.onAddClick, props.gameType]
+    [searchVal, roleListType, selectedTagsCount, props.onAddClick, props.gameType]
   );
 
   return (
@@ -1169,6 +1219,10 @@ export function RoleSearch(props) {
         </Box>
       </Stack>
       <Divider direction="horizontal" sx={{ mb: 1 }} />
+      <Button onClick={(e) => toggleDrawer(true)}>Tags</Button>
+      <Drawer open={tagDrawer} onClose={(e) =>  toggleDrawer(false)} anchor={'right'}>
+       {tabCheckboxes}
+      </Drawer>
       <Paper sx={{ p: 1 }}>
         <Grid2 container spacing={1} columns={{ xs: 4, sm: 6, md: 8 }}>
           {roleCells}
