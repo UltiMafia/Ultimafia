@@ -382,6 +382,13 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
           value: res.data,
         })
       ),
+      axios.get("/api/roles/roletags").then((res) =>
+        updateSiteInfo({
+          type: "setProp",
+          prop: "tags",
+          value: res.data,
+        })
+      ),
       axios
         .get("/api/items")
         .then((res) =>
@@ -397,7 +404,8 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
     siteInfoVal.rolesRaw &&
     siteInfoVal.modifiers &&
     siteInfoVal.gamesettings &&
-    siteInfoVal.items;
+    siteInfoVal.items &&
+    siteInfoVal.tags;
 
   return (
     <SiteInfoContext.Provider value={siteInfoVal}>
