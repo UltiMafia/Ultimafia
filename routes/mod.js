@@ -1713,6 +1713,44 @@ router.post("/breakGame", async (req, res) => {
   }
 });
 
+router.post("/purgeGame", async (req, res) => {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var gameId = String(req.body.gameId);
+    var perm = "purgeGame";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    var game = await models.Game.findOne({ id: gameId })
+      .select("_id id players")
+      .exec();
+
+    if (!game) {
+      res.status(404);
+      res.send("Game not found.");
+      return;
+    }
+
+    // Same as expireGames in periodic.js: remove from users' games, then delete
+    for (let player of game.players) {
+      await models.User.updateOne(
+        { id: player },
+        { $pull: { games: game._id } }
+      ).exec();
+    }
+
+    await models.ArchivedGame.deleteMany({ game: game._id }).exec();
+    await models.Game.deleteOne({ _id: game._id }).exec();
+
+    await routeUtils.createModAction(userId, "Purge Game", [gameId]);
+    res.send("Game purged from database.");
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error purging game: " + e.message);
+  }
+});
+
 router.post("/kick", async (req, res) => {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);

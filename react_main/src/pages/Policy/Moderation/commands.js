@@ -1237,6 +1237,26 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Purge Game": {
+      perm: "purgeGame",
+      category: "Game Management",
+      args: [
+        {
+          label: "Game ID",
+          name: "gameId",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/purgeGame", argValues)
+          .then(() => {
+            siteInfo.showAlert("Game purged from database.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
   };
 
   const banActionNames = [
