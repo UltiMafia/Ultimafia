@@ -725,20 +725,24 @@ router.post("/unban", async (req, res) => {
       site: "site",
     };
 
+    const altAccountIds = await routeUtils.getAltAccountIds(userIdToActOn);
+
     await models.Ban.deleteMany({
-      userId: userIdToActOn,
+      userId: { $in: altAccountIds },
       type: banDbTypes[banType],
       auto: false,
     }).exec();
 
     if (banType === "site") {
-      await models.User.updateOne(
-        { id: userIdToActOn },
+      await models.User.updateMany(
+        { id: { $in: altAccountIds } },
         { $set: { banned: false } }
       ).exec();
     }
 
-    await redis.cacheUserPermissions(userIdToActOn);
+    for (const altUserId of altAccountIds) {
+      await redis.cacheUserPermissions(altUserId);
+    }
 
     const modActionNames = {
       forum: "Forum Unban",
