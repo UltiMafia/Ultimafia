@@ -137,6 +137,7 @@ export default function Profile() {
   const canViewFlagged = user.perms.viewFlagged;
   const canViewAlts = user.perms.viewAlts;
   const canViewIPs = user.perms.viewIPs;
+  const canToggleFlagged = user.perms.whitelist;
 
   // userId is the id of the current profile
   // user.id is the id of the current user
@@ -267,6 +268,7 @@ export default function Profile() {
           setTrophies(res.data.trophies || []);
           setProfileFamily(res.data.family || null);
           setJoined(res.data.joined || null);
+          setIsFlagged(Boolean(res.data.flagged));
           setFriendsPage(1);
           loadFriends(resolvedId, "", 1);
 
@@ -290,7 +292,7 @@ export default function Profile() {
   }, [userId]);
 
   useEffect(() => {
-    if (!user.loggedIn || isSelf || !canViewFlagged || !profileUserId) return;
+    if (!user.loggedIn || isSelf || !(canViewFlagged || canToggleFlagged) || !profileUserId) return;
 
     let active = true;
     let intervalId = null;
@@ -299,12 +301,8 @@ export default function Profile() {
         .get(`/api/mod/flagged?userId=${profileUserId}`)
         .then((res) => {
           if (!active) return;
-
-          const flagged =
-            typeof res.data === "object" && res.data !== null
-              ? res.data.flagged === true
-              : res.data === true;
-          setIsFlagged(flagged);
+          // API returns { flagged } where flagged = user.flagged || active ipFlag ban
+          setIsFlagged(Boolean(res.data?.flagged));
         })
         .catch((e) => {
           if (active) errorAlert(e);
@@ -318,7 +316,22 @@ export default function Profile() {
       active = false;
       if (intervalId) window.clearInterval(intervalId);
     };
-  }, [canViewFlagged, errorAlert, isSelf, profileUserId, user.loggedIn]);
+  }, [canViewFlagged, canToggleFlagged, errorAlert, isSelf, profileUserId, user.loggedIn]);
+
+  async function onFlaggedToggle() {
+    if (!canToggleFlagged || !profileUserId) return;
+    const endpoint = isFlagged ? "/api/mod/whitelist" : "/api/mod/blacklist";
+    try {
+      await axios.post(endpoint, { userId: profileUserId });
+      setIsFlagged(!isFlagged);
+      siteInfo.showAlert(
+        isFlagged ? "User whitelisted (ipFlag removed)." : "User blacklisted (ipFlag applied).",
+        "success"
+      );
+    } catch (e) {
+      errorAlert(e);
+    }
+  }
 
   function onEditBanner(files, type) {
     if (!user.itemsOwned.customProfile) {
@@ -1076,13 +1089,21 @@ export default function Profile() {
         </Stack>
         {!isSelf &&
           user.loggedIn &&
-          (canViewFlagged || canViewAlts || canViewIPs) && (
+          (canToggleFlagged || canViewAlts || canViewIPs) && (
             <Stack direction="row" className="options">
-              {canViewFlagged && (
+              {canToggleFlagged && (
                 <Tooltip
-                  title={isFlagged ? "User is flagged" : "User is not flagged"}
+                  title={
+                    isFlagged
+                      ? "User is flagged!"
+                      : "User is not flagged"
+                  }
                 >
-                  <IconButton size="small" aria-label="user flagged status">
+                  <IconButton
+                    size="small"
+                    aria-label="toggle user ipFlag (blacklist/whitelist)"
+                    onClick={onFlaggedToggle}
+                  >
                     <i
                       className="fas fa-flag"
                       style={{
