@@ -1127,7 +1127,7 @@ export function RoleSearch(props) {
 
   const tabCheckboxes = (<FormGroup>
     (siteInfo.tags[props.gameType].map((type) => (
-  <FormControlLabel control={<Checkbox defaultChecked />} onChange={handleTagChange("analytics")} label="Label" />
+  <FormControlLabel control={<Checkbox defaultChecked />} onChange={handleTagChange(`{type[0]}`)} label={type[0]} />
   ));
     )
     </FormGroup>)
