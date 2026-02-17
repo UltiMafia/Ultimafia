@@ -39,13 +39,6 @@ export default function WackyWordsGame(props) {
   const meetings = history.states[stateViewing]
     ? history.states[stateViewing].meetings
     : {};
-  /*
-  const stateEvents = history.states[stateViewing]
-    ? history.states[stateViewing].stateEvents
-    : [];
-  const stateNames = ["Night", "Day"];
-  */
-  const audioConfig = [];
 
   // Make player view current state when it changes
   useEffect(() => {
@@ -53,8 +46,6 @@ export default function WackyWordsGame(props) {
   }, [history.currentState]);
 
   useEffect(() => {
-    game.loadAudioFiles(audioConfig);
-
     // Make game review start at pregame
     if (game.review) updateStateViewing({ type: "first" });
   }, []);
@@ -64,19 +55,9 @@ export default function WackyWordsGame(props) {
       if (playBellRef.current) game.playAudio("ping");
 
       playBellRef.current = true;
-
-      // for (let stateName of stateNames)
-      // 	if (state.name.indexOf(stateName) == 0)
-      // 		game.playAudio(stateName);
     });
 
-    socket.on("winners", (winners) => {
-      // game.stopAudios(stateNames);
-      // if (winners.groups.indexOf("Resistance") != -1)
-      // 	game.playAudio("resistancewin");
-      // else
-      // 	game.playAudio("spieswin");
-    });
+    socket.on("winners", (winners) => {});
   }, game.socket);
 
   return (
