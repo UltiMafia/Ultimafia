@@ -329,6 +329,28 @@ module.exports = class MafiaAction extends Action {
     }
   }
 
+  // for the actions of actor to be on target
+  redirectAllSecondaryActions(actor, target, label) {
+    actor = actor || this.actor;
+    target = target || this.target;
+
+    for (let action of this.game.actions[0]) {
+      if (label && !action.hasLabel(label)) {
+        continue;
+      }
+
+      if (
+        action.priority > this.priority &&
+        !action.hasLabel("uncontrollable") &&
+        !action.hasLabel("mafia") &&
+        !action.hasLabel("primary") &&
+        action.actor == actor
+      ) {
+        action.setAllTargets(target);
+      }
+    }
+  }
+
   // for every action targeting originalTarget, make the action target newTarget
   redirectAllActionsOnTarget(originalTarget, newTarget, label) {
     originalTarget = originalTarget || this.target;
