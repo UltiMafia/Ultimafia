@@ -18,7 +18,7 @@ module.exports = class TargetSelf50Percent extends Card {
         labels: ["block", "hidden", "absolute"],
         run: function () {
           if (Random.randInt(0, 1) == 0) {
-            this.redirectAllActions(this.actor, this.actor);
+            this.redirectAllSecondaryActions(this.actor, this.actor);
           }
         },
       },
