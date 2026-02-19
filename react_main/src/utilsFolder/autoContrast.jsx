@@ -58,7 +58,15 @@ export function autoContrastColor(sourceColor, backgroundColor, contrastLookup, 
   if (!contrastLookup) {
     return sourceColor;
   }
-  const color = Color(sourceColor);
+  if (sourceColor == null || sourceColor === '') {
+    return sourceColor ?? 'inherit';
+  }
+  let color;
+  try {
+    color = Color(sourceColor);
+  } catch {
+    return typeof sourceColor === 'string' ? sourceColor : 'inherit';
+  }
   const target = Color(backgroundColor);
   const contrast = target.contrast(color);
   if (contrast >= minimumContrast) {
