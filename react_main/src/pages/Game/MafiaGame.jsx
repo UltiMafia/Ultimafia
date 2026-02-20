@@ -194,7 +194,10 @@ export default function MafiaGame() {
             game.playAudio("music/NightSiren");
             break;
           case "Warlock":
-            game.playAudio("music/NightWarlock");
+          case "Monk":
+          case "Fatalist":
+          case "Prophet":
+            game.playAudio("music/NightFantasy");
             break;
           case "Suitress":
           case "Mistress":
@@ -225,8 +228,6 @@ export default function MafiaGame() {
           case "Blob":
           case "Doppelgänger":
           case "Grey Goo":
-          case "Prophet":
-          case "Fatalist":
             game.playAudio("music/NightMystical");
             break;
           case "Egg":
@@ -236,6 +237,15 @@ export default function MafiaGame() {
           case "Harpy":
           case "Falconer":
             game.playAudio("music/NightBird");
+            break;
+          case "Autocrat":
+          case "Palladist":
+          case "Anarchist":
+          case "Communist":
+          case "Dragoon":
+          case "Emperor":
+          case "Politician":
+            game.playAudio("music/NightPolitic");
             break;
           default:
             if (currentAlignment === "Mafia") {
