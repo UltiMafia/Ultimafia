@@ -12,7 +12,6 @@ module.exports = {
     Telepath: "Spy",
     //UM changes (golbolco is picky)
     Mason: "Freemason",
-    Mortician: "Coroner",
     Ghoul: "Coward",
     Paparazzi: "Paparazzo",
     Monitor: "Voyeur",
