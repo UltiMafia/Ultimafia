@@ -27,7 +27,7 @@ module.exports = class LearnCondemnedRole extends Card {
               "RoleInfo",
               this.actor,
               this.game,
-              this.target
+              this.role.CondemnedPlayer
             );
           info.processInfo();
           this.actor.role.hasInfo = true;
