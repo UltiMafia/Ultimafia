@@ -1022,7 +1022,7 @@ const roleData = {
       alignment: "Village",
       category: "Investigative",
       tags: ["Information", "Alignment", "Dead", "Basic"],
-      description: ["Each night, you learn the role of any players condemned the previous day."],
+      description: ["Each night, you learn the role of the most recently condemned player."],
       nightOrder: [
         ["Learn Condemnded Player's role", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10],
       ],
