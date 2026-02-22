@@ -760,7 +760,7 @@ const modifierData = {
         "When you visit a player, you learn if that player was visited by another player.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
-    Perspective: {
+    Perceptive: {
       category: "Visits",
       internal: ["LearnRoleOfVisits"],
       tags: ["Information", "Visits"],
