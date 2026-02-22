@@ -325,7 +325,7 @@ export default function Profile() {
       await axios.post(endpoint, { userId: profileUserId });
       setIsFlagged(!isFlagged);
       siteInfo.showAlert(
-        isFlagged ? "User whitelisted (ipFlag removed)." : "User blacklisted (ipFlag applied).",
+        isFlagged ? "User whitelisted." : "User blacklisted.",
         "success"
       );
     } catch (e) {
