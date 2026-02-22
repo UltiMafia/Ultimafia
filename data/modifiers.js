@@ -760,6 +760,14 @@ const modifierData = {
         "When you visit a player, you learn if that player was visited by another player.",
       eventDescription: "This modifier does nothing when on an Event.",
     },
+    Perceptive: {
+      category: "Visits",
+      internal: ["LearnRoleOfVisits"],
+      tags: ["Information", "Visits"],
+      description:
+        "When you visit a player, you learn their role.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Clumsy: {
       category: "Visits",
       internal: ["RevealRoleToTarget"],

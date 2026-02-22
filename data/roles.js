@@ -1018,6 +1018,15 @@ const roleData = {
         ["Evil Dead Count", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10],
       ],
     },
+    Mortician: {
+      alignment: "Village",
+      category: "Investigative",
+      tags: ["Information", "Alignment", "Dead", "Basic"],
+      description: ["Each night, you learn the role of the most recently condemned player."],
+      nightOrder: [
+        ["Learn Condemnded Player's role", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10],
+      ],
+    },
     Diviner: {
       alignment: "Village",
       category: "Investigative",
