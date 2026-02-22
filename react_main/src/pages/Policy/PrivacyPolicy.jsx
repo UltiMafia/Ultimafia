@@ -15,7 +15,7 @@ export default function PrivacyPolicy() {
         Privacy Policy
       </Typography>
       <Typography variant="body2" color="text.secondary" paragraph>
-        Last Updated: February 6, 2026
+        Last Updated: February 21, 2026
       </Typography>
 
       <Typography variant="body1" paragraph>
@@ -640,7 +640,7 @@ export default function PrivacyPolicy() {
           </ListItem>
           <ListItem>
             <ListItemText 
-              primary="Sending you an email notification (if we have your email address);"
+              primary="Sending you an email notification;"
             />
           </ListItem>
           <ListItem>
@@ -677,9 +677,6 @@ export default function PrivacyPolicy() {
         <Typography variant="body1" paragraph>
           If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, 
           please contact us:
-        </Typography>
-        <Typography variant="body1" paragraph>
-          <strong>By email:</strong> [Your contact email address]
         </Typography>
         <Typography variant="body1" paragraph>
           <strong>Through the Service:</strong> Use the contact methods available on the Service
