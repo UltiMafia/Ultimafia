@@ -19,6 +19,9 @@ export function ModActions(props) {
   const [page, setPage] = useState(1);
   const [actions, setActions] = useState([]);
   const [staffNameFilter, setStaffNameFilter] = useState("");
+  const [staffNameQuery, setStaffNameQuery] = useState("");
+  const [staffNameOptions, setStaffNameOptions] = useState([]);
+  const [staffIdMap, setStaffIdMap] = useState({});
   const [actionTypeFilter, setActionTypeFilter] = useState("");
 
   const modCommands = useModCommands({}, () => {}, props.setResults);
@@ -29,6 +32,25 @@ export function ModActions(props) {
   useEffect(() => {
     loadActions(1);
   }, [staffNameFilter, actionTypeFilter]);
+
+  useEffect(() => {
+    if (staffNameQuery.length === 0) {
+      setStaffNameOptions([]);
+      return;
+    }
+
+    axios
+      .get(`/api/user/searchName?query=${staffNameQuery}`)
+      .then((res) => {
+        const newIdMap = {};
+        for (let userData of res.data) {
+          newIdMap[userData.name] = userData.id;
+        }
+        setStaffIdMap(newIdMap);
+        setStaffNameOptions(res.data.map((user) => user.name));
+      })
+      .catch(errorAlert);
+  }, [staffNameQuery]);
 
   function loadActions(_page) {
     const params = new URLSearchParams();
@@ -161,20 +183,31 @@ export function ModActions(props) {
       <Typography variant="h3">Mod Actions</Typography>
       <Stack direction="column" spacing={2}>
         <Stack
-          direction={{ xs: "column", sm: "row" }}
+          direction="column"
           spacing={2}
           sx={{ mb: 1 }}
         >
-          <TextField
-            label="Search by Staff Name"
-            variant="outlined"
-            size="small"
-            value={staffNameFilter}
-            onChange={(e) => {
-              setStaffNameFilter(e.target.value);
+          <Autocomplete
+            options={staffNameOptions}
+            inputValue={staffNameQuery}
+            onInputChange={(e, newValue) => {
+              setStaffNameQuery(newValue);
+            }}
+            onChange={(e, newValue) => {
+              setStaffNameFilter(newValue || "");
               setPage(1);
             }}
-            sx={{ minWidth: 200 }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Search by Staff Name"
+                variant="outlined"
+                size="small"
+              />
+            )}
+            sx={{ width: 200 }}
+            freeSolo
+            clearOnEscape
           />
           <Autocomplete
             options={actionTypeOptions}
@@ -191,7 +224,7 @@ export function ModActions(props) {
                 size="small"
               />
             )}
-            sx={{ minWidth: 250 }}
+            sx={{ width: 200 }}
             clearOnEscape
           />
         </Stack>

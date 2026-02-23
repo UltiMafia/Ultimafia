@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import {
+  Autocomplete,
   Box,
   Button,
   Card,
@@ -37,7 +38,13 @@ export default function Reports({ basePath = "/policy" }) {
   const [totalPages, setTotalPages] = useState(1);
   const [statusFilter, setStatusFilter] = useState("");
   const [assigneeFilter, setAssigneeFilter] = useState("");
+  const [assigneeQuery, setAssigneeQuery] = useState("");
+  const [assigneeOptions, setAssigneeOptions] = useState([]);
+  const [assigneeIdMap, setAssigneeIdMap] = useState({});
   const [reportedUserFilter, setReportedUserFilter] = useState("");
+  const [reportedUserQuery, setReportedUserQuery] = useState("");
+  const [reportedUserOptions, setReportedUserOptions] = useState([]);
+  const [reportedUserIdMap, setReportedUserIdMap] = useState({});
   const [selectedReport, setSelectedReport] = useState(null);
   const [showDetail, setShowDetail] = useState(false);
 
@@ -55,6 +62,44 @@ export default function Reports({ basePath = "/policy" }) {
       loadReports();
     }
   }, [page, statusFilter, assigneeFilter, reportedUserFilter, reportId]);
+
+  useEffect(() => {
+    if (assigneeQuery.length === 0) {
+      setAssigneeOptions([]);
+      return;
+    }
+
+    axios
+      .get(`/api/user/searchName?query=${assigneeQuery}`)
+      .then((res) => {
+        const newIdMap = {};
+        for (let userData of res.data) {
+          newIdMap[userData.name] = userData.id;
+        }
+        setAssigneeIdMap(newIdMap);
+        setAssigneeOptions(res.data.map((user) => user.name));
+      })
+      .catch(errorAlert);
+  }, [assigneeQuery]);
+
+  useEffect(() => {
+    if (reportedUserQuery.length === 0) {
+      setReportedUserOptions([]);
+      return;
+    }
+
+    axios
+      .get(`/api/user/searchName?query=${reportedUserQuery}`)
+      .then((res) => {
+        const newIdMap = {};
+        for (let userData of res.data) {
+          newIdMap[userData.name] = userData.id;
+        }
+        setReportedUserIdMap(newIdMap);
+        setReportedUserOptions(res.data.map((user) => user.name));
+      })
+      .catch(errorAlert);
+  }, [reportedUserQuery]);
 
   const loadReports = async () => {
     try {
@@ -160,25 +205,47 @@ export default function Reports({ basePath = "/policy" }) {
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              label="Assignee User ID"
-              value={assigneeFilter}
-              onChange={(e) => {
-                setAssigneeFilter(e.target.value);
+            <Autocomplete
+              options={assigneeOptions}
+              inputValue={assigneeQuery}
+              onInputChange={(e, newValue) => {
+                setAssigneeQuery(newValue);
+              }}
+              onChange={(e, newValue) => {
+                setAssigneeFilter(newValue ? assigneeIdMap[newValue] || "" : "");
                 setPage(1);
               }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  fullWidth
+                  label="Assignee"
+                />
+              )}
+              freeSolo
+              clearOnEscape
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              label="Reported User ID"
-              value={reportedUserFilter}
-              onChange={(e) => {
-                setReportedUserFilter(e.target.value);
+            <Autocomplete
+              options={reportedUserOptions}
+              inputValue={reportedUserQuery}
+              onInputChange={(e, newValue) => {
+                setReportedUserQuery(newValue);
+              }}
+              onChange={(e, newValue) => {
+                setReportedUserFilter(newValue ? reportedUserIdMap[newValue] || "" : "");
                 setPage(1);
               }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  fullWidth
+                  label="Reported User"
+                />
+              )}
+              freeSolo
+              clearOnEscape
             />
           </Grid>
         </Grid>
