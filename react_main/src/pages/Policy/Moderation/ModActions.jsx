@@ -200,12 +200,12 @@ export function ModActions(props) {
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Search by Staff Name"
+                label="Staff Name"
                 variant="outlined"
                 size="small"
               />
             )}
-            sx={{ width: 200 }}
+            sx={{ width: 290 }}
             freeSolo
             clearOnEscape
           />
@@ -219,12 +219,12 @@ export function ModActions(props) {
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Filter by Action Type"
+                label="Action Type"
                 variant="outlined"
                 size="small"
               />
             )}
-            sx={{ width: 200 }}
+            sx={{ width: 290 }}
             clearOnEscape
           />
         </Stack>
