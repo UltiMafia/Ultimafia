@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { UserContext } from "../../Contexts";
 import { useErrorAlert } from "../../components/Alerts";
 import { NameWithAvatar, StatusIcon } from "../User/User";
 import { getPageNavFilterArg, PageNav } from "../../components/Nav";
@@ -19,8 +18,6 @@ export default function UserSearch(props) {
   const theme = useTheme();
   const [userList, setUserList] = useState([]);
   const [searchVal, setSearchVal] = useState("");
-
-  const user = useContext(UserContext);
 
   useEffect(() => {
     document.title = "Users | UltiMafia";
@@ -100,7 +97,6 @@ export default function UserSearch(props) {
         </Grid>
         <Grid item xs={12} md={3}>
           <NewestUsers />
-          {user.perms.viewFlagged && <FlaggedUsers />}
         </Grid>
       </Grid>
     </Box>
@@ -174,63 +170,3 @@ function NewestUsers(props) {
   );
 }
 
-function FlaggedUsers(props) {
-  const [page, setPage] = useState(1);
-  const [users, setUsers] = useState([]);
-
-  const errorAlert = useErrorAlert();
-
-  useEffect(() => {
-    onPageNav(1);
-  }, []);
-
-  function onPageNav(_page) {
-    var filterArg = getPageNavFilterArg(_page, page, users, "joined");
-
-    if (filterArg == null) return;
-
-    axios
-      .get(`/api/user/flagged?${filterArg}`)
-      .then((res) => {
-        if (res.data.length > 0) {
-          setUsers(res.data);
-          setPage(_page);
-        }
-      })
-      .catch(errorAlert);
-  }
-
-  const userRows = users.map((user) => (
-    <Card
-      key={user.id}
-      className="user-row"
-      variant="outlined"
-      sx={{ marginBottom: 2 }}
-    >
-      <CardContent sx={{ display: "flex", flexDirection: "column" }}>
-        <NameWithAvatar
-          id={user.id}
-          name={user.name}
-          avatar={user.avatar}
-          vanityUrl={user.vanityUrl}
-        />
-        <Typography variant="caption" sx={{ marginTop: "4px" }}>
-          <Time minSec millisec={Date.now() - user.joined} suffix=" ago" />
-        </Typography>
-      </CardContent>
-    </Card>
-  ));
-
-  return (
-    <Box className="flagged-users box-panel">
-      <Typography variant="h4" className="heading">
-        Flagged Users
-      </Typography>
-      <Box className="users-list">
-        <PageNav page={page} onNav={onPageNav} inverted />
-        {userRows}
-        <PageNav page={page} onNav={onPageNav} inverted />
-      </Box>
-    </Box>
-  );
-}

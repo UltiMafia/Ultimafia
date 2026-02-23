@@ -8,6 +8,7 @@ const routeUtils = require("../routes/utils");
 const models = require("../db/models");
 const fbServiceAccount = require("../" + process.env.FIREBASE_JSON_FILE);
 const logger = require("../modules/logging")(".");
+const { sendFlaggedUserDiscordAlert } = require("./report");
 const router = express.Router();
 const passport = require("passport");
 const DiscordStrategy = require("passport-discord").Strategy;
@@ -370,6 +371,7 @@ async function authSuccess(req, uid, email, discordProfile) {
         flagged: true,
       }).select("_id");
       var suspicious = flaggedSameIP.length > 0;
+      var flagReason = suspicious ? "Shared IP with flagged user" : null;
 
       if (!suspicious) {
         var flaggedSameEmail = await models.User.find({
@@ -377,6 +379,7 @@ async function authSuccess(req, uid, email, discordProfile) {
           flagged: true,
         }).select("_id");
         suspicious = flaggedSameEmail.length > 0;
+        if (suspicious) flagReason = "Shared email with flagged user";
       }
 
       if (!suspicious && process.env.IP_API_IGNORE != "true") {
@@ -386,6 +389,7 @@ async function authSuccess(req, uid, email, discordProfile) {
         );
         suspicious =
           res.data && res.data.fraud_score >= Number(process.env.IP_API_THRESH);
+        if (suspicious) flagReason = `High fraud score (${res.data.fraud_score})`;
       }
 
       if (suspicious) {
@@ -415,6 +419,8 @@ async function authSuccess(req, uid, email, discordProfile) {
           },
           [id]
         );
+
+        sendFlaggedUserDiscordAlert(name, id, flagReason || "Suspicious IP");
       } else {
         var group = await models.Group.findOne({
           name: "Ranked Player",

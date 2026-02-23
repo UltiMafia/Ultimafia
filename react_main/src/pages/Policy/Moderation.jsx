@@ -123,6 +123,7 @@ function getTabValue(pathname) {
   if (pathname.includes("/reports")) return "reports";
   if (pathname.includes("/competitive")) return "competitive";
   if (pathname.includes("/handbook")) return "handbook";
+  if (pathname.includes("/flagged-intake")) return "flagged-intake";
   return "log";
 }
 
@@ -149,8 +150,13 @@ export default function Moderation() {
       !user?.perms?.manageCompetitive
     ) {
       navigate("/policy/moderation", { replace: true });
+    } else if (
+      location.pathname.includes("/flagged-intake") &&
+      !user?.perms?.whitelist
+    ) {
+      navigate("/policy/moderation", { replace: true });
     }
-  }, [location.pathname, user?.perms?.viewModActions, user?.perms?.manageCompetitive, navigate]);
+  }, [location.pathname, user?.perms?.viewModActions, user?.perms?.manageCompetitive, user?.perms?.whitelist, navigate]);
 
   const handleTabChange = (_, newValue) => {
     const base = "/policy/moderation";
@@ -158,6 +164,7 @@ export default function Moderation() {
     else if (newValue === "reports") navigate(`${base}/reports`);
     else if (newValue === "competitive") navigate(`${base}/competitive`);
     else if (newValue === "handbook") navigate(`${base}/handbook`);
+    else if (newValue === "flagged-intake") navigate(`${base}/flagged-intake`);
   };
 
   return (
@@ -174,6 +181,9 @@ export default function Moderation() {
         )}
         {user?.perms?.manageCompetitive && (
           <Tab label="Competitive Management" value="competitive" />
+        )}
+        {user?.perms?.whitelist && (
+          <Tab label="Flagged Intake" value="flagged-intake" />
         )}
       </Tabs>
 

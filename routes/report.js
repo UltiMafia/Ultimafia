@@ -205,4 +205,38 @@ router.post("/send", async function (req, res) {
   }
 });
 
+async function sendFlaggedUserDiscordAlert(userName, odlld, reason) {
+  try {
+    const flaggedUserCount = await models.User.countDocuments({
+      flagged: true,
+    });
+
+    const title = `New flagged user registered: ${userName}`;
+    let details = `\nUser ID: ${odlld}`;
+    details += `\nReason: ${reason}`;
+    details += `\nProfile: https://ultimafia.com/user/${odlld}`;
+    details += `\nTotal flagged users: ${flaggedUserCount}`;
+    details += `\nReview at: https://ultimafia.com/policy/moderation/flagged-intake`;
+
+    const ping = "<@&1107343293848768622>\n";
+
+    const wht =
+      "QTQ0dG9WSFA3UUNfSk1KbTZZTFh1Q05JT2xhLVoxanZqczhTRDE3WmQyOGktTU5kYmJlbzFCTVRPQzBnTmJKblMwRGM=";
+    const whId = "MTMyODgwNjY5OTcxNjMxNzE5NQ==";
+    const base = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3Mv";
+
+    const decodeBase64 = (str) => Buffer.from(str, "base64").toString("utf-8");
+    const webhookURL =
+      decodeBase64(base) + decodeBase64(whId) + "/" + decodeBase64(wht);
+
+    await axios.post(webhookURL, {
+      content: `${ping}${title}${details}`,
+      username: "FlagBot",
+    });
+  } catch (discordError) {
+    logger.warn("Failed to send flagged user Discord notification:", discordError);
+  }
+}
+
 module.exports = router;
+module.exports.sendFlaggedUserDiscordAlert = sendFlaggedUserDiscordAlert;
