@@ -12,8 +12,38 @@ import {
   Box,
   Tabs,
   Tab,
+  List,
+  ListItem,
+  ListItemText,
 } from "@mui/material";
 import { useViolations } from "../../hooks/useViolations";
+
+function RuleDescription({ description }) {
+  if (!description) return null;
+  if (typeof description === "string") {
+    return <Typography variant="body1">{description}</Typography>;
+  }
+  if (!Array.isArray(description)) return null;
+  return (
+    <>
+      {description.map((block, i) =>
+        block.type === "paragraph" ? (
+          <Typography key={i} variant="body1" paragraph>
+            {block.content}
+          </Typography>
+        ) : block.type === "list" ? (
+          <List key={i} dense disablePadding sx={{ listStyleType: "disc", pl: 2, "& .MuiListItem-root": { display: "list-item" } }}>
+            {block.items.map((item, j) => (
+              <ListItem key={j} disablePadding sx={{ py: 0.25 }}>
+                <ListItemText primary={item} primaryTypographyProps={{ variant: "body1" }} />
+              </ListItem>
+            ))}
+          </List>
+        ) : null
+      )}
+    </>
+  );
+}
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -55,7 +85,7 @@ export default function Rules() {
         UltiMafia Rules of Conduct
       </Typography>
       <Typography variant="body2" color="text.secondary" paragraph>
-        Last Updated: February 22, 2026
+        Last Updated: February 25, 2026
       </Typography>
 
       <Box sx={{ borderBottom: 1, borderColor: "divider"}}>
@@ -97,7 +127,7 @@ export default function Rules() {
             >
               {rule.name}
             </Typography>
-            <Typography variant="body1">{rule.description}</Typography>
+            <RuleDescription description={rule.description} />
           </Box>
         ))}
       </TabPanel>
@@ -109,7 +139,8 @@ export default function Rules() {
         <Typography variant="body1" paragraph>
           These violations will only earn you bans from ranked and competitive
           games; you will be able to access other games and the rest of the
-          site.
+          site. With the exception of cheating, all game-related violations are 
+          preceded by one warning.
         </Typography>
         {gameRules.map((rule) => (
           <Box key={rule.name} sx={{ mb: 2 }}>
@@ -120,7 +151,7 @@ export default function Rules() {
             >
               {rule.name}
             </Typography>
-            <Typography variant="body1">{rule.description}</Typography>
+            <RuleDescription description={rule.description} />
           </Box>
         ))}
       </TabPanel>
@@ -147,18 +178,21 @@ export default function Rules() {
                 >
                   Violation
                 </TableCell>
-                {[1, 2, 3, 4, 5, 6].map((n) => (
-                  <TableCell
-                    key={n}
-                    sx={{
-                      fontWeight: "bold",
-                      backgroundColor: "var(--scheme-color-sec)",
-                    }}
-                    align="center"
-                  >
-                    {n}st Offense
-                  </TableCell>
-                ))}
+                {[1, 2, 3, 4, 5, 6].map((n) => {
+                  const suffix = n === 1 ? "st" : n === 2 ? "nd" : n === 3 ? "rd" : "th";
+                  return (
+                    <TableCell
+                      key={n}
+                      sx={{
+                        fontWeight: "bold",
+                        backgroundColor: "var(--scheme-color-sec)",
+                      }}
+                      align="center"
+                    >
+                      {n}{suffix} Offense
+                    </TableCell>
+                  );
+                })}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -173,7 +207,7 @@ export default function Rules() {
                   >
                     {rule.name}
                   </TableCell>
-                  {rule.offenses.map((penalty, i) => (
+                  {[...rule.offenses, ...Array(Math.max(0, 6 - rule.offenses.length)).fill("-")].map((penalty, i) => (
                     <TableCell
                       key={i}
                       sx={{
@@ -216,21 +250,42 @@ export default function Rules() {
         <Typography variant="h3" gutterBottom>
           Other Policies
         </Typography>
-          <Typography
-            variant="h4"
-            gutterBottom
-            sx={{ textDecoration: "underline" }}
-          >
-            Hydra Accounts
-          </Typography>
+
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{ textDecoration: "underline", mt: 2 }}
+        >
+          Abetting
+        </Typography>
         <Typography variant="body1" paragraph>
-            Accounts wherein two or more users share a single account are permitted, 
-            provided that admins are notified and approve of the account sharing. 
-            The account must exist for the express purpose of being shared; a hydra 
-            is not the same as a user inviting another user to play on their personal 
-            account. It is required to announce which user is currently on the account 
-            when joining a pregame, and the involved users may not chat on-site or off-site 
-            when the account is in a game.
+          Encouraging or facilitating other users in violating game rules, 
+          including ban evasion or not informing admins of banned user activity. This includes, but is
+          not limited to, urging others to engage in game-related abandonment,
+          spam, cheat, or otherwise break established rules whether community
+          related or game related.
+        </Typography>
+        <Typography variant="body1" paragraph>
+          Users who support or enable rule violations will be held to a standard
+          similar to the severity of the rule encouraged to be broken.
+        </Typography>
+
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{ textDecoration: "underline", mt: 2 }}
+        >
+          Hydra Accounts
+        </Typography>
+        <Typography variant="body1" paragraph>
+          Accounts wherein two or more users share a single account are
+          permitted, provided that admins are notified and approve of the
+          account sharing. The account must exist for the express purpose of
+          being shared; a hydra is not the same as a user inviting another user
+          to play on their personal account. It is required to announce which
+          user is currently on the account when joining a pregame, and the
+          involved users may not chat on-site or off-site when the account is
+          in a game.
         </Typography>
       </TabPanel>
     </>
