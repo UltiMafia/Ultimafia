@@ -172,7 +172,7 @@ const violationDefinitions = [
     name: "Game Throwing",
     description:
       "Intentionally playing against your win condition or not playing to win. Game Throwing requires intent. Includes fake claims made for any other purpose than strategy as well as voting someone based on a grudge. Forcing a draw (endgame event) when you are not faced with an autolose situation falls under this category as well, since condemning/killing would give you a chance to win.",
-    offenses: ["1 hour", "12 hours", "24 hours", "3 months"],
+    offenses: ["24 hours", "24 hours", "3 months"],
     category: "Game",
     appliesTo: ["game", "playRanked", "playCompetitive"],
   },
@@ -245,7 +245,7 @@ const violationDefinitions = [
     name: "Outside of Game Information (OGI)",
     description:
       "Using tools or processes outside of a game in a game including, but not limited to: posting on profiles, lobbies, or the forums revealing game-related information, clearly stated meta posted on profile, whether followed or not, reporting a player in a game while that game is in progress, using third party functions or sites to make in-game decisions, bribes or threats (such as karma, kudos, and reporting), and pregame pacts.",
-    offenses: ["1 hour", "12 hours", "24 hours", "3 months"],
+    offenses: ["12 hours", "24 hours", "3 months"],
     category: "Game",
     appliesTo: ["game", "playRanked", "playCompetitive"],
   },
