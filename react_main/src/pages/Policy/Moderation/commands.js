@@ -914,22 +914,17 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
-    "Adjust Minimum Games Threshold": {
+    "Toggle Auto-Approval": {
       perm: "adjustMinGames",
       category: "Site Management",
-      args: [
-        {
-          label: "Minimum Games for Ranked",
-          name: "value",
-          type: "number",
-        },
-      ],
+      args: [],
       run: function () {
         axios
-          .post("/api/mod/minGamesThreshold", argValues)
+          .post("/api/mod/autoApproval")
           .then((res) => {
+            const status = res.data.autoApprovalEnabled ? "enabled" : "disabled";
             siteInfo.showAlert(
-              `Minimum games for ranked set to ${res.data.minimumGamesForRanked}.`,
+              `Auto-approval for Ranked and Competitive is now ${status}. New users will${res.data.autoApprovalEnabled ? " " : " not "}be immediately approved upon account creation.`,
               "success"
             );
             commandRan();

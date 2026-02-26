@@ -1485,6 +1485,20 @@ async function setMinimumGamesForRanked(value) {
   await client.setAsync(key, value);
 }
 
+async function getAutoApprovalEnabled() {
+  const key = "setting:autoApprovalEnabled";
+  const value = await client.getAsync(key);
+  if (value === null) {
+    return false;
+  }
+  return value === "1" || value === "true";
+}
+
+async function setAutoApprovalEnabled(enabled) {
+  const key = "setting:autoApprovalEnabled";
+  await client.setAsync(key, enabled ? "1" : "0");
+}
+
 module.exports = {
   client,
   getUserDbId,
@@ -1563,4 +1577,6 @@ module.exports = {
   getDeletedVanityUrlUserId,
   getMinimumGamesForRanked,
   setMinimumGamesForRanked,
+  getAutoApprovalEnabled,
+  setAutoApprovalEnabled,
 };

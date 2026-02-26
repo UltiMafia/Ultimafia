@@ -260,7 +260,9 @@ router.get("/:id/connect", async function (req, res) {
       // Ranked checks
       if (userId && game.settings.ranked && !isSpectating) {
         const user = await redis.getUserInfo(userId);
-        const minGamesForRanked = await redis.getMinimumGamesForRanked();
+        const minGamesForRanked = (await redis.getAutoApprovalEnabled())
+          ? 0
+          : await redis.getMinimumGamesForRanked();
 
         if (!user || user.gamesPlayed < minGamesForRanked) {
           res.status(400);
@@ -715,7 +717,9 @@ router.post("/host", async function (req, res) {
 
     const user = await redis.getUserInfo(userId);
     if (req.body.ranked) {
-      const minGamesForRanked = await redis.getMinimumGamesForRanked();
+      const minGamesForRanked = (await redis.getAutoApprovalEnabled())
+        ? 0
+        : await redis.getMinimumGamesForRanked();
       if (user && user.gamesPlayed < minGamesForRanked) {
         res.status(400);
         res.send(

@@ -6,6 +6,7 @@ const crypto = require("crypto");
 const constants = require("../data/constants");
 const routeUtils = require("../routes/utils");
 const models = require("../db/models");
+const redis = require("../modules/redis");
 const fbServiceAccount = require("../" + process.env.FIREBASE_JSON_FILE);
 const logger = require("../modules/logging")(".");
 const { sendFlaggedUserDiscordAlert } = require("./report");
@@ -422,14 +423,25 @@ async function authSuccess(req, uid, email, discordProfile) {
 
         sendFlaggedUserDiscordAlert(name, id, flagReason || "Suspicious IP");
       } else {
-        var group = await models.Group.findOne({
+        var rankedGroup = await models.Group.findOne({
           name: "Ranked Player",
         }).select("_id");
         var inGroup = new models.InGroup({
           user: user._id,
-          group: group._id,
+          group: rankedGroup._id,
         });
         await inGroup.save();
+
+        if (await redis.getAutoApprovalEnabled()) {
+          var competitiveGroup = await models.Group.findOne({
+            name: "Competitive Player",
+          }).select("_id");
+          var inCompetitiveGroup = new models.InGroup({
+            user: user._id,
+            group: competitiveGroup._id,
+          });
+          await inCompetitiveGroup.save();
+        }
       }
     } else if (!id && bannedUser) {
       //(8) (9)

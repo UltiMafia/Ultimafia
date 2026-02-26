@@ -3754,41 +3754,37 @@ router.post("/reports/:id/rule", async (req, res) => {
   }
 });
 
-router.get("/minGamesThreshold", async function (req, res) {
-  try {
-    const value = await redis.getMinimumGamesForRanked();
-    res.json({ minimumGamesForRanked: value });
-  } catch (e) {
-    logger.error(e);
-    res.status(500).send("Error getting minimum games threshold.");
-  }
-});
-
-router.post("/minGamesThreshold", async function (req, res) {
+router.get("/autoApproval", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
 
     if (!(await routeUtils.verifyPermission(res, userId, "adjustMinGames")))
       return;
 
-    const value = parseInt(req.body.value, 10);
-
-    if (isNaN(value) || value < 0) {
-      res.status(400);
-      res.send("Value must be a non-negative number.");
-      return;
-    }
-
-    await redis.setMinimumGamesForRanked(value);
-
-    routeUtils.createModAction(userId, "Adjust Minimum Games Threshold", [
-      value,
-    ]);
-
-    res.json({ minimumGamesForRanked: value });
+    const enabled = await redis.getAutoApprovalEnabled();
+    res.json({ autoApprovalEnabled: enabled });
   } catch (e) {
     logger.error(e);
-    res.status(500).send("Error setting minimum games threshold.");
+    res.status(500).send("Error getting auto-approval status.");
+  }
+});
+
+router.post("/autoApproval", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+
+    if (!(await routeUtils.verifyPermission(res, userId, "adjustMinGames")))
+      return;
+
+    const enabled = !(await redis.getAutoApprovalEnabled());
+    await redis.setAutoApprovalEnabled(enabled);
+
+    routeUtils.createModAction(userId, "Toggle Auto-Approval", [enabled]);
+
+    res.json({ autoApprovalEnabled: enabled });
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error toggling auto-approval.");
   }
 });
 
