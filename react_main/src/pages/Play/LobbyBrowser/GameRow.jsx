@@ -28,7 +28,7 @@ const GameStatus = (props) => {
   const canShowGameButton =
     (user.loggedIn || props.game.status === "Finished") &&
     !props.game.broken &&
-    (!props.game.private || user.perms?.breakGame);
+    !props.game.private;
 
   let buttonUrl, buttonText, buttonVariant, buttonColor, buttonDisabled;
   if (props.game.status === "Open") {
