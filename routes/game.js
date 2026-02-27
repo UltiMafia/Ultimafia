@@ -628,8 +628,9 @@ router.post("/host", async function (req, res) {
       return;
     }
 
+    let roundInfo;
     if (req.body.competitive) {
-      const roundInfo = await redis.getCompRoundInfo();
+      roundInfo = await redis.getCompRoundInfo();
 
       // Check if the competitive round is completed or paused
       if (!roundInfo.round || roundInfo.round.completed) {
