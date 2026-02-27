@@ -932,6 +932,26 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Sync Competitive Approvals": {
+      perm: "adjustMinGames",
+      category: "Site Management",
+      args: [],
+      run: function () {
+        axios
+          .post("/api/mod/syncCompetitiveApprovals")
+          .then((res) => {
+            const count = res.data.restored;
+            siteInfo.showAlert(
+              count > 0
+                ? `Restored Competitive Player group to ${count} user(s) who had lost it.`
+                : "No users needed restoration; all qualifying users already have Competitive Player.",
+              "success"
+            );
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Toggle Ranked Setup": {
       perm: "approveRanked",
       category: "Setup Management",

@@ -3788,4 +3788,65 @@ router.post("/autoApproval", async function (req, res) {
   }
 });
 
+router.post("/syncCompetitiveApprovals", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+
+    if (!(await routeUtils.verifyPermission(res, userId, "adjustMinGames")))
+      return;
+
+    if (!(await redis.getAutoApprovalEnabled())) {
+      res.status(400).send(
+        "Auto-approval must be enabled. This sync only adds Competitive Player to users who have Ranked Player and would have been auto-approved."
+      );
+      return;
+    }
+
+    const rankedGroup = await models.Group.findOne({ name: "Ranked Player" }).select("_id");
+    const competitiveGroup = await models.Group.findOne({ name: "Competitive Player" }).select("_id");
+    if (!rankedGroup || !competitiveGroup) {
+      res.status(500).send("Required groups not found.");
+      return;
+    }
+
+    const inRanked = await models.InGroup.find({ group: rankedGroup._id })
+      .select("user")
+      .lean();
+    const rankedUserIds = inRanked.map((r) => r.user);
+    const inCompetitive = await models.InGroup.find({
+      group: competitiveGroup._id,
+      user: { $in: rankedUserIds },
+    })
+      .select("user")
+      .lean();
+    const competitiveUserIds = new Set(inCompetitive.map((c) => String(c.user)));
+
+    const usersToAdd = await models.User.find({
+      _id: { $in: rankedUserIds },
+      deleted: false,
+      flagged: { $ne: true },
+    })
+      .select("_id id")
+      .lean();
+
+    let restored = 0;
+    for (const user of usersToAdd) {
+      if (!competitiveUserIds.has(String(user._id))) {
+        await models.InGroup.create({
+          user: user._id,
+          group: competitiveGroup._id,
+        });
+        await redis.cacheUserPermissions(user.id);
+        restored++;
+      }
+    }
+
+    routeUtils.createModAction(userId, "Sync Competitive Approvals", [restored]);
+    res.json({ restored });
+  } catch (e) {
+    logger.error(e);
+    res.status(500).send("Error syncing competitive approvals.");
+  }
+});
+
 module.exports = router;

@@ -514,6 +514,34 @@ async function authSuccess(req, uid, email, discordProfile) {
           }
         );
       }
+
+      // When auto-approval is on, ensure returning users who qualify get Competitive Player.
+      // This heals users who may have lost it (e.g. from cache/DB issues) and keeps them in sync.
+      if (await redis.getAutoApprovalEnabled()) {
+        const fullUser = await models.User.findOne({ id, deleted: false }).select("_id flagged");
+        if (fullUser && !fullUser.flagged) {
+          const rankedGroup = await models.Group.findOne({ name: "Ranked Player" }).select("_id");
+          const competitiveGroup = await models.Group.findOne({ name: "Competitive Player" }).select("_id");
+          if (rankedGroup && competitiveGroup) {
+            const inRanked = await models.InGroup.findOne({
+              user: fullUser._id,
+              group: rankedGroup._id,
+            });
+            const inCompetitive = await models.InGroup.findOne({
+              user: fullUser._id,
+              group: competitiveGroup._id,
+            });
+            if (inRanked && !inCompetitive) {
+              const inCompetitiveGroup = new models.InGroup({
+                user: fullUser._id,
+                group: competitiveGroup._id,
+              });
+              await inCompetitiveGroup.save();
+              await redis.cacheUserPermissions(id);
+            }
+          }
+        }
+      }
     }
 
     req.session.user = {
