@@ -115,7 +115,7 @@ export function AchievementSearch() {
   return (
     <LearnSearch
       tabs={[]}
-      searchPlaceholder="🔎 Achievement name or description"
+      searchPlaceholder="🔎 Search"
       searchVal={searchVal}
       onSearchInput={(query) => setSearchVal(query)}
       items={items}
