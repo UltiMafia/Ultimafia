@@ -14,6 +14,10 @@ const TrophyTypes = {
     name: "Bronze",
     icon: "bronze-trophy.png",
   },
+  crown: {
+    name: "Crown",
+    icon: "crown-trophy.png",
+  }
 };
 
 // Array of valid trophy type keys (for validation)

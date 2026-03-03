@@ -151,6 +151,50 @@ router.post("/pause", async function (req, res) {
   }
 });
 
+router.post("/refund", async function (req, res) {
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+
+    if (!(await routeUtils.verifyPermission(res, userId, "manageCompetitive")))
+      return;
+
+    var gameId = String(req.body.gameId);
+
+    const game = await models.Game.findOne({ id: gameId }).lean();
+
+    if (!game) {
+      res.status(404);
+      res.send("Game not found.");
+      return;
+    }
+
+    const gameCompletions = await models.CompetitiveGameCompletion.find({ game: game._id });
+
+    console.log(`Refunding competitive completion for game ${gameId}`);
+    for (const gameCompletion of gameCompletions) {
+      console.log(`Refunding one gold heart to user ${gameCompletion.userId}`);
+      await models.User.updateOne(
+        { id: gameCompletion.userId },
+        { $inc: { goldHearts: 1 } }
+      );
+      await models.CompetitiveGameCompletion.updateOne(
+        { _id: gameCompletion._id },
+        { $set: { valid: false, } }
+      );
+      await redis.invalidateCachedUser(gameCompletion.userId);
+    }
+
+    // Create mod action
+    routeUtils.createModAction(userId, "Refund Competitive Game", [gameId]);
+
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error refunding game.");
+  }
+});
+
 // Get all seasons
 router.get("/seasons", async function (req, res) {
   try {

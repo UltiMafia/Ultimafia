@@ -143,6 +143,59 @@ async function progressCompetitive() {
   }
 }
 
+async function awardRoundTrophy(seasonNumber, roundNumber, userId) {
+  const trophyName = `Season ${seasonNumber} Round ${roundNumber} Winner`;
+  const trophyType = "crown";
+
+  // Verify user exists
+  const user = await models.User.findOne({
+    id: userId,
+    deleted: false,
+  }).select("_id id name");
+
+  if (!user) {
+    console.log(`[awardRoundTrophy]: User ${userId} not found, skipping trophy award`);
+    return;
+  }
+
+  // Check if user already has this trophy (to avoid duplicates)
+  const existingTrophy = await models.Trophy.findOne({
+    ownerId: userId,
+    name: trophyName,
+    revoked: false,
+  });
+
+  if (existingTrophy) {
+    console.log(`[awardRoundTrophy]: User ${userId} already has trophy "${trophyName}", skipping`);
+    return;
+  }
+
+  // Create and save the trophy
+  const trophy = new models.Trophy({
+    id: shortid.generate(),
+    name: trophyName,
+    ownerId: userId,
+    owner: user._id,
+    type: trophyType,
+    createdBy: "system", // System-awarded trophy
+  });
+  await trophy.save();
+
+  console.log(
+    `[awardRoundTrophy]: Awarded ${trophyType} trophy "${trophyName}" to ${user.name} (${userId})`
+  );
+
+  // Send notification to the winner
+  await routeUtils.createNotification(
+    {
+      content: `Congratulations! You won 1st place in Season ${seasonNumber} Round ${roundNumber} and earned a ${trophyType} trophy!`,
+      icon: "fas fa-trophy",
+      link: `/user/${userId}`,
+    },
+    [userId]
+  );
+}
+
 async function confirmStandings(seasonNumber, roundNumber) {
   const roundInfo = await redis.getCompRoundInfo(
     seasonNumber,
@@ -187,6 +240,17 @@ async function confirmStandings(seasonNumber, roundNumber) {
       });
       await seasonStanding.save();
     }
+
+    // if the user got first place, then award them a round trophy
+    if (roundStanding.ranking === 0) {
+      try {
+        await awardRoundTrophy(seasonNumber, roundNumber, userId);
+      }
+      catch (e) {
+        console.error(`[accountCompetitiveRounds]: Error awarding round trophy to ${userId} for season ${seasonNumber} round ${roundNumber}`, e);
+      }
+    }
+
     i++;
   }
 }
