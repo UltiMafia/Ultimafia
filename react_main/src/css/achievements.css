@@ -92,9 +92,9 @@
   background-image: url("/src/images/achievements/DetectiveCheck2.png");
 }
 
-.achievement-icon.BodyguardKill {
+/* .achievement-icon.BodyguardKill {
   background-image: url("/src/images/achievements/BodyguardKill.png");
-}
+} */
 
 .achievement-icon.DoctorSave {
   background-image: url("/src/images/achievements/DoctorSave.png");
