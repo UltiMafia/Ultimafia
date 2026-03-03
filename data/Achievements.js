@@ -133,7 +133,7 @@ const AchievementData = {
       reward: 20,
       roles: ["Dodo"],
     },
-    "It was Them!": {
+    "Let The Record Show": {
       ID: "Mafia19",
       internal: ["LawyerFrame"],
       description:
@@ -240,7 +240,7 @@ const AchievementData = {
       reward: 10,
       roles: ["Tracker"],
     },
-    "I'm Towntelling!": {
+    "If It Doesn't Fit": {
       ID: "Mafia33",
       internal: ["MillerTowntell"],
       description:
@@ -262,7 +262,7 @@ const AchievementData = {
       reward: 30,
       roles: ["Pedagogue"],
     },
-    "Duct Tape is Helpful": {
+    "Silence is Deafening": {
       ID: "Mafia36",
       internal: ["SilencerSilence2PR"],
       description:
@@ -284,7 +284,7 @@ const AchievementData = {
       reward: 20,
       roles: ["Granny"],
     },
-    "Clean it Up, Undie": {
+    "Hell in a Cell": {
       ID: "Mafia39",
       internal: ["UndertakerCleanPR"],
       description: "As Undertaker, clean a Village power role.",
