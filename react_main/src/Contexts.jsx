@@ -368,6 +368,11 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
         .then((res) =>
           updateSiteInfo({ type: "setProp", prop: "rolesRaw", value: res.data })
         ),
+      axios
+        .get("/api/achievements")
+        .then((res) =>
+          updateSiteInfo({ type: "setProp", prop: "achievementsRaw", value: res.data })
+        ),
       axios.get("/api/roles/modifiers").then((res) =>
         updateSiteInfo({
           type: "setProp",
@@ -402,6 +407,7 @@ export function SiteInfoProvider({ children, setSiteInfoLoading }) {
   const ready =
     siteInfoVal.roles &&
     siteInfoVal.rolesRaw &&
+    siteInfoVal.achievementsRaw &&
     siteInfoVal.modifiers &&
     siteInfoVal.gamesettings &&
     siteInfoVal.items &&

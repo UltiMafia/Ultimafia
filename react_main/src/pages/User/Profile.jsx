@@ -21,7 +21,6 @@ import { Time, filterProfanity } from "components/Basic";
 import { useErrorAlert } from "components/Alerts";
 import { getPageNavFilterArg, PageNav } from "components/Nav";
 import { RatingThresholds, RequiredTotalForStats } from "Constants";
-import { AchievementData } from "constants/Achievements";
 import { capitalize } from "utils";
 import Comments from "../Community/Comments";
 
@@ -813,8 +812,10 @@ export default function Profile() {
 
   const AchievementRows = achievements
     .map((achID) => {
-      for (let item of Object.entries(AchievementData.Mafia).filter(
-        (achievementData) => achID == achievementData[1].ID
+      const achievementData = siteInfo.achievementsRaw?.Mafia;
+      if (!achievementData) return null;
+      for (let item of Object.entries(achievementData).filter(
+        (entry) => achID == entry[1].ID
       )) {
         if (achID == item[1].ID) {
           return item[0];

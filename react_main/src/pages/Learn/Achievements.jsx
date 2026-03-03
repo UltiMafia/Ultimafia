@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import "css/play.css";
 import {
   Paper,
@@ -15,15 +15,15 @@ import {
   AccordionDetails,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-
-//import { AchievementList } from "../../../../data/Achievements";
-import { AchievementData } from "../../constants/Achievements";
+import { SiteInfoContext } from "../../Contexts";
 
 export default function Achievements(props) {
   const theme = useTheme();
+  const siteInfo = useContext(SiteInfoContext);
 
-  const commandTableRows = Object.keys(AchievementData.Mafia).map((key) => {
-    let { reward, description } = AchievementData.Mafia[key];
+  const achievementData = siteInfo.achievementsRaw?.Mafia || {};
+  const commandTableRows = Object.keys(achievementData).map((key) => {
+    let { reward, description } = achievementData[key];
 
     return {
       term: key,
@@ -45,7 +45,7 @@ export default function Achievements(props) {
         <TableBody>
           {commandTableRows.map((row) => (
             <TableRow
-              key={row.name}
+              key={row.term}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell component="th" scope="row" align="center">
