@@ -1,0 +1,173 @@
+.achievement-icon {
+  flex-shrink: 0;
+  display: inline-block;
+
+  width: 1.875rem;
+  height: 1.875rem;
+
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  background-image: url("/src/images/modifiers/unknown-modifier.png");
+  image-rendering: crisp-edges;
+}
+
+.achievement-icon.VillageVictory {
+  background-image: url("/src/images/achievements/VillageVictory.png");
+}
+
+.achievement-icon.MafiaVictory {
+  background-image: url("/src/images/achievements/MafiaVictory.png");
+}
+
+.achievement-icon.CultVictory {
+  background-image: url("/src/images/achievements/CultVictory.png");
+}
+
+/* .achievement-icon.IndependentVictory {
+  background-image: url("/src/images/achievements/IndependentVictory.png");
+} */
+
+.achievement-icon.Scumhunter {
+  background-image: url("/src/images/achievements/Scumhunter.png");
+}
+
+/* .achievement-icon.NothingToSeeHere {
+  background-image: url("/src/images/achievements/NothingToSeeHere.png");
+} */
+
+.achievement-icon.AllDeadAreCult {
+  background-image: url("/src/images/achievements/AllDeadAreCult.png");
+}
+
+.achievement-icon.FoolWinDayOne {
+  background-image: url("/src/images/achievements/FoolWinDayOne.png");
+}
+
+/* .achievement-icon.SheriffShootEvil {
+  background-image: url("/src/images/achievements/SheriffShootEvil.png");
+} */
+
+.achievement-icon.ProAnalyst {
+  background-image: url("/src/images/achievements/ProAnalyst.png");
+}
+
+/* .achievement-icon.DeputyShootGunnedEvil {
+  background-image: url("/src/images/achievements/DeputyShootGunnedEvil.png");
+} */
+
+.achievement-icon.CopFindEvil {
+  background-image: url("/src/images/achievements/CopFindEvil.png");
+}
+
+.achievement-icon.Fiddle2PRRoles {
+  background-image: url("/src/images/achievements/Fiddle2PRRoles.png");
+}
+
+.achievement-icon.JanCleanPR {
+  background-image: url("/src/images/achievements/JanCleanPR.png");
+}
+
+.achievement-icon.InquisitorDouble {
+  background-image: url("/src/images/achievements/InquisitorDouble.png");
+}
+
+.achievement-icon.ChangelingWin {
+  background-image: url("/src/images/achievements/ChangelingWin.png");
+}
+
+.achievement-icon.ExecutionerWinDay1 {
+  background-image: url("/src/images/achievements/ExecutionerWinDay1.png");
+}
+
+.achievement-icon.DodoWinDay1 {
+  background-image: url("/src/images/achievements/DodoWinDay1.png");
+}
+
+/* .achievement-icon.LawyerFrame {
+  background-image: url("/src/images/achievements/LawyerFrame.png");
+} */
+
+.achievement-icon.DetectiveCheck2 {
+  background-image: url("/src/images/achievements/DetectiveCheck2.png");
+}
+
+.achievement-icon.BodyguardKill {
+  background-image: url("/src/images/achievements/BodyguardKill.png");
+}
+
+.achievement-icon.DoctorSave {
+  background-image: url("/src/images/achievements/DoctorSave.png");
+}
+
+/* .achievement-icon.VigilanteKill {
+  background-image: url("/src/images/achievements/VigilanteKill.png");
+} */
+
+/* .achievement-icon.GunsmithGun {
+  background-image: url("/src/images/achievements/GunsmithGun.png");
+} */
+
+.achievement-icon.SniperShootGunnedPR {
+  background-image: url("/src/images/achievements/SniperShootGunnedPR.png");
+}
+
+.achievement-icon.SaboteurKill {
+  background-image: url("/src/images/achievements/SaboteurKill.png");
+}
+
+.achievement-icon.JinxKill {
+  background-image: url("/src/images/achievements/JinxKill.png");
+}
+
+/* .achievement-icon.MastermindPerfect {
+  background-image: url("/src/images/achievements/MastermindPerfect.png");
+} */
+
+.achievement-icon.HellhoundEat {
+  background-image: url("/src/images/achievements/HellhoundEat.png");
+}
+
+/* .achievement-icon.SuccubusFalse {
+  background-image: url("/src/images/achievements/SuccubusFalse.png");
+} */
+
+.achievement-icon.WatcherCheck2 {
+  background-image: url("/src/images/achievements/WatcherCheck2.png");
+}
+
+/* .achievement-icon.TrackerCheck {
+  background-image: url("/src/images/achievements/TrackerCheck.png");
+} */
+
+/* .achievement-icon.MillerTowntell {
+  background-image: url("/src/images/achievements/MillerTowntell.png");
+} */
+
+.achievement-icon.DeclareMagusAsEvil {
+  background-image: url("/src/images/achievements/DeclareMagusAsEvil.png");
+}
+
+.achievement-icon.PedagoguePedagogue {
+  background-image: url("/src/images/achievements/PedagoguePedagogue.png");
+}
+
+/* .achievement-icon.SilencerSilence2PR {
+  background-image: url("/src/images/achievements/SilencerSilence2PR.png");
+} */
+
+.achievement-icon.ShrinkSaveTwice {
+  background-image: url("/src/images/achievements/ShrinkSaveTwice.png");
+}
+
+/* .achievement-icon.GrannyKills {
+  background-image: url("/src/images/achievements/GrannyKills.png");
+} */
+
+/* .achievement-icon.UndertakerCleanPR {
+  background-image: url("/src/images/achievements/UndertakerCleanPR.png");
+} */
+
+/* .achievement-icon.HunterKill {
+  background-image: url("/src/images/achievements/HunterKill.png");
+} */
