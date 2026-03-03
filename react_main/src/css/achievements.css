@@ -104,9 +104,9 @@
   background-image: url("/src/images/achievements/VigilanteKill.png");
 } */
 
-/* .achievement-icon.GunsmithGun {
+.achievement-icon.GunsmithGun {
   background-image: url("/src/images/achievements/GunsmithGun.png");
-} */
+}
 
 .achievement-icon.SniperShootGunnedPR {
   background-image: url("/src/images/achievements/SniperShootGunnedPR.png");
@@ -120,9 +120,9 @@
   background-image: url("/src/images/achievements/JinxKill.png");
 }
 
-/* .achievement-icon.MastermindPerfect {
+.achievement-icon.MastermindPerfect {
   background-image: url("/src/images/achievements/MastermindPerfect.png");
-} */
+}
 
 .achievement-icon.HellhoundEat {
   background-image: url("/src/images/achievements/HellhoundEat.png");
@@ -152,9 +152,9 @@
   background-image: url("/src/images/achievements/PedagoguePedagogue.png");
 }
 
-/* .achievement-icon.SilencerSilence2PR {
+.achievement-icon.SilencerSilence2PR {
   background-image: url("/src/images/achievements/SilencerSilence2PR.png");
-} */
+}
 
 .achievement-icon.ShrinkSaveTwice {
   background-image: url("/src/images/achievements/ShrinkSaveTwice.png");

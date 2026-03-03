@@ -373,6 +373,7 @@ const artContributors = {
       "Miller:vivid",
       "Trucker:vivid",
       "Mortician:vivid",
+      "Undertaker:vivid",
       //Skins
       "Cop:halloween",
       "Doctor:halloween",
