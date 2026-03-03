@@ -29,6 +29,7 @@ import { Loading } from "./Loading";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 import { PopoverContent } from "./Popover";
 import { getAlignmentColor, SmallRoleList } from "./Setup";
+import { LearnSearch } from "./LearnSearch";
 
 export function RoleDetails({
   gameType,
@@ -1056,310 +1057,263 @@ export function RoleCell(props) {
   );
 }
 
+const roleAbbreviations = {
+  blue: ["Villager"],
+  nilla: ["Villager", "Mafioso"],
+  gs: ["Gunsmith"],
+  gf: ["Godfather"],
+  bs: ["Blacksmith"],
+  orc: ["Oracle"],
+  ww: ["Werewolf", "Hellhound"],
+  hh: ["Hellhound"],
+  bg: ["Bodyguard"],
+  cl: ["Cult Leader"],
+  gr: ["Graverobber"],
+  hb: ["Heartbreaker"],
+  lk: ["Lightkeeper"],
+  lm: ["Loudmouth"],
+  mm: ["Mastermind"],
+  ph: ["Party Host"],
+  sk: ["Serial Killer"],
+  sw: ["Sleepwalker"],
+  tc: ["Town Crier"],
+  tl: ["Tea Lady"],
+  rh: ["Robin Hood"],
+  hk: ["Housekeeper"],
+};
+
 export function RoleSearch(props) {
   const [roleListType, setRoleListType] = useState(
     Alignments[props.gameType][0]
   );
-  const [selectedTags, setSelectedTags] = useState(
-    []
-  );
-  const [selectedTagsCount, setSelectedTagsCount] = useState(
-    0
-  );
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedTagsCount, setSelectedTagsCount] = useState(0);
   const [tagDrawer, setTagDrawer] = useState(false);
   const [searchVal, setSearchVal] = useState("");
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
-  const isPhoneDevice = useIsPhoneDevice();
 
   function onAlignNavClick(alignment) {
     setSearchVal("");
     setRoleListType(alignment);
   }
 
-  function toggleDrawer(status)
-  {
+  function toggleDrawer(status) {
     setTagDrawer(status);
   }
 
   function handleTagChange(tag) {
-    if(selectedTags.includes(tag)){
+    if (selectedTags.includes(tag)) {
       selectedTags.splice(selectedTags.indexOf(tag), 1);
-    }
-    else{
+    } else {
       selectedTags.push(tag);
     }
-    if(selectedTags.length > 0){
-    setSearchVal("");
-    setRoleListType("");
-    }
-    else{
-    setSearchVal(searchVal);
-    setRoleListType(roleListType);
+    if (selectedTags.length > 0) {
+      setSearchVal("");
+      setRoleListType("");
+    } else {
+      setSearchVal(searchVal);
+      setRoleListType(roleListType);
     }
     setSelectedTags(selectedTags);
     setSelectedTagsCount(selectedTags.length);
   }
 
-  const roleAbbreviations = {
-    blue: ["Villager"],
-    nilla: ["Villager", "Mafioso"],
-    gs: ["Gunsmith"],
-    gf: ["Godfather"],
-    bs: ["Blacksmith"],
-    orc: ["Oracle"],
-    ww: ["Werewolf", "Hellhound"],
-    hh: ["Hellhound"],
-    bg: ["Bodyguard"],
-    cl: ["Cult Leader"],
-    gr: ["Graverobber"],
-    hb: ["Heartbreaker"],
-    lk: ["Lightkeeper"],
-    lm: ["Loudmouth"],
-    mm: ["Mastermind"],
-    ph: ["Party Host"],
-    sk: ["Serial Killer"],
-    sw: ["Sleepwalker"],
-    tc: ["Town Crier"],
-    tl: ["Tea Lady"],
-    rh: ["Robin Hood"],
-    hk: ["Housekeeper"],
-  };
-
   function onSearchInput(query) {
     setSearchVal(query.toLowerCase());
-
     if (query !== "" && roleListType.length > 0) setRoleListType("");
     else if (query === "" && roleListType.length === 0)
       setRoleListType(Alignments[props.gameType][0]);
   }
 
-  const alignButtons = Alignments[props.gameType].map((type) => (
-    <Tab
-      label={type}
-      value={type}
-      onClick={() => onAlignNavClick(type)}
-      key={type}
+  const tabs = Alignments[props.gameType].map((type) => ({ label: type, value: type }));
+
+  if (!siteInfo.tags) return <Loading small />;
+  const tabCheckboxes = siteInfo.tags[props.gameType].map((type) => (
+    <FormControlLabel
+      key={type.name}
+      control={<Checkbox defaultChecked={selectedTags.includes(type.name)} />}
+      onChange={(e) => handleTagChange(`${type.name}`)}
+      label={`${type.name}`}
     />
   ));
 
-  if (!siteInfo.tags) return <Loading small />;
-
-  const tabCheckboxes = (siteInfo.tags[props.gameType].map((type) => (
-  <FormControlLabel control={<Checkbox defaultChecked={selectedTags.includes(type.name)} />} onChange={(e) => handleTagChange(`${type.name}`)} label={`${type.name}`} />
-  ))
-    );
-
   if (!siteInfo.roles) return <Loading small />;
 
-  const roleCells = useMemo(
-    () =>
-      siteInfo.roles[props.gameType].map((role, i) => {
-        const searchTerms = searchVal
-          .split(",")
-          .filter((term) => term.trim() !== "")
-          .map((term) => term.trim().toLowerCase());
-
-        const matchesSearch =
-          searchTerms.length === 0 ||
-          searchTerms.some(
-            (term) =>
-              role.name.toLowerCase().includes(term) ||
-              role.tags.join("").toLowerCase().includes(term) ||
-              Object.entries(roleAbbreviations).some(
-                ([shortcut, roleNames]) =>
-                  shortcut === term && roleNames.includes(role.name)
-              )
-          );
-          let matchesTags = true;
-          if(selectedTags.length > 0){
-            for(let tag of selectedTags){
-                if(!role.tags.includes(tag)){
-                  matchesTags = false;
-                }
-            }
-          }
-
-        if (
-          !role.disabled &&
-          (role.alignment === roleListType ||
-            (searchVal.length > 0 &&
-              (role.name.toLowerCase().indexOf(searchVal) !== -1 ||
-                matchesSearch)) || (roleListType == "" && matchesTags && matchesSearch)) && matchesTags
-        ) {
-          return (
-            <Grid2 size={{ xs: 2 }} key={role.name}>
-              <RoleCell
-                onAddClick={props.onAddClick}
-                role={role}
-                icon={<RoleCount role={role.name} gameType={props.gameType} />}
-              />
-            </Grid2>
-          );
+  const filteredItems = useMemo(() => {
+    return siteInfo.roles[props.gameType].filter((role) => {
+      const searchTerms = searchVal
+        .split(",")
+        .filter((term) => term.trim() !== "")
+        .map((term) => term.trim().toLowerCase());
+      const matchesSearch =
+        searchTerms.length === 0 ||
+        searchTerms.some(
+          (term) =>
+            role.name.toLowerCase().includes(term) ||
+            role.tags.join("").toLowerCase().includes(term) ||
+            Object.entries(roleAbbreviations).some(
+              ([shortcut, roleNames]) =>
+                shortcut === term && roleNames.includes(role.name)
+            )
+        );
+      let matchesTags = true;
+      if (selectedTags.length > 0) {
+        for (let tag of selectedTags) {
+          if (!role.tags.includes(tag)) matchesTags = false;
         }
-      }),
-    [searchVal, roleListType, selectedTagsCount, props.onAddClick, props.gameType]
-  );
+      }
+      return (
+        !role.disabled &&
+        matchesTags &&
+        (role.alignment === roleListType ||
+          (searchVal.length > 0 &&
+            (role.name.toLowerCase().indexOf(searchVal) !== -1 || matchesSearch)) ||
+          (roleListType === "" && matchesSearch))
+      );
+    });
+  }, [siteInfo.roles, props.gameType, searchVal, roleListType, selectedTagsCount]);
 
   return (
-    <Stack direction="column">
-      <Stack direction={isPhoneDevice ? "column-reverse" : "row"} spacing={1}>
-        <Tabs
-          value={roleListType}
-          onChange={(_, value) => setRoleListType(value)}
-        >
-          {alignButtons}
-        </Tabs>
-        <Box sx={{ ml: isPhoneDevice ? undefined : "auto !important" }}>
-          <SearchBar
-            value={searchVal}
-            placeholder="🔎 Role Name"
-            onInput={onSearchInput}
-          />
-        </Box>
-      </Stack>
-      <Divider direction="horizontal" sx={{ mb: 1 }} />
-      <Button onClick={(e) => toggleDrawer(true)}>Tags</Button>
-      <Drawer open={tagDrawer} onClose={(e) =>  toggleDrawer(false)} anchor={'right'}>
-       {tabCheckboxes}
-      </Drawer>
-      <Paper sx={{ p: 1 }}>
-        <Grid2 container spacing={1} columns={{ xs: 4, sm: 6, md: 8 }}>
-          {roleCells}
-        </Grid2>
-      </Paper>
-    </Stack>
+    <LearnSearch
+      tabs={tabs}
+      tabValue={roleListType}
+      onTabChange={setRoleListType}
+      searchPlaceholder="🔎 Role Name"
+      searchVal={searchVal}
+      onSearchInput={onSearchInput}
+      items={filteredItems}
+      getItemKey={(item) => item.name}
+      getItemName={(item) => item.name}
+      renderIcon={(role) => (
+        <RoleCount role={role.name} gameType={props.gameType} />
+      )}
+      renderCell={(item, icon) => (
+        <RoleCell
+          onAddClick={props.onAddClick}
+          role={item}
+          icon={icon}
+        />
+      )}
+      extraToolbarContent={
+        <>
+          <Button onClick={(e) => toggleDrawer(true)}>Tags</Button>
+          <Drawer
+            open={tagDrawer}
+            onClose={(e) => toggleDrawer(false)}
+            anchor="right"
+          >
+            {tabCheckboxes}
+          </Drawer>
+        </>
+      }
+      gridColumns={{ xs: 4, sm: 6, md: 8 }}
+    />
   );
+}
+
+function getCompatibleModifiersOther(siteInfo, gameType, curMods) {
+  if (!curMods) curMods = [];
+  const mods = curMods.map((m) => m.name);
+  const mappedMods = siteInfo.modifiers[gameType].filter((t) =>
+    mods.includes(t.name)
+  );
+  let temp = [];
+  for (let mod of mappedMods) {
+    if (mod && mod.incompatible) temp.push(...mod.incompatible);
+  }
+  const incompatibles = temp;
+  return siteInfo.modifiers[gameType]
+    .filter((e) => !e.hidden)
+    .filter((e) => e.allowDuplicate || !mods.includes(e.name))
+    .filter((e) => !incompatibles.includes(e.name))
+    .map((m) => m.name);
 }
 
 export function ModifierSearch(props) {
   const [roleListType, setRoleListType] = useState("Items");
-
   const [searchVal, setSearchVal] = useState("");
-  const roleCellRefs = useRef([]);
-  const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
-  const isPhoneDevice = useIsPhoneDevice();
 
-  function onAlignNavClick(alignment) {
+  function onTabChange(alignment) {
     setSearchVal("");
     setRoleListType(alignment);
   }
 
   function onSearchInput(query) {
     setSearchVal(query.toLowerCase());
-
     if (query !== "" && roleListType.length > 0) setRoleListType("");
-    else if (query === "" && roleListType.length === 0)
-      setRoleListType("Items");
-  }
-
-  function getCompatibleModifiersOther(mods) {
-    if (!mods) {
-      mods = [];
-    }
-    mods = mods.map((m) => m.name);
-    const mappedMods = siteInfo.modifiers[props.gameType].filter((t) =>
-      mods.includes(t.name)
-    );
-    let temp = [];
-    for (let mod of mappedMods) {
-      if (mod && mod.incompatible) {
-        temp.push(...mod.incompatible);
-      }
-    }
-    const incompatibles = temp;
-    const modifierOptions = siteInfo.modifiers[props.gameType]
-      .filter((e) => !e.hidden)
-      .filter((e) => e.allowDuplicate || !mods.includes(e.name))
-      .filter((e) => !incompatibles.includes(e.name))
-      .map((modifier) => modifier.name);
-    return modifierOptions;
+    else if (query === "" && roleListType.length === 0) setRoleListType("Items");
   }
 
   if (!siteInfo.modifiers) return <Loading small />;
 
-  const alignButtons = ["Items", "Visits", "Appearance", "Chat", "Other"].map(
-    (type) => (
-      <Tab
-        label={type}
-        value={type}
-        onClick={() => onAlignNavClick(type)}
-        key={type}
-      />
-    )
+  const tabs = ["Items", "Visits", "Appearance", "Chat", "Other"].map((type) => ({
+    label: type,
+    value: type,
+  }));
+
+  const compatibleNames = useMemo(
+    () => getCompatibleModifiersOther(siteInfo, props.gameType, props.curMods),
+    [siteInfo, props.gameType, props.curMods]
   );
 
-  const roleCells = siteInfo.modifiers[props.gameType].map((role, i) => {
-    const searchTerms = searchVal
-      .split(",")
-      .filter((term) => term.trim() !== "")
-      .map((term) => term.trim().toLowerCase());
-
-    const matchesSearch =
-      searchTerms.length === 0 ||
-      searchTerms.some(
-        (term) =>
-          role.name.toLowerCase().includes(term) ||
-          role.tags.join("").toLowerCase().includes(term)
-        /*
-          ||
-          Object.entries(roleAbbreviations).some(
-            ([shortcut, roleNames]) =>
-              shortcut === term && roleNames.includes(role.name)
-          )
-          */
-      );
-
-    if (
-      !role.disabled &&
-      getCompatibleModifiersOther(props.curMods).includes(role.name) &&
-      (role.category === roleListType ||
-        (searchVal.length > 0 &&
-          (role.name.toLowerCase().indexOf(searchVal) !== -1 || matchesSearch)))
-    ) {
+  const filteredItems = useMemo(() => {
+    return siteInfo.modifiers[props.gameType].filter((role) => {
+      const searchTerms = searchVal
+        .split(",")
+        .filter((term) => term.trim() !== "")
+        .map((term) => term.trim().toLowerCase());
+      const matchesSearch =
+        searchTerms.length === 0 ||
+        searchTerms.some(
+          (term) =>
+            role.name.toLowerCase().includes(term) ||
+            role.tags.join("").toLowerCase().includes(term)
+        );
       return (
-        <Grid2 size={{ xs: 2 }} key={role.name}>
-          <RoleCell
-            onAddClick={props.onAddClick}
-            role={role}
-            icon={
-              <ModifierCount
-                iconLength="2em"
-                role={role.name}
-                gameType={props.gameType}
-              />
-            }
-          />
-        </Grid2>
+        !role.disabled &&
+        compatibleNames.includes(role.name) &&
+        (role.category === roleListType ||
+          (searchVal.length > 0 &&
+            (role.name.toLowerCase().indexOf(searchVal) !== -1 || matchesSearch)))
       );
-    }
-  });
+    });
+  }, [
+    siteInfo.modifiers,
+    props.gameType,
+    searchVal,
+    roleListType,
+    compatibleNames,
+  ]);
 
   return (
-    <Stack direction="column" spacing={1}>
-      <Stack direction={isPhoneDevice ? "column-reverse" : "row"} spacing={1}>
-        <Tabs
-          value={roleListType}
-          onChange={(_, value) => setRoleListType(value)}
-        >
-          {alignButtons}
-        </Tabs>
-        <Box sx={{ ml: isPhoneDevice ? undefined : "auto !important" }}>
-          <SearchBar
-            value={searchVal}
-            placeholder="🔎 Modifier Name"
-            onInput={onSearchInput}
-          />
-        </Box>
-      </Stack>
-      <Divider direction="horizontal" sx={{ mb: 1 }} />
-      <Paper sx={{ p: 1 }}>
-        <Grid2 container spacing={1} columns={{ xs: 2, sm: 6, md: 8 }}>
-          {roleCells}
-        </Grid2>
-      </Paper>
-    </Stack>
+    <LearnSearch
+      tabs={tabs}
+      tabValue={roleListType}
+      onTabChange={onTabChange}
+      searchPlaceholder="🔎 Modifier Name"
+      searchVal={searchVal}
+      onSearchInput={onSearchInput}
+      items={filteredItems}
+      getItemKey={(item) => item.name}
+      getItemName={(item) => item.name}
+      renderIcon={(item) => (
+        <ModifierCount
+          iconLength="2em"
+          role={item.name}
+          gameType={props.gameType}
+        />
+      )}
+      renderCell={(item, icon) => (
+        <RoleCell
+          onAddClick={props.onAddClick}
+          role={item}
+          icon={icon}
+        />
+      )}
+      gridColumns={{ xs: 2, sm: 6, md: 8 }}
+    />
   );
 }
 
