@@ -82,7 +82,7 @@ const AchievementData = {
       reward: 30,
       roles: ["Deputy"],
     },
-    "Super Sleuth!": {
+    "Crime Doesn't Pay": {
       ID: "Mafia12",
       internal: ["CopFindEvil"],
       description: "As Cop, find an Evil player.",
