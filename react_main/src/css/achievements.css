@@ -24,9 +24,9 @@
   background-image: url("/src/images/achievements/CultVictory.png");
 }
 
-/* .achievement-icon.IndependentVictory {
+.achievement-icon.IndependentVictory {
   background-image: url("/src/images/achievements/IndependentVictory.png");
-} */
+}
 
 .achievement-icon.Scumhunter {
   background-image: url("/src/images/achievements/Scumhunter.png");
