@@ -31,6 +31,7 @@ import ModerationSideDrawer from "components/ModerationSideDrawer";
 import ReportDialog from "../../components/ReportDialog";
 import RapSheet from "../../components/RapSheet";
 import TrophyCase from "components/TrophyCase";
+import { AchievementPanel } from "components/Achievements";
 import { PieChart } from "./PieChart";
 import AdminVisuals from "./AdminVisuals";
 import { Loading } from "components/Loading";
@@ -810,24 +811,6 @@ export default function Profile() {
     );
   });
 
-  const AchievementRows = achievements
-    .map((achID) => {
-      const achievementData = siteInfo.achievementsRaw?.Mafia;
-      if (!achievementData) return null;
-      for (let item of Object.entries(achievementData).filter(
-        (entry) => achID == entry[1].ID
-      )) {
-        if (achID == item[1].ID) {
-          return item[0];
-        }
-      }
-    })
-    .map((formatAch) => (
-      <div className="Achievement" key={formatAch}>
-        {formatAch}
-      </div>
-    ));
-
   const createdSetupRows = createdSetups.map((setup) => (
     <Setup setup={setup} key={setup.id} />
   ));
@@ -1530,29 +1513,11 @@ export default function Profile() {
                 )}
               </div>
             </div>
-            <div className="box-panel achievements" style={panelStyle}>
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <img
-                  src={ACHIEVEMENTS_ICON}
-                  style={{
-                    marginRight: "8px",
-                    marginBottom: "8px",
-                    maxWidth: "30px",
-                    maxHeight: "30px",
-                    backgroundColor: "rgba()",
-                    borderRadius: "0px",
-                  }}
-                  title="achievements"
-                />
-                <Typography variant="h3" sx={headingStyle}>
-                  Achievements
-                </Typography>
-              </div>
-              <div className="content">
-                {AchievementRows}
-                {achievements.length === 0 && "No achievements yet"}
-              </div>
-            </div>
+            <AchievementPanel
+              achievements={achievements}
+              panelStyle={panelStyle}
+              headingStyle={headingStyle}
+            />
             {archivedGamesRows.length !== 0 && (
               <div className="box-panel archived-games" style={panelStyle}>
                 <Typography variant="h3" sx={headingStyle}>

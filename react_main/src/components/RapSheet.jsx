@@ -391,29 +391,26 @@ export default function RapSheet({ userId }) {
             onClick={() => handleVerdictClick(report)}
             sx={{
               position: "relative",
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               cursor: "pointer",
               "&:hover": { opacity: 0.8 },
             }}
           >
-            <Box
-              sx={{
-                position: "relative",
-                width: "var(--role-icon-size)",
-                height: "var(--role-icon-size)",
+            <img
+              src={verdictIcon}
+              alt={violationName}
+              className="verdict-icon"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "contain",
               }}
-            >
-              <img
-                src={verdictIcon}
-                alt={violationName}
-                className="verdict-icon"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "contain",
-                }}
-              />
-              {degreeDigits.length > 0 && <DigitsCount digits={degreeDigits} />}
-            </Box>
+            />
+            {degreeDigits.length > 0 && <DigitsCount digits={degreeDigits} />}
           </Box>
         );
       })}

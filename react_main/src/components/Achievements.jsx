@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { SiteInfoContext } from "../Contexts";
 import { CellSearch, Cell } from "./CellSearch";
+import CasePanel from "./CasePanel";
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
 
 const COIN_ICON = require("images/umcoin.png");
@@ -85,6 +86,47 @@ function AchievementCount({ item }) {
         </div>
       </Popover>
     </>
+  );
+}
+
+function resolveAchievementItems(achievementIds = [], achievementData = {}) {
+  if (!achievementData || !Array.isArray(achievementIds)) return [];
+  const entries = Object.entries(achievementData);
+  return achievementIds
+    .map((achID) => {
+      const found = entries.find(([, data]) => data && data.ID === achID);
+      if (!found) return null;
+      const [name, data] = found;
+      return { name, ...data };
+    })
+    .filter(Boolean);
+}
+
+export function AchievementPanel({
+  achievements = [],
+  panelStyle = {},
+  headingStyle = {},
+  className = "box-panel achievements",
+}) {
+  const siteInfo = useContext(SiteInfoContext);
+  const achievementData = siteInfo.achievementsRaw?.Mafia || {};
+  const items = useMemo(
+    () => resolveAchievementItems(achievements, achievementData),
+    [achievements, achievementData]
+  );
+
+  return (
+    <CasePanel
+      title="Achievements"
+      panelStyle={panelStyle}
+      headingStyle={headingStyle}
+      className={className}
+      emptyMessage="No achievements yet"
+    >
+      {items.map((item) => (
+        <AchievementCount key={item.name} item={item} />
+      ))}
+    </CasePanel>
   );
 }
 

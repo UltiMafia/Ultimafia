@@ -57,7 +57,15 @@ export default function TrophyCase({
         }
         key={trophy.id}
       >
-        <Box className="trophy-item">
+        <Box
+          sx={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <img
             src={trophyIcon}
             alt={`${trophy.name} ${trophyType} trophy`}
