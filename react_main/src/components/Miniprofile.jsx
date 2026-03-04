@@ -41,6 +41,9 @@ function Miniprofile(props) {
 
   const profileLink = vanityUrl ? `/user/${vanityUrl}` : `/user/${id}`;
 
+  const totalAchievements =
+    Object.keys(siteInfo.achievementsRaw?.Mafia || {}).length || 40;
+
   const isSelf = currentUser.loggedIn && currentUser.id === id;
   const [isFriend, setIsFriend] = useState(user.isFriend || false);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
@@ -161,7 +164,7 @@ function Miniprofile(props) {
           <div className="score-info-row score-info-smallicon">
             <img src={ACHIEVEMENTS_ICON} />
           </div>
-          <div className="score-info-row">{user.achievements.length}/40</div>
+          <div className="score-info-row">{user.achievements.length}/{totalAchievements}</div>
         </div>
       </div>
     </div>

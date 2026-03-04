@@ -6,6 +6,9 @@ import {
   Popover,
   Stack,
   Divider,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from "@mui/material";
 import { SiteInfoContext } from "../Contexts";
 import { CellSearch, Cell } from "./CellSearch";
@@ -114,10 +117,12 @@ export function AchievementPanel({
     () => resolveAchievementItems(achievements, achievementData),
     [achievements, achievementData]
   );
+  const totalAchievements =
+    Object.keys(achievementData).length || 40;
 
   return (
     <CasePanel
-      title="Achievements"
+      title={`Achievements (${items.length}/${totalAchievements})`}
       panelStyle={panelStyle}
       headingStyle={headingStyle}
       className={className}
@@ -151,17 +156,24 @@ export function AchievementSearch() {
   }, [achievementData, searchVal]);
 
   return (
-    <CellSearch
-      tabs={[]}
-      searchPlaceholder="🔎 Search"
-      searchVal={searchVal}
-      onSearchInput={(query) => setSearchVal(query)}
-      items={items}
-      getItemKey={(item) => item.name}
-      getItemName={(item) => item.name}
-      renderIcon={(item) => <AchievementCount item={item} />}
-      renderCell={(item, icon) => <Cell item={item} icon={icon} />}
-      gridColumns={{ xs: 4, sm: 6, md: 8 }}
-    />
+    <Accordion defaultExpanded>
+      <AccordionSummary>
+        <Typography variant="h3">Achievements</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <CellSearch
+          tabs={[]}
+          searchPlaceholder="🔎 Search"
+          searchVal={searchVal}
+          onSearchInput={(query) => setSearchVal(query)}
+          items={items}
+          getItemKey={(item) => item.name}
+          getItemName={(item) => item.name}
+          renderIcon={(item) => <AchievementCount item={item} />}
+          renderCell={(item, icon) => <Cell item={item} icon={icon} />}
+          gridColumns={{ xs: 4, sm: 6, md: 8 }}
+        />
+      </AccordionDetails>
+    </Accordion>
   );
 }
