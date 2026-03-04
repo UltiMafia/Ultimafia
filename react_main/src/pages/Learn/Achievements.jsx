@@ -11,8 +11,7 @@ import {
   Divider,
 } from "@mui/material";
 import { SiteInfoContext } from "../../Contexts";
-import { LearnSearch } from "../../components/LearnSearch";
-import { RoleCell } from "../../components/Roles";
+import { CellSearch, Cell } from "../../components/CellSearch";
 import { usePopoverOpen } from "../../hooks/usePopoverOpen";
 
 const COIN_ICON = require("images/umcoin.png");
@@ -113,7 +112,7 @@ export function AchievementSearch() {
   }, [achievementData, searchVal]);
 
   return (
-    <LearnSearch
+    <CellSearch
       tabs={[]}
       searchPlaceholder="🔎 Search"
       searchVal={searchVal}
@@ -122,7 +121,7 @@ export function AchievementSearch() {
       getItemKey={(item) => item.name}
       getItemName={(item) => item.name}
       renderIcon={(item) => <AchievementCount item={item} />}
-      renderCell={(item, icon) => <RoleCell role={item} icon={icon} />}
+      renderCell={(item, icon) => <Cell item={item} icon={icon} />}
       gridColumns={{ xs: 4, sm: 6, md: 8 }}
     />
   );

@@ -34,8 +34,8 @@ import {
   ModifierCount,
   GameSettingSearch,
   GameSettingCount,
-  RoleCell,
 } from "components/Roles";
+import { Cell } from "components/CellSearch";
 import Form from "components/Form";
 import { useErrorAlert } from "components/Alerts";
 
@@ -768,9 +768,9 @@ export default function CreateSetup(props) {
         sx={{ width: isPhoneDevice ? "100%" : undefined }}
         key={i}
       >
-        <RoleCell
+        <Cell
           iconLength={iconLength}
-          role={m}
+          item={m}
           onDelClick={() => onRemoveModifier(m)}
           icon={
             <ModifierCount
@@ -910,9 +910,9 @@ export default function CreateSetup(props) {
                     sx={{ width: isPhoneDevice ? "100%" : undefined }}
                     key={gameSetting}
                   >
-                    <RoleCell
+                    <Cell
                       iconLength={iconLength}
-                      role={{ name: gameSetting }}
+                      item={{ name: gameSetting }}
                       onDelClick={() =>
                         updateGameSettings({ type: "remove", key: gameSetting })
                       }

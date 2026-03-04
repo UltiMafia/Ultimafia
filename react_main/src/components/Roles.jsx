@@ -29,7 +29,7 @@ import { Loading } from "./Loading";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 import { PopoverContent } from "./Popover";
 import { getAlignmentColor, SmallRoleList } from "./Setup";
-import { LearnSearch } from "./LearnSearch";
+import { CellSearch, Cell } from "./CellSearch";
 
 export function RoleDetails({
   gameType,
@@ -943,120 +943,6 @@ function DigitsCount(props) {
   );
 }
 
-export function RoleCell(props) {
-  const iconLength = props.iconLength || "2em";
-  const role = props.role;
-  const icon = props.icon;
-  const onAddClick = props.onAddClick;
-  const onDelClick = props.onDelClick;
-
-  const siteInfo = useContext(SiteInfoContext);
-  const user = useContext(UserContext);
-  const roleCellRef = useRef();
-  const isPhoneDevice = useIsPhoneDevice();
-
-  const myHeight = `calc(1.2 * ${iconLength} + 2 * var(--mui-spacing))`;
-
-  if (role === undefined) {
-    return (
-      <Box
-        sx={{
-          minWidth: 0,
-          height: myHeight,
-          minHeight: "var(--mui-spacing)",
-          borderRadius: "var(--mui-shape-borderRadius)",
-          border: `1px solid var(--mui-palette-divider)`,
-        }}
-      />
-    );
-  }
-
-  return (
-    <Paper
-      variant="outlined"
-      className="role-cell"
-      key={role.name}
-      sx={{
-        p: isPhoneDevice ? 0.5 : 1,
-        lineHeight: "normal",
-        height: myHeight,
-      }}
-    >
-      <Stack
-        direction="row"
-        spacing={1}
-        sx={{
-          alignItems: "center",
-          width: "100%",
-        }}
-        onMouseOver={() => null && onRoleCellClick()}
-        ref={roleCellRef}
-      >
-        {user.loggedIn && onAddClick && (
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              onAddClick(role);
-            }}
-            sx={{
-              padding: 1,
-              bgcolor: "#62a0db",
-              alignSelf: "stretch",
-              minWidth: "0px",
-            }}
-          >
-            <i
-              className="fa-plus fas"
-              aria-hidden="true"
-              style={{ fontSize: "0.5em" }}
-            />
-          </Button>
-        )}
-        {user.loggedIn && onDelClick && (
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelClick(role);
-            }}
-            sx={{
-              padding: 1,
-              bgcolor: "#e45050",
-              alignSelf: "stretch",
-              minWidth: "0px",
-            }}
-          >
-            <i
-              className="fa-times fas"
-              aria-hidden="true"
-              style={{ fontSize: "0.5em" }}
-            />
-          </Button>
-        )}
-        {icon}
-        <Typography
-          variant="body2"
-          sx={{
-            flex: "1",
-            textAlign: "right",
-            wordBreak: "break-word",
-            hyphens: "auto",
-          }}
-        >
-          {role.name}
-        </Typography>
-      </Stack>
-      {(role.newlyAdded || role.recentlyUpdated || role.featured) && (
-        <RoleBanners
-          newlyAdded={role.newlyAdded}
-          recentlyUpdated={role.recentlyUpdated}
-          featured={role.featured}
-          sx={{ padding: "2px" }}
-        />
-      )}
-    </Paper>
-  );
-}
-
 const roleAbbreviations = {
   blue: ["Villager"],
   nilla: ["Villager", "Mafioso"],
@@ -1175,7 +1061,7 @@ export function RoleSearch(props) {
   }, [siteInfo.roles, props.gameType, searchVal, roleListType, selectedTagsCount]);
 
   return (
-    <LearnSearch
+    <CellSearch
       tabs={tabs}
       tabValue={roleListType}
       onTabChange={setRoleListType}
@@ -1189,9 +1075,9 @@ export function RoleSearch(props) {
         <RoleCount role={role.name} gameType={props.gameType} />
       )}
       renderCell={(item, icon) => (
-        <RoleCell
+        <Cell
           onAddClick={props.onAddClick}
-          role={item}
+          item={item}
           icon={icon}
         />
       )}
@@ -1288,7 +1174,7 @@ export function ModifierSearch(props) {
   ]);
 
   return (
-    <LearnSearch
+    <CellSearch
       tabs={tabs}
       tabValue={roleListType}
       onTabChange={onTabChange}
@@ -1306,9 +1192,9 @@ export function ModifierSearch(props) {
         />
       )}
       renderCell={(item, icon) => (
-        <RoleCell
+        <Cell
           onAddClick={props.onAddClick}
-          role={item}
+          item={item}
           icon={icon}
         />
       )}
@@ -1402,9 +1288,9 @@ export function GameSettingSearch(props) {
     ) {
       return (
         <Grid2 size={{ xs: 2 }} key={role.name}>
-          <RoleCell
+          <Cell
             onAddClick={props.onAddClick}
-            role={role}
+            item={role}
             icon={
               <GameSettingCount
                 iconLength="2em"
@@ -1442,58 +1328,6 @@ export function GameSettingSearch(props) {
         </Grid2>
       </Paper>
     </Stack>
-  );
-}
-
-function RoleBanners(props) {
-  const newlyAdded = props.newlyAdded;
-  const recentlyUpdated = props.recentlyUpdated;
-  const featured = props.featured;
-
-  var banners = [];
-  if (newlyAdded) {
-    banners.push(<RoleBanner key="newlyAdded" type="newlyAdded" text="new" />);
-  }
-
-  if (recentlyUpdated) {
-    banners.push(
-      <RoleBanner
-        key="recentlyUpdated"
-        type="recentlyUpdated"
-        text={<i className="fas fa-sync" />}
-      />
-    );
-  }
-
-  if (featured) {
-    banners.push(
-      <RoleBanner
-        key="featured"
-        type="featured"
-        text={<i className="fas fa-star" />}
-      />
-    );
-  }
-
-  return (
-    <>
-      <div className="role-banner-wrapper">
-        <div className="role-banners">{banners}</div>
-      </div>
-    </>
-  );
-}
-
-function RoleBanner(props) {
-  const text = props.text;
-  const type = props.type;
-
-  return (
-    <>
-      <div className={`role-banner ${type}`}>
-        <div className="role-banner-text">{text}</div>
-      </div>
-    </>
   );
 }
 
