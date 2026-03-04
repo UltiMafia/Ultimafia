@@ -3,8 +3,8 @@ import { Box, Typography } from "@mui/material";
 
 export const casePanelItemBoxSx = {
   padding: 1,
-  width: 48,
-  height: 48,
+  width: 32,
+  height: 32,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",

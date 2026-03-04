@@ -37,7 +37,7 @@ const AchievementData = {
       reward: 20,
       roles: ["Villager"],
     },
-    "Nothing to see here": {
+    "Nothing To See Here": {
       ID: "Mafia6",
       internal: ["NothingToSeeHere"],
       description:
@@ -60,7 +60,7 @@ const AchievementData = {
       reward: 20,
       roles: ["Fool"],
     },
-    "New Sheriff in Town": {
+    "New Sheriff In Town": {
       ID: "Mafia9",
       internal: ["SheriffShootEvil"],
       description: "As Sheriff, shoot and kill an Evil player.",
@@ -97,7 +97,7 @@ const AchievementData = {
       reward: 15,
       roles: ["Fiddler"],
     },
-    "Clean it Up, Janny": {
+    "Clean It Up, Janny": {
       ID: "Mafia14",
       internal: ["JanCleanPR"],
       description: "As Janitor, clean a Village power role.",
@@ -164,14 +164,14 @@ const AchievementData = {
       reward: 10,
       roles: ["Doctor"],
     },
-    "I am the Night": {
+    "Eye Of Vigilance": {
       ID: "Mafia23",
       internal: ["VigilanteKill"],
       description: "As Vigilante, kill 2 Evil players.",
       reward: 20,
       roles: ["Vigilante"],
     },
-    "They are the Night": {
+    "Big Iron": {
       ID: "Mafia24",
       internal: ["GunsmithGun"],
       description:
@@ -187,7 +187,7 @@ const AchievementData = {
       reward: 30,
       roles: ["Sniper"],
     },
-    "Rigged from the Start": {
+    "Rigged From The Start": {
       ID: "Mafia26",
       internal: ["SaboteurKill"],
       description:
@@ -233,7 +233,7 @@ const AchievementData = {
       reward: 30,
       roles: ["Watcher"],
     },
-    "On the Trail": {
+    "On The Trail": {
       ID: "Mafia32",
       internal: ["TrackerCheck"],
       description: "As Tracker, track a player who visits you.",
@@ -255,14 +255,14 @@ const AchievementData = {
         "As a Mafia or Cult role, convince the Village to Declare a Magus game.",
       reward: 40,
     },
-    "The Master has become the Student": {
+    "The Master Has Become The Student": {
       ID: "Mafia35",
       internal: ["PedagoguePedagogue"],
       description: "As Pedagogue, Retrain a Pedagogue who is retraining you.",
       reward: 30,
       roles: ["Pedagogue"],
     },
-    "Silence is Deafening": {
+    "Silence Is Deafening": {
       ID: "Mafia36",
       internal: ["SilencerSilence2PR"],
       description:
@@ -284,7 +284,7 @@ const AchievementData = {
       reward: 20,
       roles: ["Granny"],
     },
-    "Hell in a Cell": {
+    "Hell In A Cell": {
       ID: "Mafia39",
       internal: ["UndertakerCleanPR"],
       description: "As Undertaker, clean a Village power role.",
