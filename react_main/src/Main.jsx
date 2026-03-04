@@ -307,7 +307,6 @@ function Header({ setShowAnnouncementTemporarily }) {
                 items: [
                   { text: "Games", path: "/learn/games" },
                   { text: "Terminology", path: "/learn/terminology" },
-                  { text: "Achievements", path: "/learn/achievements" },
                 ],
               },
               {
@@ -382,7 +381,6 @@ function Header({ setShowAnnouncementTemporarily }) {
               items={[
                 { text: "Games", path: "/learn/games" },
                 { text: "Terminology", path: "/learn/terminology" },
-                { text: "Achievements", path: "/learn/achievements" },
               ]}
             />
             <NavDropdown

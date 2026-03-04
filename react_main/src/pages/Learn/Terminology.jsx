@@ -18,7 +18,7 @@ import { useTheme } from "@mui/material/styles";
 
 import { slangList } from "../../constants/slangList";
 import { commandList } from "../../constants/commandList";
-//import { AchievementList } from "../../../../data/Achievements";
+import { AchievementSearch } from "../../components/Achievements";
 
 export default function Terminology(props) {
   const theme = useTheme();
@@ -107,6 +107,7 @@ export default function Terminology(props) {
       <Typography variant="h2" gutterBottom>
         Terminology
       </Typography>
+      <AchievementSearch />
       <Typography variant="body1" paragraph>
         The game features a comprehensive list of terms and chat commands.
         Understanding these commands and terms is crucial for mastering the
