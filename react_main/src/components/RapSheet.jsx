@@ -15,6 +15,7 @@ import { NameWithAvatar } from "pages/User/User";
 import { UserContext, SiteInfoContext } from "../Contexts";
 import { useErrorAlert } from "./Alerts";
 import AppealDialog from "./AppealDialog";
+import CasePanel from "./CasePanel";
 
 // Verdict icons mapping
 export const VERDICT_ICONS = {
@@ -352,13 +353,8 @@ export default function RapSheet({ userId }) {
     return null;
   }
 
-  const panelStyle = {
-    marginBottom: "16px",
-  };
-
-  const headingStyle = {
-    marginBottom: "8px",
-  };
+  const panelStyle = { marginBottom: "16px" };
+  const headingStyle = { marginBottom: "8px" };
 
   const handleVerdictClick = (report) => {
     setSelectedVerdictReport(report);
@@ -372,89 +368,56 @@ export default function RapSheet({ userId }) {
   };
 
   return (
-    <div className="box-panel" style={panelStyle}>
-      <Typography variant="h3" style={headingStyle}>
-        Rap Sheet
-      </Typography>
-      <div className="content">
-        <Box
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 1,
-          }}
-        >
-          {reports.map((report) => {
-            // A report is dismissed if finalRuling is null or doesn't have a violationName
-            // A report is a warning if finalRuling has warning: true
-            // If it has a violationName, it's a violation, not dismissed or warning
-            const isWarning = report.finalRuling?.warning === true;
-            const isDismissed =
-              (!report.finalRuling || !report.finalRuling.violationName) &&
-              !isWarning;
-            const violationName = isWarning
-              ? "Warning"
-              : isDismissed
-              ? "No Violation"
-              : report.finalRuling?.violationName || "Violation";
+    <>
+      <CasePanel title="Rap Sheet" panelStyle={panelStyle} headingStyle={headingStyle}>
+      {reports.map((report) => {
+        const isWarning = report.finalRuling?.warning === true;
+        const isDismissed =
+          (!report.finalRuling || !report.finalRuling.violationName) && !isWarning;
+        const violationName = isWarning
+          ? "Warning"
+          : isDismissed
+          ? "No Violation"
+          : report.finalRuling?.violationName || "Violation";
 
-            // Determine violation status
-            let violationStatus = null;
-            if (!isDismissed && report.violationTicket) {
-              const status = report.violationTicket.status;
-              if (status === "active") {
-                violationStatus = "active";
-              } else if (status === "expired") {
-                violationStatus = "expired";
-              } else if (status === "permanent") {
-                violationStatus = "permanent";
-              }
-            }
+        const verdictIcon = getVerdictIcon(violationName);
+        const offenseNumber = extractOffenseNumber(report.finalRuling?.violationName);
+        const degreeDigits = offenseNumber ? String(offenseNumber).split("") : [];
 
-            // Get icon for this verdict
-            const verdictIcon = getVerdictIcon(violationName);
-
-            // Extract offense number from violationName (format: "Rule Name (1st Offense)")
-            const offenseNumber = extractOffenseNumber(report.finalRuling?.violationName);
-            const degreeDigits = offenseNumber ? String(offenseNumber).split("") : [];
-
-            return (
-              <Box
-                key={report.id}
-                className="verdict-item"
-                onClick={() => handleVerdictClick(report)}
-                sx={{
-                  position: "relative",
-                  cursor: "pointer",
-                  "&:hover": {
-                    opacity: 0.8,
-                  },
+        return (
+          <Box
+            key={report.id}
+            className="verdict-item"
+            onClick={() => handleVerdictClick(report)}
+            sx={{
+              position: "relative",
+              cursor: "pointer",
+              "&:hover": { opacity: 0.8 },
+            }}
+          >
+            <Box
+              sx={{
+                position: "relative",
+                width: "var(--role-icon-size)",
+                height: "var(--role-icon-size)",
+              }}
+            >
+              <img
+                src={verdictIcon}
+                alt={violationName}
+                className="verdict-icon"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
                 }}
-              >
-                <Box
-                  sx={{
-                    position: "relative",
-                    width: "var(--role-icon-size)",
-                    height: "var(--role-icon-size)",
-                  }}
-                >
-                  <img
-                    src={verdictIcon}
-                    alt={violationName}
-                    className="verdict-icon"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                    }}
-                  />
-                  {degreeDigits.length > 0 && <DigitsCount digits={degreeDigits} />}
-                </Box>
-              </Box>
-            );
-          })}
-        </Box>
-      </div>
+              />
+              {degreeDigits.length > 0 && <DigitsCount digits={degreeDigits} />}
+            </Box>
+          </Box>
+        );
+      })}
+      </CasePanel>
       {showVerdictDialog && selectedVerdictReport && (
         <VerdictDialog
           open={showVerdictDialog}
@@ -498,6 +461,6 @@ export default function RapSheet({ userId }) {
           }}
         />
       )}
-    </div>
+    </>
   );
 }
