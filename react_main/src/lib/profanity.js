@@ -3,7 +3,6 @@ import {
   swears,
   getSwearReplacement,
   theLWord,
-  theLWordFilter,
 } from "../constants/filteredStrings";
 
 /* --- ROT13 decoding --- */
@@ -129,14 +128,14 @@ function filterProfanitySegment(profanityType, segment, char, seed = "") {
   return segment;
 }
 
-function conjugateCondemn(originalWord) {
-  const lw = originalWord.toLowerCase();
-
-  if (lw.endsWith("ing")) return "condemning";
-  if (lw.endsWith("ed")) return "condemned";
-  if (lw.endsWith("es") || lw.endsWith("s")) return "condemns";
-  return "condemn";
-}
+// Static map: L-word forms (decoded) → display text. Conjugation-aware
+// definition lookup is handled via slangList in slangify (see getSlangKey).
+const L_WORD_TO_DISPLAY = {
+  lynch: "condemn",
+  lynches: "condemns",
+  lynching: "condemning",
+  lynched: "condemned",
+};
 
 const TERMINOLOGY_ABBREVS = [
   [/\bLYLO\b/gi, "COLO"],
@@ -166,7 +165,8 @@ function filterLWord(segment) {
     let regexRes;
     while ((regexRes = lWordRegex.exec(mappedSegment)) !== null) {
       const matchedWord = regexRes[0];
-      const replacement = conjugateCondemn(matchedWord);
+      const replacement =
+        L_WORD_TO_DISPLAY[matchedWord.toLowerCase()] ?? "condemn";
 
       const index = regexRes.index;
       const length = matchedWord.length;

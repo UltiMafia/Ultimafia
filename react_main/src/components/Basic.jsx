@@ -4,6 +4,7 @@ import { emotify } from "./Emotes";
 import { filterProfanitySegment } from "../lib/profanity";
 import { MediaEmbed } from "../pages/User/User";
 import { slangList } from "../constants/slangList";
+import { getSlangKey } from "../lib/slangMatch";
 import { Slang } from "./Slang";
 import { Typography } from "@mui/material";
 import { SiteInfoContext } from "../Contexts";
@@ -276,10 +277,8 @@ export const slangify = ({ chatMessage, slangifySeed, displayEmoji }) => {
     }
 
     const wordTrimmed = word.trim();
-    const slangKey = Object.keys(slangList).find(
-      (key) => key.toLowerCase() === wordTrimmed.toLowerCase()
-    );
-    const slang = slangList[slangKey];
+    const slangKey = getSlangKey(wordTrimmed, slangList);
+    const slang = slangKey ? slangList[slangKey] : null;
     if (slang) {
       const trailingSpace = word[word.length - 1] === " " ? "\u00A0" : ""; // "words" seem to have a MAXIMUM of 1 trailing space
 

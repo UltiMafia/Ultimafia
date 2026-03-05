@@ -254,22 +254,14 @@ export const slangList = {
   //   definition:
   //     "1. Anti-town. Behaviors which the speaker believes will cause town to lose. 2. To act against one's own win condition.",
   // },
-  coasting: {
+  coast: {
     definition:
-      "The act of contributing minimally to town discussion phases, typically to avoid drawing suspicion.",
+      "Coast. The act of contributing minimally to town discussion phases, typically to avoid drawing suspicion.",
     emoji: "🎢",
   },
-  // blending: {
-  //   definition:
-  //     "The act of contributing to town discussion phases in a manner that avoids expressing unique viewpoints. Synonymous with Filler, Air.",
-  // },
-  // deflecting: {
-  //   definition:
-  //     "The act of leading town discussion away from one person in favor of another.",
-  // },
-  tunneling: {
+  tunnel: {
     definition:
-      "Tunneling. The act of forcing town discussion about one player to the exclusion of all others.",
+      "Tunnel. The act of forcing town discussion about one player to the exclusion of all others.",
     emoji: "🚇",
   },
   NC: {
@@ -315,7 +307,7 @@ export const slangList = {
       "Joint win. Two individuals or alignments accomplishing their win conditions simultaneously. Both parties will be credited with the win.",
     emoji: "➕",
   },
-  Pocketing: {
+  Pocket: {
     definition:
       "The act of a mafia player openly supporting a town player, typically with the intention that the town player will believe the mafia player to be town.",
     emoji: "😏",
