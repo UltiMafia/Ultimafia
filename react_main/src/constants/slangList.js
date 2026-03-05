@@ -142,18 +142,17 @@ export const slangList = {
       "Veg: when a player's inactivity or inability to complete in-game tasks causes the game to automatically kill them.",
     emoji: "🥕",
   },
-  // unvote: {
-  //   definition:
-  //     "Unvoting is the action in which one cancels the vote they have made.",
-  //   emoji: "❌",
-  // },
+  unvote: {
+    definition:
+      "Unvoting is the action in which one cancels the vote they have made.",
+    emoji: "❌",
+  },
   village: {
     definition:
       "Village, or town: the 'good' side. Their aim is to condemn or kill Mafia, Cult, and hostile Independent roles.",
     emoji: "🏘️",
   },
 
-  // mgg theft 1
   Vanilla: {
     definition:
       "Vanilla. Basic Role of an alignment. Villager for town, Mafioso for mafia, Cultist for Cult.",
@@ -169,20 +168,6 @@ export const slangList = {
       "Notes. Used by players to record the game in progress, whether provided by system messages or by the player's own deductions.",
     emoji: "📝",
   },
-  // unaware: {
-  //   definition:
-  //     "A type of role that appears to itself as something it's not. Synonymous with SSA, from Sees Self As.",
-  //   emoji: ["😖", "😵"],
-  // },
-  // "Named Town": {
-  //   definition:
-  //     "A type of role that has no power that is useful, but is nonetheless unique in the setup and can be claimed.",
-  // },
-  // notes: {
-  //   definition:
-  //     "Details about one's night actions. More generally, can be used to refer to anything a player has recorded about the game in progress, whether provided by system messages or by the player's own deductions.",
-  //   emoji: "📝",
-  // },
   //RR: {
   //  definition:
   //    "Role Reveal. To publically announce one's role. Synonymous with Claim.",
@@ -297,7 +282,7 @@ export const slangList = {
   },
   MC: {
     definition:
-      "Miscondemn. To send a Town player to the guillotine. Synonymous with ML.",
+      "Miscondemn. To send a Town player to the guillotine.",
   },
   push: {
     definition:
@@ -321,7 +306,7 @@ export const slangList = {
     definition:
       "Miscondemn and You Lose. A state in which condemning a town player will end the game with a mafia win (or another faction, such as Liaison), but voting to condemn no one will allow a final day, after night actions are performed. cf. CYLO.",
   },
-  cylo: {
+  colo: {
     definition:
       "Condemn (scum) or You Lose. A state in which condemning a town player or no player at all will end the game with a faction win, when the faction has a night meeting kill that is accounted for. cf. MYLO.",
   },
@@ -576,11 +561,11 @@ export const slangList = {
   // },
   Mismason: {
     definition:
-      "When the masons attempt to convert a member of the Mafia and all die",
+      "When the masons attempt to convert a member of the Mafia and all die.",
   },
   Mismime: {
     definition:
-      "When the Mime attempts to mimic a mafia member and turns into a villager",
+      "When the Mime attempts to mimic a mafia member and turns into a villager.",
   },
   Famine: {
     definition:
@@ -598,8 +583,6 @@ export const slangList = {
     definition:
       "Excess roles are Any roles from the Setup Not Currently in the Game.",
   },
-
-  // mgg theft 3
 
   ASSO: { definition: "Associate. old name for Gunrunner." },
   BP: { definition: "Bulletproof." },
@@ -641,7 +624,7 @@ slangList.ot = slangList.Overturn;
 slangList.bleed = slangList.Bleeding;
 slangList.pair = slangList.Paired;
 slangList.sheeped = slangList.sheep;
-slangList.ml = slangList.miscondemn;
+slangList.mc = slangList.miscondemn;
 slangList.coast = slangList.coasting;
 slangList.kick = slangList.kicking;
 slangList.rb = slangList.Block;

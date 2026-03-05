@@ -46,7 +46,7 @@ export default function Terminology(props) {
         <TableBody>
           {commandTableRows.map((row) => (
             <TableRow
-              key={row.name}
+              key={row.term}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell component="th" scope="row" align="center">
@@ -61,7 +61,9 @@ export default function Terminology(props) {
     </TableContainer>
   );
 
-  const slangTableRows = Object.keys(slangList).map((key) => {
+  const slangTableRows = Object.keys(slangList)
+    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }))
+    .map((key) => {
     let { definition, emoji } = slangList[key];
     if (Array.isArray(emoji)) {
       emoji = emoji.join(", ");
@@ -87,7 +89,7 @@ export default function Terminology(props) {
         <TableBody>
           {slangTableRows.map((row) => (
             <TableRow
-              key={row.name}
+              key={row.term}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell component="th" scope="row" align="center">
@@ -133,8 +135,7 @@ export default function Terminology(props) {
         <AccordionDetails>
           <Typography paragraph>
             Below is a list of terms that are automatically detected during
-            gameplay. Players can choose to toggle the visibility of these terms
-            through their profile settings.
+            gameplay.
           </Typography>
           <Box className="paragraph">{slangTable}</Box>
         </AccordionDetails>

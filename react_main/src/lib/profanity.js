@@ -83,6 +83,7 @@ function textIncludesSlurs(text) {
 // Client-side speech filtering.
 function filterProfanitySegment(profanityType, segment, char, seed = "") {
   segment = filterLWord(segment);
+  segment = filterLWordAbbrevs(segment);
 
   let profanityRegexps;
   // Getting profanity list.
@@ -135,6 +136,21 @@ function conjugateCondemn(originalWord) {
   if (lw.endsWith("ed")) return "condemned";
   if (lw.endsWith("es") || lw.endsWith("s")) return "condemns";
   return "condemn";
+}
+
+const TERMINOLOGY_ABBREVS = [
+  [/\bLYLO\b/gi, "COLO"],
+  [/\bML\b/gi, "MC"],
+  [/\bNL\b/gi, "NC"],
+  [/\bRL\b/gi, "RC"],
+];
+
+function filterLWordAbbrevs(segment) {
+  let result = segment;
+  for (const [regex, replacement] of TERMINOLOGY_ABBREVS) {
+    result = result.replace(regex, replacement);
+  }
+  return result;
 }
 
 function filterLWord(segment) {
