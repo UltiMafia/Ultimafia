@@ -19,12 +19,12 @@ import { slangList } from "../../constants/slangList";
 import { commandList } from "../../constants/commandList";
 import { AchievementSearch } from "../../components/Achievements";
 
-export default function Terminology(props) {
+export default function LearnGlossary(props) {
   const theme = useTheme();
   const [tab, setTab] = useState(0);
 
   useEffect(() => {
-    document.title = "Learn Terminology | UltiMafia";
+    document.title = "Learn Glossary | UltiMafia";
   }, []);
 
   const commandTableRows = Object.keys(commandList)
@@ -114,10 +114,10 @@ export default function Terminology(props) {
   return (
     <>
       <Typography variant="h2" gutterBottom>
-        Terminology
+        Glossary
       </Typography>
       <Typography variant="body1" paragraph>
-        The game features a comprehensive list of terms and chat commands.
+        UltiMafia features a comprehensive list of terms and chat commands.
         Understanding these commands and terms is crucial for mastering the
         game's mechanics and strategies. To improve the definitions or add new
         ones, we encourage you to get involved through our Discord or Github
