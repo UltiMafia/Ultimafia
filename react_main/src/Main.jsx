@@ -380,7 +380,7 @@ function Header({ setShowAnnouncementTemporarily }) {
               label="Learn"
               items={[
                 { text: "Games", path: "/learn/games" },
-                { text: "Terminology", path: "/learn/terminology" },
+                { text: "Glossary", path: "/learn/glossary" },
               ]}
             />
             <NavDropdown

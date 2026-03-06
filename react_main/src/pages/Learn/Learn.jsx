@@ -5,7 +5,7 @@ import Setups from "./Setup/SetupPage";
 import SetupsNightOrder from "./Setup/SetupNightOrder";
 import RolePage from "./role/RolePage";
 import Games from "./Games";
-import Terminology from "./Terminology";
+import LearnGlossary from "./LearnGlossary";
 
 import "css/play.css";
 
@@ -29,7 +29,7 @@ export default function Learn(props) {
               element={<SetupsNightOrder />}
             />
             <Route path="role/:RoleName" element={<RolePage />} />
-            <Route path="terminology" element={<Terminology />} />
+            <Route path="glossary" element={<LearnGlossary />} />
             <Route path="*" element={<Navigate to="games" />} />
           </Routes>
         </Card>
