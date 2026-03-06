@@ -80,9 +80,9 @@ export const slangList = {
     definition:
       "Insufficient Participation: when a player is not participating enough in a town discussion for others to form a read on them.",
   },
-  kicking: {
+  kick: {
     definition:
-      "Kicking. A mechanism for players to remove players who haven't voted after the timer has hit 0.",
+      "Kick. A mechanism for players to remove players who haven't voted after the timer has hit 0.",
     emoji: ["🦵", "🦶"],
   },
   leak: {
@@ -322,8 +322,8 @@ export const slangList = {
       "Hog. To make an outrageous or surprising play that goes against the grain, without violating rules. Opposite of sheep.",
     emoji: ["🐗", "🐷", "🐖"],
   },
-  Paired: {
-    definition: "Players who the speaker believes share a win condition.",
+  Pair: {
+    definition: "Players who the accuser believes share a win condition.",
     emoji: "🧑‍🤝‍🧑",
   },
   wifom: {
@@ -537,7 +537,7 @@ export const slangList = {
       "Resurrect. An action which brings a player back from the dead.",
     emoji: "💉",
   },
-  Bleeding: {
+  Bleed: {
     definition:
       "If a player is Bleeding Out, they will be killed at the start of the next night, ignoring protection, immediately after a player is condemned to the guillotine. Knives cause a player to bleed.",
     emoji: "🩸",
@@ -611,14 +611,8 @@ export const slangList = {
 // Synonyms
 slangList.graveyard = slangList.gy;
 slangList.innocent = slangList.inno;
-slangList.visited = slangList.Visit;
 slangList.ot = slangList.Overturn;
-slangList.bleed = slangList.Bleeding;
-slangList.pair = slangList.Paired;
-slangList.sheeped = slangList.sheep;
 slangList.mc = slangList.miscondemn;
-slangList.coast = slangList.coasting;
-slangList.kick = slangList.kicking;
 slangList.rb = slangList.Block;
 slangList.res = slangList.Resurrect;
 slangList.raise = slangList.Resurrect;
@@ -626,10 +620,4 @@ slangList.rizz = slangList.Resurrect;
 slangList.scummy = slangList.scum;
 slangList.sr = slangList.scumread;
 slangList.tr = slangList.townread;
-slangList["uncc'ed"] = slangList.uncc;
-slangList["uncced"] = slangList.uncc;
-slangList.vested = slangList.vest;
-slangList.gamesolving = slangList.gamesolve;
-slangList.gamesolved = slangList.gamesolve;
-slangList.gamesolves = slangList.gamesolve;
 slangList.auto = slangList.autowin;

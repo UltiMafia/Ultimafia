@@ -69,6 +69,7 @@ export default function Terminology(props) {
 
   const slangTableRows = Object.keys(slangList)
     .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }))
+    .filter((key) => slangList[key] != null)
     .map((key) => {
     let { definition, emoji } = slangList[key];
     if (Array.isArray(emoji)) {
