@@ -1221,6 +1221,43 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Disqualify User": {
+      perm: "manageCompetitive",
+      category: "Competitive Management",
+      args: [
+        {
+          label: "Season",
+          name: "season",
+          type: "number",
+        },
+        {
+          label: "Round",
+          name: "round",
+          type: "number",
+        },
+        {
+          label: "User",
+          name: "userId",
+          type: "user_search",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/competitive/disqualify", {
+            season: Number(argValues.season),
+            round: Number(argValues.round),
+            userId: argValues.userId,
+          })
+          .then((res) => {
+            siteInfo.showAlert(
+              res.data?.message || "User disqualified from round.",
+              "success"
+            );
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Manage Credits": {
       perm: "changeUsersName",
       category: "User Management",

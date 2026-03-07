@@ -833,6 +833,13 @@ async function getCompRoundInfo(
   }
 }
 
+async function invalidateCompRoundCache(seasonNumber, roundNumber) {
+  const key = `competitive:season:${seasonNumber}:round:${roundNumber}`;
+  const latestKey = "competitive:season:latest:round:latest";
+  await client.delAsync(key);
+  await client.delAsync(latestKey);
+}
+
 async function gameExists(gameId) {
   return (await client.sismemberAsync("games", gameId)) != 0;
 }
@@ -1524,6 +1531,7 @@ module.exports = {
   getLeaderBoardStat,
   getFeaturedSetup,
   getCompRoundInfo,
+  invalidateCompRoundCache,
   gameExists,
   inGame,
   hostingScheduled,

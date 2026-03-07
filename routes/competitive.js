@@ -195,6 +195,66 @@ router.post("/refund", async function (req, res) {
   }
 });
 
+// Disqualify a user from a round (set their completions for that round to invalid)
+router.post("/disqualify", async function (req, res) {
+  try {
+    var modUserId = await routeUtils.verifyLoggedIn(req);
+
+    if (!(await routeUtils.verifyPermission(res, modUserId, "manageCompetitive")))
+      return;
+
+    const season = Number.parseInt(req.body.season, 10);
+    const round = Number.parseInt(req.body.round, 10);
+    const targetUserId = String(req.body.userId).trim();
+
+    if (isNaN(season) || season < 1) {
+      res.status(400);
+      res.send("Season must be a positive number.");
+      return;
+    }
+    if (isNaN(round) || round < 1) {
+      res.status(400);
+      res.send("Round must be a positive number.");
+      return;
+    }
+    if (!targetUserId) {
+      res.status(400);
+      res.send("User ID is required.");
+      return;
+    }
+
+    const result = await models.CompetitiveGameCompletion.updateMany(
+      { season, round, userId: targetUserId },
+      { $set: { valid: false } }
+    );
+
+    if (result.matchedCount === 0) {
+      res.status(404);
+      res.send(
+        "No competitive game completions found for that season, round, and user."
+      );
+      return;
+    }
+
+    await redis.invalidateCompRoundCache(season, round);
+
+    routeUtils.createModAction(modUserId, "Disqualify User", [
+      season,
+      round,
+      targetUserId,
+    ]);
+
+    res.json({
+      message: "User disqualified from round.",
+      modifiedCount: result.modifiedCount,
+    });
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error disqualifying user.");
+  }
+});
+
 // Get all seasons
 router.get("/seasons", async function (req, res) {
   try {
