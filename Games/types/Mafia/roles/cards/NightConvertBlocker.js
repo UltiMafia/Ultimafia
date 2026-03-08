@@ -6,7 +6,7 @@ module.exports = class NightConvertBlocker extends Card {
     super(role);
 
     this.meetings = {
-      "Tell Me About Your Mother": {
+      Psychoanalyze: {
         states: ["Night"],
         flags: ["voting"],
         action: {
