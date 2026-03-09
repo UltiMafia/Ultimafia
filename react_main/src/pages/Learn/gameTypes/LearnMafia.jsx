@@ -12,7 +12,7 @@ import {
   Stack,
 } from "@mui/material";
 
-import { RoleSearch, ModifierSearch } from "../../../components/Roles";
+import { RoleSearch, ModifierSearch, GameSettingSearch } from "../../../components/Roles";
 import { AchievementSearch } from "../../../components/Achievements";
 import { SiteInfoContext } from "../../../Contexts";
 import { hyphenDelimit } from "../../../utils";
@@ -34,49 +34,6 @@ export default function LearnMafia({ Layout }) {
       };
     });
   }, [siteInfo.items, gameType]);
-
-  const mechanics = [
-    {
-      name: "Whispers",
-      text: "Allow players to privately contact another player in the town meeting. If the whisper leaks then everyone will see it.",
-    },
-    {
-      name: "Last Wills",
-      text: "Allow players to write a message that will be revealed when they die.",
-    },
-    {
-      name: "Must Act",
-      text: "Players cannot select 'no one' for their actions, not including the village meeting.",
-    },
-    {
-      name: "Must Condemn",
-      text: "Players cannot condemn 'no one' during the village meeting.",
-    },
-    {
-      name: "No Reveal",
-      text: "The roles of dead players are not revealed.",
-    },
-    {
-      name: "Alignment-Only Reveal",
-      text: "Only the alignments of dead players are revealed.",
-    },
-    {
-      name: "Closed Roles",
-      text: "Roles for each alignment are randomly chosen from the pool of roles in the setup.",
-    },
-    {
-      name: "Dawn",
-      text: "No actions can be taken the first night.",
-    },
-    {
-      name: "Famine",
-      text: "While active, each player consumes one item of food each day/night. Anyone who doesn't have food to consume dies.",
-    },
-    {
-      name: "Delirium",
-      text: "An effect that makes players get false information and have non-information abilities disabled.",
-    },
-  ];
 
   useEffect(() => {
     document.title = "Learn Mafia | UltiMafia";
@@ -122,7 +79,7 @@ export default function LearnMafia({ Layout }) {
       rolesContent={<RoleSearch gameType={gameType} />}
       modifiersContent={<ModifierSearch gameType={gameType} />}
       itemsContent={renderTable(items)}
-      mechanicsContent={renderTable(mechanics)}
+      mechanicsContent={<GameSettingSearch gameType={gameType} curMods={{}} />}
       achievementsContent={
         <Box sx={{ pt: 2 }}>
           <AchievementSearch />
