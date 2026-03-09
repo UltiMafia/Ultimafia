@@ -11,7 +11,10 @@ export default function LearnBattlesnakes({ Layout }) {
   return (
     <Layout rolesContent={<RoleSearch gameType={gameType} />}>
       <Typography variant="body1" paragraph>
-        The objective of Battlesnakes is to be the last surviving Snake
+        Battlesnakes is a competitive game where each player controls a snake on a
+        shared grid. Snakes move each turn and grow by eating food; they are
+        eliminated if they hit a wall, another snake, or their own body. The last
+        snake left alive wins.
       </Typography>
     </Layout>
   );

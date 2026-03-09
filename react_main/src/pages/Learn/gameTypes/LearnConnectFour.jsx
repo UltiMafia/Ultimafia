@@ -22,8 +22,9 @@ export default function LearnConnectFour({ Layout }) {
         invented by David Bowie.
       </Typography>
       <Typography variant="body1" paragraph>
-        In Connect Four, players are competing to the be the first to reach four
-        in a row.
+        Connect Four is a social board game played on a vertical grid. Players take
+        turns dropping discs into columns; each disc falls to the lowest open
+        space. The first player to get four of their discs in a horizontal or vertical row wins.
       </Typography>
     </Layout>
   );

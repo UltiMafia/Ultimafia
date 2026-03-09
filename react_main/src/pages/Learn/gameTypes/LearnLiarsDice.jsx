@@ -44,19 +44,11 @@ export default function LearnLiarsDice({ Layout }) {
       mechanicsContent={mechanicsContent}
     >
       <Typography variant="body1" paragraph>
-        Each player starts with 5 dice unless customized, and can only see faces
-        of their own dice. Taking turns, players guess how many of a chosen face
-        are present in all players' dice combined.
-      </Typography>
-      <Typography variant="body1" paragraph>
-        If a player thinks the player before them is wrong, they can call a lie.
-        In this case, if there are fewer dice showing that face than guessed,
-        the previous player loses a die. If there are more or an equal number of
-        dice showing that face, the player who called a lie loses a die.
-      </Typography>
-      <Typography variant="body1" paragraph>
-        When a player runs out of dice, they are eliminated. The last player
-        remaining is the winner.
+        Liar's Dice is a social dice game. Each player has dice only they can see. On your turn you bid how many of
+        a chosen face exist across all players’ dice; the next player may raise
+        the bid or call the previous bid a lie. If a call is wrong, the caller
+        loses a die; if it is right, the bidder loses one. Players who run out
+        of dice are eliminated, and the last player left wins.
       </Typography>
     </Layout>
   );

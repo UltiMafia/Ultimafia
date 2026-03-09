@@ -11,7 +11,7 @@ export default function LearnRatscrew({ Layout }) {
   return (
     <Layout rolesContent={<RoleSearch gameType={gameType} />}>
       <Typography variant="body1" paragraph>
-        In Ratscrew players will try to gather of the cards cards. Each round
+      Ratscrew is a social card game wherein players will try to gather cards. Each round
         players will blindly play a card into the stack. Any player may slap the
         card if the played card is the same as the last card. If a slap is made
         incorrectly other players may challenge the slap. If a slap is correctly
