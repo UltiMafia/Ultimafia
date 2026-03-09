@@ -17,7 +17,6 @@ import { useTheme } from "@mui/material/styles";
 
 import { slangList } from "../../constants/slangList";
 import { commandList } from "../../constants/commandList";
-import { AchievementSearch } from "../../components/Achievements";
 
 export default function LearnGlossary(props) {
   const theme = useTheme();
@@ -124,19 +123,11 @@ export default function LearnGlossary(props) {
         Repo.
       </Typography>
       <Tabs value={tab} onChange={(_, v) => setTab(v)} aria-label="Terminology sections">
-        <Tab label="Achievements" id="term-tab-0" aria-controls="term-panel-0" />
-        <Tab label="Slang" id="term-tab-1" aria-controls="term-panel-1" />
-        <Tab label="Commands" id="term-tab-2" aria-controls="term-panel-2" />
+        <Tab label="Slang" id="term-tab-0" aria-controls="term-panel-0" />
+        <Tab label="Commands" id="term-tab-1" aria-controls="term-panel-1" />
       </Tabs>
       <Box role="tabpanel" id="term-panel-0" aria-labelledby="term-tab-0" hidden={tab !== 0}>
         {tab === 0 && (
-          <Box sx={{ pt: 2 }}>
-            <AchievementSearch />
-          </Box>
-        )}
-      </Box>
-      <Box role="tabpanel" id="term-panel-1" aria-labelledby="term-tab-1" hidden={tab !== 1}>
-        {tab === 1 && (
           <Box sx={{ pt: 2 }} className="paragraph">
             <Typography paragraph>
               Below is a list of terms that are automatically detected during
@@ -146,8 +137,8 @@ export default function LearnGlossary(props) {
           </Box>
         )}
       </Box>
-      <Box role="tabpanel" id="term-panel-2" aria-labelledby="term-tab-2" hidden={tab !== 2}>
-        {tab === 2 && (
+      <Box role="tabpanel" id="term-panel-1" aria-labelledby="term-tab-1" hidden={tab !== 1}>
+        {tab === 1 && (
           <Box sx={{ pt: 2 }} className="paragraph">
             <Typography paragraph>
               Below is a list of chat commands able to be used in games.

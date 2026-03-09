@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useMemo } from "react";
 import {
+  Box,
   Typography,
   Table,
   TableBody,
@@ -12,6 +13,7 @@ import {
 } from "@mui/material";
 
 import { RoleSearch, ModifierSearch } from "../../../components/Roles";
+import { AchievementSearch } from "../../../components/Achievements";
 import { SiteInfoContext } from "../../../Contexts";
 import { hyphenDelimit } from "../../../utils";
 export default function LearnMafia({ Layout }) {
@@ -121,6 +123,11 @@ export default function LearnMafia({ Layout }) {
       modifiersContent={<ModifierSearch gameType={gameType} />}
       itemsContent={renderTable(items)}
       mechanicsContent={renderTable(mechanics)}
+      achievementsContent={
+        <Box sx={{ pt: 2 }}>
+          <AchievementSearch />
+        </Box>
+      }
     >
       <Typography variant="body1" paragraph>
         Mafia is a chat-based social deception game, based on the party game

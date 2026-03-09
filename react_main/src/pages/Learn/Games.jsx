@@ -27,8 +27,8 @@ import LearnConnectFour from "./gameTypes/LearnConnectFour";
 import { GameTypes } from "Constants";
 import GameIcon from "components/GameIcon";
 
-const TAB_IDS = ["roles", "modifiers", "items", "mechanics"];
-const TAB_LABELS = { roles: "Roles", modifiers: "Modifiers", items: "Items", mechanics: "Mechanics" };
+const TAB_IDS = ["roles", "modifiers", "items", "mechanics", "achievements"];
+const TAB_LABELS = { roles: "Roles", modifiers: "Modifiers", items: "Items", mechanics: "Mechanics", achievements: "Achievements" };
 
 function LearnTabsLayout({
   children,
@@ -36,6 +36,7 @@ function LearnTabsLayout({
   modifiersContent = null,
   itemsContent = null,
   mechanicsContent = null,
+  achievementsContent = null,
 }) {
   const enabledTabs = useMemo(() => {
     const out = [];
@@ -43,8 +44,9 @@ function LearnTabsLayout({
     if (modifiersContent != null) out.push("modifiers");
     if (itemsContent != null) out.push("items");
     if (mechanicsContent != null) out.push("mechanics");
+    if (achievementsContent != null) out.push("achievements");
     return out;
-  }, [rolesContent, modifiersContent, itemsContent, mechanicsContent]);
+  }, [rolesContent, modifiersContent, itemsContent, mechanicsContent, achievementsContent]);
 
   const [activeTab, setActiveTab] = useState(() => enabledTabs[0] || "roles");
 
@@ -90,6 +92,9 @@ function LearnTabsLayout({
       </Box>
       <Box role="tabpanel" hidden={value !== "mechanics"} id="learn-tab-mechanics">
         {value === "mechanics" && mechanicsContent}
+      </Box>
+      <Box role="tabpanel" hidden={value !== "achievements"} id="learn-tab-achievements">
+        {value === "achievements" && achievementsContent}
       </Box>
     </div>
   );
