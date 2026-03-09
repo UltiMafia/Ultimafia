@@ -2367,8 +2367,13 @@ module.exports = class Game {
           meeting.name !== "Vote Kick" && !meeting.noVeg;
       }
 
-      // during kicks, we need to exclude the votekick and noveg meetings
-      if (!meeting.ready && extraConditionDuringKicks) {
+      // during kicks, we need to exclude the votekick and noveg meetings.
+      // In postgame (currentState === -2), always require the kudos vote to be ready
+      // so the noVeg exclusion does not cause the vote to freeze after one voter.
+      if (
+        !meeting.ready &&
+        (extraConditionDuringKicks || this.currentState === -2)
+      ) {
         allReady = false;
         break;
       }

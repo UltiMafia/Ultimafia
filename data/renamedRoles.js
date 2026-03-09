@@ -70,5 +70,6 @@ module.exports = {
     Bully: "Mafioso",
     Blackmailer: "Mafioso",
     Slayer: "Sheriff",
+    Ripper: "Supervillain",
   },
 };
