@@ -6,24 +6,25 @@ import {
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { RoleSearch } from "../../components/Roles";
+import { RoleSearch } from "../../../components/Roles";
 
-export default function LearnJotto(props) {
+export default function LearnCheat(props) {
+  const gameType = "Cheat";
+
   useEffect(() => {
-    document.title = "Learn Jotto | UltiMafia";
+    document.title = "Learn Cheat | UltiMafia";
   }, []);
 
-  const gameType = "Jotto";
   const theme = useTheme();
 
   return (
     <div className="learn">
-      <Typography variant="h2" gutterBottom>
-        Learn Jotto
-      </Typography>
       <Typography variant="body1" paragraph>
-        Jotto is a logic-oriented word game, where players select a secret word
-        and attempt to guess their opponent's words.
+        In Cheat players will try to get to 0 cards. Each round players will be
+        given a Card type to play. They may play that card type or lie and play
+        a diffrent card type. After they play their cards other players may call
+        them out for lying. Players who called out for lying or incorrectly call
+        out for lying must add all played cards to their hand.
       </Typography>
       <Accordion>
         <AccordionSummary>

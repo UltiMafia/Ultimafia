@@ -8,7 +8,7 @@ import {
   Paper,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { RoleSearch } from "../../components/Roles";
+import { RoleSearch } from "../../../components/Roles";
 
 export default function LearnLiarsDice(props) {
   const gameType = "Liars Dice";
@@ -36,9 +36,6 @@ export default function LearnLiarsDice(props) {
 
   return (
     <div className="learn">
-      <Typography variant="h2" gutterBottom>
-        Learn Liars Dice
-      </Typography>
       <Typography variant="body1" paragraph>
         Each player starts with 5 dice unless customized, and can only see faces
         of their own dice. Taking turns, players guess how many of a chosen face

@@ -7,7 +7,7 @@ import {
   Link,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { RoleSearch } from "../../components/Roles";
+import { RoleSearch } from "../../../components/Roles";
 
 export default function LearnResistance(props) {
   const gameType = "Resistance";
@@ -20,9 +20,6 @@ export default function LearnResistance(props) {
 
   return (
     <div className="learn">
-      <Typography variant="h2" gutterBottom>
-        Learn Resistance
-      </Typography>
       <Typography variant="body1" paragraph>
         Based on the card game{" "}
         <Link

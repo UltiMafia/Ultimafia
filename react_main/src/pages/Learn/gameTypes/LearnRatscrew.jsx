@@ -6,7 +6,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { RoleSearch } from "../../components/Roles";
+import { RoleSearch } from "../../../components/Roles";
 
 export default function LearnCheat(props) {
   const gameType = "Ratscrew";
@@ -19,9 +19,6 @@ export default function LearnCheat(props) {
 
   return (
     <div className="learn">
-      <Typography variant="h2" gutterBottom>
-        Learn Cheat
-      </Typography>
       <Typography variant="body1" paragraph>
         In Ratscrew players will try to gather of the cards cards. Each round
         players will blindly play a card into the stack. Any player may slap the

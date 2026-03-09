@@ -6,24 +6,21 @@ import {
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { RoleSearch } from "../../../components/Roles";
 
-import { RoleSearch } from "../../components/Roles";
-
-export default function LearnBattlesnakes(props) {
-  const gameType = "Battlesnakes";
-  const theme = useTheme();
-
+export default function LearnJotto(props) {
   useEffect(() => {
-    document.title = "Learn Battlesnakes | UltiMafia";
+    document.title = "Learn Jotto | UltiMafia";
   }, []);
+
+  const gameType = "Jotto";
+  const theme = useTheme();
 
   return (
     <div className="learn">
-      <Typography variant="h2" gutterBottom>
-        Learn Battlesnakes
-      </Typography>
       <Typography variant="body1" paragraph>
-        The objective of Battlesnakes is to be the last surviving Snake
+        Jotto is a logic-oriented word game, where players select a secret word
+        and attempt to guess their opponent's words.
       </Typography>
       <Accordion>
         <AccordionSummary>

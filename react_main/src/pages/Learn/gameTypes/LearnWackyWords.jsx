@@ -6,7 +6,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { RoleSearch } from "../../components/Roles";
+import { RoleSearch } from "../../../components/Roles";
 
 export default function LearnWackyWords(props) {
   const gameType = "Wacky Words";
@@ -19,9 +19,6 @@ export default function LearnWackyWords(props) {
 
   return (
     <div className="learn">
-      <Typography variant="h2" gutterBottom>
-        Learn Wacky Words
-      </Typography>
       <Typography variant="body1" paragraph>
         All players are given a prompt and tasked to answer it! All players then
         vote for their favorites, with the winners of each round getting points.

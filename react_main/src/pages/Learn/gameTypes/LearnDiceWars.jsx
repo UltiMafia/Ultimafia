@@ -6,7 +6,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { RoleSearch } from "../../components/Roles";
+import { RoleSearch } from "../../../components/Roles";
 
 export default function LearnDiceWars(props) {
   useEffect(() => {
@@ -18,9 +18,6 @@ export default function LearnDiceWars(props) {
 
   return (
     <div className="learn">
-      <Typography variant="h2" gutterBottom>
-        Learn Dice Wars
-      </Typography>
       <Typography variant="body1" paragraph>
         Dice Wars is a turn-based strategy game where players compete to conquer
         territories on a map using dice. Each player starts with a set number of

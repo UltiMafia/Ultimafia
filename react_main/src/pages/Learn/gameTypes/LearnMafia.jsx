@@ -15,9 +15,9 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
-import { RoleSearch, ModifierSearch } from "../../components/Roles";
-import { SiteInfoContext } from "../../Contexts";
-import { hyphenDelimit } from "../../utils";
+import { RoleSearch, ModifierSearch } from "../../../components/Roles";
+import { SiteInfoContext } from "../../../Contexts";
+import { hyphenDelimit } from "../../../utils";
 
 export default function LearnMafia(props) {
   const gameType = "Mafia";
@@ -135,9 +135,6 @@ export default function LearnMafia(props) {
 
   return (
     <div className="learn">
-      <Typography variant="h2" gutterBottom>
-        Learn Mafia
-      </Typography>
       <Typography variant="body1" paragraph>
         Mafia is a chat-based social deception game, based on the party game
         Mafia by Dimitry Davidoff. In this version, the Town is under attack by

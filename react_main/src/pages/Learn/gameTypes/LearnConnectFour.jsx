@@ -4,30 +4,36 @@ import {
   AccordionSummary,
   AccordionDetails,
   Typography,
+  Link,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { RoleSearch } from "../../components/Roles";
+import { RoleSearch } from "../../../components/Roles";
 
-export default function LearnCheat(props) {
-  const gameType = "Cheat";
+export default function LearnConnectFour(props) {
+  const gameType = "Connect Four";
 
   useEffect(() => {
-    document.title = "Learn Cheat | UltiMafia";
+    document.title = "Learn Connect Four | UltiMafia";
   }, []);
 
   const theme = useTheme();
 
   return (
     <div className="learn">
-      <Typography variant="h2" gutterBottom>
-        Learn Cheat
+      <Typography variant="body1" paragraph>
+        Based on the board game{" "}
+        <Link
+          href="https://boardgamegeek.com/boardgame/2719/connect-four"
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+        >
+          Connect Four
+        </Link>{" "}
+        invented by David Bowie.
       </Typography>
       <Typography variant="body1" paragraph>
-        In Cheat players will try to get to 0 cards. Each round players will be
-        given a Card type to play. They may play that card type or lie and play
-        a diffrent card type. After they play their cards other players may call
-        them out for lying. Players who called out for lying or incorrectly call
-        out for lying must add all played cards to their hand.
+        In Connect Four, players are competing to the be the first to reach four
+        in a row.
       </Typography>
       <Accordion>
         <AccordionSummary>
