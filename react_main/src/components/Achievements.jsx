@@ -6,9 +6,6 @@ import {
   Popover,
   Stack,
   Divider,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
 } from "@mui/material";
 import { SiteInfoContext } from "../Contexts";
 import { CellSearch, Cell } from "./CellSearch";
@@ -156,11 +153,6 @@ export function AchievementSearch() {
   }, [achievementData, searchVal]);
 
   return (
-    <Accordion defaultExpanded>
-      <AccordionSummary>
-        <Typography variant="h3">Achievements</Typography>
-      </AccordionSummary>
-      <AccordionDetails>
         <CellSearch
           tabs={[]}
           searchPlaceholder="🔎 Search"
@@ -173,7 +165,5 @@ export function AchievementSearch() {
           renderCell={(item, icon) => <Cell item={item} icon={icon} />}
           gridColumns={{ xs: 4, sm: 6, md: 8 }}
         />
-      </AccordionDetails>
-    </Accordion>
   );
 }

@@ -9,6 +9,8 @@ import {
   Stack,
   Divider,
   Button,
+  Autocomplete,
+  TextField,
 } from "@mui/material";
 import { UserContext, SiteInfoContext } from "../Contexts";
 import { SearchBar } from "./Nav";
@@ -22,6 +24,9 @@ export function CellSearch({
   searchPlaceholder = "🔎 Search",
   searchVal = "",
   onSearchInput,
+  tagOptions = null,
+  selectedTags = [],
+  onSelectedTagsChange = null,
   items = [],
   getItemKey = (item) => item.name,
   getItemName = (item) => item.name,
@@ -32,6 +37,7 @@ export function CellSearch({
   loading = false,
 }) {
   const isPhoneDevice = useIsPhoneDevice();
+  const useTagAutocomplete = Array.isArray(tagOptions) && tagOptions.length > 0 && onSelectedTagsChange != null;
 
   const hasTabs = Array.isArray(tabs) && tabs.length > 0;
   const tabButtons = hasTabs
@@ -47,6 +53,37 @@ export function CellSearch({
 
   if (loading) return <Loading small />;
 
+  const searchControl = useTagAutocomplete ? (
+    <Autocomplete
+      multiple
+      freeSolo
+      size="small"
+      options={tagOptions}
+      value={selectedTags}
+      inputValue={searchVal}
+      onInputChange={(_, value) => onSearchInput?.(value ?? "")}
+      onChange={(_, newValue) => {
+        const tagSet = new Set(tagOptions);
+        onSelectedTagsChange(newValue.filter((v) => typeof v === "string" && tagSet.has(v)));
+      }}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          variant="outlined"
+          placeholder={searchPlaceholder}
+        />
+      )}
+      sx={{ minWidth: 200, flex: 1 }}
+      ListboxProps={{ sx: { maxHeight: 280 } }}
+    />
+  ) : (
+    <SearchBar
+      value={searchVal}
+      placeholder={searchPlaceholder}
+      onInput={onSearchInput ?? (() => {})}
+    />
+  );
+
   return (
     <Stack direction="column" spacing={1}>
       <Stack direction={isPhoneDevice ? "column-reverse" : "row"} spacing={1}>
@@ -55,15 +92,11 @@ export function CellSearch({
             {tabButtons}
           </Tabs>
         )}
-        <Box sx={{ ml: hasTabs && !isPhoneDevice ? "auto !important" : undefined }}>
-          <SearchBar
-            value={searchVal}
-            placeholder={searchPlaceholder}
-            onInput={onSearchInput ?? (() => {})}
-          />
+        <Box sx={{ ml: hasTabs && !isPhoneDevice ? "auto !important" : undefined, flex: useTagAutocomplete ? 1 : undefined, minWidth: useTagAutocomplete ? 0 : undefined }}>
+          {searchControl}
         </Box>
       </Stack>
-      {extraToolbarContent}
+      {!useTagAutocomplete && extraToolbarContent}
       <Divider direction="horizontal" sx={{ mb: 1 }} />
       <Paper sx={{ p: 1 }}>
         <Grid2 container spacing={1} columns={gridColumns}>
