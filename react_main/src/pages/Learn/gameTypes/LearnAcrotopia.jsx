@@ -1,24 +1,15 @@
 import React, { useEffect } from "react";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-
+import { Typography } from "@mui/material";
 import { RoleSearch } from "../../../components/Roles";
-
-export default function LearnAcrotopia(props) {
+export default function LearnAcrotopia({ Layout }) {
   const gameType = "Acrotopia";
-  const theme = useTheme();
 
   useEffect(() => {
     document.title = "Learn Acrotopia | UltiMafia";
   }, []);
 
   return (
-    <div className="learn">
+    <Layout rolesContent={<RoleSearch gameType={gameType} />}>
       <Typography variant="h2" gutterBottom>
         Learn Acrotopia
       </Typography>
@@ -28,14 +19,6 @@ export default function LearnAcrotopia(props) {
         each round getting points. The person with the most points at the end of
         the game is declared the winner!
       </Typography>
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Roles</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <RoleSearch gameType={gameType} />
-        </AccordionDetails>
-      </Accordion>
-    </div>
+    </Layout>
   );
 }

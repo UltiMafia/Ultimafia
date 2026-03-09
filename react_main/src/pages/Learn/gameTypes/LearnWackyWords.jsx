@@ -1,24 +1,15 @@
 import React, { useEffect } from "react";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { Typography } from "@mui/material";
 import { RoleSearch } from "../../../components/Roles";
-
-export default function LearnWackyWords(props) {
+export default function LearnWackyWords({ Layout }) {
   const gameType = "Wacky Words";
 
   useEffect(() => {
     document.title = "Learn Wacky Words | UltiMafia";
   }, []);
 
-  const theme = useTheme();
-
   return (
-    <div className="learn">
+    <Layout rolesContent={<RoleSearch gameType={gameType} />}>
       <Typography variant="body1" paragraph>
         All players are given a prompt and tasked to answer it! All players then
         vote for their favorites, with the winners of each round getting points.
@@ -51,14 +42,6 @@ export default function LearnWackyWords(props) {
         will be given to that player based on how close the players where to a
         50/50 split.
       </Typography>
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Roles</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <RoleSearch gameType={gameType} />
-        </AccordionDetails>
-      </Accordion>
-    </div>
+    </Layout>
   );
 }

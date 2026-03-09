@@ -1,24 +1,15 @@
 import React, { useEffect } from "react";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { Typography } from "@mui/material";
 import { RoleSearch } from "../../../components/Roles";
-
-export default function LearnCheat(props) {
+export default function LearnRatscrew({ Layout }) {
   const gameType = "Ratscrew";
 
   useEffect(() => {
     document.title = "Learn Ratscrew | UltiMafia";
   }, []);
 
-  const theme = useTheme();
-
   return (
-    <div className="learn">
+    <Layout rolesContent={<RoleSearch gameType={gameType} />}>
       <Typography variant="body1" paragraph>
         In Ratscrew players will try to gather of the cards cards. Each round
         players will blindly play a card into the stack. Any player may slap the
@@ -28,14 +19,6 @@ export default function LearnCheat(props) {
         challenged the slapper takes a card from the challenger. When a
         successful slap is made the slapper gains the stack.
       </Typography>
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Roles</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <RoleSearch gameType={gameType} />
-        </AccordionDetails>
-      </Accordion>
-    </div>
+    </Layout>
   );
 }

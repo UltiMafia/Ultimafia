@@ -1,23 +1,14 @@
 import React, { useEffect } from "react";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-  Grid,
-  Paper,
-} from "@mui/material";
+import { Typography, Grid, Paper } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { RoleSearch } from "../../../components/Roles";
-
-export default function LearnLiarsDice(props) {
+export default function LearnLiarsDice({ Layout }) {
   const gameType = "Liars Dice";
+  const theme = useTheme();
 
   useEffect(() => {
     document.title = "Learn Liars Dice | UltiMafia";
   }, []);
-
-  const theme = useTheme();
 
   const mechanics = [
     {
@@ -34,8 +25,24 @@ export default function LearnLiarsDice(props) {
     },
   ];
 
+  const mechanicsContent = (
+    <Grid container spacing={3}>
+      {mechanics.map((mechanic, index) => (
+        <Grid item xs={12} md={4} key={index}>
+          <Paper style={{ padding: theme.spacing(2), height: "100%" }}>
+            <Typography variant="h4">{mechanic.name}</Typography>
+            <Typography>{mechanic.text}</Typography>
+          </Paper>
+        </Grid>
+      ))}
+    </Grid>
+  );
+
   return (
-    <div className="learn">
+    <Layout
+      rolesContent={<RoleSearch gameType={gameType} />}
+      mechanicsContent={mechanicsContent}
+    >
       <Typography variant="body1" paragraph>
         Each player starts with 5 dice unless customized, and can only see faces
         of their own dice. Taking turns, players guess how many of a chosen face
@@ -51,31 +58,6 @@ export default function LearnLiarsDice(props) {
         When a player runs out of dice, they are eliminated. The last player
         remaining is the winner.
       </Typography>
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Roles</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <RoleSearch gameType={gameType} />
-        </AccordionDetails>
-      </Accordion>
-      <Accordion style={{ marginTop: theme.spacing(3) }}>
-        <AccordionSummary>
-          <Typography>Mechanics</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Grid container spacing={3}>
-            {mechanics.map((mechanic, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <Paper style={{ padding: theme.spacing(2), height: "100%" }}>
-                  <Typography variant="h4">{mechanic.name}</Typography>
-                  <Typography>{mechanic.text}</Typography>
-                </Paper>
-              </Grid>
-            ))}
-          </Grid>
-        </AccordionDetails>
-      </Accordion>
-    </div>
+    </Layout>
   );
 }

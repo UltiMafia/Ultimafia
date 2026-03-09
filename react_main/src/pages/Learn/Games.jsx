@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import {
   Box,
@@ -6,6 +6,8 @@ import {
   Select,
   MenuItem,
   FormControl,
+  Tabs,
+  Tab,
 } from "@mui/material";
 
 import LearnMafia from "./gameTypes/LearnMafia";
@@ -25,6 +27,74 @@ import LearnConnectFour from "./gameTypes/LearnConnectFour";
 import { GameTypes } from "Constants";
 import GameIcon from "components/GameIcon";
 
+const TAB_IDS = ["roles", "modifiers", "items", "mechanics"];
+const TAB_LABELS = { roles: "Roles", modifiers: "Modifiers", items: "Items", mechanics: "Mechanics" };
+
+function LearnTabsLayout({
+  children,
+  rolesContent,
+  modifiersContent = null,
+  itemsContent = null,
+  mechanicsContent = null,
+}) {
+  const enabledTabs = useMemo(() => {
+    const out = [];
+    if (rolesContent != null) out.push("roles");
+    if (modifiersContent != null) out.push("modifiers");
+    if (itemsContent != null) out.push("items");
+    if (mechanicsContent != null) out.push("mechanics");
+    return out;
+  }, [rolesContent, modifiersContent, itemsContent, mechanicsContent]);
+
+  const [activeTab, setActiveTab] = useState(() => enabledTabs[0] || "roles");
+
+  useEffect(() => {
+    if (enabledTabs.length && !enabledTabs.includes(activeTab)) {
+      setActiveTab(enabledTabs[0]);
+    }
+  }, [enabledTabs, activeTab]);
+
+  const value = enabledTabs.includes(activeTab) ? activeTab : enabledTabs[0] || "roles";
+  const handleChange = (_, newValue) => {
+    if (enabledTabs.includes(newValue)) setActiveTab(newValue);
+  };
+
+  return (
+    <div className="learn">
+      {children}
+      <Box sx={{ borderBottom: 1, borderColor: "divider", mt: 2, mb: 1 }}>
+        <Tabs value={value} onChange={handleChange}>
+          {TAB_IDS.map((id) => (
+            <Tab
+              key={id}
+              label={TAB_LABELS[id]}
+              value={id}
+              disabled={!enabledTabs.includes(id)}
+              sx={
+                !enabledTabs.includes(id)
+                  ? { color: "text.disabled", "&.Mui-disabled": { opacity: 0.6 } }
+                  : undefined
+              }
+            />
+          ))}
+        </Tabs>
+      </Box>
+      <Box role="tabpanel" hidden={value !== "roles"} id="learn-tab-roles">
+        {value === "roles" && rolesContent}
+      </Box>
+      <Box role="tabpanel" hidden={value !== "modifiers"} id="learn-tab-modifiers">
+        {value === "modifiers" && modifiersContent}
+      </Box>
+      <Box role="tabpanel" hidden={value !== "items"} id="learn-tab-items">
+        {value === "items" && itemsContent}
+      </Box>
+      <Box role="tabpanel" hidden={value !== "mechanics"} id="learn-tab-mechanics">
+        {value === "mechanics" && mechanicsContent}
+      </Box>
+    </div>
+  );
+}
+
 export default function Games(props) {
   const defaultGameType = "Mafia";
   const location = useLocation();
@@ -42,31 +112,31 @@ export default function Games(props) {
   function LearnPage() {
     switch (gameType) {
       case "Mafia":
-        return <LearnMafia />;
+        return <LearnMafia Layout={LearnTabsLayout} />;
       case "Resistance":
-        return <LearnResistance />;
+        return <LearnResistance Layout={LearnTabsLayout} />;
       case "Jotto":
-        return <LearnJotto />;
+        return <LearnJotto Layout={LearnTabsLayout} />;
       case "Acrotopia":
-        return <LearnAcrotopia />;
+        return <LearnAcrotopia Layout={LearnTabsLayout} />;
       case "Secret Dictator":
-        return <LearnSecretDictator />;
+        return <LearnSecretDictator Layout={LearnTabsLayout} />;
       case "Wacky Words":
-        return <LearnWackyWords />;
+        return <LearnWackyWords Layout={LearnTabsLayout} />;
       case "Liars Dice":
-        return <LearnLiarsDice />;
+        return <LearnLiarsDice Layout={LearnTabsLayout} />;
       case "Texas Hold Em":
-        return <LearnTexasHoldEm />;
+        return <LearnTexasHoldEm Layout={LearnTabsLayout} />;
       case "Cheat":
-        return <LearnCheat />;
+        return <LearnCheat Layout={LearnTabsLayout} />;
       case "Ratscrew":
-        return <LearnRatscrew />;
+        return <LearnRatscrew Layout={LearnTabsLayout} />;
       case "Battlesnakes":
-        return <LearnBattlesnakes />;
+        return <LearnBattlesnakes Layout={LearnTabsLayout} />;
       case "Dice Wars":
-        return <LearnDiceWars />;
+        return <LearnDiceWars Layout={LearnTabsLayout} />;
       case "Connect Four":
-        return <LearnConnectFour />;
+        return <LearnConnectFour Layout={LearnTabsLayout} />;
       default:
         setGameType(defaultGameType);
         return <></>;

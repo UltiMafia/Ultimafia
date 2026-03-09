@@ -1,25 +1,15 @@
 import React, { useEffect } from "react";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-  Link,
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { Typography, Link } from "@mui/material";
 import { RoleSearch } from "../../../components/Roles";
-
-export default function LearnConnectFour(props) {
+export default function LearnConnectFour({ Layout }) {
   const gameType = "Connect Four";
 
   useEffect(() => {
     document.title = "Learn Connect Four | UltiMafia";
   }, []);
 
-  const theme = useTheme();
-
   return (
-    <div className="learn">
+    <Layout rolesContent={<RoleSearch gameType={gameType} />}>
       <Typography variant="body1" paragraph>
         Based on the board game{" "}
         <Link
@@ -35,14 +25,6 @@ export default function LearnConnectFour(props) {
         In Connect Four, players are competing to the be the first to reach four
         in a row.
       </Typography>
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Roles</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <RoleSearch gameType={gameType} />
-        </AccordionDetails>
-      </Accordion>
-    </div>
+    </Layout>
   );
 }

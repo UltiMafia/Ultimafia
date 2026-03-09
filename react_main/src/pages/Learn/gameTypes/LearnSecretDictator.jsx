@@ -1,25 +1,15 @@
 import React, { useEffect } from "react";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-  Link,
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { Typography, Link } from "@mui/material";
 import { RoleSearch } from "../../../components/Roles";
-
-export default function LearnSecretDictator(props) {
+export default function LearnSecretDictator({ Layout }) {
   const gameType = "Secret Dictator";
 
   useEffect(() => {
     document.title = "Learn Secret Dictator | UltiMafia";
   }, []);
 
-  const theme = useTheme();
-
   return (
-    <div className="learn">
+    <Layout rolesContent={<RoleSearch gameType={gameType} />}>
       <Typography variant="body1" paragraph>
         Based on the card game{" "}
         <Link
@@ -40,10 +30,10 @@ export default function LearnSecretDictator(props) {
       <Typography variant="body1" paragraph>
         At the beginning of the game, each player is secretly assigned to one of
         three roles: Liberal, Fascist, or the Dictator. The Liberals have a
-        majority, but they don’t know for sure who anyone is; Fascists must
+        majority, but they don't know for sure who anyone is; Fascists must
         resort to secrecy and sabotage to accomplish their goals. The Dictator
-        plays for the Fascist team, and the Fascists know the Dictator’s
-        identity from the outset, but most of the time, the Dictator doesn’t
+        plays for the Fascist team, and the Fascists know the Dictator's
+        identity from the outset, but most of the time, the Dictator doesn't
         know the Fascists and must work to figure them out.
       </Typography>
       <Typography variant="body1" paragraph>
@@ -55,18 +45,10 @@ export default function LearnSecretDictator(props) {
       <Typography variant="body1" paragraph>
         Whenever a Fascist Policy is enacted, the government becomes more
         powerful, and the President is granted a single-use power which must be
-        used before the next round can begin. It doesn’t matter what team the
+        used before the next round can begin. It doesn't matter what team the
         President is on; in fact, even Liberal players might be tempted to enact
         a Fascist Policy to gain new powers.
       </Typography>
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Roles</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <RoleSearch gameType={gameType} />
-        </AccordionDetails>
-      </Accordion>
-    </div>
+    </Layout>
   );
 }

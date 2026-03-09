@@ -1,35 +1,18 @@
 import React, { useEffect } from "react";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-
+import { Typography } from "@mui/material";
 import { RoleSearch } from "../../../components/Roles";
-
-export default function LearnBattlesnakes(props) {
+export default function LearnBattlesnakes({ Layout }) {
   const gameType = "Battlesnakes";
-  const theme = useTheme();
 
   useEffect(() => {
     document.title = "Learn Battlesnakes | UltiMafia";
   }, []);
 
   return (
-    <div className="learn">
+    <Layout rolesContent={<RoleSearch gameType={gameType} />}>
       <Typography variant="body1" paragraph>
         The objective of Battlesnakes is to be the last surviving Snake
       </Typography>
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Roles</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <RoleSearch gameType={gameType} />
-        </AccordionDetails>
-      </Accordion>
-    </div>
+    </Layout>
   );
 }

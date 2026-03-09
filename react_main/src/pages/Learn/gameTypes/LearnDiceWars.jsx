@@ -1,23 +1,15 @@
 import React, { useEffect } from "react";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { Typography } from "@mui/material";
 import { RoleSearch } from "../../../components/Roles";
+export default function LearnDiceWars({ Layout }) {
+  const gameType = "Dice Wars";
 
-export default function LearnDiceWars(props) {
   useEffect(() => {
     document.title = "Learn Dice Wars | UltiMafia";
   }, []);
 
-  const gameType = "Dice Wars";
-  const theme = useTheme();
-
   return (
-    <div className="learn">
+    <Layout rolesContent={<RoleSearch gameType={gameType} />}>
       <Typography variant="body1" paragraph>
         Dice Wars is a turn-based strategy game where players compete to conquer
         territories on a map using dice. Each player starts with a set number of
@@ -27,14 +19,6 @@ export default function LearnDiceWars(props) {
         of chance to the strategic gameplay. The last player to control all
         territories wins.
       </Typography>
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Roles</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <RoleSearch gameType={gameType} />
-        </AccordionDetails>
-      </Accordion>
-    </div>
+    </Layout>
   );
 }

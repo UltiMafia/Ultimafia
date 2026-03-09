@@ -1,8 +1,5 @@
 import React, { useContext, useEffect, useMemo } from "react";
 import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Typography,
   Table,
   TableBody,
@@ -13,15 +10,12 @@ import {
   Paper,
   Stack,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
 
 import { RoleSearch, ModifierSearch } from "../../../components/Roles";
 import { SiteInfoContext } from "../../../Contexts";
 import { hyphenDelimit } from "../../../utils";
-
-export default function LearnMafia(props) {
+export default function LearnMafia({ Layout }) {
   const gameType = "Mafia";
-  const theme = useTheme();
   const siteInfo = useContext(SiteInfoContext);
 
   const items = useMemo(() => {
@@ -82,18 +76,6 @@ export default function LearnMafia(props) {
     },
   ];
 
-  const modifiers = siteInfo.modifiers["Mafia"]
-    .filter((e) => !e.hidden)
-    .map((e) => ({
-      name: e.name,
-      text: e.description,
-      icon: (
-        <div
-          className={`icon modifier modifier-Mafia-${hyphenDelimit(e.name)}`}
-        />
-      ),
-    }));
-
   useEffect(() => {
     document.title = "Learn Mafia | UltiMafia";
   }, []);
@@ -134,7 +116,12 @@ export default function LearnMafia(props) {
   );
 
   return (
-    <div className="learn">
+    <Layout
+      rolesContent={<RoleSearch gameType={gameType} />}
+      modifiersContent={<ModifierSearch gameType={gameType} />}
+      itemsContent={renderTable(items)}
+      mechanicsContent={renderTable(mechanics)}
+    >
       <Typography variant="body1" paragraph>
         Mafia is a chat-based social deception game, based on the party game
         Mafia by Dimitry Davidoff. In this version, the Town is under attack by
@@ -162,34 +149,6 @@ export default function LearnMafia(props) {
         can be used to aid their team, or that provide them unique conditions
         for winning. Be sure to read the description carefully!
       </Typography>
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Roles</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <RoleSearch gameType={gameType} />
-        </AccordionDetails>
-      </Accordion>
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Modifiers</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <ModifierSearch gameType={gameType} />
-        </AccordionDetails>
-      </Accordion>
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Items</Typography>
-        </AccordionSummary>
-        <AccordionDetails>{renderTable(items)}</AccordionDetails>
-      </Accordion>
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Mechanics</Typography>
-        </AccordionSummary>
-        <AccordionDetails>{renderTable(mechanics)}</AccordionDetails>
-      </Accordion>
-    </div>
+    </Layout>
   );
 }
