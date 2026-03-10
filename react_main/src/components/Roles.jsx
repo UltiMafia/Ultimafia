@@ -18,11 +18,6 @@ import {
   Paper,
   Stack,
   Divider,
-  Button,
-  FormGroup,
-  Checkbox,
-  FormControlLabel,
-  Drawer,
 } from "@mui/material";
 import { usePopoverOpen } from "../hooks/usePopoverOpen";
 import { Loading } from "./Loading";
@@ -974,7 +969,6 @@ export function RoleSearch(props) {
   );
   const [selectedTags, setSelectedTags] = useState([]);
   const [selectedTagsCount, setSelectedTagsCount] = useState(0);
-  const [tagDrawer, setTagDrawer] = useState(false);
   const [searchVal, setSearchVal] = useState("");
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -984,25 +978,13 @@ export function RoleSearch(props) {
     setRoleListType(alignment);
   }
 
-  function toggleDrawer(status) {
-    setTagDrawer(status);
-  }
-
-  function handleTagChange(tag) {
-    if (selectedTags.includes(tag)) {
-      selectedTags.splice(selectedTags.indexOf(tag), 1);
-    } else {
-      selectedTags.push(tag);
-    }
-    if (selectedTags.length > 0) {
+  function handleSelectedTagsChange(next) {
+    setSelectedTags(next);
+    setSelectedTagsCount(next.length);
+    if (next.length > 0) {
       setSearchVal("");
       setRoleListType("");
-    } else {
-      setSearchVal(searchVal);
-      setRoleListType(roleListType);
     }
-    setSelectedTags(selectedTags);
-    setSelectedTagsCount(selectedTags.length);
   }
 
   function onSearchInput(query) {
@@ -1015,14 +997,6 @@ export function RoleSearch(props) {
   const tabs = Alignments[props.gameType].map((type) => ({ label: type, value: type }));
 
   if (!siteInfo.tags) return <Loading small />;
-  const tabCheckboxes = siteInfo.tags[props.gameType].map((type) => (
-    <FormControlLabel
-      key={type.name}
-      control={<Checkbox defaultChecked={selectedTags.includes(type.name)} />}
-      onChange={(e) => handleTagChange(`${type.name}`)}
-      label={`${type.name}`}
-    />
-  ));
 
   if (!siteInfo.roles) return <Loading small />;
 
@@ -1060,6 +1034,8 @@ export function RoleSearch(props) {
     });
   }, [siteInfo.roles, props.gameType, searchVal, roleListType, selectedTagsCount]);
 
+  const tagOptionNames = siteInfo.tags[props.gameType].map((t) => t.name);
+
   return (
     <CellSearch
       tabs={tabs}
@@ -1068,6 +1044,9 @@ export function RoleSearch(props) {
       searchPlaceholder="🔎 Role Name"
       searchVal={searchVal}
       onSearchInput={onSearchInput}
+      tagOptions={tagOptionNames}
+      selectedTags={selectedTags}
+      onSelectedTagsChange={handleSelectedTagsChange}
       items={filteredItems}
       getItemKey={(item) => item.name}
       getItemName={(item) => item.name}
@@ -1081,18 +1060,6 @@ export function RoleSearch(props) {
           icon={icon}
         />
       )}
-      extraToolbarContent={
-        <>
-          <Button onClick={(e) => toggleDrawer(true)}>Tags</Button>
-          <Drawer
-            open={tagDrawer}
-            onClose={(e) => toggleDrawer(false)}
-            anchor="right"
-          >
-            {tabCheckboxes}
-          </Drawer>
-        </>
-      }
       gridColumns={{ xs: 4, sm: 6, md: 8 }}
     />
   );

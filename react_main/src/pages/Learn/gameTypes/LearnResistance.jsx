@@ -1,28 +1,15 @@
 import React, { useEffect } from "react";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-  Link,
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import { RoleSearch } from "../../components/Roles";
-
-export default function LearnResistance(props) {
+import { Typography, Link } from "@mui/material";
+import { RoleSearch } from "../../../components/Roles";
+export default function LearnResistance({ Layout }) {
   const gameType = "Resistance";
 
   useEffect(() => {
     document.title = "Learn Resistance | UltiMafia";
   }, []);
 
-  const theme = useTheme();
-
   return (
-    <div className="learn">
-      <Typography variant="h2" gutterBottom>
-        Learn Resistance
-      </Typography>
+    <Layout rolesContent={<RoleSearch gameType={gameType} />}>
       <Typography variant="body1" paragraph>
         Based on the card game{" "}
         <Link
@@ -54,14 +41,6 @@ export default function LearnResistance(props) {
         succeed. The game continues until a certain number of missions succeed
         or fail, with the Resistance and the Spies winning respectively.
       </Typography>
-      <Accordion>
-        <AccordionSummary>
-          <Typography variant="h3">Roles</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <RoleSearch gameType={gameType} />
-        </AccordionDetails>
-      </Accordion>
-    </div>
+    </Layout>
   );
 }

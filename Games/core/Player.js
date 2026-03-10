@@ -641,25 +641,28 @@ module.exports = class Player {
         let amountOfRolls = 1;
         let diceType = 6;
 
-        if (cmd.args.length == 1) {
-          amountOfRolls = cmd.args[0];
-        } else if (cmd.args.length >= 2) {
-          amountOfRolls = cmd.args[0];
-          diceType = cmd.args[1];
+        if (cmd.args.length >= 1) {
+          amountOfRolls = Number(cmd.args[0]);
+          if (!Number.isInteger(amountOfRolls) || amountOfRolls < 1) {
+            this.sendAlert(
+              `:system: /diceroll amount must be a positive integer (e.g. 1–10).`
+            );
+            return;
+          }
         }
-
-        if (isNaN(amountOfRolls) || amountOfRolls < 0) {
-          amountOfRolls = 1;
-        }
-
-        if (isNaN(diceType) || diceType < 0) {
-          diceType = 6;
+        if (cmd.args.length >= 2) {
+          diceType = Number(cmd.args[1]);
+          if (!Number.isInteger(diceType) || diceType < 1) {
+            this.sendAlert(
+              `:system: /diceroll dice type must be a positive integer (e.g. 6 for d6).`
+            );
+            return;
+          }
         }
 
         if (amountOfRolls > 10) {
           amountOfRolls = 10;
         }
-
         if (diceType > 100) {
           diceType = 100;
         }
@@ -681,7 +684,9 @@ module.exports = class Player {
           }
         }
 
-        this.sendAlert(rollsOutput);
+        const meeting = this.game.getMeeting(cmd.raw.meetingId);
+        const recipients = meeting ? meeting.getPlayers() : [this];
+        this.game.sendAlert(rollsOutput, recipients);
 
         return;
 
