@@ -341,6 +341,17 @@ router.get("/:id", async function (req, res) {
 
     if (setup) {
       setup = setup.toJSON();
+      setup.voteCount = setup.voteCount ?? 0;
+      var userId = await routeUtils.verifyLoggedIn(req, true);
+      if (userId) {
+        var voteDoc = await models.ForumVote.findOne({
+          voter: userId,
+          item: setup.id,
+        }).select("direction");
+        setup.vote = voteDoc ? voteDoc.direction : 0;
+      } else {
+        setup.vote = 0;
+      }
 
       var setupVersionNum = setup.version || 0;
       let setupVersion = await models.SetupVersion.findOne({
