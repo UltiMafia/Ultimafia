@@ -897,8 +897,11 @@ export function UserSearchSelect(props) {
     setInputValue(e.target.value);
   }
 
-  function onChange(option) {
-    if (props.onChange) props.onChange(idMap[option.target.textContent]);
+  function onChange(event, value) {
+    if (value != null && props.onChange) {
+      const id = idMap[value];
+      if (id != null) props.onChange(id, value);
+    }
     setInputValue("");
   }
 

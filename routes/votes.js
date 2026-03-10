@@ -102,6 +102,23 @@ router.post("/", async function (req, res) {
 
     var vote = await models.ForumVote.findOne({ voter: userId, item: itemId });
 
+    let incVoteCount, incUp, incDown;
+    if (itemType === "setup") {
+      if (!vote) {
+        incVoteCount = direction;
+        incUp = direction === 1 ? 1 : 0;
+        incDown = direction === -1 ? 1 : 0;
+      } else if (vote.direction !== direction) {
+        incVoteCount = 2 * direction;
+        incUp = direction === 1 ? 1 : -1;
+        incDown = direction === -1 ? 1 : -1;
+      } else {
+        incVoteCount = -direction;
+        incUp = direction === 1 ? -1 : 0;
+        incDown = direction === -1 ? -1 : 0;
+      }
+    }
+
     if (!vote) {
       vote = new models.ForumVote({
         voter: userId,
@@ -110,9 +127,29 @@ router.post("/", async function (req, res) {
       });
       await vote.save();
 
-      await itemModel
-        .updateOne({ id: itemId }, { $inc: { voteCount: direction } })
-        .exec();
+      if (itemType === "setup") {
+        await models.Setup.updateOne(
+          { id: itemId },
+          [
+            {
+              $set: {
+                voteCount: { $add: ["$voteCount", incVoteCount] },
+                upVotes: { $add: ["$upVotes", incUp] },
+                downVotes: { $add: ["$downVotes", incDown] },
+              },
+            },
+            {
+              $set: {
+                controversialScore: { $min: ["$upVotes", "$downVotes"] },
+              },
+            },
+          ]
+        );
+      } else {
+        await itemModel
+          .updateOne({ id: itemId }, { $inc: { voteCount: direction } })
+          .exec();
+      }
 
       res.send(String(direction));
     } else if (vote.direction != direction) {
@@ -121,17 +158,63 @@ router.post("/", async function (req, res) {
         { $set: { direction: direction } }
       ).exec();
 
-      await itemModel
-        .updateOne({ id: itemId }, { $inc: { voteCount: 2 * direction } })
-        .exec();
+      if (itemType === "setup") {
+        await models.Setup.updateOne(
+          { id: itemId },
+          [
+            {
+              $set: {
+                voteCount: { $add: ["$voteCount", incVoteCount] },
+                upVotes: { $add: ["$upVotes", incUp] },
+                downVotes: { $add: ["$downVotes", incDown] },
+              },
+            },
+            {
+              $set: {
+                controversialScore: { $min: ["$upVotes", "$downVotes"] },
+              },
+            },
+          ]
+        );
+      } else {
+        await itemModel
+          .updateOne(
+            { id: itemId },
+            { $inc: { voteCount: 2 * direction } }
+          )
+          .exec();
+      }
 
       res.send(String(direction));
     } else {
       await models.ForumVote.deleteOne({ voter: userId, item: itemId }).exec();
 
-      await itemModel
-        .updateOne({ id: itemId }, { $inc: { voteCount: -1 * direction } })
-        .exec();
+      if (itemType === "setup") {
+        await models.Setup.updateOne(
+          { id: itemId },
+          [
+            {
+              $set: {
+                voteCount: { $add: ["$voteCount", incVoteCount] },
+                upVotes: { $add: ["$upVotes", incUp] },
+                downVotes: { $add: ["$downVotes", incDown] },
+              },
+            },
+            {
+              $set: {
+                controversialScore: { $min: ["$upVotes", "$downVotes"] },
+              },
+            },
+          ]
+        );
+      } else {
+        await itemModel
+          .updateOne(
+            { id: itemId },
+            { $inc: { voteCount: -1 * direction } }
+          )
+          .exec();
+      }
 
       res.send("0");
     }
