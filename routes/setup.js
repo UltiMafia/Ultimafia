@@ -366,6 +366,14 @@ router.get("/:id", async function (req, res) {
         setup.stats = calculateStats(setupVersion, setup.gameType);
       }
 
+      // Count completed games with no leavers/veg for "Played X times!"
+      setup.playedCount =
+        (await models.Game.countDocuments({
+          setup: new ObjectID(setup._id),
+          endTime: { $gt: 0 },
+          $or: [{ left: [] }, { left: { $exists: false } }],
+        })) || 0;
+
       res.send(setup);
     } else {
       res.status(500);

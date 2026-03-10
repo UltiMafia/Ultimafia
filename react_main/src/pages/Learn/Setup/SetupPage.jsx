@@ -386,6 +386,7 @@ export function SetupPage() {
             <Grid item xs={12} md={2}>
               <Stack
                 direction={isPhoneDevice ? "row" : "column"}
+                spacing={0.5}
                 sx={{
                   alignItems: "center",
                 }}
@@ -406,6 +407,16 @@ export function SetupPage() {
                     avatar={setup.creator.avatar}
                   />
                 </Box>
+                <Typography variant="body2" color="text.secondary" sx={{ width: "100%", textAlign: isPhoneDevice ? "right" : "center" }}>
+                  {"Favorited "}
+                  {setup.favorites ?? 0}
+                  {" times!"}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ width: "100%", textAlign: isPhoneDevice ? "right" : "center" }}>
+                  {"Played "}
+                  {setup.playedCount ?? 0}
+                  {" times!"}
+                </Typography>
               </Stack>
             </Grid>
           )}
