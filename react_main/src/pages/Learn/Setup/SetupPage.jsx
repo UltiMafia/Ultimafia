@@ -412,6 +412,11 @@ export function SetupPage() {
                   {setup.favorites ?? 0}
                   {" times!"}
                 </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ width: "100%", textAlign: isPhoneDevice ? "right" : "center" }}>
+                  {"Played "}
+                  {setup.playedCount ?? 0}
+                  {" times!"}
+                </Typography>
               </Stack>
             </Grid>
           )}
