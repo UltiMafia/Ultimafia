@@ -5,6 +5,7 @@ import axios from "axios";
 import { UserContext } from "Contexts";
 import { PageNav, SearchBar } from "components/Nav";
 import Setup, { SetupManipulationButtons } from "components/Setup";
+import { UserSearchSelect } from "components/Form";
 import HostGameDialogue from "components/HostGameDialogue";
 import { useErrorAlert } from "components/Alerts";
 
@@ -15,16 +16,20 @@ import {
   Box,
   Button,
   Divider,
+  FormControl,
   IconButton,
+  InputLabel,
   List,
   ListItem,
-  ListItemText,
   ListItemIcon,
+  ListItemText,
+  MenuItem,
   Paper,
+  Select,
   Stack,
+  SwipeableDrawer,
   Tab,
   Tabs,
-  SwipeableDrawer,
   useTheme,
   Grid,
 } from "@mui/material";
@@ -61,7 +66,15 @@ export default function HostBrowser(props) {
     (state, action) => {
       switch (action.type) {
         case "ChangeList": {
-          return { ...state, option: action.value, page: 1, query: "" };
+          return {
+            ...state,
+            option: action.value,
+            page: 1,
+            query: "",
+            ...(action.value === "Yours"
+              ? { creatorId: "", creatorName: "" }
+              : {}),
+          };
         }
         case "ChangePage": {
           return { ...state, page: action.value };
@@ -83,6 +96,17 @@ export default function HostBrowser(props) {
         case "ChangeMaxSlots": {
           return { ...state, maxSlots: action.value };
         }
+        case "ChangeSortBy": {
+          return { ...state, page: 1, sortBy: action.value };
+        }
+        case "ChangeCreator": {
+          return {
+            ...state,
+            page: 1,
+            creatorId: action.value?.id ?? "",
+            creatorName: action.value?.name ?? "",
+          };
+        }
       }
     },
     {
@@ -91,6 +115,9 @@ export default function HostBrowser(props) {
       query: "",
       minSlots: minSlots,
       maxSlots: maxSlots,
+      sortBy: "",
+      creatorId: "",
+      creatorName: "",
     }
   );
 
@@ -167,6 +194,16 @@ export default function HostBrowser(props) {
     dispatchFilters({ type: "ChangeQuery", value: query });
   }
 
+  function onCreatorSelect(userId, userName) {
+    dispatchFilters({
+      type: "ChangeCreator",
+      value:
+        userId != null && userId !== ""
+          ? { id: userId, name: userName ?? "" }
+          : null,
+    });
+  }
+
   function onPageNav(page) {
     dispatchFilters({ type: "ChangePage", value: page });
   }
@@ -188,6 +225,18 @@ export default function HostBrowser(props) {
     );
     dispatchFilters({ type: "ChangeMaxSlots", value });
   }
+
+  const sortByOptions = [
+    { value: "", label: "Default" },
+    { value: "newest", label: "Newest" },
+    { value: "oldest", label: "Oldest" },
+    { value: "updated", label: "Most recently updated" },
+    { value: "upvoted", label: "Most upvoted" },
+    { value: "downvoted", label: "Most downvoted" },
+    { value: "controversial", label: "Most controversial" },
+    { value: "favorites", label: "Most favorites" },
+    { value: "played", label: "Most played" },
+  ];
 
   function onSelectSetup(setup) {
     setSelSetup(setup);
@@ -375,6 +424,34 @@ export default function HostBrowser(props) {
                 onInput={onSearchInput}
               />
             </Paper>
+          </Grid>
+          <Grid item xs={12}>
+            <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+              <FormControl size="small" sx={{ minWidth: 220 }}>
+                <InputLabel id="host-sort-by-label">Sort by</InputLabel>
+                <Select
+                  labelId="host-sort-by-label"
+                  value={filters.sortBy ?? ""}
+                  label="Sort by"
+                  onChange={(e) =>
+                    dispatchFilters({ type: "ChangeSortBy", value: e.target.value })
+                  }
+                >
+                  {sortByOptions.map((opt) => (
+                    <MenuItem key={opt.value || "default"} value={opt.value}>
+                      {opt.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl size="small" sx={{ minWidth: 220 }}>
+                <UserSearchSelect
+                  key={filters.creatorId || "no-creator"}
+                  onChange={onCreatorSelect}
+                  placeholder="Filter by creator"
+                />
+              </FormControl>
+            </Stack>
           </Grid>
         </Grid>
         <Box

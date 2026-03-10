@@ -169,6 +169,14 @@ router.get("/search", async function (req, res) {
         { roles: { $regex: String(req.query.query), $options: "i" } },
       ];
     }
+    if (req.query.creatorId) {
+      const creator = await models.User.findOne({ id: String(req.query.creatorId) })
+        .select("_id")
+        .lean();
+      if (creator) {
+        search.creator = creator._id;
+      }
+    }
     if (req.query.option) {
       const options = Array.isArray(req.query.option)
         ? req.query.option
@@ -210,6 +218,38 @@ router.get("/search", async function (req, res) {
           return true;
         })
       );
+    }
+
+    const sortBy = (req.query.sortBy || "").toLowerCase();
+    if (sortBy) {
+      switch (sortBy) {
+        case "newest":
+          sort._id = -1;
+          break;
+        case "oldest":
+          sort._id = 1;
+          break;
+        case "updated":
+          sort.updatedAt = -1;
+          break;
+        case "upvoted":
+          sort.voteCount = -1;
+          break;
+        case "downvoted":
+          sort.voteCount = 1;
+          break;
+        case "controversial":
+          sort.controversialScore = -1;
+          break;
+        case "favorites":
+          sort.favorites = -1;
+          break;
+        case "played":
+          sort.played = -1;
+          break;
+        default:
+          break;
+      }
     }
 
     var setups = await models.Setup.find(search)
@@ -826,6 +866,10 @@ router.post("/create", async function (req, res) {
         ),
       });
       await setupVersion.save();
+      await models.Setup.updateOne(
+        { _id: setupAfterChanges._id },
+        { $set: { updatedAt: Date.now() } }
+      );
     } else {
       logger.warn(
         `failed to find setup for ID: ${setupId}. A setup version will not be created as a result.`
