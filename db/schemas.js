@@ -218,6 +218,7 @@ var schemas = {
       teamFailLimit: Number,
       excessRoles: Number,
       favorites: Number,
+      voteCount: { type: Number, default: 0 },
       version: { type: Number, default: 0 },
       featured: { type: Boolean, index: true },
       ranked: { type: Boolean, default: false },

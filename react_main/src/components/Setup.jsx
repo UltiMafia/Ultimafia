@@ -858,11 +858,17 @@ export function SetupManipulationButtons(props) {
   const user = useContext(UserContext);
 
   const isOwner = props.setup.creator?.id === user.id;
+  const hasEditAnySetupPerm = user.perms?.editAnySetup;
+  const canEditThisSetup = isOwner || hasEditAnySetupPerm;
   const favIconFormat = props.setup.favorite ? "fas" : "far";
 
   const missingOwnershipStyle = {
     opacity: !isOwner ? "20%" : undefined,
     cursor: !isOwner ? "not-allowed" : undefined,
+  };
+  const missingEditStyle = {
+    opacity: !canEditThisSetup ? "20%" : undefined,
+    cursor: !canEditThisSetup ? "not-allowed" : undefined,
   };
 
   return (
@@ -878,12 +884,17 @@ export function SetupManipulationButtons(props) {
       <Grid item xs={3}>
         <IconButton
           aria-label="edit"
-          disabled={!isOwner}
-          sx={missingOwnershipStyle}
+          disabled={!canEditThisSetup}
+          sx={missingEditStyle}
         >
           <i
             className={`setup-btn edit-setup fa-pen-square fas`}
-            onClick={() => props.onEdit(props.setup)}
+            onClick={() =>
+              window.open(
+                `/play/create?edit=${props.setup.id}&game=${props.setup.gameType}`,
+                "_blank"
+              )
+            }
           />
         </IconButton>
       </Grid>
@@ -891,7 +902,12 @@ export function SetupManipulationButtons(props) {
         <IconButton aria-label="copy">
           <i
             className={`setup-btn copy-setup fa-copy fas`}
-            onClick={() => props.onCopy(props.setup)}
+            onClick={() =>
+              window.open(
+                `/play/create?copy=${props.setup.id}&game=${props.setup.gameType}`,
+                "_blank"
+              )
+            }
           />
         </IconButton>
       </Grid>

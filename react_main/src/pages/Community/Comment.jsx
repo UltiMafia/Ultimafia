@@ -6,7 +6,7 @@ import { useErrorAlert } from "components/Alerts";
 import { Time } from "components/Basic";
 import CustomMarkdown from "components/CustomMarkdown";
 
-import { VoteWidget } from "./Forums/Forums";
+import { VoteWidget } from "components/VoteWidget";
 import { NameWithAvatar } from "../User/User";
 
 import { Box, Divider, Grid, IconButton, Paper, Stack } from "@mui/material";

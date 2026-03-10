@@ -28,6 +28,7 @@ import {
   determineSetupType,
   getAlignmentColor,
   FullRoleList,
+  SetupManipulationButtons,
 } from "components/Setup";
 import GameIcon from "components/GameIcon";
 import HostGameDialogue from "components/HostGameDialogue";
@@ -37,6 +38,7 @@ import Comments from "pages/Community/Comments";
 import { SetupStrategiesSection } from "components/Strategies";
 import { NameWithAvatar } from "pages/User/User";
 import { Loading } from "components/Loading";
+import { VoteWidget } from "components/VoteWidget";
 import {
   getRowStubColor,
   getSetupBackgroundColor,
@@ -196,10 +198,27 @@ export function SetupPage() {
   if (!setup || !user.loaded) return <Loading small />;
 
   let commentLocation = `setup/${setupId}`;
+// TODO add button to host it
+  function onFavSetup(favSetup) {
+    axios.post("/api/setup/favorite", { id: favSetup.id }).catch(errorAlert);
+    setSetup((prev) => (prev?.id === favSetup.id ? { ...prev, favorite: !prev.favorite } : prev));
+  }
 
-  // favourites
+  function onEditSetup(s) {
+    navigate(`/play/create?edit=${s.id}&game=${s.gameType}`);
+  }
 
-  // TODO add button to host it
+  function onCopySetup(s) {
+    navigate(`/play/create?copy=${s.id}&game=${s.gameType}`);
+  }
+
+  function onDelSetup(s) {
+    if (!window.confirm("Are you sure you want to delete this setup?")) return;
+    axios
+      .post("/api/setup/delete", { id: s.id })
+      .then(() => navigate("/play"))
+      .catch(errorAlert);
+  }
 
   let closedRoleInfo = [];
   // Roles
@@ -293,29 +312,55 @@ export function SetupPage() {
           divider={<Divider orientation="vertical" flexItem />}
         >
           <Grid item xs={12} md={8}>
-            <Stack
-              direction="row"
-              spacing={1}
-              sx={{ height: "100%", alignItems: "center" }}
-            >
-              <IconButton
-                onClick={() => setIshostGameDialogueOpen(true)}
-                sx={{
-                  p: isPhoneDevice ? 1 : 2,
-                  borderRadius: "50%",
-                  backgroundColor: setupHeadingIconColor,
-                }}
+            <Stack direction="column" spacing={1}>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ height: "100%", alignItems: "center" }}
               >
-                <GameIcon gameType={setup.gameType} size={iconSize} />
-              </IconButton>
-              <Typography
-                variant="h2"
-                sx={{
-                  ml: isPhoneDevice ? "auto !important" : undefined,
-                }}
-              >
-                {setup.name}
-              </Typography>
+                <VoteWidget
+                  item={{
+                    id: setup.id,
+                    vote: setup.vote ?? 0,
+                    voteCount: setup.voteCount ?? 0,
+                  }}
+                  itemType="setup"
+                  setItemHolder={(newItem) =>
+                    setSetup((prev) =>
+                      prev?.id === newItem.id
+                        ? { ...prev, vote: newItem.vote, voteCount: newItem.voteCount }
+                        : prev
+                    )
+                  }
+                />
+                <IconButton
+                  onClick={() => setIshostGameDialogueOpen(true)}
+                  sx={{
+                    p: isPhoneDevice ? 1 : 2,
+                    borderRadius: "50%",
+                    backgroundColor: setupHeadingIconColor,
+                  }}
+                >
+                  <GameIcon gameType={setup.gameType} size={iconSize} />
+                </IconButton>
+                <Typography
+                  variant="h2"
+                  sx={{
+                    ml: isPhoneDevice ? "auto !important" : undefined,
+                  }}
+                >
+                  {setup.name}
+                </Typography>
+              </Stack>
+              {user.loggedIn && (
+                <SetupManipulationButtons
+                  setup={setup}
+                  onFav={onFavSetup}
+                  onEdit={onEditSetup}
+                  onCopy={onCopySetup}
+                  onDel={onDelSetup}
+                />
+              )}
             </Stack>
           </Grid>
           <Grid item xs={12} md={2}>

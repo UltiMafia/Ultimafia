@@ -24,7 +24,7 @@ import { UserContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { TextEditor } from "components/Form";
 import CustomMarkdown from "components/CustomMarkdown";
-import { VoteWidget } from "pages/Community/Forums/Forums";
+import { VoteWidget } from "components/VoteWidget";
 import { NameWithAvatar } from "pages/User/User";
 import { Loading } from "components/Loading";
 import surprisedFace from "images/emotes/surprised.webp";
