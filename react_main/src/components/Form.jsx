@@ -898,9 +898,13 @@ export function UserSearchSelect(props) {
   }
 
   function onChange(event, value) {
-    if (value != null && props.onChange) {
-      const id = idMap[value];
-      if (id != null) props.onChange(id, value);
+    if (props.onChange) {
+      if (value != null) {
+        const id = idMap[value];
+        if (id != null) props.onChange(id, value);
+      } else {
+        props.onChange(null, null);
+      }
     }
     setInputValue("");
   }

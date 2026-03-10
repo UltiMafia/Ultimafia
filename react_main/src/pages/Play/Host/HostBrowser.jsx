@@ -195,16 +195,13 @@ export default function HostBrowser(props) {
   }
 
   function onCreatorSelect(userId, userName) {
-    if (userId) {
-      dispatchFilters({
-        type: "ChangeCreator",
-        value: { id: userId, name: userName },
-      });
-    }
-  }
-
-  function onClearCreator() {
-    dispatchFilters({ type: "ChangeCreator", value: null });
+    dispatchFilters({
+      type: "ChangeCreator",
+      value:
+        userId != null && userId !== ""
+          ? { id: userId, name: userName ?? "" }
+          : null,
+    });
   }
 
   function onPageNav(page) {
@@ -419,7 +416,7 @@ export default function HostBrowser(props) {
               </div>
             </Paper>
           </Grid>
-          <Grid item xs={12} md={2}>
+          <Grid item xs={12} md={4}>
             <Paper>
               <SearchBar
                 value={filters.query}
@@ -428,45 +425,33 @@ export default function HostBrowser(props) {
               />
             </Paper>
           </Grid>
-          <Grid item xs={12} md={2}>
-            <Paper sx={{ height: "100%", display: "flex", alignItems: "center" }}>
-              <Stack direction="row" spacing={1} alignItems="center" sx={{ width: "100%" }}>
-                <Box sx={{ flex: "1 1 auto", minWidth: 0 }}>
-                  <UserSearchSelect
-                    onChange={onCreatorSelect}
-                    placeholder="Filter by creator"
-                  />
-                </Box>
-                {filters.creatorId && (
-                  <Button
-                    size="small"
-                    onClick={onClearCreator}
-                    sx={{ flexShrink: 0 }}
-                  >
-                    Clear
-                  </Button>
-                )}
-              </Stack>
-            </Paper>
-          </Grid>
           <Grid item xs={12}>
-            <FormControl size="small" sx={{ minWidth: 220 }}>
-              <InputLabel id="host-sort-by-label">Sort by</InputLabel>
-              <Select
-                labelId="host-sort-by-label"
-                value={filters.sortBy ?? ""}
-                label="Sort by"
-                onChange={(e) =>
-                  dispatchFilters({ type: "ChangeSortBy", value: e.target.value })
-                }
-              >
-                {sortByOptions.map((opt) => (
-                  <MenuItem key={opt.value || "default"} value={opt.value}>
-                    {opt.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+              <FormControl size="small" sx={{ minWidth: 220 }}>
+                <InputLabel id="host-sort-by-label">Sort by</InputLabel>
+                <Select
+                  labelId="host-sort-by-label"
+                  value={filters.sortBy ?? ""}
+                  label="Sort by"
+                  onChange={(e) =>
+                    dispatchFilters({ type: "ChangeSortBy", value: e.target.value })
+                  }
+                >
+                  {sortByOptions.map((opt) => (
+                    <MenuItem key={opt.value || "default"} value={opt.value}>
+                      {opt.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl size="small" sx={{ minWidth: 220 }}>
+                <UserSearchSelect
+                  key={filters.creatorId || "no-creator"}
+                  onChange={onCreatorSelect}
+                  placeholder="Filter by creator"
+                />
+              </FormControl>
+            </Stack>
           </Grid>
         </Grid>
         <Box
