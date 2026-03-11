@@ -14,13 +14,9 @@ import {
   Button,
   Card,
   Divider,
-  FormControl,
   Grid,
   IconButton,
-  InputLabel,
   Link,
-  MenuItem,
-  Select,
   Stack,
   Tab,
   Table,
@@ -74,6 +70,46 @@ export default function Setups() {
       </div>
     </>
   );
+}
+
+function getBasicPieStats(alignmentWinrate, roleWinrate, rolesRaw) {
+  const data = {};
+  const colors = {};
+
+  if (!alignmentWinrate || !roleWinrate || !rolesRaw) {
+    return null;
+  }
+
+  Object.keys(alignmentWinrate).forEach(function (alignment) {
+    if (alignment === "Independent") {
+      return;
+    }
+
+    if (alignment === "Village") {
+      colors[alignment] = getAlignmentColor(alignment);
+      data[alignment] = `${alignmentWinrate[alignment]}`;
+    } else if (alignment === "Mafia") {
+      colors[alignment] = getAlignmentColor(alignment);
+      data[alignment] = `${alignmentWinrate[alignment]}`;
+    } else if (alignment === "Cult") {
+      colors[alignment] = getAlignmentColor(alignment);
+      data[alignment] = `${alignmentWinrate[alignment]}`;
+    }
+  });
+
+  Object.keys(roleWinrate).forEach(function (roleName) {
+    if (roleWinrate[roleName] === 0) {
+      return;
+    }
+
+    const alignment = rolesRaw[roleName]?.alignment;
+    if (alignment === "Independent") {
+      colors[roleName] = getAlignmentColor(alignment);
+      data[roleName] = `${roleWinrate[roleName]}`;
+    }
+  });
+
+  return { data: data, colors: colors };
 }
 
 function getEloPieStats(factionRatings) {
@@ -137,9 +173,7 @@ export function SetupPage() {
   const [diff, setDiff] = useState([]); // Changelog diff
   const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
   const [tabValue, setTabValue] = useState(0);
-  const [setupStats, setSetupStats] = useState(null);
-  const [statsView, setStatsView] = useState("alignment"); // "alignment" | "role"
-  const [statsGameTypeFilter, setStatsGameTypeFilter] = useState("all"); // "all" | "unranked" | "ranked" | "competitive"
+  const [pieData, setPieData] = useState(null);
   const [lineage, setLineage] = useState(null); // { copiedFrom: { setup, copiedAt } | null, copiedTo: [] }
   const [description, setDescription] = useState("");
   const [editingDescription, setEditingDescription] = useState(false);
@@ -172,13 +206,19 @@ export function SetupPage() {
           setSelectedVersionNum(setup.version);
           setVersionTimestamp(setup.setupVersion.timestamp);
           setVersionGamesPlayed(setup.setupVersion.played);
-          setSetupStats(setup.setupVersion?.setupStats ?? null);
           setDescription(setup.description ?? "");
 
           document.title = `Setup | ${res.data.name} | UltiMafia`;
 
           if (setup.gameType === "Mafia") {
             setEloPieData(getEloPieStats(setup.factionRatings));
+            setPieData(
+              getBasicPieStats(
+                setup.stats?.alignmentWinrate,
+                setup.stats?.roleWinrate,
+                siteInfo?.rolesRaw?.Mafia
+              )
+            );
 
             const changelog = setup.setupVersion.changelog;
             if (changelog) {
@@ -199,7 +239,7 @@ export function SetupPage() {
   }, [setupId, tabValue]);
 
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
-  // TODO if setupId not set, redirect to a setup page
+  if (!setupId) return <Navigate to="/learn/games" replace />;
 
   if (!setup || !user.loaded) return <Loading small />;
 
@@ -228,7 +268,6 @@ export function SetupPage() {
     }
   }
 
-  // TODO add button to host it
   function onFavSetup(favSetup) {
     axios.post("/api/setup/favorite", { id: favSetup.id }).catch(errorAlert);
     setSetup((prev) => (prev?.id === favSetup.id ? { ...prev, favorite: !prev.favorite } : prev));
@@ -282,9 +321,16 @@ export function SetupPage() {
           setSelectedVersionNum(newVersionNum);
           setVersionTimestamp(setupVersion.timestamp);
           setVersionGamesPlayed(setupVersion.played);
-          setSetupStats(setupVersion.setupStats ?? null);
 
           if (gameType === "Mafia") {
+            setPieData(
+              getBasicPieStats(
+                setupVersion.stats?.alignmentWinrate,
+                setupVersion.stats?.roleWinrate,
+                siteInfo?.rolesRaw?.Mafia
+              )
+            );
+
             const changelog = setupVersion.changelog;
             if (changelog) {
               setDiff(JSON.parse(changelog));
@@ -343,51 +389,6 @@ export function SetupPage() {
     nightOrder: key[1][1],
   }));
 
-  // Compute filtered win rates from setupStats for Statistics tab (per-game data)
-  const statsSource =
-    setupStats && statsView === "role"
-      ? setupStats.roleWinRates
-      : setupStats?.alignmentWinRates;
-  const filteredStatsRows = [];
-  if (statsSource && typeof statsSource === "object") {
-    for (const [name, entries] of Object.entries(statsSource)) {
-      if (!Array.isArray(entries)) continue;
-      const filtered = statsGameTypeFilter === "all"
-        ? entries
-        : entries.filter((e) => e && e[0] === statsGameTypeFilter);
-      const wins = filtered.filter((e) => e[1] === true).length;
-      const total = filtered.length;
-      if (total > 0) {
-        filteredStatsRows.push({
-          name,
-          wins,
-          total,
-          winRate: wins / total,
-        });
-      }
-    }
-    filteredStatsRows.sort((a, b) => b.total - a.total);
-  }
-  // Bar color for Statistics: alignment name -> getAlignmentColor; role name (e.g. "Villager:Strong") -> role's alignment color
-  const getStatsBarColor = (name) => {
-    if (statsView === "alignment") return getAlignmentColor(name);
-    const roleName = String(name).split(":")[0];
-    const alignment =
-      siteInfo?.rolesRaw?.[setup?.gameType]?.[roleName]?.alignment;
-    return alignment != null
-      ? getAlignmentColor(alignment)
-      : getAlignmentColor("Independent");
-  };
-  const gameLengths = setupStats?.gameLengths || [];
-  const filteredGameLengths =
-    statsGameTypeFilter === "all"
-      ? gameLengths
-      : gameLengths.filter((e) => e && e[0] === statsGameTypeFilter);
-  const avgGameLengthMs =
-    filteredGameLengths.length > 0
-      ? filteredGameLengths.reduce((s, e) => s + (e[1] || 0), 0) /
-        filteredGameLengths.length
-      : null;
   return (
     <Stack
       spacing={1}
@@ -462,15 +463,6 @@ export function SetupPage() {
                   {setup.name}
                 </Typography>
               </Stack>
-              {user.loggedIn && (
-                <SetupManipulationButtons
-                  setup={setup}
-                  onFav={onFavSetup}
-                  onEdit={onEditSetup}
-                  onCopy={onCopySetup}
-                  onDel={onDelSetup}
-                />
-              )}
             </Stack>
           </Grid>
           <Grid item xs={12} md={2}>
@@ -517,16 +509,31 @@ export function SetupPage() {
                     avatar={setup.creator.avatar}
                   />
                 </Box>
-                <Typography variant="body2" color="text.secondary" sx={{ width: "100%", textAlign: isPhoneDevice ? "right" : "center" }}>
-                  {"Favorited "}
-                  {setup.favorites ?? 0}
-                  {" times!"}
+              </Stack>
+            </Grid>
+          )}
+          {shouldDisplayStats && (
+            <Grid item xs={12} md={8} sx={{ alignSelf: "center" }}>
+              <Stack
+                direction={{ xs: "column", md: "row" }}
+                alignItems={{ xs: "stretch", md: "center" }}
+                spacing={1}
+                sx={{ width: { xs: "100%", md: "auto" } }}
+              >
+                <Typography component="label" variant="body2" sx={{ whiteSpace: "nowrap" }}>
+                  Version
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ width: "100%", textAlign: isPhoneDevice ? "right" : "center" }}>
-                  {"Played "}
-                  {setup.playedCount ?? 0}
-                  {" times!"}
-                </Typography>
+                <Box sx={{ width: { xs: "100%", md: "auto" }, minWidth: 72 }}>
+                  <select
+                    value={selectedVersionNum}
+                    onChange={handleVersionChange}
+                    style={{ width: "100%", minWidth: 72, boxSizing: "border-box" }}
+                  >
+                    {allVersions.map((v) => (
+                      <option key={v} value={v}>{v}</option>
+                    ))}
+                  </select>
+                </Box>
               </Stack>
             </Grid>
           )}
@@ -542,6 +549,7 @@ export function SetupPage() {
         <SetupProfileLayout
           left={
             <>
+              <FullRoleList setup={setup} compact={isPhoneDevice} />
               <div className="box-panel">
                 <div className="heading">Description</div>
                 <div
@@ -575,29 +583,24 @@ export function SetupPage() {
           }
           right={
             <>
-              <div className="box-panel">
-                <div className="heading">Roles</div>
-                <div className="content">
-                  <FullRoleList setup={setup} compact={isPhoneDevice} />
-                </div>
-              </div>
               {closedRoleInfo.length > 0 && (
                 <div className="box-panel">
                   <div className="heading">Closed Setup Info</div>
                   <div className="content">{closedRoleInfo}</div>
                 </div>
               )}
-              {shouldDisplayStats && (
+              {user.loggedIn && (
                 <div className="box-panel">
-                  <div className="heading">Select Version</div>
-                  <select
-                    value={selectedVersionNum}
-                    onChange={handleVersionChange}
-                  >
-                    {allVersions.map((v) => (
-                      <option key={v} value={v}>{v}</option>
-                    ))}
-                  </select>
+                  <div className="heading">Setup Panel</div>
+                  <div className="content">
+                    <SetupManipulationButtons
+                      setup={setup}
+                      onFav={onFavSetup}
+                      onEdit={onEditSetup}
+                      onCopy={onCopySetup}
+                      onDel={onDelSetup}
+                    />
+                  </div>
                 </div>
               )}
               <SetupStrategiesSection setupId={setupId} />
@@ -607,171 +610,70 @@ export function SetupPage() {
       )}
       {tabValue === 1 && (
         <Box>
+          <Box className="box-panel" sx={{ mb: 2 }}>
+            <div className="heading">Setup activity</div>
+            <div className="content">
+              <Typography variant="body2" color="text.secondary">
+                {"Favorited "}
+                {setup.favorites ?? 0}
+                {" times!"}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {"Played "}
+                {setup.playedCount ?? 0}
+                {" times!"}
+              </Typography>
+            </div>
+          </Box>
           {shouldDisplayStats && (
-            <>
-              <Stack direction="row" flexWrap="wrap" gap={2} sx={{ mb: 2 }}>
-                <div className="box-panel">
-                  <div className="heading">Select Version</div>
-                  <select
-                    value={selectedVersionNum}
-                    onChange={handleVersionChange}
-                  >
-                    {allVersions.map((v) => (
-                      <option key={v} value={v}>
-                        {v}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <FormControl size="small" sx={{ minWidth: 160 }}>
-                  <InputLabel>View</InputLabel>
-                  <Select
-                    value={statsView}
-                    label="View"
-                    onChange={(e) => setStatsView(e.target.value)}
-                  >
-                    <MenuItem value="alignment">Alignment</MenuItem>
-                    <MenuItem value="role">Role</MenuItem>
-                  </Select>
-                </FormControl>
-                <FormControl size="small" sx={{ minWidth: 160 }}>
-                  <InputLabel>Filter</InputLabel>
-                  <Select
-                    value={statsGameTypeFilter}
-                    label="Filter"
-                    onChange={(e) => setStatsGameTypeFilter(e.target.value)}
-                  >
-                    <MenuItem value="all">All</MenuItem>
-                    <MenuItem value="unranked">Unranked</MenuItem>
-                    <MenuItem value="ranked">Ranked</MenuItem>
-                    <MenuItem value="competitive">Competitive</MenuItem>
-                  </Select>
-                </FormControl>
-              </Stack>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={8}>
-                  <div className="box-panel">
-                    <div className="heading">
-                      {statsView === "alignment"
-                        ? "Alignment"
-                        : "Role"}{" "}
-                      win rates
-                      {statsGameTypeFilter !== "all" && ` (${statsGameTypeFilter})`}
-                    </div>
-                    <div className="content">
-                      {filteredStatsRows.length === 0 ? (
-                        <Typography color="text.secondary">
-                          Stats are recorded only for games
-                          with no abandonments.
-                        </Typography>
-                      ) : (
-                        <Stack spacing={2} sx={{ width: "100%" }}>
-                          {filteredStatsRows.map((row) => (
-                            <Box key={row.name}>
-                              <Typography variant="body2" sx={{ mb: 0.5 }}>
-                                {row.name}: {(100 * row.winRate).toFixed(0)}%
-                              </Typography>
-                              <Box
-                                sx={{
-                                  height: 12,
-                                  bgcolor: "action.hover",
-                                  borderRadius: 0.5,
-                                  overflow: "hidden",
-                                }}
-                              >
-                                <Box
-                                  sx={{
-                                    height: "100%",
-                                    width: `${100 * row.winRate}%`,
-                                    bgcolor: getStatsBarColor(row.name),
-                                    borderRadius: 0.5,
-                                    minWidth: row.winRate > 0 ? 4 : 0,
-                                  }}
-                                />
-                              </Box>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                                sx={{ mt: 0.25 }}
-                              >
-                                Total: {row.total}
-                              </Typography>
-                            </Box>
-                          ))}
-                        </Stack>
-                      )}
-                    </div>
-                  </div>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Stack spacing={1}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={8}>
+                <Stack spacing={1}>
+                  {pieData && Object.keys(pieData.data).length > 0 && (
                     <div className="box-panel">
-                      <div className="heading">Game statistics</div>
-                      <div className="content">
-                        {filteredGameLengths.length === 0 ? (
-                          <Typography variant="body2" color="text.secondary">
-                            No data
-                          </Typography>
-                        ) : (
-                          <Typography variant="body2">
-                            Average length:{" "}
-                            {avgGameLengthMs != null
-                              ? (avgGameLengthMs / 60000).toFixed(1)
-                              : "—"}{" "}
-                            minutes
-                          </Typography>
-                        )}
+                      <div className="heading">
+                        v{selectedVersionNum} Winrate (n = {versionGamesPlayed})
+                      </div>
+                      <div
+                        className="content"
+                        style={{ padding: "0", justifyContent: "center" }}
+                      >
+                        <PieChart
+                          data={pieData.data}
+                          colors={pieData.colors}
+                          displayPieChart={true}
+                          suffixFn={(value) =>
+                            ` ${(100 * Number.parseFloat(value)).toFixed(0)}%`
+                          }
+                        />
                       </div>
                     </div>
-                    {setup?.fortunePayouts && Object.keys(setup.fortunePayouts).length > 0 && (
-                      <div className="box-panel">
-                        <div className="heading">Point Payouts</div>
-                        <div className="content">
-                          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                            Points earned by a winning player in each faction (ranked/competitive).
-                          </Typography>
-                          <Stack spacing={0.5}>
-                            {Object.entries(setup.fortunePayouts).map(([factionName, payout]) => (
-                              <Stack
-                                key={factionName}
-                                direction="row"
-                                justifyContent="space-between"
-                                alignItems="center"
-                              >
-                                <Typography variant="body2" sx={{ color: getAlignmentColor(factionName) }}>
-                                  {factionName}
-                                </Typography>
-                                <Typography variant="body2" fontWeight="500">
-                                  {payout} pts
-                                </Typography>
-                              </Stack>
-                            ))}
-                          </Stack>
-                        </div>
-                      </div>
-                    )}
-                    {eloPieData && Object.keys(eloPieData.data).length > 0 && (
-                      <div className="box-panel">
-                        <div className="heading">Faction Elo</div>
-                        <div
-                          className="content"
-                          style={{ padding: "0", justifyContent: "center" }}
-                        >
-                          <PieChart
-                            data={eloPieData.data}
-                            colors={eloPieData.colors}
-                            displayPieChart={true}
-                            suffixFn={(value) =>
-                              ` ${Number.parseFloat(value).toFixed(0)}`
-                            }
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </Stack>
-                </Grid>
+                  )}
+                </Stack>
               </Grid>
-            </>
+              <Grid item xs={12} md={4}>
+                <Stack spacing={1}>
+                  {eloPieData && Object.keys(eloPieData.data).length > 0 && (
+                    <div className="box-panel">
+                      <div className="heading">Faction Elo</div>
+                      <div
+                        className="content"
+                        style={{ padding: "0", justifyContent: "center" }}
+                      >
+                        <PieChart
+                          data={eloPieData.data}
+                          colors={eloPieData.colors}
+                          displayPieChart={true}
+                          suffixFn={(value) =>
+                            ` ${Number.parseFloat(value).toFixed(0)}`
+                          }
+                        />
+                      </div>
+                    </div>
+                  )}
+                </Stack>
+              </Grid>
+            </Grid>
           )}
           {!shouldDisplayStats && (
             <Typography color="text.secondary">
@@ -823,21 +725,6 @@ export function SetupPage() {
         <SetupProfileLayout
           left={
             <>
-              {shouldDisplayChangelog && (
-                <div className="box-panel">
-                  <div className="heading">Select Version</div>
-                  <select
-                    value={selectedVersionNum}
-                    onChange={handleVersionChange}
-                  >
-                    {allVersions.map((v) => (
-                      <option key={v} value={v}>
-                        {v}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
               {shouldDisplayChangelog ? (
                 <div className="box-panel">
                   <div className="heading">

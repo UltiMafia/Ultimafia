@@ -16,7 +16,6 @@ const router = express.Router();
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const Diff = require("diff");
-const { getFortunePayouts } = require("../lib/fortunePayouts");
 
 function markFavSetups(userId, setups) {
   return new Promise(async (resolve, reject) => {
@@ -443,15 +442,12 @@ router.get("/:id", async function (req, res) {
         setup: new ObjectID(setup._id),
         version: setupVersionNum,
       }).select(
-        "-_id timestamp changelog manifest played rolePlays roleWins alignmentPlays alignmentWins dayCountWins setupStats"
+        "-_id timestamp changelog manifest played rolePlays roleWins alignmentPlays alignmentWins dayCountWins"
       );
       setup.setupVersion = setupVersion || {};
 
       if (req.get("includeStats") == "true") {
         setup.stats = calculateStats(setupVersion, setup.gameType);
-        if (setup.gameType === "Mafia" && setup.factionRatings?.length) {
-          setup.fortunePayouts = getFortunePayouts(setup.factionRatings);
-        }
       }
 
       // Count completed games with no leavers/veg for "Played X times!"
@@ -488,7 +484,7 @@ router.get("/:id/version/:setupVersionNum", async function (req, res) {
         setup: new ObjectID(setup._id),
         version: req.params.setupVersionNum,
       }).select(
-        "-_id timestamp changelog manifest played rolePlays roleWins alignmentPlays alignmentWins dayCountWins setupStats"
+        "-_id timestamp changelog manifest played rolePlays roleWins alignmentPlays alignmentWins dayCountWins"
       );
 
       if (setupVersion) {

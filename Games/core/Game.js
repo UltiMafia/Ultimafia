@@ -1035,17 +1035,6 @@ module.exports = class Game {
 
     // Tell clients the game started, assign roles, and move to the next state
     this.assignRoles();
-    // Store start alignment/faction per player for setup stats (mafia: .faction, 3rds: .role.name)
-    this.startAlignmentKeys = {};
-    for (let player of this.players) {
-      if (this.originalRoles[player.id]) {
-        const roleStr = this.originalRoles[player.id];
-        const roleName = roleStr.split(":")[0];
-        const alignment = this.getRoleAlignment(roleName);
-        this.startAlignmentKeys[player.id] =
-          alignment === "Independent" ? roleName : player.faction;
-      }
-    }
     this.started = true;
     this.broadcast("start");
     this.events.emit("start");
@@ -2914,7 +2903,6 @@ module.exports = class Game {
       const winnersInfo = winners.getWinnersInfo();
 
       this.finished = true;
-      this.gameEndTime = Date.now();
       this.clearTimers();
 
       this.winners = winners;
@@ -3377,72 +3365,14 @@ module.exports = class Game {
         increments[`dayCountWins.${this.dayCount}`] = 1;
       }
 
-      const updatePayload = {
-        $inc: {
-          ...increments,
-          played: 1,
-        },
-      };
-
-      // Per-game setupStats: only for Mafia; only alignment/role/gameLength when no abandonments
-      if (this.type === "Mafia") {
-        const playersLeft = Object.values(this.playersGone || {}).filter(
-          (p) => this.originalRoles[p.id]
-        );
-        const noLeavers = playersLeft.length === 0;
-        const gameType = this.competitive
-          ? "competitive"
-          : this.ranked
-          ? "ranked"
-          : "unranked";
-
-        if (noLeavers) {
-          const winnerGroupSet = new Set(this.winners.groups || []);
-          const pushUpdates = {};
-
-          // Alignments: start keys + any end alignments (from current player faction / role)
-          const alignmentKeys = new Set();
-          const allPlayers = this.players.concat(
-            Object.values(this.playersGone || {})
-          );
-          for (const p of allPlayers) {
-            if (!this.originalRoles[p.id]) continue;
-            const roleStr = this.originalRoles[p.id];
-            const roleName = roleStr.split(":")[0];
-            const alignment = this.getRoleAlignment(roleName);
-            const startKey =
-              this.startAlignmentKeys && this.startAlignmentKeys[p.id];
-            if (startKey) alignmentKeys.add(startKey);
-            const endKey =
-              alignment === "Independent" ? roleName : (p.faction || alignment);
-            alignmentKeys.add(endKey);
-          }
-          for (const alignmentName of alignmentKeys) {
-            const won = winnerGroupSet.has(alignmentName);
-            pushUpdates[
-              `setupStats.alignmentWinRates.${alignmentName}`
-            ] = [gameType, won];
-          }
-
-          // Roles: "roleName:modifiers" at start; won = that player won
-          const winnerIds = new Set(this.winners.getPlayers());
-          for (const playerId in this.originalRoles) {
-            const roleKey = this.originalRoles[playerId];
-            const won = winnerIds.has(playerId);
-            pushUpdates[`setupStats.roleWinRates.${roleKey}`] = [gameType, won];
-          }
-
-          const gameLengthMs =
-            (this.gameEndTime || Date.now()) - this.startTime;
-          pushUpdates["setupStats.gameLengths"] = [gameType, gameLengthMs];
-
-          updatePayload.$push = pushUpdates;
-        }
-      }
-
       await models.SetupVersion.updateOne(
         { _id: new ObjectID(setupVersion._id) },
-        updatePayload
+        {
+          $inc: {
+            ...increments,
+            played: 1,
+          },
+        }
       ).exec();
     } catch (e) {
       logger.error("Error recording setup statistics: ", e);
