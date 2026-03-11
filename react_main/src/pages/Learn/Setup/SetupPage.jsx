@@ -559,7 +559,7 @@ export function SetupPage() {
                 >
                   {!editingDescription ? (
                     <div className="md-content">
-                      <CustomMarkdown>{description || (isSetupCreator ? "Click to edit description (e.g. theme, house rules, notes)." : "No description.")}</CustomMarkdown>
+                      <CustomMarkdown>{description || (isSetupCreator ? "Click to edit description (e.g. theme, tips, notes)." : "No description.")}</CustomMarkdown>
                     </div>
                   ) : (
                     <>
@@ -696,9 +696,9 @@ export function SetupPage() {
               <Table aria-label="night order">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Role</TableCell>
-                    <TableCell>Action</TableCell>
-                    <TableCell>Priority</TableCell>
+                    <TableCell sx={{ verticalAlign: "middle" }}>Role</TableCell>
+                    <TableCell sx={{ verticalAlign: "middle" }}>Action</TableCell>
+                    <TableCell sx={{ verticalAlign: "middle" }}>Priority</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -707,12 +707,14 @@ export function SetupPage() {
                       key={`${row.roleName}-${row.actionName}-${idx}`}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      <TableCell component="th" scope="row" align="center">
-                        {row.roleIcon}
-                        {row.roleName}
+                      <TableCell component="th" scope="row" align="center" sx={{ verticalAlign: "middle" }}>
+                        <Stack direction="row" alignItems="center" justifyContent="center" spacing={1}>
+                          {row.roleIcon}
+                          <span>{row.roleName}</span>
+                        </Stack>
                       </TableCell>
-                      <TableCell align="center">{row.actionName}</TableCell>
-                      <TableCell align="center">{row.nightOrder}</TableCell>
+                      <TableCell align="center" sx={{ verticalAlign: "middle" }}>{row.actionName}</TableCell>
+                      <TableCell align="center" sx={{ verticalAlign: "middle" }}>{row.nightOrder}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
