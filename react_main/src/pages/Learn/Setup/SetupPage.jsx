@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import {
+  Link as RouterLink,
   Route,
   Routes,
   Navigate,
@@ -17,6 +18,14 @@ import {
   IconButton,
   Link,
   Stack,
+  Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tabs,
   Typography,
   useMediaQuery,
 } from "@mui/material";
@@ -30,6 +39,7 @@ import {
   FullRoleList,
   SetupManipulationButtons,
 } from "components/Setup";
+import SetupDisplay from "components/Setup";
 import GameIcon from "components/GameIcon";
 import HostGameDialogue from "components/HostGameDialogue";
 import { UserContext, SiteInfoContext } from "Contexts";
@@ -37,6 +47,8 @@ import { UserContext, SiteInfoContext } from "Contexts";
 import Comments from "pages/Community/Comments";
 import { SetupStrategiesSection } from "components/Strategies";
 import { NameWithAvatar } from "pages/User/User";
+import { TextEditor } from "components/Form";
+import CustomMarkdown from "components/CustomMarkdown";
 import { Loading } from "components/Loading";
 import { VoteWidget } from "components/VoteWidget";
 import {
@@ -44,6 +56,7 @@ import {
   getSetupBackgroundColor,
 } from "pages/Play/LobbyBrowser/gameRowColors";
 
+import { RoleCount } from "components/Roles";
 import { PieChart } from "./PieChart";
 
 import "css/setupPage.css";
@@ -89,7 +102,7 @@ function getBasicPieStats(alignmentWinrate, roleWinrate, rolesRaw) {
       return;
     }
 
-    const alignment = rolesRaw[roleName].alignment;
+    const alignment = rolesRaw[roleName]?.alignment;
     if (alignment === "Independent") {
       colors[roleName] = getAlignmentColor(alignment);
       data[roleName] = `${roleWinrate[roleName]}`;
@@ -123,6 +136,24 @@ function getEloPieStats(factionRatings) {
   return { data: data, colors: colors };
 }
 
+/** Shared two-column profile-style layout for Info and Version History tabs. */
+function SetupProfileLayout({ left, right }) {
+  return (
+    <Grid container rowSpacing={1} columnSpacing={1} className="profile" sx={{ mt: 0 }}>
+      <Grid item xs={12} md={8}>
+        <Stack direction="column" spacing={1}>
+          {left}
+        </Stack>
+      </Grid>
+      <Grid item xs={12} md={4}>
+        <Stack direction="column" spacing={1}>
+          {right}
+        </Stack>
+      </Grid>
+    </Grid>
+  );
+}
+
 export function SetupPage() {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
@@ -133,7 +164,6 @@ export function SetupPage() {
 
   const [setup, setSetup] = useState();
   const [gameType, setGameType] = useState("");
-  const [pieData, setPieData] = useState(null);
   const [eloPieData, setEloPieData] = useState(null);
   const [currentVersionNum, setCurrentVersionNum] = useState(0);
   const [selectedVersionNum, setSelectedVersionNum] = useState(0);
@@ -142,6 +172,12 @@ export function SetupPage() {
   const [versionGamesPlayed, setVersionGamesPlayed] = useState(0);
   const [diff, setDiff] = useState([]); // Changelog diff
   const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
+  const [tabValue, setTabValue] = useState(0);
+  const [pieData, setPieData] = useState(null);
+  const [lineage, setLineage] = useState(null); // { copiedFrom: { setup, copiedAt } | null, copiedTo: [] }
+  const [description, setDescription] = useState("");
+  const [editingDescription, setEditingDescription] = useState(false);
+  const [oldDescription, setOldDescription] = useState("");
 
   const allVersions = Array.from(Array(currentVersionNum + 1).keys()).reverse();
   const localDateString = new Date(
@@ -170,6 +206,7 @@ export function SetupPage() {
           setSelectedVersionNum(setup.version);
           setVersionTimestamp(setup.setupVersion.timestamp);
           setVersionGamesPlayed(setup.setupVersion.played);
+          setDescription(setup.description ?? "");
 
           document.title = `Setup | ${res.data.name} | UltiMafia`;
 
@@ -177,9 +214,9 @@ export function SetupPage() {
             setEloPieData(getEloPieStats(setup.factionRatings));
             setPieData(
               getBasicPieStats(
-                setup.stats.alignmentWinrate,
-                setup.stats.roleWinrate,
-                siteInfo.rolesRaw["Mafia"]
+                setup.stats?.alignmentWinrate,
+                setup.stats?.roleWinrate,
+                siteInfo?.rolesRaw?.Mafia
               )
             );
 
@@ -192,13 +229,45 @@ export function SetupPage() {
     }
   }, [setupId]);
 
+  useEffect(() => {
+    if (setupId && tabValue === 3) {
+      axios
+        .get(`/api/setup/${setupId}/lineage`)
+        .then((res) => setLineage(res.data))
+        .catch(() => setLineage({ copiedFrom: null, copiedTo: [] }));
+    }
+  }, [setupId, tabValue]);
+
   if (user.loaded && !user.loggedIn) return <Navigate to="/play" />;
-  // TODO if setupId not set, redirect to a setup page
+  if (!setupId) return <Navigate to="/learn/games" replace />;
 
   if (!setup || !user.loaded) return <Loading small />;
 
   let commentLocation = `setup/${setupId}`;
-// TODO add button to host it
+  const isSetupCreator = user.loggedIn && setup?.creator && user.id === setup.creator.id;
+
+  function onSaveDescription() {
+    axios
+      .post("/api/setup/description", { id: setupId, description })
+      .then(() => {
+        setEditingDescription(false);
+        setSetup((prev) => (prev ? { ...prev, description } : prev));
+      })
+      .catch(errorAlert);
+  }
+
+  function onCancelEditDescription() {
+    setEditingDescription(false);
+    setDescription(oldDescription);
+  }
+
+  function onDescriptionClick() {
+    if (isSetupCreator && !editingDescription) {
+      setOldDescription(description);
+      setEditingDescription(true);
+    }
+  }
+
   function onFavSetup(favSetup) {
     axios.post("/api/setup/favorite", { id: favSetup.id }).catch(errorAlert);
     setSetup((prev) => (prev?.id === favSetup.id ? { ...prev, favorite: !prev.favorite } : prev));
@@ -256,9 +325,9 @@ export function SetupPage() {
           if (gameType === "Mafia") {
             setPieData(
               getBasicPieStats(
-                setupVersion.stats.alignmentWinrate,
-                setupVersion.stats.roleWinrate,
-                siteInfo.rolesRaw["Mafia"]
+                setupVersion.stats?.alignmentWinrate,
+                setupVersion.stats?.roleWinrate,
+                siteInfo?.rolesRaw?.Mafia
               )
             );
 
@@ -277,6 +346,48 @@ export function SetupPage() {
   };
 
   const iconSize = isPhoneDevice ? 30 : 60;
+
+  // Night order: flatten setup roles with siteInfo, collect night actions, sort by priority
+  let useingRoles = [];
+  if (setup && siteInfo?.rolesRaw?.[setup.gameType]) {
+    for (let i = 0; i < setup.roles.length; i++) {
+      useingRoles = useingRoles.concat(
+        Object.keys(setup.roles[i]).map((key) => [
+          key,
+          siteInfo.rolesRaw[setup.gameType][key.split(":")[0]],
+        ])
+      );
+    }
+  }
+  const roles = useingRoles;
+  const hasMafia = roles.filter((r) => r[1].alignment === "Mafia").length > 0;
+  const nightRoles = roles.filter((r) => r[1].nightOrder != null);
+  let nightActions = [];
+  if (hasMafia) {
+    nightActions.push(["Mafia", ["Mafia Kill", -1]]);
+  }
+  for (const role of nightRoles) {
+    for (const item of role[1].nightOrder) {
+      nightActions.push([role[0], item]);
+    }
+  }
+  for (let j = 0; j < nightActions.length; j++) {
+    for (let u = 0; u < nightActions.length; u++) {
+      if (nightActions[u][1][1] > nightActions[j][1][1]) {
+        const temp = nightActions[j];
+        nightActions[j] = nightActions[u];
+        nightActions[u] = temp;
+      }
+    }
+  }
+  const nightOrderTableRows = nightActions.map((key) => ({
+    roleIcon: (
+      <RoleCount key={0} scheme="vivid" role={key[0]} gameType={setup.gameType} />
+    ),
+    roleName: key[0],
+    actionName: key[1][0],
+    nightOrder: key[1][1],
+  }));
 
   return (
     <Stack
@@ -352,15 +463,6 @@ export function SetupPage() {
                   {setup.name}
                 </Typography>
               </Stack>
-              {user.loggedIn && (
-                <SetupManipulationButtons
-                  setup={setup}
-                  onFav={onFavSetup}
-                  onEdit={onEditSetup}
-                  onCopy={onCopySetup}
-                  onDel={onDelSetup}
-                />
-              )}
             </Stack>
           </Grid>
           <Grid item xs={12} md={2}>
@@ -407,99 +509,225 @@ export function SetupPage() {
                     avatar={setup.creator.avatar}
                   />
                 </Box>
-                <Typography variant="body2" color="text.secondary" sx={{ width: "100%", textAlign: isPhoneDevice ? "right" : "center" }}>
-                  {"Favorited "}
-                  {setup.favorites ?? 0}
-                  {" times!"}
+              </Stack>
+            </Grid>
+          )}
+          {shouldDisplayStats && (
+            <Grid item xs={12} md={8} sx={{ alignSelf: "center" }}>
+              <Stack
+                direction={{ xs: "column", md: "row" }}
+                alignItems={{ xs: "stretch", md: "center" }}
+                spacing={1}
+                sx={{ width: { xs: "100%", md: "auto" } }}
+              >
+                <Typography component="label" variant="body2" sx={{ whiteSpace: "nowrap" }}>
+                  Version
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ width: "100%", textAlign: isPhoneDevice ? "right" : "center" }}>
-                  {"Played "}
-                  {setup.playedCount ?? 0}
-                  {" times!"}
-                </Typography>
+                <Box sx={{ width: { xs: "100%", md: "auto" }, minWidth: 72 }}>
+                  <select
+                    value={selectedVersionNum}
+                    onChange={handleVersionChange}
+                    style={{ width: "100%", minWidth: 72, boxSizing: "border-box" }}
+                  >
+                    {allVersions.map((v) => (
+                      <option key={v} value={v}>{v}</option>
+                    ))}
+                  </select>
+                </Box>
               </Stack>
             </Grid>
           )}
         </Grid>
       </Card>
-      <Box>
-        <FullRoleList setup={setup} compact={isPhoneDevice} />
-      </Box>
-      <Box>
-        <Grid container spacing={1}>
-          <Grid item xs={12} md={3}>
-            <Stack direction="column" spacing={1}>
+      <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)}>
+        <Tab label="Info" />
+        <Tab label="Statistics" />
+        <Tab label="Night Order" />
+        <Tab label="Version History" />
+      </Tabs>
+      {tabValue === 0 && (
+        <SetupProfileLayout
+          left={
+            <>
+              <FullRoleList setup={setup} compact={isPhoneDevice} />
+              <div className="box-panel">
+                <div className="heading">Description</div>
+                <div
+                  className={`content${isSetupCreator && !editingDescription ? " edit" : ""}`}
+                  onClick={onDescriptionClick}
+                  style={{ cursor: isSetupCreator && !editingDescription ? "pointer" : undefined }}
+                >
+                  {!editingDescription ? (
+                    <div className="md-content">
+                      <CustomMarkdown>{description || (isSetupCreator ? "Click to edit description (e.g. theme, tips, notes)." : "No description.")}</CustomMarkdown>
+                    </div>
+                  ) : (
+                    <>
+                      <TextEditor value={description} onChange={setDescription} />
+                      <div className="buttons" style={{ marginTop: 8 }}>
+                        <div className="btn btn-theme" onClick={onSaveDescription}>
+                          Submit
+                        </div>
+                        <div className="btn btn-theme-sec" onClick={onCancelEditDescription}>
+                          Cancel
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+              <Box sx={{ mt: 1 }}>
+                <Comments fullWidth location={commentLocation} />
+              </Box>
+            </>
+          }
+          right={
+            <>
               {closedRoleInfo.length > 0 && (
                 <div className="box-panel">
                   <div className="heading">Closed Setup Info</div>
                   <div className="content">{closedRoleInfo}</div>
                 </div>
               )}
-              <div className="box-panel">
-                <div className="heading">Night Order</div>
-                <div className="content">
-                  <Link href={`/learn/setup/${setupId}/nightorder`}>
-                    Click to Show
-                  </Link>
-                </div>
-              </div>
-            </Stack>
-          </Grid>
-          <Grid item xs={12} md={3}>
-            {shouldDisplayStats && (
-              <Stack direction="column" spacing={1}>
+              {user.loggedIn && (
                 <div className="box-panel">
-                  <div className="heading">Select Version</div>
-                  <select onChange={handleVersionChange}>
-                    {allVersions.map((oldVersionNum) => (
-                      <option value={oldVersionNum}>{oldVersionNum}</option>
-                    ))}
-                  </select>
+                  <div className="heading">Setup Panel</div>
+                  <div className="content">
+                    <SetupManipulationButtons
+                      setup={setup}
+                      onFav={onFavSetup}
+                      onEdit={onEditSetup}
+                      onCopy={onCopySetup}
+                      onDel={onDelSetup}
+                    />
+                  </div>
                 </div>
-                {pieData && Object.keys(pieData.data).length > 0 && (
-                  <div className="box-panel">
-                    <div className="heading">
-                      v{selectedVersionNum} Winrate (n = {versionGamesPlayed})
+              )}
+              <SetupStrategiesSection setupId={setupId} />
+            </>
+          }
+        />
+      )}
+      {tabValue === 1 && (
+        <Box>
+          <Box className="box-panel" sx={{ mb: 2 }}>
+            <div className="heading">Setup activity</div>
+            <div className="content">
+              <Typography variant="body2" color="text.secondary">
+                {"Favorited "}
+                {setup.favorites ?? 0}
+                {" times!"}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {"Played "}
+                {setup.playedCount ?? 0}
+                {" times!"}
+              </Typography>
+            </div>
+          </Box>
+          {shouldDisplayStats && (
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={8}>
+                <Stack spacing={1}>
+                  {pieData && Object.keys(pieData.data).length > 0 && (
+                    <div className="box-panel">
+                      <div className="heading">
+                        v{selectedVersionNum} Winrate (n = {versionGamesPlayed})
+                      </div>
+                      <div
+                        className="content"
+                        style={{ padding: "0", justifyContent: "center" }}
+                      >
+                        <PieChart
+                          data={pieData.data}
+                          colors={pieData.colors}
+                          displayPieChart={true}
+                          suffixFn={(value) =>
+                            ` ${(100 * Number.parseFloat(value)).toFixed(0)}%`
+                          }
+                        />
+                      </div>
                     </div>
-                    <div
-                      className="content"
-                      style={{ padding: "0", justifyContent: "center" }}
+                  )}
+                </Stack>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Stack spacing={1}>
+                  {eloPieData && Object.keys(eloPieData.data).length > 0 && (
+                    <div className="box-panel">
+                      <div className="heading">Faction Elo</div>
+                      <div
+                        className="content"
+                        style={{ padding: "0", justifyContent: "center" }}
+                      >
+                        <PieChart
+                          data={eloPieData.data}
+                          colors={eloPieData.colors}
+                          displayPieChart={true}
+                          suffixFn={(value) =>
+                            ` ${Number.parseFloat(value).toFixed(0)}`
+                          }
+                        />
+                      </div>
+                    </div>
+                  )}
+                </Stack>
+              </Grid>
+            </Grid>
+          )}
+          {!shouldDisplayStats && (
+            <Typography color="text.secondary">
+              Statistics are only available for Mafia setups.
+            </Typography>
+          )}
+        </Box>
+      )}
+      {tabValue === 2 && (
+        <Box>
+          <Typography variant="h2" gutterBottom>
+            Setup Night Order
+          </Typography>
+          <Typography paragraph>
+            The night order resolves from the lowest priority to the highest. Ties
+            in priority are resolved by the player list
+          </Typography>
+          <Box className="paragraph">
+            <TableContainer>
+              <Table aria-label="night order">
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ verticalAlign: "middle" }}>Role</TableCell>
+                    <TableCell sx={{ verticalAlign: "middle" }}>Action</TableCell>
+                    <TableCell sx={{ verticalAlign: "middle" }}>Priority</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {nightOrderTableRows.map((row, idx) => (
+                    <TableRow
+                      key={`${row.roleName}-${row.actionName}-${idx}`}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                     >
-                      <PieChart
-                        data={pieData.data}
-                        colors={pieData.colors}
-                        displayPieChart={true}
-                        suffixFn={(value) =>
-                          ` ${(100 * Number.parseFloat(value)).toFixed(0)}%`
-                        }
-                      />
-                    </div>
-                  </div>
-                )}
-                {eloPieData && Object.keys(eloPieData.data).length > 0 && (
-                  <div className="box-panel">
-                    <div className="heading">Faction Elo</div>
-                    <div
-                      className="content"
-                      style={{ padding: "0", justifyContent: "center" }}
-                    >
-                      <PieChart
-                        data={eloPieData.data}
-                        colors={eloPieData.colors}
-                        displayPieChart={true}
-                        suffixFn={(value) =>
-                          ` ${Number.parseFloat(value).toFixed(0)}`
-                        }
-                      />
-                    </div>
-                  </div>
-                )}
-              </Stack>
-            )}
-          </Grid>
-          <Grid item xs={12} md={6}>
-            {shouldDisplayChangelog && (
-              <div className="side column">
+                      <TableCell component="th" scope="row" align="center" sx={{ verticalAlign: "middle" }}>
+                        <Stack direction="row" alignItems="center" justifyContent="center" spacing={1}>
+                          {row.roleIcon}
+                          <span>{row.roleName}</span>
+                        </Stack>
+                      </TableCell>
+                      <TableCell align="center" sx={{ verticalAlign: "middle" }}>{row.actionName}</TableCell>
+                      <TableCell align="center" sx={{ verticalAlign: "middle" }}>{row.nightOrder}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+        </Box>
+      )}
+      {tabValue === 3 && (
+        <SetupProfileLayout
+          left={
+            <>
+              {shouldDisplayChangelog ? (
                 <div className="box-panel">
                   <div className="heading">
                     Changelog for v{selectedVersionNum} ({localDateString})
@@ -508,13 +736,85 @@ export function SetupPage() {
                     <Changelog diff={diff} />
                   </div>
                 </div>
+              ) : (
+                <div className="box-panel">
+                  <div className="content">
+                    <Typography color="text.secondary">
+                      Version history is only available for Mafia setups.
+                    </Typography>
+                  </div>
+                </div>
+              )}
+            </>
+          }
+          right={
+            <div className="box-panel">
+              <div className="heading">Lineage</div>
+              <div className="content">
+                {lineage == null ? (
+                  <Typography variant="body2" color="text.secondary">
+                    Loading…
+                  </Typography>
+                ) : (lineage.copiedFrom || lineage.copiedTo?.length > 0) ? (
+                  <>
+                    {lineage.copiedFrom && (
+                      <Box sx={{ mb: 2 }}>
+                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                          Copied from
+                        </Typography>
+                        <Link
+                          component={RouterLink}
+                          to={`/learn/setup/${lineage.copiedFrom.setup.id}`}
+                          underline="hover"
+                          sx={{ display: "block" }}
+                        >
+                          <Box sx={{ p: 1, borderRadius: 1, bgcolor: "action.hover" }}>
+                            <SetupDisplay setup={lineage.copiedFrom.setup} disablePopover />
+                            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block" }}>
+                              {lineage.copiedFrom.copiedAt
+                                ? new Date(lineage.copiedFrom.copiedAt).toLocaleDateString()
+                                : ""}
+                            </Typography>
+                          </Box>
+                        </Link>
+                      </Box>
+                    )}
+                    {lineage.copiedTo?.length > 0 && (
+                      <Box>
+                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                          Copied to
+                        </Typography>
+                        <Stack spacing={1}>
+                          {lineage.copiedTo.map(({ setup: s, copiedAt }) => (
+                            <Link
+                              key={s.id}
+                              component={RouterLink}
+                              to={`/learn/setup/${s.id}`}
+                              underline="hover"
+                              sx={{ display: "block" }}
+                            >
+                              <Box sx={{ p: 1, borderRadius: 1, bgcolor: "action.hover" }}>
+                                <SetupDisplay setup={s} disablePopover />
+                                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block" }}>
+                                  {copiedAt ? new Date(copiedAt).toLocaleDateString() : ""}
+                                </Typography>
+                              </Box>
+                            </Link>
+                          ))}
+                        </Stack>
+                      </Box>
+                    )}
+                  </>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No lineage to display.
+                  </Typography>
+                )}
               </div>
-            )}
-          </Grid>
-        </Grid>
-      </Box>
-      <Comments location={commentLocation} />
-      <SetupStrategiesSection setupId={setupId} />
+            </div>
+          }
+        />
+      )}
     </Stack>
   );
 }

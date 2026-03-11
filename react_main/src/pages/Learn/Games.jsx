@@ -64,7 +64,7 @@ function LearnTabsLayout({
   return (
     <div className="learn">
       {children}
-      <Box sx={{ borderBottom: 1, borderColor: "divider", mt: 2, mb: 1 }}>
+      <Box sx={{ mt: 2, mb: 1 }}>
         <Tabs value={value} onChange={handleChange}>
           {TAB_IDS.map((id) => (
             <Tab

@@ -163,13 +163,6 @@ export default function LobbyBrowser() {
     <Tabs
       value={lobbyName}
       onChange={(_, newValue) => setLobbyName(newValue)}
-      variant="scrollable"
-      scrollButtons="auto"
-      allowScrollButtonsMobile
-      sx={{
-        borderBottom: 1,
-        borderColor: "divider",
-      }}
     >
       {lobbies
         .filter((lobby) => !lobby.hidden)

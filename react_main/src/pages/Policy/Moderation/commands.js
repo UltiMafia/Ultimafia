@@ -569,6 +569,26 @@ export function useModCommands(argValues, commandRan, setResults) {
           .catch(errorAlert);
       },
     },
+    "Clear Setup Description": {
+      perm: "clearSetupName",
+      category: "Setup Management",
+      args: [
+        {
+          label: "Setup Id",
+          name: "setupId",
+          type: "text",
+        },
+      ],
+      run: function () {
+        axios
+          .post("/api/mod/clearSetupDescription", argValues)
+          .then(() => {
+            siteInfo.showAlert("Setup description cleared.", "success");
+            commandRan();
+          })
+          .catch(errorAlert);
+      },
+    },
     "Clear User Content": {
       perm: "clearUserContent",
       category: "User Management",

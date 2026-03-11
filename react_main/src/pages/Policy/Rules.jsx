@@ -88,25 +88,13 @@ export default function Rules() {
         Last Updated: February 25, 2026
       </Typography>
 
-      <Box sx={{ borderBottom: 1, borderColor: "divider"}}>
-        <Tabs 
-          value={selectedTab}
-          onChange={handleTabChange}
-          variant="scrollable"
-          scrollButtons="auto"
-          allowScrollButtonsMobile
-          sx={{
-            borderBottom: 1,
-            borderColor: "divider",
-          }}
-          >
-          <Tab label="Community Violations" />
-          <Tab label="Game-Related Violations" />
-          <Tab label="Violation Lengths" />
-          <Tab label="Filing an Appeal" />
-          <Tab label="Other Policies" />
-        </Tabs>
-      </Box>
+      <Tabs value={selectedTab} onChange={handleTabChange}>
+        <Tab label="Community Violations" />
+        <Tab label="Game-Related Violations" />
+        <Tab label="Violation Lengths" />
+        <Tab label="Filing an Appeal" />
+        <Tab label="Other Policies" />
+      </Tabs>
 
       <TabPanel value={selectedTab} index={0}>
         <Typography variant="h3" gutterBottom>

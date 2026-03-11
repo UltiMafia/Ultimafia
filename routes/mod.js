@@ -1087,6 +1087,29 @@ router.post("/clearSetupName", async (req, res) => {
   }
 });
 
+router.post("/clearSetupDescription", async (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  try {
+    var userId = await routeUtils.verifyLoggedIn(req);
+    var setupId = String(req.body.setupId);
+    var perm = "clearSetupName";
+
+    if (!(await routeUtils.verifyPermission(res, userId, perm))) return;
+
+    await models.Setup.updateOne(
+      { id: setupId },
+      { $set: { description: "" } }
+    ).exec();
+
+    routeUtils.createModAction(userId, "Clear Setup Description", [setupId]);
+    res.sendStatus(200);
+  } catch (e) {
+    logger.error(e);
+    res.status(500);
+    res.send("Error clearing setup description.");
+  }
+});
+
 router.post("/deleteStrategy", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   try {

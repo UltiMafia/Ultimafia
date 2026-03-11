@@ -19,7 +19,7 @@ function stringify(value) {
 }
 
 const strategyProjection =
-  "id author title content createdAt updatedAt voteCount deleted setupId";
+  "id author title content createdAt updatedAt voteCount deleted deletedAt setupId";
 
 function formatAuthor(authorDoc) {
   if (!authorDoc) return null;
@@ -115,7 +115,7 @@ router.get("/", async function (req, res) {
     const strategies = await models.Strategy.find(strategyFilter)
       .select(strategyProjection)
       .populate("author", "id name avatar groups vanityUrl deleted")
-      .sort({ voteCount: -1, updatedAt: -1, createdAt: -1 })
+      .sort({ deleted: 1, voteCount: -1, updatedAt: -1, createdAt: -1 })
       .lean();
 
     const strategyIds = strategies.map((strategy) => strategy.id);
@@ -352,11 +352,13 @@ router.post("/:strategyId/delete", async function (req, res) {
     }
 
     if (!strategy.deleted) {
+      const now = Date.now();
       await models.Strategy.updateOne(
         { id: strategyId },
-        { $set: { deleted: true } }
+        { $set: { deleted: true, deletedAt: now } }
       ).exec();
       strategy.deleted = true;
+      strategy.deletedAt = now;
     }
 
     if (hasDeletePerm && !isAuthor) {

@@ -232,6 +232,9 @@ var schemas = {
       roleWins: {},
       factionRatings: factionRatings,
       lockedFactionRatings: factionRatings,
+      copiedFrom: { type: String, index: true },
+      copiedAt: Date,
+      description: { type: String, default: "" },
     },
     { minimize: false }
   ),
@@ -247,6 +250,12 @@ var schemas = {
     alignmentPlays: {},
     alignmentWins: {},
     dayCountWins: {},
+    // Per-game stats (only for games with no abandonments). Arrays are [gameType, value].
+    setupStats: {
+      alignmentWinRates: { type: mongoose.Schema.Types.Mixed, default: {} },
+      roleWinRates: { type: mongoose.Schema.Types.Mixed, default: {} },
+      gameLengths: { type: Array, default: [] },
+    },
   }),
   AnonymousDeck: anonymousDeck,
   CustomEmote: new mongoose.Schema({
@@ -459,6 +468,7 @@ var schemas = {
     updatedAt: { type: Number, index: true },
     voteCount: { type: Number, default: 0, index: true },
     deleted: { type: Boolean, default: false },
+    deletedAt: { type: Number, default: null },
   }),
   Comment: new mongoose.Schema({
     id: { type: String, index: true },

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 
 import Setups from "./Setup/SetupPage";
-import SetupsNightOrder from "./Setup/SetupNightOrder";
 import RolePage from "./role/RolePage";
 import Games from "./Games";
 import LearnGlossary from "./LearnGlossary";
@@ -24,10 +23,6 @@ export default function Learn(props) {
           <Routes>
             <Route path="games" element={<Games />} />
             <Route path="setup/:setupId" element={<Setups />} />
-            <Route
-              path="setup/:setupId/nightorder"
-              element={<SetupsNightOrder />}
-            />
             <Route path="role/:RoleName" element={<RolePage />} />
             <Route path="glossary" element={<LearnGlossary />} />
             <Route path="*" element={<Navigate to="games" />} />

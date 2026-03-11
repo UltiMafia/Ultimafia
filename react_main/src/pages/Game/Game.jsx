@@ -1643,8 +1643,6 @@ export function TextMeetingLayout() {
         <Tabs
           value={selTab || false}
           onChange={onTabChange}
-          variant="scrollable"
-          scrollButtons="auto"
           sx={{
             flexGrow: 1,
             minHeight: 36,

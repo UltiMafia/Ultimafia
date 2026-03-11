@@ -183,10 +183,6 @@ function SettingsSection({ sections, activeSection }) {
       <Stack
         direction="row"
         spacing={1}
-        sx={{
-          borderBottom: 1,
-          borderColor: "divider",
-        }}
       >
         <Tabs value={activeSection.path} aria-label="Settings Sections">
           {sections.map((section) => (

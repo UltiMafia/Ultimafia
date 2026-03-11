@@ -171,17 +171,7 @@ export default function Moderation() {
 
   return (
     <Box>
-      <Tabs
-        value={tabValue}
-        onChange={handleTabChange}
-        variant="scrollable"
-        scrollButtons="auto"
-        allowScrollButtonsMobile
-        sx={{
-          borderBottom: 1,
-          borderColor: "divider",
-        }}
-      >
+      <Tabs value={tabValue} onChange={handleTabChange}>
         <Tab label="Moderation Log" value="log" />
         <Tab label="Staff Handbook" value="handbook" />
         <Tab label="Volunteer" value="volunteer" />

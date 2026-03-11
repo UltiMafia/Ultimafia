@@ -288,9 +288,6 @@ export default function HostBrowser(props) {
     <Tabs
       value={hostNavLabel}
       onChange={(_, newValue) => onHostNavClick(newValue)}
-      variant="scrollable"
-      scrollButtons="auto"
-      allowScrollButtonsMobile
     >
       {hostButtonLabels.map((label) => (
         <Tab key={label} label={<div>{label}</div>} value={label} />

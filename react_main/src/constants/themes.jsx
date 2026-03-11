@@ -157,6 +157,18 @@ export function getSiteTheme(customPrimaryColor) {
       align: "center",
       fontWeight: "bold",
     },
+    MuiTabs: {
+      defaultProps: {
+        variant: "scrollable",
+        scrollButtons: "auto",
+        allowScrollButtonsMobile: true,
+      },
+      styleOverrides: {
+        root: ({ theme }) => ({
+          borderBottom: `1px solid ${theme.palette.divider}`,
+        }),
+      },
+    },
   };
 
   return createTheme({
